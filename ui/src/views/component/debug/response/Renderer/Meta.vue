@@ -19,7 +19,7 @@
       <span v-if="item.resultStatus===ResultStatus.Pass"><CheckCircleOutlined /></span>
       <span v-if="item.resultStatus===ResultStatus.Fail"><CloseCircleOutlined /></span>
 
-      <span>{{item.msg}}</span>
+      <span>{{item.resultMsg}}</span>
     </div>
   </div>
 </template>

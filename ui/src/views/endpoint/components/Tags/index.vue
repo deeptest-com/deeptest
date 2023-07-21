@@ -4,7 +4,7 @@
     :key="tag" v-for="(tag,index) in values"
     closable @close="close(index)"
     >{{tag}}</a-tag>
-    <PlusCircleOutlined  @click="showSelect=true"/>
+    <PlusCircleOutlined  @click="showSelect=true" style="padding-top:3px;margin-left:5px"/>
     <a-select 
         v-if="showSelect"
         v-model:value="tag"

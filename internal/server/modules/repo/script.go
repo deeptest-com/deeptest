@@ -2,6 +2,7 @@ package repo
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/jinzhu/copier"
@@ -83,21 +84,30 @@ func (r *ScriptRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *ScriptRepo) UpdateResult(script model.DebugConditionScript, usedBy consts.UsedBy) (err error) {
+func (r *ScriptRepo) DeleteByCondition(conditionId uint) (err error) {
+	err = r.DB.Model(&model.DebugConditionScript{}).
+		Where("condition_id=?", conditionId).
+		Update("deleted", true).
+		Error
+
+	return
+}
+
+func (r *ScriptRepo) UpdateResult(script domain.ScriptBase) (err error) {
 	values := map[string]interface{}{
 		"output":        script.Output,
 		"result_status": script.ResultStatus,
 	}
 
 	err = r.DB.Model(&script).
-		Where("id=? AND used_by=?", script.ID, usedBy).
+		Where("id=?", script.RecordId).
 		Updates(values).
 		Error
 
 	return
 }
 
-func (r *ScriptRepo) CreateLog(script model.DebugConditionScript, invokeId uint, usedBy consts.UsedBy) (
+func (r *ScriptRepo) CreateLog(script domain.ScriptBase, invokeId uint) (
 	log model.ExecLogScript, err error) {
 
 	copier.CopyWithOption(&log, script, copier.Option{DeepCopy: true})

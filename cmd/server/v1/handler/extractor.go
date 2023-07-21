@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -63,22 +62,22 @@ func (c *ExtractorCtrl) Get(ctx iris.Context) {
 }
 
 // CreateOrUpdateResult 新建或更新结果
-func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
-	var extractor model.DebugConditionExtractor
-	err := ctx.ReadJSON(&extractor)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	err = c.ExtractorService.CreateOrUpdateResult(&extractor, consts.InterfaceDebug)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-}
+//func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
+//	var extractor model.DebugConditionExtractor
+//	err := ctx.ReadJSON(&extractor)
+//	if err != nil {
+//		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+//		return
+//	}
+//
+//	err = c.ExtractorService.CreateOrUpdateResult(&extractor, consts.InterfaceDebug)
+//	if err != nil {
+//		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
+//		return
+//	}
+//
+//	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+//}
 
 // Update 更新
 func (c *ExtractorCtrl) Update(ctx iris.Context) {

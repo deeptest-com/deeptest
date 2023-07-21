@@ -115,22 +115,30 @@ func (r *CheckpointRepo) Delete(id uint) (err error) {
 
 	return
 }
+func (r *CheckpointRepo) DeleteByCondition(conditionId uint) (err error) {
+	err = r.DB.Model(&model.DebugConditionCheckpoint{}).
+		Where("condition_id=?", conditionId).
+		Update("deleted", true).
+		Error
 
-func (r *CheckpointRepo) UpdateResult(checkpoint model.DebugConditionCheckpoint, usedBy consts.UsedBy) (err error) {
+	return
+}
+
+func (r *CheckpointRepo) UpdateResult(checkpoint domain.CheckpointBase) (err error) {
 	values := map[string]interface{}{
 		"actual_result": checkpoint.ActualResult,
 		"result_status": checkpoint.ResultStatus,
 	}
 
 	err = r.DB.Model(&checkpoint).
-		Where("id=? AND used_by=?", checkpoint.ID, usedBy).
+		Where("id=?", checkpoint.RecordId).
 		Updates(values).
 		Error
 
 	return
 }
 
-func (r *CheckpointRepo) CreateLog(checkpoint model.DebugConditionCheckpoint, invokeId uint, usedBy consts.UsedBy) (
+func (r *CheckpointRepo) CreateLog(checkpoint domain.CheckpointBase, invokeId uint) (
 	log model.ExecLogCheckpoint, err error) {
 
 	copier.CopyWithOption(&log, checkpoint, copier.Option{DeepCopy: true})

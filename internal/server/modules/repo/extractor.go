@@ -133,23 +133,23 @@ func (r *ExtractorRepo) UpdateDesc(po *model.DebugConditionExtractor) (err error
 	return
 }
 
-func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.DebugConditionExtractor, usedBy consts.UsedBy) (err error) {
-	postCondition, _ := r.PostConditionRepo.Get(extractor.ConditionId)
-
-	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, postCondition.EndpointInterfaceId)
-	if po.ID > 0 {
-		extractor.ID = po.ID
-		r.UpdateResult(*extractor, usedBy)
-		return
-	}
-
-	err = r.DB.Save(extractor).Error
-	if err != nil {
-		return
-	}
-
-	return
-}
+//func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.DebugConditionExtractor, usedBy consts.UsedBy) (err error) {
+//	postCondition, _ := r.PostConditionRepo.Get(extractor.ConditionId)
+//
+//	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, postCondition.EndpointInterfaceId)
+//	if po.ID > 0 {
+//		extractor.ID = po.ID
+//		r.UpdateResult(*extractor, usedBy)
+//		return
+//	}
+//
+//	err = r.DB.Save(extractor).Error
+//	if err != nil {
+//		return
+//	}
+//
+//	return
+//}
 
 func (r *ExtractorRepo) Delete(id uint) (err error) {
 	err = r.DB.Model(&model.DebugConditionExtractor{}).
@@ -159,8 +159,16 @@ func (r *ExtractorRepo) Delete(id uint) (err error) {
 
 	return
 }
+func (r *ExtractorRepo) DeleteByCondition(conditionId uint) (err error) {
+	err = r.DB.Model(&model.DebugConditionExtractor{}).
+		Where("condition_id=?", conditionId).
+		Update("deleted", true).
+		Error
 
-func (r *ExtractorRepo) UpdateResult(extractor model.DebugConditionExtractor, usedBy consts.UsedBy) (err error) {
+	return
+}
+
+func (r *ExtractorRepo) UpdateResult(extractor domain.ExtractorBase) (err error) {
 	extractor.Result = strings.TrimSpace(extractor.Result)
 	values := map[string]interface{}{}
 	if extractor.Result != "" {
@@ -170,8 +178,8 @@ func (r *ExtractorRepo) UpdateResult(extractor model.DebugConditionExtractor, us
 		values["scope"] = extractor.Scope
 	}
 
-	err = r.DB.Model(&extractor).
-		Where("id = ?", extractor.ID).
+	err = r.DB.Model(&model.DebugConditionExtractor{}).
+		Where("id = ?", extractor.RecordId).
 		Updates(values).Error
 
 	if err != nil {
@@ -182,7 +190,7 @@ func (r *ExtractorRepo) UpdateResult(extractor model.DebugConditionExtractor, us
 	return
 }
 
-func (r *ExtractorRepo) CreateLog(extractor model.DebugConditionExtractor, invokeId uint, usedBy consts.UsedBy) (
+func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase, invokeId uint) (
 	logExtractor model.ExecLogExtractor, err error) {
 
 	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})

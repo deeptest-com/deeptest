@@ -19,6 +19,7 @@ type ExtractorBase struct {
 	Scope    consts.ExtractorScope `json:"scope" gorm:"default:public"`
 
 	Result   string `json:"result"`
+	RecordId uint   `gorm:"-" json:"recordId"`
 	InvokeId uint   `json:"invokeId"`
 
 	Disabled bool `json:"disabled"`
@@ -39,6 +40,7 @@ type CheckpointBase struct {
 	ActualResult string                    `json:"actualResult"`
 
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	RecordId     uint                `gorm:"-" json:"recordId"`
 	InvokeId     uint                `json:"invokeId"`
 
 	Disabled bool `json:"disabled"`
@@ -55,6 +57,7 @@ type ScriptBase struct {
 
 	Output       string              `json:"output"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	RecordId     uint                `gorm:"-" json:"recordId"`
 	InvokeId     uint                `json:"invokeId"`
 
 	Disabled bool `json:"disabled"`

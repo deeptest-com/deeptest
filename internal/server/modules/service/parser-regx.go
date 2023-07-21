@@ -28,6 +28,7 @@ func (s *ParserRegxService) ParseRegx(req *v1.ParserRequest) (ret v1.ParserRespo
 		Expr:          expr,
 		ExprType:      exprType,
 	}
+
 	return
 }
 

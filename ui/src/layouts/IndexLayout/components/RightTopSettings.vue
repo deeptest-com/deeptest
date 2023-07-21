@@ -25,6 +25,22 @@
         </template>
       </a-dropdown>
 
+      <!--  切换Agent -->
+      <a-dropdown placement="bottomRight" v-if="isElectronEnv" >
+        <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 12px;">
+          <EnvironmentOutlined class="user-icon"/>
+          <span class="user-name">{{currentAgentLabel}}</span>
+          <DownOutlined class="user-icon"/>
+        </a>
+        <template #overlay>
+          <a-menu @click="changeAgentEnv">
+            <a-menu-item  v-for="agent in agentUrlOpts" :key="agent.value" :disabled="agent.label === currentAgentLabel">
+              {{agent.label}}
+            </a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
+
       <a-tooltip placement="bottom" @click="toggle">
         <template #title>{{ isFullscreen ? '退出全屏' : '全屏' }}</template>
         <a-button type="text" class="share-btn">
@@ -33,29 +49,6 @@
         </a-button>
       </a-tooltip>
 
-      <a-dropdown placement="bottomRight">
-        <a class="indexlayout-top-usermenu ant-dropdown-link">
-          <UserOutlined class="user-icon"/>
-          <span class="user-name">{{ currentUser.name }}</span>
-          <DownOutlined class="user-icon"/>
-        </a>
-        <template #overlay>
-          <a-menu @click="onMenuClick">
-            <a-menu-item key="profile">
-              <SettingOutlined class="settings"/>
-              个人信息
-            </a-menu-item>
-            <a-menu-item key="management">
-              <SettingOutlined class="settings"/>
-              用户管理
-            </a-menu-item>
-            <a-menu-item key="logout">
-              <LogoutOutlined/>
-              登出
-            </a-menu-item>
-          </a-menu>
-        </template>
-      </a-dropdown>
 
     </div>
 
@@ -64,14 +57,15 @@
 <script lang="ts">
 import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
-
+import {agentUrlOpts, getAgentLabel, isElectronEnv} from '@/utils/env'
 import {
   DownOutlined,
   SettingOutlined,
   UserOutlined,
   LogoutOutlined,
   FullscreenOutlined,
-  FullscreenExitOutlined
+  FullscreenExitOutlined,
+  EnvironmentOutlined
 } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 // import IconSvg from "@/components/IconSvg";
@@ -83,9 +77,10 @@ export default defineComponent({
   name: 'RightTopSettings',
   components: {
     DownOutlined,
-    SettingOutlined, UserOutlined, LogoutOutlined,
+    SettingOutlined, UserOutlined, LogoutOutlined,EnvironmentOutlined,
     // IconSvg
-    FullscreenOutlined, FullscreenExitOutlined
+    FullscreenOutlined,
+    FullscreenExitOutlined
   },
   props: {
     theme: {
@@ -138,6 +133,18 @@ export default defineComponent({
       }
     }
 
+
+    function changeAgentEnv(event:any) {
+      const {key} = event;
+      console.log('832',key);
+      window.localStorage.setItem('dp-cache-agent-value',key);
+      window.location.reload();
+    }
+
+    const currentAgentLabel = getAgentLabel();
+
+
+
     const onManagementClick = () => {
       router.replace({path: '/user-manage/index'})
     }
@@ -151,7 +158,11 @@ export default defineComponent({
       closeSelectLang,
       onManagementClick,
       toggle,
-      isFullscreen
+      isFullscreen,
+      changeAgentEnv,
+      agentUrlOpts,
+      isElectronEnv,
+      currentAgentLabel
     }
   }
 })

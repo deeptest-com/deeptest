@@ -73,7 +73,7 @@ export class DeepTestApp {
                 contextIsolation: false,
                 enableRemoteModule: true,
                 webSecurity: false,
-            }
+            },
         })
         if (IS_LINUX && !DEBUG) {
             const pth = path.join(__dirname, 'icon', 'favicon.png')

@@ -1,10 +1,10 @@
 module.exports = {
     electronPackagerConfig: {
-        "name": "deeptest",
+        "name": "LeyanAPI",
         "icon": "./ui/favicon.ico"
     },
     packagerConfig: {
-        "name": "deeptest",
+        "name": "LeyanAPI",
         "icon": "./icon/favicon",
         extraResource: [
             './bin',
@@ -16,7 +16,7 @@ module.exports = {
         {
             name: '@electron-forge/maker-squirrel',
             config: {
-                name: 'deeptest'
+                name: 'LeyanAPI'
             }
         },
         {

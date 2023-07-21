@@ -41,3 +41,24 @@ export function getAgentUrl() {
         return process.env.VUE_APP_API_AGENT;
     }
 }
+
+
+/**
+ * 获取当前的 Agent 的 URL
+ *
+ * */
+export function getAgentLabel() {
+    // 运行在客户端 Electron 容器中
+    if (isElectronEnv) {
+        const localCacheAgentVal = window.localStorage.getItem('dp-cache-agent-value') || 'local';
+        const selectedAgent = agentUrlOpts.find((item) => {
+            return item.value === localCacheAgentVal;
+        });
+        if (selectedAgent?.label) {
+            return selectedAgent?.label;
+        }
+        // 如果是浏览器环境，只能通过远程服务调取
+    } else {
+        return '本地'
+    }
+}

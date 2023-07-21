@@ -5,7 +5,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"go.uber.org/zap"
@@ -69,18 +68,9 @@ func (r *ExtractorRepo) GetByInterfaceVariable(variable string, id, debugInterfa
 	return
 }
 
-func (r *ExtractorRepo) Save(extractor *model.DebugConditionExtractor) (id uint, bizErr _domain.BizErr) {
-	//postCondition, _ := r.PostConditionRepo.Get(extractor.ConditionId)
-	//
-	//po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, postCondition.EndpointInterfaceId)
-	//if po.ID > 0 {
-	//	bizErr.Code = _domain.ErrNameExist.Code
-	//	return
-	//}
-
-	err := r.DB.Save(extractor).Error
+func (r *ExtractorRepo) Save(extractor *model.DebugConditionExtractor) (id uint, err error) {
+	err = r.DB.Save(extractor).Error
 	if err != nil {
-		bizErr.Code = _domain.SystemErr.Code
 		return
 	}
 

@@ -7,7 +7,6 @@ import (
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 )
 
@@ -31,8 +30,8 @@ func (s *ExtractorService) Get(id uint) (extractor model.DebugConditionExtractor
 	return
 }
 
-func (s *ExtractorService) Create(extractor *model.DebugConditionExtractor) (bizErr _domain.BizErr) {
-	_, bizErr = s.ExtractorRepo.Save(extractor)
+func (s *ExtractorService) Create(extractor *model.DebugConditionExtractor) (err error) {
+	_, err = s.ExtractorRepo.Save(extractor)
 
 	return
 }
@@ -57,9 +56,6 @@ func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickC
 	extractor.ConditionId = condition.ID
 
 	_, err = s.ExtractorRepo.Save(&extractor)
-	if err != nil {
-		return
-	}
 
 	s.PostConditionRepo.UpdateEntityId(condition.ID, extractor.ID)
 

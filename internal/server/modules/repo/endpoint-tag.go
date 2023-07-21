@@ -193,23 +193,78 @@ func (r *EndpointTagRepo) AddRel(endpointId uint, tagIds []uint) (err error) {
 }
 
 func (r *EndpointTagRepo) GetEndpointIdsByTagNames(tagNames []string, projectId int64) (endpointIds []uint, err error) {
+	//err = r.DB.Model(&model.EndpointTagRel{}).
+	//	Joins("LEFT JOIN biz_endpoint_tag t ON biz_endpoint_tag_rel.tag_id=t.id").
+	//	Where("t.project_id = ?", projectId).
+	//	Where("t.name IN (?) AND NOT t.deleted AND NOT t.disabled", tagNames).
+	//	Select("biz_endpoint_tag_rel.endpoint_id").
+	//	Find(&endpointIds).Error
 	err = r.DB.Model(&model.EndpointTagRel{}).
-		Joins("LEFT JOIN biz_endpoint_tag t ON biz_endpoint_tag_rel.tag_id=t.id").
-		Where("t.project_id = ?", projectId).
-		Where("t.name IN (?) AND NOT t.deleted AND NOT t.disabled", tagNames).
-		Select("biz_endpoint_tag_rel.endpoint_id").
+		Where("project_id = ?", projectId).
+		Where("tag_name IN (?) AND NOT deleted AND NOT disabled", tagNames).
+		Select("endpoint_id").
 		Find(&endpointIds).Error
 
 	return
 }
 
 func (r *EndpointTagRepo) GetTagNamesByEndpointId(endpointId, projectId uint) (tagNames []string, err error) {
-	err = r.DB.Model(&model.EndpointTag{}).
-		Joins("LEFT JOIN biz_endpoint_tag_rel l ON biz_endpoint_tag.id=l.tag_id").
-		Where("l.endpoint_id = ?", endpointId).
-		Where("biz_endpoint_tag.project_id = ? AND NOT biz_endpoint_tag.deleted AND NOT biz_endpoint_tag.disabled", projectId).
-		Select("biz_endpoint_tag.name").
+	//err = r.DB.Model(&model.EndpointTag{}).
+	//	Joins("LEFT JOIN biz_endpoint_tag_rel l ON biz_endpoint_tag.id=l.tag_id").
+	//	Where("l.endpoint_id = ?", endpointId).
+	//	Where("biz_endpoint_tag.project_id = ? AND NOT biz_endpoint_tag.deleted AND NOT biz_endpoint_tag.disabled", projectId).
+	//	Select("biz_endpoint_tag.name").
+	//	Find(&tagNames).Error
+	err = r.DB.Model(&model.EndpointTagRel{}).
+		Where("endpoint_id = ?", endpointId).
+		Where("project_id = ? AND NOT deleted AND NOT disabled", projectId).
+		Select("tag_name").
 		Find(&tagNames).Error
+
+	return
+}
+
+func (r *EndpointTagRepo) DeleteRelByEndpointAndProject(endpointId, projectId uint) (err error) {
+	err = r.DB.
+		Where("endpoint_id = ?", endpointId).
+		Where("project_id = ?", projectId).
+		Delete(&model.EndpointTagRel{}).Error
+
+	if err != nil {
+		logUtils.Errorf("delete endpoint tag relation by endpoint and project error", zap.String("error:", err.Error()))
+		return
+	}
+
+	return
+}
+
+func (r *EndpointTagRepo) BatchAddRel(endpointId, projectId uint, tagNames []string) (err error) {
+	relations := make([]model.EndpointTagRel, 0)
+	for _, v := range tagNames {
+		relation := model.EndpointTagRel{
+			EndpointId: endpointId,
+			TagName:    v,
+			ProjectId:  projectId,
+		}
+		relations = append(relations, relation)
+	}
+
+	err = r.DB.Model(&model.EndpointTagRel{}).
+		Create(relations).Error
+
+	if err != nil {
+		logUtils.Errorf("batch add endpoint and tag relation error", zap.String("error:", err.Error()))
+		return
+	}
+
+	return
+}
+
+func (r *EndpointTagRepo) ListRelByProject(projectId uint) (tags []model.EndpointTagRel, err error) {
+	err = r.DB.Model(&model.EndpointTagRel{}).
+		Distinct("tag_name").
+		Where("project_id = ? AND NOT deleted AND NOT disabled", projectId).
+		Find(&tags).Error
 
 	return
 }

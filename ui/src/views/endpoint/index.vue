@@ -41,7 +41,7 @@
             </a-dropdown>
           </div>
           <div class="top-search-filter">
-            <TableFilter @filter="handleTableFilter"/>
+            <TableFilter @filter="handleTableFilter" ref="filter"/>
           </div>
         </div>
         <EmptyCom>
@@ -84,6 +84,18 @@
                       :value="record?.status"
                       :options="endpointStatusOpts"
                       @update="(val) => { handleChangeStatus(val,record);}"/>
+                </div>
+              </template>
+
+              <template #colTags="{record}">
+                <div class="customTagsColRender">
+                  <Tags
+                  :values = "record?.tags"
+                  :options = "tagList"
+                  @updateTags = "(values:[])=>{
+                    updateTags(values,record.id)
+                  }"
+                    />
                 </div>
               </template>
 
@@ -173,15 +185,18 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
+import Tags from './components/Tags/index.vue';
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const serves = computed<any>(() => store.state.ServeGlobal.serves);
 const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
+let filterState1 = computed<any>(() => store.state.Endpoint.filterState);
 const createApiModalVisible = ref(false);
 const router = useRouter();
 type Key = ColumnProps['key'];
+const tagList: any = computed(()=>store.state.Endpoint.tagList);
 
 /**
  * 表格数据
@@ -196,7 +211,8 @@ const columns = [
     title: '接口名称',
     dataIndex: 'title',
     slots: {customRender: 'colTitle'},
-    ellipsis: true
+    ellipsis: true,
+    width: 150,
   },
   {
     title: '状态',
@@ -205,9 +221,16 @@ const columns = [
     width: 150,
   },
   {
+    title: '标签',
+    dataIndex: 'tags',
+    slots: {customRender: 'colTags'},
+    width: 200,
+  },
+  {
     title: '创建人',
     dataIndex: 'createUser',
     width: 100,
+    ellipsis: true
   },
   {
     title: '接口路径',
@@ -458,6 +481,8 @@ async function handleTableFilter(state) {
   await loadList(pagination.value.current, pagination.value.pageSize, state);
 }
 
+const filter = ref() 
+
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据
 watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
   const [newProjectId, newServeId] = newVal;
@@ -465,11 +490,14 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
     await loadList(pagination.value.current, pagination.value.pageSize, {
       serveId: newServeId || 0,
     });
+    await store.dispatch('Endpoint/getEndpointTagList');
     if (newServeId) {
       await store.dispatch('Endpoint/getServerList', {id: newServeId});
       // 获取授权列表
       await store.dispatch('Endpoint/getSecurityList', {id: newServeId});
     }
+    store.commit('Endpoint/clearFilterState');
+    filter.value.resetFields()
   }
 }, {
   immediate: true
@@ -491,9 +519,8 @@ watch(
 
 // 页面路由卸载时，清空搜索条件
 onUnmounted(async () => {
-  await store.commit('Endpoint/clearFilterState');
+  store.commit('Endpoint/clearFilterState');
 })
-
 
 
 function paneResizeStop(pane, resizer, size) {
@@ -502,6 +529,13 @@ function paneResizeStop(pane, resizer, size) {
     const leftWidth = size.split('px')[0];
     // 当左侧宽度小于 100 时，折叠左侧
   }
+}
+
+const updateTags = async (tags :[],id:number)=>{  
+   await store.dispatch('Endpoint/updateEndpointTag', {
+      id:id,tagNames:tags
+    });
+    
 }
 
 </script>

@@ -69,8 +69,7 @@
             </div>
           </template>
         </a-tree>
-
-        <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
+        <div v-if="!treeData?.[0]?.children?.length" class="nodata-tip">请点击上方按钮添加目录 ~</div>
       </div>
     </div>
 

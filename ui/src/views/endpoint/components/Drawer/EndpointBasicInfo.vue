@@ -1,5 +1,5 @@
 <template>
-  <a-descriptions :size="'small'" :title="null" >
+  <a-descriptions :size="'small'" :title="null" :column="4">
     <a-descriptions-item label="创建人">{{ endpointDetail?.createUser }}</a-descriptions-item>
     <a-descriptions-item label="状态">
       <EditAndShowSelect
@@ -7,6 +7,16 @@
           :value="endpointDetail?.status"
           :options="endpointStatusOpts"
           @update="handleChangeStatus"/>
+    </a-descriptions-item>
+    <a-descriptions-item label="标签">
+      <Tags
+       :options="tagList"
+       :size="'small'"
+       :values="endpointDetail.tags"
+       @updateTags = "(values:[])=>{
+          updateTags(values,endpointDetail.id,endpointDetail.projectId)
+        }"
+      />
     </a-descriptions-item>
     <a-descriptions-item label="描述">
       <EditAndShowField :placeholder="'请输入描述'" :value="endpointDetail?.description || '暂无'"
@@ -30,6 +40,7 @@ import {
   ref,
   defineEmits,
   computed,
+onMounted,
 } from 'vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import {useStore} from "vuex";
@@ -37,11 +48,12 @@ import {Endpoint} from "@/views/endpoint/data";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowTreeSelect from '@/components/EditAndShowTreeSelect/index.vue';
-
-const props = defineProps({})
+import Tags from '../Tags/index.vue';
 
 const store = useStore<{ Endpoint }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const tagList: any = computed(()=>store.state.Endpoint.tagList);
+//  const tagList = ref(["aabdd","sddsd"])
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
 const treeData: any = computed(() => {
   return treeDataCategory.value?.[0]?.children || [];
@@ -89,6 +101,14 @@ function updateDescription(val: string) {
   emit('changeDescription', val);
 }
 
+const updateTags = async (tags :[],id:number,projectId:number)=>{  
+   await store.dispatch('Endpoint/updateEndpointTag', {
+      id:id,tagNames:tags
+    });
+
+  await store.dispatch('Endpoint/loadList', {projectId: projectId});
+    
+}
 
 </script>
 

@@ -283,9 +283,9 @@ export async function saveExtractor(data): Promise<any> {
         data: data,
     });
 }
-export async function createExtractorOrUpdateResult(data): Promise<any> {
+export async function quickCreateExtractor(data): Promise<any> {
     return request({
-        url: `/${apiExtractor}/createOrUpdateResult`,
+        url: `/${apiExtractor}/quickCreate`,
         method: 'POST',
         data: data,
     });

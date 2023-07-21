@@ -3,7 +3,7 @@ import {StoreModuleType} from "@/utils/store";
 
 import {
     clearShareVar,
-    createExtractorOrUpdateResult,
+    quickCreateExtractor,
     getCheckpoint,
     getExtractor,
     getInvocationAsInterface,
@@ -129,7 +129,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         getExtractor: Action<StateType, StateType>;
         saveExtractor: Action<StateType, StateType>;
-        createExtractorOrUpdateResult: Action<StateType, StateType>;
+        quickCreateExtractor: Action<StateType, StateType>;
         removeExtractor: Action<StateType, StateType>;
 
         getCheckpoint: Action<StateType, StateType>;
@@ -498,9 +498,9 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async createExtractorOrUpdateResult({commit, dispatch, state}, payload: any) {
+        async quickCreateExtractor({commit, dispatch, state}, payload: any) {
             try {
-                await createExtractorOrUpdateResult(payload);
+                await quickCreateExtractor(payload);
                 dispatch('listPostCondition');
                 dispatch('listShareVar');
                 return true;

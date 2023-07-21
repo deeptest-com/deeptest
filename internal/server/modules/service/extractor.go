@@ -1,14 +1,20 @@
 package service
 
 import (
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/jinzhu/copier"
 )
 
 type ExtractorService struct {
-	ExtractorRepo *repo.ExtractorRepo `inject:""`
+	ExtractorRepo        *repo.ExtractorRepo     `inject:""`
+	PostConditionRepo    *repo.PostConditionRepo `inject:""`
+	PostConditionService *PostConditionService   `inject:""`
 
 	ShareVarService *ShareVarService `inject:""`
 }
@@ -27,6 +33,35 @@ func (s *ExtractorService) Get(id uint) (extractor model.DebugConditionExtractor
 
 func (s *ExtractorService) Create(extractor *model.DebugConditionExtractor) (bizErr _domain.BizErr) {
 	_, bizErr = s.ExtractorRepo.Save(extractor)
+
+	return
+}
+func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickCreateReq, usedBy consts.UsedBy) (err error) {
+	debugInfo := req.Info
+	config := req.Config
+
+	// create post-condition
+	condition := model.DebugPostCondition{}
+	copier.CopyWithOption(&condition, debugInfo, copier.Option{DeepCopy: true})
+
+	condition.EntityId = 0 // update later
+	condition.EntityType = consts.ConditionTypeExtractor
+	condition.UsedBy = debugInfo.UsedBy
+	condition.Desc = extractorHelper.GenDesc(config.Src, config.Type, config.Expression, "", "")
+
+	err = s.PostConditionRepo.Save(&condition)
+
+	// create extractor
+	var extractor model.DebugConditionExtractor
+	copier.CopyWithOption(&extractor, config, copier.Option{DeepCopy: true})
+	extractor.ConditionId = condition.ID
+
+	_, err = s.ExtractorRepo.Save(&extractor)
+	if err != nil {
+		return
+	}
+
+	s.PostConditionRepo.UpdateEntityId(condition.ID, extractor.ID)
 
 	return
 }

@@ -113,18 +113,19 @@ const testParse = (expr, exprType) => {
   })
 }
 
-const responseExtractorFinish = (data) => {
+const responseExtractorFinish = (conf) => {
   console.log('responseExtractorFinish')
-  data.type = data.expressionType === 'regx' ? ExtractorType.regx : ExtractorType.htmlquery
-  data.src = ExtractorSrc.body
-  data.result = result.value
 
-  data.debugInterfaceId = debugInfo.value.debugInterfaceId
-  data.endpointInterfaceId = debugInfo.value.endpointInterfaceId
-  data.projectId = debugData.value.projectId
-  data.usedBy = usedBy
+  conf.type = conf.expressionType
+  conf.src = ExtractorSrc.body
+  conf.result = result.value
 
-  store.dispatch('Debug/createExtractorOrUpdateResult', data).then((result) => {
+  const data = {
+    conf,
+    info: debugInfo.value,
+  } as any
+
+  store.dispatch('Debug/quickCreateExtractor', data).then((result) => {
     if (result) {
       responseExtractorVisible.value = false
     }

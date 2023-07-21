@@ -69,6 +69,7 @@ var (
 		&ExecLogProcessor{},
 		&ExecLogExtractor{},
 		&ExecLogCheckpoint{},
+		&ExecLogScript{},
 
 		&ComponentSchema{},
 		&ComponentSchemaSecurity{},

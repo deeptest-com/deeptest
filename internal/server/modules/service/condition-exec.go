@@ -27,7 +27,7 @@ func (s *ExecConditionService) SavePreConditionResult(invokeId uint, preConditio
 			json.Unmarshal(condition.Raw, &scriptBase)
 
 			s.ScriptRepo.UpdateResult(scriptBase)
-			s.ScriptRepo.CreateLog(scriptBase, invokeId)
+			s.ScriptRepo.CreateLog(scriptBase)
 		}
 	}
 
@@ -42,9 +42,10 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 		if condition.Type == consts.ConditionTypeExtractor {
 			var extractorBase domain.ExtractorBase
 			json.Unmarshal(condition.Raw, &extractorBase)
+			extractorBase.InvokeId = invokeId
 
 			s.ExtractorRepo.UpdateResult(extractorBase)
-			s.ExtractorRepo.CreateLog(extractorBase, invokeId)
+			s.ExtractorRepo.CreateLog(extractorBase)
 
 			// add all ids for easy to load
 			s.ShareVarService.Save(extractorBase.Variable, extractorBase.Result,
@@ -54,16 +55,18 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 		} else if condition.Type == consts.ConditionTypeCheckpoint {
 			var checkpointBase domain.CheckpointBase
 			json.Unmarshal(condition.Raw, &checkpointBase)
+			checkpointBase.InvokeId = invokeId
 
 			s.CheckpointRepo.UpdateResult(checkpointBase)
-			s.CheckpointRepo.CreateLog(checkpointBase, invokeId)
+			s.CheckpointRepo.CreateLog(checkpointBase)
 
 		} else if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
+			scriptBase.InvokeId = invokeId
 
 			s.ScriptRepo.UpdateResult(scriptBase)
-			s.ScriptRepo.CreateLog(scriptBase, invokeId)
+			s.ScriptRepo.CreateLog(scriptBase)
 		}
 	}
 

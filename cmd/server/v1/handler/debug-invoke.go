@@ -90,16 +90,13 @@ func (c *DebugInvokeCtrl) GetResult(ctx iris.Context) {
 		return
 	}
 
-	debugData, resultReq, resultResp, err := c.DebugInvokeService.GetAsInterface(invokeId)
+	result, err := c.DebugInvokeService.GetResult(invokeId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{
-		"debugData": debugData,
-		"req":       resultReq,
-		"resp":      resultResp,
-	}})
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: result})
 }
 
 // GetAsInterface 详情

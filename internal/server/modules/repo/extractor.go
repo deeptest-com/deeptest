@@ -190,17 +190,27 @@ func (r *ExtractorRepo) UpdateResult(extractor domain.ExtractorBase) (err error)
 	return
 }
 
-func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase, invokeId uint) (
-	logExtractor model.ExecLogExtractor, err error) {
+func (r *ExtractorRepo) ListLogByInvoke(invokeId uint) (pos []model.ExecLogExtractor, err error) {
+	err = r.DB.
+		Where("NOT deleted").
+		Where("invoke_id=?", invokeId).
+		Order("created_at ASC").Error
 
-	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
+	return
+}
 
-	logExtractor.ID = 0
-	logExtractor.InvokeId = invokeId
-	logExtractor.CreatedAt = nil
-	logExtractor.UpdatedAt = nil
+func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase) (
+	log model.ExecLogExtractor, err error) {
 
-	err = r.DB.Save(&logExtractor).Error
+	copier.CopyWithOption(&log, extractor, copier.Option{DeepCopy: true})
+
+	log.ID = 0
+	log.ConditionId = extractor.RecordId
+	log.InvokeId = extractor.InvokeId
+	log.CreatedAt = nil
+	log.UpdatedAt = nil
+
+	err = r.DB.Save(&log).Error
 
 	return
 }
@@ -308,6 +318,15 @@ func (r *ExtractorRepo) CreateDefault(conditionId uint) (po model.DebugCondition
 	}
 
 	r.Save(&po)
+
+	return
+}
+
+func (r *ExtractorRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogExtractor, err error) {
+	err = r.DB.
+		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
+		Where("NOT deleted").
+		First(&ret).Error
 
 	return
 }

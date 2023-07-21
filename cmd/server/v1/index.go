@@ -20,7 +20,8 @@ type IndexModule struct {
 	RoleModule    *router.RoleModule    `inject:""`
 	PermModule    *router.PermModule    `inject:""`
 
-	DebugModule             *router.DebugModule             `inject:""`
+	DebugInterfaceModule    *router.DebugInterfaceModule    `inject:""`
+	DebugInvokeModule       *router.DebugInvokeModule       `inject:""`
 	DiagnoseInterfaceModule *router.DiagnoseInterfaceModule `inject:""`
 
 	MockModule *router.MockModule `inject:""`
@@ -131,7 +132,8 @@ func (m *IndexModule) Party() module.WebModule {
 		m.PlanReportModule.Party(),
 		m.SummaryModule.Party(),
 
-		m.DebugModule.Party(),
+		m.DebugInterfaceModule.Party(),
+		m.DebugInvokeModule.Party(),
 		m.DiagnoseInterfaceModule.Party(),
 		m.MessageModule.Party(),
 		m.DocumentModule.Party(),

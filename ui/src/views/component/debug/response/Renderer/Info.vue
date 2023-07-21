@@ -15,7 +15,7 @@
 
       <ParamContent v-else
                     title="请求体"
-                    :content="requestData.body" />
+                    :content="requestData.body || ''" />
 
     </div>
 

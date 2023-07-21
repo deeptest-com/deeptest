@@ -130,7 +130,7 @@ func (r *CheckpointRepo) UpdateResult(checkpoint domain.CheckpointBase) (err err
 		"result_status": checkpoint.ResultStatus,
 	}
 
-	err = r.DB.Model(&checkpoint).
+	err = r.DB.Model(&model.DebugConditionCheckpoint{}).
 		Where("id=?", checkpoint.RecordId).
 		Updates(values).
 		Error
@@ -138,13 +138,14 @@ func (r *CheckpointRepo) UpdateResult(checkpoint domain.CheckpointBase) (err err
 	return
 }
 
-func (r *CheckpointRepo) CreateLog(checkpoint domain.CheckpointBase, invokeId uint) (
+func (r *CheckpointRepo) CreateLog(checkpoint domain.CheckpointBase) (
 	log model.ExecLogCheckpoint, err error) {
 
 	copier.CopyWithOption(&log, checkpoint, copier.Option{DeepCopy: true})
 
 	log.ID = 0
-	log.InvokeId = invokeId
+	log.ConditionId = checkpoint.RecordId
+	log.InvokeId = checkpoint.InvokeId
 	log.CreatedAt = nil
 	log.UpdatedAt = nil
 
@@ -202,6 +203,15 @@ func (r *CheckpointRepo) CreateDefault(conditionId uint) (po model.DebugConditio
 	}
 
 	r.Save(&po)
+
+	return
+}
+
+func (r *CheckpointRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogCheckpoint, err error) {
+	err = r.DB.
+		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
+		Where("NOT deleted").
+		First(&ret).Error
 
 	return
 }

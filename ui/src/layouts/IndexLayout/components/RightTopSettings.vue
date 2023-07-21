@@ -32,20 +32,33 @@
           <FullscreenExitOutlined v-if="!isFullscreen" :style="{'font-size': '14px','color':theme === 'white-theme' ? '#fff' : '#8A8A8A'}"/>
         </a-button>
       </a-tooltip>
+
+      <a-dropdown placement="bottomRight">
+        <a class="indexlayout-top-usermenu ant-dropdown-link">
+          <UserOutlined class="user-icon"/>
+          <span class="user-name">{{ currentUser.name }}</span>
+          <DownOutlined class="user-icon"/>
+        </a>
+        <template #overlay>
+          <a-menu @click="onMenuClick">
+            <a-menu-item key="profile">
+              <SettingOutlined class="settings"/>
+              个人信息
+            </a-menu-item>
+            <a-menu-item key="management">
+              <SettingOutlined class="settings"/>
+              用户管理
+            </a-menu-item>
+            <a-menu-item key="logout">
+              <LogoutOutlined/>
+              登出
+            </a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
+
     </div>
-    <!-- <div class="msgs">
-      <a @click="gotoMessage">
-        <a-badge count="100" :overflowCount="99" show-zero
-                 :numberStyle="{fontSize: '12px', minWidth: '12px', height: '10px', lineHeight: '10px', padding: '0 4px','box-shadow':'none'}">
-          <MailOutlined  class="dp-light user-icon" :style="{ fontSize: '16px',left:'-2px',position:'relative' }"/>
-        </a-badge>
-      </a>
-    </div> -->
-    <!--    <div class="user-management" @click="onManagementClick">-->
-    <!--      <a-tooltip placement="bottom" title="用户管理">-->
-    <!--        <icon-svg type="setting" :style="{width: '20px', height: '20px', fill: `${theme === 'white-theme' ? '#fff' : '#8A8A8A' }`}" />-->
-    <!--      </a-tooltip>-->
-    <!--    </div>-->
+
   </div>
 </template>
 <script lang="ts">

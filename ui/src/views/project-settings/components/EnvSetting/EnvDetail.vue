@@ -154,7 +154,8 @@ async function addService() {
 
 function urlValidator(...arg: any[]) {
     const value = arg[1];
-    const urlReg = /http(s)?:\/\/([\w-]+\.)+[\w-]+(\/[\w- .\/?%&=]*)?/; // eslint-disable-line
+    // 需要兼容 https://localhost
+    const urlReg = /http(s)?:\/\/[\w-]+/; // eslint-disable-line
     if (value === '') {
         return Promise.reject('url不能为空');
     } else {

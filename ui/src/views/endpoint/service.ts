@@ -241,3 +241,26 @@ export async function batchUpdateField(data: any): Promise<any> {
         data: data
     });
 }
+
+/**
+ * 获取tags
+ * @param data
+ */
+export async function tagList(): Promise<any> {
+    return request({
+        url: `/endpoint/tags`,
+        method: 'get'
+    });
+}
+
+/**
+ * 更新标签
+ * @param data
+ */
+export async function updateTag(data: any): Promise<any> {
+    return request({
+        url: `/endpoint/updateTag`,
+        method: 'put',
+        data: data
+    });
+}

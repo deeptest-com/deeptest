@@ -4,7 +4,6 @@ import {DownOutlined, PlusOutlined, RightOutlined,} from '@ant-design/icons-vue'
 import SplitDivider from "./SplitDivider.vue";
 import ExtraInfo from "./ExtraInfo.vue";
 import DataTypeSetting from './DataTypeSetting.vue';
-import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
     findLastNotArrayNode, handleRefInfo,
@@ -40,8 +39,6 @@ export default defineComponent({
                     handleRefInfo(tree, result);
                     data.value = addExtraViewInfo(data.value);
                     tree.extraViewInfo.isExpand = true;
-
-
                 } else {
                     delete tree.content;
                     tree.extraViewInfo.isExpand = false;
@@ -92,18 +89,20 @@ export default defineComponent({
         }
 
         const renderProperties = (options: any) => {
-            const {keyName, parent, depth, isRoot} = options;
+            const {keyName, parent, depth, isRoot,ancestor} = options;
+
             if (isRoot) {
                 return null
             }
             if (!parent) {
                 return null;
             }
-
-            const properties = parent?.properties?.[keyName] || {};
+            // const items = parent?.type === 'array' ? ancestor : parent;
+            // const properties = parent?.properties?.[keyName] || {};
+            const properties = parent?.type === 'array' ? parent?.items || {} : parent?.properties?.[keyName] || {};
             const list: any = [];
             Object.entries(properties).forEach(([k, v]) => {
-                if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo','ref','content','name','required'].includes(k)) {
+                if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo','ref','content','name','required','types'].includes(k)) {
                     if (!!v || v === 0) {
                         list.push({
                             label: k,
@@ -118,14 +117,19 @@ export default defineComponent({
             return <div>
                 {
                     list.map((item) => {
+
                         const {label, value} = item;
+                        if(Array.isArray(value) && value.length === 0){
+                            return null
+                        }
                         return <div class={['directoryText', 'properties-info']}
                                     style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
                             {label !== 'description' ?
                                 <a-typography-text type="secondary">{label}：</a-typography-text> : null}
-                            {label === 'description' ? <a-typography-text>{value}</a-typography-text> : null}
                             {label !== 'description' ?
                                 <a-typography-text type="secondary">{value}</a-typography-text> : null}
+                            {label === 'description' ? <a-typography-text>{value}</a-typography-text> : null}
+
                         </div>
                     })
                 }

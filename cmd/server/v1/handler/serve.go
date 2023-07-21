@@ -338,6 +338,11 @@ func (c *ServeCtrl) SaveSwaggerSync(ctx iris.Context) {
 	if req.Switch == consts.SwitchOFF {
 
 	}
+
+	projectId, _ := ctx.URLParamInt("currProjectId")
+	if req.ProjectId == 0 {
+		req.ProjectId = uint(projectId)
+	}
 	res, err := c.ServeService.SaveSwaggerSync(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

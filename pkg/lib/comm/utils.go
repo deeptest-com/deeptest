@@ -223,3 +223,83 @@ func InSlice(target string, strArray []string) bool {
 	}
 	return false
 }
+
+// IntInSlice 判断uint是否在切片中
+func IntInSlice(target int, intArray []int) bool {
+	sort.Ints(intArray)
+	index := sort.SearchInts(intArray, target)
+	if index < len(intArray) && intArray[index] == target {
+		return true
+	}
+	return false
+}
+
+// Intersect 求交集
+func Intersect(slice1, slice2 []string) []string {
+	m := make(map[string]int)
+	nn := make([]string, 0)
+	for _, v := range slice1 {
+		m[v]++
+	}
+
+	for _, v := range slice2 {
+		times, _ := m[v]
+		if times == 1 {
+			nn = append(nn, v)
+		}
+	}
+	return nn
+}
+
+// Difference 差集
+func Difference(slice1, slice2 []string) []string {
+	m := make(map[string]int)
+	nn := make([]string, 0)
+	inter := Intersect(slice1, slice2)
+	for _, v := range inter {
+		m[v]++
+	}
+
+	for _, value := range slice1 {
+		times, _ := m[value]
+		if times == 0 {
+			nn = append(nn, value)
+		}
+	}
+	return nn
+}
+
+// IntersectUint 求交集
+func IntersectUint(slice1, slice2 []uint) []uint {
+	m := make(map[uint]int)
+	nn := make([]uint, 0)
+	for _, v := range slice1 {
+		m[v]++
+	}
+
+	for _, v := range slice2 {
+		times, _ := m[v]
+		if times == 1 {
+			nn = append(nn, v)
+		}
+	}
+	return nn
+}
+
+// DifferenceUint 差集
+func DifferenceUint(slice1, slice2 []uint) []uint {
+	m := make(map[uint]int)
+	nn := make([]uint, 0)
+	inter := IntersectUint(slice1, slice2)
+	for _, v := range inter {
+		m[v]++
+	}
+
+	for _, value := range slice1 {
+		times, _ := m[value]
+		if times == 0 {
+			nn = append(nn, value)
+		}
+	}
+	return nn
+}

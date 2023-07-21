@@ -13,6 +13,7 @@ import (
 	"github.com/jinzhu/copier"
 	"net/http"
 	"net/url"
+	"sort"
 )
 
 type DiagnoseInterfaceService struct {
@@ -251,7 +252,9 @@ func (s *DiagnoseInterfaceService) getQueryParams(params url.Values) (ret []doma
 			})
 		}
 	}
-
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i].Name < ret[j].Name
+	})
 	return
 }
 
@@ -264,6 +267,23 @@ func (s *DiagnoseInterfaceService) getHeaders(header http.Header) (ret []domain.
 			})
 		}
 	}
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i].Name < ret[j].Name
+	})
+	return
+}
 
+func (s *DiagnoseInterfaceService) getCookies(cookies map[string]*http.Cookie) (ret []domain.ExecCookie) {
+	for _, item := range cookies {
+		ret = append(ret, domain.ExecCookie{
+			Name:       item.Name,
+			Value:      item.Value,
+			ExpireTime: &item.Expires,
+			Domain:     item.Domain,
+		})
+	}
+	sort.Slice(ret, func(i, j int) bool {
+		return ret[i].Name < ret[j].Name
+	})
 	return
 }

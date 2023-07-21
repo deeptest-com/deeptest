@@ -225,6 +225,22 @@ func (c *EndpointCtrl) BatchUpdateField(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *EndpointCtrl) UpdateTag(ctx iris.Context) {
+	var req serverDomain.EndpointTagReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	projectId, _ := ctx.URLParamInt("currProjectId")
+	if err := c.EndpointService.UpdateTags(req, uint(projectId)); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	return
 }
 

@@ -318,6 +318,11 @@ func (s *ServeService) GetSwaggerSyncById(id uint) (data model.SwaggerSync, err 
 func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
 	name := "swaggerSync" + "_" + strconv.Itoa(int(item.ID))
 	s.Cron.RemoveTask(name)
+
+	if item.Switch == consts.SwitchOFF {
+		return
+	}
+	
 	taskId := item.ID
 	s.Cron.AddCommonTask(name, item.Cron, func() {
 		task, err := s.GetSwaggerSyncById(taskId)

@@ -30,7 +30,8 @@ export default defineComponent({
     watch(() => {
       return currentUser.value
     },(newVal) => {
-      if(newVal?.username){
+      // 仅乐研环境才会接入
+      if(newVal?.username && process.env.VUE_APP_DEPLOY_ENV === 'ly'){
         // 渲染乐研评论反馈系统
         renderfeedback(currentUser);
       }

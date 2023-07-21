@@ -1671,13 +1671,50 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "获取调试接口请求的请求体",
-                        "name": "DebugReq",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.DebugReq"
-                        }
+                        "type": "integer",
+                        "description": "load by endpoint case",
+                        "name": "caseInterfaceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "debugInterfaceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "load by interface diagnose",
+                        "name": "diagnoseInterfaceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "EndpointInterface without DebugInterface init",
+                        "name": "endpointInterfaceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "used to load vars by scenario processor",
+                        "name": "scenarioProcessorId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "interface_debug",
+                            "scenario_debug",
+                            "diagnose_debug",
+                            "case_debug"
+                        ],
+                        "type": "string",
+                        "x-enum-varnames": [
+                            "InterfaceDebug",
+                            "ScenarioDebug",
+                            "DiagnoseDebug",
+                            "CaseDebug"
+                        ],
+                        "name": "usedBy",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1700,6 +1737,225 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/invoke/getLastResp": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "获取最后调试记录响应",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "debugInterfaceId",
+                        "name": "debugInterfaceId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointInterfaceId",
+                        "name": "endpointInterfaceId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/domain.DebugResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/invoke/submitResult": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "Agent提交接口执行结果",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Agent提交接口执行结果的请求体",
+                        "name": "SubmitDebugResultRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.SubmitDebugResultRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/invoke/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "调试记录详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "debugData": {
+                                                    "$ref": "#/definitions/domain.DebugData"
+                                                },
+                                                "resp": {
+                                                    "$ref": "#/definitions/domain.DebugResponse"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "删除调试记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
                         }
                     }
                 }
@@ -2765,6 +3021,15 @@ const docTemplate = `{
                 "TRACE"
             ]
         },
+        "consts.HttpRespCharset": {
+            "type": "string",
+            "enum": [
+                "utf-8"
+            ],
+            "x-enum-varnames": [
+                "UTF8"
+            ]
+        },
         "consts.HttpRespCode": {
             "type": "integer",
             "enum": [
@@ -3288,6 +3553,50 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.DebugResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "contentCharset": {
+                    "$ref": "#/definitions/consts.HttpRespCharset"
+                },
+                "contentLang": {
+                    "$ref": "#/definitions/consts.HttpRespLangType"
+                },
+                "contentLength": {
+                    "type": "integer"
+                },
+                "contentType": {
+                    "$ref": "#/definitions/consts.HttpContentType"
+                },
+                "cookies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.ExecCookie"
+                    }
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Header"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "statusCode": {
+                    "$ref": "#/definitions/consts.HttpRespCode"
+                },
+                "statusContent": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "integer"
+                }
+            }
+        },
         "domain.EnvToVariables": {
             "type": "object",
             "additionalProperties": {
@@ -3507,6 +3816,17 @@ const docTemplate = `{
                 },
                 "value": {
                     "type": "string"
+                }
+            }
+        },
+        "domain.SubmitDebugResultRequest": {
+            "type": "object",
+            "properties": {
+                "request": {
+                    "$ref": "#/definitions/domain.DebugData"
+                },
+                "response": {
+                    "$ref": "#/definitions/domain.DebugResponse"
                 }
             }
         },

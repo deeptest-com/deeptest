@@ -150,6 +150,12 @@ definitions:
     - CONNECT
     - OPTIONS
     - TRACE
+  consts.HttpRespCharset:
+    enum:
+    - utf-8
+    type: string
+    x-enum-varnames:
+    - UTF8
   consts.HttpRespCode:
     enum:
     - 100
@@ -562,6 +568,35 @@ definitions:
       usedBy:
         $ref: '#/definitions/consts.UsedBy'
     type: object
+  domain.DebugResponse:
+    properties:
+      content:
+        type: string
+      contentCharset:
+        $ref: '#/definitions/consts.HttpRespCharset'
+      contentLang:
+        $ref: '#/definitions/consts.HttpRespLangType'
+      contentLength:
+        type: integer
+      contentType:
+        $ref: '#/definitions/consts.HttpContentType'
+      cookies:
+        items:
+          $ref: '#/definitions/domain.ExecCookie'
+        type: array
+      headers:
+        items:
+          $ref: '#/definitions/domain.Header'
+        type: array
+      id:
+        type: integer
+      statusCode:
+        $ref: '#/definitions/consts.HttpRespCode'
+      statusContent:
+        type: string
+      time:
+        type: integer
+    type: object
   domain.EnvToVariables:
     additionalProperties:
       items:
@@ -707,6 +742,13 @@ definitions:
         type: string
       value:
         type: string
+    type: object
+  domain.SubmitDebugResultRequest:
+    properties:
+      request:
+        $ref: '#/definitions/domain.DebugData'
+      response:
+        $ref: '#/definitions/domain.DebugResponse'
     type: object
   iris.Map:
     additionalProperties: true
@@ -2359,12 +2401,38 @@ paths:
         name: endpointInterfaceId
         required: true
         type: integer
-      - description: 获取调试接口请求的请求体
-        in: body
-        name: DebugReq
-        required: true
-        schema:
-          $ref: '#/definitions/domain.DebugReq'
+      - description: load by endpoint case
+        in: query
+        name: caseInterfaceId
+        type: integer
+      - in: query
+        name: debugInterfaceId
+        type: integer
+      - description: load by interface diagnose
+        in: query
+        name: diagnoseInterfaceId
+        type: integer
+      - description: EndpointInterface without DebugInterface init
+        in: query
+        name: endpointInterfaceId
+        type: integer
+      - description: used to load vars by scenario processor
+        in: query
+        name: scenarioProcessorId
+        type: integer
+      - enum:
+        - interface_debug
+        - scenario_debug
+        - diagnose_debug
+        - case_debug
+        in: query
+        name: usedBy
+        type: string
+        x-enum-varnames:
+        - InterfaceDebug
+        - ScenarioDebug
+        - DiagnoseDebug
+        - CaseDebug
       produces:
       - application/json
       responses:
@@ -2380,6 +2448,146 @@ paths:
                   type: array
               type: object
       summary: 调试记录列表
+      tags:
+      - 接口调试
+  /api/v1/debugs/invoke/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除调试记录
+      tags:
+      - 接口调试
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    debugData:
+                      $ref: '#/definitions/domain.DebugData'
+                    resp:
+                      $ref: '#/definitions/domain.DebugResponse'
+                  type: object
+              type: object
+      summary: 调试记录详情
+      tags:
+      - 接口调试
+  /api/v1/debugs/invoke/getLastResp:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: debugInterfaceId
+        in: query
+        name: debugInterfaceId
+        required: true
+        type: integer
+      - description: endpointInterfaceId
+        in: query
+        name: endpointInterfaceId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.DebugResponse'
+              type: object
+      summary: 获取最后调试记录响应
+      tags:
+      - 接口调试
+  /api/v1/debugs/invoke/submitResult:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: Agent提交接口执行结果的请求体
+        in: body
+        name: SubmitDebugResultRequest
+        required: true
+        schema:
+          $ref: '#/definitions/domain.SubmitDebugResultRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: Agent提交接口执行结果
       tags:
       - 接口调试
   /api/v1/init/checkdb:

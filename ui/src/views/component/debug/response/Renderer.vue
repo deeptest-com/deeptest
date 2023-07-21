@@ -3,10 +3,10 @@
     <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
       <a-tab-pane key="body" :tab="title">
         <ResponseLensJson v-if="responseData.contentLang === 'json'"></ResponseLensJson>
-        <ResponseLensXml v-if="responseData.contentLang === 'xml'"></ResponseLensXml>
-        <ResponseLensHtml v-if="responseData.contentLang === 'html'"></ResponseLensHtml>
-        <ResponseLensRaw v-if="responseData.contentLang === 'text'"></ResponseLensRaw>
-        <ResponseLensImage v-if="responseData.contentLang === 'image'"></ResponseLensImage>
+        <ResponseLensHtml v-else-if="responseData.contentLang === 'html'"></ResponseLensHtml>
+        <ResponseLensXml v-else-if="responseData.contentLang === 'xml'"></ResponseLensXml>
+        <ResponseLensRaw v-else-if="responseData.contentLang === 'text'"></ResponseLensRaw>
+        <ResponseLensImage v-else-if="responseData.contentLang === 'image'"></ResponseLensImage>
       </a-tab-pane>
 
       <a-tab-pane key="header" tab="响应头">

@@ -19,13 +19,13 @@ type DataCtrl struct {
 }
 
 // Init  初始化项目接口
-// @summary 初始化项目
-// @Tags 系统
-// @Accept json
-// @Produce	json
-// @Router /api/v1/init/initdb [post]
-// @Param ProjectReq body serverDomain.DataReq true "初始化db"
-//@Success 200 {object} _domain.Response
+// @Tags	初始化模块
+// @summary	初始化项目
+// @accept	application/json
+// @Produce	application/json
+// @Param 	DataReq	body	serverDomain.DataReq true 	"初始化项目的请求体"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/init/initdb	[post]
 func (c *DataCtrl) Init(ctx iris.Context) {
 	req := serverDomain.DataReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -47,6 +47,12 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 }
 
 // Check 检测是否需要初始化项目
+// @Tags	初始化模块
+// @summary	检测是否需要初始化项目
+// @accept	application/json
+// @Produce	application/json
+// @success	200	{object}	_domain.Response{data=object{needInit=bool}}
+// @Router	/api/v1/init/checkdb	[get]
 func (c *DataCtrl) Check(ctx iris.Context) {
 	if c.DataService.DataRepo.DB == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NeedInitErr.Code, Data: iris.Map{

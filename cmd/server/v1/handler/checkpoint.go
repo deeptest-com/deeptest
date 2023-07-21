@@ -13,6 +13,16 @@ type CheckpointCtrl struct {
 }
 
 // List
+// @Tags	检查点
+// @summary	检查点列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string	true	"Authentication header"
+// @Param 	currProjectId		query	int		true	"当前项目ID"
+// @Param 	debugInterfaceId	query	int		true	"debugInterfaceId"
+// @Param 	endpointInterfaceId	query	int		true	"endpointInterfaceId"
+// @success	200	{object}	_domain.Response{data=[]model.DebugInterfaceCheckpoint}
+// @Router	/api/v1/checkpoints	[get]
 func (c *CheckpointCtrl) List(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
@@ -38,6 +48,15 @@ func (c *CheckpointCtrl) List(ctx iris.Context) {
 }
 
 // Get 详情
+// @Tags	检查点
+// @summary	检查点详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string	true	"Authentication header"
+// @Param 	currProjectId		query	int		true	"当前项目ID"
+// @Param 	id					path	int		true	"检查点ID"
+// @success	200	{object}	_domain.Response{data=model.DebugInterfaceCheckpoint}
+// @Router	/api/v1/checkpoints/{id}	[get]
 func (c *CheckpointCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -54,6 +73,15 @@ func (c *CheckpointCtrl) Get(ctx iris.Context) {
 }
 
 // Create 添加
+// @Tags	检查点
+// @summary	新建检查点
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization				header	string								true	"Authentication header"
+// @Param 	currProjectId				query	int									true	"当前项目ID"
+// @Param 	DebugInterfaceCheckpoint	body	model.DebugInterfaceCheckpoint		true	"新建检查点的请求体"
+// @success	200	{object}	_domain.Response{data=model.DebugInterfaceCheckpoint}
+// @Router	/api/v1/checkpoints	[post]
 func (c *CheckpointCtrl) Create(ctx iris.Context) {
 	checkpoint := model.DebugInterfaceCheckpoint{}
 	err := ctx.ReadJSON(&checkpoint)
@@ -74,6 +102,15 @@ func (c *CheckpointCtrl) Create(ctx iris.Context) {
 }
 
 // Update 更新
+// @Tags	检查点
+// @summary	更新检查点
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization				header	string								true	"Authentication header"
+// @Param 	currProjectId				query	int									true	"当前项目ID"
+// @Param 	DebugInterfaceCheckpoint	body	model.DebugInterfaceCheckpoint		true	"更新检查点的请求体"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/checkpoints	[put]
 func (c *CheckpointCtrl) Update(ctx iris.Context) {
 	var checkpoint model.DebugInterfaceCheckpoint
 	err := ctx.ReadJSON(&checkpoint)
@@ -91,6 +128,15 @@ func (c *CheckpointCtrl) Update(ctx iris.Context) {
 }
 
 // Delete 删除
+// @Tags	检查点
+// @summary	删除检查点
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string	true	"Authentication header"
+// @Param 	currProjectId		query	int		true	"当前项目ID"
+// @Param 	id					path	int		true	"检查点ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/checkpoints/{id}	[delete]
 func (c *CheckpointCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {

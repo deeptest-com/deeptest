@@ -14,6 +14,16 @@ type DatapoolCtrl struct {
 	BaseCtrl
 }
 
+// Index
+// @Tags	数据池
+// @summary	数据池列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization			header	string								true	"Authentication header"
+// @Param 	currProjectId			query	int									true	"当前项目ID"
+// @Param 	DatapoolReqPaginate		body	serverDomain.DatapoolReqPaginate	true	"获取数据池列表的请求体"
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Datapool}}
+// @Router	/api/v1/datapools/index	[post]
 func (c *DatapoolCtrl) Index(ctx iris.Context) {
 	var req serverDomain.DatapoolReqPaginate
 
@@ -25,6 +35,16 @@ func (c *DatapoolCtrl) Index(ctx iris.Context) {
 	}
 }
 
+// Get
+// @Tags	数据池
+// @summary	数据池详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"数据池ID"
+// @success	200	{object}	_domain.Response{data=model.Datapool}
+// @Router	/api/v1/datapools/{id}	[get]
 func (c *DatapoolCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -41,6 +61,16 @@ func (c *DatapoolCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: datapool, Msg: _domain.NoErr.Msg})
 }
 
+// Save
+// @Tags	数据池
+// @summary	保存数据池
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	Datapool				body	model.Datapool		true	"保存数据池的请求体"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/datapools/save	[post]
 func (c *DatapoolCtrl) Save(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
@@ -67,6 +97,16 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// Delete
+// @Tags	数据池
+// @summary	删除数据池
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"数据池ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/datapools/{id}	[delete]
 func (c *DatapoolCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -83,6 +123,17 @@ func (c *DatapoolCtrl) Delete(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// Disable
+// @Tags	数据池
+// @summary	禁用数据池
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"数据池ID"
+// @Param 	Datapool				body	model.Datapool		true	"保存数据池的请求体"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/datapools/{id}/disable	[put]
 func (c *DatapoolCtrl) Disable(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {

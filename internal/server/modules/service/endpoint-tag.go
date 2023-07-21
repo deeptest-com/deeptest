@@ -10,8 +10,8 @@ type EndpointTagService struct {
 	EndpointTagRepo *repo.EndpointTagRepo `inject:""`
 }
 
-func (s *EndpointTagService) ListTagsByProject(projectId uint) (tags []model.EndpointTag, err error) {
-	tags, err = s.EndpointTagRepo.ListByProject(projectId)
+func (s *EndpointTagService) ListTagsByProject(projectId uint) (tags []model.EndpointTagRel, err error) {
+	tags, err = s.EndpointTagRepo.ListRelByProject(projectId)
 	return
 }
 

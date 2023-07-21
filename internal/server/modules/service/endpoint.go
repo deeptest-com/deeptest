@@ -445,43 +445,48 @@ func (s *EndpointService) getRequestBodyItem(body string) (requestBodyItem model
 }
 
 func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err error) {
-	oldTagIds, err := s.EndpointTagRepo.GetTagIdsByEndpointId(req.Id)
-	if err != nil && err != gorm.ErrRecordNotFound {
+	if err = s.EndpointTagRepo.DeleteRelByEndpointAndProject(req.Id, projectId); err != nil {
 		return
 	}
 
-	intTagIds, err := s.EndpointTagService.GetTagIdsNyName(req.TagNames, projectId)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return
-	}
-
-	tagsNeedDeleted := _commUtils.DifferenceUint(oldTagIds, intTagIds)
-
-	if err = s.EndpointTagRepo.DeleteRelByEndpointId(req.Id); err != nil {
-		return
-	}
-
-	if len(intTagIds) > 0 {
-		err = s.EndpointTagRepo.AddRel(req.Id, intTagIds)
-		if err != nil {
-			return err
-		}
-	}
-
-	logUtils.Infof("================tagsNeedDeleted:%+v", tagsNeedDeleted)
-	for _, v := range tagsNeedDeleted {
-		relations, err := s.EndpointTagRepo.ListRelByTagId(v)
-		logUtils.Infof("================relations:%+v, err:%+v", relations, err)
-
-		if err != nil && err != gorm.ErrRecordNotFound {
-			return err
-		}
-
-		if len(relations) == 0 {
-			if err = s.EndpointTagRepo.DeleteById(v); err != nil {
-				return err
-			}
-		}
+	if len(req.TagNames) > 0 {
+		err = s.EndpointTagRepo.BatchAddRel(req.Id, projectId, req.TagNames)
 	}
 	return
+	//oldTagIds, err := s.EndpointTagRepo.GetTagIdsByEndpointId(req.Id)
+	//if err != nil && err != gorm.ErrRecordNotFound {
+	//	return
+	//}
+	//
+	//intTagIds, err := s.EndpointTagService.GetTagIdsNyName(req.TagNames, projectId)
+	//if err != nil && err != gorm.ErrRecordNotFound {
+	//	return
+	//}
+	//
+	//tagsNeedDeleted := _commUtils.DifferenceUint(oldTagIds, intTagIds)
+	//
+	//if err = s.EndpointTagRepo.DeleteRelByEndpointId(req.Id); err != nil {
+	//	return
+	//}
+	//
+	//if len(intTagIds) > 0 {
+	//	err = s.EndpointTagRepo.AddRel(req.Id, intTagIds)
+	//	if err != nil {
+	//		return err
+	//	}
+	//}
+	//
+	//for _, v := range tagsNeedDeleted {
+	//	relations, err := s.EndpointTagRepo.ListRelByTagId(v)
+	//	if err != nil && err != gorm.ErrRecordNotFound {
+	//		return err
+	//	}
+	//
+	//	if len(relations) == 0 {
+	//		if err = s.EndpointTagRepo.DeleteById(v); err != nil {
+	//			return err
+	//		}
+	//	}
+	//}
+	//return
 }

@@ -817,7 +817,7 @@ const StoreModel: ModuleType = {
             if (resp.code === 0) {
 
                const res =  resp.data.map((arrItem)=>{
-                 return {label:arrItem.name,value:arrItem.name}
+                 return {label:arrItem.tagName,value:arrItem.tagName}
                })
                commit("setEndpointTagList", res);
                //console.log("setEndpointTagList",state.tagList);

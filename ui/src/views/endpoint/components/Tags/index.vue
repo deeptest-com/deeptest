@@ -4,7 +4,7 @@
     :key="tag" v-for="(tag,index) in values"
     closable @close="close(index)"
     >{{tag}}</a-tag>
-    <PlusCircleOutlined  @click="showSelect=true"/>
+    <PlusCircleOutlined  @click="showSelect=true" style="padding-top:3px;margin-left:5px"/>
     <a-select 
         v-if="showSelect"
         v-model:value="tag"
@@ -58,7 +58,13 @@ const props = defineProps({
 const emits = defineEmits('updateTags')
 
 const values = ref(props?.values||[])
-const options = computed(()=>props.options)
+
+const options = computed(()=> 
+   props.options.filter(
+        arrItem =>  values.value.indexOf(arrItem.value) == -1
+        )   
+)
+
 const showSelect = ref(false)
 const tag = ref()
 const searchValue = ref()
@@ -97,6 +103,7 @@ const handleChange = async (value: string) => {
 
    values.value = Array.from(new Set([...values.value,value]))
    await updateTags(values.value)
+   tag.value = undefined
 };
 
 const handleBlur = () => {

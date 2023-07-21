@@ -124,21 +124,6 @@ func (r *ScriptRepo) CreateLog(script domain.ScriptBase) (
 	return
 }
 
-//func (r *ScriptRepo) UpdateResultToExecLog(script model.DebugConditionScript, log *model.ExecLogProcessor) (
-//	logScript model.ExecLogCheckpoint, err error) {
-//
-//	copier.CopyWithOption(&logScript, script, copier.Option{DeepCopy: true})
-//
-//	logScript.ID = 0
-//	logScript.LogId = log.ID
-//	logScript.CreatedAt = nil
-//	logScript.UpdatedAt = nil
-//
-//	err = r.DB.Save(&logScript).Error
-//
-//	return
-//}
-
 func (r *ScriptRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint,
 	usedBy consts.UsedBy) (
 	err error) {

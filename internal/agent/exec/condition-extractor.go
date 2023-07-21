@@ -6,7 +6,7 @@ import (
 )
 
 func ExecExtract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err error) {
-	extractor.Result, err = extractorHelper.Extract(*extractor, resp)
+	err = extractorHelper.Extract(extractor, resp)
 
 	return
 }

@@ -1,9 +1,9 @@
 package repo
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -101,27 +101,7 @@ func (r *ExtractorRepo) Update(extractor *model.DebugConditionExtractor) (err er
 }
 
 func (r *ExtractorRepo) UpdateDesc(po *model.DebugConditionExtractor) (err error) {
-	src := ""
-	if po.Src == consts.Header {
-		src = "响应头"
-	} else if po.Src == consts.Body {
-		src = "响应体"
-	}
-
-	name := ""
-	if po.Type == consts.Boundary {
-		name = fmt.Sprintf("边界提取器 \"%s - %s\"", po.BoundaryStart, po.BoundaryEnd)
-	} else if po.Type == consts.JsonQuery {
-		name = fmt.Sprintf("JSON提取器 \"%s\"", po.Expression)
-	} else if po.Type == consts.HtmlQuery {
-		name = fmt.Sprintf("HTML提取器 \"%s\"", po.Expression)
-	} else if po.Type == consts.XmlQuery {
-		name = fmt.Sprintf("XML提取器 \"%s\"", po.Expression)
-	} else if po.Type == consts.Regx {
-		name = fmt.Sprintf("正则表达式提取器 \"%s\"", po.Expression)
-	}
-
-	desc := fmt.Sprintf("%s%s", src, name)
+	desc := extractorHelper.GenDesc(po.Src, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
 	values := map[string]interface{}{
 		"desc": desc,
 	}
@@ -132,24 +112,6 @@ func (r *ExtractorRepo) UpdateDesc(po *model.DebugConditionExtractor) (err error
 
 	return
 }
-
-//func (r *ExtractorRepo) CreateOrUpdateResult(extractor *model.DebugConditionExtractor, usedBy consts.UsedBy) (err error) {
-//	postCondition, _ := r.PostConditionRepo.Get(extractor.ConditionId)
-//
-//	po, _ := r.GetByInterfaceVariable(extractor.Variable, extractor.ID, postCondition.EndpointInterfaceId)
-//	if po.ID > 0 {
-//		extractor.ID = po.ID
-//		r.UpdateResult(*extractor, usedBy)
-//		return
-//	}
-//
-//	err = r.DB.Save(extractor).Error
-//	if err != nil {
-//		return
-//	}
-//
-//	return
-//}
 
 func (r *ExtractorRepo) Delete(id uint) (err error) {
 	err = r.DB.Model(&model.DebugConditionExtractor{}).
@@ -164,6 +126,15 @@ func (r *ExtractorRepo) DeleteByCondition(conditionId uint) (err error) {
 		Where("condition_id=?", conditionId).
 		Update("deleted", true).
 		Error
+
+	return
+}
+
+func (r *ExtractorRepo) ListLogByInvoke(invokeId uint) (pos []model.ExecLogExtractor, err error) {
+	err = r.DB.
+		Where("NOT deleted").
+		Where("invoke_id=?", invokeId).
+		Order("created_at ASC").Error
 
 	return
 }
@@ -190,15 +161,6 @@ func (r *ExtractorRepo) UpdateResult(extractor domain.ExtractorBase) (err error)
 	return
 }
 
-func (r *ExtractorRepo) ListLogByInvoke(invokeId uint) (pos []model.ExecLogExtractor, err error) {
-	err = r.DB.
-		Where("NOT deleted").
-		Where("invoke_id=?", invokeId).
-		Order("created_at ASC").Error
-
-	return
-}
-
 func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase) (
 	log model.ExecLogExtractor, err error) {
 
@@ -215,21 +177,6 @@ func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase) (
 
 	return
 }
-
-//func (r *ExtractorRepo) UpdateResultToExecLog(extractor model.DebugConditionExtractor, log *model.ExecLogProcessor) (
-//	logExtractor model.ExecLogExtractor, err error) {
-//
-//	copier.CopyWithOption(&logExtractor, extractor, copier.Option{DeepCopy: true})
-//
-//	logExtractor.ID = 0
-//	logExtractor.LogId = log.ID
-//	logExtractor.CreatedAt = nil
-//	logExtractor.UpdatedAt = nil
-//
-//	err = r.DB.Save(&logExtractor).Error
-//
-//	return
-//}
 
 func (r *ExtractorRepo) ListExtractorVariableByInterface(req domain.DebugReq) (variables []domain.Variable, err error) {
 	err = r.DB.Model(&model.DebugConditionExtractor{}).

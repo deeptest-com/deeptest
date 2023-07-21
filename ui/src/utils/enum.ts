@@ -1,3 +1,11 @@
+export enum  ResultStatus {
+    Pass = "pass",
+    Fail = "fail",
+    Skip = "skip",
+    Block = "block",
+    Unknown = "unknown",
+}
+
 export enum UsedBy {
     InterfaceDebug = "interface_debug",
     ScenarioDebug = "scenario_debug",

@@ -1,7 +1,8 @@
 <template>
   <div class="response-meta">
     <div class="row">
-      <span class="col" :class="[responseData.statusCode===200? 'dp-color-pass': 'dp-color-fail']">
+      <span class="col"
+            :class="[responseData.statusCode===200? 'dp-color-pass': 'dp-color-fail']">
         状态：{{ responseData.statusContent }}
       </span>
       <span class="col">
@@ -12,8 +13,13 @@
       </span>
     </div>
 
-    <div v-for="(item, index) in resultData" :key="index" class="item">
-      {{item.id}}
+    <div v-for="(item, index) in resultData" :key="index" class="item"
+         :class="[item.resultStatus===ResultStatus.Pass? 'dp-color-pass': item.resultStatus===ResultStatus.Fail? 'dp-color-fail':'']">
+
+      <span v-if="item.resultStatus===ResultStatus.Pass"><CheckCircleOutlined /></span>
+      <span v-if="item.resultStatus===ResultStatus.Fail"><CloseCircleOutlined /></span>
+
+      <span>{{item.msg}}</span>
     </div>
   </div>
 </template>
@@ -21,6 +27,9 @@
 <script setup lang="ts">
 import {computed, watch} from "vue";
 import {useStore} from "vuex";
+import { CheckCircleOutlined, CloseCircleOutlined} from '@ant-design/icons-vue';
+
+import {ResultStatus} from "@/utils/enum";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {useI18n} from "vue-i18n";
 const {t} = useI18n();

@@ -1,11 +1,10 @@
 package repo
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	checkpointHelpper "github.com/aaronchen2k/deeptest/internal/pkg/helper/checkpoint"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
-	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
@@ -78,24 +77,7 @@ func (r *CheckpointRepo) Save(checkpoint *model.DebugConditionCheckpoint) (err e
 	return
 }
 func (r *CheckpointRepo) UpdateDesc(po *model.DebugConditionCheckpoint) (err error) {
-	name := ""
-
-	opt := fmt.Sprintf("%v", po.Operator)
-	optName := _i118Utils.Sprintf(opt)
-	if po.Type == consts.ResponseStatus {
-		name = _i118Utils.Sprintf("usage")
-		name = fmt.Sprintf("状态码检查点 %s \"%s\"", optName, po.Value)
-	} else if po.Type == consts.ResponseHeader {
-		name = fmt.Sprintf("响应头检查点 %s \"%s\"", optName, po.Expression)
-	} else if po.Type == consts.ResponseBody {
-		name = fmt.Sprintf("响应体检查点 %s \"%s\"", optName, po.Value)
-	} else if po.Type == consts.Extractor {
-		name = fmt.Sprintf("提取器检查点 %s %s \"%s\"", po.ExtractorVariable, optName, po.Value)
-	} else if po.Type == consts.Judgement {
-		name = fmt.Sprintf("表达式检查点 \"%s\"", po.Expression)
-	}
-
-	desc := name
+	desc := checkpointHelpper.GenDesc(po.Type, po.Operator, po.Value, po.Expression, po.ExtractorVariable)
 	values := map[string]interface{}{
 		"desc": desc,
 	}
@@ -155,21 +137,6 @@ func (r *CheckpointRepo) CreateLog(checkpoint domain.CheckpointBase) (
 
 	return
 }
-
-//func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.DebugConditionCheckpoint, log *model.ExecLogProcessor) (
-//	logCheckpoint model.ExecLogCheckpoint, err error) {
-//
-//	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})
-//
-//	logCheckpoint.ID = 0
-//	logCheckpoint.InvokeId = log.ID
-//	logCheckpoint.CreatedAt = nil
-//	logCheckpoint.UpdatedAt = nil
-//
-//	err = r.DB.Save(&logCheckpoint).Error
-//
-//	return
-//}
 
 func (r *CheckpointRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint,
 	usedBy consts.UsedBy) (

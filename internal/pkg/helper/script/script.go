@@ -1,7 +1,10 @@
 package scriptHelper
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"path/filepath"
 )
 
@@ -81,6 +84,14 @@ func GetScript(name ScriptType) string {
 	//}
 
 	return ""
+}
+
+func GenResultMsg(po *domain.ScriptBase) (ret string) {
+	ret = fmt.Sprintf("%s%s，输出%s。",
+		_i118Utils.Sprintf("exec"), _i118Utils.Sprintf(po.ResultStatus.String()),
+		po.Output)
+
+	return
 }
 
 var (

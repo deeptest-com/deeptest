@@ -58,7 +58,13 @@ const props = defineProps({
 const emits = defineEmits('updateTags')
 
 const values = ref(props?.values||[])
-const options = computed(()=>props.options)
+
+const options = computed(()=> 
+   props.options.filter(
+        arrItem =>  values.value.indexOf(arrItem.value) == -1
+        )   
+)
+
 const showSelect = ref(false)
 const tag = ref()
 const searchValue = ref()

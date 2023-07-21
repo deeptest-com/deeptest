@@ -1,5 +1,5 @@
 <template>
-  <a-form :layout="'inline'">
+  <a-form :layout="'inline'" ref="tagFormRef" :model="tagFormRef">
     <a-space :size="16">
       <a-form-item label="创建人" style="margin-bottom: 0;">
         <a-select
@@ -36,18 +36,6 @@
             placeholder="请选择标签"
             max-tag-count="responsive"
             :options="tagList"/>
-            <template v-slot:max-tag-placeholder>
-        数据同步
-        <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip">
-          <template v-slot:title>
-            <span class="title">完全覆盖</span><br>
-            通过swagger导入/同步的接口定义，同步更新时使用接口方法和路径进行匹配。<br>
-            匹配到的相同接口同步时不保留平台中的旧数据，完全使用swagger文档中的新数据进行覆盖。<br>
-            通过平台创建的接口定义不会被覆盖。<br>
-         </template>
-        <QuestionCircleOutlined class="icon" style=" font-size: 14px;transform: scale(0.9)" />
-        </a-tooltip>
-      </template>
       </a-form-item>
       <a-form-item :label="null">
         <a-input-search
@@ -70,7 +58,7 @@
 import {endpointStatusOpts} from '@/config/constant';
 import {filterFormState} from "../data";
 import {
-  defineEmits, ref,
+  defineEmits, ref,defineExpose,
   onMounted, computed, watch, Ref
 } from 'vue';
 
@@ -88,7 +76,8 @@ const formState: Ref<filterFormState> = ref({
   "status": "",
   "createUser": "",
   "title": "",
-  "tags":[],
+  "categoryId":"",
+  "tagNames":[],
 });
 
 async function handleFilterChange(type, e) {
@@ -116,10 +105,17 @@ async function handleFilter() {
     ...formState.value
   });
 }
-const maxTagPlaceholder = (num) => {
-  console.log(num,"++++")
-                return 'more ';
-            }
+
+const tagFormRef = ref()
+
+const resetFields = () => {
+  formState.value = {}
+}
+
+
+defineExpose({
+  resetFields
+});
 
 watch(() => {
   return filterState.value
@@ -132,6 +128,7 @@ watch(() => {
 onMounted(async () => {
   await store.dispatch('Project/getUserList');
 })
+
 
 </script>
 

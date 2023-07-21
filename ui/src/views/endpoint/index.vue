@@ -41,7 +41,7 @@
             </a-dropdown>
           </div>
           <div class="top-search-filter">
-            <TableFilter @filter="handleTableFilter"/>
+            <TableFilter @filter="handleTableFilter" ref="filter"/>
           </div>
         </div>
         <EmptyCom>
@@ -192,6 +192,7 @@ const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const serves = computed<any>(() => store.state.ServeGlobal.serves);
 const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
+let filterState1 = computed<any>(() => store.state.Endpoint.filterState);
 const createApiModalVisible = ref(false);
 const router = useRouter();
 type Key = ColumnProps['key'];
@@ -480,6 +481,8 @@ async function handleTableFilter(state) {
   await loadList(pagination.value.current, pagination.value.pageSize, state);
 }
 
+const filter = ref() 
+
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据
 watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
   const [newProjectId, newServeId] = newVal;
@@ -493,6 +496,8 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
       // 获取授权列表
       await store.dispatch('Endpoint/getSecurityList', {id: newServeId});
     }
+    store.commit('Endpoint/clearFilterState');
+    filter.value.resetFields()
   }
 }, {
   immediate: true
@@ -514,7 +519,7 @@ watch(
 
 // 页面路由卸载时，清空搜索条件
 onUnmounted(async () => {
-  await store.commit('Endpoint/clearFilterState');
+  store.commit('Endpoint/clearFilterState');
 })
 
 

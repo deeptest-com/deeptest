@@ -17,6 +17,13 @@ definitions:
       msg:
         type: string
     type: object
+  agentExec.InterfaceExecObj:
+    properties:
+      debugData:
+        $ref: '#/definitions/domain.DebugData'
+      execScene:
+        $ref: '#/definitions/domain.ExecScene'
+    type: object
   consts.AuditStatus:
     enum:
     - 0
@@ -27,6 +34,18 @@ definitions:
     - Init
     - Agreed
     - Refused
+  consts.AuthorType:
+    enum:
+    - basicAuth
+    - bearerToken
+    - oAuth2
+    - apiKey
+    type: string
+    x-enum-varnames:
+    - BasicAuth
+    - BearerToken
+    - OAuth2
+    - ApiKey
   consts.CheckpointType:
     enum:
     - responseStatus
@@ -69,6 +88,14 @@ definitions:
     - LessThanOrEqual
     - Contain
     - NotContain
+  consts.FormDataType:
+    enum:
+    - text
+    - file
+    type: string
+    x-enum-varnames:
+    - FormDataTypeText
+    - FormDataTypeFile
   consts.GrantType:
     enum:
     - authorizationCode
@@ -83,6 +110,170 @@ definitions:
     - Implicit
     - PasswordCredential
     - ClientCredential
+  consts.HttpContentType:
+    enum:
+    - application/json
+    - application/xml
+    - text/html
+    - text/text
+    - multipart/form-data
+    - application/x-www-form-urlencoded
+    - httpd/unix-directory
+    type: string
+    x-enum-varnames:
+    - ContentTypeJSON
+    - ContentTypeXML
+    - ContentTypeHTML
+    - ContentTypeTEXT
+    - ContentTypeFormData
+    - ContentTypeFormUrlencoded
+    - ContentTypeUnixDir
+  consts.HttpMethod:
+    enum:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - PATCH
+    - HEAD
+    - CONNECT
+    - OPTIONS
+    - TRACE
+    type: string
+    x-enum-varnames:
+    - GET
+    - POST
+    - PUT
+    - DELETE
+    - PATCH
+    - HEAD
+    - CONNECT
+    - OPTIONS
+    - TRACE
+  consts.HttpRespCode:
+    enum:
+    - 100
+    - 101
+    - 200
+    - 201
+    - 202
+    - 203
+    - 204
+    - 205
+    - 206
+    - 300
+    - 301
+    - 302
+    - 303
+    - 304
+    - 305
+    - 306
+    - 307
+    - 308
+    - 400
+    - 401
+    - 402
+    - 403
+    - 404
+    - 405
+    - 406
+    - 407
+    - 408
+    - 409
+    - 410
+    - 411
+    - 412
+    - 413
+    - 414
+    - 415
+    - 416
+    - 417
+    - 500
+    - 501
+    - 502
+    - 503
+    - 504
+    - 505
+    type: integer
+    x-enum-varnames:
+    - Continue
+    - SwitchingProtocol
+    - OK
+    - Created
+    - Accepted
+    - NonAuthoritativeInformation
+    - NoContent
+    - ResetContent
+    - PartialContent
+    - MultipleChoice
+    - MovedPermanently
+    - Found
+    - SeeOther
+    - NotModified
+    - UseProxy
+    - unused
+    - TemporaryRedirect
+    - PermanentRedirect
+    - BadRequest
+    - Unauthorized
+    - PaymentRequired
+    - Forbidden
+    - NotFound
+    - MethodNotAllowed
+    - NotAcceptable
+    - ProxyAuthenticationRequired
+    - RequestTimeout
+    - Conflict
+    - Gone
+    - LengthRequired
+    - PreconditionFailed
+    - RequestEntityTooLarge
+    - RequestURITooLong
+    - UnsupportedMediaType
+    - RequestedRangeNotSatisfiable
+    - ExpectationFailed
+    - InternalServerError
+    - Implemented
+    - BadGateway
+    - ServiceUnavailable
+    - GatewayTimeout
+    - HTTPVersionNotSupported
+  consts.HttpRespLangType:
+    enum:
+    - json
+    - xml
+    - html
+    - text
+    type: string
+    x-enum-varnames:
+    - LangJSON
+    - LangXML
+    - LangHTML
+    - LangTEXT
+  consts.ParamIn:
+    enum:
+    - path
+    - query
+    - header
+    - cookie
+    - body
+    type: string
+    x-enum-varnames:
+    - ParamInPath
+    - ParamInQuery
+    - ParamInHeader
+    - ParamInCookie
+    - ParamInBody
+  consts.ParamType:
+    enum:
+    - string
+    - number
+    - integer
+    type: string
+    x-enum-varnames:
+    - ParamTypeString
+    - ParamTypeNumber
+    - ParamTypeInteger
   consts.ProcessorCategory:
     enum:
     - processor_root
@@ -209,6 +400,314 @@ definitions:
     - ScenarioDebug
     - DiagnoseDebug
     - CaseDebug
+  domain.ApiKey:
+    properties:
+      key:
+        type: string
+      transferMode:
+        type: string
+      value:
+        type: string
+    type: object
+  domain.BasicAuth:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  domain.BearerToken:
+    properties:
+      token:
+        type: string
+    type: object
+  domain.BodyFormDataItem:
+    properties:
+      desc:
+        type: string
+      interfaceId:
+        type: integer
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/consts.FormDataType'
+      value:
+        type: string
+    type: object
+  domain.BodyFormUrlEncodedItem:
+    properties:
+      desc:
+        type: string
+      interfaceId:
+        type: integer
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  domain.Datapools:
+    additionalProperties:
+      items:
+        additionalProperties: true
+        type: object
+      type: array
+    type: object
+  domain.DebugData:
+    properties:
+      apiKey:
+        $ref: '#/definitions/domain.ApiKey'
+      authorizationType:
+        $ref: '#/definitions/consts.AuthorType'
+      baseUrl:
+        type: string
+      basicAuth:
+        $ref: '#/definitions/domain.BasicAuth'
+      bearerToken:
+        $ref: '#/definitions/domain.BearerToken'
+      body:
+        type: string
+      bodyFormData:
+        items:
+          $ref: '#/definitions/domain.BodyFormDataItem'
+        type: array
+      bodyFormUrlencoded:
+        items:
+          $ref: '#/definitions/domain.BodyFormUrlEncodedItem'
+        type: array
+      bodyLang:
+        $ref: '#/definitions/consts.HttpRespLangType'
+      bodyType:
+        $ref: '#/definitions/consts.HttpContentType'
+      caseInterfaceId:
+        type: integer
+      cookies:
+        description: from cookie processor in scenario
+        items:
+          $ref: '#/definitions/domain.ExecCookie'
+        type: array
+      debugInterfaceId:
+        type: integer
+      diagnoseInterfaceId:
+        type: integer
+      endpointInterfaceId:
+        type: integer
+      envVars:
+        items:
+          $ref: '#/definitions/domain.GlobalVar'
+        type: array
+      globalParams:
+        items:
+          $ref: '#/definitions/domain.GlobalParam'
+        type: array
+      globalVars:
+        items:
+          $ref: '#/definitions/domain.GlobalVar'
+        type: array
+      headers:
+        items:
+          $ref: '#/definitions/domain.Header'
+        type: array
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
+      name:
+        type: string
+      oauth20:
+        $ref: '#/definitions/domain.OAuth20'
+      pathParams:
+        items:
+          $ref: '#/definitions/domain.Param'
+        type: array
+      preRequestScript:
+        type: string
+      projectId:
+        type: integer
+      queryParams:
+        items:
+          $ref: '#/definitions/domain.Param'
+        type: array
+      scenarioProcessorId:
+        type: integer
+      serveId:
+        type: integer
+      serverId:
+        type: integer
+      shareVars:
+        description: used for selection and show in right environment tab
+        items:
+          $ref: '#/definitions/domain.GlobalVar'
+        type: array
+      url:
+        type: string
+      usedBy:
+        $ref: '#/definitions/consts.UsedBy'
+      validationScript:
+        type: string
+    type: object
+  domain.DebugReq:
+    properties:
+      caseInterfaceId:
+        description: load by endpoint case
+        type: integer
+      debugInterfaceId:
+        type: integer
+      diagnoseInterfaceId:
+        description: load by interface diagnose
+        type: integer
+      endpointInterfaceId:
+        description: EndpointInterface without DebugInterface init
+        type: integer
+      scenarioProcessorId:
+        description: used to load vars by scenario processor
+        type: integer
+      usedBy:
+        $ref: '#/definitions/consts.UsedBy'
+    type: object
+  domain.EnvToVariables:
+    additionalProperties:
+      items:
+        $ref: '#/definitions/domain.GlobalVar'
+      type: array
+    type: object
+  domain.ExecCookie:
+    properties:
+      domain:
+        type: string
+      expireTime:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      value: {}
+    type: object
+  domain.ExecScene:
+    properties:
+      datapool:
+        $ref: '#/definitions/domain.Datapools'
+      debugInterfaceToEnvMap:
+        $ref: '#/definitions/domain.InterfaceToEnvMap'
+      envToVariables:
+        $ref: '#/definitions/domain.EnvToVariables'
+      globalParam:
+        items:
+          $ref: '#/definitions/domain.GlobalParam'
+        type: array
+      globalVar:
+        items:
+          $ref: '#/definitions/domain.GlobalVar'
+        type: array
+      shareVars:
+        items:
+          $ref: '#/definitions/domain.GlobalVar'
+        type: array
+    type: object
+  domain.GlobalParam:
+    properties:
+      Required:
+        type: boolean
+      defaultValue:
+        type: string
+      in:
+        $ref: '#/definitions/consts.ParamIn'
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/consts.ParamType'
+    type: object
+  domain.GlobalVar:
+    properties:
+      localValue:
+        type: string
+      name:
+        type: string
+      remoteValue:
+        type: string
+      rightValue:
+        type: string
+      varId:
+        type: integer
+    type: object
+  domain.Header:
+    properties:
+      default:
+        type: string
+      disabled:
+        type: boolean
+      example:
+        type: string
+      format:
+        type: string
+      maxItems:
+        type: integer
+      maxLength:
+        type: integer
+      minItems:
+        type: integer
+      minLength:
+        type: integer
+      multipleOf:
+        type: integer
+      name:
+        type: string
+      pattern:
+        type: string
+      ref:
+        type: string
+      required:
+        type: boolean
+      type:
+        type: string
+      uniqueItems:
+        type: boolean
+      value:
+        type: string
+    type: object
+  domain.InterfaceToEnvMap:
+    additionalProperties:
+      type: integer
+    type: object
+  domain.OAuth20:
+    properties:
+      accessToken:
+        type: string
+      accessTokenURL:
+        type: string
+      authURL:
+        type: string
+      callbackUrl:
+        type: string
+      clientAuthentication:
+        $ref: '#/definitions/consts.ClientAuthenticationWay'
+      clientID:
+        type: string
+      clientSecret:
+        type: string
+      grantType:
+        $ref: '#/definitions/consts.GrantType'
+      headerPrefix:
+        type: string
+      name:
+        type: string
+      scope:
+        type: string
+      state:
+        type: string
+    type: object
+  domain.Param:
+    properties:
+      Description:
+        type: string
+      disabled:
+        type: boolean
+      name:
+        type: string
+      paramIn:
+        $ref: '#/definitions/consts.ParamIn'
+      type:
+        type: string
+      value:
+        type: string
+    type: object
   iris.Map:
     additionalProperties: true
     type: object
@@ -365,6 +864,45 @@ definitions:
         type: string
       state:
         type: string
+      updatedAt:
+        type: string
+    type: object
+  model.DebugInvoke:
+    properties:
+      checkpointStatus:
+        $ref: '#/definitions/consts.ResultStatus'
+      createdAt:
+        type: string
+      debugInterfaceId:
+        type: integer
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      endpointInterfaceId:
+        type: integer
+      httpStatusCode:
+        $ref: '#/definitions/consts.HttpRespCode'
+      httpStatusContent:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      projectId:
+        type: integer
+      reqContent:
+        type: string
+      respContent:
+        type: string
+      resultStatus:
+        $ref: '#/definitions/consts.ResultStatus'
+      scenarioId:
+        type: integer
+      scenarioProcessorId:
+        type: integer
+      serveId:
+        type: integer
       updatedAt:
         type: string
     type: object
@@ -1688,6 +2226,162 @@ paths:
       summary: 保存数据池
       tags:
       - 数据池
+  /api/v1/debugs/interface/load:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 获取调试接口请求的请求体
+        in: body
+        name: DebugReq
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.DebugData'
+              type: object
+      summary: 获取调试接口请求
+      tags:
+      - 接口调试
+  /api/v1/debugs/interface/loadForExec:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 获取调试接口用于执行的请求体
+        in: body
+        name: DebugReq
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/agentExec.InterfaceExecObj'
+              type: object
+      summary: 获取调试接口用于执行
+      tags:
+      - 接口调试
+  /api/v1/debugs/interface/save:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存调试接口的请求体
+        in: body
+        name: DebugReq
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/agentExec.InterfaceExecObj'
+              type: object
+      summary: 保存调试接口
+      tags:
+      - 接口调试
+  /api/v1/debugs/invoke:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: debugInterfaceId
+        in: query
+        name: debugInterfaceId
+        required: true
+        type: integer
+      - description: endpointInterfaceId
+        in: query
+        name: endpointInterfaceId
+        required: true
+        type: integer
+      - description: 获取调试接口请求的请求体
+        in: body
+        name: DebugReq
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.DebugInvoke'
+                  type: array
+              type: object
+      summary: 调试记录列表
+      tags:
+      - 接口调试
   /api/v1/init/checkdb:
     get:
       consumes:

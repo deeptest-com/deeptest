@@ -1442,6 +1442,259 @@
                 }
             }
         },
+        "/api/v1/debugs/interface/load": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "获取调试接口请求",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "获取调试接口请求的请求体",
+                        "name": "DebugReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/domain.DebugData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/interface/loadForExec": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "获取调试接口用于执行",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "获取调试接口用于执行的请求体",
+                        "name": "DebugReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/agentExec.InterfaceExecObj"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/interface/save": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "保存调试接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存调试接口的请求体",
+                        "name": "DebugReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/agentExec.InterfaceExecObj"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/invoke": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "调试记录列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "debugInterfaceId",
+                        "name": "debugInterfaceId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointInterfaceId",
+                        "name": "endpointInterfaceId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "获取调试接口请求的请求体",
+                        "name": "DebugReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.DebugInvoke"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/init/checkdb": {
             "get": {
                 "consumes": [
@@ -2338,6 +2591,17 @@
                 }
             }
         },
+        "agentExec.InterfaceExecObj": {
+            "type": "object",
+            "properties": {
+                "debugData": {
+                    "$ref": "#/definitions/domain.DebugData"
+                },
+                "execScene": {
+                    "$ref": "#/definitions/domain.ExecScene"
+                }
+            }
+        },
         "consts.AuditStatus": {
             "type": "integer",
             "enum": [
@@ -2349,6 +2613,21 @@
                 "Init",
                 "Agreed",
                 "Refused"
+            ]
+        },
+        "consts.AuthorType": {
+            "type": "string",
+            "enum": [
+                "basicAuth",
+                "bearerToken",
+                "oAuth2",
+                "apiKey"
+            ],
+            "x-enum-varnames": [
+                "BasicAuth",
+                "BearerToken",
+                "OAuth2",
+                "ApiKey"
             ]
         },
         "consts.CheckpointType": {
@@ -2402,6 +2681,17 @@
                 "NotContain"
             ]
         },
+        "consts.FormDataType": {
+            "type": "string",
+            "enum": [
+                "text",
+                "file"
+            ],
+            "x-enum-varnames": [
+                "FormDataTypeText",
+                "FormDataTypeFile"
+            ]
+        },
         "consts.GrantType": {
             "type": "string",
             "enum": [
@@ -2417,6 +2707,188 @@
                 "Implicit",
                 "PasswordCredential",
                 "ClientCredential"
+            ]
+        },
+        "consts.HttpContentType": {
+            "type": "string",
+            "enum": [
+                "application/json",
+                "application/xml",
+                "text/html",
+                "text/text",
+                "multipart/form-data",
+                "application/x-www-form-urlencoded",
+                "httpd/unix-directory"
+            ],
+            "x-enum-varnames": [
+                "ContentTypeJSON",
+                "ContentTypeXML",
+                "ContentTypeHTML",
+                "ContentTypeTEXT",
+                "ContentTypeFormData",
+                "ContentTypeFormUrlencoded",
+                "ContentTypeUnixDir"
+            ]
+        },
+        "consts.HttpMethod": {
+            "type": "string",
+            "enum": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "HEAD",
+                "CONNECT",
+                "OPTIONS",
+                "TRACE"
+            ],
+            "x-enum-varnames": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "HEAD",
+                "CONNECT",
+                "OPTIONS",
+                "TRACE"
+            ]
+        },
+        "consts.HttpRespCode": {
+            "type": "integer",
+            "enum": [
+                100,
+                101,
+                200,
+                201,
+                202,
+                203,
+                204,
+                205,
+                206,
+                300,
+                301,
+                302,
+                303,
+                304,
+                305,
+                306,
+                307,
+                308,
+                400,
+                401,
+                402,
+                403,
+                404,
+                405,
+                406,
+                407,
+                408,
+                409,
+                410,
+                411,
+                412,
+                413,
+                414,
+                415,
+                416,
+                417,
+                500,
+                501,
+                502,
+                503,
+                504,
+                505
+            ],
+            "x-enum-varnames": [
+                "Continue",
+                "SwitchingProtocol",
+                "OK",
+                "Created",
+                "Accepted",
+                "NonAuthoritativeInformation",
+                "NoContent",
+                "ResetContent",
+                "PartialContent",
+                "MultipleChoice",
+                "MovedPermanently",
+                "Found",
+                "SeeOther",
+                "NotModified",
+                "UseProxy",
+                "unused",
+                "TemporaryRedirect",
+                "PermanentRedirect",
+                "BadRequest",
+                "Unauthorized",
+                "PaymentRequired",
+                "Forbidden",
+                "NotFound",
+                "MethodNotAllowed",
+                "NotAcceptable",
+                "ProxyAuthenticationRequired",
+                "RequestTimeout",
+                "Conflict",
+                "Gone",
+                "LengthRequired",
+                "PreconditionFailed",
+                "RequestEntityTooLarge",
+                "RequestURITooLong",
+                "UnsupportedMediaType",
+                "RequestedRangeNotSatisfiable",
+                "ExpectationFailed",
+                "InternalServerError",
+                "Implemented",
+                "BadGateway",
+                "ServiceUnavailable",
+                "GatewayTimeout",
+                "HTTPVersionNotSupported"
+            ]
+        },
+        "consts.HttpRespLangType": {
+            "type": "string",
+            "enum": [
+                "json",
+                "xml",
+                "html",
+                "text"
+            ],
+            "x-enum-varnames": [
+                "LangJSON",
+                "LangXML",
+                "LangHTML",
+                "LangTEXT"
+            ]
+        },
+        "consts.ParamIn": {
+            "type": "string",
+            "enum": [
+                "path",
+                "query",
+                "header",
+                "cookie",
+                "body"
+            ],
+            "x-enum-varnames": [
+                "ParamInPath",
+                "ParamInQuery",
+                "ParamInHeader",
+                "ParamInCookie",
+                "ParamInBody"
+            ]
+        },
+        "consts.ParamType": {
+            "type": "string",
+            "enum": [
+                "string",
+                "number",
+                "integer"
+            ],
+            "x-enum-varnames": [
+                "ParamTypeString",
+                "ParamTypeNumber",
+                "ParamTypeInteger"
             ]
         },
         "consts.ProcessorCategory": {
@@ -2562,6 +3034,471 @@
                 "DiagnoseDebug",
                 "CaseDebug"
             ]
+        },
+        "domain.ApiKey": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "transferMode": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.BasicAuth": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.BearerToken": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.BodyFormDataItem": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.FormDataType"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.BodyFormUrlEncodedItem": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Datapools": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "domain.DebugData": {
+            "type": "object",
+            "properties": {
+                "apiKey": {
+                    "$ref": "#/definitions/domain.ApiKey"
+                },
+                "authorizationType": {
+                    "$ref": "#/definitions/consts.AuthorType"
+                },
+                "baseUrl": {
+                    "type": "string"
+                },
+                "basicAuth": {
+                    "$ref": "#/definitions/domain.BasicAuth"
+                },
+                "bearerToken": {
+                    "$ref": "#/definitions/domain.BearerToken"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "bodyFormData": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.BodyFormDataItem"
+                    }
+                },
+                "bodyFormUrlencoded": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.BodyFormUrlEncodedItem"
+                    }
+                },
+                "bodyLang": {
+                    "$ref": "#/definitions/consts.HttpRespLangType"
+                },
+                "bodyType": {
+                    "$ref": "#/definitions/consts.HttpContentType"
+                },
+                "caseInterfaceId": {
+                    "type": "integer"
+                },
+                "cookies": {
+                    "description": "from cookie processor in scenario",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.ExecCookie"
+                    }
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "diagnoseInterfaceId": {
+                    "type": "integer"
+                },
+                "endpointInterfaceId": {
+                    "type": "integer"
+                },
+                "envVars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalVar"
+                    }
+                },
+                "globalParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalParam"
+                    }
+                },
+                "globalVars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalVar"
+                    }
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Header"
+                    }
+                },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "oauth20": {
+                    "$ref": "#/definitions/domain.OAuth20"
+                },
+                "pathParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Param"
+                    }
+                },
+                "preRequestScript": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "queryParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Param"
+                    }
+                },
+                "scenarioProcessorId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "serverId": {
+                    "type": "integer"
+                },
+                "shareVars": {
+                    "description": "used for selection and show in right environment tab",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalVar"
+                    }
+                },
+                "url": {
+                    "type": "string"
+                },
+                "usedBy": {
+                    "$ref": "#/definitions/consts.UsedBy"
+                },
+                "validationScript": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.DebugReq": {
+            "type": "object",
+            "properties": {
+                "caseInterfaceId": {
+                    "description": "load by endpoint case",
+                    "type": "integer"
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "diagnoseInterfaceId": {
+                    "description": "load by interface diagnose",
+                    "type": "integer"
+                },
+                "endpointInterfaceId": {
+                    "description": "EndpointInterface without DebugInterface init",
+                    "type": "integer"
+                },
+                "scenarioProcessorId": {
+                    "description": "used to load vars by scenario processor",
+                    "type": "integer"
+                },
+                "usedBy": {
+                    "$ref": "#/definitions/consts.UsedBy"
+                }
+            }
+        },
+        "domain.EnvToVariables": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/domain.GlobalVar"
+                }
+            }
+        },
+        "domain.ExecCookie": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string"
+                },
+                "expireTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "value": {}
+            }
+        },
+        "domain.ExecScene": {
+            "type": "object",
+            "properties": {
+                "datapool": {
+                    "$ref": "#/definitions/domain.Datapools"
+                },
+                "debugInterfaceToEnvMap": {
+                    "$ref": "#/definitions/domain.InterfaceToEnvMap"
+                },
+                "envToVariables": {
+                    "$ref": "#/definitions/domain.EnvToVariables"
+                },
+                "globalParam": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalParam"
+                    }
+                },
+                "globalVar": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalVar"
+                    }
+                },
+                "shareVars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalVar"
+                    }
+                }
+            }
+        },
+        "domain.GlobalParam": {
+            "type": "object",
+            "properties": {
+                "Required": {
+                    "type": "boolean"
+                },
+                "defaultValue": {
+                    "type": "string"
+                },
+                "in": {
+                    "$ref": "#/definitions/consts.ParamIn"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.ParamType"
+                }
+            }
+        },
+        "domain.GlobalVar": {
+            "type": "object",
+            "properties": {
+                "localValue": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "remoteValue": {
+                    "type": "string"
+                },
+                "rightValue": {
+                    "type": "string"
+                },
+                "varId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.Header": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "example": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "maxItems": {
+                    "type": "integer"
+                },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "minItems": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "multipleOf": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uniqueItems": {
+                    "type": "boolean"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.InterfaceToEnvMap": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "integer"
+            }
+        },
+        "domain.OAuth20": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "accessTokenURL": {
+                    "type": "string"
+                },
+                "authURL": {
+                    "type": "string"
+                },
+                "callbackUrl": {
+                    "type": "string"
+                },
+                "clientAuthentication": {
+                    "$ref": "#/definitions/consts.ClientAuthenticationWay"
+                },
+                "clientID": {
+                    "type": "string"
+                },
+                "clientSecret": {
+                    "type": "string"
+                },
+                "grantType": {
+                    "$ref": "#/definitions/consts.GrantType"
+                },
+                "headerPrefix": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Param": {
+            "type": "object",
+            "properties": {
+                "Description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "paramIn": {
+                    "$ref": "#/definitions/consts.ParamIn"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
         },
         "iris.Map": {
             "type": "object",
@@ -2796,6 +3733,65 @@
                 },
                 "state": {
                     "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInvoke": {
+            "type": "object",
+            "properties": {
+                "checkpointStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointInterfaceId": {
+                    "type": "integer"
+                },
+                "httpStatusCode": {
+                    "$ref": "#/definitions/consts.HttpRespCode"
+                },
+                "httpStatusContent": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "reqContent": {
+                    "type": "string"
+                },
+                "respContent": {
+                    "type": "string"
+                },
+                "resultStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                },
+                "scenarioProcessorId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
                 },
                 "updatedAt": {
                     "type": "string"

@@ -12,7 +12,10 @@
       <Tags
        :options="tagList"
        :size="'small'"
-       :record="endpointDetail"
+       :values="endpointDetail.tags"
+       @updateTags = "(values:[])=>{
+          updateTags(values,endpointDetail.id,endpointDetail.projectId)
+        }"
       />
     </a-descriptions-item>
     <a-descriptions-item label="描述">
@@ -96,6 +99,15 @@ function handleChangeCategory(val) {
 
 function updateDescription(val: string) {
   emit('changeDescription', val);
+}
+
+const updateTags = async (tags :[],id:number,projectId:number)=>{  
+   await store.dispatch('Endpoint/updateEndpointTag', {
+      id:id,tagNames:tags
+    });
+
+  await store.dispatch('Endpoint/loadList', {projectId: projectId});
+    
 }
 
 </script>

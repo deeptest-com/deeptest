@@ -36,6 +36,18 @@
             placeholder="请选择标签"
             max-tag-count="responsive"
             :options="tagList"/>
+            <template v-slot:max-tag-placeholder>
+        数据同步
+        <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip">
+          <template v-slot:title>
+            <span class="title">完全覆盖</span><br>
+            通过swagger导入/同步的接口定义，同步更新时使用接口方法和路径进行匹配。<br>
+            匹配到的相同接口同步时不保留平台中的旧数据，完全使用swagger文档中的新数据进行覆盖。<br>
+            通过平台创建的接口定义不会被覆盖。<br>
+         </template>
+        <QuestionCircleOutlined class="icon" style=" font-size: 14px;transform: scale(0.9)" />
+        </a-tooltip>
+      </template>
       </a-form-item>
       <a-form-item :label="null">
         <a-input-search
@@ -104,6 +116,10 @@ async function handleFilter() {
     ...formState.value
   });
 }
+const maxTagPlaceholder = (num) => {
+  console.log(num,"++++")
+                return 'more ';
+            }
 
 watch(() => {
   return filterState.value

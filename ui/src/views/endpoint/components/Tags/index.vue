@@ -1,6 +1,6 @@
 <template>
     <div style:="width: 200px">
-    <a-tag 
+    <a-tag style="margin:2px;"
     :key="tag" v-for="(tag,index) in values"
     closable @close="close(index)"
     >{{tag}}</a-tag>
@@ -29,7 +29,7 @@
 <script setup lang="ts">
 
 import {useStore} from "vuex";
-import { ref,defineProps,computed, watch } from 'vue';
+import { ref,defineProps,defineEmits,computed, watch } from 'vue';
 import { PlusCircleOutlined } from '@ant-design/icons-vue';
 import { vOnClickOutside } from '@vueuse/components';
 const store = useStore<{ Endpoint }>();
@@ -48,19 +48,24 @@ const props = defineProps({
         default:[],
     },
 
-    record:{
-        type: Object,
+    values:{
+        type: [],
         required: true,
     }
     
 })
 
-const values = ref(props.record?.tags)
+const emits = defineEmits('updateTags')
+
+const values = ref(props?.values||[])
 const options = computed(()=>props.options)
 const showSelect = ref(false)
-const tag = ref('')
+const tag = ref()
 const searchValue = ref()
 
+const updateTags = (tags) => {
+     emits('updateTags',tags)
+}
 
 function canColse() {
   if(isOpen.value){
@@ -68,6 +73,7 @@ function canColse() {
   }
 
   showSelect.value = false;
+  tag.value = undefined
 }
 
 const isOpen = ref(false);
@@ -78,6 +84,7 @@ function dropdownVisibleChange(open) {
 
 const filterOption = (input: string, option: any) => {
   return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+
 };
 
 
@@ -87,16 +94,15 @@ const handleChange = async (value: string) => {
         //debugger;
         return 
     }
-    console.log(`selected1 ${value}`,values.value);
+
    values.value = Array.from(new Set([...values.value,value]))
- // console.log(`selected ${value}`);
-  console.log(`selected2 ${value}`,values.value);
-  await updateTags(values.value)
+   await updateTags(values.value)
 };
 
 const handleBlur = () => {
   console.log('blur');
   showSelect.value=false
+  tag.value = undefined
 };
 const handleFocus = () => {
   console.log('focus');
@@ -104,23 +110,15 @@ const handleFocus = () => {
 
 const search = (va)=>{
     searchValue.value = va
-    //console.log('search',va);
 }
 
 const enter = (value) => {
-    //debugger;
     if (value.code=="Enter" ){
-        ///debugger;
         console.log('enter',searchValue.value);
         handleChange(searchValue.value)
     }
 }
 
-const updateTags = async (tags)=>{
-   await store.dispatch('Endpoint/updateEndpointTag', {
-      id:props.record.id,tagNames:tags,projectId:props.record.projectId
-    });
-}
 
 const close = (index)=>{
     console.log("colse",index)
@@ -128,7 +126,7 @@ const close = (index)=>{
     updateTags(values.value)
 }
 
-watch(()=>{return props.record?.tags},(newVal)=>{
+watch(()=>{return props.values},(newVal)=>{
     values.value = [...new Set(newVal)]
 })
 

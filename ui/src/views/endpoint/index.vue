@@ -90,8 +90,11 @@
               <template #colTags="{record}">
                 <div class="customTagsColRender">
                   <Tags
-                  :record = "record"
+                  :values = "record?.tags"
                   :options = "tagList"
+                  @updateTags = "(values:[])=>{
+                    updateTags(values,record.id)
+                  }"
                     />
                 </div>
               </template>
@@ -521,6 +524,13 @@ function paneResizeStop(pane, resizer, size) {
     const leftWidth = size.split('px')[0];
     // 当左侧宽度小于 100 时，折叠左侧
   }
+}
+
+const updateTags = async (tags :[],id:number)=>{  
+   await store.dispatch('Endpoint/updateEndpointTag', {
+      id:id,tagNames:tags
+    });
+    
 }
 
 </script>

@@ -74,7 +74,7 @@ func (o *openapi2endpoint) convertEndpoints() {
 			endpoint.Title = interf.Name
 			endpoint.Interfaces = append(endpoint.Interfaces, interf)
 			endpoint.Tags = interf.Tags
-			endpoint.Maintainer = interf.Maintainer
+			endpoint.CreateUser = interf.Creator
 			o.endpoints = append(o.endpoints, endpoint)
 		}
 
@@ -163,12 +163,12 @@ func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operatio
 	}
 	interf.ResponseBodies = o.responseBodies(operation.Responses)
 	interf.Tags = o.makeDirs(operation.Tags)
-	interf.Maintainer = o.Maintainer(operation.Extensions)
+	interf.Creator = o.creator(operation.Extensions)
 	return
 }
 
-func (o *openapi2endpoint) Maintainer(extensions map[string]interface{}) (res string) {
-	if value, ok := extensions["x-maintainer"]; ok {
+func (o *openapi2endpoint) creator(extensions map[string]interface{}) (res string) {
+	if value, ok := extensions["x-creator"]; ok {
 		json.Unmarshal(value.(json.RawMessage), &res)
 	}
 	return

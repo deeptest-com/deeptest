@@ -77,7 +77,7 @@ func (c *AccountCtrl) Register(ctx iris.Context) {
 // @Param 	usernameOrPassword	query	string	true	"用户名或者密码"
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/account/forgotPassword	[post]
-// @x-maintainer "wangzhen"
+// @x-creator "wangzhen"
 func (c *AccountCtrl) ForgotPassword(ctx iris.Context) {
 	usernameOrPassword := ctx.URLParam("usernameOrPassword")
 	if usernameOrPassword == "" {

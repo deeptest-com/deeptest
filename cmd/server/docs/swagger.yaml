@@ -1935,7 +1935,7 @@ paths:
       summary: 忘记密码
       tags:
       - 认证模块
-      x-maintainer: wangzhen
+      x-creator: wangzhen
   /api/v1/account/login:
     post:
       consumes:

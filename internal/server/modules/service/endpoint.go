@@ -223,11 +223,11 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 	user, _ := s.UserRepo.FindById(req.UserId)
 
 	for _, endpoint := range endpoints {
-		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId, endpoint.CreateUser = req.ProjectId, req.ServeId, req.CategoryId, user.Name
+		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId = req.ProjectId, req.ServeId, req.CategoryId
 		endpoint.Status = 1
 		endpoint.SourceType = consts.Swagger
 		if endpoint.CreateUser == "" {
-			endpoint.CreateUser = endpoint.Maintainer
+			endpoint.CreateUser = user.Username
 		}
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
 		if req.DataSyncType == convert.FullCover {

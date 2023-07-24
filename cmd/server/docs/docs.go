@@ -127,7 +127,7 @@ const docTemplate = `{
                         }
                     }
                 },
-                "x-maintainer": "wangzhen"
+                "x-creator": "wangzhen"
             }
         },
         "/api/v1/account/login": {

@@ -1435,6 +1435,39 @@ definitions:
           $ref: '#/definitions/model.EndpointVersion'
         type: array
     type: object
+  model.EndpointCase:
+    properties:
+      createUserId:
+        type: integer
+      createUserName:
+        type: string
+      createdAt:
+        type: string
+      createdBy:
+        type: integer
+      debugData:
+        $ref: '#/definitions/model.DebugInterface'
+      debugInterfaceId:
+        type: integer
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      endpointId:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      projectId:
+        type: integer
+      serialNumber:
+        type: string
+      serveId:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
   model.EndpointDocument:
     properties:
       createdAt:
@@ -2435,6 +2468,27 @@ definitions:
         type: string
     required:
     - version
+    type: object
+  serverDomain.EndpointCaseSaveReq:
+    properties:
+      createUserId:
+        type: integer
+      createUserName:
+        type: string
+      desc:
+        type: string
+      endpointId:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      parentId:
+        type: integer
+      projectId:
+        type: integer
+      serveId:
+        type: integer
     type: object
   serverDomain.EndpointReq:
     properties:
@@ -5356,6 +5410,235 @@ paths:
       summary: 设计器信息转yaml
       tags:
       - 设计器
+  /api/v1/endpoints/cases/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 用例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 删除用例的请求参数
+        in: body
+        name: EndpointCaseSaveReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EndpointCaseSaveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除用例
+      tags:
+      - 接口用例
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 用例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.EndpointCase'
+              type: object
+      summary: 用例详情
+      tags:
+      - 接口用例
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 用例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 保存用例的请求参数
+        in: body
+        name: EndpointCaseSaveReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EndpointCaseSaveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.EndpointCase'
+                  type: array
+              type: object
+      summary: 保存用例
+      tags:
+      - 接口用例
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 用例ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 保存用例名称的请求参数
+        in: body
+        name: EndpointCaseSaveReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EndpointCaseSaveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.EndpointCase'
+                  type: array
+              type: object
+      summary: 保存用例名称
+      tags:
+      - 接口用例
+  /api/v1/endpoints/cases/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: endpointId
+        in: query
+        name: endpointId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.EndpointCase'
+                  type: array
+              type: object
+      summary: 用例列表
+      tags:
+      - 接口用例
+  /api/v1/endpoints/cases/saveDebugData:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存调试数据的请求参数
+        in: body
+        name: DebugData
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.EndpointCase'
+                  type: array
+              type: object
+      summary: 保存调试数据
+      tags:
+      - 接口用例
   /api/v1/init/checkdb:
     get:
       consumes:

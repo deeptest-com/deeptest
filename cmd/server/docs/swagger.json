@@ -2547,6 +2547,455 @@
                 }
             }
         },
+        "/api/v1/document": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口文档"
+                ],
+                "summary": "接口文档列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "查看接口文档列表的请求参数",
+                        "name": "DocumentReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DocumentReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.DocumentRep"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/document/delete": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口文档"
+                ],
+                "summary": "删除接口文档",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "文档ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/document/get_share_content": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口文档"
+                ],
+                "summary": "查看分享的文档",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "查看接口文档的链接",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.DocumentRep"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/document/publish": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口文档"
+                ],
+                "summary": "发布接口文档",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "发布接口文档的请求参数",
+                        "name": "DocumentVersionReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DocumentVersionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/document/share": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口文档"
+                ],
+                "summary": "生成分享接口文档的链接",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "生成分享接口文档的链接的请求参数",
+                        "name": "DocumentShareReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DocumentShareReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/document/share_detail": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口文档"
+                ],
+                "summary": "查看文档详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "文档ID",
+                        "name": "documentId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointId",
+                        "name": "endpointId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "interfaceId",
+                        "name": "interfaceId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "interface": {
+                                                    "$ref": "#/definitions/model.EndpointInterface"
+                                                },
+                                                "servers": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/model.ServeServer"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/document/update_version": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口文档"
+                ],
+                "summary": "更新文档版本信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "更新文档版本信息的请求参数",
+                        "name": "UpdateDocumentVersionReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.UpdateDocumentVersionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/document/version_list": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口文档"
+                ],
+                "summary": "接口文档版本列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "接口文档版本列表的请求参数",
+                        "name": "DocumentVersionListReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DocumentVersionListReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.EndpointDocument"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/init/checkdb": {
             "get": {
                 "consumes": [
@@ -4448,6 +4897,75 @@
                 }
             }
         },
+        "domain.RequestBody": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "examples": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mediaType": {
+                    "type": "string"
+                },
+                "schemaItem": {
+                    "$ref": "#/definitions/domain.SchemaItem"
+                },
+                "schemaRefId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.ResponseBody": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "examples": {
+                    "type": "string"
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Header"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "mediaType": {
+                    "type": "string"
+                },
+                "schemaItem": {
+                    "$ref": "#/definitions/domain.SchemaItem"
+                },
+                "schemaRefId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.SchemaItem": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.SubmitDebugResultRequest": {
             "type": "object",
             "properties": {
@@ -5290,6 +5808,653 @@
                 }
             }
         },
+        "model.EndpointDocument": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointInterface": {
+            "type": "object",
+            "properties": {
+                "Version": {
+                    "type": "string"
+                },
+                "authorizationType": {
+                    "type": "string"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "bodyType": {
+                    "$ref": "#/definitions/consts.HttpContentType"
+                },
+                "cookies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointInterfaceCookie"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointId": {
+                    "type": "integer"
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointInterfaceHeader"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operationId": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "params": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointInterfaceParam"
+                    }
+                },
+                "parentId": {
+                    "description": "IsDir       bool   `json:\"isDir\"`",
+                    "type": "integer"
+                },
+                "pathParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointPathParam"
+                    }
+                },
+                "preRequestScript": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "requestBody": {
+                    "$ref": "#/definitions/model.EndpointInterfaceRequestBody"
+                },
+                "responseBodies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointInterfaceResponseBody"
+                    }
+                },
+                "responseCodes": {
+                    "type": "string"
+                },
+                "security": {
+                    "type": "string"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                },
+                "sourceType": {
+                    "$ref": "#/definitions/consts.SourceType"
+                },
+                "tags": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "useId": {
+                    "type": "integer"
+                },
+                "validationScript": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointInterfaceCookie": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "example": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "maxItems": {
+                    "type": "integer"
+                },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "minItems": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "multipleOf": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uniqueItems": {
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointInterfaceHeader": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "example": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "maxItems": {
+                    "type": "integer"
+                },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "minItems": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "multipleOf": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uniqueItems": {
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointInterfaceParam": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "example": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "maxItems": {
+                    "type": "integer"
+                },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "minItems": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "multipleOf": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uniqueItems": {
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointInterfaceRequestBody": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "examples": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "mediaType": {
+                    "type": "string"
+                },
+                "schemaItem": {
+                    "$ref": "#/definitions/model.EndpointInterfaceRequestBodyItem"
+                },
+                "schemaRefId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointInterfaceRequestBodyItem": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "requestBodyId": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointInterfaceResponseBody": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "examples": {
+                    "type": "string"
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointInterfaceResponseBodyHeader"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "mediaType": {
+                    "type": "string"
+                },
+                "schemaItem": {
+                    "$ref": "#/definitions/model.EndpointInterfaceResponseBodyItem"
+                },
+                "schemaRefId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointInterfaceResponseBodyHeader": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "example": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "maxItems": {
+                    "type": "integer"
+                },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "minItems": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "multipleOf": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "responseBodyId": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uniqueItems": {
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointInterfaceResponseBodyItem": {
+            "type": "object",
+            "properties": {
+                "ResponseBodyId": {
+                    "type": "integer"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointPathParam": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointId": {
+                    "type": "integer"
+                },
+                "example": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "maxItems": {
+                    "type": "integer"
+                },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "minItems": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "multipleOf": {
+                    "type": "number"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uniqueItems": {
+                    "type": "boolean"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Processor": {
             "type": "object",
             "properties": {
@@ -5511,6 +6676,54 @@
                     "type": "string"
                 }
             }
+        },
+        "model.ServeServer": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "environmentId": {
+                    "type": "integer"
+                },
+                "environmentName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "serveName": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverConsts.AuthType": {
+            "type": "string",
+            "enum": [
+                "apiKey",
+                "bearerToken",
+                "basicAuth"
+            ],
+            "x-enum-varnames": [
+                "ApiKey",
+                "BearerToken",
+                "BasicAuth"
+            ]
         },
         "serverConsts.CategoryDiscriminator": {
             "type": "string",
@@ -5871,6 +7084,396 @@
                 }
             }
         },
+        "serverDomain.DocumentRep": {
+            "type": "object",
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "adminName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "documentId": {
+                    "type": "integer"
+                },
+                "environment": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.EnvironmentReq"
+                    }
+                },
+                "globalParams": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "globalVars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.EnvironmentParam"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "includeExample": {
+                    "type": "boolean"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orgId": {
+                    "type": "integer"
+                },
+                "schemaId": {
+                    "type": "integer"
+                },
+                "serves": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.DocumentServe"
+                    }
+                },
+                "shortName": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.ProjectType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.DocumentReq": {
+            "type": "object",
+            "properties": {
+                "documentId": {
+                    "type": "integer"
+                },
+                "endpointIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "needDetail": {
+                    "type": "boolean"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                }
+            }
+        },
+        "serverDomain.DocumentServe": {
+            "type": "object",
+            "required": [
+                "name",
+                "projectId"
+            ],
+            "properties": {
+                "component": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.ServeSchemaReq"
+                    }
+                },
+                "createUser": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "endpoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.EndpointReq"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "securities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.ServeSecurityReq"
+                    }
+                },
+                "servers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.ServeServer"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.DocumentShareReq": {
+            "type": "object",
+            "properties": {
+                "documentId": {
+                    "type": "integer"
+                },
+                "endpointId": {
+                    "type": "integer"
+                },
+                "needDetail": {
+                    "type": "boolean"
+                },
+                "projectId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.DocumentVersionListReq": {
+            "type": "object",
+            "properties": {
+                "needLatest": {
+                    "description": "需要展示实时版本这条假数据",
+                    "type": "boolean"
+                }
+            }
+        },
+        "serverDomain.DocumentVersionReq": {
+            "type": "object",
+            "required": [
+                "version"
+            ],
+            "properties": {
+                "endpointIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.EndpointReq": {
+            "type": "object",
+            "required": [
+                "projectId",
+                "serveId",
+                "title"
+            ],
+            "properties": {
+                "CreateUser": {
+                    "type": "string"
+                },
+                "categoryId": {
+                    "type": "integer"
+                },
+                "curl": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaces": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.InterfaceResp"
+                    }
+                },
+                "path": {
+                    "type": "string"
+                },
+                "pathParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.OpenApiParam"
+                    }
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "serverId": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.EnvironmentParam": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "defaultValue": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.EnvironmentReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "projectId"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveServers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.ServeServer"
+                    }
+                },
+                "vars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.EnvironmentVariable"
+                    }
+                }
+            }
+        },
+        "serverDomain.EnvironmentVariable": {
+            "type": "object",
+            "required": [
+                "localValue",
+                "name",
+                "remoteValue"
+            ],
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "localValue": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "remoteValue": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.InterfaceResp": {
+            "type": "object",
+            "properties": {
+                "body": {
+                    "type": "string"
+                },
+                "bodyType": {
+                    "type": "string"
+                },
+                "cookies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.OpenApiCookie"
+                    }
+                },
+                "description": {
+                    "type": "string"
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.OpenApiHeader"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "operationId": {
+                    "type": "string"
+                },
+                "params": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.OpenApiParam"
+                    }
+                },
+                "requestBody": {
+                    "$ref": "#/definitions/domain.RequestBody"
+                },
+                "responseBodies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.ResponseBody"
+                    }
+                },
+                "responseCodes": {
+                    "type": "string"
+                },
+                "security": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "serverDomain.LoginReq": {
             "type": "object",
             "required": [
@@ -5919,6 +7522,192 @@
                     "$ref": "#/definitions/consts.RoleType"
                 },
                 "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.OpenApiCookie": {
+            "type": "object",
+            "properties": {
+                "Description": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "example": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "maxItems": {
+                    "type": "integer"
+                },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "minItems": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "multipleOf": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "paramIn": {
+                    "$ref": "#/definitions/consts.ParamIn"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uniqueItems": {
+                    "type": "boolean"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.OpenApiHeader": {
+            "type": "object",
+            "properties": {
+                "Description": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "example": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "maxItems": {
+                    "type": "integer"
+                },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "minItems": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "multipleOf": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "paramIn": {
+                    "$ref": "#/definitions/consts.ParamIn"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uniqueItems": {
+                    "type": "boolean"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.OpenApiParam": {
+            "type": "object",
+            "properties": {
+                "Description": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "example": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "maxItems": {
+                    "type": "integer"
+                },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "minItems": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "multipleOf": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "paramIn": {
+                    "$ref": "#/definitions/consts.ParamIn"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uniqueItems": {
+                    "type": "boolean"
+                },
+                "value": {
                     "type": "string"
                 }
             }
@@ -6016,6 +7805,130 @@
                     "type": "string"
                 },
                 "vcode": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.ServeSchemaReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "serveId"
+            ],
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "examples": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "tag": {
+                    "type": "string"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.ServeSecurityReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "projectId",
+                "serveId",
+                "type"
+            ],
+            "properties": {
+                "default": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "in": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.AuthType"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.ServeServer": {
+            "type": "object",
+            "properties": {
+                "environmentName": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "serverId": {
+                    "description": "load by server id in scenario design page",
+                    "type": "integer"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.UpdateDocumentVersionReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "version": {
                     "type": "string"
                 }
             }

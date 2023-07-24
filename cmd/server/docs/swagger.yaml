@@ -776,6 +776,51 @@ definitions:
       value:
         type: string
     type: object
+  domain.RequestBody:
+    properties:
+      description:
+        type: string
+      examples:
+        type: string
+      id:
+        type: integer
+      mediaType:
+        type: string
+      schemaItem:
+        $ref: '#/definitions/domain.SchemaItem'
+      schemaRefId:
+        type: integer
+    type: object
+  domain.ResponseBody:
+    properties:
+      code:
+        type: string
+      description:
+        type: string
+      examples:
+        type: string
+      headers:
+        items:
+          $ref: '#/definitions/domain.Header'
+        type: array
+      id:
+        type: integer
+      mediaType:
+        type: string
+      schemaItem:
+        $ref: '#/definitions/domain.SchemaItem'
+      schemaRefId:
+        type: integer
+    type: object
+  domain.SchemaItem:
+    properties:
+      content:
+        type: string
+      name:
+        type: string
+      type:
+        type: string
+    type: object
   domain.SubmitDebugResultRequest:
     properties:
       request:
@@ -1335,6 +1380,434 @@ definitions:
       useId:
         type: integer
     type: object
+  model.EndpointDocument:
+    properties:
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      projectId:
+        type: integer
+      updatedAt:
+        type: string
+      version:
+        type: string
+    type: object
+  model.EndpointInterface:
+    properties:
+      Version:
+        type: string
+      authorizationType:
+        type: string
+      body:
+        type: string
+      bodyType:
+        $ref: '#/definitions/consts.HttpContentType'
+      cookies:
+        items:
+          $ref: '#/definitions/model.EndpointInterfaceCookie'
+        type: array
+      createdAt:
+        type: string
+      debugInterfaceId:
+        type: integer
+      desc:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      endpointId:
+        type: integer
+      headers:
+        items:
+          $ref: '#/definitions/model.EndpointInterfaceHeader'
+        type: array
+      id:
+        type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
+      name:
+        type: string
+      operationId:
+        type: string
+      ordr:
+        type: integer
+      params:
+        items:
+          $ref: '#/definitions/model.EndpointInterfaceParam'
+        type: array
+      parentId:
+        description: IsDir       bool   `json:"isDir"`
+        type: integer
+      pathParams:
+        items:
+          $ref: '#/definitions/model.EndpointPathParam'
+        type: array
+      preRequestScript:
+        type: string
+      projectId:
+        type: integer
+      requestBody:
+        $ref: '#/definitions/model.EndpointInterfaceRequestBody'
+      responseBodies:
+        items:
+          $ref: '#/definitions/model.EndpointInterfaceResponseBody'
+        type: array
+      responseCodes:
+        type: string
+      security:
+        type: string
+      slots:
+        $ref: '#/definitions/iris.Map'
+      sourceType:
+        $ref: '#/definitions/consts.SourceType'
+      tags:
+        items:
+          type: string
+        type: array
+      updatedAt:
+        type: string
+      url:
+        type: string
+      useId:
+        type: integer
+      validationScript:
+        type: string
+    type: object
+  model.EndpointInterfaceCookie:
+    properties:
+      createdAt:
+        type: string
+      default:
+        type: string
+      desc:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      example:
+        type: string
+      format:
+        type: string
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      maxItems:
+        type: integer
+      maxLength:
+        type: integer
+      minItems:
+        type: integer
+      minLength:
+        type: integer
+      multipleOf:
+        type: number
+      name:
+        type: string
+      pattern:
+        type: string
+      ref:
+        type: string
+      required:
+        type: boolean
+      type:
+        type: string
+      uniqueItems:
+        type: boolean
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.EndpointInterfaceHeader:
+    properties:
+      createdAt:
+        type: string
+      default:
+        type: string
+      desc:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      example:
+        type: string
+      format:
+        type: string
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      maxItems:
+        type: integer
+      maxLength:
+        type: integer
+      minItems:
+        type: integer
+      minLength:
+        type: integer
+      multipleOf:
+        type: number
+      name:
+        type: string
+      pattern:
+        type: string
+      ref:
+        type: string
+      required:
+        type: boolean
+      type:
+        type: string
+      uniqueItems:
+        type: boolean
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.EndpointInterfaceParam:
+    properties:
+      createdAt:
+        type: string
+      default:
+        type: string
+      desc:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      example:
+        type: string
+      format:
+        type: string
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      maxItems:
+        type: integer
+      maxLength:
+        type: integer
+      minItems:
+        type: integer
+      minLength:
+        type: integer
+      multipleOf:
+        type: number
+      name:
+        type: string
+      pattern:
+        type: string
+      ref:
+        type: string
+      required:
+        type: boolean
+      type:
+        type: string
+      uniqueItems:
+        type: boolean
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.EndpointInterfaceRequestBody:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      examples:
+        type: string
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      mediaType:
+        type: string
+      schemaItem:
+        $ref: '#/definitions/model.EndpointInterfaceRequestBodyItem'
+      schemaRefId:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  model.EndpointInterfaceRequestBodyItem:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      requestBodyId:
+        type: integer
+      type:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.EndpointInterfaceResponseBody:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      examples:
+        type: string
+      headers:
+        items:
+          $ref: '#/definitions/model.EndpointInterfaceResponseBodyHeader'
+        type: array
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      mediaType:
+        type: string
+      schemaItem:
+        $ref: '#/definitions/model.EndpointInterfaceResponseBodyItem'
+      schemaRefId:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  model.EndpointInterfaceResponseBodyHeader:
+    properties:
+      createdAt:
+        type: string
+      default:
+        type: string
+      desc:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      example:
+        type: string
+      format:
+        type: string
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      maxItems:
+        type: integer
+      maxLength:
+        type: integer
+      minItems:
+        type: integer
+      minLength:
+        type: integer
+      multipleOf:
+        type: number
+      name:
+        type: string
+      pattern:
+        type: string
+      ref:
+        type: string
+      required:
+        type: boolean
+      responseBodyId:
+        type: integer
+      type:
+        type: string
+      uniqueItems:
+        type: boolean
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.EndpointInterfaceResponseBodyItem:
+    properties:
+      ResponseBodyId:
+        type: integer
+      content:
+        type: string
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.EndpointPathParam:
+    properties:
+      createdAt:
+        type: string
+      default:
+        type: string
+      desc:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      endpointId:
+        type: integer
+      example:
+        type: string
+      format:
+        type: string
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      maxItems:
+        type: integer
+      maxLength:
+        type: integer
+      minItems:
+        type: integer
+      minLength:
+        type: integer
+      multipleOf:
+        type: number
+      name:
+        type: string
+      pattern:
+        type: string
+      ref:
+        type: string
+      required:
+        type: boolean
+      type:
+        type: string
+      uniqueItems:
+        type: boolean
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
   model.Processor:
     properties:
       children:
@@ -1482,6 +1955,39 @@ definitions:
       updatedAt:
         type: string
     type: object
+  model.ServeServer:
+    properties:
+      createdAt:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      environmentId:
+        type: integer
+      environmentName:
+        type: string
+      id:
+        type: integer
+      serveId:
+        type: integer
+      serveName:
+        type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+    type: object
+  serverConsts.AuthType:
+    enum:
+    - apiKey
+    - bearerToken
+    - basicAuth
+    type: string
+    x-enum-varnames:
+    - ApiKey
+    - BearerToken
+    - BasicAuth
   serverConsts.CategoryDiscriminator:
     enum:
     - endpoint
@@ -1721,6 +2227,265 @@ definitions:
       type:
         $ref: '#/definitions/serverConsts.DiagnoseInterfaceType'
     type: object
+  serverDomain.DocumentRep:
+    properties:
+      adminId:
+        type: integer
+      adminName:
+        type: string
+      createdAt:
+        type: string
+      desc:
+        type: string
+      documentId:
+        type: integer
+      environment:
+        items:
+          $ref: '#/definitions/serverDomain.EnvironmentReq'
+        type: array
+      globalParams:
+        additionalProperties: true
+        type: object
+      globalVars:
+        items:
+          $ref: '#/definitions/serverDomain.EnvironmentParam'
+        type: array
+      id:
+        type: integer
+      includeExample:
+        type: boolean
+      logo:
+        type: string
+      name:
+        type: string
+      orgId:
+        type: integer
+      schemaId:
+        type: integer
+      serves:
+        items:
+          $ref: '#/definitions/serverDomain.DocumentServe'
+        type: array
+      shortName:
+        type: string
+      type:
+        $ref: '#/definitions/serverConsts.ProjectType'
+      updatedAt:
+        type: string
+      version:
+        type: string
+    type: object
+  serverDomain.DocumentReq:
+    properties:
+      documentId:
+        type: integer
+      endpointIds:
+        items:
+          type: integer
+        type: array
+      needDetail:
+        type: boolean
+      projectId:
+        type: integer
+      serveIds:
+        items:
+          type: integer
+        type: array
+    type: object
+  serverDomain.DocumentServe:
+    properties:
+      component:
+        items:
+          $ref: '#/definitions/serverDomain.ServeSchemaReq'
+        type: array
+      createUser:
+        type: string
+      description:
+        type: string
+      endpoints:
+        items:
+          $ref: '#/definitions/serverDomain.EndpointReq'
+        type: array
+      id:
+        type: integer
+      name:
+        type: string
+      projectId:
+        type: integer
+      securities:
+        items:
+          $ref: '#/definitions/serverDomain.ServeSecurityReq'
+        type: array
+      servers:
+        items:
+          $ref: '#/definitions/serverDomain.ServeServer'
+        type: array
+      status:
+        type: integer
+    required:
+    - name
+    - projectId
+    type: object
+  serverDomain.DocumentShareReq:
+    properties:
+      documentId:
+        type: integer
+      endpointId:
+        type: integer
+      needDetail:
+        type: boolean
+      projectId:
+        type: integer
+    type: object
+  serverDomain.DocumentVersionListReq:
+    properties:
+      needLatest:
+        description: 需要展示实时版本这条假数据
+        type: boolean
+    type: object
+  serverDomain.DocumentVersionReq:
+    properties:
+      endpointIds:
+        items:
+          type: integer
+        type: array
+      name:
+        type: string
+      version:
+        type: string
+    required:
+    - version
+    type: object
+  serverDomain.EndpointReq:
+    properties:
+      CreateUser:
+        type: string
+      categoryId:
+        type: integer
+      curl:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      interfaces:
+        items:
+          $ref: '#/definitions/serverDomain.InterfaceResp'
+        type: array
+      path:
+        type: string
+      pathParams:
+        items:
+          $ref: '#/definitions/serverDomain.OpenApiParam'
+        type: array
+      projectId:
+        type: integer
+      serveId:
+        type: integer
+      serverId:
+        type: integer
+      status:
+        type: integer
+      title:
+        type: string
+      version:
+        type: string
+    required:
+    - projectId
+    - serveId
+    - title
+    type: object
+  serverDomain.EnvironmentParam:
+    properties:
+      defaultValue:
+        type: string
+      description:
+        type: string
+      name:
+        type: string
+      required:
+        type: boolean
+      type:
+        type: string
+    required:
+    - name
+    type: object
+  serverDomain.EnvironmentReq:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      projectId:
+        type: integer
+      serveServers:
+        items:
+          $ref: '#/definitions/serverDomain.ServeServer'
+        type: array
+      vars:
+        items:
+          $ref: '#/definitions/serverDomain.EnvironmentVariable'
+        type: array
+    required:
+    - name
+    - projectId
+    type: object
+  serverDomain.EnvironmentVariable:
+    properties:
+      description:
+        type: string
+      localValue:
+        type: string
+      name:
+        type: string
+      remoteValue:
+        type: string
+    required:
+    - localValue
+    - name
+    - remoteValue
+    type: object
+  serverDomain.InterfaceResp:
+    properties:
+      body:
+        type: string
+      bodyType:
+        type: string
+      cookies:
+        items:
+          $ref: '#/definitions/serverDomain.OpenApiCookie'
+        type: array
+      description:
+        type: string
+      headers:
+        items:
+          $ref: '#/definitions/serverDomain.OpenApiHeader'
+        type: array
+      id:
+        type: integer
+      method:
+        type: string
+      name:
+        type: string
+      operationId:
+        type: string
+      params:
+        items:
+          $ref: '#/definitions/serverDomain.OpenApiParam'
+        type: array
+      requestBody:
+        $ref: '#/definitions/domain.RequestBody'
+      responseBodies:
+        items:
+          $ref: '#/definitions/domain.ResponseBody'
+        type: array
+      responseCodes:
+        type: string
+      security:
+        type: string
+      url:
+        type: string
+    type: object
   serverDomain.LoginReq:
     properties:
       password:
@@ -1753,6 +2518,129 @@ definitions:
       roleName:
         $ref: '#/definitions/consts.RoleType'
       username:
+        type: string
+    type: object
+  serverDomain.OpenApiCookie:
+    properties:
+      Description:
+        type: string
+      default:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      example:
+        type: string
+      format:
+        type: string
+      maxItems:
+        type: integer
+      maxLength:
+        type: integer
+      minItems:
+        type: integer
+      minLength:
+        type: integer
+      multipleOf:
+        type: integer
+      name:
+        type: string
+      paramIn:
+        $ref: '#/definitions/consts.ParamIn'
+      pattern:
+        type: string
+      ref:
+        type: string
+      required:
+        type: boolean
+      type:
+        type: string
+      uniqueItems:
+        type: boolean
+      value:
+        type: string
+    type: object
+  serverDomain.OpenApiHeader:
+    properties:
+      Description:
+        type: string
+      default:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      example:
+        type: string
+      format:
+        type: string
+      maxItems:
+        type: integer
+      maxLength:
+        type: integer
+      minItems:
+        type: integer
+      minLength:
+        type: integer
+      multipleOf:
+        type: integer
+      name:
+        type: string
+      paramIn:
+        $ref: '#/definitions/consts.ParamIn'
+      pattern:
+        type: string
+      ref:
+        type: string
+      required:
+        type: boolean
+      type:
+        type: string
+      uniqueItems:
+        type: boolean
+      value:
+        type: string
+    type: object
+  serverDomain.OpenApiParam:
+    properties:
+      Description:
+        type: string
+      default:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      example:
+        type: string
+      format:
+        type: string
+      maxItems:
+        type: integer
+      maxLength:
+        type: integer
+      minItems:
+        type: integer
+      minLength:
+        type: integer
+      multipleOf:
+        type: integer
+      name:
+        type: string
+      paramIn:
+        $ref: '#/definitions/consts.ParamIn'
+      pattern:
+        type: string
+      ref:
+        type: string
+      required:
+        type: boolean
+      type:
+        type: string
+      uniqueItems:
+        type: boolean
+      value:
         type: string
     type: object
   serverDomain.ProjectMemberRemoveReq:
@@ -1819,6 +2707,89 @@ definitions:
     - password
     - username
     - vcode
+    type: object
+  serverDomain.ServeSchemaReq:
+    properties:
+      content:
+        type: string
+      description:
+        type: string
+      examples:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      ref:
+        type: string
+      serveId:
+        type: integer
+      tag:
+        type: string
+      tags:
+        type: string
+      type:
+        type: string
+    required:
+    - name
+    - serveId
+    type: object
+  serverDomain.ServeSecurityReq:
+    properties:
+      default:
+        type: boolean
+      description:
+        type: string
+      id:
+        type: integer
+      in:
+        type: string
+      key:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      projectId:
+        type: integer
+      serveId:
+        type: integer
+      token:
+        type: string
+      type:
+        $ref: '#/definitions/serverConsts.AuthType'
+      username:
+        type: string
+      value:
+        type: string
+    required:
+    - name
+    - projectId
+    - serveId
+    - type
+    type: object
+  serverDomain.ServeServer:
+    properties:
+      environmentName:
+        type: string
+      id:
+        type: integer
+      serveId:
+        type: integer
+      serverId:
+        description: load by server id in scenario design page
+        type: integer
+      url:
+        type: string
+    type: object
+  serverDomain.UpdateDocumentVersionReq:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+      version:
+        type: string
     type: object
   serverDomain.UpdateProjectMemberReq:
     properties:
@@ -3464,6 +4435,288 @@ paths:
       summary: 保存测试调试接口
       tags:
       - 快捷调试
+  /api/v1/document:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 查看接口文档列表的请求参数
+        in: body
+        name: DocumentReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.DocumentReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.DocumentRep'
+              type: object
+      summary: 接口文档列表
+      tags:
+      - 接口文档
+  /api/v1/document/delete:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 文档ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除接口文档
+      tags:
+      - 接口文档
+  /api/v1/document/get_share_content:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: 查看接口文档的链接
+        in: query
+        name: code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.DocumentRep'
+              type: object
+      summary: 查看分享的文档
+      tags:
+      - 接口文档
+  /api/v1/document/publish:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 发布接口文档的请求参数
+        in: body
+        name: DocumentVersionReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.DocumentVersionReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 发布接口文档
+      tags:
+      - 接口文档
+  /api/v1/document/share:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 生成分享接口文档的链接的请求参数
+        in: body
+        name: DocumentShareReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.DocumentShareReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    code:
+                      type: string
+                  type: object
+              type: object
+      summary: 生成分享接口文档的链接
+      tags:
+      - 接口文档
+  /api/v1/document/share_detail:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 文档ID
+        in: query
+        name: documentId
+        required: true
+        type: integer
+      - description: endpointId
+        in: query
+        name: endpointId
+        required: true
+        type: integer
+      - description: interfaceId
+        in: query
+        name: interfaceId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    interface:
+                      $ref: '#/definitions/model.EndpointInterface'
+                    servers:
+                      items:
+                        $ref: '#/definitions/model.ServeServer'
+                      type: array
+                  type: object
+              type: object
+      summary: 查看文档详情
+      tags:
+      - 接口文档
+  /api/v1/document/update_version:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 更新文档版本信息的请求参数
+        in: body
+        name: UpdateDocumentVersionReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.UpdateDocumentVersionReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新文档版本信息
+      tags:
+      - 接口文档
+  /api/v1/document/version_list:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 接口文档版本列表的请求参数
+        in: body
+        name: DocumentVersionListReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.DocumentVersionListReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.EndpointDocument'
+                  type: array
+              type: object
+      summary: 接口文档版本列表
+      tags:
+      - 接口文档
   /api/v1/init/checkdb:
     get:
       consumes:

@@ -18,7 +18,7 @@ func (m *DiagnoseInterfaceModule) Party() module.WebModule {
 
 		index.Get("/", m.DiagnoseInterfaceCtrl.Load).Name = "获取测试接口"
 		index.Get("/{id:uint}", m.DiagnoseInterfaceCtrl.Get).Name = "获取测试接口"
-		index.Post("/", m.DiagnoseInterfaceCtrl.Save).Name = "新建测试接口"
+		index.Post("/", m.DiagnoseInterfaceCtrl.Create).Name = "新建测试接口"
 		index.Put("/", m.DiagnoseInterfaceCtrl.Update).Name = "更新测试接口"
 		index.Delete("/{id:uint}", m.DiagnoseInterfaceCtrl.Delete).Name = "删除测试接口"
 		index.Post("/move", m.DiagnoseInterfaceCtrl.Move).Name = "移动节点"

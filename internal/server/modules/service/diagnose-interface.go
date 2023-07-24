@@ -202,9 +202,12 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
 	debugData.ServeId = parent.ServeId
 
-	server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
-	debugData.ServerId = server.ID
+	if debugData.ServerId == 0 {
+		server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+		debugData.ServerId = server.ID
+	}
 
+	server, _ := s.ServeServerRepo.Get(debugData.ServerId)
 	debugData.BaseUrl = "" // no need to bind to env in debug page
 	debugData.Url = _httpUtils.CombineUrls(server.Url, debugData.Url)
 

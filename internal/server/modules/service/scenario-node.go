@@ -174,7 +174,12 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 
 	debugData.ServeId = *serveId
 
-	server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+	if debugData.ServerId == 0 {
+		server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+		debugData.ServerId = server.ID
+	}
+
+	server, _ := s.ServeServerRepo.Get(debugData.ServerId)
 	debugData.ServerId = server.ID
 	debugData.BaseUrl = server.Url
 

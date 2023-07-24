@@ -48,8 +48,8 @@ func (c *DiagnoseInterfaceCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
-// Save
-func (c *DiagnoseInterfaceCtrl) Save(ctx iris.Context) {
+// Create
+func (c *DiagnoseInterfaceCtrl) Create(ctx iris.Context) {
 	req := serverDomain.DiagnoseInterfaceSaveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {

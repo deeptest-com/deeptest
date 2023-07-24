@@ -36,7 +36,13 @@ func (s *EndpointCaseService) Save(req serverDomain.EndpointCaseSaveReq) (po mod
 	s.CopyValueFromRequest(&po, req)
 
 	endpoint, err := s.EndpointRepo.Get(req.EndpointId)
-	server, _ := s.ServeServerRepo.GetDefaultByServe(endpoint.ServeId)
+
+	var server model.ServeServer
+	if endpoint.ServerId > 0 {
+		server, _ = s.ServeServerRepo.Get(endpoint.ServerId)
+	} else {
+		server, _ = s.ServeServerRepo.GetDefaultByServe(endpoint.ServeId)
+	}
 
 	// create new DebugInterface
 	url := req.DebugData.Url

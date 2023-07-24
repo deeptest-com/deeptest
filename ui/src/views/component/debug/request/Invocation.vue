@@ -189,7 +189,7 @@ const save = (e) => {
   data = prepareDataForRequest(data)
 
   if (validateInfo()) {
-    props.onSave(data)
+     props.onSave(data)
   }
 };
 

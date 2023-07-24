@@ -1315,6 +1315,41 @@ definitions:
       userId:
         type: integer
     type: object
+  serverDomain.UserResp:
+    properties:
+      avatar:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      intro:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      projectRoles:
+        additionalProperties:
+          $ref: '#/definitions/consts.RoleType'
+        type: object
+      role_ids:
+        items:
+          type: integer
+        type: array
+      sysRoles:
+        items:
+          type: string
+        type: array
+      updatedAt:
+        type: string
+      username:
+        type: string
+    required:
+    - username
+    type: object
 info:
   contact:
     email: 462626@qq.com
@@ -1323,6 +1358,49 @@ info:
   title: DeepTest服务端API文档
   version: "3.0"
 paths:
+  /api/v1//users:
+    get:
+      parameters:
+      - in: query
+        name: field
+        type: string
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: order
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: userName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/serverDomain.UserResp'
+                        type: array
+                    type: object
+              type: object
+      summary: 用户列表
+      tags:
+      - 用户管理
   /api/v1/account/forgotPassword:
     post:
       consumes:
@@ -1343,6 +1421,7 @@ paths:
       summary: 忘记密码
       tags:
       - 认证模块
+      x-maintainer: wangzhen
   /api/v1/account/login:
     post:
       consumes:

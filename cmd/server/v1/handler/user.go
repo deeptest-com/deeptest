@@ -25,7 +25,7 @@ type UserCtrl struct {
 // @summary	用户列表
 // @Produce application/json
 // @Param 	UserReqPaginate		query	serverDomain.UserReqPaginate	true	"查询参数"
-// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]*serverDomain.UserResp}}
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]serverDomain.UserResp}}
 // @Router	/api/v1//users	[get]
 func (c *UserCtrl) ListAll(ctx iris.Context) {
 	var req serverDomain.UserReqPaginate

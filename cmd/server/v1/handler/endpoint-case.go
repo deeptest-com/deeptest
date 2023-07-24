@@ -14,7 +14,7 @@ type EndpointCaseCtrl struct {
 }
 
 // List
-// @Tags	接口用例
+// @Tags	设计器/接口用例
 // @summary	用例列表
 // @accept 	application/json
 // @Produce application/json
@@ -36,7 +36,7 @@ func (c *EndpointCaseCtrl) List(ctx iris.Context) {
 }
 
 // Get
-// @Tags	接口用例
+// @Tags	设计器/接口用例
 // @summary	用例详情
 // @accept 	application/json
 // @Produce application/json
@@ -58,7 +58,7 @@ func (c *EndpointCaseCtrl) Get(ctx iris.Context) {
 }
 
 // Save
-// @Tags	接口用例
+// @Tags	设计器/接口用例
 // @summary	保存用例
 // @accept 	application/json
 // @Produce application/json
@@ -95,7 +95,7 @@ func (c *EndpointCaseCtrl) Save(ctx iris.Context) {
 }
 
 // UpdateName
-// @Tags	接口用例
+// @Tags	设计器/接口用例
 // @summary	保存用例名称
 // @accept 	application/json
 // @Produce application/json
@@ -129,7 +129,7 @@ func (c *EndpointCaseCtrl) UpdateName(ctx iris.Context) {
 }
 
 // SaveDebugData
-// @Tags	接口用例
+// @Tags	设计器/接口用例
 // @summary	保存调试数据
 // @accept 	application/json
 // @Produce application/json
@@ -162,7 +162,7 @@ func (c *EndpointCaseCtrl) SaveDebugData(ctx iris.Context) {
 }
 
 // Remove
-// @Tags	接口用例
+// @Tags	设计器/接口用例
 // @summary	删除用例
 // @accept 	application/json
 // @Produce application/json

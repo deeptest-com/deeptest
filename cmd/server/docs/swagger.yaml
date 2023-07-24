@@ -439,6 +439,31 @@ definitions:
     - ScenarioDebug
     - DiagnoseDebug
     - CaseDebug
+  convert.DataSyncType:
+    enum:
+    - full_cover
+    - copy_add
+    type: string
+    x-enum-comments:
+      CopyAdd: 复制新增
+      FullCover: 完全覆盖
+    x-enum-varnames:
+    - FullCover
+    - CopyAdd
+  convert.DriverType:
+    enum:
+    - postman
+    - yapi
+    - swagger
+    - swagger2
+    - swagger3
+    type: string
+    x-enum-varnames:
+    - POSTMAN
+    - YAPI
+    - SWAGGER
+    - SWAGGER2
+    - SWAGGER3
   domain.ApiKey:
     properties:
       key:
@@ -827,6 +852,17 @@ definitions:
         $ref: '#/definitions/domain.DebugData'
       response:
         $ref: '#/definitions/domain.DebugResponse'
+    type: object
+  domain.Variable:
+    properties:
+      availableForCurrScope:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      value:
+        type: string
     type: object
   iris.Map:
     additionalProperties: true
@@ -1896,6 +1932,25 @@ definitions:
       value:
         type: string
     type: object
+  model.EndpointTagRel:
+    properties:
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      endpointId:
+        type: integer
+      id:
+        type: integer
+      projectId:
+        type: integer
+      tagId:
+        type: integer
+      tagName:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   model.EndpointVersion:
     properties:
       createdAt:
@@ -1910,6 +1965,56 @@ definitions:
         type: string
       version:
         type: string
+    type: object
+  model.Environment:
+    properties:
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      projectId:
+        type: integer
+      serveServers:
+        items:
+          $ref: '#/definitions/model.ServeServer'
+        type: array
+      sort:
+        type: integer
+      updatedAt:
+        type: string
+      vars:
+        items:
+          $ref: '#/definitions/model.EnvironmentVar'
+        type: array
+    type: object
+  model.EnvironmentVar:
+    properties:
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      environmentId:
+        type: integer
+      id:
+        type: integer
+      localValue:
+        type: string
+      name:
+        type: string
+      projectId:
+        type: integer
+      remoteValue:
+        type: string
+      rightValue:
+        type: string
+      updatedAt:
+        type: string
+      varId:
+        type: integer
     type: object
   model.Processor:
     properties:
@@ -2490,6 +2595,25 @@ definitions:
       serveId:
         type: integer
     type: object
+  serverDomain.EndpointInterfaceReqPaginate:
+    properties:
+      Keywords:
+        type: string
+      categoryId:
+        type: integer
+      field:
+        type: string
+      order:
+        type: string
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      projectId:
+        type: integer
+      serveId:
+        type: integer
+    type: object
   serverDomain.EndpointReq:
     properties:
       CreateUser:
@@ -2589,6 +2713,27 @@ definitions:
     required:
     - name
     type: object
+  serverDomain.EnvironmentParamsReq:
+    properties:
+      body:
+        items:
+          $ref: '#/definitions/serverDomain.EnvironmentParam'
+        type: array
+      cookie:
+        items:
+          $ref: '#/definitions/serverDomain.EnvironmentParam'
+        type: array
+      header:
+        items:
+          $ref: '#/definitions/serverDomain.EnvironmentParam'
+        type: array
+      projectId:
+        type: integer
+      query:
+        items:
+          $ref: '#/definitions/serverDomain.EnvironmentParam'
+        type: array
+    type: object
   serverDomain.EnvironmentReq:
     properties:
       id:
@@ -2623,6 +2768,36 @@ definitions:
     - localValue
     - name
     - remoteValue
+    type: object
+  serverDomain.ImportEndpointDataReq:
+    properties:
+      categoryId:
+        description: 所属分类
+        type: integer
+      dataSyncType:
+        allOf:
+        - $ref: '#/definitions/convert.DataSyncType'
+        description: 数据同步方式
+      driverType:
+        allOf:
+        - $ref: '#/definitions/convert.DriverType'
+        description: 接口数据来源
+      filePath:
+        type: string
+      openUrlImport:
+        description: 开启url导入
+        type: boolean
+      projectId:
+        type: integer
+      serveId:
+        description: 服务ID
+        type: integer
+      userId:
+        type: integer
+    required:
+    - driverType
+    - filePath
+    - serveId
     type: object
   serverDomain.InterfaceResp:
     properties:
@@ -5235,6 +5410,38 @@ paths:
       summary: 保存设计器
       tags:
       - 设计器
+  /api/v1/endpoint/tags:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.EndpointTagRel'
+                  type: array
+              type: object
+      summary: 用例详情
+      tags:
+      - 设计器/标签
   /api/v1/endpoint/updateStatus:
     put:
       consumes:
@@ -5445,7 +5652,7 @@ paths:
             $ref: '#/definitions/_domain.Response'
       summary: 删除用例
       tags:
-      - 接口用例
+      - 设计器/接口用例
     get:
       consumes:
       - application/json
@@ -5479,7 +5686,7 @@ paths:
               type: object
       summary: 用例详情
       tags:
-      - 接口用例
+      - 设计器/接口用例
     post:
       consumes:
       - application/json
@@ -5521,7 +5728,7 @@ paths:
               type: object
       summary: 保存用例
       tags:
-      - 接口用例
+      - 设计器/接口用例
     put:
       consumes:
       - application/json
@@ -5563,7 +5770,7 @@ paths:
               type: object
       summary: 保存用例名称
       tags:
-      - 接口用例
+      - 设计器/接口用例
   /api/v1/endpoints/cases/list:
     get:
       consumes:
@@ -5600,7 +5807,7 @@ paths:
               type: object
       summary: 用例列表
       tags:
-      - 接口用例
+      - 设计器/接口用例
   /api/v1/endpoints/cases/saveDebugData:
     post:
       consumes:
@@ -5638,7 +5845,1055 @@ paths:
               type: object
       summary: 保存调试数据
       tags:
-      - 接口用例
+      - 设计器/接口用例
+  /api/v1/endpoints/interfaces/importEndpointData:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 导入接口数据的请求参数
+        in: body
+        name: ImportEndpointDataReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ImportEndpointDataReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 导入接口数据
+      tags:
+      - 设计器/接口
+  /api/v1/endpoints/interfaces/listForSelection:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 获取接口列表的请求参数
+        in: body
+        name: EndpointInterfaceReqPaginate
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EndpointInterfaceReqPaginate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    result:
+                      items:
+                        $ref: '#/definitions/model.EndpointInterface'
+                      type: array
+                  type: object
+              type: object
+      summary: 接口列表
+      tags:
+      - 设计器/接口
+  /api/v1/environments:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Environment'
+                  type: array
+              type: object
+      summary: 环境列表(List)
+      tags:
+      - 环境管理
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 新建环境的请求参数
+        in: body
+        name: Environment
+        required: true
+        schema:
+          $ref: '#/definitions/model.Environment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Environment'
+              type: object
+      summary: 新建环境
+      tags:
+      - 环境管理
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 更新环境的请求参数
+        in: body
+        name: Environment
+        required: true
+        schema:
+          $ref: '#/definitions/model.Environment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新环境
+      tags:
+      - 环境管理
+  /api/v1/environments/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 环境ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除环境(路径传参)
+      tags:
+      - 环境管理
+  /api/v1/environments/changeEnvironment:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 环境id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 修改环境
+      tags:
+      - 环境管理
+  /api/v1/environments/copy:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 环境ID
+        in: query
+        name: id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 复制环境
+      tags:
+      - 环境管理
+  /api/v1/environments/copyEnvironment:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 环境id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 复制环境
+      tags:
+      - 环境管理
+  /api/v1/environments/delete:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 环境ID
+        in: query
+        name: id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除环境(param传参)
+      tags:
+      - 环境管理
+  /api/v1/environments/envVars:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务ID
+        in: query
+        name: serverId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.GlobalVar'
+                  type: array
+              type: object
+      summary: 列出环境变量
+      tags:
+      - 环境管理/全局变量
+  /api/v1/environments/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 项目ID
+        in: query
+        name: projectId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Environment'
+                  type: array
+              type: object
+      summary: 环境列表(ListAll)
+      tags:
+      - 环境管理
+  /api/v1/environments/order:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 修改环境顺序的请求参数
+        in: body
+        name: EnvironmentIdsReq
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 修改环境的顺序
+      tags:
+      - 环境管理
+  /api/v1/environments/param:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 项目ID
+        in: query
+        name: projectId
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 全局参数列表
+      tags:
+      - 环境管理/全局参数
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保保存全局参数的请求参数
+        in: body
+        name: EnvironmentParamsReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EnvironmentParamsReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 保存全局参数
+      tags:
+      - 环境管理/全局参数
+  /api/v1/environments/save:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存环境的请求参数
+        in: body
+        name: EnvironmentReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EnvironmentReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 保存环境
+      tags:
+      - 环境管理
+  /api/v1/environments/shareVars/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 环境变量ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Environment'
+              type: object
+      summary: 删除共享变量
+      tags:
+      - 环境管理/共享变量
+  /api/v1/environments/shareVars/clear:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: interfaceId
+        in: query
+        name: interfaceId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Environment'
+              type: object
+      summary: 清空共享变量
+      tags:
+      - 环境管理/共享变量
+  /api/v1/environments/vars:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 新建环境变量的请求参数
+        in: body
+        name: EnvironmentVar
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnvironmentVar'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Environment'
+              type: object
+      summary: 新建环境变量
+      tags:
+      - 环境管理/全局变量
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 更新环境变量的请求参数
+        in: body
+        name: EnvironmentVar
+        required: true
+        schema:
+          $ref: '#/definitions/model.EnvironmentVar'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Environment'
+              type: object
+      summary: 更新环境变量
+      tags:
+      - 环境管理/全局变量
+  /api/v1/environments/vars/clear:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 环境ID
+        in: query
+        name: environmentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Environment'
+              type: object
+      summary: 清空环境变量
+      tags:
+      - 环境管理/全局变量
+  /api/v1/environments/vars/global:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.EnvironmentVar'
+                  type: array
+              type: object
+      summary: 列出全局变量
+      tags:
+      - 环境管理/全局变量
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存全局变量的请求参数
+        in: body
+        name: EnvironmentVariable
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/serverDomain.EnvironmentVariable'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 保存全局变量
+      tags:
+      - 环境管理/全局变量
+  /api/v1/environments{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 环境ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Environment'
+              type: object
+      summary: 环境详情
+      tags:
+      - 环境管理
+  /api/v1/extractors:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: debugInterfaceId
+        in: query
+        name: debugInterfaceId
+        required: true
+        type: integer
+      - description: endpointInterfaceId
+        in: query
+        name: endpointInterfaceId
+        required: true
+        type: integer
+      - description: usedBy
+        in: query
+        name: usedBy
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.DebugInterfaceExtractor'
+                        type: array
+                    type: object
+              type: object
+      summary: 提取器列表
+      tags:
+      - 提取器
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 新建提取器的请求参数
+        in: body
+        name: DebugInterfaceExtractor
+        required: true
+        schema:
+          $ref: '#/definitions/model.DebugInterfaceExtractor'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.DebugInterfaceExtractor'
+              type: object
+      summary: 新建提取器
+      tags:
+      - 提取器
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 更新提取器的请求参数
+        in: body
+        name: DebugInterfaceExtractor
+        required: true
+        schema:
+          $ref: '#/definitions/model.DebugInterfaceExtractor'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新提取器
+      tags:
+      - 提取器
+  /api/v1/extractors/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 提取器ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除提取器
+      tags:
+      - 提取器
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 提取器ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.DebugInterfaceExtractor'
+              type: object
+      summary: 提取器详情
+      tags:
+      - 提取器
+  /api/v1/extractors/createOrUpdateResult:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 新建或更新提取器的请求参数
+        in: body
+        name: DebugInterfaceExtractor
+        required: true
+        schema:
+          $ref: '#/definitions/model.DebugInterfaceExtractor'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 新建或更新提取器
+      tags:
+      - 提取器
+  /api/v1/extractors/listExtractorVariableForCheckpoint:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 提取器变量列表的请求参数
+        in: body
+        name: DebugReq
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.Variable'
+                  type: array
+              type: object
+      summary: 提取器变量列表
+      tags:
+      - 提取器
   /api/v1/init/checkdb:
     get:
       consumes:

@@ -20,6 +20,2583 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1//users": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "用户列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "field",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "userName",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/serverDomain.UserResp"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/account/forgotPassword": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "认证模块"
+                ],
+                "summary": "忘记密码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "用户名或者密码",
+                        "name": "usernameOrPassword",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                },
+                "x-maintainer": "wangzhen"
+            }
+        },
+        "/api/v1/account/login": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "认证模块"
+                ],
+                "summary": "登录",
+                "parameters": [
+                    {
+                        "description": "登录的请求体",
+                        "name": "LoginReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.LoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.LoginResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/account/register": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "认证模块"
+                ],
+                "summary": "注册",
+                "parameters": [
+                    {
+                        "description": "注册的请求体",
+                        "name": "RegisterReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.RegisterReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/account/resetPassword": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "认证模块"
+                ],
+                "summary": "重置密码",
+                "parameters": [
+                    {
+                        "description": "重置密码的参数",
+                        "name": "ResetPasswordReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ResetPasswordReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/getOAuth2AccessToken": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "授权模块"
+                ],
+                "summary": "调用认证服务生成访问令牌",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "accessTokenURL",
+                        "name": "accessTokenURL",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "clientId",
+                        "name": "clientId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "clientSecret",
+                        "name": "clientSecret",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "code",
+                        "name": "code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/iris.Map"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/listOAuth2Token": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "授权模块"
+                ],
+                "summary": "加载访问令牌到接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Auth2Token"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/oauth2Authorization": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "授权模块"
+                ],
+                "summary": "生成OAuth认证信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "生成OAuth认证信息的请求体",
+                        "name": "DebugInterfaceOAuth20",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.DebugInterfaceOAuth20"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "url": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/removeToken": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "授权模块"
+                ],
+                "summary": "删除访问令牌",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "token id",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/auth/useOAuth2AccessToken": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "授权模块"
+                ],
+                "summary": "加载访问令牌到接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "接口ID",
+                        "name": "interfaceId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "name",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token",
+                        "name": "token",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "tokenType",
+                        "name": "tokenType",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "token": {
+                                                    "type": "string"
+                                                },
+                                                "tokenType": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "更新分类",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "新建分类的请求体",
+                        "name": "CategoryReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.CategoryReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.CategoryReq"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "新建分类",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "新建分类的请求体",
+                        "name": "CategoryCreateReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.CategoryCreateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Category"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/load": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "分类树状数据",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "类型",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "服务ID",
+                        "name": "serveId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.Category"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/move": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "移动节点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "移动节点的请求体",
+                        "name": "CategoryMoveReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.CategoryMoveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "分类详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Category"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "删除节点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/categories/{id}/updateName": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "分类管理"
+                ],
+                "summary": "更新节点名称",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "分类ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "更新节点名称的请求体",
+                        "name": "CategoryReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.CategoryReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/checkpoints": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "检查点"
+                ],
+                "summary": "检查点列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "debugInterfaceId",
+                        "name": "debugInterfaceId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointInterfaceId",
+                        "name": "endpointInterfaceId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "检查点"
+                ],
+                "summary": "更新检查点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "更新检查点的请求体",
+                        "name": "DebugInterfaceCheckpoint",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "检查点"
+                ],
+                "summary": "新建检查点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "新建检查点的请求体",
+                        "name": "DebugInterfaceCheckpoint",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/checkpoints/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "检查点"
+                ],
+                "summary": "检查点详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "检查点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "检查点"
+                ],
+                "summary": "删除检查点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "检查点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/configs": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "配置"
+                ],
+                "summary": "获取服务端配置",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "demoTestSite": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/datapools/index": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据池"
+                ],
+                "summary": "数据池列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "获取数据池列表的请求体",
+                        "name": "DatapoolReqPaginate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DatapoolReqPaginate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.Datapool"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/datapools/save": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据池"
+                ],
+                "summary": "保存数据池",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存数据池的请求体",
+                        "name": "Datapool",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Datapool"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/datapools/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据池"
+                ],
+                "summary": "数据池详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "数据池ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Datapool"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据池"
+                ],
+                "summary": "删除数据池",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "数据池ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/datapools/{id}/disable": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "数据池"
+                ],
+                "summary": "禁用数据池",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "数据池ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "保存数据池的请求体",
+                        "name": "Datapool",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Datapool"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/interface/load": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "获取调试接口请求",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "获取调试接口请求的请求体",
+                        "name": "DebugReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/domain.DebugData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/interface/loadForExec": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "获取调试接口用于执行",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "获取调试接口用于执行的请求体",
+                        "name": "DebugReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/agentExec.InterfaceExecObj"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/interface/save": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "保存调试接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存调试接口的请求体",
+                        "name": "DebugReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/agentExec.InterfaceExecObj"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/invoke": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "调试记录列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "debugInterfaceId",
+                        "name": "debugInterfaceId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointInterfaceId",
+                        "name": "endpointInterfaceId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "load by endpoint case",
+                        "name": "caseInterfaceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "debugInterfaceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "load by interface diagnose",
+                        "name": "diagnoseInterfaceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "EndpointInterface without DebugInterface init",
+                        "name": "endpointInterfaceId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "used to load vars by scenario processor",
+                        "name": "scenarioProcessorId",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "interface_debug",
+                            "scenario_debug",
+                            "diagnose_debug",
+                            "case_debug"
+                        ],
+                        "type": "string",
+                        "x-enum-varnames": [
+                            "InterfaceDebug",
+                            "ScenarioDebug",
+                            "DiagnoseDebug",
+                            "CaseDebug"
+                        ],
+                        "name": "usedBy",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.DebugInvoke"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/invoke/getLastResp": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "获取最后调试记录响应",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "debugInterfaceId",
+                        "name": "debugInterfaceId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointInterfaceId",
+                        "name": "endpointInterfaceId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/domain.DebugResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/invoke/submitResult": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "Agent提交接口执行结果",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Agent提交接口执行结果的请求体",
+                        "name": "SubmitDebugResultRequest",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.SubmitDebugResultRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/debugs/invoke/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "调试记录详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "debugData": {
+                                                    "$ref": "#/definitions/domain.DebugData"
+                                                },
+                                                "resp": {
+                                                    "$ref": "#/definitions/domain.DebugResponse"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "接口调试"
+                ],
+                "summary": "删除调试记录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/diagnoseInterfaces": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷调试"
+                ],
+                "summary": "获取测试接口列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "projectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "服务ID",
+                        "name": "serveId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/serverDomain.DiagnoseInterface"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷调试"
+                ],
+                "summary": "更新测试接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "更新测试接口的请求体",
+                        "name": "DiagnoseInterfaceSaveReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DiagnoseInterfaceSaveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/serverDomain.DiagnoseInterface"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷调试"
+                ],
+                "summary": "新建测试接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "新建测试接口的请求体",
+                        "name": "DiagnoseInterfaceSaveReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DiagnoseInterfaceSaveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/serverDomain.DiagnoseInterface"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/diagnoseInterfaces/importCurl": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷调试"
+                ],
+                "summary": "导入cURL命令",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "导入cURL命令的请求体",
+                        "name": "DiagnoseCurlImportReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DiagnoseCurlImportReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.DiagnoseInterface"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/diagnoseInterfaces/importInterfaces": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷调试"
+                ],
+                "summary": "导入接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "导入接口的请求体",
+                        "name": "DiagnoseInterfaceImportReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DiagnoseInterfaceImportReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.DiagnoseInterface"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/diagnoseInterfaces/move": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷调试"
+                ],
+                "summary": "移动节点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "移动节点的请求体",
+                        "name": "DiagnoseInterfaceMoveReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.DiagnoseInterfaceMoveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/diagnoseInterfaces/saveDebugData": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷调试"
+                ],
+                "summary": "保存测试调试接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存测试调试接口的请求体",
+                        "name": "DebugData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/domain.DebugData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/diagnoseInterfaces/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷调试"
+                ],
+                "summary": "获取测试接口详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "调试接口的id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.DiagnoseInterface"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "快捷调试"
+                ],
+                "summary": "删除测试接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "调试接口的id",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "type",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/init/checkdb": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "初始化模块"
+                ],
+                "summary": "检测是否需要初始化项目",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "needInit": {
+                                                    "type": "boolean"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/init/initdb": {
             "post": {
                 "consumes": [
@@ -29,13 +2606,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "系统"
+                    "初始化模块"
                 ],
                 "summary": "初始化项目",
                 "parameters": [
                     {
-                        "description": "初始化db",
-                        "name": "ProjectReq",
+                        "description": "初始化项目的请求体",
+                        "name": "DataReq",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -55,11 +2632,31 @@ const docTemplate = `{
         },
         "/api/v1/projects": {
             "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
                 "tags": [
-                    "项目管理/项目列表"
+                    "项目管理"
                 ],
                 "summary": "项目列表",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "type": "string",
                         "name": "enabled",
@@ -95,12 +2692,39 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/_domain.Response"
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.Project"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
             },
-            "post": {
+            "put": {
                 "consumes": [
                     "application/json"
                 ],
@@ -108,12 +2732,26 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "项目管理/项目列表"
+                    "项目管理"
                 ],
-                "summary": "创建项目",
+                "summary": "更新项目",
                 "parameters": [
                     {
-                        "description": "Create project Request Object",
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "update project Request Object",
                         "name": "ProjectReq",
                         "in": "body",
                         "required": true,
@@ -130,10 +2768,680 @@ const docTemplate = `{
                         }
                     }
                 }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "创建项目",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Create project Request Object",
+                        "name": "ProjectReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ProjectReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/apply": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "申请项目成员",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "申请项目成员的请求体",
+                        "name": "ApplyProjectReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ApplyProjectReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/audit": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "审批操作",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "审批操作的请求体",
+                        "name": "AuditProjectReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.AuditProjectReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/auditList": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "申请加入审批列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "申请加入审批列表的请求体",
+                        "name": "AuditProjectPaginate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.AuditProjectPaginate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.ProjectMemberAudit"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/changeProject": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "切换用户默认项目",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "项目ID",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "integer"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/changeUserRole": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "更新项目成员的角色",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "更新项目成员角色的请求体",
+                        "name": "UpdateProjectMemberReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.UpdateProjectMemberReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/getByUser": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "获取用户参与的项目",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                " currProject": {
+                                                    "$ref": "#/definitions/model.Project"
+                                                },
+                                                " recentProjects": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/model.Project"
+                                                    }
+                                                },
+                                                "projects": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/model.ProjectMemberRole"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/members": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "获取项目成员",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "enabled",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "field",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keywords",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/serverDomain.MemberResp"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/removeMember": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "删除项目成员",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "删除项目成员的请求体",
+                        "name": "ProjectMemberRemoveReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ProjectMemberRemoveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "项目详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Project"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "删除项目",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
             }
         }
     },
     "definitions": {
+        "_domain.PageData": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "result": {},
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
         "_domain.Response": {
             "type": "object",
             "properties": {
@@ -146,6 +3454,2112 @@ const docTemplate = `{
                 }
             }
         },
+        "agentExec.InterfaceExecObj": {
+            "type": "object",
+            "properties": {
+                "debugData": {
+                    "$ref": "#/definitions/domain.DebugData"
+                },
+                "execScene": {
+                    "$ref": "#/definitions/domain.ExecScene"
+                }
+            }
+        },
+        "consts.AuditStatus": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "Init",
+                "Agreed",
+                "Refused"
+            ]
+        },
+        "consts.AuthorType": {
+            "type": "string",
+            "enum": [
+                "basicAuth",
+                "bearerToken",
+                "oAuth2",
+                "apiKey"
+            ],
+            "x-enum-varnames": [
+                "BasicAuth",
+                "BearerToken",
+                "OAuth2",
+                "ApiKey"
+            ]
+        },
+        "consts.CheckpointType": {
+            "type": "string",
+            "enum": [
+                "responseStatus",
+                "responseHeader",
+                "responseBody",
+                "extractor",
+                "judgement"
+            ],
+            "x-enum-varnames": [
+                "ResponseStatus",
+                "ResponseHeader",
+                "ResponseBody",
+                "Extractor",
+                "Judgement"
+            ]
+        },
+        "consts.ClientAuthenticationWay": {
+            "type": "string",
+            "enum": [
+                "sendAsBasicAuthHeader",
+                "sendClientCredentialsInBody"
+            ],
+            "x-enum-varnames": [
+                "SendAsBasicAuthHeader",
+                "SendClientCredentialsInBody"
+            ]
+        },
+        "consts.ComparisonOperator": {
+            "type": "string",
+            "enum": [
+                "equal",
+                "notEqual",
+                "greaterThan",
+                "greaterThanOrEqual",
+                "lessThan",
+                "lessThanOrEqual",
+                "contain",
+                "notContain"
+            ],
+            "x-enum-varnames": [
+                "Equal",
+                "NotEqual",
+                "GreaterThan",
+                "GreaterThanOrEqual",
+                "LessThan",
+                "LessThanOrEqual",
+                "Contain",
+                "NotContain"
+            ]
+        },
+        "consts.ExtractorScope": {
+            "type": "string",
+            "enum": [
+                "private",
+                "public"
+            ],
+            "x-enum-comments": {
+                "Private": "in current interface",
+                "Public": "shared by other interfaces in serve OR scenario"
+            },
+            "x-enum-varnames": [
+                "Private",
+                "Public"
+            ]
+        },
+        "consts.ExtractorSrc": {
+            "type": "string",
+            "enum": [
+                "header",
+                "body"
+            ],
+            "x-enum-varnames": [
+                "Header",
+                "Body"
+            ]
+        },
+        "consts.ExtractorType": {
+            "type": "string",
+            "enum": [
+                "boundary",
+                "jsonquery",
+                "htmlquery",
+                "xmlquery",
+                "regx"
+            ],
+            "x-enum-varnames": [
+                "Boundary",
+                "JsonQuery",
+                "HtmlQuery",
+                "XmlQuery",
+                "Regx"
+            ]
+        },
+        "consts.FormDataType": {
+            "type": "string",
+            "enum": [
+                "text",
+                "file"
+            ],
+            "x-enum-varnames": [
+                "FormDataTypeText",
+                "FormDataTypeFile"
+            ]
+        },
+        "consts.GrantType": {
+            "type": "string",
+            "enum": [
+                "authorizationCode",
+                "authorizationCodeWithPKCE",
+                "implicit",
+                "passwordCredential",
+                "clientCredential"
+            ],
+            "x-enum-varnames": [
+                "AuthorizationCode",
+                "AuthorizationCodeWithPKCE",
+                "Implicit",
+                "PasswordCredential",
+                "ClientCredential"
+            ]
+        },
+        "consts.HttpContentType": {
+            "type": "string",
+            "enum": [
+                "application/json",
+                "application/xml",
+                "text/html",
+                "text/text",
+                "multipart/form-data",
+                "application/x-www-form-urlencoded",
+                "httpd/unix-directory"
+            ],
+            "x-enum-varnames": [
+                "ContentTypeJSON",
+                "ContentTypeXML",
+                "ContentTypeHTML",
+                "ContentTypeTEXT",
+                "ContentTypeFormData",
+                "ContentTypeFormUrlencoded",
+                "ContentTypeUnixDir"
+            ]
+        },
+        "consts.HttpMethod": {
+            "type": "string",
+            "enum": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "HEAD",
+                "CONNECT",
+                "OPTIONS",
+                "TRACE"
+            ],
+            "x-enum-varnames": [
+                "GET",
+                "POST",
+                "PUT",
+                "DELETE",
+                "PATCH",
+                "HEAD",
+                "CONNECT",
+                "OPTIONS",
+                "TRACE"
+            ]
+        },
+        "consts.HttpRespCharset": {
+            "type": "string",
+            "enum": [
+                "utf-8"
+            ],
+            "x-enum-varnames": [
+                "UTF8"
+            ]
+        },
+        "consts.HttpRespCode": {
+            "type": "integer",
+            "enum": [
+                100,
+                101,
+                200,
+                201,
+                202,
+                203,
+                204,
+                205,
+                206,
+                300,
+                301,
+                302,
+                303,
+                304,
+                305,
+                306,
+                307,
+                308,
+                400,
+                401,
+                402,
+                403,
+                404,
+                405,
+                406,
+                407,
+                408,
+                409,
+                410,
+                411,
+                412,
+                413,
+                414,
+                415,
+                416,
+                417,
+                500,
+                501,
+                502,
+                503,
+                504,
+                505
+            ],
+            "x-enum-varnames": [
+                "Continue",
+                "SwitchingProtocol",
+                "OK",
+                "Created",
+                "Accepted",
+                "NonAuthoritativeInformation",
+                "NoContent",
+                "ResetContent",
+                "PartialContent",
+                "MultipleChoice",
+                "MovedPermanently",
+                "Found",
+                "SeeOther",
+                "NotModified",
+                "UseProxy",
+                "unused",
+                "TemporaryRedirect",
+                "PermanentRedirect",
+                "BadRequest",
+                "Unauthorized",
+                "PaymentRequired",
+                "Forbidden",
+                "NotFound",
+                "MethodNotAllowed",
+                "NotAcceptable",
+                "ProxyAuthenticationRequired",
+                "RequestTimeout",
+                "Conflict",
+                "Gone",
+                "LengthRequired",
+                "PreconditionFailed",
+                "RequestEntityTooLarge",
+                "RequestURITooLong",
+                "UnsupportedMediaType",
+                "RequestedRangeNotSatisfiable",
+                "ExpectationFailed",
+                "InternalServerError",
+                "Implemented",
+                "BadGateway",
+                "ServiceUnavailable",
+                "GatewayTimeout",
+                "HTTPVersionNotSupported"
+            ]
+        },
+        "consts.HttpRespLangType": {
+            "type": "string",
+            "enum": [
+                "json",
+                "xml",
+                "html",
+                "text"
+            ],
+            "x-enum-varnames": [
+                "LangJSON",
+                "LangXML",
+                "LangHTML",
+                "LangTEXT"
+            ]
+        },
+        "consts.ParamIn": {
+            "type": "string",
+            "enum": [
+                "path",
+                "query",
+                "header",
+                "cookie",
+                "body"
+            ],
+            "x-enum-varnames": [
+                "ParamInPath",
+                "ParamInQuery",
+                "ParamInHeader",
+                "ParamInCookie",
+                "ParamInBody"
+            ]
+        },
+        "consts.ParamType": {
+            "type": "string",
+            "enum": [
+                "string",
+                "number",
+                "integer"
+            ],
+            "x-enum-varnames": [
+                "ParamTypeString",
+                "ParamTypeNumber",
+                "ParamTypeInteger"
+            ]
+        },
+        "consts.ProcessorCategory": {
+            "type": "string",
+            "enum": [
+                "processor_root",
+                "processor_interface",
+                "processor_group",
+                "processor_logic",
+                "processor_loop",
+                "processor_timer",
+                "processor_print",
+                "processor_variable",
+                "processor_assertion",
+                "processor_extractor",
+                "processor_cookie",
+                "processor_data"
+            ],
+            "x-enum-varnames": [
+                "ProcessorRoot",
+                "ProcessorInterface",
+                "ProcessorGroup",
+                "ProcessorLogic",
+                "ProcessorLoop",
+                "ProcessorTimer",
+                "ProcessorPrint",
+                "ProcessorVariable",
+                "ProcessorAssertion",
+                "ProcessorExtractor",
+                "ProcessorCookie",
+                "ProcessorData"
+            ]
+        },
+        "consts.ProcessorType": {
+            "type": "string",
+            "enum": [
+                "processor_root_default",
+                "processor_interface_default",
+                "processor_group_default",
+                "processor_timer_default",
+                "processor_print_default",
+                "processor_logic_if",
+                "processor_logic_else",
+                "processor_loop_time",
+                "processor_loop_in",
+                "processor_loop_range",
+                "processor_loop_until",
+                "processor_loop_break",
+                "processor_variable_set",
+                "processor_variable_clear",
+                "processor_assertion_default",
+                "processor_extractor_boundary",
+                "processor_extractor_jsonquery",
+                "processor_extractor_htmlquery",
+                "processor_extractor_xmlquery",
+                "processor_cookie_get",
+                "processor_cookie_set",
+                "processor_cookie_clear",
+                "processor_data_text",
+                "processor_data_excel"
+            ],
+            "x-enum-varnames": [
+                "ProcessorRootDefault",
+                "ProcessorInterfaceDefault",
+                "ProcessorGroupDefault",
+                "ProcessorTimerDefault",
+                "ProcessorPrintDefault",
+                "ProcessorLogicIf",
+                "ProcessorLogicElse",
+                "ProcessorLoopTime",
+                "ProcessorLoopIn",
+                "ProcessorLoopRange",
+                "ProcessorLoopUntil",
+                "ProcessorLoopBreak",
+                "ProcessorVariableSet",
+                "ProcessorVariableClear",
+                "ProcessorAssertionDefault",
+                "ProcessorExtractorBoundary",
+                "ProcessorExtractorJsonQuery",
+                "ProcessorExtractorHtmlQuery",
+                "ProcessorExtractorXmlQuery",
+                "ProcessorCookieGet",
+                "ProcessorCookieSet",
+                "ProcessorCookieClear",
+                "ProcessorDataText",
+                "ProcessorDataExcel"
+            ]
+        },
+        "consts.ResultStatus": {
+            "type": "string",
+            "enum": [
+                "pass",
+                "fail",
+                "skip",
+                "block",
+                "unknown"
+            ],
+            "x-enum-varnames": [
+                "Pass",
+                "Fail",
+                "Skip",
+                "Block",
+                "Unknown"
+            ]
+        },
+        "consts.RoleType": {
+            "type": "string",
+            "enum": [
+                "admin",
+                "user",
+                "tester",
+                "developer",
+                "product_manager"
+            ],
+            "x-enum-varnames": [
+                "Admin",
+                "User",
+                "Tester",
+                "Developer",
+                "ProductManager"
+            ]
+        },
+        "consts.SourceType": {
+            "type": "integer",
+            "enum": [
+                1
+            ],
+            "x-enum-varnames": [
+                "Swagger"
+            ]
+        },
+        "consts.UsedBy": {
+            "type": "string",
+            "enum": [
+                "interface_debug",
+                "scenario_debug",
+                "diagnose_debug",
+                "case_debug"
+            ],
+            "x-enum-varnames": [
+                "InterfaceDebug",
+                "ScenarioDebug",
+                "DiagnoseDebug",
+                "CaseDebug"
+            ]
+        },
+        "domain.ApiKey": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "transferMode": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.BasicAuth": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.BearerToken": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.BodyFormDataItem": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.FormDataType"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.BodyFormUrlEncodedItem": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Datapools": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                }
+            }
+        },
+        "domain.DebugData": {
+            "type": "object",
+            "properties": {
+                "apiKey": {
+                    "$ref": "#/definitions/domain.ApiKey"
+                },
+                "authorizationType": {
+                    "$ref": "#/definitions/consts.AuthorType"
+                },
+                "baseUrl": {
+                    "type": "string"
+                },
+                "basicAuth": {
+                    "$ref": "#/definitions/domain.BasicAuth"
+                },
+                "bearerToken": {
+                    "$ref": "#/definitions/domain.BearerToken"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "bodyFormData": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.BodyFormDataItem"
+                    }
+                },
+                "bodyFormUrlencoded": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.BodyFormUrlEncodedItem"
+                    }
+                },
+                "bodyLang": {
+                    "$ref": "#/definitions/consts.HttpRespLangType"
+                },
+                "bodyType": {
+                    "$ref": "#/definitions/consts.HttpContentType"
+                },
+                "caseInterfaceId": {
+                    "type": "integer"
+                },
+                "cookies": {
+                    "description": "from cookie processor in scenario",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.ExecCookie"
+                    }
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "diagnoseInterfaceId": {
+                    "type": "integer"
+                },
+                "endpointInterfaceId": {
+                    "type": "integer"
+                },
+                "envVars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalVar"
+                    }
+                },
+                "globalParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalParam"
+                    }
+                },
+                "globalVars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalVar"
+                    }
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Header"
+                    }
+                },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "oauth20": {
+                    "$ref": "#/definitions/domain.OAuth20"
+                },
+                "pathParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Param"
+                    }
+                },
+                "preRequestScript": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "queryParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Param"
+                    }
+                },
+                "scenarioProcessorId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "serverId": {
+                    "type": "integer"
+                },
+                "shareVars": {
+                    "description": "used for selection and show in right environment tab",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalVar"
+                    }
+                },
+                "url": {
+                    "type": "string"
+                },
+                "usedBy": {
+                    "$ref": "#/definitions/consts.UsedBy"
+                },
+                "validationScript": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.DebugReq": {
+            "type": "object",
+            "properties": {
+                "caseInterfaceId": {
+                    "description": "load by endpoint case",
+                    "type": "integer"
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "diagnoseInterfaceId": {
+                    "description": "load by interface diagnose",
+                    "type": "integer"
+                },
+                "endpointInterfaceId": {
+                    "description": "EndpointInterface without DebugInterface init",
+                    "type": "integer"
+                },
+                "scenarioProcessorId": {
+                    "description": "used to load vars by scenario processor",
+                    "type": "integer"
+                },
+                "usedBy": {
+                    "$ref": "#/definitions/consts.UsedBy"
+                }
+            }
+        },
+        "domain.DebugResponse": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "contentCharset": {
+                    "$ref": "#/definitions/consts.HttpRespCharset"
+                },
+                "contentLang": {
+                    "$ref": "#/definitions/consts.HttpRespLangType"
+                },
+                "contentLength": {
+                    "type": "integer"
+                },
+                "contentType": {
+                    "$ref": "#/definitions/consts.HttpContentType"
+                },
+                "cookies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.ExecCookie"
+                    }
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Header"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "statusCode": {
+                    "$ref": "#/definitions/consts.HttpRespCode"
+                },
+                "statusContent": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.EnvToVariables": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "$ref": "#/definitions/domain.GlobalVar"
+                }
+            }
+        },
+        "domain.ExecCookie": {
+            "type": "object",
+            "properties": {
+                "domain": {
+                    "type": "string"
+                },
+                "expireTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "value": {}
+            }
+        },
+        "domain.ExecScene": {
+            "type": "object",
+            "properties": {
+                "datapool": {
+                    "$ref": "#/definitions/domain.Datapools"
+                },
+                "debugInterfaceToEnvMap": {
+                    "$ref": "#/definitions/domain.InterfaceToEnvMap"
+                },
+                "envToVariables": {
+                    "$ref": "#/definitions/domain.EnvToVariables"
+                },
+                "globalParam": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalParam"
+                    }
+                },
+                "globalVar": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalVar"
+                    }
+                },
+                "shareVars": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.GlobalVar"
+                    }
+                }
+            }
+        },
+        "domain.GlobalParam": {
+            "type": "object",
+            "properties": {
+                "Required": {
+                    "type": "boolean"
+                },
+                "defaultValue": {
+                    "type": "string"
+                },
+                "in": {
+                    "$ref": "#/definitions/consts.ParamIn"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.ParamType"
+                }
+            }
+        },
+        "domain.GlobalVar": {
+            "type": "object",
+            "properties": {
+                "localValue": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "remoteValue": {
+                    "type": "string"
+                },
+                "rightValue": {
+                    "type": "string"
+                },
+                "varId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.Header": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "example": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "maxItems": {
+                    "type": "integer"
+                },
+                "maxLength": {
+                    "type": "integer"
+                },
+                "minItems": {
+                    "type": "integer"
+                },
+                "minLength": {
+                    "type": "integer"
+                },
+                "multipleOf": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "pattern": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "required": {
+                    "type": "boolean"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "uniqueItems": {
+                    "type": "boolean"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.InterfaceToEnvMap": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "integer"
+            }
+        },
+        "domain.OAuth20": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "accessTokenURL": {
+                    "type": "string"
+                },
+                "authURL": {
+                    "type": "string"
+                },
+                "callbackUrl": {
+                    "type": "string"
+                },
+                "clientAuthentication": {
+                    "$ref": "#/definitions/consts.ClientAuthenticationWay"
+                },
+                "clientID": {
+                    "type": "string"
+                },
+                "clientSecret": {
+                    "type": "string"
+                },
+                "grantType": {
+                    "$ref": "#/definitions/consts.GrantType"
+                },
+                "headerPrefix": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Param": {
+            "type": "object",
+            "properties": {
+                "Description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "paramIn": {
+                    "$ref": "#/definitions/consts.ParamIn"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.SubmitDebugResultRequest": {
+            "type": "object",
+            "properties": {
+                "request": {
+                    "$ref": "#/definitions/domain.DebugData"
+                },
+                "response": {
+                    "$ref": "#/definitions/domain.DebugResponse"
+                }
+            }
+        },
+        "iris.Map": {
+            "type": "object",
+            "additionalProperties": true
+        },
+        "model.Auth2Token": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "tokenType": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Category": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Processor"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDir": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                },
+                "sourceType": {
+                    "$ref": "#/definitions/consts.SourceType"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.CategoryDiscriminator"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "useId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Datapool": {
+            "type": "object",
+            "properties": {
+                "createUser": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "data": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterface": {
+            "type": "object",
+            "properties": {
+                "Version": {
+                    "type": "string"
+                },
+                "apiKey": {
+                    "$ref": "#/definitions/model.DebugInterfaceApiKey"
+                },
+                "authorizationType": {
+                    "type": "string"
+                },
+                "baseUrl": {
+                    "type": "string"
+                },
+                "basicAuth": {
+                    "$ref": "#/definitions/model.DebugInterfaceBasicAuth"
+                },
+                "bearerToken": {
+                    "$ref": "#/definitions/model.DebugInterfaceBearerToken"
+                },
+                "body": {
+                    "type": "string"
+                },
+                "bodyFormData": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DebugInterfaceBodyFormDataItem"
+                    }
+                },
+                "bodyFormUrlencoded": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DebugInterfaceBodyFormUrlEncodedItem"
+                    }
+                },
+                "bodyType": {
+                    "$ref": "#/definitions/consts.HttpContentType"
+                },
+                "cookies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DebugInterfaceCookie"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "diagnoseInterfaceId": {
+                    "type": "integer"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointInterfaceId": {
+                    "type": "integer"
+                },
+                "headers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DebugInterfaceHeader"
+                    }
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceCheckpoints": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                    }
+                },
+                "interfaceExtractors": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DebugInterfaceExtractor"
+                    }
+                },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "oauth20": {
+                    "$ref": "#/definitions/model.DebugInterfaceOAuth20"
+                },
+                "operationId": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "parentId": {
+                    "description": "IsDir       bool   ` + "`" + `json:\"isDir\"` + "`" + `",
+                    "type": "integer"
+                },
+                "pathParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DebugInterfaceParam"
+                    }
+                },
+                "preRequestScript": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "queryParams": {
+                    "description": "debug data",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DebugInterfaceParam"
+                    }
+                },
+                "scenarioProcessorId": {
+                    "type": "integer"
+                },
+                "security": {
+                    "type": "string"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "serverId": {
+                    "description": "used by DiagnoseInterface",
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "useId": {
+                    "type": "integer"
+                },
+                "validationScript": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceApiKey": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "transferMode": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceBasicAuth": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceBearerToken": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceBodyFormDataItem": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.FormDataType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceBodyFormUrlEncodedItem": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceCheckpoint": {
+            "type": "object",
+            "properties": {
+                "actualResult": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "diagnoseInterfaceId": {
+                    "description": "debug for Test Interface",
+                    "type": "integer"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointInterfaceId": {
+                    "description": "debug for Endpoint Interface",
+                    "type": "integer"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "extractorVariable": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "operator": {
+                    "$ref": "#/definitions/consts.ComparisonOperator"
+                },
+                "resultStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                },
+                "scenarioProcessorId": {
+                    "description": "debug in Scenario Processor",
+                    "type": "integer"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.CheckpointType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "usedBy": {
+                    "$ref": "#/definitions/consts.UsedBy"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceCookie": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceExtractor": {
+            "type": "object",
+            "properties": {
+                "boundaryEnd": {
+                    "type": "string"
+                },
+                "boundaryIncluded": {
+                    "type": "boolean"
+                },
+                "boundaryIndex": {
+                    "type": "integer"
+                },
+                "boundaryStart": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "diagnoseInterfaceId": {
+                    "description": "debug for Test Interface",
+                    "type": "integer"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointInterfaceId": {
+                    "description": "debug for Endpoint Interface",
+                    "type": "integer"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "key": {
+                    "description": "form header",
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                },
+                "scenarioProcessorId": {
+                    "description": "debug in Scenario Processor",
+                    "type": "integer"
+                },
+                "scope": {
+                    "$ref": "#/definitions/consts.ExtractorScope"
+                },
+                "src": {
+                    "$ref": "#/definitions/consts.ExtractorSrc"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.ExtractorType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "usedBy": {
+                    "$ref": "#/definitions/consts.UsedBy"
+                },
+                "variable": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceHeader": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceOAuth20": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "accessTokenURL": {
+                    "type": "string"
+                },
+                "authURL": {
+                    "type": "string"
+                },
+                "callbackUrl": {
+                    "type": "string"
+                },
+                "clientAuthentication": {
+                    "$ref": "#/definitions/consts.ClientAuthenticationWay"
+                },
+                "clientID": {
+                    "type": "string"
+                },
+                "clientSecret": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "grantType": {
+                    "$ref": "#/definitions/consts.GrantType"
+                },
+                "headerPrefix": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "scope": {
+                    "type": "string"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInterfaceParam": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "paramIn": {
+                    "$ref": "#/definitions/consts.ParamIn"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugInvoke": {
+            "type": "object",
+            "properties": {
+                "checkpointStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointInterfaceId": {
+                    "type": "integer"
+                },
+                "httpStatusCode": {
+                    "$ref": "#/definitions/consts.HttpRespCode"
+                },
+                "httpStatusContent": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "reqContent": {
+                    "type": "string"
+                },
+                "respContent": {
+                    "type": "string"
+                },
+                "resultStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                },
+                "scenarioProcessorId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DiagnoseInterface": {
+            "type": "object",
+            "properties": {
+                "IsDir": {
+                    "type": "boolean"
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.DiagnoseInterface"
+                    }
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "debugData": {
+                    "$ref": "#/definitions/model.DebugInterface"
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isLeaf": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.DiagnoseInterfaceType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "useId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "model.Processor": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.Processor"
+                    }
+                },
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "createdBy": {
+                    "type": "integer"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointInterfaceId": {
+                    "type": "integer"
+                },
+                "entityCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "entityId": {
+                    "description": "Debug Interface Id for ProcessorInterface type",
+                    "type": "integer"
+                },
+                "entityType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Project": {
+            "type": "object",
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "adminName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "environmentId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "includeExample": {
+                    "type": "boolean"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orgId": {
+                    "type": "integer"
+                },
+                "schemaId": {
+                    "type": "integer"
+                },
+                "shortName": {
+                    "type": "string"
+                },
+                "spec": {
+                    "type": "string"
+                },
+                "spec2": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.ProjectType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProjectMemberAudit": {
+            "type": "object",
+            "properties": {
+                "applyUserId": {
+                    "type": "integer"
+                },
+                "applyUserName": {
+                    "type": "string"
+                },
+                "auditUserId": {
+                    "type": "integer"
+                },
+                "auditUserName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "projectName": {
+                    "type": "string"
+                },
+                "projectRoleName": {
+                    "$ref": "#/definitions/consts.RoleType"
+                },
+                "status": {
+                    "$ref": "#/definitions/consts.AuditStatus"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProjectMemberRole": {
+            "type": "object",
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "adminName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "environmentId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "includeExample": {
+                    "type": "boolean"
+                },
+                "logo": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "orgId": {
+                    "type": "integer"
+                },
+                "roleId": {
+                    "type": "integer"
+                },
+                "roleName": {
+                    "$ref": "#/definitions/consts.RoleType"
+                },
+                "schemaId": {
+                    "type": "integer"
+                },
+                "shortName": {
+                    "type": "string"
+                },
+                "spec": {
+                    "type": "string"
+                },
+                "spec2": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.ProjectType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverConsts.CategoryDiscriminator": {
+            "type": "string",
+            "enum": [
+                "endpoint",
+                "scenario",
+                "plan"
+            ],
+            "x-enum-varnames": [
+                "EndpointCategory",
+                "ScenarioCategory",
+                "PlanCategory"
+            ]
+        },
+        "serverConsts.DiagnoseInterfaceType": {
+            "type": "string",
+            "enum": [
+                "dir",
+                "interface"
+            ],
+            "x-enum-varnames": [
+                "DiagnoseInterfaceTypeDir",
+                "DiagnoseInterfaceTypeInterface"
+            ]
+        },
+        "serverConsts.DropPos": {
+            "type": "integer",
+            "enum": [
+                -1,
+                0,
+                1
+            ],
+            "x-enum-varnames": [
+                "Before",
+                "Inner",
+                "After"
+            ]
+        },
         "serverConsts.ProjectType": {
             "type": "string",
             "enum": [
@@ -156,6 +5570,157 @@ const docTemplate = `{
                 "Full",
                 "Debug"
             ]
+        },
+        "serverDomain.ApplyProjectReq": {
+            "type": "object",
+            "required": [
+                "projectId",
+                "projectRoleName"
+            ],
+            "properties": {
+                "applyUserId": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "projectRoleName": {
+                    "$ref": "#/definitions/consts.RoleType"
+                }
+            }
+        },
+        "serverDomain.AuditProjectPaginate": {
+            "type": "object",
+            "properties": {
+                "applyUserId": {
+                    "type": "integer"
+                },
+                "auditUserId": {
+                    "type": "integer"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.AuditProjectReq": {
+            "type": "object",
+            "required": [
+                "id",
+                "status"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "status": {
+                    "$ref": "#/definitions/consts.AuditStatus"
+                }
+            }
+        },
+        "serverDomain.Category": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.Category"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                }
+            }
+        },
+        "serverDomain.CategoryCreateReq": {
+            "type": "object",
+            "properties": {
+                "mode": {
+                    "type": "string"
+                },
+                "moduleId": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "targetId": {
+                    "type": "integer"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.CategoryDiscriminator"
+                }
+            }
+        },
+        "serverDomain.CategoryMoveReq": {
+            "type": "object",
+            "properties": {
+                "dragKey": {
+                    "type": "integer"
+                },
+                "dropKey": {
+                    "type": "integer"
+                },
+                "dropPos": {
+                    "$ref": "#/definitions/serverConsts.DropPos"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.CategoryDiscriminator"
+                }
+            }
+        },
+        "serverDomain.CategoryReq": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "integer"
+                }
+            }
         },
         "serverDomain.DataReq": {
             "type": "object",
@@ -173,6 +5738,210 @@ const docTemplate = `{
             "properties": {
                 "adminPassword": {
                     "type": "string"
+                }
+            }
+        },
+        "serverDomain.DatapoolReqPaginate": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.DiagnoseCurlImportReq": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createBy": {
+                    "type": "integer"
+                },
+                "targetId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.DiagnoseInterface": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.DiagnoseInterface"
+                    }
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDir": {
+                    "type": "boolean"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.DiagnoseInterfaceType"
+                },
+                "useId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.DiagnoseInterfaceImportReq": {
+            "type": "object",
+            "properties": {
+                "createBy": {
+                    "type": "integer"
+                },
+                "interfaceIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "targetId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.DiagnoseInterfaceMoveReq": {
+            "type": "object",
+            "properties": {
+                "dragKey": {
+                    "type": "integer"
+                },
+                "dropKey": {
+                    "type": "integer"
+                },
+                "dropPos": {
+                    "$ref": "#/definitions/serverConsts.DropPos"
+                }
+            }
+        },
+        "serverDomain.DiagnoseInterfaceSaveReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "mode": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.DiagnoseInterfaceType"
+                }
+            }
+        },
+        "serverDomain.LoginReq": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.LoginResp": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.MemberResp": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "roleId": {
+                    "type": "integer"
+                },
+                "roleName": {
+                    "$ref": "#/definitions/consts.RoleType"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.ProjectMemberRemoveReq": {
+            "type": "object",
+            "properties": {
+                "projectId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         },
@@ -216,6 +5985,115 @@ const docTemplate = `{
                     "$ref": "#/definitions/serverConsts.ProjectType"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.RegisterReq": {
+            "type": "object",
+            "required": [
+                "confirm",
+                "email",
+                "password",
+                "username"
+            ],
+            "properties": {
+                "confirm": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.ResetPasswordReq": {
+            "type": "object",
+            "required": [
+                "password",
+                "username",
+                "vcode"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "vcode": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.UpdateProjectMemberReq": {
+            "type": "object",
+            "properties": {
+                "projectId": {
+                    "type": "integer"
+                },
+                "projectRoleId": {
+                    "type": "integer"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.UserResp": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "intro": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "projectRoles": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/consts.RoleType"
+                    }
+                },
+                "role_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "sysRoles": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "username": {
                     "type": "string"
                 }
             }

@@ -162,6 +162,7 @@ func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operatio
 	}
 	interf.ResponseBodies = o.responseBodies(operation.Responses)
 	interf.Tags = o.makeDirs(operation.Tags)
+
 	return
 }
 

@@ -85,7 +85,7 @@ func (s *ShareVarService) Delete(id int) (err error) {
 	return
 }
 
-func (s *ShareVarService) Clear(debugReq domain.DebugReq) (err error) {
+func (s *ShareVarService) Clear(debugReq domain.DebugInfo) (err error) {
 	if debugReq.ScenarioProcessorId > 0 {
 		processor, _ := s.ScenarioProcessorRepo.Get(debugReq.ScenarioProcessorId)
 		err = s.ShareVariableRepo.DeleteAllByScenarioId(processor.ScenarioId)

@@ -36,7 +36,7 @@ type DebugInterfaceService struct {
 	PostConditionRepo *repo.PostConditionRepo `inject:""`
 }
 
-func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.DebugData, err error) {
+func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain.DebugData, err error) {
 	if loadReq.DebugInterfaceId > 0 {
 		debugData, _ = s.GetDebugDataFromDebugInterface(loadReq.DebugInterfaceId)
 	} else {
@@ -59,7 +59,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 	return
 }
 
-func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentExec.InterfaceExecObj, err error) {
+func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agentExec.InterfaceExecObj, err error) {
 	ret.DebugData, _ = s.Load(loadReq)
 
 	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
@@ -86,7 +86,7 @@ func (s *DebugInterfaceService) GetDetail(id uint) (ret model.DebugInterface, er
 func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
 	s.CopyValueFromRequest(&debugInterface, req)
 
-	if req.DebugInterfaceId > 0 { // to update
+	if req.DebugInterfaceId > 0 { // to update if already loading from a debugInterface
 		debugInterface.ID = req.DebugInterfaceId
 	} else {
 		debugInterface.ServeId = req.ServeId
@@ -94,10 +94,18 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
-	if req.DebugInterfaceId <= 0 { // first time to save
-		// clone extractors and checkpoints if needed
-		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
-		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
+	if req.DebugInterfaceId <= 0 { // first time to save, clone conditions
+		debugInfo := domain.DebugInfo{
+			DebugInterfaceId:    req.DebugInterfaceId,
+			EndpointInterfaceId: req.EndpointInterfaceId,
+			CaseInterfaceId:     req.CaseInterfaceId,
+			DiagnoseInterfaceId: req.DiagnoseInterfaceId,
+			ScenarioProcessorId: req.ScenarioProcessorId,
+			//ScenarioId: req.ScenarioId,
+		}
+
+		s.PreConditionRepo.CloneAll(req.EndpointInterfaceId, 0, debugInfo)
+		s.PostConditionRepo.CloneAll(req.EndpointInterfaceId, 0, debugInfo)
 	}
 
 	if req.UsedBy == consts.InterfaceDebug {
@@ -327,4 +335,11 @@ func (s *DebugInterfaceService) GetDebugInterfaceByEndpointCase(endpointCaseId u
 	})
 
 	return
+}
+
+func (s *DebugInterfaceService) ClearAsAnNewData(data *domain.DebugData) {
+	data.DebugInterfaceId = 0
+	data.EndpointInterfaceId = 0
+	data.DiagnoseInterfaceId = 0
+	data.ScenarioProcessorId = 0
 }

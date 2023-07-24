@@ -11,5 +11,5 @@ type ConditionMoveReq struct {
 
 type ExtractorConditionQuickCreateReq struct {
 	Config domain.ExtractorBase `json:"conf"`
-	Info   domain.DebugReq      `json:"info"`
+	Info   domain.DebugInfo     `json:"info"`
 }

@@ -11,17 +11,11 @@ import (
 )
 
 type ExtractorService struct {
-	ExtractorRepo        *repo.ExtractorRepo     `inject:""`
+	ExtractorRepo *repo.ExtractorRepo `inject:""`
+
 	PostConditionRepo    *repo.PostConditionRepo `inject:""`
 	PostConditionService *PostConditionService   `inject:""`
-
-	ShareVarService *ShareVarService `inject:""`
-}
-
-func (s *ExtractorService) List(debugInterfaceId, endpointInterfaceId uint) (extractors []model.DebugConditionExtractor, err error) {
-	extractors, err = s.ExtractorRepo.List(debugInterfaceId, endpointInterfaceId)
-
-	return
+	ShareVarService      *ShareVarService        `inject:""`
 }
 
 func (s *ExtractorService) Get(id uint) (extractor model.DebugConditionExtractor, err error) {
@@ -74,7 +68,7 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugReq) (variables []domain.Variable, err error) {
+func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugInfo) (variables []domain.Variable, err error) {
 	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(req)
 
 	return

@@ -16,7 +16,6 @@ func (m *ScriptModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Get("/", m.ScriptCtrl.List).Name = "脚本列表"
 		index.Get("/{id:uint}", m.ScriptCtrl.Get).Name = "脚本详情"
 		index.Put("/", m.ScriptCtrl.Update).Name = "更新脚本"
 		index.Delete("/{id:uint}", m.ScriptCtrl.Delete).Name = "删除脚本"

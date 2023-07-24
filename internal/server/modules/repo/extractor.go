@@ -17,22 +17,6 @@ type ExtractorRepo struct {
 	PostConditionRepo *PostConditionRepo `inject:""`
 }
 
-func (r *ExtractorRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugConditionExtractor, err error) {
-	db := r.DB.
-		Where("NOT deleted").
-		Order("created_at ASC")
-
-	if debugInterfaceId > 0 {
-		db.Where("debug_interface_id=?", debugInterfaceId)
-	} else {
-		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
-	}
-
-	err = db.Find(&pos).Error
-
-	return
-}
-
 func (r *ExtractorRepo) Get(id uint) (extractor model.DebugConditionExtractor, err error) {
 	err = r.DB.
 		Where("id=?", id).
@@ -155,7 +139,7 @@ func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase) (
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariableByInterface(req domain.DebugReq) (variables []domain.Variable, err error) {
+func (r *ExtractorRepo) ListExtractorVariableByInterface(req domain.DebugInfo) (variables []domain.Variable, err error) {
 	err = r.DB.Model(&model.DebugConditionExtractor{}).
 		Select("id, variable AS name, result AS value").
 		Where("debug_interface_id=?", req.DebugInterfaceId).
@@ -206,24 +190,6 @@ func (r *ExtractorRepo) GetParentIds(processorId uint, ids *[]uint) {
 
 	if po.ParentId > 0 {
 		r.GetParentIds(po.ParentId, ids)
-	}
-
-	return
-}
-
-func (r *ExtractorRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint,
-	usedBy consts.UsedBy) (
-	err error) {
-
-	srcPos, _ := r.List(0, endpointInterfaceId)
-
-	for _, po := range srcPos {
-		po.ID = 0
-		//po.EndpointInterfaceId = endpointInterfaceId
-		//po.DebugInterfaceId = debugInterfaceId
-		//po.UsedBy = usedBy
-
-		r.Save(&po)
 	}
 
 	return

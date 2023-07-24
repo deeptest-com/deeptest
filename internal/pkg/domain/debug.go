@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
-type DebugReq struct {
+type DebugInfo struct {
 	DebugInterfaceId    uint `json:"debugInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"` // EndpointInterface without DebugInterface init
 	CaseInterfaceId     uint `json:"caseInterfaceId"`     // load by endpoint case

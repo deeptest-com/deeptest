@@ -15,12 +15,6 @@ type ScriptService struct {
 	VariableService *VariableService      `inject:""`
 }
 
-func (s *ScriptService) List(debugInterfaceId, endpointInterfaceId uint) (scripts []model.DebugConditionScript, err error) {
-	scripts, err = s.ScriptRepo.List(debugInterfaceId, endpointInterfaceId)
-
-	return
-}
-
 func (s *ScriptService) Get(id uint) (script model.DebugConditionScript, err error) {
 	script, err = s.ScriptRepo.Get(id)
 

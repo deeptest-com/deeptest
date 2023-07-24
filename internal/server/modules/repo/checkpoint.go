@@ -13,36 +13,6 @@ type CheckpointRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *CheckpointRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugConditionCheckpoint, err error) {
-	db := r.DB.
-		Where("NOT deleted").
-		Order("created_at ASC")
-
-	if debugInterfaceId > 0 {
-		db.Where("debug_interface_id=?", debugInterfaceId)
-	} else {
-		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
-	}
-
-	err = db.
-		Find(&pos).Error
-
-	return
-}
-
-//func (r *CheckpointRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.CheckpointBase, err error) {
-//	pos, err := r.List(debugInterfaceId, endpointInterfaceId)
-//
-//	for _, po := range pos {
-//		checkpoint := domain.CheckpointBase{}
-//		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
-//
-//		ret = append(ret, checkpoint)
-//	}
-//
-//	return
-//}
-
 func (r *CheckpointRepo) Get(id uint) (checkpoint model.DebugConditionCheckpoint, err error) {
 	err = r.DB.
 		Where("id=?", id).
@@ -134,24 +104,6 @@ func (r *CheckpointRepo) CreateLog(checkpoint domain.CheckpointBase) (
 	log.UpdatedAt = nil
 
 	err = r.DB.Save(&log).Error
-
-	return
-}
-
-func (r *CheckpointRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint,
-	usedBy consts.UsedBy) (
-	err error) {
-
-	srcPos, _ := r.List(0, endpointInterfaceId)
-
-	for _, po := range srcPos {
-		po.ID = 0
-		//po.EndpointInterfaceId = endpointInterfaceId
-		//po.DebugInterfaceId = debugInterfaceId
-		//po.UsedBy = usedBy
-
-		r.Save(&po)
-	}
 
 	return
 }

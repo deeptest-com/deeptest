@@ -77,10 +77,13 @@ type DebugReferIds struct {
 	// debug for Endpoint Interface
 	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
 
-	// debug in Scenario Processor
-	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
-	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
+	// debug for Endpoint Interface
+	CaseInterfaceId uint `gorm:"default:0" json:"caseInterfaceId"`
 
 	// debug for Test Interface
 	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
+
+	// debug in Scenario Processor
+	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
+	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
 }

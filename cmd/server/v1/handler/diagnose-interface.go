@@ -87,7 +87,7 @@ func (c *DiagnoseInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	loadReq := domain.DebugReq{
+	loadReq := domain.DebugInfo{
 		DiagnoseInterfaceId: req.DiagnoseInterfaceId,
 		DebugInterfaceId:    req.DebugInterfaceId,
 		UsedBy:              consts.DiagnoseDebug,

@@ -23,8 +23,8 @@ type ExtractorBase struct {
 	ResultMsg    string              `json:"resultMsg"`
 
 	ConditionId       uint `json:"conditionId"`
-	ConditionEntityId uint `json:"conditionEntityId"`
-	InvokeId          uint `json:"invokeId"`
+	ConditionEntityId uint `gorm:"-" json:"conditionEntityId"` // refer to po id in domain object
+	InvokeId          uint `json:"invokeId"`                   // for log only
 
 	Disabled bool `json:"disabled"`
 }
@@ -47,8 +47,8 @@ type CheckpointBase struct {
 	ResultMsg    string              `json:"resultMsg"`
 
 	ConditionId       uint `json:"conditionId"`
-	ConditionEntityId uint `json:"conditionEntityId"`
-	InvokeId          uint `json:"invokeId"`
+	ConditionEntityId uint `gorm:"-" json:"conditionEntityId"` // refer to entity po id in domain object
+	InvokeId          uint `json:"invokeId"`                   // for log only
 
 	Disabled bool `json:"disabled"`
 }
@@ -67,8 +67,8 @@ type ScriptBase struct {
 	ResultMsg    string              `json:"resultMsg"`
 
 	ConditionId       uint `json:"conditionId"`
-	ConditionEntityId uint `json:"conditionEntityId"`
-	InvokeId          uint `json:"invokeId"`
+	ConditionEntityId uint `gorm:"-" json:"conditionEntityId"` // refer to po id in domain object
+	InvokeId          uint `json:"invokeId"`                   // for log only
 
 	Disabled bool `json:"disabled"`
 }

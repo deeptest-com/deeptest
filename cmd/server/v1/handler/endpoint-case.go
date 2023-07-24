@@ -10,7 +10,8 @@ import (
 )
 
 type EndpointCaseCtrl struct {
-	EndpointCaseService *service.EndpointCaseService `inject:""`
+	EndpointCaseService   *service.EndpointCaseService   `inject:""`
+	DebugInterfaceService *service.DebugInterfaceService `inject:""`
 }
 
 // Load
@@ -99,7 +100,7 @@ func (c *EndpointCaseCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.EndpointCaseService.SaveDebugData(req)
+	_, err = c.DebugInterfaceService.Save(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

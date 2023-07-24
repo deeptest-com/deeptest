@@ -12,31 +12,6 @@ type ScriptCtrl struct {
 	BaseCtrl
 }
 
-// List
-func (c *ScriptCtrl) List(ctx iris.Context) {
-	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
-	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
-	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	if debugInterfaceId < 0 {
-		debugInterfaceId = 0
-	}
-	if endpointInterfaceId < 0 {
-		endpointInterfaceId = 0
-	}
-
-	data, err := c.ScriptService.List(uint(debugInterfaceId), uint(endpointInterfaceId))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
-}
-
 // Get 详情
 func (c *ScriptCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")

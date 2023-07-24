@@ -3,7 +3,6 @@ package service
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -77,11 +76,13 @@ func (s *EndpointCaseService) Save(req serverDomain.EndpointCaseSaveReq) (po mod
 }
 
 func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCaseSaveReq) (po model.EndpointCase, err error) {
-	// save debug data
-	req.DebugData.DebugInterfaceId = 0 // force to create
-	req.DebugData.UsedBy = consts.CaseDebug
+	debugData := req.DebugData
 
-	debugInterface, err := s.SaveDebugData(req.DebugData)
+	// save debug data
+	s.DebugInterfaceService.ClearAsAnNewData(&debugData)
+	debugData.UsedBy = consts.CaseDebug
+
+	debugInterface, err := s.DebugInterfaceService.Save(debugData)
 
 	// save case
 	s.CopyValueFromRequest(&po, req)
@@ -114,12 +115,6 @@ func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCa
 
 func (s *EndpointCaseService) UpdateName(req serverDomain.EndpointCaseSaveReq) (err error) {
 	err = s.EndpointCaseRepo.UpdateName(req)
-
-	return
-}
-
-func (s *EndpointCaseService) SaveDebugData(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
-	debugInterface, err = s.DebugInterfaceService.Save(req)
 
 	return
 }

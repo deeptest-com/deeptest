@@ -14,7 +14,7 @@ type ShareVarCtrl struct {
 
 // List
 func (c *ShareVarCtrl) List(ctx iris.Context) {
-	req := domain.DebugReq{}
+	req := domain.DebugInfo{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -51,7 +51,7 @@ func (c *ShareVarCtrl) Delete(ctx iris.Context) {
 
 // Clear 清除
 func (c *ShareVarCtrl) Clear(ctx iris.Context) {
-	req := domain.DebugReq{}
+	req := domain.DebugInfo{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})

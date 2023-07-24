@@ -15,38 +15,6 @@ type ExtractorCtrl struct {
 	BaseCtrl
 }
 
-// List
-func (c *ExtractorCtrl) List(ctx iris.Context) {
-	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
-	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
-
-	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	if debugInterfaceId < 0 {
-		debugInterfaceId = 0
-	}
-	if endpointInterfaceId < 0 {
-		endpointInterfaceId = 0
-	}
-
-	data, err := c.ExtractorService.List(uint(debugInterfaceId), uint(endpointInterfaceId))
-
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ret := []interface{}{}
-	for _, item := range data {
-		ret = append(ret, item)
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
-}
-
 // Get 详情
 func (c *ExtractorCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
@@ -118,7 +86,7 @@ func (c *ExtractorCtrl) Delete(ctx iris.Context) {
 
 // ListExtractorVariableForCheckpoint
 func (c *ExtractorCtrl) ListExtractorVariableForCheckpoint(ctx iris.Context) {
-	req := domain.DebugReq{}
+	req := domain.DebugInfo{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})

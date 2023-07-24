@@ -49,6 +49,54 @@ func (r *PostConditionRepo) Save(po *model.DebugPostCondition) (err error) {
 	return
 }
 
+func (r *PostConditionRepo) CloneAll(srcEndpointInterfaceId, srcDebugInterfaceId uint, debugInfo domain.DebugInfo) (err error) {
+	srcConditions, err := r.List(srcEndpointInterfaceId, srcDebugInterfaceId)
+
+	for _, srcCondition := range srcConditions {
+		// clone condition po
+		srcCondition.ID = 0
+		srcCondition.DebugInterfaceId = debugInfo.DebugInterfaceId
+		srcCondition.EndpointInterfaceId = debugInfo.EndpointInterfaceId
+		srcCondition.CaseInterfaceId = debugInfo.CaseInterfaceId
+		srcCondition.DiagnoseInterfaceId = debugInfo.DiagnoseInterfaceId
+		srcCondition.ScenarioProcessorId = debugInfo.ScenarioProcessorId
+		//srcCondition.ScenarioId = debugInfo.ScenarioId
+
+		r.Save(&srcCondition)
+
+		// clone condition entity
+		var entityId uint
+		if srcCondition.EntityType == consts.ConditionTypeExtractor {
+			srcEntity, _ := r.ExtractorRepo.Get(srcCondition.EntityId)
+			srcEntity.ID = 0
+			srcEntity.ConditionId = srcCondition.ID
+
+			r.ExtractorRepo.Save(&srcEntity)
+			entityId = srcEntity.ID
+
+		} else if srcCondition.EntityType == consts.ConditionTypeCheckpoint {
+			srcEntity, _ := r.CheckpointRepo.Get(srcCondition.EntityId)
+			srcEntity.ID = 0
+			srcEntity.ConditionId = srcCondition.ID
+
+			r.CheckpointRepo.Save(&srcEntity)
+			entityId = srcEntity.ID
+
+		} else if srcCondition.EntityType == consts.ConditionTypeScript {
+			srcEntity, _ := r.ScriptRepo.Get(srcCondition.EntityId)
+			srcEntity.ID = 0
+			srcEntity.ConditionId = srcCondition.ID
+
+			r.ScriptRepo.Save(&srcEntity)
+			entityId = srcEntity.ID
+		}
+
+		err = r.UpdateEntityId(srcCondition.ID, entityId)
+	}
+
+	return
+}
+
 func (r *PostConditionRepo) Delete(id uint) (err error) {
 	po, _ := r.Get(id)
 

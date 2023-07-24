@@ -136,7 +136,7 @@ const props = defineProps({
   },
   serveId: {
     required: true,
-    type: Array
+    type: Number
   },
   isRefChildNode: {
     required: true,

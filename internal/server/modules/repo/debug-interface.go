@@ -236,8 +236,6 @@ func (r *DebugInterfaceRepo) UpdateCookies(id uint, cookies []model.DebugInterfa
 		cookies[idx].InterfaceId = id
 	}
 
-	err = r.DB.Create(&cookies).Error
-
 	return
 }
 
@@ -268,7 +266,9 @@ func (r *DebugInterfaceRepo) UpdateBodyFormData(id uint, items []model.DebugInte
 		list = append(list, item)
 	}
 
-	err = r.DB.Create(&items).Error
+	if len(list) > 0 {
+		err = r.DB.Create(&items).Error
+	}
 
 	return
 }
@@ -299,7 +299,9 @@ func (r *DebugInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.Deb
 		list = append(list, item)
 	}
 
-	err = r.DB.Create(&list).Error
+	if len(list) > 0 {
+		err = r.DB.Create(&list).Error
+	}
 
 	return
 }

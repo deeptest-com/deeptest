@@ -33,19 +33,6 @@ func (r *ExtractorRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []
 	return
 }
 
-//func (r *ExtractorRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.ExtractorBase, err error) {
-//	pos, _ := r.List(debugInterfaceId, endpointInterfaceId)
-//
-//	for _, po := range pos {
-//		extractor := domain.ExtractorBase{}
-//		copier.CopyWithOption(&extractor, po, copier.Option{DeepCopy: true})
-//
-//		ret = append(ret, extractor)
-//	}
-//
-//	return
-//}
-
 func (r *ExtractorRepo) Get(id uint) (extractor model.DebugConditionExtractor, err error) {
 	err = r.DB.
 		Where("id=?", id).

@@ -71,10 +71,6 @@ const props = defineProps({
   visible: {
     required: true,
     type: Boolean,
-  },
-  tabs: {
-    type: Object,
-    required: true
   }
 })
 const emit = defineEmits(['ok', 'close', 'refreshList']);

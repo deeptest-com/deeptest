@@ -64,16 +64,14 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentE
 
 	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
 		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
-
 	ret.PostConditions, _ = s.PostConditionRepo.ListTo(
 		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
 
 	ret.ExecScene.ShareVars = ret.DebugData.ShareVars // for execution
 	ret.DebugData.ShareVars = nil                     // for display on debug page only
 
-	// get project environment data
+	// get project environment and settings
 	s.SceneService.LoadEnvVars(&ret.ExecScene, ret.DebugData)
-
 	s.SceneService.LoadProjectSettings(&ret.ExecScene, ret.DebugData.ProjectId)
 
 	return

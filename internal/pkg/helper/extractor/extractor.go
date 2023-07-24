@@ -63,15 +63,15 @@ func GenDesc(src consts.ExtractorSrc, typ consts.ExtractorType,
 
 	nameDesc := ""
 	if typ == consts.Boundary {
-		nameDesc = fmt.Sprintf("边界提取 \"%s - %s\"", boundaryStart, boundaryEnd)
+		nameDesc = fmt.Sprintf("边界提取器 \"%s - %s\"", boundaryStart, boundaryEnd)
 	} else if typ == consts.JsonQuery {
-		nameDesc = fmt.Sprintf("JSON提取 \"%s\"", expression)
+		nameDesc = fmt.Sprintf("JSON提取器 \"%s\"", expression)
 	} else if typ == consts.HtmlQuery {
 		nameDesc = fmt.Sprintf("HTML提取器 \"%s\"", expression)
 	} else if typ == consts.XmlQuery {
-		nameDesc = fmt.Sprintf("XML提取 \"%s\"", expression)
+		nameDesc = fmt.Sprintf("XML提取器 \"%s\"", expression)
 	} else if typ == consts.Regx {
-		nameDesc = fmt.Sprintf("正则表达式提取 \"%s\"", expression)
+		nameDesc = fmt.Sprintf("正则表达式提取器 \"%s\"", expression)
 	}
 
 	ret = fmt.Sprintf("%s%s", srcDesc, nameDesc)

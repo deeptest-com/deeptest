@@ -108,9 +108,9 @@ func (s *ShareVarService) ListForDebug(serveId, scenarioProcessorId uint, usedBy
 	var pos []model.ShareVariable
 
 	if scenarioProcessorId > 0 {
-		pos, err = s.ShareVariableRepo.ListByScenarioDebug(scenarioProcessorId)
+		pos, err = s.ShareVariableRepo.ListForScenarioDebug(scenarioProcessorId)
 	} else {
-		pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId, usedBy)
+		pos, err = s.ShareVariableRepo.ListForInterfaceDebug(serveId, usedBy)
 	}
 
 	for _, po := range pos {

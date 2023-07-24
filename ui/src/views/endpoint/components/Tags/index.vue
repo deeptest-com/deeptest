@@ -1,11 +1,11 @@
 <template>
-    <div style:="width: 200px">
+    <div :style="{width: '200px'}">
     <a-tag style="margin:2px;"
     :key="tag" v-for="(tag,index) in values"
     closable @close="close(index)"
     >{{tag}}</a-tag>
     <PlusCircleOutlined  @click="showSelect=true" style="padding-top:3px;margin-left:5px"/>
-    <a-select 
+    <a-select
         v-if="showSelect"
         v-model:value="tag"
         show-search
@@ -44,25 +44,27 @@ const props = defineProps({
         default:'120px'
     },
     options:{
-        type:[],
-        default:[],
+        type: Array,
+        default: () => {
+          return [];
+        },
     },
 
     values:{
-        type: [],
+        type: Array,
         required: true,
     }
-    
+
 })
 
 const emits = defineEmits('updateTags')
 
 const values = ref(props?.values||[])
 
-const options = computed(()=> 
+const options = computed(()=>
    props.options.filter(
         arrItem =>  values.value.indexOf(arrItem.value) == -1
-        )   
+        )
 )
 
 const showSelect = ref(false)
@@ -98,7 +100,7 @@ const handleChange = async (value: string) => {
     value = value.trim()
     if (!value) {
         //debugger;
-        return 
+        return
     }
 
    values.value = Array.from(new Set([...values.value,value]))

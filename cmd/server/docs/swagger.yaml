@@ -1380,6 +1380,61 @@ definitions:
       useId:
         type: integer
     type: object
+  model.Endpoint:
+    properties:
+      categoryId:
+        type: integer
+      createUser:
+        type: string
+      createdAt:
+        type: string
+      curl:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      interfaces:
+        items:
+          $ref: '#/definitions/model.EndpointInterface'
+        type: array
+      path:
+        type: string
+      pathParams:
+        items:
+          $ref: '#/definitions/model.EndpointPathParam'
+        type: array
+      projectId:
+        type: integer
+      serialNumber:
+        type: string
+      serveId:
+        type: integer
+      serveName:
+        type: string
+      serverId:
+        type: integer
+      sourceType:
+        $ref: '#/definitions/consts.SourceType'
+      status:
+        type: integer
+      tags:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+      updatedAt:
+        type: string
+      version:
+        type: string
+      versions:
+        items:
+          $ref: '#/definitions/model.EndpointVersion'
+        type: array
+    type: object
   model.EndpointDocument:
     properties:
       createdAt:
@@ -1808,6 +1863,21 @@ definitions:
       value:
         type: string
     type: object
+  model.EndpointVersion:
+    properties:
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      endpointId:
+        type: integer
+      id:
+        type: integer
+      updatedAt:
+        type: string
+      version:
+        type: string
+    type: object
   model.Processor:
     properties:
       children:
@@ -2064,6 +2134,16 @@ definitions:
     required:
     - id
     - status
+    type: object
+  serverDomain.BatchUpdateReq:
+    properties:
+      endpointIds:
+        items:
+          type: integer
+        type: array
+      fieldName:
+        type: string
+      value: {}
     type: object
   serverDomain.Category:
     properties:
@@ -2394,6 +2474,51 @@ definitions:
     - projectId
     - serveId
     - title
+    type: object
+  serverDomain.EndpointReqPaginate:
+    properties:
+      categoryId:
+        type: integer
+      createUser:
+        type: string
+      field:
+        type: string
+      order:
+        type: string
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      projectId:
+        type: integer
+      serveId:
+        type: integer
+      serveVersion:
+        type: string
+      status:
+        type: integer
+      tagNames:
+        items:
+          type: string
+        type: array
+      title:
+        type: string
+    type: object
+  serverDomain.EndpointTagReq:
+    properties:
+      id:
+        type: integer
+      tagNames:
+        items:
+          type: string
+        type: array
+    type: object
+  serverDomain.EndpointVersionReq:
+    properties:
+      endpointId:
+        type: integer
+      version:
+        type: string
     type: object
   serverDomain.EnvironmentParam:
     properties:
@@ -4717,6 +4842,520 @@ paths:
       summary: 接口文档版本列表
       tags:
       - 接口文档
+  /api/v1/endpoint/batchDelete:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - collectionFormat: csv
+        description: 设计器id
+        in: query
+        items:
+          type: integer
+        name: req
+        required: true
+        type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 批量删除设计器
+      tags:
+      - 设计器
+  /api/v1/endpoint/batchUpdateField:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 批量更新字段内容的请求参数
+        in: body
+        name: BatchUpdateReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.BatchUpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 批量更新字段内容
+      tags:
+      - 设计器
+  /api/v1/endpoint/copy:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 设计器id
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 设计器版本
+        in: query
+        name: version
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 复制设计器
+      tags:
+      - 设计器
+  /api/v1/endpoint/delete:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 设计器id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除设计器
+      tags:
+      - 设计器
+  /api/v1/endpoint/detail:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 设计器id
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 设计器版本
+        in: query
+        name: version
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Endpoint'
+              type: object
+      summary: 设计器详情
+      tags:
+      - 设计器
+  /api/v1/endpoint/develop:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 设计器id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 开发设计器
+      tags:
+      - 设计器
+  /api/v1/endpoint/expire:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 设计器id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 禁用设计器
+      tags:
+      - 设计器
+  /api/v1/endpoint/index:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 设计器列表的请求体
+        in: body
+        name: EndpointReqPaginate
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EndpointReqPaginate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    result:
+                      items:
+                        $ref: '#/definitions/model.Endpoint'
+                      type: array
+                  type: object
+              type: object
+      summary: 设计器列表
+      tags:
+      - 设计器
+  /api/v1/endpoint/publish:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 设计器id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 发布设计器
+      tags:
+      - 设计器
+  /api/v1/endpoint/save:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存设计器的请求参数
+        in: body
+        name: EndpointReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EndpointReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 保存设计器
+      tags:
+      - 设计器
+  /api/v1/endpoint/updateStatus:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 设计器id
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 设计器状态
+        in: query
+        name: status
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新设计器状态
+      tags:
+      - 设计器
+  /api/v1/endpoint/updateTag:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 更新标签的请求参数
+        in: body
+        name: EndpointTagReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EndpointTagReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新标签
+      tags:
+      - 设计器
+  /api/v1/endpoint/version/add:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 添加设计器版本的请求参数
+        in: body
+        name: EndpointVersionReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EndpointVersionReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 添加设计器版本
+      tags:
+      - 设计器
+  /api/v1/endpoint/version/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 设计器id
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.EndpointVersion'
+                  type: array
+              type: object
+      summary: 设计器版本列表
+      tags:
+      - 设计器
+  /api/v1/endpoint/yaml:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 设计器信息转yaml的请求参数
+        in: body
+        name: EndpointReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.EndpointReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: 设计器信息转yaml
+      tags:
+      - 设计器
   /api/v1/init/checkdb:
     get:
       consumes:

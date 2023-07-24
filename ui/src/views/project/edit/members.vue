@@ -261,7 +261,7 @@ const invite = () => {
 };
 
 
-const ok= async (modelRef:any,callback:any)=>{ 
+const ok= async (modelRef:any,callback:any)=>{
   inviteVisible.value = false;
    await inviteUser(modelRef, projectId).then((json) => {
       if (json.code === 0) {
@@ -275,7 +275,7 @@ const ok= async (modelRef:any,callback:any)=>{
           message: `保存失败`,
         });
       }
-      close()
+      // close()
     })
   callback()
   getMembers(1);

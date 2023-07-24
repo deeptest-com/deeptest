@@ -76,7 +76,7 @@ import ContextMenu from "@/views/component/debug/others/variable-replace/Context
 import {serverList} from "@/views/project-settings/service";
 import {getArrSelectItems} from "@/utils/comm";
 
-const store = useStore<{ Debug: Debug, Endpoint }>();
+const store = useStore<{ Debug: Debug, Endpoint,Global }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 
@@ -170,13 +170,17 @@ const send = async (e) => {
   console.log('sendRequest', debugData.value)
 
   if (validateInfo()) {
+    store.commit("Global/setSpinning",true)
     const callData = {
       serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
       token: await getToken(),
 
       data: debugData.value
     }
-    await store.dispatch('Debug/call', callData)
+    await store.dispatch('Debug/call', callData).finally(()=>{
+      store.commit("Global/setSpinning",false)
+    })
+    store.commit("Global/setSpinning",false)
   }
 }
 

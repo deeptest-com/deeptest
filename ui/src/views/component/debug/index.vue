@@ -102,8 +102,8 @@ const props = defineProps({
 
 const rightTabKey = ref('')
 
-const saveDebugData = async () => {
-  props.onSaveDebugData()
+const saveDebugData = async (data:any) => {
+  props.onSaveDebugData(data)
 };
 
 const syncDebugData = async () => {

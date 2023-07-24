@@ -22,6 +22,7 @@ export interface StateType {
   permissionMenuMap: any;
   permissionButtonMap: any;
   serverConfig: any;
+  spinning:boolean;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -34,6 +35,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     setHeadTabNavList: Mutation<StateType>;
     setPermissionMenuAndBtn: Mutation<StateType>;
     setServerConfig: Mutation<StateType>;
+    setSpinning: Mutation<StateType>;
   };
   actions: {
     getPermissionList: Action<StateType, StateType>;
@@ -57,6 +59,7 @@ const initState: StateType = {
   permissionMenuMap: null,
   permissionButtonMap: null,
   serverConfig: {},
+  spinning:false,
 };
 
 const StoreModel: ModuleType = {
@@ -88,6 +91,9 @@ const StoreModel: ModuleType = {
     },
     setServerConfig(state, payload) {
       state.serverConfig = payload
+    },
+    setSpinning(state, payload) {
+      state.spinning = payload
     },
   },
   actions: {

@@ -54,7 +54,12 @@
 <!--              style="width: 100px"/>-->
 <!--        </template>-->
 <!--      </a-input>-->
-
+      <a-input :value="fieldState.example"
+               placeholder="输入示例"
+               :disabled="hasRef"
+               @change="handleExampleChange"
+               style="width: 200px">
+      </a-input>
       <a-input :value="fieldState.description"
                placeholder="输入描述信息"
                :disabled="hasRef"
@@ -273,6 +278,11 @@ function handleTypeChange(val: any) {
 
 function handleDescChange(e: any) {
   fieldState.value.description = e.target.value;
+  emit('change', fieldState.value);
+}
+
+function handleExampleChange(e: any) {
+  fieldState.value.example = e.target.value;
   emit('change', fieldState.value);
 }
 

@@ -17,6 +17,16 @@ type PlanReportCtrl struct {
 	BaseCtrl
 }
 
+// List
+// @Tags	测试报告
+// @summary	结果列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization			header	string								true	"Authentication header"
+// @Param 	currProjectId			query	int									true	"当前项目ID"
+// @Param 	PlanReportReqPaginate	query	serverDomain.PlanReportReqPaginate	true	"测试报告列表的请求参数"
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.PlanReportDetail}}
+// @Router	/api/v1/plans/reports	[get]
 func (c *PlanReportCtrl) List(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
@@ -44,6 +54,16 @@ func (c *PlanReportCtrl) List(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
+// Get
+// @Tags	测试报告
+// @summary	结果详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"测试报告ID"
+// @success	200	{object}	_domain.Response{data=model.PlanReportDetail}
+// @Router	/api/v1/plans/reports/{id}	[get]
 func (c *PlanReportCtrl) Get(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
@@ -59,6 +79,16 @@ func (c *PlanReportCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report, Msg: _domain.NoErr.Msg})
 }
 
+// Delete
+// @Tags	测试报告
+// @summary	删除计划报告
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"测试报告ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/plans/reports/{id}	[delete]
 func (c *PlanReportCtrl) Delete(ctx iris.Context) {
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)

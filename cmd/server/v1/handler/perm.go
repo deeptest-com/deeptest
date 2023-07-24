@@ -17,6 +17,15 @@ type PermCtrl struct {
 }
 
 // GetAllPerms 分页列表
+// @Tags	权限模块
+// @summary	权限列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @Param 	PermReqPaginate	query	serverDomain.PermReqPaginate	true	"权限列表的请求参数"
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]serverDomain.PermResp}}
+// @Router	/api/v1/perms	[get]
 func (c *PermCtrl) GetAllPerms(ctx iris.Context) {
 	var req serverDomain.PermReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
@@ -38,6 +47,15 @@ func (c *PermCtrl) GetAllPerms(ctx iris.Context) {
 }
 
 // GetPerm 详情
+// @Tags	权限模块
+// @summary	权限详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"权限ID"
+// @success	200	{object}	_domain.Response{data=serverDomain.PermResp}
+// @Router	/api/v1/perms/{id}	[get]
 func (c *PermCtrl) GetPerm(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
@@ -54,6 +72,15 @@ func (c *PermCtrl) GetPerm(ctx iris.Context) {
 }
 
 // CreatePerm 添加
+// @Tags	权限模块
+// @summary	新建权限
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string					true	"Authentication header"
+// @Param 	currProjectId	query	int						true	"当前项目ID"
+// @Param 	PermReq			body	serverDomain.PermReq	true	"新建权限的请求参数"
+// @success	200	{object}	_domain.Response{data=object{id=int}}
+// @Router	/api/v1/perms	[post]
 func (c *PermCtrl) CreatePerm(ctx iris.Context) {
 	req := serverDomain.PermReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -74,6 +101,16 @@ func (c *PermCtrl) CreatePerm(ctx iris.Context) {
 }
 
 // UpdatePerm 更新
+// @Tags	权限模块
+// @summary	编辑权限
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string					true	"Authentication header"
+// @Param 	currProjectId	query	int						true	"当前项目ID"
+// @Param 	id				path	int						true	"权限ID"
+// @Param 	PermReq			body	serverDomain.PermReq	true	"编辑权限的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/perms/{id}	[post]
 func (c *PermCtrl) UpdatePerm(ctx iris.Context) {
 	var reqId _domain.ReqId
 	if err := ctx.ReadParams(&reqId); err != nil {
@@ -101,6 +138,15 @@ func (c *PermCtrl) UpdatePerm(ctx iris.Context) {
 }
 
 // DeletePerm 删除
+// @Tags	权限模块
+// @summary	删除权限
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"权限ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/perms/{id}	[delete]
 func (c *PermCtrl) DeletePerm(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {

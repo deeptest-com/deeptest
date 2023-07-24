@@ -20,6 +20,16 @@ type PlanCtrl struct {
 	BaseCtrl
 }
 
+// List
+// @Tags	测试计划
+// @summary	计划列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @Param 	PlanReqPaginate	query	serverDomain.PlanReqPaginate	true	"计划列表的请求参数"
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Plan}}
+// @Router	/api/v1/plans	[get]
 func (c *PlanCtrl) List(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
@@ -49,6 +59,17 @@ func (c *PlanCtrl) List(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
+// Get
+// @Tags	测试计划
+// @summary	计划详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"计划ID"
+// @Param 	detail			query	bool	true	"是否需要详情"
+// @success	200	{object}	_domain.Response{data=serverDomain.PlanAndReportDetail}
+// @Router	/api/v1/plans/{id}	[get]
 func (c *PlanCtrl) Get(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
@@ -68,6 +89,16 @@ func (c *PlanCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: plan, Msg: _domain.NoErr.Msg})
 }
 
+// Create
+// @Tags	测试计划
+// @summary	新建计划
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string		true	"Authentication header"
+// @Param 	currProjectId	query	int			true	"当前项目ID"
+// @Param 	Plan			body	model.Plan	true	"新建计划的请求参数"
+// @success	200	{object}	_domain.Response{data=model.Plan}
+// @Router	/api/v1/plans	[post]
 func (c *PlanCtrl) Create(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
@@ -93,6 +124,16 @@ func (c *PlanCtrl) Create(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po, Msg: _domain.NoErr.Msg})
 }
 
+// Update
+// @Tags	测试计划
+// @summary	更新计划
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string		true	"Authentication header"
+// @Param 	currProjectId	query	int			true	"当前项目ID"
+// @Param 	Plan			body	model.Plan	true	"更新计划的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/plans	[put]
 func (c *PlanCtrl) Update(ctx iris.Context) {
 	var req model.Plan
 	err := ctx.ReadJSON(&req)
@@ -112,6 +153,16 @@ func (c *PlanCtrl) Update(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// Delete
+// @Tags	测试计划
+// @summary	删除计划
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"计划ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/plans/{id}	[delete]
 func (c *PlanCtrl) Delete(ctx iris.Context) {
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
@@ -129,6 +180,17 @@ func (c *PlanCtrl) Delete(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// AddScenarios
+// @Tags	测试计划
+// @summary	添加场景
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string								true	"Authentication header"
+// @Param 	currProjectId		query	int									true	"当前项目ID"
+// @Param 	id					path	int									true	"计划ID"
+// @Param 	PlanAddScenariosReq	body	serverDomain.PlanAddScenariosReq	true	"添加场景的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/plans/{id}/addScenarios	[post]
 func (c *PlanCtrl) AddScenarios(ctx iris.Context) {
 	planId, _ := ctx.Params().GetInt("id")
 
@@ -148,6 +210,17 @@ func (c *PlanCtrl) AddScenarios(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
+// RemoveScenario
+// @Tags	测试计划
+// @summary	移除场景
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string	true	"Authentication header"
+// @Param 	currProjectId		query	int		true	"当前项目ID"
+// @Param 	id					path	int		true	"计划ID"
+// @Param 	scenarioId			query	int		true	"场景ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/plans/{id}/removeScenario	[post]
 func (c *PlanCtrl) RemoveScenario(ctx iris.Context) {
 	planId, _ := ctx.Params().GetInt("id")
 
@@ -162,6 +235,17 @@ func (c *PlanCtrl) RemoveScenario(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
+// RemoveScenarios
+// @Tags	测试计划
+// @summary	批量移除场景
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string								true	"Authentication header"
+// @Param 	currProjectId		query	int									true	"当前项目ID"
+// @Param 	id					path	int									true	"计划ID"
+// @Param 	PlanAddScenariosReq	body	serverDomain.PlanAddScenariosReq	true	"批量移除场景的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/plans/{id}/removeScenarios	[post]
 func (c *PlanCtrl) RemoveScenarios(ctx iris.Context) {
 	planId, _ := ctx.Params().GetInt("id")
 
@@ -181,16 +265,44 @@ func (c *PlanCtrl) RemoveScenarios(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
+// StatusDropDownOptions
+// @Tags	测试计划
+// @summary	计划状态下拉选项
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response{data=map[consts.TestStatus]string}
+// @Router	/api/v1/plans/statusDropDownOptions	[get]
 func (c *PlanCtrl) StatusDropDownOptions(ctx iris.Context) {
 	data := c.PlanService.StatusDropDownOptions()
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
+// TestStageDropDownOptions
+// @Tags	测试计划
+// @summary	计划测试阶段下拉选项
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response{data=map[consts.TestStage]string}
+// @Router	/api/v1/plans/testStageDropDownOptions	[get]
 func (c *PlanCtrl) TestStageDropDownOptions(ctx iris.Context) {
 	data := c.PlanService.TestStageDropDownOptions()
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
+// Clone
+// @Tags	测试计划
+// @summary	克隆计划
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"计划ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/plans/{id}/clone	[post]
 func (c *PlanCtrl) Clone(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
@@ -210,6 +322,17 @@ func (c *PlanCtrl) Clone(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: plan, Msg: _domain.NoErr.Msg})
 }
 
+// PlanScenariosList
+// @Tags	测试计划
+// @summary	计划中的场景列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization				header	string									true	"Authentication header"
+// @Param 	currProjectId				query	int										true	"当前项目ID"
+// @Param 	planId						query	int										true	"计划ID"
+// @Param 	PlanScenariosReqPaginate	query	serverDomain.PlanScenariosReqPaginate	true	"计划中的场景列表的请求参数"
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ScenarioDetail}}
+// @Router	/api/v1/planScenariosList	[get]
 func (c *PlanCtrl) PlanScenariosList(ctx iris.Context) {
 	planId, err := ctx.URLParamInt("planId")
 	if planId == 0 {
@@ -238,6 +361,16 @@ func (c *PlanCtrl) PlanScenariosList(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
+// NotRelationScenarioList
+// @Tags	测试计划
+// @summary	计划中未绑定的场景列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization					header	string										true	"Authentication header"
+// @Param 	currProjectId					query	int											true	"当前项目ID"
+// @Param 	NotRelationScenarioReqPaginate	query	serverDomain.NotRelationScenarioReqPaginate	true	"计划中未绑定的场景列表的请求参数"
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Scenario}}
+// @Router	/api/v1/notRelationScenarioList	[get]
 func (c *PlanCtrl) NotRelationScenarioList(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {

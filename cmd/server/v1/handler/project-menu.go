@@ -12,6 +12,15 @@ type ProjectMenuCtrl struct {
 	BaseCtrl
 }
 
+// UserMenuList
+// @Tags	项目菜单
+// @summary	项目中用户的左侧菜单栏列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @success	200	{object}	_domain.Response{data=object{result=[]model.ProjectMenu}}
+// @Router	/api/v1/projects/menus/userMenuList	[get]
 func (c *ProjectMenuCtrl) UserMenuList(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")

@@ -209,13 +209,7 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 	debugData.Url = _httpUtils.CombineUrls(server.Url, debugData.Url)
 
 	debugData.UsedBy = consts.DiagnoseDebug
-	debugInterface, err := s.DebugInterfaceService.Save(debugData)
-
-	// clone extractors and checkpoints if needed
-	//if endpointInterface.DebugInterfaceId <= 0 {
-	//	s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID, consts.DiagnoseDebug)
-	//	s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(uint(endpointInterfaceId), debugInterface.ID, consts.DiagnoseDebug)
-	//}
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
 
 	// save test interface
 	diagnoseInterface := model.DiagnoseInterface{

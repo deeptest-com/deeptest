@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref} from "vue";
+import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
@@ -136,7 +136,11 @@ const list = () => {
   console.log('list')
   store.dispatch('Debug/listPostCondition')
 }
-list()
+
+watch(debugData, (newVal) => {
+  console.log('watch debugData')
+  list()
+}, {immediate: true, deep: true});
 
 const create = () => {
   console.log('create', conditionType.value)

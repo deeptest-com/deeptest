@@ -94,23 +94,25 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
-	if req.DebugInterfaceId <= 0 { // first time to save, clone conditions
-		debugInfo := domain.DebugInfo{
-			DebugInterfaceId:    req.DebugInterfaceId,
-			EndpointInterfaceId: req.EndpointInterfaceId,
-			CaseInterfaceId:     req.CaseInterfaceId,
-			DiagnoseInterfaceId: req.DiagnoseInterfaceId,
-			ScenarioProcessorId: req.ScenarioProcessorId,
-			//ScenarioId: req.ScenarioId,
-		}
+	// first time to save a debug interface that convert from endpoint interface, clone conditions
+	// it's different from cloning data between two debug interfaces when do importing
+	if req.DebugInterfaceId <= 0 {
+		s.PreConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
+		s.PostConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
 
-		s.PreConditionRepo.CloneAll(req.EndpointInterfaceId, 0, debugInfo)
-		s.PostConditionRepo.CloneAll(req.EndpointInterfaceId, 0, debugInfo)
-	}
-
-	if req.UsedBy == consts.InterfaceDebug {
 		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
 	}
+
+	return
+}
+
+func (s *DebugInterfaceService) SaveAs(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
+	s.CopyValueFromRequest(&debugInterface, req)
+
+	err = s.DebugInterfaceRepo.Save(&debugInterface)
+
+	s.PreConditionRepo.CloneAll(req.DebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
+	s.PostConditionRepo.CloneAll(req.DebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
 
 	return
 }
@@ -335,11 +337,4 @@ func (s *DebugInterfaceService) GetDebugInterfaceByEndpointCase(endpointCaseId u
 	})
 
 	return
-}
-
-func (s *DebugInterfaceService) ClearAsAnNewData(data *domain.DebugData) {
-	data.DebugInterfaceId = 0
-	data.EndpointInterfaceId = 0
-	data.DiagnoseInterfaceId = 0
-	data.ScenarioProcessorId = 0
 }

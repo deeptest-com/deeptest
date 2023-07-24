@@ -79,10 +79,8 @@ func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCa
 	debugData := req.DebugData
 
 	// save debug data
-	s.DebugInterfaceService.ClearAsAnNewData(&debugData)
-	debugData.UsedBy = consts.CaseDebug
-
-	debugInterface, err := s.DebugInterfaceService.Save(debugData)
+	req.DebugData.UsedBy = consts.CaseDebug
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
 
 	// save case
 	s.CopyValueFromRequest(&po, req)

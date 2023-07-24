@@ -7,7 +7,9 @@ import (
 
 type DebugPreCondition struct {
 	BaseModel
-	DebugReferIds
+
+	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
+	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
 
 	EntityType consts.ConditionType `json:"entityType"`
 	EntityId   uint                 `json:"entityId"`
@@ -24,7 +26,9 @@ func (DebugPreCondition) TableName() string {
 
 type DebugPostCondition struct {
 	BaseModel
-	DebugReferIds
+
+	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
+	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
 
 	EntityType consts.ConditionType `json:"entityType"`
 	EntityId   uint                 `json:"entityId"`
@@ -67,23 +71,4 @@ type DebugConditionScript struct {
 
 func (DebugConditionScript) TableName() string {
 	return "biz_debug_condition_script"
-}
-
-type DebugReferIds struct {
-	UsedBy consts.UsedBy `json:"usedBy"`
-
-	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
-
-	// debug for Endpoint Interface
-	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
-
-	// debug for Endpoint Interface
-	CaseInterfaceId uint `gorm:"default:0" json:"caseInterfaceId"`
-
-	// debug for Test Interface
-	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
-
-	// debug in Scenario Processor
-	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
-	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
 }

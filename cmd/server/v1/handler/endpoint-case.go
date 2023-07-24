@@ -100,7 +100,7 @@ func (c *EndpointCaseCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.DebugInterfaceService.Save(req)
+	_, err = c.DebugInterfaceService.SaveAs(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

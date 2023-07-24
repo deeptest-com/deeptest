@@ -39,6 +39,10 @@ func (s *PreConditionService) Create(condition *model.DebugPreCondition) (err er
 	return
 }
 
+//func (s *PreConditionService) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint) (err error) {
+//	return s.PreConditionRepo.CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId)
+//}
+
 func (s *PreConditionService) Delete(reqId uint) (err error) {
 	err = s.PreConditionRepo.Delete(reqId)
 

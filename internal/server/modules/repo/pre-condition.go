@@ -47,18 +47,13 @@ func (r *PreConditionRepo) Save(checkpoint *model.DebugPreCondition) (err error)
 	return
 }
 
-func (r *PreConditionRepo) CloneAll(srcEndpointInterfaceId, srcDebugInterfaceId uint, debugInfo domain.DebugInfo) (err error) {
-	srcConditions, err := r.List(srcEndpointInterfaceId, srcDebugInterfaceId)
+func (r *PreConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint) (err error) {
+	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId)
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
 		srcCondition.ID = 0
-		srcCondition.DebugInterfaceId = debugInfo.DebugInterfaceId
-		srcCondition.EndpointInterfaceId = debugInfo.EndpointInterfaceId
-		srcCondition.CaseInterfaceId = debugInfo.CaseInterfaceId
-		srcCondition.DiagnoseInterfaceId = debugInfo.DiagnoseInterfaceId
-		srcCondition.ScenarioProcessorId = debugInfo.ScenarioProcessorId
-		//srcCondition.ScenarioId = debugInfo.ScenarioId
+		srcCondition.DebugInterfaceId = distDebugInterfaceId
 
 		r.Save(&srcCondition)
 

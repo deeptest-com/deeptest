@@ -28,8 +28,7 @@ type DebugData struct {
 
 	Name string `json:"name"`
 
-	DebugInterfaceId uint `json:"debugInterfaceId"`
-
+	DebugInterfaceId    uint `json:"debugInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"`
 	CaseInterfaceId     uint `json:"caseInterfaceId"`
 	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"`

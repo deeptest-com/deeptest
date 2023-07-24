@@ -14,6 +14,7 @@ type DebugInterfaceCtrl struct {
 	DebugInterfaceService *service.DebugInterfaceService `inject:""`
 	ExtractorService      *service.ExtractorService      `inject:""`
 	CheckpointService     *service.CheckpointService     `inject:""`
+
 	BaseCtrl
 }
 

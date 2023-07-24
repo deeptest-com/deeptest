@@ -37,7 +37,7 @@ import {StateType as Endpoint} from "@/views/endpoint/store";
 import DebugMethod from './method.vue';
 import DebugComp from '@/views/component/debug/index.vue';
 
-const store = useStore<{  Debug: Debug,Endpoint:Endpoint }>();
+const store = useStore<{  Debug: Debug,Endpoint:Endpoint,Global }>();
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 
 provide('usedBy', UsedBy.InterfaceDebug)
@@ -51,8 +51,10 @@ const saveDebugInterface = async (data) => {
   console.log('saveDebugInterface', data)
 
   Object.assign(data, {shareVars: null, envVars: null, globalEnvVars: null, globalParamVars: null })
-
-  const res = await store.dispatch('Debug/save', data)
+  store.commit("Global/setSpinning",true)
+  const res = await store.dispatch('Debug/save', data).finally(()=>{
+    store.commit("Global/setSpinning",false)
+  })
   if (res === true) {
     notification.success({
       key: NotificationKeyCommon,
@@ -64,6 +66,7 @@ const saveDebugInterface = async (data) => {
       message: `保存失败`,
     });
   }
+  store.commit("Global/setSpinning",false)
 };
 
 </script>

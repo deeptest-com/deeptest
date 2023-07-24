@@ -18,6 +18,7 @@ type EndpointInterface struct {
 
 	DebugInterfaceId uint              `gorm:"default:0" json:"debugInterfaceId"`
 	SourceType       consts.SourceType `json:"sourceType" gorm:"default:0"`
+	Maintainer       string            `gorm:"-" json:"maintainer"`
 }
 type SchemaParam struct {
 	Name        string  `json:"name"`

@@ -95,9 +95,9 @@ export class DeepTestApp {
         const url = await startUIService()
 
 
+        await mainWin.loadURL('https://leyanapi.nancalcloud.com/');
         // await mainWin.loadURL('https://leyanapi.nancalcloud.com/');
-        // await mainWin.loadURL('https://leyanapi.nancalcloud.com/');
-        await mainWin.loadURL('http://127.0.0.1:8000/');
+        // await mainWin.loadURL('http://127.0.0.1:8000/');
 
         // const temp = path.resolve(process.resourcesPath, 'ui_temp')
         // logInfo('===' + temp)

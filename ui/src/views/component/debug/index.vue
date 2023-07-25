@@ -6,7 +6,8 @@
                   :onSave="saveDebugData"
                   :onSaveAsCase="saveAsCase"
                   :onSync="syncDebugData"
-                  :baseUrlDisabled="baseUrlDisabled" />
+                  :baseUrlDisabled="baseUrlDisabled"
+                  :urlDisabled="urlDisabled"/>
       <DebugConfig />
     </div>
 
@@ -106,6 +107,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: true
+  },
+  urlDisabled: {
+    type: Boolean,
+    required: false,
+    default: false
   },
   showMethodSelection: {
     type: Boolean,

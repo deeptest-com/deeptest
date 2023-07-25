@@ -109,6 +109,6 @@ func (r *EndpointCaseRepo) UpdateSerialNumber(id, projectId uint) (err error) {
 
 	err = r.DB.Model(&model.EndpointCase{}).
 		Where("id=?", id).
-		Update("serial_number", project.ShortName+"-TS-"+strconv.Itoa(int(id))).Error
+		Update("serial_number", project.ShortName+"-TC-"+strconv.Itoa(int(id))).Error
 	return
 }

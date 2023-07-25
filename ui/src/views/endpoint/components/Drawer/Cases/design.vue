@@ -7,9 +7,11 @@
     </div>
 
     <div id="endpoint-debug-cases-design-panel">
+      <div class="name">{{endpointCase.name}}</div>
       <DebugComp
           :topVal="'-36px'"
-          :onSaveDebugData="saveCaseInterface"/>
+          :onSaveDebugData="saveCaseInterface"
+          :urlDisabled="true"/>
     </div>
 
   </div>
@@ -132,7 +134,7 @@ const back = () => {
 
 <style scoped lang="less">
 .endpoint-debug-cases-design-main {
-  padding: 16px 0px 16px 16px;
+  padding: 0px 0px 16px 16px;
   position: relative;
 
   .toolbar {
@@ -144,6 +146,10 @@ const back = () => {
   }
 
   #endpoint-debug-cases-design-panel {
+    .name {
+      line-height: 36px;
+      font-weight: bold;
+    }
   }
 }
 

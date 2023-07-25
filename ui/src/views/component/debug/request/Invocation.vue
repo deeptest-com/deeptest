@@ -16,6 +16,7 @@
 
       <div class="url">
         <a-input placeholder="请输入路径"
+                 :disabled="urlDisabled"
                  v-model:value="debugData.url"/>
       </div>
 
@@ -114,6 +115,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: true
+  },
+  urlDisabled: {
+    type: Boolean,
+    required: false,
+    default: false
   },
 })
 const usedBy = inject('usedBy') as UsedBy
@@ -288,10 +294,6 @@ onUnmounted(() => {
 
     .base-url {
       flex: 1;
-
-      .ant-input[disabled] {
-        color: rgba(0, 0, 0, 0.5);
-      }
     }
 
     .url {

@@ -124,7 +124,7 @@ type InterfaceRequestBodyBase struct {
 
 type InterfaceResponseBodyBase struct {
 	Code        string `json:"code"`
-	InterfaceId uint   `json:"interfaceId"`
+	InterfaceId uint   `json:"interfaceId" gorm:"index"`
 	MediaType   string `json:"mediaType"`
 	Description string `json:"description"`
 	SchemaRefId int64  `json:"schemaRefId"`

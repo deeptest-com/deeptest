@@ -1,4 +1,5 @@
 <template>
+  <a-spin :spinning="spinning">
   <div class="diagnose-interface-design-main">
       <div id="diagnose-interface-debug-panel">
         <a-tabs class="dp-tabs-full-height" type="editable-card"
@@ -24,6 +25,7 @@
        <!-- <EnvSelection /> -->
       </div>
   </div>
+  </a-spin>
 </template>
 
 <script setup lang="ts">
@@ -44,7 +46,7 @@ import {NotificationKeyCommon} from "@/utils/const";
 
 provide('usedBy', UsedBy.DiagnoseDebug)
 
-const store = useStore<{ Debug: Debug, DiagnoseInterface: DiagnoseInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
+const store = useStore<{ Debug: Debug, DiagnoseInterface: DiagnoseInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType,Global }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -54,6 +56,7 @@ const interfaceData = computed<any>(() => store.state.DiagnoseInterface.interfac
 const interfaceTabs = computed<any>(() => store.state.DiagnoseInterface.interfaceTabs);
 const activeTabKey = ref('0')
 const rightTabKey = ref('')
+const spinning = computed(()=> store.state.Global.spinning )
 
 const changeTab = (key) => {
   console.log('changeTab', key)
@@ -95,6 +98,7 @@ watch(() => { return currProject.value.id },(newVal) => {
 },{immediate:true})
 
 const saveDiagnoseInterface = async (e) => {
+  store.commit("Global/setSpinning",true)
   console.log('saveDiagnoseInterface')
 
     let data = JSON.parse(JSON.stringify(debugData.value))
@@ -102,8 +106,9 @@ const saveDiagnoseInterface = async (e) => {
 
     Object.assign(data, {shareVars: null, envVars: null, globalEnvVars: null, globalParamVars: null})
 
-    const res = await store.dispatch('DiagnoseInterface/saveDiagnoseDebugData', data)
-    if (res === true) {
+    const res = await store.dispatch('DiagnoseInterface/saveDiagnoseDebugData', data).finally(()=> store.commit("Global/setSpinning",false))
+
+  if (res === true) {
       notification.success({
         key: NotificationKeyCommon,
         message: `保存成功`,
@@ -114,6 +119,7 @@ const saveDiagnoseInterface = async (e) => {
         message: `保存失败`,
       });
     }
+  store.commit("Global/setSpinning",false)
 }
 
 const onTabEdit = (key, action) => {

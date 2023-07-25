@@ -9,6 +9,7 @@
             :wrapClassName="'abc-1'"
             @close="onCloseDrawer">
     <!-- 头部信息  -->
+    <a-spin tip="Loading..." :spinning="spinning" style="z-index: 2000;">
     <template #title>
       <div  class="dp-drawer-header">
         <slot name="header"/>
@@ -29,6 +30,7 @@
         <slot name="tabContent"/>
       </div>
     </div>
+    </a-spin>
   </a-drawer>
 </template>
 
@@ -42,11 +44,14 @@ import {
   onMounted,
 } from 'vue';
 
-
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import {message} from "ant-design-vue";
+import {StateType as ServeStateType} from "@/store/serve";
 
+
+
+const store = useStore<{ Global}>();
 
 const props = defineProps({
   visible: {
@@ -66,6 +71,8 @@ function onCloseDrawer() {
 }
 
 const contentRef: any = ref(null)
+
+const spinning = computed( ()=>store.state.Global.spinning )
 
 
 watch(() => {

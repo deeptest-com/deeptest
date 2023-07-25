@@ -15,6 +15,15 @@ type DebugInvokeCtrl struct {
 }
 
 // SubmitResult
+// @Tags	接口调试
+// @summary	Agent提交接口执行结果
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization				header	string										true	"Authentication header"
+// @Param 	currProjectId				query	int											true	"当前项目ID"
+// @Param 	SubmitDebugResultRequest	body	domain.SubmitDebugResultRequest				true	"Agent提交接口执行结果的请求体"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/debugs/invoke/submitResult	[post]
 func (c *DebugInvokeCtrl) SubmitResult(ctx iris.Context) {
 	req := domain.SubmitDebugResultRequest{}
 	err := ctx.ReadJSON(&req)
@@ -33,6 +42,17 @@ func (c *DebugInvokeCtrl) SubmitResult(ctx iris.Context) {
 }
 
 // List
+// @Tags	接口调试
+// @summary	调试记录列表
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization		header	string			true	"Authentication header"
+// @Param 	currProjectId		query	int				true	"当前项目ID"
+// @Param 	debugInterfaceId	query	int				true	"debugInterfaceId"
+// @Param 	endpointInterfaceId	query	int				true	"endpointInterfaceId"
+// @Param 	DebugReq 			query 	domain.DebugReq true 	"获取调试接口请求的请求体"
+// @success	200	{object}	_domain.Response{data=[]model.DebugInvoke}
+// @Router	/api/v1/debugs/invoke	[get]
 func (c *DebugInvokeCtrl) List(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
@@ -58,6 +78,16 @@ func (c *DebugInvokeCtrl) List(ctx iris.Context) {
 }
 
 // GetLastResp
+// @Tags	接口调试
+// @summary	获取最后调试记录响应
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization		header	string			true	"Authentication header"
+// @Param 	currProjectId		query	int				true	"当前项目ID"
+// @Param 	debugInterfaceId	query	int				true	"debugInterfaceId"
+// @Param 	endpointInterfaceId	query	int				true	"endpointInterfaceId"
+// @success	200	{object}	_domain.Response{data=domain.DebugResponse}
+// @Router	/api/v1/debugs/invoke/getLastResp	[get]
 func (c *DebugInvokeCtrl) GetLastResp(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
@@ -100,6 +130,15 @@ func (c *DebugInvokeCtrl) GetResult(ctx iris.Context) {
 }
 
 // GetAsInterface 详情
+// @Tags	接口调试
+// @summary	调试记录详情
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string			true	"Authentication header"
+// @Param 	currProjectId	query	int				true	"当前项目ID"
+// @Param 	id				path	int				true	"id"
+// @success	200	{object}	_domain.Response{data=object{debugData=domain.DebugData,resp=domain.DebugResponse}}
+// @Router	/api/v1/debugs/invoke/{id}	[get]
 func (c *DebugInvokeCtrl) GetAsInterface(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -120,6 +159,15 @@ func (c *DebugInvokeCtrl) GetAsInterface(ctx iris.Context) {
 }
 
 // Delete 删除
+// @Tags	接口调试
+// @summary	删除调试记录
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string			true	"Authentication header"
+// @Param 	currProjectId	query	int				true	"当前项目ID"
+// @Param 	id				path	int				true	"id"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/debugs/invoke/{id}	[delete]
 func (c *DebugInvokeCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {

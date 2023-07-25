@@ -93,4 +93,14 @@ export async function doAudit(params: any): Promise<any> {
     });
 }
 
+export async function auditUsers(projectId: number): Promise<any> {
+    const params = {"projectId":projectId}
+    return request({
+        url: `/${apiPath}/auditUsers`,
+        method: 'get' ,
+        params
+    });
+}
+
+
 

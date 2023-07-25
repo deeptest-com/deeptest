@@ -18,6 +18,14 @@ type AccountCtrl struct {
 	UserRepo       *repo.UserRepo          `inject:""`
 }
 
+// Login
+// @Tags	认证模块
+// @summary	登录
+// @accept	application/json
+// @Produce	application/json
+// @Param 	LoginReq	body	serverDomain.LoginReq	true	"登录的请求体"
+// @success	200	{object}	_domain.Response{data=serverDomain.LoginResp}
+// @Router	/api/v1/account/login	[post]
 func (c *AccountCtrl) Login(ctx iris.Context) {
 	var req serverDomain.LoginReq
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -37,6 +45,14 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
 }
 
+// Register
+// @Tags	认证模块
+// @summary	注册
+// @accept	application/json
+// @Produce	application/json
+// @Param 	RegisterReq	body	serverDomain.RegisterReq	true	"注册的请求体"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/account/register	[post]
 func (c *AccountCtrl) Register(ctx iris.Context) {
 	var req serverDomain.RegisterReq
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -53,6 +69,15 @@ func (c *AccountCtrl) Register(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: err.Code, Msg: err.Msg})
 }
 
+// ForgotPassword
+// @Tags	认证模块
+// @summary	忘记密码
+// @accept	application/json
+// @Produce	application/json
+// @Param 	usernameOrPassword	query	string	true	"用户名或者密码"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/account/forgotPassword	[post]
+// @x-creator "wangzhen"
 func (c *AccountCtrl) ForgotPassword(ctx iris.Context) {
 	usernameOrPassword := ctx.URLParam("usernameOrPassword")
 	if usernameOrPassword == "" {
@@ -69,6 +94,14 @@ func (c *AccountCtrl) ForgotPassword(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// ResetPassword
+// @Tags	认证模块
+// @summary	重置密码
+// @accept	application/json
+// @Produce	application/json
+// @Param 	ResetPasswordReq	body	serverDomain.ResetPasswordReq	true	"重置密码的参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/account/resetPassword	[post]
 func (c *AccountCtrl) ResetPassword(ctx iris.Context) {
 	var req serverDomain.ResetPasswordReq
 	err := ctx.ReadJSON(&req)

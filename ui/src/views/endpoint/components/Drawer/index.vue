@@ -64,7 +64,7 @@ import {Endpoint} from "@/views/endpoint/data";
 import {message} from "ant-design-vue";
 import {SaveOutlined} from '@ant-design/icons-vue';
 
-const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal }>();
+const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal,Global }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 
 const props = defineProps({
@@ -167,9 +167,15 @@ async function cancel() {
 }
 
 async function save() {
+
+  store.commit("Global/setSpinning",true)
   await store.dispatch('Endpoint/updateEndpointDetail',
       {...endpointDetail.value}
+  ).finally( ()=>{
+        store.commit("Global/setSpinning",false)
+      }
   );
+  store.commit("Global/setSpinning",false)
   message.success('保存成功');
   emit('refreshList');
 }

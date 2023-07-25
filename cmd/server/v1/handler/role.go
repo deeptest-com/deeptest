@@ -17,6 +17,15 @@ type RoleCtrl struct {
 }
 
 // GetAllRoles 分页列表
+// @Tags	角色模块
+// @summary	角色列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @Param 	RoleReqPaginate	query	serverDomain.RoleReqPaginate	true	"获取角色列表的请求参数"
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]serverDomain.RoleResp}}
+// @Router	/api/v1/roles	[get]
 func (c *RoleCtrl) GetAllRoles(ctx iris.Context) {
 	var req serverDomain.RoleReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
@@ -38,6 +47,15 @@ func (c *RoleCtrl) GetAllRoles(ctx iris.Context) {
 }
 
 // GetRole 详情
+// @Tags	角色模块
+// @summary	角色列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"角色ID"
+// @success	200	{object}	_domain.Response{data=serverDomain.RoleResp}
+// @Router	/api/v1/roles/{id}	[get]
 func (c *RoleCtrl) GetRole(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
@@ -54,6 +72,15 @@ func (c *RoleCtrl) GetRole(ctx iris.Context) {
 }
 
 // CreateRole 添加
+// @Tags	角色模块
+// @summary	新建角色
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	RoleReq			body	serverDomain.RoleReq		true	"新建角色的请求参数"
+// @success	200	{object}	_domain.Response{data=object{id=int}}
+// @Router	/api/v1/roles	[post]
 func (c *RoleCtrl) CreateRole(ctx iris.Context) {
 	req := serverDomain.RoleReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -74,6 +101,16 @@ func (c *RoleCtrl) CreateRole(ctx iris.Context) {
 }
 
 // UpdateRole 更新
+// @Tags	角色模块
+// @summary	编辑角色
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string					true	"Authentication header"
+// @Param 	currProjectId	query	int						true	"当前项目ID"
+// @Param 	id				path	int						true	"角色ID"
+// @Param 	RoleReq			body	serverDomain.RoleReq	true	"编辑角色的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/roles/{id}	[post]
 func (c *RoleCtrl) UpdateRole(ctx iris.Context) {
 	id, _ := ctx.Params().GetInt("id")
 
@@ -96,6 +133,15 @@ func (c *RoleCtrl) UpdateRole(ctx iris.Context) {
 }
 
 // DeleteRole 删除
+// @Tags	角色模块
+// @summary	删除角色
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"角色ID"
+// @success	200	{object}	_domain.Response{data=serverDomain.RoleResp}
+// @Router	/api/v1/roles/{id}	[delete]
 func (c *RoleCtrl) DeleteRole(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
@@ -112,6 +158,15 @@ func (c *RoleCtrl) DeleteRole(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// AllRoleList
+// @Tags	角色模块
+// @summary	无分页的角色列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response{data=object{result=[]serverDomain.RoleResp}}
+// @Router	/api/v1/roles/all	[get]
 func (c *RoleCtrl) AllRoleList(ctx iris.Context) {
 	roles, err := c.RoleService.AllRoleList()
 	if err != nil {

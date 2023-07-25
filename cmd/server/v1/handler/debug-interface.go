@@ -19,6 +19,15 @@ type DebugInterfaceCtrl struct {
 }
 
 // Load
+// @Tags	接口调试
+// @summary	获取调试接口请求
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string			true	"Authentication header"
+// @Param 	currProjectId	query	int				true	"当前项目ID"
+// @Param 	DebugReq 		body 	domain.DebugReq true 	"获取调试接口请求的请求体"
+// @success	200	{object}	_domain.Response{data=domain.DebugData}
+// @Router	/api/v1/debugs/interface/load	[post]
 func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
 	req := domain.DebugInfo{}
 	err := ctx.ReadJSON(&req)
@@ -36,7 +45,16 @@ func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
-// Load
+// LoadForExec
+// @Tags	接口调试
+// @summary	获取调试接口用于执行
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string			true	"Authentication header"
+// @Param 	currProjectId	query	int				true	"当前项目ID"
+// @Param 	DebugReq 		body 	domain.DebugReq true 	"获取调试接口用于执行的请求体"
+// @success	200	{object}	_domain.Response{data=agentExec.InterfaceExecObj}
+// @Router	/api/v1/debugs/interface/loadForExec	[post]
 func (c *DebugInterfaceCtrl) LoadForExec(ctx iris.Context) {
 	req := domain.DebugInfo{}
 	err := ctx.ReadJSON(&req)
@@ -55,6 +73,15 @@ func (c *DebugInterfaceCtrl) LoadForExec(ctx iris.Context) {
 }
 
 // Save
+// @Tags	接口调试
+// @summary	保存调试接口
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string			true	"Authentication header"
+// @Param 	currProjectId	query	int				true	"当前项目ID"
+// @Param 	DebugReq 		body 	domain.DebugReq true 	"保存调试接口的请求体"
+// @success	200	{object}	_domain.Response{data=agentExec.InterfaceExecObj}
+// @Router	/api/v1/debugs/interface/save	[post]
 func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {
 	req := domain.DebugData{}
 	err := ctx.ReadJSON(&req)

@@ -64,7 +64,10 @@ const saveDebugInterface = async (data) => {
 
   Object.assign(data, {shareVars: null, envVars: null, globalEnvVars: null, globalParamVars: null})
 
+  store.commit("Global/setSpinning",true)
   const res = await store.dispatch('Debug/save', data)
+  store.commit("Global/setSpinning",false)
+
   if (res === true) {
     notification.success({
       key: NotificationKeyCommon,
@@ -90,7 +93,10 @@ const saveAsFinish = async (model) => {
 
   const data = Object.assign({...model, debugData: debugData.value}, debugInfo.value)
 
+  store.commit("Global/setSpinning",true)
   const res = await store.dispatch('Debug/saveAsCase', data)
+  store.commit("Global/setSpinning",false)
+
   if (res === true) {
     saveAsVisible.value = false
 

@@ -15,7 +15,7 @@ type BaseRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *BaseRepo) GetAllParentIds(id uint, tableName string) (ids []uint, err error) {
+func (r *BaseRepo) GetAncestorIds(id uint, tableName string) (ids []uint, err error) {
 	sql := `
 		WITH RECURSIVE temp AS
 		(
@@ -40,7 +40,7 @@ func (r *BaseRepo) GetAllParentIds(id uint, tableName string) (ids []uint, err e
 	return
 }
 
-func (r *BaseRepo) GetAllChildIds(id uint, tableName string, typ serverConsts.CategoryDiscriminator, projectId int) (
+func (r *BaseRepo) GetDescendantIds(id uint, tableName string, typ serverConsts.CategoryDiscriminator, projectId int) (
 	ids []uint, err error) {
 	sql := `
 		WITH RECURSIVE temp AS

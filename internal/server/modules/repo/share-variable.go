@@ -82,10 +82,10 @@ func (r *ShareVariableRepo) ListForScenarioDebug(processorId uint) (pos []model.
 	processor, _ := r.ScenarioProcessorRepo.Get(processorId)
 	scenarioId := processor.ScenarioId
 
-	parentProcessorIds, err := r.GetAllParentIds(processorId, model.Processor{}.TableName())
+	ancestorProcessorIds, err := r.GetAncestorIds(processorId, model.Processor{}.TableName())
 
 	err = r.DB.Model(&model.ShareVariable{}).
-		Where("scenario_processor_id IN ?", parentProcessorIds).
+		Where("scenario_processor_id IN ?", ancestorProcessorIds).
 		Where("scenario_id=?", scenarioId).
 		Where("NOT deleted AND NOT disabled").
 		Find(&pos).Error

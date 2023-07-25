@@ -48,6 +48,7 @@ const props = defineProps({
   }
   .content {
     padding: 10px 10px;
+    word-break: break-all;
   }
 }
 

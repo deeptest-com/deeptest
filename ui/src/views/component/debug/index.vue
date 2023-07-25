@@ -63,7 +63,8 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, onMounted, onUnmounted, PropType, ref} from "vue";
+import {computed, defineProps, inject, onBeforeUnmount, onMounted, onUnmounted, ref, watch} from "vue";
+import { onBeforeRouteLeave } from 'vue-router';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 
@@ -85,6 +86,7 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, Endpoint: Endpoint, ProjectGlobal: ProjectGlobal, Global: GlobalStateType }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
+const debugDataChanged = computed<any>(() => store.state.Debug.debugDataChanged);
 
 const props = defineProps({
   onSaveDebugData: {
@@ -138,6 +140,7 @@ const syncDebugData = async () => {
 
 const posStyleEnv = ref({})
 const posStyleHis = ref({})
+
 onMounted(() => {
   console.log('onMounted in debug-index')
   resize()
@@ -145,6 +148,21 @@ onMounted(() => {
 onUnmounted(() => {
   console.log('onUnmounted in debug-index')
   store.dispatch('Debug/resetDataAndInvocations');
+})
+
+watch(debugData, async () => { // changes from webpage
+  console.log('watch debugData')
+
+  let newVal = ''
+  if (debugDataChanged.value === 'refreshed') { // just refreshed in store
+    newVal = 'no'
+  } else {
+    newVal = 'yes'
+  }
+  await store.commit('Debug/setDebugDataChanged', newVal)
+}, {immediate: true, deep: true})
+onBeforeRouteLeave((to, from) => {
+  return true
 })
 
 const resize = () => {

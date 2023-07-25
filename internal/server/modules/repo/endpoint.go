@@ -47,7 +47,7 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 
 	if req.CategoryId > 0 {
 		var categoryIds []uint
-		categoryIds, err = r.BaseRepo.GetAllChildIds(uint(req.CategoryId), model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetDescendantIds(uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.EndpointCategory, int(req.ProjectId))
 		if err != nil {
 			return

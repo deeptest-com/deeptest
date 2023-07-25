@@ -35,7 +35,7 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 	var categoryIds []uint
 
 	if req.CategoryId > 0 {
-		categoryIds, err = r.BaseRepo.GetAllChildIds(uint(req.CategoryId), model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetDescendantIds(uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.ScenarioCategory, projectId)
 		if err != nil {
 			return

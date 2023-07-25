@@ -41,6 +41,7 @@ import {listEnvVarByServer} from "@/services/environment";
 export interface StateType {
     debugInfo: DebugInfo
     debugData: any;
+    debugDataChanged: string;
 
     requestData: any;
     responseData: Response;
@@ -58,6 +59,7 @@ export interface StateType {
 const initState: StateType = {
     debugInfo: {} as DebugInfo,
     debugData: {},
+    debugDataChanged: 'no',
 
     requestData: {},
     responseData: {} as Response,
@@ -78,6 +80,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     mutations: {
         setDebugInfo: Mutation<StateType>;
         setDebugData: Mutation<StateType>;
+        setDebugDataChanged: Mutation<StateType>;
 
         setRequest: Mutation<StateType>;
         setResponse: Mutation<StateType>;
@@ -169,6 +172,10 @@ const StoreModel: ModuleType = {
 
         setDebugData(state, payload) {
             state.debugData = payload;
+            state.debugDataChanged = 'refreshed';
+        },
+        setDebugDataChanged(state, payload) {
+            state.debugDataChanged = payload;
         },
         setRequest(state, payload) {
             state.requestData = payload;
@@ -249,15 +256,6 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async resetDataAndInvocations({commit, dispatch, state}) {
-            commit('setDebugInfo', {});
-            commit('setDebugData', {});
-            commit('setRequest', {});
-            commit('setResponse', {});
-            commit('setResult', []);
-            commit('setInvocations', []);
-        },
-
         async loadData({commit, state, dispatch}, data) {
             try {
                 const resp: ResponseData = await loadData(data);
@@ -298,6 +296,14 @@ const StoreModel: ModuleType = {
             } else {
                 return false
             }
+        },
+        async resetDataAndInvocations({commit, dispatch, state}) {
+            commit('setDebugInfo', {});
+            commit('setDebugData', {});
+            commit('setRequest', {});
+            commit('setResponse', {});
+            commit('setResult', []);
+            commit('setInvocations', []);
         },
 
         async call({commit, dispatch, state}, data: any) {

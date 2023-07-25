@@ -70,7 +70,7 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agent
 	ret.ExecScene.ShareVars = ret.DebugData.ShareVars // for execution
 	ret.DebugData.ShareVars = nil                     // for display on debug page only
 
-	// get project environment and settings
+	// get environment and settings on project level
 	s.SceneService.LoadEnvVars(&ret.ExecScene, ret.DebugData)
 	s.SceneService.LoadProjectSettings(&ret.ExecScene, ret.DebugData.ProjectId)
 

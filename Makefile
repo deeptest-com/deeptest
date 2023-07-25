@@ -1,5 +1,5 @@
-VERSION=1.1.1
-PROJECT=deeptest
+VERSION=0.0.3
+PROJECT=LeyanAPI
 
 ifeq ($(OS),Windows_NT)
     PLATFORM="windows"
@@ -12,9 +12,9 @@ else
 endif
 
 ifeq ($(PLATFORM),"mac")
-    QINIU_DIR=/Users/liguangwei/nk
+    QINIU_DIR=/Users/liguangwei/nk2/
 else
-    QINIU_DIR=~/nk/
+    QINIU_DIR=~/nk2/
 endif
 
 QINIU_DIST_DIR=${QINIU_DIR}${PROJECT}/${VERSION}/
@@ -52,7 +52,7 @@ gen_version_file:
 	@echo '{"version": "${VERSION}"}' > ${QINIU_DIR}/${PROJECT}/version.json
 
 compile_ui:
-	@cd ui && yarn build --mode deeptest-local --dest ../client/ui && cd ..
+	@cd ui && yarn build --mode ly-client --dest ../client/ui && cd ..
 
 # launcher
 compile_launcher_win64:

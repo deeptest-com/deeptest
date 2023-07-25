@@ -1,11 +1,12 @@
 {
   "name": "deeptest",
   "productName": "deeptest",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "deeptest",
   "main": ".webpack/main",
   "scripts": {
     "start": "sudo NODE_ENV=development electron-forge start",
+    "dev": "UI_SERVER_URL=http://127.0.0.1:8000 SKIP_AGENT_SERVER=1 npm run start",
     "package": "sudo electron-forge package",
     "package-mac": "sudo npm run package -- --platform=darwin",
     "package-linux": "sudo npm run package -- --platform=linux",

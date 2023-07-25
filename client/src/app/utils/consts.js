@@ -17,8 +17,8 @@ export const electronMsgDownloading = 'electronMsgDownloading'
 export const minimumSizeWidth = 1024
 export const minimumSizeHeight = 640
 
-export const App = 'deeptest';
+export const App = 'LeyanAPI';
 export const WorkDir = path.join(os.homedir(), App);
 export const ResDir = process.resourcesPath;
 // export const downloadUrl = 'http://127.0.0.1:8085/upload/';
-export const downloadUrl = 'http://111.231.16.35:8085/upload/';
+export const downloadUrl = 'http://192.168.40.198:8080';

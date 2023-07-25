@@ -39,8 +39,9 @@
 
   if (isElectron.value && !ipcRenderer) {
     ipcRenderer = window.require('electron').ipcRenderer
-
+    debugger;
     ipcRenderer.on(settings.electronMsgUpdate, async (event, data) => {
+
       console.log('update msg from electron', data)
       currVersion.value = data.currVersionStr
       newVersion.value = data.newVersionStr

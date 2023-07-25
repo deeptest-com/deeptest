@@ -49,7 +49,13 @@
                 "
               />
             </a-form-item>
-            <!-- <a-form-item label="审批人"> ericpp; flyjenkin </a-form-item> -->
+            <a-form-item label="审批人">
+            <a-select
+              v-model:value="auditUsers"
+              mode="multiple"
+              disabled
+            ></a-select>
+            </a-form-item>
             <a-form-item
               class="edit-button"
               :wrapper-col="{ offset: labelCol.span, span: wrapperCol.span }"
@@ -134,6 +140,8 @@ const handleSelectLogo = (item: any) => {
   selectLogoKey.value = item.imgName;
   formStateRef.logo = item.imgName;
 };
+
+const auditUsers = ref(["wangzhen","hahaha","hahaha","hahaha","hahaha","hahaha","wangzhen","hahaha","hahaha","hahaha","hahaha","hahaha"])
 
 watch(() => props.visible, (val) => {
     if (val) {

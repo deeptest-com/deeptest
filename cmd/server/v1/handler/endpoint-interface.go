@@ -12,6 +12,16 @@ type EndpointInterfaceCtrl struct {
 	EndpointInterfaceService *service.EndpointInterfaceService `inject:""`
 }
 
+// ListForSelection
+// @Tags	设计器/接口
+// @summary	接口列表
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization					header	string										true	"Authentication header"
+// @Param 	currProjectId					query	int											true	"当前项目ID"
+// @Param 	EndpointInterfaceReqPaginate 	body 	serverDomain.EndpointInterfaceReqPaginate 	true 	"获取接口列表的请求参数"
+// @success	200	{object}	_domain.Response{data=object{result=[]model.EndpointInterface}}
+// @Router	/api/v1/endpoints/interfaces/listForSelection	[post]
 func (c *EndpointInterfaceCtrl) ListForSelection(ctx iris.Context) {
 	var req serverDomain.EndpointInterfaceReqPaginate
 	err := ctx.ReadJSON(&req)
@@ -26,6 +36,16 @@ func (c *EndpointInterfaceCtrl) ListForSelection(ctx iris.Context) {
 	return
 }
 
+// ImportEndpointData
+// @Tags	设计器/接口
+// @summary	导入接口数据
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization			header	string								true	"Authentication header"
+// @Param 	currProjectId			query	int									true	"当前项目ID"
+// @Param 	ImportEndpointDataReq 	body 	serverDomain.ImportEndpointDataReq 	true 	"导入接口数据的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoints/interfaces/importEndpointData	[post]
 func (c *EndpointInterfaceCtrl) ImportEndpointData(ctx iris.Context) {
 	var req serverDomain.ImportEndpointDataReq
 	err := ctx.ReadJSON(&req)

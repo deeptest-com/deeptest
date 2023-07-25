@@ -10,6 +10,15 @@ type EndpointTagCtrl struct {
 	EndpointTagService *service.EndpointTagService `inject:""`
 }
 
+// ListTags
+// @Tags	设计器/标签
+// @summary	用例详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response{data=[]model.EndpointTagRel}
+// @Router	/api/v1/endpoint/tags	[get]
 func (c *EndpointTagCtrl) ListTags(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")
 

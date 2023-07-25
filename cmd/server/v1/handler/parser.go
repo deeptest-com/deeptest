@@ -17,6 +17,15 @@ type ParserCtrl struct {
 }
 
 // ParseHtml
+// @Tags	解析模块
+// @summary	解析HTML
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	ParserRequest 	body 	serverDomain.ParserRequest 	true 	"解析HTML的请求参数"
+// @success	200	{object}	_domain.Response{data=serverDomain.ParserResponse}
+// @Router	/api/v1/parser/parseHtml	[post]
 func (c *ParserCtrl) ParseHtml(ctx iris.Context) {
 	req := serverDomain.ParserRequest{}
 	err := ctx.ReadJSON(&req)
@@ -35,6 +44,15 @@ func (c *ParserCtrl) ParseHtml(ctx iris.Context) {
 }
 
 // ParseXml
+// @Tags	解析模块
+// @summary	解析XML
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	ParserRequest 	body 	serverDomain.ParserRequest 	true 	"解析XML的请求参数"
+// @success	200	{object}	_domain.Response{data=serverDomain.ParserResponse}
+// @Router	/api/v1/parser/parseXml	[post]
 func (c *ParserCtrl) ParseXml(ctx iris.Context) {
 	req := serverDomain.ParserRequest{}
 	err := ctx.ReadJSON(&req)
@@ -53,6 +71,15 @@ func (c *ParserCtrl) ParseXml(ctx iris.Context) {
 }
 
 // ParseJson
+// @Tags	解析模块
+// @summary	解析JSON
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	ParserRequest 	body 	serverDomain.ParserRequest 	true 	"解析JSON的请求参数"
+// @success	200	{object}	_domain.Response{data=serverDomain.ParserResponse}
+// @Router	/api/v1/parser/parseJson	[post]
 func (c *ParserCtrl) ParseJson(ctx iris.Context) {
 	req := serverDomain.ParserRequest{}
 	err := ctx.ReadJSON(&req)
@@ -71,6 +98,15 @@ func (c *ParserCtrl) ParseJson(ctx iris.Context) {
 }
 
 // ParseText
+// @Tags	解析模块
+// @summary	解析TEXT
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	ParserRequest 	body 	serverDomain.ParserRequest 	true 	"解析TEXT的请求参数"
+// @success	200	{object}	_domain.Response{data=serverDomain.ParserResponse}
+// @Router	/api/v1/parser/parseText	[post]
 func (c *ParserCtrl) ParseText(ctx iris.Context) {
 	req := serverDomain.ParserRequest{}
 	err := ctx.ReadJSON(&req)
@@ -89,6 +125,15 @@ func (c *ParserCtrl) ParseText(ctx iris.Context) {
 }
 
 // TestExpr
+// @Tags	解析模块
+// @summary	测试XPath或正则表达式
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @Param 	TestExprRequest body 	serverDomain.TestExprRequest 	true 	"测试XPath或正则表达式的请求参数"
+// @success	200	{object}	_domain.Response{data=serverDomain.TestExprResponse}
+// @Router	/api/v1/parser/testExpr	[post]
 func (c *ParserCtrl) TestExpr(ctx iris.Context) {
 	req := serverDomain.TestExprRequest{}
 	err := ctx.ReadJSON(&req)

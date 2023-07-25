@@ -5,6 +5,7 @@
 const win:any = window?.process;
 export const isElectronEnv = win?.versions?.electron;
 
+
 /**
  * 可选的 Agent 服务地址
  * */

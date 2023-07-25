@@ -4,7 +4,7 @@
       <div class="content">
         <div class="codes">
           <MonacoEditor theme="vs" language="typescript" class="editor"
-                        v-model:value="model.content"
+                        :value="model.content"
                         :options="editorOptions"
                         @change="editorChange" />
         </div>

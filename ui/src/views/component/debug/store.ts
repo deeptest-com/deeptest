@@ -585,7 +585,7 @@ const StoreModel: ModuleType = {
         async addSnippet({commit, dispatch, state}, name: string) {
             const json = await getSnippet(name)
             if (json.code === 0) {
-                let script = state.scriptData.content ? state.scriptData.content: '' + '\n' +  json.data.script
+                let script = (state.scriptData.content ? state.scriptData.content: '') + '\n' +  json.data.script
                 script = script.trim()
                 commit('setScriptContent', script);
             }

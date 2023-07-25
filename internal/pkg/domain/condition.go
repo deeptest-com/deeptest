@@ -60,9 +60,9 @@ func (condition CheckpointBase) GetType() consts.ConditionType {
 type ScriptBase struct {
 	ConditionSrc consts.ConditionSrc `json:"conditionType"`
 
-	Content string `json:"content"`
+	Content string `gorm:"type:longtext;" json:"content"`
 
-	Output       string              `json:"output"`
+	Output       string              `gorm:"type:longtext;" json:"output"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg"`
 

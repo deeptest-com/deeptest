@@ -1,37 +1,35 @@
 <template>
   <div class="post-script-main">
-    <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-      <div class="content">
-        <div class="codes">
-          <MonacoEditor theme="vs" language="typescript" class="editor"
-                        :value="model.content"
-                        :options="editorOptions"
-                        @change="editorChange" />
-        </div>
-
-        <div class="refer">
-          <div class="desc">后置脚本使用JavaScript编写，在获取响应后执行。</div>
-
-          <div class="title">代码片段：</div>
-          <div>
-            <!--          <div @click="addSnippet('environment_get')" class="dp-link-primary">Get an environment variable</div>
-                      <div @click="addSnippet('environment_set')" class="dp-link-primary">Set an environment variable</div>
-                      <div @click="addSnippet('environment_clear')" class="dp-link-primary">Clear an environment variable</div>-->
-
-            <div @click="addSnippet('variables_get')" class="dp-link-primary">Get an variable</div>
-            <div @click="addSnippet('variables_set')" class="dp-link-primary">Set an variable</div>
-            <div @click="addSnippet('variables_clear')" class="dp-link-primary">Clear an variable</div>
-
-            <div @click="addSnippet('datapool_get')" class="dp-link-primary">Get datapool variable</div>
-          </div>
-        </div>
+    <div class="content">
+      <div class="codes">
+        <MonacoEditor theme="vs" language="typescript" class="editor"
+                      :value="model.content"
+                      :options="editorOptions"
+                      @change="editorChange" />
       </div>
 
-      <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
-        <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
-        <a-button v-if="finish" @click="cancel" class="dp-btn-gap">取消</a-button>
-      </a-form-item>
-    </a-form>
+      <div class="refer">
+        <div class="desc">后置脚本使用JavaScript编写，在获取响应后执行。</div>
+
+        <div class="title">代码片段：</div>
+        <div>
+          <!--          <div @click="addSnippet('environment_get')" class="dp-link-primary">Get an environment variable</div>
+                    <div @click="addSnippet('environment_set')" class="dp-link-primary">Set an environment variable</div>
+                    <div @click="addSnippet('environment_clear')" class="dp-link-primary">Clear an environment variable</div>-->
+
+          <div @click="addSnippet('variables_get')" class="dp-link-primary">Get an variable</div>
+          <div @click="addSnippet('variables_set')" class="dp-link-primary">Set an variable</div>
+          <div @click="addSnippet('variables_clear')" class="dp-link-primary">Clear an variable</div>
+
+          <div @click="addSnippet('datapool_get')" class="dp-link-primary">Get datapool variable</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
+      <a-button v-if="finish" @click="cancel" class="dp-btn-gap">取消</a-button>
+    </div>
   </div>
 </template>
 
@@ -89,6 +87,7 @@ const addSnippet = (snippetName) => {
   store.dispatch('Debug/addSnippet', snippetName)
 }
 const editorChange = (newScriptCode) => {
+  console.log('editorChange', newScriptCode)
   model.value.content = newScriptCode;
 }
 
@@ -142,20 +141,24 @@ const wrapperCol = { span: 24 }
   height: 100%;
   width: 100%;
 
-  .head {
-    padding: 2px 3px;
-    border-bottom: 1px solid #d9d9d9;
-  }
   .content {
     display: flex;
-    height: calc(100% - 28px);
+    height: calc(100% - 32px);
+
     &>div {
       height: 100%;
     }
-
     .codes {
       flex: 1;
+      height: 100%;
+      min-height: 160px;
+
+      .editor {
+        height: 100%;
+        min-height: 160px;
+      }
     }
+
     .refer {
       width: 260px;
       padding: 10px;
@@ -169,15 +172,10 @@ const wrapperCol = { span: 24 }
       }
     }
   }
+  .footer {
 
-  .codes {
-    height: 100%;
-    min-height: 160px;
-
-    .editor {
-      height: 100%;
-      min-height: 160px;
-    }
   }
+
+
 }
 </style>

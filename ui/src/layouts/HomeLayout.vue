@@ -21,7 +21,8 @@ import RightTopUpdate from './IndexLayout/components/RightTopUpdate.vue';
 export default defineComponent({
   name: 'HomeLayout',
   components: {
-    UserSetting
+    UserSetting,
+    RightTopUpdate
   },
   setup() {
     const router = useRouter();

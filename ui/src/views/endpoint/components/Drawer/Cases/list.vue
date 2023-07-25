@@ -38,7 +38,7 @@
 
       </a-table>
 
-      <a-empty v-if="caseList.length === 0" :image="simpleImage" />
+      <a-empty v-if="caseList.length === 0" :image="simpleImage" class="dp-empty-no-margin" />
     </div>
 
     <CaseEdit

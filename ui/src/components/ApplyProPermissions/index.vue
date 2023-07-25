@@ -72,7 +72,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, defineProps, defineEmits, computed } from "vue";
+import { ref, reactive, watch, defineProps, defineEmits, computed, onMounted } from "vue";
 import { Form, message } from "ant-design-vue";
 import { StateType as UserStateType } from "@/store/user";
 import { StateType as ProjectStateType } from "@/views/project/store";
@@ -89,6 +89,7 @@ const props = defineProps<{
 const emits = defineEmits(["update:visible", "handleOk", "handleSuccess"]);
 const store = useStore<{ User: UserStateType; Project: ProjectStateType }>();
 const roles = computed<SelectTypes["options"]>(() => store.state.Project.roles);
+const auditUsers = computed(()=>store.state.Project.auditUsers)
 const labelCol = { span: 6 };
 const wrapperCol = { span: 14 };
 const projectInfo:any = {
@@ -141,13 +142,12 @@ const handleSelectLogo = (item: any) => {
   formStateRef.logo = item.imgName;
 };
 
-const auditUsers = ref(["wangzhen","hahaha","hahaha","hahaha","hahaha","hahaha","wangzhen","hahaha","hahaha","hahaha","hahaha","hahaha"])
-
 watch(() => props.visible, (val) => {
     if (val) {
        resetFields()
       console.log("roles", roles);
       store.dispatch("Project/getRoles");
+      store.dispatch("Project/getAuditUsers",props.item.projectId)
 
     }
   }, {immediate: true,});

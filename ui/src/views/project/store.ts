@@ -4,7 +4,7 @@ import { ResponseData } from '@/utils/request';
 import {SelectTypes} from 'ant-design-vue/es/select';
 import { Project, QueryResult, PaginationConfig } from './data.d';
 import {
-    query, save, remove, detail, getUserList, getRoles, getNotExistedUserList
+    query, save, remove, detail, getUserList, getRoles, getNotExistedUserList, auditUsers
 } from './service';
 import {QueryParams} from "@/types/data";
 
@@ -15,6 +15,7 @@ export interface StateType {
     userList:SelectTypes["options"];
     notExistedUserList:SelectTypes["options"];
     roles:SelectTypes["options"];
+    auditUsers:[];
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -26,6 +27,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setUserList:Mutation<StateType>;
         setNotExistedUserList:Mutation<StateType>;
         setRoles:Mutation<StateType>;
+        setAuditUsers:Mutation<StateType>;
     };
     actions: {
         queryProject: Action<StateType, StateType>;
@@ -35,6 +37,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getUserList: Action<StateType, StateType>;
         getNotExistedUserList: Action<StateType, StateType>;
         getRoles:Action<StateType, StateType>;
+        getAuditUsers:Action<StateType, StateType>;
     };
 }
 const initState: StateType = {
@@ -53,6 +56,7 @@ const initState: StateType = {
     userList:[] as SelectTypes["options"] ,
     notExistedUserList:[] as SelectTypes["options"] ,
     roles:[] as SelectTypes["options"],
+    auditUsers:[]
 };
 
 const StoreModel: ModuleType = {
@@ -80,6 +84,9 @@ const StoreModel: ModuleType = {
         setRoles(state, payload) {
             state.roles = payload;
         },
+        setAuditUsers(state, payload){
+            state.auditUsers = payload;
+        }
     },
     actions: {
         async queryProject({ commit }, params: QueryParams ) {
@@ -173,6 +180,16 @@ const StoreModel: ModuleType = {
                 })
                 commit('setRoles',data.result);
               }
+        },
+
+        async getAuditUsers({ commit },projectId:number) {
+            const response: ResponseData = await auditUsers(projectId);
+            const { data } = response;
+            const res:string[]= []
+            if (response.code === 0) {
+                data.forEach((item:any) => res.push(item.name))
+                commit('setAuditUsers',res);
+            }
         },
     }
 };

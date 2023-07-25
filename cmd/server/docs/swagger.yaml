@@ -2169,6 +2169,8 @@ definitions:
         items:
           $ref: '#/definitions/model.EndpointInterface'
         type: array
+      maintainer:
+        type: string
       path:
         type: string
       pathParams:
@@ -2269,6 +2271,8 @@ definitions:
           $ref: '#/definitions/model.EndpointInterfaceCookie'
         type: array
       createdAt:
+        type: string
+      creator:
         type: string
       debugInterfaceId:
         type: integer
@@ -3498,6 +3502,59 @@ definitions:
         type: string
       url:
         type: string
+    type: object
+  model.SysUser:
+    properties:
+      avatar:
+        type: string
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      email:
+        type: string
+      id:
+        type: integer
+      intro:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      profile:
+        $ref: '#/definitions/model.SysUserProfile'
+      role_ids:
+        items:
+          type: integer
+        type: array
+      updatedAt:
+        type: string
+      username:
+        type: string
+      vcode:
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  model.SysUserProfile:
+    properties:
+      createdAt:
+        type: string
+      currProjectId:
+        type: integer
+      currServeId:
+        type: integer
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      phone:
+        type: string
+      updatedAt:
+        type: string
+      userId:
+        type: integer
     type: object
   serverConsts.AuthType:
     enum:
@@ -10144,6 +10201,43 @@ paths:
                     type: object
               type: object
       summary: 申请加入审批列表
+      tags:
+      - 项目管理
+  /api/v1/projects/auditUsers:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 要申请的项目ID
+        in: query
+        name: projectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.SysUser'
+                  type: array
+              type: object
+      summary: 申请加入项目的审批人
       tags:
       - 项目管理
   /api/v1/projects/changeProject:

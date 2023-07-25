@@ -392,3 +392,31 @@ func (c *ProjectCtrl) AuditList(ctx iris.Context) {
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
+
+// AuditUsers
+// @Tags	项目管理
+// @summary	申请加入项目的审批人
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	projectId		query	int		true	"要申请的项目ID"
+// @success	200	{object}	_domain.Response{data=[]model.SysUser}
+// @Router	/api/v1/projects/auditUsers	[get]
+func (c *ProjectCtrl) AuditUsers(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("projectId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: "projectId can't be empty"})
+		return
+	}
+	res, err := c.ProjectService.AuditUsers(uint(projectId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}

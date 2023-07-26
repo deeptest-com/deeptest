@@ -9,6 +9,7 @@ type PlanReportReqPaginate struct {
 	ExecuteStartTime int64  `json:"executeStartTime"`
 	ExecuteEndTime   int64  `json:"executeEndTime"`
 	CreateUserId     uint   `json:"createUserId"`
+	CreateUserIds    []uint `json:"createUserIds"`
 	Keywords         string `json:"keywords"`
 	PlanId           uint   `json:"planId"`
 }

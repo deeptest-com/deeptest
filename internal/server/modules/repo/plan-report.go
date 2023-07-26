@@ -41,6 +41,9 @@ func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (
 	if req.CreateUserId != 0 {
 		db = db.Where("biz_plan_report.create_user_id = ?", req.CreateUserId)
 	}
+	if len(req.CreateUserIds) != 0 {
+		db = db.Where("biz_plan_report.create_user_id IN (?)", req.CreateUserIds)
+	}
 	if req.ExecuteStartTime != 0 {
 		db = db.Where("biz_plan_report.start_time > ?", time.Unix(req.ExecuteStartTime/1000, 0).Format(timeLayout))
 	}

@@ -51,12 +51,17 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 	if req.Enabled != "" {
 		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
 	}
-
 	if req.Status != "" {
 		db = db.Where("status = ?", req.Status)
 	}
+	if len(req.StatusArr) != 0 {
+		db = db.Where("status IN (?)", req.StatusArr)
+	}
 	if req.AdminId != 0 {
 		db = db.Where("admin_id = ?", req.AdminId)
+	}
+	if len(req.AdminIds) != 0 {
+		db = db.Where("admin_id IN (?)", req.AdminIds)
 	}
 	err = db.Count(&count).Error
 	if err != nil {

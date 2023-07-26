@@ -7,7 +7,13 @@
     </div>
 
     <div id="endpoint-debug-cases-design-panel">
-      <div class="name">{{endpointCase.name}}</div>
+      <div class="name">
+        <EditAndShowField placeholder="请输入名称"
+                          :custom-class="'custom-serve show-on-hover'"
+                          :value="endpointCase.name"
+                          @update="updateName" />
+      </div>
+
       <DebugComp
           :topVal="'-36px'"
           :onSaveDebugData="saveCaseInterface"
@@ -31,6 +37,7 @@ import {StateType as DiagnoseInterfaceStateType} from "@/views/diagnose/store";
 import {prepareDataForRequest} from "@/views/component/debug/service";
 import {notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 
 provide('usedBy', UsedBy.CaseDebug)
 const usedBy = UsedBy.CaseDebug
@@ -82,6 +89,12 @@ const saveCaseInterface = async (e) => {
       message: `保存失败`,
     });
   }
+}
+
+const updateName = (val) => {
+  endpointCase.value.name = val
+  console.log('updateName', val, endpointCase.value)
+  store.dispatch('Endpoint/updateCaseName', endpointCase.value)
 }
 
 const back = () => {
@@ -147,6 +160,7 @@ const back = () => {
 
   #endpoint-debug-cases-design-panel {
     .name {
+      width: 260px;
       line-height: 36px;
       font-weight: bold;
     }

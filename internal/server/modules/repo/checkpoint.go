@@ -119,7 +119,7 @@ func (r *CheckpointRepo) CreateDefault(conditionId uint) (po model.DebugConditio
 			Operator:          consts.Equal,
 			Expression:        "",
 			ExtractorVariable: "",
-			Value:             "",
+			Value:             "200",
 		},
 	}
 

@@ -151,7 +151,7 @@ onUnmounted(() => {
 })
 
 watch(debugData, async () => { // changes from webpage
-  console.log('watch debugData')
+  console.log('watch debugData', debugDataChanged.value)
 
   let newVal = ''
   if (debugDataChanged.value === 'refreshed') { // just refreshed in store

@@ -19,7 +19,7 @@ func (m *EndpointCaseModule) Party() module.WebModule {
 		public.Get("/list", m.EndpointCaseCtrl.List).Name = "用例列表"
 		public.Get("/{id:uint}", m.EndpointCaseCtrl.Get).Name = "用例详情"
 		public.Post("/{id:uint}", m.EndpointCaseCtrl.Save).Name = "保存用例"
-		public.Put("/{id:uint}", m.EndpointCaseCtrl.UpdateName).Name = "保存用例名称"
+		public.Put("/updateName", m.EndpointCaseCtrl.UpdateName).Name = "保存用例名称"
 		public.Post("/saveDebugData", m.EndpointCaseCtrl.SaveDebugData).Name = "保存调试数据"
 		public.Delete("/{id:uint}", m.EndpointCaseCtrl.Remove).Name = "删除用例"
 	}

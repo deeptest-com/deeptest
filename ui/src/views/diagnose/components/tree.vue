@@ -19,7 +19,7 @@
             showIcon
             :expandedKeys="expandedKeys"
             :auto-expand-parent="autoExpandParent"
-            v-model:selectedKeys="selectedKeys"
+            :selectedKeys="selectedKeys"
             @drop="onDrop"
             @expand="onExpand"
             @select="selectNode"

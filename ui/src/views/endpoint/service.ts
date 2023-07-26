@@ -217,7 +217,7 @@ export async function saveEndpointCaseDebugData(data: any): Promise<any> {
 }
 export async function updateEndpointCaseName(data): Promise<any> {
     return request({
-        url: `/${apiPathCase}/${data.id}`,
+        url: `/${apiPathCase}/updateName`,
         method: 'put',
         data
     });

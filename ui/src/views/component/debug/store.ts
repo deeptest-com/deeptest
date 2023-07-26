@@ -213,23 +213,35 @@ const StoreModel: ModuleType = {
         },
 
         setShareVars(state, payload) {
+            console.log('set debugData shareVars')
             state.debugData.shareVars = payload;
+            state.debugDataChanged = 'refreshed';
         },
         setEnvVars(state, payload) {
+            console.log('set debugData envVars')
             state.debugData.envVars = payload;
+            state.debugDataChanged = 'refreshed';
         },
         setGlobalVars(state, payload) {
+            console.log('set debugData globalVars')
             state.debugData.globalVars = payload;
+            state.debugDataChanged = 'refreshed';
         },
 
-        setUrl(state, payload) {
-            state.debugData.url = payload;
-        },
         setBaseUrl(state, payload) {
+            console.log('set debugData baseUrl')
             state.debugData.baseUrl = payload;
+            state.debugDataChanged = 'refreshed';
+        },
+        setUrl(state, payload) {
+            console.log('set debugData url')
+            state.debugData.url = payload;
+            state.debugDataChanged = 'refreshed';
         },
         setBody(state, payload) {
+            console.log('set debugData body')
             state.debugData.body = payload;
+            state.debugDataChanged = 'refreshed';
         },
     },
     actions: {

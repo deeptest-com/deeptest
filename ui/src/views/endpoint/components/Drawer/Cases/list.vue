@@ -20,7 +20,7 @@
                             :custom-class="'custom-endpoint show-on-hover'"
                             :value="text || ''"
                             @update="(val) => updateName(val, record)"
-                            @edit="design(record)" />
+                            @edit="design(record)"/>
         </template>
 
         <template #createdAt="{ record }">
@@ -38,7 +38,9 @@
 
       </a-table>
 
-      <a-empty v-if="caseList.length === 0" :image="simpleImage" class="dp-empty-no-margin" />
+      <a-empty class="dp-empty-no-margin"
+               v-if="caseList.length === 0"
+               :image="simpleImage"/>
     </div>
 
     <CaseEdit
@@ -46,7 +48,7 @@
         :visible="editVisible"
         :model="editModel"
         :onFinish="createFinish"
-        :onCancel="createCancel" />
+        :onCancel="createCancel"/>
   </div>
 </template>
 
@@ -56,7 +58,7 @@ import {UsedBy} from "@/utils/enum";
 import {Empty} from "ant-design-vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { momentUtc } from '@/utils/datetime';
+import {momentUtc} from '@/utils/datetime';
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 
@@ -175,14 +177,17 @@ const columns = [
 
 <style lang="less" scoped>
 .endpoint-debug-cases-list {
+  position: relative;
+
   height: 100%;
+
   .toolbar {
     position: absolute;
     top: -42px;
     right: 0;
-    height: 50px;
     width: 100px;
   }
+
   .content {
     height: 100%;
   }

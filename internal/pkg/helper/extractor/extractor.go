@@ -35,7 +35,7 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
 			result = queryUtils.XmlQuery(resp.Content, extractor.Expression)
 
-		} else if extractor.Type == consts.Boundary {
+		} else if extractor.Type == consts.Boundary && (extractor.BoundaryStart != "" || extractor.BoundaryEnd != "") {
 			result = queryUtils.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
 				extractor.BoundaryIndex, extractor.BoundaryIncluded)
 		}

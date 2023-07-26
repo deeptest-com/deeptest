@@ -11,7 +11,8 @@ import {
     findLastNotArrayNode,
     generateSchemaByArray,
     handleRefInfo,
-    isArray, isCompositeType,
+    isArray,
+    isCompositeType,
     isNormalType,
     isObject,
     isRef,
@@ -231,7 +232,7 @@ export default defineComponent({
             try {
                 nextTick(() => {
                     let obj = JSON.parse(newVal);
-                    obj = obj ? obj : {type:'object'};
+                    obj = obj ? obj : {type: 'object'};
                     data.value = addExtraViewInfo(obj);
                 })
             } catch (e) {
@@ -278,22 +279,31 @@ export default defineComponent({
         const renderDataTypeSetting = (options: any) => {
             const {tree, isRefChildNode} = options;
             const propsLen = Object.keys(tree?.properties || {}).length;
+            const combines = {
+                allOf:tree?.allOf || [],
+                oneOf:tree?.oneOf || [],
+                anyOf:tree?.anyOf || [],
+            }
             return <>
                 <DataTypeSetting
-                                 value={tree}
-                                 serveId={props.serveId}
-                                 isRefChildNode={isRefChildNode || false}
-                                 onChange={dataTypeChange.bind(this, options)}/>
+                    value={tree}
+                    serveId={props.serveId}
+                    isRefChildNode={isRefChildNode || false}
+                    onChange={dataTypeChange.bind(this, options)}/>
                 {isObject(tree?.type) && !isRef(tree) ? <span
                     class={'baseInfoSpace'}>{tree.types?.length > 0 ? `[${propsLen}]` : `{${propsLen}}`}</span> : null}
+                {/* 复合类型 */}
+                {isCompositeType(tree?.type) ?
+                    <span class={'baseInfoSpace'}>{`{${combines[tree.type].length}}`}</span> : null}
             </>
         }
         const renderKeyName = (options: any) => {
-            const {keyName, keyIndex, parent, isRoot, isRefChildNode, isRef, isRefRootNode, ancestor} = options;
+            const {keyName, keyIndex, parent, isRoot, isRefChildNode, isRef, isRefRootNode, ancestor,isCompositeChildNode} = options;
             const items = parent?.type === 'array' ? ancestor : parent;
             if (isRoot) return null;
             if (!keyName) return null;
-            if (isRefRootNode) return null;
+            debugger;
+            if (isRefRootNode || isCompositeChildNode) return null;
             return <>
                 <span class={'baseInfoKey'}
                       contenteditable={!isRefChildNode}
@@ -331,7 +341,25 @@ export default defineComponent({
                 {renderExtraAction(options)}
             </div>)
         }
+
+        // 渲染复合类型
+        const renderCompositeType = (options: any) => {
+            return (<div key={options.index}
+                         class={'leafNode'}
+                         style={{'paddingLeft': `${options.depth * treeLevelWidth}px`}}>
+                {!options.isRoot ? <div class={'leafNodeHorizontalLine'}
+                                        style={{left: `${(options.depth - 1) * treeLevelWidth + 8}px`}}/> : null}
+                <div class={'baseInfo'}>
+                    {renderKeyName(options)}
+                    {renderDataTypeSetting(options)}
+                </div>
+                {renderAction(options)}
+                {renderExtraAction(options)}
+            </div>)
+        }
+
         const renderDirectoryText = (options: any) => {
+            // debugger;
             const {depth, tree, isRefChildNode} = options;
             return <div class={'directoryText'}
                         style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
@@ -356,11 +384,6 @@ export default defineComponent({
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};
             // 普通类型
             if (isNormalType(tree.type) && !isRef(tree)) {
-                return renderNormalType(options)
-            }
-            // 复合类型
-            if (isCompositeType(tree.type) && !isRef(tree)) {
-                // todo 复合类型的渲染
                 return renderNormalType(options)
             }
             // 渲染对象类型节点
@@ -389,6 +412,29 @@ export default defineComponent({
                     }
                 </div>
             }
+            // 渲染复合类型节点
+            if (isCompositeType(tree.type) && !isRef(tree)) {
+                // debugger;
+                const isRoot = tree?.extraViewInfo?.depth === 1;
+                const isExpand = tree?.extraViewInfo?.isExpand;
+                const options = {...tree?.extraViewInfo, isRoot, tree}
+                const combines = {
+                    allOf:tree?.allOf || [],
+                    oneOf:tree?.oneOf || [],
+                    anyOf:tree?.anyOf || [],
+                }
+                // debugger;
+                return <div key={tree.type} class={{'directoryNode': true, "rootNode": isRoot}}>
+                    {renderDirectoryText(options)}
+                    {
+                        isExpand && combines[tree.type].map((value: any) => {
+                            return renderTree(value)
+                        })
+                    }
+                    {isExpand && combines[tree.type].length > 0 && renderVerticalLine(options)}
+                </div>
+            }
+
             // 如果是引用类型
             if (isRef(tree)) {
                 const isRoot = tree?.extraViewInfo?.depth === 1;

@@ -42,7 +42,7 @@ export function isNormalType(type: string): boolean {
  * 复合类型
  * */
 export function isCompositeType(type: string): boolean {
-    return ['oneof', 'anyof', 'allOf'].includes(type);
+    return ['oneOf', 'anyOf', 'allOf'].includes(type);
 }
 
 function getExpandedValue(val: any, defaultVal: boolean) {
@@ -58,7 +58,6 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
     }
     let type = val.type;
     if (!type) {
-        // todo 先展示出来，但是还没实现这几个关键词
         if (val?.oneOf) {
             type = 'oneof';
         } else if (val?.anyOf) {
@@ -83,9 +82,17 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         "isRef": isRef(val),
     };
 
-    function traverse(obj: any, depth: number, parent: any, options: any = {}, isRefChildNode = false) {
-
-        // base Case 普通类型，递归结束，
+    /**
+     *  @description 递归遍历 schema 结构，添加额外的渲染属性
+     *  @param obj 当前节点
+     *  @param depth 深度
+     *  @param parent 父节点
+     *  @param options 额外的参数
+     *  @param isRefChildNode 是否是引用类型的子节点
+     *  @param isCompositeChildNode 是否是复合类型的子节点
+     * */
+    function traverse(obj: any, depth: number, parent: any, options: any = {}, isRefChildNode = false, isCompositeChildNode = false) {
+        // 普通类型，递归结束
         if (isNormalType(obj.type) && !isRef(obj)) {
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},
@@ -128,7 +135,27 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
             const {node, types} = findLastNotArrayNode(obj);
             if (node) {
                 node.types = types;
-                traverse(node, depth, obj, options, isRefChildNode);
+                traverse(node, depth, obj, options, isRefChildNode, isCompositeChildNode);
+            }
+        }
+        // 处理数组类型
+        if (isCompositeType(obj.type) && !isRef(obj)) {
+            const combines = {
+                oneOf: obj.oneOf,
+                anyOf: obj.anyOf,
+                allOf: obj.allOf,
+            }
+            if (combines[obj.type]?.length) {
+                combines[obj.type].forEach((item: any, index: number) => {
+                    traverse(item, depth + 1, obj, {
+                        keyName: index,
+                        keyIndex: index,
+                        isFirst: index === 0,
+                        isLast: index === combines[obj.type].length - 1,
+                        ancestor: obj,
+                        isRef: isRef(item),
+                    }, isRefChildNode, true);
+                })
             }
         }
         // 处理引用类型
@@ -150,14 +177,14 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
                 traverse(obj.content, depth + 1, obj, {
                     ...options,
                     isRefRootNode: true,
-                }, true);
+                }, true, isCompositeChildNode);
             }
         }
     }
 
     // array  object  ref 类型都需要递归
     if (!isNormalType(val.type) || isRef(val)) {
-        traverse(val, 1, null, false);
+        traverse(val, 1, null, null, isRef(val), isCompositeType(val.type));
     }
 
     return val;
@@ -187,6 +214,21 @@ export function removeExtraViewInfo(val: Object | any, isRemoveRefContent = fals
             Object.entries(obj.properties || {}).forEach(([keyName, value]: any, keyIndex: number) => {
                 traverse(value);
             })
+        }
+        // 处理 composite 类型
+        if (isCompositeType(obj.type)) {
+            delete obj?.extraViewInfo;
+            delete obj?.items;
+            const combines = {
+                oneOf: obj.oneOf,
+                anyOf: obj.anyOf,
+                allOf: obj.allOf,
+            }
+            if (combines[obj.type]?.length) {
+                combines[obj.type].forEach((item: any, index: number) => {
+                    traverse(item);
+                })
+            }
         }
         // 处理数组类型
         if (isArray(obj.type)) {
@@ -304,10 +346,7 @@ export const handleRefInfo = (tree: any, result: any) => {
             tree.content.type = 'array';
         } else if (result?.allOf) {
             tree.content.type = 'array';
-        }
-            // todo 先展示出来，但是还没实现这几个关键词
-        // AND = all of XOR = one of OR = any of
-        else if (tree.content?.anyof) {
+        } else if (tree.content?.anyof) {
             tree.content.type = 'anyof';
         } else if (tree.content?.oneof) {
             tree.content.type = 'oneof';

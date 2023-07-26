@@ -31,7 +31,7 @@ import {
     expireEndpoint,
     getEndpointDetail,
     getEndpointList,
-    saveEndpoint,
+    saveEndpoint, copyEndpointCase,
 } from './service';
 
 import {
@@ -149,6 +149,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         listCase: Action<StateType, StateType>;
         getCase: Action<StateType, StateType>;
         saveCase: Action<StateType, StateType>;
+        copyCase: Action<StateType, StateType>;
         updateCaseName: Action<StateType, StateType>;
         removeCase: Action<StateType, StateType>;
         batchUpdateField: Action<StateType, StateType>;
@@ -762,6 +763,14 @@ const StoreModel: ModuleType = {
                 return true;
             } else {
                 return false
+            }
+        },
+        async copyCase({state, dispatch}, id: number) {
+            const jsn = await copyEndpointCase(id)
+            if (jsn.code === 0) {
+                return jsn.data;
+            } else {
+                return null
             }
         },
         async updateCaseName({state, dispatch}, payload: any) {

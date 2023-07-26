@@ -32,8 +32,13 @@
         </template>
 
         <template #action="{ record }">
-          <a-button type="link" @click="() => design(record)">设计</a-button>
-          <a-button type="link" @click="() => remove(record)">删除</a-button>
+          <a-button type="link" @click="() => copy(record)">
+            <CopyOutlined title="复制" />
+          </a-button>
+
+          <a-button type="link" @click="() => remove(record)">
+            <DeleteOutlined title="删除" />
+          </a-button>
         </template>
 
       </a-table>
@@ -58,6 +63,7 @@ import {UsedBy} from "@/utils/enum";
 import {Empty} from "ant-design-vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
+import {DeleteOutlined, CopyOutlined} from '@ant-design/icons-vue';
 import {momentUtc} from '@/utils/datetime';
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
@@ -119,6 +125,12 @@ const remove = (record) => {
   const title = '确定删除该用例吗？'
   confirmToDelete(title, '', () => {
     store.dispatch('Endpoint/removeCase', record);
+  })
+}
+const copy  = (record) => {
+  console.log('copy', record)
+  store.dispatch('Endpoint/copyCase', record.id).then((po) => {
+    design(po)
   })
 }
 

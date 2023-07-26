@@ -208,6 +208,14 @@ export async function saveEndpointCase(data: any): Promise<any> {
         data
     });
 }
+export async function copyEndpointCase(id: number): Promise<any> {
+    const params = {id}
+    return request({
+        url: `/${apiPathCase}/copy`,
+        method: 'post',
+        params
+    });
+}
 export async function saveEndpointCaseDebugData(data: any): Promise<any> {
     return request({
         url: `/${apiPathCase}/saveDebugData`,

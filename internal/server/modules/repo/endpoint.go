@@ -28,13 +28,13 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	db := r.DB.Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 
 	if req.Title != "" {
-		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
+		db = db.Where("title LIKE ? or path LIKE ?", fmt.Sprintf("%%%s%%", req.Title), fmt.Sprintf("%%%s%%", req.Title))
 	}
-	if req.CreateUser != "" {
-		db = db.Where("create_user = ?", req.CreateUser)
+	if len(req.CreateUser) > 0 {
+		db = db.Where("create_user in ?", req.CreateUser)
 	}
-	if req.Status != 0 {
-		db = db.Where("status = ?", req.Status)
+	if len(req.Status) > 0 {
+		db = db.Where("status in ?", req.Status)
 	}
 	if req.ServeId != 0 {
 		db = db.Where("serve_id = ?", req.ServeId)

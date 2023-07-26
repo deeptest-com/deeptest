@@ -3,6 +3,8 @@
     <a-space :size="16">
       <a-form-item label="创建人" style="margin-bottom: 0;">
         <a-select
+            mode="multiple"
+            :maxTagCount="1"
             allowClear
             @change="(e) => {
               handleFilterChange('createUser',e);
@@ -10,13 +12,15 @@
             placeholder="请选择创建人"
             :options="userList"
             option-label-prop="name"
-            style="width: 140px;"
+            style="width: 180px;"
             :value="formState?.createUser"/>
       </a-form-item>
       <a-form-item label="状态" style="margin-bottom: 0;">
         <a-select
-            style="width: 120px;"
+            style="width: 180px;"
             allowClear
+            mode="multiple"
+            :maxTagCount="1"
             @change="(e) => {
               handleFilterChange('status',e);
             }"
@@ -40,7 +44,7 @@
       <a-form-item :label="null">
         <a-input-search
             style="display: flex;justify-content: end;width: 250px;"
-            placeholder="请输入关键词"
+            placeholder="请输入接口名称或者路径"
             enter-button
             :value="formState?.title"
             @change="(e) => {
@@ -73,8 +77,8 @@ import {useStore} from "vuex";
 const emit = defineEmits(['filter']);
 
 const formState: Ref<filterFormState> = ref({
-  "status": "",
-  "createUser": "",
+  "status": [],
+  "createUser": [],
   "title": "",
   "categoryId":"",
   "tagNames":[],

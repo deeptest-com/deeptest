@@ -2,6 +2,15 @@
   <a-form :layout="'inline'" ref="tagFormRef" :model="tagFormRef">
     <a-space :size="16">
       <a-form-item label="创建人" style="margin-bottom: 0;">
+        <SelectP
+        :placeholder="'请选择创建人'"
+        :options="userList"
+        :value="formState?.createUser || []"
+        @change="(e) => {
+              handleFilterChange('createUser',e);
+            }"
+        />
+        <!--
         <a-select
             mode="multiple"
             :maxTagCount="1"
@@ -14,6 +23,7 @@
             option-label-prop="name"
             style="width: 180px;"
             :value="formState?.createUser"/>
+          -->
       </a-form-item>
       <a-form-item label="状态" style="margin-bottom: 0;">
         <a-select
@@ -65,6 +75,7 @@ import {
   defineEmits, ref,defineExpose,
   onMounted, computed, watch, Ref
 } from 'vue';
+import SelectP from '@/components/Select/index.vue';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -73,6 +84,7 @@ let filterState = computed<any>(() => store.state.Endpoint.filterState);
 const tagList: any = computed(()=>store.state.Endpoint.tagList);
 
 import {useStore} from "vuex";
+
 
 const emit = defineEmits(['filter']);
 

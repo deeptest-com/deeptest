@@ -9,13 +9,13 @@
             :wrapClassName="'abc-1'"
             @close="onCloseDrawer">
     <!-- 头部信息  -->
-    <a-spin tip="Loading..." :spinning="spinning" style="z-index: 2000;">
     <template #title>
       <div  class="dp-drawer-header">
         <slot name="header"/>
       </div>
-
     </template>
+
+    <a-spin tip="Loading..." :spinning="spinning" style="z-index: 2000;">
     <div class="dp-drawer-content" ref="contentRef">
       <!-- 基本信息区域 -->
       <div class="dp-drawer-content-basic-info">
@@ -38,32 +38,15 @@
 import {
   ref,
   defineProps,
-  nextTick,
   defineEmits,
   computed, watch,
-  onMounted,
 } from 'vue';
 
 import {useStore} from "vuex";
-import {Endpoint} from "@/views/endpoint/data";
-import {message} from "ant-design-vue";
-import {StateType as ServeStateType} from "@/store/serve";
-
-
-
 const store = useStore<{ Global}>();
 
-const props = defineProps({
-  visible: {
-    required: true,
-    type: Boolean,
-  },
-  // 每次变化时，触发吸顶操作
-  stickyKey: {
-    type: Number,
-    required: true,
-  }
-})
+
+const props = defineProps(['visible', 'stickyKey']);
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 function onCloseDrawer() {

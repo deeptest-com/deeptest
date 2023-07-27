@@ -88,7 +88,9 @@ const maxTagPlaceholder = (omittedValues) => {
     },
   })
   */
- return <a-tooltip placement='top' title={res} >{omittedValues.length}...</a-tooltip>
+ //return <a-tooltip placement='top' title={res} >{omittedValues.length}...</a-tooltip>
+
+ return "+"+omittedValues.length+"..."
 
 }
 

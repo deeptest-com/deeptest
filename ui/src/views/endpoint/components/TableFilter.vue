@@ -2,7 +2,7 @@
   <a-form :layout="'inline'" ref="tagFormRef" :model="tagFormRef">
     <a-space :size="16">
       <a-form-item label="创建人" style="margin-bottom: 0;">
-        <SelectP
+        <Select
         :placeholder="'请选择创建人'"
         :options="userList"
         :value="formState?.createUser || []"
@@ -26,6 +26,16 @@
           -->
       </a-form-item>
       <a-form-item label="状态" style="margin-bottom: 0;">
+        <Select
+        :placeholder="'请选择创建人'"
+        :options="endpointStatusOpts"
+        :value="formState?.createUser || []"
+        :width="'180px'"
+        @change="(e) => {
+              handleFilterChange('status',e);
+            }"
+        />
+        <!--
         <a-select
             style="width: 180px;"
             allowClear
@@ -37,6 +47,7 @@
             :value="formState?.status"
             placeholder="请选择状态"
             :options="endpointStatusOpts"/>
+          -->
       </a-form-item>
       <a-form-item label="标签" style="margin-bottom: 0;">
         <a-select
@@ -75,7 +86,7 @@ import {
   defineEmits, ref,defineExpose,
   onMounted, computed, watch, Ref
 } from 'vue';
-import SelectP from '@/components/Select/index.vue';
+import Select from '@/components/Select/index.vue';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);

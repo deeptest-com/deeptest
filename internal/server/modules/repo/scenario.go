@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"strconv"
+	"strings"
 )
 
 type ScenarioRepo struct {
@@ -59,13 +60,13 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
 	}
 	if req.Status != "" {
-		db = db.Where("status = ?", req.Status)
+		db = db.Where("status in ?", strings.Split(req.Status, ","))
 	}
 	if req.Priority != "" {
-		db = db.Where("priority = ?", req.Priority)
+		db = db.Where("priority in ?", strings.Split(req.Priority, ","))
 	}
 	if req.Type != "" {
-		db = db.Where("type = ?", req.Type)
+		db = db.Where("type in ?", strings.Split(req.Type, ","))
 	}
 
 	err = db.Count(&count).Error

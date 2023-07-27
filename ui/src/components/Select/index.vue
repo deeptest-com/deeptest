@@ -1,5 +1,5 @@
 <template>
-  <div :ref="selectRef">
+  <div>
     <a-popover :visible="visible && values?.length"
                :placement="'top'"
                trigger="click"
@@ -29,7 +29,7 @@
 
 </template>
 
-<script type="tsx" setup>
+<script lang="tsx" setup>
 
 import {ref, defineProps, defineEmits, computed, watch, createVNode} from 'vue';
 import {vOnClickOutside} from '@vueuse/components';
@@ -56,7 +56,6 @@ const props = defineProps({
 
 const visible = ref(false)
 
-const selectRef = ref(null);
 
 const options = computed(() => props.options)
 
@@ -78,7 +77,7 @@ const maxTagPlaceholder = (omittedValues) => {
     res += res ? "," + item.label : item.label
   })
 /*
-  return createVNode('tooltip', {
+  return createVNode('a-tooltip', {
     placement: 'top',
     title: res,
     overlayClassName:'dp-select-tag-tooltip'
@@ -88,9 +87,10 @@ const maxTagPlaceholder = (omittedValues) => {
     },
   })
   */
- //return <a-tooltip placement='top' title={res} >{omittedValues.length}...</a-tooltip>
+  
+ return <a-tooltip placement='top' title={res} >{omittedValues.length}...</a-tooltip>
 
- return "+"+omittedValues.length+"..."
+ //return "+"+omittedValues.length+"..."
 
 }
 

@@ -45,6 +45,7 @@ func (c *ScenarioCtrl) List(ctx iris.Context) {
 	}
 
 	var req serverDomain.ScenarioReqPaginate
+
 	err = ctx.ReadQuery(&req)
 	if err != nil {
 		errs := validate.ValidRequest(err)

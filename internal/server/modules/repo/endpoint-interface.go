@@ -88,6 +88,17 @@ func (r *EndpointInterfaceRepo) ListIdByEndpoint(endpointId uint) (ids []uint, e
 	return
 }
 
+func (r *EndpointInterfaceRepo) ListIdByEndpoints(endpointIds []uint) (ids []uint, err error) {
+	err = r.DB.
+		Model(model.EndpointInterface{}).
+		Select("id").
+		Where("endpoint_id IN (?)", endpointIds).
+		Where("NOT deleted").
+		Find(&ids).Error
+
+	return
+}
+
 func (r *EndpointInterfaceRepo) Get(interfaceId uint) (field model.EndpointInterface, err error) {
 	err = r.DB.
 		Where("id=? AND NOT deleted", interfaceId).
@@ -766,6 +777,15 @@ func (r *EndpointInterfaceRepo) DeleteByEndpoint(endpointId uint) (err error) {
 
 	return
 }
+
+func (r *EndpointInterfaceRepo) DeleteByEndpoints(endpointIds []uint) (err error) {
+	ids, err := r.ListIdByEndpoints(endpointIds)
+
+	err = r.DeleteBatch(ids)
+
+	return
+}
+
 func (r *EndpointInterfaceRepo) DeleteBatch(ids []uint) (err error) {
 	for _, id := range ids {
 		err = r.Delete(id)

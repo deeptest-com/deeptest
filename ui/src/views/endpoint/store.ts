@@ -421,9 +421,9 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async removeCategoryNode({commit, dispatch, state}, payload: number) {
+        async removeCategoryNode({commit, dispatch, state}, payload: any) {
             try {
-                await removeCategory(payload);
+                await removeCategory(payload.id, payload.type);
                 await dispatch('loadCategory');
                 return true;
             } catch (error) {

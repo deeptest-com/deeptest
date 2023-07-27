@@ -78,8 +78,7 @@ const maxTagPlaceholder = (omittedValues) => {
   })
   return createVNode(Tooltip, {
     placement: 'top',
-    title: res,
-    overlayClassName:'dp-select-tag-tooltip'
+    title: res
   }, {
     default: () => {
       return `+${omittedValues.length}...`

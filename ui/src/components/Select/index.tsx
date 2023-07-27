@@ -1,4 +1,3 @@
-
 import {defineComponent,ref, defineProps, defineEmits, computed, watch, createVNode} from 'vue';
 import {vOnClickOutside} from '@vueuse/components';
 
@@ -27,21 +26,21 @@ export default defineComponent({
 
         const visible = ref(false)
 
-        const options = computed(() => props.options)
+        const options = computed<any[]>(() => props.options)
         
-        const values = ref(props?.value || [])
+        const values:any = ref(props?.value || [])
         
         const optionsMap = computed(() => {
-          let map = new Map()
+          const map = new Map()
           options.value.forEach((item) => {
             map.set(item.value, item.label)
           })
           return map
         })
         
-        const maxTagPlaceholder = (omittedValues) => {
+        const maxTagPlaceholder = (omittedValues: any[]) => {
           let res = ""
-          omittedValues.forEach((item) => {
+          omittedValues.forEach((item: { label: string; }) => {
             res += res ? "," + item.label : item.label
           })
         /*
@@ -59,7 +58,7 @@ export default defineComponent({
         
         }
         
-        const change = (e) => {
+        const change = (e: any) => {
           values.value = e
           emit('change', e)
         }
@@ -68,11 +67,11 @@ export default defineComponent({
           visible.value = true
         }
         
-        const close = (key) => {
-          values.value = values.value.filter(arrItem => arrItem != key)
+        const close = (key: any) => {
+          values.value = values.value.filter((arrItem: any) => arrItem != key)
         }
         
-        function canClose(e) {
+        function canClose(e: { target: Node | null; }) {
           const indexlayout = document.getElementById('indexlayout');
           if (indexlayout != null && indexlayout.contains(e.target)) {
             visible.value = false
@@ -84,40 +83,37 @@ export default defineComponent({
             mode={'multiple'}
             maxTagCount="1"
             allowClear
-            onChange={change}
+            onChange={change(this)}
             placeholder="placeholder"
             options={options}
             style="width: 180px;"
             value={values}
-            OnFocus={focus}
-            onBlur={blur}
+            OnFocus={focus()}
+            onBlur={blur()}
             maxTagPlaceholder={maxTagPlaceholder}
             v-on-click-outside={canClose}/>
         }
 
 
         const tag = () => {
-            return <a-tag key="key" v-for="(item,key) in values" closable OnClose={close(item)}>{ optionsMap.value.get(item) }</a-tag>
+            const tags = values.value.map((item: any,key: any) => <a-tag key={key} closable OnClose={close(item)}>{optionsMap.value.get(item) }</a-tag>)
+            return tags
         }
 
         const tags = () => {
-            return <a-popover visible={visible && values?.length}
+            return <a-popover visible={visible.value && values.value?.length}
             placement={'top'}
             trigger="click"
             autoAdjustOverflow={false}
             overlayClassName="dp-select-tooltip" 
-            content = {tag}
+            content = {tag()}
             />
         }
 
 
-        return () => {
-            return (
+        return ()=>
                 <div>
-                    {tags}
-                   {select}
+                    {select()}
                 </div>
-            )
-        }
     }
 })

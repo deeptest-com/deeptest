@@ -8,8 +8,7 @@ type PlanReportReqPaginate struct {
 	_domain.PaginateReq
 	ExecuteStartTime int64  `json:"executeStartTime"`
 	ExecuteEndTime   int64  `json:"executeEndTime"`
-	CreateUserId     uint   `json:"createUserId"`
-	CreateUserIds    []uint `json:"createUserIds"`
+	CreateUserId     string `json:"createUserId"`
 	Keywords         string `json:"keywords"`
 	PlanId           uint   `json:"planId"`
 }

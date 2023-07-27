@@ -1,20 +1,10 @@
 <template>
   <div class="pre-condition-main">
     <div class="head">
-      <a-row type="flex">
-        <a-col flex="1">
-          <a-select size="small" :style="{width:'116px'}" :bordered="true"
-                    v-model:value="conditionType">
-            <!--            <a-select-option key="" value="">
-                          控制器类型
-                        </a-select-option>-->
-
-            <a-select-option v-for="item in conditionTypes" :key="item.value" :value="item.value">
-              {{ t(item.label) }}
-            </a-select-option>
-          </a-select> &nbsp;
-
-          <a-button @click="create" size="small">新建</a-button>
+      <a-row type="flex" class="row">
+        <a-col flex="1" class="left">
+          <icon-svg type="script" class="icon"  />
+          <span>JavaScript代码</span>
         </a-col>
 
         <a-col flex="100px" class="dp-right">
@@ -27,60 +17,24 @@
             <template #title>清除</template>
             <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>全屏</template>
+            <FullscreenOutlined @click.stop="openFullscreen()"  class="dp-icon-btn dp-trans-80" />
+          </a-tooltip>
+
+
         </a-col>
       </a-row>
     </div>
 
     <div class="content">
-      <draggable tag="div" item-key="name" class="collapse-list"
-                 :list="preConditions || []"
-                 handle=".handle"
-                 @end="handleDrop">
-        <template #item="{ element }">
-
-          <div class="collapse-item">
-            <div class="header">
-              <div @click.stop="expand(element)" class="title dp-link">
-                <MenuOutlined class="handle dp-drag" /> &nbsp;
-
-                {{ t(element.entityType) }} &nbsp;
-                {{ element.desc }} -
-                {{activeItem.id || 0}},{{element.id}}
-              </div>
-              <div class="buttons">
-                <ClearOutlined v-if="activeItem.id === +element.id && element.entityType === ConditionType.script"
-                               @click.stop="format(element)"  class="dp-icon-btn dp-trans-80" />&nbsp;
-
-                <CheckCircleOutlined v-if="!element.disabled" @click.stop="disable(element)"
-                                     class="dp-icon-btn dp-trans-80 dp-color-pass" />
-                <CloseCircleOutlined v-if="element.disabled" @click.stop="disable(element)"
-                                     class="dp-icon-btn dp-trans-80" />
-
-                <DeleteOutlined @click.stop="remove(element)"  class="dp-icon-btn dp-trans-80" />
-                <FullscreenOutlined v-if="activeItem.id === element.id"
-                                    @click.stop="openFullscreen(element)"  class="dp-icon-btn dp-trans-80" />&nbsp;
-
-                <RightOutlined v-if="activeItem.id !== element.id"
-                               @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
-                <DownOutlined v-if="activeItem.id === element.id"
-                              @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
-              </div>
-            </div>
-
-            <div class="content" v-if="activeItem.id === +element.id">
-              <Script v-if="element.entityType === ConditionType.script"
-                      :condition="element" />
-            </div>
-
-          </div>
-
-        </template>
-      </draggable>
+      <Script v-if="preConditions.length > 0" :condition="preConditions[0]" />
     </div>
 
     <FullScreenPopup v-if="fullscreen"
                      :visible="fullscreen"
-                     :model="activeItem"
+                     :model="preConditions[0]"
                      :onCancel="closeFullScreen"/>
   </div>
 </template>
@@ -97,6 +51,7 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {confirmToDelete} from "@/utils/confirm";
 import {ConditionType, PreConditionType, UsedBy} from "@/utils/enum";
+import IconSvg from "@/components/IconSvg";
 import {EnvDataItem} from "@/views/project-settings/data";
 
 import {StateType as Debug} from "@/views/component/debug/store";
@@ -113,20 +68,6 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 const fullscreen = ref(false)
-const activeItem = ref({} as any)
-
-const conditionType = ref(PreConditionType.script)
-const conditionTypes = ref(getEnumSelectItems(PreConditionType))
-
-const expand = (item) => {
-  console.log('expand', item)
-
-  if (activeItem.value.id === item.id) {
-    activeItem.value = {}
-  } else {
-    activeItem.value = item
-  }
-}
 
 const list = () => {
   console.log('list')
@@ -138,48 +79,18 @@ watch(debugData, (newVal) => {
   list()
 }, {immediate: true, deep: true});
 
-const create = () => {
-  console.log('create', conditionType.value)
-  store.dispatch('Debug/createPreCondition', {
-    entityType: conditionType.value,
-    ...debugInfo.value,
-  })
-}
-
 const format = (item) => {
   console.log('format', item)
   bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
 }
-const disable = (item) => {
-  console.log('disable', item)
-  store.dispatch('Debug/disablePreCondition', item.id)
-}
-const remove = (item) => {
-  console.log('remove', item)
 
-  confirmToDelete(`确定删除该${t(item.entityType)}？`, '', () => {
-    store.dispatch('Debug/removePreCondition', item.id)
-  })
-}
-
-const openFullscreen = (item) => {
-  console.log('openFullscreen', item)
+const openFullscreen = () => {
+  console.log('openFullscreen')
   fullscreen.value = true
 }
-const closeFullScreen = (item) => {
-  console.log('closeFullScreen', item)
+const closeFullScreen = () => {
+  console.log('closeFullScreen')
   fullscreen.value = false
-}
-
-function handleDrop(_e: any) {
-  const envIdList = preConditions.value.map((e: EnvDataItem) => {
-    return e.id;
-  })
-
-  store.dispatch('Debug/movePreCondition', {
-    data: envIdList,
-    info: debugInfo.value,
-  })
 }
 
 </script>
@@ -208,6 +119,14 @@ function handleDrop(_e: any) {
     height: 30px;
     padding: 2px 3px;
     border-bottom: 1px solid #d9d9d9;
+
+    .row {
+      .left {
+        .icon {
+          margin-right: 5px;
+        }
+      }
+    }
   }
   .content {
     flex: 1;

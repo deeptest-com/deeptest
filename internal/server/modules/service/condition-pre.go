@@ -12,8 +12,21 @@ type PreConditionService struct {
 	ScriptRepo       *repo.ScriptRepo       `inject:""`
 }
 
-func (s *PreConditionService) List(debugInterfaceId, endpointInterfaceId uint) (checkpoints []model.DebugPreCondition, err error) {
-	checkpoints, err = s.PreConditionRepo.List(debugInterfaceId, endpointInterfaceId)
+func (s *PreConditionService) List(debugInterfaceId, endpointInterfaceId uint) (conditions []model.DebugPreCondition, err error) {
+	conditions, err = s.PreConditionRepo.List(debugInterfaceId, endpointInterfaceId)
+
+	if len(conditions) == 0 {
+		condition := model.DebugPreCondition{
+			DebugInterfaceId:    debugInterfaceId,
+			EndpointInterfaceId: endpointInterfaceId,
+		}
+		err = s.Create(&condition)
+		script := s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)
+
+		s.PreConditionRepo.UpdateEntityId(condition.ID, script.ID)
+
+		conditions, err = s.PreConditionRepo.List(debugInterfaceId, endpointInterfaceId)
+	}
 
 	return
 }

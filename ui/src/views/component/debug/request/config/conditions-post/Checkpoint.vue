@@ -64,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, PropType, reactive, Ref, ref, watch} from "vue";
+import {computed, defineProps, inject, onBeforeUnmount, onMounted, PropType, reactive, Ref, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {message, Form, notification} from 'ant-design-vue';
@@ -81,6 +81,8 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {Checkpoint} from "@/views/component/debug/data";
 import {getEnumSelectItems} from "@/utils/comm";
 import {NotificationKeyCommon} from "@/utils/const";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
@@ -171,6 +173,15 @@ const cancel = () => {
     props.finish()
   }
 }
+
+onMounted(() => {
+  console.log('onMounted')
+  bus.on(settings.eventConditionSave, save);
+})
+onBeforeUnmount( () => {
+  console.log('onBeforeUnmount')
+  bus.off(settings.eventConditionSave, save);
+})
 
 const selectType = () => {
   console.log('selectType')

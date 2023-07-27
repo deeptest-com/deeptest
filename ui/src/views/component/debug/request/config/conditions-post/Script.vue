@@ -34,7 +34,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, reactive, ref} from "vue";
+import {computed, defineProps, inject, onBeforeUnmount, onMounted, reactive, ref} from "vue";
 import {message, Form, notification} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -44,6 +44,8 @@ import {UsedBy} from "@/utils/enum";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
@@ -130,6 +132,15 @@ const cancel = () => {
     props.finish()
   }
 }
+
+onMounted(() => {
+  console.log('onMounted')
+  bus.on(settings.eventConditionSave, save);
+})
+onBeforeUnmount( () => {
+  console.log('onBeforeUnmount')
+  bus.off(settings.eventConditionSave, save);
+})
 
 const labelCol = { span: 0 }
 const wrapperCol = { span: 24 }

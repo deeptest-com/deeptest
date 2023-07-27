@@ -23,7 +23,6 @@
             <FullscreenOutlined @click.stop="openFullscreen()"  class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
-
         </a-col>
       </a-row>
     </div>
@@ -32,7 +31,7 @@
       <Script v-if="preConditions.length > 0" :condition="preConditions[0]" />
     </div>
 
-    <FullScreenPopup v-if="fullscreen"
+    <FullScreenPopup v-if="preConditions.length > 0 && fullscreen"
                      :visible="fullscreen"
                      :model="preConditions[0]"
                      :onCancel="closeFullScreen"/>
@@ -43,19 +42,13 @@
 import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
-  ClearOutlined, MenuOutlined, RightOutlined,
-  DownOutlined, CloseCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
-import draggable from 'vuedraggable'
+import { QuestionCircleOutlined, DeleteOutlined, FullscreenOutlined, SaveOutlined } from '@ant-design/icons-vue';
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
-import {confirmToDelete} from "@/utils/confirm";
-import {ConditionType, PreConditionType, UsedBy} from "@/utils/enum";
+import {UsedBy} from "@/utils/enum";
 import IconSvg from "@/components/IconSvg";
-import {EnvDataItem} from "@/views/project-settings/data";
 
 import {StateType as Debug} from "@/views/component/debug/store";
-import {getEnumSelectItems} from "@/views/scenario/service";
 import Script from "./conditions-pre/Script.vue";
 import FullScreenPopup from "./ConditionPopup.vue";
 

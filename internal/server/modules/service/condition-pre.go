@@ -19,6 +19,7 @@ func (s *PreConditionService) List(debugInterfaceId, endpointInterfaceId uint) (
 		condition := model.DebugPreCondition{
 			DebugInterfaceId:    debugInterfaceId,
 			EndpointInterfaceId: endpointInterfaceId,
+			EntityType:          consts.ConditionTypeScript,
 		}
 		err = s.Create(&condition)
 		script := s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)

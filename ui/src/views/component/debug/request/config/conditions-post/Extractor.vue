@@ -92,7 +92,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, reactive, watch} from "vue";
+import {computed, defineProps, inject, onBeforeUnmount, onMounted, reactive, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {Form, notification} from 'ant-design-vue';
@@ -100,6 +100,8 @@ import {CheckpointType, ComparisonOperator, ExtractorSrc, ExtractorType, UsedBy}
 import {StateType as Debug} from "@/views/component/debug/store";
 import {getEnumSelectItems} from "@/utils/comm";
 import {NotificationKeyCommon} from "@/utils/const";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
@@ -208,6 +210,15 @@ const cancel = () => {
     props.finish()
   }
 }
+
+onMounted(() => {
+  console.log('onMounted')
+  bus.on(settings.eventConditionSave, save);
+})
+onBeforeUnmount( () => {
+  console.log('onBeforeUnmount')
+  bus.off(settings.eventConditionSave, save);
+})
 
 function selectSrc() {
   console.log('selectSrc', model.value.src)

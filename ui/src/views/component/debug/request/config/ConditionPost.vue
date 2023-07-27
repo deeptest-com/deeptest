@@ -5,7 +5,7 @@
         <a-col flex="1">
           <a-select size="small" :style="{width:'116px'}" :bordered="true"
                     v-model:value="conditionType">
-            <!--            <a-select-option key="" value="">
+            <!--        <a-select-option key="" value="">
                           控制器类型
                         </a-select-option>-->
 
@@ -63,10 +63,14 @@
                                      class="dp-icon-btn dp-trans-80 dp-color-pass" />
                 <CloseCircleOutlined v-if="element.disabled" @click.stop="disable(element)"
                                      class="dp-icon-btn dp-trans-80" />
-
                 <DeleteOutlined @click.stop="remove(element)"  class="dp-icon-btn dp-trans-80" />
-                <FullscreenOutlined v-if="activeItem.id === element.id"
-                                    @click.stop="openFullscreen(element)"  class="dp-icon-btn dp-trans-80" />&nbsp;
+
+                <SaveOutlined class="dp-icon-btn dp-trans-80" title="保存"
+                              v-if="activeItem.id === element.id"
+                              @click.stop="save(element)" />
+                <FullscreenOutlined class="dp-icon-btn dp-trans-80"
+                                    v-if="activeItem.id === element.id"
+                                    @click.stop="openFullscreen(element)" />
 
                 <RightOutlined v-if="activeItem.id !== element.id"
                                @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
@@ -77,13 +81,13 @@
 
             <div class="content" v-if="activeItem.id === +element.id">
               <Extractor v-if="element.entityType === ConditionType.extractor"
-                          :condition="element" />
+                         :condition="element" />
 
               <Checkpoint v-if="element.entityType === ConditionType.checkpoint"
                           :condition="element" />
 
               <Script v-if="element.entityType === ConditionType.script"
-                          :condition="element" />
+                      :condition="element" />
             </div>
           </div>
 
@@ -99,12 +103,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref, watch} from "vue";
+import {computed, inject, ref, watch, getCurrentInstance, ComponentInternalInstance} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
   ClearOutlined, MenuOutlined, RightOutlined,
-  DownOutlined, CloseCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
+  DownOutlined, CloseCircleOutlined, FullscreenOutlined, SaveOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
 import {ConditionType, UsedBy} from "@/utils/enum";
 import {EnvDataItem} from "@/views/project-settings/data";
@@ -176,6 +180,11 @@ const remove = (item) => {
   confirmToDelete(`确定删除该${t(item.entityType)}？`, '', () => {
     store.dispatch('Debug/removePostCondition', item.id)
   })
+}
+
+const save = (item) => {
+  console.log('save', item)
+  bus.emit(settings.eventConditionSave, {});
 }
 
 const openFullscreen = (item) => {

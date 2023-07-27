@@ -130,6 +130,7 @@ import { PaginationConfig, Plan } from '../data.d';
 import { StateType } from "../store";
 import { momentUtc } from "@/utils/datetime";
 import { planStatusColorMap, planStatusTextMap, planStatusOptions } from "@/config/constant";
+import Select from '@/components/Select/index.vue';
 const columns = [
   {
     title: '编号',

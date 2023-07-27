@@ -27,7 +27,7 @@
       </a-form-item>
       <a-form-item label="状态" style="margin-bottom: 0;">
         <Select
-        :placeholder="'请选择创建人'"
+        :placeholder="'请选择状态'"
         :options="endpointStatusOpts"
         :value="formState?.createUser || []"
         :width="'180px'"

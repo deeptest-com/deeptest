@@ -5,22 +5,40 @@
         <a-button type="primary" @click="() => create()">新建</a-button>
       </template>
       <template #extra>
-        <a-select
-          allowClear
-          @change="onSearch"
-          v-model:value="queryParams.status"
-          :options="planStatusOptions"
-          class="status-select"
-          style="width: 120px"
-          placeholder="请选择状态">
-        </a-select>
-        <a-input-search
-          allowClear
-          @change="onSearch"
-          @search="onSearch"
-          v-model:value="queryParams.keywords"
-          placeholder="输入关键字搜索"
-          style="width:270px;margin-left: 16px;" />
+        <a-form :layout="'inline'">
+          <a-form-item :label="null" style="margin-bottom: 0;">
+<!--            <a-select-->
+<!--                allowClear-->
+<!--                @change="onSearch"-->
+<!--                v-model:value="queryParams.status"-->
+<!--                :options="planStatusOptions"-->
+<!--                class="status-select"-->
+<!--                style="width: 120px"-->
+<!--                placeholder="请选择状态">-->
+<!--            </a-select>-->
+            <Select
+                :placeholder="'请选择状态'"
+                :options="planStatusOptions"
+                :value="queryParams.status || []"
+                :width="'180px'"
+                @change="(e) => {
+                 changeStatus(e);
+              }"
+            />
+
+          </a-form-item>
+          <a-form-item :label="null" style="margin-bottom: 0;">
+            <a-input-search
+                allowClear
+                @change="onSearch"
+                @search="onSearch"
+                v-model:value="queryParams.keywords"
+                placeholder="输入关键字搜索"
+                style="width:270px;margin-left: 16px;" />
+          </a-form-item>
+        </a-form>
+
+
       </template>
 
       <div>
@@ -130,6 +148,8 @@ import { PaginationConfig, Plan } from '../data.d';
 import { StateType } from "../store";
 import { momentUtc } from "@/utils/datetime";
 import { planStatusColorMap, planStatusTextMap, planStatusOptions } from "@/config/constant";
+
+
 import Select from '@/components/Select/index.vue';
 const columns = [
   {
@@ -194,7 +214,8 @@ const envSelectVisible = ref(false); // 选择执行环境
 const getList = debounce(async (current: number): Promise<void> => {
   loading.value = true;
   await store.dispatch('Plan/listPlan', {
-    ...queryParams,
+    keywords: queryParams.keywords.trim(),
+    status: queryParams.status?.join(',') || '',
     categoryId: nodeDataCategory.value?.id || 0,
     pageSize: pagination.value.pageSize,
     page: current,
@@ -297,6 +318,11 @@ const remove = (id: number) => {
   });
 }
 
+function changeStatus(e) {
+  queryParams.status = e;
+  getList(1);
+
+}
 const onSearch = () => {
   getList(1);
 };

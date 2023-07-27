@@ -10,20 +10,6 @@
               handleFilterChange('createUser',e);
             }"
         />
-        <!--
-        <a-select
-            mode="multiple"
-            :maxTagCount="1"
-            allowClear
-            @change="(e) => {
-              handleFilterChange('createUser',e);
-            }"
-            placeholder="请选择创建人"
-            :options="userList"
-            option-label-prop="name"
-            style="width: 180px;"
-            :value="formState?.createUser"/>
-          -->
       </a-form-item>
       <a-form-item label="状态" style="margin-bottom: 0;">
         <Select
@@ -35,19 +21,6 @@
               handleFilterChange('status',e);
             }"
         />
-        <!--
-        <a-select
-            style="width: 180px;"
-            allowClear
-            mode="multiple"
-            :maxTagCount="1"
-            @change="(e) => {
-              handleFilterChange('status',e);
-            }"
-            :value="formState?.status"
-            placeholder="请选择状态"
-            :options="endpointStatusOpts"/>
-          -->
       </a-form-item>
       <a-form-item label="标签" style="margin-bottom: 0;">
         <a-select

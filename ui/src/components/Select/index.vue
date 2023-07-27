@@ -13,6 +13,7 @@
           :maxTagCount="1"
           allowClear
           @change="change"
+          class="selector-con"
           :placeholder="placeholder"
           :options="options"
           style="width: 180px;"
@@ -20,9 +21,7 @@
           @focus="focus"
           @blur="blur"
           :maxTagPlaceholder="maxTagPlaceholder"
-          v-on-click-outside="canClose"
-      >
-
+          v-on-click-outside="canClose">
       </a-select>
     </a-popover>
   </div>
@@ -128,8 +127,11 @@ function canClose(e) {
       padding: 0 3px;
     }
   }
-
 }
+</style>
 
-
+<style lang="less" scoped>
+.selector-con :deep(.ant-select-selector){
+  max-height: 32px;
+}
 </style>

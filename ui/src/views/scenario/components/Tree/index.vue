@@ -69,12 +69,12 @@
 <script setup lang="ts">
 import {
   computed, ref, onMounted,
-  watch, defineEmits, defineProps
+  watch, defineEmits, defineProps, createVNode
 } from 'vue';
 import {
   PlusOutlined,
   CaretDownOutlined,
-  MoreOutlined
+  MoreOutlined, ExclamationCircleOutlined
 } from '@ant-design/icons-vue';
 import {message, Modal} from 'ant-design-vue';
 import CreateCategoryModal from '@/components/CreateCategoryModal/index.vue'
@@ -209,8 +209,9 @@ const tagModalMode = ref('new');
 // 删除分类
 async function deleteCategory(node) {
   Modal.confirm({
-    title: () => '确定删除该分类吗？',
-    content: () => '删除后所有所有子分类都会被删除',
+    title: () => '将级联删除分类下的所有子分类、场景测试用例',
+    icon: createVNode(ExclamationCircleOutlined),
+    content: () => '删除后无法恢复，请确认是否删除？',
     okText: () => '确定',
     okType: 'danger',
     cancelText: () => '取消',

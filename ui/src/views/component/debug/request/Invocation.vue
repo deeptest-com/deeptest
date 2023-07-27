@@ -3,8 +3,14 @@
     <div class="toolbar">
       <div v-if="showMethodSelection" class="select-method">
         <a-select class="select-method"
-                  :options="methods"
                   v-model:value="debugData.method">
+          <template v-for="method in Methods">
+            <a-select-option v-if="hasDefinedMethod(method)"
+                             :key="method"
+                             :value="method">
+              {{ method }}
+            </a-select-option>
+          </template>
         </a-select>
       </div>
 
@@ -125,7 +131,6 @@ const props = defineProps({
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} = useVariableReplace('endpointInterfaceUrl')
-const methods = getArrSelectItems(Methods)
 
 const servers = ref([] as any[])
 const listServer = async (serveId) => {
@@ -253,6 +258,12 @@ onMounted(() => {
 onUnmounted(() => {
   console.log('onUnmounted')
 })
+
+function hasDefinedMethod(method: string) {
+  return endpointDetail?.value?.interfaces?.some((item) => {
+    return item.method === method;
+  })
+}
 
 // const showContextMenu = ref(false)
 // const clearMenu = () => {

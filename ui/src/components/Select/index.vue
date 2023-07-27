@@ -4,8 +4,7 @@
                :placement="'top'"
                trigger="click"
                :autoAdjustOverflow="false"
-               overlayClassName="dp-select-tooltip"
-               style=" background-color: #fafafa">
+               overlayClassName="dp-select-tooltip">
       <template #content>
         <a-tag :key="key" v-for="(item,key) in values" closable @close="close(item)">{{ optionsMap.get(item) }}</a-tag>
       </template>
@@ -21,23 +20,16 @@
           @focus="focus"
           @blur="blur"
           :maxTagPlaceholder="maxTagPlaceholder"
-          @dropdownVisibleChange="dropdownVisibleChange"
           v-on-click-outside="canClose"
-          :open="open"
       >
 
       </a-select>
     </a-popover>
   </div>
 
-  v-for=xx
-
-
-
-
 </template>
 
-<script type="ts" setup>
+<script type="tsx" setup>
 
 import {ref, defineProps, defineEmits, computed, watch, createVNode} from 'vue';
 import {vOnClickOutside} from '@vueuse/components';
@@ -72,10 +64,6 @@ const emits = defineEmits('change')
 
 const values = ref(props?.value || [])
 
-const open = ref(false)
-
-const isOpen = ref(false)
-
 const optionsMap = computed(() => {
   let map = new Map()
   options.value.forEach((item) => {
@@ -89,15 +77,18 @@ const maxTagPlaceholder = (omittedValues) => {
   omittedValues.forEach((item) => {
     res += res ? "," + item.label : item.label
   })
-
-  return createVNode('a-tooltip', {
+/*
+  return createVNode('tooltip', {
     placement: 'top',
     title: res,
+    overlayClassName:'dp-select-tag-tooltip'
   }, {
     default: () => {
-      return `${+omittedValues.length}...`
+      return `+${omittedValues.length}...`
     },
   })
+  */
+ return <a-tooltip placement='top' title={res} >{omittedValues.length}...</a-tooltip>
 
 }
 
@@ -111,29 +102,8 @@ const focus = () => {
   open.value = true
 }
 
-const blur = () => {
-  if (open.value) {
-    return
-  }
-
-  // isOpen.value = visible.value
-  //visible.value = false
-}
-
 const close = (key) => {
-  console.log("close", key);
-  //isOpen.value = true
-  // debugger;
-  if(selectRef?.value){
-    // debugger;
-    selectRef.value.focus();
-  }
   values.value = values.value.filter(arrItem => arrItem != key)
-}
-
-const dropdownVisibleChange = (open) => {
-  console.log("dropdownVisibleChange", open)
-  isOpen.value = open
 }
 
 function canClose(e) {

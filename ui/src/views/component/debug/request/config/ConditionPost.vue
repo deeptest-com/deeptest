@@ -41,7 +41,18 @@
           <div class="collapse-item">
             <div class="header">
               <div @click.stop="expand(element)" class="title dp-link">
-                <MenuOutlined class="handle dp-drag" /> &nbsp;
+                <icon-svg class="handle dp-drag icon" type="move"  />
+
+                <icon-svg v-if="element.entityType === ConditionType.extractor"
+                          type="variable"
+                          class="icon variable" />
+                <icon-svg v-if="element.entityType === ConditionType.checkpoint"
+                          type="checkpoint"
+                          class="icon"  />
+                <icon-svg v-if="element.entityType === ConditionType.script"
+                          type="script"
+                          class="icon"  />
+
                 {{ element.desc || t(element.entityType) }}
               </div>
               <div class="buttons">
@@ -102,6 +113,7 @@ import settings from "@/config/settings";
 import {confirmToDelete} from "@/utils/confirm";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {getEnumSelectItems} from "@/views/scenario/service";
+import IconSvg from "@/components/IconSvg";
 
 import Extractor from "./conditions-post/Extractor.vue";
 import Checkpoint from "./conditions-post/Checkpoint.vue";
@@ -265,6 +277,14 @@ function handleDrop(_e: any) {
           .title {
             flex: 1;
             font-weight: bolder;
+
+            .icon {
+              margin-right: 3px;
+              &.variable {
+                font-size: 16px;
+                vertical-align: -0.2em;
+              }
+            }
           }
           .buttons {
             width: 160px;

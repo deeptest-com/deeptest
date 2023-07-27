@@ -58,9 +58,9 @@ const visible = ref(false)
 
 const options = computed(() => props.options)
 
-const emits = defineEmits('change')
+const emits = defineEmits('change','clear')
 
-const values = ref(props?.value || [])
+const values = computed(() => props?.value || [])
 
 const optionsMap = computed(() => {
   let map = new Map()
@@ -86,7 +86,7 @@ const maxTagPlaceholder = (omittedValues) => {
 }
 
 const change = (e) => {
-  values.value = e
+  //values.value = e
   emits('change', e)
 }
 
@@ -96,8 +96,8 @@ const focus = () => {
 }
 
 const close = (key) => {
-  values.value = values.value.filter(arrItem => arrItem != key);
-  emits('change', values.value);
+  const selectValue = values.value.filter(arrItem => arrItem != key);
+  emits('change', selectValue);
 }
 
 function canClose(e) {

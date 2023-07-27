@@ -79,17 +79,17 @@ export default defineComponent({
         }
 
         const select = () => {
-            return       <a-select
+            return  <a-select
             mode={'multiple'}
             maxTagCount="1"
             allowClear
-            onChange={change(this)}
-            placeholder="placeholder"
-            options={options}
+            onChange={change}
+            placeholder={props.placeholder}
+            options={options.value ||[]}
             style="width: 180px;"
-            value={values}
-            OnFocus={focus()}
-            onBlur={blur()}
+            value={values.value}
+            onFocus={focus}
+            onBlur={blur}
             maxTagPlaceholder={maxTagPlaceholder}
             v-on-click-outside={canClose}/>
         }
@@ -113,6 +113,7 @@ export default defineComponent({
 
         return ()=>
                 <div>
+                    {tags()}
                     {select()}
                 </div>
     }

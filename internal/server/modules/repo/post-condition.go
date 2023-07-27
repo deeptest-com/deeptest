@@ -19,7 +19,7 @@ type PostConditionRepo struct {
 	ScriptRepo     *ScriptRepo     `inject:""`
 }
 
-func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ string) (pos []model.DebugPostCondition, err error) {
+func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory) (pos []model.DebugPostCondition, err error) {
 	db := r.DB.
 		Where("NOT deleted").
 		Order("ordr ASC")
@@ -30,9 +30,9 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
 	}
 
-	if typ == "result" {
+	if typ == consts.ConditionCategoryResult {
 		db.Where("entity_type = ?", consts.ConditionTypeCheckpoint)
-	} else if typ == "log" {
+	} else if typ == consts.ConditionCategoryConsole {
 		db.Where("entity_type != ?", consts.ConditionTypeCheckpoint)
 	}
 
@@ -56,7 +56,7 @@ func (r *PostConditionRepo) Save(po *model.DebugPostCondition) (err error) {
 }
 
 func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint) (err error) {
-	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, "")
+	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll)
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
@@ -152,7 +152,7 @@ func (r *PostConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 }
 
 func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.InterfaceExecCondition, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId, "")
+	pos, err := r.List(debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll)
 
 	for _, po := range pos {
 		typ := po.EntityType

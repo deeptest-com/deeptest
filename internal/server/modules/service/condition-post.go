@@ -14,7 +14,7 @@ type PostConditionService struct {
 	ScriptRepo        *repo.ScriptRepo        `inject:""`
 }
 
-func (s *PostConditionService) List(debugInterfaceId, endpointInterfaceId uint, typ string) (conditions []model.DebugPostCondition, err error) {
+func (s *PostConditionService) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory) (conditions []model.DebugPostCondition, err error) {
 	conditions, err = s.PostConditionRepo.List(debugInterfaceId, endpointInterfaceId, typ)
 
 	return

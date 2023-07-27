@@ -278,6 +278,14 @@ const (
 	ConditionTypeScript     ConditionType = "script"
 )
 
+type ConditionCategory string
+
+const (
+	ConditionCategoryResult  ConditionCategory = "result"
+	ConditionCategoryConsole ConditionCategory = "console"
+	ConditionCategoryAll     ConditionCategory = "all"
+)
+
 type ExtractorSrc string
 
 const (

@@ -129,6 +129,23 @@ func (c *DebugInvokeCtrl) GetResult(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: result})
 }
 
+// GetLog 获取调用日志
+func (c *DebugInvokeCtrl) GetLog(ctx iris.Context) {
+	invokeId, err := ctx.URLParamInt("invokeId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	result, err := c.DebugInvokeService.GetLog(invokeId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: result})
+}
+
 // GetAsInterface 详情
 // @Tags	接口调试
 // @summary	调试记录详情

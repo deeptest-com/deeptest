@@ -1,6 +1,7 @@
 <template>
   <div class="param-grid-main">
-    <div class="head" :class="[list.length===0?'hidden':'']">
+    <div v-if="title"  class="head"
+         :class="[list.length===0?'hidden':'']">
       <ConBoxTitle :title="title" />
     </div>
 
@@ -25,7 +26,7 @@ const {t} = useI18n();
 const props = defineProps({
   title: {
     type: String,
-    required: true
+    required: false
   },
   list: {
     type: Array,

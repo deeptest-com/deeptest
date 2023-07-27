@@ -3,23 +3,27 @@
     <div class="left">
       <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
         <a-tab-pane key="body" :tab="title">
-          <ResponseLensJson v-if="responseData.contentLang === 'json'"></ResponseLensJson>
-          <ResponseLensHtml v-else-if="responseData.contentLang === 'html'"></ResponseLensHtml>
-          <ResponseLensXml v-else-if="responseData.contentLang === 'xml'"></ResponseLensXml>
-          <ResponseLensRaw v-else-if="responseData.contentLang === 'text'"></ResponseLensRaw>
-          <ResponseLensImage v-else-if="responseData.contentLang === 'image'"></ResponseLensImage>
+          <ResponseLensJson v-if="responseData.contentLang === 'json'" />
+          <ResponseLensHtml v-else-if="responseData.contentLang === 'html'" />
+          <ResponseLensXml v-else-if="responseData.contentLang === 'xml'" />
+          <ResponseLensRaw v-else-if="responseData.contentLang === 'text'" />
+          <ResponseLensImage v-else-if="responseData.contentLang === 'image'" />
         </a-tab-pane>
 
         <a-tab-pane key="header" tab="响应头">
-          <ResponseHeaders v-if="activeKey === 'header'"></ResponseHeaders>
+          <ResponseHeaders v-if="activeKey === 'header'" />
         </a-tab-pane>
 
         <a-tab-pane key="cookie" tab="Cookie">
-          <ResponseCookies v-if="activeKey === 'cookie'"></ResponseCookies>
+          <ResponseCookies v-if="activeKey === 'cookie'" />
+        </a-tab-pane>
+
+        <a-tab-pane key="console" tab="控制台">
+          <ResponseConsole v-if="activeKey === 'console'" />
         </a-tab-pane>
 
         <a-tab-pane key="info" tab="实际请求">
-          <ResponseInfo v-if="activeKey === 'info'"></ResponseInfo>
+          <ResponseInfo v-if="activeKey === 'info'" />
           <!-- <template #tab>
             <a-badge v-if="extractorFail" dot><span class="link">提取器</span></a-badge>
             <span v-else>提取器</span>
@@ -30,7 +34,7 @@
     </div>
 
     <div class="right">
-      <ResponseMeta />
+      <ResponseResult />
     </div>
   </div>
 </template>
@@ -42,9 +46,10 @@ import {useStore} from "vuex";
 
 import ResponseHeaders from "./Renderer/Headers.vue";
 import ResponseCookies from "./Renderer/Cookies.vue";
+import ResponseConsole from "./Renderer/Console.vue";
 import ResponseInfo from "./Renderer/Info.vue";
 
-import ResponseMeta from "./Renderer/Meta.vue";
+import ResponseResult from "./Renderer/Result.vue";
 import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseLensXml from "@/views/component/debug/response/Renderer/lenses/XMLLensRenderer.vue";
 import ResponseLensHtml from "@/views/component/debug/response/Renderer/lenses/HTMLLensRenderer.vue";

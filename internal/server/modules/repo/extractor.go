@@ -219,5 +219,7 @@ func (r *ExtractorRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogExt
 		Where("NOT deleted").
 		First(&ret).Error
 
+	ret.ConditionEntityType = consts.ConditionTypeExtractor
+
 	return
 }

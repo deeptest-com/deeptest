@@ -78,6 +78,13 @@ export async function getInvocationResult(invokeId: number): Promise<any> {
         params
     });
 }
+export async function getInvocationLog(invokeId: number): Promise<any> {
+    const params = {invokeId}
+    return request({
+        url: `/${apiPathInvoke}/getLog`,
+        params
+    });
+}
 export async function getInvocationAsInterface(id: number): Promise<any> {
     return request({url: `/${apiPathInvoke}/${id}`});
 }

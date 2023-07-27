@@ -1,54 +1,52 @@
 <template>
-  <div class="response-result">
-    <div class="row status">
-      <span class="col">
-        状态：{{ responseData.statusContent }}
-      </span>
-      <span class="col">
-        耗时: {{ responseData.time }}毫秒
-      </span>
-      <span class="col">
-        大小：{{ responseData.contentLength }}字节
-      </span>
-    </div>
-
-    <div class="title">断言结果</div>
-
-    <div v-for="(item, index) in resultData"
+  <div class="response-console-main">
+    <div v-for="(item, index) in consoleData"
          :key="index"
          :class="getResultClass(item)" class="item">
 
       <span v-if="item.resultStatus===ResultStatus.Pass">
         <CheckCircleOutlined />
       </span>
-
       <span v-if="item.resultStatus===ResultStatus.Fail">
         <CloseCircleOutlined />
       </span>&nbsp;
 
+      <span>
+        <icon-svg v-if="item.conditionEntityType === ConditionType.extractor"
+                  type="variable"
+                  class="icon variable" />
+        <icon-svg v-if="item.conditionEntityType === ConditionType.checkpoint"
+                  type="checkpoint"
+                  class="icon"  />
+        <icon-svg v-if="item.conditionEntityType === ConditionType.script"
+                  type="script"
+                  class="icon"  />
+      </span>
+      &nbsp;
       <span>{{item.resultMsg}}</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, watch} from "vue";
+import {computed, inject, watch} from "vue";
 import {useStore} from "vuex";
-import { CheckCircleOutlined, CloseCircleOutlined} from '@ant-design/icons-vue';
-
-import {ResultStatus} from "@/utils/enum";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {useI18n} from "vue-i18n";
-const {t} = useI18n();
-const store = useStore<{  Debug: Debug }>();
+import {ConditionType, ResultStatus} from "@/utils/enum";
+import { CheckCircleOutlined, CloseCircleOutlined} from '@ant-design/icons-vue';
+import IconSvg from "@/components/IconSvg";
 
+const {t} = useI18n();
+
+const store = useStore<{  Debug: Debug }>();
 const responseData = computed<any>(() => store.state.Debug.responseData);
-const resultData = computed<any>(() => store.state.Debug.resultData);
+const consoleData = computed<any>(() => store.state.Debug.consoleData);
 
 watch(responseData, (newVal) => {
   console.log('responseData', responseData.value.invokeId)
   if (responseData.value.invokeId)
-    store.dispatch("Debug/getInvocationResult", responseData.value.invokeId)
+    store.dispatch("Debug/getInvocationLog", responseData.value.invokeId)
 }, {deep: true, immediate: true})
 
 const getResultClass = (item) => {
@@ -58,8 +56,13 @@ const getResultClass = (item) => {
 
 </script>
 
+<style lang="less">
+.response-console-main {
+}
+</style>
+
 <style lang="less" scoped>
-.response-result {
+.response-console-main {
   height: 100%;
   overflow-y: auto;
   padding: 0px 6px;

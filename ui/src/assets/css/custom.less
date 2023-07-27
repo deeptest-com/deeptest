@@ -334,8 +334,16 @@
 
 .dp-param-grid {
   .head {
-    //padding: 2px 3px;
+    font-weight: bold;
+    background: #fafafa;
     border-bottom: 1px solid #d9d9d9;
+    .ant-col {
+      line-height: 36px;
+      border-right: 1px solid #d9d9d9;
+      &.title {
+        padding: 0 10px;
+      }
+    }
   }
 
   .params {
@@ -351,6 +359,7 @@
 
         input {
           margin-top: 1px;
+          height: 32px;
         }
 
         .ant-select {

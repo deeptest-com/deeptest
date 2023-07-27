@@ -29,7 +29,7 @@ func (c *PostConditionCtrl) List(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	data, err := c.PostConditionService.List(uint(debugInterfaceId), uint(endpointInterfaceId))
+	data, err := c.PostConditionService.List(uint(debugInterfaceId), uint(endpointInterfaceId), "log")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -3,7 +3,9 @@
     <div class="dp-param-grid">
       <div class="head">
         <a-row type="flex">
-          <a-col flex="1">查询参数</a-col>
+          <a-col flex="1" class="title">参数名</a-col>
+          <a-col flex="1" class="title">参数值</a-col>
+
           <a-col flex="80px" class="dp-right">
             <a-tooltip overlayClassName="dp-tip-small">
               <template #title>帮助</template>

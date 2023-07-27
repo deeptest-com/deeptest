@@ -31,7 +31,7 @@ import {
     removePostConditions,
     movePostConditions,
     removePreConditions,
-    movePreConditions, disablePreConditions, disablePostConditions, saveAsCase, getInvocationResult,
+    movePreConditions, disablePreConditions, disablePostConditions, saveAsCase, getInvocationResult, getInvocationLog,
 } from './service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {UsedBy} from "@/utils/enum";
@@ -45,6 +45,7 @@ export interface StateType {
 
     requestData: any;
     responseData: Response;
+    consoleData: any[];
     resultData: any[];
 
     invocationsData: any[];
@@ -63,6 +64,7 @@ const initState: StateType = {
 
     requestData: {},
     responseData: {} as Response,
+    consoleData: [],
     resultData: [],
 
     invocationsData: [],
@@ -85,6 +87,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setRequest: Mutation<StateType>;
         setResponse: Mutation<StateType>;
         setResult: Mutation<StateType>;
+        setLog: Mutation<StateType>;
 
         setInvocations: Mutation<StateType>;
         setServerId: Mutation<StateType>;
@@ -115,6 +118,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         listInvocation: Action<StateType, StateType>;
         getLastInvocationResp: Action<StateType, StateType>;
         getInvocationResult: Action<StateType, StateType>;
+        getInvocationLog: Action<StateType, StateType>;
         getInvocationAsInterface: Action<StateType, StateType>;
         removeInvocation: Action<StateType, StateType>;
 
@@ -185,6 +189,9 @@ const StoreModel: ModuleType = {
         },
         setResult(state, payload) {
             state.resultData = payload;
+        },
+        setLog(state, payload) {
+            state.consoleData = payload;
         },
 
         setInvocations(state, payload) {
@@ -315,6 +322,7 @@ const StoreModel: ModuleType = {
             commit('setRequest', {});
             commit('setResponse', {});
             commit('setResult', []);
+            commit('setLog', []);
             commit('setInvocations', []);
         },
 
@@ -372,6 +380,11 @@ const StoreModel: ModuleType = {
         async getInvocationResult({commit, dispatch, state}, invokeId: number) {
             const response = await getInvocationResult(invokeId);
             commit('setResult', response.data);
+            return true;
+        },
+        async getInvocationLog({commit, dispatch, state}, invokeId: number) {
+            const response = await getInvocationLog(invokeId);
+            commit('setLog', response.data);
             return true;
         },
 

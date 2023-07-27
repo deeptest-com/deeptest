@@ -29,11 +29,11 @@
 
 </template>
 
-<script lang="tsx" setup>
+<script type="ts" setup>
 
 import {ref, defineProps, defineEmits, computed, watch, createVNode} from 'vue';
 import {vOnClickOutside} from '@vueuse/components';
-
+import {Tooltip} from 'ant-design-vue'
 const props = defineProps({
   placeholder: {
     type: String,
@@ -76,8 +76,7 @@ const maxTagPlaceholder = (omittedValues) => {
   omittedValues.forEach((item) => {
     res += res ? "," + item.label : item.label
   })
-/*
-  return createVNode('a-tooltip', {
+  return createVNode(Tooltip, {
     placement: 'top',
     title: res,
     overlayClassName:'dp-select-tag-tooltip'
@@ -86,12 +85,6 @@ const maxTagPlaceholder = (omittedValues) => {
       return `+${omittedValues.length}...`
     },
   })
-  */
-  
- return <a-tooltip placement='top' title={res} >{omittedValues.length}...</a-tooltip>
-
- //return "+"+omittedValues.length+"..."
-
 }
 
 const change = (e) => {

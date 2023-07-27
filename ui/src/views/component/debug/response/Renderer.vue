@@ -1,31 +1,37 @@
 <template>
   <div class="response-renderer">
-    <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
-      <a-tab-pane key="body" :tab="title">
-        <ResponseLensJson v-if="responseData.contentLang === 'json'"></ResponseLensJson>
-        <ResponseLensHtml v-else-if="responseData.contentLang === 'html'"></ResponseLensHtml>
-        <ResponseLensXml v-else-if="responseData.contentLang === 'xml'"></ResponseLensXml>
-        <ResponseLensRaw v-else-if="responseData.contentLang === 'text'"></ResponseLensRaw>
-        <ResponseLensImage v-else-if="responseData.contentLang === 'image'"></ResponseLensImage>
-      </a-tab-pane>
+    <div class="left">
+      <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
+        <a-tab-pane key="body" :tab="title">
+          <ResponseLensJson v-if="responseData.contentLang === 'json'"></ResponseLensJson>
+          <ResponseLensHtml v-else-if="responseData.contentLang === 'html'"></ResponseLensHtml>
+          <ResponseLensXml v-else-if="responseData.contentLang === 'xml'"></ResponseLensXml>
+          <ResponseLensRaw v-else-if="responseData.contentLang === 'text'"></ResponseLensRaw>
+          <ResponseLensImage v-else-if="responseData.contentLang === 'image'"></ResponseLensImage>
+        </a-tab-pane>
 
-      <a-tab-pane key="header" tab="响应头">
-        <ResponseHeaders v-if="activeKey === 'header'"></ResponseHeaders>
-      </a-tab-pane>
+        <a-tab-pane key="header" tab="响应头">
+          <ResponseHeaders v-if="activeKey === 'header'"></ResponseHeaders>
+        </a-tab-pane>
 
-      <a-tab-pane key="cookie" tab="Cookie">
-        <ResponseCookies v-if="activeKey === 'cookie'"></ResponseCookies>
-      </a-tab-pane>
+        <a-tab-pane key="cookie" tab="Cookie">
+          <ResponseCookies v-if="activeKey === 'cookie'"></ResponseCookies>
+        </a-tab-pane>
 
-      <a-tab-pane key="info" tab="详情">
-        <ResponseInfo v-if="activeKey === 'info'"></ResponseInfo>
-        <!-- <template #tab>
-          <a-badge v-if="extractorFail" dot><span class="link">提取器</span></a-badge>
-          <span v-else>提取器</span>
-        </template> -->
-      </a-tab-pane>
+        <a-tab-pane key="info" tab="实际请求">
+          <ResponseInfo v-if="activeKey === 'info'"></ResponseInfo>
+          <!-- <template #tab>
+            <a-badge v-if="extractorFail" dot><span class="link">提取器</span></a-badge>
+            <span v-else>提取器</span>
+          </template> -->
+        </a-tab-pane>
 
-    </a-tabs>
+      </a-tabs>
+    </div>
+
+    <div class="right">
+      <ResponseMeta />
+    </div>
   </div>
 </template>
 
@@ -38,6 +44,7 @@ import ResponseHeaders from "./Renderer/Headers.vue";
 import ResponseCookies from "./Renderer/Cookies.vue";
 import ResponseInfo from "./Renderer/Info.vue";
 
+import ResponseMeta from "./Renderer/Meta.vue";
 import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseLensXml from "@/views/component/debug/response/Renderer/lenses/XMLLensRenderer.vue";
 import ResponseLensHtml from "@/views/component/debug/response/Renderer/lenses/HTMLLensRenderer.vue";
@@ -69,18 +76,30 @@ const activeKey = ref('body');
 <style lang="less">
 .response-renderer {
   height: 100%;
+  display: flex;
 
-  .ant-tabs-line {
+  .left {
     height: 100%;
-    .ant-tabs-top-content {
-      height: calc(100% - 61px);
+    flex: 1;
+    .ant-tabs-line {
+      height: 100%;
+      .ant-tabs-top-content {
+        height: calc(100% - 61px);
+      }
+    }
+    .link {
+      color: #009688;
     }
   }
+  .right {
+    height: 100%;
+    width: 360px;
+  }
+
+
 }
 </style>
 
 <style lang="less" scoped>
-  .link {
-    color: #009688;
-  }
+
 </style>

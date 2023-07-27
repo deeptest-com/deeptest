@@ -1,7 +1,12 @@
 @import './antd-variables.less';
 @import './variables.less';
 
-
+.ant-spin-nested-loading {
+    height: 100%;
+    .ant-spin-container {
+        height: 100%;
+    }
+}
 .ant-btn-link {
     color: @primary-color;
 }
@@ -15,6 +20,12 @@
 .ant-empty.dp-empty-no-margin {
     margin: 0px !important;
     padding: 32px 0 !important;
+}
+
+.ant-table-wrapper.dp-small-table {
+    th,td {
+        padding: 8px;
+    }
 }
 
 .ant-modal-wrap.dp-modal-confirm {

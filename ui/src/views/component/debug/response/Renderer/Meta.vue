@@ -1,6 +1,6 @@
 <template>
   <div class="response-meta">
-    <div class="row">
+    <div class="row status">
       <span class="col">
         状态：{{ responseData.statusContent }}
       </span>
@@ -12,12 +12,12 @@
       </span>
     </div>
 
-    <div v-for="(item, index) in resultData" :key="index" class="item"
-         :class="[item.resultStatus===ResultStatus.Pass? 'dp-color-pass': item.resultStatus===ResultStatus.Fail? 'dp-color-fail':'']">
+    <div v-for="(item, index) in resultData"
+         :key="index"
+         :class="getResultClass(item)" class="item">
 
       <span v-if="item.resultStatus===ResultStatus.Pass"><CheckCircleOutlined /></span>
-      <span v-if="item.resultStatus===ResultStatus.Fail"><CloseCircleOutlined /></span>
-      &nbsp;
+      <span v-if="item.resultStatus===ResultStatus.Fail"><CloseCircleOutlined /></span>&nbsp;
       <span>{{item.resultMsg}}</span>
     </div>
   </div>
@@ -37,6 +37,15 @@ const store = useStore<{  Debug: Debug }>();
 const responseData = computed<any>(() => store.state.Debug.responseData);
 const resultData = computed<any>(() => store.state.Debug.resultData);
 
+const getStatusClass = (item) => {
+  return item.statusCode===200? 'pass' : 'fail'
+}
+
+const getResultClass = (item) => {
+  return item.resultStatus===ResultStatus.Pass? 'pass':
+      item.resultStatus===ResultStatus.Fail ? 'fail' : ''
+}
+
 watch(responseData, (newVal) => {
   console.log('responseData', responseData.value.invokeId)
   if (responseData.value.invokeId)
@@ -49,12 +58,25 @@ watch(responseData, (newVal) => {
 .response-meta {
   height: 100%;
   overflow-y: auto;
-  padding: 0 6px;
+  padding: 0px 6px;
 
-  .row {
-    padding: 2px 0;
+  .status {
+    padding: 12px 0 8px 0;
     .col {
       margin-right: 20px;
+    }
+  }
+
+  .item {
+    margin: 3px;
+    padding: 5px;
+    &.pass {
+      color: #14945a;
+      background-color: #F1FAF4;
+    }
+    &.fail {
+      color: #D8021A;
+      background-color: #FFECEE;
     }
   }
 }

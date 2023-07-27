@@ -1,6 +1,5 @@
 <template>
   <div class="info-main">
-    <div class="params">
       <ParamGrid title="查询参数" :list="requestData.queryParams || []" />
       <ParamGrid title="路径参数" :list="requestData.pathParams || []" />
       <ParamGrid title="请求头" :list="requestData.headers || []" />
@@ -16,12 +15,6 @@
       <ParamContent v-else
                     title="请求体"
                     :content="requestData.body || ''" />
-
-    </div>
-
-    <div class="meta">
-      <ResponseMeta />
-    </div>
   </div>
 </template>
 
@@ -47,18 +40,7 @@ const requestData = computed<any>(() => store.state.Debug.requestData);
 <style lang="less" scoped>
 .info-main {
   height: 100%;
-  display: flex;
-
-  .params {
-    flex: 1;
-    height: 100%;
-    overflow-y: auto;
-  }
-
-  .meta {
-    height: 100%;
-    width: 360px;
-  }
+  overflow-y: auto;
 }
 
 </style>

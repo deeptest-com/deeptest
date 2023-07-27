@@ -86,8 +86,8 @@ func GetScript(name ScriptType) string {
 	return ""
 }
 
-func GenResultMsg(po *domain.ScriptBase) (ret string) {
-	ret = fmt.Sprintf("%s%s，输出%s。",
+func GenResultMsg(po *domain.ScriptBase) {
+	po.ResultMsg = fmt.Sprintf("%s%s，输出\"%s\"。",
 		_i118Utils.Sprintf("exec"), _i118Utils.Sprintf(po.ResultStatus.String()),
 		po.Output)
 

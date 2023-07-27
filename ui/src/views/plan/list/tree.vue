@@ -200,11 +200,6 @@ const tagModalMode = ref('new');
 
 // 删除分类
 async function deleteCategorie(node) {
-  if (node.count > 0) {
-    message.warning('该目录下有数据，请删除后再操作');
-    return
-  }
-
   Modal.confirm({
     title: () => '确定删除该分类吗？',
     content: () => '删除后所有所有子分类都会被删除',
@@ -212,7 +207,10 @@ async function deleteCategorie(node) {
     okType: 'danger',
     cancelText: () => '取消',
     onOk: async () => {
-      const res = await store.dispatch('Plan/removeCategoryNode', node.id);
+      const res = await store.dispatch('Plan/removeCategoryNode', {
+        id:node.id,
+        type:'plan'
+      });
       if (res) {
         message.success('删除成功');
       } else {

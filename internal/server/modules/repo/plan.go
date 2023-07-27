@@ -444,3 +444,11 @@ func (r *PlanRepo) GetCategoryCount(result interface{}, projectId uint) (err err
 	err = r.DB.Raw("select count(id) count, category_id from "+model.Plan{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }
+
+func (r *PlanRepo) DeleteByCategoryIds(categoryIds []uint) (err error) {
+	err = r.DB.Model(&model.Plan{}).
+		Where("category_id IN (?)", categoryIds).
+		Update("deleted", 1).Error
+
+	return
+}

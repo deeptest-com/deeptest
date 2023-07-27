@@ -13,6 +13,7 @@ import (
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"strconv"
+	"strings"
 )
 
 type PlanRepo struct {
@@ -52,16 +53,10 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 		db = db.Where("disabled = ?", commonUtils.IsDisable(req.Enabled))
 	}
 	if req.Status != "" {
-		db = db.Where("status = ?", req.Status)
+		db = db.Where("status IN (?)", strings.Split(req.Status, ","))
 	}
-	if len(req.StatusArr) != 0 {
-		db = db.Where("status IN (?)", req.StatusArr)
-	}
-	if req.AdminId != 0 {
-		db = db.Where("admin_id = ?", req.AdminId)
-	}
-	if len(req.AdminIds) != 0 {
-		db = db.Where("admin_id IN (?)", req.AdminIds)
+	if req.AdminId != "" {
+		db = db.Where("admin_id IN (?)", strings.Split(req.AdminId, ","))
 	}
 	err = db.Count(&count).Error
 	if err != nil {

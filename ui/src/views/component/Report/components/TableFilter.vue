@@ -14,8 +14,14 @@
         <a-form :model="formState" class="report-form">
             <div class="report-executor-selector">
                 <a-form-item name="executor" label="执行人">
-                    <a-select allowClear placeholder="请选择执行人" v-model:value="selectValue" :options="executorOptions"
-                        style="width: 140px" @change="handleSelectChange" />
+                  <Select
+                      :placeholder="'请选择执行人'"
+                      :options="executorOptions"
+                      :value="selectValue"
+                      @change="handleSelectChange"
+                  />
+<!--                  <a-select allowClear placeholder="请选择执行人" v-model:value="selectValue" :options="executorOptions"-->
+<!--                        style="width: 140px" @change="handleSelectChange" />-->
                 </a-form-item>
             </div>
             <div class="report-excutime">
@@ -41,6 +47,7 @@ import { useStore } from 'vuex';
 import { StateType } from "../store";
 import { StateType as ProjectStateType } from "@/store/project";
 import { momentTimeStamp } from '@/utils/datetime';
+import Select from '@/components/Select/index.vue';
 
 defineProps({
     showOperation: {
@@ -54,7 +61,7 @@ const store = useStore<{ Report: StateType, ProjectGlobal: ProjectStateType }>()
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const executorOptions = computed<any[]>(() => store.state.Report.members);
 
-const selectValue = ref(null);
+const selectValue = ref([]);
 const executeName = ref('');
 const formState = reactive({});
 let executeTime = reactive<any>({ executeStartTime: '', executeEndTime: '' });
@@ -79,12 +86,13 @@ function onRangeChange(date: any) {
 }
 
 function handleSelectChange(value: any) {
-    console.log('handleSelect---', value);
-    refreshList({});
+  console.log('handleSelect---', value);
+  selectValue.value = value
+  refreshList({});
 }
 
 function refreshList(params) {
-    emits('handleFilter', { keywords: executeName.value, createUserId: selectValue.value, ...executeTime, ...params })
+    emits('handleFilter', { keywords: executeName.value, createUserId: selectValue.value.join(','), ...executeTime, ...params })
 }
 
 const onSearch = (val: string) => {

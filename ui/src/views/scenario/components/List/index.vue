@@ -8,41 +8,29 @@
       </div>
       <div class="right">
         <a-form :layout="'inline'" class="filter-items">
-          <a-form-item :label="'测试类型'">
-            <!--
-            <a-select style="width:100px" allowClear placeholder="请选择" @change="onSearch"
-                      v-model:value="queryParams.type" :options="testTypeOptions" class="status-select"/>
-            -->
-        <Select
-        :placeholder="'请选择'"
-        :options="testTypeOptions"
-        :value="queryParams.type"
-        @change="(e) => queryParams.type = e.join()"
-        />
+          <a-form-item :label="'测试类型'" class="filter-item">
+            <Select
+                :placeholder="'请选择'"
+                :options="testTypeOptions"
+                :value="queryParams.type"
+                @change="(e) => queryParams.type = e.join()"
+            />
           </a-form-item>
           <a-form-item :label="'状态'">
-            <!--
-            <a-select style="width:100px" allowClear placeholder="请选择" @change="onSearch"
-                      v-model:value="queryParams.status" :options="scenarioStatusOptions" class="status-select"/>
-            -->
-        <Select
-        :placeholder="'请选择'"
-        :options="scenarioStatusOptions"
-        :value="queryParams.status"
-        @change="(e) => queryParams.status = e.join()"
-        />          
+            <Select
+                :placeholder="'请选择'"
+                :options="scenarioStatusOptions"
+                :value="queryParams.status"
+                @change="(e) => queryParams.status = e.join()"
+            />
           </a-form-item>
           <a-form-item :label="'优先级'">
-            <!--
-            <a-select style="width:100px" placeholder="请选择" allowClear @change="onSearch"
-                      v-model:value="queryParams.priority" :options="priorityOptions" class="status-select"/>
-              -->        
-        <Select
-        :placeholder="'请选择'"
-        :options="priorityOptions"
-        :value="queryParams.priority"
-        @change="(e) => queryParams.priority = e.join()"
-        />
+            <Select
+                :placeholder="'请选择'"
+                :options="priorityOptions"
+                :value="queryParams.priority"
+                @change="(e) => queryParams.priority = e.join()"
+            />
           </a-form-item>
           <a-input-search @change="onSearch" allowClear @search="onSearch" v-model:value="queryParams.keywords"
                           placeholder="搜索测试场景" style="width:200px;margin-left: 8px;"/>
@@ -430,13 +418,13 @@ onMounted(() => {
 })
 
 watch(
-  ()=>[isEditVisible.value, drawerVisible.value],
-  async (newValue) => {
-    if (!newValue[0] || !newValue[1]) {
-      await store.dispatch('Scenario/loadCategory');
-    }
-  },
-  {  immediate: true }
+    () => [isEditVisible.value, drawerVisible.value],
+    async (newValue) => {
+      if (!newValue[0] || !newValue[1]) {
+        await store.dispatch('Scenario/loadCategory');
+      }
+    },
+    {immediate: true}
 );
 
 </script>
@@ -466,6 +454,9 @@ watch(
 
 .filter-items {
   font-weight: normal;
+  .filter-item{
+    max-height: 32px;
+  }
 }
 
 .operation-a {

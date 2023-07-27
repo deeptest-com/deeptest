@@ -9,14 +9,12 @@ import (
 type PlanReqPaginate struct {
 	_domain.PaginateReq
 
-	ProjectId  uint                `json:"projectId"`
-	CategoryId int64               `json:"categoryId"`
-	Status     consts.TestStatus   `json:"status"`
-	StatusArr  []consts.TestStatus `json:"statusArr"`
-	AdminId    uint                `json:"adminId"`
-	AdminIds   []uint              `json:"adminIds"`
-	Keywords   string              `json:"keywords"`
-	Enabled    string              `json:"enabled"`
+	ProjectId  uint   `json:"projectId"`
+	CategoryId int64  `json:"categoryId"`
+	Status     string `json:"status"`
+	AdminId    string `json:"adminId"`
+	Keywords   string `json:"keywords"`
+	Enabled    string `json:"enabled"`
 }
 
 //type PlanAddScenariosReq struct {

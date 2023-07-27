@@ -231,11 +231,14 @@ func (s *SummaryProjectUserRankingService) SortRanking(data []model.SummaryProje
 				tmp := data[i]
 				data[i] = data[x]
 				data[x] = tmp
+				data[i].Sort = int64(x + 1)
+				data[x].Sort = int64(x)
+			} else {
 				data[i].Sort = int64(x)
+				data[x].Sort = int64(x + 1)
 			}
 		}
 	}
-	data[length-1].Sort = int64(length)
 	ret = data
 	return
 }
@@ -251,10 +254,14 @@ func (s *SummaryProjectUserRankingService) SortRankingList(data v1.ResRankingLis
 				list[i] = list[x]
 				list[x] = tmp
 				list[i].Sort = int64(x)
+				list[i].Sort = int64(x + 1)
+				list[x].Sort = int64(x)
+			} else {
+				list[i].Sort = int64(x)
+				list[x].Sort = int64(x + 1)
 			}
 		}
 	}
-	list[length-1].Sort = int64(length)
 	ret = data
 	return
 }

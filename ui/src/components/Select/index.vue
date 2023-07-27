@@ -96,7 +96,8 @@ const focus = () => {
 }
 
 const close = (key) => {
-  values.value = values.value.filter(arrItem => arrItem != key)
+  values.value = values.value.filter(arrItem => arrItem != key);
+  emits('change', values.value);
 }
 
 function canClose(e) {

@@ -6,16 +6,18 @@
       </template>
       <template #extra>
         <a-form :layout="'inline'">
-          <a-form-item :label="null" style="margin-bottom: 0;">
-<!--            <a-select-->
-<!--                allowClear-->
-<!--                @change="onSearch"-->
-<!--                v-model:value="queryParams.status"-->
-<!--                :options="planStatusOptions"-->
-<!--                class="status-select"-->
-<!--                style="width: 120px"-->
-<!--                placeholder="请选择状态">-->
-<!--            </a-select>-->
+          <a-form-item :label="'负责人'" style="margin-bottom: 0;">
+            <Select
+                :placeholder="'请选择负责人'"
+                :options="userOptions"
+                :value="queryParams.adminId || []"
+                :width="'180px'"
+                @change="(e) => {
+                 changeAdminId(e);
+              }"
+            />
+          </a-form-item>
+          <a-form-item :label="'状态'" style="margin-bottom: 0;">
             <Select
                 :placeholder="'请选择状态'"
                 :options="planStatusOptions"
@@ -25,7 +27,6 @@
                  changeStatus(e);
               }"
             />
-
           </a-form-item>
           <a-form-item :label="null" style="margin-bottom: 0;">
             <a-input-search
@@ -130,7 +131,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import { useStore } from "vuex";
 import { message } from 'ant-design-vue';
 import { MoreOutlined } from "@ant-design/icons-vue";
@@ -191,7 +192,7 @@ const columns = [
 
 import { ReportDetailType } from "@/utils/enum";
 
-const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
+const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
@@ -199,9 +200,18 @@ const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
 
+const userOptions = computed(() => {
+  return store.state.Project.userList.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+})
 const queryParams = reactive<any>({
   keywords: '',
-  status: null
+  status: null,
+  adminId: null,
 });
 const loading = ref<boolean>(false);
 const createDrawerVisible = ref(false);
@@ -216,6 +226,7 @@ const getList = debounce(async (current: number): Promise<void> => {
   await store.dispatch('Plan/listPlan', {
     keywords: queryParams.keywords.trim(),
     status: queryParams.status?.join(',') || '',
+    adminId: queryParams.adminId?.join(',') || '',
     categoryId: nodeDataCategory.value?.id || 0,
     pageSize: pagination.value.pageSize,
     page: current,
@@ -321,8 +332,13 @@ const remove = (id: number) => {
 function changeStatus(e) {
   queryParams.status = e;
   getList(1);
-
 }
+
+function changeAdminId(e) {
+  queryParams.adminId = e;
+  getList(1);
+}
+
 const onSearch = () => {
   getList(1);
 };
@@ -351,6 +367,9 @@ watch(
   {  immediate: true }
 );
 
+onMounted(async () => {
+  await store.dispatch('Project/getUserList');
+})
 </script>
 
 <style lang="less" scoped>

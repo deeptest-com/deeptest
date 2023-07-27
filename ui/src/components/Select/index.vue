@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-popover :visible="visible && values?.length"
+    <a-popover :visible="visible && !!values?.length"
                :placement="'top'"
                trigger="click"
                :autoAdjustOverflow="false"
@@ -19,7 +19,6 @@
           style="width: 180px;"
           :value="values"
           @focus="focus"
-          @blur="blur"
           :maxTagPlaceholder="maxTagPlaceholder"
           v-on-click-outside="canClose">
       </a-select>
@@ -33,32 +32,14 @@
 import {ref, defineProps, defineEmits, computed, watch, createVNode} from 'vue';
 import {vOnClickOutside} from '@vueuse/components';
 import {Tooltip} from 'ant-design-vue'
-const props = defineProps({
-  placeholder: {
-    type: String,
-    default: 'small'
-  },
-  value: {
-    type: [],
-    required: true,
-  },
-  width: {
-    type: String,
-    default: '180px'
-  },
-  options: {
-    type: [],
-    default: [],
-  },
 
-})
+
+const props = defineProps(['placeholder', 'value', 'width', 'options'])
+const emits = defineEmits(['change'])
 
 const visible = ref(false)
 
-
 const options = computed(() => props.options)
-
-const emits = defineEmits('change','clear')
 
 const values = computed(() => props?.value || [])
 

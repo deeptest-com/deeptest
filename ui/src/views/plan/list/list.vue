@@ -9,7 +9,7 @@
           <a-form-item :label="'负责人'" style="margin-bottom: 0;">
             <Select
                 :placeholder="'请选择负责人'"
-                :options="userOptions"
+                :options="userOptions || []"
                 :value="queryParams.adminId || []"
                 :width="'180px'"
                 @change="(e) => {
@@ -20,7 +20,7 @@
           <a-form-item :label="'状态'" style="margin-bottom: 0;">
             <Select
                 :placeholder="'请选择状态'"
-                :options="planStatusOptions"
+                :options="planStatusOptions || []"
                 :value="queryParams.status || []"
                 :width="'180px'"
                 @change="(e) => {
@@ -201,6 +201,7 @@ const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
 
 const userOptions = computed(() => {
+  if(!store.state.Project.userList) return [];
   return store.state.Project.userList.map((item) => {
     return {
       label: item.name,
@@ -210,8 +211,8 @@ const userOptions = computed(() => {
 })
 const queryParams = reactive<any>({
   keywords: '',
-  status: null,
-  adminId: null,
+  status: [],
+  adminId: [],
 });
 const loading = ref<boolean>(false);
 const createDrawerVisible = ref(false);

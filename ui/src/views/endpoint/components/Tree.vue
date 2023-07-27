@@ -85,6 +85,8 @@ import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {StateType as ProjectStateType} from "@/store/project";
 import {setSelectedKey} from "@/utils/cache";
 import {filterTree} from "@/utils/tree";
+import {getCache} from "@/utils/localCache";
+import settings from "@/config/settings";
 
 const store = useStore<{ Endpoint: EndpointStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -211,7 +213,8 @@ async function deleteCategorie(node) {
     onOk: async () => {
       const res = await store.dispatch('Endpoint/removeCategoryNode', {
         id:node.id,
-        type:'endpoint'
+        type:'endpoint',
+        projectId: await getCache(settings.currProjectId)
       });
       if (res) {
         message.success('删除成功');

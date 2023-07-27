@@ -90,11 +90,11 @@
               <template #colTags="{record}">
                 <div class="customTagsColRender">
                   <Tags
-                  :values = "record?.tags"
-                  :options = "tagList"
-                  @updateTags = "(values:[])=>{
-                    updateTags(values,record.id)
-                  }"
+                    :values = "record?.tags"
+                    :options = "tagList"
+                    @updateTags = "(values:[])=>{
+                      updateTags(values,record.id)
+                    }"
                     />
                 </div>
               </template>
@@ -192,7 +192,6 @@ const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const serves = computed<any>(() => store.state.ServeGlobal.serves);
 const list = computed<Endpoint[]>(() => store.state.Endpoint.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Endpoint.listResult.pagination);
-let filterState1 = computed<any>(() => store.state.Endpoint.filterState);
 const createApiModalVisible = ref(false);
 const router = useRouter();
 type Key = ColumnProps['key'];
@@ -481,7 +480,7 @@ async function handleTableFilter(state) {
   await loadList(pagination.value.current, pagination.value.pageSize, state);
 }
 
-const filter = ref() 
+const filter = ref()
 
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据
 watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
@@ -531,11 +530,11 @@ function paneResizeStop(pane, resizer, size) {
   }
 }
 
-const updateTags = async (tags :[],id:number)=>{  
+const updateTags = async (tags :[],id:number)=>{
    await store.dispatch('Endpoint/updateEndpointTag', {
       id:id,tagNames:tags
     });
-    
+
 }
 
 </script>

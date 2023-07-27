@@ -14,7 +14,7 @@
       <a-form-item label="状态" style="margin-bottom: 0;">
         <Select
         :placeholder="'请选择状态'"
-        :options="endpointStatusOpts"
+        :options="endpointStatusOpts || []"
         :value="formState?.status || []"
         :width="'180px'"
         @change="(e) => {

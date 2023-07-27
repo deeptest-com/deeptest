@@ -186,7 +186,7 @@ export class DeepTestApp {
         this.openOrCreateWindow()
         this.setAboutPanel();
 
-         globalShortcut.register('CommandOrControl+D', () => {
+         globalShortcut.register('Alt+CommandOrControl+I', () => {
              const mainWin = this._windows.get('main');
              mainWin.toggleDevTools()
          })
@@ -199,9 +199,7 @@ export class DeepTestApp {
          });
 
          setInterval(async () => {
-             debugger;
-             await checkUpdate(this._windows.get('main'))
-
+             // await checkUpdate(this._windows.get('main'))
          }, 6000);
     }
 

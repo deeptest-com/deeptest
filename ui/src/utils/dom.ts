@@ -1,6 +1,7 @@
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
+import {requestMethodOpts} from "@/config/constant";
 
 export function resizeWidth(mainId: string, leftId: string, splitterId: string, rightId: string,
                             leftMin: number, rightMin: number): boolean {
@@ -217,4 +218,10 @@ function getRightTabTop() {
     }
 
     return 100
+}
+
+export const getMethodColor = (method) => {
+    return requestMethodOpts.find((item: any) => {
+        return item.value === method;
+    })?.color
 }

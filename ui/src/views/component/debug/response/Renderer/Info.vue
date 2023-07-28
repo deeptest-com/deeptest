@@ -1,20 +1,30 @@
 <template>
   <div class="info-main">
-      <ParamGrid title="查询参数" :list="requestData.queryParams || []" />
-      <ParamGrid title="路径参数" :list="requestData.pathParams || []" />
-      <ParamGrid title="请求头" :list="requestData.headers || []" />
+    <div>
+      <ConBoxTitle title="请求地址" />
+      <div>
+        <span :style="{color: getMethodColor(requestData.method)}">
+          {{requestData.method}}
+        </span>&nbsp;
+        <span>{{requestData.url}}</span>
+      </div>
+    </div>
 
-      <ParamGrid v-if="requestData.bodyType==='multipart/form-data' && requestData.bodyFormData"
-                 title="表单数据"
-                 :list="requestData.bodyFormData || []" />
+    <ParamGrid title="查询参数" :list="requestData.queryParams || []" />
+    <ParamGrid title="路径参数" :list="requestData.pathParams || []" />
+    <ParamGrid title="请求头" :list="requestData.headers || []" />
 
-      <ParamGrid v-else-if="requestData.bodyType==='application/x-www-form-urlencoded' && requestData.bodyFormUrlencoded"
-                 title="表单数据（UrlEncoded）"
-                 :list="requestData.bodyFormUrlencoded || []" />
+    <ParamGrid v-if="requestData.bodyType==='multipart/form-data' && requestData.bodyFormData"
+               title="表单数据"
+               :list="requestData.bodyFormData || []" />
 
-      <ParamContent v-else
-                    title="请求体"
-                    :content="requestData.body || ''" />
+    <ParamGrid v-else-if="requestData.bodyType==='application/x-www-form-urlencoded' && requestData.bodyFormUrlencoded"
+               title="表单数据（UrlEncoded）"
+               :list="requestData.bodyFormUrlencoded || []" />
+
+    <ParamContent v-else
+                  title="请求体"
+                  :content="requestData.body || ''" />
   </div>
 </template>
 
@@ -31,6 +41,7 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 import {StateType as Debug} from "@/views/component/debug/store";
+import {getMethodColor} from "@/utils/dom";
 const store = useStore<{  Debug: Debug }>();
 
 const requestData = computed<any>(() => store.state.Debug.requestData);

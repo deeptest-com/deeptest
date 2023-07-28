@@ -11,13 +11,14 @@
       <!-- 请求方法定义 -->
       <a-radio-group v-model:value="selectedMethod" button-style="outline">
         <a-radio-button
+            v-for="method in requestMethodOpts"
             :class="{'has-defined': hasDefinedMethod(method.value),'request-method-btn':true}"
             :style="{ color: hasDefinedMethod(method.value) ? method.color : '#999999',
                       'box-shadow': `none` ,
                       background: method.value !== selectedMethod ? '#f5f5f5' : '#fff',
                      'border-color': '#d9d9d9'}"
             :size="'small'"
-            :key="method.value" v-for="method in requestMethodOpts" :value="method.value">
+            :key="method.value" :value="method.value">
           {{ method.label }}
         </a-radio-button>
       </a-radio-group>

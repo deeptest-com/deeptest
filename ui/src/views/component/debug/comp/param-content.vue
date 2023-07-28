@@ -1,10 +1,12 @@
 <template>
   <div class="param-content-main">
-    <div class="head">
+    <div :class="[content===''?'hidden':'']"
+         class="head">
       <ConBoxTitle :title="title" />
     </div>
 
-    <div class="content">
+    <div :class="[content===''?'hidden':'']"
+         class="content">
       {{content}}
     </div>
   </div>

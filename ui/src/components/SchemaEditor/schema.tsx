@@ -302,7 +302,6 @@ export default defineComponent({
             const items = parent?.type === 'array' ? ancestor : parent;
             if (isRoot) return null;
             if (!keyName) return null;
-            debugger;
             if (isRefRootNode || isCompositeChildNode) return null;
             return <>
                 <span class={'baseInfoKey'}

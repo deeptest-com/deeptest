@@ -2,7 +2,7 @@
   <div class="info-main">
     <div>
       <ConBoxTitle title="请求地址" />
-      <div>
+      <div class="content">
         <span :style="{color: getMethodColor(requestData.method)}">
           {{requestData.method}}
         </span>&nbsp;
@@ -32,6 +32,7 @@
 import {computed, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
+import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import ParamGrid from "../../comp/param-grid.vue";
 import ParamContent from "../../comp/param-content.vue";
 
@@ -52,6 +53,10 @@ const requestData = computed<any>(() => store.state.Debug.requestData);
 .info-main {
   height: 100%;
   overflow-y: auto;
+
+  .content {
+    padding: 10px 10px;
+  }
 }
 
 </style>

@@ -103,6 +103,9 @@ watch(() => {
     return currProject.value;
 }, (val: any) => {
     if (val.id) {
+   selectValue.value = []
+   executeName.value = ""
+   executeTime = { executeStartTime: '', executeEndTime: '' }
         getMember();
     }
 }, {

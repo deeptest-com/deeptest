@@ -12,7 +12,7 @@
             <Select
                 :placeholder="'请选择'"
                 :options="testTypeOptions"
-                :value="queryParams.type"
+                :value="queryParams.type? queryParams?.type?.split(',') : []"
                 @change="(e) => queryParams.type = e.join()"
             />
           </a-form-item>
@@ -20,7 +20,7 @@
             <Select
                 :placeholder="'请选择'"
                 :options="scenarioStatusOptions"
-                :value="queryParams.status"
+                :value="queryParams.status? queryParams?.status?.split(',') : []"
                 @change="(e) => queryParams.status = e.join()"
             />
           </a-form-item>
@@ -28,7 +28,7 @@
             <Select
                 :placeholder="'请选择'"
                 :options="priorityOptions"
-                :value="queryParams.priority"
+                :value="queryParams.priority? queryParams?.priority?.split(',') : []"
                 @change="(e) => queryParams.priority = e.join()"
             />
           </a-form-item>
@@ -201,6 +201,11 @@ watch(nodeDataCategory, () => {
 watch(currProject, () => {
   console.log('watch currProject', currProject.value.id)
   getList(1, nodeDataCategory.value.id);
+  queryParams.type = queryParams.status = queryParams.priority = queryParams.keywords = ""
+}, {deep: false})
+
+watch(queryParams, () => {
+  getList(1, nodeDataCategory.value?.id || 0);
 }, {deep: false})
 
 onMounted(async () => {

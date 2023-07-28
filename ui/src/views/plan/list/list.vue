@@ -354,6 +354,8 @@ watch(() => {
   return currProject.value;
 }, async (val) => {
   if (val.id) {
+    queryParams.status = queryParams.adminId = []
+    queryParams.keywords = ""
     await getList(1);
   }
 }, { immediate: true });

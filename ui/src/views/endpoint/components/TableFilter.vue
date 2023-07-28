@@ -15,7 +15,7 @@
         <Select
         :placeholder="'请选择状态'"
         :options="endpointStatusOpts || []"
-        :value="formState?.createUser || []"
+        :value="formState?.status || []"
         :width="'180px'"
         @change="(e) => {
               handleFilterChange('status',e);

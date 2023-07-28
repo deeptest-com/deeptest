@@ -67,7 +67,7 @@
             </div>
           </template>
           <template #status="{ record }">
-            <a-tag v-if="record.status" :color="planStatusColorMap.get(record.status)">{{ planStatusTextMap.get(record.status) }}</a-tag>
+            <a-tag  :color="planStatusColorMap.get(record.status || 'draft')">{{ planStatusTextMap.get(record.status || 'draft') }}</a-tag>
           </template>
           <template #updatedAt="{ record }">
             <span>{{ momentUtc(record.updatedAt) }}</span>

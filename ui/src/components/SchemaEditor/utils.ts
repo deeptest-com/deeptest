@@ -102,6 +102,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
                 "type": obj.type,
                 "parent": parent,
                 isRefChildNode,
+                isCompositeChildNode,
                 ...options
             }
             return;
@@ -115,6 +116,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
                 "type": obj.type,
                 "parent": parent,
                 isRefChildNode,
+                isCompositeChildNode,
                 ...options
             }
             Object.entries(obj.properties || {}).forEach(([keyName, value]: any, keyIndex: number) => {
@@ -172,6 +174,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
                     "parent": parent,
                     isRef: true,
                     isRefChildNode,
+                    isCompositeChildNode,
                     ...options
                 }
             if (obj?.content && obj.content?.type) {

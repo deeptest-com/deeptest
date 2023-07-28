@@ -27,11 +27,7 @@ import {StateType as ServeStateType} from "@/store/serve";
 
 export default defineComponent({
     name: 'SchemeEditor',
-    props: {
-        value: String,
-        contentStyle: Object,
-        serveId: Number,
-    },
+    props: ['value', 'contentStyle', 'serveId'],
     emits: ['change'],
     setup(props, {emit}) {
         const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
@@ -60,19 +56,31 @@ export default defineComponent({
             }
         }
         const addProps = (tree: any, e: any) => {
-            tree.properties = tree.properties || {};
-            const keys = Object.keys(tree.properties);
-            keys.push(`name${keys.length + 1}`);
-            const newVal: any = {type: 'string'};
-            const newObj: any = {};
-            keys.forEach((item) => {
-                if (tree.properties[item]) {
-                    newObj[item] = tree.properties[item];
+            // 如果是对象类型，添加属性
+            if (isObject(tree.type)) {
+                tree.properties = tree.properties || {};
+                const keys = Object.keys(tree.properties);
+                keys.push(`name${keys.length + 1}`);
+                const newVal: any = {type: 'string'};
+                const newObj: any = {};
+                keys.forEach((item) => {
+                    if (tree.properties[item]) {
+                        newObj[item] = tree.properties[item];
+                    } else {
+                        newObj[item] = newVal;
+                    }
+                })
+                tree.properties = {...newObj};
+            }
+            if (isCompositeType(tree.type)) {
+                // 如果复合类型是数组，添加元素
+                if (Array.isArray(tree[tree.type])) {
+                    tree[tree.type].push({type: 'string'});
+                //  否则添加属性
                 } else {
-                    newObj[item] = newVal;
+                    tree[tree.type] = [{type: 'string'}]
                 }
-            })
-            tree.properties = {...newObj};
+            }
             data.value = addExtraViewInfo(data.value);
         }
         const pasteKeyName = (e) => {
@@ -137,16 +145,23 @@ export default defineComponent({
                     }
                     // 非数组类型
                 } else if (newProps?.length === 1 && !isArray(firstType)) {
-                    const items = parent?.type === 'array' ? ancestor : parent;
-                    if (items?.properties?.[keyName]) {
-                        // 之前是引用类型
-                        // if(items.properties[keyName]?.ref){
-                        //
-                        // }
-                        // items.properties[keyName] = Object.assign(items.properties[keyName], {...newProps[0]})
-                        // 既然更换类型，之前的属性就不需要了
-                        items.properties[keyName] = {...newProps[0]};
+                    // 如果是复合类型，需要特殊处理
+                    // debugger;
+                    if(isCompositeType(parent?.type)) {
+                        let items:any = parent?.[parent.type] || [];
+                        if(items?.length) {
+                            items.push({...newProps[0]});
+                        }else {
+                            items = [{...newProps[0]}];
+                        }
+                    }else {
+                        const items = parent?.type === 'array' ? ancestor : parent;
+                        if (items?.properties?.[keyName]) {
+                            // 既然更换类型，之前的属性就不需要了
+                            items.properties[keyName] = {...newProps[0]};
+                        }
                     }
+
                 } else {
                     message.warning(`数组类型至少需要一个元素`);
                 }
@@ -277,18 +292,19 @@ export default defineComponent({
             </div>
         }
         const renderDataTypeSetting = (options: any) => {
-            const {tree, isRefChildNode} = options;
+            const {tree, isRefChildNode, isRoot} = options;
             const propsLen = Object.keys(tree?.properties || {}).length;
             const combines = {
-                allOf:tree?.allOf || [],
-                oneOf:tree?.oneOf || [],
-                anyOf:tree?.anyOf || [],
+                allOf: tree?.allOf || [],
+                oneOf: tree?.oneOf || [],
+                anyOf: tree?.anyOf || [],
             }
             return <>
                 <DataTypeSetting
                     value={tree}
                     serveId={props.serveId}
                     isRefChildNode={isRefChildNode || false}
+                    isRoot={isRoot || false}
                     onChange={dataTypeChange.bind(this, options)}/>
                 {isObject(tree?.type) && !isRef(tree) ? <span
                     class={'baseInfoSpace'}>{tree.types?.length > 0 ? `[${propsLen}]` : `{${propsLen}}`}</span> : null}
@@ -298,7 +314,17 @@ export default defineComponent({
             </>
         }
         const renderKeyName = (options: any) => {
-            const {keyName, keyIndex, parent, isRoot, isRefChildNode, isRef, isRefRootNode, ancestor,isCompositeChildNode} = options;
+            const {
+                keyName,
+                keyIndex,
+                parent,
+                isRoot,
+                isRefChildNode,
+                isRef,
+                isRefRootNode,
+                ancestor,
+                isCompositeChildNode
+            } = options;
             const items = parent?.type === 'array' ? ancestor : parent;
             if (isRoot) return null;
             if (!keyName) return null;
@@ -315,7 +341,6 @@ export default defineComponent({
         }
         const renderExpandIcon = (options: any) => {
             const {isExpand, tree, isRoot, isRef} = options;
-            // if (isRoot) return null;
             if (isExpand) {
                 return <DownOutlined onClick={expandIt.bind(this, tree, options)} class={'expandIcon'}/>
             } else {
@@ -341,24 +366,7 @@ export default defineComponent({
             </div>)
         }
 
-        // 渲染复合类型
-        const renderCompositeType = (options: any) => {
-            return (<div key={options.index}
-                         class={'leafNode'}
-                         style={{'paddingLeft': `${options.depth * treeLevelWidth}px`}}>
-                {!options.isRoot ? <div class={'leafNodeHorizontalLine'}
-                                        style={{left: `${(options.depth - 1) * treeLevelWidth + 8}px`}}/> : null}
-                <div class={'baseInfo'}>
-                    {renderKeyName(options)}
-                    {renderDataTypeSetting(options)}
-                </div>
-                {renderAction(options)}
-                {renderExtraAction(options)}
-            </div>)
-        }
-
         const renderDirectoryText = (options: any) => {
-            // debugger;
             const {depth, tree, isRefChildNode} = options;
             return <div class={'directoryText'}
                         style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
@@ -367,8 +375,10 @@ export default defineComponent({
                     {renderExpandIcon(options)}
                     {renderKeyName(options)}
                     {renderDataTypeSetting(options)}
-                    {isObject(tree.type) && !isRef(tree) && !isRefChildNode ?
-                        <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/> : null}
+                    {
+                        (isObject(tree.type) && !isRef(tree) && !isRefChildNode) || isCompositeType(tree.type) ?
+                            <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/> : null
+                    }
                 </div>
                 {renderAction(options)}
                 {renderExtraAction(options)}
@@ -413,16 +423,14 @@ export default defineComponent({
             }
             // 渲染复合类型节点
             if (isCompositeType(tree.type) && !isRef(tree)) {
-                // debugger;
                 const isRoot = tree?.extraViewInfo?.depth === 1;
                 const isExpand = tree?.extraViewInfo?.isExpand;
                 const options = {...tree?.extraViewInfo, isRoot, tree}
                 const combines = {
-                    allOf:tree?.allOf || [],
-                    oneOf:tree?.oneOf || [],
-                    anyOf:tree?.anyOf || [],
+                    allOf: tree?.allOf || [],
+                    oneOf: tree?.oneOf || [],
+                    anyOf: tree?.anyOf || [],
                 }
-                // debugger;
                 return <div key={tree.type} class={{'directoryNode': true, "rootNode": isRoot}}>
                     {renderDirectoryText(options)}
                     {

@@ -9,7 +9,7 @@
           <div class="item"
                v-for="(tab,tabIndex) in tabs"
                @click="() => {
-                 if(isRefChildNode){
+                 if(isDisabled){
                     return;
                  }
                   selectTab(tabs,tabIndex)
@@ -28,7 +28,7 @@
                 :size="'small'"
                 class="select-type-btn"
                 v-if="tab.active"
-                :disabled="isRefChildNode"
+                :disabled="isDisabled"
                 v-model:value="tab.value"
                 @change="(event) => changeType(tabsIndex, event)"
                 button-style="solid">
@@ -38,6 +38,7 @@
                   :value="item.value">{{ item.label }}
               </a-radio-button>
             </a-radio-group>
+            <!-- ::::基本类型设置 -->
             <a-form :layout="'vertical'" v-if="tab.type === 'type' && tab.active">
               <div v-for="(item,itemIndex) in tab.props" :key="itemIndex">
                 <div v-if="item.value === tab.value">
@@ -53,7 +54,7 @@
                           :labelAlign="'right'"
                           :label="opt.label">
                         <a-select
-                            :disabled="isRefChildNode"
+                            :disabled="isDisabled"
                             v-if="opt.component === 'selectTag'"
                             v-model:value="opt.value"
                             mode="tags"
@@ -62,26 +63,26 @@
                         <a-select
                             v-if="opt.component === 'select'"
                             v-model:value="opt.value"
-                            :disabled="isRefChildNode"
+                            :disabled="isDisabled"
                             :options="opt.options"
                             :placeholder="opt.placeholder"
                         />
                         <a-input
                             v-if="opt.component === 'input'"
                             v-model:value="opt.value"
-                            :disabled="isRefChildNode"
+                            :disabled="isDisabled"
                             :placeholder="opt.placeholder"
                         />
                         <a-input-number
                             v-if="opt.component === 'inputNumber'"
                             id="inputNumber"
-                            :disabled="isRefChildNode"
+                            :disabled="isDisabled"
                             :placeholder="opt.placeholder"
                             v-model:value="opt.value"
                         />
                         <a-switch
                             v-if="opt.component === 'switch'"
-                            :disabled="isRefChildNode"
+                            :disabled="isDisabled"
                             v-model:checked="opt.value"/>
                       </a-form-item>
                     </a-col>
@@ -89,6 +90,7 @@
                 </div>
               </div>
             </a-form>
+            <!-- ::::引用类型设置 -->
             <a-form :layout="'vertical'" style="margin-bottom: 16px;" v-if="tab.type === '$ref' && tab.active">
               <a-form-item
                   class="col-form-item"
@@ -96,7 +98,7 @@
                   :label="'请选择组件'">
                 <a-select
                     :options="refsOptions"
-                    :disabled="isRefChildNode"
+                    :disabled="isDisabled"
                     @change="(e) => {
                       changeRef(tabsIndex,tabIndex,e);
                     }"
@@ -108,6 +110,27 @@
                     style="width: 100%"/>
               </a-form-item>
             </a-form>
+            <!-- ::::组合schema -->
+            <a-form :layout="'vertical'" style="margin-bottom: 16px;" v-if="tab.type === 'combine' && tab.active">
+              <a-form-item
+                  class="col-form-item"
+                  :labelAlign="'right'"
+                  :label="'请选择复合关键字'">
+                <a-select
+                    :options="combineSchemaOpts"
+                    :disabled="isDisabled"
+                    @change="(e) => {
+                      changeCombineType(tabsIndex,tabIndex,e);
+                    }"
+                    show-search
+                    allowClear
+                    @search="searchRefs"
+                    :value="tab.value || null"
+                    placeholder="Select an option below to combine your schemas"
+                    style="width: 100%"/>
+              </a-form-item>
+            </a-form>
+
           </div>
         </div>
       </div>
@@ -123,29 +146,21 @@ import {ref, defineProps, defineEmits, watch, reactive, toRaw, computed, onMount
 import {
   LinkOutlined
 } from '@ant-design/icons-vue';
-import {schemaSettingInfo, typeOpts} from "./config";
+import {schemaSettingInfo, typeOpts, combineSchemaOpts, combineTypes} from "./config";
 import cloneDeep from "lodash/cloneDeep";
 import {useStore} from "vuex";
 import {StateType as ServeStateType} from "@/store/serve";
 import debounce from "lodash.debounce";
 
-const props = defineProps({
-  value: {
-    required: true,
-    type: Object
-  },
-  serveId: {
-    required: true,
-    type: Array
-  },
-  isRefChildNode: {
-    required: true,
-    type: Boolean
-  }
-})
+const props = defineProps(['value', 'serveId', 'isRefChildNode','isRoot']);
 const emit = defineEmits(['change']);
 const tabsList: any = ref([]);
 const visible: any = ref(false);
+
+const isDisabled: any = computed(() => {
+  return props.isRefChildNode && !props.isRoot;
+})
+
 // 返回，如何展示类型
 const typesLabel: any = computed(() => {
   let {type, types} = props.value || {};
@@ -185,36 +200,74 @@ function changeRef(tabsIndex, tabIndex, e) {
   }
 }
 
+// ref 组件
+function changeCombineType(tabsIndex, tabIndex, e) {
+  tabsList.value[tabsIndex][tabIndex].value = e;
+  // 选中的是ref，则需要隐藏其他的选择
+  if (e) {
+    debugger;
+    tabsList.value.splice(tabsIndex + 1);
+  }
+}
+
+
 function selectTab(tabs: any, tabIndex: number) {
   tabs.forEach((tab: any, index: number) => {
     tab.active = tabIndex === index;
   })
   // 切换成普通选择模式时，如果是选中的是数组，则需要添加一个tab
-  if(tabIndex === 0 && tabs[tabIndex].value === 'array' && tabsList.value.length === 1){
+  if (tabIndex === 0 && tabs[tabIndex].value === 'array' && tabsList.value.length === 1) {
     tabsList.value.push(cloneDeep(schemaSettingInfo));
   }
 }
 
+/**
+ * 初始化tabsList数据
+ * */
 function initTabsList(types: any, treeInfo: any) {
   let tabsList: any = [];
   types.forEach((type: string) => {
     const defaultTabs: any = cloneDeep(schemaSettingInfo);
+    // 基本类型，即第一个tab
     if (typeOpts.includes(type)) {
-      defaultTabs[0].active = typeOpts.includes(type);
+      defaultTabs[0].active = true;
       defaultTabs[0].value = type;
       const activeTabProps = defaultTabs[0].props.find((prop: any) => prop.value === type);
       activeTabProps?.props?.options?.forEach((opt: any) => {
         opt.value = treeInfo[opt.name] || opt.value;
       })
-    } else {
+
+      defaultTabs[1].active = false;
+      defaultTabs[1].value = treeInfo?.ref;
+
+      defaultTabs[2].active = false;
+      defaultTabs[2].value = 'allOf';
+
+      //  组合类型,即，第三个tab
+    } else if (combineTypes.includes(type)) {
       defaultTabs[0].active = false;
       defaultTabs[0].value = treeInfo?.type || 'string';
+
+      defaultTabs[1].active = false;
+      defaultTabs[1].value = treeInfo?.ref;
+
+      defaultTabs[2].active = true;
+      defaultTabs[2].value = type;
+      //  引用类型，即，选中第二个tab时
+    } else {
+
+      defaultTabs[0].active = false;
+      defaultTabs[0].value = treeInfo?.type || 'string';
+
       defaultTabs[1].active = true;
       defaultTabs[1].value = treeInfo?.ref;
+
+      defaultTabs[2].active = false;
+      defaultTabs[2].value = 'allOf';
     }
     tabsList.push(defaultTabs)
   });
-  // 如果是数组，还需加一项
+  // 如果是数组，还需加一项，渲染需要
   if (types[types.length - 1] === 'array') {
     const arrayItems: any = cloneDeep(schemaSettingInfo);
     tabsList.push(arrayItems);
@@ -239,7 +292,7 @@ function getValueFromTabsList(tabsList: any) {
         type: selectedRef?.type || '',
         ref: activeTab.value || '',
         name: selectedRef?.name || '',
-        content:null
+        content: null
       };
     } else {
       res = {
@@ -257,16 +310,16 @@ function getValueFromTabsList(tabsList: any) {
 
 
 const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
-const refsOptions:any = ref([]);
+const refsOptions: any = ref([]);
 
 async function searchRefs(keyword) {
   //TODO 加缓存，否则会重复拿数据
   debounce(async () => {
     refsOptions.value = await store.dispatch('Endpoint/getAllRefs', {
       "serveId": props.serveId,
-      page:1,
-      name:keyword,
-      pageSize:20
+      page: 1,
+      name: keyword,
+      pageSize: 20
     });
   }, 500)();
 }
@@ -275,15 +328,18 @@ onMounted(async () => {
   // await searchRefs('');
 })
 
-watch(() => {return visible.value}, async (newVal: any) => {
+watch(() => {
+  return visible.value
+}, async (newVal: any) => {
 
-  if(visible.value){
+  // 打开时，初始化数据
+  if (visible.value) {
     await searchRefs('');
   }
 
   let {type, types} = props.value || {};
   // ref 优先级高于 type，如果是 ref，则优先取 ref值判断类型
-  type =  props.value?.ref || type;
+  type = props.value?.ref || type;
   const allTypes = [...(types || []), type];
   // 打开时，初始化数据
   if (newVal && (props.value.type || props.value.ref)) {
@@ -300,7 +356,7 @@ watch(() => {return visible.value}, async (newVal: any) => {
       emit('change', value);
     }
   }
-  }, {immediate: false})
+}, {immediate: false})
 
 </script>
 

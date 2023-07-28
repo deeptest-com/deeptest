@@ -588,7 +588,40 @@ export const schemaSettingInfo = [
         active: false,
         subLabel: 'Components',
     },
+    {
+        label: 'Combine Schemas',
+        type: 'combine',
+        value: '',
+        active: false,
+        subLabel: null,
+    },
 ]
+/**
+ * 可选的组合schema 类型
+ * Select an option below to combine your schemas
+ * AND = all of
+ * XOR = one of
+ * OR = any of
+ * */
+export const combineSchemaOpts = [
+    {
+        label: 'all of',
+        value: 'allOf',
+    },
+    {
+        label: 'one of',
+        value: 'oneOf',
+    },
+    {
+        label: 'any of',
+        value: 'anyOf',
+    },
+]
+// 组合类型
+export const combineTypes = ['allOf', 'oneOf', 'anyOf'];
+
+// 基本的数据类型，用于判断是否是基本类型，区别于 引用类型 和 组合类型
 export const typeOpts = ['string', 'number', 'boolean', 'array', 'object', 'integer'];
+
 // 树形结构的层级递进宽度
 export const treeLevelWidth = 24;

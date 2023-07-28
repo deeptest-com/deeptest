@@ -1,7 +1,7 @@
 <template>
   <a-form :layout="'inline'" ref="tagFormRef" :model="tagFormRef">
     <a-space :size="16">
-      <a-form-item label="创建人" style="margin-bottom: 0;">
+      <a-form-item :label="null"  style="margin-bottom: 0;">
         <Select
         :placeholder="'请选择创建人'"
         :options="userList"
@@ -11,7 +11,7 @@
             }"
         />
       </a-form-item>
-      <a-form-item label="状态" style="margin-bottom: 0;">
+      <a-form-item :label="null" style="margin-bottom: 0;">
         <Select
         :placeholder="'请选择状态'"
         :options="endpointStatusOpts || []"
@@ -22,7 +22,7 @@
             }"
         />
       </a-form-item>
-      <a-form-item label="标签" style="margin-bottom: 0;">
+      <a-form-item :label="null"  style="margin-bottom: 0;">
         <a-select
             mode="multiple"
             style="width: 180px;"
@@ -37,8 +37,8 @@
       </a-form-item>
       <a-form-item :label="null">
         <a-input-search
-            style="display: flex;justify-content: end;width: 180px;"
-            placeholder="请输入接口名称或者路径"
+            style="display: flex;justify-content: end;width: 200px;"
+            placeholder="接口名称或路径"
             enter-button
             :value="formState?.title"
             @change="(e) => {

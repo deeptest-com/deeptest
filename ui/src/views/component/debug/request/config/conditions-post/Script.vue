@@ -25,11 +25,6 @@
         </div>
       </div>
     </div>
-
-    <div class="footer">
-      <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
-      <a-button v-if="finish" @click="cancel" class="dp-btn-gap">取消</a-button>
-    </div>
   </div>
 </template>
 

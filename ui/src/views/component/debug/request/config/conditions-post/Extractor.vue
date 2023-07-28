@@ -82,11 +82,6 @@
         </div>
       </a-form-item>
 
-      <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
-        <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
-        <a-button v-if="finish" @click="cancel" class="dp-btn-gap">取消</a-button>
-      </a-form-item>
-
     </a-form>
   </div>
 </template>

@@ -3,17 +3,6 @@
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
-          <a-select size="small" :style="{width:'116px'}" :bordered="true"
-                    v-model:value="conditionType">
-            <!--        <a-select-option key="" value="">
-                          控制器类型
-                        </a-select-option>-->
-
-            <a-select-option v-for="item in conditionTypes" :key="item.value" :value="item.value">
-              {{ t(item.label) }}
-            </a-select-option>
-          </a-select> &nbsp;
-
           <a-button @click="create" size="small">新建</a-button>
         </a-col>
 
@@ -33,9 +22,9 @@
 
     <div class="content">
       <draggable tag="div" item-key="name" class="collapse-list"
-                 :list="postConditions || []"
+                 :list="assertionConditions || []"
                  handle=".handle"
-                 @end="handleDrop">
+                 @end="move">
         <template #item="{ element }">
 
           <div class="collapse-item">
@@ -80,14 +69,8 @@
             </div>
 
             <div class="content" v-if="activeItem.id === +element.id">
-              <Extractor v-if="element.entityType === ConditionType.extractor"
-                         :condition="element" />
-
               <Checkpoint v-if="element.entityType === ConditionType.checkpoint"
                           :condition="element" />
-
-              <Script v-if="element.entityType === ConditionType.script"
-                      :condition="element" />
             </div>
           </div>
 
@@ -119,15 +102,13 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {getEnumSelectItems} from "@/views/scenario/service";
 import IconSvg from "@/components/IconSvg";
 
-import Extractor from "./conditions-post/Extractor.vue";
 import Checkpoint from "./conditions-post/Checkpoint.vue";
-import Script from "./conditions-post/Script.vue";
 import FullScreenPopup from "./ConditionPopup.vue";
 
 const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
-const postConditions = computed<any>(() => store.state.Debug.postConditions);
+const assertionConditions = computed<any>(() => store.state.Debug.assertionConditions);
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
@@ -136,7 +117,6 @@ const fullscreen = ref(false)
 const activeItem = ref({} as any)
 
 const conditionType = ref(ConditionType.extractor)
-const conditionTypes = ref(getEnumSelectItems(ConditionType))
 
 const expand = (item) => {
   console.log('expand', item)
@@ -150,7 +130,7 @@ const expand = (item) => {
 
 const list = () => {
   console.log('list')
-  store.dispatch('Debug/listPostCondition')
+  store.dispatch('Debug/listAssertionCondition')
 }
 
 watch(debugData, (newVal) => {
@@ -172,13 +152,24 @@ const format = (item) => {
 }
 const disable = (item) => {
   console.log('disable', item)
-  store.dispatch('Debug/disablePostCondition', item.id)
+  store.dispatch('Debug/disablePostCondition', item)
 }
 const remove = (item) => {
   console.log('remove', item)
 
   confirmToDelete(`确定删除该${t(item.entityType)}？`, '', () => {
-    store.dispatch('Debug/removePostCondition', item.id)
+    store.dispatch('Debug/removePostCondition', item)
+  })
+}
+function move(_e: any) {
+  const envIdList = assertionConditions.value.map((e: EnvDataItem) => {
+    return e.id;
+  })
+
+  store.dispatch('Debug/movePostCondition', {
+    data: envIdList,
+    info: debugInfo.value,
+    entityType: ConditionType.checkpoint,
   })
 }
 
@@ -194,17 +185,6 @@ const openFullscreen = (item) => {
 const closeFullScreen = (item) => {
   console.log('closeFullScreen', item)
   fullscreen.value = false
-}
-
-function handleDrop(_e: any) {
-  const envIdList = postConditions.value.map((e: EnvDataItem) => {
-    return e.id;
-  })
-
-  store.dispatch('Debug/movePostCondition', {
-    data: envIdList,
-    info: debugInfo.value,
-  })
 }
 
 </script>

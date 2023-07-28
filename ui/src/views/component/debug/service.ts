@@ -2,7 +2,7 @@ import request from '@/utils/request';
 import {requestToAgent} from '@/utils/request';
 import {DebugInfo, Interface, OAuth20} from "./data";
 import {isInArray} from "@/utils/array";
-import {UsedBy} from "@/utils/enum";
+import {ConditionCategory, UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
 
 const apiPath = 'debugs';
@@ -240,8 +240,8 @@ export async function movePreConditions(data): Promise<any> {
     });
 }
 
-export async function listPostConditions(debugInterfaceId, endpointInterfaceId: number): Promise<any> {
-    const params = {debugInterfaceId, endpointInterfaceId}
+export async function listPostConditions(debugInterfaceId, endpointInterfaceId: number, category: ConditionCategory): Promise<any> {
+    const params = {debugInterfaceId, endpointInterfaceId, category}
 
     return request({
         url: `/${apiPostConditions}`,

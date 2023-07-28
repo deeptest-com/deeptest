@@ -147,6 +147,10 @@ export enum ComparisonOperator {
     notContain = 'notContain',
 }
 
+export enum ConditionCategory {
+    result = 'result',
+    console = 'console',
+}
 export enum ConditionType {
     extractor = 'extractor',
     checkpoint = 'checkpoint',

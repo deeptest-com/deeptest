@@ -1,65 +1,60 @@
 <template>
   <div class="response-checkpoint-main">
     <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-item label="类型" v-bind="validateInfos.type">
-            <a-select v-model:value="model.type"
-                      @change="selectType"
-                      @blur="validate('type', { trigger: 'change' }).catch(() => {})">
-              <a-select-option v-for="(item, idx) in types" :key="idx" :value="item.value">
-                {{ t(item.label) }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
+      <a-form-item label="类型" v-bind="validateInfos.type">
+        <a-select v-model:value="model.type"
+                  @change="selectType"
+                  @blur="validate('type', { trigger: 'change' }).catch(() => {})">
+          <a-select-option v-for="(item, idx) in types" :key="idx" :value="item.value">
+            {{ t(item.label) }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
 
-          <a-form-item v-if="model.type === 'responseHeader'"
-                       :label="model.type === 'responseHeader' ? '键值' : ''"
-                       v-bind="validateInfos.expression">
-            <a-input v-model:value="model.expression"
-                     @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
-          </a-form-item>
+      <a-form-item v-if="model.type === 'responseHeader'"
+                   :label="model.type === 'responseHeader' ? '键值' : ''"
+                   v-bind="validateInfos.expression">
+        <a-input v-model:value="model.expression"
+                 @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
+      </a-form-item>
 
-          <a-form-item v-if="model.type === 'extractor'" label="变量名称" v-bind="validateInfos.extractorVariable">
-            <a-select v-model:value="model.extractorVariable"
-                      @blur="validate('extractorVariable', { trigger: 'blur' }).catch(() => {})">
-              <a-select-option key="" value=""></a-select-option>
-              <a-select-option v-for="(item, idx) in variables" :key="idx" :value="item.name">
-                {{ item.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
+      <a-form-item v-if="model.type === 'extractor'" label="变量名称" v-bind="validateInfos.extractorVariable">
+        <a-select v-model:value="model.extractorVariable"
+                  @blur="validate('extractorVariable', { trigger: 'blur' }).catch(() => {})">
+          <a-select-option key="" value=""></a-select-option>
+          <a-select-option v-for="(item, idx) in variables" :key="idx" :value="item.name">
+            {{ item.name }}
+          </a-select-option>
+        </a-select>
+      </a-form-item>
 
-          <a-form-item v-if="model.type !== 'judgement'" label="运算符" v-bind="validateInfos.operator">
-            {{ void (options = model.type === 'responseStatus' ? operatorsForCode :
-              isInArray(model.type, ['responseHeader', 'responseBody']) ? operatorsForString : operators) }}
+      <a-form-item v-if="model.type !== 'judgement'" label="运算符" v-bind="validateInfos.operator">
+        {{ void (options = model.type === 'responseStatus' ? operatorsForCode :
+          isInArray(model.type, ['responseHeader', 'responseBody']) ? operatorsForString : operators) }}
 
-            <a-select v-model:value="model.operator"
-                      @blur="validate('operator', { trigger: 'change' }).catch(() => {})">
+        <a-select v-model:value="model.operator"
+                  @blur="validate('operator', { trigger: 'change' }).catch(() => {})">
 
-              <a-select-option v-for="(item, idx) in options" :key="idx" :value="item.value">
-                {{ t(item.label) }}
-              </a-select-option>
+          <a-select-option v-for="(item, idx) in options" :key="idx" :value="item.value">
+            {{ t(item.label) }}
+          </a-select-option>
 
-            </a-select>
-          </a-form-item>
+        </a-select>
+      </a-form-item>
 
-          <a-form-item v-if="model.type === 'judgement'" label="判断表达式" v-bind="validateInfos.expression">
-            <a-textarea v-model:value="model.expression" :auto-size="{ minRows: 2, maxRows: 5 }"
-                     @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
+      <a-form-item v-if="model.type === 'judgement'" label="判断表达式" v-bind="validateInfos.expression">
+        <a-textarea v-model:value="model.expression" :auto-size="{ minRows: 2, maxRows: 5 }"
+                 @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
 
-            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}'})}}</div>
-          </a-form-item>
+        <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}'})}}</div>
+      </a-form-item>
 
-          <a-form-item v-if="model.type !== 'judgement'" label="数值" v-bind="validateInfos.value">
-            <a-input v-model:value="model.value"
-                     @blur="validate('value', { trigger: 'blur' }).catch(() => {})" />
-          </a-form-item>
+      <a-form-item v-if="model.type !== 'judgement'" label="数值" v-bind="validateInfos.value">
+        <a-input v-model:value="model.value"
+                 @blur="validate('value', { trigger: 'blur' }).catch(() => {})" />
+      </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
-            <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
-            <a-button v-if="finish" @click="cancel" class="dp-btn-gap">取消</a-button>
-          </a-form-item>
-
-        </a-form>
+    </a-form>
   </div>
 </template>
 

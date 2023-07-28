@@ -35,7 +35,7 @@
       <draggable tag="div" item-key="name" class="collapse-list"
                  :list="postConditions || []"
                  handle=".handle"
-                 @end="handleDrop">
+                 @end="move">
         <template #item="{ element }">
 
           <div class="collapse-item">
@@ -181,6 +181,17 @@ const remove = (item) => {
     store.dispatch('Debug/removePostCondition', item.id)
   })
 }
+function move(_e: any) {
+  const envIdList = postConditions.value.map((e: EnvDataItem) => {
+    return e.id;
+  })
+
+  store.dispatch('Debug/movePostCondition', {
+    data: envIdList,
+    info: debugInfo.value,
+    entityType: '',
+  })
+}
 
 const save = (item) => {
   console.log('save', item)
@@ -194,17 +205,6 @@ const openFullscreen = (item) => {
 const closeFullScreen = (item) => {
   console.log('closeFullScreen', item)
   fullscreen.value = false
-}
-
-function handleDrop(_e: any) {
-  const envIdList = postConditions.value.map((e: EnvDataItem) => {
-    return e.id;
-  })
-
-  store.dispatch('Debug/movePostCondition', {
-    data: envIdList,
-    info: debugInfo.value,
-  })
 }
 
 </script>

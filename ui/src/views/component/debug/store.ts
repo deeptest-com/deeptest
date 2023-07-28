@@ -34,7 +34,7 @@ import {
     movePreConditions, disablePreConditions, disablePostConditions, saveAsCase, getInvocationResult, getInvocationLog,
 } from './service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
-import {UsedBy} from "@/utils/enum";
+import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
 import {listEnvVarByServer} from "@/services/environment";
 
@@ -52,6 +52,7 @@ export interface StateType {
 
     preConditions: any[];
     postConditions: any[];
+    assertionConditions: any[];
 
     extractorData: any;
     checkpointData: any;
@@ -71,6 +72,7 @@ const initState: StateType = {
 
     preConditions: [],
     postConditions: [],
+    assertionConditions: [],
 
     extractorData: {} as Extractor,
     checkpointData: {} as Checkpoint,
@@ -94,6 +96,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setPreConditions: Mutation<StateType>;
         setPostConditions: Mutation<StateType>;
+        setAssertionConditions: Mutation<StateType>;
         setExtractor: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
         setScript: Mutation<StateType>;
@@ -129,6 +132,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         movePreCondition: Action<StateType, StateType>;
 
         listPostCondition: Action<StateType, StateType>;
+        listAssertionCondition: Action<StateType, StateType>;
         createPostCondition: Action<StateType, StateType>;
         removePostCondition: Action<StateType, StateType>;
         disablePostCondition: Action<StateType, StateType>;
@@ -203,6 +207,9 @@ const StoreModel: ModuleType = {
         },
         setPostConditions(state, payload) {
             state.postConditions = payload;
+        },
+        setAssertionConditions(state, payload) {
+            state.assertionConditions = payload;
         },
 
         setExtractor(state, payload) {
@@ -342,6 +349,7 @@ const StoreModel: ModuleType = {
 
                 await dispatch('listPreCondition');
                 await dispatch('listPostCondition');
+                await dispatch('listAssertionCondition');
 
                 return true;
             } else {
@@ -463,9 +471,22 @@ const StoreModel: ModuleType = {
 
         async listPostCondition({commit, state}) {
             try {
-                const resp = await listPostConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId);
+                const resp = await listPostConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId,
+                    ConditionCategory.console);
                 const {data} = resp;
                 commit('setPostConditions', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async listAssertionCondition({commit, state}) {
+            try {
+                const resp = await listPostConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId,
+                    ConditionCategory.result);
+
+                const {data} = resp;
+                commit('setAssertionConditions', data);
                 return true;
             } catch (error) {
                 return false;
@@ -474,25 +495,38 @@ const StoreModel: ModuleType = {
         async createPostCondition({commit, dispatch, state}, payload: any) {
             try {
                 await createPostConditions(payload);
-                dispatch('listPostCondition');
+
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async disablePostCondition({commit, dispatch, state}, id: number) {
+        async disablePostCondition({commit, dispatch, state}, payload: any) {
             try {
-                await disablePostConditions(id);
-                dispatch('listPostCondition');
+                await disablePostConditions(payload.id);
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async removePostCondition({commit, dispatch, state}, id: number) {
+        async removePostCondition({commit, dispatch, state}, payload: any) {
             try {
-                await removePostConditions(id);
-                dispatch('listPostCondition');
+                await removePostConditions(payload.id);
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
                 return true;
             } catch (error) {
                 return false;
@@ -501,7 +535,11 @@ const StoreModel: ModuleType = {
         async movePostCondition({commit, dispatch, state}, payload: any) {
             try {
                 await movePostConditions(payload);
-                dispatch('listPostCondition');
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
                 return true;
             } catch (error) {
                 return false;

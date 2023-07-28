@@ -5,22 +5,41 @@
         <a-button type="primary" @click="() => create()">新建</a-button>
       </template>
       <template #extra>
-        <a-select
-          allowClear
-          @change="onSearch"
-          v-model:value="queryParams.status"
-          :options="planStatusOptions"
-          class="status-select"
-          style="width: 120px"
-          placeholder="请选择状态">
-        </a-select>
-        <a-input-search
-          allowClear
-          @change="onSearch"
-          @search="onSearch"
-          v-model:value="queryParams.keywords"
-          placeholder="输入关键字搜索"
-          style="width:270px;margin-left: 16px;" />
+        <a-form :layout="'inline'">
+          <a-form-item :label="null" style="margin-bottom: 0;">
+            <Select
+                :placeholder="'请选择负责人'"
+                :options="userOptions || []"
+                :value="queryParams.adminId || []"
+                :width="'180px'"
+                @change="(e) => {
+                 changeAdminId(e);
+              }"
+            />
+          </a-form-item>
+          <a-form-item :label="null" style="margin-bottom: 0;">
+            <Select
+                :placeholder="'请选择状态'"
+                :options="planStatusOptions || []"
+                :value="queryParams.status || []"
+                :width="'180px'"
+                @change="(e) => {
+                 changeStatus(e);
+              }"
+            />
+          </a-form-item>
+          <a-form-item :label="null" style="margin-bottom: 0;">
+            <a-input-search
+                allowClear
+                @change="onSearch"
+                @search="onSearch"
+                v-model:value="queryParams.keywords"
+                placeholder="输入关键字搜索"
+                style="width:270px;margin-left: 16px;" />
+          </a-form-item>
+        </a-form>
+
+
       </template>
 
       <div>
@@ -112,7 +131,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from "vue";
+import {computed, onMounted, reactive, ref, watch} from "vue";
 import { useStore } from "vuex";
 import { message } from 'ant-design-vue';
 import { MoreOutlined } from "@ant-design/icons-vue";
@@ -130,6 +149,9 @@ import { PaginationConfig, Plan } from '../data.d';
 import { StateType } from "../store";
 import { momentUtc } from "@/utils/datetime";
 import { planStatusColorMap, planStatusTextMap, planStatusOptions } from "@/config/constant";
+
+
+import Select from '@/components/Select/index.vue';
 const columns = [
   {
     title: '编号',
@@ -170,7 +192,7 @@ const columns = [
 
 import { ReportDetailType } from "@/utils/enum";
 
-const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType }>();
+const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(() => store.state.Plan.nodeDataCategory);
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
@@ -178,9 +200,19 @@ const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const list = computed<Plan[]>(() => store.state.Plan.listResult.list);
 let pagination = computed<PaginationConfig>(() => store.state.Plan.listResult.pagination);
 
+const userOptions = computed(() => {
+  if(!store.state.Project.userList) return [];
+  return store.state.Project.userList.map((item) => {
+    return {
+      label: item.name,
+      value: item.id,
+    };
+  });
+})
 const queryParams = reactive<any>({
   keywords: '',
-  status: null
+  status: [],
+  adminId: [],
 });
 const loading = ref<boolean>(false);
 const createDrawerVisible = ref(false);
@@ -193,7 +225,9 @@ const envSelectVisible = ref(false); // 选择执行环境
 const getList = debounce(async (current: number): Promise<void> => {
   loading.value = true;
   await store.dispatch('Plan/listPlan', {
-    ...queryParams,
+    keywords: queryParams.keywords.trim(),
+    status: queryParams.status?.join(',') || '',
+    adminId: queryParams.adminId?.join(',') || '',
     categoryId: nodeDataCategory.value?.id || 0,
     pageSize: pagination.value.pageSize,
     page: current,
@@ -296,6 +330,16 @@ const remove = (id: number) => {
   });
 }
 
+function changeStatus(e) {
+  queryParams.status = e;
+  getList(1);
+}
+
+function changeAdminId(e) {
+  queryParams.adminId = e;
+  getList(1);
+}
+
 const onSearch = () => {
   getList(1);
 };
@@ -310,6 +354,8 @@ watch(() => {
   return currProject.value;
 }, async (val) => {
   if (val.id) {
+    queryParams.status = queryParams.adminId = []
+    queryParams.keywords = ""
     await getList(1);
   }
 }, { immediate: true });
@@ -324,6 +370,9 @@ watch(
   {  immediate: true }
 );
 
+onMounted(async () => {
+  await store.dispatch('Project/getUserList');
+})
 </script>
 
 <style lang="less" scoped>

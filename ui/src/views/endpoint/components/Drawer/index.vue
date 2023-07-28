@@ -14,7 +14,6 @@
                          @change-description="changeDescription"
                          @changeCategory="changeCategory"/>
     </template>
-
     <template #tabHeader>
       <div class="tab-header-items">
         <div class="tab-header-item"
@@ -33,7 +32,6 @@
         </a-button>
       </div>
     </template>
-
     <template #tabContent>
       <div class="tab-pane">
         <EndpointDefine v-if="activeTabKey === 'request'" @switchMode="switchMode"/>
@@ -67,16 +65,7 @@ import {SaveOutlined} from '@ant-design/icons-vue';
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal,Global }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 
-const props = defineProps({
-  visible: {
-    required: true,
-    type: Boolean,
-  },
-  tabs: {
-    type: Object,
-    required: true
-  }
-})
+const props = defineProps(['visible']);
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 function onCloseDrawer() {

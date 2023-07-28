@@ -25,7 +25,7 @@
       <a-form-item label="标签" style="margin-bottom: 0;">
         <a-select
             mode="multiple"
-            style="width: 200px;"
+            style="width: 180px;"
             allowClear
             @change="(e) => {
               handleFilterChange('tagNames',e);
@@ -37,7 +37,7 @@
       </a-form-item>
       <a-form-item :label="null">
         <a-input-search
-            style="display: flex;justify-content: end;width: 250px;"
+            style="display: flex;justify-content: end;width: 180px;"
             placeholder="请输入接口名称或者路径"
             enter-button
             :value="formState?.title"

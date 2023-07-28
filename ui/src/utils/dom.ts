@@ -194,12 +194,27 @@ export function getRightTabPanelPosition(tabId) {
 
     if (elem) {
         const pos = elem.getBoundingClientRect()
+        const top = getRightTabTop()
         ret = {
-            top: pos.y + 'px',
+            top: getRightTabTop() + 'px',
             left: (pos.left - 360 - 10) + 'px',
-            height: (document.body.clientHeight - pos.y - 60) + 'px',
+            height: (document.body.clientHeight - top) + 'px',
         }
     }
 
     return ret
+}
+
+function getRightTabTop() {
+    const elems = document.getElementsByClassName('debug-page-container-top')
+    if (elems.length > 0) {
+        return elems[0].getBoundingClientRect().y
+    }
+
+    const elem = document.getElementById('debug-index')
+    if (elem) {
+        return elem.getBoundingClientRect().y
+    }
+
+    return 100
 }

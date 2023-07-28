@@ -116,8 +116,6 @@ const {t} = useI18n();
 const fullscreen = ref(false)
 const activeItem = ref({} as any)
 
-const conditionType = ref(ConditionType.extractor)
-
 const expand = (item) => {
   console.log('expand', item)
 
@@ -139,9 +137,9 @@ watch(debugData, (newVal) => {
 }, {immediate: true, deep: true});
 
 const create = () => {
-  console.log('create', conditionType.value)
+  console.log('create', ConditionType.checkpoint)
   store.dispatch('Debug/createPostCondition', {
-    entityType: conditionType.value,
+    entityType: ConditionType.checkpoint,
     ...debugInfo.value,
   })
 }
@@ -243,24 +241,18 @@ const closeFullScreen = (item) => {
     .collapse-list {
       height: 100%;
       width: 100%;
-      padding: 3px 0;
+      padding: 0;
 
       .collapse-item {
-        width: 100%;
+        margin: 4px;
         border: 1px solid #d9d9d9;
-        border-bottom: 0;
-        border-radius: 2px;
-
-        &:last-child {
-          border-radius: 0 0 2px 2px;
-          border-bottom: 1px solid #d9d9d9;
-        }
+        border-radius: 5px;
 
         .header {
-          height: 38px;
-          line-height: 22px;
-          padding: 10px;
+          height: 28px;
+          padding: 3px;
           background-color: #fafafa;
+          border-radius: 5px;
 
           display: flex;
           .title {

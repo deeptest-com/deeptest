@@ -23,7 +23,7 @@
           <template #tab>
             <span id="env-tab">
               <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>环境</template>
+                <template #title>变量</template>
                 <EnvironmentOutlined/>
               </a-tooltip>
             </span>

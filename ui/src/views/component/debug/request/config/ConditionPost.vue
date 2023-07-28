@@ -41,7 +41,7 @@
           <div class="collapse-item">
             <div class="header">
               <div @click.stop="expand(element)" class="title dp-link">
-                <icon-svg class="handle dp-drag icon" type="move"  />
+                <icon-svg class="handle dp-drag icon" type="move" />
 
                 <icon-svg v-if="element.entityType === ConditionType.extractor"
                           type="variable"
@@ -57,25 +57,30 @@
               </div>
               <div class="buttons">
                 <ClearOutlined v-if="activeItem.id === +element.id && element.entityType === ConditionType.script"
-                               @click.stop="format(element)"  class="dp-icon-btn dp-trans-80" />&nbsp;
+                               @click.stop="format(element)"
+                               class="dp-icon-btn dp-trans-80"
+                               title="格式化"/>&nbsp;
 
                 <CheckCircleOutlined v-if="!element.disabled" @click.stop="disable(element)"
-                                     class="dp-icon-btn dp-trans-80 dp-color-pass" />
+                                     class="dp-icon-btn dp-trans-80 dp-color-pass" title="启用" />
                 <CloseCircleOutlined v-if="element.disabled" @click.stop="disable(element)"
-                                     class="dp-icon-btn dp-trans-80" />
-                <DeleteOutlined @click.stop="remove(element)"  class="dp-icon-btn dp-trans-80" />
+                                     class="dp-icon-btn dp-trans-80" title="禁用" />
+                <DeleteOutlined @click.stop="remove(element)"
+                                class="dp-icon-btn dp-trans-80" title="删除" />
 
-                <SaveOutlined class="dp-icon-btn dp-trans-80" title="保存"
-                              v-if="activeItem.id === element.id"
-                              @click.stop="save(element)" />
-                <FullscreenOutlined class="dp-icon-btn dp-trans-80"
-                                    v-if="activeItem.id === element.id"
-                                    @click.stop="openFullscreen(element)" />
+                <SaveOutlined v-if="activeItem.id === element.id"
+                              @click.stop="save(element)"
+                              class="dp-icon-btn dp-trans-80" title="保存"/>
+                <FullscreenOutlined v-if="activeItem.id === element.id"
+                                    @click.stop="openFullscreen(element)"
+                                    class="dp-icon-btn dp-trans-80" title="全屏" />
 
                 <RightOutlined v-if="activeItem.id !== element.id"
-                               @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
+                               @click.stop="expand(element)"
+                               class="dp-icon-btn dp-trans-80" />
                 <DownOutlined v-if="activeItem.id === element.id"
-                              @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
+                              @click.stop="expand(element)"
+                              class="dp-icon-btn dp-trans-80" />
               </div>
             </div>
 
@@ -263,24 +268,18 @@ const closeFullScreen = (item) => {
     .collapse-list {
       height: 100%;
       width: 100%;
-      padding: 3px 0;
+      padding: 0;
 
       .collapse-item {
-        width: 100%;
+        margin: 4px;
         border: 1px solid #d9d9d9;
-        border-bottom: 0;
-        border-radius: 2px;
-
-        &:last-child {
-          border-radius: 0 0 2px 2px;
-          border-bottom: 1px solid #d9d9d9;
-        }
+        border-radius: 5px;
 
         .header {
-          height: 38px;
-          line-height: 22px;
-          padding: 10px;
+          height: 28px;
+          padding: 3px;
           background-color: #fafafa;
+          border-radius: 5px;
 
           display: flex;
           .title {

@@ -16,6 +16,7 @@ func ExecPreConditions(obj *InterfaceExecObj) (err error) {
 			json.Unmarshal(condition.Raw, &scriptBase)
 
 			err = ExecScript(&scriptBase)
+			scriptHelper.GenResultMsg(&scriptBase)
 
 			obj.PreConditions[index].Raw, _ = json.Marshal(scriptBase)
 		}

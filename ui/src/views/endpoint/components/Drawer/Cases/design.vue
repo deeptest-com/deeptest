@@ -1,5 +1,5 @@
 <template>
-  <div class="endpoint-debug-cases-design-main">
+  <div class="endpoint-debug-cases-design-main debug-page-container-top">
     <div id="endpoint-debug-cases-design-panel">
       <div class="name">
         <a-button @click="back" size="small" class="btn">

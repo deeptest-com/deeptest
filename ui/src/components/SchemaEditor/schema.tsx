@@ -76,7 +76,7 @@ export default defineComponent({
                 // 如果复合类型是数组，添加元素
                 if (Array.isArray(tree[tree.type])) {
                     tree[tree.type].push({type: 'string'});
-                //  否则添加属性
+                    //  否则添加属性
                 } else {
                     tree[tree.type] = [{type: 'string'}]
                 }
@@ -139,29 +139,31 @@ export default defineComponent({
             } else {
                 //  数组类型, 且个数大于等于 1 ，需要生成新的schema
                 if (newProps?.length >= 1 && isArray(firstType)) {
-                    const items = parent?.type === 'array' ? ancestor : parent;
-                    if (items?.properties?.[keyName]) {
-                        items.properties[keyName] = generateSchemaByArray(newProps);
+                    // 如果是复合类型，需要特殊处理
+                    if (isCompositeType(ancestor?.type)) {
+                        if (ancestor?.[ancestor.type]?.[keyName]) {
+                            ancestor[ancestor.type][keyName] = generateSchemaByArray(newProps);
+                        }
+                    } else {
+                        const items = parent?.type === 'array' ? ancestor : parent;
+                        if (items?.properties?.[keyName]) {
+                            items.properties[keyName] = generateSchemaByArray(newProps);
+                        }
                     }
                     // 非数组类型
                 } else if (newProps?.length === 1 && !isArray(firstType)) {
                     // 如果是复合类型，需要特殊处理
-                    // debugger;
-                    if(isCompositeType(parent?.type)) {
-                        let items:any = parent?.[parent.type] || [];
-                        if(items?.length) {
-                            items.push({...newProps[0]});
-                        }else {
-                            items = [{...newProps[0]}];
+                    if (isCompositeType(ancestor?.type)) {
+                        if (ancestor?.[ancestor.type]?.[keyName]) {
+                            ancestor[ancestor.type][keyName] = {...newProps[0]};
                         }
-                    }else {
+                    } else {
                         const items = parent?.type === 'array' ? ancestor : parent;
                         if (items?.properties?.[keyName]) {
                             // 既然更换类型，之前的属性就不需要了
                             items.properties[keyName] = {...newProps[0]};
                         }
                     }
-
                 } else {
                     message.warning(`数组类型至少需要一个元素`);
                 }
@@ -368,6 +370,7 @@ export default defineComponent({
 
         const renderDirectoryText = (options: any) => {
             const {depth, tree, isRefChildNode} = options;
+            console.log(83233333, options, tree.type, isCompositeType(tree.type));
             return <div class={'directoryText'}
                         style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
                 {renderHorizontalLine(depth)}
@@ -376,7 +379,7 @@ export default defineComponent({
                     {renderKeyName(options)}
                     {renderDataTypeSetting(options)}
                     {
-                        (isObject(tree.type) && !isRef(tree) && !isRefChildNode) || isCompositeType(tree.type) ?
+                        (isObject(tree.type) || isCompositeType(tree.type)) && !isRef(tree) && !isRefChildNode ?
                             <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/> : null
                     }
                 </div>
@@ -391,6 +394,7 @@ export default defineComponent({
             if (!tree) return null;
             const isRoot = tree?.extraViewInfo?.depth === 1;
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};
+
             // 普通类型
             if (isNormalType(tree.type) && !isRef(tree)) {
                 return renderNormalType(options)
@@ -426,6 +430,7 @@ export default defineComponent({
                 const isRoot = tree?.extraViewInfo?.depth === 1;
                 const isExpand = tree?.extraViewInfo?.isExpand;
                 const options = {...tree?.extraViewInfo, isRoot, tree}
+
                 const combines = {
                     allOf: tree?.allOf || [],
                     oneOf: tree?.oneOf || [],

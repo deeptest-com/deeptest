@@ -203,11 +203,6 @@ function changeRef(tabsIndex, tabIndex, e) {
 // ref 组件
 function changeCombineType(tabsIndex, tabIndex, e) {
   tabsList.value[tabsIndex][tabIndex].value = e;
-  // 选中的是ref，则需要隐藏其他的选择
-  if (e) {
-    debugger;
-    tabsList.value.splice(tabsIndex + 1);
-  }
 }
 
 
@@ -294,7 +289,13 @@ function getValueFromTabsList(tabsList: any) {
         name: selectedRef?.name || '',
         content: null
       };
-    } else {
+    }else if(activeTab.type === 'combine'){
+      res = {
+        type: activeTab.value,
+      };
+      res[activeTab.value] = [];
+    }
+    else {
       res = {
         type: activeTab.value
       };
@@ -324,9 +325,6 @@ async function searchRefs(keyword) {
   }, 500)();
 }
 
-onMounted(async () => {
-  // await searchRefs('');
-})
 
 watch(() => {
   return visible.value

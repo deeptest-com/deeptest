@@ -35,13 +35,14 @@ export function isArray(value: any): boolean {
  * 普通类型
  * */
 export function isNormalType(type: string): boolean {
-    return !['array', 'object', 'oneof', 'anyof', 'allOf'].includes(type);
+    return !['array', 'object', 'oneOf', 'anyOf', 'allOf'].includes(type);
 }
 
 /**
  * 复合类型
  * */
 export function isCompositeType(type: string): boolean {
+    console.log(832, 'isCompositeType', type)
     return ['oneOf', 'anyOf', 'allOf'].includes(type);
 }
 

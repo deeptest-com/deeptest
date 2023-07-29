@@ -24,11 +24,11 @@ import {UsedBy} from "@/utils/enum";
 
 const usedBy = inject('usedBy') as UsedBy;
 const store = useStore<{  Debug: Debug, Endpoint: Endpoint }>();
-const selectedMethodDetail = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
+const interfaceDetail = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 
-const selectedMethod = ref(selectedMethodDetail.value?.method ? selectedMethodDetail.value?.method : 'GET');
+const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
 
 const changeMethod = async () => {
   console.log('changeMethod', selectedMethod.value)

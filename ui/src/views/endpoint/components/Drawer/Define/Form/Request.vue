@@ -95,7 +95,7 @@ const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
 
 onMounted(() => {
-  if (endpointDetail.value?.interfaces?.length) {
+  if (!selectedMethod.value && endpointDetail.value?.interfaces?.length) {
     selectedMethod.value = endpointDetail.value.interfaces[0].method;
   }
 })
@@ -118,6 +118,8 @@ const showRequestBody = ref(false);
 watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
+  console.log('selectedMethod', selectedMethod.value)
+
   selectedMethodDetail.value = interfaceMethodToObjMap.value[newVal];
   if (selectedMethodDetail.value) {
     store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
@@ -126,7 +128,7 @@ watch(() => {
   }
   // 根据选中的请求方法决定是否展示请求体设置，暂定以下三种方法是不需要请求体的
   showRequestBody.value = ['POST', 'PUT', 'PATCH'].includes(newVal);
-}, {immediate: true});
+}, {immediate: true, deep: true});
 
 function addEndpoint() {
   const item = {

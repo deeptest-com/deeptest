@@ -33,6 +33,7 @@ type EndpointService struct {
 	DiagnoseInterfaceService *DiagnoseInterfaceService   `inject:""`
 	EndpointTagRepo          *repo.EndpointTagRepo       `inject:""`
 	EndpointTagService       *EndpointTagService         `inject:""`
+	ServeService             *ServeService               `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -61,6 +62,7 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 
 func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) {
 	res, _ = s.EndpointRepo.GetAll(id, version)
+	s.SchemaConv(&res)
 	return
 }
 
@@ -502,4 +504,20 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 	//	}
 	//}
 	//return
+}
+
+func (s *EndpointService) SchemaConv(endpoint *model.Endpoint) {
+	schema2conv := openapi.NewSchema2conv()
+	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
+	for key, intef := range endpoint.Interfaces {
+		for k, response := range intef.ResponseBodies {
+			schema := new(openapi.SchemaRef)
+			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
+			if endpoint.SourceType == 1 && len(schema.Value.AllOf) > 0 {
+				schema2conv.AllOfConv(schema)
+			}
+			endpoint.Interfaces[key].ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
+		}
+	}
+
 }

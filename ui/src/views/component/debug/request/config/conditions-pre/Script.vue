@@ -5,6 +5,7 @@
         <div class="codes">
           <MonacoEditor theme="vs" language="typescript" class="editor"
                         :value="model.content"
+                        :timestamp="timestamp"
                         :options="editorOptions"
                         @change="editorChange" />
         </div>
@@ -35,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, reactive, ref} from "vue";
+import {computed, defineProps, inject, reactive, ref, watch} from "vue";
 import {message, Form} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -62,6 +63,11 @@ const props = defineProps({
     required: true,
   },
 })
+
+const timestamp = ref('')
+watch(model, (newVal) => {
+  timestamp.value = Date.now() + ''
+}, {immediate: true, deep: true})
 
 const load = () => {
   console.log('load', props.condition)

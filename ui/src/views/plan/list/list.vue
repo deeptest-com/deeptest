@@ -6,7 +6,7 @@
       </template>
       <template #extra>
         <a-form :layout="'inline'">
-          <a-form-item :label="'负责人'" style="margin-bottom: 0;">
+          <a-form-item :label="null" style="margin-bottom: 0;">
             <Select
                 :placeholder="'请选择负责人'"
                 :options="userOptions || []"
@@ -17,7 +17,7 @@
               }"
             />
           </a-form-item>
-          <a-form-item :label="'状态'" style="margin-bottom: 0;">
+          <a-form-item :label="null" style="margin-bottom: 0;">
             <Select
                 :placeholder="'请选择状态'"
                 :options="planStatusOptions || []"
@@ -67,7 +67,7 @@
             </div>
           </template>
           <template #status="{ record }">
-            <a-tag v-if="record.status" :color="planStatusColorMap.get(record.status)">{{ planStatusTextMap.get(record.status) }}</a-tag>
+            <a-tag  :color="planStatusColorMap.get(record.status || 'draft')">{{ planStatusTextMap.get(record.status || 'draft') }}</a-tag>
           </template>
           <template #updatedAt="{ record }">
             <span>{{ momentUtc(record.updatedAt) }}</span>

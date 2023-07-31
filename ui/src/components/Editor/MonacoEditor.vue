@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import {defineComponent, computed, toRefs, nextTick, inject} from 'vue'
+import {defineComponent, computed, toRefs, nextTick, inject, watch} from 'vue'
 import * as monaco from 'monaco-editor'
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
@@ -12,6 +12,7 @@ import {addExtractAction, addReplaceAction} from "@/components/Editor/service";
 import {getSnippet} from "@/views/component/debug/service";
 
 import {UsedBy} from "@/utils/enum";
+import renderfeedback from "@/utils/feedback";
 
 export default defineComponent({
   name: "MonacoEditor",
@@ -36,6 +37,10 @@ export default defineComponent({
     'change'
   ],
   setup(props){
+    watch(() => {return props.value},(newVal) => {
+      console.log('watch props.value', newVal)
+    },{immediate:true, deep: true})
+
     const { width, height } = toRefs(props)
 
     const style = computed(()=>{
@@ -91,10 +96,11 @@ export default defineComponent({
 
   methods: {
     async initMonaco() {
-      console.log('initMonaco ...')
+      console.log('initMonaco ...', this)
       this.$emit('editorWillMount', this.monaco)
 
-      const {interfaceId, value, language, theme, options} = this;
+      let value = ''
+      const {language, theme, options} = this;
       Object.assign(options, {
         scrollbar: {
           useShadows: false,
@@ -122,7 +128,6 @@ export default defineComponent({
       });
 
       this.diffEditor && this._setModel(this.value, this.original);
-
 
       // const usedBy = inject('usedBy')
       // if (usedBy === UsedBy.InterfaceDebug) {

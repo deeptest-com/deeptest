@@ -1,7 +1,7 @@
 <template>
   <div class="post-script-main">
     <div class="content">
-      <div class="codes">{{model.content}}
+      <div class="codes">
         <MonacoEditor theme="vs" language="typescript" class="editor"
                       :value="model.content"
                       :options="editorOptions"

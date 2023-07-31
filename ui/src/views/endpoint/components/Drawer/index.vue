@@ -73,7 +73,6 @@ import {SaveOutlined} from '@ant-design/icons-vue';
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal,Global }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 
-<<<<<<< HEAD
 const props = defineProps({
   visible: {
     required: true,
@@ -81,9 +80,6 @@ const props = defineProps({
   }
 })
 
-=======
-const props = defineProps(['visible']);
->>>>>>> hotfix/20230724_update
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 const showList = ref(true)

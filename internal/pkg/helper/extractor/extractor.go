@@ -35,9 +35,11 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
 			result = queryUtils.XmlQuery(resp.Content, extractor.Expression)
 
-		} else if extractor.Type == consts.Boundary {
+		} else if extractor.Type == consts.Boundary && (extractor.BoundaryStart != "" || extractor.BoundaryEnd != "") {
 			result = queryUtils.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
 				extractor.BoundaryIndex, extractor.BoundaryIncluded)
+		} else if extractor.Type == consts.Regx {
+			result = queryUtils.RegxQuery(resp.Content, extractor.Expression)
 		}
 	}
 
@@ -63,18 +65,18 @@ func GenDesc(src consts.ExtractorSrc, typ consts.ExtractorType,
 
 	nameDesc := ""
 	if typ == consts.Boundary {
-		nameDesc = fmt.Sprintf("边界提取器 \"%s - %s\"", boundaryStart, boundaryEnd)
+		nameDesc = fmt.Sprintf("边界\"%s - %s\"", boundaryStart, boundaryEnd)
 	} else if typ == consts.JsonQuery {
-		nameDesc = fmt.Sprintf("JSON提取器 \"%s\"", expression)
+		nameDesc = fmt.Sprintf("JSON\"%s\"", expression)
 	} else if typ == consts.HtmlQuery {
-		nameDesc = fmt.Sprintf("HTML提取器 \"%s\"", expression)
+		nameDesc = fmt.Sprintf("HTML\"%s\"", expression)
 	} else if typ == consts.XmlQuery {
-		nameDesc = fmt.Sprintf("XML提取器 \"%s\"", expression)
+		nameDesc = fmt.Sprintf("XML\"%s\"", expression)
 	} else if typ == consts.Regx {
-		nameDesc = fmt.Sprintf("正则表达式提取器 \"%s\"", expression)
+		nameDesc = fmt.Sprintf("正则表达式\"%s\"", expression)
 	}
 
-	ret = fmt.Sprintf("%s%s", srcDesc, nameDesc)
+	ret = fmt.Sprintf("提取变量 %s%s", srcDesc, nameDesc)
 
 	return
 }

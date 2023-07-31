@@ -8,19 +8,33 @@
       </div>
       <div class="right">
         <a-form :layout="'inline'" class="filter-items">
-          <a-form-item :label="'测试类型'">
-            <a-select style="width:100px" allowClear placeholder="请选择" @change="onSearch"
-                      v-model:value="queryParams.type" :options="testTypeOptions" class="status-select"/>
+          <a-form-item :label="null" class="filter-item">
+            <Select
+                :placeholder="'请选择测试类型'"
+                :options="testTypeOptions"
+                :value="queryParams.type? queryParams?.type?.split(',') : []"
+                @change="(e) => queryParams.type = e.join()"
+            />
           </a-form-item>
-          <a-form-item :label="'状态'">
-            <a-select style="width:100px" allowClear placeholder="请选择" @change="onSearch"
-                      v-model:value="queryParams.status" :options="scenarioStatusOptions" class="status-select"/>
+          <a-form-item :label="null">
+            <Select
+                :placeholder="'请选择状态'"
+                :options="scenarioStatusOptions"
+                :value="queryParams.status? queryParams?.status?.split(',') : []"
+                @change="(e) => queryParams.status = e.join()"
+            />
           </a-form-item>
-          <a-form-item :label="'优先级'">
-            <a-select style="width:100px" placeholder="请选择" allowClear @change="onSearch"
-                      v-model:value="queryParams.priority" :options="priorityOptions" class="status-select"/>
+          <a-form-item :label="null">
+            <Select
+                :placeholder="'请选择优先级'"
+                :options="priorityOptions"
+                :value="queryParams.priority? queryParams?.priority?.split(',') : []"
+                @change="(e) => queryParams.priority = e.join()"
+            />
           </a-form-item>
-          <a-input-search @change="onSearch" allowClear @search="onSearch" v-model:value="queryParams.keywords"
+          <a-input-search @change="onSearch" allowClear @search="onSearch"
+                          enter-button
+                          v-model:value="queryParams.keywords"
                           placeholder="搜索测试场景" style="width:200px;margin-left: 8px;"/>
         </a-form>
       </div>
@@ -157,6 +171,7 @@ import {
 } from "@/config/constant";
 import {ExclamationCircleOutlined} from '@ant-design/icons-vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
+import Select from '@/components/Select/index.vue';
 
 type Key = ColumnProps['key'];
 
@@ -188,11 +203,18 @@ watch(nodeDataCategory, () => {
 watch(currProject, () => {
   console.log('watch currProject', currProject.value.id)
   getList(1, nodeDataCategory.value.id);
+  queryParams.type = queryParams.status = queryParams.priority = queryParams.keywords = ""
+}, {deep: false})
+
+watch(queryParams, () => {
+  getList(1, nodeDataCategory.value?.id || 0);
 }, {deep: false})
 
 onMounted(async () => {
   getList(1, nodeDataCategory.value.id);
 })
+
+
 
 const loading = ref<boolean>(true);
 
@@ -405,20 +427,20 @@ onMounted(() => {
 })
 
 watch(
-  ()=>[isEditVisible.value, drawerVisible.value],
-  async (newValue) => {
-    if (!newValue[0] || !newValue[1]) {
-      await store.dispatch('Scenario/loadCategory');
-    }
-  },
-  {  immediate: true }
+    () => [isEditVisible.value, drawerVisible.value],
+    async (newValue) => {
+      if (!newValue[0] || !newValue[1]) {
+        await store.dispatch('Scenario/loadCategory');
+      }
+    },
+    {immediate: true}
 );
 
 </script>
 
 <style lang="less" scoped>
 .scenario-list-main {
-  //min-width: 1000px;
+  min-width: 1000px;
 }
 
 .filter-header {
@@ -441,6 +463,9 @@ watch(
 
 .filter-items {
   font-weight: normal;
+  .filter-item{
+    max-height: 32px;
+  }
 }
 
 .operation-a {

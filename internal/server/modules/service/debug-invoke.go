@@ -23,6 +23,7 @@ type DebugInvokeService struct {
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 	ExecConditionService  *ExecConditionService  `inject:""`
 
+	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
 	PostConditionRepo *repo.PostConditionRepo `inject:""`
 	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
 	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
@@ -141,9 +142,47 @@ func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId u
 func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err error) {
 	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
 
-	conditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId)
+	conditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryResult)
 
 	for _, condition := range conditions {
+		typ := condition.EntityType
+		var log interface{}
+
+		if typ == consts.ConditionTypeExtractor {
+			log, _ = s.ExtractorRepo.GetLog(condition.ID, uint(invokeId))
+
+		} else if typ == consts.ConditionTypeCheckpoint {
+			log, _ = s.CheckpointRepo.GetLog(condition.ID, uint(invokeId))
+
+		} else if typ == consts.ConditionTypeScript {
+			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
+
+		}
+
+		results = append(results, log)
+	}
+
+	return
+}
+
+func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err error) {
+	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
+
+	preConditions, err := s.PreConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId)
+	for _, condition := range preConditions {
+		typ := condition.EntityType
+		var log interface{}
+
+		if typ == consts.ConditionTypeScript {
+			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
+		}
+
+		results = append(results, log)
+	}
+
+	postConditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryConsole)
+
+	for _, condition := range postConditions {
 		typ := condition.EntityType
 		var log interface{}
 

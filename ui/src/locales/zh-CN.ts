@@ -78,9 +78,9 @@ export default {
     'responseStatus': '响应码',
     'responseHeader': '响应头',
     'responseBody': '响应体',
-    'extractor': '提取器',
+    'extractor': '提取变量',
     'checkpoint': '检查点',
-    'script': '脚本',
+    'script': '定制代码',
     'judgement': '表达式',
 
     'fulltext': '全文本',

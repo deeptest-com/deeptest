@@ -1,7 +1,6 @@
 <template>
   <div class="cookies-main">
-    <ParamGrid title="请求参数"
-               :list="responseData.cookies || []" />
+    <ParamGrid :list="responseData.cookies || []" />
   </div>
 </template>
 

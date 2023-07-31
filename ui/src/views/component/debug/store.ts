@@ -31,10 +31,10 @@ import {
     removePostConditions,
     movePostConditions,
     removePreConditions,
-    movePreConditions, disablePreConditions, disablePostConditions, saveAsCase, getInvocationResult,
+    movePreConditions, disablePreConditions, disablePostConditions, saveAsCase, getInvocationResult, getInvocationLog,
 } from './service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
-import {UsedBy} from "@/utils/enum";
+import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
 import {listEnvVarByServer} from "@/services/environment";
 
@@ -45,12 +45,14 @@ export interface StateType {
 
     requestData: any;
     responseData: Response;
+    consoleData: any[];
     resultData: any[];
 
     invocationsData: any[];
 
     preConditions: any[];
     postConditions: any[];
+    assertionConditions: any[];
 
     extractorData: any;
     checkpointData: any;
@@ -63,12 +65,14 @@ const initState: StateType = {
 
     requestData: {},
     responseData: {} as Response,
+    consoleData: [],
     resultData: [],
 
     invocationsData: [],
 
     preConditions: [],
     postConditions: [],
+    assertionConditions: [],
 
     extractorData: {} as Extractor,
     checkpointData: {} as Checkpoint,
@@ -85,12 +89,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setRequest: Mutation<StateType>;
         setResponse: Mutation<StateType>;
         setResult: Mutation<StateType>;
+        setLog: Mutation<StateType>;
 
         setInvocations: Mutation<StateType>;
         setServerId: Mutation<StateType>;
 
         setPreConditions: Mutation<StateType>;
         setPostConditions: Mutation<StateType>;
+        setAssertionConditions: Mutation<StateType>;
         setExtractor: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
         setScript: Mutation<StateType>;
@@ -115,6 +121,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         listInvocation: Action<StateType, StateType>;
         getLastInvocationResp: Action<StateType, StateType>;
         getInvocationResult: Action<StateType, StateType>;
+        getInvocationLog: Action<StateType, StateType>;
         getInvocationAsInterface: Action<StateType, StateType>;
         removeInvocation: Action<StateType, StateType>;
 
@@ -125,6 +132,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         movePreCondition: Action<StateType, StateType>;
 
         listPostCondition: Action<StateType, StateType>;
+        listAssertionCondition: Action<StateType, StateType>;
         createPostCondition: Action<StateType, StateType>;
         removePostCondition: Action<StateType, StateType>;
         disablePostCondition: Action<StateType, StateType>;
@@ -186,6 +194,9 @@ const StoreModel: ModuleType = {
         setResult(state, payload) {
             state.resultData = payload;
         },
+        setLog(state, payload) {
+            state.consoleData = payload;
+        },
 
         setInvocations(state, payload) {
             state.invocationsData = payload;
@@ -196,6 +207,9 @@ const StoreModel: ModuleType = {
         },
         setPostConditions(state, payload) {
             state.postConditions = payload;
+        },
+        setAssertionConditions(state, payload) {
+            state.assertionConditions = payload;
         },
 
         setExtractor(state, payload) {
@@ -213,23 +227,35 @@ const StoreModel: ModuleType = {
         },
 
         setShareVars(state, payload) {
+            console.log('set debugData shareVars')
             state.debugData.shareVars = payload;
+            state.debugDataChanged = 'refreshed';
         },
         setEnvVars(state, payload) {
+            console.log('set debugData envVars')
             state.debugData.envVars = payload;
+            state.debugDataChanged = 'refreshed';
         },
         setGlobalVars(state, payload) {
+            console.log('set debugData globalVars')
             state.debugData.globalVars = payload;
+            state.debugDataChanged = 'refreshed';
         },
 
-        setUrl(state, payload) {
-            state.debugData.url = payload;
-        },
         setBaseUrl(state, payload) {
+            console.log('set debugData baseUrl')
             state.debugData.baseUrl = payload;
+            state.debugDataChanged = 'refreshed';
+        },
+        setUrl(state, payload) {
+            console.log('set debugData url')
+            state.debugData.url = payload;
+            state.debugDataChanged = 'refreshed';
         },
         setBody(state, payload) {
+            console.log('set debugData body')
             state.debugData.body = payload;
+            state.debugDataChanged = 'refreshed';
         },
     },
     actions: {
@@ -303,6 +329,7 @@ const StoreModel: ModuleType = {
             commit('setRequest', {});
             commit('setResponse', {});
             commit('setResult', []);
+            commit('setLog', []);
             commit('setInvocations', []);
         },
 
@@ -322,6 +349,7 @@ const StoreModel: ModuleType = {
 
                 await dispatch('listPreCondition');
                 await dispatch('listPostCondition');
+                await dispatch('listAssertionCondition');
 
                 return true;
             } else {
@@ -360,6 +388,11 @@ const StoreModel: ModuleType = {
         async getInvocationResult({commit, dispatch, state}, invokeId: number) {
             const response = await getInvocationResult(invokeId);
             commit('setResult', response.data);
+            return true;
+        },
+        async getInvocationLog({commit, dispatch, state}, invokeId: number) {
+            const response = await getInvocationLog(invokeId);
+            commit('setLog', response.data);
             return true;
         },
 
@@ -438,9 +471,22 @@ const StoreModel: ModuleType = {
 
         async listPostCondition({commit, state}) {
             try {
-                const resp = await listPostConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId);
+                const resp = await listPostConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId,
+                    ConditionCategory.console);
                 const {data} = resp;
                 commit('setPostConditions', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async listAssertionCondition({commit, state}) {
+            try {
+                const resp = await listPostConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId,
+                    ConditionCategory.result);
+
+                const {data} = resp;
+                commit('setAssertionConditions', data);
                 return true;
             } catch (error) {
                 return false;
@@ -449,25 +495,38 @@ const StoreModel: ModuleType = {
         async createPostCondition({commit, dispatch, state}, payload: any) {
             try {
                 await createPostConditions(payload);
-                dispatch('listPostCondition');
+
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async disablePostCondition({commit, dispatch, state}, id: number) {
+        async disablePostCondition({commit, dispatch, state}, payload: any) {
             try {
-                await disablePostConditions(id);
-                dispatch('listPostCondition');
+                await disablePostConditions(payload.id);
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async removePostCondition({commit, dispatch, state}, id: number) {
+        async removePostCondition({commit, dispatch, state}, payload: any) {
             try {
-                await removePostConditions(id);
-                dispatch('listPostCondition');
+                await removePostConditions(payload.id);
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
                 return true;
             } catch (error) {
                 return false;
@@ -476,7 +535,11 @@ const StoreModel: ModuleType = {
         async movePostCondition({commit, dispatch, state}, payload: any) {
             try {
                 await movePostConditions(payload);
-                dispatch('listPostCondition');
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
                 return true;
             } catch (error) {
                 return false;

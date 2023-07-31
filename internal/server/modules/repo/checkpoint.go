@@ -119,7 +119,7 @@ func (r *CheckpointRepo) CreateDefault(conditionId uint) (po model.DebugConditio
 			Operator:          consts.Equal,
 			Expression:        "",
 			ExtractorVariable: "",
-			Value:             "",
+			Value:             "200",
 		},
 	}
 
@@ -133,6 +133,8 @@ func (r *CheckpointRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogCh
 		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
 		Where("NOT deleted").
 		First(&ret).Error
+
+	ret.ConditionEntityType = consts.ConditionTypeCheckpoint
 
 	return
 }

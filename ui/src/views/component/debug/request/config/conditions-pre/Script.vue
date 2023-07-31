@@ -10,7 +10,7 @@
         </div>
 
         <div class="refer">
-          <div class="desc">后置脚本使用JavaScript编写，在获取响应后执行。</div>
+          <div class="desc">预请求脚本使用JavaScript编写，并在请求发送前执行。</div>
 
           <div class="title">代码片段：</div>
           <div>

@@ -14,12 +14,12 @@
                          @change-description="changeDescription"
                          @changeCategory="changeCategory"/>
     </template>
-
     <template #tabHeader>
       <div class="tab-header-items">
         <div class="tab-header-item"
-             :class="{'active':tab.key === activeTabKey}" v-for="tab in tabsList"
+             v-for="tab in tabsList"
              :key="tab.key"
+             :class="{'active':tab.key === activeTabKey}"
              @click="changeTab(tab.key)">
           <span>{{ tab.label }}</span>
         </div>
@@ -33,12 +33,18 @@
         </a-button>
       </div>
     </template>
-
     <template #tabContent>
       <div class="tab-pane">
-        <EndpointDefine v-if="activeTabKey === 'request'" @switchMode="switchMode"/>
-        <EndpointDebug v-if="activeTabKey === 'run'" @switchToDefineTab="switchToDefineTab"/>
-        <EndpointCases v-if="activeTabKey === 'cases'" @switchToDefineTab="switchToDefineTab"/>
+        <EndpointDefine v-if="activeTabKey === 'request'"
+                        @switchMode="switchMode"/>
+
+        <EndpointDebug v-if="activeTabKey === 'run'"
+                       @switchToDefineTab="switchToDefineTab"/>
+
+        <EndpointCases v-if="activeTabKey === 'cases'"
+                       v-model:showList="showList"
+                       @switchToDefineTab="switchToDefineTab"/>
+
         <Docs :onlyShowDocs="true"
               :showHeader="false"
               v-if="activeTabKey === 'docs' && docsData"
@@ -67,18 +73,20 @@ import {SaveOutlined} from '@ant-design/icons-vue';
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal,Global }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 
+<<<<<<< HEAD
 const props = defineProps({
   visible: {
     required: true,
     type: Boolean,
   }
 })
+
+=======
+const props = defineProps(['visible']);
+>>>>>>> hotfix/20230724_update
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
-function onCloseDrawer() {
-  emit('close');
-}
-
+const showList = ref(true)
 const docsData = ref(null);
 
 const tabsList = [
@@ -102,6 +110,14 @@ const tabsList = [
 
 const stickyKey = ref(0);
 async function changeTab(value) {
+  console.log('changeTab', value)
+
+  // click cases tab again, will cause EndpointCases component back to case list page
+  if (activeTabKey.value === 'cases' && activeTabKey.value === value) {
+    showList.value = true // back to list
+    return
+  }
+
   activeTabKey.value = value;
   stickyKey.value ++;
   // 切换到调试页面时，需要先保存

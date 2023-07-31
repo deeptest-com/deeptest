@@ -22,9 +22,10 @@ type ExtractorBase struct {
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg"`
 
-	ConditionId       uint `json:"conditionId"`
-	ConditionEntityId uint `gorm:"-" json:"conditionEntityId"` // refer to po id in domain object
-	InvokeId          uint `json:"invokeId"`                   // for log only
+	ConditionId         uint                 `json:"conditionId"`
+	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object
+	ConditionEntityType consts.ConditionType `gorm:"-" json:"conditionEntityType"` // for log only
+	InvokeId            uint                 `json:"invokeId"`                     // for log only
 
 	Disabled bool `json:"disabled"`
 }
@@ -46,9 +47,10 @@ type CheckpointBase struct {
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg"`
 
-	ConditionId       uint `json:"conditionId"`
-	ConditionEntityId uint `gorm:"-" json:"conditionEntityId"` // refer to entity po id in domain object
-	InvokeId          uint `json:"invokeId"`                   // for log only
+	ConditionId         uint                 `json:"conditionId"`
+	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to entity po id in domain object
+	ConditionEntityType consts.ConditionType `gorm:"-" json:"conditionEntityType"` // for log only
+	InvokeId            uint                 `json:"invokeId"`                     // for log only
 
 	Disabled bool `json:"disabled"`
 }
@@ -66,9 +68,10 @@ type ScriptBase struct {
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg"`
 
-	ConditionId       uint `json:"conditionId"`
-	ConditionEntityId uint `gorm:"-" json:"conditionEntityId"` // refer to po id in domain object
-	InvokeId          uint `json:"invokeId"`                   // for log only
+	ConditionId         uint                 `json:"conditionId"`
+	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object
+	ConditionEntityType consts.ConditionType `gorm:"-" json:"conditionEntityType"` // for log only
+	InvokeId            uint                 `json:"invokeId"`                     // for log only
 
 	Disabled bool `json:"disabled"`
 }

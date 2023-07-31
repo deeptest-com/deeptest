@@ -1,57 +1,93 @@
 <template>
-  <div class="response-result-main">
-    <div class="head">
-      <a-row type="flex">
-        <a-col flex="1">
-          <span>合计6个检查点，<span class="dp-color-fail">3</span>个失败。</span>
-        </a-col>
-      </a-row>
+  <div class="response-result">
+    <div class="row status">
+      <span class="col">
+        状态：{{ responseData.statusContent }}
+      </span>
+      <span class="col">
+        耗时: {{ responseData.time }}毫秒
+      </span>
+      <span class="col">
+        大小：{{ responseData.contentLength }}字节
+      </span>
     </div>
 
-    <div class="body">
-      <div class="line">
-        <span class="dp-color-fail dp-tip-small">
-          <CloseOutlined class="dp-icon-btn dp-trans-80" />
-        </span>
-        <span>期待结果'200'，实际为'400'。</span>
-      </div>
+    <div class="title">断言结果</div>
+
+    <div v-for="(item, index) in resultData"
+         :key="index"
+         :class="getResultClass(item)" class="item">
+
+      <span v-if="item.resultStatus===ResultStatus.Pass">
+        <CheckCircleOutlined />
+      </span>
+
+      <span v-if="item.resultStatus===ResultStatus.Fail">
+        <CloseCircleOutlined />
+      </span>&nbsp;
+
+      <span>{{item.resultMsg}}</span>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {inject} from "vue";
-import {useI18n} from "vue-i18n";
-import { CloseOutlined } from '@ant-design/icons-vue';
-import {UsedBy} from "@/utils/enum";
+import {computed, watch} from "vue";
+import {useStore} from "vuex";
+import { CheckCircleOutlined, CloseCircleOutlined} from '@ant-design/icons-vue';
 
-const usedBy = inject('usedBy') as UsedBy
+import {ResultStatus} from "@/utils/enum";
+import {StateType as Debug} from "@/views/component/debug/store";
+import {useI18n} from "vue-i18n";
 const {t} = useI18n();
+const store = useStore<{  Debug: Debug }>();
+
+const responseData = computed<any>(() => store.state.Debug.responseData);
+const resultData = computed<any>(() => store.state.Debug.resultData);
+
+watch(responseData, (newVal) => {
+  console.log('responseData', responseData.value.invokeId)
+  if (responseData.value.invokeId)
+    store.dispatch("Debug/getInvocationResult", responseData.value.invokeId)
+}, {deep: true, immediate: true})
+
+const getResultClass = (item) => {
+  return item.resultStatus===ResultStatus.Pass? 'pass':
+      item.resultStatus===ResultStatus.Fail ? 'fail' : ''
+}
 
 </script>
 
-<style lang="less">
-.response-result-main {
-}
-</style>
-
 <style lang="less" scoped>
-.response-result-main {
+.response-result {
   height: 100%;
-  .head {
-    padding: 2px 3px;
-    border-bottom: 1px solid #d9d9d9;
-  }
-  .body {
-    padding: 6px;
-    height: calc(100% - 30px);
-    overflow-y: hidden;
-    &>div {
-      height: 100%;
+  overflow-y: auto;
+  padding: 0px 6px;
+
+  .status {
+    padding: 12px 0 8px 0;
+    .col {
+      margin-right: 20px;
     }
-    .line {
-      font-size: 13px;
+  }
+
+  .title {
+    padding-left: 2px;
+    font-weight: bold;
+  }
+
+  .item {
+    margin: 3px;
+    padding: 5px;
+    &.pass {
+      color: #14945a;
+      background-color: #F1FAF4;
+    }
+    &.fail {
+      color: #D8021A;
+      background-color: #FFECEE;
     }
   }
 }
+
 </style>

@@ -32,8 +32,8 @@ func (s *EndpointCaseService) Get(id int) (ret model.EndpointCase, err error) {
 	return
 }
 
-func (s *EndpointCaseService) Save(req serverDomain.EndpointCaseSaveReq) (po model.EndpointCase, err error) {
-	s.CopyValueFromRequest(&po, req)
+func (s *EndpointCaseService) Save(req serverDomain.EndpointCaseSaveReq) (casePo model.EndpointCase, err error) {
+	s.CopyValueFromRequest(&casePo, req)
 
 	endpoint, err := s.EndpointRepo.Get(req.EndpointId)
 
@@ -66,17 +66,38 @@ func (s *EndpointCaseService) Save(req serverDomain.EndpointCaseSaveReq) (po mod
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
-	po.ProjectId = endpoint.ProjectId
-	po.ServeId = endpoint.ServeId
-	po.DebugInterfaceId = debugInterface.ID
-	err = s.EndpointCaseRepo.Save(&po)
+	casePo.ProjectId = endpoint.ProjectId
+	casePo.ServeId = endpoint.ServeId
+	casePo.DebugInterfaceId = debugInterface.ID
+	err = s.EndpointCaseRepo.Save(&casePo)
 
-	if po.DebugInterfaceId > 0 {
+	if casePo.DebugInterfaceId > 0 {
 		values := map[string]interface{}{
-			"case_interface_id": po.ID,
+			"case_interface_id": casePo.ID,
 		}
-		err = s.DebugInterfaceRepo.UpdateDebugInfo(po.DebugInterfaceId, values)
+		err = s.DebugInterfaceRepo.UpdateDebugInfo(casePo.DebugInterfaceId, values)
 	}
+
+	return
+}
+
+func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po model.EndpointCase, err error) {
+	endpointCase, _ := s.EndpointCaseRepo.Get(uint(id))
+	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
+
+	req := serverDomain.EndpointCaseSaveReq{
+		Name:       "copy-" + endpointCase.Name,
+		EndpointId: endpointCase.EndpointId,
+		ServeId:    endpointCase.ServeId,
+		ProjectId:  endpointCase.ProjectId,
+
+		CreateUserId:   userId,
+		CreateUserName: userName,
+
+		DebugData: debugData,
+	}
+
+	po, err = s.Save(req)
 
 	return
 }

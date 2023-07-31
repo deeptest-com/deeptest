@@ -20,7 +20,7 @@
                             :custom-class="'custom-endpoint show-on-hover'"
                             :value="text || ''"
                             @update="(val) => updateName(val, record)"
-                            @edit="design(record)" />
+                            @edit="design(record)"/>
         </template>
 
         <template #createdAt="{ record }">
@@ -32,13 +32,20 @@
         </template>
 
         <template #action="{ record }">
-          <a-button type="link" @click="() => design(record)">设计</a-button>
-          <a-button type="link" @click="() => remove(record)">删除</a-button>
+          <a-button type="link" @click="() => copy(record)">
+            <CopyOutlined title="复制" />
+          </a-button>
+
+          <a-button type="link" @click="() => remove(record)">
+            <DeleteOutlined title="删除" />
+          </a-button>
         </template>
 
       </a-table>
 
-      <a-empty v-if="caseList.length === 0" :image="simpleImage" />
+      <a-empty class="dp-empty-no-margin"
+               v-if="caseList.length === 0"
+               :image="simpleImage"/>
     </div>
 
     <CaseEdit
@@ -46,7 +53,7 @@
         :visible="editVisible"
         :model="editModel"
         :onFinish="createFinish"
-        :onCancel="createCancel" />
+        :onCancel="createCancel"/>
   </div>
 </template>
 
@@ -56,7 +63,8 @@ import {UsedBy} from "@/utils/enum";
 import {Empty} from "ant-design-vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { momentUtc } from '@/utils/datetime';
+import {DeleteOutlined, CopyOutlined} from '@ant-design/icons-vue';
+import {momentUtc} from '@/utils/datetime';
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 
@@ -119,6 +127,12 @@ const remove = (record) => {
     store.dispatch('Endpoint/removeCase', record);
   })
 }
+const copy  = (record) => {
+  console.log('copy', record)
+  store.dispatch('Endpoint/copyCase', record.id).then((po) => {
+    design(po)
+  })
+}
 
 const design = async (record: any) => {
   props.onDesign(record)
@@ -175,14 +189,17 @@ const columns = [
 
 <style lang="less" scoped>
 .endpoint-debug-cases-list {
+  position: relative;
+
   height: 100%;
+
   .toolbar {
     position: absolute;
     top: -42px;
     right: 0;
-    height: 50px;
     width: 100px;
   }
+
   .content {
     height: 100%;
   }

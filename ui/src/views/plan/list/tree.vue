@@ -69,12 +69,12 @@
 <script setup lang="ts">
 import {
   computed, ref, onMounted,
-  watch, defineEmits, defineProps
+  watch, defineEmits, defineProps, createVNode
 } from 'vue';
 import {
   PlusOutlined,
   CaretDownOutlined,
-  MoreOutlined
+  MoreOutlined, ExclamationCircleOutlined
 } from '@ant-design/icons-vue';
 import {message, Modal} from 'ant-design-vue';
 import CreateCategoryModal from '@/components/CreateCategoryModal/index.vue'
@@ -200,19 +200,18 @@ const tagModalMode = ref('new');
 
 // 删除分类
 async function deleteCategorie(node) {
-  if (node.count > 0) {
-    message.warning('该目录下有数据，请删除后再操作');
-    return
-  }
-
   Modal.confirm({
-    title: () => '确定删除该分类吗？',
-    content: () => '删除后所有所有子分类都会被删除',
+    title: () => '将级联删除分类下的所有子分类、测试计划',
+    icon: createVNode(ExclamationCircleOutlined),
+    content: () => '删除后无法恢复，请确认是否删除？',
     okText: () => '确定',
     okType: 'danger',
     cancelText: () => '取消',
     onOk: async () => {
-      const res = await store.dispatch('Plan/removeCategoryNode', node.id);
+      const res = await store.dispatch('Plan/removeCategoryNode', {
+        id:node.id,
+        type:'plan'
+      });
       if (res) {
         message.success('删除成功');
       } else {

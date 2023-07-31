@@ -95,6 +95,34 @@ func (c *EndpointCaseCtrl) Save(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
 
+// Copy
+// @Tags	设计器/接口用例
+// @summary	用例复制
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	id		query	int		true	"用例ID"
+// @success	200	{object}	_domain.Response{data=model.EndpointCase}
+// @Router	/api/v1/endpoints/cases/copy	[post]
+func (c *EndpointCaseCtrl) Copy(ctx iris.Context) {
+	id, err := ctx.URLParamInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	userId := multi.GetUserId(ctx)
+	userName := multi.GetUsername(ctx)
+
+	po, err := c.EndpointCaseService.Copy(id, userId, userName)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po})
+}
+
 // UpdateName
 // @Tags	设计器/接口用例
 // @summary	保存用例名称

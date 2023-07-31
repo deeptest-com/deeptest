@@ -132,14 +132,8 @@ import Schema from './schema';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
 
-const props = defineProps<{
-  tabContentStyle?: object,
-  contentStr?: string,
-  serveId?: number,
-  exampleStr?: string,
-  schemeVisibleKey?: string | number,
-}>();
 
+const props = defineProps(['tabContentStyle', 'contentStr', 'serveId', 'exampleStr', 'schemeVisibleKey']);
 const emit = defineEmits<{
   (e: 'generateFromJSON', jsonStr?: string): void,
   (e: 'generateExample', jsonStr?: string): void,

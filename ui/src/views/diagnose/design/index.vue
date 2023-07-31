@@ -5,10 +5,12 @@
         <a-tabs class="dp-tabs-full-height" type="editable-card"
                 :hideAdd="true"
                 v-if="interfaceTabs?.length"
-                v-model:activeKey="activeTabKey"
+                :activeKey="activeTabKey"
                 @edit="onTabEdit"
                 @change="changeTab">
-          <a-tab-pane v-for="tab in interfaceTabs" :key="''+tab.id" :tab="getTitle(tab.title)" class="dp-relative">
+          <a-tab-pane v-for="tab in interfaceTabs"
+                      :key="''+tab.id" :tab="getTitle(tab.title)"
+                      class="dp-relative">
             <template v-if="debugData?.method" >
               <DebugComp :topVal="'-40px'"
                          :onSaveDebugData="saveDiagnoseInterface"
@@ -39,10 +41,13 @@ import DebugComp from '@/views/component/debug/index.vue';
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as DiagnoseInterfaceStateType} from '../store';
 import {StateType as ServeStateType} from "@/store/serve";
-import {StateType as Debug} from "@/views/component/debug/store";
-import {prepareDataForRequest} from "@/views/component/debug/service";
 import {notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
+import {prepareDataForRequest} from "@/views/component/debug/service";
+import openModal from "@/components/OpenModal/modal";
+import {StateType as Debug} from "@/views/component/debug/store";
+import ConfirmSave from "@/components/ConfirmSave/index.vue";
+import {confirmToSave} from "@/utils/confirm";
 
 provide('usedBy', UsedBy.DiagnoseDebug)
 
@@ -50,21 +55,33 @@ const store = useStore<{ Debug: Debug, DiagnoseInterface: DiagnoseInterfaceState
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const debugData = computed<any>(() => store.state.Debug.debugData);
+const debugDataChanged = computed<any>(() => store.state.Debug.debugDataChanged);
 
 const interfaceId = computed<any>(() => store.state.DiagnoseInterface.interfaceId);
 const interfaceData = computed<any>(() => store.state.DiagnoseInterface.interfaceData);
 const interfaceTabs = computed<any>(() => store.state.DiagnoseInterface.interfaceTabs);
 const activeTabKey = ref('0')
-const rightTabKey = ref('')
 const spinning = computed(()=> store.state.Global.spinning )
 
-const changeTab = (key) => {
+// function toChangeTab (key) {
+//   console.log('changeTab', key, debugDataChanged.value)
+//
+//   if (debugDataChanged.value !== 'yes') {
+//     changeTab(key)
+//   } else {
+//     confirmToSave(() => {
+//       changeTab(key)
+//     })
+//   }
+// }
+
+function changeTab(key) {
   console.log('changeTab', key)
+  activeTabKey.value = key
 
   const found = interfaceTabs.value.find(function (item, index, arr) {
     return item.id === +key
   })
-
   store.dispatch('DiagnoseInterface/openInterfaceTab', found);
 }
 
@@ -135,10 +152,6 @@ const getTitle = (title) => {
 
   return title.substr(0, 16) + '...' + title.substr(len-6, len);
 };
-
-const closeRightTab = () => {
-  rightTabKey.value = ''
-}
 
 </script>
 

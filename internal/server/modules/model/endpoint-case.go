@@ -2,7 +2,6 @@ package model
 
 type EndpointCase struct {
 	BaseModel
-	CreatedBy uint `json:"createdBy"`
 
 	Name string `json:"name"`
 	Desc string `json:"desc"`

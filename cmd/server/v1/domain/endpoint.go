@@ -10,8 +10,8 @@ type EndpointReqPaginate struct {
 	_domain.PaginateReq
 	ProjectId    int64    `json:"projectId"`
 	CategoryId   int64    `json:"categoryId"`
-	Status       int64    `json:"status"`
-	CreateUser   string   `json:"createUser"`
+	Status       []int64  `json:"status"`
+	CreateUser   []string `json:"createUser"`
 	Title        string   `json:"title"`
 	ServeId      uint     `json:"serveId"`
 	ServeVersion string   `json:"serveVersion"`

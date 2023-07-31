@@ -3,7 +3,9 @@
     <div class="dp-param-grid">
       <div class="head">
         <a-row type="flex">
-          <a-col flex="1">请求头列表</a-col>
+          <a-col flex="1" class="title">参数名</a-col>
+          <a-col flex="1" class="title">参数值</a-col>
+
           <a-col flex="80px" class="dp-right">
             <a-tooltip overlayClassName="dp-tip-small">
               <template #title>帮助</template>
@@ -99,7 +101,7 @@ const onParamChange = (idx) => {
 
 const add = () => {
   console.log('add')
-  debugData.value.params.push({} as Header)
+  debugData.value.headers.push({} as Header)
 }
 const removeAll = () => {
   console.log('removeAll', debugData.value.headers)
@@ -113,7 +115,10 @@ const disable = (idx) => {
 const remove = (idx) => {
   console.log('remove')
   debugData.value.headers.splice(idx, 1)
-  add()
+  const len = debugData.value.headers.length
+  if (len == 0 || !!debugData.value.headers[len-1].name) {
+    add()
+  }
 }
 const insert = (idx) => {
   console.log('insert')

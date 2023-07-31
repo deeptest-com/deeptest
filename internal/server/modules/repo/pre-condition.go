@@ -28,22 +28,21 @@ func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos
 		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
 	}
 
-	err = db.
-		Find(&pos).Error
+	err = db.Find(&pos).Error
 
 	return
 }
 
-func (r *PreConditionRepo) Get(id uint) (checkpoint model.DebugPreCondition, err error) {
+func (r *PreConditionRepo) Get(id uint) (condition model.DebugPreCondition, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
-		First(&checkpoint).Error
+		First(&condition).Error
 	return
 }
 
-func (r *PreConditionRepo) Save(checkpoint *model.DebugPreCondition) (err error) {
-	err = r.DB.Save(checkpoint).Error
+func (r *PreConditionRepo) Save(condition *model.DebugPreCondition) (err error) {
+	err = r.DB.Save(condition).Error
 	return
 }
 

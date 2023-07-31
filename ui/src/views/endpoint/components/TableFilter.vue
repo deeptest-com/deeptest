@@ -59,7 +59,7 @@ import {
   defineEmits, ref,defineExpose,
   onMounted, computed, watch, Ref
 } from 'vue';
-import Select from '@/components/Select/index.vue';
+import Select from '@/components/Select';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);

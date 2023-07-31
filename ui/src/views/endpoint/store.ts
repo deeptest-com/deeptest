@@ -467,7 +467,6 @@ const StoreModel: ModuleType = {
         },
         async loadList({commit, dispatch, state}, {projectId, page, pageSize, opts}: any) {
 
-            console.log(111111111111)
             page = page || state.listResult.pagination.current;
             pageSize = pageSize || state.listResult.pagination.pageSize;
             const otherParams = {...state.filterState, ...opts};

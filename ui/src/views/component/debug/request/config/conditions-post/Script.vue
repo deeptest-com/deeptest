@@ -45,6 +45,7 @@ import settings from "@/config/settings";
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
+
 const store = useStore<{  Debug: Debug }>();
 
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);

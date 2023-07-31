@@ -422,10 +422,11 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async removeCategoryNode({commit, dispatch, state}, payload: number) {
+        async removeCategoryNode({commit, dispatch, state}, payload: any) {
             try {
-                await removeCategory(payload);
+                await removeCategory(payload.id, payload.type);
                 await dispatch('loadCategory');
+                await dispatch('loadList', {projectId: payload.projectId});
                 return true;
             } catch (error) {
                 return false;

@@ -1,7 +1,7 @@
 <template>
   <div class="post-script-main">
     <div class="content">
-      <div class="codes">
+      <div class="codes">{{model.content}}
         <MonacoEditor theme="vs" language="typescript" class="editor"
                       :value="model.content"
                       :options="editorOptions"
@@ -64,7 +64,7 @@ const props = defineProps({
 })
 
 const load = () => {
-  console.log('load', props.condition)
+  console.log('load script ...', props.condition)
   store.dispatch('Debug/getScript', props.condition.entityId)
 }
 load()

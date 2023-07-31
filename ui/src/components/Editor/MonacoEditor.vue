@@ -91,6 +91,7 @@ export default defineComponent({
 
   methods: {
     async initMonaco() {
+      console.log('initMonaco ...')
       this.$emit('editorWillMount', this.monaco)
 
       const {interfaceId, value, language, theme, options} = this;

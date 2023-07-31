@@ -177,13 +177,13 @@ const format = (item) => {
 }
 const disable = (item) => {
   console.log('disable', item)
-  store.dispatch('Debug/disablePostCondition', item.id)
+  store.dispatch('Debug/disablePostCondition', item)
 }
 const remove = (item) => {
   console.log('remove', item)
 
   confirmToDelete(`确定删除该${t(item.entityType)}？`, '', () => {
-    store.dispatch('Debug/removePostCondition', item.id)
+    store.dispatch('Debug/removePostCondition', item)
   })
 }
 function move(_e: any) {

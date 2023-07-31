@@ -100,8 +100,9 @@ export default defineComponent({
         scrollbar: {
           useShadows: false,
           automaticLayout: true,
+          alwaysConsumeMouseWheel: false,
           verticalScrollbarSize: 6,
-          horizontalScrollbarSize: 6
+          horizontalScrollbarSize: 6,
         }
       })
 

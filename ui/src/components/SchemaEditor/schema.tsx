@@ -46,7 +46,6 @@ export default defineComponent({
                     handleRefInfo(tree, result);
                     data.value = addExtraViewInfo(data.value);
                     tree.extraViewInfo.isExpand = true;
-
                 } else {
                     tree.extraViewInfo.isExpand = false;
                     delete tree.content;
@@ -91,14 +90,26 @@ export default defineComponent({
             // 插入纯文本
             document.execCommand("insertHTML", false, text);
         }
+        const keyNameKeyDown = (oldKey: any, keyIndex: any, parent: any, event: any) => {
+            // 获取用户输入的字符
+            const char = event.key;
+            console.log('832char', char);
+            // 允许输入字母、数字、下划线、短横线和  删除、上下左右箭头键
+            if (/^[\w-]$/.test(char) || ['Delete','Backspace','ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(char)) {
+                console.log('合法字符');
+            }else {
+                event.preventDefault();
+            }
+        }
         const updateKeyName = (oldKey: any, keyIndex: any, parent: any, event: any) => {
             const newKey = event.target.innerText;
             const keys = Object.keys(parent.properties);
-            // 判断组件名称必须是英文，复合 URL 规则
-            // 匹配由 数字、26个英文字母、下划线、 - 组成的字符串
-            // const reg = /^[a-zA-Z$][\w\W]*$/;
+            // const reg = /^\w+$/;
             // if(!reg.test(newKey)){
-            //     message.warning(`属性须以字母开头`);
+            //     message.warning(`属性名非法，请重新输入`);
+            //     event.target.innerText = oldKey;
+            //     event.preventDefault();
+            //     return;
             // }
             // 新旧 key 相等
             if (oldKey === newKey) {
@@ -172,46 +183,85 @@ export default defineComponent({
             console.log('change datatype  data.value', data.value);
         }
         const moveUp = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            // 互换两个元素的位置
-            [keys[keyIndex - 1], keys[keyIndex]] = [keys[keyIndex], keys[keyIndex - 1]];
-            const newObj: any = {};
-            keys.forEach((item) => {
-                newObj[item] = parent.properties[item];
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
+            if (isCompositeType(parent.type)) {
+                const combines = {
+                    allOf: parent?.allOf || [],
+                    oneOf: parent?.oneOf || [],
+                    anyOf: parent?.anyOf || [],
+                }
+                const items = combines[parent.type];
+                // 互换两个元素的位置
+                [items[keyIndex - 1], items[keyIndex]] = [items[keyIndex], items[keyIndex - 1]];
+                parent[parent.type] = [...items];
+                data.value = addExtraViewInfo(data.value);
+            } else {
+                const keys = Object.keys(parent.properties);
+                // 互换两个元素的位置
+                [keys[keyIndex - 1], keys[keyIndex]] = [keys[keyIndex], keys[keyIndex - 1]];
+                const newObj: any = {};
+                keys.forEach((item) => {
+                    newObj[item] = parent.properties[item];
+                })
+                parent.properties = {...newObj};
+                data.value = addExtraViewInfo(data.value);
+            }
         };
         const moveDown = (keyIndex: number, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            // 互换两个元素的位置
-            [keys[keyIndex + 1], keys[keyIndex]] = [keys[keyIndex], keys[keyIndex + 1]];
-            const newObj: any = {};
-            keys.forEach((item) => {
-                newObj[item] = parent.properties[item];
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
+            if (isCompositeType(parent.type)) {
+                const combines: any = {
+                    allOf: parent?.allOf || [],
+                    oneOf: parent?.oneOf || [],
+                    anyOf: parent?.anyOf || [],
+                }
+                const items = combines[parent.type];
+                // 互换两个元素的位置
+                [items[keyIndex + 1], items[keyIndex]] = [items[keyIndex], items[keyIndex + 1]];
+                parent[parent.type] = [...items];
+                data.value = addExtraViewInfo(data.value);
+
+            } else {
+                const keys = Object.keys(parent.properties);
+                // 互换两个元素的位置
+                [keys[keyIndex + 1], keys[keyIndex]] = [keys[keyIndex], keys[keyIndex + 1]];
+                const newObj: any = {};
+                keys.forEach((item) => {
+                    newObj[item] = parent.properties[item];
+                })
+                parent.properties = {...newObj};
+                data.value = addExtraViewInfo(data.value);
+            }
         };
         const copy = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            const key = keys[keyIndex];
-            const copyObj = cloneDeep(parent.properties[key]);
-            let keyCopyName = `${key}-copy`;
-            if (keys.includes(keyCopyName)) {
-                keyCopyName = `${keyCopyName}-copy`;
-            }
-            keys.splice(keyIndex + 1, 0, `${keyCopyName}`);
-            const newObj: any = {};
-            keys.forEach((item, index: number) => {
-                if (parent.properties[item]) {
-                    newObj[item] = parent.properties[item];
-                } else {
-                    newObj[item] = copyObj;
+            if (isCompositeType(parent.type)) {
+                const combines = {
+                    allOf: parent?.allOf || [],
+                    oneOf: parent?.oneOf || [],
+                    anyOf: parent?.anyOf || [],
                 }
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
+                const copyObj = cloneDeep(combines[parent.type][keyIndex]);
+                combines[parent.type].splice(keyIndex + 1, 0, copyObj);
+                parent[parent.type] = combines[parent.type];
+                data.value = addExtraViewInfo(data.value);
+            } else {
+                const keys = Object.keys(parent.properties);
+                const key = keys[keyIndex];
+                const copyObj = cloneDeep(parent.properties[key]);
+                let keyCopyName = `${key}-copy`;
+                if (keys.includes(keyCopyName)) {
+                    keyCopyName = `${keyCopyName}-copy`;
+                }
+                keys.splice(keyIndex + 1, 0, `${keyCopyName}`);
+                const newObj: any = {};
+                keys.forEach((item, index: number) => {
+                    if (parent.properties[item]) {
+                        newObj[item] = parent.properties[item];
+                    } else {
+                        newObj[item] = copyObj;
+                    }
+                })
+                parent.properties = {...newObj};
+                data.value = addExtraViewInfo(data.value);
+            }
         }
         const setRequire = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
@@ -223,7 +273,6 @@ export default defineComponent({
                 const index = parent.required.indexOf(key);
                 parent.required.splice(index, 1);
             }
-
         };
 
         const addDesc = (tree: any, desc: string) => {
@@ -232,14 +281,25 @@ export default defineComponent({
         };
 
         const del = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            keys.splice(keyIndex, 1);
-            const newObj: any = {};
-            keys.forEach((item) => {
-                newObj[item] = parent.properties[item];
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
+            if (isCompositeType(parent.type)) {
+                const combines = {
+                    allOf: parent?.allOf || [],
+                    oneOf: parent?.oneOf || [],
+                    anyOf: parent?.anyOf || [],
+                }
+                combines[parent.type].splice(keyIndex, 1);
+                parent[parent.type] = combines[parent.type];
+                data.value = addExtraViewInfo(data.value);
+            } else {
+                const keys = Object.keys(parent.properties);
+                keys.splice(keyIndex, 1);
+                const newObj: any = {};
+                keys.forEach((item) => {
+                    newObj[item] = parent.properties[item];
+                })
+                parent.properties = {...newObj};
+                data.value = addExtraViewInfo(data.value);
+            }
         };
 
         // 监听value变化，更新data，他是一个字符串
@@ -281,12 +341,13 @@ export default defineComponent({
             </div>
         }
         const renderExtraAction = (options: any) => {
-            const {isRoot, keyIndex, parent, tree, ancestor, isRefChildNode} = options;
+            const {isRoot, keyIndex, parent, tree, ancestor, isRefChildNode,isCompositeChildNode} = options;
             const items = parent?.type === 'array' ? ancestor : parent;
             return <div class={'extraAction'}>
                 <ExtraActions
                     isRoot={isRoot}
                     isRefChildNode={isRefChildNode || false}
+                    isCompositeChildNode={isCompositeChildNode || false}
                     value={tree}
                     onAddDesc={addDesc.bind(this, tree)}
                     onDel={del.bind(this, keyIndex, items)}
@@ -335,6 +396,7 @@ export default defineComponent({
                 <span class={'baseInfoKey'}
                       contenteditable={!isRefChildNode}
                       onPaste={pasteKeyName}
+                      onKeydown={keyNameKeyDown.bind(this, keyName,keyIndex, items)}
                       onBlur={updateKeyName.bind(this, keyName, keyIndex, items)}>
                     {keyName}
                 </span>

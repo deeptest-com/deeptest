@@ -42,12 +42,14 @@ export function isNormalType(type: string): boolean {
  * 复合类型
  * */
 export function isCompositeType(type: string): boolean {
-    console.log(832, 'isCompositeType', type)
     return ['oneOf', 'anyOf', 'allOf'].includes(type);
 }
 
+/**
+ * 获取该节点的展开状态
+ * */
 function getExpandedValue(val: any, defaultVal: boolean) {
-    return (typeof val?.extraViewInfo === 'object' && 'isExpand' in val?.extraViewInfo) ? val.extraViewInfo.isExpand : defaultVal
+    return (typeof val?.extraViewInfo === 'object' && 'isExpand' in val?.extraViewInfo) ? val.extraViewInfo.isExpand : defaultVal ;
 }
 
 /**
@@ -105,13 +107,13 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         if (isNormalType(obj.type) && !isRef(obj)) {
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},
-                "isExpand": getExpandedValue(val, true),
                 "depth": depth,
                 "type": obj.type,
                 "parent": parent,
                 isRefChildNode,
                 isCompositeChildNode,
-                ...options
+                ...options,
+                "isExpand": getExpandedValue(val, true),
             }
             return;
         }
@@ -119,13 +121,13 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         if (isObject(obj.type) && !isRef(obj)) {
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},
-                "isExpand": getExpandedValue(val, true),
                 "depth": depth,
                 "type": obj.type,
                 "parent": parent,
                 isRefChildNode,
                 isCompositeChildNode,
-                ...options
+                ...options,
+                "isExpand": getExpandedValue(val, true),
             }
             Object.entries(obj.properties || {}).forEach(([keyName, value]: any, keyIndex: number) => {
                 // 处理引用类型，添加 type 属性
@@ -157,13 +159,13 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         if (isCompositeType(obj.type) && !isRef(obj)) {
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},
-                "isExpand": getExpandedValue(val, true),
                 "depth": depth,
                 "type": obj.type,
                 "parent": parent,
                 isRefChildNode,
                 isCompositeChildNode,
-                ...options
+                ...options,
+                "isExpand": getExpandedValue(val, true),
             }
             const combines = {
                 oneOf: obj.oneOf,
@@ -190,14 +192,14 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
             obj.name = obj.ref?.split('/')?.pop();
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},
-                "isExpand": !!(obj?.content && obj.content?.type),
                 "depth": depth,
                 "type": obj.type,
                 "parent": parent,
                 isRef: true,
                 isRefChildNode,
                 isCompositeChildNode,
-                ...options
+                ...options,
+                "isExpand": !!(obj?.content && obj.content?.type),
             }
             if (obj?.content && obj.content?.type) {
                 traverse(obj.content, depth + 1, obj, {

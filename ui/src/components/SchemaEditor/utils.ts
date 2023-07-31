@@ -49,7 +49,7 @@ export function isCompositeType(type: string): boolean {
  * 获取该节点的展开状态
  * */
 function getExpandedValue(val: any, defaultVal: boolean) {
-    return (typeof val?.extraViewInfo === 'object' && 'isExpand' in val?.extraViewInfo) ? val.extraViewInfo.isExpand : defaultVal ;
+    return (typeof val?.extraViewInfo === 'object' && 'isExpand' in val?.extraViewInfo) ? val.extraViewInfo.isExpand : defaultVal;
 }
 
 /**
@@ -376,12 +376,12 @@ export const handleRefInfo = (tree: any, result: any) => {
             tree.content.type = 'array';
         } else if (result?.allOf) {
             tree.content.type = 'array';
-        } else if (tree.content?.anyof) {
-            tree.content.type = 'anyof';
-        } else if (tree.content?.oneof) {
-            tree.content.type = 'oneof';
-        } else if (tree.content?.allof) {
-            tree.content.type = 'allof';
+        } else if (tree.content?.anyOf) {
+            tree.content.type = 'anyOf';
+        } else if (tree.content?.oneOf) {
+            tree.content.type = 'oneOf';
+        } else if (tree.content?.allOf) {
+            tree.content.type = 'allOf';
         } else {
             tree.content.type = 'string';
         }

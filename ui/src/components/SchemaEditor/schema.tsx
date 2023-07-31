@@ -432,7 +432,6 @@ export default defineComponent({
 
         const renderDirectoryText = (options: any) => {
             const {depth, tree, isRefChildNode} = options;
-            console.log(83233333, options, tree.type, isCompositeType(tree.type));
             return <div class={'directoryText'}
                         style={{'paddingLeft': `${depth * treeLevelWidth}px`}}>
                 {renderHorizontalLine(depth)}

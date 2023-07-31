@@ -121,6 +121,16 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
                 ...options
             }
             Object.entries(obj.properties || {}).forEach(([keyName, value]: any, keyIndex: number) => {
+                // 处理引用类型，添加 type 属性
+                if(!value?.type){
+                    if(value?.oneOf) {
+                        value.type = 'oneOf';
+                    }else if(value?.anyOf) {
+                        value.type = 'anyOf';
+                    }else if(value?.allOf) {
+                        value.type = 'allOf';
+                    }
+                }
                 traverse(value, depth + 1, obj, {
                         keyName,
                         keyIndex,
@@ -144,6 +154,16 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         }
         // 处理数组类型
         if (isCompositeType(obj.type) && !isRef(obj)) {
+            obj.extraViewInfo = {
+                ...obj.extraViewInfo || {},
+                "isExpand": getExpandedValue(val, true),
+                "depth": depth,
+                "type": obj.type,
+                "parent": parent,
+                isRefChildNode,
+                isCompositeChildNode,
+                ...options
+            }
             const combines = {
                 oneOf: obj.oneOf,
                 anyOf: obj.anyOf,
@@ -166,18 +186,18 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         if (isRef(obj)) {
             // 需要兼容两种写法，三方导入的$ref
             obj.ref = obj.ref || obj.$ref;
-            obj.name = obj.ref?.split('/')?.pop(),
-                obj.extraViewInfo = {
-                    ...obj.extraViewInfo || {},
-                    "isExpand": !!(obj?.content && obj.content?.type),
-                    "depth": depth,
-                    "type": obj.type,
-                    "parent": parent,
-                    isRef: true,
-                    isRefChildNode,
-                    isCompositeChildNode,
-                    ...options
-                }
+            obj.name = obj.ref?.split('/')?.pop();
+            obj.extraViewInfo = {
+                ...obj.extraViewInfo || {},
+                "isExpand": !!(obj?.content && obj.content?.type),
+                "depth": depth,
+                "type": obj.type,
+                "parent": parent,
+                isRef: true,
+                isRefChildNode,
+                isCompositeChildNode,
+                ...options
+            }
             if (obj?.content && obj.content?.type) {
                 traverse(obj.content, depth + 1, obj, {
                     ...options,

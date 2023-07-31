@@ -882,6 +882,18 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    },
+                    {
+                        "enum": [
+                            "endpoint",
+                            "scenario",
+                            "plan"
+                        ],
+                        "type": "string",
+                        "description": "类型",
+                        "name": "type",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -7127,12 +7139,21 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "name": "categoryId",
+                        "name": "adminId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "adminIds",
                         "in": "query"
                     },
                     {
                         "type": "integer",
-                        "name": "directorId",
+                        "name": "categoryId",
                         "in": "query"
                     },
                     {
@@ -7191,6 +7212,21 @@ const docTemplate = `{
                             "Executed"
                         ],
                         "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "enum": [
+                                "draft",
+                                "disabled",
+                                "to_execute",
+                                "executed"
+                            ],
+                            "type": "string"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "statusArr",
                         "in": "query"
                     }
                 ],
@@ -7614,6 +7650,15 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "name": "createUserId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "array",
+                        "items": {
+                            "type": "integer"
+                        },
+                        "collectionFormat": "csv",
+                        "name": "createUserIds",
                         "in": "query"
                     },
                     {
@@ -15796,7 +15841,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "createUser": {
-                    "type": "string"
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 },
                 "field": {
                     "type": "string"
@@ -15820,7 +15868,10 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "integer"
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 },
                 "tagNames": {
                     "type": "array",

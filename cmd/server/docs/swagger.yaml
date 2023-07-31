@@ -4028,7 +4028,9 @@ definitions:
       categoryId:
         type: integer
       createUser:
-        type: string
+        items:
+          type: string
+        type: array
       field:
         type: string
       order:
@@ -4044,7 +4046,9 @@ definitions:
       serveVersion:
         type: string
       status:
-        type: integer
+        items:
+          type: integer
+        type: array
       tagNames:
         items:
           type: string
@@ -5204,6 +5208,15 @@ paths:
         name: id
         required: true
         type: integer
+      - description: 类型
+        enum:
+        - endpoint
+        - scenario
+        - plan
+        in: query
+        name: type
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -9223,10 +9236,16 @@ paths:
         required: true
         type: integer
       - in: query
-        name: categoryId
+        name: adminId
         type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: integer
+        name: adminIds
+        type: array
       - in: query
-        name: directorId
+        name: categoryId
         type: integer
       - in: query
         name: enabled
@@ -9267,6 +9286,17 @@ paths:
         - Disabled
         - ToExecute
         - Executed
+      - collectionFormat: csv
+        in: query
+        items:
+          enum:
+          - draft
+          - disabled
+          - to_execute
+          - executed
+          type: string
+        name: statusArr
+        type: array
       produces:
       - application/json
       responses:
@@ -9734,6 +9764,12 @@ paths:
       - in: query
         name: createUserId
         type: integer
+      - collectionFormat: csv
+        in: query
+        items:
+          type: integer
+        name: createUserIds
+        type: array
       - in: query
         name: executeEndTime
         type: integer

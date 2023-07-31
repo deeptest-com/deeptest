@@ -65,19 +65,28 @@ func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) 
 }
 
 func (s *EndpointService) DeleteById(id uint) (err error) {
-	var count int64
-	count, err = s.EndpointRepo.GetUsedCountByEndpointId(id)
-	if err != nil {
-		return err
-	}
-
-	if count > 0 {
-		err = fmt.Errorf("this interface has already been used by scenarios, not allowed to delete")
-		return err
-	}
+	//var count int64
+	//count, err = s.EndpointRepo.GetUsedCountByEndpointId(id)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//if count > 0 {
+	//	err = fmt.Errorf("this interface has already been used by scenarios, not allowed to delete")
+	//	return err
+	//}
 
 	err = s.EndpointRepo.DeleteById(id)
 	err = s.EndpointInterfaceRepo.DeleteByEndpoint(id)
+
+	return
+}
+
+func (s *EndpointService) DeleteByCategories(categoryIds []uint) (err error) {
+	endpointIds, err := s.EndpointRepo.ListEndpointByCategories(categoryIds)
+
+	err = s.EndpointRepo.DeleteByIds(endpointIds)
+	err = s.EndpointInterfaceRepo.DeleteByEndpoints(endpointIds)
 
 	return
 }

@@ -13,15 +13,14 @@
         style="width: 200px"
         :options="options"
         :filter-option="filterOption"
-        @focus="handleFocus"
         @blur="handleBlur"
         @change="handleChange"
         v-on-click-outside="canColse"
         @dropdownVisibleChange="dropdownVisibleChange"
         @inputKeyDown="enter"
         @search="search"
-     ></a-select>
-    </div>
+    ></a-select>
+  </div>
 
 </template>
 
@@ -29,57 +28,36 @@
 <script setup lang="ts">
 
 import {useStore} from "vuex";
-import { ref,defineProps,defineEmits,computed, watch } from 'vue';
-import { PlusCircleOutlined } from '@ant-design/icons-vue';
+import {ref, defineProps, defineEmits, computed, watch} from 'vue';
+import {PlusCircleOutlined} from '@ant-design/icons-vue';
 import { vOnClickOutside } from '@vueuse/components';
 const store = useStore<{ Endpoint }>();
 
-const props = defineProps({
-    size:{
-        type:String,
-        default:'small'
-    },
-    width:{
-        type:String,
-        default:'120px'
-    },
-    options:{
-        type: Array,
-        default: () => {
-          return [];
-        },
-    },
+const props = defineProps(['size', 'width', 'options', 'values']);
 
-    values:{
-        type: Array,
-        required: true,
-    }
+const emits = defineEmits(['updateTags'])
 
-})
 
-const emits = defineEmits('updateTags')
+const values = ref(props?.values || [])
 
-const values = ref(props?.values||[])
+const options = computed(() =>
+    props.options.filter(
+        arrItem => values.value.indexOf(arrItem.value) == -1
+    )
 
-const options = computed(()=>
-   props.options.filter(
-        arrItem =>  values.value.indexOf(arrItem.value) == -1
-        )
 )
-
 const showSelect = ref(false)
 const tag = ref()
 const searchValue = ref()
 
 const updateTags = (tags) => {
-     emits('updateTags',tags)
+  emits('updateTags', tags)
 }
 
 function canColse() {
-  if(isOpen.value){
+  if (isOpen.value) {
     return;
   }
-
   showSelect.value = false;
   tag.value = undefined
 }
@@ -97,48 +75,45 @@ const filterOption = (input: string, option: any) => {
 
 
 const handleChange = async (value: string) => {
-    value = value.trim()
-    if (!value) {
-        //debugger;
-        return
-    }
 
-   values.value = Array.from(new Set([...values.value,value]))
-   await updateTags(values.value)
-   tag.value = undefined
+  value = value.trim()
+  if (!value) {
+    return
+  }
+
+
+  values.value = Array.from(new Set([...values.value, value]))
+  await updateTags(values.value)
+  tag.value = undefined
 };
 
 const handleBlur = () => {
-  console.log('blur');
-  showSelect.value=false
+  showSelect.value = false
   tag.value = undefined
 };
-const handleFocus = () => {
-  console.log('focus');
-};
 
-const search = (va)=>{
-    searchValue.value = va
+
+const search = (va) => {
+  searchValue.value = va
 }
 
 const enter = (value) => {
-    if (value.code=="Enter" ){
-        console.log('enter',searchValue.value);
-        handleChange(searchValue.value)
-    }
+  if (value.code == "Enter") {
+    handleChange(searchValue.value)
+  }
 }
 
 
-const close = (index)=>{
-    console.log("colse",index)
-    values.value.splice(index, 1)
-    updateTags(values.value)
+const close = (index) => {
+  values.value.splice(index, 1)
+  updateTags(values.value)
 }
 
-watch(()=>{return props.values},(newVal)=>{
-    values.value = [...new Set(newVal)]
+watch(() => {
+  return props.values
+}, (newVal) => {
+  values.value = [...new Set(newVal)]
 })
-
 
 
 </script>

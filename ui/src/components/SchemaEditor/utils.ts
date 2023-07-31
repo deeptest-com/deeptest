@@ -51,19 +51,16 @@ function getExpandedValue(val: any, defaultVal: boolean) {
 }
 
 /**
- * 根据传入的 schema 结构信息，添加需要额外的渲染属性
+ * 处理组合类型的节点的类型
+ * Notice: 该函数会修改传入的参数
  * */
-export function addExtraViewInfo(val: Object | any | undefined | null): any {
-    console.log(8321, 'addExtraViewInfo', val)
-    if (!val) {
-        return null;
-    }
+function handleCompositeChildNode(val) {
     let type = val.type;
     if (!type) {
         if (val?.oneOf) {
-            type = 'oneof';
+            type = 'oneOf';
         } else if (val?.anyOf) {
-            type = 'anyof';
+            type = 'anyOf';
         } else if (val?.allOf) {
             type = 'allOf';
         } else {
@@ -71,11 +68,21 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         }
     }
     val.type = type;
+}
 
+/**
+ * 根据传入的 schema 结构信息，添加需要额外的渲染属性
+ * */
+export function addExtraViewInfo(val: Object | any | undefined | null): any {
+    console.log(8321, 'addExtraViewInfo', val);
+    if (!val) {
+        return null;
+    }
+    handleCompositeChildNode(val);
     val.extraViewInfo = {
         "isExpand": getExpandedValue(val, true),
         "depth": 1,
-        "type": type,
+        "type": val.type,
         "parent": null,
         "keyName": "root",
         "keyIndex": 0,
@@ -122,15 +129,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
             }
             Object.entries(obj.properties || {}).forEach(([keyName, value]: any, keyIndex: number) => {
                 // 处理引用类型，添加 type 属性
-                if(!value?.type){
-                    if(value?.oneOf) {
-                        value.type = 'oneOf';
-                    }else if(value?.anyOf) {
-                        value.type = 'anyOf';
-                    }else if(value?.allOf) {
-                        value.type = 'allOf';
-                    }
-                }
+                handleCompositeChildNode(value);
                 traverse(value, depth + 1, obj, {
                         keyName,
                         keyIndex,
@@ -149,6 +148,8 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
             const {node, types} = findLastNotArrayNode(obj);
             if (node) {
                 node.types = types;
+                // 处理组合类型，添加 type 属性
+                handleCompositeChildNode(node);
                 traverse(node, depth, obj, options, isRefChildNode, isCompositeChildNode);
             }
         }

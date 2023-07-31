@@ -434,6 +434,47 @@ definitions:
       useId:
         type: integer
     type: object
+  agentExec.ProcessorMsg:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/agentExec.Processor'
+        type: array
+      comments:
+        type: string
+      endpointInterfaceId:
+        type: integer
+      entityCategory:
+        $ref: '#/definitions/consts.ProcessorCategory'
+      entityId:
+        type: integer
+      entityRaw:
+        items:
+          type: integer
+        type: array
+      entityType:
+        $ref: '#/definitions/consts.ProcessorType'
+      id:
+        type: integer
+      isDir:
+        type: boolean
+      name:
+        type: string
+      ordr:
+        type: integer
+      parentId:
+        type: integer
+      projectId:
+        type: integer
+      result:
+        $ref: '#/definitions/agentDomain.ScenarioExecResult'
+      scenarioId:
+        type: integer
+      slots:
+        $ref: '#/definitions/iris.Map'
+      useId:
+        type: integer
+    type: object
   agentExec.ScenarioExecObj:
     properties:
       baseUrl:
@@ -444,6 +485,23 @@ definitions:
         type: string
       rootProcessor:
         $ref: '#/definitions/agentExec.Processor'
+      scenarioId:
+        type: integer
+      serverUrl:
+        type: string
+      token:
+        type: string
+    type: object
+  agentExec.ScenarioExecObjMsg:
+    properties:
+      baseUrl:
+        type: string
+      execScene:
+        $ref: '#/definitions/domain.ExecScene'
+      name:
+        type: string
+      rootProcessor:
+        $ref: '#/definitions/agentExec.ProcessorMsg'
       scenarioId:
         type: integer
       serverUrl:
@@ -3398,6 +3456,84 @@ definitions:
       version:
         type: number
     type: object
+  model.ScenarioReport:
+    properties:
+      createUserId:
+        type: integer
+      createUserName:
+        type: string
+      createdAt:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      duration:
+        description: sec
+        type: integer
+      endTime:
+        type: string
+      execEnv:
+        type: string
+      execEnvId:
+        type: integer
+      failAssertionNum:
+        type: integer
+      failInterfaceNum:
+        type: integer
+      failRequestNum:
+        type: integer
+      finishProcessorNum:
+        type: integer
+      id:
+        type: integer
+      interfaceStatusMap:
+        additionalProperties:
+          additionalProperties:
+            type: integer
+          type: object
+        type: object
+      logs:
+        items:
+          $ref: '#/definitions/model.ExecLogProcessor'
+        type: array
+      name:
+        type: string
+      passAssertionNum:
+        type: integer
+      passInterfaceNum:
+        type: integer
+      passRequestNum:
+        type: integer
+      payload:
+        type: string
+      planReportId:
+        type: integer
+      priority:
+        type: string
+      progressStatus:
+        $ref: '#/definitions/consts.ProgressStatus'
+      projectId:
+        type: integer
+      resultStatus:
+        $ref: '#/definitions/consts.ResultStatus'
+      scenarioId:
+        type: integer
+      serialNumber:
+        type: string
+      startTime:
+        type: string
+      totalAssertionNum:
+        type: integer
+      totalInterfaceNum:
+        type: integer
+      totalProcessorNum:
+        type: integer
+      totalRequestNum:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
   model.ScenarioReportDetail:
     properties:
       createUserId:
@@ -3537,6 +3673,22 @@ definitions:
     - Before
     - Inner
     - After
+  serverConsts.NodeCreateMode:
+    enum:
+    - brother
+    - child
+    type: string
+    x-enum-varnames:
+    - Brother
+    - Child
+  serverConsts.NodeCreateType:
+    enum:
+    - dir
+    - node
+    type: string
+    x-enum-varnames:
+    - Dir
+    - Node
   serverConsts.ProjectType:
     enum:
     - full
@@ -4561,6 +4713,96 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  serverDomain.ScenarioAddInterfacesFromTreeReq:
+    properties:
+      createBy:
+        type: integer
+      selectedNodes:
+        items:
+          $ref: '#/definitions/serverDomain.DiagnoseInterface'
+        type: array
+      targetId:
+        type: integer
+    type: object
+  serverDomain.ScenarioAddInterfacesReq:
+    properties:
+      createBy:
+        type: integer
+      interfaceIds:
+        items:
+          type: integer
+        type: array
+      targetId:
+        type: integer
+    type: object
+  serverDomain.ScenarioAddScenarioReq:
+    properties:
+      createBy:
+        type: integer
+      mode:
+        type: string
+      name:
+        type: string
+      processorCategory:
+        $ref: '#/definitions/consts.ProcessorCategory'
+      processorType:
+        $ref: '#/definitions/consts.ProcessorType'
+      projectId:
+        type: integer
+      targetProcessorCategory:
+        $ref: '#/definitions/consts.ProcessorCategory'
+      targetProcessorId:
+        type: integer
+      targetProcessorType:
+        $ref: '#/definitions/consts.ProcessorType'
+    type: object
+  serverDomain.ScenarioNodeMoveReq:
+    properties:
+      dragKey:
+        type: integer
+      dropKey:
+        type: integer
+      dropPos:
+        $ref: '#/definitions/serverConsts.DropPos'
+    type: object
+  serverDomain.ScenarioNodeReq:
+    properties:
+      id:
+        type: integer
+      mode:
+        $ref: '#/definitions/serverConsts.NodeCreateMode'
+      name:
+        type: string
+      projectId:
+        type: integer
+      target:
+        type: integer
+      type:
+        $ref: '#/definitions/serverConsts.NodeCreateType'
+    type: object
+  serverDomain.ScenarioPlanReqPaginate:
+    properties:
+      adminId:
+        type: integer
+      categoryId:
+        type: integer
+      field:
+        type: string
+      keywords:
+        type: string
+      order:
+        type: string
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      projectId:
+        type: integer
+      ref:
+        type: boolean
+      status:
+        $ref: '#/definitions/consts.TestStatus'
     type: object
   serverDomain.ServeSchemaReq:
     properties:
@@ -10789,6 +11031,880 @@ paths:
       summary: 无分页的角色列表
       tags:
       - 角色模块
+  /api/v1/scenarios:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - in: query
+        name: categoryId
+        type: integer
+      - in: query
+        name: enabled
+        type: string
+      - in: query
+        name: field
+        type: string
+      - in: query
+        name: keywords
+        type: string
+      - in: query
+        name: order
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: priority
+        type: string
+      - in: query
+        name: status
+        type: string
+      - in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.Scenario'
+                        type: array
+                    type: object
+              type: object
+      summary: 场景列表
+      tags:
+      - 场景模块
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 新建场景的请求参数
+        in: body
+        name: Scenario
+        required: true
+        schema:
+          $ref: '#/definitions/model.Scenario'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Scenario'
+              type: object
+      summary: 新建场景
+      tags:
+      - 场景模块
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 更新场景的请求参数
+        in: body
+        name: Scenario
+        required: true
+        schema:
+          $ref: '#/definitions/model.Scenario'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新场景
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除场景
+      tags:
+      - 场景模块
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Scenario'
+              type: object
+      summary: 场景详情
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}/addPlans:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 关联计划
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}/plans:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 查询关联计划列表的参数
+        in: body
+        name: ScenarioPlanReqPaginate
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioPlanReqPaginate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.Plan'
+                        type: array
+                    type: object
+              type: object
+      summary: 关联计划列表
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}/removePlans:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 计划ID
+        in: body
+        name: '""'
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 取消计划关联
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}/updatePriority:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 场景优先级
+        in: query
+        name: priority
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新优先级
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}/updateStatus:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 场景状态
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新计划状态
+      tags:
+      - 场景模块
+  /api/v1/scenarios/exec/getScenarioNormalData:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 环境ID
+        in: query
+        name: environmentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/agentDomain.Report'
+              type: object
+      summary: 获取场景执行初始化信息
+      tags:
+      - 场景模块/场景执行
+  /api/v1/scenarios/exec/loadExecResult:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: query
+        name: scenarioId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Report'
+              type: object
+      summary: 加载执行结果
+      tags:
+      - 场景模块/场景执行
+  /api/v1/scenarios/exec/loadExecScenario:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 环境ID
+        in: query
+        name: environmentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/agentExec.ScenarioExecObjMsg'
+              type: object
+      summary: 加载执行场景
+      tags:
+      - 场景模块/场景执行
+  /api/v1/scenarios/exec/submitResult/{id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 场景执行结果
+        in: body
+        name: ScenarioExecResult
+        required: true
+        schema:
+          $ref: '#/definitions/agentDomain.ScenarioExecResult'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ScenarioReport'
+              type: object
+      summary: 提交测试结果
+      tags:
+      - 场景模块/场景执行
+  /api/v1/scenarios/interface/resetDebugData:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: scenarioProcessorId
+        in: query
+        name: scenarioProcessorId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 重置场景调试接口
+      tags:
+      - 场景模块/场景调试
+  /api/v1/scenarios/interface/saveDebugData:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存场景调试接口的请求参数
+        in: body
+        name: DebugData
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 保存场景调试接口
+      tags:
+      - 场景模块/场景调试
+  /api/v1/scenarios/listByProject:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Scenario'
+                  type: array
+              type: object
+      summary: 当前项目下的所有场景
+      tags:
+      - 场景模块
+  /api/v1/scenarios/load:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: query
+        name: scenarioId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/agentExec.Processor'
+              type: object
+      summary: 场景树状数据
+      tags:
+      - 场景模块
+  /api/v1/scenarios/nodes/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除节点
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/{id}/updateName:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 更新节点名称的请求参数
+        in: body
+        name: ScenarioNodeReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioNodeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新节点名称
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/addInterfacesFromDefine:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 添加定义接口的请求参数
+        in: body
+        name: ScenarioAddInterfacesReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioAddInterfacesReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 添加定义接口
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/addInterfacesFromTest:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 添加调试接口的请求参数
+        in: body
+        name: ScenarioAddInterfacesFromTreeReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioAddInterfacesFromTreeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 添加调试接口
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/addProcessor:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 新建处理器的请求参数
+        in: body
+        name: ScenarioAddScenarioReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioAddScenarioReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 新建处理器
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/move:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 移动节点的请求参数
+        in: body
+        name: ScenarioNodeMoveReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioNodeMoveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 移动节点
+      tags:
+      - 场景模块/编排节点
   /api/v1/upload:
     post:
       parameters:

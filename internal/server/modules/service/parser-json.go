@@ -68,6 +68,10 @@ func (s *ParserJsonService) getJsonSelectedElem(docJson, selectContent string) (
 		return
 	}
 
+	if ret == nil {
+		return
+	}
+
 	if ret.Type == jsonquery.TextNode &&
 		ret.Parent.Data != "" { // except the array parent node which data is empty
 

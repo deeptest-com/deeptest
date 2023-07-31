@@ -101,7 +101,7 @@ const onParamChange = (idx) => {
 
 const add = () => {
   console.log('add')
-  debugData.value.params.push({} as Header)
+  debugData.value.headers.push({} as Header)
 }
 const removeAll = () => {
   console.log('removeAll', debugData.value.headers)
@@ -115,7 +115,10 @@ const disable = (idx) => {
 const remove = (idx) => {
   console.log('remove')
   debugData.value.headers.splice(idx, 1)
-  add()
+  const len = debugData.value.headers.length
+  if (len == 0 || !!debugData.value.headers[len-1].name) {
+    add()
+  }
 }
 const insert = (idx) => {
   console.log('insert')

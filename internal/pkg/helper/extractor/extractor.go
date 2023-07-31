@@ -38,6 +38,8 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 		} else if extractor.Type == consts.Boundary && (extractor.BoundaryStart != "" || extractor.BoundaryEnd != "") {
 			result = queryUtils.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
 				extractor.BoundaryIndex, extractor.BoundaryIncluded)
+		} else if extractor.Type == consts.Regx {
+			result = queryUtils.RegxQuery(resp.Content, extractor.Expression)
 		}
 	}
 

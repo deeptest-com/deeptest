@@ -19,6 +19,11 @@
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>保存</template>
+            <SaveOutlined @click="save" class="dp-icon-btn dp-trans-80"/>
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全屏</template>
             <FullscreenOutlined @click.stop="openFullscreen()"  class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
@@ -75,6 +80,11 @@ watch(debugData, (newVal) => {
 const format = (item) => {
   console.log('format', item)
   bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
+}
+
+const save = () => {
+  console.log('save')
+  bus.emit(settings.eventConditionSave, {});
 }
 
 const openFullscreen = () => {

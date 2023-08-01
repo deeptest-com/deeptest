@@ -1,6 +1,5 @@
 <template>
   <div class="pre-script-main">
-    <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
       <div class="content">
         <div class="codes">
           <MonacoEditor theme="vs" language="typescript" class="editor"
@@ -15,7 +14,7 @@
 
           <div class="title">代码片段：</div>
           <div>
-            <!--          <div @click="addSnippet('environment_get')" class="dp-link-primary">Get an environment variable</div>
+            <!--      <div @click="addSnippet('environment_get')" class="dp-link-primary">Get an environment variable</div>
                       <div @click="addSnippet('environment_set')" class="dp-link-primary">Set an environment variable</div>
                       <div @click="addSnippet('environment_clear')" class="dp-link-primary">Clear an environment variable</div>-->
 
@@ -27,25 +26,22 @@
           </div>
         </div>
       </div>
-
-      <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
-        <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
-      </a-form-item>
-    </a-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, reactive, ref, watch} from "vue";
-import {message, Form} from 'ant-design-vue';
+import {computed, defineProps, inject, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
+import {message, Form, notification} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
 import {UsedBy} from "@/utils/enum";
 
 import {StateType as Debug} from "@/views/component/debug/store";
-import {MonacoOptions} from "@/utils/const";
+import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
@@ -103,14 +99,34 @@ let { resetFields, validate, validateInfos } = useForm(model, rules);
 
 const save = () => {
   console.log('save', model.value)
-  validate().then(() => {
+  validate().then(async () => {
     model.value.debugInterfaceId = debugInfo.value.debugInterfaceId
     model.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
     model.value.projectId = debugData.value.projectId
 
-    store.dispatch('Debug/saveScript', model.value)
+    const result = await store.dispatch('Debug/saveScript', model.value)
+    if (result) {
+      notification.success({
+        key: NotificationKeyCommon,
+        message: `保存成功`,
+      })
+    } else {
+      notification.error({
+        key: NotificationKeyCommon,
+        message: `保存失败`,
+      });
+    }
   })
 }
+
+onMounted(() => {
+  console.log('onMounted')
+  bus.on(settings.eventConditionSave, save);
+})
+onBeforeUnmount( () => {
+  console.log('onBeforeUnmount')
+  bus.off(settings.eventConditionSave, save);
+})
 
 const labelCol = { span: 0 }
 const wrapperCol = { span: 24 }
@@ -128,7 +144,7 @@ const wrapperCol = { span: 24 }
   }
   .content {
     display: flex;
-    height: calc(100% - 28px);
+    height: 100%;
     &>div {
       height: 100%;
     }

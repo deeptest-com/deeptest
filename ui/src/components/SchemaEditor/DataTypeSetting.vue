@@ -129,6 +129,14 @@
                     placeholder="Select an option below to combine your schemas"
                     style="width: 100%"/>
               </a-form-item>
+
+              <div style="margin-top: 8px;margin-left: -14px;">
+                <ul>
+                  <li><a-typography-text type="secondary"><span class="form-item-info">all of：</span>根据所有子模式验证值</a-typography-text></li>
+                  <li><a-typography-text type="secondary"><span class="form-item-info">one of:</span> 根据其中一个子模式验证值</a-typography-text></li>
+                  <li><a-typography-text type="secondary"><span class="form-item-info">any of：</span>根据任意（一个或多个）子模式验证值</a-typography-text></li>
+                </ul>
+              </div>
             </a-form>
 
           </div>
@@ -152,7 +160,7 @@ import {useStore} from "vuex";
 import {StateType as ServeStateType} from "@/store/serve";
 import debounce from "lodash.debounce";
 
-const props = defineProps(['value', 'serveId', 'isRefChildNode','isRoot']);
+const props = defineProps(['value', 'serveId', 'isRefChildNode', 'isRoot']);
 const emit = defineEmits(['change']);
 const tabsList: any = ref([]);
 const visible: any = ref(false);
@@ -289,13 +297,12 @@ function getValueFromTabsList(tabsList: any) {
         name: selectedRef?.name || '',
         content: null
       };
-    }else if(activeTab.type === 'combine'){
+    } else if (activeTab.type === 'combine') {
       res = {
         type: activeTab.value,
       };
       res[activeTab.value] = [];
-    }
-    else {
+    } else {
       res = {
         type: activeTab.value
       };
@@ -418,11 +425,16 @@ watch(() => {
     }
   }
 }
+.form-item-info{
+  //width: 60px;
+  display: inline-block;
+  text-align: left;
+  font-weight: bold;
+}
 
 </style>
 
 <style lang="less">
-
 .data-type-setting-container {
   .ant-popover-inner {
     max-height: 480px;

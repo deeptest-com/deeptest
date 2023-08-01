@@ -147,7 +147,9 @@ function changeExamples(examples: any) {
 .form-item-response-item-con {
   position: relative;
   margin-bottom: 24px;
-
+  align-items: flex-start;
+  //padding-bottom: 50vh;
+  min-height: calc(100vh - 594px);
   &:before {
     content: "";
     position: absolute;

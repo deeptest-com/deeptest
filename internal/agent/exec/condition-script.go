@@ -19,6 +19,24 @@ type JsVm struct {
 	JsRuntime *goja.Runtime
 }
 
+func ExecScript(script string) (ret goja.Value) {
+	if MyVm.JsRuntime == nil {
+		InitJsRuntime()
+	}
+
+	if script == "" {
+		return
+	}
+
+	ret, err := MyVm.JsRuntime.RunString(script)
+	if err != nil {
+		logUtils.Info(err.Error())
+		return
+	}
+
+	return
+}
+
 func InitJsRuntime() {
 	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 
@@ -57,22 +75,4 @@ func InitJsRuntime() {
 	}
 
 	MyVm.JsRuntime.Set("dp", dp)
-}
-
-func ExecJs(script string) (ret goja.Value) {
-	if MyVm.JsRuntime == nil {
-		InitJsRuntime()
-	}
-
-	if script == "" {
-		return
-	}
-
-	ret, err := MyVm.JsRuntime.RunString(script)
-	if err != nil {
-		logUtils.Info(err.Error())
-		return
-	}
-
-	return
 }

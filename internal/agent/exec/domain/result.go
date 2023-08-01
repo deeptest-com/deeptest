@@ -2,6 +2,7 @@ package agentDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	uuid "github.com/satori/go.uuid"
 	"time"
 )
@@ -34,8 +35,9 @@ type ScenarioExecResult struct {
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode,omitempty"`
 	HttpRespStatusContent string              `json:"httpStatusContent,omitempty"`
 
-	ExtractorsResult  []Extractor  `json:"extractorsResult,omitempty"`
-	CheckpointsResult []Checkpoint `json:"checkpointsResult,omitempty"`
+	ExtractorsResult  []domain.ExtractorBase  `json:"extractorsResult,omitempty"`
+	CheckpointsResult []domain.CheckpointBase `json:"checkpointsResult,omitempty"`
+	ScriptsResult     []domain.ScriptBase     `json:"scriptsResult,omitempty"`
 
 	// for processor
 	ProcessorId      uint   `json:"processorId,omitempty"`

@@ -112,6 +112,26 @@ func (c *DebugInvokeCtrl) GetLastResp(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: reqAndResp})
 }
 
+// GetResult 获取调用结果细节
+func (c *DebugInvokeCtrl) GetResult(ctx iris.Context) {
+	invokeId, err := ctx.URLParamInt("invokeId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	debugData, resultReq, resultResp, err := c.DebugInvokeService.GetAsInterface(invokeId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{
+		"debugData": debugData,
+		"req":       resultReq,
+		"resp":      resultResp,
+	}})
+}
+
 // GetAsInterface 详情
 // @Tags	接口调试
 // @summary	调试记录详情

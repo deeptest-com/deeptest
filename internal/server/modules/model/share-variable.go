@@ -8,6 +8,7 @@ type ShareVariable struct {
 	Name  string `json:"name"`
 	Value string `gorm:"type:text" json:"value"`
 
+	InvokeId            uint `gorm:"default:0" json:"invokeId"`
 	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
 	CaseInterfaceId     uint `gorm:"default:0" json:"caseInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"`

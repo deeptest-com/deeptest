@@ -45,18 +45,17 @@ func (s *ScriptService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ScriptService) Check(script model.DebugConditionScript, caseInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse,
-	usedBy consts.UsedBy) (logScript model.ExecLogScript, err error) {
+func (s *ScriptService) Exec(invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (logScript model.ExecLogScript, err error) {
 
-	if script.Disabled {
-		script.ResultStatus = ""
-
-		s.ScriptRepo.UpdateResult(script, usedBy)
-
-		return
-	}
-
-	script.ResultStatus = consts.Pass
+	//if script.Disabled {
+	//	script.ResultStatus = ""
+	//
+	//	s.ScriptRepo.UpdateResult(script, usedBy)
+	//
+	//	return
+	//}
+	//
+	//script.ResultStatus = consts.Pass
 
 	return
 }

@@ -58,7 +58,7 @@ const requestData = computed<any>(() => store.state.Debug.requestData);
   .status {
     height: 100%;
     overflow: hidden;
-    width: 260px;
+    width: 360px;
   }
 }
 

@@ -71,6 +71,13 @@ export async function getLastInvocationResp(params: DebugInfo): Promise<any> {
         params
     });
 }
+export async function getInvocationResult(invokeId: number): Promise<any> {
+    const params = {invokeId}
+    return request({
+        url: `/${apiPathInvoke}/getResult`,
+        params
+    });
+}
 export async function getInvocationAsInterface(id: number): Promise<any> {
     return request({url: `/${apiPathInvoke}/${id}`});
 }

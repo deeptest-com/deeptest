@@ -2,8 +2,8 @@ package repo
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"github.com/jinzhu/copier"
@@ -31,11 +31,11 @@ func (r *CheckpointRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos [
 	return
 }
 
-func (r *CheckpointRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []agentDomain.Checkpoint, err error) {
+func (r *CheckpointRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.CheckpointBase, err error) {
 	pos, err := r.List(debugInterfaceId, endpointInterfaceId)
 
 	for _, po := range pos {
-		checkpoint := agentDomain.Checkpoint{}
+		checkpoint := domain.CheckpointBase{}
 		copier.CopyWithOption(&checkpoint, po, copier.Option{DeepCopy: true})
 
 		ret = append(ret, checkpoint)
@@ -130,20 +130,35 @@ func (r *CheckpointRepo) UpdateResult(checkpoint model.DebugConditionCheckpoint,
 	return
 }
 
-func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.DebugConditionCheckpoint, log *model.ExecLogProcessor) (
-	logCheckpoint model.ExecLogCheckpoint, err error) {
+func (r *CheckpointRepo) CreateLog(checkpoint model.DebugConditionCheckpoint, invokeId uint, usedBy consts.UsedBy) (
+	log model.ExecLogCheckpoint, err error) {
 
-	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})
+	copier.CopyWithOption(&log, checkpoint, copier.Option{DeepCopy: true})
 
-	logCheckpoint.ID = 0
-	logCheckpoint.LogId = log.ID
-	logCheckpoint.CreatedAt = nil
-	logCheckpoint.UpdatedAt = nil
+	log.ID = 0
+	log.InvokeId = invokeId
+	log.CreatedAt = nil
+	log.UpdatedAt = nil
 
-	err = r.DB.Save(&logCheckpoint).Error
+	err = r.DB.Save(&log).Error
 
 	return
 }
+
+//func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.DebugConditionCheckpoint, log *model.ExecLogProcessor) (
+//	logCheckpoint model.ExecLogCheckpoint, err error) {
+//
+//	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})
+//
+//	logCheckpoint.ID = 0
+//	logCheckpoint.InvokeId = log.ID
+//	logCheckpoint.CreatedAt = nil
+//	logCheckpoint.UpdatedAt = nil
+//
+//	err = r.DB.Save(&logCheckpoint).Error
+//
+//	return
+//}
 
 func (r *CheckpointRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInterfaceId, debugInterfaceId uint,
 	usedBy consts.UsedBy) (
@@ -167,12 +182,15 @@ func (r *CheckpointRepo) CreateDefault(conditionId uint) (po model.DebugConditio
 	po.ConditionId = conditionId
 
 	po = model.DebugConditionCheckpoint{
-		ConditionId:       conditionId,
-		Type:              consts.ResponseStatus,
-		Operator:          consts.Equal,
-		Expression:        "",
-		ExtractorVariable: "",
-		Value:             "",
+		ConditionId: conditionId,
+
+		CheckpointBase: domain.CheckpointBase{
+			Type:              consts.ResponseStatus,
+			Operator:          consts.Equal,
+			Expression:        "",
+			ExtractorVariable: "",
+			Value:             "",
+		},
 	}
 
 	r.Save(&po)

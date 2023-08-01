@@ -32,7 +32,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 
 func RequestInterface(req domain.DebugData) (ret domain.DebugResponse, err error) {
 	// exec pre-request script
-	agentExec.ExecJs(req.PreRequestScript)
+	agentExec.ExecScript(req.PreRequestScript)
 
 	// replace variables
 	agentExec.ReplaceVariables(&req.BaseRequest, consts.InterfaceDebug)

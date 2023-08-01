@@ -7,7 +7,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
@@ -55,7 +54,7 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 
 	entity.Src = consts.Body
 	entity.Type = getExtractorTypeForProcessor(entity.ProcessorType)
-	entity.Result, err = extractorHelper.Extract(entity.ExtractorBase, resp)
+	entity.Result, err = ExecExtract(entity.ExtractorBase, resp)
 	if err != nil {
 		processor.Result.Summary = fmt.Sprintf("%s提取器解析错误 %s。", entity.ProcessorType, err.Error())
 		processor.AddResultToParent()

@@ -25,52 +25,6 @@ type ExecCookie struct {
 	ExpireTime *time.Time `json:"expireTime"`
 }
 
-type Extractor struct {
-	Src  consts.ExtractorSrc  `json:"src"`
-	Type consts.ExtractorType `json:"type"`
-	Key  string               `json:"key"`
-
-	Expression string `json:"expression"`
-	Prop       string `json:"prop"`
-
-	BoundaryStart    string `json:"boundaryStart"`
-	BoundaryEnd      string `json:"boundaryEnd"`
-	BoundaryIndex    int    `json:"boundaryIndex"`
-	BoundaryIncluded bool   `json:"boundaryIncluded"`
-
-	Variable string                `json:"variable"`
-	Scope    consts.ExtractorScope `json:"scope"`
-
-	Result      string `json:"result"`
-	InterfaceId uint   `json:"interfaceId"`
-
-	Disabled bool `json:"disabled"`
-}
-type Checkpoint struct {
-	Type consts.CheckpointType `json:"type"`
-
-	Expression        string `json:"expression"`
-	ExtractorVariable string `json:"extractorVariable"`
-
-	Operator     consts.ComparisonOperator `json:"operator"`
-	Value        string                    `json:"value"`
-	ActualResult string                    `json:"actualResult"`
-
-	ResultStatus consts.ResultStatus `json:"resultStatus"`
-	InterfaceId  uint                `json:"interfaceId"`
-
-	Disabled bool `json:"disabled"`
-}
-type Script struct {
-	Name    string `json:"name"`
-	Content string `json:"content"`
-
-	ResultStatus consts.ResultStatus `json:"resultStatus"`
-	InterfaceId  uint                `json:"interfaceId"`
-
-	Disabled bool `json:"disabled"`
-}
-
 type ExecIterator struct {
 	ProcessorCategory consts.ProcessorCategory
 	ProcessorType     consts.ProcessorType

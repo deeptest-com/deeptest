@@ -42,8 +42,6 @@ type DebugConditionExtractor struct {
 	ConditionId uint `json:"conditionId"`
 
 	domain.ExtractorBase
-
-	Scope consts.ExtractorScope `json:"scope" gorm:"default:public"`
 }
 
 func (DebugConditionExtractor) TableName() string {
@@ -54,16 +52,7 @@ type DebugConditionCheckpoint struct {
 	BaseModel
 	ConditionId uint `json:"conditionId"`
 
-	Type consts.CheckpointType `json:"type"`
-
-	Expression        string `json:"expression"`
-	ExtractorVariable string `json:"extractorVariable"`
-
-	Operator consts.ComparisonOperator `json:"operator"`
-	Value    string                    `json:"value"`
-
-	ActualResult string              `json:"actualResult"`
-	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	domain.CheckpointBase
 }
 
 func (DebugConditionCheckpoint) TableName() string {

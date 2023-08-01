@@ -17,7 +17,6 @@ func (m *PostConditionModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
 		index.Get("", m.PostConditionCtrl.List).Name = "前置条件列表"
-		index.Get("/{id:uint}", m.PostConditionCtrl.Get).Name = "后置条件详情"
 		index.Post("/", m.PostConditionCtrl.Create).Name = "新建后置条件"
 
 		index.Delete("/{id:uint}", m.PostConditionCtrl.Delete).Name = "删除后置条件"

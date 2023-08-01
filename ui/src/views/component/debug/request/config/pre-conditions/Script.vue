@@ -1,5 +1,5 @@
 <template>
-  <div class="post-script-main">
+  <div class="pre-script-main">
     <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
       <div class="content">
         <div class="codes">
@@ -112,7 +112,7 @@ const wrapperCol = { span: 24 }
 </script>
 
 <style lang="less" scoped>
-.post-script-main {
+.pre-script-main {
   height: 100%;
   width: 100%;
 

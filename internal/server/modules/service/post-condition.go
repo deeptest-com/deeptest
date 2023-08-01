@@ -40,7 +40,7 @@ func (s *PostConditionService) Create(condition *model.DebugPostCondition) (err 
 		entityId = po.ID
 
 	} else if condition.EntityType == consts.ConditionTypeScript {
-		po := s.ScriptRepo.CreateDefault(condition.ID)
+		po := s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPost)
 		entityId = po.ID
 	}
 

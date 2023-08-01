@@ -205,7 +205,7 @@ export async function createPreConditions(data): Promise<any> {
 }
 export async function disablePreConditions(id): Promise<any> {
     return request({
-        url: `/${apiPostConditions}/${id}/disable`,
+        url: `/${apiPreConditions}/${id}/disable`,
         method: 'POST',
     });
 }
@@ -217,7 +217,7 @@ export async function removePreConditions(id): Promise<any> {
 }
 export async function movePreConditions(data): Promise<any> {
     return request({
-        url: `/${apiPreConditions}`,
+        url: `/${apiPreConditions}/move`,
         method: 'POST',
         data: data,
     });

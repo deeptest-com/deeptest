@@ -263,6 +263,13 @@ const (
 	CaseDebug      UsedBy = "case_debug"
 )
 
+type ConditionSrc string
+
+const (
+	ConditionSrcPre  ConditionSrc = "pre"
+	ConditionSrcPost ConditionSrc = "post"
+)
+
 type ConditionType string
 
 const (

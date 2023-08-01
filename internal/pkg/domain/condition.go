@@ -7,15 +7,15 @@ type ExtractorBase struct {
 	Type consts.ExtractorType `json:"type"`
 	Key  string               `json:"key"`
 
-	Expression string `json:"expression"`
+	Expression string `gorm:"default:''" json:"expression"`
 	Prop       string `json:"prop"`
 
-	BoundaryStart    string `json:"boundaryStart"`
-	BoundaryEnd      string `json:"boundaryEnd"`
+	BoundaryStart    string `gorm:"default:''" json:"boundaryStart"`
+	BoundaryEnd      string `gorm:"default:''" json:"boundaryEnd"`
 	BoundaryIndex    int    `json:"boundaryIndex"`
 	BoundaryIncluded bool   `json:"boundaryIncluded"`
 
-	Variable string                `json:"variable"`
+	Variable string                `gorm:"default:''" json:"variable"`
 	Scope    consts.ExtractorScope `json:"scope" gorm:"default:public"`
 
 	Result       string              `json:"result"`

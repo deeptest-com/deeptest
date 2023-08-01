@@ -139,10 +139,10 @@ func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase) (
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariableByInterface(req domain.DebugInfo) (variables []domain.Variable, err error) {
+func (r *ExtractorRepo) ListExtractorVariableByInterface(conditionIds []uint) (variables []domain.Variable, err error) {
 	err = r.DB.Model(&model.DebugConditionExtractor{}).
 		Select("id, variable AS name, result AS value").
-		Where("debug_interface_id=?", req.DebugInterfaceId).
+		Where("condition_id IN (?)", conditionIds).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").
 		Find(&variables).Error

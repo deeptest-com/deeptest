@@ -88,13 +88,16 @@
 
             <div class="content" v-if="activeItem.id === +element.id">
               <Extractor v-if="element.entityType === ConditionType.extractor"
-                         :condition="element" />
+                         :condition="element"
+                          :finish="list"/>
 
               <Checkpoint v-if="element.entityType === ConditionType.checkpoint"
-                          :condition="element" />
+                          :condition="element"
+                          :finish="list"/>
 
               <Script v-if="element.entityType === ConditionType.script"
-                      :condition="element" />
+                      :condition="element"
+                      :finish="list"/>
             </div>
           </div>
 

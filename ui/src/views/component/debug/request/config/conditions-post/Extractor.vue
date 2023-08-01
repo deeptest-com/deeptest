@@ -2,7 +2,7 @@
   <div class="response-extractor-main">
     <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
       <a-form-item label="数据来源" v-bind="validateInfos.src">
-        <a-radio-group name="srcGroup" @change="selectSrc" v-model:value="model.src"
+        <a-radio-group name="srcGroup" v-model:value="model.src"
                        @blur="validate('src', { trigger: 'change' }).catch(() => {})">
           <a-radio v-for="(item, idx) in srcOptions" :key="idx" :value="item.value">
             {{ t(item.label) }}
@@ -12,7 +12,7 @@
 
       <!-- for body -->
       <a-form-item v-if="model.src === 'body'" label="提取方法" v-bind="validateInfos.type">
-        <a-select v-model:value="model.type" @change="selectType"
+        <a-select v-model:value="model.type"
                   @blur="validate('type', { trigger: 'change' }).catch(() => {})">
           <a-select-option v-for="(item, idx) in typeOptions" :key="idx" :value="item.value">
             {{ t(item.label) }}
@@ -27,6 +27,7 @@
       </a-form-item>
 
       <template v-if="model.src === 'body' && model.type === 'boundary'">
+        {{rules.boundaryStart}}
         <a-form-item label="边界开始" v-bind="validateInfos.boundaryStart">
           <a-input v-model:value="model.boundaryStart"
                    @blur="validate('boundaryStart', { trigger: 'blur' }).catch(() => {})"/>
@@ -51,6 +52,7 @@
 
       <a-form-item label="变量名称" v-bind="validateInfos.variable">
         <a-input-group compact>
+          {{rules.variable}}
           <a-input v-model:value="model.variable"
                    @change="onVarChanged"
                    @blur="validate('variable', { trigger: 'blur' }).catch(() => {})"
@@ -87,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, onBeforeUnmount, onMounted, reactive, watch} from "vue";
+import {computed, defineProps, inject, onBeforeUnmount, onMounted, reactive, watch, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {Form, notification} from 'ant-design-vue';
@@ -109,44 +111,41 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
 const model = computed<any>(() => store.state.Debug.extractorData);
 
-const typeRequired = {required: true, message: '请选择类型', trigger: 'change'}
-const expressionRequired = {required: true, message: '请输入元素路径', trigger: 'blur'}
-const keyRequired = {required: true, message: '请输入键值', trigger: 'blur'}
-const boundaryStartRequired = {required: true, message: '请输入边界开始字符串', trigger: 'blur'}
-const boundaryEndRequired = {required: true, message: '请输入边界结束字符串', trigger: 'blur'}
-const rules = reactive({
+const typeRequired = [{required: true, message: '请选择类型', trigger: 'change'}]
+const expressionRequired = [{required: true, message: '请输入元素路径', trigger: 'blur'}]
+const keyRequired = [{required: true, message: '请输入键值', trigger: 'blur'}]
+const boundaryStartRequired = [{required: true, message: '请输入边界开始字符串', trigger: 'blur'}]
+const boundaryEndRequired = [{required: true, message: '请输入边界结束字符串', trigger: 'blur'}]
+
+const rules = computed(() => { return {
   src: [
     {required: true, message: '请选择来源', trigger: 'change'},
   ],
-  type: [
-    typeRequired,
-  ],
-  expression: [
-    expressionRequired,
-  ],
-  key: [
-    keyRequired,
-  ],
-  boundaryStart: [
-    boundaryStartRequired,
-  ],
-  boundaryEnd: [
-    boundaryEndRequired,
-  ],
+  type: model.value.src === ExtractorSrc.header ? [] : typeRequired,
+  key: model.value.src === ExtractorSrc.header ? keyRequired : [],
+
+  expression: model.value.src === ExtractorSrc.header || model.value.type === ExtractorType.boundary ? [] : expressionRequired,
+  boundaryStart: model.value.src !== ExtractorSrc.header && model.value.type === ExtractorType.boundary ? boundaryStartRequired : [],
+  boundaryEnd: model.value.src !== ExtractorSrc.header && model.value.type === ExtractorType.boundary ? boundaryEndRequired : [],
+
   variable: [
     {required: true, message: '请输入变量名', trigger: 'blur'},
   ],
-});
+}})
 
+const isInit = ref(true)
 watch(model, (newVal) => {
-    selectSrc()
-    if (responseData.value.contentLang === 'json') {
-      model.value.type = ExtractorType.jsonquery
-    } else if (responseData.value.contentLang === 'xml') {
-      model.value.type = ExtractorType.xmlquery
-    } else if (responseData.value.contentLang === 'html') {
-      model.value.type = ExtractorType.htmlquery
-    }
+  if (!isInit.value) return
+
+  isInit.value = false
+
+  if (responseData.value.contentLang === 'json') {
+    model.value.type = ExtractorType.jsonquery
+  } else if (responseData.value.contentLang === 'xml') {
+    model.value.type = ExtractorType.xmlquery
+  } else if (responseData.value.contentLang === 'html') {
+    model.value.type = ExtractorType.htmlquery
+  }
   }, {immediate: true, deep: true}
 )
 
@@ -172,7 +171,7 @@ const load = () => {
 }
 load()
 
-const {resetFields, validate, validateInfos} = useForm(model, rules);
+let {resetFields, validate, validateInfos} = useForm(model, rules);
 
 const save = () => {
   console.log('save')
@@ -214,35 +213,6 @@ onBeforeUnmount( () => {
   console.log('onBeforeUnmount')
   bus.off(settings.eventConditionSave, save);
 })
-
-function selectSrc() {
-  console.log('selectSrc', model.value.src)
-
-  if (model.value.src === ExtractorSrc.header) {
-    rules.key = [keyRequired]
-    rules.expression = []
-    rules.type = []
-  } else {
-    rules.key = []
-    rules.expression = [expressionRequired]
-    rules.type = [typeRequired]
-  }
-
-  selectType()
-}
-function selectType() {
-  console.log('selectType', model.value.type)
-
-  if (model.value.type === ExtractorType.boundary) {
-    rules.boundaryStart = [boundaryStartRequired]
-    rules.boundaryEnd = [boundaryEndRequired]
-    rules.expression = []
-  } else {
-    rules.boundaryStart = []
-    rules.boundaryEnd = []
-    rules.expression = [expressionRequired]
-  }
-}
 
 const onVarChanged = (e) => {
   console.log('onVarChanged', e)

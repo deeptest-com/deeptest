@@ -17,15 +17,14 @@
       <div v-if="debugData.usedBy !== UsedBy.DiagnoseDebug && debugData.processorInterfaceSrc !== UsedBy.DiagnoseDebug" class="base-url">
         <a-input placeholder="请输入地址"
                  v-model:value="debugData.baseUrl"
-                 :disabled="baseUrlDisabled"
-                 title="请在接口定义中修改" />
+                 :disabled="baseUrlDisabled" />
       </div>
 
       <div class="url">
         <a-input placeholder="请输入路径"
                  v-model:value="debugData.url"
                  :disabled="urlDisabled"
-                 title="请在接口定义中修改" />
+                 :title="urlDisabled ? '请在接口定义中修改' : ''" />
       </div>
 
       <div class="send">

@@ -42,6 +42,24 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 	return
 }
 
+func (r *PostConditionRepo) ListExtrator(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugPostCondition, err error) {
+	db := r.DB.
+		Where("NOT deleted").
+		Order("ordr ASC")
+
+	if debugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", debugInterfaceId)
+	} else {
+		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
+	}
+
+	db.Where("entity_type = ?", consts.ConditionTypeExtractor)
+
+	err = db.Find(&pos).Error
+
+	return
+}
+
 func (r *PostConditionRepo) Get(id uint) (po model.DebugPostCondition, err error) {
 	err = r.DB.
 		Where("id=?", id).

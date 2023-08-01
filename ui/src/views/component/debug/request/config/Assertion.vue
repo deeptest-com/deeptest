@@ -70,7 +70,8 @@
 
             <div class="content" v-if="activeItem.id === +element.id">
               <Checkpoint v-if="element.entityType === ConditionType.checkpoint"
-                          :condition="element" />
+                          :condition="element"
+                          :finish="list"/>
             </div>
           </div>
 

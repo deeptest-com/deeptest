@@ -8,6 +8,10 @@ type TypeScript struct {
 	Base
 }
 
+func (t *TypeScript) fieldTypeConv(fieldType fieldType) (newType fieldType) {
+	return
+}
+
 func (t *TypeScript) fieldString(field field) (ret string) {
 	ret = strings.ReplaceAll("${_name_}: ${_type_},", "${_name_}", string(field.fieldName))
 	ret = strings.ReplaceAll(ret, "${_type_}", string(field.fieldType))
@@ -20,6 +24,7 @@ func (t *TypeScript) classString(name class) string {
 
 func (t *TypeScript) AddField(fieldName fieldName, fieldType fieldType) {
 	field := field{fieldName: fieldName}
+	field.fieldType = t.fieldTypeConv(fieldType)
 	t.Base.AddField(field)
 }
 

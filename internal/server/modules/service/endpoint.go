@@ -514,7 +514,7 @@ func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 			schema := new(openapi.SchemaRef)
 			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
 			if endpoint.SourceType == 1 && len(schema.Value.AllOf) > 0 {
-				schema2conv.AllOfConv(schema)
+				schema2conv.CombineSchemas(schema)
 			}
 			endpoint.Interfaces[key].ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
 		}
@@ -529,7 +529,7 @@ func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId ui
 		schema := new(openapi.SchemaRef)
 		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
 		if len(schema.Value.AllOf) > 0 {
-			schema2conv.AllOfConv(schema)
+			schema2conv.CombineSchemas(schema)
 		}
 		interf.ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
 	}

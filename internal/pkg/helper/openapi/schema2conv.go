@@ -3,7 +3,9 @@ package openapi
 import (
 	"encoding/json"
 	"github.com/getkin/kin-openapi/openapi3"
+	"math/rand"
 	"reflect"
+	"time"
 )
 
 type SchemaRef struct {
@@ -19,6 +21,8 @@ type Schema struct {
 	Items      *SchemaRef `json:"items,omitempty" yaml:"items,omitempty"`
 	Properties Schemas    `json:"properties,omitempty" yaml:"properties,omitempty"`
 	AllOf      SchemaRefs `json:"allOf,omitempty" yaml:"allOf,omitempty"`
+	OneOf      SchemaRefs `json:"oneOf,omitempty" yaml:"allOf,omitempty"`
+	AnyOf      SchemaRefs `json:"anyOf,omitempty" yaml:"allOf,omitempty"`
 	Ref        string     `json:"ref,omitempty" yaml:"ref,omitempty"`
 	RefExt     string     `json:"$ref,omitempty" yaml:"ref,omitempty"`
 }
@@ -103,7 +107,7 @@ func (s *schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 		schema = component
 	}
 
-	s.AllOfConv(&schema)
+	s.CombineSchemas(&schema)
 
 	switch schema.Value.Type {
 	case openapi3.TypeObject:
@@ -132,36 +136,68 @@ func (s *schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 	return
 }
 
-func (s *schema2conv) AllOfConv(schema *SchemaRef) {
-	if len(schema.Value.AllOf) > 1 {
+func (s *schema2conv) CombineSchemas(schema *SchemaRef) {
+	var combineSchemas SchemaRefs
 
-		//schema = SchemaRef{}
-		//schema.Value = new(Schema)
-		schema.Value.Type = openapi3.TypeObject
-		schema.Value.Properties = Schemas{}
-		for _, item := range schema.Value.AllOf {
-			if item.Ref != "" {
-				if component, ok := s.Components[item.Ref]; ok {
-					item = &component
-				}
+	if len(schema.Value.AllOf) >= 1 {
+		combineSchemas = schema.Value.AllOf
+		schema.Value.AllOf = nil
+	} else {
+		if len(schema.Value.AnyOf) >= 1 {
+			rand.Seed(time.Now().UnixNano())
+			n := rand.Intn(len(schema.Value.AnyOf)-1) + 1
+			combineSchemas = s.anyMoreSchemas(schema.Value.AnyOf, n)
+			schema.Value.AnyOf = nil
+		} else if len(schema.Value.OneOf) >= 1 {
+			combineSchemas = s.anyMoreSchemas(schema.Value.OneOf, 1)
+			schema.Value.OneOf = nil
+		}
+	}
+
+	for _, item := range combineSchemas {
+
+		if item.Ref != "" {
+			if component, ok := s.Components[item.Ref]; ok {
+				item = &component
+			}
+		}
+		schema.Value.Type = item.Value.Type
+
+		if item.Value.Type != openapi3.TypeObject {
+			item.Value.Properties = Schemas{}
+			schema.Value = item.Value
+			continue
+		}
+
+		for key, property := range item.Value.Properties {
+			if property.Value.Type == "" {
+				//continue
 			}
 
-			if item.Value.Type != openapi3.TypeObject {
-				continue
+			s.CombineSchemas(property)
+
+			if schema.Value.Properties == nil {
+				schema.Value.Properties = Schemas{}
 			}
-
-			for key, property := range item.Value.Properties {
-				if property.Value.Type == "" {
-					//continue
-				}
-
-				s.AllOfConv(property)
-
-				schema.Value.Properties[key] = property
-
-			}
+			schema.Value.Properties[key] = property
 
 		}
-		schema.Value.AllOf = nil
+
 	}
+
+}
+
+func (s *schema2conv) anyMoreSchemas(schemas SchemaRefs, n int) (combineSchemas SchemaRefs) {
+	if n > len(schemas) {
+		return
+	}
+
+	for ; n > 0; n-- {
+		rand.Seed(time.Now().UnixNano())
+		index := rand.Intn(len(schemas))
+		combineSchemas = append(combineSchemas, schemas[index])
+		schemas = append(schemas[:index], schemas[index+1:]...)
+	}
+
+	return combineSchemas
 }

@@ -31,8 +31,12 @@ var (
 		&DebugInterfaceBearerToken{},
 		&DebugInterfaceOAuth20{},
 		&DebugInterfaceApiKey{},
-		&DebugInterfaceExtractor{},
-		&DebugInterfaceCheckpoint{},
+
+		&DebugPreCondition{},
+		&DebugPostCondition{},
+		&DebugConditionExtractor{},
+		&DebugConditionCheckpoint{},
+		&DebugConditionScript{},
 
 		&DiagnoseInterface{},
 

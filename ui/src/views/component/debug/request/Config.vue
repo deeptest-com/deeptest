@@ -1,6 +1,6 @@
 <template>
   <div class="config-main">
-    <a-tabs v-model:activeKey="activeKey" :animated="false">
+    <a-tabs v-model:activeKey="activeKey" :animated="false" class="dp-tabs-full-height">
       <a-tab-pane key="query-param" tab="查询参数">
         <QueryParameters v-if="activeKey === 'query-param'"></QueryParameters>
       </a-tab-pane>
@@ -55,14 +55,13 @@ const activeKey = ref('query-param');
 
 <style lang="less">
 .config-main {
-  height: calc(100% - 32px);
-  //min-height: 300px;
+  height: 100%;
 
   .ant-tabs-line {
     height: 100%;
 
     .ant-tabs-top-content {
-      height: calc(100% - 61px);
+      height: calc(100% - 45px);
       overflow-y: auto;
     }
   }

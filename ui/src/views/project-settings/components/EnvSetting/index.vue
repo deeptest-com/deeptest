@@ -23,6 +23,7 @@
       </div>
       <div class="env">
         <div class="header">环境</div>
+
         <draggable tag="div" :list="envList" class="list-group" handle=".handle" item-key="name" @end="handleDragEnd">
           <template #item="{ element, index }">
             <a-button :class="{ 'env-item': true, 'env-item-active': activeEnvDetail?.id === element.id }"
@@ -36,6 +37,7 @@
             </a-button>
           </template>
         </draggable>
+
         <div style="margin: 0 16px;">
           <a-divider class="divider" />
         </div>

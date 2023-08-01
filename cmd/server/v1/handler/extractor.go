@@ -94,7 +94,7 @@ func (c *ExtractorCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.DebugInterfaceExtractor}
 // @Router	/api/v1/extractors	[post]
 func (c *ExtractorCtrl) Create(ctx iris.Context) {
-	extractor := model.DebugInterfaceExtractor{}
+	extractor := model.DebugConditionExtractor{}
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -123,7 +123,7 @@ func (c *ExtractorCtrl) Create(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/extractors/createOrUpdateResult	[post]
 func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
-	var extractor model.DebugInterfaceExtractor
+	var extractor model.DebugConditionExtractor
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -150,7 +150,7 @@ func (c *ExtractorCtrl) CreateOrUpdateResult(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/extractors	[put]
 func (c *ExtractorCtrl) Update(ctx iris.Context) {
-	var extractor model.DebugInterfaceExtractor
+	var extractor model.DebugConditionExtractor
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})

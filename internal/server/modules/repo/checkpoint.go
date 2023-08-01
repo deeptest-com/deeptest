@@ -12,7 +12,7 @@ type CheckpointRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *CheckpointRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugInterfaceCheckpoint, err error) {
+func (r *CheckpointRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugConditionCheckpoint, err error) {
 	db := r.DB.
 		Where("NOT deleted").
 		Order("created_at ASC")
@@ -42,7 +42,7 @@ func (r *CheckpointRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret
 	return
 }
 
-func (r *CheckpointRepo) Get(id uint) (checkpoint model.DebugInterfaceCheckpoint, err error) {
+func (r *CheckpointRepo) Get(id uint) (checkpoint model.DebugConditionCheckpoint, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
@@ -50,8 +50,8 @@ func (r *CheckpointRepo) Get(id uint) (checkpoint model.DebugInterfaceCheckpoint
 	return
 }
 
-func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint model.DebugInterfaceCheckpoint, err error) {
-	var checkpoints []model.DebugInterfaceCheckpoint
+func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint model.DebugConditionCheckpoint, err error) {
+	var checkpoints []model.DebugConditionCheckpoint
 
 	db := r.DB.Model(&checkpoint).
 		Where("name = ? AND endpoint_interface_id =? AND not deleted", name, interfaceId)
@@ -69,13 +69,13 @@ func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint mo
 	return
 }
 
-func (r *CheckpointRepo) Save(checkpoint *model.DebugInterfaceCheckpoint) (err error) {
+func (r *CheckpointRepo) Save(checkpoint *model.DebugConditionCheckpoint) (err error) {
 	err = r.DB.Save(checkpoint).Error
 	return
 }
 
 func (r *CheckpointRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.DebugInterfaceCheckpoint{}).
+	err = r.DB.Model(&model.DebugConditionCheckpoint{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -83,7 +83,7 @@ func (r *CheckpointRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *CheckpointRepo) UpdateResult(checkpoint model.DebugInterfaceCheckpoint, usedBy consts.UsedBy) (err error) {
+func (r *CheckpointRepo) UpdateResult(checkpoint model.DebugConditionCheckpoint, usedBy consts.UsedBy) (err error) {
 	values := map[string]interface{}{
 		"actual_result": checkpoint.ActualResult,
 		"result_status": checkpoint.ResultStatus,
@@ -97,7 +97,7 @@ func (r *CheckpointRepo) UpdateResult(checkpoint model.DebugInterfaceCheckpoint,
 	return
 }
 
-func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.DebugInterfaceCheckpoint, log *model.ExecLogProcessor) (
+func (r *CheckpointRepo) UpdateResultToExecLog(checkpoint model.DebugConditionCheckpoint, log *model.ExecLogProcessor) (
 	logCheckpoint model.ExecLogCheckpoint, err error) {
 
 	copier.CopyWithOption(&logCheckpoint, checkpoint, copier.Option{DeepCopy: true})
@@ -120,12 +120,29 @@ func (r *CheckpointRepo) CloneFromEndpointInterfaceToDebugInterface(endpointInte
 
 	for _, po := range srcPos {
 		po.ID = 0
-		po.EndpointInterfaceId = endpointInterfaceId
-		po.DebugInterfaceId = debugInterfaceId
-		po.UsedBy = usedBy
+		//po.EndpointInterfaceId = endpointInterfaceId
+		//po.DebugInterfaceId = debugInterfaceId
+		//po.UsedBy = usedBy
 
 		r.Save(&po)
 	}
+
+	return
+}
+
+func (r *CheckpointRepo) CreateDefault(conditionId uint) (po model.DebugConditionCheckpoint) {
+	po.ConditionId = conditionId
+
+	po = model.DebugConditionCheckpoint{
+		ConditionId:       conditionId,
+		Type:              consts.ResponseStatus,
+		Operator:          consts.Equal,
+		Expression:        "",
+		ExtractorVariable: "",
+		Value:             "",
+	}
+
+	r.Save(&po)
 
 	return
 }

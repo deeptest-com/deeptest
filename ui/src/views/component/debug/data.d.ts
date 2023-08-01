@@ -117,6 +117,19 @@ export interface Checkpoint {
     projectId?: number;
 }
 
+export interface Script  {
+    id?: number;
+    usedBy: UsedBy;
+
+    content: string;
+    output: string;
+    resultStatus: string;
+
+    debugInterfaceId?: number;
+    endpointInterfaceId?: number;
+    projectId?: number;
+}
+
 export interface DebugInfo {
     debugInterfaceId: number,
     endpointInterfaceId: number,

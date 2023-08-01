@@ -61,6 +61,15 @@ type Checkpoint struct {
 
 	Disabled bool `json:"disabled"`
 }
+type Script struct {
+	Name    string `json:"name"`
+	Content string `json:"content"`
+
+	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	InterfaceId  uint                `json:"interfaceId"`
+
+	Disabled bool `json:"disabled"`
+}
 
 type ExecIterator struct {
 	ProcessorCategory consts.ProcessorCategory

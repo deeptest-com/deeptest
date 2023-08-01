@@ -95,3 +95,19 @@ type ExecLogCheckpoint struct {
 func (ExecLogCheckpoint) TableName() string {
 	return "biz_exec_log_checkpoint"
 }
+
+type ExecLogScript struct {
+	BaseModel
+
+	Name string `json:"name"`
+	Desc string `json:"desc"`
+
+	Output       string              `json:"output"`
+	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	InterfaceId  uint                `json:"interfaceId"`
+	LogId        uint                `json:"logId"`
+}
+
+func (ExecLogScript) TableName() string {
+	return "biz_exec_log_script"
+}

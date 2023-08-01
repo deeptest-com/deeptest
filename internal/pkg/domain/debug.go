@@ -20,6 +20,8 @@ type SubmitDebugResultRequest struct {
 type DebugData struct {
 	BaseRequest
 
+	Name string `json:"name"`
+
 	DebugInterfaceId uint `json:"debugInterfaceId"`
 
 	EndpointInterfaceId uint          `json:"endpointInterfaceId"`
@@ -32,13 +34,25 @@ type DebugData struct {
 	ServerId  uint `json:"serverId"`
 	ProjectId uint `json:"projectId"`
 
-	BaseUrl string `json:"baseUrl"`
+	BaseUrl        string      `json:"baseUrl"`
+	PreConditions  []Condition `json:"postConditions"`
+	PostConditions []Condition `json:"postConditions"`
 
 	// used for selection and show in right environment tab
 	ShareVars    []GlobalVar   `json:"shareVars"`
 	EnvVars      []GlobalVar   `json:"envVars"`
 	GlobalVars   []GlobalVar   `json:"globalVars"`
 	GlobalParams []GlobalParam `json:"globalParams"`
+}
 
+type Condition struct {
 	Name string `json:"name"`
+	Desc string `json:"desc"`
+
+	EntityType string      `json:"entityType"`
+	EntityId   uint        `json:"entityId"`
+	EntityData interface{} `json:"entityData"`
+
+	Ordr     int  `json:"ordr"`
+	Disabled bool `json:"disabled"`
 }

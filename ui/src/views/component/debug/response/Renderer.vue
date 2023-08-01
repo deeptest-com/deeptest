@@ -13,7 +13,7 @@
         <ResponseHeaders v-if="activeKey === '3'"></ResponseHeaders>
       </a-tab-pane>
 
-      <a-tab-pane key="4">
+<!--      <a-tab-pane key="4">
         <ResponseExtract v-if="activeKey === '4'"></ResponseExtract>
 
         <template #tab>
@@ -31,7 +31,7 @@
           <span v-else>检查点</span>
         </template>
 
-      </a-tab-pane>
+      </a-tab-pane>-->
     </a-tabs>
   </div>
 </template>
@@ -57,8 +57,8 @@ const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
-const extractorsData = computed<any>(() => store.state.Debug.extractorsData);
-const checkpointsData = computed<any>(() => store.state.Debug.checkpointsData);
+/*const extractorsData = computed<any>(() => store.state.Debug.extractorsData);
+const checkpointsData = computed<any>(() => store.state.Debug.checkpointsData);*/
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
@@ -66,7 +66,7 @@ const {t} = useI18n();
 const title = computed(() => t(responseData.value.contentLang ? responseData.value.contentLang : 'empty'))
 const activeKey = ref('1');
 
-const extractorFail = computed(() => {
+/*const extractorFail = computed(() => {
   for (let val of extractorsData.value) {
     if (val.result==='extractor_err') return true
   }
@@ -78,7 +78,7 @@ const checkpointFail = computed(() => {
     if (val.resultStatus==='fail') return true
   }
   return false
-})
+})*/
 
 </script>
 

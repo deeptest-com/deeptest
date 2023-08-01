@@ -8,15 +8,15 @@
         </a-select>
       </div>
 
-      <div class="base-url">
-          <a-input placeholder="请输入地址"
-                   :disabled="baseUrlDisabled"
-                   v-model:value="debugData.baseUrl" />
+      <div v-if="debugData.processorInterfaceSrc !== UsedBy.DiagnoseDebug" class="base-url">
+        <a-input placeholder="请输入地址"
+                 :disabled="baseUrlDisabled"
+                 v-model:value="debugData.baseUrl"/>
       </div>
 
       <div class="url">
         <a-input placeholder="请输入路径"
-                 v-model:value="debugData.url" />
+                 v-model:value="debugData.url"/>
       </div>
 
       <div class="send">
@@ -34,12 +34,13 @@
 
       <div v-if="usedBy === UsedBy.ScenarioDebug" class="sync">
         <a-button trigger="click" @click="sync" class="dp-bg-light">
-          <UndoOutlined />
+          <UndoOutlined/>
           同步
         </a-button>
       </div>
     </div>
 
+    <!-- 选择环境 -->
     <div class="select-env" :style="{top: topVal}">
       <a-select :value="serverId || null" @change="changeServer"
                 placeholder="请选择环境" class="select-env">
@@ -107,7 +108,7 @@ const props = defineProps({
 })
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('endpointInterfaceUrl')
+const {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} = useVariableReplace('endpointInterfaceUrl')
 const methods = getArrSelectItems(Methods)
 
 const servers = ref([] as any[])
@@ -154,7 +155,9 @@ watch(debugData, (newVal) => {
     currServerId.value = newVal.serverId
   }
 
-  debugData.value.url = debugData?.value.url || endpointDetail.value?.path || ''
+  if (usedBy !== UsedBy.DiagnoseDebug) {
+    debugData.value.url = debugData?.value.url || endpointDetail.value?.path || ''
+  }
 
 }, {immediate: true, deep: true});
 
@@ -270,6 +273,7 @@ onUnmounted(() => {
 
     .base-url {
       flex: 1;
+
       .ant-input[disabled] {
         color: rgba(0, 0, 0, 0.5);
       }

@@ -20,12 +20,6 @@ import {computed, defineProps, provide, ref, watch} from 'vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {UsedBy} from "@/utils/enum";
-import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
-
-import RequestEnv from '@/views/component/debug/others/env/index.vue';
-import RequestHistory from '@/views/component/debug/others/history/index.vue';
-
-import Invocation from '@/views/component/debug/request/Invocation.vue';
 
 import DebugComp from '@/views/component/debug/index.vue';
 

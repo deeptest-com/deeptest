@@ -28,7 +28,8 @@
           <template #item="{ element, index }">
             <a-button :class="{ 'env-item': true, 'env-item-active': activeEnvDetail?.id === element.id }"
               :type="activeEnvDetail?.id === element.id ? 'primary' : 'text'" @click="toEnvDetail(element)" :key="index">
-              <MenuOutlined class="handle" />
+              <MenuOutlined class="handle dp-drag" />
+
               <span class="text"> {{ element.displayName }} </span>
               <span class="action">
                 <copy-outlined class="copy" @click.stop="copyEnvData(element)" />

@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	checkpointHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/checkpoint"
+	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
+	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 )
 
 func ExecPreConditions(obj *InterfaceExecObj) (err error) {
@@ -28,6 +31,8 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 			json.Unmarshal(condition.Raw, &extractorBase)
 
 			err = ExecExtract(&extractorBase, resp)
+			extractorHelper.GenResultMsg(&extractorBase)
+
 			obj.PostConditions[index].Raw, _ = json.Marshal(extractorBase)
 
 		} else if condition.Type == consts.ConditionTypeCheckpoint {
@@ -35,6 +40,8 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 			json.Unmarshal(condition.Raw, &checkpointBase)
 
 			err = ExecCheckPoint(&checkpointBase, resp, 0)
+			checkpointHelper.GenResultMsg(&checkpointBase)
+
 			obj.PostConditions[index].Raw, _ = json.Marshal(checkpointBase)
 
 		} else if condition.Type == consts.ConditionTypeScript {
@@ -42,6 +49,8 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 			json.Unmarshal(condition.Raw, &scriptBase)
 
 			err = ExecScript(&scriptBase)
+			scriptHelper.GenResultMsg(&scriptBase)
+
 			obj.PostConditions[index].Raw, _ = json.Marshal(scriptBase)
 		}
 	}

@@ -2,6 +2,23 @@
   "language": "zh",
   "messages": [
     {
+      "id": "success",
+      "translation": "成功"
+    },
+    {
+      "id": "pass",
+      "translation": "通过"
+    },
+    {
+      "id": "fail",
+      "translation": "失败"
+    },
+    {
+      "id": "skip",
+      "translation": "忽略"
+    },
+
+    {
       "id": "for_example",
       "translation": "例如 %s"
     },

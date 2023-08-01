@@ -10749,6 +10749,479 @@
                 }
             }
         },
+        "/api/v1/scenarios/processors/saveProcessorInfo": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/处理器"
+                ],
+                "summary": "保存基本信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存基本信息的请求参数",
+                        "name": "ScenarioProcessorInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ScenarioProcessorInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/processors/{category}/save": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/处理器"
+                ],
+                "summary": "保存配置信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "category",
+                        "name": "category",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "ProcessorGroup",
+                        "name": "ProcessorGroup",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProcessorGroup"
+                        }
+                    },
+                    {
+                        "description": "ProcessorLogic",
+                        "name": "ProcessorLogic",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProcessorLogic"
+                        }
+                    },
+                    {
+                        "description": "ProcessorLoop",
+                        "name": "ProcessorLoop",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProcessorLoop"
+                        }
+                    },
+                    {
+                        "description": "ProcessorTimer",
+                        "name": "ProcessorTimer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProcessorTimer"
+                        }
+                    },
+                    {
+                        "description": "ProcessorPrint",
+                        "name": "ProcessorPrint",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProcessorPrint"
+                        }
+                    },
+                    {
+                        "description": "ProcessorVariable",
+                        "name": "ProcessorVariable",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProcessorVariable"
+                        }
+                    },
+                    {
+                        "description": "ProcessorCookie",
+                        "name": "ProcessorCookie",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProcessorCookie"
+                        }
+                    },
+                    {
+                        "description": "ProcessorAssertion",
+                        "name": "ProcessorAssertion",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProcessorAssertion"
+                        }
+                    },
+                    {
+                        "description": "ProcessorExtractor",
+                        "name": "ProcessorExtractor",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProcessorExtractor"
+                        }
+                    },
+                    {
+                        "description": "ProcessorData",
+                        "name": "ProcessorData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.ProcessorData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.ProcessorData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/processors/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/处理器"
+                ],
+                "summary": "场景节点详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "节点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/reports": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景报告"
+                ],
+                "summary": "结果列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "获取结果列表的请求参数",
+                        "name": "ReportReqPaginate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ReportReqPaginate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.ScenarioReport"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/reports/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景报告"
+                ],
+                "summary": "结果详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "报告ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.ScenarioReport"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景报告"
+                ],
+                "summary": "创建报告",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "报告ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景报告"
+                ],
+                "summary": "删除报告",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "报告ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/scenarios/{id}": {
             "get": {
                 "consumes": [
@@ -12055,6 +12528,17 @@
                 "LessThanOrEqual",
                 "Contain",
                 "NotContain"
+            ]
+        },
+        "consts.DataSource": {
+            "type": "string",
+            "enum": [
+                "text",
+                "excel"
+            ],
+            "x-enum-varnames": [
+                "Text",
+                "Excel"
             ]
         },
         "consts.DataType": {
@@ -15887,6 +16371,502 @@
                 }
             }
         },
+        "model.ProcessorAssertion": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProcessorCookie": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "cookieName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "domain": {
+                    "type": "string"
+                },
+                "expireTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "rightValue": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "variableName": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProcessorData": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isRand": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "repeatTimes": {
+                    "type": "integer"
+                },
+                "separator": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.DataSource"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "variableName": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProcessorExtractor": {
+            "type": "object",
+            "properties": {
+                "boundaryEnd": {
+                    "type": "string"
+                },
+                "boundaryIncluded": {
+                    "type": "boolean"
+                },
+                "boundaryIndex": {
+                    "type": "integer"
+                },
+                "boundaryStart": {
+                    "type": "string"
+                },
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "key": {
+                    "description": "form header",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "src": {
+                    "$ref": "#/definitions/consts.ExtractorSrc"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.ExtractorType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "variable": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProcessorGroup": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProcessorLogic": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProcessorLoop": {
+            "type": "object",
+            "properties": {
+                "breakIfExpression": {
+                    "type": "string"
+                },
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isRand": {
+                    "type": "boolean"
+                },
+                "list": {
+                    "description": "in",
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "range": {
+                    "description": "range",
+                    "type": "string"
+                },
+                "step": {
+                    "type": "string"
+                },
+                "times": {
+                    "description": "time",
+                    "type": "integer"
+                },
+                "untilExpression": {
+                    "description": "until",
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "variableName": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProcessorPrint": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "rightValue": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProcessorTimer": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "sleepTime": {
+                    "type": "integer"
+                },
+                "unit": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ProcessorVariable": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "variableName": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Project": {
             "type": "object",
             "properties": {
@@ -18054,6 +19034,38 @@
                 }
             }
         },
+        "serverDomain.ReportReqPaginate": {
+            "type": "object",
+            "properties": {
+                "createUserId": {
+                    "type": "integer"
+                },
+                "executeEndTime": {
+                    "type": "string"
+                },
+                "executeStartTime": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "keywords": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                }
+            }
+        },
         "serverDomain.ResetPasswordReq": {
             "type": "object",
             "required": [
@@ -18282,6 +19294,20 @@
                 },
                 "status": {
                     "$ref": "#/definitions/consts.TestStatus"
+                }
+            }
+        },
+        "serverDomain.ScenarioProcessorInfo": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         },

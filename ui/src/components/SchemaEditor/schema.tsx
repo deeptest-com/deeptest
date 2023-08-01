@@ -95,9 +95,9 @@ export default defineComponent({
             const char = event.key;
             console.log('832char', char);
             // 允许输入字母、数字、下划线、短横线和  删除、上下左右箭头键
-            if (/^[\w-]$/.test(char) || ['Delete','Backspace','ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(char)) {
+            if (/^[\w-]$/.test(char) || ['Delete', 'Backspace', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(char)) {
                 console.log('合法字符');
-            }else {
+            } else {
                 event.preventDefault();
             }
         }
@@ -162,7 +162,7 @@ export default defineComponent({
                         }
                     }
                     // 非数组类型
-                } else if (newProps?.length === 1 && !isArray(firstType)) {
+                } else if (newProps?.length >= 1 && !isArray(firstType)) {
                     // 如果是复合类型，需要特殊处理
                     if (isCompositeType(ancestor?.type)) {
                         if (ancestor?.[ancestor.type]?.[keyName]) {
@@ -175,8 +175,9 @@ export default defineComponent({
                             items.properties[keyName] = {...newProps[0]};
                         }
                     }
-                } else {
-                    message.warning(`数组类型至少需要一个元素`);
+                // 其他场景
+                }  else {
+                    message.warning(`未知异常，请重试`);
                 }
             }
             data.value = addExtraViewInfo(data.value);
@@ -341,7 +342,7 @@ export default defineComponent({
             </div>
         }
         const renderExtraAction = (options: any) => {
-            const {isRoot, keyIndex, parent, tree, ancestor, isRefChildNode,isCompositeChildNode} = options;
+            const {isRoot, keyIndex, parent, tree, ancestor, isRefChildNode, isCompositeChildNode} = options;
             const items = parent?.type === 'array' ? ancestor : parent;
             return <div class={'extraAction'}>
                 <ExtraActions
@@ -396,7 +397,7 @@ export default defineComponent({
                 <span class={'baseInfoKey'}
                       contenteditable={!isRefChildNode}
                       onPaste={pasteKeyName}
-                      onKeydown={keyNameKeyDown.bind(this, keyName,keyIndex, items)}
+                      onKeydown={keyNameKeyDown.bind(this, keyName, keyIndex, items)}
                       onBlur={updateKeyName.bind(this, keyName, keyIndex, items)}>
                     {keyName}
                 </span>

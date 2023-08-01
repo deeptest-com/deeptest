@@ -2,10 +2,11 @@
   <div id="debug-index" class="dp-splits-v">
     <div id="debug-content">
       <Invocation :topVal="topVal"
-      :showMethodSelection = "showMethodSelection"
+                  :showMethodSelection = "showMethodSelection"
                   :onSave="saveDebugData"
+                  :onSaveAsCase="saveAsCase"
                   :onSync="syncDebugData"
-                  :baseUrlDisabled="baseUrlDisabled"/>
+                  :baseUrlDisabled="baseUrlDisabled" />
       <DebugConfig />
     </div>
 
@@ -89,6 +90,10 @@ const props = defineProps({
     type: Function,
     required: true
   },
+  onSaveAsCase: {
+    type: Function,
+    required: false
+  },
   onSyncDebugData: {
     type: Function,
     required: false
@@ -110,8 +115,13 @@ const props = defineProps({
 
 const rightTabKey = ref('')
 
-const saveDebugData = async () => {
-  props.onSaveDebugData()
+const saveDebugData = async (data) => {
+  props.onSaveDebugData(data)
+};
+const saveAsCase = async () => {
+  if (props.onSaveAsCase) {
+    props.onSaveAsCase()
+  }
 };
 
 const syncDebugData = async () => {

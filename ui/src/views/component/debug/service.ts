@@ -32,11 +32,18 @@ export async function loadData(data): Promise<any> {
         data,
     });
 }
-export async function save(interf: Interface): Promise<any> {
+export async function save(data: Interface): Promise<any> {
     return request({
         url: `/${apiPathInterface}/save`,
         method: 'post',
-        data: interf,
+        data,
+    });
+}
+export async function saveAsCase(data: Interface): Promise<any> {
+    return request({
+        url: `/${apiPathInterface}/saveAsCase`,
+        method: 'post',
+        data,
     });
 }
 

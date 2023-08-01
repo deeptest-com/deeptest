@@ -31,7 +31,7 @@ import {
     removePostConditions,
     movePostConditions,
     removePreConditions,
-    movePreConditions, disablePreConditions, disablePostConditions,
+    movePreConditions, disablePreConditions, disablePostConditions, saveAsCase,
 } from './service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {UsedBy} from "@/utils/enum";
@@ -98,6 +98,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         loadData: Action<StateType, StateType>;
         call: Action<StateType, StateType>;
         save: Action<StateType, StateType>;
+        saveAsCase: Action<StateType, StateType>;
 
         listInvocation: Action<StateType, StateType>;
         getLastInvocationResp: Action<StateType, StateType>;
@@ -266,6 +267,15 @@ const StoreModel: ModuleType = {
             if (resp.code === 0) {
                 commit('setDebugData', resp.data);
 
+                return true;
+            } else {
+                return false
+            }
+        },
+        async saveAsCase({commit}, payload: any) {
+            const resp = await  saveAsCase(payload)
+            if (resp.code === 0) {
+                // commit('setDebugData', resp.data);
                 return true;
             } else {
                 return false

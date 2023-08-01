@@ -1,7 +1,7 @@
 <template>
   <div class="response-extractor-main">
     <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-      <a-form-item label="数据来源" v-bind="validateInfos.src">
+      <a-form-item label="数据来源" v-bind="validateInfos.src" required>
         <a-radio-group name="srcGroup" v-model:value="model.src"
                        @blur="validate('src', { trigger: 'change' }).catch(() => {})">
           <a-radio v-for="(item, idx) in srcOptions" :key="idx" :value="item.value">
@@ -11,7 +11,7 @@
       </a-form-item>
 
       <!-- for body -->
-      <a-form-item v-if="model.src === 'body'" label="提取方法" v-bind="validateInfos.type">
+      <a-form-item v-if="model.src === 'body'" label="提取方法" v-bind="validateInfos.type" required>
         <a-select v-model:value="model.type"
                   @blur="validate('type', { trigger: 'change' }).catch(() => {})">
           <a-select-option v-for="(item, idx) in typeOptions" :key="idx" :value="item.value">
@@ -21,18 +21,17 @@
       </a-form-item>
 
       <!-- for header -->
-      <a-form-item v-if="model.src === 'header'" label="键值" v-bind="validateInfos.key">
+      <a-form-item v-if="model.src === 'header'" label="键值" v-bind="validateInfos.key" required>
         <a-input v-model:value="model.key"
                  @blur="validate('key', { trigger: 'blur' }).catch(() => {})"/>
       </a-form-item>
 
       <template v-if="model.src === 'body' && model.type === 'boundary'">
-        {{rules.boundaryStart}}
-        <a-form-item label="边界开始" v-bind="validateInfos.boundaryStart">
+        <a-form-item label="边界开始" v-bind="validateInfos.boundaryStart" required>
           <a-input v-model:value="model.boundaryStart"
                    @blur="validate('boundaryStart', { trigger: 'blur' }).catch(() => {})"/>
         </a-form-item>
-        <a-form-item label="边界结束" v-bind="validateInfos.boundaryEnd">
+        <a-form-item label="边界结束" v-bind="validateInfos.boundaryEnd" required>
           <a-input v-model:value="model.boundaryEnd"
                    @blur="validate('boundaryEnd', { trigger: 'blur' }).catch(() => {})"/>
         </a-form-item>
@@ -45,14 +44,13 @@
       </template>
 
       <a-form-item v-if="model.src === 'body' && model.type !== 'boundary'"
-                   :label="model.type==='regx'?'表达式':'XPath'" v-bind="validateInfos.expression">
+                   :label="model.type==='regx'?'表达式':'XPath'" v-bind="validateInfos.expression" required>
         <a-input v-model:value="model.expression"
                  @blur="validate('expression', { trigger: 'blur' }).catch(() => {})"/>
       </a-form-item>
 
-      <a-form-item label="变量名称" v-bind="validateInfos.variable">
+      <a-form-item label="变量名称" v-bind="validateInfos.variable" required>
         <a-input-group compact>
-          {{rules.variable}}
           <a-input v-model:value="model.variable"
                    @change="onVarChanged"
                    @blur="validate('variable', { trigger: 'blur' }).catch(() => {})"
@@ -117,6 +115,7 @@ const keyRequired = [{required: true, message: '请输入键值', trigger: 'blur
 const boundaryStartRequired = [{required: true, message: '请输入边界开始字符串', trigger: 'blur'}]
 const boundaryEndRequired = [{required: true, message: '请输入边界结束字符串', trigger: 'blur'}]
 
+const isInit = ref(true)
 const rules = computed(() => { return {
   src: [
     {required: true, message: '请选择来源', trigger: 'change'},
@@ -133,7 +132,7 @@ const rules = computed(() => { return {
   ],
 }})
 
-const isInit = ref(true)
+
 watch(model, (newVal) => {
   if (!isInit.value) return
 

@@ -593,7 +593,7 @@ export const schemaSettingInfo = [
         type: 'combine',
         value: '',
         active: false,
-        subLabel: null,
+        subLabel: 'Combine Schemas',
     },
 ]
 /**

@@ -130,7 +130,7 @@
                     style="width: 100%"/>
               </a-form-item>
 
-              <div style="margin-top: 8px;margin-left: -14px;">
+              <div style="margin-top: 12px;margin-left: -14px;">
                 <ul>
                   <li><a-typography-text type="secondary"><span class="form-item-info">all of：</span>根据所有子模式验证值</a-typography-text></li>
                   <li><a-typography-text type="secondary"><span class="form-item-info">one of:</span> 根据其中一个子模式验证值</a-typography-text></li>
@@ -410,7 +410,6 @@ watch(() => {
     height: 30px;
     line-height: 30px;
     font-weight: bold;
-
     &.active {
       color: #1890ff;
     }
@@ -419,14 +418,13 @@ watch(() => {
 
 .main {
   .item {
-    //margin-top: 16px;
+    margin-bottom: 16px;
     .select-type-btn {
       margin-top: 16px;
     }
   }
 }
 .form-item-info{
-  //width: 60px;
   display: inline-block;
   text-align: left;
   font-weight: bold;

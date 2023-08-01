@@ -14,6 +14,7 @@ import (
 	"net/http"
 	"net/url"
 	"sort"
+	"strings"
 )
 
 type DiagnoseInterfaceService struct {
@@ -130,16 +131,26 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	title := fmt.Sprintf("%s %s", url, curlObj.Method)
 	queryParams := s.getQueryParams(curlObj.ParsedURL.Query())
 	headers := s.getHeaders(wf.Header)
+	cookies := s.getCookies(wf.Cookies)
 
 	server, _ := s.ServeServerRepo.GetDefaultByServe(parent.ServeId)
+	bodyType := ""
+	contentType := strings.Split(curlObj.ContentType, ";")
+	if len(contentType) > 1 {
+		bodyType = contentType[0]
+	}
 
 	debugData := domain.DebugData{
 		Name:    title,
-		BaseUrl: url,
+		BaseUrl: "",
 		BaseRequest: domain.BaseRequest{
-			Method:      consts.HttpMethod(curlObj.Method),
+			Method:      s.getMethod(bodyType, curlObj.Method),
 			QueryParams: queryParams,
 			Headers:     headers,
+			Cookies:     cookies,
+			Body:        wf.Body.String(),
+			BodyType:    consts.HttpContentType(bodyType),
+			Url:         url,
 		},
 		ServeId:   parent.ServeId,
 		ServerId:  server.ID,
@@ -148,7 +159,7 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 		UsedBy: consts.DiagnoseDebug,
 	}
 
-	debugInterface, err := s.DebugInterfaceService.Save(debugData)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
 
 	// save test interface
 	diagnoseInterface := model.DiagnoseInterface{
@@ -283,4 +294,13 @@ func (s *DiagnoseInterfaceService) getCookies(cookies map[string]*http.Cookie) (
 		return ret[i].Name < ret[j].Name
 	})
 	return
+}
+
+func (s *DiagnoseInterfaceService) getMethod(contentType, method string) (ret consts.HttpMethod) {
+
+	if method == "" && contentType == "application/json" {
+		method = "POST"
+	}
+
+	return consts.HttpMethod(method)
 }

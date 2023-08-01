@@ -70,6 +70,42 @@ func (s *EndpointCaseService) Save(req serverDomain.EndpointCaseSaveReq) (po mod
 	return
 }
 
+func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCaseSaveReq) (po model.EndpointCase, err error) {
+	// save debug data
+	req.DebugData.DebugInterfaceId = 0 // force to create
+	req.DebugData.UsedBy = consts.CaseDebug
+
+	debugInterface, err := s.SaveDebugData(req.DebugData)
+
+	// save case
+	s.CopyValueFromRequest(&po, req)
+
+	if po.EndpointId == 0 {
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(uint(req.EndpointInterfaceId))
+		po.EndpointId = endpointInterface.EndpointId
+	}
+	endpoint, err := s.EndpointRepo.Get(po.EndpointId)
+	po.ProjectId = endpoint.ProjectId
+	po.ServeId = endpoint.ServeId
+
+	po.DebugInterfaceId = debugInterface.ID
+	po.ID = 0
+	err = s.EndpointCaseRepo.Save(&po)
+
+	if po.DebugInterfaceId > 0 {
+		values := map[string]interface{}{
+			"case_interface_id": po.ID,
+		}
+		err = s.DebugInterfaceRepo.UpdateDebugInfo(po.DebugInterfaceId, values)
+	}
+
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (s *EndpointCaseService) UpdateName(req serverDomain.EndpointCaseSaveReq) (err error) {
 	err = s.EndpointCaseRepo.UpdateName(req)
 

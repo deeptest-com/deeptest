@@ -19,6 +19,16 @@ func (c *SummaryCtrl) Summary() {
 	return
 }
 
+// Card
+// @Tags	汇总
+// @summary	汇总卡片位信息
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	projectId		path	int		true	"项目ID"
+// @success	200	{object}	_domain.Response{data=serverDomain.ResSummaryCard}
+// @Router	/api/v1/summary/card/{projectId}	[get]
 func (c *SummaryCtrl) Card(ctx iris.Context) {
 	projectId, err := ctx.Params().GetInt64("projectId")
 
@@ -39,6 +49,16 @@ func (c *SummaryCtrl) Card(ctx iris.Context) {
 	}
 }
 
+// Bugs
+// @Tags	汇总
+// @summary	汇总bug信息
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	projectId		path	int		true	"项目ID"
+// @success	200	{object}	_domain.Response{data=serverDomain.ResSummaryBugs}
+// @Router	/api/v1/summary/bugs/{projectId}	[get]
 func (c *SummaryCtrl) Bugs(ctx iris.Context) {
 	projectId, err := ctx.Params().GetInt64("projectId")
 
@@ -58,6 +78,15 @@ func (c *SummaryCtrl) Bugs(ctx iris.Context) {
 	}
 }
 
+// Details
+// @Tags	汇总
+// @summary	汇总项目详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response{data=serverDomain.ResSummaryDetail}
+// @Router	/api/v1/summary/details	[get]
 func (c *SummaryCtrl) Details(ctx iris.Context) {
 
 	userId := multi.GetUserId(ctx)
@@ -78,6 +107,17 @@ func (c *SummaryCtrl) Details(ctx iris.Context) {
 	}
 }
 
+// ProjectUserRanking
+// @Tags	汇总
+// @summary	汇总项目用户排行数据
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	cycle			path	int		true	"cycle"
+// @Param 	projectId		path	int		true	"项目ID"
+// @success	200	{object}	_domain.Response{data=serverDomain.ResRankingList}
+// @Router	/api/v1/summary/projectUserRanking/{cycle}/{projectId}	[get]
 func (c *SummaryCtrl) ProjectUserRanking(ctx iris.Context) {
 
 	cycle, err := ctx.Params().GetInt64("cycle")
@@ -100,6 +140,16 @@ func (c *SummaryCtrl) ProjectUserRanking(ctx iris.Context) {
 	}
 }
 
+// Collection
+// @Tags	汇总
+// @summary	汇总数据
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	store			path	string	true	"string"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/summary/collection/{store}	[get]
 func (c *SummaryCtrl) Collection(ctx iris.Context) {
 
 	name := ctx.Params().GetString("store")

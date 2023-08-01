@@ -14,6 +14,15 @@ type SnippetCtrl struct {
 }
 
 // Get 详情
+// @Tags	脚本
+// @summary	获取详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	name			query	string	true	"脚本名"
+// @success	200	{object}	_domain.Response{data=model.Snippet}
+// @Router	/api/v1/snippets	[get]
 func (c *SnippetCtrl) Get(ctx iris.Context) {
 	name := ctx.URLParam("name")
 

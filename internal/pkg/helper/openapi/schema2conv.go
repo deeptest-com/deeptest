@@ -162,6 +162,6 @@ func (s *schema2conv) AllOfConv(schema *SchemaRef) {
 			}
 
 		}
-
+		schema.Value.AllOf = nil
 	}
 }

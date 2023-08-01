@@ -62,7 +62,7 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 
 func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) {
 	res, _ = s.EndpointRepo.GetAll(id, version)
-	s.SchemaConv(&res)
+	s.SchemasConv(&res)
 	return
 }
 
@@ -506,7 +506,7 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 	//return
 }
 
-func (s *EndpointService) SchemaConv(endpoint *model.Endpoint) {
+func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 	schema2conv := openapi.NewSchema2conv()
 	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
 	for key, intef := range endpoint.Interfaces {
@@ -520,4 +520,17 @@ func (s *EndpointService) SchemaConv(endpoint *model.Endpoint) {
 		}
 	}
 
+}
+
+func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId uint) {
+	schema2conv := openapi.NewSchema2conv()
+	schema2conv.Components = s.ServeService.Components(serveId)
+	for k, response := range interf.ResponseBodies {
+		schema := new(openapi.SchemaRef)
+		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
+		if len(schema.Value.AllOf) > 0 {
+			schema2conv.AllOfConv(schema)
+		}
+		interf.ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
+	}
 }

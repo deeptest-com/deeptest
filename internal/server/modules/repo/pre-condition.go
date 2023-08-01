@@ -14,9 +14,7 @@ import (
 type PreConditionRepo struct {
 	DB *gorm.DB `inject:""`
 
-	ExtractorRepo  *ExtractorRepo  `inject:""`
-	CheckpointRepo *CheckpointRepo `inject:""`
-	ScriptRepo     *ScriptRepo     `inject:""`
+	ScriptRepo *ScriptRepo `inject:""`
 }
 
 func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugPreCondition, err error) {
@@ -50,10 +48,16 @@ func (r *PreConditionRepo) Save(checkpoint *model.DebugPreCondition) (err error)
 }
 
 func (r *PreConditionRepo) Delete(id uint) (err error) {
+	po, _ := r.Get(id)
+
 	err = r.DB.Model(&model.DebugPreCondition{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
+
+	if po.EntityType == consts.ConditionTypeScript {
+		r.ScriptRepo.DeleteByCondition(id)
+	}
 
 	return
 }
@@ -98,39 +102,12 @@ func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (r
 	for _, po := range pos {
 		typ := po.EntityType
 
-		if typ == consts.ConditionTypeExtractor {
-			extractor := domain.ExtractorBase{}
-
-			entity, _ := r.ExtractorRepo.Get(po.EntityId)
-			copier.CopyWithOption(&extractor, entity, copier.Option{DeepCopy: true})
-
-			raw, _ := json.Marshal(extractor)
-			condition := domain.InterfaceExecCondition{
-				Type: typ,
-				Raw:  raw,
-			}
-
-			ret = append(ret, condition)
-
-		} else if typ == consts.ConditionTypeCheckpoint {
-			checkpoint := domain.CheckpointBase{}
-
-			entity, _ := r.CheckpointRepo.Get(po.EntityId)
-			copier.CopyWithOption(&checkpoint, entity, copier.Option{DeepCopy: true})
-
-			raw, _ := json.Marshal(checkpoint)
-			condition := domain.InterfaceExecCondition{
-				Type: typ,
-				Raw:  raw,
-			}
-
-			ret = append(ret, condition)
-
-		} else if typ == consts.ConditionTypeScript {
+		if typ == consts.ConditionTypeScript {
 			script := domain.ScriptBase{}
 
 			entity, _ := r.ScriptRepo.Get(po.EntityId)
 			copier.CopyWithOption(&script, entity, copier.Option{DeepCopy: true})
+			script.RecordId = po.EntityId
 
 			raw, _ := json.Marshal(script)
 			condition := domain.InterfaceExecCondition{

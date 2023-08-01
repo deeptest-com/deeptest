@@ -7,7 +7,6 @@ import (
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/kataras/iris/v12"
-	"log"
 	"time"
 )
 
@@ -25,9 +24,10 @@ type DebugInvokeService struct {
 	DebugSceneService     *DebugSceneService     `inject:""`
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 
-	ExtractorService  *ExtractorService  `inject:""`
-	CheckpointService *CheckpointService `inject:""`
-	ScriptService     *ScriptService     `inject:""`
+	ExtractorService     *ExtractorService     `inject:""`
+	CheckpointService    *CheckpointService    `inject:""`
+	ScriptService        *ScriptService        `inject:""`
+	ExecConditionService *ExecConditionService `inject:""`
 
 	VariableService *VariableService `inject:""`
 	DatapoolService *DatapoolService `inject:""`
@@ -66,7 +66,13 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 	}
 
 	invoke, err := s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
-	log.Println(invoke)
+
+	s.ExecConditionService.SavePreConditionResult(invoke.ID, req.PreConditions, usedBy)
+
+	s.ExecConditionService.SavePostConditionResult(invoke.ID,
+		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
+		serveId, processorId, scenarioId, usedBy,
+		req.PostConditions)
 
 	//s.ExtractorService.ExtractInterface(invoke.ID,
 	//	req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,

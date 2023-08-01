@@ -11,6 +11,7 @@ type DebugPreCondition struct {
 
 	EntityType consts.ConditionType `json:"entityType"`
 	EntityId   uint                 `json:"entityId"`
+	UsedBy     consts.UsedBy        `json:"usedBy"`
 
 	Name string `json:"name"`
 	Desc string `json:"desc"`
@@ -27,6 +28,7 @@ type DebugPostCondition struct {
 
 	EntityType consts.ConditionType `json:"entityType"`
 	EntityId   uint                 `json:"entityId"`
+	UsedBy     consts.UsedBy        `json:"usedBy"`
 
 	Name string `json:"name"`
 	Desc string `json:"desc"`

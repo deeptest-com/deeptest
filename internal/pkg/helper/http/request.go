@@ -134,8 +134,13 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	}
 
 	unicodeContent, err := ioutil.ReadAll(reader)
-	utf8Content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
+	if IsImageContent(ret.ContentType.String()) {
+		imgBase64Str := base64.StdEncoding.EncodeToString(unicodeContent)
+		ret.Content = imgBase64Str
+		return
+	}
 
+	utf8Content, _ := _stringUtils.UnescapeUnicode(unicodeContent)
 	if _consts.Verbose {
 		_logUtils.Info(string(utf8Content))
 	}
@@ -382,6 +387,9 @@ func IsHtmlContent(str string) bool {
 }
 func IsJsonContent(str string) bool {
 	return strings.Contains(str, "json")
+}
+func IsImageContent(str string) bool {
+	return strings.Contains(str, "image")
 }
 
 func Base64(str string) (ret string) {

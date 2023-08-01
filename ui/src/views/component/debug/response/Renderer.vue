@@ -7,7 +7,7 @@
           <ResponseLensHtml v-else-if="responseData.contentLang === 'html'" />
           <ResponseLensXml v-else-if="responseData.contentLang === 'xml'" />
           <ResponseLensRaw v-else-if="responseData.contentLang === 'text'" />
-          <ResponseLensImage v-else-if="responseData.contentLang === 'image'" />
+          <ResponseLensImage v-else-if="isImage(responseData.contentType)" />
         </a-tab-pane>
 
         <a-tab-pane key="header" tab="响应头">
@@ -68,6 +68,10 @@ const {t} = useI18n();
 
 const title = computed(() => t(responseData.value.contentLang ? responseData.value.contentLang : 'empty'))
 const activeKey = ref('body');
+
+const isImage = (type) => {
+  return type && type.indexOf('image') > -1
+}
 
 /* const extractorFail = computed(() => {
   for (let val of extractorsData.value) {

@@ -61,13 +61,11 @@ import {MonacoOptions} from "@/utils/const";
 import {formatXml} from "@/utils/dom";
 import {parseXml, testExpr} from "@/views/component/debug/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
+import {StateType as Debug} from "@/views/component/debug/store";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 const usedBy = inject('usedBy') as UsedBy
 
 const {t} = useI18n();
-
-import {Param} from "@/views/component/debug/data";
-import {StateType as Debug} from "@/views/component/debug/store";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 const store = useStore<{  Debug: Debug }>();
@@ -75,6 +73,11 @@ const store = useStore<{  Debug: Debug }>();
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
+
+const timestamp = ref('')
+watch(responseData, (newVal) => {
+  timestamp.value = Date.now() + ''
+}, {immediate: true, deep: true})
 
 const editorOptions = ref(Object.assign({usedWith: 'response',readOnly:false}, MonacoOptions) )
 const content = ref(formatXml(responseData.value.content))

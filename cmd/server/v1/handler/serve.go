@@ -116,9 +116,8 @@ func (c *ServeCtrl) Detail(ctx iris.Context) {
 }
 
 // Copy 克隆服务
-// Detail 服务详情
-// @Tags	复制服务
-// @summary	服务详情
+// @Tags	服务管理
+// @summary	复制服务
 // @accept 	application/json
 // @Produce application/json
 // @Param	Authorization	header	string	true	"Authentication header"

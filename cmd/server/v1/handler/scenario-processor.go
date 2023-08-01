@@ -96,16 +96,6 @@ func (c *ScenarioProcessorCtrl) SaveBasicInfo(ctx iris.Context) {
 // @Param	Authorization			header	string							true	"Authentication header"
 // @Param 	currProjectId			query	int								true	"当前项目ID"
 // @Param 	category			path	string								true	"category"
-// @Param 	ProcessorGroup	body	model.ProcessorGroup	true	"ProcessorGroup"
-// @Param 	ProcessorLogic	body	model.ProcessorLogic	true	"ProcessorLogic"
-// @Param 	ProcessorLoop	body	model.ProcessorLoop	true	"ProcessorLoop"
-// @Param 	ProcessorTimer	body	model.ProcessorTimer	true	"ProcessorTimer"
-// @Param 	ProcessorPrint	body	model.ProcessorPrint	true	"ProcessorPrint"
-// @Param 	ProcessorVariable	body	model.ProcessorVariable	true	"ProcessorVariable"
-// @Param 	ProcessorCookie	body	model.ProcessorCookie	true	"ProcessorCookie"
-// @Param 	ProcessorAssertion	body	model.ProcessorAssertion	true	"ProcessorAssertion"
-// @Param 	ProcessorExtractor	body	model.ProcessorExtractor	true	"ProcessorExtractor"
-// @Param 	ProcessorData	body	model.ProcessorData	true	"ProcessorData"
 // @success	200	{object}	_domain.Response{data=model.ProcessorData}
 // @Router	/api/v1/scenarios/processors/{category}/save	[put]
 func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {

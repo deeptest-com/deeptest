@@ -19,6 +19,7 @@ type DocumentService struct {
 	EndpointDocumentRepo  *repo.EndpointDocumentRepo  `inject:""`
 	EndpointSnapshotRepo  *repo.EndpointSnapshotRepo  `inject:""`
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
+	EndpointService       *EndpointService            `inject:""`
 }
 
 const (
@@ -311,6 +312,7 @@ func (s *DocumentService) GetDocumentDetail(documentId, endpointId, interfaceId 
 		return
 	}
 
+	s.EndpointService.SchemaConv(&interfaceDetail, serveId)
 	res = make(map[string]interface{})
 	res["interface"] = interfaceDetail
 	res["servers"] = serves

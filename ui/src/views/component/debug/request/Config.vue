@@ -25,7 +25,7 @@
         <PreCondition v-if="activeKey === 'pre-condition'" />
       </a-tab-pane>
 
-      <a-tab-pane key="post-condition" tab="后处理">
+      <a-tab-pane key="post-condition" tab="后置处理">
         <PostCondition v-if="activeKey === 'post-condition'" />
       </a-tab-pane>
 

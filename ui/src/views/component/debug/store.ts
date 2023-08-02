@@ -53,6 +53,8 @@ export interface StateType {
     preConditions: any[];
     postConditions: any[];
     assertionConditions: any[];
+    activeAssertion: any;
+    activePostCondition: any;
 
     extractorData: any;
     checkpointData: any;
@@ -73,6 +75,8 @@ const initState: StateType = {
     preConditions: [],
     postConditions: [],
     assertionConditions: [],
+    activeAssertion: [],
+    activePostCondition: [],
 
     extractorData: {} as Extractor,
     checkpointData: {} as Checkpoint,
@@ -97,6 +101,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setPreConditions: Mutation<StateType>;
         setPostConditions: Mutation<StateType>;
         setAssertionConditions: Mutation<StateType>;
+        setActiveAssertion: Mutation<StateType>;
+        setActivePostCondition: Mutation<StateType>;
+
         setExtractor: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
         setScript: Mutation<StateType>;
@@ -210,6 +217,21 @@ const StoreModel: ModuleType = {
         },
         setAssertionConditions(state, payload) {
             state.assertionConditions = payload;
+        },
+
+        setActiveAssertion(state, payload) {
+            if (state.activeAssertion.id === payload.id) {
+                state.activeAssertion = {}
+            } else {
+                state.activeAssertion = payload;
+            }
+        },
+        setActivePostCondition(state, payload) {
+            if (state.activePostCondition.id === payload.id) {
+                state.activePostCondition = {}
+            } else {
+                state.activePostCondition = payload;
+            }
         },
 
         setExtractor(state, payload) {
@@ -497,9 +519,20 @@ const StoreModel: ModuleType = {
                 await createPostConditions(payload);
 
                 if (payload.entityType === ConditionType.checkpoint) {
-                    dispatch('listAssertionCondition');
+                    await dispatch('listAssertionCondition');
+
+                    const len = state.assertionConditions.length
+                    if (len > 0) {
+                        commit('setActiveAssertion', state.assertionConditions[len-1]);
+                    }
+
                 } else {
-                    dispatch('listPostCondition');
+                    await dispatch('listPostCondition');
+
+                    const len = state.postConditions.length
+                    if (len > 0) {
+                        commit('setActivePostCondition', state.postConditions[len-1]);
+                    }
                 }
                 return true;
             } catch (error) {

@@ -20,11 +20,6 @@
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>清除</template>
-            <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
-
-          <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全屏</template>
             <FullscreenOutlined @click.stop="openFullscreen()"  class="dp-icon-btn dp-trans-80" />
           </a-tooltip>

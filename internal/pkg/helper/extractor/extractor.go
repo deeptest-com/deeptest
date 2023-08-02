@@ -72,19 +72,19 @@ func GenDesc(varName string, src consts.ExtractorSrc, typ consts.ExtractorType,
 
 	} else if typ == consts.JsonQuery {
 		name = fmt.Sprintf("JSON查询")
-		expr = fmt.Sprintf("%s", getLimitStr(expression, 26))
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 50))
 
 	} else if typ == consts.HtmlQuery {
 		name = fmt.Sprintf("HTML查询")
-		expr = fmt.Sprintf("%s", getLimitStr(expression, 26))
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 50))
 
 	} else if typ == consts.XmlQuery {
 		name = fmt.Sprintf("XML查询")
-		expr = fmt.Sprintf("%s", getLimitStr(expression, 26))
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 50))
 
 	} else if typ == consts.Regx {
 		name = fmt.Sprintf("正则表达式")
-		expr = fmt.Sprintf("%s", getLimitStr(expression, 26))
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 50))
 	}
 
 	ret = fmt.Sprintf("<b>提取变量&nbsp;%s</b>&nbsp;&nbsp;%s&nbsp;%s（%s）", varName, srcDesc, name, expr)

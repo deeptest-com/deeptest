@@ -33,7 +33,7 @@ func GenDesc(typ consts.CheckpointType, operator consts.ComparisonOperator, valu
 func GenResultMsg(po *domain.CheckpointBase) {
 	desc := GenDesc(po.Type, po.Operator, po.Value, po.Expression, po.ExtractorVariable)
 
-	po.ResultMsg = fmt.Sprintf("%s，%s。", desc, _i118Utils.Sprintf(po.ResultStatus.String()))
+	po.ResultMsg = fmt.Sprintf("%s", desc)
 
 	return
 }

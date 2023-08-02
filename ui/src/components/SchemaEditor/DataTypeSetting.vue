@@ -4,7 +4,7 @@
              v-model:visible="visible"
              :overlayClassName="'data-type-setting-container'">
     <template #content>
-      <div class="content" v-for="(tabs,tabsIndex) in tabsList" :key="tabsIndex">
+      <div class="content" v-for="(tabs,tabsIndex) in tabsList" :key="tabsIndex" v-show="!(activeTabsIndex > 0 && tabsIndex > 0)">
         <div class="header">
           <div class="item"
                v-for="(tab,tabIndex) in tabs"
@@ -138,7 +138,6 @@
                 </ul>
               </div>
             </a-form>
-
           </div>
         </div>
       </div>
@@ -165,6 +164,19 @@ const emit = defineEmits(['change']);
 const tabsList: any = ref([]);
 const visible: any = ref(false);
 
+// 当前选中的顶层 tab index
+/**
+ * 这里备注下：Components 和 Combine Schemas 两种类型，都是通过 tabsList[0] 来控制的，所以这里的 tabsIndex 也是通过 tabsList[0] 来控制的
+ * 另外，如果选中了Components 和 Combine Schemas 两种类型，则 TabLists[1,....] 则不需要展示了
+ * */
+const activeTabsIndex = computed(() => {
+  if(!Array.isArray(tabsList.value?.[0])){
+    return -1;
+  }
+  return tabsList.value?.[0]?.findIndex((item: any, index: any) => {
+    return item.active;
+  });
+});
 const isDisabled: any = computed(() => {
   return props.isRefChildNode && !props.isRoot;
 })
@@ -222,6 +234,11 @@ function selectTab(tabs: any, tabIndex: number) {
   if (tabIndex === 0 && tabs[tabIndex].value === 'array' && tabsList.value.length === 1) {
     tabsList.value.push(cloneDeep(schemaSettingInfo));
   }
+  console.log('832 tabsList', tabsList.value)
+  // 切换到 组件 Tab 或者 组合schema Tab 时，需要清空其他的tab
+  // if(tabIndex === 2 || tabIndex === 1){
+  //   tabsList.value.splice(1);
+  // }
 }
 
 /**
@@ -280,7 +297,7 @@ function initTabsList(types: any, treeInfo: any) {
 
 function getValueFromTabsList(tabsList: any) {
   const result: any = [];
-  // debugger;
+
   tabsList.forEach((tabs: any) => {
     let activeTab = tabs.find((tab: any) => tab.active);
     // debugger

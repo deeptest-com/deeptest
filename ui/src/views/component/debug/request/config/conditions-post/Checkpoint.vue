@@ -113,27 +113,25 @@ load()
 
 const variables = ref([])
 
-const extractorVariableRequired = { required: true, message: '请选择变量', trigger: 'change' }
-const expressionRequired = { required: true, message: '请输入表达式', trigger: 'blur' }
-const operatorRequired = { required: true, message: '请选择操作', trigger: 'change' }
-const valueRequired = { required: true, message: '请输入数值', trigger: 'blur' }
-const rules = reactive({
-  type: [
-    { required: true, message: '请选择类型', trigger: 'blur' },
-  ],
-  extractorVariable: [
-    extractorVariableRequired
-  ],
-  expression: [
-    expressionRequired
-  ],
-  operator: [
-    operatorRequired,
-  ],
-  value: [
-    valueRequired,
-  ],
-} as any);
+const extractorVariableRequired = [{ required: true, message: '请选择变量', trigger: 'change' }]
+const expressionRequired = [{ required: true, message: '请输入表达式', trigger: 'blur' }]
+const operatorRequired = [{ required: true, message: '请选择操作', trigger: 'change' }]
+const valueRequired = [{ required: true, message: '请输入数值', trigger: 'blur' }]
+
+const rules = computed(() => { return {
+    type: [
+      { required: true, message: '请选择类型', trigger: 'blur' },
+    ],
+    extractorVariable: model.value.type === CheckpointType.extractor ? extractorVariableRequired : [],
+    expression: model.value.type === CheckpointType.responseHeader || model.value.type === CheckpointType.judgement ?
+        expressionRequired : [],
+    operator: [
+      model.value.type === CheckpointType.judgement ? [] : operatorRequired,
+    ],
+    value: [
+      model.value.type === CheckpointType.judgement ? [] : valueRequired,
+    ],
+}})
 
 let { resetFields, validate, validateInfos } = useForm(model, rules);
 
@@ -191,32 +189,18 @@ const selectType = () => {
 }
 
 const loadExtractorVariable = () => {
-  if (model.value.type === CheckpointType.responseHeader || model.value.type === CheckpointType.judgement) {
-    rules.expression = [expressionRequired]
-  } else {
-    rules.expression = []
-  }
-
   if (model.value.type === CheckpointType.judgement) {
-    rules.operator = []
-    rules.value = []
-
     model.value.operator = ComparisonOperator.empty
     model.value.value = ''
   } else {
-    rules.operator = [operatorRequired]
-    rules.value = [valueRequired]
-    if (!model.value.operator) model.value.operator = ComparisonOperator.equal
+    if (!model.value.operator)
+      model.value.operator = ComparisonOperator.equal
   }
 
   if (model.value.type === CheckpointType.extractor) {
-    rules.extractorVariable = [extractorVariableRequired]
-
     listExtractorVariable(debugInfo.value).then((jsn) => {
       variables.value = jsn.data
     })
-  } else {
-    rules.extractorVariable = []
   }
 }
 loadExtractorVariable()

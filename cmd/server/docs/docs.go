@@ -4367,7 +4367,7 @@ const docTemplate = `{
                 "tags": [
                     "环境管理"
                 ],
-                "summary": "环境列表(List)",
+                "summary": "环境列表(GetScript)",
                 "parameters": [
                     {
                         "type": "string",

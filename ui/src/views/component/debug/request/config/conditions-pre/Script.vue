@@ -3,7 +3,7 @@
       <div class="content">
         <div class="codes">
           <MonacoEditor theme="vs" language="typescript" class="editor"
-                        :value="model.content"
+                        :value="scriptData.content"
                         :timestamp="timestamp"
                         :options="editorOptions"
                         @change="editorChange" />
@@ -51,25 +51,12 @@ const store = useStore<{  Debug: Debug }>();
 
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const model = computed<any>(() => store.state.Debug.scriptData);
-
-const props = defineProps({
-  condition: {
-    type: Object,
-    required: true,
-  },
-})
+const scriptData = computed<any>(() => store.state.Debug.scriptData);
 
 const timestamp = ref('')
-watch(model, (newVal) => {
+watch(scriptData, (newVal) => {
   timestamp.value = Date.now() + ''
 }, {immediate: true, deep: true})
-
-const load = () => {
-  console.log('load', props.condition)
-  store.dispatch('Debug/getScript', props.condition.entityId)
-}
-load()
 
 const editorOptions = ref(Object.assign({
       usedWith: 'request',
@@ -86,37 +73,28 @@ const addSnippet = (snippetName) => {
   store.dispatch('Debug/addSnippet', snippetName)
 }
 const editorChange = (newScriptCode) => {
-  model.value.content = newScriptCode;
+  scriptData.value.content = newScriptCode;
 }
 
-const rules = reactive({
-  content: [
-    { required: true, message: '请输入脚本内容', trigger: 'blur' },
-  ]
-} as any);
+const save = async () => {
+  console.log('save', scriptData.value)
 
-let { resetFields, validate, validateInfos } = useForm(model, rules);
+  scriptData.value.debugInterfaceId = debugInfo.value.debugInterfaceId
+  scriptData.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
+  scriptData.value.projectId = debugData.value.projectId
 
-const save = () => {
-  console.log('save', model.value)
-  validate().then(async () => {
-    model.value.debugInterfaceId = debugInfo.value.debugInterfaceId
-    model.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
-    model.value.projectId = debugData.value.projectId
-
-    const result = await store.dispatch('Debug/saveScript', model.value)
-    if (result) {
-      notification.success({
-        key: NotificationKeyCommon,
-        message: `保存成功`,
-      })
-    } else {
-      notification.error({
-        key: NotificationKeyCommon,
-        message: `保存失败`,
-      });
-    }
-  })
+  const result = await store.dispatch('Debug/saveScript', scriptData.value)
+  if (result) {
+    notification.success({
+      key: NotificationKeyCommon,
+      message: `保存成功`,
+    })
+  } else {
+    notification.error({
+      key: NotificationKeyCommon,
+      message: `保存失败`,
+    });
+  }
 }
 
 onMounted(() => {

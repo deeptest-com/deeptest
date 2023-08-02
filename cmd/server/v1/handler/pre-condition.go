@@ -14,8 +14,8 @@ type PreConditionCtrl struct {
 	BaseCtrl
 }
 
-// List
-func (c *PreConditionCtrl) List(ctx iris.Context) {
+// GetScript
+func (c *PreConditionCtrl) GetScript(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
@@ -30,7 +30,7 @@ func (c *PreConditionCtrl) List(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	data, err := c.PreConditionService.List(uint(debugInterfaceId), uint(endpointInterfaceId))
+	data, err := c.PreConditionService.GetScript(uint(debugInterfaceId), uint(endpointInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

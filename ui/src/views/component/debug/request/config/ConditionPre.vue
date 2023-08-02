@@ -29,12 +29,12 @@
     </div>
 
     <div class="content">
-      <Script v-if="preConditions.length > 0" :condition="preConditions[0]" />
+      <Script />
     </div>
 
-    <FullScreenPopup v-if="preConditions.length > 0 && fullscreen"
+    <FullScreenPopup v-if="scriptData.id > 0 && fullscreen"
                      :visible="fullscreen"
-                     :model="preConditions[0]"
+                     :model="scriptData"
                      :onCancel="closeFullScreen"/>
   </div>
 </template>
@@ -53,24 +53,24 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import Script from "./conditions-pre/Script.vue";
 import FullScreenPopup from "./ConditionPopup.vue";
 
-const store = useStore<{  Debug: Debug }>();
-const debugData = computed<any>(() => store.state.Debug.debugData);
-const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
-const preConditions = computed<any>(() => store.state.Debug.preConditions);
+const store = useStore<{  Debug: Debug }>()
+const debugData = computed<any>(() => store.state.Debug.debugData)
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo)
+const scriptData = computed<any>(() => store.state.Debug.scriptData);
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 const fullscreen = ref(false)
 
-const list = () => {
-  console.log('list')
-  store.dispatch('Debug/listPreCondition')
+const getPreConditionScript = () => {
+  console.log('getPreConditionScript')
+  store.dispatch('Debug/getPreConditionScript')
 }
 
 watch(debugData, (newVal) => {
   console.log('watch debugData')
-  list()
+  getPreConditionScript()
 }, {immediate: true, deep: true});
 
 const format = (item) => {

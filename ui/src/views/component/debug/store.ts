@@ -21,7 +21,6 @@ import {
     listInvocation,
     listShareVar,
     getSnippet,
-    listPreConditions,
     listPostConditions,
     getScript,
     saveScript,
@@ -31,7 +30,13 @@ import {
     removePostConditions,
     movePostConditions,
     removePreConditions,
-    movePreConditions, disablePreConditions, disablePostConditions, saveAsCase, getInvocationResult, getInvocationLog,
+    movePreConditions,
+    disablePreConditions,
+    disablePostConditions,
+    saveAsCase,
+    getInvocationResult,
+    getInvocationLog,
+    getPreConditionScript,
 } from './service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
@@ -98,7 +103,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setInvocations: Mutation<StateType>;
         setServerId: Mutation<StateType>;
 
-        setPreConditions: Mutation<StateType>;
         setPostConditions: Mutation<StateType>;
         setAssertionConditions: Mutation<StateType>;
         setActiveAssertion: Mutation<StateType>;
@@ -132,7 +136,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getInvocationAsInterface: Action<StateType, StateType>;
         removeInvocation: Action<StateType, StateType>;
 
-        listPreCondition: Action<StateType, StateType>;
+        getPreConditionScript: Action<StateType, StateType>;
         createPreCondition: Action<StateType, StateType>;
         disablePreCondition: Action<StateType, StateType>;
         removePreCondition: Action<StateType, StateType>;
@@ -209,9 +213,6 @@ const StoreModel: ModuleType = {
             state.invocationsData = payload;
         },
 
-        setPreConditions(state, payload) {
-            state.preConditions = payload;
-        },
         setPostConditions(state, payload) {
             state.postConditions = payload;
         },
@@ -444,11 +445,11 @@ const StoreModel: ModuleType = {
         },
 
         // conditions
-        async listPreCondition({commit, state}) {
+        async getPreConditionScript({commit, state}) {
             try {
-                const resp = await listPreConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId);
+                const resp = await getPreConditionScript(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId);
                 const {data} = resp;
-                commit('setPreConditions', data);
+                commit('setScript', data);
                 return true;
             } catch (error) {
                 return false;

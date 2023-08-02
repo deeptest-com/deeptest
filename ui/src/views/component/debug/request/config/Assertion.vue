@@ -22,7 +22,7 @@
                  @end="move">
         <template #item="{ element }">
 
-          <div :class="[activePostCondition.id === +element.id ? 'active' : '']" class="collapse-item">
+          <div :class="[activeAssertion.id === +element.id ? 'active' : '']" class="collapse-item">
             <div class="header">
               <div @click.stop="expand(element)" class="title dp-link">
                 <icon-svg class="handle dp-drag icon" type="move"  />

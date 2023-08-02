@@ -5,7 +5,22 @@
         <a-input-search placeholder="输入关键字过滤"
                         class="search-input"
                         v-model:value="keywords" />
-        <PlusOutlined class="plus-icon"/>
+        <a-dropdown>
+          <PlusOutlined class="plus-icon" @click="addTopNode"/>
+          <template #overlay>
+            <a-menu>
+              <a-sub-menu key="test" title="添加请求">
+                <a-menu-item>导入接口定义</a-menu-item>
+                <a-menu-item>导入接口用例</a-menu-item>
+                <a-menu-item>导入快捷调试</a-menu-item>
+                <a-menu-item>自定义请求</a-menu-item>
+                <a-menu-item>cURL导入</a-menu-item>
+              </a-sub-menu>
+              <a-menu-item>添加处理器</a-menu-item>
+              <a-menu-item>添加分组</a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
       </div>
       <div class="tree-content">
         <a-tree
@@ -379,6 +394,10 @@ async function onDrop(info: DropEvent) {
   )
 }
 
+function addTopNode() {
+  console.log('addTopNode');
+}
+
 let currentInstance
 onMounted(() => {
   console.log('onMounted')
@@ -401,6 +420,7 @@ onUnmounted(() => {
 }
 .plus-icon{
   margin: 0 12px 0 6px;
+  cursor: pointer;
 }
 
 

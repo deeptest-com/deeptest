@@ -98,6 +98,7 @@ import EditPage from "../edit/invite.vue";
 import { SelectTypes } from "ant-design-vue/lib/select";
 import {QueryParams} from "@/types/data";
 import {inviteUser} from "@/views/user/info/service";
+import { message } from 'ant-design-vue';
 
 const router = useRouter();
 const store = useStore<{ Project: StateType; User: UserStateType,ProjectGlobal }>();
@@ -287,6 +288,7 @@ const handleChangeRole = async (val: any, record: any) => {
     projectRoleId: val,
     userId: record.id,
   });
+  message.success('操作成功',1);
 };
 
 

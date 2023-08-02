@@ -118,7 +118,7 @@ const expressionRequired = [{ required: true, message: '请输入表达式', tri
 const operatorRequired = [{ required: true, message: '请选择操作', trigger: 'change' }]
 const valueRequired = [{ required: true, message: '请输入数值', trigger: 'blur' }]
 
-const rules = computed(() => { return {
+const rulesRef = computed(() => { return {
     type: [
       { required: true, message: '请选择类型', trigger: 'blur' },
     ],
@@ -133,7 +133,7 @@ const rules = computed(() => { return {
     ],
 }})
 
-let { resetFields, validate, validateInfos } = useForm(model, rules);
+let { resetFields, validate, validateInfos } = useForm(model, rulesRef);
 
 const save = () => {
   console.log('save', model.value)

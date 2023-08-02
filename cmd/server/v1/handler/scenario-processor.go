@@ -16,6 +16,15 @@ type ScenarioProcessorCtrl struct {
 }
 
 // Get 详情
+// @Tags	场景模块/处理器
+// @summary	场景节点详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"节点ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/scenarios/processors/{id}	[get]
 func (c *ScenarioProcessorCtrl) Get(ctx iris.Context) {
 	processorId, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -52,6 +61,15 @@ func (c *ScenarioProcessorCtrl) Get(ctx iris.Context) {
 //}
 
 // SaveBasicInfo 更新
+// @Tags	场景模块/处理器
+// @summary	保存基本信息
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization			header	string							true	"Authentication header"
+// @Param 	currProjectId			query	int								true	"当前项目ID"
+// @Param 	ScenarioProcessorInfo	body	domain.ScenarioProcessorInfo	true	"保存基本信息的请求参数"
+// @success	200	{object}	_domain.Response{data=object{name=string}}
+// @Router	/api/v1/scenarios/processors/saveProcessorInfo	[put]
 func (c *ScenarioProcessorCtrl) SaveBasicInfo(ctx iris.Context) {
 	var req domain.ScenarioProcessorInfo
 	err := ctx.ReadJSON(&req)
@@ -71,6 +89,15 @@ func (c *ScenarioProcessorCtrl) SaveBasicInfo(ctx iris.Context) {
 }
 
 // Save 保存
+// @Tags	场景模块/处理器
+// @summary	保存配置信息
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization			header	string							true	"Authentication header"
+// @Param 	currProjectId			query	int								true	"当前项目ID"
+// @Param 	category			path	string								true	"category"
+// @success	200	{object}	_domain.Response{data=model.ProcessorData}
+// @Router	/api/v1/scenarios/processors/{category}/save	[put]
 func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 	processorCategoryString := ctx.Params().Get("category")
 	processorCategory := consts.ProcessorCategory(processorCategoryString)

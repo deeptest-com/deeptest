@@ -20,84 +20,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1//users": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "用户管理"
-                ],
-                "summary": "用户列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "field",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "name",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "order",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "page",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "pageSize",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "name": "userName",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/_domain.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/definitions/_domain.PageData"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "result": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "$ref": "#/definitions/serverDomain.UserResp"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/account/forgotPassword": {
             "post": {
                 "consumes": [
@@ -961,71 +883,6 @@ const docTemplate = `{
             }
         },
         "/api/v1/checkpoints": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "检查点"
-                ],
-                "summary": "检查点列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authentication header",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前项目ID",
-                        "name": "currProjectId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "debugInterfaceId",
-                        "name": "debugInterfaceId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "endpointInterfaceId",
-                        "name": "endpointInterfaceId",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/_domain.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
             "put": {
                 "consumes": [
                     "application/json"
@@ -1058,7 +915,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                            "$ref": "#/definitions/model.DebugConditionCheckpoint"
                         }
                     }
                 ],
@@ -1103,7 +960,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                            "$ref": "#/definitions/model.DebugConditionCheckpoint"
                         }
                     }
                 ],
@@ -1119,7 +976,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                                            "$ref": "#/definitions/model.DebugConditionCheckpoint"
                                         }
                                     }
                                 }
@@ -1176,7 +1033,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                                            "$ref": "#/definitions/model.DebugConditionCheckpoint"
                                         }
                                     }
                                 }
@@ -1576,7 +1433,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.DebugReq"
+                            "$ref": "#/definitions/domain.DebugInfo"
                         }
                     }
                 ],
@@ -1635,7 +1492,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.DebugReq"
+                            "$ref": "#/definitions/domain.DebugInfo"
                         }
                     }
                 ],
@@ -1694,7 +1551,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.DebugReq"
+                            "$ref": "#/definitions/domain.DebugData"
                         }
                     }
                 ],
@@ -1760,52 +1617,6 @@ const docTemplate = `{
                         "name": "endpointInterfaceId",
                         "in": "query",
                         "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "load by endpoint case",
-                        "name": "caseInterfaceId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "name": "debugInterfaceId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "load by interface diagnose",
-                        "name": "diagnoseInterfaceId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "EndpointInterface without DebugInterface init",
-                        "name": "endpointInterfaceId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "integer",
-                        "description": "used to load vars by scenario processor",
-                        "name": "scenarioProcessorId",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "interface_debug",
-                            "scenario_debug",
-                            "diagnose_debug",
-                            "case_debug"
-                        ],
-                        "type": "string",
-                        "x-enum-varnames": [
-                            "InterfaceDebug",
-                            "ScenarioDebug",
-                            "DiagnoseDebug",
-                            "CaseDebug"
-                        ],
-                        "name": "usedBy",
-                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -3877,6 +3688,56 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/endpoints/cases/copy": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设计器/接口用例"
+                ],
+                "summary": "用例复制",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用例ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.EndpointCase"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/endpoints/cases/list": {
             "get": {
                 "consumes": [
@@ -5509,90 +5370,6 @@ const docTemplate = `{
             }
         },
         "/api/v1/extractors": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "提取器"
-                ],
-                "summary": "提取器列表",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authentication header",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前项目ID",
-                        "name": "currProjectId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "debugInterfaceId",
-                        "name": "debugInterfaceId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "endpointInterfaceId",
-                        "name": "endpointInterfaceId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "usedBy",
-                        "name": "usedBy",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/_domain.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/definitions/_domain.PageData"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "result": {
-                                                            "type": "array",
-                                                            "items": {
-                                                                "$ref": "#/definitions/model.DebugInterfaceExtractor"
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            },
             "put": {
                 "consumes": [
                     "application/json"
@@ -5621,11 +5398,11 @@ const docTemplate = `{
                     },
                     {
                         "description": "更新提取器的请求参数",
-                        "name": "DebugInterfaceExtractor",
+                        "name": "DebugConditionExtractor",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.DebugInterfaceExtractor"
+                            "$ref": "#/definitions/model.DebugConditionExtractor"
                         }
                     }
                 ],
@@ -5666,70 +5443,11 @@ const docTemplate = `{
                     },
                     {
                         "description": "新建提取器的请求参数",
-                        "name": "DebugInterfaceExtractor",
+                        "name": "ExtractorConditionQuickCreateReq",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.DebugInterfaceExtractor"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/_domain.Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "$ref": "#/definitions/model.DebugInterfaceExtractor"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                }
-            }
-        },
-        "/api/v1/extractors/createOrUpdateResult": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "提取器"
-                ],
-                "summary": "新建或更新提取器",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Authentication header",
-                        "name": "Authorization",
-                        "in": "header",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "当前项目ID",
-                        "name": "currProjectId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "description": "新建或更新提取器的请求参数",
-                        "name": "DebugInterfaceExtractor",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.DebugInterfaceExtractor"
+                            "$ref": "#/definitions/serverDomain.ExtractorConditionQuickCreateReq"
                         }
                     }
                 ],
@@ -5772,11 +5490,11 @@ const docTemplate = `{
                     },
                     {
                         "description": "提取器变量列表的请求参数",
-                        "name": "DebugReq",
+                        "name": "DebugInfo",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.DebugReq"
+                            "$ref": "#/definitions/domain.DebugInfo"
                         }
                     }
                 ],
@@ -5852,7 +5570,7 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "$ref": "#/definitions/model.DebugInterfaceExtractor"
+                                            "$ref": "#/definitions/model.DebugConditionExtractor"
                                         }
                                     }
                                 }
@@ -7138,17 +6856,8 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
                         "name": "adminId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        },
-                        "collectionFormat": "csv",
-                        "name": "adminIds",
                         "in": "query"
                     },
                     {
@@ -7192,41 +6901,8 @@ const docTemplate = `{
                         "in": "query"
                     },
                     {
-                        "enum": [
-                            "draft",
-                            "disabled",
-                            "to_execute",
-                            "executed"
-                        ],
                         "type": "string",
-                        "x-enum-comments": {
-                            "Disabled": "已禁用",
-                            "Draft": "草稿",
-                            "Executed": "已执行",
-                            "ToExecute": "待执行"
-                        },
-                        "x-enum-varnames": [
-                            "Draft",
-                            "Disabled",
-                            "ToExecute",
-                            "Executed"
-                        ],
                         "name": "status",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "enum": [
-                                "draft",
-                                "disabled",
-                                "to_execute",
-                                "executed"
-                            ],
-                            "type": "string"
-                        },
-                        "collectionFormat": "csv",
-                        "name": "statusArr",
                         "in": "query"
                     }
                 ],
@@ -7648,17 +7324,8 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
+                        "type": "string",
                         "name": "createUserId",
-                        "in": "query"
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "integer"
-                        },
-                        "collectionFormat": "csv",
-                        "name": "createUserIds",
                         "in": "query"
                     },
                     {
@@ -9860,6 +9527,3786 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/scenarios": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "场景列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "name": "categoryId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "enabled",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "field",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "keywords",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "priority",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "status",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "type",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.Scenario"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "更新场景",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "更新场景的请求参数",
+                        "name": "Scenario",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Scenario"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "新建场景",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "新建场景的请求参数",
+                        "name": "Scenario",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Scenario"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Scenario"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/exec/getScenarioNormalData": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景执行"
+                ],
+                "summary": "获取场景执行初始化信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "环境ID",
+                        "name": "environmentId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/agentDomain.Report"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/exec/loadExecResult": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景执行"
+                ],
+                "summary": "加载执行结果",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "scenarioId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/domain.Report"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/exec/loadExecScenario": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景执行"
+                ],
+                "summary": "加载执行场景",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "环境ID",
+                        "name": "environmentId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/agentExec.ScenarioExecObjMsg"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/exec/submitResult/{id}": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景执行"
+                ],
+                "summary": "提交测试结果",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "场景执行结果",
+                        "name": "ScenarioExecResult",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/agentDomain.ScenarioExecResult"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.ScenarioReport"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/interface/resetDebugData": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景调试"
+                ],
+                "summary": "重置场景调试接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "scenarioProcessorId",
+                        "name": "scenarioProcessorId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Processor"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/interface/saveDebugData": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景调试"
+                ],
+                "summary": "保存场景调试接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存场景调试接口的请求参数",
+                        "name": "DebugData",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugData"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/listByProject": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "当前项目下的所有场景",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.Scenario"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/load": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "场景树状数据",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "scenarioId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/agentExec.Processor"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/nodes/addInterfacesFromDefine": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/编排节点"
+                ],
+                "summary": "添加定义接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "添加定义接口的请求参数",
+                        "name": "ScenarioAddInterfacesReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ScenarioAddInterfacesReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Processor"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/nodes/addInterfacesFromTest": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/编排节点"
+                ],
+                "summary": "添加调试接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "添加调试接口的请求参数",
+                        "name": "ScenarioAddInterfacesFromTreeReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ScenarioAddInterfacesFromTreeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Processor"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/nodes/addProcessor": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/编排节点"
+                ],
+                "summary": "新建处理器",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "新建处理器的请求参数",
+                        "name": "ScenarioAddScenarioReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ScenarioAddScenarioReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Processor"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/nodes/move": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/编排节点"
+                ],
+                "summary": "移动节点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "移动节点的请求参数",
+                        "name": "ScenarioNodeMoveReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ScenarioNodeMoveReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/nodes/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/编排节点"
+                ],
+                "summary": "删除节点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "节点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/nodes/{id}/updateName": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/编排节点"
+                ],
+                "summary": "更新节点名称",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "节点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "更新节点名称的请求参数",
+                        "name": "ScenarioNodeReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ScenarioNodeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/processors/saveProcessorInfo": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/处理器"
+                ],
+                "summary": "保存基本信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存基本信息的请求参数",
+                        "name": "ScenarioProcessorInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ScenarioProcessorInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "name": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/processors/{category}/save": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/处理器"
+                ],
+                "summary": "保存配置信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "category",
+                        "name": "category",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.ProcessorData"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/processors/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/处理器"
+                ],
+                "summary": "场景节点详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "节点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/reports": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景报告"
+                ],
+                "summary": "结果列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "获取结果列表的请求参数",
+                        "name": "ReportReqPaginate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ReportReqPaginate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.ScenarioReport"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/reports/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景报告"
+                ],
+                "summary": "结果详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "报告ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.ScenarioReport"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景报告"
+                ],
+                "summary": "创建报告",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "报告ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/场景报告"
+                ],
+                "summary": "删除报告",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "报告ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "场景详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Scenario"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "删除场景",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/{id}/addPlans": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "关联计划",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/{id}/plans": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "关联计划列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "查询关联计划列表的参数",
+                        "name": "ScenarioPlanReqPaginate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ScenarioPlanReqPaginate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.Plan"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/{id}/removePlans": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "取消计划关联",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "计划ID",
+                        "name": "\"\"",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/{id}/updatePriority": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "更新优先级",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "场景优先级",
+                        "name": "priority",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/{id}/updateStatus": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块"
+                ],
+                "summary": "更新计划状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "场景ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "场景状态",
+                        "name": "status",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/changeServe": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "切换用户当前服务",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "切换用户当前服务的请求参数",
+                        "name": "ChangeServeReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ChangeServeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Serve"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/copy": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "复制服务",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "服务ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/delete": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "删除服务",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "服务ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/detail": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "服务详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "服务ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Serve"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/expire": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "禁用服务",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "服务ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/index": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "服务列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "服务列表的请求参数",
+                        "name": "ServeReqPaginate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeReqPaginate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.Serve"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/listByProject": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "获取项目下的服务",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "currServe": {
+                                                    "$ref": "#/definitions/model.Serve"
+                                                },
+                                                "serves": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/model.Serve"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/save": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "保存服务",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存服务的请求参数",
+                        "name": "ServeReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/saveSwaggerSync": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "自动同步"
+                ],
+                "summary": "保存同步信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存同步信息的请求参数",
+                        "name": "SwaggerSyncReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.SwaggerSyncReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.SwaggerSync"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/schema/copy": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/schema"
+                ],
+                "summary": "复制Schema",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Schema ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/schema/delete": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/schema"
+                ],
+                "summary": "删除Schema",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "schema ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/schema/detail": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/schema"
+                ],
+                "summary": "获取Schema",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "获取Schema的请求参数",
+                        "name": "ServeSchemaRefReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeSchemaRefReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.ComponentSchema"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/schema/example2schema": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/schema"
+                ],
+                "summary": "example转schema",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "example转schema的请求参数",
+                        "name": "JsonContent",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.JsonContent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/openapi.Schema"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/schema/list": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/schema"
+                ],
+                "summary": "Schema列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Schema列表的请求参数",
+                        "name": "ServeSchemaPaginate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeSchemaPaginate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.ComponentSchema"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/schema/save": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/schema"
+                ],
+                "summary": "保存Schema",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存Schema的请求参数",
+                        "name": "ServeSchemaReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeSchemaReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/schema/schema2example": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/schema"
+                ],
+                "summary": "Schema生成Example",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Schema生成Example的请求参数",
+                        "name": "JsonContent",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.JsonContent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/schema/schema2yaml": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/schema"
+                ],
+                "summary": "schema转yaml",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "schema转yaml的请求参数",
+                        "name": "JsonContent",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.JsonContent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/security/delete": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/授权"
+                ],
+                "summary": "删除授权",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "授权ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/security/list": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/授权"
+                ],
+                "summary": "授权列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "授权列表的请求参数",
+                        "name": "ServeSecurityPaginate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeSecurityPaginate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.ComponentSchemaSecurity"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/security/save": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/授权"
+                ],
+                "summary": "保存授权",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存授权的请求参数",
+                        "name": "ServeSecurityReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeSecurityReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/server/list": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "服务列表(不分页)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "服务列表的请求参数",
+                        "name": "ServeServer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeServer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.ServeServer"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/swaggerSyncDetail": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "自动同步"
+                ],
+                "summary": "获取同步信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.SwaggerSync"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/version/bindEndpoint": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/版本"
+                ],
+                "summary": "关联接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "服务版本关联接口的请求参数",
+                        "name": "ServeVersionBindEndpointReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeVersionBindEndpointReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/version/delete": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/版本"
+                ],
+                "summary": "删除版本",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "服务版本ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/version/expire": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/版本"
+                ],
+                "summary": "禁用版本",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "服务版本ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/version/list": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/版本"
+                ],
+                "summary": "版本列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "服务版本列表的请求参数",
+                        "name": "ServeVersionPaginate",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeVersionPaginate"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/model.ServeVersion"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/version/save": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理/版本"
+                ],
+                "summary": "保存版本",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存服务版本的请求参数",
+                        "name": "ServeVersionReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeVersionReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/shareVars/clear": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "共享变量"
+                ],
+                "summary": "清空共享变量",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "清空共享变量的请求参数",
+                        "name": "DebugInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/shareVars/list": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "共享变量"
+                ],
+                "summary": "列出变量列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "列出变量列表的请求参数",
+                        "name": "DebugInfo",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.DebugInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/domain.GlobalVar"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/shareVars/{id}": {
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "共享变量"
+                ],
+                "summary": "删除共享变量",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "变量ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/snippets": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "脚本"
+                ],
+                "summary": "获取详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "脚本名",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Snippet"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/summary/bugs/{projectId}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "汇总"
+                ],
+                "summary": "汇总bug信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.ResSummaryBugs"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/summary/card/{projectId}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "汇总"
+                ],
+                "summary": "汇总卡片位信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.ResSummaryCard"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/summary/collection/{store}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "汇总"
+                ],
+                "summary": "汇总数据",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "string",
+                        "name": "store",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/summary/details": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "汇总"
+                ],
+                "summary": "汇总项目详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.ResSummaryDetail"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/summary/projectUserRanking/{cycle}/{projectId}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "汇总"
+                ],
+                "summary": "汇总项目用户排行数据",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "cycle",
+                        "name": "cycle",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "项目ID",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.ResRankingList"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/upload": {
             "post": {
                 "produces": [
@@ -9928,6 +13375,788 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/users": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "用户列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "field",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "order",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "name": "pageSize",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "userName",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/_domain.PageData"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "result": {
+                                                            "type": "array",
+                                                            "items": {
+                                                                "$ref": "#/definitions/serverDomain.UserResp"
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "新建用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "新建用户的请求参数",
+                        "name": "UserReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.UserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/changeUserSysRole": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "更新用户系统角色",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "更新用户系统角色的请求参数",
+                        "name": "UpdateUserRoleReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.UpdateUserRoleReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/change_avatar": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "修改头像",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "头像",
+                        "name": "Avatar",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Avatar"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/clear": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "清空 token",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/invite": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "邀请用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "邀请用户的请求参数",
+                        "name": "InviteUserReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.InviteUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/logout": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "退出登录",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/profile": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "个人信息",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.UserResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/updateEmail": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "修改邮箱",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "修改邮箱的请求参数",
+                        "name": "UpdateUserReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.UpdateUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/updateName": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "修改名称",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "修改名称的请求参数",
+                        "name": "UpdateUserReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.UpdateUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.UserResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/updatePassword": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "修改密码",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "修改密码的请求参数",
+                        "name": "UpdateUserReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.UpdateUserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.UserResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/usersNotExistedInProject": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "获取项目中没有的用户列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "result": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/serverDomain.UserResp"
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/users/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "用户详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.UserResp"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "编辑用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "编辑用户的请求参数",
+                        "name": "UserReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.UserReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "用户管理"
+                ],
+                "summary": "删除用户",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "用户ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -9954,38 +14183,6 @@ const docTemplate = `{
                 },
                 "data": {},
                 "msg": {
-                    "type": "string"
-                }
-            }
-        },
-        "agentDomain.Checkpoint": {
-            "type": "object",
-            "properties": {
-                "actualResult": {
-                    "type": "string"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "expression": {
-                    "type": "string"
-                },
-                "extractorVariable": {
-                    "type": "string"
-                },
-                "interfaceId": {
-                    "type": "integer"
-                },
-                "operator": {
-                    "$ref": "#/definitions/consts.ComparisonOperator"
-                },
-                "resultStatus": {
-                    "$ref": "#/definitions/consts.ResultStatus"
-                },
-                "type": {
-                    "$ref": "#/definitions/consts.CheckpointType"
-                },
-                "value": {
                     "type": "string"
                 }
             }
@@ -10198,53 +14395,6 @@ const docTemplate = `{
                 }
             }
         },
-        "agentDomain.Extractor": {
-            "type": "object",
-            "properties": {
-                "boundaryEnd": {
-                    "type": "string"
-                },
-                "boundaryIncluded": {
-                    "type": "boolean"
-                },
-                "boundaryIndex": {
-                    "type": "integer"
-                },
-                "boundaryStart": {
-                    "type": "string"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "expression": {
-                    "type": "string"
-                },
-                "interfaceId": {
-                    "type": "integer"
-                },
-                "key": {
-                    "type": "string"
-                },
-                "prop": {
-                    "type": "string"
-                },
-                "result": {
-                    "type": "string"
-                },
-                "scope": {
-                    "$ref": "#/definitions/consts.ExtractorScope"
-                },
-                "src": {
-                    "$ref": "#/definitions/consts.ExtractorSrc"
-                },
-                "type": {
-                    "$ref": "#/definitions/consts.ExtractorType"
-                },
-                "variable": {
-                    "type": "string"
-                }
-            }
-        },
         "agentDomain.PlanExecResult": {
             "type": "object",
             "properties": {
@@ -10384,7 +14534,7 @@ const docTemplate = `{
                 "checkpointsResult": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/agentDomain.Checkpoint"
+                        "$ref": "#/definitions/domain.CheckpointBase"
                     }
                 },
                 "cost": {
@@ -10412,7 +14562,7 @@ const docTemplate = `{
                 "extractorsResult": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/agentDomain.Extractor"
+                        "$ref": "#/definitions/domain.ExtractorBase"
                     }
                 },
                 "httpStatusCode": {
@@ -10484,6 +14634,12 @@ const docTemplate = `{
                 "scenarioReportId": {
                     "type": "integer"
                 },
+                "scriptsResult": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.ScriptBase"
+                    }
+                },
                 "startTime": {
                     "type": "string"
                 },
@@ -10504,6 +14660,18 @@ const docTemplate = `{
                 },
                 "execScene": {
                     "$ref": "#/definitions/domain.ExecScene"
+                },
+                "postConditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.InterfaceExecCondition"
+                    }
+                },
+                "preConditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.InterfaceExecCondition"
+                    }
                 }
             }
         },
@@ -10590,6 +14758,68 @@ const docTemplate = `{
                 }
             }
         },
+        "agentExec.ProcessorMsg": {
+            "type": "object",
+            "properties": {
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/agentExec.Processor"
+                    }
+                },
+                "comments": {
+                    "type": "string"
+                },
+                "endpointInterfaceId": {
+                    "type": "integer"
+                },
+                "entityCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "entityId": {
+                    "type": "integer"
+                },
+                "entityRaw": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "entityType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDir": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "result": {
+                    "$ref": "#/definitions/agentDomain.ScenarioExecResult"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                },
+                "useId": {
+                    "type": "integer"
+                }
+            }
+        },
         "agentExec.ScenarioExecObj": {
             "type": "object",
             "properties": {
@@ -10604,6 +14834,32 @@ const docTemplate = `{
                 },
                 "rootProcessor": {
                     "$ref": "#/definitions/agentExec.Processor"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                },
+                "serverUrl": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "agentExec.ScenarioExecObjMsg": {
+            "type": "object",
+            "properties": {
+                "baseUrl": {
+                    "type": "string"
+                },
+                "execScene": {
+                    "$ref": "#/definitions/domain.ExecScene"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "rootProcessor": {
+                    "$ref": "#/definitions/agentExec.ProcessorMsg"
                 },
                 "scenarioId": {
                     "type": "integer"
@@ -10693,6 +14949,41 @@ const docTemplate = `{
                 "LessThanOrEqual",
                 "Contain",
                 "NotContain"
+            ]
+        },
+        "consts.ConditionSrc": {
+            "type": "string",
+            "enum": [
+                "pre",
+                "post"
+            ],
+            "x-enum-varnames": [
+                "ConditionSrcPre",
+                "ConditionSrcPost"
+            ]
+        },
+        "consts.ConditionType": {
+            "type": "string",
+            "enum": [
+                "extractor",
+                "checkpoint",
+                "script"
+            ],
+            "x-enum-varnames": [
+                "ConditionTypeExtractor",
+                "ConditionTypeCheckpoint",
+                "ConditionTypeScript"
+            ]
+        },
+        "consts.DataSource": {
+            "type": "string",
+            "enum": [
+                "text",
+                "excel"
+            ],
+            "x-enum-varnames": [
+                "Text",
+                "Excel"
             ]
         },
         "consts.DataType": {
@@ -11131,6 +15422,26 @@ const docTemplate = `{
                 "Swagger"
             ]
         },
+        "consts.SwitchStatus": {
+            "type": "integer",
+            "enum": [
+                1,
+                2
+            ],
+            "x-enum-varnames": [
+                "SwitchON",
+                "SwitchOFF"
+            ]
+        },
+        "consts.SyncType": {
+            "type": "integer",
+            "enum": [
+                1
+            ],
+            "x-enum-varnames": [
+                "FullCopy"
+            ]
+        },
         "consts.TestStage": {
             "type": "string",
             "enum": [
@@ -11308,6 +15619,57 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.CheckpointBase": {
+            "type": "object",
+            "properties": {
+                "actualResult": {
+                    "type": "string"
+                },
+                "conditionEntityId": {
+                    "description": "refer to entity po id in domain object",
+                    "type": "integer"
+                },
+                "conditionEntityType": {
+                    "description": "for log only",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/consts.ConditionType"
+                        }
+                    ]
+                },
+                "conditionId": {
+                    "type": "integer"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "extractorVariable": {
+                    "type": "string"
+                },
+                "invokeId": {
+                    "description": "for log only",
+                    "type": "integer"
+                },
+                "operator": {
+                    "$ref": "#/definitions/consts.ComparisonOperator"
+                },
+                "resultMsg": {
+                    "type": "string"
+                },
+                "resultStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.CheckpointType"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Datapools": {
             "type": "object",
             "additionalProperties": {
@@ -11415,8 +15777,8 @@ const docTemplate = `{
                         "$ref": "#/definitions/domain.Param"
                     }
                 },
-                "preRequestScript": {
-                    "type": "string"
+                "processorInterfaceSrc": {
+                    "$ref": "#/definitions/consts.UsedBy"
                 },
                 "projectId": {
                     "type": "integer"
@@ -11448,13 +15810,10 @@ const docTemplate = `{
                 },
                 "usedBy": {
                     "$ref": "#/definitions/consts.UsedBy"
-                },
-                "validationScript": {
-                    "type": "string"
                 }
             }
         },
-        "domain.DebugReq": {
+        "domain.DebugInfo": {
             "type": "object",
             "properties": {
                 "caseInterfaceId": {
@@ -11512,6 +15871,9 @@ const docTemplate = `{
                     }
                 },
                 "id": {
+                    "type": "integer"
+                },
+                "invokeId": {
                     "type": "integer"
                 },
                 "statusCode": {
@@ -11835,6 +16197,75 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.ExtractorBase": {
+            "type": "object",
+            "properties": {
+                "boundaryEnd": {
+                    "type": "string"
+                },
+                "boundaryIncluded": {
+                    "type": "boolean"
+                },
+                "boundaryIndex": {
+                    "type": "integer"
+                },
+                "boundaryStart": {
+                    "type": "string"
+                },
+                "conditionEntityId": {
+                    "description": "refer to po id in domain object",
+                    "type": "integer"
+                },
+                "conditionEntityType": {
+                    "description": "for log only",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/consts.ConditionType"
+                        }
+                    ]
+                },
+                "conditionId": {
+                    "type": "integer"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "invokeId": {
+                    "description": "for log only",
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "prop": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "resultMsg": {
+                    "type": "string"
+                },
+                "resultStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "scope": {
+                    "$ref": "#/definitions/consts.ExtractorScope"
+                },
+                "src": {
+                    "$ref": "#/definitions/consts.ExtractorSrc"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.ExtractorType"
+                },
+                "variable": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.GlobalParam": {
             "type": "object",
             "properties": {
@@ -11925,6 +16356,20 @@ const docTemplate = `{
                 },
                 "value": {
                     "type": "string"
+                }
+            }
+        },
+        "domain.InterfaceExecCondition": {
+            "type": "object",
+            "properties": {
+                "debugData": {
+                    "$ref": "#/definitions/consts.ConditionType"
+                },
+                "raw": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },
@@ -12146,9 +16591,63 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.ScriptBase": {
+            "type": "object",
+            "properties": {
+                "conditionEntityId": {
+                    "description": "refer to po id in domain object",
+                    "type": "integer"
+                },
+                "conditionEntityType": {
+                    "description": "for log only",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/consts.ConditionType"
+                        }
+                    ]
+                },
+                "conditionId": {
+                    "type": "integer"
+                },
+                "conditionType": {
+                    "$ref": "#/definitions/consts.ConditionSrc"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "invokeId": {
+                    "description": "for log only",
+                    "type": "integer"
+                },
+                "output": {
+                    "type": "string"
+                },
+                "resultMsg": {
+                    "type": "string"
+                },
+                "resultStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                }
+            }
+        },
         "domain.SubmitDebugResultRequest": {
             "type": "object",
             "properties": {
+                "postConditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.InterfaceExecCondition"
+                    }
+                },
+                "preConditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.InterfaceExecCondition"
+                    }
+                },
                 "request": {
                     "$ref": "#/definitions/domain.DebugData"
                 },
@@ -12211,6 +16710,14 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Avatar": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Category": {
             "type": "object",
             "properties": {
@@ -12267,6 +16774,115 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ComponentSchema": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "examples": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "sourceType": {
+                    "$ref": "#/definitions/consts.SourceType"
+                },
+                "tags": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ComponentSchemaSecurity": {
+            "type": "object",
+            "properties": {
+                "bearerFormat": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "flows": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "in": {
+                    "type": "string"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "openIdConnectUrl": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "project_id": {
+                    "type": "integer"
+                },
+                "scheme": {
+                    "type": "string"
+                },
+                "serve_id": {
+                    "type": "integer"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Datapool": {
             "type": "object",
             "properties": {
@@ -12298,6 +16914,144 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugConditionCheckpoint": {
+            "type": "object",
+            "properties": {
+                "actualResult": {
+                    "type": "string"
+                },
+                "conditionEntityId": {
+                    "description": "refer to entity po id in domain object",
+                    "type": "integer"
+                },
+                "conditionEntityType": {
+                    "description": "for log only",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/consts.ConditionType"
+                        }
+                    ]
+                },
+                "conditionId": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "extractorVariable": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "invokeId": {
+                    "description": "for log only",
+                    "type": "integer"
+                },
+                "operator": {
+                    "$ref": "#/definitions/consts.ComparisonOperator"
+                },
+                "resultMsg": {
+                    "type": "string"
+                },
+                "resultStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.CheckpointType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.DebugConditionExtractor": {
+            "type": "object",
+            "properties": {
+                "boundaryEnd": {
+                    "type": "string"
+                },
+                "boundaryIncluded": {
+                    "type": "boolean"
+                },
+                "boundaryIndex": {
+                    "type": "integer"
+                },
+                "boundaryStart": {
+                    "type": "string"
+                },
+                "conditionEntityId": {
+                    "description": "refer to po id in domain object",
+                    "type": "integer"
+                },
+                "conditionEntityType": {
+                    "description": "for log only",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/consts.ConditionType"
+                        }
+                    ]
+                },
+                "conditionId": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "invokeId": {
+                    "description": "for log only",
+                    "type": "integer"
+                },
+                "key": {
+                    "type": "string"
+                },
+                "prop": {
+                    "type": "string"
+                },
+                "result": {
+                    "type": "string"
+                },
+                "resultMsg": {
+                    "type": "string"
+                },
+                "resultStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "scope": {
+                    "$ref": "#/definitions/consts.ExtractorScope"
+                },
+                "src": {
+                    "$ref": "#/definitions/consts.ExtractorSrc"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.ExtractorType"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "variable": {
                     "type": "string"
                 }
             }
@@ -12341,6 +17095,9 @@ const docTemplate = `{
                 "bodyType": {
                     "$ref": "#/definitions/consts.HttpContentType"
                 },
+                "caseInterfaceId": {
+                    "type": "integer"
+                },
                 "cookies": {
                     "type": "array",
                     "items": {
@@ -12377,13 +17134,13 @@ const docTemplate = `{
                 "interfaceCheckpoints": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.DebugInterfaceCheckpoint"
+                        "$ref": "#/definitions/model.DebugConditionCheckpoint"
                     }
                 },
                 "interfaceExtractors": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.DebugInterfaceExtractor"
+                        "$ref": "#/definitions/model.DebugConditionExtractor"
                     }
                 },
                 "method": {
@@ -12413,6 +17170,9 @@ const docTemplate = `{
                 },
                 "preRequestScript": {
                     "type": "string"
+                },
+                "processorInterfaceSrc": {
+                    "$ref": "#/definitions/consts.UsedBy"
                 },
                 "projectId": {
                     "type": "integer"
@@ -12593,65 +17353,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.DebugInterfaceCheckpoint": {
-            "type": "object",
-            "properties": {
-                "actualResult": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "debugInterfaceId": {
-                    "type": "integer"
-                },
-                "diagnoseInterfaceId": {
-                    "description": "debug for Test Interface",
-                    "type": "integer"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "endpointInterfaceId": {
-                    "description": "debug for Endpoint Interface",
-                    "type": "integer"
-                },
-                "expression": {
-                    "type": "string"
-                },
-                "extractorVariable": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "operator": {
-                    "$ref": "#/definitions/consts.ComparisonOperator"
-                },
-                "resultStatus": {
-                    "$ref": "#/definitions/consts.ResultStatus"
-                },
-                "scenarioId": {
-                    "type": "integer"
-                },
-                "scenarioProcessorId": {
-                    "description": "debug in Scenario Processor",
-                    "type": "integer"
-                },
-                "type": {
-                    "$ref": "#/definitions/consts.CheckpointType"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "usedBy": {
-                    "$ref": "#/definitions/consts.UsedBy"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
         "model.DebugInterfaceCookie": {
             "type": "object",
             "properties": {
@@ -12680,81 +17381,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "model.DebugInterfaceExtractor": {
-            "type": "object",
-            "properties": {
-                "boundaryEnd": {
-                    "type": "string"
-                },
-                "boundaryIncluded": {
-                    "type": "boolean"
-                },
-                "boundaryIndex": {
-                    "type": "integer"
-                },
-                "boundaryStart": {
-                    "type": "string"
-                },
-                "createdAt": {
-                    "type": "string"
-                },
-                "debugInterfaceId": {
-                    "type": "integer"
-                },
-                "diagnoseInterfaceId": {
-                    "description": "debug for Test Interface",
-                    "type": "integer"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "endpointInterfaceId": {
-                    "description": "debug for Endpoint Interface",
-                    "type": "integer"
-                },
-                "expression": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "key": {
-                    "description": "form header",
-                    "type": "string"
-                },
-                "projectId": {
-                    "type": "integer"
-                },
-                "result": {
-                    "type": "string"
-                },
-                "scenarioId": {
-                    "type": "integer"
-                },
-                "scenarioProcessorId": {
-                    "description": "debug in Scenario Processor",
-                    "type": "integer"
-                },
-                "scope": {
-                    "$ref": "#/definitions/consts.ExtractorScope"
-                },
-                "src": {
-                    "$ref": "#/definitions/consts.ExtractorSrc"
-                },
-                "type": {
-                    "$ref": "#/definitions/consts.ExtractorType"
-                },
-                "updatedAt": {
-                    "type": "string"
-                },
-                "usedBy": {
-                    "$ref": "#/definitions/consts.UsedBy"
-                },
-                "variable": {
                     "type": "string"
                 }
             }
@@ -13106,9 +17732,6 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "type": "string"
-                },
-                "createdBy": {
-                    "type": "integer"
                 },
                 "debugData": {
                     "$ref": "#/definitions/model.DebugInterface"
@@ -13929,6 +18552,21 @@ const docTemplate = `{
                 "actualResult": {
                     "type": "string"
                 },
+                "conditionEntityId": {
+                    "description": "refer to entity po id in domain object",
+                    "type": "integer"
+                },
+                "conditionEntityType": {
+                    "description": "for log only",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/consts.ConditionType"
+                        }
+                    ]
+                },
+                "conditionId": {
+                    "type": "integer"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -13944,14 +18582,14 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "interfaceId": {
-                    "type": "integer"
-                },
-                "logId": {
+                "invokeId": {
                     "type": "integer"
                 },
                 "operator": {
                     "$ref": "#/definitions/consts.ComparisonOperator"
+                },
+                "resultMsg": {
+                    "type": "string"
                 },
                 "resultStatus": {
                     "$ref": "#/definitions/consts.ResultStatus"
@@ -13982,6 +18620,21 @@ const docTemplate = `{
                 "boundaryStart": {
                     "type": "string"
                 },
+                "conditionEntityId": {
+                    "description": "refer to po id in domain object",
+                    "type": "integer"
+                },
+                "conditionEntityType": {
+                    "description": "for log only",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/consts.ConditionType"
+                        }
+                    ]
+                },
+                "conditionId": {
+                    "type": "integer"
+                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -13994,20 +18647,26 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "interfaceId": {
+                "invokeId": {
                     "type": "integer"
                 },
                 "key": {
                     "type": "string"
-                },
-                "logId": {
-                    "type": "integer"
                 },
                 "prop": {
                     "type": "string"
                 },
                 "result": {
                     "type": "string"
+                },
+                "resultMsg": {
+                    "type": "string"
+                },
+                "resultStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "scope": {
+                    "$ref": "#/definitions/consts.ExtractorScope"
                 },
                 "src": {
                     "$ref": "#/definitions/consts.ExtractorSrc"
@@ -14531,6 +19190,62 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ProcessorData": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isRand": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentID": {
+                    "type": "integer"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorID": {
+                    "type": "integer"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "repeatTimes": {
+                    "type": "integer"
+                },
+                "separator": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.DataSource"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "variableName": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Project": {
             "type": "object",
             "properties": {
@@ -14901,6 +19616,123 @@ const docTemplate = `{
                 }
             }
         },
+        "model.ScenarioReport": {
+            "type": "object",
+            "properties": {
+                "createUserId": {
+                    "type": "integer"
+                },
+                "createUserName": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "duration": {
+                    "description": "sec",
+                    "type": "integer"
+                },
+                "endTime": {
+                    "type": "string"
+                },
+                "execEnv": {
+                    "type": "string"
+                },
+                "execEnvId": {
+                    "type": "integer"
+                },
+                "failAssertionNum": {
+                    "type": "integer"
+                },
+                "failInterfaceNum": {
+                    "type": "integer"
+                },
+                "failRequestNum": {
+                    "type": "integer"
+                },
+                "finishProcessorNum": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceStatusMap": {
+                    "type": "object",
+                    "additionalProperties": {
+                        "type": "object",
+                        "additionalProperties": {
+                            "type": "integer"
+                        }
+                    }
+                },
+                "logs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ExecLogProcessor"
+                    }
+                },
+                "name": {
+                    "type": "string"
+                },
+                "passAssertionNum": {
+                    "type": "integer"
+                },
+                "passInterfaceNum": {
+                    "type": "integer"
+                },
+                "passRequestNum": {
+                    "type": "integer"
+                },
+                "payload": {
+                    "type": "string"
+                },
+                "planReportId": {
+                    "type": "integer"
+                },
+                "priority": {
+                    "type": "string"
+                },
+                "progressStatus": {
+                    "$ref": "#/definitions/consts.ProgressStatus"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "resultStatus": {
+                    "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                },
+                "serialNumber": {
+                    "type": "string"
+                },
+                "startTime": {
+                    "type": "string"
+                },
+                "totalAssertionNum": {
+                    "type": "integer"
+                },
+                "totalInterfaceNum": {
+                    "type": "integer"
+                },
+                "totalProcessorNum": {
+                    "type": "integer"
+                },
+                "totalRequestNum": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ScenarioReportDetail": {
             "type": "object",
             "properties": {
@@ -15018,6 +19850,56 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Serve": {
+            "type": "object",
+            "properties": {
+                "Component": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ComponentSchema"
+                    }
+                },
+                "Securities": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ComponentSchemaSecurity"
+                    }
+                },
+                "createUser": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "servers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.ServeServer"
+                    }
+                },
+                "status": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "model.ServeServer": {
             "type": "object",
             "properties": {
@@ -15044,6 +19926,102 @@ const docTemplate = `{
                 },
                 "serveName": {
                     "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.ServeVersion": {
+            "type": "object",
+            "properties": {
+                "createUser": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Snippet": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "script": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SwaggerSync": {
+            "type": "object",
+            "properties": {
+                "ServeId": {
+                    "type": "integer"
+                },
+                "categoryId": {
+                    "type": "integer"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "cron": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "execTime": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "switch": {
+                    "$ref": "#/definitions/consts.SwitchStatus"
+                },
+                "syncType": {
+                    "$ref": "#/definitions/consts.SyncType"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -15133,6 +20111,43 @@ const docTemplate = `{
                 }
             }
         },
+        "openapi.Schema": {
+            "type": "object",
+            "properties": {
+                "$ref": {
+                    "type": "string"
+                },
+                "items": {
+                    "$ref": "#/definitions/openapi.SchemaRef"
+                },
+                "properties": {
+                    "$ref": "#/definitions/openapi.Schemas"
+                },
+                "ref": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "openapi.SchemaRef": {
+            "type": "object",
+            "properties": {
+                "ref": {
+                    "type": "string"
+                },
+                "value": {
+                    "$ref": "#/definitions/openapi.Schema"
+                }
+            }
+        },
+        "openapi.Schemas": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/openapi.SchemaRef"
+            }
+        },
         "serverConsts.AuthType": {
             "type": "string",
             "enum": [
@@ -15181,6 +20196,28 @@ const docTemplate = `{
                 "Before",
                 "Inner",
                 "After"
+            ]
+        },
+        "serverConsts.NodeCreateMode": {
+            "type": "string",
+            "enum": [
+                "brother",
+                "child"
+            ],
+            "x-enum-varnames": [
+                "Brother",
+                "Child"
+            ]
+        },
+        "serverConsts.NodeCreateType": {
+            "type": "string",
+            "enum": [
+                "dir",
+                "node"
+            ],
+            "x-enum-varnames": [
+                "Dir",
+                "Node"
             ]
         },
         "serverConsts.ProjectType": {
@@ -15356,6 +20393,14 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "parent": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.ChangeServeReq": {
+            "type": "object",
+            "properties": {
+                "id": {
                     "type": "integer"
                 }
             }
@@ -15724,10 +20769,19 @@ const docTemplate = `{
                 "createUserName": {
                     "type": "string"
                 },
+                "debugData": {
+                    "$ref": "#/definitions/domain.DebugData"
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
                 "desc": {
                     "type": "string"
                 },
                 "endpointId": {
+                    "type": "integer"
+                },
+                "endpointInterfaceId": {
                     "type": "integer"
                 },
                 "id": {
@@ -15736,14 +20790,14 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "parentId": {
-                    "type": "integer"
-                },
                 "projectId": {
                     "type": "integer"
                 },
                 "serveId": {
                     "type": "integer"
+                },
+                "usedBy": {
+                    "type": "string"
                 }
             }
         },
@@ -15909,6 +20963,17 @@ const docTemplate = `{
                 }
             }
         },
+        "serverDomain.EndpointVersions": {
+            "type": "object",
+            "properties": {
+                "endpointId": {
+                    "type": "integer"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
         "serverDomain.EnvironmentParam": {
             "type": "object",
             "required": [
@@ -16013,6 +21078,17 @@ const docTemplate = `{
                 },
                 "remoteValue": {
                     "type": "string"
+                }
+            }
+        },
+        "serverDomain.ExtractorConditionQuickCreateReq": {
+            "type": "object",
+            "properties": {
+                "conf": {
+                    "$ref": "#/definitions/domain.ExtractorBase"
+                },
+                "info": {
+                    "$ref": "#/definitions/domain.DebugInfo"
                 }
             }
         },
@@ -16139,6 +21215,34 @@ const docTemplate = `{
                 },
                 "yapiHost": {
                     "type": "string"
+                }
+            }
+        },
+        "serverDomain.InviteUserReq": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "roleName": {
+                    "$ref": "#/definitions/consts.RoleType"
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.JsonContent": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "string"
+                },
+                "serveId": {
+                    "type": "integer"
                 }
             }
         },
@@ -16645,6 +21749,226 @@ const docTemplate = `{
                 }
             }
         },
+        "serverDomain.ReportReqPaginate": {
+            "type": "object",
+            "properties": {
+                "createUserId": {
+                    "type": "integer"
+                },
+                "executeEndTime": {
+                    "type": "string"
+                },
+                "executeStartTime": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "keywords": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "scenarioId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.ResRankingList": {
+            "type": "object",
+            "properties": {
+                "userRankingList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.ResUserRanking"
+                    }
+                }
+            }
+        },
+        "serverDomain.ResSummaryBugs": {
+            "type": "object",
+            "properties": {
+                "blocker": {
+                    "type": "number"
+                },
+                "critical": {
+                    "type": "number"
+                },
+                "deadly": {
+                    "type": "number"
+                },
+                "major": {
+                    "type": "number"
+                },
+                "minor": {
+                    "type": "number"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.ResSummaryCard": {
+            "type": "object",
+            "properties": {
+                "coverage": {
+                    "type": "number"
+                },
+                "coverageHb": {
+                    "type": "number"
+                },
+                "execTotal": {
+                    "type": "integer"
+                },
+                "interfaceHb": {
+                    "type": "number"
+                },
+                "interfaceTotal": {
+                    "type": "integer"
+                },
+                "passRate": {
+                    "type": "number"
+                },
+                "projectTotal": {
+                    "type": "integer"
+                },
+                "scenarioHb": {
+                    "type": "number"
+                },
+                "scenarioTotal": {
+                    "type": "integer"
+                },
+                "userTotal": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.ResSummaryDetail": {
+            "type": "object",
+            "properties": {
+                "projectList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.ResSummaryDetails"
+                    }
+                },
+                "projectTotal": {
+                    "type": "integer"
+                },
+                "userProjectList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.ResSummaryDetails"
+                    }
+                },
+                "userProjectTotal": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.ResSummaryDetails": {
+            "type": "object",
+            "properties": {
+                "accessible": {
+                    "type": "integer"
+                },
+                "adminId": {
+                    "type": "integer"
+                },
+                "adminName": {
+                    "type": "string"
+                },
+                "bugTotal": {
+                    "type": "integer"
+                },
+                "coverage": {
+                    "type": "number"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "execTotal": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceTotal": {
+                    "type": "integer"
+                },
+                "passRate": {
+                    "type": "number"
+                },
+                "projectDescr": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "projectName": {
+                    "type": "string"
+                },
+                "projectShortName": {
+                    "type": "string"
+                },
+                "scenarioTotal": {
+                    "type": "integer"
+                },
+                "userList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.ResUserIdAndName"
+                    }
+                }
+            }
+        },
+        "serverDomain.ResUserIdAndName": {
+            "type": "object",
+            "properties": {
+                "userId": {
+                    "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.ResUserRanking": {
+            "type": "object",
+            "properties": {
+                "hb": {
+                    "type": "integer"
+                },
+                "scenarioTotal": {
+                    "type": "integer"
+                },
+                "sort": {
+                    "type": "integer"
+                },
+                "testCaseTotal": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "userId": {
+                    "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
         "serverDomain.ResetPasswordReq": {
             "type": "object",
             "required": [
@@ -16738,6 +22062,252 @@ const docTemplate = `{
                 }
             }
         },
+        "serverDomain.ScenarioAddInterfacesFromTreeReq": {
+            "type": "object",
+            "properties": {
+                "createBy": {
+                    "type": "integer"
+                },
+                "selectedNodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.DiagnoseInterface"
+                    }
+                },
+                "targetId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.ScenarioAddInterfacesReq": {
+            "type": "object",
+            "properties": {
+                "createBy": {
+                    "type": "integer"
+                },
+                "interfaceIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "targetId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.ScenarioAddScenarioReq": {
+            "type": "object",
+            "properties": {
+                "createBy": {
+                    "type": "integer"
+                },
+                "mode": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "processorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "targetProcessorCategory": {
+                    "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "targetProcessorId": {
+                    "type": "integer"
+                },
+                "targetProcessorType": {
+                    "$ref": "#/definitions/consts.ProcessorType"
+                }
+            }
+        },
+        "serverDomain.ScenarioNodeMoveReq": {
+            "type": "object",
+            "properties": {
+                "dragKey": {
+                    "type": "integer"
+                },
+                "dropKey": {
+                    "type": "integer"
+                },
+                "dropPos": {
+                    "$ref": "#/definitions/serverConsts.DropPos"
+                }
+            }
+        },
+        "serverDomain.ScenarioNodeReq": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "mode": {
+                    "$ref": "#/definitions/serverConsts.NodeCreateMode"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "target": {
+                    "type": "integer"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.NodeCreateType"
+                }
+            }
+        },
+        "serverDomain.ScenarioPlanReqPaginate": {
+            "type": "object",
+            "properties": {
+                "adminId": {
+                    "type": "integer"
+                },
+                "categoryId": {
+                    "type": "integer"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "keywords": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "ref": {
+                    "type": "boolean"
+                },
+                "status": {
+                    "$ref": "#/definitions/consts.TestStatus"
+                }
+            }
+        },
+        "serverDomain.ScenarioProcessorInfo": {
+            "type": "object",
+            "properties": {
+                "comments": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.ServeReq": {
+            "type": "object",
+            "required": [
+                "name",
+                "projectId"
+            ],
+            "properties": {
+                "createUser": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "status": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.ServeReqPaginate": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.ServeSchemaPaginate": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "tag": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.ServeSchemaRefReq": {
+            "type": "object",
+            "required": [
+                "ref",
+                "serveId"
+            ],
+            "properties": {
+                "ref": {
+                    "type": "string"
+                },
+                "serveId": {
+                    "type": "integer"
+                }
+            }
+        },
         "serverDomain.ServeSchemaReq": {
             "type": "object",
             "required": [
@@ -16774,6 +22344,29 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
+                }
+            }
+        },
+        "serverDomain.ServeSecurityPaginate": {
+            "type": "object",
+            "properties": {
+                "field": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
                 }
             }
         },
@@ -16848,6 +22441,95 @@ const docTemplate = `{
                 }
             }
         },
+        "serverDomain.ServeVersionBindEndpointReq": {
+            "type": "object",
+            "properties": {
+                "endpointVersions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.EndpointVersions"
+                    }
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "serveVersion": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.ServeVersionPaginate": {
+            "type": "object",
+            "properties": {
+                "createUser": {
+                    "type": "string"
+                },
+                "field": {
+                    "type": "string"
+                },
+                "order": {
+                    "type": "string"
+                },
+                "page": {
+                    "type": "integer"
+                },
+                "pageSize": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.ServeVersionReq": {
+            "type": "object",
+            "properties": {
+                "createUser": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.SwaggerSyncReq": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "cron": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "switch": {
+                    "$ref": "#/definitions/consts.SwitchStatus"
+                },
+                "syncType": {
+                    "$ref": "#/definitions/consts.SyncType"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "serverDomain.TestExprRequest": {
             "type": "object",
             "required": [
@@ -16904,6 +22586,81 @@ const docTemplate = `{
                 },
                 "userId": {
                     "type": "integer"
+                }
+            }
+        },
+        "serverDomain.UpdateUserReq": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "newPassword": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.UpdateUserRoleReq": {
+            "type": "object",
+            "required": [
+                "userId"
+            ],
+            "properties": {
+                "roleIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "userId": {
+                    "type": "integer"
+                }
+            }
+        },
+        "serverDomain.UserReq": {
+            "type": "object",
+            "required": [
+                "username"
+            ],
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "intro": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role_ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
                 }
             }
         },

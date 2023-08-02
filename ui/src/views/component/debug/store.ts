@@ -137,10 +137,6 @@ export interface ModuleType extends StoreModuleType<StateType> {
         removeInvocation: Action<StateType, StateType>;
 
         getPreConditionScript: Action<StateType, StateType>;
-        createPreCondition: Action<StateType, StateType>;
-        disablePreCondition: Action<StateType, StateType>;
-        removePreCondition: Action<StateType, StateType>;
-        movePreCondition: Action<StateType, StateType>;
 
         listPostCondition: Action<StateType, StateType>;
         listAssertionCondition: Action<StateType, StateType>;
@@ -370,7 +366,6 @@ const StoreModel: ModuleType = {
 
                 await dispatch('listShareVar');
 
-                await dispatch('listPreCondition');
                 await dispatch('listPostCondition');
                 await dispatch('listAssertionCondition');
 
@@ -450,42 +445,6 @@ const StoreModel: ModuleType = {
                 const resp = await getPreConditionScript(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId);
                 const {data} = resp;
                 commit('setScript', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async createPreCondition({commit, dispatch, state}, payload: any) {
-            try {
-                await createPreConditions(payload);
-                dispatch('listPreCondition');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async disablePreCondition({commit, dispatch, state}, id: number) {
-            try {
-                await disablePreConditions(id);
-                dispatch('listPreCondition');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async removePreCondition({commit, dispatch, state}, id: number) {
-            try {
-                await removePreConditions(id);
-                dispatch('listPreCondition');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async movePreCondition({commit, dispatch, state}, payload: any) {
-            try {
-                await movePreConditions(payload);
-                dispatch('listPreCondition');
                 return true;
             } catch (error) {
                 return false;

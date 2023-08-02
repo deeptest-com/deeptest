@@ -69,7 +69,14 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 }
 
 func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugInfo) (variables []domain.Variable, err error) {
-	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(req)
+	extractorConditions, err := s.PostConditionRepo.ListExtrator(req.DebugInterfaceId, req.EndpointInterfaceId)
+
+	var conditionIds []uint
+	for _, item := range extractorConditions {
+		conditionIds = append(conditionIds, item.ID)
+	}
+
+	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(conditionIds)
 
 	return
 }

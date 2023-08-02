@@ -9,9 +9,11 @@
                           控制器类型
                         </a-select-option>-->
 
-            <a-select-option v-for="item in conditionTypes" :key="item.value" :value="item.value">
-              {{ t(item.label) }}
-            </a-select-option>
+            <template v-for="item in conditionTypes" :key="item.value">
+              <a-select-option v-if="item.value !== ConditionType.checkpoint" :value="item.value">
+                {{ t(item.label) }}
+              </a-select-option>
+            </template>
           </a-select> &nbsp;
 
           <a-button @click="create" size="small">新建</a-button>
@@ -86,13 +88,16 @@
 
             <div class="content" v-if="activeItem.id === +element.id">
               <Extractor v-if="element.entityType === ConditionType.extractor"
-                         :condition="element" />
+                         :condition="element"
+                          :finish="list"/>
 
               <Checkpoint v-if="element.entityType === ConditionType.checkpoint"
-                          :condition="element" />
+                          :condition="element"
+                          :finish="list"/>
 
               <Script v-if="element.entityType === ConditionType.script"
-                      :condition="element" />
+                      :condition="element"
+                      :finish="list"/>
             </div>
           </div>
 

@@ -32,9 +32,7 @@
           :language="responseData.contentLang"
           theme="vs"
           :options="editorOptions"
-
           :onExtractor="responseExtractor"
-          :onReplace="responseExtractor"
       />
     </div>
 

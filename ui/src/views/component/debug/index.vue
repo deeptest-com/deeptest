@@ -1,61 +1,63 @@
 <template>
-  <div id="debug-index" class="dp-splits-v">
-    <div id="debug-content">
-      <Invocation :topVal="topVal"
-                  :showMethodSelection = "showMethodSelection"
-                  :onSave="saveDebugData"
-                  :onSaveAsCase="saveAsCase"
-                  :onSync="syncDebugData"
-                  :baseUrlDisabled="baseUrlDisabled"
-                  :urlDisabled="urlDisabled"/>
-      <DebugConfig />
-    </div>
-
-    <div id="debug-splitter" class="splitter"></div>
-
-    <div id="debug-right">
-      <a-tabs tabPosition="right" class="right-tab"
-              v-model:activeKey="rightTabKey"
-              :tabBarGutter="0"
-              @change="changeRightTab">
-
-        <a-tab-pane key="env">
-          <template #tab>
-            <span id="env-tab">
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>变量</template>
-                <EnvironmentOutlined/>
-              </a-tooltip>
-            </span>
-          </template>
-        </a-tab-pane>
-
-        <a-tab-pane key="history">
-          <template #tab>
-            <span id="his-tab">
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>历史</template>
-                <HistoryOutlined/>
-              </a-tooltip>
-            </span>
-          </template>
-        </a-tab-pane>
-
-      </a-tabs>
-    </div>
-
-    <div v-if="rightTabKey==='env'"
-         :style="posStyleEnv"
-         class="right-float-tab dp-bg-white">
-      <div class="dp-bg-light">
-        <RequestEnv :onClose="closeRightTab" />
+  <div class="debug-index-wrapper">
+    <div id="debug-index" class="dp-splits-v">
+      <div id="debug-content">
+        <Invocation :topVal="topVal"
+                    :showMethodSelection = "showMethodSelection"
+                    :onSave="saveDebugData"
+                    :onSaveAsCase="saveAsCase"
+                    :onSync="syncDebugData"
+                    :baseUrlDisabled="baseUrlDisabled"
+                    :urlDisabled="urlDisabled"/>
+        <DebugConfig />
       </div>
-    </div>
-    <div v-if="rightTabKey==='history'"
-         :style="posStyleHis"
-         class="right-float-tab dp-bg-white">
-      <div class="dp-bg-light">
-        <RequestHistory :onClose="closeRightTab" />
+
+      <div id="debug-splitter" class="splitter"></div>
+
+      <div id="debug-right">
+        <a-tabs tabPosition="right" class="right-tab"
+                v-model:activeKey="rightTabKey"
+                :tabBarGutter="0"
+                @change="changeRightTab">
+
+          <a-tab-pane key="env">
+            <template #tab>
+              <span id="env-tab">
+                <a-tooltip placement="left" overlayClassName="dp-tip-small">
+                  <template #title>变量</template>
+                  <EnvironmentOutlined/>
+                </a-tooltip>
+              </span>
+            </template>
+          </a-tab-pane>
+
+          <a-tab-pane key="history">
+            <template #tab>
+              <span id="his-tab">
+                <a-tooltip placement="left" overlayClassName="dp-tip-small">
+                  <template #title>历史</template>
+                  <HistoryOutlined/>
+                </a-tooltip>
+              </span>
+            </template>
+          </a-tab-pane>
+
+        </a-tabs>
+      </div>
+
+      <div v-if="rightTabKey==='env'"
+           :style="posStyleEnv"
+           class="right-float-tab dp-bg-white">
+        <div class="dp-bg-light">
+          <RequestEnv :onClose="closeRightTab" />
+        </div>
+      </div>
+      <div v-if="rightTabKey==='history'"
+           :style="posStyleHis"
+           class="right-float-tab dp-bg-white">
+        <div class="dp-bg-light">
+          <RequestHistory :onClose="closeRightTab" />
+        </div>
       </div>
     </div>
   </div>
@@ -184,8 +186,8 @@ const closeRightTab = () => {
 
 <style lang="less">
 #debug-index #debug-right .right-tab {
-  //height: 100%;
-  height: calc(100vh - 152px);
+  height: 100%;
+  //height: calc(100vh - 152px);
   .ant-tabs-left-content {
     padding-left: 0px;
   }
@@ -222,23 +224,29 @@ const closeRightTab = () => {
 </style>
 
 <style lang="less" scoped>
-#debug-index {
-  display: flex;
+.debug-index-wrapper {
   height: 100%;
-  width: 100%;
+  overflow-y: auto;
 
-  #debug-content {
-    flex: 1;
-    width: 0;
-  }
-
-  #debug-right {
-    width: 38px;
+  #debug-index {
+    display: flex;
+    min-height: 460px;
     height: 100%;
-  }
-  #debug-splitter {
-    width: 1px;
-    background-color: #f0f0f0;
+    width: 100%;
+
+    #debug-content {
+      flex: 1;
+      width: 0;
+    }
+
+    #debug-right {
+      width: 38px;
+      height: 100%;
+    }
+    #debug-splitter {
+      width: 1px;
+      background-color: #f0f0f0;
+    }
   }
 }
 </style>

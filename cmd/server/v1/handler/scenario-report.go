@@ -17,6 +17,16 @@ type ScenarioReportCtrl struct {
 	BaseCtrl
 }
 
+// List
+// @Tags	场景模块/场景报告
+// @summary	结果列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string							true	"Authentication header"
+// @Param 	currProjectId		query	int								true	"当前项目ID"
+// @Param 	ReportReqPaginate	body	serverDomain.ReportReqPaginate	true	"获取结果列表的请求参数"
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ScenarioReport}}
+// @Router	/api/v1/scenarios/reports	[post]
 func (c *ScenarioReportCtrl) List(ctx iris.Context) {
 	/*
 		projectId, err := ctx.URLParamInt("currProjectId")
@@ -45,6 +55,16 @@ func (c *ScenarioReportCtrl) List(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
+// Get
+// @Tags	场景模块/场景报告
+// @summary	结果详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"报告ID"
+// @success	200	{object}	_domain.Response{data=model.ScenarioReport}
+// @Router	/api/v1/scenarios/reports/{id}	[get]
 func (c *ScenarioReportCtrl) Get(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
@@ -60,6 +80,16 @@ func (c *ScenarioReportCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report, Msg: _domain.NoErr.Msg})
 }
 
+// Delete
+// @Tags	场景模块/场景报告
+// @summary	删除报告
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"报告ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/scenarios/reports/{id}	[delete]
 func (c *ScenarioReportCtrl) Delete(ctx iris.Context) {
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
@@ -77,6 +107,16 @@ func (c *ScenarioReportCtrl) Delete(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// Create
+// @Tags	场景模块/场景报告
+// @summary	创建报告
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"报告ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/scenarios/reports/{id}	[put]
 func (c *ScenarioReportCtrl) Create(ctx iris.Context) {
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)

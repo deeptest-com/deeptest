@@ -16,6 +16,16 @@ type ScenarioInterfaceCtrl struct {
 	BaseCtrl
 }
 
+// SaveDebugData
+// @Tags	场景模块/场景调试
+// @summary	保存场景调试接口
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string				true	"Authentication header"
+// @Param 	currProjectId	query	int					true	"当前项目ID"
+// @Param 	DebugData		body	domain.DebugData	true	"保存场景调试接口的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/scenarios/interface/saveDebugData	[post]
 func (c *ScenarioInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 	req := domain.DebugData{}
 	err := ctx.ReadJSON(&req)
@@ -33,6 +43,16 @@ func (c *ScenarioInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
+// ResetDebugData
+// @Tags	场景模块/场景调试
+// @summary	重置场景调试接口
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string	true	"Authentication header"
+// @Param 	currProjectId		query	int		true	"当前项目ID"
+// @Param 	scenarioProcessorId	query	int		true	"scenarioProcessorId"
+// @success	200	{object}	_domain.Response{data=model.Processor}
+// @Router	/api/v1/scenarios/interface/resetDebugData	[post]
 func (c *ScenarioInterfaceCtrl) ResetDebugData(ctx iris.Context) {
 	createBy := multi.GetUserId(ctx)
 	scenarioProcessorId, err := ctx.URLParamInt("scenarioProcessorId")

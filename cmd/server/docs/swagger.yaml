@@ -17,27 +17,6 @@ definitions:
       msg:
         type: string
     type: object
-  agentDomain.Checkpoint:
-    properties:
-      actualResult:
-        type: string
-      disabled:
-        type: boolean
-      expression:
-        type: string
-      extractorVariable:
-        type: string
-      interfaceId:
-        type: integer
-      operator:
-        $ref: '#/definitions/consts.ComparisonOperator'
-      resultStatus:
-        $ref: '#/definitions/consts.ResultStatus'
-      type:
-        $ref: '#/definitions/consts.CheckpointType'
-      value:
-        type: string
-    type: object
   agentDomain.ExecIterator:
     properties:
       data:
@@ -174,37 +153,6 @@ definitions:
       useId:
         type: integer
     type: object
-  agentDomain.Extractor:
-    properties:
-      boundaryEnd:
-        type: string
-      boundaryIncluded:
-        type: boolean
-      boundaryIndex:
-        type: integer
-      boundaryStart:
-        type: string
-      disabled:
-        type: boolean
-      expression:
-        type: string
-      interfaceId:
-        type: integer
-      key:
-        type: string
-      prop:
-        type: string
-      result:
-        type: string
-      scope:
-        $ref: '#/definitions/consts.ExtractorScope'
-      src:
-        $ref: '#/definitions/consts.ExtractorSrc'
-      type:
-        $ref: '#/definitions/consts.ExtractorType'
-      variable:
-        type: string
-    type: object
   agentDomain.PlanExecResult:
     properties:
       desc:
@@ -298,7 +246,7 @@ definitions:
         type: boolean
       checkpointsResult:
         items:
-          $ref: '#/definitions/agentDomain.Checkpoint'
+          $ref: '#/definitions/domain.CheckpointBase'
         type: array
       cost:
         type: integer
@@ -317,7 +265,7 @@ definitions:
         type: integer
       extractorsResult:
         items:
-          $ref: '#/definitions/agentDomain.Extractor'
+          $ref: '#/definitions/domain.ExtractorBase'
         type: array
       httpStatusCode:
         $ref: '#/definitions/consts.HttpRespCode'
@@ -364,6 +312,10 @@ definitions:
         type: integer
       scenarioReportId:
         type: integer
+      scriptsResult:
+        items:
+          $ref: '#/definitions/domain.ScriptBase'
+        type: array
       startTime:
         type: string
       summary:
@@ -378,6 +330,14 @@ definitions:
         $ref: '#/definitions/domain.DebugData'
       execScene:
         $ref: '#/definitions/domain.ExecScene'
+      postConditions:
+        items:
+          $ref: '#/definitions/domain.InterfaceExecCondition'
+        type: array
+      preConditions:
+        items:
+          $ref: '#/definitions/domain.InterfaceExecCondition'
+        type: array
     type: object
   agentExec.PlanExecObj:
     properties:
@@ -434,6 +394,47 @@ definitions:
       useId:
         type: integer
     type: object
+  agentExec.ProcessorMsg:
+    properties:
+      children:
+        items:
+          $ref: '#/definitions/agentExec.Processor'
+        type: array
+      comments:
+        type: string
+      endpointInterfaceId:
+        type: integer
+      entityCategory:
+        $ref: '#/definitions/consts.ProcessorCategory'
+      entityId:
+        type: integer
+      entityRaw:
+        items:
+          type: integer
+        type: array
+      entityType:
+        $ref: '#/definitions/consts.ProcessorType'
+      id:
+        type: integer
+      isDir:
+        type: boolean
+      name:
+        type: string
+      ordr:
+        type: integer
+      parentId:
+        type: integer
+      projectId:
+        type: integer
+      result:
+        $ref: '#/definitions/agentDomain.ScenarioExecResult'
+      scenarioId:
+        type: integer
+      slots:
+        $ref: '#/definitions/iris.Map'
+      useId:
+        type: integer
+    type: object
   agentExec.ScenarioExecObj:
     properties:
       baseUrl:
@@ -444,6 +445,23 @@ definitions:
         type: string
       rootProcessor:
         $ref: '#/definitions/agentExec.Processor'
+      scenarioId:
+        type: integer
+      serverUrl:
+        type: string
+      token:
+        type: string
+    type: object
+  agentExec.ScenarioExecObjMsg:
+    properties:
+      baseUrl:
+        type: string
+      execScene:
+        $ref: '#/definitions/domain.ExecScene'
+      name:
+        type: string
+      rootProcessor:
+        $ref: '#/definitions/agentExec.ProcessorMsg'
       scenarioId:
         type: integer
       serverUrl:
@@ -515,6 +533,32 @@ definitions:
     - LessThanOrEqual
     - Contain
     - NotContain
+  consts.ConditionSrc:
+    enum:
+    - pre
+    - post
+    type: string
+    x-enum-varnames:
+    - ConditionSrcPre
+    - ConditionSrcPost
+  consts.ConditionType:
+    enum:
+    - extractor
+    - checkpoint
+    - script
+    type: string
+    x-enum-varnames:
+    - ConditionTypeExtractor
+    - ConditionTypeCheckpoint
+    - ConditionTypeScript
+  consts.DataSource:
+    enum:
+    - text
+    - excel
+    type: string
+    x-enum-varnames:
+    - Text
+    - Excel
   consts.DataType:
     enum:
     - int
@@ -890,6 +934,20 @@ definitions:
     type: integer
     x-enum-varnames:
     - Swagger
+  consts.SwitchStatus:
+    enum:
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - SwitchON
+    - SwitchOFF
+  consts.SyncType:
+    enum:
+    - 1
+    type: integer
+    x-enum-varnames:
+    - FullCopy
   consts.TestStage:
     enum:
     - unit_test
@@ -1020,6 +1078,39 @@ definitions:
       value:
         type: string
     type: object
+  domain.CheckpointBase:
+    properties:
+      actualResult:
+        type: string
+      conditionEntityId:
+        description: refer to entity po id in domain object
+        type: integer
+      conditionEntityType:
+        allOf:
+        - $ref: '#/definitions/consts.ConditionType'
+        description: for log only
+      conditionId:
+        type: integer
+      disabled:
+        type: boolean
+      expression:
+        type: string
+      extractorVariable:
+        type: string
+      invokeId:
+        description: for log only
+        type: integer
+      operator:
+        $ref: '#/definitions/consts.ComparisonOperator'
+      resultMsg:
+        type: string
+      resultStatus:
+        $ref: '#/definitions/consts.ResultStatus'
+      type:
+        $ref: '#/definitions/consts.CheckpointType'
+      value:
+        type: string
+    type: object
   domain.Datapools:
     additionalProperties:
       items:
@@ -1092,8 +1183,8 @@ definitions:
         items:
           $ref: '#/definitions/domain.Param'
         type: array
-      preRequestScript:
-        type: string
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.UsedBy'
       projectId:
         type: integer
       queryParams:
@@ -1115,10 +1206,8 @@ definitions:
         type: string
       usedBy:
         $ref: '#/definitions/consts.UsedBy'
-      validationScript:
-        type: string
     type: object
-  domain.DebugReq:
+  domain.DebugInfo:
     properties:
       caseInterfaceId:
         description: load by endpoint case
@@ -1158,6 +1247,8 @@ definitions:
           $ref: '#/definitions/domain.Header'
         type: array
       id:
+        type: integer
+      invokeId:
         type: integer
       statusCode:
         $ref: '#/definitions/consts.HttpRespCode'
@@ -1371,6 +1462,51 @@ definitions:
           $ref: '#/definitions/domain.GlobalVar'
         type: array
     type: object
+  domain.ExtractorBase:
+    properties:
+      boundaryEnd:
+        type: string
+      boundaryIncluded:
+        type: boolean
+      boundaryIndex:
+        type: integer
+      boundaryStart:
+        type: string
+      conditionEntityId:
+        description: refer to po id in domain object
+        type: integer
+      conditionEntityType:
+        allOf:
+        - $ref: '#/definitions/consts.ConditionType'
+        description: for log only
+      conditionId:
+        type: integer
+      disabled:
+        type: boolean
+      expression:
+        type: string
+      invokeId:
+        description: for log only
+        type: integer
+      key:
+        type: string
+      prop:
+        type: string
+      result:
+        type: string
+      resultMsg:
+        type: string
+      resultStatus:
+        $ref: '#/definitions/consts.ResultStatus'
+      scope:
+        $ref: '#/definitions/consts.ExtractorScope'
+      src:
+        $ref: '#/definitions/consts.ExtractorSrc'
+      type:
+        $ref: '#/definitions/consts.ExtractorType'
+      variable:
+        type: string
+    type: object
   domain.GlobalParam:
     properties:
       Required:
@@ -1431,6 +1567,15 @@ definitions:
         type: boolean
       value:
         type: string
+    type: object
+  domain.InterfaceExecCondition:
+    properties:
+      debugData:
+        $ref: '#/definitions/consts.ConditionType'
+      raw:
+        items:
+          type: integer
+        type: array
     type: object
   domain.InterfaceToEnvMap:
     additionalProperties:
@@ -1576,8 +1721,43 @@ definitions:
       type:
         type: string
     type: object
+  domain.ScriptBase:
+    properties:
+      conditionEntityId:
+        description: refer to po id in domain object
+        type: integer
+      conditionEntityType:
+        allOf:
+        - $ref: '#/definitions/consts.ConditionType'
+        description: for log only
+      conditionId:
+        type: integer
+      conditionType:
+        $ref: '#/definitions/consts.ConditionSrc'
+      content:
+        type: string
+      disabled:
+        type: boolean
+      invokeId:
+        description: for log only
+        type: integer
+      output:
+        type: string
+      resultMsg:
+        type: string
+      resultStatus:
+        $ref: '#/definitions/consts.ResultStatus'
+    type: object
   domain.SubmitDebugResultRequest:
     properties:
+      postConditions:
+        items:
+          $ref: '#/definitions/domain.InterfaceExecCondition'
+        type: array
+      preConditions:
+        items:
+          $ref: '#/definitions/domain.InterfaceExecCondition'
+        type: array
       request:
         $ref: '#/definitions/domain.DebugData'
       response:
@@ -1619,6 +1799,11 @@ definitions:
       updatedAt:
         type: string
     type: object
+  model.Avatar:
+    properties:
+      avatar:
+        type: string
+    type: object
   model.Category:
     properties:
       children:
@@ -1656,6 +1841,78 @@ definitions:
       useId:
         type: integer
     type: object
+  model.ComponentSchema:
+    properties:
+      content:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      examples:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      ref:
+        type: string
+      serveId:
+        type: integer
+      sourceType:
+        $ref: '#/definitions/consts.SourceType'
+      tags:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.ComponentSchemaSecurity:
+    properties:
+      bearerFormat:
+        type: string
+      createdAt:
+        type: string
+      default:
+        type: boolean
+      description:
+        type: string
+      disabled:
+        type: boolean
+      flows:
+        type: string
+      id:
+        type: integer
+      in:
+        type: string
+      key:
+        type: string
+      name:
+        type: string
+      openIdConnectUrl:
+        type: string
+      password:
+        type: string
+      project_id:
+        type: integer
+      scheme:
+        type: string
+      serve_id:
+        type: integer
+      token:
+        type: string
+      type:
+        type: string
+      updatedAt:
+        type: string
+      username:
+        type: string
+      value:
+        type: string
+    type: object
   model.Datapool:
     properties:
       createUser:
@@ -1677,6 +1934,96 @@ definitions:
       projectId:
         type: integer
       updatedAt:
+        type: string
+    type: object
+  model.DebugConditionCheckpoint:
+    properties:
+      actualResult:
+        type: string
+      conditionEntityId:
+        description: refer to entity po id in domain object
+        type: integer
+      conditionEntityType:
+        allOf:
+        - $ref: '#/definitions/consts.ConditionType'
+        description: for log only
+      conditionId:
+        type: integer
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      expression:
+        type: string
+      extractorVariable:
+        type: string
+      id:
+        type: integer
+      invokeId:
+        description: for log only
+        type: integer
+      operator:
+        $ref: '#/definitions/consts.ComparisonOperator'
+      resultMsg:
+        type: string
+      resultStatus:
+        $ref: '#/definitions/consts.ResultStatus'
+      type:
+        $ref: '#/definitions/consts.CheckpointType'
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.DebugConditionExtractor:
+    properties:
+      boundaryEnd:
+        type: string
+      boundaryIncluded:
+        type: boolean
+      boundaryIndex:
+        type: integer
+      boundaryStart:
+        type: string
+      conditionEntityId:
+        description: refer to po id in domain object
+        type: integer
+      conditionEntityType:
+        allOf:
+        - $ref: '#/definitions/consts.ConditionType'
+        description: for log only
+      conditionId:
+        type: integer
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      expression:
+        type: string
+      id:
+        type: integer
+      invokeId:
+        description: for log only
+        type: integer
+      key:
+        type: string
+      prop:
+        type: string
+      result:
+        type: string
+      resultMsg:
+        type: string
+      resultStatus:
+        $ref: '#/definitions/consts.ResultStatus'
+      scope:
+        $ref: '#/definitions/consts.ExtractorScope'
+      src:
+        $ref: '#/definitions/consts.ExtractorSrc'
+      type:
+        $ref: '#/definitions/consts.ExtractorType'
+      updatedAt:
+        type: string
+      variable:
         type: string
     type: object
   model.DebugInterface:
@@ -1705,6 +2052,8 @@ definitions:
         type: array
       bodyType:
         $ref: '#/definitions/consts.HttpContentType'
+      caseInterfaceId:
+        type: integer
       cookies:
         items:
           $ref: '#/definitions/model.DebugInterfaceCookie'
@@ -1729,11 +2078,11 @@ definitions:
         type: integer
       interfaceCheckpoints:
         items:
-          $ref: '#/definitions/model.DebugInterfaceCheckpoint'
+          $ref: '#/definitions/model.DebugConditionCheckpoint'
         type: array
       interfaceExtractors:
         items:
-          $ref: '#/definitions/model.DebugInterfaceExtractor'
+          $ref: '#/definitions/model.DebugConditionExtractor'
         type: array
       method:
         $ref: '#/definitions/consts.HttpMethod'
@@ -1754,6 +2103,8 @@ definitions:
         type: array
       preRequestScript:
         type: string
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.UsedBy'
       projectId:
         type: integer
       queryParams:
@@ -1872,46 +2223,6 @@ definitions:
       value:
         type: string
     type: object
-  model.DebugInterfaceCheckpoint:
-    properties:
-      actualResult:
-        type: string
-      createdAt:
-        type: string
-      debugInterfaceId:
-        type: integer
-      diagnoseInterfaceId:
-        description: debug for Test Interface
-        type: integer
-      disabled:
-        type: boolean
-      endpointInterfaceId:
-        description: debug for Endpoint Interface
-        type: integer
-      expression:
-        type: string
-      extractorVariable:
-        type: string
-      id:
-        type: integer
-      operator:
-        $ref: '#/definitions/consts.ComparisonOperator'
-      resultStatus:
-        $ref: '#/definitions/consts.ResultStatus'
-      scenarioId:
-        type: integer
-      scenarioProcessorId:
-        description: debug in Scenario Processor
-        type: integer
-      type:
-        $ref: '#/definitions/consts.CheckpointType'
-      updatedAt:
-        type: string
-      usedBy:
-        $ref: '#/definitions/consts.UsedBy'
-      value:
-        type: string
-    type: object
   model.DebugInterfaceCookie:
     properties:
       createdAt:
@@ -1931,57 +2242,6 @@ definitions:
       updatedAt:
         type: string
       value:
-        type: string
-    type: object
-  model.DebugInterfaceExtractor:
-    properties:
-      boundaryEnd:
-        type: string
-      boundaryIncluded:
-        type: boolean
-      boundaryIndex:
-        type: integer
-      boundaryStart:
-        type: string
-      createdAt:
-        type: string
-      debugInterfaceId:
-        type: integer
-      diagnoseInterfaceId:
-        description: debug for Test Interface
-        type: integer
-      disabled:
-        type: boolean
-      endpointInterfaceId:
-        description: debug for Endpoint Interface
-        type: integer
-      expression:
-        type: string
-      id:
-        type: integer
-      key:
-        description: form header
-        type: string
-      projectId:
-        type: integer
-      result:
-        type: string
-      scenarioId:
-        type: integer
-      scenarioProcessorId:
-        description: debug in Scenario Processor
-        type: integer
-      scope:
-        $ref: '#/definitions/consts.ExtractorScope'
-      src:
-        $ref: '#/definitions/consts.ExtractorSrc'
-      type:
-        $ref: '#/definitions/consts.ExtractorType'
-      updatedAt:
-        type: string
-      usedBy:
-        $ref: '#/definitions/consts.UsedBy'
-      variable:
         type: string
     type: object
   model.DebugInterfaceHeader:
@@ -2214,8 +2474,6 @@ definitions:
         type: string
       createdAt:
         type: string
-      createdBy:
-        type: integer
       debugData:
         $ref: '#/definitions/model.DebugInterface'
       debugInterfaceId:
@@ -2757,6 +3015,15 @@ definitions:
     properties:
       actualResult:
         type: string
+      conditionEntityId:
+        description: refer to entity po id in domain object
+        type: integer
+      conditionEntityType:
+        allOf:
+        - $ref: '#/definitions/consts.ConditionType'
+        description: for log only
+      conditionId:
+        type: integer
       createdAt:
         type: string
       disabled:
@@ -2767,12 +3034,12 @@ definitions:
         type: string
       id:
         type: integer
-      interfaceId:
-        type: integer
-      logId:
+      invokeId:
         type: integer
       operator:
         $ref: '#/definitions/consts.ComparisonOperator'
+      resultMsg:
+        type: string
       resultStatus:
         $ref: '#/definitions/consts.ResultStatus'
       type:
@@ -2792,6 +3059,15 @@ definitions:
         type: integer
       boundaryStart:
         type: string
+      conditionEntityId:
+        description: refer to po id in domain object
+        type: integer
+      conditionEntityType:
+        allOf:
+        - $ref: '#/definitions/consts.ConditionType'
+        description: for log only
+      conditionId:
+        type: integer
       createdAt:
         type: string
       disabled:
@@ -2800,16 +3076,20 @@ definitions:
         type: string
       id:
         type: integer
-      interfaceId:
+      invokeId:
         type: integer
       key:
         type: string
-      logId:
-        type: integer
       prop:
         type: string
       result:
         type: string
+      resultMsg:
+        type: string
+      resultStatus:
+        $ref: '#/definitions/consts.ResultStatus'
+      scope:
+        $ref: '#/definitions/consts.ExtractorScope'
       src:
         $ref: '#/definitions/consts.ExtractorSrc'
       type:
@@ -3157,6 +3437,43 @@ definitions:
       updatedAt:
         type: string
     type: object
+  model.ProcessorData:
+    properties:
+      comments:
+        type: string
+      createdAt:
+        type: string
+      default:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      isRand:
+        type: boolean
+      name:
+        type: string
+      parentID:
+        type: integer
+      processorCategory:
+        $ref: '#/definitions/consts.ProcessorCategory'
+      processorID:
+        type: integer
+      processorType:
+        $ref: '#/definitions/consts.ProcessorType'
+      repeatTimes:
+        type: integer
+      separator:
+        type: string
+      type:
+        $ref: '#/definitions/consts.DataSource'
+      updatedAt:
+        type: string
+      url:
+        type: string
+      variableName:
+        type: string
+    type: object
   model.Project:
     properties:
       adminId:
@@ -3402,6 +3719,84 @@ definitions:
       version:
         type: number
     type: object
+  model.ScenarioReport:
+    properties:
+      createUserId:
+        type: integer
+      createUserName:
+        type: string
+      createdAt:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      duration:
+        description: sec
+        type: integer
+      endTime:
+        type: string
+      execEnv:
+        type: string
+      execEnvId:
+        type: integer
+      failAssertionNum:
+        type: integer
+      failInterfaceNum:
+        type: integer
+      failRequestNum:
+        type: integer
+      finishProcessorNum:
+        type: integer
+      id:
+        type: integer
+      interfaceStatusMap:
+        additionalProperties:
+          additionalProperties:
+            type: integer
+          type: object
+        type: object
+      logs:
+        items:
+          $ref: '#/definitions/model.ExecLogProcessor'
+        type: array
+      name:
+        type: string
+      passAssertionNum:
+        type: integer
+      passInterfaceNum:
+        type: integer
+      passRequestNum:
+        type: integer
+      payload:
+        type: string
+      planReportId:
+        type: integer
+      priority:
+        type: string
+      progressStatus:
+        $ref: '#/definitions/consts.ProgressStatus'
+      projectId:
+        type: integer
+      resultStatus:
+        $ref: '#/definitions/consts.ResultStatus'
+      scenarioId:
+        type: integer
+      serialNumber:
+        type: string
+      startTime:
+        type: string
+      totalAssertionNum:
+        type: integer
+      totalInterfaceNum:
+        type: integer
+      totalProcessorNum:
+        type: integer
+      totalRequestNum:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
   model.ScenarioReportDetail:
     properties:
       createUserId:
@@ -3480,6 +3875,39 @@ definitions:
       updatedAt:
         type: string
     type: object
+  model.Serve:
+    properties:
+      Component:
+        items:
+          $ref: '#/definitions/model.ComponentSchema'
+        type: array
+      Securities:
+        items:
+          $ref: '#/definitions/model.ComponentSchemaSecurity'
+        type: array
+      createUser:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      projectId:
+        type: integer
+      servers:
+        items:
+          $ref: '#/definitions/model.ServeServer'
+        type: array
+      status:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
   model.ServeServer:
     properties:
       createdAt:
@@ -3498,6 +3926,69 @@ definitions:
         type: integer
       serveName:
         type: string
+      updatedAt:
+        type: string
+      url:
+        type: string
+    type: object
+  model.ServeVersion:
+    properties:
+      createUser:
+        type: string
+      createdAt:
+        type: string
+      description:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      serveId:
+        type: integer
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.Snippet:
+    properties:
+      createdAt:
+        type: string
+      desc:
+        type: string
+      disabled:
+        type: boolean
+      id:
+        type: integer
+      name:
+        type: string
+      script:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.SwaggerSync:
+    properties:
+      ServeId:
+        type: integer
+      categoryId:
+        type: integer
+      createdAt:
+        type: string
+      cron:
+        type: string
+      disabled:
+        type: boolean
+      execTime:
+        type: string
+      id:
+        type: integer
+      projectId:
+        type: integer
+      switch:
+        $ref: '#/definitions/consts.SwitchStatus'
+      syncType:
+        $ref: '#/definitions/consts.SyncType'
       updatedAt:
         type: string
       url:
@@ -3556,6 +4047,30 @@ definitions:
       userId:
         type: integer
     type: object
+  openapi.Schema:
+    properties:
+      $ref:
+        type: string
+      items:
+        $ref: '#/definitions/openapi.SchemaRef'
+      properties:
+        $ref: '#/definitions/openapi.Schemas'
+      ref:
+        type: string
+      type:
+        type: string
+    type: object
+  openapi.SchemaRef:
+    properties:
+      ref:
+        type: string
+      value:
+        $ref: '#/definitions/openapi.Schema'
+    type: object
+  openapi.Schemas:
+    additionalProperties:
+      $ref: '#/definitions/openapi.SchemaRef'
+    type: object
   serverConsts.AuthType:
     enum:
     - apiKey
@@ -3594,6 +4109,22 @@ definitions:
     - Before
     - Inner
     - After
+  serverConsts.NodeCreateMode:
+    enum:
+    - brother
+    - child
+    type: string
+    x-enum-varnames:
+    - Brother
+    - Child
+  serverConsts.NodeCreateType:
+    enum:
+    - dir
+    - node
+    type: string
+    x-enum-varnames:
+    - Dir
+    - Node
   serverConsts.ProjectType:
     enum:
     - full
@@ -3709,6 +4240,11 @@ definitions:
       name:
         type: string
       parent:
+        type: integer
+    type: object
+  serverDomain.ChangeServeReq:
+    properties:
+      id:
         type: integer
     type: object
   serverDomain.DataReq:
@@ -3950,20 +4486,26 @@ definitions:
         type: integer
       createUserName:
         type: string
+      debugData:
+        $ref: '#/definitions/domain.DebugData'
+      debugInterfaceId:
+        type: integer
       desc:
         type: string
       endpointId:
+        type: integer
+      endpointInterfaceId:
         type: integer
       id:
         type: integer
       name:
         type: string
-      parentId:
-        type: integer
       projectId:
         type: integer
       serveId:
         type: integer
+      usedBy:
+        type: string
     type: object
   serverDomain.EndpointInterfaceReqPaginate:
     properties:
@@ -4072,6 +4614,13 @@ definitions:
       version:
         type: string
     type: object
+  serverDomain.EndpointVersions:
+    properties:
+      endpointId:
+        type: integer
+      version:
+        type: string
+    type: object
   serverDomain.EnvironmentParam:
     properties:
       defaultValue:
@@ -4142,6 +4691,13 @@ definitions:
     - localValue
     - name
     - remoteValue
+    type: object
+  serverDomain.ExtractorConditionQuickCreateReq:
+    properties:
+      conf:
+        $ref: '#/definitions/domain.ExtractorBase'
+      info:
+        $ref: '#/definitions/domain.DebugInfo'
     type: object
   serverDomain.ImportEndpointDataReq:
     properties:
@@ -4224,6 +4780,24 @@ definitions:
         type: string
       yapiHost:
         type: string
+    type: object
+  serverDomain.InviteUserReq:
+    properties:
+      email:
+        type: string
+      projectId:
+        type: integer
+      roleName:
+        $ref: '#/definitions/consts.RoleType'
+      userId:
+        type: integer
+    type: object
+  serverDomain.JsonContent:
+    properties:
+      data:
+        type: string
+      serveId:
+        type: integer
     type: object
   serverDomain.LoginReq:
     properties:
@@ -4560,6 +5134,150 @@ definitions:
     - password
     - username
     type: object
+  serverDomain.ReportReqPaginate:
+    properties:
+      createUserId:
+        type: integer
+      executeEndTime:
+        type: string
+      executeStartTime:
+        type: string
+      field:
+        type: string
+      keywords:
+        type: string
+      order:
+        type: string
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      scenarioId:
+        type: integer
+    type: object
+  serverDomain.ResRankingList:
+    properties:
+      userRankingList:
+        items:
+          $ref: '#/definitions/serverDomain.ResUserRanking'
+        type: array
+    type: object
+  serverDomain.ResSummaryBugs:
+    properties:
+      blocker:
+        type: number
+      critical:
+        type: number
+      deadly:
+        type: number
+      major:
+        type: number
+      minor:
+        type: number
+      total:
+        type: integer
+    type: object
+  serverDomain.ResSummaryCard:
+    properties:
+      coverage:
+        type: number
+      coverageHb:
+        type: number
+      execTotal:
+        type: integer
+      interfaceHb:
+        type: number
+      interfaceTotal:
+        type: integer
+      passRate:
+        type: number
+      projectTotal:
+        type: integer
+      scenarioHb:
+        type: number
+      scenarioTotal:
+        type: integer
+      userTotal:
+        type: integer
+    type: object
+  serverDomain.ResSummaryDetail:
+    properties:
+      projectList:
+        items:
+          $ref: '#/definitions/serverDomain.ResSummaryDetails'
+        type: array
+      projectTotal:
+        type: integer
+      userProjectList:
+        items:
+          $ref: '#/definitions/serverDomain.ResSummaryDetails'
+        type: array
+      userProjectTotal:
+        type: integer
+    type: object
+  serverDomain.ResSummaryDetails:
+    properties:
+      accessible:
+        type: integer
+      adminId:
+        type: integer
+      adminName:
+        type: string
+      bugTotal:
+        type: integer
+      coverage:
+        type: number
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      execTotal:
+        type: integer
+      id:
+        type: integer
+      interfaceTotal:
+        type: integer
+      passRate:
+        type: number
+      projectDescr:
+        type: string
+      projectId:
+        type: integer
+      projectName:
+        type: string
+      projectShortName:
+        type: string
+      scenarioTotal:
+        type: integer
+      userList:
+        items:
+          $ref: '#/definitions/serverDomain.ResUserIdAndName'
+        type: array
+    type: object
+  serverDomain.ResUserIdAndName:
+    properties:
+      userId:
+        type: integer
+      userName:
+        type: string
+    type: object
+  serverDomain.ResUserRanking:
+    properties:
+      hb:
+        type: integer
+      scenarioTotal:
+        type: integer
+      sort:
+        type: integer
+      testCaseTotal:
+        type: integer
+      updatedAt:
+        type: string
+      userId:
+        type: integer
+      userName:
+        type: string
+    type: object
   serverDomain.ResetPasswordReq:
     properties:
       password:
@@ -4623,6 +5341,167 @@ definitions:
     required:
     - name
     type: object
+  serverDomain.ScenarioAddInterfacesFromTreeReq:
+    properties:
+      createBy:
+        type: integer
+      selectedNodes:
+        items:
+          $ref: '#/definitions/serverDomain.DiagnoseInterface'
+        type: array
+      targetId:
+        type: integer
+    type: object
+  serverDomain.ScenarioAddInterfacesReq:
+    properties:
+      createBy:
+        type: integer
+      interfaceIds:
+        items:
+          type: integer
+        type: array
+      targetId:
+        type: integer
+    type: object
+  serverDomain.ScenarioAddScenarioReq:
+    properties:
+      createBy:
+        type: integer
+      mode:
+        type: string
+      name:
+        type: string
+      processorCategory:
+        $ref: '#/definitions/consts.ProcessorCategory'
+      processorType:
+        $ref: '#/definitions/consts.ProcessorType'
+      projectId:
+        type: integer
+      targetProcessorCategory:
+        $ref: '#/definitions/consts.ProcessorCategory'
+      targetProcessorId:
+        type: integer
+      targetProcessorType:
+        $ref: '#/definitions/consts.ProcessorType'
+    type: object
+  serverDomain.ScenarioNodeMoveReq:
+    properties:
+      dragKey:
+        type: integer
+      dropKey:
+        type: integer
+      dropPos:
+        $ref: '#/definitions/serverConsts.DropPos'
+    type: object
+  serverDomain.ScenarioNodeReq:
+    properties:
+      id:
+        type: integer
+      mode:
+        $ref: '#/definitions/serverConsts.NodeCreateMode'
+      name:
+        type: string
+      projectId:
+        type: integer
+      target:
+        type: integer
+      type:
+        $ref: '#/definitions/serverConsts.NodeCreateType'
+    type: object
+  serverDomain.ScenarioPlanReqPaginate:
+    properties:
+      adminId:
+        type: integer
+      categoryId:
+        type: integer
+      field:
+        type: string
+      keywords:
+        type: string
+      order:
+        type: string
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      projectId:
+        type: integer
+      ref:
+        type: boolean
+      status:
+        $ref: '#/definitions/consts.TestStatus'
+    type: object
+  serverDomain.ScenarioProcessorInfo:
+    properties:
+      comments:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  serverDomain.ServeReq:
+    properties:
+      createUser:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      projectId:
+        type: integer
+      status:
+        type: integer
+    required:
+    - name
+    - projectId
+    type: object
+  serverDomain.ServeReqPaginate:
+    properties:
+      field:
+        type: string
+      name:
+        type: string
+      order:
+        type: string
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      projectId:
+        type: integer
+    type: object
+  serverDomain.ServeSchemaPaginate:
+    properties:
+      field:
+        type: string
+      name:
+        type: string
+      order:
+        type: string
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      serveId:
+        type: integer
+      tag:
+        type: string
+      type:
+        type: string
+    type: object
+  serverDomain.ServeSchemaRefReq:
+    properties:
+      ref:
+        type: string
+      serveId:
+        type: integer
+    required:
+    - ref
+    - serveId
+    type: object
   serverDomain.ServeSchemaReq:
     properties:
       content:
@@ -4648,6 +5527,21 @@ definitions:
     required:
     - name
     - serveId
+    type: object
+  serverDomain.ServeSecurityPaginate:
+    properties:
+      field:
+        type: string
+      name:
+        type: string
+      order:
+        type: string
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      serveId:
+        type: integer
     type: object
   serverDomain.ServeSecurityReq:
     properties:
@@ -4697,6 +5591,64 @@ definitions:
       url:
         type: string
     type: object
+  serverDomain.ServeVersionBindEndpointReq:
+    properties:
+      endpointVersions:
+        items:
+          $ref: '#/definitions/serverDomain.EndpointVersions'
+        type: array
+      serveId:
+        type: integer
+      serveVersion:
+        type: string
+    type: object
+  serverDomain.ServeVersionPaginate:
+    properties:
+      createUser:
+        type: string
+      field:
+        type: string
+      order:
+        type: string
+      page:
+        type: integer
+      pageSize:
+        type: integer
+      serveId:
+        type: integer
+      version:
+        type: string
+    type: object
+  serverDomain.ServeVersionReq:
+    properties:
+      createUser:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      serveId:
+        type: integer
+      value:
+        type: string
+    type: object
+  serverDomain.SwaggerSyncReq:
+    properties:
+      categoryId:
+        type: integer
+      cron:
+        type: string
+      id:
+        type: integer
+      projectId:
+        type: integer
+      switch:
+        $ref: '#/definitions/consts.SwitchStatus'
+      syncType:
+        $ref: '#/definitions/consts.SyncType'
+      url:
+        type: string
+    type: object
   serverDomain.TestExprRequest:
     properties:
       content:
@@ -4735,6 +5687,55 @@ definitions:
         type: integer
       userId:
         type: integer
+    type: object
+  serverDomain.UpdateUserReq:
+    properties:
+      email:
+        type: string
+      newPassword:
+        type: string
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  serverDomain.UpdateUserRoleReq:
+    properties:
+      roleIds:
+        items:
+          type: integer
+        type: array
+      userId:
+        type: integer
+    required:
+    - userId
+    type: object
+  serverDomain.UserReq:
+    properties:
+      avatar:
+        type: string
+      createdAt:
+        type: string
+      email:
+        type: string
+      id:
+        type: integer
+      intro:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      role_ids:
+        items:
+          type: integer
+        type: array
+      updatedAt:
+        type: string
+      username:
+        type: string
+    required:
+    - username
     type: object
   serverDomain.UserResp:
     properties:
@@ -4779,49 +5780,6 @@ info:
   title: DeepTest服务端API文档
   version: "3.0"
 paths:
-  /api/v1//users:
-    get:
-      parameters:
-      - in: query
-        name: field
-        type: string
-      - in: query
-        name: name
-        type: string
-      - in: query
-        name: order
-        type: string
-      - in: query
-        name: page
-        type: integer
-      - in: query
-        name: pageSize
-        type: integer
-      - in: query
-        name: userName
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/_domain.Response'
-            - properties:
-                data:
-                  allOf:
-                  - $ref: '#/definitions/_domain.PageData'
-                  - properties:
-                      result:
-                        items:
-                          $ref: '#/definitions/serverDomain.UserResp'
-                        type: array
-                    type: object
-              type: object
-      summary: 用户列表
-      tags:
-      - 用户管理
   /api/v1/account/forgotPassword:
     post:
       consumes:
@@ -5369,47 +6327,6 @@ paths:
       tags:
       - 分类管理
   /api/v1/checkpoints:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: Authentication header
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 当前项目ID
-        in: query
-        name: currProjectId
-        required: true
-        type: integer
-      - description: debugInterfaceId
-        in: query
-        name: debugInterfaceId
-        required: true
-        type: integer
-      - description: endpointInterfaceId
-        in: query
-        name: endpointInterfaceId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/_domain.Response'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/model.DebugInterfaceCheckpoint'
-                  type: array
-              type: object
-      summary: 检查点列表
-      tags:
-      - 检查点
     post:
       consumes:
       - application/json
@@ -5429,7 +6346,7 @@ paths:
         name: DebugInterfaceCheckpoint
         required: true
         schema:
-          $ref: '#/definitions/model.DebugInterfaceCheckpoint'
+          $ref: '#/definitions/model.DebugConditionCheckpoint'
       produces:
       - application/json
       responses:
@@ -5440,7 +6357,7 @@ paths:
             - $ref: '#/definitions/_domain.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.DebugInterfaceCheckpoint'
+                  $ref: '#/definitions/model.DebugConditionCheckpoint'
               type: object
       summary: 新建检查点
       tags:
@@ -5464,7 +6381,7 @@ paths:
         name: DebugInterfaceCheckpoint
         required: true
         schema:
-          $ref: '#/definitions/model.DebugInterfaceCheckpoint'
+          $ref: '#/definitions/model.DebugConditionCheckpoint'
       produces:
       - application/json
       responses:
@@ -5534,7 +6451,7 @@ paths:
             - $ref: '#/definitions/_domain.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.DebugInterfaceCheckpoint'
+                  $ref: '#/definitions/model.DebugConditionCheckpoint'
               type: object
       summary: 检查点详情
       tags:
@@ -5755,7 +6672,7 @@ paths:
         name: DebugReq
         required: true
         schema:
-          $ref: '#/definitions/domain.DebugReq'
+          $ref: '#/definitions/domain.DebugInfo'
       produces:
       - application/json
       responses:
@@ -5791,7 +6708,7 @@ paths:
         name: DebugReq
         required: true
         schema:
-          $ref: '#/definitions/domain.DebugReq'
+          $ref: '#/definitions/domain.DebugInfo'
       produces:
       - application/json
       responses:
@@ -5827,7 +6744,7 @@ paths:
         name: DebugReq
         required: true
         schema:
-          $ref: '#/definitions/domain.DebugReq'
+          $ref: '#/definitions/domain.DebugData'
       produces:
       - application/json
       responses:
@@ -5868,38 +6785,6 @@ paths:
         name: endpointInterfaceId
         required: true
         type: integer
-      - description: load by endpoint case
-        in: query
-        name: caseInterfaceId
-        type: integer
-      - in: query
-        name: debugInterfaceId
-        type: integer
-      - description: load by interface diagnose
-        in: query
-        name: diagnoseInterfaceId
-        type: integer
-      - description: EndpointInterface without DebugInterface init
-        in: query
-        name: endpointInterfaceId
-        type: integer
-      - description: used to load vars by scenario processor
-        in: query
-        name: scenarioProcessorId
-        type: integer
-      - enum:
-        - interface_debug
-        - scenario_debug
-        - diagnose_debug
-        - case_debug
-        in: query
-        name: usedBy
-        type: string
-        x-enum-varnames:
-        - InterfaceDebug
-        - ScenarioDebug
-        - DiagnoseDebug
-        - CaseDebug
       produces:
       - application/json
       responses:
@@ -7363,6 +8248,36 @@ paths:
       summary: 保存用例名称
       tags:
       - 设计器/接口用例
+  /api/v1/endpoints/cases/copy:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 用例ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.EndpointCase'
+              type: object
+      summary: 用例复制
+      tags:
+      - 设计器/接口用例
   /api/v1/endpoints/cases/list:
     get:
       consumes:
@@ -8237,57 +9152,6 @@ paths:
       tags:
       - 环境管理
   /api/v1/extractors:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: Authentication header
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 当前项目ID
-        in: query
-        name: currProjectId
-        required: true
-        type: integer
-      - description: debugInterfaceId
-        in: query
-        name: debugInterfaceId
-        required: true
-        type: integer
-      - description: endpointInterfaceId
-        in: query
-        name: endpointInterfaceId
-        required: true
-        type: integer
-      - description: usedBy
-        in: query
-        name: usedBy
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/_domain.Response'
-            - properties:
-                data:
-                  allOf:
-                  - $ref: '#/definitions/_domain.PageData'
-                  - properties:
-                      result:
-                        items:
-                          $ref: '#/definitions/model.DebugInterfaceExtractor'
-                        type: array
-                    type: object
-              type: object
-      summary: 提取器列表
-      tags:
-      - 提取器
     post:
       consumes:
       - application/json
@@ -8304,22 +9168,17 @@ paths:
         type: integer
       - description: 新建提取器的请求参数
         in: body
-        name: DebugInterfaceExtractor
+        name: ExtractorConditionQuickCreateReq
         required: true
         schema:
-          $ref: '#/definitions/model.DebugInterfaceExtractor'
+          $ref: '#/definitions/serverDomain.ExtractorConditionQuickCreateReq'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            allOf:
-            - $ref: '#/definitions/_domain.Response'
-            - properties:
-                data:
-                  $ref: '#/definitions/model.DebugInterfaceExtractor'
-              type: object
+            $ref: '#/definitions/_domain.Response'
       summary: 新建提取器
       tags:
       - 提取器
@@ -8339,10 +9198,10 @@ paths:
         type: integer
       - description: 更新提取器的请求参数
         in: body
-        name: DebugInterfaceExtractor
+        name: DebugConditionExtractor
         required: true
         schema:
-          $ref: '#/definitions/model.DebugInterfaceExtractor'
+          $ref: '#/definitions/model.DebugConditionExtractor'
       produces:
       - application/json
       responses:
@@ -8412,40 +9271,9 @@ paths:
             - $ref: '#/definitions/_domain.Response'
             - properties:
                 data:
-                  $ref: '#/definitions/model.DebugInterfaceExtractor'
+                  $ref: '#/definitions/model.DebugConditionExtractor'
               type: object
       summary: 提取器详情
-      tags:
-      - 提取器
-  /api/v1/extractors/createOrUpdateResult:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Authentication header
-        in: header
-        name: Authorization
-        required: true
-        type: string
-      - description: 当前项目ID
-        in: query
-        name: currProjectId
-        required: true
-        type: integer
-      - description: 新建或更新提取器的请求参数
-        in: body
-        name: DebugInterfaceExtractor
-        required: true
-        schema:
-          $ref: '#/definitions/model.DebugInterfaceExtractor'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/_domain.Response'
-      summary: 新建或更新提取器
       tags:
       - 提取器
   /api/v1/extractors/listExtractorVariableForCheckpoint:
@@ -8465,10 +9293,10 @@ paths:
         type: integer
       - description: 提取器变量列表的请求参数
         in: body
-        name: DebugReq
+        name: DebugInfo
         required: true
         schema:
-          $ref: '#/definitions/domain.DebugReq'
+          $ref: '#/definitions/domain.DebugInfo'
       produces:
       - application/json
       responses:
@@ -9237,13 +10065,7 @@ paths:
         type: integer
       - in: query
         name: adminId
-        type: integer
-      - collectionFormat: csv
-        in: query
-        items:
-          type: integer
-        name: adminIds
-        type: array
+        type: string
       - in: query
         name: categoryId
         type: integer
@@ -9268,35 +10090,9 @@ paths:
       - in: query
         name: projectId
         type: integer
-      - enum:
-        - draft
-        - disabled
-        - to_execute
-        - executed
-        in: query
+      - in: query
         name: status
         type: string
-        x-enum-comments:
-          Disabled: 已禁用
-          Draft: 草稿
-          Executed: 已执行
-          ToExecute: 待执行
-        x-enum-varnames:
-        - Draft
-        - Disabled
-        - ToExecute
-        - Executed
-      - collectionFormat: csv
-        in: query
-        items:
-          enum:
-          - draft
-          - disabled
-          - to_execute
-          - executed
-          type: string
-        name: statusArr
-        type: array
       produces:
       - application/json
       responses:
@@ -9763,13 +10559,7 @@ paths:
         type: integer
       - in: query
         name: createUserId
-        type: integer
-      - collectionFormat: csv
-        in: query
-        items:
-          type: integer
-        name: createUserIds
-        type: array
+        type: string
       - in: query
         name: executeEndTime
         type: integer
@@ -10920,6 +11710,2367 @@ paths:
       summary: 无分页的角色列表
       tags:
       - 角色模块
+  /api/v1/scenarios:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - in: query
+        name: categoryId
+        type: integer
+      - in: query
+        name: enabled
+        type: string
+      - in: query
+        name: field
+        type: string
+      - in: query
+        name: keywords
+        type: string
+      - in: query
+        name: order
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: priority
+        type: string
+      - in: query
+        name: status
+        type: string
+      - in: query
+        name: type
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.Scenario'
+                        type: array
+                    type: object
+              type: object
+      summary: 场景列表
+      tags:
+      - 场景模块
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 新建场景的请求参数
+        in: body
+        name: Scenario
+        required: true
+        schema:
+          $ref: '#/definitions/model.Scenario'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Scenario'
+              type: object
+      summary: 新建场景
+      tags:
+      - 场景模块
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 更新场景的请求参数
+        in: body
+        name: Scenario
+        required: true
+        schema:
+          $ref: '#/definitions/model.Scenario'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新场景
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除场景
+      tags:
+      - 场景模块
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Scenario'
+              type: object
+      summary: 场景详情
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}/addPlans:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 关联计划
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}/plans:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 查询关联计划列表的参数
+        in: body
+        name: ScenarioPlanReqPaginate
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioPlanReqPaginate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.Plan'
+                        type: array
+                    type: object
+              type: object
+      summary: 关联计划列表
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}/removePlans:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 计划ID
+        in: body
+        name: '""'
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 取消计划关联
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}/updatePriority:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 场景优先级
+        in: query
+        name: priority
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新优先级
+      tags:
+      - 场景模块
+  /api/v1/scenarios/{id}/updateStatus:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 场景状态
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新计划状态
+      tags:
+      - 场景模块
+  /api/v1/scenarios/exec/getScenarioNormalData:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 环境ID
+        in: query
+        name: environmentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/agentDomain.Report'
+              type: object
+      summary: 获取场景执行初始化信息
+      tags:
+      - 场景模块/场景执行
+  /api/v1/scenarios/exec/loadExecResult:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: query
+        name: scenarioId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/domain.Report'
+              type: object
+      summary: 加载执行结果
+      tags:
+      - 场景模块/场景执行
+  /api/v1/scenarios/exec/loadExecScenario:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      - description: 环境ID
+        in: query
+        name: environmentId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/agentExec.ScenarioExecObjMsg'
+              type: object
+      summary: 加载执行场景
+      tags:
+      - 场景模块/场景执行
+  /api/v1/scenarios/exec/submitResult/{id}:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 场景执行结果
+        in: body
+        name: ScenarioExecResult
+        required: true
+        schema:
+          $ref: '#/definitions/agentDomain.ScenarioExecResult'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ScenarioReport'
+              type: object
+      summary: 提交测试结果
+      tags:
+      - 场景模块/场景执行
+  /api/v1/scenarios/interface/resetDebugData:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: scenarioProcessorId
+        in: query
+        name: scenarioProcessorId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 重置场景调试接口
+      tags:
+      - 场景模块/场景调试
+  /api/v1/scenarios/interface/saveDebugData:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存场景调试接口的请求参数
+        in: body
+        name: DebugData
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugData'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 保存场景调试接口
+      tags:
+      - 场景模块/场景调试
+  /api/v1/scenarios/listByProject:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.Scenario'
+                  type: array
+              type: object
+      summary: 当前项目下的所有场景
+      tags:
+      - 场景模块
+  /api/v1/scenarios/load:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 场景ID
+        in: query
+        name: scenarioId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/agentExec.Processor'
+              type: object
+      summary: 场景树状数据
+      tags:
+      - 场景模块
+  /api/v1/scenarios/nodes/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除节点
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/{id}/updateName:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 更新节点名称的请求参数
+        in: body
+        name: ScenarioNodeReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioNodeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新节点名称
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/addInterfacesFromDefine:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 添加定义接口的请求参数
+        in: body
+        name: ScenarioAddInterfacesReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioAddInterfacesReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 添加定义接口
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/addInterfacesFromTest:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 添加调试接口的请求参数
+        in: body
+        name: ScenarioAddInterfacesFromTreeReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioAddInterfacesFromTreeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 添加调试接口
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/addProcessor:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 新建处理器的请求参数
+        in: body
+        name: ScenarioAddScenarioReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioAddScenarioReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 新建处理器
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/move:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 移动节点的请求参数
+        in: body
+        name: ScenarioNodeMoveReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioNodeMoveReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 移动节点
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/processors/{category}/save:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: category
+        in: path
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ProcessorData'
+              type: object
+      summary: 保存配置信息
+      tags:
+      - 场景模块/处理器
+  /api/v1/scenarios/processors/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 场景节点详情
+      tags:
+      - 场景模块/处理器
+  /api/v1/scenarios/processors/saveProcessorInfo:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存基本信息的请求参数
+        in: body
+        name: ScenarioProcessorInfo
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioProcessorInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    name:
+                      type: string
+                  type: object
+              type: object
+      summary: 保存基本信息
+      tags:
+      - 场景模块/处理器
+  /api/v1/scenarios/reports:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 获取结果列表的请求参数
+        in: body
+        name: ReportReqPaginate
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ReportReqPaginate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.ScenarioReport'
+                        type: array
+                    type: object
+              type: object
+      summary: 结果列表
+      tags:
+      - 场景模块/场景报告
+  /api/v1/scenarios/reports/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 报告ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除报告
+      tags:
+      - 场景模块/场景报告
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 报告ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ScenarioReport'
+              type: object
+      summary: 结果详情
+      tags:
+      - 场景模块/场景报告
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 报告ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 创建报告
+      tags:
+      - 场景模块/场景报告
+  /api/v1/serves/changeServe:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 切换用户当前服务的请求参数
+        in: body
+        name: ChangeServeReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ChangeServeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Serve'
+              type: object
+      summary: 切换用户当前服务
+      tags:
+      - 服务管理
+  /api/v1/serves/copy:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 复制服务
+      tags:
+      - 服务管理
+  /api/v1/serves/delete:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除服务
+      tags:
+      - 服务管理
+  /api/v1/serves/detail:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Serve'
+              type: object
+      summary: 服务详情
+      tags:
+      - 服务管理
+  /api/v1/serves/expire:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 禁用服务
+      tags:
+      - 服务管理
+  /api/v1/serves/index:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务列表的请求参数
+        in: body
+        name: ServeReqPaginate
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeReqPaginate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.Serve'
+                        type: array
+                    type: object
+              type: object
+      summary: 服务列表
+      tags:
+      - 服务管理
+  /api/v1/serves/listByProject:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    currServe:
+                      $ref: '#/definitions/model.Serve'
+                    serves:
+                      items:
+                        $ref: '#/definitions/model.Serve'
+                      type: array
+                  type: object
+              type: object
+      summary: 获取项目下的服务
+      tags:
+      - 服务管理
+  /api/v1/serves/save:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存服务的请求参数
+        in: body
+        name: ServeReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 保存服务
+      tags:
+      - 服务管理
+  /api/v1/serves/saveSwaggerSync:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存同步信息的请求参数
+        in: body
+        name: SwaggerSyncReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.SwaggerSyncReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SwaggerSync'
+              type: object
+      summary: 保存同步信息
+      tags:
+      - 自动同步
+  /api/v1/serves/schema/copy:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: Schema ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 复制Schema
+      tags:
+      - 服务管理/schema
+  /api/v1/serves/schema/delete:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: schema ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除Schema
+      tags:
+      - 服务管理/schema
+  /api/v1/serves/schema/detail:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 获取Schema的请求参数
+        in: body
+        name: ServeSchemaRefReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeSchemaRefReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ComponentSchema'
+              type: object
+      summary: 获取Schema
+      tags:
+      - 服务管理/schema
+  /api/v1/serves/schema/example2schema:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: example转schema的请求参数
+        in: body
+        name: JsonContent
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.JsonContent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/openapi.Schema'
+              type: object
+      summary: example转schema
+      tags:
+      - 服务管理/schema
+  /api/v1/serves/schema/list:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: Schema列表的请求参数
+        in: body
+        name: ServeSchemaPaginate
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeSchemaPaginate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.ComponentSchema'
+                        type: array
+                    type: object
+              type: object
+      summary: Schema列表
+      tags:
+      - 服务管理/schema
+  /api/v1/serves/schema/save:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存Schema的请求参数
+        in: body
+        name: ServeSchemaReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeSchemaReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 保存Schema
+      tags:
+      - 服务管理/schema
+  /api/v1/serves/schema/schema2example:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: Schema生成Example的请求参数
+        in: body
+        name: JsonContent
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.JsonContent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: Schema生成Example
+      tags:
+      - 服务管理/schema
+  /api/v1/serves/schema/schema2yaml:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: schema转yaml的请求参数
+        in: body
+        name: JsonContent
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.JsonContent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: string
+              type: object
+      summary: schema转yaml
+      tags:
+      - 服务管理/schema
+  /api/v1/serves/security/delete:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 授权ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除授权
+      tags:
+      - 服务管理/授权
+  /api/v1/serves/security/list:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 授权列表的请求参数
+        in: body
+        name: ServeSecurityPaginate
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeSecurityPaginate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.ComponentSchemaSecurity'
+                        type: array
+                    type: object
+              type: object
+      summary: 授权列表
+      tags:
+      - 服务管理/授权
+  /api/v1/serves/security/save:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存授权的请求参数
+        in: body
+        name: ServeSecurityReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeSecurityReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 保存授权
+      tags:
+      - 服务管理/授权
+  /api/v1/serves/server/list:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务列表的请求参数
+        in: body
+        name: ServeServer
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeServer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.ServeServer'
+                  type: array
+              type: object
+      summary: 服务列表(不分页)
+      tags:
+      - 服务管理
+  /api/v1/serves/swaggerSyncDetail:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.SwaggerSync'
+              type: object
+      summary: 获取同步信息
+      tags:
+      - 自动同步
+  /api/v1/serves/version/bindEndpoint:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务版本关联接口的请求参数
+        in: body
+        name: ServeVersionBindEndpointReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeVersionBindEndpointReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 关联接口
+      tags:
+      - 服务管理/版本
+  /api/v1/serves/version/delete:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务版本ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除版本
+      tags:
+      - 服务管理/版本
+  /api/v1/serves/version/expire:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务版本ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 禁用版本
+      tags:
+      - 服务管理/版本
+  /api/v1/serves/version/list:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务版本列表的请求参数
+        in: body
+        name: ServeVersionPaginate
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeVersionPaginate'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/model.ServeVersion'
+                        type: array
+                    type: object
+              type: object
+      summary: 版本列表
+      tags:
+      - 服务管理/版本
+  /api/v1/serves/version/save:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存服务版本的请求参数
+        in: body
+        name: ServeVersionReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeVersionReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 保存版本
+      tags:
+      - 服务管理/版本
+  /api/v1/shareVars/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 变量ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除共享变量
+      tags:
+      - 共享变量
+  /api/v1/shareVars/clear:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 清空共享变量的请求参数
+        in: body
+        name: DebugInfo
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 清空共享变量
+      tags:
+      - 共享变量
+  /api/v1/shareVars/list:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 列出变量列表的请求参数
+        in: body
+        name: DebugInfo
+        required: true
+        schema:
+          $ref: '#/definitions/domain.DebugInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.GlobalVar'
+                  type: array
+              type: object
+      summary: 列出变量列表
+      tags:
+      - 共享变量
+  /api/v1/snippets:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 脚本名
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Snippet'
+              type: object
+      summary: 获取详情
+      tags:
+      - 脚本
+  /api/v1/summary/bugs/{projectId}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 项目ID
+        in: path
+        name: projectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.ResSummaryBugs'
+              type: object
+      summary: 汇总bug信息
+      tags:
+      - 汇总
+  /api/v1/summary/card/{projectId}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 项目ID
+        in: path
+        name: projectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.ResSummaryCard'
+              type: object
+      summary: 汇总卡片位信息
+      tags:
+      - 汇总
+  /api/v1/summary/collection/{store}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: string
+        in: path
+        name: store
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 汇总数据
+      tags:
+      - 汇总
+  /api/v1/summary/details:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.ResSummaryDetail'
+              type: object
+      summary: 汇总项目详情
+      tags:
+      - 汇总
+  /api/v1/summary/projectUserRanking/{cycle}/{projectId}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: cycle
+        in: path
+        name: cycle
+        required: true
+        type: integer
+      - description: 项目ID
+        in: path
+        name: projectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.ResRankingList'
+              type: object
+      summary: 汇总项目用户排行数据
+      tags:
+      - 汇总
   /api/v1/upload:
     post:
       parameters:
@@ -10963,4 +14114,499 @@ paths:
       summary: 上传文件
       tags:
       - 上传文件模块
+  /api/v1/users:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - in: query
+        name: field
+        type: string
+      - in: query
+        name: name
+        type: string
+      - in: query
+        name: order
+        type: string
+      - in: query
+        name: page
+        type: integer
+      - in: query
+        name: pageSize
+        type: integer
+      - in: query
+        name: userName
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  allOf:
+                  - $ref: '#/definitions/_domain.PageData'
+                  - properties:
+                      result:
+                        items:
+                          $ref: '#/definitions/serverDomain.UserResp'
+                        type: array
+                    type: object
+              type: object
+      summary: 用户列表
+      tags:
+      - 用户管理
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 新建用户的请求参数
+        in: body
+        name: UserReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.UserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 新建用户
+      tags:
+      - 用户管理
+  /api/v1/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 删除用户
+      tags:
+      - 用户管理
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.UserResp'
+              type: object
+      summary: 用户详情
+      tags:
+      - 用户管理
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 用户ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: 编辑用户的请求参数
+        in: body
+        name: UserReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.UserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 编辑用户
+      tags:
+      - 用户管理
+  /api/v1/users/change_avatar:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 头像
+        in: body
+        name: Avatar
+        required: true
+        schema:
+          $ref: '#/definitions/model.Avatar'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 修改头像
+      tags:
+      - 用户管理
+  /api/v1/users/changeUserSysRole:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 更新用户系统角色的请求参数
+        in: body
+        name: UpdateUserRoleReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.UpdateUserRoleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新用户系统角色
+      tags:
+      - 用户管理
+  /api/v1/users/clear:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 清空 token
+      tags:
+      - 用户管理
+  /api/v1/users/invite:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 邀请用户的请求参数
+        in: body
+        name: InviteUserReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.InviteUserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 邀请用户
+      tags:
+      - 用户管理
+  /api/v1/users/logout:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 退出登录
+      tags:
+      - 用户管理
+  /api/v1/users/profile:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.UserResp'
+              type: object
+      summary: 个人信息
+      tags:
+      - 用户管理
+  /api/v1/users/updateEmail:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 修改邮箱的请求参数
+        in: body
+        name: UpdateUserReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.UpdateUserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 修改邮箱
+      tags:
+      - 用户管理
+  /api/v1/users/updateName:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 修改名称的请求参数
+        in: body
+        name: UpdateUserReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.UpdateUserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.UserResp'
+              type: object
+      summary: 修改名称
+      tags:
+      - 用户管理
+  /api/v1/users/updatePassword:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 修改密码的请求参数
+        in: body
+        name: UpdateUserReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.UpdateUserReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.UserResp'
+              type: object
+      summary: 修改密码
+      tags:
+      - 用户管理
+  /api/v1/users/usersNotExistedInProject:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    result:
+                      items:
+                        $ref: '#/definitions/serverDomain.UserResp'
+                      type: array
+                  type: object
+              type: object
+      summary: 获取项目中没有的用户列表
+      tags:
+      - 用户管理
 swagger: "2.0"

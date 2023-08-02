@@ -25,7 +25,7 @@ type DebugInterfaceCtrl struct {
 // @Produce	application/json
 // @Param 	Authorization	header	string			true	"Authentication header"
 // @Param 	currProjectId	query	int				true	"当前项目ID"
-// @Param 	DebugReq 		body 	domain.DebugReq true 	"获取调试接口请求的请求体"
+// @Param 	DebugReq 		body 	domain.DebugInfo true 	"获取调试接口请求的请求体"
 // @success	200	{object}	_domain.Response{data=domain.DebugData}
 // @Router	/api/v1/debugs/interface/load	[post]
 func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
@@ -52,7 +52,7 @@ func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
 // @Produce	application/json
 // @Param 	Authorization	header	string			true	"Authentication header"
 // @Param 	currProjectId	query	int				true	"当前项目ID"
-// @Param 	DebugReq 		body 	domain.DebugReq true 	"获取调试接口用于执行的请求体"
+// @Param 	DebugReq 		body 	domain.DebugInfo true 	"获取调试接口用于执行的请求体"
 // @success	200	{object}	_domain.Response{data=agentExec.InterfaceExecObj}
 // @Router	/api/v1/debugs/interface/loadForExec	[post]
 func (c *DebugInterfaceCtrl) LoadForExec(ctx iris.Context) {
@@ -79,7 +79,7 @@ func (c *DebugInterfaceCtrl) LoadForExec(ctx iris.Context) {
 // @Produce	application/json
 // @Param 	Authorization	header	string			true	"Authentication header"
 // @Param 	currProjectId	query	int				true	"当前项目ID"
-// @Param 	DebugReq 		body 	domain.DebugReq true 	"保存调试接口的请求体"
+// @Param 	DebugReq 		body 	domain.DebugData true 	"保存调试接口的请求体"
 // @success	200	{object}	_domain.Response{data=agentExec.InterfaceExecObj}
 // @Router	/api/v1/debugs/interface/save	[post]
 func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {

@@ -8,13 +8,14 @@ import (
 
 type EndpointReqPaginate struct {
 	_domain.PaginateReq
-	ProjectId    int64  `json:"projectId"`
-	CategoryId   int64  `json:"categoryId"`
-	Status       int64  `json:"status"`
-	CreateUser   string `json:"createUser"`
-	Title        string `json:"title"`
-	ServeId      uint   `json:"serveId"`
-	ServeVersion string `json:"serveVersion"`
+	ProjectId    int64    `json:"projectId"`
+	CategoryId   int64    `json:"categoryId"`
+	Status       []int64  `json:"status"`
+	CreateUser   []string `json:"createUser"`
+	Title        string   `json:"title"`
+	ServeId      uint     `json:"serveId"`
+	ServeVersion string   `json:"serveVersion"`
+	TagNames     []string `json:"tagNames"`
 }
 
 type EndpointInterfaceReqPaginate struct {
@@ -90,4 +91,9 @@ type BatchUpdateReq struct {
 	FieldName   string      `json:"fieldName"`
 	Value       interface{} `json:"value"`
 	EndpointIds []uint      `json:"endpointIds"`
+}
+
+type EndpointTagReq struct {
+	Id       uint     `json:"id"`
+	TagNames []string `json:"tagNames"`
 }

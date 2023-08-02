@@ -15,6 +15,16 @@ type PlanExecCtrl struct {
 }
 
 // LoadExecData
+// @Tags	测试计划/执行计划
+// @summary	加载执行计划
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				query	int		true	"计划ID"
+// @Param 	environmentId	query	int		true	"环境ID"
+// @success	200	{object}	_domain.Response{data=agentExec.PlanExecObj}
+// @Router	/api/v1/plans/exec/loadExecPlan	[get]
 func (c *PlanExecCtrl) LoadExecData(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 	environmentId, err := ctx.URLParamInt("environmentId")
@@ -29,6 +39,15 @@ func (c *PlanExecCtrl) LoadExecData(ctx iris.Context) {
 }
 
 // LoadExecResult
+// @Tags	测试计划/执行计划
+// @summary	加载执行结果
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	planId			query	int		true	"计划ID"
+// @success	200	{object}	_domain.Response{data=domain.Report}
+// @Router	/api/v1/plans/exec/loadExecResult	[get]
 func (c *PlanExecCtrl) LoadExecResult(ctx iris.Context) {
 	scenarioId, err := ctx.URLParamInt("planId")
 
@@ -42,6 +61,16 @@ func (c *PlanExecCtrl) LoadExecResult(ctx iris.Context) {
 }
 
 // SubmitResult
+// @Tags	测试计划/执行计划
+// @summary	提交测试结果
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	id				path	int							true	"计划ID"
+// @Param 	PlanExecResult	body	agentDomain.PlanExecResult	true	"提交计划测试结果的请求参数"
+// @success	200	{object}	_domain.Response{data=model.PlanReport}
+// @Router	/api/v1/plans/exec/submitResult/{id}	[post]
 func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
 	planId, err := ctx.Params().GetInt("id")
 
@@ -59,6 +88,17 @@ func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report})
 }
 
+// GetPlanReportNormalData
+// @Tags	测试计划/执行计划
+// @summary	获取计划执行中的静态内容
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				query	int		true	"计划ID"
+// @Param 	environmentId	query	int		true	"环境ID"
+// @success	200	{object}	_domain.Response{data=agentDomain.Report}
+// @Router	/api/v1/plans/exec/getPlanReportNormalData	[get]
 func (c *PlanExecCtrl) GetPlanReportNormalData(ctx iris.Context) {
 	planId, err := ctx.URLParamInt("id")
 	if err != nil {

@@ -17,6 +17,16 @@ type EndpointCtrl struct {
 	ServeService    *service.ServeService    `inject:""`
 }
 
+// Index
+// @Tags	设计器
+// @summary	设计器列表
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization		header	string							true	"Authentication header"
+// @Param 	currProjectId		query	int								true	"当前项目ID"
+// @Param 	EndpointReqPaginate body 	serverDomain.EndpointReqPaginate true 	"设计器列表的请求体"
+// @success	200	{object}	_domain.Response{data=object{result=[]model.Endpoint}}
+// @Router	/api/v1/endpoint/index	[post]
 func (c *EndpointCtrl) Index(ctx iris.Context) {
 	var req serverDomain.EndpointReqPaginate
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -30,6 +40,16 @@ func (c *EndpointCtrl) Index(ctx iris.Context) {
 	return
 }
 
+// Save
+// @Tags	设计器
+// @summary	保存设计器
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization		header	string							true	"Authentication header"
+// @Param 	currProjectId		query	int								true	"当前项目ID"
+// @Param 	EndpointReq body 	serverDomain.EndpointReq true 	"保存设计器的请求参数"
+// @success	200	{object}	_domain.Response{data=int}
+// @Router	/api/v1/endpoint/save	[post]
 func (c *EndpointCtrl) Save(ctx iris.Context) {
 	var req serverDomain.EndpointReq
 	err := ctx.ReadJSON(&req)
@@ -56,6 +76,17 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 	return
 }
 
+// Detail
+// @Tags	设计器
+// @summary	设计器详情
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id 				query 	int 	true 	"设计器id"
+// @Param 	version 		query 	string false 	"设计器版本"
+// @success	200	{object}	_domain.Response{data=model.Endpoint}
+// @Router	/api/v1/endpoint/detail	[get]
 func (c *EndpointCtrl) Detail(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(uint(id)))
@@ -67,6 +98,16 @@ func (c *EndpointCtrl) Detail(ctx iris.Context) {
 	}
 }
 
+// Delete
+// @Tags	设计器
+// @summary	删除设计器
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id 				query 	int 	true 	"设计器id"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/delete	[delete]
 func (c *EndpointCtrl) Delete(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 
@@ -79,6 +120,16 @@ func (c *EndpointCtrl) Delete(ctx iris.Context) {
 	}
 }
 
+// BatchDelete
+// @Tags	设计器
+// @summary	批量删除设计器
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	req 			query 	[]int 	true 	"设计器id"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/batchDelete	[delete]
 func (c *EndpointCtrl) BatchDelete(ctx iris.Context) {
 	var req []uint
 	if err := ctx.ReadJSON(&req); err == nil {
@@ -119,6 +170,16 @@ func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint mod
 	return
 }
 
+// Expire
+// @Tags	设计器
+// @summary	禁用设计器
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id 				query 	int 	true 	"设计器id"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/expire	[put]
 func (c *EndpointCtrl) Expire(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	err := c.EndpointService.DisableById(uint(id))
@@ -129,6 +190,16 @@ func (c *EndpointCtrl) Expire(ctx iris.Context) {
 	}
 }
 
+// Publish
+// @Tags	设计器
+// @summary	发布设计器
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id 				query 	int 	true 	"设计器id"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/publish	[put]
 func (c *EndpointCtrl) Publish(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	err := c.EndpointService.Publish(uint(id))
@@ -139,6 +210,16 @@ func (c *EndpointCtrl) Publish(ctx iris.Context) {
 	}
 }
 
+// Develop
+// @Tags	设计器
+// @summary	开发设计器
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id 				query 	int 	true 	"设计器id"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/develop	[put]
 func (c *EndpointCtrl) Develop(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	err := c.EndpointService.Develop(uint(id))
@@ -149,6 +230,17 @@ func (c *EndpointCtrl) Develop(ctx iris.Context) {
 	}
 }
 
+// Copy
+// @Tags	设计器
+// @summary	复制设计器
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id 				query 	int 	true 	"设计器id"
+// @Param 	version 		query 	string 	false 	"设计器版本"
+// @success	200	{object}	_domain.Response{data=int}
+// @Router	/api/v1/endpoint/copy	[get]
 func (c *EndpointCtrl) Copy(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(uint(id)))
@@ -160,6 +252,16 @@ func (c *EndpointCtrl) Copy(ctx iris.Context) {
 	}
 }
 
+// Yaml
+// @Tags	设计器
+// @summary	设计器信息转yaml
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	EndpointReq 	body 	serverDomain.EndpointReq 	true 	"设计器信息转yaml的请求参数"
+// @success	200	{object}	_domain.Response{data=string}
+// @Router	/api/v1/endpoint/yaml	[post]
 func (c *EndpointCtrl) Yaml(ctx iris.Context) {
 	var req serverDomain.EndpointReq
 	if err := ctx.ReadJSON(&req); err == nil {
@@ -175,6 +277,17 @@ func (c *EndpointCtrl) Yaml(ctx iris.Context) {
 	return
 }
 
+// UpdateStatus
+// @Tags	设计器
+// @summary	更新设计器状态
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id 				query 	int	true 	"设计器id"
+// @Param 	status 			query 	int	true 	"设计器状态"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/updateStatus	[put]
 func (c *EndpointCtrl) UpdateStatus(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	status := ctx.URLParamUint64("status")
@@ -186,6 +299,16 @@ func (c *EndpointCtrl) UpdateStatus(ctx iris.Context) {
 	}
 }
 
+// AddVersion
+// @Tags	设计器
+// @summary	添加设计器版本
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization		header	string							true	"Authentication header"
+// @Param 	currProjectId		query	int								true	"当前项目ID"
+// @Param 	EndpointVersionReq 	body 	serverDomain.EndpointVersionReq	true 	"添加设计器版本的请求参数"
+// @success	200	{object}	_domain.Response{data=string}
+// @Router	/api/v1/endpoint/version/add	[post]
 func (c *EndpointCtrl) AddVersion(ctx iris.Context) {
 	var req serverDomain.EndpointVersionReq
 	if err := ctx.ReadJSON(&req); err == nil {
@@ -202,6 +325,16 @@ func (c *EndpointCtrl) AddVersion(ctx iris.Context) {
 	}
 }
 
+// ListVersions
+// @Tags	设计器
+// @summary	设计器版本列表
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id 				query 	int		true 	"设计器id"
+// @success	200	{object}	_domain.Response{data=[]model.EndpointVersion}
+// @Router	/api/v1/endpoint/version/list	[get]
 func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	res, err := c.EndpointService.GetVersionsByEndpointId(uint(id))
@@ -212,6 +345,16 @@ func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
 	}
 }
 
+// BatchUpdateField
+// @Tags	设计器
+// @summary	批量更新字段内容
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	BatchUpdateReq 	body 	serverDomain.BatchUpdateReq	true 	"批量更新字段内容的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/batchUpdateField	[post]
 func (c *EndpointCtrl) BatchUpdateField(ctx iris.Context) {
 	var req serverDomain.BatchUpdateReq
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -220,6 +363,32 @@ func (c *EndpointCtrl) BatchUpdateField(ctx iris.Context) {
 	}
 
 	if err := c.EndpointService.BatchUpdateByField(req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// UpdateTag
+// @Tags	设计器
+// @summary	更新标签
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	EndpointTagReq 	body 	serverDomain.EndpointTagReq	true 	"更新标签的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/updateTag	[put]
+func (c *EndpointCtrl) UpdateTag(ctx iris.Context) {
+	var req serverDomain.EndpointTagReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	projectId, _ := ctx.URLParamInt("currProjectId")
+	if err := c.EndpointService.UpdateTags(req, uint(projectId)); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}

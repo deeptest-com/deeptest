@@ -18,6 +18,7 @@ type EndpointRepo struct {
 	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
 	ServeRepo             *ServeRepo             `inject:""`
 	ProjectRepo           *ProjectRepo           `inject:""`
+	EndpointTagRepo       *EndpointTagRepo       `inject:""`
 }
 
 func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -27,13 +28,13 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	db := r.DB.Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 
 	if req.Title != "" {
-		db = db.Where("title LIKE ?", fmt.Sprintf("%%%s%%", req.Title))
+		db = db.Where("title LIKE ? or path LIKE ?", fmt.Sprintf("%%%s%%", req.Title), fmt.Sprintf("%%%s%%", req.Title))
 	}
-	if req.CreateUser != "" {
-		db = db.Where("create_user = ?", req.CreateUser)
+	if len(req.CreateUser) > 0 {
+		db = db.Where("create_user in ?", req.CreateUser)
 	}
-	if req.Status != 0 {
-		db = db.Where("status = ?", req.Status)
+	if len(req.Status) > 0 {
+		db = db.Where("status in ?", req.Status)
 	}
 	if req.ServeId != 0 {
 		db = db.Where("serve_id = ?", req.ServeId)
@@ -46,7 +47,7 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 
 	if req.CategoryId > 0 {
 		var categoryIds []uint
-		categoryIds, err = r.BaseRepo.GetAllChildIds(uint(req.CategoryId), model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetDescendantIds(uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.EndpointCategory, int(req.ProjectId))
 		if err != nil {
 			return
@@ -56,6 +57,14 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		}
 	} else if req.CategoryId == -1 {
 		db.Where("category_id IN(-1)")
+	}
+
+	if len(req.TagNames) != 0 {
+		endpointIds, err := r.EndpointTagRepo.GetEndpointIdsByTagNames(req.TagNames, req.ProjectId)
+		if err != nil {
+			return ret, err
+		}
+		db.Where("id IN (?)", endpointIds)
 	}
 
 	db = db.Order("created_at desc")
@@ -89,6 +98,8 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 			serveNames[result.ServeId] = serve.Name
 		}
 		results[key].ServeName = serveNames[result.ServeId]
+
+		results[key].Tags, err = r.EndpointTagRepo.GetTagNamesByEndpointId(result.ID, result.ProjectId)
 	}
 
 	ret.Populate(results, count, req.Page, req.PageSize)
@@ -253,6 +264,8 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 	if err != nil {
 		return
 	}
+
+	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
 	endpoint.PathParams, _ = r.GetEndpointParams(id)
 	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.GetByEndpointId(id, version)
 
@@ -278,6 +291,14 @@ func (r *EndpointRepo) DeleteById(id uint) (err error) {
 }
 func (r *EndpointRepo) DeleteByIds(ids []uint) error {
 	return r.DB.Model(&model.Endpoint{}).Where("id IN ?", ids).Update("deleted", 1).Error
+}
+
+func (r *EndpointRepo) DeleteByCategoryIds(categoryIds []int64) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("category_id IN ?", categoryIds).
+		Update("deleted", 1).Error
+
+	return
 }
 
 func (r *EndpointRepo) DisableById(id uint) error {
@@ -320,6 +341,14 @@ func (r *EndpointRepo) ListEndpointByCategory(categoryId uint) (ids []uint, err 
 	err = r.DB.Model(&model.Endpoint{}).
 		Select("id").
 		Where("category_id = ? AND NOT deleted", categoryId).
+		Find(&ids).Error
+	return
+}
+
+func (r *EndpointRepo) ListEndpointByCategories(categoryIds []uint) (ids []uint, err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Select("id").
+		Where("category_id IN (?) AND NOT deleted", categoryIds).
 		Find(&ids).Error
 	return
 }

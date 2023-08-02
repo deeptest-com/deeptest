@@ -53,7 +53,10 @@ export default defineComponent({
         }
 
         onMounted(() => {
-            getUser();
+            getUser().catch((err)=>{
+                console.log('getUser',err)
+
+            });
         })
 
         return {

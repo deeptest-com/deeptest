@@ -1,7 +1,9 @@
 package agentExec
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -17,6 +19,28 @@ var (
 
 type JsVm struct {
 	JsRuntime *goja.Runtime
+}
+
+func ExecScript(scriptObj *domain.ScriptBase) (err error) {
+	if MyVm.JsRuntime == nil {
+		InitJsRuntime()
+	}
+
+	if scriptObj.Content == "" {
+		return
+	}
+
+	result, err := MyVm.JsRuntime.RunString(scriptObj.Content)
+	if err != nil {
+		scriptObj.ResultStatus = consts.Fail
+		scriptObj.Output = fmt.Sprintf("%v, ERROR: %s", result, err.Error())
+		logUtils.Error(scriptObj.Output)
+	} else {
+		scriptObj.ResultStatus = consts.Pass
+		scriptObj.Output = fmt.Sprintf("%v", result)
+	}
+
+	return
 }
 
 func InitJsRuntime() {
@@ -57,22 +81,4 @@ func InitJsRuntime() {
 	}
 
 	MyVm.JsRuntime.Set("dp", dp)
-}
-
-func ExecJs(script string) (ret goja.Value) {
-	if MyVm.JsRuntime == nil {
-		InitJsRuntime()
-	}
-
-	if script == "" {
-		return
-	}
-
-	ret, err := MyVm.JsRuntime.RunString(script)
-	if err != nil {
-		logUtils.Info(err.Error())
-		return
-	}
-
-	return
 }

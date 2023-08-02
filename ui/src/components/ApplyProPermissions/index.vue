@@ -49,7 +49,13 @@
                 "
               />
             </a-form-item>
-            <!-- <a-form-item label="审批人"> ericpp; flyjenkin </a-form-item> -->
+            <a-form-item label="审批人">
+            <a-select
+              v-model:value="auditUsers"
+              mode="multiple"
+              disabled
+            ></a-select>
+            </a-form-item>
             <a-form-item
               class="edit-button"
               :wrapper-col="{ offset: labelCol.span, span: wrapperCol.span }"
@@ -66,7 +72,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, watch, defineProps, defineEmits, computed } from "vue";
+import { ref, reactive, watch, defineProps, defineEmits, computed, onMounted } from "vue";
 import { Form, message } from "ant-design-vue";
 import { StateType as UserStateType } from "@/store/user";
 import { StateType as ProjectStateType } from "@/views/project/store";
@@ -83,6 +89,7 @@ const props = defineProps<{
 const emits = defineEmits(["update:visible", "handleOk", "handleSuccess"]);
 const store = useStore<{ User: UserStateType; Project: ProjectStateType }>();
 const roles = computed<SelectTypes["options"]>(() => store.state.Project.roles);
+const auditUsers = computed(()=>store.state.Project.auditUsers)
 const labelCol = { span: 6 };
 const wrapperCol = { span: 14 };
 const projectInfo:any = {
@@ -140,6 +147,7 @@ watch(() => props.visible, (val) => {
        resetFields()
       console.log("roles", roles);
       store.dispatch("Project/getRoles");
+      store.dispatch("Project/getAuditUsers",props.item.projectId)
 
     }
   }, {immediate: true,});

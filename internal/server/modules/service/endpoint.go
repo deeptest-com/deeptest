@@ -31,6 +31,8 @@ type EndpointService struct {
 	UserRepo                 *repo.UserRepo              `inject:""`
 	CategoryRepo             *repo.CategoryRepo          `inject:""`
 	DiagnoseInterfaceService *DiagnoseInterfaceService   `inject:""`
+	EndpointTagRepo          *repo.EndpointTagRepo       `inject:""`
+	EndpointTagService       *EndpointTagService         `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -63,19 +65,28 @@ func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) 
 }
 
 func (s *EndpointService) DeleteById(id uint) (err error) {
-	var count int64
-	count, err = s.EndpointRepo.GetUsedCountByEndpointId(id)
-	if err != nil {
-		return err
-	}
-
-	if count > 0 {
-		err = fmt.Errorf("this interface has already been used by scenarios, not allowed to delete")
-		return err
-	}
+	//var count int64
+	//count, err = s.EndpointRepo.GetUsedCountByEndpointId(id)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//if count > 0 {
+	//	err = fmt.Errorf("this interface has already been used by scenarios, not allowed to delete")
+	//	return err
+	//}
 
 	err = s.EndpointRepo.DeleteById(id)
 	err = s.EndpointInterfaceRepo.DeleteByEndpoint(id)
+
+	return
+}
+
+func (s *EndpointService) DeleteByCategories(categoryIds []uint) (err error) {
+	endpointIds, err := s.EndpointRepo.ListEndpointByCategories(categoryIds)
+
+	err = s.EndpointRepo.DeleteByIds(endpointIds)
+	err = s.EndpointInterfaceRepo.DeleteByEndpoints(endpointIds)
 
 	return
 }
@@ -219,10 +230,14 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		wg.Done()
 	}()
 	user, _ := s.UserRepo.FindById(req.UserId)
+
 	for _, endpoint := range endpoints {
-		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId, endpoint.CreateUser = req.ProjectId, req.ServeId, req.CategoryId, user.Name
+		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId = req.ProjectId, req.ServeId, req.CategoryId
 		endpoint.Status = 1
 		endpoint.SourceType = consts.Swagger
+		if endpoint.CreateUser == "" {
+			endpoint.CreateUser = user.Username
+		}
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
 		if req.DataSyncType == convert.FullCover {
 			res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
@@ -440,4 +455,51 @@ func (s *EndpointService) getRequestBodyItem(body string) (requestBodyItem model
 	schema2conv.Example2Schema(obj, &schema)
 	requestBodyItem.Content = _commUtils.JsonEncode(schema)
 	return
+}
+
+func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err error) {
+	if err = s.EndpointTagRepo.DeleteRelByEndpointAndProject(req.Id, projectId); err != nil {
+		return
+	}
+
+	if len(req.TagNames) > 0 {
+		err = s.EndpointTagRepo.BatchAddRel(req.Id, projectId, req.TagNames)
+	}
+	return
+	//oldTagIds, err := s.EndpointTagRepo.GetTagIdsByEndpointId(req.Id)
+	//if err != nil && err != gorm.ErrRecordNotFound {
+	//	return
+	//}
+	//
+	//intTagIds, err := s.EndpointTagService.GetTagIdsNyName(req.TagNames, projectId)
+	//if err != nil && err != gorm.ErrRecordNotFound {
+	//	return
+	//}
+	//
+	//tagsNeedDeleted := _commUtils.DifferenceUint(oldTagIds, intTagIds)
+	//
+	//if err = s.EndpointTagRepo.DeleteRelByEndpointId(req.Id); err != nil {
+	//	return
+	//}
+	//
+	//if len(intTagIds) > 0 {
+	//	err = s.EndpointTagRepo.AddRel(req.Id, intTagIds)
+	//	if err != nil {
+	//		return err
+	//	}
+	//}
+	//
+	//for _, v := range tagsNeedDeleted {
+	//	relations, err := s.EndpointTagRepo.ListRelByTagId(v)
+	//	if err != nil && err != gorm.ErrRecordNotFound {
+	//		return err
+	//	}
+	//
+	//	if len(relations) == 0 {
+	//		if err = s.EndpointTagRepo.DeleteById(v); err != nil {
+	//			return err
+	//		}
+	//	}
+	//}
+	//return
 }

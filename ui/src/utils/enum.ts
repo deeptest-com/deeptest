@@ -1,3 +1,11 @@
+export enum  ResultStatus {
+    Pass = "pass",
+    Fail = "fail",
+    Skip = "skip",
+    Block = "block",
+    Unknown = "unknown",
+}
+
 export enum UsedBy {
     InterfaceDebug = "interface_debug",
     ScenarioDebug = "scenario_debug",
@@ -137,6 +145,19 @@ export enum ComparisonOperator {
 
     contain = 'contain',
     notContain = 'notContain',
+}
+
+export enum ConditionCategory {
+    result = 'result',
+    console = 'console',
+}
+export enum ConditionType {
+    extractor = 'extractor',
+    checkpoint = 'checkpoint',
+    script = 'script',
+}
+export enum PreConditionType {
+    script = 'script',
 }
 
 export enum ExtractorSrc {

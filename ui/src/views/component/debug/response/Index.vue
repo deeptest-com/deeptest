@@ -1,14 +1,13 @@
 <template>
   <div class="response-main">
-    <ResponseMeta></ResponseMeta>
     <ResponseRenderer></ResponseRenderer>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, onMounted, PropType, Ref} from "vue";
+import {onMounted} from "vue";
 import {useI18n} from "vue-i18n";
-import {Form, message} from 'ant-design-vue';
+import {Form} from 'ant-design-vue';
 import {resizeHeight} from "@/utils/dom";
 import ResponseMeta from './Meta.vue';
 import ResponseRenderer from './Renderer.vue';

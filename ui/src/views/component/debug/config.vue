@@ -60,13 +60,15 @@ onUnmounted(() => {
   position: relative;
 
   #top-panel {
-    flex: 1;
+    flex: 3;
+    height: 0;
+
     width: 100%;
     padding: 0;
   }
 
   #bottom-panel {
-    flex: 1;
+    flex: 2;
     width: 100%;
     padding: 0;
     overflow: auto;

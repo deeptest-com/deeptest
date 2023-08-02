@@ -23,8 +23,17 @@ import {
     listEndpointCase,
     saveEndpointCase,
     saveEndpointCaseDebugData,
-    batchUpdateField
+    batchUpdateField,
+    tagList,
+    updateTag,
+    copyEndpoint,
+    deleteEndpoint,
+    expireEndpoint,
+    getEndpointDetail,
+    getEndpointList,
+    saveEndpoint, copyEndpointCase,
 } from './service';
+
 import {
     loadCategory,
     getCategory,
@@ -34,14 +43,6 @@ import {
     moveCategory,
     updateCategoryName
 } from "@/services/category";
-import {
-    copyEndpoint,
-    deleteEndpoint,
-    expireEndpoint,
-    getEndpointDetail,
-    getEndpointList,
-    saveEndpoint,
-} from './service';
 
 import {genNodeMap, getNodeMap} from "@/services/tree";
 import {momentUtc} from "@/utils/datetime";
@@ -53,6 +54,7 @@ import {
     serverList,
     getSchemaList, getSchemaDetail
 } from "@/views/project-settings/service";
+
 
 export interface StateType {
     endpointId: number;
@@ -75,6 +77,7 @@ export interface StateType {
 
     caseList: any[];
     caseDetail: any;
+    tagList: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -106,6 +109,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setEndpointCaseList: Mutation<StateType>;
         setEndpointCaseDetail: Mutation<StateType>;
+        setEndpointTagList: Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -145,10 +149,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         listCase: Action<StateType, StateType>;
         getCase: Action<StateType, StateType>;
         saveCase: Action<StateType, StateType>;
+        copyCase: Action<StateType, StateType>;
         updateCaseName: Action<StateType, StateType>;
         removeCase: Action<StateType, StateType>;
         batchUpdateField: Action<StateType, StateType>;
         saveCaseDebugData: Action<StateType, StateType>;
+        getEndpointList: Action<StateType, StateType>;
+        getEndpointTagList: Action<StateType, StateType>;
+        updateEndpointTag: Action<StateType, StateType>;
     }
 }
 
@@ -175,6 +183,7 @@ const initState: StateType = {
         "createUser": null,
         "title": null,
         categoryId: null,
+        tagNames:[]
     },
     endpointDetail: null,
     endpointDetailYamlCode: null,
@@ -186,6 +195,7 @@ const initState: StateType = {
     selectedCodeDetail: {},
     caseList: [],
     caseDetail: {},
+    tagList:[],
 };
 
 const StoreModel: ModuleType = {
@@ -300,6 +310,9 @@ const StoreModel: ModuleType = {
         setEndpointCaseDetail(state, payload) {
             state.caseDetail = payload;
         },
+        setEndpointTagList(state, payload) {
+            state.tagList = payload;
+        }
     },
     actions: {
         async listEndpoint({commit, dispatch, state}, params: QueryParams) {
@@ -409,10 +422,11 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async removeCategoryNode({commit, dispatch, state}, payload: number) {
+        async removeCategoryNode({commit, dispatch, state}, payload: any) {
             try {
-                await removeCategory(payload);
+                await removeCategory(payload.id, payload.type);
                 await dispatch('loadCategory');
+                await dispatch('loadList', {projectId: payload.projectId});
                 return true;
             } catch (error) {
                 return false;
@@ -752,6 +766,14 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
+        async copyCase({state, dispatch}, id: number) {
+            const jsn = await copyEndpointCase(id)
+            if (jsn.code === 0) {
+                return jsn.data;
+            } else {
+                return null
+            }
+        },
         async updateCaseName({state, dispatch}, payload: any) {
             const jsn = await updateEndpointCaseName(payload)
             if (jsn.code === 0) {
@@ -782,7 +804,7 @@ const StoreModel: ModuleType = {
                 return null
             }
         },
-    
+
         async saveCaseDebugData({ state, dispatch }, payload: any) {
             const jsn = await saveEndpointCaseDebugData(payload)
             if (jsn.code === 0) {
@@ -791,6 +813,42 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
+
+        async getEndpointList({ commit }, payload: any) {
+            const resp = await getEndpointList(payload)
+            if (resp.code === 0) {
+                commit('setEndpointCaseDetail', resp.data);
+            } else {
+                return false
+            }
+        },
+        async getEndpointTagList({ commit } ) {
+            const resp = await tagList()
+            if (resp.code === 0) {
+
+               const res =  resp.data.map((arrItem)=>{
+                 return {label:arrItem.tagName,value:arrItem.tagName}
+               })
+               commit("setEndpointTagList", res);
+               //console.log("setEndpointTagList",state.tagList);
+
+            } else {
+                return false
+            }
+        },
+        async updateEndpointTag({ dispatch }, payload: any) {
+            const jsn = await updateTag(payload)
+            //console.log(payload,"+++++")
+            if (jsn.code === 0) {
+                await dispatch("getEndpointTagList")
+                //await dispatch('loadList', {projectId: payload.projectId});
+                return true;
+            } else {
+                return false
+            }
+        },
+
+
     },
 };
 

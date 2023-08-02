@@ -17,6 +17,15 @@ type FileCtrl struct {
 }
 
 // Upload 上传文件
+// @Tags	上传文件模块
+// @summary	上传文件
+// @Produce	application/json
+// @Param 	Authorization	header		string	true	"Authentication header"
+// @Param 	currProjectId	query		int		true	"当前项目ID"
+// @Param 	isDatapool 		query 		bool 	true 	"是否是数据池"
+// @Param 	file 			formData 	string true 	"文件"
+// @success	200	{object}	_domain.Response{data=object{path=string,data=interface{}}}
+// @Router	/api/v1/upload	[post]
 func (c *FileCtrl) Upload(ctx iris.Context) {
 	isDatapool, _ := ctx.URLParamBool("isDatapool")
 

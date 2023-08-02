@@ -25,11 +25,16 @@ type EndpointCaseSaveReq struct {
 	ID         uint   `json:"id"`
 	Name       string `json:"name"`
 	Desc       string `json:"desc"`
-	ParentId   uint   `json:"parentId"`
 	EndpointId uint   `json:"endpointId"`
 	ServeId    uint   `json:"serveId"`
 	ProjectId  uint   `json:"projectId"`
 
 	CreateUserId   uint   `json:"createUserId"`
 	CreateUserName string `json:"createUserName"`
+
+	DebugInterfaceId    int    `json:"debugInterfaceId"`
+	EndpointInterfaceId int    `json:"endpointInterfaceId"`
+	UsedBy              string `json:"usedBy"`
+
+	DebugData domain.DebugData `json:"debugData"`
 }

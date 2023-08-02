@@ -31,8 +31,12 @@ var (
 		&DebugInterfaceBearerToken{},
 		&DebugInterfaceOAuth20{},
 		&DebugInterfaceApiKey{},
-		&DebugInterfaceExtractor{},
-		&DebugInterfaceCheckpoint{},
+
+		&DebugPreCondition{},
+		&DebugPostCondition{},
+		&DebugConditionExtractor{},
+		&DebugConditionCheckpoint{},
+		&DebugConditionScript{},
 
 		&DiagnoseInterface{},
 
@@ -65,6 +69,7 @@ var (
 		&ExecLogProcessor{},
 		&ExecLogExtractor{},
 		&ExecLogCheckpoint{},
+		&ExecLogScript{},
 
 		&ComponentSchema{},
 		&ComponentSchemaSecurity{},
@@ -83,6 +88,8 @@ var (
 		&EndpointInterfaceHeader{},
 		&EndpointDocument{},
 		&EndpointSnapshot{},
+		&EndpointTag{},
+		&EndpointTagRel{},
 
 		&Serve{},
 		&ServeServer{},

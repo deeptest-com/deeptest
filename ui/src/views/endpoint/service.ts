@@ -208,6 +208,14 @@ export async function saveEndpointCase(data: any): Promise<any> {
         data
     });
 }
+export async function copyEndpointCase(id: number): Promise<any> {
+    const params = {id}
+    return request({
+        url: `/${apiPathCase}/copy`,
+        method: 'post',
+        params
+    });
+}
 export async function saveEndpointCaseDebugData(data: any): Promise<any> {
     return request({
         url: `/${apiPathCase}/saveDebugData`,
@@ -217,7 +225,7 @@ export async function saveEndpointCaseDebugData(data: any): Promise<any> {
 }
 export async function updateEndpointCaseName(data): Promise<any> {
     return request({
-        url: `/${apiPathCase}/${data.id}`,
+        url: `/${apiPathCase}/updateName`,
         method: 'put',
         data
     });
@@ -238,6 +246,29 @@ export async function batchUpdateField(data: any): Promise<any> {
     return request({
         url: `/endpoint/batchUpdateField`,
         method: 'post',
+        data: data
+    });
+}
+
+/**
+ * 获取tags
+ * @param data
+ */
+export async function tagList(): Promise<any> {
+    return request({
+        url: `/endpoint/tags`,
+        method: 'get'
+    });
+}
+
+/**
+ * 更新标签
+ * @param data
+ */
+export async function updateTag(data: any): Promise<any> {
+    return request({
+        url: `/endpoint/updateTag`,
+        method: 'put',
         data: data
     });
 }

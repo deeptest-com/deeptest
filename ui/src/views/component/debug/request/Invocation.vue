@@ -3,20 +3,28 @@
     <div class="toolbar">
       <div v-if="showMethodSelection" class="select-method">
         <a-select class="select-method"
-                  :options="methods"
                   v-model:value="debugData.method">
+          <template v-for="method in Methods">
+            <a-select-option v-if="hasDefinedMethod(method)"
+                             :key="method"
+                             :value="method">
+              {{ method }}
+            </a-select-option>
+          </template>
         </a-select>
       </div>
 
-      <div class="base-url">
-          <a-input placeholder="请输入地址"
-                   :disabled="baseUrlDisabled"
-                   v-model:value="debugData.baseUrl" />
+      <div v-if="debugData.usedBy !== UsedBy.DiagnoseDebug && debugData.processorInterfaceSrc !== UsedBy.DiagnoseDebug" class="base-url">
+        <a-input placeholder="请输入地址"
+                 v-model:value="debugData.baseUrl"
+                 :disabled="baseUrlDisabled" />
       </div>
 
       <div class="url">
         <a-input placeholder="请输入路径"
-                 v-model:value="debugData.url" />
+                 v-model:value="debugData.url"
+                 :disabled="urlDisabled"
+                 :title="urlDisabled ? '请在接口定义中修改' : ''" />
       </div>
 
       <div class="send">
@@ -27,19 +35,26 @@
 
       <div class="save">
         <a-button trigger="click" @click="save" class="dp-bg-light">
-          <SaveOutlined/>
+          <icon-svg class="icon dp-icon-with-text" type="save" />
           保存
+        </a-button>
+      </div>
+
+      <div v-if="usedBy === UsedBy.InterfaceDebug" class="save-as-case">
+        <a-button trigger="click" @click="saveAsCase" class="dp-bg-light">
+          另存为用例
         </a-button>
       </div>
 
       <div v-if="usedBy === UsedBy.ScenarioDebug" class="sync">
         <a-button trigger="click" @click="sync" class="dp-bg-light">
-          <UndoOutlined />
+          <UndoOutlined/>
           同步
         </a-button>
       </div>
     </div>
 
+    <!-- 选择环境 -->
     <div class="select-env" :style="{top: topVal}">
       <a-select :value="serverId || null" @change="changeServer"
                 placeholder="请选择环境" class="select-env">
@@ -61,9 +76,10 @@
 <script setup lang="ts">
 import {computed, defineProps, inject, onMounted, onUnmounted, PropType, ref, watch} from "vue";
 import {notification} from 'ant-design-vue';
-import {SaveOutlined, UndoOutlined} from '@ant-design/icons-vue';
+import {UndoOutlined} from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
+import IconSvg from "@/components/IconSvg";
 import {Methods, UsedBy} from "@/utils/enum";
 import {prepareDataForRequest} from "@/views/component/debug/service";
 import {NotificationKeyCommon} from "@/utils/const"
@@ -74,9 +90,8 @@ import useVariableReplace from "@/hooks/variable-replace";
 import {getToken} from "@/utils/localToken";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 import {serverList} from "@/views/project-settings/service";
-import {getArrSelectItems} from "@/utils/comm";
 
-const store = useStore<{ Debug: Debug, Endpoint }>();
+const store = useStore<{ Debug: Debug, Endpoint,Global }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 
@@ -88,6 +103,10 @@ const props = defineProps({
   onSave: {
     type: Function as PropType<(data) => void>,
     required: true
+  },
+  onSaveAsCase: {
+    type: Function,
+    required: false
   },
   onSync: {
     type: Function as PropType<() => void>,
@@ -104,11 +123,15 @@ const props = defineProps({
     required: false,
     default: true
   },
+  urlDisabled: {
+    type: Boolean,
+    required: false,
+    default: false
+  },
 })
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = useVariableReplace('endpointInterfaceUrl')
-const methods = getArrSelectItems(Methods)
+const {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} = useVariableReplace('endpointInterfaceUrl')
 
 const servers = ref([] as any[])
 const listServer = async (serveId) => {
@@ -154,7 +177,9 @@ watch(debugData, (newVal) => {
     currServerId.value = newVal.serverId
   }
 
-  debugData.value.url = debugData?.value.url || endpointDetail.value?.path || ''
+  if (usedBy !== UsedBy.DiagnoseDebug) {
+    debugData.value.url = debugData?.value.url || endpointDetail.value?.path || ''
+  }
 
 }, {immediate: true, deep: true});
 
@@ -167,16 +192,20 @@ function changeServer(id) {
 }
 
 const send = async (e) => {
-  console.log('sendRequest', debugData.value)
+  const data = prepareDataForRequest(debugData.value)
+  console.log('sendRequest', data)
 
   if (validateInfo()) {
+    store.commit("Global/setSpinning",true)
     const callData = {
       serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
       token: await getToken(),
-
-      data: debugData.value
+      data: data
     }
-    await store.dispatch('Debug/call', callData)
+    await store.dispatch('Debug/call', callData).finally(()=>{
+      store.commit("Global/setSpinning",false)
+    })
+    store.commit("Global/setSpinning",false)
   }
 }
 
@@ -185,9 +214,15 @@ const save = (e) => {
   data = prepareDataForRequest(data)
 
   if (validateInfo()) {
-    props.onSave(data)
+     props.onSave(data)
   }
-};
+}
+const saveAsCase = () => {
+  // console.log('saveAsCase', debugData.value.url)
+  if (validateInfo() && props.onSaveAsCase) {
+    props.onSaveAsCase()
+  }
+}
 
 const sync = (e) => {
   if (validateInfo() && props.onSync) {
@@ -225,6 +260,12 @@ onUnmounted(() => {
   console.log('onUnmounted')
 })
 
+function hasDefinedMethod(method: string) {
+  return endpointDetail?.value?.interfaces?.some((item) => {
+    return item.method === method;
+  })
+}
+
 // const showContextMenu = ref(false)
 // const clearMenu = () => {
 //   console.log('clearMenu')
@@ -252,7 +293,6 @@ onUnmounted(() => {
     right: 0px;
     width: 120px;
     height: 36px;
-    z-index: 9999;
   }
 }
 </style>
@@ -270,9 +310,6 @@ onUnmounted(() => {
 
     .base-url {
       flex: 1;
-      .ant-input[disabled] {
-        color: rgba(0, 0, 0, 0.5);
-      }
     }
 
     .url {
@@ -287,6 +324,11 @@ onUnmounted(() => {
     .save {
       margin-left: 8px;
       width: 80px;
+    }
+
+    .save-as-case {
+      margin-left: 8px;
+      width: 102px;
     }
 
     .sync {

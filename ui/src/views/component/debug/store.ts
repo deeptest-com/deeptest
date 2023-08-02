@@ -3,7 +3,7 @@ import {StoreModuleType} from "@/utils/store";
 
 import {
     clearShareVar,
-    createExtractorOrUpdateResult,
+    quickCreateExtractor,
     getCheckpoint,
     getExtractor,
     getInvocationAsInterface,
@@ -19,41 +19,64 @@ import {
     call,
     save,
     listInvocation,
-    listExtractor,
-    listCheckpoint,
-    listShareVar, getSnippet,
+    listShareVar,
+    getSnippet,
+    listPreConditions,
+    listPostConditions,
+    getScript,
+    saveScript,
+    removeScript,
+    createPostConditions,
+    createPreConditions,
+    removePostConditions,
+    movePostConditions,
+    removePreConditions,
+    movePreConditions, disablePreConditions, disablePostConditions, saveAsCase, getInvocationResult, getInvocationLog,
 } from './service';
-import {Checkpoint, DebugInfo, Extractor, Interface, Response} from "./data";
-import {UsedBy} from "@/utils/enum";
+import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
+import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
 import {listEnvVarByServer} from "@/services/environment";
 
 export interface StateType {
     debugInfo: DebugInfo
     debugData: any;
+    debugDataChanged: string;
 
+    requestData: any;
     responseData: Response;
+    consoleData: any[];
+    resultData: any[];
 
     invocationsData: any[];
 
-    extractorsData: any[];
-    extractorData: any;
+    preConditions: any[];
+    postConditions: any[];
+    assertionConditions: any[];
 
-    checkpointsData: any[];
+    extractorData: any;
     checkpointData: any;
+    scriptData: any;
 }
 const initState: StateType = {
     debugInfo: {} as DebugInfo,
     debugData: {},
+    debugDataChanged: 'no',
+
+    requestData: {},
     responseData: {} as Response,
+    consoleData: [],
+    resultData: [],
 
     invocationsData: [],
 
-    extractorsData: [],
-    extractorData: {} as Extractor,
+    preConditions: [],
+    postConditions: [],
+    assertionConditions: [],
 
-    checkpointsData: [],
+    extractorData: {} as Extractor,
     checkpointData: {} as Checkpoint,
+    scriptData: {} as Script,
 };
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -61,23 +84,31 @@ export interface ModuleType extends StoreModuleType<StateType> {
     mutations: {
         setDebugInfo: Mutation<StateType>;
         setDebugData: Mutation<StateType>;
+        setDebugDataChanged: Mutation<StateType>;
+
+        setRequest: Mutation<StateType>;
         setResponse: Mutation<StateType>;
+        setResult: Mutation<StateType>;
+        setLog: Mutation<StateType>;
+
         setInvocations: Mutation<StateType>;
         setServerId: Mutation<StateType>;
 
-        setExtractors: Mutation<StateType>;
+        setPreConditions: Mutation<StateType>;
+        setPostConditions: Mutation<StateType>;
+        setAssertionConditions: Mutation<StateType>;
         setExtractor: Mutation<StateType>;
+        setCheckpoint: Mutation<StateType>;
+        setScript: Mutation<StateType>;
+        setScriptContent: Mutation<StateType>;
+
         setShareVars: Mutation<StateType>;
         setEnvVars: Mutation<StateType>;
         setGlobalVars: Mutation<StateType>;
 
-        setCheckpoints: Mutation<StateType>;
-        setCheckpoint: Mutation<StateType>;
-
         setUrl: Mutation<StateType>;
         setBaseUrl: Mutation<StateType>;
         setBody: Mutation<StateType>;
-        setPreRequestScript: Mutation<StateType>;
     };
     actions: {
         loadDataAndInvocations: Action<StateType, StateType>;
@@ -85,31 +116,49 @@ export interface ModuleType extends StoreModuleType<StateType> {
         loadData: Action<StateType, StateType>;
         call: Action<StateType, StateType>;
         save: Action<StateType, StateType>;
+        saveAsCase: Action<StateType, StateType>;
 
         listInvocation: Action<StateType, StateType>;
         getLastInvocationResp: Action<StateType, StateType>;
+        getInvocationResult: Action<StateType, StateType>;
+        getInvocationLog: Action<StateType, StateType>;
         getInvocationAsInterface: Action<StateType, StateType>;
         removeInvocation: Action<StateType, StateType>;
 
-        listExtractor: Action<StateType, StateType>;
+        listPreCondition: Action<StateType, StateType>;
+        createPreCondition: Action<StateType, StateType>;
+        disablePreCondition: Action<StateType, StateType>;
+        removePreCondition: Action<StateType, StateType>;
+        movePreCondition: Action<StateType, StateType>;
+
+        listPostCondition: Action<StateType, StateType>;
+        listAssertionCondition: Action<StateType, StateType>;
+        createPostCondition: Action<StateType, StateType>;
+        removePostCondition: Action<StateType, StateType>;
+        disablePostCondition: Action<StateType, StateType>;
+        movePostCondition: Action<StateType, StateType>;
+
         getExtractor: Action<StateType, StateType>;
         saveExtractor: Action<StateType, StateType>;
-        createExtractorOrUpdateResult: Action<StateType, StateType>;
+        quickCreateExtractor: Action<StateType, StateType>;
         removeExtractor: Action<StateType, StateType>;
+
+        getCheckpoint: Action<StateType, StateType>;
+        saveCheckpoint: Action<StateType, StateType>;
+        removeCheckpoint: Action<StateType, StateType>;
+
+        getScript: Action<StateType, StateType>;
+        saveScript: Action<StateType, StateType>;
+        removeScript: Action<StateType, StateType>;
+        addSnippet: Action<StateType, StateType>;
 
         listShareVar: Action<StateType, StateType>;
         removeShareVar: Action<StateType, StateType>;
         clearShareVar: Action<StateType, StateType>;
 
-        listCheckpoint: Action<StateType, StateType>;
-        getCheckpoint: Action<StateType, StateType>;
-        saveCheckpoint: Action<StateType, StateType>;
-        removeCheckpoint: Action<StateType, StateType>;
-
         updateUrl: Action<StateType, StateType>;
         updateBaseUrl:Action<StateType, StateType>;
         updateBody: Action<StateType, StateType>;
-        addSnippet: Action<StateType, StateType>;
 
         changeServer: Action<StateType, StateType>;
     };
@@ -131,52 +180,82 @@ const StoreModel: ModuleType = {
 
         setDebugData(state, payload) {
             state.debugData = payload;
+            state.debugDataChanged = 'refreshed';
+        },
+        setDebugDataChanged(state, payload) {
+            state.debugDataChanged = payload;
+        },
+        setRequest(state, payload) {
+            state.requestData = payload;
         },
         setResponse(state, payload) {
             state.responseData = payload;
+        },
+        setResult(state, payload) {
+            state.resultData = payload;
+        },
+        setLog(state, payload) {
+            state.consoleData = payload;
         },
 
         setInvocations(state, payload) {
             state.invocationsData = payload;
         },
 
-        setExtractors(state, payload) {
-            state.extractorsData = payload;
+        setPreConditions(state, payload) {
+            state.preConditions = payload;
+        },
+        setPostConditions(state, payload) {
+            state.postConditions = payload;
+        },
+        setAssertionConditions(state, payload) {
+            state.assertionConditions = payload;
         },
 
         setExtractor(state, payload) {
             state.extractorData = payload;
         },
-
-        setShareVars(state, payload) {
-            state.debugData.shareVars = payload;
-        },
-        setEnvVars(state, payload) {
-            state.debugData.envVars = payload;
-        },
-        setGlobalVars(state, payload) {
-            state.debugData.globalVars = payload;
-        },
-
-        setCheckpoints(state, payload) {
-            state.checkpointsData = payload;
-        },
         setCheckpoint(state, payload) {
             state.checkpointData = payload;
         },
-
-        setUrl(state, payload) {
-            state.debugData.url = payload;
+        setScript(state, payload) {
+            state.scriptData = payload;
         },
+        setScriptContent(state, content) {
+            console.log('setScriptContent', content)
+            state.scriptData.content = content;
+        },
+
+        setShareVars(state, payload) {
+            console.log('set debugData shareVars')
+            state.debugData.shareVars = payload;
+            state.debugDataChanged = 'refreshed';
+        },
+        setEnvVars(state, payload) {
+            console.log('set debugData envVars')
+            state.debugData.envVars = payload;
+            state.debugDataChanged = 'refreshed';
+        },
+        setGlobalVars(state, payload) {
+            console.log('set debugData globalVars')
+            state.debugData.globalVars = payload;
+            state.debugDataChanged = 'refreshed';
+        },
+
         setBaseUrl(state, payload) {
+            console.log('set debugData baseUrl')
             state.debugData.baseUrl = payload;
+            state.debugDataChanged = 'refreshed';
+        },
+        setUrl(state, payload) {
+            console.log('set debugData url')
+            state.debugData.url = payload;
+            state.debugDataChanged = 'refreshed';
         },
         setBody(state, payload) {
+            console.log('set debugData body')
             state.debugData.body = payload;
-        },
-        setPreRequestScript(state, payload) {
-            console.log('setPreRequestScript', payload)
-            state.debugData.preRequestScript = payload;
+            state.debugDataChanged = 'refreshed';
         },
     },
     actions: {
@@ -203,13 +282,6 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async resetDataAndInvocations({commit, dispatch, state}) {
-            commit('setDebugInfo', {});
-            commit('setDebugData', {});
-            commit('setResponse', {});
-            commit('setInvocations', []);
-        },
-
         async loadData({commit, state, dispatch}, data) {
             try {
                 const resp: ResponseData = await loadData(data);
@@ -242,25 +314,42 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
+        async saveAsCase({commit}, payload: any) {
+            const resp = await  saveAsCase(payload)
+            if (resp.code === 0) {
+                // commit('setDebugData', resp.data);
+                return true;
+            } else {
+                return false
+            }
+        },
+        async resetDataAndInvocations({commit, dispatch, state}) {
+            commit('setDebugInfo', {});
+            commit('setDebugData', {});
+            commit('setRequest', {});
+            commit('setResponse', {});
+            commit('setResult', []);
+            commit('setLog', []);
+            commit('setInvocations', []);
+        },
 
         async call({commit, dispatch, state}, data: any) {
-
-            // 发送时请求时，先清空response
-            // 比如，手动清空 response.content中的内容后，再次点击发送，还是现实空的response.content
-
+            commit('setRequest', {});
             commit('setResponse', {});
             const response = await call(data)
 
             if (response.code === 0) {
-                commit('setResponse', response.data);
+                commit('setRequest', response.data.req);
+                commit('setResponse', response.data.resp);
 
                 await dispatch('getLastInvocationResp')
                 await dispatch('listInvocation')
 
                 await dispatch('listShareVar');
 
-                await dispatch('listExtractor');
-                await dispatch('listCheckpoint');
+                await dispatch('listPreCondition');
+                await dispatch('listPostCondition');
+                await dispatch('listAssertionCondition');
 
                 return true;
             } else {
@@ -292,18 +381,28 @@ const StoreModel: ModuleType = {
                 caseInterfaceId: state.debugInfo.caseInterfaceId,
             } as DebugInfo);
 
-            const {data} = response;
-            console.log('getLastInvocationResp', data)
-
-            commit('setResponse', data);
+            commit('setRequest', response.data.req);
+            commit('setResponse', response.data.resp);
             return true;
         },
+        async getInvocationResult({commit, dispatch, state}, invokeId: number) {
+            const response = await getInvocationResult(invokeId);
+            commit('setResult', response.data);
+            return true;
+        },
+        async getInvocationLog({commit, dispatch, state}, invokeId: number) {
+            const response = await getInvocationLog(invokeId);
+            commit('setLog', response.data);
+            return true;
+        },
+
         async getInvocationAsInterface({commit}, id: number) {
             try {
                 const resp = await getInvocationAsInterface(id);
                 const {data} = resp;
 
                 commit('setDebugData', data.debugData);
+                commit('setRequest', data.req);
                 commit('setResponse', data.resp);
                 return true;
             } catch (error) {
@@ -322,17 +421,132 @@ const StoreModel: ModuleType = {
             }
         },
 
-        // extractor
-        async listExtractor({commit, dispatch, state}) {
+        // conditions
+        async listPreCondition({commit, state}) {
             try {
-                const resp = await listExtractor(state.debugInfo.debugInterfaceId, state.debugInfo.endpointInterfaceId, state.debugInfo.usedBy);
+                const resp = await listPreConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId);
                 const {data} = resp;
-                commit('setExtractors', data);
+                commit('setPreConditions', data);
                 return true;
             } catch (error) {
                 return false;
             }
         },
+        async createPreCondition({commit, dispatch, state}, payload: any) {
+            try {
+                await createPreConditions(payload);
+                dispatch('listPreCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async disablePreCondition({commit, dispatch, state}, id: number) {
+            try {
+                await disablePreConditions(id);
+                dispatch('listPreCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removePreCondition({commit, dispatch, state}, id: number) {
+            try {
+                await removePreConditions(id);
+                dispatch('listPreCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async movePreCondition({commit, dispatch, state}, payload: any) {
+            try {
+                await movePreConditions(payload);
+                dispatch('listPreCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async listPostCondition({commit, state}) {
+            try {
+                const resp = await listPostConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId,
+                    ConditionCategory.console);
+                const {data} = resp;
+                commit('setPostConditions', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async listAssertionCondition({commit, state}) {
+            try {
+                const resp = await listPostConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId,
+                    ConditionCategory.result);
+
+                const {data} = resp;
+                commit('setAssertionConditions', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async createPostCondition({commit, dispatch, state}, payload: any) {
+            try {
+                await createPostConditions(payload);
+
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async disablePostCondition({commit, dispatch, state}, payload: any) {
+            try {
+                await disablePostConditions(payload.id);
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removePostCondition({commit, dispatch, state}, payload: any) {
+            try {
+                await removePostConditions(payload.id);
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async movePostCondition({commit, dispatch, state}, payload: any) {
+            try {
+                await movePostConditions(payload);
+                if (payload.entityType === ConditionType.checkpoint) {
+                    dispatch('listAssertionCondition');
+                } else {
+                    dispatch('listPostCondition');
+                }
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        // extractor
         async getExtractor({commit}, id: number) {
             try {
                 const response = await getExtractor(id);
@@ -347,16 +561,16 @@ const StoreModel: ModuleType = {
         async saveExtractor({commit, dispatch, state}, payload: any) {
             try {
                 await saveExtractor(payload);
-                dispatch('listExtractor');
+                dispatch('listPostCondition');
                 return true;
             } catch (error) {
                 return false;
             }
         },
-        async createExtractorOrUpdateResult({commit, dispatch, state}, payload: any) {
+        async quickCreateExtractor({commit, dispatch, state}, payload: any) {
             try {
-                await createExtractorOrUpdateResult(payload);
-                dispatch('listExtractor');
+                await quickCreateExtractor(payload);
+                dispatch('listPostCondition');
                 dispatch('listShareVar');
                 return true;
             } catch (error) {
@@ -367,7 +581,7 @@ const StoreModel: ModuleType = {
             try {
                 await removeExtractor(payload.id);
 
-                dispatch('listExtractor');
+                dispatch('listPostCondition');
                 return true;
             } catch (error) {
                 return false;
@@ -375,16 +589,6 @@ const StoreModel: ModuleType = {
         },
 
         // checkpoint
-        async listCheckpoint({commit, state}) {
-            try {
-                const resp = await listCheckpoint(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId);
-                const {data} = resp;
-                commit('setCheckpoints', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
         async getCheckpoint({commit}, id: number) {
             try {
                 const response = await getCheckpoint(id);
@@ -399,7 +603,7 @@ const StoreModel: ModuleType = {
         async saveCheckpoint({commit, dispatch, state}, payload: any) {
             try {
                 await saveCheckpoint(payload);
-                dispatch('listCheckpoint', UsedBy.InterfaceDebug);
+                dispatch('listPostCondition', UsedBy.InterfaceDebug);
                 return true
             } catch (error) {
                 return false;
@@ -409,13 +613,54 @@ const StoreModel: ModuleType = {
             try {
                 await removeCheckpoint(id);
 
-                dispatch('listCheckpoint', UsedBy.InterfaceDebug);
+                dispatch('listPostCondition', UsedBy.InterfaceDebug);
                 return true;
             } catch (error) {
                 return false;
             }
         },
 
+        // script
+        async getScript({commit}, id: number) {
+            try {
+                const response = await getScript(id);
+                const {data} = response;
+
+                commit('setScript', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async saveScript({commit, dispatch, state}, payload: any) {
+            try {
+                await saveScript(payload);
+                dispatch('listPostCondition', UsedBy.InterfaceDebug);
+                return true
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeScript({commit, dispatch, state}, id: number) {
+            try {
+                await removeScript(id);
+
+                dispatch('listPostCondition', UsedBy.InterfaceDebug);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async addSnippet({commit, dispatch, state}, name: string) {
+            const json = await getSnippet(name)
+            if (json.code === 0) {
+                let script = (state.scriptData.content ? state.scriptData.content: '') + '\n' +  json.data.script
+                script = script.trim()
+                commit('setScriptContent', script);
+            }
+
+            return true;
+        },
 
         // shared variable
         async listShareVar({commit, dispatch, state}) {
@@ -461,16 +706,6 @@ const StoreModel: ModuleType = {
         },
         async updateBody({commit, dispatch, state}, body: string) {
             commit('setBody', body);
-            return true;
-        },
-        async addSnippet({commit, dispatch, state}, name: string) {
-            const json = await getSnippet(name)
-            if (json.code === 0) {
-                let script = state.debugData.preRequestScript + '\n' +  json.data.script
-                script = script.trim()
-                commit('setPreRequestScript', script);
-            }
-
             return true;
         },
 

@@ -132,6 +132,10 @@ func (s *ProjectService) AuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	return s.ProjectRepo.GetAuditList(req)
 }
 
+func (s *ProjectService) AuditUsers(projectId uint) (data []model.SysUser, err error) {
+	return s.ProjectRepo.GetAuditUsers(projectId)
+}
+
 /*
 func (s *ProjectService) createSample(projectId uint) (err error) {
 	serve, endpoint, _ := s.SampleSource.GetSources()

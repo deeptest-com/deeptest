@@ -1,15 +1,23 @@
 <template>
-  <div class="endpoint-debug-cases-design-main">
-    <div class="toolbar">
-      <a-button type="link" trigger="click" @click="back">
-        <span>返回用例列表</span>
-      </a-button>
-    </div>
-
+  <div class="endpoint-debug-cases-design-main debug-page-container-top">
     <div id="endpoint-debug-cases-design-panel">
+      <div class="name">
+        <a-button @click="back" size="small" class="btn">
+          <template #icon>
+            <icon-svg class="" type="back"  />
+          </template>
+          返回
+        </a-button>
+        <EditAndShowField placeholder="请输入名称"
+                          :custom-class="'text show-on-hover'"
+                          :value="endpointCase.name"
+                          @update="updateName" />
+      </div>
+
       <DebugComp
-          :topVal="'-52px'"
-          :onSaveDebugData="saveCaseInterface" />
+          :topVal="'-36px'"
+          :onSaveDebugData="saveCaseInterface"
+          :urlDisabled="true"/>
     </div>
 
   </div>
@@ -20,12 +28,6 @@ import {computed, defineProps, provide, ref, watch} from 'vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {UsedBy} from "@/utils/enum";
-import { EnvironmentOutlined, HistoryOutlined } from '@ant-design/icons-vue';
-
-import RequestEnv from '@/views/component/debug/others/env/index.vue';
-import RequestHistory from '@/views/component/debug/others/history/index.vue';
-
-import Invocation from '@/views/component/debug/request/Invocation.vue';
 
 import DebugComp from '@/views/component/debug/index.vue';
 
@@ -34,7 +36,9 @@ import {StateType as EndpointStateType} from '../../../store';
 import {StateType as DiagnoseInterfaceStateType} from "@/views/diagnose/store";
 import {prepareDataForRequest} from "@/views/component/debug/service";
 import {notification} from "ant-design-vue";
+import IconSvg from "@/components/IconSvg";
 import {NotificationKeyCommon} from "@/utils/const";
+import EditAndShowField from '@/components/EditAndShow/index.vue';
 
 provide('usedBy', UsedBy.CaseDebug)
 const usedBy = UsedBy.CaseDebug
@@ -88,6 +92,12 @@ const saveCaseInterface = async (e) => {
   }
 }
 
+const updateName = (val) => {
+  endpointCase.value.name = val
+  console.log('updateName', val, endpointCase.value)
+  store.dispatch('Endpoint/updateCaseName', endpointCase.value)
+}
+
 const back = () => {
   console.log('back')
   props.onBack()
@@ -138,17 +148,21 @@ const back = () => {
 
 <style scoped lang="less">
 .endpoint-debug-cases-design-main {
-  padding: 16px 0px 16px 16px;
-
-  .toolbar {
-    position: absolute;
-    top: -52px;
-    right: 110px;
-    height: 50px;
-    width: 120px;
-  }
+  padding: 0px 0px 16px 16px;
+  position: relative;
 
   #endpoint-debug-cases-design-panel {
+    .name {
+      display: flex;
+      padding: 6px 0 6px 0;
+
+      .btn {
+        margin-right: 8px;
+      }
+      .text {
+        font-weight: bold;
+      }
+    }
   }
 }
 

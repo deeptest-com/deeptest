@@ -876,3 +876,13 @@ func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceId
 	return nil
 
 }
+
+func (r *ProjectRepo) GetAuditUsers(projectId uint) (users []model.SysUser, err error) {
+	err = r.DB.Model(model.SysUser{}).
+		Joins("LEFT JOIN biz_project_member m ON m.user_id=sys_user.id").
+		Joins("LEFT JOIN biz_project_role r ON m.project_role_id=r.id").
+		Where("m.project_id=? and r.name=? and not m.deleted and not m.disabled", projectId, consts.Admin).
+		Find(&users).Error
+
+	return
+}

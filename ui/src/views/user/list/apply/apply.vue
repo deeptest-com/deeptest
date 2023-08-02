@@ -40,7 +40,6 @@ const roles = ()=>{
   })
   return rolesList
 }
-let activeKey = ref("1");
 
 const getRoleName = (val:any)=>{
   let rolesList = roles()
@@ -96,7 +95,7 @@ const getAudits = (page: number) => {
   getAuditList({
     pageSize: pagination.value.pageSize,
     page: page,
-    type: activeKey.value == "2" ? 0 : 1,
+    type:  1,
   })
     .then((json) => {
       console.log("审批列表", json);

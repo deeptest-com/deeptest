@@ -152,25 +152,25 @@ const showSecurity = ref(!!selectedMethodDetail.value?.security);
 
 const paramTypeOpts = [
   {
-    label: 'Security',
-    value: 'security'
+    label: 'Query Params',
+    value: 'query'
   },
   {
     label: 'Header',
     value: 'header'
   },
   {
-    label: 'Query Params',
-    value: 'query'
-  },
-  {
     label: 'Cookie',
     value: 'cookie'
+  },
+  {
+    label: 'Security',
+    value: 'security'
   },
 ]
 
 // 当前选中的参数类型
-const selectedParamType = ref('security');
+const selectedParamType = ref('query');
 
 function goEditSecurity() {
   window.open(`/#/project-setting/service-setting?sectab=service-security&serveId=${endpointDetail.value.serveId}`, '_blank')

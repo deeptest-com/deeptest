@@ -1,8 +1,11 @@
 package domain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"encoding/json"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
-type DebugReq struct {
+type DebugInfo struct {
 	DebugInterfaceId    uint `json:"debugInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"` // EndpointInterface without DebugInterface init
 	CaseInterfaceId     uint `json:"caseInterfaceId"`     // load by endpoint case
@@ -15,18 +18,24 @@ type DebugReq struct {
 type SubmitDebugResultRequest struct {
 	Request  DebugData     `json:"request"`
 	Response DebugResponse `json:"response"`
+
+	PreConditions  []InterfaceExecCondition `json:"preConditions"`
+	PostConditions []InterfaceExecCondition `json:"postConditions"`
 }
 
 type DebugData struct {
 	BaseRequest
 
-	DebugInterfaceId uint `json:"debugInterfaceId"`
+	Name string `json:"name"`
 
-	EndpointInterfaceId uint          `json:"endpointInterfaceId"`
-	ScenarioProcessorId uint          `json:"scenarioProcessorId"`
-	DiagnoseInterfaceId uint          `json:"diagnoseInterfaceId"`
-	CaseInterfaceId     uint          `json:"caseInterfaceId"`
-	UsedBy              consts.UsedBy `json:"usedBy"`
+	DebugInterfaceId    uint `json:"debugInterfaceId"`
+	EndpointInterfaceId uint `json:"endpointInterfaceId"`
+	CaseInterfaceId     uint `json:"caseInterfaceId"`
+	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"`
+
+	ScenarioProcessorId uint `json:"scenarioProcessorId"`
+
+	UsedBy consts.UsedBy `json:"usedBy"`
 
 	ServeId   uint `json:"serveId"`
 	ServerId  uint `json:"serverId"`
@@ -39,6 +48,21 @@ type DebugData struct {
 	EnvVars      []GlobalVar   `json:"envVars"`
 	GlobalVars   []GlobalVar   `json:"globalVars"`
 	GlobalParams []GlobalParam `json:"globalParams"`
+}
 
+type Condition struct {
 	Name string `json:"name"`
+	Desc string `json:"desc"`
+
+	EntityType string      `json:"entityType"`
+	EntityId   uint        `json:"entityId"`
+	EntityData interface{} `json:"entityData"`
+
+	Ordr     int  `json:"ordr"`
+	Disabled bool `json:"disabled"`
+}
+
+type InterfaceExecCondition struct {
+	Type consts.ConditionType `json:"debugData"`
+	Raw  json.RawMessage      `json:"raw"`
 }

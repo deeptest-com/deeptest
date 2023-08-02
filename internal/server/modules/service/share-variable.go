@@ -19,12 +19,14 @@ type ShareVarService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
-func (s *ShareVarService) Save(name, value string, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint,
+func (s *ShareVarService) Save(name, value string,
+	invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint,
 	scope consts.ExtractorScope, usedBy consts.UsedBy) (err error) {
 
 	po := model.ShareVariable{
 		Name:                name,
 		Value:               value,
+		InvokeId:            invokeId,
 		DebugInterfaceId:    debugInterfaceId,
 		CaseInterfaceId:     caseInterfaceId,
 		EndpointInterfaceId: endpointInterfaceId,
@@ -83,7 +85,7 @@ func (s *ShareVarService) Delete(id int) (err error) {
 	return
 }
 
-func (s *ShareVarService) Clear(debugReq domain.DebugReq) (err error) {
+func (s *ShareVarService) Clear(debugReq domain.DebugInfo) (err error) {
 	if debugReq.ScenarioProcessorId > 0 {
 		processor, _ := s.ScenarioProcessorRepo.Get(debugReq.ScenarioProcessorId)
 		err = s.ShareVariableRepo.DeleteAllByScenarioId(processor.ScenarioId)
@@ -106,9 +108,9 @@ func (s *ShareVarService) ListForDebug(serveId, scenarioProcessorId uint, usedBy
 	var pos []model.ShareVariable
 
 	if scenarioProcessorId > 0 {
-		pos, err = s.ShareVariableRepo.ListByScenarioDebug(scenarioProcessorId)
+		pos, err = s.ShareVariableRepo.ListForScenarioDebug(scenarioProcessorId)
 	} else {
-		pos, err = s.ShareVariableRepo.ListByInterfaceDebug(serveId, usedBy)
+		pos, err = s.ShareVariableRepo.ListForInterfaceDebug(serveId, usedBy)
 	}
 
 	for _, po := range pos {

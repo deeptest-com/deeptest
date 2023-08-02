@@ -8,7 +8,6 @@ import (
 	"os"
 )
 
-//go:embed ui/dist
 var uiFileSys embed.FS
 
 func GetUiFileSys() (ret fs.FS, err error) {

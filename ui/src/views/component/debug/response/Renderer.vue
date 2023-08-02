@@ -1,38 +1,41 @@
 <template>
   <div class="response-renderer">
-    <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
-      <a-tab-pane key="1" :tab="title">
-        <ResponseLensJson v-if="responseData.contentLang === 'json'"></ResponseLensJson>
-        <ResponseLensXml v-if="responseData.contentLang === 'xml'"></ResponseLensXml>
-        <ResponseLensHtml v-if="responseData.contentLang === 'html'"></ResponseLensHtml>
-        <ResponseLensRaw v-if="responseData.contentLang === 'text'"></ResponseLensRaw>
-        <ResponseLensImage v-if="responseData.contentLang === 'image'"></ResponseLensImage>
-      </a-tab-pane>
+    <div class="left">
+      <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
+        <a-tab-pane key="body" :tab="title">
+          <ResponseLensJson v-if="responseData.contentLang === 'json'" />
+          <ResponseLensHtml v-else-if="responseData.contentLang === 'html'" />
+          <ResponseLensXml v-else-if="responseData.contentLang === 'xml'" />
+          <ResponseLensRaw v-else-if="responseData.contentLang === 'text'" />
+          <ResponseLensImage v-else-if="isImage(responseData.contentType)" />
+        </a-tab-pane>
 
-      <a-tab-pane key="3" tab="响应头">
-        <ResponseHeaders v-if="activeKey === '3'"></ResponseHeaders>
-      </a-tab-pane>
+        <a-tab-pane key="header" tab="响应头">
+          <ResponseHeaders v-if="activeKey === 'header'" />
+        </a-tab-pane>
 
-      <a-tab-pane key="4">
-        <ResponseExtract v-if="activeKey === '4'"></ResponseExtract>
+        <a-tab-pane key="cookie" tab="Cookie">
+          <ResponseCookies v-if="activeKey === 'cookie'" />
+        </a-tab-pane>
 
-        <template #tab>
-          <a-badge v-if="extractorFail" dot><span class="link">提取器</span></a-badge>
-          <span v-else>提取器</span>
-        </template>
+        <a-tab-pane key="console" tab="控制台">
+          <ResponseConsole v-if="activeKey === 'console'" />
+        </a-tab-pane>
 
-      </a-tab-pane>
+        <a-tab-pane key="info" tab="实际请求">
+          <ResponseInfo v-if="activeKey === 'info'" />
+          <!-- <template #tab>
+            <a-badge v-if="extractorFail" dot><span class="link">提取器</span></a-badge>
+            <span v-else>提取器</span>
+          </template> -->
+        </a-tab-pane>
 
-      <a-tab-pane key="5">
-        <ResponseCheck v-if="activeKey === '5'"></ResponseCheck>
+      </a-tabs>
+    </div>
 
-        <template #tab>
-          <a-badge v-if="checkpointFail" dot><span class="link">检查点</span></a-badge>
-          <span v-else>检查点</span>
-        </template>
-
-      </a-tab-pane>
-    </a-tabs>
+    <div class="right">
+      <ResponseResult />
+    </div>
   </div>
 </template>
 
@@ -42,9 +45,11 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 
 import ResponseHeaders from "./Renderer/Headers.vue";
-import ResponseExtract from "./Renderer/Extractor.vue";
-import ResponseCheck from "./Renderer/Checkpoint.vue";
+import ResponseCookies from "./Renderer/Cookies.vue";
+import ResponseConsole from "./Renderer/Console.vue";
+import ResponseInfo from "./Renderer/Info.vue";
 
+import ResponseResult from "./Renderer/Result.vue";
 import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseLensXml from "@/views/component/debug/response/Renderer/lenses/XMLLensRenderer.vue";
 import ResponseLensHtml from "@/views/component/debug/response/Renderer/lenses/HTMLLensRenderer.vue";
@@ -57,46 +62,53 @@ const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
-const extractorsData = computed<any>(() => store.state.Debug.extractorsData);
-const checkpointsData = computed<any>(() => store.state.Debug.checkpointsData);
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 const title = computed(() => t(responseData.value.contentLang ? responseData.value.contentLang : 'empty'))
-const activeKey = ref('1');
+const activeKey = ref('body');
 
-const extractorFail = computed(() => {
+const isImage = (type) => {
+  return type && type.indexOf('image') > -1
+}
+
+/* const extractorFail = computed(() => {
   for (let val of extractorsData.value) {
     if (val.result==='extractor_err') return true
   }
   return false
-})
-
-const checkpointFail = computed(() => {
-  for (let val of checkpointsData.value) {
-    if (val.resultStatus==='fail') return true
-  }
-  return false
-})
+}) */
 
 </script>
 
 <style lang="less">
 .response-renderer {
-  height: calc(100% - 32px);
+  height: 100%;
+  display: flex;
 
-  .ant-tabs-line {
+  .left {
     height: 100%;
-    .ant-tabs-top-content {
-      height: calc(100% - 61px);
+    flex: 1;
+    .ant-tabs-line {
+      height: 100%;
+      .ant-tabs-top-content {
+        height: calc(100% - 61px);
+      }
+    }
+    .link {
+      color: #009688;
     }
   }
+  .right {
+    height: 100%;
+    width: 360px;
+  }
+
+
 }
 </style>
 
 <style lang="less" scoped>
-  .link {
-    color: #009688;
-  }
+
 </style>

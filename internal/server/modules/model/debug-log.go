@@ -52,24 +52,8 @@ func (ExecLogProcessor) TableName() string {
 }
 
 type ExecLogExtractor struct {
-	BaseModel
-	Src  consts.ExtractorSrc  `json:"src"`
-	Type consts.ExtractorType `json:"type"`
-	Key  string               `json:"key"`
-
-	Expression string `json:"expression"`
-	Prop       string `json:"prop"`
-
-	BoundaryStart    string `json:"boundaryStart"`
-	BoundaryEnd      string `json:"boundaryEnd"`
-	BoundaryIndex    int    `json:"boundaryIndex"`
-	BoundaryIncluded bool   `json:"boundaryIncluded"`
-
-	Variable string `json:"variable"`
-
-	Result      string `json:"result"`
-	InterfaceId uint   `json:"interfaceId"`
-	LogId       uint   `json:"logId"`
+	DebugConditionExtractor
+	InvokeId uint `json:"invokeId"`
 }
 
 func (ExecLogExtractor) TableName() string {
@@ -77,21 +61,19 @@ func (ExecLogExtractor) TableName() string {
 }
 
 type ExecLogCheckpoint struct {
-	BaseModel
-	Type consts.CheckpointType `json:"type"`
-
-	Expression        string `json:"expression"`
-	ExtractorVariable string `json:"extractorVariable"`
-
-	Operator consts.ComparisonOperator `json:"operator"`
-	Value    string                    `json:"value"`
-
-	ActualResult string              `json:"actualResult"`
-	ResultStatus consts.ResultStatus `json:"resultStatus"`
-	InterfaceId  uint                `json:"interfaceId"`
-	LogId        uint                `json:"logId"`
+	DebugConditionCheckpoint
+	InvokeId uint `json:"invokeId"`
 }
 
 func (ExecLogCheckpoint) TableName() string {
 	return "biz_exec_log_checkpoint"
+}
+
+type ExecLogScript struct {
+	DebugConditionScript
+	InvokeId uint `json:"invokeId"`
+}
+
+func (ExecLogScript) TableName() string {
+	return "biz_exec_log_script"
 }

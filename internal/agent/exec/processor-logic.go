@@ -39,7 +39,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	detail := map[string]interface{}{"表达式": entity.Expression}
 	if typ == consts.ProcessorLogicIf {
 		var result interface{}
-		result, err = EvaluateGovaluateExpressionByScope(entity.Expression, entity.ProcessorID)
+		result, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, entity.ProcessorID)
 		if err != nil {
 			pass = false
 		} else {

@@ -12,6 +12,15 @@ type EnvironmentVarCtrl struct {
 }
 
 // List
+// @Tags	环境管理/全局变量
+// @summary	列出环境变量
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	serverId		query	int		true	"服务ID"
+// @success	200	{object}	_domain.Response{data=[]domain.GlobalVar}
+// @Router	/api/v1/environments/envVars	[get]
 func (c *EnvironmentVarCtrl) List(ctx iris.Context) {
 	serverId, err := ctx.URLParamInt("serverId")
 	if err != nil {

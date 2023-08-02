@@ -132,9 +132,9 @@
 
               <div style="margin-top: 12px;margin-left: -14px;">
                 <ul>
-                  <li><a-typography-text type="secondary"><span class="form-item-info">all of：</span>根据所有子模式验证值</a-typography-text></li>
-                  <li><a-typography-text type="secondary"><span class="form-item-info">one of:</span> 根据其中一个子模式验证值</a-typography-text></li>
-                  <li><a-typography-text type="secondary"><span class="form-item-info">any of：</span>根据任意（一个或多个）子模式验证值</a-typography-text></li>
+                  <li><a-typography-text type="secondary"><span class="form-item-info">allOf：</span>根据所有子模式验证值</a-typography-text></li>
+                  <li><a-typography-text type="secondary"><span class="form-item-info">oneOf:</span> 根据其中一个子模式验证值</a-typography-text></li>
+                  <li><a-typography-text type="secondary"><span class="form-item-info">anyOf：</span>根据任意（一个或多个）子模式验证值</a-typography-text></li>
                 </ul>
               </div>
             </a-form>

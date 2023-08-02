@@ -605,15 +605,15 @@ export const schemaSettingInfo = [
  * */
 export const combineSchemaOpts = [
     {
-        label: 'all of',
+        label: 'allOf',
         value: 'allOf',
     },
     {
-        label: 'one of',
+        label: 'oneOf',
         value: 'oneOf',
     },
     {
-        label: 'any of',
+        label: 'anyOf',
         value: 'anyOf',
     },
 ]

@@ -29,7 +29,6 @@ func (m *EndpointModule) Party() module.WebModule {
 		public.Delete("/batchDelete", m.EndpointCtrl.BatchDelete).Name = "批量删除"
 		public.Post("/version/add", m.EndpointCtrl.AddVersion).Name = "添加版本"
 		public.Get("/version/list", m.EndpointCtrl.ListVersions).Name = "版本列表"
-		public.Post("/batchUpdateField", m.EndpointCtrl.BatchUpdateField).Name = "批量更新字段内容"
 		public.Put("/updateTag", m.EndpointCtrl.UpdateTag).Name = "更新标签"
 	}
 	return module.NewModule("/endpoint", handler)

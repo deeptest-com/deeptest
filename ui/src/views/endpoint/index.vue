@@ -417,7 +417,8 @@ async function handleBatchUpdate(data) {
   await store.dispatch('Endpoint/batchUpdateField', {
     "fieldName": data.value.fieldName,
     "value": data.value.value,
-    "endpointIds":selectedRowIds.value
+    "ids":selectedRowIds.value,
+    "module": "endpoint"
   });
   await refreshList();
   showBatchUpdateModal.value = false;

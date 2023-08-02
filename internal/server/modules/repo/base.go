@@ -112,3 +112,7 @@ func (r *BaseRepo) Save(id uint, entity interface{}) (err error) {
 	}
 	return
 }
+
+func (r *BaseRepo) BatchUpdateStatus(entity interface{}, ids []uint, fieldName string, fieldValue interface{}) error {
+	return r.DB.Model(&entity).Where("id IN (?)", ids).Update(fieldName, fieldValue).Error
+}

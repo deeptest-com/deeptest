@@ -417,14 +417,6 @@ func (r *EndpointRepo) CreateEndpoints(endpoints []*model.Endpoint) error {
 	return r.DB.Create(endpoints).Error
 }
 
-func (r *EndpointRepo) BatchUpdateStatus(ids []uint, status int64) error {
-	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("status", status).Error
-}
-
-func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
-	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
-}
-
 func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, title string) (res model.Endpoint, err error) {
 
 	err = r.DB.First(&res, "source_type=? and project_id=? AND path = ? AND serve_id = ? AND title = ?", sourceType, projectId, path, serveId, title).Error

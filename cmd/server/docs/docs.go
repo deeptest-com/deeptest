@@ -20295,6 +20295,9 @@ const docTemplate = `{
         },
         "serverDomain.BatchUpdateReq": {
             "type": "object",
+            "required": [
+                "module"
+            ],
             "properties": {
                 "endpointIds": {
                     "type": "array",
@@ -20303,6 +20306,15 @@ const docTemplate = `{
                     }
                 },
                 "fieldName": {
+                    "type": "string"
+                },
+                "ids": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "module": {
                     "type": "string"
                 },
                 "value": {}

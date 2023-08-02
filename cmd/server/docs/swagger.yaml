@@ -4182,7 +4182,15 @@ definitions:
         type: array
       fieldName:
         type: string
+      ids:
+        items:
+          type: integer
+        type: array
+      module:
+        type: string
       value: {}
+    required:
+    - module
     type: object
   serverDomain.Category:
     properties:

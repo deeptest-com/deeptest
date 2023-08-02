@@ -87,12 +87,6 @@ type ImportEndpointDataReq struct {
 	UserId        uint                 `json:"userId"`
 }
 
-type BatchUpdateReq struct {
-	FieldName   string      `json:"fieldName"`
-	Value       interface{} `json:"value"`
-	EndpointIds []uint      `json:"endpointIds"`
-}
-
 type EndpointTagReq struct {
 	Id       uint     `json:"id"`
 	TagNames []string `json:"tagNames"`

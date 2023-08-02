@@ -25,7 +25,7 @@
                   v-model:value="formState.value"
                   :options="endpointStatusOpts"
                   placeholder="请选择"/>
-        <a-tree-select v-else-if="formState.fieldName === 'categoryId'"
+        <a-tree-select v-else-if="formState.fieldName === 'category_id'"
                        v-model:value="formState.value"
             show-search
             :multiple="false"
@@ -71,7 +71,7 @@ const FieldNameOpts = [
   },
   {
     label: '所属分类',
-    value: 'categoryId',
+    value: 'category_id',
   },
 ]
 

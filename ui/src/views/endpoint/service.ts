@@ -244,7 +244,7 @@ export async function removeEndpointCase(data): Promise<any> {
  */
 export async function batchUpdateField(data: any): Promise<any> {
     return request({
-        url: `/endpoint/batchUpdateField`,
+        url: `/common/batchUpdateField`,
         method: 'post',
         data: data
     });

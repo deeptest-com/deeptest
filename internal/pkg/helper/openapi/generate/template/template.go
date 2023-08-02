@@ -1,7 +1,5 @@
 package template
 
-import "strings"
-
 type languageInter interface {
 	fieldTypeConv(fieldType fieldType) (newType fieldType)
 	fieldString(field field) (ret string)
@@ -105,7 +103,7 @@ func (t *template) classString(name class) string {
 	return strings.ReplaceAll("export interface ${_name_} { ${_content_} }", "${_name_}", string(name))
 }
 */
-
+/*
 func (t *template) Content() (ret string) {
 	ret = t.classString(t.class)
 	fieldString := ""
@@ -116,3 +114,5 @@ func (t *template) Content() (ret string) {
 
 	return strings.ReplaceAll(ret, "{_content_}", fieldString)
 }
+
+*/

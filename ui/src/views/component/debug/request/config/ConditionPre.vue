@@ -35,7 +35,7 @@
     <FullScreenPopup v-if="scriptData.id > 0 && fullscreen"
                      :visible="fullscreen"
                      :model="scriptData"
-                     :onCancel="closeFullScreen"/>
+                     :onCancel="closeFullScreen" />
   </div>
 </template>
 

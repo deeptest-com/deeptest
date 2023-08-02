@@ -40,7 +40,7 @@ func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickC
 	condition.EntityId = 0 // update later
 	condition.EntityType = consts.ConditionTypeExtractor
 	condition.UsedBy = debugInfo.UsedBy
-	condition.Desc = extractorHelper.GenDesc(config.Src, config.Type, config.Expression, "", "")
+	condition.Desc = extractorHelper.GenDesc(config.Variable, config.Src, config.Type, config.Expression, "", "")
 
 	err = s.PostConditionRepo.Save(&condition)
 

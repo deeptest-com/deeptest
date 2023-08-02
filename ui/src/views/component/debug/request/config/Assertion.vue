@@ -45,6 +45,11 @@
                 {{ element.desc || t(element.entityType) }}
               </div>
               <div class="buttons">
+                <icon-svg class="icon dp-link-primary dp-icon-large" type="save"
+                          title="保存"
+                          v-if="activeItem.id === element.id"
+                          @click.stop="save(element)" />
+
                 <ClearOutlined v-if="activeItem.id === +element.id && element.entityType === ConditionType.script"
                                @click.stop="format(element)"  class="dp-icon-btn dp-trans-80" />&nbsp;
 
@@ -54,9 +59,6 @@
                                      class="dp-icon-btn dp-trans-80" />
                 <DeleteOutlined @click.stop="remove(element)"  class="dp-icon-btn dp-trans-80" />
 
-                <SaveOutlined class="dp-icon-btn dp-trans-80" title="保存"
-                              v-if="activeItem.id === element.id"
-                              @click.stop="save(element)" />
                 <FullscreenOutlined class="dp-icon-btn dp-trans-80"
                                     v-if="activeItem.id === element.id"
                                     @click.stop="openFullscreen(element)" />
@@ -100,7 +102,6 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {confirmToDelete} from "@/utils/confirm";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {getEnumSelectItems} from "@/views/scenario/service";
 import IconSvg from "@/components/IconSvg";
 
 import Checkpoint from "./conditions-post/Checkpoint.vue";

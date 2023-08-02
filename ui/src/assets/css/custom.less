@@ -139,6 +139,19 @@
   cursor: pointer !important;
 }
 
+.dp-icon {
+  &:focus {
+    outline: unset !important;
+  }
+}
+.dp-icon-large {
+  font-size: 15px;
+}
+.dp-icon-with-text {
+  display: inline-block;
+  margin-right: 3px;
+}
+
 .dp-trans-80 {
   opacity: 0.6;
 }
@@ -159,7 +172,11 @@
   }
 }
 
-
+.dp-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 
 .dp-table {
   .ant-btn-link {

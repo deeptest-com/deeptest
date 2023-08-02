@@ -23,7 +23,7 @@
                   class="icon"  />
       </span>
       &nbsp;
-      <span>{{item.resultMsg}}</span>
+      <span v-html="item.resultMsg"></span>
     </div>
   </div>
 </template>

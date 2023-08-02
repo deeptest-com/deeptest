@@ -42,7 +42,7 @@
 
           <div class="collapse-item">
             <div class="header">
-              <div @click.stop="expand(element)" class="title dp-link">
+              <div @click.stop="expand(element)" class="title dp-link dp-ellipsis">
                 <icon-svg class="handle dp-drag icon" type="move" />
 
                 <icon-svg v-if="element.entityType === ConditionType.extractor"
@@ -55,9 +55,14 @@
                           type="script"
                           class="icon"  />
 
-                {{ element.desc || t(element.entityType) }}
+                <span v-html="element.desc || t(element.entityType)"></span>
               </div>
               <div class="buttons">
+                <icon-svg class="icon dp-link-primary dp-icon-large" type="save"
+                          title="保存"
+                          v-if="activeItem.id === element.id"
+                          @click.stop="save(element)" />
+
                 <ClearOutlined v-if="activeItem.id === +element.id && element.entityType === ConditionType.script"
                                @click.stop="format(element)"
                                class="dp-icon-btn dp-trans-80"
@@ -70,9 +75,6 @@
                 <DeleteOutlined @click.stop="remove(element)"
                                 class="dp-icon-btn dp-trans-80" title="删除" />
 
-                <SaveOutlined v-if="activeItem.id === element.id"
-                              @click.stop="save(element)"
-                              class="dp-icon-btn dp-trans-80" title="保存"/>
                 <FullscreenOutlined v-if="activeItem.id === element.id"
                                     @click.stop="openFullscreen(element)"
                                     class="dp-icon-btn dp-trans-80" title="全屏" />
@@ -117,8 +119,8 @@ import {computed, inject, ref, watch, getCurrentInstance, ComponentInternalInsta
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
-  ClearOutlined, MenuOutlined, RightOutlined,
-  DownOutlined, CloseCircleOutlined, FullscreenOutlined, SaveOutlined } from '@ant-design/icons-vue';
+  ClearOutlined, RightOutlined,
+  DownOutlined, CloseCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
 import {ConditionType, UsedBy} from "@/utils/enum";
 import {EnvDataItem} from "@/views/project-settings/data";
@@ -289,7 +291,6 @@ const closeFullScreen = (item) => {
           display: flex;
           .title {
             flex: 1;
-            font-weight: bolder;
 
             .icon {
               margin-right: 3px;

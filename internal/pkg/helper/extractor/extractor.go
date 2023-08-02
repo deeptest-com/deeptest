@@ -54,7 +54,7 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 	return
 }
 
-func GenDesc(src consts.ExtractorSrc, typ consts.ExtractorType,
+func GenDesc(varName string, src consts.ExtractorSrc, typ consts.ExtractorType,
 	expression, boundaryStart, boundaryEnd string) (ret string) {
 	srcDesc := ""
 	if src == consts.Header {
@@ -63,28 +63,49 @@ func GenDesc(src consts.ExtractorSrc, typ consts.ExtractorType,
 		srcDesc = "响应体"
 	}
 
-	nameDesc := ""
+	name := ""
+	expr := ""
+
 	if typ == consts.Boundary {
-		nameDesc = fmt.Sprintf("边界\"%s - %s\"", boundaryStart, boundaryEnd)
+		name = fmt.Sprintf("边界选择器")
+		expr = fmt.Sprintf("%s ~ %s", getLimitStr(boundaryStart, 26), getLimitStr(boundaryEnd, 26))
+
 	} else if typ == consts.JsonQuery {
-		nameDesc = fmt.Sprintf("JSON\"%s\"", expression)
+		name = fmt.Sprintf("JSON查询")
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 26))
+
 	} else if typ == consts.HtmlQuery {
-		nameDesc = fmt.Sprintf("HTML\"%s\"", expression)
+		name = fmt.Sprintf("HTML查询")
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 26))
+
 	} else if typ == consts.XmlQuery {
-		nameDesc = fmt.Sprintf("XML\"%s\"", expression)
+		name = fmt.Sprintf("XML查询")
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 26))
+
 	} else if typ == consts.Regx {
-		nameDesc = fmt.Sprintf("正则表达式\"%s\"", expression)
+		name = fmt.Sprintf("正则表达式")
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 26))
 	}
 
-	ret = fmt.Sprintf("提取变量 %s%s", srcDesc, nameDesc)
+	ret = fmt.Sprintf("<b>提取变量&nbsp;%s</b>&nbsp;&nbsp;%s&nbsp;%s（%s）", varName, srcDesc, name, expr)
 
 	return
 }
 
 func GenResultMsg(po *domain.ExtractorBase) (ret string) {
-	desc := GenDesc(po.Src, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
+	desc := GenDesc(po.Variable, po.Src, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
 
-	po.ResultMsg = fmt.Sprintf("%s， 结果\"%s\"。", desc, po.Result)
+	po.ResultMsg = fmt.Sprintf("%s，结果\"%s\"。", desc, po.Result)
+
+	return
+}
+
+func getLimitStr(str string, limit int) (ret string) {
+	if len(str) <= limit-3 {
+		return str
+	}
+
+	ret = str[:limit-3] + "..."
 
 	return
 }

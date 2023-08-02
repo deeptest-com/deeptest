@@ -9,6 +9,12 @@
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>保存</template>
+            <icon-svg type="save" class="dp-icon dp-link-primary dp-icon-large"
+                      @click.stop="save" />
+          </a-tooltip>
+
+          <a-tooltip overlayClassName="dp-tip-small">
             <template #title>帮助</template>
             <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
@@ -16,11 +22,6 @@
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>清除</template>
             <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
-
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>保存</template>
-            <SaveOutlined @click="save" class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
@@ -47,7 +48,7 @@
 import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, FullscreenOutlined, SaveOutlined } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined, DeleteOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {UsedBy} from "@/utils/enum";

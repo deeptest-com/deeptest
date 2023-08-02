@@ -11,7 +11,8 @@ import {
     findLastNotArrayNode,
     generateSchemaByArray,
     handleRefInfo,
-    isArray, isCompositeType,
+    isArray,
+    isCompositeType,
     isNormalType,
     isObject,
     isRef,
@@ -26,11 +27,7 @@ import {StateType as ServeStateType} from "@/store/serve";
 
 export default defineComponent({
     name: 'SchemeEditor',
-    props: {
-        value: String,
-        contentStyle: Object,
-        serveId: Number,
-    },
+    props: ['value', 'contentStyle', 'serveId'],
     emits: ['change'],
     setup(props, {emit}) {
         const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
@@ -49,7 +46,6 @@ export default defineComponent({
                     handleRefInfo(tree, result);
                     data.value = addExtraViewInfo(data.value);
                     tree.extraViewInfo.isExpand = true;
-
                 } else {
                     tree.extraViewInfo.isExpand = false;
                     delete tree.content;
@@ -59,19 +55,31 @@ export default defineComponent({
             }
         }
         const addProps = (tree: any, e: any) => {
-            tree.properties = tree.properties || {};
-            const keys = Object.keys(tree.properties);
-            keys.push(`name${keys.length + 1}`);
-            const newVal: any = {type: 'string'};
-            const newObj: any = {};
-            keys.forEach((item) => {
-                if (tree.properties[item]) {
-                    newObj[item] = tree.properties[item];
+            // 如果是对象类型，添加属性
+            if (isObject(tree.type)) {
+                tree.properties = tree.properties || {};
+                const keys = Object.keys(tree.properties);
+                keys.push(`name${keys.length + 1}`);
+                const newVal: any = {type: 'string'};
+                const newObj: any = {};
+                keys.forEach((item) => {
+                    if (tree.properties[item]) {
+                        newObj[item] = tree.properties[item];
+                    } else {
+                        newObj[item] = newVal;
+                    }
+                })
+                tree.properties = {...newObj};
+            }
+            if (isCompositeType(tree.type)) {
+                // 如果复合类型是数组，添加元素
+                if (Array.isArray(tree[tree.type])) {
+                    tree[tree.type].push({type: 'string'});
+                    //  否则添加属性
                 } else {
-                    newObj[item] = newVal;
+                    tree[tree.type] = [{type: 'string'}]
                 }
-            })
-            tree.properties = {...newObj};
+            }
             data.value = addExtraViewInfo(data.value);
         }
         const pasteKeyName = (e) => {
@@ -82,14 +90,26 @@ export default defineComponent({
             // 插入纯文本
             document.execCommand("insertHTML", false, text);
         }
+        const keyNameKeyDown = (oldKey: any, keyIndex: any, parent: any, event: any) => {
+            // 获取用户输入的字符
+            const char = event.key;
+            console.log('832char', char);
+            // 允许输入字母、数字、下划线、短横线和  删除、上下左右箭头键
+            if (/^[\w-]$/.test(char) || ['Delete', 'Backspace', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(char)) {
+                console.log('合法字符');
+            } else {
+                event.preventDefault();
+            }
+        }
         const updateKeyName = (oldKey: any, keyIndex: any, parent: any, event: any) => {
             const newKey = event.target.innerText;
             const keys = Object.keys(parent.properties);
-            // 判断组件名称必须是英文，复合 URL 规则
-            // 匹配由 数字、26个英文字母、下划线、 - 组成的字符串
-            // const reg = /^[a-zA-Z$][\w\W]*$/;
+            // const reg = /^\w+$/;
             // if(!reg.test(newKey)){
-            //     message.warning(`属性须以字母开头`);
+            //     message.warning(`属性名非法，请重新输入`);
+            //     event.target.innerText = oldKey;
+            //     event.preventDefault();
+            //     return;
             // }
             // 新旧 key 相等
             if (oldKey === newKey) {
@@ -130,70 +150,119 @@ export default defineComponent({
             } else {
                 //  数组类型, 且个数大于等于 1 ，需要生成新的schema
                 if (newProps?.length >= 1 && isArray(firstType)) {
-                    const items = parent?.type === 'array' ? ancestor : parent;
-                    if (items?.properties?.[keyName]) {
-                        items.properties[keyName] = generateSchemaByArray(newProps);
+                    // 如果是复合类型，需要特殊处理
+                    if (isCompositeType(ancestor?.type)) {
+                        if (ancestor?.[ancestor.type]?.[keyName]) {
+                            ancestor[ancestor.type][keyName] = generateSchemaByArray(newProps);
+                        }
+                    } else {
+                        const items = parent?.type === 'array' ? ancestor : parent;
+                        if (items?.properties?.[keyName]) {
+                            items.properties[keyName] = generateSchemaByArray(newProps);
+                        }
                     }
                     // 非数组类型
-                } else if (newProps?.length === 1 && !isArray(firstType)) {
-                    const items = parent?.type === 'array' ? ancestor : parent;
-                    if (items?.properties?.[keyName]) {
-                        // 之前是引用类型
-                        // if(items.properties[keyName]?.ref){
-                        //
-                        // }
-                        // items.properties[keyName] = Object.assign(items.properties[keyName], {...newProps[0]})
-                        // 既然更换类型，之前的属性就不需要了
-                        items.properties[keyName] = {...newProps[0]};
+                } else if (newProps?.length >= 1 && !isArray(firstType)) {
+                    // 如果是复合类型，需要特殊处理
+                    if (isCompositeType(ancestor?.type)) {
+                        if (ancestor?.[ancestor.type]?.[keyName]) {
+                            ancestor[ancestor.type][keyName] = {...newProps[0]};
+                        }
+                    } else {
+                        const items = parent?.type === 'array' ? ancestor : parent;
+                        if (items?.properties?.[keyName]) {
+                            // 既然更换类型，之前的属性就不需要了
+                            items.properties[keyName] = {...newProps[0]};
+                        }
                     }
-                } else {
-                    message.warning(`数组类型至少需要一个元素`);
+                // 其他场景
+                }  else {
+                    message.warning(`未知异常，请重试`);
                 }
             }
             data.value = addExtraViewInfo(data.value);
             console.log('change datatype  data.value', data.value);
         }
         const moveUp = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            // 互换两个元素的位置
-            [keys[keyIndex - 1], keys[keyIndex]] = [keys[keyIndex], keys[keyIndex - 1]];
-            const newObj: any = {};
-            keys.forEach((item) => {
-                newObj[item] = parent.properties[item];
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
+            if (isCompositeType(parent.type)) {
+                const combines = {
+                    allOf: parent?.allOf || [],
+                    oneOf: parent?.oneOf || [],
+                    anyOf: parent?.anyOf || [],
+                }
+                const items = combines[parent.type];
+                // 互换两个元素的位置
+                [items[keyIndex - 1], items[keyIndex]] = [items[keyIndex], items[keyIndex - 1]];
+                parent[parent.type] = [...items];
+                data.value = addExtraViewInfo(data.value);
+            } else {
+                const keys = Object.keys(parent.properties);
+                // 互换两个元素的位置
+                [keys[keyIndex - 1], keys[keyIndex]] = [keys[keyIndex], keys[keyIndex - 1]];
+                const newObj: any = {};
+                keys.forEach((item) => {
+                    newObj[item] = parent.properties[item];
+                })
+                parent.properties = {...newObj};
+                data.value = addExtraViewInfo(data.value);
+            }
         };
         const moveDown = (keyIndex: number, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            // 互换两个元素的位置
-            [keys[keyIndex + 1], keys[keyIndex]] = [keys[keyIndex], keys[keyIndex + 1]];
-            const newObj: any = {};
-            keys.forEach((item) => {
-                newObj[item] = parent.properties[item];
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
+            if (isCompositeType(parent.type)) {
+                const combines: any = {
+                    allOf: parent?.allOf || [],
+                    oneOf: parent?.oneOf || [],
+                    anyOf: parent?.anyOf || [],
+                }
+                const items = combines[parent.type];
+                // 互换两个元素的位置
+                [items[keyIndex + 1], items[keyIndex]] = [items[keyIndex], items[keyIndex + 1]];
+                parent[parent.type] = [...items];
+                data.value = addExtraViewInfo(data.value);
+
+            } else {
+                const keys = Object.keys(parent.properties);
+                // 互换两个元素的位置
+                [keys[keyIndex + 1], keys[keyIndex]] = [keys[keyIndex], keys[keyIndex + 1]];
+                const newObj: any = {};
+                keys.forEach((item) => {
+                    newObj[item] = parent.properties[item];
+                })
+                parent.properties = {...newObj};
+                data.value = addExtraViewInfo(data.value);
+            }
         };
         const copy = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            const key = keys[keyIndex];
-            const copyObj = cloneDeep(parent.properties[key]);
-            let keyCopyName = `${key}-copy`;
-            if (keys.includes(keyCopyName)) {
-                keyCopyName = `${keyCopyName}-copy`;
-            }
-            keys.splice(keyIndex + 1, 0, `${keyCopyName}`);
-            const newObj: any = {};
-            keys.forEach((item, index: number) => {
-                if (parent.properties[item]) {
-                    newObj[item] = parent.properties[item];
-                } else {
-                    newObj[item] = copyObj;
+            if (isCompositeType(parent.type)) {
+                const combines = {
+                    allOf: parent?.allOf || [],
+                    oneOf: parent?.oneOf || [],
+                    anyOf: parent?.anyOf || [],
                 }
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
+                const copyObj = cloneDeep(combines[parent.type][keyIndex]);
+                combines[parent.type].splice(keyIndex + 1, 0, copyObj);
+                parent[parent.type] = combines[parent.type];
+                data.value = addExtraViewInfo(data.value);
+            } else {
+                const keys = Object.keys(parent.properties);
+                const key = keys[keyIndex];
+                const copyObj = cloneDeep(parent.properties[key]);
+                let keyCopyName = `${key}-copy`;
+                if (keys.includes(keyCopyName)) {
+                    keyCopyName = `${keyCopyName}-copy`;
+                }
+                keys.splice(keyIndex + 1, 0, `${keyCopyName}`);
+                const newObj: any = {};
+                keys.forEach((item, index: number) => {
+                    if (parent.properties[item]) {
+                        newObj[item] = parent.properties[item];
+                    } else {
+                        newObj[item] = copyObj;
+                    }
+                })
+                parent.properties = {...newObj};
+                data.value = addExtraViewInfo(data.value);
+            }
         }
         const setRequire = (keyIndex: any, parent: any) => {
             const keys = Object.keys(parent.properties);
@@ -205,7 +274,6 @@ export default defineComponent({
                 const index = parent.required.indexOf(key);
                 parent.required.splice(index, 1);
             }
-
         };
 
         const addDesc = (tree: any, desc: string) => {
@@ -214,14 +282,25 @@ export default defineComponent({
         };
 
         const del = (keyIndex: any, parent: any) => {
-            const keys = Object.keys(parent.properties);
-            keys.splice(keyIndex, 1);
-            const newObj: any = {};
-            keys.forEach((item) => {
-                newObj[item] = parent.properties[item];
-            })
-            parent.properties = {...newObj};
-            data.value = addExtraViewInfo(data.value);
+            if (isCompositeType(parent.type)) {
+                const combines = {
+                    allOf: parent?.allOf || [],
+                    oneOf: parent?.oneOf || [],
+                    anyOf: parent?.anyOf || [],
+                }
+                combines[parent.type].splice(keyIndex, 1);
+                parent[parent.type] = combines[parent.type];
+                data.value = addExtraViewInfo(data.value);
+            } else {
+                const keys = Object.keys(parent.properties);
+                keys.splice(keyIndex, 1);
+                const newObj: any = {};
+                keys.forEach((item) => {
+                    newObj[item] = parent.properties[item];
+                })
+                parent.properties = {...newObj};
+                data.value = addExtraViewInfo(data.value);
+            }
         };
 
         // 监听value变化，更新data，他是一个字符串
@@ -231,7 +310,7 @@ export default defineComponent({
             try {
                 nextTick(() => {
                     let obj = JSON.parse(newVal);
-                    obj = obj ? obj : {type:'object'};
+                    obj = obj ? obj : {type: 'object'};
                     data.value = addExtraViewInfo(obj);
                 })
             } catch (e) {
@@ -263,12 +342,13 @@ export default defineComponent({
             </div>
         }
         const renderExtraAction = (options: any) => {
-            const {isRoot, keyIndex, parent, tree, ancestor, isRefChildNode} = options;
+            const {isRoot, keyIndex, parent, tree, ancestor, isRefChildNode, isCompositeChildNode} = options;
             const items = parent?.type === 'array' ? ancestor : parent;
             return <div class={'extraAction'}>
                 <ExtraActions
                     isRoot={isRoot}
                     isRefChildNode={isRefChildNode || false}
+                    isCompositeChildNode={isCompositeChildNode || false}
                     value={tree}
                     onAddDesc={addDesc.bind(this, tree)}
                     onDel={del.bind(this, keyIndex, items)}
@@ -276,28 +356,48 @@ export default defineComponent({
             </div>
         }
         const renderDataTypeSetting = (options: any) => {
-            const {tree, isRefChildNode} = options;
+            const {tree, isRefChildNode, isRoot} = options;
             const propsLen = Object.keys(tree?.properties || {}).length;
+            const combines = {
+                allOf: tree?.allOf || [],
+                oneOf: tree?.oneOf || [],
+                anyOf: tree?.anyOf || [],
+            }
             return <>
                 <DataTypeSetting
-                                 value={tree}
-                                 serveId={props.serveId}
-                                 isRefChildNode={isRefChildNode || false}
-                                 onChange={dataTypeChange.bind(this, options)}/>
+                    value={tree}
+                    serveId={props.serveId}
+                    isRefChildNode={isRefChildNode || false}
+                    isRoot={isRoot || false}
+                    onChange={dataTypeChange.bind(this, options)}/>
                 {isObject(tree?.type) && !isRef(tree) ? <span
                     class={'baseInfoSpace'}>{tree.types?.length > 0 ? `[${propsLen}]` : `{${propsLen}}`}</span> : null}
+                {/* 复合类型 */}
+                {isCompositeType(tree?.type) ?
+                    <span class={'baseInfoSpace'}>{`{${combines[tree.type].length}}`}</span> : null}
             </>
         }
         const renderKeyName = (options: any) => {
-            const {keyName, keyIndex, parent, isRoot, isRefChildNode, isRef, isRefRootNode, ancestor} = options;
+            const {
+                keyName,
+                keyIndex,
+                parent,
+                isRoot,
+                isRefChildNode,
+                isRef,
+                isRefRootNode,
+                ancestor,
+                isCompositeChildNode
+            } = options;
             const items = parent?.type === 'array' ? ancestor : parent;
             if (isRoot) return null;
             if (!keyName) return null;
-            if (isRefRootNode) return null;
+            if (isRefRootNode || isCompositeChildNode) return null;
             return <>
                 <span class={'baseInfoKey'}
                       contenteditable={!isRefChildNode}
                       onPaste={pasteKeyName}
+                      onKeydown={keyNameKeyDown.bind(this, keyName, keyIndex, items)}
                       onBlur={updateKeyName.bind(this, keyName, keyIndex, items)}>
                     {keyName}
                 </span>
@@ -306,7 +406,6 @@ export default defineComponent({
         }
         const renderExpandIcon = (options: any) => {
             const {isExpand, tree, isRoot, isRef} = options;
-            // if (isRoot) return null;
             if (isExpand) {
                 return <DownOutlined onClick={expandIt.bind(this, tree, options)} class={'expandIcon'}/>
             } else {
@@ -331,6 +430,7 @@ export default defineComponent({
                 {renderExtraAction(options)}
             </div>)
         }
+
         const renderDirectoryText = (options: any) => {
             const {depth, tree, isRefChildNode} = options;
             return <div class={'directoryText'}
@@ -340,8 +440,10 @@ export default defineComponent({
                     {renderExpandIcon(options)}
                     {renderKeyName(options)}
                     {renderDataTypeSetting(options)}
-                    {isObject(tree.type) && !isRef(tree) && !isRefChildNode ?
-                        <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/> : null}
+                    {
+                        (isObject(tree.type) || isCompositeType(tree.type)) && !isRef(tree) && !isRefChildNode ?
+                            <PlusOutlined onClick={addProps.bind(this, tree)} class={'addIcon'}/> : null
+                    }
                 </div>
                 {renderAction(options)}
                 {renderExtraAction(options)}
@@ -354,13 +456,9 @@ export default defineComponent({
             if (!tree) return null;
             const isRoot = tree?.extraViewInfo?.depth === 1;
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};
+
             // 普通类型
             if (isNormalType(tree.type) && !isRef(tree)) {
-                return renderNormalType(options)
-            }
-            // 复合类型
-            if (isCompositeType(tree.type) && !isRef(tree)) {
-                // todo 复合类型的渲染
                 return renderNormalType(options)
             }
             // 渲染对象类型节点
@@ -389,6 +487,28 @@ export default defineComponent({
                     }
                 </div>
             }
+            // 渲染复合类型节点
+            if (isCompositeType(tree.type) && !isRef(tree)) {
+                const isRoot = tree?.extraViewInfo?.depth === 1;
+                const isExpand = tree?.extraViewInfo?.isExpand;
+                const options = {...tree?.extraViewInfo, isRoot, tree}
+
+                const combines = {
+                    allOf: tree?.allOf || [],
+                    oneOf: tree?.oneOf || [],
+                    anyOf: tree?.anyOf || [],
+                }
+                return <div key={tree.type} class={{'directoryNode': true, "rootNode": isRoot}}>
+                    {renderDirectoryText(options)}
+                    {
+                        isExpand && combines[tree.type].map((value: any) => {
+                            return renderTree(value)
+                        })
+                    }
+                    {isExpand && combines[tree.type].length > 0 && renderVerticalLine(options)}
+                </div>
+            }
+
             // 如果是引用类型
             if (isRef(tree)) {
                 const isRoot = tree?.extraViewInfo?.depth === 1;

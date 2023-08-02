@@ -47,7 +47,7 @@
 
         <Docs :onlyShowDocs="true"
               :showHeader="false"
-              v-if="activeTabKey === 'docs' && docsData"
+              v-if="activeTabKey === 'docs'"
               :data="docsData"
               @switchToDefineTab="switchToDefineTab"
               :show-menu="true"/> <!-- use v-if to force page reload-->

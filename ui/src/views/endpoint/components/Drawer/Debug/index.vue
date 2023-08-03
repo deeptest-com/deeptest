@@ -132,15 +132,15 @@ const saveAsCancel = () => {
       display: flex;
       margin: 12px 0;
       height: 32px;
-      //margin-bottom: 12px;
       align-items: center;
       justify-content: space-between;
       padding-right: 2px;
     }
 
     #debug-bottom {
-      height: calc(100% - 46px);
-      //height: calc(100vh - 152px);
+      flex:1;
+      display: flex;
+      flex-direction: column;
     }
   }
 }

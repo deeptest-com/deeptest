@@ -90,6 +90,8 @@ import useVariableReplace from "@/hooks/variable-replace";
 import {getToken} from "@/utils/localToken";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 import {serverList} from "@/views/project-settings/service";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 
 const store = useStore<{ Debug: Debug, Endpoint,Global }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -216,6 +218,8 @@ const save = (e) => {
   if (validateInfo()) {
      props.onSave(data)
   }
+
+  bus.emit(settings.eventConditionSave, {});
 }
 const saveAsCase = () => {
   // console.log('saveAsCase', debugData.value.url)

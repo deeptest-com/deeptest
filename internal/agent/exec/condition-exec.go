@@ -34,6 +34,8 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 			err = ExecExtract(&extractorBase, resp)
 			extractorHelper.GenResultMsg(&extractorBase)
 
+			SetVariable(0, extractorBase.Variable, extractorBase.Result, consts.Public)
+
 			obj.PostConditions[index].Raw, _ = json.Marshal(extractorBase)
 
 		} else if condition.Type == consts.ConditionTypeCheckpoint {

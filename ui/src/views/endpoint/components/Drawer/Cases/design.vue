@@ -15,7 +15,7 @@
       </div>
 
       <DebugComp
-          :topVal="'-36px'"
+          :topVal="'-3px'"
           :onSaveDebugData="saveCaseInterface"
           :urlDisabled="true"/>
     </div>

@@ -55,6 +55,8 @@ export function resizeHeight(mainId: string, topId: string, splitterId: string, 
     const splitter = document.getElementById(splitterId) as any;
     const bottom = document.getElementById(bottomId) as any;
 
+    console.log(main, top, splitter, bottom)
+
     if (!splitter) return false
 
     splitter.onmousedown = function (e) {
@@ -71,7 +73,12 @@ export function resizeHeight(mainId: string, topId: string, splitterId: string, 
             if (topNewHeight > availableHeight - bottomMin) topNewHeight = availableHeight - bottomMin;
 
             top.style.height = topNewHeight + 'px';
+            top.style.flex = undefined
+
             bottom.style.height = availableHeight - topNewHeight + 'px';
+            bottom.style.flex = undefined
+
+            console.log('height: ', availableHeight, top.style.height, bottom.style.height)
 
             resizeHandler()
         };

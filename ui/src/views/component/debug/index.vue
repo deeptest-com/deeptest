@@ -142,11 +142,6 @@ const syncDebugData = async () => {
 const posStyleEnv = ref({})
 const posStyleHis = ref({})
 
-const resize = () => {
-  resizeWidth('debug-index',
-      'debug-content', 'debug-splitter', 'debug-right', 500, 38)
-}
-
 const changeRightTab = () => {
   console.log('changeRightTab')
   posStyleEnv.value = getRightTabPanelPosition('env-tab')
@@ -159,7 +154,6 @@ const closeRightTab = () => {
 
 onMounted(() => {
   console.log('onMounted in debug-index')
-  resize()
 })
 onUnmounted(() => {
   console.log('onUnmounted in debug-index')

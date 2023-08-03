@@ -178,7 +178,7 @@ const format = (item) => {
     border-bottom: 1px solid #d9d9d9;
   }
   .body {
-    height: calc(100% - 30px);
+    height: calc(100% - 27px);
     overflow-x: hidden;
     overflow-y: hidden;
     &>div {

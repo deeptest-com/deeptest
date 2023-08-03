@@ -92,9 +92,6 @@ const isImage = (type) => {
     flex: 1;
     .ant-tabs-line {
       height: 100%;
-      .ant-tabs-top-content {
-        height: calc(100% - 61px);
-      }
     }
     .link {
       color: #009688;

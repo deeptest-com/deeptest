@@ -2,7 +2,7 @@
   <div class="response-renderer">
     <div class="left">
       <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
-        <a-tab-pane key="body" :tab="title">
+        <a-tab-pane key="body" :tab="title" class="uppercase">
           <ResponseLensJson v-if="responseData.contentLang === 'json'" />
           <ResponseLensHtml v-else-if="responseData.contentLang === 'html'" />
           <ResponseLensXml v-else-if="responseData.contentLang === 'xml'" />

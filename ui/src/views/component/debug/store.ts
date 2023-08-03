@@ -21,7 +21,6 @@ import {
     listInvocation,
     listShareVar,
     getSnippet,
-    listPreConditions,
     listPostConditions,
     getScript,
     saveScript,
@@ -31,7 +30,13 @@ import {
     removePostConditions,
     movePostConditions,
     removePreConditions,
-    movePreConditions, disablePreConditions, disablePostConditions, saveAsCase, getInvocationResult, getInvocationLog,
+    movePreConditions,
+    disablePreConditions,
+    disablePostConditions,
+    saveAsCase,
+    getInvocationResult,
+    getInvocationLog,
+    getPreConditionScript,
 } from './service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
@@ -53,6 +58,8 @@ export interface StateType {
     preConditions: any[];
     postConditions: any[];
     assertionConditions: any[];
+    activeAssertion: any;
+    activePostCondition: any;
 
     extractorData: any;
     checkpointData: any;
@@ -73,6 +80,8 @@ const initState: StateType = {
     preConditions: [],
     postConditions: [],
     assertionConditions: [],
+    activeAssertion: [],
+    activePostCondition: [],
 
     extractorData: {} as Extractor,
     checkpointData: {} as Checkpoint,
@@ -94,9 +103,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setInvocations: Mutation<StateType>;
         setServerId: Mutation<StateType>;
 
-        setPreConditions: Mutation<StateType>;
         setPostConditions: Mutation<StateType>;
         setAssertionConditions: Mutation<StateType>;
+        setActiveAssertion: Mutation<StateType>;
+        setActivePostCondition: Mutation<StateType>;
+
         setExtractor: Mutation<StateType>;
         setCheckpoint: Mutation<StateType>;
         setScript: Mutation<StateType>;
@@ -125,11 +136,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getInvocationAsInterface: Action<StateType, StateType>;
         removeInvocation: Action<StateType, StateType>;
 
-        listPreCondition: Action<StateType, StateType>;
-        createPreCondition: Action<StateType, StateType>;
-        disablePreCondition: Action<StateType, StateType>;
-        removePreCondition: Action<StateType, StateType>;
-        movePreCondition: Action<StateType, StateType>;
+        getPreConditionScript: Action<StateType, StateType>;
 
         listPostCondition: Action<StateType, StateType>;
         listAssertionCondition: Action<StateType, StateType>;
@@ -202,14 +209,26 @@ const StoreModel: ModuleType = {
             state.invocationsData = payload;
         },
 
-        setPreConditions(state, payload) {
-            state.preConditions = payload;
-        },
         setPostConditions(state, payload) {
             state.postConditions = payload;
         },
         setAssertionConditions(state, payload) {
             state.assertionConditions = payload;
+        },
+
+        setActiveAssertion(state, payload) {
+            if (state.activeAssertion.id === payload.id) {
+                state.activeAssertion = {}
+            } else {
+                state.activeAssertion = payload;
+            }
+        },
+        setActivePostCondition(state, payload) {
+            if (state.activePostCondition.id === payload.id) {
+                state.activePostCondition = {}
+            } else {
+                state.activePostCondition = payload;
+            }
         },
 
         setExtractor(state, payload) {
@@ -347,7 +366,6 @@ const StoreModel: ModuleType = {
 
                 await dispatch('listShareVar');
 
-                await dispatch('listPreCondition');
                 await dispatch('listPostCondition');
                 await dispatch('listAssertionCondition');
 
@@ -422,47 +440,11 @@ const StoreModel: ModuleType = {
         },
 
         // conditions
-        async listPreCondition({commit, state}) {
+        async getPreConditionScript({commit, state}) {
             try {
-                const resp = await listPreConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId);
+                const resp = await getPreConditionScript(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId);
                 const {data} = resp;
-                commit('setPreConditions', data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async createPreCondition({commit, dispatch, state}, payload: any) {
-            try {
-                await createPreConditions(payload);
-                dispatch('listPreCondition');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async disablePreCondition({commit, dispatch, state}, id: number) {
-            try {
-                await disablePreConditions(id);
-                dispatch('listPreCondition');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async removePreCondition({commit, dispatch, state}, id: number) {
-            try {
-                await removePreConditions(id);
-                dispatch('listPreCondition');
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async movePreCondition({commit, dispatch, state}, payload: any) {
-            try {
-                await movePreConditions(payload);
-                dispatch('listPreCondition');
+                commit('setScript', data);
                 return true;
             } catch (error) {
                 return false;
@@ -497,9 +479,20 @@ const StoreModel: ModuleType = {
                 await createPostConditions(payload);
 
                 if (payload.entityType === ConditionType.checkpoint) {
-                    dispatch('listAssertionCondition');
+                    await dispatch('listAssertionCondition');
+
+                    const len = state.assertionConditions.length
+                    if (len > 0) {
+                        commit('setActiveAssertion', state.assertionConditions[len-1]);
+                    }
+
                 } else {
-                    dispatch('listPostCondition');
+                    await dispatch('listPostCondition');
+
+                    const len = state.postConditions.length
+                    if (len > 0) {
+                        commit('setActivePostCondition', state.postConditions[len-1]);
+                    }
                 }
                 return true;
             } catch (error) {

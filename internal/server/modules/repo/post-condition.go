@@ -20,9 +20,7 @@ type PostConditionRepo struct {
 }
 
 func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory) (pos []model.DebugPostCondition, err error) {
-	db := r.DB.
-		Where("NOT deleted").
-		Order("ordr ASC")
+	db := r.DB.Where("NOT deleted")
 
 	if debugInterfaceId > 0 {
 		db.Where("debug_interface_id=?", debugInterfaceId)

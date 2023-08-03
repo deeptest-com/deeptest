@@ -20,7 +20,7 @@ type CheckpointCtrl struct {
 // @Param	Authorization		header	string	true	"Authentication header"
 // @Param 	currProjectId		query	int		true	"当前项目ID"
 // @Param 	id					path	int		true	"检查点ID"
-// @success	200	{object}	_domain.Response{data=model.DebugInterfaceCheckpoint}
+// @success	200	{object}	_domain.Response{data=model.DebugConditionCheckpoint}
 // @Router	/api/v1/checkpoints/{id}	[get]
 func (c *CheckpointCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
@@ -44,8 +44,8 @@ func (c *CheckpointCtrl) Get(ctx iris.Context) {
 // @Produce application/json
 // @Param	Authorization				header	string								true	"Authentication header"
 // @Param 	currProjectId				query	int									true	"当前项目ID"
-// @Param 	DebugInterfaceCheckpoint	body	model.DebugInterfaceCheckpoint		true	"新建检查点的请求体"
-// @success	200	{object}	_domain.Response{data=model.DebugInterfaceCheckpoint}
+// @Param 	DebugInterfaceCheckpoint	body	model.DebugConditionCheckpoint		true	"新建检查点的请求体"
+// @success	200	{object}	_domain.Response{data=model.DebugConditionCheckpoint}
 // @Router	/api/v1/checkpoints	[post]
 func (c *CheckpointCtrl) Create(ctx iris.Context) {
 	checkpoint := model.DebugConditionCheckpoint{}
@@ -73,7 +73,7 @@ func (c *CheckpointCtrl) Create(ctx iris.Context) {
 // @Produce application/json
 // @Param	Authorization				header	string								true	"Authentication header"
 // @Param 	currProjectId				query	int									true	"当前项目ID"
-// @Param 	DebugInterfaceCheckpoint	body	model.DebugInterfaceCheckpoint		true	"更新检查点的请求体"
+// @Param 	DebugInterfaceCheckpoint	body	model.DebugConditionCheckpoint		true	"更新检查点的请求体"
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/checkpoints	[put]
 func (c *CheckpointCtrl) Update(ctx iris.Context) {

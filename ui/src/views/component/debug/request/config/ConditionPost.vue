@@ -16,18 +16,13 @@
             </template>
           </a-select> &nbsp;
 
-          <a-button @click="create" size="small">新建</a-button>
+          <a-button @click="create" type="primary" size="small">添加处理</a-button>
         </a-col>
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>帮助</template>
             <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
-
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>清除</template>
-            <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
         </a-col>
       </a-row>
@@ -40,7 +35,7 @@
                  @end="move">
         <template #item="{ element }">
 
-          <div class="collapse-item">
+          <div :class="[activePostCondition.id === +element.id ? 'active' : '']" class="collapse-item">
             <div class="header">
               <div @click.stop="expand(element)" class="title dp-link dp-ellipsis">
                 <icon-svg class="handle dp-drag icon" type="move" />
@@ -60,10 +55,10 @@
               <div class="buttons">
                 <icon-svg class="icon dp-link-primary dp-icon-large" type="save"
                           title="保存"
-                          v-if="activeItem.id === element.id"
+                          v-if="activePostCondition.id === element.id"
                           @click.stop="save(element)" />
 
-                <ClearOutlined v-if="activeItem.id === +element.id && element.entityType === ConditionType.script"
+                <ClearOutlined v-if="activePostCondition.id === +element.id && element.entityType === ConditionType.script"
                                @click.stop="format(element)"
                                class="dp-icon-btn dp-trans-80"
                                title="格式化"/>&nbsp;
@@ -75,30 +70,30 @@
                 <DeleteOutlined @click.stop="remove(element)"
                                 class="dp-icon-btn dp-trans-80" title="删除" />
 
-                <FullscreenOutlined v-if="activeItem.id === element.id"
+                <FullscreenOutlined v-if="activePostCondition.id === element.id"
                                     @click.stop="openFullscreen(element)"
                                     class="dp-icon-btn dp-trans-80" title="全屏" />
 
-                <RightOutlined v-if="activeItem.id !== element.id"
+                <RightOutlined v-if="activePostCondition.id !== element.id"
                                @click.stop="expand(element)"
                                class="dp-icon-btn dp-trans-80" />
-                <DownOutlined v-if="activeItem.id === element.id"
+                <DownOutlined v-if="activePostCondition.id === element.id"
                               @click.stop="expand(element)"
                               class="dp-icon-btn dp-trans-80" />
               </div>
             </div>
 
-            <div class="content" v-if="activeItem.id === +element.id">
+            <div class="content" v-if="activePostCondition.id === +element.id">
               <Extractor v-if="element.entityType === ConditionType.extractor"
-                         :condition="element"
+                         :condition="activePostCondition"
                           :finish="list"/>
 
               <Checkpoint v-if="element.entityType === ConditionType.checkpoint"
-                          :condition="element"
+                          :condition="activePostCondition"
                           :finish="list"/>
 
               <Script v-if="element.entityType === ConditionType.script"
-                      :condition="element"
+                      :condition="activePostCondition"
                       :finish="list"/>
             </div>
           </div>
@@ -109,8 +104,8 @@
 
     <FullScreenPopup v-if="fullscreen"
                      :visible="fullscreen"
-                     :model="activeItem"
-                     :onCancel="closeFullScreen"/>
+                     :model="activePostCondition"
+                     :onCancel="closeFullScreen" />
   </div>
 </template>
 
@@ -140,24 +135,19 @@ const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const postConditions = computed<any>(() => store.state.Debug.postConditions);
+const activePostCondition = computed<any>(() => store.state.Debug.activePostCondition);
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 const fullscreen = ref(false)
-const activeItem = ref({} as any)
 
 const conditionType = ref(ConditionType.extractor)
 const conditionTypes = ref(getEnumSelectItems(ConditionType))
 
 const expand = (item) => {
   console.log('expand', item)
-
-  if (activeItem.value.id === item.id) {
-    activeItem.value = {}
-  } else {
-    activeItem.value = item
-  }
+  store.commit('Debug/setActivePostCondition', item)
 }
 
 const list = () => {
@@ -244,7 +234,6 @@ const closeFullScreen = (item) => {
   .head {
     height: 30px;
     padding: 2px 3px;
-    border-bottom: 1px solid #d9d9d9;
   }
   .content {
     flex: 1;
@@ -279,8 +268,12 @@ const closeFullScreen = (item) => {
 
       .collapse-item {
         margin: 4px;
-        border: 1px solid #d9d9d9;
         border-radius: 5px;
+        border: 1px solid #d9d9d9;
+
+        &.active {
+          border: 1px solid #1890ff;
+        }
 
         .header {
           height: 28px;
@@ -313,8 +306,4 @@ const closeFullScreen = (item) => {
     }
   }
 }
-</style>
-
-<style lang="less" scoped>
-
 </style>

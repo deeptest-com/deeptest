@@ -204,11 +204,11 @@ export function getCodeLangByType(type) {
 }
 
 // conditions
-export async function listPreConditions(debugInterfaceId, endpointInterfaceId: number): Promise<any> {
+export async function getPreConditionScript(debugInterfaceId, endpointInterfaceId: number): Promise<any> {
     const params = {debugInterfaceId, endpointInterfaceId}
 
     return request({
-        url: `/${apiPreConditions}`,
+        url: `/${apiPreConditions}/getScript`,
         method: 'GET',
         params,
     });

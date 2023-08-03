@@ -2,25 +2,15 @@
   <div class="scenario-tree-main">
     <div class="dp-tree-container">
       <div class="tree-filter">
-        <a-input-search placeholder="输入关键字过滤"
-                        class="search-input"
-                        v-model:value="keywords" />
-        <a-dropdown>
-          <PlusOutlined class="plus-icon" @click="addTopNode"/>
-          <template #overlay>
-            <a-menu>
-              <a-sub-menu key="test" title="添加请求">
-                <a-menu-item>导入接口定义</a-menu-item>
-                <a-menu-item>导入接口用例</a-menu-item>
-                <a-menu-item>导入快捷调试</a-menu-item>
-                <a-menu-item>自定义请求</a-menu-item>
-                <a-menu-item>cURL导入</a-menu-item>
-              </a-sub-menu>
-              <a-menu-item>添加处理器</a-menu-item>
-              <a-menu-item>添加分组</a-menu-item>
-            </a-menu>
+        <a-input-search
+            placeholder="输入关键字过滤"
+            class="search-input"
+            v-model:value="keywords"/>
+        <TreeMenu>
+          <template #button>
+            <PlusOutlined class="plus-icon" @click.prevent.stop/>
           </template>
-        </a-dropdown>
+        </TreeMenu>
       </div>
       <div class="tree-content">
         <a-tree
@@ -43,9 +33,11 @@
           <template #title="nodeProps">
             <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
               <span class="tree-title-text" v-if="nodeProps.dataRef.name.indexOf(keywords) > -1">
-                <span>{{nodeProps.dataRef.name.substr(0, nodeProps.dataRef.name.indexOf(keywords))}}</span>
-                <span style="color: #f50">{{keywords}}</span>
-                <span>{{nodeProps.dataRef.name.substr(nodeProps.dataRef.name.indexOf(keywords) + keywords.length)}}</span>
+                <span>{{ nodeProps.dataRef.name.substr(0, nodeProps.dataRef.name.indexOf(keywords)) }}</span>
+                <span style="color: #f50">{{ keywords }}</span>
+                <span>{{
+                    nodeProps.dataRef.name.substr(nodeProps.dataRef.name.indexOf(keywords) + keywords.length)
+                  }}</span>
               </span>
               <span class="tree-title-text" v-else>{{ nodeProps.dataRef.name }}</span>
               <span class="more-icon" v-if="nodeProps.dataRef.id > 0">
@@ -68,17 +60,15 @@
         v-if="currentNode"
         :nodeInfo="currentNode"
         @ok="handleEditModalOk"
-        @cancel="handleEditModalCancel" />
-
+        @cancel="handleEditModalCancel"/>
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromDefine'"
         :onFinish="endpointInterfaceIdsSelectionFinish"
-        :onCancel="interfaceSelectionCancel" />
-
+        :onCancel="interfaceSelectionCancel"/>
     <InterfaceSelectionFromTest
         v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromTest'"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
-        :onCancel="interfaceSelectionCancel" />
+        :onCancel="interfaceSelectionCancel"/>
 
   </div>
 </template>
@@ -94,6 +84,7 @@ import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {PlusOutlined, CaretDownOutlined, MoreOutlined,} from '@ant-design/icons-vue';
 
 import {expandAllKeys, expandOneKey} from "@/services/tree";
+import TreeMenu from "./components/TreeMenu";
 
 import {getExpandedKeys, getSelectedKey, setExpandedKeys} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "../../store";
@@ -111,10 +102,11 @@ const {t} = useI18n();
 import {Scenario} from "@/views/scenario/data";
 import {confirmToDelete} from "@/utils/confirm";
 import {filterTree} from "@/utils/tree";
+
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
-const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
+const selectedNode = computed<any>(() => store.state.Scenario.nodeData);
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 
 watch(treeData, () => {
@@ -129,13 +121,13 @@ watch(treeData, () => {
 
 watch(() => {
   return detailResult.value.id
-},async (newVal) => {
-  if(newVal){
+}, async (newVal) => {
+  if (newVal) {
     // loadTree();
     await store.dispatch('Scenario/loadScenario', newVal);
   }
-},{
-  immediate:true
+}, {
+  immediate: true
 })
 
 const keywords = ref('');
@@ -191,10 +183,12 @@ const onExpand = (keys: number[]) => {
 };
 
 const currentNode = ref(null as any);
+
 function create(parentId, type) {
   console.log('create', parentId, type)
   currentNode.value = {parentId, type};
 }
+
 function edit(node) {
   console.log('edit', node)
   currentNode.value = node;
@@ -302,15 +296,16 @@ const addNode = (mode, processorCategory, processorType,
 
   } else {
     store.dispatch('Scenario/addProcessor',
-        {mode, processorCategory, processorType,
+        {
+          mode, processorCategory, processorType,
           targetProcessorCategory, targetProcessorType, targetProcessorId,
           name: t(processorType)
         }).then((newNode) => {
-          console.log('addProcessor successfully', newNode)
-          selectNode([newNode.id], null)
-          expandOneKey(treeDataMap.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
-          setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
-        })
+      console.log('addProcessor successfully', newNode)
+      selectNode([newNode.id], null)
+      expandOneKey(treeDataMap.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
+      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+    })
   }
 }
 
@@ -415,10 +410,12 @@ onUnmounted(() => {
 .scenario-tree-main {
   background: #ffffff;
 }
-.tree-filter{
+
+.tree-filter {
   margin-top: 8px;
 }
-.plus-icon{
+
+.plus-icon {
   margin: 0 12px 0 6px;
   cursor: pointer;
 }

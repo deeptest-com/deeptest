@@ -225,7 +225,7 @@ function addHeader() {
   collapse.value = true;
   selectedMethodDetail.value.headers.push(cloneByJSON({
     ...defaultHeaderParams,
-    name: 'header' + (selectedMethodDetail.value.headers.length + 1)
+    // name: 'header' + (selectedMethodDetail.value.headers.length + 1)
   }));
   store.commit('Endpoint/setSelectedMethodDetail', {
     ...selectedMethodDetail.value

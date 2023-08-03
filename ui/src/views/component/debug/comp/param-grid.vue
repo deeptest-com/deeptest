@@ -8,6 +8,7 @@
     <div class="items" :class="[list.length===0?'hidden':'']">
       <a-table :dataSource="list || []" :columns="columns"
                :rowKey="(record, index) => {return index}"
+               :tableLayout="'fixed'"
                class="dp-small-table"
                :rowClassName="(record, index) => {return record.name==='' ? 'hidden' : ''}"
                :pagination="false"/>

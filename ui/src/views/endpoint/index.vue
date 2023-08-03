@@ -99,6 +99,11 @@
                     />
                   </div>
                 </template>
+                <template #colCreateUser="{record}">
+                  <div class="customTagsColRender">
+                    {{username(record.createUser)}}
+                  </div>
+                </template>
 
                 <template #colPath="{text}">
                   <div class="customPathColRender">
@@ -188,7 +193,7 @@ import {message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
 import Tags from './components/Tags/index.vue';
-const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType }>();
+const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const serves = computed<any>(() => store.state.ServeGlobal.serves);
@@ -198,6 +203,7 @@ const createApiModalVisible = ref(false);
 const router = useRouter();
 type Key = ColumnProps['key'];
 const tagList: any = computed(()=>store.state.Endpoint.tagList);
+const userList = computed<any>(() => store.state.Project.userList);
 
 /**
  * 表格数据
@@ -230,6 +236,7 @@ const columns = [
   {
     title: '创建人',
     dataIndex: 'createUser',
+    slots: {customRender: 'colCreateUser'},
     width: 100,
     ellipsis: true
   },
@@ -537,6 +544,11 @@ const updateTags = async (tags :[],id:number)=>{
       id:id,tagNames:tags
     });
 
+}
+
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
 }
 
 </script>

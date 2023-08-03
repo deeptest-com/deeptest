@@ -47,14 +47,9 @@ export const DESIGN_MENU_CONFIG = [
         icon: 'arrange-control',
         children: [
             {
-                key: 'addVariable',
+                key: 'addLoop',
                 title: '循环',
-                icon: 'arrange-variable',
-                //循环次数
-                // 数据送代
-                // 循环直到
-                // 循环区间
-                // 跳出循环
+                icon: 'arrange-var',
                 children: [
                     {
                         title: '循环次数',
@@ -64,12 +59,12 @@ export const DESIGN_MENU_CONFIG = [
                     {
                         title: '数据送代',
                         key: 'loopData',
-                        icon: 'arrange-data',
+                        icon: 'arrange-database',
                     },
                     {
                         title: '循环直到',
                         key: 'loopUntil',
-                        icon: 'arrange-until',
+                        icon: 'arrange-untils'
                     },
                     {
                         title: '循环区间',
@@ -79,7 +74,7 @@ export const DESIGN_MENU_CONFIG = [
                     {
                         title: '跳出循环',
                         key: 'loopBreak',
-                        icon: 'arrange-break',
+                        icon: 'arrange-return',
                     },
                 ]
             },
@@ -87,7 +82,7 @@ export const DESIGN_MENU_CONFIG = [
             {
                 key: 'addCondition',
                 title: '条件',
-                icon: 'arrange-condition',
+                icon: 'arrange-if',
             },
             // 等待时间
             {
@@ -99,9 +94,8 @@ export const DESIGN_MENU_CONFIG = [
             {
                 key: 'addData',
                 title: '数据迭代',
-                icon: 'arrange-data',
+                icon: 'arrange-data-loop',
             },
-            // Cookie
             {
                 key: 'addCookie',
                 title: 'Cookie',
@@ -124,8 +118,42 @@ export const DESIGN_MENU_CONFIG = [
                     },
                 ]
             },
-            //
-
+            //   变量
+            {
+                key: 'addVariable',
+                title: '变量',
+                icon: 'arrange-var',
+                children: [
+                    {
+                        title: '添加变量',
+                        key: 'addVariable',
+                        icon: 'arrange-add',
+                    },
+                    {
+                        title: '删除变量',
+                        key: 'deleteVariable',
+                        icon: 'arrange-delete',
+                    }
+                ]
+            },
+            //  输出
+            {
+                key: 'addOutput',
+                title: '输出',
+                icon: 'arrange-output',
+            },
+            //   断言
+            {
+                key: 'addAssert',
+                title: '断言',
+                icon: 'arrange-assert',
+            },
+            //     定制代码
+            {
+                key: 'addCustomCode',
+                title: '定制代码',
+                icon: 'arrange-code',
+            },
         ]
     },
     {

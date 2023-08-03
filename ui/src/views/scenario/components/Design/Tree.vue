@@ -84,7 +84,7 @@ import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {PlusOutlined, CaretDownOutlined, MoreOutlined,} from '@ant-design/icons-vue';
 
 import {expandAllKeys, expandOneKey} from "@/services/tree";
-import TreeMenu from "./components/TreeMenu";
+import TreeMenu from "./components/TreeMenu/index.vue";
 
 import {getExpandedKeys, getSelectedKey, setExpandedKeys} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "../../store";

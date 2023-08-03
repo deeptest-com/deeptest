@@ -1,40 +1,46 @@
 <template>
   <div class="response-renderer">
-    <div class="left">
-      <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
-        <a-tab-pane key="body" :tab="title" class="uppercase">
-          <ResponseLensJson v-if="responseData.contentLang === 'json'" />
-          <ResponseLensHtml v-else-if="responseData.contentLang === 'html'" />
-          <ResponseLensXml v-else-if="responseData.contentLang === 'xml'" />
-          <ResponseLensRaw v-else-if="responseData.contentLang === 'text'" />
-          <ResponseLensImage v-else-if="isImage(responseData.contentType)" />
-        </a-tab-pane>
+    <template v-if="invokedMap[debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId]">
+      <div class="left">
+        <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
+          <a-tab-pane key="body" :tab="title" class="uppercase">
+            <ResponseLensJson v-if="responseData.contentLang === 'json'" />
+            <ResponseLensHtml v-else-if="responseData.contentLang === 'html'" />
+            <ResponseLensXml v-else-if="responseData.contentLang === 'xml'" />
+            <ResponseLensRaw v-else-if="responseData.contentLang === 'text'" />
+            <ResponseLensImage v-else-if="isImage(responseData.contentType)" />
+          </a-tab-pane>
 
-        <a-tab-pane key="header" tab="响应头">
-          <ResponseHeaders v-if="activeKey === 'header'" />
-        </a-tab-pane>
+          <a-tab-pane key="header" tab="响应头">
+            <ResponseHeaders v-if="activeKey === 'header'" />
+          </a-tab-pane>
 
-        <a-tab-pane key="cookie" tab="Cookie">
-          <ResponseCookies v-if="activeKey === 'cookie'" />
-        </a-tab-pane>
+          <a-tab-pane key="cookie" tab="Cookie">
+            <ResponseCookies v-if="activeKey === 'cookie'" />
+          </a-tab-pane>
 
-        <a-tab-pane key="console" tab="控制台">
-          <ResponseConsole v-if="activeKey === 'console'" />
-        </a-tab-pane>
+          <a-tab-pane key="console" tab="控制台">
+            <ResponseConsole v-if="activeKey === 'console'" />
+          </a-tab-pane>
 
-        <a-tab-pane key="info" tab="实际请求">
-          <ResponseInfo v-if="activeKey === 'info'" />
-          <!-- <template #tab>
-            <a-badge v-if="extractorFail" dot><span class="link">提取器</span></a-badge>
-            <span v-else>提取器</span>
-          </template> -->
-        </a-tab-pane>
+          <a-tab-pane key="info" tab="实际请求">
+            <ResponseInfo v-if="activeKey === 'info'" />
+          </a-tab-pane>
 
+        </a-tabs>
+      </div>
+
+      <div class="right">
+        <ResponseResult />
+      </div>
+    </template>
+
+    <div v-else class="left">
+      <a-tabs class="dp-tabs-full-height">
+        <a-tab-pane key="response" tab="响应">
+          <div style="padding:10px;">无数据</div>
+        </a-tab-pane>
       </a-tabs>
-    </div>
-
-    <div class="right">
-      <ResponseResult />
     </div>
   </div>
 </template>
@@ -61,7 +67,9 @@ import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const responseData = computed<any>(() => store.state.Debug.responseData);
+const invokedMap = computed<any>(() => store.state.Debug.invokedMap);
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
@@ -72,13 +80,6 @@ const activeKey = ref('body');
 const isImage = (type) => {
   return type && type.indexOf('image') > -1
 }
-
-/* const extractorFail = computed(() => {
-  for (let val of extractorsData.value) {
-    if (val.result==='extractor_err') return true
-  }
-  return false
-}) */
 
 </script>
 

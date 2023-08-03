@@ -63,9 +63,13 @@ func GenDesc(varName string, src consts.ExtractorSrc, typ consts.ExtractorType,
 		srcDesc = "响应体"
 	}
 
+	if src != consts.Body {
+		ret = fmt.Sprintf("<b>提取变量&nbsp;%s</b>&nbsp;&nbsp;%s", varName, srcDesc)
+		return
+	}
+
 	name := ""
 	expr := ""
-
 	if typ == consts.Boundary {
 		name = fmt.Sprintf("边界选择器")
 		expr = fmt.Sprintf("%s ~ %s", getLimitStr(boundaryStart, 26), getLimitStr(boundaryEnd, 26))

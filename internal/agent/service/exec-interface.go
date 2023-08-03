@@ -20,7 +20,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 
 	// exec interface
 	agentExec.ExecPreConditions(&req)
-	resultResp, err = RequestInterface(req.DebugData)
+	resultResp, err = RequestInterface(&req.DebugData)
 	agentExec.ExecPostConditions(&req, resultResp)
 
 	// submit result
@@ -31,17 +31,18 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	return
 }
 
-func RequestInterface(req domain.DebugData) (ret domain.DebugResponse, err error) {
+func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err error) {
 	// replace variables
 	agentExec.ReplaceVariables(&req.BaseRequest, consts.InterfaceDebug)
 
 	// gen url
 	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
 
+	req.BaseRequest.FullUrlToDisplay = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
 	if req.ProcessorInterfaceSrc != consts.DiagnoseDebug {
-		req.BaseRequest.Url = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
+		req.BaseRequest.Url = req.BaseRequest.FullUrlToDisplay
 	}
-	logUtils.Info("url: " + req.BaseRequest.Url)
+	logUtils.Info("requested url: " + req.BaseRequest.Url)
 
 	// send request
 	ret, err = agentExec.Invoke(&req.BaseRequest)

@@ -6,7 +6,7 @@
         <span :style="{color: getMethodColor(requestData.method)}">
           {{requestData.method}}
         </span>&nbsp;
-        <span>{{requestData.url}}</span>
+        <span>{{requestData.fullUrlToDisplay}}</span>
       </div>
     </div>
 

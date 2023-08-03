@@ -88,7 +88,6 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, Endpoint: Endpoint, ProjectGlobal: ProjectGlobal, Global: GlobalStateType }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const debugDataChanged = computed<any>(() => store.state.Debug.debugDataChanged);
 
 const props = defineProps({
   onSaveDebugData: {
@@ -143,30 +142,6 @@ const syncDebugData = async () => {
 const posStyleEnv = ref({})
 const posStyleHis = ref({})
 
-onMounted(() => {
-  console.log('onMounted in debug-index')
-  resize()
-})
-onUnmounted(() => {
-  console.log('onUnmounted in debug-index')
-  store.dispatch('Debug/resetDataAndInvocations');
-})
-
-watch(debugData, async () => { // changes from webpage
-  console.log('watch debugData', debugDataChanged.value)
-
-  let newVal = ''
-  if (debugDataChanged.value === 'refreshed') { // just refreshed in store
-    newVal = 'no'
-  } else {
-    newVal = 'yes'
-  }
-  await store.commit('Debug/setDebugDataChanged', newVal)
-}, {immediate: true, deep: true})
-onBeforeRouteLeave((to, from) => {
-  return true
-})
-
 const resize = () => {
   resizeWidth('debug-index',
       'debug-content', 'debug-splitter', 'debug-right', 500, 38)
@@ -181,6 +156,15 @@ const changeRightTab = () => {
 const closeRightTab = () => {
   rightTabKey.value = ''
 }
+
+onMounted(() => {
+  console.log('onMounted in debug-index')
+  resize()
+})
+onUnmounted(() => {
+  console.log('onUnmounted in debug-index')
+  store.dispatch('Debug/resetDataAndInvocations');
+})
 
 </script>
 

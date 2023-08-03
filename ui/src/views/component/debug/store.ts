@@ -46,7 +46,7 @@ import {listEnvVarByServer} from "@/services/environment";
 export interface StateType {
     debugInfo: DebugInfo
     debugData: any;
-    debugDataChanged: string;
+    invokedMap: any;
 
     requestData: any;
     responseData: Response;
@@ -68,7 +68,7 @@ export interface StateType {
 const initState: StateType = {
     debugInfo: {} as DebugInfo,
     debugData: {},
-    debugDataChanged: 'no',
+    invokedMap: {},
 
     requestData: {},
     responseData: {} as Response,
@@ -93,7 +93,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     mutations: {
         setDebugInfo: Mutation<StateType>;
         setDebugData: Mutation<StateType>;
-        setDebugDataChanged: Mutation<StateType>;
+        putInvokedMap: Mutation<StateType>;
 
         setRequest: Mutation<StateType>;
         setResponse: Mutation<StateType>;
@@ -187,10 +187,11 @@ const StoreModel: ModuleType = {
 
         setDebugData(state, payload) {
             state.debugData = payload;
-            state.debugDataChanged = 'refreshed';
         },
-        setDebugDataChanged(state, payload) {
-            state.debugDataChanged = payload;
+        putInvokedMap(state) {
+            const key = `${state.debugInfo.debugInterfaceId}-${state.debugInfo.endpointInterfaceId}`
+            console.log('putInvokedMap', key)
+            state.invokedMap[key] = true;
         },
         setRequest(state, payload) {
             state.requestData = payload;
@@ -248,33 +249,27 @@ const StoreModel: ModuleType = {
         setShareVars(state, payload) {
             console.log('set debugData shareVars')
             state.debugData.shareVars = payload;
-            state.debugDataChanged = 'refreshed';
         },
         setEnvVars(state, payload) {
             console.log('set debugData envVars')
             state.debugData.envVars = payload;
-            state.debugDataChanged = 'refreshed';
         },
         setGlobalVars(state, payload) {
             console.log('set debugData globalVars')
             state.debugData.globalVars = payload;
-            state.debugDataChanged = 'refreshed';
         },
 
         setBaseUrl(state, payload) {
             console.log('set debugData baseUrl')
             state.debugData.baseUrl = payload;
-            state.debugDataChanged = 'refreshed';
         },
         setUrl(state, payload) {
             console.log('set debugData url')
             state.debugData.url = payload;
-            state.debugDataChanged = 'refreshed';
         },
         setBody(state, payload) {
             console.log('set debugData body')
             state.debugData.body = payload;
-            state.debugDataChanged = 'refreshed';
         },
     },
     actions: {
@@ -283,12 +278,6 @@ const StoreModel: ModuleType = {
             try {
                 await dispatch('loadData', data)
 
-                dispatch('getLastInvocationResp', {
-                    debugInterfaceId: state.debugInfo.debugInterfaceId,
-                    endpointInterfaceId: state.debugInfo.endpointInterfaceId,
-                    diagnoseInterfaceId: state.debugInfo.diagnoseInterfaceId,
-                    caseInterfaceId: state.debugInfo.caseInterfaceId,
-                })
                 dispatch('listInvocation', {
                     debugInterfaceId: state.debugInfo.debugInterfaceId,
                     endpointInterfaceId: state.debugInfo.endpointInterfaceId,
@@ -314,7 +303,6 @@ const StoreModel: ModuleType = {
                     caseInterfaceId: data.caseInterfaceId,
                     usedBy:          data.usedBy,
                 } as DebugInfo);
-                console.log('set debugInfo', state.debugInfo)
 
                 await commit('setDebugData', resp.data);
 
@@ -361,8 +349,10 @@ const StoreModel: ModuleType = {
                 commit('setRequest', response.data.req);
                 commit('setResponse', response.data.resp);
 
-                await dispatch('getLastInvocationResp')
                 await dispatch('listInvocation')
+                await dispatch('getLastInvocationResp')
+
+                commit('putInvokedMap')
 
                 await dispatch('listShareVar');
 

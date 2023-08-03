@@ -54,6 +54,7 @@ function resize() {
       'debug-form-splitter', 'debug-form-bottom',
       300, 200)
 }
+
 </script>
 
 <style lang="less" scoped>

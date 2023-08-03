@@ -5,6 +5,7 @@
       <a-menu>
         <template v-for="menu in DESIGN_MENU_CONFIG">
           <SubMenu :key="menu.key" :menu="menu" v-if="menu?.children?.length"/>
+          <a-menu-divider v-else-if="menu?.key === 'divider'" :key="menu.key"/>
           <MenuItem v-else :menu="menu" :key="menu.key"/>
         </template>
       </a-menu>

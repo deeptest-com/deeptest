@@ -6,8 +6,6 @@
 /**
  * 场景编排菜单配置
  * */
-
-
 export const DESIGN_MENU_CONFIG = [
     {
         key: 'addRequest',
@@ -160,7 +158,24 @@ export const DESIGN_MENU_CONFIG = [
         key: 'addGroup',
         title: '添加分组',
         icon: 'arrange-group',
-    }
+    },
+//    分割线
+    {
+        key: 'divider',
+        title: '分割线',
+    },
+    //    禁用
+    {
+        key: 'addDisable',
+        title: '禁用',
+        icon: 'arrange-disable',
+    },
+    // 删除
+    {
+        key: 'addDelete',
+        title: '删除',
+        icon: 'arrange-delete',
+    },
 ]
 
 

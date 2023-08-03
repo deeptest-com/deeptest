@@ -36,7 +36,7 @@ const props = defineProps(['menu']);
 .menu-text {
   display: inline-block;
   margin-left: 8px;
-  width: 80px;
+  width: 72px;
 }
 .expand-icon {
   position: relative;

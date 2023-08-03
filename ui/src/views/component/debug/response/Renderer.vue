@@ -1,6 +1,6 @@
 <template>
   <div class="response-renderer">
-    {{invokedMap}} - {{debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId}}
+<!--    {{invokedMap}} - {{debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId}}-->
     <template v-if="invokedMap[debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId] &&
                     responseData.id">
       <div class="left">

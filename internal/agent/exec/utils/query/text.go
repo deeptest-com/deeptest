@@ -5,7 +5,7 @@ import (
 )
 
 func RegxQuery(content string, expr string) (result string) {
-	expr = "(?m)" + expr
+	expr = "(?U)" + expr
 	regx := regexp.MustCompile(expr)
 
 	arr := regx.FindAllStringSubmatch(content, -1)

@@ -4,7 +4,7 @@
       <div class="filters">
         <a-input-search
             style="display: flex;justify-content: end;width: 300px;margin-bottom: 16px; "
-            placeholder="请输入关键词"
+            placeholder="请输入接口名称或路径"
             enter-button
             v-model:value="filters.keywords"
             @change="onKeywordsChanged"

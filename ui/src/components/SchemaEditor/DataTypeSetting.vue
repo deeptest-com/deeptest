@@ -159,24 +159,8 @@ import {useStore} from "vuex";
 import {StateType as ServeStateType} from "@/store/serve";
 import debounce from "lodash.debounce";
 
-<<<<<<< HEAD
-const props = defineProps({
-  value: {
-    required: true,
-    type: Object
-  },
-  serveId: {
-    required: true,
-    type: Number
-  },
-  isRefChildNode: {
-    required: true,
-    type: Boolean
-  }
-})
-=======
 const props = defineProps(['value', 'serveId', 'isRefChildNode', 'isRoot']);
->>>>>>> hotfix/20230802
+
 const emit = defineEmits(['change']);
 const tabsList: any = ref([]);
 const visible: any = ref(false);

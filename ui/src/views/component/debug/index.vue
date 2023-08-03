@@ -209,13 +209,18 @@ onUnmounted(() => {
 
 <style lang="less" scoped>
 .debug-index-wrapper {
+  flex:1;
   height: 100%;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 
   #debug-index {
+    //border: 1px solid red;
     display: flex;
-    min-height: 460px;
-    height: 100%;
+    //min-height: 460px;
+    flex:1;
+    //height: 100%;
     width: 100%;
 
     #debug-content {

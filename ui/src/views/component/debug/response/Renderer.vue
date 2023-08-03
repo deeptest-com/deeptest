@@ -1,6 +1,8 @@
 <template>
   <div class="response-renderer">
-    <template v-if="invokedMap[debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId]">
+    {{invokedMap}} - {{debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId}}
+    <template v-if="invokedMap[debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId] &&
+                    responseData.id">
       <div class="left">
         <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
           <a-tab-pane key="body" :tab="title" class="uppercase">
@@ -37,7 +39,7 @@
 
     <div v-else class="left">
       <a-tabs class="dp-tabs-full-height">
-        <a-tab-pane key="response" tab="响应">
+        <a-tab-pane key="response" tab="响应体">
           <div style="padding:10px;">无数据</div>
         </a-tab-pane>
       </a-tabs>

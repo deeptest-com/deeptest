@@ -26,12 +26,8 @@ import {
     saveScript,
     removeScript,
     createPostConditions,
-    createPreConditions,
     removePostConditions,
     movePostConditions,
-    removePreConditions,
-    movePreConditions,
-    disablePreConditions,
     disablePostConditions,
     saveAsCase,
     getInvocationResult,
@@ -42,6 +38,7 @@ import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./d
 import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
 import {listEnvVarByServer} from "@/services/environment";
+import {getResponseKey} from "@/utils/comm";
 
 export interface StateType {
     debugInfo: DebugInfo
@@ -93,6 +90,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
     mutations: {
         setDebugInfo: Mutation<StateType>;
         setDebugData: Mutation<StateType>;
+
+        clearInvokedMap: Mutation<StateType>;
         putInvokedMap: Mutation<StateType>;
 
         setRequest: Mutation<StateType>;
@@ -188,9 +187,11 @@ const StoreModel: ModuleType = {
         setDebugData(state, payload) {
             state.debugData = payload;
         },
+        clearInvokedMap(state) {
+            state.invokedMap = {}
+        },
         putInvokedMap(state) {
-            const key = `${state.debugInfo.debugInterfaceId}-${state.debugInfo.endpointInterfaceId}`
-            console.log('putInvokedMap', key)
+            const key = getResponseKey(state.debugInfo)
             state.invokedMap[key] = true;
         },
         setRequest(state, payload) {
@@ -305,6 +306,11 @@ const StoreModel: ModuleType = {
                 } as DebugInfo);
 
                 await commit('setDebugData', resp.data);
+
+                const key = getResponseKey(state.debugInfo)
+                if (state.invokedMap[key]) {
+                    await dispatch('getLastInvocationResp')
+                }
 
                 return true;
             } catch (error) {

@@ -195,6 +195,7 @@ const columns = [
 
   .toolbar {
     position: absolute;
+    z-index: 999999;
     top: -42px;
     right: 0;
     width: 100px;

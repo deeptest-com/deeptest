@@ -28,20 +28,20 @@
             <span>添加请求</span>
           </template>
 
-          <a-menu-item key="add-child-interface-interface" class="menu-item">
+          <a-menu-item :key="`add-child-interface-${ProcessorInterfaceSrc.Define}`" class="menu-item">
             <span>导入接口定义</span>
           </a-menu-item>
-          <a-menu-item key="add-child-interface-case" class="menu-item">
+          <a-menu-item :key="`add-child-interface-${ProcessorInterfaceSrc.Case}`" class="menu-item">
             <span>导入接口用例</span>
           </a-menu-item>
-          <a-menu-item key="add-child-interface-diagnose" class="menu-item">
+          <a-menu-item :key="`add-child-interface-${ProcessorInterfaceSrc.Diagnose}`" class="menu-item">
             <span>导入快捷调试</span>
           </a-menu-item>
 
-          <a-menu-item key="add-child-interface-custom" class="menu-item">
+          <a-menu-item :key="`add-child-interface-${ProcessorInterfaceSrc.Custom}`" class="menu-item">
             <span>自定义请求</span>
           </a-menu-item>
-          <a-menu-item key="add-child-interface-curl" class="menu-item">
+          <a-menu-item :key="`add-child-interface-${ProcessorInterfaceSrc.Curl}`" class="menu-item">
             <span>cURL导入</span>
           </a-menu-item>
 
@@ -71,7 +71,7 @@ import {Form} from 'ant-design-vue';
 import {FolderAddOutlined, EditOutlined, CloseOutlined} from "@ant-design/icons-vue";
 
 import {isInArray} from "@/utils/array";
-import {ProcessorAction, ProcessorCategory} from "@/utils/enum";
+import {ProcessorAction, ProcessorCategory, ProcessorInterfaceSrc} from "@/utils/enum";
 import {getProcessorCategories, getMenu, showMenuItem} from "@/views/scenario/service";
 import TreeContextSubMenu from "./TreeContextSubMenu.vue";
 

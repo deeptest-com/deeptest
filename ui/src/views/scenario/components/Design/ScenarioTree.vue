@@ -35,7 +35,7 @@
               <div class="title">
                 <!-- 标题前缀 -->
                 <span class="prefix-icon"
-                      v-if=" DESIGN_TYPE_ICON_MAP[dataRef?.entityType] !== 'processor_interface_default'">
+                      v-if="dataRef?.entityType !== 'processor_interface_default'">
                   <IconSvg v-if="DESIGN_TYPE_ICON_MAP[dataRef.entityType]"
                            :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
                 </span>
@@ -79,12 +79,12 @@
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc===ProcessorInterfaceSrc.Define"
         :onFinish="endpointInterfaceIdsSelectionFinish"
-        :onCancel="interfaceSelectionCancel" />
+        :onCancel="interfaceSelectionCancel"/>
 
     <InterfaceSelectionFromDiagnose
         v-if="interfaceSelectionVisible && interfaceSelectionSrc===ProcessorInterfaceSrc.Diagnose"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
-        :onCancel="interfaceSelectionCancel" />
+        :onCancel="interfaceSelectionCancel"/>
 
   </div>
 </template>
@@ -92,13 +92,13 @@
 import {computed, defineProps, onMounted, onUnmounted, ref, watch, getCurrentInstance} from "vue";
 
 import {useI18n} from "vue-i18n";
-import {Form, message} from 'ant-design-vue';
+import {Form, message, Modal} from 'ant-design-vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 import {filterTree} from "@/utils/tree";
 import {ProcessorInterfaceSrc} from "@/utils/enum";
-import {DESIGN_TYPE_ICON_MAP} from "./config";
+import {DESIGN_TYPE_ICON_MAP, processorCategoryMap} from "./config";
 import {getMethodColor} from "@/utils/dom";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {PlusOutlined, CaretDownOutlined, MoreOutlined, FolderOpenOutlined, FolderOutlined} from '@ant-design/icons-vue';
@@ -115,9 +115,7 @@ import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFr
 import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelectionFromDiagnose/main.vue";
 
 const props = defineProps<{}>()
-
 const useForm = Form.useForm;
-
 const {t} = useI18n();
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -290,22 +288,14 @@ const menuClick = (menuKey: string, targetId: number) => {
 
 function selectMenu(menuInfo, treeNode) {
   // console.log(8322222,menuInfo,treeNode);
-  const targetModelId = treeNode?.id;
-  if (!targetModelId) return;
 
-  // debugger;
-  // {
-  //     "mode": "child",
-  //     "processorCategory": "processor_group",
-  //     "processorType": "processor_group_default",
-  //     "targetProcessorCategory": "processor_root",
-  //     "targetProcessorType": "processor_root_default",
-  //     "targetProcessorId": 184,
-  //     "name": "分组"
-  // }
-  // const mode = "child";
-  const keyPath = menuInfo.keyPath;
+  targetModelId = treeNode?.id;
   const key = menuInfo.key;
+  const mode = 'child';
+  const processorType = key;
+  // 检验必要字段
+  if (!targetModelId) return;
+  if (!key) return;
 
   if (key === 'edit') {
     edit(treeDataMap.value[targetModelId])
@@ -315,16 +305,17 @@ function selectMenu(menuInfo, treeNode) {
     removeNode()
     return
   }
-
-  const mode = keyPath[0]
-  const processorCategory = keyPath[1];
-  const processorType = keyPath[2];
-
-  if(key=== 'processor_group'){
-    addNode('child', 'processor_group', 'processor_group_default',
-        'processor_root', 'processor_root_default', targetModelId)
+  if (key === 'disable') {
+    disableNode()
     return
   }
+  if (key === 'enable') {
+    enableNode()
+    return
+  }
+
+  const processorCategory = processorCategoryMap[key];
+  if (!processorCategory) return;
 
   const targetProcessorId = targetModelId
   const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
@@ -429,7 +420,45 @@ const removeNode = () => {
     store.dispatch('Scenario/removeNode', targetModelId);
     selectNode([], null)
   })
+
 }
+
+const disableNode = () => {
+  const node = treeDataMap.value[targetModelId]
+  Modal.confirm({
+    okType: 'danger',
+    title: `确定禁用名为${node.name}的节点吗？`,
+    content: '将同时禁用步骤下的所有子步骤。禁用后该步骤及所有子步骤在场景测试运行时不会被执行。是否确定禁用？',
+    okText: () => '确定',
+    cancelText: () => '取消',
+    onOk: async () => {
+      await store.dispatch('Scenario/removeNode', targetModelId);
+      selectNode([], null)
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+};
+
+
+const enableNode = () => {
+  const node = treeDataMap.value[targetModelId]
+  Modal.confirm({
+    okType: 'danger',
+    title: `启用名为${node.name}的场景步骤吗？`,
+    content: '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？',
+    okText: () => '确定',
+    cancelText: () => '取消',
+    onOk: async () => {
+      await store.dispatch('Scenario/removeNode', targetModelId);
+      selectNode([], null)
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+};
 
 const clearMenu = () => {
   console.log('clearMenu')

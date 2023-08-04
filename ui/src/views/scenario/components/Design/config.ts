@@ -156,7 +156,6 @@ export const DESIGN_MENU_CONFIG = [
     },
     {
         key: 'processor_group',
-        type:'processor_group_default',
         title: '添加分组',
         icon: 'arrange-group',
     },
@@ -167,7 +166,7 @@ export const DESIGN_MENU_CONFIG = [
     },
     //    禁用
     {
-        key: 'disabled',
+        key: 'disable',
         title: '禁用',
         icon: 'arrange-disable',
     },
@@ -196,4 +195,5 @@ export const DESIGN_TYPE_ICON_MAP = {
  * */
 export const processorCategoryMap = {
     'processor_group': 'processor_group_default',
+    'processor_interface': 'processor_interface_default',
 }

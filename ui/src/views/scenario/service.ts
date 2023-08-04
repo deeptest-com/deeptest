@@ -102,6 +102,22 @@ export async function removeNode(id: number): Promise<any> {
         method: 'delete',
     });
 }
+
+// todo 接口待确定，待联调
+export async function disableNode(id: number): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/${id}`,
+        method: 'delete',
+    });
+}
+// todo 接口待确定，待联调
+export async function enabledNode(id: number): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/${id}`,
+        method: 'delete',
+    });
+}
+
 export async function moveNode(data: any): Promise<any> {
     return request({
         url: `/${apiPathNodes}/move`,

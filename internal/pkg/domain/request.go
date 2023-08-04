@@ -5,7 +5,8 @@ import (
 )
 
 type DebugResponse struct {
-	Id uint `json:"id"`
+	Id       uint `json:"id"`
+	InvokeId uint `json:"invokeId"`
 
 	StatusCode    consts.HttpRespCode `json:"statusCode"`
 	StatusContent string              `json:"statusContent"`
@@ -24,6 +25,8 @@ type DebugResponse struct {
 }
 
 type BaseRequest struct {
+	ProcessorInterfaceSrc consts.UsedBy `json:"processorInterfaceSrc"`
+
 	Method      consts.HttpMethod `gorm:"default:GET" json:"method"`
 	Url         string            `json:"url"`
 	QueryParams []Param           ` json:"queryParams"`
@@ -33,18 +36,20 @@ type BaseRequest struct {
 
 	Body               string                   `json:"body"`
 	BodyFormData       []BodyFormDataItem       `json:"bodyFormData"`
-	BodyFormUrlencoded []BodyFormUrlEncodedItem `son:"bodyFormUrlencoded"`
+	BodyFormUrlencoded []BodyFormUrlEncodedItem `json:"bodyFormUrlencoded"`
 	BodyType           consts.HttpContentType   `json:"bodyType"`
 	BodyLang           consts.HttpRespLangType  `json:"bodyLang"`
 
 	AuthorizationType consts.AuthorType `json:"authorizationType"`
-	PreRequestScript  string            `json:"preRequestScript"`
-	ValidationScript  string            `json:"validationScript"`
+	//PreRequestScript  string            `json:"preRequestScript"`
+	//ValidationScript  string            `json:"validationScript"`
 
 	BasicAuth   BasicAuth   `json:"basicAuth"`
 	BearerToken BearerToken `json:"bearerToken"`
 	OAuth20     OAuth20     `json:"oauth20"`
 	ApiKey      ApiKey      `json:"apiKey"`
+
+	FullUrlToDisplay string `json:"fullUrlToDisplay"`
 }
 
 type Header struct {

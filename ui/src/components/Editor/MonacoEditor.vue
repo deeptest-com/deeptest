@@ -28,6 +28,8 @@ export default defineComponent({
     readOnly:  { type: Boolean, default: false ,required: false},
     onExtractor: {type: Function},
     onReplace: {type: Function},
+    hooks: String,
+    timestamp: String,
   },
   emits: [
     'editorWillMount',
@@ -66,9 +68,13 @@ export default defineComponent({
       this.editor.layout(size)
     }, 500);
 
-    bus.on(settings.eventEditorContainerHeightChanged, () => {
-      console.log('resizeIt')
-      resizeIt()
+    bus.on(settings.eventEditorAction, (data) => {
+      console.log('eventEditorAction', data)
+      if (data.act === settings.eventTypeContainerHeightChanged) {
+        resizeIt()
+      } else if (data.act === settings.eventTypeFormat) {
+        this.formatDocUpdate(this.editor)
+      }
     });
   },
 
@@ -76,32 +82,29 @@ export default defineComponent({
     console.log('editor beforeUnmount')
 
     this.editor && this.editor.dispose();
-    bus.off(settings.eventEditorContainerHeightChanged)
+    bus.off(settings.eventEditorAction)
+  },
+  unmounted() {
+    console.log('editor unmounted')
+    this.editor && this.editor.dispose();
+    bus.off(settings.eventEditorAction)
   },
 
   methods: {
-    async initMonaco() {
+    initMonaco() {
+      console.log('initMonaco ...')
       this.$emit('editorWillMount', this.monaco)
 
-      const {interfaceId, value, language, theme, options} = this;
+      const {value, language, theme, options} = this;
       Object.assign(options, {
         scrollbar: {
           useShadows: false,
           automaticLayout: true,
+          alwaysConsumeMouseWheel: false,
           verticalScrollbarSize: 6,
-          horizontalScrollbarSize: 6
+          horizontalScrollbarSize: 6,
         }
       })
-
-      if (options.initTsModules) {
-        const json = await getSnippet('global')
-
-        if (json.code === 0) {
-          // const externalDtsFileName = 'ex.d.ts';
-          // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://modelRef/${externalDtsFileName}`);
-          monaco.languages.typescript.typescriptDefaults.addExtraLib(json.data.script);
-        }
-      }
 
       this.editor = monaco.editor[this.diffEditor ? 'createDiffEditor' : 'create'](this.$el, {
         value: value,
@@ -115,11 +118,11 @@ export default defineComponent({
 
       // const usedBy = inject('usedBy')
       // if (usedBy === UsedBy.InterfaceDebug) {
-        if (this.options.usedWith === 'response') {
-          addExtractAction(this.editor, this.onExtractor)
-        } else if (this.options.usedWith === 'request') {
-          addReplaceAction(this.editor, this.onReplace)
-        }
+      if (this.options.usedWith === 'response') {
+        addExtractAction(this.editor, this.onExtractor)
+      } else if (this.options.usedWith === 'request') {
+        addReplaceAction(this.editor, this.onReplace)
+      }
       // }
 
       // @event `change`
@@ -155,6 +158,16 @@ export default defineComponent({
       setTimeout(() => {
         this.formatDocInit(editor)
       }, 500)
+
+      if (options.initTsModules) {
+        getSnippet('global').then(json => {
+          if (json.code === 0) {
+            // const externalDtsFileName = 'ex.d.ts';
+            // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://modelRef/${externalDtsFileName}`);
+            monaco.languages.typescript.typescriptDefaults.addExtraLib(json.data.script);
+          }
+        })
+      }
     },
 
     formatDocInit: (editor) => {
@@ -205,6 +218,12 @@ export default defineComponent({
   },
 
   watch: {
+    hooks: {
+      handler(val) {
+        alert(val)
+      }
+    },
+
     options: {
       deep: true,
       handler(options) {
@@ -213,10 +232,14 @@ export default defineComponent({
       }
     },
 
-    value() {
-      console.log('watch value');
+    timestamp() {
+      console.log('watch timestamp', this.value);
       this.value !== this._getValue() && this._setValue(this.value);
     },
+    // value() {
+    //   console.log('watch value', this.value);
+    //   this.value !== this._getValue() && this._setValue(this.value);
+    // },
 
     original() {
       this._setOriginal()
@@ -248,3 +271,4 @@ export default defineComponent({
   }
 }
 </style>
+

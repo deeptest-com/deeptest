@@ -168,15 +168,23 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(endpointInterfaceId)
 	debugData.DebugInterfaceId = 0 // force to clone the old one
 	debugData.EndpointInterfaceId = endpointInterfaceId
+
 	debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved
+	debugData.ProcessorInterfaceSrc = consts.InterfaceDebug
+
 	debugData.ServeId = *serveId
 
-	server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+	if debugData.ServerId == 0 {
+		server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+		debugData.ServerId = server.ID
+	}
+
+	server, _ := s.ServeServerRepo.Get(debugData.ServerId)
 	debugData.ServerId = server.ID
 	debugData.BaseUrl = server.Url
 
 	debugData.UsedBy = consts.ScenarioDebug
-	debugInterface, err := s.DebugInterfaceService.Save(debugData)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
 
 	// save scenario interface
 	if name == "" {
@@ -254,16 +262,20 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 
 		// convert or clone a debug interface obj
 		debugData.DebugInterfaceId = 0 // force to clone the old one
+
 		debugData.ScenarioProcessorId = processor.ID
+		debugData.ProcessorInterfaceSrc = consts.DiagnoseDebug
+
 		debugData.ServeId = diagnoseInterfaceNode.ServeId
 
 		debugInterfaceOfDiagnoseInterfaceNode, _ := s.DebugInterfaceRepo.Get(diagnoseInterfaceNode.DebugInterfaceId)
 		debugData.ServerId = debugInterfaceOfDiagnoseInterfaceNode.ServerId
-		debugData.BaseUrl = debugInterfaceOfDiagnoseInterfaceNode.BaseUrl
+
+		debugData.BaseUrl = "" // no need to bind to env in debug page
 		debugData.Url = debugInterfaceOfDiagnoseInterfaceNode.Url
 
 		debugData.UsedBy = consts.ScenarioDebug
-		debugInterface, _ := s.DebugInterfaceService.Save(debugData)
+		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData)
 
 		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, debugInterface.ID)
 

@@ -164,12 +164,22 @@ func (r *DebugInterfaceRepo) UpdateHeaders(id uint, headers []model.DebugInterfa
 		return
 	}
 
-	for idx, _ := range headers {
-		headers[idx].ID = 0
-		headers[idx].InterfaceId = id
+	var newHeaders []model.DebugInterfaceHeader
+	for _, h := range headers {
+		if h.Name == "" {
+			continue
+		}
+
+		h.ID = 0
+		h.InterfaceId = id
+
+		newHeaders = append(newHeaders, h)
 	}
 
-	err = r.DB.Create(&headers).Error
+	if len(newHeaders) == 0 {
+		return
+	}
+	err = r.DB.Create(&newHeaders).Error
 
 	return
 }
@@ -188,7 +198,6 @@ func (r *DebugInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []mod
 	var params []model.DebugInterfaceParam
 
 	for _, p := range queryParams {
-
 		if p.Name == "" {
 			continue
 		}
@@ -232,12 +241,22 @@ func (r *DebugInterfaceRepo) UpdateCookies(id uint, cookies []model.DebugInterfa
 		return
 	}
 
-	for idx, _ := range cookies {
-		cookies[idx].ID = 0
-		cookies[idx].InterfaceId = id
+	var newCookies []model.DebugInterfaceCookie
+	for _, c := range cookies {
+		if c.Name == "" {
+			continue
+		}
+
+		c.ID = 0
+		c.InterfaceId = id
+
+		newCookies = append(newCookies, c)
 	}
 
-	err = r.DB.Create(&cookies).Error
+	if len(newCookies) == 0 {
+		return
+	}
+	err = r.DB.Create(&newCookies).Error
 
 	return
 }
@@ -257,12 +276,22 @@ func (r *DebugInterfaceRepo) UpdateBodyFormData(id uint, items []model.DebugInte
 		return
 	}
 
-	for idx, _ := range items {
-		items[idx].ID = 0
-		items[idx].InterfaceId = id
+	var list []model.DebugInterfaceBodyFormDataItem
+	for _, item := range items {
+		if item.Name == "" {
+			continue
+		}
+
+		item.ID = 0
+		item.InterfaceId = id
+
+		list = append(list, item)
 	}
 
-	err = r.DB.Create(&items).Error
+	if len(list) == 0 {
+		return
+	}
+	err = r.DB.Create(&list).Error
 
 	return
 }
@@ -281,12 +310,22 @@ func (r *DebugInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.Deb
 		return
 	}
 
-	for idx, _ := range items {
-		items[idx].ID = 0
-		items[idx].InterfaceId = id
+	var list []model.DebugInterfaceBodyFormUrlEncodedItem
+	for _, item := range items {
+		if item.Name == "" {
+			continue
+		}
+
+		item.ID = 0
+		item.InterfaceId = id
+
+		list = append(list, item)
 	}
 
-	err = r.DB.Create(&items).Error
+	if len(list) == 0 {
+		return
+	}
+	err = r.DB.Create(&list).Error
 
 	return
 }

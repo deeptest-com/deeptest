@@ -1,17 +1,17 @@
 package model
 
-import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-)
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type DebugInterface struct {
 	BaseModel
 	InterfaceBase
 
 	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
-	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
+	CaseInterfaceId     uint `gorm:"default:0" json:"caseInterfaceId"`
 	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
+
+	ScenarioProcessorId   uint          `gorm:"default:0" json:"scenarioProcessorId"`
+	ProcessorInterfaceSrc consts.UsedBy `json:"processorInterfaceSrc"`
 
 	ServeId uint `json:"serveId"`
 	// used by DiagnoseInterface
@@ -32,8 +32,8 @@ type DebugInterface struct {
 	OAuth20     DebugInterfaceOAuth20     `gorm:"-" json:"oauth20"`
 	ApiKey      DebugInterfaceApiKey      `gorm:"-" json:"apiKey"`
 
-	InterfaceExtractors  []DebugInterfaceExtractor  `gorm:"-" json:"interfaceExtractors"`
-	InterfaceCheckpoints []DebugInterfaceCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
+	InterfaceExtractors  []DebugConditionExtractor  `gorm:"-" json:"interfaceExtractors"`
+	InterfaceCheckpoints []DebugConditionCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
 }
 
 func (DebugInterface) TableName() string {
@@ -120,63 +120,4 @@ type DebugInterfaceApiKey struct {
 
 func (DebugInterfaceApiKey) TableName() string {
 	return "biz_debug_interface_apikey"
-}
-
-type DebugInterfaceExtractor struct {
-	BaseModel
-
-	domain.ExtractorBase
-
-	UsedBy consts.UsedBy         `json:"usedBy"`
-	Scope  consts.ExtractorScope `json:"scope" gorm:"default:private"`
-
-	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
-
-	// debug for Endpoint Interface
-	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
-
-	// debug in Scenario Processor
-	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
-	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
-
-	// debug for Test Interface
-	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
-
-	ProjectId uint `json:"projectId"`
-}
-
-func (DebugInterfaceExtractor) TableName() string {
-	return "biz_debug_interface_extractor"
-}
-
-type DebugInterfaceCheckpoint struct {
-	BaseModel
-
-	UsedBy consts.UsedBy         `json:"usedBy"`
-	Type   consts.CheckpointType `json:"type"`
-
-	Expression        string `json:"expression"`
-	ExtractorVariable string `json:"extractorVariable"`
-
-	Operator consts.ComparisonOperator `json:"operator"`
-	Value    string                    `json:"value"`
-
-	ActualResult string              `json:"actualResult"`
-	ResultStatus consts.ResultStatus `json:"resultStatus"`
-
-	DebugInterfaceId uint `gorm:"default:0" json:"debugInterfaceId"`
-
-	// debug for Endpoint Interface
-	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
-
-	// debug in Scenario Processor
-	ScenarioProcessorId uint `gorm:"default:0" json:"scenarioProcessorId"`
-	ScenarioId          uint `gorm:"default:0" json:"scenarioId"`
-
-	// debug for Test Interface
-	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
-}
-
-func (DebugInterfaceCheckpoint) TableName() string {
-	return "biz_debug_interface_checkpoint"
 }

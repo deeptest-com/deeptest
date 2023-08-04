@@ -1,46 +1,63 @@
 package service
 
 import (
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
+	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/jinzhu/copier"
 )
 
 type ExtractorService struct {
 	ExtractorRepo *repo.ExtractorRepo `inject:""`
 
-	ShareVarService *ShareVarService `inject:""`
+	PostConditionRepo    *repo.PostConditionRepo `inject:""`
+	PostConditionService *PostConditionService   `inject:""`
+	ShareVarService      *ShareVarService        `inject:""`
 }
 
-func (s *ExtractorService) List(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (extractors []model.DebugInterfaceExtractor, err error) {
-	extractors, err = s.ExtractorRepo.List(debugInterfaceId, endpointInterfaceId, usedBy)
-
-	return
-}
-
-func (s *ExtractorService) Get(id uint) (extractor model.DebugInterfaceExtractor, err error) {
+func (s *ExtractorService) Get(id uint) (extractor model.DebugConditionExtractor, err error) {
 	extractor, err = s.ExtractorRepo.Get(id)
 
 	return
 }
 
-func (s *ExtractorService) Create(extractor *model.DebugInterfaceExtractor) (bizErr _domain.BizErr) {
-	_, bizErr = s.ExtractorRepo.Save(extractor)
+func (s *ExtractorService) Create(extractor *model.DebugConditionExtractor) (err error) {
+	_, err = s.ExtractorRepo.Save(extractor)
+
+	return
+}
+func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickCreateReq, usedBy consts.UsedBy) (err error) {
+	debugInfo := req.Info
+	config := req.Config
+
+	// create post-condition
+	condition := model.DebugPostCondition{}
+	copier.CopyWithOption(&condition, debugInfo, copier.Option{DeepCopy: true})
+
+	condition.EntityId = 0 // update later
+	condition.EntityType = consts.ConditionTypeExtractor
+	condition.UsedBy = debugInfo.UsedBy
+	condition.Desc = extractorHelper.GenDesc(config.Variable, config.Src, config.Key, config.Type, config.Expression, "", "")
+
+	err = s.PostConditionRepo.Save(&condition)
+
+	// create extractor
+	var extractor model.DebugConditionExtractor
+	copier.CopyWithOption(&extractor, config, copier.Option{DeepCopy: true})
+	extractor.ConditionId = condition.ID
+
+	_, err = s.ExtractorRepo.Save(&extractor)
+
+	s.PostConditionRepo.UpdateEntityId(condition.ID, extractor.ID)
 
 	return
 }
 
-func (s *ExtractorService) Update(extractor *model.DebugInterfaceExtractor) (err error) {
+func (s *ExtractorService) Update(extractor *model.DebugConditionExtractor) (err error) {
 	s.ExtractorRepo.Update(extractor)
-
-	return
-}
-
-func (s *ExtractorService) CreateOrUpdateResult(extractor *model.DebugInterfaceExtractor, usedBy consts.UsedBy) (err error) {
-	s.ExtractorRepo.CreateOrUpdateResult(extractor, usedBy)
 
 	return
 }
@@ -51,32 +68,15 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 	return
 }
 
-func (s *ExtractorService) ExtractInterface(debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (err error) {
-	extractors, _ := s.ExtractorRepo.List(debugInterfaceId, endpointInterfaceId, usedBy)
+func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugInfo) (variables []domain.Variable, err error) {
+	extractorConditions, err := s.PostConditionRepo.ListExtrator(req.DebugInterfaceId, req.EndpointInterfaceId)
 
-	for _, extractor := range extractors {
-		s.Extract(&extractor, resp, usedBy)
-		s.ShareVarService.Save(extractor.Variable, extractor.Result, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, extractor.Scope, usedBy)
+	var conditionIds []uint
+	for _, item := range extractorConditions {
+		conditionIds = append(conditionIds, item.ID)
 	}
 
-	return
-}
-
-func (s *ExtractorService) Extract(extractor *model.DebugInterfaceExtractor, resp domain.DebugResponse,
-	usedBy consts.UsedBy) (err error) {
-
-	extractor.Result, err = extractorHelper.Extract(extractor.ExtractorBase, resp)
-	if err != nil {
-		return
-	}
-
-	s.ExtractorRepo.UpdateResult(*extractor, usedBy)
-
-	return
-}
-
-func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugReq) (variables []domain.Variable, err error) {
-	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(req)
+	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(conditionIds)
 
 	return
 }

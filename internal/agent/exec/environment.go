@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"strings"
 )
 
@@ -15,10 +16,11 @@ func GenRequestUrl(req *domain.BaseRequest, debugInterfaceId uint, baseUrl strin
 		baseUrl = getValueFromList(consts.KEY_BASE_URL, vars)
 	}
 
-	uri := ReplacePathParams(req.Url, req.PathParams)
+	req.Url = ReplacePathParams(req.Url, req.PathParams)
 
-	//req.Url = _httpUtils.AddSepIfNeeded(baseUrl) + uri
-	req.Url = baseUrl + uri
+	if req.ProcessorInterfaceSrc != consts.DiagnoseDebug {
+		req.Url = _httpUtils.CombineUrls(baseUrl, req.Url)
+	}
 }
 
 func ReplacePathParams(uri string, pathParams []domain.Param) string {

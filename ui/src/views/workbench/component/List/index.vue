@@ -15,7 +15,7 @@
 
       <div>
         <a-table
-          row-key="id"
+          row-key="sort"
           :columns="columns"
           :data-source="list"
           :loading="loading"

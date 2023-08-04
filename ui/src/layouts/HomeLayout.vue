@@ -8,7 +8,6 @@
       </div>
     </div>
     <router-view></router-view>
-
     <RightTopUpdate />
   </div>
 </template>

@@ -23,11 +23,13 @@
       </div>
       <div class="env">
         <div class="header">环境</div>
+
         <draggable tag="div" :list="envList" class="list-group" handle=".handle" item-key="name" @end="handleDragEnd">
           <template #item="{ element, index }">
             <a-button :class="{ 'env-item': true, 'env-item-active': activeEnvDetail?.id === element.id }"
               :type="activeEnvDetail?.id === element.id ? 'primary' : 'text'" @click="toEnvDetail(element)" :key="index">
-              <MenuOutlined class="handle" />
+              <MenuOutlined class="handle dp-drag" />
+
               <span class="text"> {{ element.displayName }} </span>
               <span class="action">
                 <copy-outlined class="copy" @click.stop="copyEnvData(element)" />
@@ -36,6 +38,7 @@
             </a-button>
           </template>
         </draggable>
+
         <div style="margin: 0 16px;">
           <a-divider class="divider" />
         </div>

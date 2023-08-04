@@ -18,6 +18,16 @@ type MessageCtrl struct {
 	BaseCtrl
 }
 
+// List
+// @Tags	消息管理
+// @summary	消息列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string							true	"Authentication header"
+// @Param 	currProjectId		query	int								true	"当前项目ID"
+// @Param 	MessageReqPaginate	query	serverDomain.MessageReqPaginate	true	"获取消息列表的请求参数"
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Message}}
+// @Router	/api/v1/message	[get]
 func (c *MessageCtrl) List(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
@@ -41,6 +51,15 @@ func (c *MessageCtrl) List(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
+// UnreadCount
+// @Tags	消息管理
+// @summary	未读消息数
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string	true	"Authentication header"
+// @Param 	currProjectId		query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response{data=object{count=int}}
+// @Router	/api/v1/message/unreadCount	[get]
 func (c *MessageCtrl) UnreadCount(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
@@ -55,6 +74,16 @@ func (c *MessageCtrl) UnreadCount(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
 }
 
+// OperateRead
+// @Tags	消息管理
+// @summary	已读操作
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string						true	"Authentication header"
+// @Param 	currProjectId		query	int							true	"当前项目ID"
+// @Param 	MessageReadReq		body	serverDomain.MessageReadReq	true	"已读操作的请求参数"
+// @success	200	{object}	_domain.Response{data=object{id=int}}
+// @Router	/api/v1/message/operateRead	[post]
 func (c *MessageCtrl) OperateRead(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 

@@ -20,7 +20,8 @@ type IndexModule struct {
 	RoleModule    *router.RoleModule    `inject:""`
 	PermModule    *router.PermModule    `inject:""`
 
-	DebugModule             *router.DebugModule             `inject:""`
+	DebugInterfaceModule    *router.DebugInterfaceModule    `inject:""`
+	DebugInvokeModule       *router.DebugInvokeModule       `inject:""`
 	DiagnoseInterfaceModule *router.DiagnoseInterfaceModule `inject:""`
 
 	MockModule *router.MockModule `inject:""`
@@ -34,10 +35,14 @@ type IndexModule struct {
 	ImportModule      *router.ImportModule      `inject:""`
 	AuthModule        *router.AuthModule        `inject:""`
 	EnvironmentModule *router.EnvironmentModule `inject:""`
-	ExtractorModule   *router.ExtractorModule   `inject:""`
 	ShareVarModule    *router.ShareVarModule    `inject:""`
-	CheckpointModule  *router.CheckpointModule  `inject:""`
 	ParserModule      *router.ParserModule      `inject:""`
+
+	PreConditionModule  *router.PreConditionModule  `inject:""`
+	PostConditionModule *router.PostConditionModule `inject:""`
+	ExtractorModule     *router.ExtractorModule     `inject:""`
+	CheckpointModule    *router.CheckpointModule    `inject:""`
+	ScriptModule        *router.ScriptModule        `inject:""`
 
 	CategoryModule          *router.CategoryModule          `inject:""`
 	ScenarioModule          *router.ScenarioModule          `inject:""`
@@ -100,10 +105,14 @@ func (m *IndexModule) Party() module.WebModule {
 		m.ImportModule.Party(),
 		m.AuthModule.Party(),
 		m.EnvironmentModule.Party(),
-		m.ExtractorModule.Party(),
 		m.ShareVarModule.Party(),
-		m.CheckpointModule.Party(),
 		m.ParserModule.Party(),
+
+		m.PreConditionModule.Party(),
+		m.PostConditionModule.Party(),
+		m.ExtractorModule.Party(),
+		m.CheckpointModule.Party(),
+		m.ScriptModule.Party(),
 
 		m.CategoryModule.Party(),
 		m.ScenarioModule.Party(),
@@ -126,7 +135,8 @@ func (m *IndexModule) Party() module.WebModule {
 		m.PlanReportModule.Party(),
 		m.SummaryModule.Party(),
 
-		m.DebugModule.Party(),
+		m.DebugInterfaceModule.Party(),
+		m.DebugInvokeModule.Party(),
 		m.DiagnoseInterfaceModule.Party(),
 		m.MessageModule.Party(),
 		m.DocumentModule.Party(),

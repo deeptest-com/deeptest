@@ -33,6 +33,7 @@ type EndpointService struct {
 	DiagnoseInterfaceService *DiagnoseInterfaceService   `inject:""`
 	EndpointTagRepo          *repo.EndpointTagRepo       `inject:""`
 	EndpointTagService       *EndpointTagService         `inject:""`
+	ServeService             *ServeService               `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -61,23 +62,33 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 
 func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) {
 	res, _ = s.EndpointRepo.GetAll(id, version)
+	s.SchemasConv(&res)
 	return
 }
 
 func (s *EndpointService) DeleteById(id uint) (err error) {
-	var count int64
-	count, err = s.EndpointRepo.GetUsedCountByEndpointId(id)
-	if err != nil {
-		return err
-	}
-
-	if count > 0 {
-		err = fmt.Errorf("this interface has already been used by scenarios, not allowed to delete")
-		return err
-	}
+	//var count int64
+	//count, err = s.EndpointRepo.GetUsedCountByEndpointId(id)
+	//if err != nil {
+	//	return err
+	//}
+	//
+	//if count > 0 {
+	//	err = fmt.Errorf("this interface has already been used by scenarios, not allowed to delete")
+	//	return err
+	//}
 
 	err = s.EndpointRepo.DeleteById(id)
 	err = s.EndpointInterfaceRepo.DeleteByEndpoint(id)
+
+	return
+}
+
+func (s *EndpointService) DeleteByCategories(categoryIds []uint) (err error) {
+	endpointIds, err := s.EndpointRepo.ListEndpointByCategories(categoryIds)
+
+	err = s.EndpointRepo.DeleteByIds(endpointIds)
+	err = s.EndpointInterfaceRepo.DeleteByEndpoints(endpointIds)
 
 	return
 }
@@ -221,10 +232,14 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		wg.Done()
 	}()
 	user, _ := s.UserRepo.FindById(req.UserId)
+
 	for _, endpoint := range endpoints {
-		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId, endpoint.CreateUser = req.ProjectId, req.ServeId, req.CategoryId, user.Name
+		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId = req.ProjectId, req.ServeId, req.CategoryId
 		endpoint.Status = 1
 		endpoint.SourceType = consts.Swagger
+		if endpoint.CreateUser == "" {
+			endpoint.CreateUser = user.Username
+		}
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
 		if req.DataSyncType == convert.FullCover {
 			res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
@@ -489,4 +504,33 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 	//	}
 	//}
 	//return
+}
+
+func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
+	schema2conv := openapi.NewSchema2conv()
+	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
+	for key, intef := range endpoint.Interfaces {
+		for k, response := range intef.ResponseBodies {
+			schema := new(openapi.SchemaRef)
+			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
+			if endpoint.SourceType == 1 && len(schema.Value.AllOf) > 0 {
+				schema2conv.CombineSchemas(schema)
+			}
+			endpoint.Interfaces[key].ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
+		}
+	}
+
+}
+
+func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId uint) {
+	schema2conv := openapi.NewSchema2conv()
+	schema2conv.Components = s.ServeService.Components(serveId)
+	for k, response := range interf.ResponseBodies {
+		schema := new(openapi.SchemaRef)
+		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
+		if len(schema.Value.AllOf) > 0 {
+			schema2conv.CombineSchemas(schema)
+		}
+		interf.ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
+	}
 }

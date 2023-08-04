@@ -9,7 +9,7 @@
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>格式化</template>
-            <ClearOutlined class="dp-icon-btn dp-trans-80" />
+            <ClearOutlined @click="format" class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
@@ -32,9 +32,7 @@
           :language="responseData.contentLang"
           theme="vs"
           :options="editorOptions"
-
           :onExtractor="responseExtractor"
-          :onReplace="responseExtractor"
       />
     </div>
 
@@ -61,18 +59,23 @@ import {MonacoOptions} from "@/utils/const";
 import {formatXml} from "@/utils/dom";
 import {parseXml, testExpr} from "@/views/component/debug/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
+import {StateType as Debug} from "@/views/component/debug/store";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 const usedBy = inject('usedBy') as UsedBy
 
 const {t} = useI18n();
-
-import {Param} from "@/views/component/debug/data";
-import {StateType as Debug} from "@/views/component/debug/store";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 const store = useStore<{  Debug: Debug }>();
 
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
+
+const timestamp = ref('')
+watch(responseData, (newVal) => {
+  timestamp.value = Date.now() + ''
+}, {immediate: true, deep: true})
 
 const editorOptions = ref(Object.assign({usedWith: 'response',readOnly:false}, MonacoOptions) )
 const content = ref(formatXml(responseData.value.content))
@@ -114,18 +117,19 @@ const testParse = (expr1, exprType1) => {
   })
 }
 
-const responseExtractorFinish = (data) => {
+const responseExtractorFinish = (conf) => {
   console.log('responseExtractorFinish')
-  data.type = data.expressionType === 'regx' ? ExtractorType.regx : ExtractorType.xmlquery
-  data.src = ExtractorSrc.body
-  data.result = result.value
 
-  data.debugInterfaceId = debugInfo.value.debugInterfaceId
-  data.endpointInterfaceId = debugInfo.value.endpointInterfaceId
-  data.projectId = debugData.value.projectId
-  data.usedBy = usedBy
+  conf.type = conf.expressionType === 'regx' ? ExtractorType.regx : ExtractorType.xmlquery
+  conf.src = ExtractorSrc.body
+  conf.result = result.value
 
-  store.dispatch('Debug/createExtractorOrUpdateResult', data).then((result) => {
+  const data = {
+    conf,
+    info: debugInfo.value,
+  } as any
+
+  store.dispatch('Debug/quickCreateExtractor', data).then((result) => {
     if (result) {
       responseExtractorVisible.value = false
     }
@@ -140,6 +144,11 @@ watch(responseData, () => {
   console.log('watch responseData')
   content.value = formatXml(responseData.value.content)
 }, {deep: true})
+
+const format = (item) => {
+  console.log('format', item)
+  bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
+}
 
 </script>
 

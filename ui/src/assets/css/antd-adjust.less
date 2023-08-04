@@ -1,12 +1,45 @@
 @import './antd-variables.less';
 @import './variables.less';
 
-
+.ant-spin-nested-loading {
+    height: 100%;
+    .ant-spin-container {
+        height: 100%;
+    }
+}
 .ant-btn-link {
     color: @primary-color;
 }
+.ant-input[disabled] {
+    color: rgba(0, 0, 0, 0.5);
+    cursor: default;
+}
 .ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected {
     background-color: @itemSelectedBackground;
+}
+
+.ant-empty.dp-empty-no-margin {
+    margin: 0px !important;
+    padding: 32px 0 !important;
+}
+
+.ant-table-wrapper.dp-small-table {
+    th,td {
+        padding: 8px;
+    }
+}
+
+.ant-modal-wrap.dp-modal-confirm {
+    .ant-modal {
+        .ant-modal-content {
+            .ant-modal-header {
+
+            }
+            .ant-modal-body {
+                padding: 16px 36px 36px 36px;
+            }
+        }
+    }
 }
 
 /** set container height to 100% */
@@ -27,11 +60,12 @@
 }
 .ant-tabs.dp-tabs-full-height{
     height: 100%;
-    .ant-tabs-bar {
+    .ant-tabs-bar.ant-tabs-top-bar {
+        height: 48px;
         margin-bottom: 0px;
     }
     .ant-tabs-content {
-        height: calc(100% - 56px);
+        height: calc(100% - 48px);
         .ant-tabs-tabpane-active {
             height: 100%;
         }

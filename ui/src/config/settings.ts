@@ -50,7 +50,13 @@ export interface SettingsType {
     eventNotify,
     eventWebSocketConnStatus: string,
     eventWebSocketMsg: string,
-    eventEditorContainerHeightChanged: string,
+
+    eventEditorAction: string,
+    eventTypeContainerHeightChanged: string,
+    eventTypeFormat: string,
+
+    eventConditionSave: string,
+
     eventVariableSelectionStatus: string,
     eventVariableSelectionResult: any,
     webSocketRoom: string,
@@ -99,7 +105,13 @@ const settings: SettingsType = {
     eventNotify: 'eventNotify',
     eventWebSocketConnStatus: 'eventWebSocketStatus',
     eventWebSocketMsg: 'eventWebSocketMsg',
-    eventEditorContainerHeightChanged: 'eventWebSocketMsg',
+
+    eventEditorAction: 'eventEditorAction',
+    eventTypeContainerHeightChanged: 'heightChanged',
+    eventTypeFormat: 'format',
+
+    eventConditionSave: '',
+
     eventVariableSelectionStatus: 'eventVariableSelectionStatus',
     eventVariableSelectionResult: 'eventVariableSelectionResult',
     webSocketRoom: 'webSocketRoom',

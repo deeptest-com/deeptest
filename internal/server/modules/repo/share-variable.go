@@ -68,7 +68,7 @@ func (r *ShareVariableRepo) GetExistByScenarioDebug(name string, scenarioId uint
 	return
 }
 
-func (r *ShareVariableRepo) ListByInterfaceDebug(serveId uint, usedBy consts.UsedBy) (pos []model.ShareVariable, err error) {
+func (r *ShareVariableRepo) ListForInterfaceDebug(serveId uint, usedBy consts.UsedBy) (pos []model.ShareVariable, err error) {
 	err = r.DB.Model(&model.ShareVariable{}).
 		Where("serve_id=?", serveId).
 		Where("used_by=?", usedBy).
@@ -78,14 +78,14 @@ func (r *ShareVariableRepo) ListByInterfaceDebug(serveId uint, usedBy consts.Use
 	return
 }
 
-func (r *ShareVariableRepo) ListByScenarioDebug(processorId uint) (pos []model.ShareVariable, err error) {
+func (r *ShareVariableRepo) ListForScenarioDebug(processorId uint) (pos []model.ShareVariable, err error) {
 	processor, _ := r.ScenarioProcessorRepo.Get(processorId)
 	scenarioId := processor.ScenarioId
 
-	parentIds, err := r.GetAllParentIds(processorId, model.Processor{}.TableName())
+	ancestorProcessorIds, err := r.GetAncestorIds(processorId, model.Processor{}.TableName())
 
 	err = r.DB.Model(&model.ShareVariable{}).
-		Where("scenario_processor_id IN ?", parentIds).
+		Where("scenario_processor_id IN ?", ancestorProcessorIds).
 		Where("scenario_id=?", scenarioId).
 		Where("NOT deleted AND NOT disabled").
 		Find(&pos).Error

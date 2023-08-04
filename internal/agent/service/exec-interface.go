@@ -5,12 +5,12 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strings"
 )
 
-func RunInterface(call agentDomain.InterfaceCall) (ret domain.DebugResponse, err error) {
+func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
 	req := GetInterfaceToExec(call)
 
 	agentExec.CurrDebugInterfaceId = req.DebugData.DebugInterfaceId
@@ -18,26 +18,31 @@ func RunInterface(call agentDomain.InterfaceCall) (ret domain.DebugResponse, err
 
 	agentExec.ExecScene = req.ExecScene
 
-	logUtils.Info("DebugData:" + _commUtils.JsonEncode(req.DebugData))
-	ret, err = RequestInterface(req.DebugData)
-	logUtils.Info("DebugResponse:" + _commUtils.JsonEncode(ret))
+	// exec interface
+	agentExec.ExecPreConditions(&req)
+	resultResp, err = RequestInterface(&req.DebugData)
+	agentExec.ExecPostConditions(&req, resultResp)
 
-	err = SubmitInterfaceResult(req.DebugData, ret, call.ServerUrl, call.Token)
+	// submit result
+	err = SubmitInterfaceResult(req, resultResp, call.ServerUrl, call.Token)
+
+	resultReq = req.DebugData
 
 	return
 }
 
-func RequestInterface(req domain.DebugData) (ret domain.DebugResponse, err error) {
-	// exec pre-request script
-	agentExec.ExecJs(req.PreRequestScript)
-
+func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err error) {
 	// replace variables
 	agentExec.ReplaceVariables(&req.BaseRequest, consts.InterfaceDebug)
 
 	// gen url
 	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
-	req.BaseRequest.Url = req.BaseUrl + reqUri
-	logUtils.Info("url: " + req.BaseRequest.Url)
+
+	req.BaseRequest.FullUrlToDisplay = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
+	if req.ProcessorInterfaceSrc != consts.DiagnoseDebug {
+		req.BaseRequest.Url = req.BaseRequest.FullUrlToDisplay
+	}
+	logUtils.Info("requested url: " + req.BaseRequest.Url)
 
 	// send request
 	ret, err = agentExec.Invoke(&req.BaseRequest)

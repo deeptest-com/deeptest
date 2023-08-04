@@ -20,7 +20,7 @@
                             :custom-class="'custom-endpoint show-on-hover'"
                             :value="text || ''"
                             @update="(val) => updateName(val, record)"
-                            @edit="design(record)" />
+                            @edit="design(record)"/>
         </template>
 
         <template #createdAt="{ record }">
@@ -32,13 +32,20 @@
         </template>
 
         <template #action="{ record }">
-          <a-button type="link" @click="() => design(record)">设计</a-button>
-          <a-button type="link" @click="() => remove(record)">删除</a-button>
+          <a-button type="link" @click="() => copy(record)">
+            <CopyOutlined title="复制" />
+          </a-button>
+
+          <a-button type="link" @click="() => remove(record)">
+            <DeleteOutlined title="删除" />
+          </a-button>
         </template>
 
       </a-table>
 
-      <a-empty v-if="caseList.length === 0" :image="simpleImage" />
+      <a-empty class="dp-empty-no-margin"
+               v-if="caseList.length === 0"
+               :image="simpleImage"/>
     </div>
 
     <CaseEdit
@@ -46,22 +53,24 @@
         :visible="editVisible"
         :model="editModel"
         :onFinish="createFinish"
-        :onCancel="createCancel" />
+        :onCancel="createCancel"/>
   </div>
 </template>
 
 <script lang="ts" setup>
 import {computed, defineProps, provide, ref} from "vue";
 import {UsedBy} from "@/utils/enum";
-import {Empty} from "ant-design-vue";
+import {Empty, notification} from "ant-design-vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { momentUtc } from '@/utils/datetime';
+import {DeleteOutlined, CopyOutlined} from '@ant-design/icons-vue';
+import {momentUtc} from '@/utils/datetime';
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CaseEdit from "./edit.vue";
+import {NotificationKeyCommon} from "@/utils/const";
 
 provide('usedBy', UsedBy.InterfaceDebug)
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
@@ -117,6 +126,23 @@ const remove = (record) => {
   const title = '确定删除该用例吗？'
   confirmToDelete(title, '', () => {
     store.dispatch('Endpoint/removeCase', record);
+  })
+}
+const copy  = (record) => {
+  console.log('copy', record)
+  store.dispatch('Endpoint/copyCase', record.id).then((po) => {
+    if (po.id > 0) {
+      notification.success({
+        key: NotificationKeyCommon,
+        message: `复制成功`,
+      });
+      design(po)
+    } else {
+      notification.error({
+        key: NotificationKeyCommon,
+        message: `复制失败`,
+      });
+    }
   })
 }
 
@@ -175,14 +201,18 @@ const columns = [
 
 <style lang="less" scoped>
 .endpoint-debug-cases-list {
+  position: relative;
+
   height: 100%;
+
   .toolbar {
     position: absolute;
+    z-index: 999999;
     top: -42px;
     right: 0;
-    height: 50px;
     width: 100px;
   }
+
   .content {
     height: 100%;
   }

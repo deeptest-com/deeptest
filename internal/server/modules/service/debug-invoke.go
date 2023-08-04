@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/kataras/iris/v12"
 	"time"
 )
 
@@ -15,19 +16,18 @@ type DebugInvokeService struct {
 	DebugInvokeRepo    *repo.DebugInvokeRepo    `inject:""`
 
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
-	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
 	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
 	EndpointCaseRepo      *repo.EndpointCaseRepo      `inject:""`
 
-	DebugSceneService     *DebugSceneService     `inject:""`
 	DebugInterfaceService *DebugInterfaceService `inject:""`
+	ExecConditionService  *ExecConditionService  `inject:""`
 
-	ExtractorService  *ExtractorService  `inject:""`
-	CheckpointService *CheckpointService `inject:""`
-	VariableService   *VariableService   `inject:""`
-	DatapoolService   *DatapoolService   `inject:""`
-	EndpointService   *EndpointService   `inject:""`
+	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
+	PostConditionRepo *repo.PostConditionRepo `inject:""`
+	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
+	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
+	ScriptRepo        *repo.ScriptRepo        `inject:""`
 }
 
 func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (err error) {
@@ -61,16 +61,14 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 		projectId = caseInterface.ProjectId
 	}
 
-	s.ExtractorService.ExtractInterface(
-		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
-		serveId, processorId, scenarioId,
-		req.Response, usedBy)
-	s.CheckpointService.CheckInterface(
-		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
-		req.Request.ScenarioProcessorId,
-		req.Response, usedBy)
+	invoke, err := s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
 
-	_, err = s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
+	s.ExecConditionService.SavePreConditionResult(invoke.ID, req.PreConditions, usedBy)
+
+	s.ExecConditionService.SavePostConditionResult(invoke.ID,
+		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
+		serveId, processorId, scenarioId, usedBy,
+		req.PostConditions)
 
 	if err != nil {
 		return
@@ -115,11 +113,18 @@ func (s *DebugInvokeService) ListByInterface(debugInterfaceId, endpointInterface
 	return
 }
 
-func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId uint) (resp domain.DebugResponse, err error) {
+func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId uint) (ret iris.Map, err error) {
 	po, _ := s.DebugRepo.GetLast(debugInterfaceId, endpointInterfaceId)
 
+	req := domain.DebugData{}
+	resp := domain.DebugResponse{}
+
 	if po.ID > 0 {
+		json.Unmarshal([]byte(po.ReqContent), &req)
 		json.Unmarshal([]byte(po.RespContent), &resp)
+
+		resp.InvokeId = po.ID
+
 	} else {
 		resp = domain.DebugResponse{
 			ContentLang: consts.LangHTML,
@@ -127,14 +132,86 @@ func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId u
 		}
 	}
 
+	ret = iris.Map{}
+	ret["req"] = req
+	ret["resp"] = resp
+
 	return
 }
 
-func (s *DebugInvokeService) GetAsInterface(id int) (debugData domain.DebugData, interfResp domain.DebugResponse, err error) {
+func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err error) {
+	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
+
+	conditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryResult)
+
+	for _, condition := range conditions {
+		typ := condition.EntityType
+		var log interface{}
+
+		if typ == consts.ConditionTypeExtractor {
+			log, _ = s.ExtractorRepo.GetLog(condition.ID, uint(invokeId))
+
+		} else if typ == consts.ConditionTypeCheckpoint {
+			log, _ = s.CheckpointRepo.GetLog(condition.ID, uint(invokeId))
+
+		} else if typ == consts.ConditionTypeScript {
+			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
+
+		}
+
+		results = append(results, log)
+	}
+
+	return
+}
+
+func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err error) {
+	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
+
+	preConditions, err := s.PreConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId)
+	for _, condition := range preConditions {
+		typ := condition.EntityType
+		var log interface{}
+
+		if typ == consts.ConditionTypeScript {
+			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
+		}
+
+		results = append(results, log)
+	}
+
+	postConditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryConsole)
+
+	for _, condition := range postConditions {
+		typ := condition.EntityType
+		var log interface{}
+
+		if typ == consts.ConditionTypeExtractor {
+			log, _ = s.ExtractorRepo.GetLog(condition.ID, uint(invokeId))
+
+		} else if typ == consts.ConditionTypeCheckpoint {
+			log, _ = s.CheckpointRepo.GetLog(condition.ID, uint(invokeId))
+
+		} else if typ == consts.ConditionTypeScript {
+			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
+
+		}
+
+		results = append(results, log)
+	}
+
+	return
+}
+
+func (s *DebugInvokeService) GetAsInterface(id int) (
+	debugData domain.DebugData, resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
+
 	invocation, err := s.DebugInvokeRepo.Get(uint(id))
 
 	json.Unmarshal([]byte(invocation.ReqContent), &debugData)
-	json.Unmarshal([]byte(invocation.RespContent), &interfResp)
+
+	json.Unmarshal([]byte(invocation.ReqContent), &resultReq)
+	json.Unmarshal([]byte(invocation.RespContent), &resultResp)
 
 	return
 }

@@ -22,6 +22,7 @@ type Endpoint struct {
 	SerialNumber string              `json:"serialNumber"`
 	Curl         string              `gorm:"-" json:"curl"`
 	SourceType   consts.SourceType   `json:"sourceType"`
+	Maintainer   string              `gorm:"-" json:"maintainer"`
 }
 
 func (Endpoint) TableName() string {

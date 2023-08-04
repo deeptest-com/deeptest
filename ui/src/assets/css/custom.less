@@ -30,6 +30,9 @@
   cursor: pointer;
   color: @primary-color;
 }
+.dp-drag {
+  cursor: move !important;
+}
 
 .dp-btn-group {
   padding-left: 6px;
@@ -136,6 +139,19 @@
   cursor: pointer !important;
 }
 
+.dp-icon {
+  &:focus {
+    outline: unset !important;
+  }
+}
+.dp-icon-large {
+  font-size: 15px;
+}
+.dp-icon-with-text {
+  display: inline-block;
+  margin-right: 3px;
+}
+
 .dp-trans-80 {
   opacity: 0.6;
 }
@@ -154,6 +170,12 @@
     padding: 6px 8px;
     min-height: 24px;
   }
+}
+
+.dp-ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .dp-table {
@@ -316,22 +338,31 @@
     padding-bottom: 0;
     margin: 0;
   }
-
   .ant-modal-content {
     display: flex;
     flex-direction: column;
     height: calc(100vh);
   }
-
   .ant-modal-body {
     flex: 1;
+    .content {
+      height: 100%;
+    }
   }
 }
 
 .dp-param-grid {
   .head {
-    //padding: 2px 3px;
+    font-weight: bold;
+    background: #fafafa;
     border-bottom: 1px solid #d9d9d9;
+    .ant-col {
+      line-height: 36px;
+      border-right: 1px solid #d9d9d9;
+      &.title {
+        padding: 0 10px;
+      }
+    }
   }
 
   .params {
@@ -347,6 +378,7 @@
 
         input {
           margin-top: 1px;
+          height: 32px;
         }
 
         .ant-select {

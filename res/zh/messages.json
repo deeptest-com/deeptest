@@ -2,6 +2,23 @@
   "language": "zh",
   "messages": [
     {
+      "id": "success",
+      "translation": "成功"
+    },
+    {
+      "id": "pass",
+      "translation": "通过"
+    },
+    {
+      "id": "fail",
+      "translation": "失败"
+    },
+    {
+      "id": "skip",
+      "translation": "忽略"
+    },
+
+    {
       "id": "for_example",
       "translation": "例如 %s"
     },
@@ -45,6 +62,39 @@
     {
       "id": "invite_user",
       "translation": "邀请用户"
+    },
+    {
+      "id": "equal",
+      "translation": "等于"
+    },
+    {
+      "id": "notEqual",
+      "translation": "不等于"
+    },
+    {
+      "id": "greaterThan",
+      "translation": "大于"
+    },
+    {
+      "id": "greaterThanOrEqual",
+      "translation": "大于等于"
+    },
+    {
+      "id": "lessThan",
+      "translation": "小于"
+    },
+    {
+      "id": "lessThanOrEqual",
+      "translation": "小于等于"
+    },
+
+    {
+      "id": "contain",
+      "translation": "包含"
+    },
+    {
+      "id": "notContain",
+      "translation": "不包含"
     }
   ]
 }

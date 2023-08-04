@@ -6,13 +6,14 @@
           v-model:value="fieldState.name"
           style="width: 200px"
           placeholder="输入字段名称"
-          @search="handleSearch"
+          :options="requestHeaderOptions"
+          :filter-option="requestHeaderOptions"
           @change="handleChangeHeader">
-        <template #dataSource>
-          <a-select-option v-for="header in result" :key="header">
-            {{ header }}
-          </a-select-option>
-        </template>
+<!--        <template #dataSource>-->
+<!--          <a-select-option v-for="header in result" :key="header">-->
+<!--            {{ header }}-->
+<!--          </a-select-option>-->
+<!--        </template>-->
       </a-auto-complete>
       <a-select
           :value="fieldState.type"
@@ -54,7 +55,12 @@
 <!--              style="width: 100px"/>-->
 <!--        </template>-->
 <!--      </a-input>-->
-
+      <a-input :value="fieldState.example"
+               placeholder="输入示例"
+               :disabled="hasRef"
+               @change="handleExampleChange"
+               style="width: 200px">
+      </a-input>
       <a-input :value="fieldState.description"
                placeholder="输入描述信息"
                :disabled="hasRef"
@@ -273,6 +279,11 @@ function handleTypeChange(val: any) {
 
 function handleDescChange(e: any) {
   fieldState.value.description = e.target.value;
+  emit('change', fieldState.value);
+}
+
+function handleExampleChange(e: any) {
+  fieldState.value.example = e.target.value;
   emit('change', fieldState.value);
 }
 

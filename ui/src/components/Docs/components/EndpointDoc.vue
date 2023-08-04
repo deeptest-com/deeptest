@@ -40,31 +40,31 @@
         </div>
       </div>
       <div class="interface-request">
-        <H2>请求信息</H2>
+        <h2>请求信息</h2>
         <div class="req-item req-path-params" v-if="security">
-          <H3>请求鉴权（Security）</H3>
+          <h3>请求鉴权（Security）</h3>
           <Security :item="security"/>
         </div>
         <div class="req-item req-path-params" v-if="info?.endpointInfo.pathParams?.length">
-          <H3>路径参数（Path Parameters）</H3>
+          <h3>路径参数（Path Parameters）</h3>
           <Parameters :items="info?.endpointInfo.pathParams"/>
         </div>
         <div class="req-item req-path-params" v-if="info?.headers?.length">
-          <H3>请求Header（Headers）</H3>
+          <h3>请求Header（Headers）</h3>
           <Parameters :items="info?.headers"/>
         </div>
         <div class="req-item req-path-params" v-if="info?.params?.length">
-          <H3>请求参数（Query Parameters）</H3>
+          <h3>请求参数（Query Parameters）</h3>
           <Parameters :items="info?.params"/>
         </div>
         <div class="req-item req-path-params" v-if="info?.cookies?.length">
-          <H3>请求Cookie（Cookies）</H3>
+          <h3>请求Cookie（Cookies）</h3>
           <Parameters :items="info?.cookies"/>
         </div>
         <div class="req-item req-path-params" v-if="info?.requestBody?.schemaItem?.content">
-          <H3 class="body-header">请求体（Request Body）
+          <h3 class="body-header">请求体（Request Body）
             <a-tag class="tag" color="default">{{ info.requestBody?.mediaType || '未定义请求体类型'}}</a-tag>
-          </H3>
+          </h3>
           <p v-if="info.requestBody.description">{{ info.requestBody.description }}</p>
           <SchemaViewer
               :examples-str="info?.requestBody?.examples"
@@ -75,7 +75,7 @@
       </div>
       <div class="interface-response">
         <div class="header">
-          <H2>响应信息</H2>
+          <h2>响应信息</h2>
           <a-checkable-tag
               class="code-tag"
               :style="{color: selectedCode === res.code ? '#fff': getCodeColor(res.code)}"
@@ -97,13 +97,13 @@
           <p v-if="res.description ">{{ res.description }}</p>
         </div>
         <div class="res-item res-path-params" v-if="res?.headers?.length">
-          <H3>响应Header（Headers）</H3>
+          <h3>响应Header（Headers）</h3>
           <Parameters :items="res?.headers"/>
         </div>
         <div class="res-item res-path-params">
-          <H3 class="body-header">响应体（Response Body）
+          <h3 class="body-header">响应体（Response Body）
             <a-tag class="tag" color="default">{{ res.mediaType || '未定义响应类型' }}</a-tag>
-          </H3>
+          </h3>
           <p v-if="res.description">{{ res.description }}</p>
           <SchemaViewer :examples-str="res?.examples"
                         :components="info?.serveInfo?.component"

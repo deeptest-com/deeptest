@@ -1,6 +1,7 @@
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
+import {requestMethodOpts} from "@/config/constant";
 
 export function resizeWidth(mainId: string, leftId: string, splitterId: string, rightId: string,
                             leftMin: number, rightMin: number): boolean {
@@ -54,6 +55,8 @@ export function resizeHeight(mainId: string, topId: string, splitterId: string, 
     const splitter = document.getElementById(splitterId) as any;
     const bottom = document.getElementById(bottomId) as any;
 
+    console.log(main, top, splitter, bottom)
+
     if (!splitter) return false
 
     splitter.onmousedown = function (e) {
@@ -70,7 +73,12 @@ export function resizeHeight(mainId: string, topId: string, splitterId: string, 
             if (topNewHeight > availableHeight - bottomMin) topNewHeight = availableHeight - bottomMin;
 
             top.style.height = topNewHeight + 'px';
+            top.style.flex = undefined
+
             bottom.style.height = availableHeight - topNewHeight + 'px';
+            bottom.style.flex = undefined
+
+            console.log('height: ', availableHeight, top.style.height, bottom.style.height)
 
             resizeHandler()
         };
@@ -92,7 +100,7 @@ export function resizeHeight(mainId: string, topId: string, splitterId: string, 
 }
 
 export const resizeHandler = debounce(() => {
-    bus.emit(settings.eventEditorContainerHeightChanged, '')
+    bus.emit(settings.eventEditorAction, {act: settings.eventTypeContainerHeightChanged})
 }, 50);
 
 export function hasClass( elements, cName ){
@@ -194,12 +202,33 @@ export function getRightTabPanelPosition(tabId) {
 
     if (elem) {
         const pos = elem.getBoundingClientRect()
+        const top = getRightTabTop()
         ret = {
-            top: pos.y + 'px',
+            top: getRightTabTop() + 'px',
             left: (pos.left - 360 - 10) + 'px',
-            height: (document.body.clientHeight - pos.y - 60) + 'px',
+            height: (document.body.clientHeight - top) + 'px',
         }
     }
 
     return ret
+}
+
+function getRightTabTop() {
+    const elems = document.getElementsByClassName('debug-page-container-top')
+    if (elems.length > 0) {
+        return elems[0].getBoundingClientRect().y
+    }
+
+    const elem = document.getElementById('debug-index')
+    if (elem) {
+        return elem.getBoundingClientRect().y
+    }
+
+    return 100
+}
+
+export const getMethodColor = (method) => {
+    return requestMethodOpts.find((item: any) => {
+        return item.value === method;
+    })?.color
 }

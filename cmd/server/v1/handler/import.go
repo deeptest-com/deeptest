@@ -19,6 +19,16 @@ type ImportCtrl struct {
 	BaseCtrl
 }
 
+// ImportSpec
+// @Tags	导入模块
+// @summary	导入OpenApi文件
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	targetId 		query 	int 	true 	"targetId"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/import/importSpec	[post]
 func (c *ImportCtrl) ImportSpec(ctx iris.Context) {
 	targetId, err := ctx.URLParamInt("targetId")
 	if targetId == 0 {
@@ -41,6 +51,16 @@ func (c *ImportCtrl) ImportSpec(ctx iris.Context) {
 	return
 }
 
+// ImportYapi
+// @Tags	导入模块
+// @summary	导入yapi项目接口
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization		header	string							true	"Authentication header"
+// @Param 	currProjectId		query	int								true	"当前项目ID"
+// @Param 	InterfaceYapiReq 	body 	serverDomain.InterfaceYapiReq 	true 	"导入yapi项目接口的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/import/importYapi	[post]
 func (c *ImportCtrl) ImportYapi(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	fmt.Println("projectId", projectId)

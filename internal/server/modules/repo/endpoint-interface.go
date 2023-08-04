@@ -29,7 +29,7 @@ func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (r
 		Where("NOT biz_endpoint_interface.deleted AND NOT biz_endpoint_interface.disabled")
 
 	if req.Keywords != "" {
-		db = db.Where("biz_endpoint_interface.name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+		db = db.Where("biz_endpoint_interface.name LIKE ? or biz_endpoint_interface.url LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords), fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 	if req.ServeId != 0 {
 		db = db.Where("e.serve_id = ?", req.ServeId)
@@ -37,7 +37,7 @@ func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (r
 
 	if req.CategoryId > 0 {
 		var categoryIds []uint
-		categoryIds, err = r.BaseRepo.GetAllChildIds(uint(req.CategoryId), model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetDescendantIds(uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.EndpointCategory, int(req.ProjectId))
 		if err != nil {
 			return
@@ -82,6 +82,17 @@ func (r *EndpointInterfaceRepo) ListIdByEndpoint(endpointId uint) (ids []uint, e
 		Model(model.EndpointInterface{}).
 		Select("id").
 		Where("endpoint_id=?", endpointId).
+		Where("NOT deleted").
+		Find(&ids).Error
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) ListIdByEndpoints(endpointIds []uint) (ids []uint, err error) {
+	err = r.DB.
+		Model(model.EndpointInterface{}).
+		Select("id").
+		Where("endpoint_id IN (?)", endpointIds).
 		Where("NOT deleted").
 		Find(&ids).Error
 
@@ -766,6 +777,15 @@ func (r *EndpointInterfaceRepo) DeleteByEndpoint(endpointId uint) (err error) {
 
 	return
 }
+
+func (r *EndpointInterfaceRepo) DeleteByEndpoints(endpointIds []uint) (err error) {
+	ids, err := r.ListIdByEndpoints(endpointIds)
+
+	err = r.DeleteBatch(ids)
+
+	return
+}
+
 func (r *EndpointInterfaceRepo) DeleteBatch(ids []uint) (err error) {
 	for _, id := range ids {
 		err = r.Delete(id)

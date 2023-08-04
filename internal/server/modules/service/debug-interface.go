@@ -31,9 +31,12 @@ type DebugInterfaceService struct {
 	EnvironmentService       *EnvironmentService       `inject:""`
 	DatapoolService          *DatapoolService          `inject:""`
 	ServeService             *ServeService             `inject:""`
+
+	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
+	PostConditionRepo *repo.PostConditionRepo `inject:""`
 }
 
-func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.DebugData, err error) {
+func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain.DebugData, err error) {
 	if loadReq.DebugInterfaceId > 0 {
 		debugData, _ = s.GetDebugDataFromDebugInterface(loadReq.DebugInterfaceId)
 	} else {
@@ -56,15 +59,19 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugReq) (debugData domain.
 	return
 }
 
-func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugReq) (ret agentExec.InterfaceExecObj, err error) {
+func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agentExec.InterfaceExecObj, err error) {
 	ret.DebugData, _ = s.Load(loadReq)
+
+	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
+	ret.PostConditions, _ = s.PostConditionRepo.ListTo(
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
 
 	ret.ExecScene.ShareVars = ret.DebugData.ShareVars // for execution
 	ret.DebugData.ShareVars = nil                     // for display on debug page only
 
-	// get project environment data
+	// get environment and settings on project level
 	s.SceneService.LoadEnvVars(&ret.ExecScene, ret.DebugData)
-
 	s.SceneService.LoadProjectSettings(&ret.ExecScene, ret.DebugData.ProjectId)
 
 	return
@@ -79,7 +86,7 @@ func (s *DebugInterfaceService) GetDetail(id uint) (ret model.DebugInterface, er
 func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
 	s.CopyValueFromRequest(&debugInterface, req)
 
-	if req.DebugInterfaceId > 0 { // to update
+	if req.DebugInterfaceId > 0 { // to update if already loading from a debugInterface
 		debugInterface.ID = req.DebugInterfaceId
 	} else {
 		debugInterface.ServeId = req.ServeId
@@ -87,15 +94,25 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
-	if req.DebugInterfaceId <= 0 { // first time to save
-		// clone extractors and checkpoints if needed
-		s.ExtractorRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
-		s.CheckpointRepo.CloneFromEndpointInterfaceToDebugInterface(req.EndpointInterfaceId, debugInterface.ID, req.UsedBy)
-	}
+	// first time to save a debug interface that convert from endpoint interface, clone conditions
+	// it's different from cloning data between two debug interfaces when do importing
+	if req.DebugInterfaceId <= 0 {
+		s.PreConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
+		s.PostConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
 
-	if req.UsedBy == consts.InterfaceDebug {
 		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
 	}
+
+	return
+}
+
+func (s *DebugInterfaceService) SaveAs(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
+	s.CopyValueFromRequest(&debugInterface, req)
+
+	err = s.DebugInterfaceRepo.Save(&debugInterface)
+
+	s.PreConditionRepo.CloneAll(req.DebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
+	s.PostConditionRepo.CloneAll(req.DebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
 
 	return
 }
@@ -253,6 +270,7 @@ func (s *DebugInterfaceService) GetDebugInterfaceByScenarioInterface(scenarioPro
 
 	ret.DebugInterfaceId = debugInterfaceId
 	ret.ScenarioProcessorId = scenarioProcessorId
+	ret.ProcessorInterfaceSrc = debugData.ProcessorInterfaceSrc
 
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
 	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})

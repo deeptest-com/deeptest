@@ -20,6 +20,16 @@ type UserCtrl struct {
 	UserRepo    *repo.UserRepo       `inject:""`
 }
 
+// ListAll
+// @Tags	用户管理
+// @summary	用户列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string				true	"Authentication header"
+// @Param 	currProjectId	query	int					true	"当前项目ID"
+// @Param 	UserReqPaginate		query	serverDomain.UserReqPaginate	true	"查询参数"
+// @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]serverDomain.UserResp}}
+// @Router	/api/v1/users	[get]
 func (c *UserCtrl) ListAll(ctx iris.Context) {
 	var req serverDomain.UserReqPaginate
 
@@ -42,6 +52,15 @@ func (c *UserCtrl) ListAll(ctx iris.Context) {
 }
 
 // GetUser 详情
+// @Tags	用户管理
+// @summary	用户详情
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"用户ID"
+// @success	200	{object}	_domain.Response{data=serverDomain.UserResp}
+// @Router	/api/v1/users/{id}	[get]
 func (c *UserCtrl) GetUser(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
@@ -58,6 +77,15 @@ func (c *UserCtrl) GetUser(ctx iris.Context) {
 }
 
 // Invite 邀请用户
+// @Tags	用户管理
+// @summary	邀请用户
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	InviteUserReq	body	serverDomain.InviteUserReq	true	"邀请用户的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/users/invite	[post]
 func (c *UserCtrl) Invite(ctx iris.Context) {
 	req := serverDomain.InviteUserReq{}
 	err := ctx.ReadJSON(&req)
@@ -82,6 +110,15 @@ func (c *UserCtrl) Invite(ctx iris.Context) {
 }
 
 // UpdateEmail 修改邮箱
+// @Tags	用户管理
+// @summary	修改邮箱
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	UpdateUserReq	body	serverDomain.UpdateUserReq	true	"修改邮箱的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/users/updateEmail	[post]
 func (c *UserCtrl) UpdateEmail(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	req := serverDomain.UpdateUserReq{}
@@ -115,6 +152,15 @@ func (c *UserCtrl) UpdateEmail(ctx iris.Context) {
 }
 
 // UpdateName 修改名称
+// @Tags	用户管理
+// @summary	修改名称
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	UpdateUserReq	body	serverDomain.UpdateUserReq	true	"修改名称的请求参数"
+// @success	200	{object}	_domain.Response{data=serverDomain.UserResp}
+// @Router	/api/v1/users/updateName	[post]
 func (c *UserCtrl) UpdateName(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	req := serverDomain.UpdateUserReq{}
@@ -148,6 +194,15 @@ func (c *UserCtrl) UpdateName(ctx iris.Context) {
 }
 
 // UpdatePassword 修改密码
+// @Tags	用户管理
+// @summary	修改密码
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string						true	"Authentication header"
+// @Param 	currProjectId	query	int							true	"当前项目ID"
+// @Param 	UpdateUserReq	body	serverDomain.UpdateUserReq	true	"修改密码的请求参数"
+// @success	200	{object}	_domain.Response{data=serverDomain.UserResp}
+// @Router	/api/v1/users/updatePassword	[post]
 func (c *UserCtrl) UpdatePassword(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 
@@ -175,6 +230,14 @@ func (c *UserCtrl) UpdatePassword(ctx iris.Context) {
 }
 
 // Profile 个人信息
+// @Tags	用户管理
+// @summary	个人信息
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response{data=serverDomain.UserResp}
+// @Router	/api/v1/users/profile	[get]
 func (c *UserCtrl) Profile(ctx iris.Context) {
 	id := multi.GetUserId(ctx)
 	if id == 0 {
@@ -199,6 +262,15 @@ func (c *UserCtrl) Message(ctx iris.Context) {
 }
 
 // CreateUser 添加
+// @Tags	用户管理
+// @summary	新建用户
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string					true	"Authentication header"
+// @Param 	currProjectId	query	int						true	"当前项目ID"
+// @Param 	UserReq			body	serverDomain.UserReq	true	"新建用户的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/users	[post]
 func (c *UserCtrl) CreateUser(ctx iris.Context) {
 	req := serverDomain.UserReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -219,6 +291,16 @@ func (c *UserCtrl) CreateUser(ctx iris.Context) {
 }
 
 // UpdateUser 更新
+// @Tags	用户管理
+// @summary	编辑用户
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string					true	"Authentication header"
+// @Param 	currProjectId	query	int						true	"当前项目ID"
+// @Param 	id				path	int						true	"用户ID"
+// @Param 	UserReq			body	serverDomain.UserReq	true	"编辑用户的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/users/{id}	[post]
 func (c *UserCtrl) UpdateUser(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	var reqId _domain.ReqId
@@ -247,6 +329,15 @@ func (c *UserCtrl) UpdateUser(ctx iris.Context) {
 }
 
 // DeleteUser 删除
+// @Tags	用户管理
+// @summary	删除用户
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				path	int		true	"用户ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/users/{id}	[delete]
 func (c *UserCtrl) DeleteUser(ctx iris.Context) {
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
@@ -264,6 +355,14 @@ func (c *UserCtrl) DeleteUser(ctx iris.Context) {
 }
 
 // Logout 退出
+// @Tags	用户管理
+// @summary	退出登录
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/users/logout	[get]
 func (c *UserCtrl) Logout(ctx iris.Context) {
 	token := multi.GetVerifiedToken(ctx)
 	if token == nil {
@@ -279,6 +378,14 @@ func (c *UserCtrl) Logout(ctx iris.Context) {
 }
 
 // Clear 清空 token
+// @Tags	用户管理
+// @summary	清空 token
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/users/clear	[get]
 func (c *UserCtrl) Clear(ctx iris.Context) {
 	token := multi.GetVerifiedToken(ctx)
 	if token == nil {
@@ -293,6 +400,15 @@ func (c *UserCtrl) Clear(ctx iris.Context) {
 }
 
 // ChangeAvatar 修改头像
+// @Tags	用户管理
+// @summary	修改头像
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string			true	"Authentication header"
+// @Param 	currProjectId	query	int				true	"当前项目ID"
+// @Param 	Avatar			body	model.Avatar	true	"头像"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/users/change_avatar	[post]
 func (c *UserCtrl) ChangeAvatar(ctx iris.Context) {
 	avatar := &model.Avatar{}
 	if err := ctx.ReadJSON(avatar); err != nil {
@@ -311,6 +427,15 @@ func (c *UserCtrl) ChangeAvatar(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// GetUsersNotExistedInProject
+// @Tags	用户管理
+// @summary	获取项目中没有的用户列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response{data=object{result=[]serverDomain.UserResp}}
+// @Router	/api/v1/users/usersNotExistedInProject	[get]
 func (c *UserCtrl) GetUsersNotExistedInProject(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
@@ -324,6 +449,16 @@ func (c *UserCtrl) GetUsersNotExistedInProject(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
+// ChangeUserSysRole
+// @Tags	用户管理
+// @summary	更新用户系统角色
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string							true	"Authentication header"
+// @Param 	currProjectId		query	int								true	"当前项目ID"
+// @Param 	UpdateUserRoleReq	body	serverDomain.UpdateUserRoleReq	true	"更新用户系统角色的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/users/changeUserSysRole	[post]
 func (c *UserCtrl) ChangeUserSysRole(ctx iris.Context) {
 	req := serverDomain.UpdateUserRoleReq{}
 	err := ctx.ReadJSON(&req)

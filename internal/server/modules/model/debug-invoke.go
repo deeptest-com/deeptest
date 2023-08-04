@@ -20,8 +20,8 @@ type InvocationBase struct {
 	Name string `json:"name"`
 	Desc string `json:"desc,omitempty" gorm:"type:text"`
 
-	ReqContent  string `json:"reqContent,omitempty" gorm:"type:mediumtext"`
-	RespContent string `json:"respContent,omitempty" gorm:"type:mediumtext"`
+	ReqContent  string `json:"reqContent,omitempty" gorm:"type:longtext"`
+	RespContent string `json:"respContent,omitempty" gorm:"type:longtext"`
 
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
 	HttpRespStatusContent string              `json:"httpStatusContent"`

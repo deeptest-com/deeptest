@@ -1,16 +1,16 @@
 <!--
-  适用于 左侧目录树 + 右边区域表格筛选，且左侧目录树可伸缩
+  适用于 上下 两个面板的布局
 -->
 <template>
   <div class="container" :style="containerStyle || {}">
     <div class="content">
-      <multipane class="vertical-panes" layout="vertical">
-        <div class="pane left" :style="{ minWidth: '150px', width: '300px', maxWidth: '600px' }">
-          <slot name="left"></slot>
+      <multipane class="vertical-panes" layout="horizontal">
+        <div class="pane top" :style="{ minHeight: '150px', height: '300px', maxHeight: '700px' }">
+          <slot name="top"/>
         </div>
         <multipane-resizer/>
-        <div class="pane right" :style="{ flexGrow: 1  }">
-          <slot name="right"></slot>
+        <div class="pane bottom" :style="{ flexGrow: 1  }">
+          <slot name="bottom"/>
         </div>
       </multipane>
     </div>
@@ -18,10 +18,8 @@
 </template>
 
 <script setup lang="ts">
-import {useI18n} from "vue-i18n";
 import { defineProps } from 'vue'
 import {Multipane, MultipaneResizer} from '@/components/Resize/index';
-const {t} = useI18n();
 const props = defineProps(['containerStyle'])
 </script>
 
@@ -57,3 +55,4 @@ const props = defineProps(['containerStyle'])
 }
 
 </style>
+

@@ -20,7 +20,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.multipane-resizer {
+.dp-multipane-con.layout-v .multipane-resizer {
   position: relative;
   z-index: 2;
   width: 1px;
@@ -36,8 +36,40 @@ export default {
   }
 
   &:hover:after {
+
     cursor: col-resize;
     width: 2px;
+    background-color: #1890ff;
+  }
+
+  &.collapsed {
+    &:after {
+      display: none;
+    }
+  }
+
+}
+
+.dp-multipane-con.layout-h .multipane-resizer {
+  position: relative;
+  z-index: 2;
+  height: 2px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  &:after {
+    height: 2px;
+    content: '';
+    width: 100%;
+    position: absolute;
+    background-color: #f0f0f0;
+    left:0;
+  }
+
+  &:hover:after {
+    cursor: row-resize;
+    height: 2px;
+    width: 100%;
     background-color: #1890ff;
   }
 

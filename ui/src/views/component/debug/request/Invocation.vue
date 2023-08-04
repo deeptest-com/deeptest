@@ -294,6 +294,7 @@ function hasDefinedMethod(method: string) {
 .invocation-main {
   .select-env {
     position: absolute;
+    z-index: 999999;
     right: 0px;
     width: 120px;
     height: 36px;

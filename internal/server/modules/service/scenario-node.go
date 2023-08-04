@@ -2,15 +2,19 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
+	"strings"
 )
 
 type ScenarioNodeService struct {
@@ -25,7 +29,8 @@ type ScenarioNodeService struct {
 	CheckpointRepo           *repo.CheckpointRepo        `inject:""`
 	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
 
-	DebugInterfaceService *DebugInterfaceService `inject:""`
+	DebugInterfaceService    *DebugInterfaceService    `inject:""`
+	DiagnoseInterfaceService *DiagnoseInterfaceService `inject:""`
 }
 
 func (s *ScenarioNodeService) GetTree(scenario model.Scenario, withDetail bool) (root *agentExec.Processor, err error) {
@@ -329,4 +334,78 @@ func (s *ScenarioNodeService) ListToByScenario(id uint) (ret []*agentExec.Proces
 	}
 
 	return
+}
+
+func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq) (ret model.Processor, err error) {
+	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
+
+	if !s.ScenarioNodeRepo.IsDir(targetProcessor) {
+		targetProcessor, _ = s.ScenarioProcessorRepo.Get(targetProcessor.ParentId)
+	}
+
+	curlObj := curlHelper.Parse(req.Content)
+	wf := curlObj.CreateTemporary(curlObj.CreateSession())
+
+	url := fmt.Sprintf("%s://%s%s", curlObj.ParsedURL.Scheme,
+		curlObj.ParsedURL.Host, curlObj.ParsedURL.Path)
+	title := fmt.Sprintf("%s %s", url, curlObj.Method)
+	queryParams := s.DiagnoseInterfaceService.getQueryParams(curlObj.ParsedURL.Query())
+	headers := s.DiagnoseInterfaceService.getHeaders(wf.Header)
+	cookies := s.DiagnoseInterfaceService.getCookies(wf.Cookies)
+
+	bodyType := ""
+	contentType := strings.Split(curlObj.ContentType, ";")
+	if len(contentType) > 1 {
+		bodyType = contentType[0]
+	}
+
+	debugData := domain.DebugData{
+		Name:    title,
+		BaseUrl: "",
+		BaseRequest: domain.BaseRequest{
+			Method:      s.DiagnoseInterfaceService.getMethod(bodyType, curlObj.Method),
+			QueryParams: queryParams,
+			Headers:     headers,
+			Cookies:     cookies,
+			Body:        wf.Body.String(),
+			BodyType:    consts.HttpContentType(bodyType),
+			Url:         url,
+		},
+		//ServeId:   parent.ServeId,
+		//ServerId:  server.ID,
+		ProjectId: targetProcessor.ProjectId,
+
+		UsedBy: consts.ScenarioDebug,
+	}
+
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
+
+	processor := model.Processor{
+		Name: title,
+
+		EntityCategory:      consts.ProcessorInterface,
+		EntityType:          consts.ProcessorInterfaceDefault,
+		EntityId:            debugInterface.ID, // as debugInterfaceId
+		EndpointInterfaceId: debugInterface.EndpointInterfaceId,
+
+		Ordr: s.ScenarioNodeRepo.GetMaxOrder(targetProcessor.ID),
+
+		ParentId:   targetProcessor.ID,
+		ScenarioId: targetProcessor.ScenarioId,
+		ProjectId:  targetProcessor.ProjectId,
+		CreatedBy:  req.CreateBy,
+	}
+
+	s.ScenarioNodeRepo.Save(&processor)
+
+	// update to new ScenarioProcessorId
+	values := map[string]interface{}{
+		"scenario_processor_id": processor.ID,
+	}
+	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
+
+	ret = processor
+
+	return
+
 }

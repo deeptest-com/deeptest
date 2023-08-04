@@ -8,7 +8,7 @@
  * */
 export const DESIGN_MENU_CONFIG = [
     {
-        key: 'processor_interface',
+        key: 'addInterface',
         title: ' 添加请求',
         icon: 'arrange-interface',
         children: [
@@ -40,7 +40,7 @@ export const DESIGN_MENU_CONFIG = [
         ]
     },
     {
-        key: 'addHandler',
+        key: 'addProcessor',
         title: '添加处理器',
         icon: 'arrange-control',
         children: [

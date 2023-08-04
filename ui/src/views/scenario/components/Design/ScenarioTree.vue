@@ -25,7 +25,7 @@
             @drop="onDrop"
             @expand="onExpand"
             @select="selectNode"
-            :tree-data="treeDataNeedRender"
+            :tree-data="treeData"
             :replace-fields="replaceFields">
           <template #switcherIcon>
             <CaretDownOutlined/>
@@ -50,7 +50,7 @@
               <div class="icon" v-if="dataRef.id > 0">
                 <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
                   <template #button>
-                    <PlusOutlined class="plus-icon" @click.prevent.stop/>
+                    <PlusOutlined class="plus-icon"/>
                   </template>
                 </TreeMenu>
                 <a-dropdown>
@@ -283,11 +283,32 @@ const menuClick = (menuKey: string, targetId: number) => {
   clearMenu()
 }
 
-function selectMenu(item,treeNode) {
-  console.log(8322222,item,treeNode);
+function selectMenu(menuInfo,treeNode) {
+  console.log(8322222,menuInfo,treeNode);
   const targetModelId = treeNode.dataRef.id
-  // debugger;
-  const keyPath = item.keyPath;
+  debugger;
+  const keyPath = menuInfo.keyPath;
+  const key = menuInfo.key;
+
+  if (key === 'edit') {
+    edit(treeDataMap.value[targetModelId])
+    return
+  }
+  if (key === 'remove') {
+    removeNode()
+    return
+  }
+
+  const mode = keyPath[0]
+  const processorCategory = keyPath[1];
+  const processorType = keyPath[2];
+
+  const targetProcessorId = targetModelId
+  const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
+  const targetProcessorType = treeDataMap.value[targetModelId].entityType
+
+  addNode(mode, processorCategory, processorType,
+      targetProcessorCategory, targetProcessorType, targetProcessorId)
 }
 
 async function handleEditModalOk(model) {
@@ -468,7 +489,7 @@ onUnmounted(() => {
   }
 
   .icon {
-    width: 20px;
+    width: 40px;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -17,8 +17,8 @@
 import {defineEmits,defineProps} from "vue";
 const props = defineProps(['treeNode']);
 const emit = defineEmits(['selectMenu']);
-function selectMenu(item) {
-    emit('selectMenu', props.treeNode)
+function selectMenu(info) {
+    emit('selectMenu',info, props.treeNode)
 }
 import {DESIGN_MENU_CONFIG} from "../../config";
 import SubMenu from "./SubMenu.vue";

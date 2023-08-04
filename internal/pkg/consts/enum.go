@@ -258,9 +258,19 @@ type UsedBy string
 
 const (
 	InterfaceDebug UsedBy = "interface_debug"
-	ScenarioDebug  UsedBy = "scenario_debug"
-	DiagnoseDebug  UsedBy = "diagnose_debug"
 	CaseDebug      UsedBy = "case_debug"
+	DiagnoseDebug  UsedBy = "diagnose_debug"
+	ScenarioDebug  UsedBy = "scenario_debug"
+)
+
+type ProcessorInterfaceSrc string
+
+const (
+	InterfaceSrcInterface ProcessorInterfaceSrc = "interface"
+	InterfaceSrcCase      ProcessorInterfaceSrc = "case"
+	InterfaceSrcDiagnose  ProcessorInterfaceSrc = "diagnose"
+	InterfaceSrcCurl      ProcessorInterfaceSrc = "curl"
+	InterfaceSrcCustom    ProcessorInterfaceSrc = "custom"
 )
 
 type ConditionSrc string

@@ -28,12 +28,23 @@
             <span>添加请求</span>
           </template>
 
-          <a-menu-item key="add-child-interface-fromDefine" class="menu-item">
-            <span>从接口管理模块</span>
+          <a-menu-item key="add-child-interface-interface" class="menu-item">
+            <span>导入接口定义</span>
           </a-menu-item>
-          <a-menu-item key="add-child-interface-fromTest" class="menu-item">
-            <span>从接口调试模块</span>
+          <a-menu-item key="add-child-interface-case" class="menu-item">
+            <span>导入接口用例</span>
           </a-menu-item>
+          <a-menu-item key="add-child-interface-diagnose" class="menu-item">
+            <span>导入快捷调试</span>
+          </a-menu-item>
+
+          <a-menu-item key="add-child-interface-custom" class="menu-item">
+            <span>自定义请求</span>
+          </a-menu-item>
+          <a-menu-item key="add-child-interface-curl" class="menu-item">
+            <span>cURL导入</span>
+          </a-menu-item>
+
         </a-sub-menu>
       </template>
 

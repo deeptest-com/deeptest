@@ -266,11 +266,11 @@ const (
 type ProcessorInterfaceSrc string
 
 const (
-	InterfaceSrcInterface ProcessorInterfaceSrc = "interface"
-	InterfaceSrcCase      ProcessorInterfaceSrc = "case"
-	InterfaceSrcDiagnose  ProcessorInterfaceSrc = "diagnose"
-	InterfaceSrcCurl      ProcessorInterfaceSrc = "curl"
-	InterfaceSrcCustom    ProcessorInterfaceSrc = "custom"
+	InterfaceSrcDefine   ProcessorInterfaceSrc = "define"
+	InterfaceSrcCase     ProcessorInterfaceSrc = "case"
+	InterfaceSrcDiagnose ProcessorInterfaceSrc = "diagnose"
+	InterfaceSrcCurl     ProcessorInterfaceSrc = "curl"
+	InterfaceSrcCustom   ProcessorInterfaceSrc = "custom"
 )
 
 type ConditionSrc string

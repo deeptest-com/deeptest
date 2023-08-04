@@ -75,14 +75,16 @@
         :nodeInfo="currentNode"
         @ok="handleEditModalOk"
         @cancel="handleEditModalCancel"/>
+
     <InterfaceSelectionFromDefine
-        v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromDefine'"
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc===ProcessorInterfaceSrc.Define"
         :onFinish="endpointInterfaceIdsSelectionFinish"
-        :onCancel="interfaceSelectionCancel"/>
-    <InterfaceSelectionFromTest
-        v-if="interfaceSelectionVisible && interfaceSelectionSrc==='fromTest'"
+        :onCancel="interfaceSelectionCancel" />
+
+    <InterfaceSelectionFromDiagnose
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc===ProcessorInterfaceSrc.Diagnose"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
-        :onCancel="interfaceSelectionCancel"/>
+        :onCancel="interfaceSelectionCancel" />
 
   </div>
 </template>
@@ -93,6 +95,11 @@ import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
+import {confirmToDelete} from "@/utils/confirm";
+import {filterTree} from "@/utils/tree";
+import {ProcessorInterfaceSrc} from "@/utils/enum";
+import {DESIGN_TYPE_ICON_MAP} from "./config";
+import {getMethodColor} from "@/utils/dom";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {PlusOutlined, CaretDownOutlined, MoreOutlined, FolderOpenOutlined, FolderOutlined} from '@ant-design/icons-vue';
 import {expandAllKeys, expandOneKey} from "@/services/tree";
@@ -101,21 +108,17 @@ import IconSvg from "@/components/IconSvg";
 import {getExpandedKeys, getSelectedKey, setExpandedKeys} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
+import {Scenario} from "@/views/scenario/data";
 import TreeContextMenu from "./components/TreeContextMenu.vue";
 import EditModal from "./components/edit.vue";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
-import InterfaceSelectionFromTest from "@/views/component/InterfaceSelectionFromTest/main.vue";
-import {DESIGN_TYPE_ICON_MAP} from "./config";
-import {getMethodColor} from "@/utils/dom";
+import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelectionFromDiagnose/main.vue";
 
 const props = defineProps<{}>()
 
 const useForm = Form.useForm;
 
 const {t} = useI18n();
-import {Scenario} from "@/views/scenario/data";
-import {confirmToDelete} from "@/utils/confirm";
-import {filterTree} from "@/utils/tree";
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
@@ -257,6 +260,7 @@ const expandAll = () => {
 
 let targetModelId = 0
 const menuClick = (menuKey: string, targetId: number) => {
+  console.log('menuClick', menuKey)
   targetModelId = targetId
   if (menuKey === 'edit') {
     edit(treeDataMap.value[targetModelId])
@@ -266,8 +270,8 @@ const menuClick = (menuKey: string, targetId: number) => {
     removeNode()
     return
   }
-  // add-child-interface-define
-  // add-child-interface-debug
+  // add-child-interface-interface
+  // add-child-interface-diagnose
   // add-child-processor_logic-processor_logic_if
   const arr = menuKey.split('-')
   const mode = arr[1]

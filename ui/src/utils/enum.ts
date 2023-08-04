@@ -13,6 +13,15 @@ export enum UsedBy {
     CaseDebug = "case_debug",
 }
 
+export enum ProcessorInterfaceSrc {
+    Define = "define",
+    Case = "case",
+    Diagnose = "diagnose",
+    Curl = "curl",
+    Custom = "custom",
+}
+
+
 export enum VarScope {
     ScopePublic = "public",
     ScopePrivate = "private",

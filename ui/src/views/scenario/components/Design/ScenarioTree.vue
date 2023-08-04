@@ -52,15 +52,15 @@
               <div class="icon" v-if="dataRef.id > 0">
                 <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
                   <template #button>
-                    <PlusOutlined class="plus-icon"/>
+                    <MoreOutlined/>
                   </template>
                 </TreeMenu>
-                <a-dropdown>
-                  <MoreOutlined/>
-                  <template #overlay>
-                    <TreeContextMenu :treeNode="dataRef" :onMenuClick="menuClick"/>
-                  </template>
-                </a-dropdown>
+<!--                <a-dropdown>-->
+<!--                  <MoreOutlined/>-->
+<!--                  <template #overlay>-->
+<!--                    <TreeContextMenu :treeNode="dataRef" :onMenuClick="menuClick"/>-->
+<!--                  </template>-->
+<!--                </a-dropdown>-->
               </div>
             </div>
           </template>
@@ -77,12 +77,12 @@
         @cancel="handleEditModalCancel"/>
 
     <InterfaceSelectionFromDefine
-        v-if="interfaceSelectionVisible && interfaceSelectionSrc===ProcessorInterfaceSrc.Define"
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Define)"
         :onFinish="endpointInterfaceIdsSelectionFinish"
         :onCancel="interfaceSelectionCancel"/>
 
     <InterfaceSelectionFromDiagnose
-        v-if="interfaceSelectionVisible && interfaceSelectionSrc===ProcessorInterfaceSrc.Diagnose"
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes('ProcessorInterfaceSrc.Diagnose')"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
         :onCancel="interfaceSelectionCancel"/>
 
@@ -98,7 +98,7 @@ import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 import {filterTree} from "@/utils/tree";
 import {ProcessorInterfaceSrc} from "@/utils/enum";
-import {DESIGN_TYPE_ICON_MAP, processorCategoryMap} from "./config";
+import {DESIGN_TYPE_ICON_MAP, menuKeyMapToProcessorCategory} from "./config";
 import {getMethodColor} from "@/utils/dom";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {PlusOutlined, CaretDownOutlined, MoreOutlined, FolderOpenOutlined, FolderOutlined} from '@ant-design/icons-vue';
@@ -287,8 +287,6 @@ const menuClick = (menuKey: string, targetId: number) => {
 }
 
 function selectMenu(menuInfo, treeNode) {
-  // console.log(8322222,menuInfo,treeNode);
-
   targetModelId = treeNode?.id;
   const key = menuInfo.key;
   const mode = 'child';
@@ -313,14 +311,12 @@ function selectMenu(menuInfo, treeNode) {
     enableNode()
     return
   }
-
-  const processorCategory = processorCategoryMap[key];
+  // debugger;
+  const processorCategory = menuKeyMapToProcessorCategory[key];
   if (!processorCategory) return;
-
   const targetProcessorId = targetModelId
   const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
   const targetProcessorType = treeDataMap.value[targetModelId].entityType
-
   addNode(mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 }
@@ -349,11 +345,10 @@ const addNode = (mode, processorCategory, processorType,
   console.log('addNode', mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
-  if (processorCategory === 'interface') { // show popup to select a interface
+  if (processorCategory === 'interface' || processorCategory === 'processor_interface') { // show popup to select a interface
     interfaceSelectionSrc.value = processorType
     interfaceSelectionVisible.value = true
     return
-
   } else {
     store.dispatch('Scenario/addProcessor',
         {
@@ -368,6 +363,7 @@ const addNode = (mode, processorCategory, processorType,
     })
   }
 }
+
 
 const interfaceSelectionVisible = ref(false)
 const interfaceSelectionSrc = ref('')
@@ -428,7 +424,7 @@ const disableNode = () => {
   Modal.confirm({
     okType: 'danger',
     title: `确定禁用名为${node.name}的节点吗？`,
-    content: '将同时禁用步骤下的所有子步骤。禁用后该步骤及所有子步骤在场景测试运行时不会被执行。是否确定禁用？',
+    content: '将同时禁用步骤下的所有子步骤，禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？',
     okText: () => '确定',
     cancelText: () => '取消',
     onOk: async () => {
@@ -440,7 +436,6 @@ const disableNode = () => {
     },
   });
 };
-
 
 const enableNode = () => {
   const node = treeDataMap.value[targetModelId]
@@ -482,10 +477,6 @@ async function onDrop(info: DropEvent) {
         }
       }
   )
-}
-
-function addTopNode() {
-  console.log('addTopNode');
 }
 
 let currentInstance

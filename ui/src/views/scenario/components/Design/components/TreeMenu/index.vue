@@ -2,7 +2,7 @@
   <a-dropdown>
     <slot name="button"/>
     <template #overlay>
-      <a-menu>
+      <a-menu @click="selectMenu">
         <template v-for="menu in DESIGN_MENU_CONFIG">
           <SubMenu :key="menu.key" :menu="menu" v-if="menu?.children?.length"/>
           <a-menu-divider v-else-if="menu?.key === 'divider'" :key="menu.key"/>
@@ -14,11 +14,13 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, createVNode} from "vue";
-import {useI18n} from "vue-i18n";
-import {Form} from 'ant-design-vue';
-import {CaretRightOutlined} from "@ant-design/icons-vue";
-import {DESIGN_MENU_CONFIG} from "./config";
+import {defineEmits,defineProps} from "vue";
+const props = defineProps(['treeNode']);
+const emit = defineEmits(['selectMenu']);
+function selectMenu(item) {
+    emit('selectMenu', props.treeNode)
+}
+import {DESIGN_MENU_CONFIG} from "../../config";
 import SubMenu from "./SubMenu.vue";
 import MenuItem from "./MenuItem.vue";
 </script>

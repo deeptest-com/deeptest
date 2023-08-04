@@ -8,17 +8,17 @@
  * */
 export const DESIGN_MENU_CONFIG = [
     {
-        key: 'addRequest',
+        key: 'processor_interface',
         title: ' 添加请求',
         icon: 'arrange-interface',
         children: [
             {
-                key: 'importInterface',
+                key: 'add-child-interface-fromDefine',
                 title: '导入接口定义',
                 icon: 'interface',
             },
             {
-                key: 'importInterfaceCase',
+                key:'add-child-interface-fromTest',
                 title: '导入接口用例',
                 icon: 'arrange-case',
             },
@@ -45,104 +45,104 @@ export const DESIGN_MENU_CONFIG = [
         icon: 'arrange-control',
         children: [
             {
-                key: 'addLoop',
+                key: 'processor_loop',
                 title: '循环',
                 icon: 'arrange-var',
                 children: [
                     {
                         title: '循环次数',
-                        key: 'loopCount',
+                        key: 'processor_loop_time',
                         icon: 'arrange-count',
                     },
-                    {
-                        title: '数据送代',
-                        key: 'loopData',
-                        icon: 'arrange-database',
-                    },
+                    // {
+                    //     title: '数据送代',
+                    //     key: 'loopData',
+                    //     icon: 'arrange-database',
+                    // },
                     {
                         title: '循环直到',
-                        key: 'loopUntil',
+                        key: 'processor_loop_until',
                         icon: 'arrange-untils'
                     },
                     {
                         title: '循环区间',
-                        key: 'loopRange',
+                        key: 'processor_loop_range',
                         icon: 'arrange-range',
                     },
                     {
                         title: '跳出循环',
-                        key: 'loopBreak',
+                        key: 'processor_loop_break',
                         icon: 'arrange-return',
                     },
                 ]
             },
             // 条件
             {
-                key: 'addCondition',
+                key: 'processor_logic',
                 title: '条件',
                 icon: 'arrange-if',
             },
             // 等待时间
             {
-                key: 'addWait',
+                key: 'processor_timer',
                 title: '等待时间',
                 icon: 'arrange-wait',
             },
             //    数据迭代
             {
-                key: 'addData',
+                key: 'processor_data',
                 title: '数据迭代',
                 icon: 'arrange-data-loop',
             },
             {
-                key: 'addCookie',
+                key: 'processor_cookie',
                 title: 'Cookie',
                 icon: 'arrange-cookie',
                 children: [
                     {
                         title: '添加Cookie',
-                        key: 'addCookie',
+                        key: 'processor_cookie_get',
                         icon: 'arrange-add',
                     },
                     {
                         title: '删除Cookie',
-                        key: 'deleteCookie',
+                        key: 'processor_cookie_set',
                         icon: 'arrange-delete',
                     },
                     {
                         title: '清空Cookie',
-                        key: 'clearCookie',
+                        key: 'processor_cookie_clear',
                         icon: 'arrange-clear',
                     },
                 ]
             },
             //   变量
             {
-                key: 'addVariable',
+                key: 'processor_variable',
                 title: '变量',
                 icon: 'arrange-var',
                 children: [
                     {
                         title: '添加变量',
-                        key: 'addVariable',
+                        key: 'processor_variable_set',
                         icon: 'arrange-add',
                     },
                     {
                         title: '删除变量',
-                        key: 'deleteVariable',
+                        key: 'processor_variable_clear',
                         icon: 'arrange-delete',
                     }
                 ]
             },
             //  输出
             {
-                key: 'addOutput',
+                key: 'processor_print',
                 title: '输出',
                 icon: 'arrange-output',
             },
             //   断言
             {
-                key: 'addAssert',
+                key: 'processor_assertion_default',
                 title: '断言',
                 icon: 'arrange-assert',
             },
@@ -166,16 +166,25 @@ export const DESIGN_MENU_CONFIG = [
     },
     //    禁用
     {
-        key: 'addDisable',
+        key: 'disabled',
         title: '禁用',
         icon: 'arrange-disable',
     },
     // 删除
     {
-        key: 'addDelete',
+        key: 'remove',
         title: '删除',
         icon: 'arrange-delete',
     },
 ]
 
+/**
+ * 场景编排类型对应的图标映射
+ * */
 
+export const DESIGN_TYPE_ICON_MAP = {
+    'processor_group_default': 'arrange-group',
+    'processor_loop_time': 'arrange-count',
+    'processor_loop_until': 'arrange-untils',
+    "processor_variable_set": "arrange-var",
+}

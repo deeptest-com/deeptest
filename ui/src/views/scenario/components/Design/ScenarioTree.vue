@@ -25,33 +25,45 @@
             @drop="onDrop"
             @expand="onExpand"
             @select="selectNode"
-            :tree-data="treeData"
+            :tree-data="treeDataNeedRender"
             :replace-fields="replaceFields">
           <template #switcherIcon>
             <CaretDownOutlined/>
           </template>
-          <template #title="nodeProps">
-            <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
-              <span class="tree-title-text" v-if="nodeProps.dataRef.name.indexOf(keywords) > -1">
-                <span>{{ nodeProps.dataRef.name.substr(0, nodeProps.dataRef.name.indexOf(keywords)) }}</span>
-                <span style="color: #f50">{{ keywords }}</span>
-                <span>{{
-                    nodeProps.dataRef.name.substr(nodeProps.dataRef.name.indexOf(keywords) + keywords.length)
-                  }}</span>
+          <template #title="{dataRef}">
+            <div class="tree-title" :draggable="dataRef.id === -1">
+              <div class="title">
+                <!-- 标题前缀 -->
+                <span class="prefix-icon" v-if="dataRef.entityType !== 'processor_interface_default'">
+                <IconSvg :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
               </span>
-              <span class="tree-title-text" v-else>{{ nodeProps.dataRef.name }}</span>
-              <span class="more-icon" v-if="nodeProps.dataRef.id > 0">
-                  <a-dropdown>
-                       <MoreOutlined/>
-                      <template #overlay>
-                        <TreeContextMenu :treeNode="nodeProps.dataRef" :onMenuClick="menuClick"/>
-                      </template>
-                    </a-dropdown>
-                </span>
+                <!-- 请求：请求方法 -->
+                <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
+                <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET' )">{{
+                    dataRef.method || "GET"
+                  }}</a-tag>
+              </span>
+                <span class="title-text">
+                {{ dataRef.name }}
+              </span>
+              </div>
+              <div class="icon" v-if="dataRef.id > 0">
+                <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
+                  <template #button>
+                    <PlusOutlined class="plus-icon" @click.prevent.stop/>
+                  </template>
+                </TreeMenu>
+                <a-dropdown>
+                  <MoreOutlined/>
+                  <template #overlay>
+                    <TreeContextMenu :treeNode="dataRef" :onMenuClick="menuClick"/>
+                  </template>
+                </a-dropdown>
+              </div>
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
+        <div v-if="!treeDataNeedRender" class="nodata-tip">请点击上方按钮添加分类 ~</div>
       </div>
     </div>
 
@@ -72,7 +84,6 @@
 
   </div>
 </template>
-
 <script setup lang="ts">
 import {computed, defineProps, onMounted, onUnmounted, ref, watch, getCurrentInstance} from "vue";
 
@@ -81,11 +92,10 @@ import {Form, message} from 'ant-design-vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
-import {PlusOutlined, CaretDownOutlined, MoreOutlined,} from '@ant-design/icons-vue';
-
+import {PlusOutlined, CaretDownOutlined, MoreOutlined, FolderOpenOutlined, FolderOutlined} from '@ant-design/icons-vue';
 import {expandAllKeys, expandOneKey} from "@/services/tree";
 import TreeMenu from "./components/TreeMenu/index.vue";
-
+import IconSvg from "@/components/IconSvg";
 import {getExpandedKeys, getSelectedKey, setExpandedKeys} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
@@ -93,6 +103,8 @@ import TreeContextMenu from "./components/TreeContextMenu.vue";
 import EditModal from "./components/edit.vue";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import InterfaceSelectionFromTest from "@/views/component/InterfaceSelectionFromTest/main.vue";
+import {DESIGN_TYPE_ICON_MAP} from "./config";
+import {getMethodColor} from "@/utils/dom";
 
 const props = defineProps<{}>()
 
@@ -105,13 +117,21 @@ import {filterTree} from "@/utils/tree";
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
+const treeDataNeedRender = computed<any>(() => {
+  if (treeData?.value?.[0]?.children?.length > 0) {
+    return treeData.value[0].children;
+  }
+  return null
+});
+
 
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
 const selectedNode = computed<any>(() => store.state.Scenario.nodeData);
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 
 watch(treeData, () => {
-  console.log('832 watch treeData', treeData)
+  console.log('832 watch treeData1', treeData.value)
+  console.log('832 watch treeData2', treeDataNeedRender.value)
 
   if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
     tips.value = '右键树状节点操作'
@@ -235,19 +255,16 @@ const expandAll = () => {
 
 let targetModelId = 0
 const menuClick = (menuKey: string, targetId: number) => {
-  console.log('menuClick', menuKey, targetId)
+  console.log('menuClick 832', menuKey, targetId)
   targetModelId = targetId
-
   if (menuKey === 'edit') {
     edit(treeDataMap.value[targetModelId])
     return
   }
-
   if (menuKey === 'remove') {
     removeNode()
     return
   }
-
   // add-child-interface-define
   // add-child-interface-debug
   // add-child-processor_logic-processor_logic_if
@@ -264,6 +281,13 @@ const menuClick = (menuKey: string, targetId: number) => {
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
   clearMenu()
+}
+
+function selectMenu(item,treeNode) {
+  console.log(8322222,item,treeNode);
+  const targetModelId = treeNode.dataRef.id
+  // debugger;
+  const keyPath = item.keyPath;
 }
 
 async function handleEditModalOk(model) {
@@ -405,8 +429,6 @@ onUnmounted(() => {
 })
 
 </script>
-
-
 <style lang="less" scoped>
 .scenario-tree-main {
   background: #ffffff;
@@ -421,5 +443,36 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
+.prefix-icon {
+  margin-right: 6px;
+}
+
+.method-tag {
+  transform: scale(0.7);
+  margin-right: 3px;
+}
+
+// 给下面样式添加省略号
+.tree-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .title {
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    display: inline-block;
+  }
+
+  .icon {
+    width: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
 
 </style>

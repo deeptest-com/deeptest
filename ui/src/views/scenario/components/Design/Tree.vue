@@ -234,7 +234,7 @@ const expandAll = () => {
 
 let targetModelId = 0
 const menuClick = (menuKey: string, targetId: number) => {
-  console.log('menuClick', menuKey, targetId)
+  console.log('menuClick 832', menuKey, targetId)
   targetModelId = targetId
 
   if (menuKey === 'edit') {

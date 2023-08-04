@@ -155,11 +155,12 @@ export const DESIGN_MENU_CONFIG = [
         ]
     },
     {
-        key: 'addGroup',
+        key: 'processor_group',
+        type:'processor_group_default',
         title: '添加分组',
         icon: 'arrange-group',
     },
-//    分割线
+    //  分割线
     {
         key: 'divider',
         title: '分割线',
@@ -187,4 +188,12 @@ export const DESIGN_TYPE_ICON_MAP = {
     'processor_loop_time': 'arrange-count',
     'processor_loop_until': 'arrange-untils',
     "processor_variable_set": "arrange-var",
+}
+
+
+/**
+ * 根据 key 获取对应的分类
+ * */
+export const processorCategoryMap = {
+    'processor_group': 'processor_group_default',
 }

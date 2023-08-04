@@ -6,9 +6,9 @@
             placeholder="输入关键字过滤"
             class="search-input"
             v-model:value="keywords"/>
-        <TreeMenu>
+        <TreeMenu @selectMenu="selectMenu" :treeNode="treeData?.[0]">
           <template #button>
-            <PlusOutlined class="plus-icon" @click.prevent.stop/>
+            <PlusOutlined class="plus-icon"/>
           </template>
         </TreeMenu>
       </div>
@@ -34,9 +34,11 @@
             <div class="tree-title" :draggable="dataRef.id === -1">
               <div class="title">
                 <!-- 标题前缀 -->
-                <span class="prefix-icon" v-if="dataRef.entityType !== 'processor_interface_default'">
-                <IconSvg :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
-              </span>
+                <span class="prefix-icon"
+                      v-if=" DESIGN_TYPE_ICON_MAP[dataRef?.entityType] !== 'processor_interface_default'">
+                  <IconSvg v-if="DESIGN_TYPE_ICON_MAP[dataRef.entityType]"
+                           :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
+                </span>
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
                 <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET' )">{{
@@ -48,11 +50,11 @@
               </span>
               </div>
               <div class="icon" v-if="dataRef.id > 0">
-<!--                <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">-->
-<!--                  <template #button>-->
-<!--                    <PlusOutlined class="plus-icon"/>-->
-<!--                  </template>-->
-<!--                </TreeMenu>-->
+                <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
+                  <template #button>
+                    <PlusOutlined class="plus-icon"/>
+                  </template>
+                </TreeMenu>
                 <a-dropdown>
                   <MoreOutlined/>
                   <template #overlay>
@@ -282,12 +284,25 @@ const menuClick = (menuKey: string, targetId: number) => {
   clearMenu()
 }
 
-function selectMenu(menuInfo,treeNode) {
+function selectMenu(menuInfo, treeNode) {
   // console.log(8322222,menuInfo,treeNode);
-  const targetModelId = treeNode.id;
+  const targetModelId = treeNode?.id;
+  if (!targetModelId) return;
+
   // debugger;
+  // {
+  //     "mode": "child",
+  //     "processorCategory": "processor_group",
+  //     "processorType": "processor_group_default",
+  //     "targetProcessorCategory": "processor_root",
+  //     "targetProcessorType": "processor_root_default",
+  //     "targetProcessorId": 184,
+  //     "name": "分组"
+  // }
+  // const mode = "child";
   const keyPath = menuInfo.keyPath;
   const key = menuInfo.key;
+
   if (key === 'edit') {
     edit(treeDataMap.value[targetModelId])
     return
@@ -300,6 +315,12 @@ function selectMenu(menuInfo,treeNode) {
   const mode = keyPath[0]
   const processorCategory = keyPath[1];
   const processorType = keyPath[2];
+
+  if(key=== 'processor_group'){
+    addNode('child', 'processor_group', 'processor_group_default',
+        'processor_root', 'processor_root_default', targetModelId)
+    return
+  }
 
   const targetProcessorId = targetModelId
   const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
@@ -397,12 +418,9 @@ const interfaceSelectionCancel = () => {
 
 const removeNode = () => {
   console.log('removeNode')
-
   const node = treeDataMap.value[targetModelId]
-
   const title = `确定删除名为${node.name}的节点吗？`
   const context = '该节点的所有子节点都将被删除！'
-
   confirmToDelete(title, context, () => {
     store.dispatch('Scenario/removeNode', targetModelId);
     selectNode([], null)

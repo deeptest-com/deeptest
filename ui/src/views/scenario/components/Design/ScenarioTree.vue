@@ -48,11 +48,11 @@
               </span>
               </div>
               <div class="icon" v-if="dataRef.id > 0">
-                <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
-                  <template #button>
-                    <PlusOutlined class="plus-icon"/>
-                  </template>
-                </TreeMenu>
+<!--                <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">-->
+<!--                  <template #button>-->
+<!--                    <PlusOutlined class="plus-icon"/>-->
+<!--                  </template>-->
+<!--                </TreeMenu>-->
                 <a-dropdown>
                   <MoreOutlined/>
                   <template #overlay>
@@ -63,7 +63,7 @@
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeDataNeedRender" class="nodata-tip">请点击上方按钮添加分类 ~</div>
+        <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
       </div>
     </div>
 
@@ -255,7 +255,6 @@ const expandAll = () => {
 
 let targetModelId = 0
 const menuClick = (menuKey: string, targetId: number) => {
-  console.log('menuClick 832', menuKey, targetId)
   targetModelId = targetId
   if (menuKey === 'edit') {
     edit(treeDataMap.value[targetModelId])
@@ -284,12 +283,11 @@ const menuClick = (menuKey: string, targetId: number) => {
 }
 
 function selectMenu(menuInfo,treeNode) {
-  console.log(8322222,menuInfo,treeNode);
-  const targetModelId = treeNode.dataRef.id
-  debugger;
+  // console.log(8322222,menuInfo,treeNode);
+  const targetModelId = treeNode.id;
+  // debugger;
   const keyPath = menuInfo.keyPath;
   const key = menuInfo.key;
-
   if (key === 'edit') {
     edit(treeDataMap.value[targetModelId])
     return

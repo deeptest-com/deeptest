@@ -49,7 +49,7 @@ watch(responseData, (newVal) => {
   console.log('responseData', responseData.value.invokeId)
   if (responseData.value.invokeId)
     store.dispatch("Debug/getInvocationResult", responseData.value.invokeId)
-}, {immediate: false, deep: true})
+}, {immediate: true, deep: true})
 
 const getResultClass = (item) => {
   return item.resultStatus===ResultStatus.Pass? 'pass':

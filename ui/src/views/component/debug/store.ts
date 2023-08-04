@@ -347,6 +347,8 @@ const StoreModel: ModuleType = {
         },
 
         async call({commit, dispatch, state}, data: any) {
+            console.log('call')
+
             commit('setRequest', {});
             commit('setResponse', {});
             const response = await call(data)

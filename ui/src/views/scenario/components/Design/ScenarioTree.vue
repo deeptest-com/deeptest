@@ -6,9 +6,9 @@
             placeholder="输入关键字过滤"
             class="search-input"
             v-model:value="keywords"/>
-        <TreeMenu>
+        <TreeMenu @selectMenu="selectMenu" :treeNode="treeData?.[0]">
           <template #button>
-            <PlusOutlined class="plus-icon" @click.prevent.stop/>
+            <PlusOutlined class="plus-icon"/>
           </template>
         </TreeMenu>
       </div>
@@ -34,9 +34,11 @@
             <div class="tree-title" :draggable="dataRef.id === -1">
               <div class="title">
                 <!-- 标题前缀 -->
-                <span class="prefix-icon" v-if="dataRef.entityType !== 'processor_interface_default'">
-                <IconSvg :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
-              </span>
+                <span class="prefix-icon"
+                      v-if="dataRef?.entityType !== 'processor_interface_default'">
+                  <IconSvg v-if="DESIGN_TYPE_ICON_MAP[dataRef.entityType]"
+                           :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
+                </span>
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
                 <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET' )">{{
@@ -48,11 +50,11 @@
               </span>
               </div>
               <div class="icon" v-if="dataRef.id > 0">
-<!--                <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">-->
-<!--                  <template #button>-->
-<!--                    <PlusOutlined class="plus-icon"/>-->
-<!--                  </template>-->
-<!--                </TreeMenu>-->
+                <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
+                  <template #button>
+                    <PlusOutlined class="plus-icon"/>
+                  </template>
+                </TreeMenu>
                 <a-dropdown>
                   <MoreOutlined/>
                   <template #overlay>
@@ -77,12 +79,12 @@
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc===ProcessorInterfaceSrc.Define"
         :onFinish="endpointInterfaceIdsSelectionFinish"
-        :onCancel="interfaceSelectionCancel" />
+        :onCancel="interfaceSelectionCancel"/>
 
     <InterfaceSelectionFromDiagnose
         v-if="interfaceSelectionVisible && interfaceSelectionSrc===ProcessorInterfaceSrc.Diagnose"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
-        :onCancel="interfaceSelectionCancel" />
+        :onCancel="interfaceSelectionCancel"/>
 
   </div>
 </template>
@@ -90,13 +92,13 @@
 import {computed, defineProps, onMounted, onUnmounted, ref, watch, getCurrentInstance} from "vue";
 
 import {useI18n} from "vue-i18n";
-import {Form, message} from 'ant-design-vue';
+import {Form, message, Modal} from 'ant-design-vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 import {filterTree} from "@/utils/tree";
 import {ProcessorInterfaceSrc} from "@/utils/enum";
-import {DESIGN_TYPE_ICON_MAP} from "./config";
+import {DESIGN_TYPE_ICON_MAP, processorCategoryMap} from "./config";
 import {getMethodColor} from "@/utils/dom";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {PlusOutlined, CaretDownOutlined, MoreOutlined, FolderOpenOutlined, FolderOutlined} from '@ant-design/icons-vue';
@@ -113,9 +115,7 @@ import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFr
 import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelectionFromDiagnose/main.vue";
 
 const props = defineProps<{}>()
-
 const useForm = Form.useForm;
-
 const {t} = useI18n();
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -286,12 +286,17 @@ const menuClick = (menuKey: string, targetId: number) => {
   clearMenu()
 }
 
-function selectMenu(menuInfo,treeNode) {
+function selectMenu(menuInfo, treeNode) {
   // console.log(8322222,menuInfo,treeNode);
-  const targetModelId = treeNode.id;
-  // debugger;
-  const keyPath = menuInfo.keyPath;
+
+  targetModelId = treeNode?.id;
   const key = menuInfo.key;
+  const mode = 'child';
+  const processorType = key;
+  // 检验必要字段
+  if (!targetModelId) return;
+  if (!key) return;
+
   if (key === 'edit') {
     edit(treeDataMap.value[targetModelId])
     return
@@ -300,10 +305,17 @@ function selectMenu(menuInfo,treeNode) {
     removeNode()
     return
   }
+  if (key === 'disable') {
+    disableNode()
+    return
+  }
+  if (key === 'enable') {
+    enableNode()
+    return
+  }
 
-  const mode = keyPath[0]
-  const processorCategory = keyPath[1];
-  const processorType = keyPath[2];
+  const processorCategory = processorCategoryMap[key];
+  if (!processorCategory) return;
 
   const targetProcessorId = targetModelId
   const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
@@ -401,17 +413,52 @@ const interfaceSelectionCancel = () => {
 
 const removeNode = () => {
   console.log('removeNode')
-
   const node = treeDataMap.value[targetModelId]
-
   const title = `确定删除名为${node.name}的节点吗？`
   const context = '该节点的所有子节点都将被删除！'
-
   confirmToDelete(title, context, () => {
     store.dispatch('Scenario/removeNode', targetModelId);
     selectNode([], null)
   })
+
 }
+
+const disableNode = () => {
+  const node = treeDataMap.value[targetModelId]
+  Modal.confirm({
+    okType: 'danger',
+    title: `确定禁用名为${node.name}的节点吗？`,
+    content: '将同时禁用步骤下的所有子步骤。禁用后该步骤及所有子步骤在场景测试运行时不会被执行。是否确定禁用？',
+    okText: () => '确定',
+    cancelText: () => '取消',
+    onOk: async () => {
+      await store.dispatch('Scenario/removeNode', targetModelId);
+      selectNode([], null)
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+};
+
+
+const enableNode = () => {
+  const node = treeDataMap.value[targetModelId]
+  Modal.confirm({
+    okType: 'danger',
+    title: `启用名为${node.name}的场景步骤吗？`,
+    content: '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？',
+    okText: () => '确定',
+    cancelText: () => '取消',
+    onOk: async () => {
+      await store.dispatch('Scenario/removeNode', targetModelId);
+      selectNode([], null)
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+};
 
 const clearMenu = () => {
   console.log('clearMenu')

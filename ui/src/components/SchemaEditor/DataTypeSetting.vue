@@ -160,7 +160,6 @@ import {StateType as ServeStateType} from "@/store/serve";
 import debounce from "lodash.debounce";
 
 const props = defineProps(['value', 'serveId', 'isRefChildNode', 'isRoot']);
-
 const emit = defineEmits(['change']);
 const tabsList: any = ref([]);
 const visible: any = ref(false);

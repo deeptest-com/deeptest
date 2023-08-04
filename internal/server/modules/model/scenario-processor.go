@@ -21,8 +21,9 @@ type Processor struct {
 	EntityCategory consts.ProcessorCategory `json:"entityCategory"`
 	EntityType     consts.ProcessorType     `json:"entityType"`
 
-	EntityId            uint `json:"entityId"` // Debug Interface Id for ProcessorInterface type
-	EndpointInterfaceId uint `json:"endpointInterfaceId"`
+	EntityId              uint                         `json:"entityId"` // Debug Interface Id for ProcessorInterface type
+	EndpointInterfaceId   uint                         `json:"endpointInterfaceId"`
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 
 	Ordr     int          `json:"ordr"`
 	Children []*Processor `gorm:"-" json:"children"`

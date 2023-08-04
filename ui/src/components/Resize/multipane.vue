@@ -1,5 +1,5 @@
 <template>
-  <div class="multipane-con" :class="classnames" :style="{ cursor, userSelect }" @mousedown="onMouseDown">
+  <div class="dp-multipane-con" :class="classnames" :style="{ cursor, userSelect }" @mousedown="onMouseDown">
     <slot></slot>
   </div>
 </template>
@@ -141,9 +141,5 @@ export default {
   position: relative;
   z-index: 1;
 }
-
-
-
-
 
 </style>

@@ -48,6 +48,8 @@ type BaseRequest struct {
 	BearerToken BearerToken `json:"bearerToken"`
 	OAuth20     OAuth20     `json:"oauth20"`
 	ApiKey      ApiKey      `json:"apiKey"`
+
+	FullUrlToDisplay string `json:"fullUrlToDisplay"`
 }
 
 type Header struct {

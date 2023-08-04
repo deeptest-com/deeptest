@@ -132,14 +132,8 @@ import Schema from './schema';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {MonacoOptions} from '@/utils/const';
 
-const props = defineProps<{
-  tabContentStyle?: object,
-  contentStr?: string,
-  serveId?: number,
-  exampleStr?: string,
-  schemeVisibleKey?: string | number,
-}>();
 
+const props = defineProps(['tabContentStyle', 'contentStr', 'serveId', 'exampleStr', 'schemeVisibleKey']);
 const emit = defineEmits<{
   (e: 'generateFromJSON', jsonStr?: string): void,
   (e: 'generateExample', jsonStr?: string): void,
@@ -242,8 +236,14 @@ watch(() => {
 
 watch(() => {
   return examples.value.length
-}, (newVal) => {
+}, (newVal,oldValue) => {
   activeExample.value = newVal > 0 ? examples.value[newVal - 1] : null;
+  // 根据删除的 exampleIndex 重新设置 activeExampleIndex
+  if(newVal === 0){
+    activeExampleIndex.value = 0;
+  }else if(newVal === oldValue + 1){
+    activeExampleIndex.value = newVal - 1;
+  }
 }, {
   immediate: true
 })

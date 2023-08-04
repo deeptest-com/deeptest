@@ -9,13 +9,14 @@
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
+            <template #title>保存</template>
+            <icon-svg type="save" class="dp-icon dp-link-primary dp-icon-large"
+                      @click.stop="save" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>清除</template>
-            <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
+            <template #title>帮助</template>
+            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
@@ -23,19 +24,18 @@
             <FullscreenOutlined @click.stop="openFullscreen()"  class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
 
-
         </a-col>
       </a-row>
     </div>
 
     <div class="content">
-      <Script v-if="preConditions.length > 0" :condition="preConditions[0]" />
+      <Script />
     </div>
 
-    <FullScreenPopup v-if="fullscreen"
+    <FullScreenPopup v-if="scriptData.id > 0 && fullscreen"
                      :visible="fullscreen"
-                     :model="preConditions[0]"
-                     :onCancel="closeFullScreen"/>
+                     :model="scriptData"
+                     :onCancel="closeFullScreen" />
   </div>
 </template>
 
@@ -43,45 +43,44 @@
 import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
-  ClearOutlined, MenuOutlined, RightOutlined,
-  DownOutlined, CloseCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
-import draggable from 'vuedraggable'
+import { QuestionCircleOutlined, DeleteOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
-import {confirmToDelete} from "@/utils/confirm";
-import {ConditionType, PreConditionType, UsedBy} from "@/utils/enum";
+import {UsedBy} from "@/utils/enum";
 import IconSvg from "@/components/IconSvg";
-import {EnvDataItem} from "@/views/project-settings/data";
 
 import {StateType as Debug} from "@/views/component/debug/store";
-import {getEnumSelectItems} from "@/views/scenario/service";
 import Script from "./conditions-pre/Script.vue";
 import FullScreenPopup from "./ConditionPopup.vue";
 
-const store = useStore<{  Debug: Debug }>();
-const debugData = computed<any>(() => store.state.Debug.debugData);
-const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
-const preConditions = computed<any>(() => store.state.Debug.preConditions);
+const store = useStore<{  Debug: Debug }>()
+const debugData = computed<any>(() => store.state.Debug.debugData)
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo)
+const scriptData = computed<any>(() => store.state.Debug.scriptData);
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 const fullscreen = ref(false)
 
-const list = () => {
-  console.log('list')
-  store.dispatch('Debug/listPreCondition')
+const getPreConditionScript = () => {
+  console.log('getPreConditionScript')
+  store.dispatch('Debug/getPreConditionScript')
 }
 
 watch(debugData, (newVal) => {
   console.log('watch debugData')
-  list()
+  getPreConditionScript()
 }, {immediate: true, deep: true});
 
 const format = (item) => {
   console.log('format', item)
   bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
+}
+
+const save = () => {
+  console.log('save')
+  bus.emit(settings.eventConditionSave, {});
 }
 
 const openFullscreen = () => {

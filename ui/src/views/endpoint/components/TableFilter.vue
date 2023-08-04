@@ -1,33 +1,31 @@
 <template>
   <a-form :layout="'inline'" ref="tagFormRef" :model="tagFormRef">
     <a-space :size="16">
-      <a-form-item label="创建人" style="margin-bottom: 0;">
-        <a-select
-            allowClear
-            @change="(e) => {
+      <a-form-item :label="null"  style="margin-bottom: 0;">
+        <Select
+        :placeholder="'请选择创建人'"
+        :options="userList"
+        :value="formState?.createUser || []"
+        @change="(e) => {
               handleFilterChange('createUser',e);
             }"
-            placeholder="请选择创建人"
-            :options="userList"
-            option-label-prop="name"
-            style="width: 140px;"
-            :value="formState?.createUser"/>
+        />
       </a-form-item>
-      <a-form-item label="状态" style="margin-bottom: 0;">
-        <a-select
-            style="width: 120px;"
-            allowClear
-            @change="(e) => {
+      <a-form-item :label="null" style="margin-bottom: 0;">
+        <Select
+        :placeholder="'请选择状态'"
+        :options="endpointStatusOpts || []"
+        :value="formState?.status || []"
+        :width="'180px'"
+        @change="(e) => {
               handleFilterChange('status',e);
             }"
-            :value="formState?.status"
-            placeholder="请选择状态"
-            :options="endpointStatusOpts"/>
+        />
       </a-form-item>
-      <a-form-item label="标签" style="margin-bottom: 0;">
+      <a-form-item :label="null"  style="margin-bottom: 0;">
         <a-select
             mode="multiple"
-            style="width: 200px;"
+            style="width: 180px;"
             allowClear
             @change="(e) => {
               handleFilterChange('tagNames',e);
@@ -39,8 +37,8 @@
       </a-form-item>
       <a-form-item :label="null">
         <a-input-search
-            style="display: flex;justify-content: end;width: 250px;"
-            placeholder="请输入关键词"
+            style="display: flex;justify-content: end;width: 200px;"
+            placeholder="接口名称或路径"
             enter-button
             :value="formState?.title"
             @change="(e) => {
@@ -61,6 +59,7 @@ import {
   defineEmits, ref,defineExpose,
   onMounted, computed, watch, Ref
 } from 'vue';
+import Select from '@/components/Select/index.vue';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -70,11 +69,12 @@ const tagList: any = computed(()=>store.state.Endpoint.tagList);
 
 import {useStore} from "vuex";
 
+
 const emit = defineEmits(['filter']);
 
 const formState: Ref<filterFormState> = ref({
-  "status": "",
-  "createUser": "",
+  "status": [],
+  "createUser": [],
   "title": "",
   "categoryId":"",
   "tagNames":[],

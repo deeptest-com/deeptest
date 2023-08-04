@@ -37,10 +37,10 @@ func (s *ShareVarService) Save(name, value string,
 		UsedBy:              usedBy,
 	}
 
-	if usedBy == consts.InterfaceDebug || usedBy == consts.DiagnoseDebug {
-		po.ID, err = s.ShareVariableRepo.GetExistByInterfaceDebug(name, serveId, usedBy)
-	} else if usedBy == consts.ScenarioDebug {
+	if usedBy == consts.ScenarioDebug {
 		po.ID, err = s.ShareVariableRepo.GetExistByScenarioDebug(name, scenarioId)
+	} else {
+		po.ID, err = s.ShareVariableRepo.GetExistByInterfaceDebug(name, serveId, usedBy)
 	}
 
 	err = s.ShareVariableRepo.Save(&po)

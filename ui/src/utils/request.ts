@@ -10,6 +10,7 @@ import settings from '@/config/settings';
 import { getToken } from '@/utils/localToken';
 import { getCache } from '@/utils/localCache';
 import {ref} from "vue";
+import {getAgentUrl} from '@/utils/env';
 
 export interface ResponseData {
     code: number;
@@ -32,7 +33,8 @@ export const getUrls = () => {
     console.log(`isElectron=${isElectron}, nodeEnv=${nodeEnv}, locationHref=${window.location.href}`)
 
     const serverUrl = process.env.VUE_APP_API_SERVER
-    const agentUrl = process.env.VUE_APP_API_AGENT
+    // const agentUrl = process.env.VUE_APP_API_AGENT
+    const agentUrl = getAgentUrl()
 /*
     if (nodeEnv === 'production' && !isElectron) { // load ui page from server
         const location = unescape(window.location.href);

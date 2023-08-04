@@ -25,6 +25,22 @@
         </template>
       </a-dropdown>
 
+      <!--  切换Agent -->
+      <a-dropdown placement="bottomRight" v-if="isElectronEnv" >
+        <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 12px;">
+          <EnvironmentOutlined class="user-icon"/>
+          <span class="user-name">{{currentAgentLabel}}</span>
+          <DownOutlined class="user-icon"/>
+        </a>
+        <template #overlay>
+          <a-menu @click="changeAgentEnv">
+            <a-menu-item  v-for="agent in agentUrlOpts" :key="agent.value" :disabled="agent.label === currentAgentLabel">
+              {{agent.label}}
+            </a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
+
       <a-tooltip placement="bottom" @click="toggle">
         <template #title>{{ isFullscreen ? '退出全屏' : '全屏' }}</template>
         <a-button type="text" class="share-btn">
@@ -32,33 +48,24 @@
           <FullscreenExitOutlined v-if="!isFullscreen" :style="{'font-size': '14px','color':theme === 'white-theme' ? '#fff' : '#8A8A8A'}"/>
         </a-button>
       </a-tooltip>
+
+
     </div>
-    <!-- <div class="msgs">
-      <a @click="gotoMessage">
-        <a-badge count="100" :overflowCount="99" show-zero
-                 :numberStyle="{fontSize: '12px', minWidth: '12px', height: '10px', lineHeight: '10px', padding: '0 4px','box-shadow':'none'}">
-          <MailOutlined  class="dp-light user-icon" :style="{ fontSize: '16px',left:'-2px',position:'relative' }"/>
-        </a-badge>
-      </a>
-    </div> -->
-    <!--    <div class="user-management" @click="onManagementClick">-->
-    <!--      <a-tooltip placement="bottom" title="用户管理">-->
-    <!--        <icon-svg type="setting" :style="{width: '20px', height: '20px', fill: `${theme === 'white-theme' ? '#fff' : '#8A8A8A' }`}" />-->
-    <!--      </a-tooltip>-->
-    <!--    </div>-->
+
   </div>
 </template>
 <script lang="ts">
 import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
-
+import {agentUrlOpts, getAgentLabel, isElectronEnv} from '@/utils/env'
 import {
   DownOutlined,
   SettingOutlined,
   UserOutlined,
   LogoutOutlined,
   FullscreenOutlined,
-  FullscreenExitOutlined
+  FullscreenExitOutlined,
+  EnvironmentOutlined
 } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 // import IconSvg from "@/components/IconSvg";
@@ -70,9 +77,10 @@ export default defineComponent({
   name: 'RightTopSettings',
   components: {
     DownOutlined,
-    SettingOutlined, UserOutlined, LogoutOutlined,
+    SettingOutlined, UserOutlined, LogoutOutlined,EnvironmentOutlined,
     // IconSvg
-    FullscreenOutlined, FullscreenExitOutlined
+    FullscreenOutlined,
+    FullscreenExitOutlined
   },
   props: {
     theme: {
@@ -125,6 +133,18 @@ export default defineComponent({
       }
     }
 
+
+    function changeAgentEnv(event:any) {
+      const {key} = event;
+      console.log('832',key);
+      window.localStorage.setItem('dp-cache-agent-value',key);
+      window.location.reload();
+    }
+
+    const currentAgentLabel = getAgentLabel();
+
+
+
     const onManagementClick = () => {
       router.replace({path: '/user-manage/index'})
     }
@@ -138,7 +158,11 @@ export default defineComponent({
       closeSelectLang,
       onManagementClick,
       toggle,
-      isFullscreen
+      isFullscreen,
+      changeAgentEnv,
+      agentUrlOpts,
+      isElectronEnv,
+      currentAgentLabel
     }
   }
 })

@@ -1,6 +1,6 @@
 <template>
-  <div :class="{'content':isDocsPage,'full-content':isDocsFullPage,'drawer-content':isEndpointPage}"
-       v-if="data?.name && serviceList?.length">
+  <div v-if="data?.name && serviceList?.length"
+       :class="{'content':isDocsPage,'full-content':isDocsFullPage,'drawer-content':isEndpointPage}">
     <DocsHeader v-if="showHeader"
                 :data="data"
                 :items="serviceList"
@@ -43,7 +43,8 @@ import {
   ref,
   defineProps,
   defineEmits,
-  computed, onMounted, watch,
+  computed,
+  watch,
 } from 'vue';
 import {useStore} from "vuex";
 
@@ -102,6 +103,7 @@ watch(() => {
   }
 }, {immediate: true});
 
+
 async function selectMenu(item) {
   selectedItem.value = item;
 
@@ -156,12 +158,15 @@ function changeVersion(docId) {
 // 文档页面
 .content {
   height: calc(100vh - 100px);
+
   .doc-container {
     display: flex;
     height: calc(100vh - 156px);
+
     .left {
       margin-left: 12px;
     }
+
     .only-docs {
       padding: 0;
     }
@@ -185,6 +190,7 @@ function changeVersion(docId) {
 
   .doc-container {
     position: relative;
+
     .left {
       margin-left: 0 !important;
       height: calc(100vh - 96px);

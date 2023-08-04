@@ -8,8 +8,6 @@
 import {onMounted} from "vue";
 import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
-import {resizeHeight} from "@/utils/dom";
-import ResponseMeta from './Meta.vue';
 import ResponseRenderer from './Renderer.vue';
 
 const useForm = Form.useForm;
@@ -21,7 +19,6 @@ const sendRequest = (e) => {
 
 onMounted(() => {
   console.log('onMounted')
-  resizeHeight('content', 'top-panel', 'splitter-v', 'bottom-panel', 200, 200)
 })
 
 </script>

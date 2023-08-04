@@ -35,7 +35,7 @@
           :contentStr="contentStr"
           :exampleStr="exampleStr"
           @generateExample="handleGenerateExample"
-          :tab-content-style="{width:'720px'}"
+          :tab-content-style="{width:'800px'}"
           :value="activeResBodySchema"/>
     </a-col>
   </a-row>
@@ -147,7 +147,9 @@ function changeExamples(examples: any) {
 .form-item-response-item-con {
   position: relative;
   margin-bottom: 24px;
-
+  align-items: flex-start;
+  //padding-bottom: 50vh;
+  min-height: calc(100vh - 594px);
   &:before {
     content: "";
     position: absolute;

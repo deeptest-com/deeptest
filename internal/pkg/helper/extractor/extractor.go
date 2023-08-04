@@ -38,6 +38,8 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 		} else if extractor.Type == consts.Boundary && (extractor.BoundaryStart != "" || extractor.BoundaryEnd != "") {
 			result = queryUtils.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
 				extractor.BoundaryIndex, extractor.BoundaryIncluded)
+		} else if extractor.Type == consts.Regx {
+			result = queryUtils.RegxQuery(resp.Content, extractor.Expression)
 		}
 	}
 
@@ -52,7 +54,7 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 	return
 }
 
-func GenDesc(src consts.ExtractorSrc, typ consts.ExtractorType,
+func GenDesc(varName string, src consts.ExtractorSrc, key string, typ consts.ExtractorType,
 	expression, boundaryStart, boundaryEnd string) (ret string) {
 	srcDesc := ""
 	if src == consts.Header {
@@ -61,28 +63,53 @@ func GenDesc(src consts.ExtractorSrc, typ consts.ExtractorType,
 		srcDesc = "响应体"
 	}
 
-	nameDesc := ""
-	if typ == consts.Boundary {
-		nameDesc = fmt.Sprintf("边界提取器 \"%s - %s\"", boundaryStart, boundaryEnd)
-	} else if typ == consts.JsonQuery {
-		nameDesc = fmt.Sprintf("JSON提取器 \"%s\"", expression)
-	} else if typ == consts.HtmlQuery {
-		nameDesc = fmt.Sprintf("HTML提取器 \"%s\"", expression)
-	} else if typ == consts.XmlQuery {
-		nameDesc = fmt.Sprintf("XML提取器 \"%s\"", expression)
-	} else if typ == consts.Regx {
-		nameDesc = fmt.Sprintf("正则表达式提取器 \"%s\"", expression)
+	if src != consts.Body {
+		ret = fmt.Sprintf("<b>提取变量&nbsp;%s</b>&nbsp;&nbsp;%s&nbsp;%s", varName, srcDesc, key)
+		return
 	}
 
-	ret = fmt.Sprintf("%s%s", srcDesc, nameDesc)
+	name := ""
+	expr := ""
+	if typ == consts.Boundary {
+		name = fmt.Sprintf("边界选择器")
+		expr = fmt.Sprintf("%s ~ %s", getLimitStr(boundaryStart, 26), getLimitStr(boundaryEnd, 26))
+
+	} else if typ == consts.JsonQuery {
+		name = fmt.Sprintf("JSON查询")
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 50))
+
+	} else if typ == consts.HtmlQuery {
+		name = fmt.Sprintf("HTML查询")
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 50))
+
+	} else if typ == consts.XmlQuery {
+		name = fmt.Sprintf("XML查询")
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 50))
+
+	} else if typ == consts.Regx {
+		name = fmt.Sprintf("正则表达式")
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 50))
+	}
+
+	ret = fmt.Sprintf("<b>提取变量&nbsp;%s</b>&nbsp;&nbsp;%s&nbsp;%s（%s）", varName, srcDesc, name, expr)
 
 	return
 }
 
 func GenResultMsg(po *domain.ExtractorBase) (ret string) {
-	desc := GenDesc(po.Src, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
+	desc := GenDesc(po.Variable, po.Src, po.Key, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
 
-	po.ResultMsg = fmt.Sprintf("%s， 结果\"%s\"。", desc, po.Result)
+	po.ResultMsg = fmt.Sprintf("%s，结果\"%s\"。", desc, po.Result)
+
+	return
+}
+
+func getLimitStr(str string, limit int) (ret string) {
+	if len(str) <= limit-3 {
+		return str
+	}
+
+	ret = str[:limit-3] + "..."
 
 	return
 }

@@ -13,7 +13,6 @@ const renderfeedback = (currentUser:any) => {
             userKey: currentUser?.value?.username,
             email: currentUser?.value?.email,
         };
-
         /** 指引配置 */
         const help = [
             {
@@ -47,7 +46,6 @@ const renderfeedback = (currentUser:any) => {
                 ],
             },
         ];
-
         /** 自定义过滤 */
         const filterHelp = (list, e) => {
             if (e.to !== '/login') {
@@ -85,13 +83,11 @@ const renderfeedback = (currentUser:any) => {
         render();
 
         // 监听路由链接变化
-        // onHrefChange((e) => {
-        //     if (e.to == '/login') {
-        //         unmount();
-        //     } else {
-        //         helpChange('key'); // 获取优先级：key > url >  tab_index
-        //     }
-        // });
+        onHrefChange((e) => {
+            if (e.to.includes('user/login')) {
+                unmount();
+            }
+        });
 
     } catch (e) {
         console.error('乐研评论反馈系统，渲染报错：', e)

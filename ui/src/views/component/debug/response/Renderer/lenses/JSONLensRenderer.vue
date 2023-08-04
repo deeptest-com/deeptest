@@ -29,12 +29,11 @@
       <MonacoEditor
           class="editor"
           :value="responseData.content"
+          :timestamp="timestamp"
           :language="responseData.contentLang"
           theme="vs"
           :options="editorOptions"
-          :onExtractor="responseExtractor"
-          :onReplace="responseExtractor"
-      />
+          :onExtractor="responseExtractor" />
     </div>
 
     <ResponseExtractor
@@ -51,7 +50,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref} from "vue";
+import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -60,19 +59,23 @@ import {MonacoOptions} from "@/utils/const";
 
 import {parseHtml, parseJson, testExpr} from "@/views/component/debug/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
-import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
-const usedBy = inject('usedBy') as UsedBy
-const {t} = useI18n();
-
-import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
+
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
 const store = useStore<{  Debug: Debug }>();
 
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
+
+const timestamp = ref('')
+watch(responseData, (newVal) => {
+  timestamp.value = Date.now() + ''
+}, {immediate: true, deep: true})
 
 const editorOptions = ref(Object.assign({usedWith: 'response',readOnly:false}, MonacoOptions) )
 
@@ -175,7 +178,7 @@ const format = (item) => {
     border-bottom: 1px solid #d9d9d9;
   }
   .body {
-    height: calc(100% - 30px);
+    height: calc(100% - 27px);
     overflow-x: hidden;
     overflow-y: hidden;
     &>div {

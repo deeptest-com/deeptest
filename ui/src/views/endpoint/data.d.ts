@@ -84,8 +84,8 @@ export interface PaginationConfig {
 
 
 export interface filterFormState {
-    status: string | null,
-    createUser: string | null,
+    status: [] | null,
+    createUser: [] | null,
     title: string | null,
     categoryId: string | null,
     tagNames:[]|[]

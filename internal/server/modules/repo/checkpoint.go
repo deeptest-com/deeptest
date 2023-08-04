@@ -134,5 +134,7 @@ func (r *CheckpointRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogCh
 		Where("NOT deleted").
 		First(&ret).Error
 
+	ret.ConditionEntityType = consts.ConditionTypeCheckpoint
+
 	return
 }

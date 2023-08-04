@@ -1,4 +1,4 @@
-import {defineComponent, ref, watch,nextTick} from 'vue';
+import {defineComponent, ref, watch, nextTick} from 'vue';
 import './schema.less';
 import {DownOutlined, PlusOutlined, RightOutlined,} from '@ant-design/icons-vue';
 import SplitDivider from "./SplitDivider.vue";
@@ -18,13 +18,7 @@ import {
 
 export default defineComponent({
     name: 'SchemeEditor',
-    props: {
-        value: Object,
-        contentStyle: Object,
-        serveId: Number,
-        refsOptions: Array,
-        components: Array,
-    },
+    props: ['value', 'contentStyle', 'serveId', 'refsOptions', 'components'],
     emits: [],
     setup(props, {emit}) {
         const data: any = ref(null);
@@ -48,7 +42,9 @@ export default defineComponent({
             }
         }
 
-        watch(() => {return props.value}, (newVal) => {
+        watch(() => {
+            return props.value
+        }, (newVal) => {
             data.value = addExtraViewInfo(newVal);
         }, {immediate: true, deep: false});
 
@@ -79,30 +75,40 @@ export default defineComponent({
         const renderDataTypeSetting = (options: any) => {
             const {tree, isRefChildNode} = options;
             const propsLen = Object.keys(tree?.properties || {}).length;
+            const combines = {
+                allOf: tree?.allOf || [],
+                oneOf: tree?.oneOf || [],
+                anyOf: tree?.anyOf || [],
+            }
+
             return <>
                 <DataTypeSetting refsOptions={props.refsOptions}
                                  value={tree}
                                  isRefChildNode={isRefChildNode || false}/>
                 {isObject(tree?.type) && !isRef(tree) ? <span
                     class={'baseInfoSpace'}>{tree.types?.length > 0 ? `[${propsLen}]` : `{${propsLen}}`}</span> : null}
+
+                {/* 复合类型 */}
+                {isCompositeType(tree?.type) ?
+                    <span class={'baseInfoSpace'}>{`{${combines[tree.type].length}}`}</span> : null}
             </>
         }
 
         const renderProperties = (options: any) => {
-            const {keyName, parent, depth, isRoot,ancestor} = options;
-
+            const {keyName, parent, depth, isRoot, ancestor} = options;
             if (isRoot) {
                 return null
             }
             if (!parent) {
                 return null;
             }
-            // const items = parent?.type === 'array' ? ancestor : parent;
-            // const properties = parent?.properties?.[keyName] || {};
-            const properties = parent?.type === 'array' ? parent?.items || {} : parent?.properties?.[keyName] || {};
+            if(isCompositeType(parent?.type)){
+                return null;
+            }
+            const properties = parent?.type === 'array' ? parent?.items || {} : parent?.properties[keyName] || {};
             const list: any = [];
             Object.entries(properties).forEach(([k, v]) => {
-                if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo','ref','content','name','required','types'].includes(k)) {
+                if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo', 'ref', '$ref', 'content', 'name', 'required', 'types'].includes(k)) {
                     if (!!v || v === 0) {
                         list.push({
                             label: k,
@@ -117,9 +123,8 @@ export default defineComponent({
             return <div>
                 {
                     list.map((item) => {
-
                         const {label, value} = item;
-                        if(Array.isArray(value) && value.length === 0){
+                        if (Array.isArray(value) && value.length === 0) {
                             return null
                         }
                         return <div class={['directoryText', 'properties-info']}
@@ -134,13 +139,12 @@ export default defineComponent({
                     })
                 }
             </div>
-
         }
         const renderKeyName = (options: any) => {
-            const {keyName, keyIndex, parent, isRoot, isRefChildNode, isRef, isRefRootNode} = options;
+            const {keyName, isRoot, isRefRootNode, isCompositeChildNode} = options;
             if (isRoot) return null;
             if (!keyName) return null;
-            if (isRefRootNode) return null;
+            if (isRefRootNode || isCompositeChildNode) return null;
             return <>
                 <span class={'baseInfoKey'}>
                     {keyName}
@@ -150,7 +154,6 @@ export default defineComponent({
         }
         const renderExpandIcon = (options: any) => {
             const {isExpand, tree, isRoot, isRef} = options;
-            // if (isRoot) return null;
             if (isExpand) {
                 return <DownOutlined onClick={expandIt.bind(this, tree, options)} class={'expandIcon'}/>
             } else {
@@ -193,7 +196,7 @@ export default defineComponent({
                     {renderDivider(options)}
                     {renderExtraAction(options)}
                 </div>
-                {isExpand ? renderProperties(options) : null}
+                {/*{isExpand ? renderProperties(options) : null}*/}
             </div>
         }
 
@@ -205,11 +208,6 @@ export default defineComponent({
             const isRoot = tree?.extraViewInfo?.depth === 1;
             const options = {...tree?.extraViewInfo, isRoot, tree: tree};
             if (isNormalType(tree.type) && !isRef(tree)) {
-                return renderNormalType(options)
-            }
-            // 复合类型
-            if (isCompositeType(tree.type) && !isRef(tree)) {
-                // todo 复合类型的渲染
                 return renderNormalType(options)
             }
             // 渲染对象类型节点
@@ -232,10 +230,30 @@ export default defineComponent({
                 // 找到最后一个非数组类型的节点
                 const {node} = findLastNotArrayNode(tree);
                 const isRoot = tree?.extraViewInfo?.depth === 1;
-                return <div class={{'directoryNode': true, "rootNode": isRoot,'rootNode-array':isRoot}}>
+                return <div class={{'directoryNode': true, "rootNode": isRoot, 'rootNode-array': isRoot}}>
                     {
                         renderTree(node)
                     }
+                </div>
+            }
+            // 渲染复合类型节点
+            if (isCompositeType(tree.type) && !isRef(tree)) {
+                const isRoot = tree?.extraViewInfo?.depth === 1;
+                const isExpand = tree?.extraViewInfo?.isExpand;
+                const options = {...tree?.extraViewInfo, isRoot, tree}
+                const combines = {
+                    allOf: tree?.allOf || [],
+                    oneOf: tree?.oneOf || [],
+                    anyOf: tree?.anyOf || [],
+                }
+                return <div key={tree.type} class={{'directoryNode': true, "rootNode": isRoot}}>
+                    {renderDirectoryText(options)}
+                    {
+                        isExpand && combines[tree.type].map((value: any) => {
+                            return renderTree(value)
+                        })
+                    }
+                    {isExpand && combines[tree.type].length > 0 && renderVerticalLine(options)}
                 </div>
             }
             // 如果是引用类型

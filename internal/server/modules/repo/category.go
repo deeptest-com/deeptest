@@ -183,6 +183,14 @@ func (r *CategoryRepo) Delete(id uint) (err error) {
 	return
 }
 
+func (r *CategoryRepo) BatchDelete(ids []uint) (err error) {
+	err = r.DB.Model(&model.Category{}).
+		Where("id IN (?)", ids).
+		Update("deleted", true).
+		Error
+
+	return
+}
 func (r *CategoryRepo) GetChildren(nodeId uint) (children []*model.Category, err error) {
 	err = r.DB.Where("parent_id=?", nodeId).Find(&children).Error
 	return
@@ -220,4 +228,31 @@ func (r *CategoryRepo) GetByItem(sourceType consts.SourceType, parentId uint, ty
 
 	return
 
+}
+
+func (r *CategoryRepo) GetChild(categories, result []*model.Category, parentId int) []*model.Category {
+	child := make([]*model.Category, 0)
+	for _, item := range categories {
+		if item.ParentId == parentId {
+			result = append(result, item)
+			child = append(child, item)
+		}
+	}
+
+	if len(child) != 0 {
+		for _, v := range child {
+			return r.GetChild(categories, result, int(v.ID))
+		}
+	}
+	return result
+}
+
+func (r *CategoryRepo) GetAllChild(typ serverConsts.CategoryDiscriminator, projectId uint, parentId int) (child []*model.Category, err error) {
+	pos, err := r.ListByProject(typ, projectId, 0)
+	if err != nil || len(pos) == 0 {
+		return
+	}
+
+	child = r.GetChild(pos, child, parentId)
+	return
 }

@@ -23,7 +23,7 @@ type ExtractorCtrl struct {
 // @Param	Authorization	header	string	true	"Authentication header"
 // @Param 	currProjectId	query	int		true	"当前项目ID"
 // @Param 	id				path	int		true	"提取器ID"
-// @success	200	{object}	_domain.Response{data=model.DebugInterfaceExtractor}
+// @success	200	{object}	_domain.Response{data=model.DebugConditionExtractor}
 // @Router	/api/v1/extractors/{id}	[get]
 func (c *ExtractorCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
@@ -40,15 +40,15 @@ func (c *ExtractorCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: extractor})
 }
 
-// Create 添加
+// QuickCreate 添加
 // @Tags	提取器
 // @summary	新建提取器
 // @accept 	application/json
 // @Produce application/json
-// @Param	Authorization	header	string	true	"Authentication header"
-// @Param 	currProjectId	query	int		true	"当前项目ID"
-// @Param 	DebugInterfaceExtractor				body	model.DebugInterfaceExtractor		true	"新建提取器的请求参数"
-// @success	200	{object}	_domain.Response{data=model.DebugInterfaceExtractor}
+// @Param	Authorization						header	string											true	"Authentication header"
+// @Param 	currProjectId						query	int												true	"当前项目ID"
+// @Param 	ExtractorConditionQuickCreateReq	body	serverDomain.ExtractorConditionQuickCreateReq	true	"新建提取器的请求参数"
+// @success	200	{object}	_domain.Response
 // @Router	/api/v1/extractors	[post]
 func (c *ExtractorCtrl) QuickCreate(ctx iris.Context) {
 	var req serverDomain.ExtractorConditionQuickCreateReq
@@ -74,7 +74,7 @@ func (c *ExtractorCtrl) QuickCreate(ctx iris.Context) {
 // @Produce application/json
 // @Param	Authorization			header	string							true	"Authentication header"
 // @Param 	currProjectId			query	int								true	"当前项目ID"
-// @Param 	DebugInterfaceExtractor	body	model.DebugInterfaceExtractor	true	"更新提取器的请求参数"
+// @Param 	DebugConditionExtractor	body	model.DebugConditionExtractor	true	"更新提取器的请求参数"
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/extractors	[put]
 func (c *ExtractorCtrl) Update(ctx iris.Context) {
@@ -125,9 +125,9 @@ func (c *ExtractorCtrl) Delete(ctx iris.Context) {
 // @summary	提取器变量列表
 // @accept 	application/json
 // @Produce application/json
-// @Param	Authorization	header	string			true	"Authentication header"
-// @Param 	currProjectId	query	int				true	"当前项目ID"
-// @Param 	DebugReq		body	domain.DebugReq	true	"提取器变量列表的请求参数"
+// @Param	Authorization	header	string				true	"Authentication header"
+// @Param 	currProjectId	query	int					true	"当前项目ID"
+// @Param 	DebugInfo		body	domain.DebugInfo	true	"提取器变量列表的请求参数"
 // @success	200	{object}	_domain.Response{data=[]domain.Variable}
 // @Router	/api/v1/extractors/listExtractorVariableForCheckpoint	[post]
 func (c *ExtractorCtrl) ListExtractorVariableForCheckpoint(ctx iris.Context) {

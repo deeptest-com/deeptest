@@ -19,3 +19,9 @@ export const getEnumSelectItems = (enumDef) => {
 
     return arr
 }
+
+export const getResponseKey = (debugInfo) => {
+    const key = `${debugInfo.debugInterfaceId}-${debugInfo.endpointInterfaceId}`
+    console.log('getResponseKey', key)
+    return key
+}

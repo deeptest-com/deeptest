@@ -12,6 +12,7 @@ const props = defineProps<{
   isLast?: boolean | undefined,
   isRoot?: boolean | undefined,
   isRefChildNode?: boolean | undefined,
+  isCompositeChildNode?: boolean | undefined,
   value?: any
 }>();
 
@@ -27,10 +28,7 @@ const disableSetRequire = computed(() => {
   if (props.isRoot) {
     return true;
   }
-  if (props.isRefChildNode) {
-    return true;
-  }
-  return false;
+  return props.isRefChildNode || props.isCompositeChildNode;
 });
 const disableAddDesc = computed(() => {
   return false;
@@ -52,13 +50,17 @@ const isRequired = computed(() => {
 });
 
 const description = ref('');
-watch(() => {return props.value}, (newVal) => {
+watch(() => {
+  return props.value
+}, (newVal) => {
   if (newVal) {
     description.value = newVal.description;
   }
 }, {immediate: true})
 
-watch(() => {return visible.value}, (newVal) => {
+watch(() => {
+  return visible.value
+}, (newVal) => {
   if (!newVal && description.value) {
     emit('addDesc', description.value);
   }
@@ -70,8 +72,8 @@ watch(() => {return visible.value}, (newVal) => {
   <a-tooltip placement="topLeft" :title="disableSetRequire ? null :  '是否必填？'" arrow-point-at-center>
     <a-button :size="'small'" :disabled="disableSetRequire" type="text" @click="emit('setRequire')">
       <template #icon>
-        <InfoCircleOutlined  v-if="!isRequired" />
-        <InfoCircleTwoTone   v-if="isRequired" />
+        <InfoCircleOutlined v-if="!isRequired"/>
+        <InfoCircleOutlined class="filed-required" v-if="isRequired"/>
       </template>
     </a-button>
   </a-tooltip>
@@ -104,5 +106,13 @@ watch(() => {return visible.value}, (newVal) => {
     </a-button>
   </a-tooltip>
 </template>
+
+<style scoped lang="less">
+.filed-required{
+  :deep(svg){
+    fill: #ff4d4f;
+  }
+}
+</style>
 
 

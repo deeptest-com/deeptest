@@ -6,13 +6,14 @@
           v-model:value="fieldState.name"
           style="width: 200px"
           placeholder="输入字段名称"
-          @search="handleSearch"
+          :options="requestHeaderOptions"
+          :filter-option="requestHeaderOptions"
           @change="handleChangeHeader">
-        <template #dataSource>
-          <a-select-option v-for="header in result" :key="header">
-            {{ header }}
-          </a-select-option>
-        </template>
+<!--        <template #dataSource>-->
+<!--          <a-select-option v-for="header in result" :key="header">-->
+<!--            {{ header }}-->
+<!--          </a-select-option>-->
+<!--        </template>-->
       </a-auto-complete>
       <a-select
           :value="fieldState.type"

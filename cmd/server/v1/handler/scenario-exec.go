@@ -17,6 +17,16 @@ type ScenarioExecCtrl struct {
 }
 
 // LoadExecData
+// @Tags	场景模块/场景执行
+// @summary	加载执行场景
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id				query	int		true	"场景ID"
+// @Param 	environmentId	query	int		true	"环境ID"
+// @success	200	{object}	_domain.Response{data=agentExec.ScenarioExecObjMsg}
+// @Router	/api/v1/scenarios/exec/loadExecScenario	[get]
 func (c *ScenarioExecCtrl) LoadExecData(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 	environmentId, err := ctx.URLParamInt("environmentId")
@@ -34,6 +44,15 @@ func (c *ScenarioExecCtrl) LoadExecData(ctx iris.Context) {
 }
 
 // LoadExecResult
+// @Tags	场景模块/场景执行
+// @summary	加载执行结果
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	scenarioId		query	int		true	"场景ID"
+// @success	200	{object}	_domain.Response{data=domain.Report}
+// @Router	/api/v1/scenarios/exec/loadExecResult	[get]
 func (c *ScenarioExecCtrl) LoadExecResult(ctx iris.Context) {
 	scenarioId, err := ctx.URLParamInt("scenarioId")
 
@@ -47,6 +66,16 @@ func (c *ScenarioExecCtrl) LoadExecResult(ctx iris.Context) {
 }
 
 // SubmitResult
+// @Tags	场景模块/场景执行
+// @summary	提交测试结果
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string							true	"Authentication header"
+// @Param 	currProjectId		query	int								true	"当前项目ID"
+// @Param 	id					path	int								true	"场景ID"
+// @Param 	ScenarioExecResult	body	agentDomain.ScenarioExecResult	true	"场景执行结果"
+// @success	200	{object}	_domain.Response{data=model.ScenarioReport}
+// @Router	/api/v1/scenarios/exec/submitResult/{id}	[post]
 func (c *ScenarioExecCtrl) SubmitResult(ctx iris.Context) {
 	scenarioId, err := ctx.Params().GetInt("id")
 
@@ -64,6 +93,17 @@ func (c *ScenarioExecCtrl) SubmitResult(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report})
 }
 
+// GetScenarioNormalData
+// @Tags	场景模块/场景执行
+// @summary	获取场景执行初始化信息
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string	true	"Authentication header"
+// @Param 	currProjectId		query	int		true	"当前项目ID"
+// @Param 	id					query	int		true	"场景ID"
+// @Param 	environmentId		query	int		true	"环境ID"
+// @success	200	{object}	_domain.Response{data=agentDomain.Report}
+// @Router	/api/v1/scenarios/exec/getScenarioNormalData	[get]
 func (c *ScenarioExecCtrl) GetScenarioNormalData(ctx iris.Context) {
 	id, err := ctx.URLParamInt("id")
 	if err != nil {

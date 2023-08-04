@@ -35,10 +35,12 @@ export async function updateCategoryName(id: number, name: string): Promise<any>
         data: data,
     });
 }
-export async function removeCategory(id: number): Promise<any> {
+export async function removeCategory(id: number, type: string): Promise<any> {
+    const params = {type}
     return request({
         url: `/${apiPath}/${id}`,
         method: 'delete',
+        params,
     });
 }
 export async function moveCategory(data: any): Promise<any> {

@@ -5,11 +5,12 @@
         <MonacoEditor theme="vs" language="typescript" class="editor"
                       :value="model.content"
                       :options="editorOptions"
+                      :timestamp="timestamp"
                       @change="editorChange" />
       </div>
 
       <div class="refer">
-        <div class="desc">后置脚本使用JavaScript编写，在获取响应后执行。</div>
+        <div class="desc">后置处理脚本使用JavaScript编写，并在收到请求响应后执行。</div>
 
         <div class="title">代码片段：</div>
         <div>
@@ -25,16 +26,11 @@
         </div>
       </div>
     </div>
-
-    <div class="footer">
-      <a-button type="primary" @click="save" class="dp-btn-gap">保存</a-button>
-      <a-button v-if="finish" @click="cancel" class="dp-btn-gap">取消</a-button>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, reactive, ref} from "vue";
+import {computed, defineProps, inject, onBeforeUnmount, onMounted, reactive, ref, watch} from "vue";
 import {message, Form, notification} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -44,11 +40,12 @@ import {UsedBy} from "@/utils/enum";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-
 const store = useStore<{  Debug: Debug }>();
 
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
@@ -67,15 +64,19 @@ const props = defineProps({
 })
 
 const load = () => {
-  console.log('load', props.condition)
+  console.log('load script ...', props.condition)
   store.dispatch('Debug/getScript', props.condition.entityId)
 }
 load()
 
+const timestamp = ref('')
+watch(model, (newVal) => {
+  timestamp.value = Date.now() + ''
+}, {immediate: true, deep: true})
+
 const editorOptions = ref(Object.assign({
       usedWith: 'request',
       initTsModules: true,
-
       allowNonTsExtensions: true,
       minimap: {
         enabled: false
@@ -130,6 +131,15 @@ const cancel = () => {
     props.finish()
   }
 }
+
+onMounted(() => {
+  console.log('onMounted')
+  bus.on(settings.eventConditionSave, save);
+})
+onBeforeUnmount( () => {
+  console.log('onBeforeUnmount')
+  bus.off(settings.eventConditionSave, save);
+})
 
 const labelCol = { span: 0 }
 const wrapperCol = { span: 24 }

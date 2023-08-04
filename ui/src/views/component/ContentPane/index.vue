@@ -9,7 +9,7 @@
           <slot name="left"></slot>
         </div>
         <multipane-resizer/>
-        <div class="pane right" :style="{ flexGrow: 1 }">
+        <div class="pane right" :style="{ flexGrow: 1  }">
           <slot name="right"></slot>
         </div>
       </multipane>

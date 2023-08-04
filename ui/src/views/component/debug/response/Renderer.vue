@@ -1,31 +1,49 @@
 <template>
   <div class="response-renderer">
-    <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
-      <a-tab-pane key="body" :tab="title">
-        <ResponseLensJson v-if="responseData.contentLang === 'json'"></ResponseLensJson>
-        <ResponseLensHtml v-else-if="responseData.contentLang === 'html'"></ResponseLensHtml>
-        <ResponseLensXml v-else-if="responseData.contentLang === 'xml'"></ResponseLensXml>
-        <ResponseLensRaw v-else-if="responseData.contentLang === 'text'"></ResponseLensRaw>
-        <ResponseLensImage v-else-if="responseData.contentLang === 'image'"></ResponseLensImage>
-      </a-tab-pane>
+<!--    {{invokedMap}} - {{debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId}}-->
+    <template v-if="invokedMap[debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId] &&
+                    responseData.invokeId">
+      <div class="left">
+        <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
+          <a-tab-pane key="body" :tab="title" class="uppercase">
+            <ResponseLensJson v-if="responseData.contentLang === 'json'" />
+            <ResponseLensHtml v-else-if="responseData.contentLang === 'html'" />
+            <ResponseLensXml v-else-if="responseData.contentLang === 'xml'" />
+            <ResponseLensRaw v-else-if="responseData.contentLang === 'text'" />
+            <ResponseLensImage v-else-if="isImage(responseData.contentType)" />
+          </a-tab-pane>
 
-      <a-tab-pane key="header" tab="响应头">
-        <ResponseHeaders v-if="activeKey === 'header'"></ResponseHeaders>
-      </a-tab-pane>
+          <a-tab-pane key="header" tab="响应头">
+            <ResponseHeaders v-if="activeKey === 'header'" />
+          </a-tab-pane>
 
-      <a-tab-pane key="cookie" tab="Cookie">
-        <ResponseCookies v-if="activeKey === 'cookie'"></ResponseCookies>
-      </a-tab-pane>
+          <a-tab-pane key="cookie" tab="Cookie">
+            <ResponseCookies v-if="activeKey === 'cookie'" />
+          </a-tab-pane>
 
-      <a-tab-pane key="info" tab="详情">
-        <ResponseInfo v-if="activeKey === 'info'"></ResponseInfo>
-        <!-- <template #tab>
-          <a-badge v-if="extractorFail" dot><span class="link">提取器</span></a-badge>
-          <span v-else>提取器</span>
-        </template> -->
-      </a-tab-pane>
+          <a-tab-pane key="console" tab="控制台">
+            <ResponseConsole v-if="activeKey === 'console'" />
+          </a-tab-pane>
 
-    </a-tabs>
+          <a-tab-pane key="info" tab="实际请求">
+            <ResponseInfo v-if="activeKey === 'info'" />
+          </a-tab-pane>
+
+        </a-tabs>
+      </div>
+
+      <div class="right">
+        <ResponseResult />
+      </div>
+    </template>
+
+    <div v-else class="left">
+      <a-tabs class="dp-tabs-full-height">
+        <a-tab-pane key="response" tab="响应体">
+          <div style="padding:10px;">无数据</div>
+        </a-tab-pane>
+      </a-tabs>
+    </div>
   </div>
 </template>
 
@@ -36,8 +54,10 @@ import {useStore} from "vuex";
 
 import ResponseHeaders from "./Renderer/Headers.vue";
 import ResponseCookies from "./Renderer/Cookies.vue";
+import ResponseConsole from "./Renderer/Console.vue";
 import ResponseInfo from "./Renderer/Info.vue";
 
+import ResponseResult from "./Renderer/Result.vue";
 import ResponseLensJson from "./Renderer/lenses/JSONLensRenderer.vue";
 import ResponseLensXml from "@/views/component/debug/response/Renderer/lenses/XMLLensRenderer.vue";
 import ResponseLensHtml from "@/views/component/debug/response/Renderer/lenses/HTMLLensRenderer.vue";
@@ -49,7 +69,9 @@ import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const responseData = computed<any>(() => store.state.Debug.responseData);
+const invokedMap = computed<any>(() => store.state.Debug.invokedMap);
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
@@ -57,30 +79,36 @@ const {t} = useI18n();
 const title = computed(() => t(responseData.value.contentLang ? responseData.value.contentLang : 'empty'))
 const activeKey = ref('body');
 
-/* const extractorFail = computed(() => {
-  for (let val of extractorsData.value) {
-    if (val.result==='extractor_err') return true
-  }
-  return false
-}) */
+const isImage = (type) => {
+  return type && type.indexOf('image') > -1
+}
 
 </script>
 
 <style lang="less">
 .response-renderer {
   height: 100%;
+  display: flex;
 
-  .ant-tabs-line {
+  .left {
     height: 100%;
-    .ant-tabs-top-content {
-      height: calc(100% - 61px);
+    flex: 1;
+    .ant-tabs-line {
+      height: 100%;
+    }
+    .link {
+      color: #009688;
     }
   }
+  .right {
+    height: 100%;
+    width: 360px;
+  }
+
+
 }
 </style>
 
 <style lang="less" scoped>
-  .link {
-    color: #009688;
-  }
+
 </style>

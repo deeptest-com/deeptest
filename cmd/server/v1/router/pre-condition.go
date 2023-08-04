@@ -16,7 +16,7 @@ func (m *PreConditionModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Get("", m.PreConditionCtrl.List).Name = "前置条件列表"
+		index.Get("/getScript", m.PreConditionCtrl.GetScript).Name = "前置条件列表"
 		index.Post("/", m.PreConditionCtrl.Create).Name = "新建前置条件"
 		index.Delete("/{id:uint}", m.PreConditionCtrl.Delete).Name = "删除前置条件"
 		index.Post("/{id:uint}/disable", m.PreConditionCtrl.Disable).Name = "禁用前置条件"

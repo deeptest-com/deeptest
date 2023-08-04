@@ -53,6 +53,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         openInterfaceTab: Action<StateType, StateType>;
         removeInterfaceTab: Action<StateType, StateType>;
+        removeInterfaceTabs: Action<StateType, StateType>;
 
         getServeServers: Action<StateType, StateType>;
         saveDiagnoseDebugData: Action<StateType, StateType>;
@@ -159,8 +160,12 @@ const StoreModel: ModuleType = {
             try {
                 const jsn = await remove(payload.id, payload.type);
                 if (jsn.code === 0) {
-                    dispatch('removeInterfaceTab', payload.id)
-                    dispatch('loadTree', state.queryParams)
+                    if (payload.type == 'interface') {
+                        await dispatch('removeInterfaceTab', payload.id)
+                    } else if (payload.type == 'dir') {
+                        await dispatch('removeInterfaceTabs', payload.id)
+                    }
+                    await dispatch('loadTree', state.queryParams)
                     return true;
                 }
                 return false;
@@ -272,6 +277,28 @@ const StoreModel: ModuleType = {
                 dispatch('openInterfaceTab', openTab);
             }
         },
+        async removeInterfaceTabs({commit, dispatch, state}, id: number) {
+            const removeInterfaceIds = [] as number[]
+            state.treeDataMap[id].children?.forEach((item: any) => {
+                removeInterfaceIds.push(item.id)
+            })
+
+            const needReload = removeInterfaceIds.indexOf(state.interfaceId) > -1
+
+            const interfaceTabs = state.interfaceTabs.filter(tab => removeInterfaceIds.indexOf(tab.id) == -1);
+            commit('setInterfaceTabs', interfaceTabs)
+
+            let openTab = {} as any
+            if (state.interfaceTabs.length && removeInterfaceIds.indexOf(state.interfaceId) > -1) { // close curr tab
+                openTab = state.interfaceTabs[0]
+                commit('setInterfaceId', openTab.id)
+            }
+
+            if (needReload && openTab.id) {
+                await dispatch('openInterfaceTab', openTab);
+            }
+        },
+
         async saveDiagnoseDebugData({commit}, payload: any) {
             const resp = await  saveDiagnoseDebugData(payload)
             return resp.code === 0;

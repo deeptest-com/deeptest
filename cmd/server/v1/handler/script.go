@@ -30,14 +30,14 @@ func (c *ScriptCtrl) Get(ctx iris.Context) {
 
 // Update 更新
 func (c *ScriptCtrl) Update(ctx iris.Context) {
-	var checkpoint model.DebugConditionScript
-	err := ctx.ReadJSON(&checkpoint)
+	var script model.DebugConditionScript
+	err := ctx.ReadJSON(&script)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.ScriptService.Update(&checkpoint)
+	err = c.ScriptService.Update(&script)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -237,8 +237,8 @@ function edit(node) {
   currentNode.value = node;
 }
 async function deleteNode(node) {
-  const title = '确定删除该' + (node.type === 'interface'?'接口':'目录') + '吗？'
-  const context = node.type === 'dir'?'删除后所有所有子目录都会被删除。':''
+  const title = node.type === 'dir' ?'将级联删除目录下的所有子目录、快捷调试' : ''
+  const context = '删除后无法恢复，请确认是否删除？'
 
   confirmToDelete(title, context, () => {
     store.dispatch('DiagnoseInterface/removeInterface', {id: node.id, type: node.type});

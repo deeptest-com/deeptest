@@ -18,13 +18,10 @@
 import {computed, onMounted, reactive, ref} from "vue";
 import {useRouter} from 'vue-router';
 import {useI18n} from "vue-i18n";
-import {EditOutlined, CloseOutlined, CheckOutlined} from "@ant-design/icons-vue";
 
 import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
 import {StateType as UserStateType} from "@/store/user";
-import {NotificationKeyCommon, pattern} from "@/utils/const";
-import ChangePassword from './changePassword.vue'
 
 const useForm = Form.useForm;
 

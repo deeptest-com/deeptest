@@ -26,31 +26,23 @@
     </div>
 
     <div class="body">
-      <MonacoEditor
-          class="editor"
-          :value="responseData.content"
-          :language="responseData.contentLang"
-          theme="vs"
-          :options="editorOptions"
-      />
+      <img class="image" :src="'data:' + responseData.contentType + ';base64,' + responseData.content" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref} from "vue";
+import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
-import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
+import {StateType as Debug} from "@/views/component/debug/store";
 import {MonacoOptions} from "@/utils/const";
 import {UsedBy} from "@/utils/enum";
 
 const {t} = useI18n();
 const usedBy = inject('usedBy') as UsedBy
 
-import {Param} from "@/views/component/debug/data";
-import {StateType as Debug} from "@/views/component/debug/store";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -87,10 +79,14 @@ const editorOptions = ref(Object.assign({usedWith: 'response',readOnly:false}, M
     border-bottom: 1px solid #d9d9d9;
   }
   .body {
-    height: calc(100% - 30px);
-    overflow-y: hidden;
-    &>div {
-      height: 100%;
+    height: calc(100% - 28px);
+    width: 100%;
+    overflow-y: auto;
+    word-wrap: break-word;
+
+    .image {
+      max-width: 100%;
+      width: auto;
     }
   }
 }

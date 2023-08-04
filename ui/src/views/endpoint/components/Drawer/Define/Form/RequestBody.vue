@@ -10,7 +10,7 @@
     <a-col :span="18">
       <a-select
           v-if="selectedMethodDetail.requestBody"
-          :value="selectedMethodDetail.requestBody.mediaType || null"
+          :value="selectedMethodDetail.requestBody.mediaType || 'application/json'"
           @change="handleChangeMediaType"
           placeholder="请选择请求格式"
           style="width: 300px"
@@ -106,6 +106,7 @@ async function handleGenerateExample(examples: any) {
 }
 
 function handleChangeMediaType(mediaType: string) {
+  debugger
   selectedMethodDetail.value.requestBody.mediaType = mediaType;
   store.commit('Endpoint/setSelectedMethodDetail', {
     ...selectedMethodDetail.value

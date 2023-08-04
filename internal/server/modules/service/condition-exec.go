@@ -25,6 +25,7 @@ func (s *ExecConditionService) SavePreConditionResult(invokeId uint, preConditio
 		if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
+			scriptBase.InvokeId = invokeId
 
 			s.ScriptRepo.UpdateResult(scriptBase)
 			s.ScriptRepo.CreateLog(scriptBase)

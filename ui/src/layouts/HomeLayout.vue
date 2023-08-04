@@ -8,7 +8,6 @@
       </div>
     </div>
     <router-view></router-view>
-
     <RightTopUpdate />
   </div>
 </template>
@@ -21,7 +20,8 @@ import RightTopUpdate from './IndexLayout/components/RightTopUpdate.vue';
 export default defineComponent({
   name: 'HomeLayout',
   components: {
-    UserSetting
+    UserSetting,
+    RightTopUpdate
   },
   setup() {
     const router = useRouter();

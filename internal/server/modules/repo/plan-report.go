@@ -10,6 +10,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -38,9 +39,10 @@ func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (
 	if req.PlanId != 0 {
 		db = db.Where("biz_plan_report.plan_id = ?", req.PlanId)
 	}
-	if req.CreateUserId != 0 {
-		db = db.Where("biz_plan_report.create_user_id = ?", req.CreateUserId)
+	if req.CreateUserId != "" {
+		db = db.Where("biz_plan_report.create_user_id IN (?)", strings.Split(req.CreateUserId, ","))
 	}
+
 	if req.ExecuteStartTime != 0 {
 		db = db.Where("biz_plan_report.start_time > ?", time.Unix(req.ExecuteStartTime/1000, 0).Format(timeLayout))
 	}

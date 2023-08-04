@@ -5,27 +5,24 @@
         <a-col flex="1">
           <a-select size="small" :style="{width:'116px'}" :bordered="true"
                     v-model:value="conditionType">
-            <!--            <a-select-option key="" value="">
+            <!--        <a-select-option key="" value="">
                           控制器类型
                         </a-select-option>-->
 
-            <a-select-option v-for="item in conditionTypes" :key="item.value" :value="item.value">
-              {{ t(item.label) }}
-            </a-select-option>
+            <template v-for="item in conditionTypes" :key="item.value">
+              <a-select-option v-if="item.value !== ConditionType.checkpoint" :value="item.value">
+                {{ t(item.label) }}
+              </a-select-option>
+            </template>
           </a-select> &nbsp;
 
-          <a-button @click="create" size="small">新建</a-button>
+          <a-button @click="create" type="primary" size="small">添加处理</a-button>
         </a-col>
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>帮助</template>
             <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
-
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>清除</template>
-            <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
         </a-col>
       </a-row>
@@ -35,13 +32,13 @@
       <draggable tag="div" item-key="name" class="collapse-list"
                  :list="postConditions || []"
                  handle=".handle"
-                 @end="handleDrop">
+                 @end="move">
         <template #item="{ element }">
 
-          <div class="collapse-item">
+          <div :class="[activePostCondition.id === +element.id ? 'active' : '']" class="collapse-item">
             <div class="header">
-              <div @click.stop="expand(element)" class="title dp-link">
-                <icon-svg class="handle dp-drag icon" type="move"  />
+              <div @click.stop="expand(element)" class="title dp-link dp-ellipsis">
+                <icon-svg class="handle dp-drag icon" type="move" />
 
                 <icon-svg v-if="element.entityType === ConditionType.extractor"
                           type="variable"
@@ -53,37 +50,51 @@
                           type="script"
                           class="icon"  />
 
-                {{ element.desc || t(element.entityType) }}
+                <span v-html="element.desc || t(element.entityType)"></span>
               </div>
               <div class="buttons">
-                <ClearOutlined v-if="activeItem.id === +element.id && element.entityType === ConditionType.script"
-                               @click.stop="format(element)"  class="dp-icon-btn dp-trans-80" />&nbsp;
+                <icon-svg class="icon dp-link-primary dp-icon-large" type="save"
+                          title="保存"
+                          v-if="activePostCondition.id === element.id"
+                          @click.stop="save(element)" />
+
+                <ClearOutlined v-if="activePostCondition.id === +element.id && element.entityType === ConditionType.script"
+                               @click.stop="format(element)"
+                               class="dp-icon-btn dp-trans-80"
+                               title="格式化"/>&nbsp;
 
                 <CheckCircleOutlined v-if="!element.disabled" @click.stop="disable(element)"
-                                     class="dp-icon-btn dp-trans-80 dp-color-pass" />
+                                     class="dp-icon-btn dp-trans-80 dp-color-pass" title="启用" />
                 <CloseCircleOutlined v-if="element.disabled" @click.stop="disable(element)"
-                                     class="dp-icon-btn dp-trans-80" />
+                                     class="dp-icon-btn dp-trans-80" title="禁用" />
+                <DeleteOutlined @click.stop="remove(element)"
+                                class="dp-icon-btn dp-trans-80" title="删除" />
 
-                <DeleteOutlined @click.stop="remove(element)"  class="dp-icon-btn dp-trans-80" />
-                <FullscreenOutlined v-if="activeItem.id === element.id"
-                                    @click.stop="openFullscreen(element)"  class="dp-icon-btn dp-trans-80" />&nbsp;
+                <FullscreenOutlined v-if="activePostCondition.id === element.id"
+                                    @click.stop="openFullscreen(element)"
+                                    class="dp-icon-btn dp-trans-80" title="全屏" />
 
-                <RightOutlined v-if="activeItem.id !== element.id"
-                               @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
-                <DownOutlined v-if="activeItem.id === element.id"
-                              @click.stop="expand(element)"  class="dp-icon-btn dp-trans-80" />
+                <RightOutlined v-if="activePostCondition.id !== element.id"
+                               @click.stop="expand(element)"
+                               class="dp-icon-btn dp-trans-80" />
+                <DownOutlined v-if="activePostCondition.id === element.id"
+                              @click.stop="expand(element)"
+                              class="dp-icon-btn dp-trans-80" />
               </div>
             </div>
 
-            <div class="content" v-if="activeItem.id === +element.id">
+            <div class="content" v-if="activePostCondition.id === +element.id">
               <Extractor v-if="element.entityType === ConditionType.extractor"
-                          :condition="element" />
+                         :condition="activePostCondition"
+                          :finish="list"/>
 
               <Checkpoint v-if="element.entityType === ConditionType.checkpoint"
-                          :condition="element" />
+                          :condition="activePostCondition"
+                          :finish="list"/>
 
               <Script v-if="element.entityType === ConditionType.script"
-                          :condition="element" />
+                      :condition="activePostCondition"
+                      :finish="list"/>
             </div>
           </div>
 
@@ -93,17 +104,17 @@
 
     <FullScreenPopup v-if="fullscreen"
                      :visible="fullscreen"
-                     :model="activeItem"
-                     :onCancel="closeFullScreen"/>
+                     :model="activePostCondition"
+                     :onCancel="closeFullScreen" />
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref, watch} from "vue";
+import {computed, inject, ref, watch, getCurrentInstance, ComponentInternalInstance} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
-  ClearOutlined, MenuOutlined, RightOutlined,
+  ClearOutlined, RightOutlined,
   DownOutlined, CloseCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
 import {ConditionType, UsedBy} from "@/utils/enum";
@@ -124,24 +135,19 @@ const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const postConditions = computed<any>(() => store.state.Debug.postConditions);
+const activePostCondition = computed<any>(() => store.state.Debug.activePostCondition);
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 const fullscreen = ref(false)
-const activeItem = ref({} as any)
 
 const conditionType = ref(ConditionType.extractor)
 const conditionTypes = ref(getEnumSelectItems(ConditionType))
 
 const expand = (item) => {
   console.log('expand', item)
-
-  if (activeItem.value.id === item.id) {
-    activeItem.value = {}
-  } else {
-    activeItem.value = item
-  }
+  store.commit('Debug/setActivePostCondition', item)
 }
 
 const list = () => {
@@ -168,14 +174,30 @@ const format = (item) => {
 }
 const disable = (item) => {
   console.log('disable', item)
-  store.dispatch('Debug/disablePostCondition', item.id)
+  store.dispatch('Debug/disablePostCondition', item)
 }
 const remove = (item) => {
   console.log('remove', item)
 
   confirmToDelete(`确定删除该${t(item.entityType)}？`, '', () => {
-    store.dispatch('Debug/removePostCondition', item.id)
+    store.dispatch('Debug/removePostCondition', item)
   })
+}
+function move(_e: any) {
+  const envIdList = postConditions.value.map((e: EnvDataItem) => {
+    return e.id;
+  })
+
+  store.dispatch('Debug/movePostCondition', {
+    data: envIdList,
+    info: debugInfo.value,
+    entityType: '',
+  })
+}
+
+const save = (item) => {
+  console.log('save', item)
+  bus.emit(settings.eventConditionSave, {});
 }
 
 const openFullscreen = (item) => {
@@ -185,17 +207,6 @@ const openFullscreen = (item) => {
 const closeFullScreen = (item) => {
   console.log('closeFullScreen', item)
   fullscreen.value = false
-}
-
-function handleDrop(_e: any) {
-  const envIdList = postConditions.value.map((e: EnvDataItem) => {
-    return e.id;
-  })
-
-  store.dispatch('Debug/movePostCondition', {
-    data: envIdList,
-    info: debugInfo.value,
-  })
 }
 
 </script>
@@ -223,7 +234,6 @@ function handleDrop(_e: any) {
   .head {
     height: 30px;
     padding: 2px 3px;
-    border-bottom: 1px solid #d9d9d9;
   }
   .content {
     flex: 1;
@@ -254,29 +264,26 @@ function handleDrop(_e: any) {
     .collapse-list {
       height: 100%;
       width: 100%;
-      padding: 3px 0;
+      padding: 0;
 
       .collapse-item {
-        width: 100%;
+        margin: 4px;
+        border-radius: 5px;
         border: 1px solid #d9d9d9;
-        border-bottom: 0;
-        border-radius: 2px;
 
-        &:last-child {
-          border-radius: 0 0 2px 2px;
-          border-bottom: 1px solid #d9d9d9;
+        &.active {
+          border: 1px solid #1890ff;
         }
 
         .header {
-          height: 38px;
-          line-height: 22px;
-          padding: 10px;
+          height: 28px;
+          padding: 3px;
           background-color: #fafafa;
+          border-radius: 5px;
 
           display: flex;
           .title {
             flex: 1;
-            font-weight: bolder;
 
             .icon {
               margin-right: 3px;
@@ -299,8 +306,4 @@ function handleDrop(_e: any) {
     }
   }
 }
-</style>
-
-<style lang="less" scoped>
-
 </style>

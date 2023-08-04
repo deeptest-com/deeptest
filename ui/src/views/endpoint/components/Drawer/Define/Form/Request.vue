@@ -11,13 +11,14 @@
       <!-- 请求方法定义 -->
       <a-radio-group v-model:value="selectedMethod" button-style="outline">
         <a-radio-button
+            v-for="method in requestMethodOpts"
             :class="{'has-defined': hasDefinedMethod(method.value),'request-method-btn':true}"
             :style="{ color: hasDefinedMethod(method.value) ? method.color : '#999999',
                       'box-shadow': `none` ,
                       background: method.value !== selectedMethod ? '#f5f5f5' : '#fff',
                      'border-color': '#d9d9d9'}"
             :size="'small'"
-            :key="method.value" v-for="method in requestMethodOpts" :value="method.value">
+            :key="method.value" :value="method.value">
           {{ method.label }}
         </a-radio-button>
       </a-radio-group>
@@ -117,6 +118,8 @@ const showRequestBody = ref(false);
 watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
+  console.log('selectedMethod', selectedMethod.value)
+
   selectedMethodDetail.value = interfaceMethodToObjMap.value[newVal];
   if (selectedMethodDetail.value) {
     store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);
@@ -125,7 +128,7 @@ watch(() => {
   }
   // 根据选中的请求方法决定是否展示请求体设置，暂定以下三种方法是不需要请求体的
   showRequestBody.value = ['POST', 'PUT', 'PATCH'].includes(newVal);
-}, {immediate: true});
+}, {immediate: true, deep: true});
 
 function addEndpoint() {
   const item = {

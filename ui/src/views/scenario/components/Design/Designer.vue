@@ -1,5 +1,5 @@
 <template>
-  <div id="scenario-design-main">
+  <div id="scenario-design-main" class="debug-page-container-top">
     <div class="scenario-design-content">
       <Processor></Processor>
     </div>

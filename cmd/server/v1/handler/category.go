@@ -173,9 +173,10 @@ func (c *CategoryCtrl) UpdateName(ctx iris.Context) {
 // @summary	删除节点
 // @accept	application/json
 // @Produce	application/json
-// @Param 	Authorization	header	string						true	"Authentication header"
-// @Param 	currProjectId	query	int							true	"当前项目ID"
-// @Param 	id				path	int							true	"分类ID"
+// @Param 	Authorization	header	string								true	"Authentication header"
+// @Param 	currProjectId	query	int									true	"当前项目ID"
+// @Param 	id				path	int									true	"分类ID"
+// @Param 	type			query	serverConsts.CategoryDiscriminator	true	"类型"
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/categories/{id}	[delete]
 func (c *CategoryCtrl) Delete(ctx iris.Context) {
@@ -185,7 +186,14 @@ func (c *CategoryCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.CategoryService.Delete(uint(id))
+	projectId, err := ctx.URLParamInt("currProjectId")
+	typ := ctx.URLParam("type")
+	if typ == "" {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	err = c.CategoryService.Delete(serverConsts.CategoryDiscriminator(typ), uint(projectId), uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

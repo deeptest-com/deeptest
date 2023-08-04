@@ -16,6 +16,15 @@ type ScenarioNodeCtrl struct {
 }
 
 // LoadTree
+// @Tags	场景模块
+// @summary	场景树状数据
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	scenarioId		query	int		true	"场景ID"
+// @success	200	{object}	_domain.Response{data=agentExec.Processor}
+// @Router	/api/v1/scenarios/load	[get]
 func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 	scenarioId, err := ctx.URLParamInt("scenarioId")
 
@@ -35,6 +44,15 @@ func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 }
 
 // AddInterfacesFromDefine 添加接口
+// @Tags	场景模块/编排节点
+// @summary	添加定义接口
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization				header	string									true	"Authentication header"
+// @Param 	currProjectId				query	int										true	"当前项目ID"
+// @Param 	ScenarioAddInterfacesReq	body	serverDomain.ScenarioAddInterfacesReq	true	"添加定义接口的请求参数"
+// @success	200	{object}	_domain.Response{data=model.Processor}
+// @Router	/api/v1/scenarios/nodes/addInterfacesFromDefine	[post]
 func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 	req := serverDomain.ScenarioAddInterfacesReq{}
 	err := ctx.ReadJSON(&req)
@@ -56,6 +74,15 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 }
 
 // AddInterfacesFromTest 添加接口
+// @Tags	场景模块/编排节点
+// @summary	添加调试接口
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization						header	string											true	"Authentication header"
+// @Param 	currProjectId						query	int												true	"当前项目ID"
+// @Param 	ScenarioAddInterfacesFromTreeReq	body	serverDomain.ScenarioAddInterfacesFromTreeReq	true	"添加调试接口的请求参数"
+// @success	200	{object}	_domain.Response{data=model.Processor}
+// @Router	/api/v1/scenarios/nodes/addInterfacesFromTest	[post]
 func (c *ScenarioNodeCtrl) AddInterfacesFromTest(ctx iris.Context) {
 	req := serverDomain.ScenarioAddInterfacesFromTreeReq{}
 	err := ctx.ReadJSON(&req)
@@ -77,6 +104,15 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromTest(ctx iris.Context) {
 }
 
 // AddProcessor 添加
+// @Tags	场景模块/编排节点
+// @summary	新建处理器
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization			header	string								true	"Authentication header"
+// @Param 	currProjectId			query	int									true	"当前项目ID"
+// @Param 	ScenarioAddScenarioReq	body	serverDomain.ScenarioAddScenarioReq	true	"新建处理器的请求参数"
+// @success	200	{object}	_domain.Response{data=model.Processor}
+// @Router	/api/v1/scenarios/nodes/addProcessor	[post]
 func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
@@ -105,6 +141,16 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 }
 
 // UpdateName 更新
+// @Tags	场景模块/编排节点
+// @summary	更新节点名称
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @Param 	id				path	int								true	"节点ID"
+// @Param 	ScenarioNodeReq	body	serverDomain.ScenarioNodeReq	true	"更新节点名称的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/scenarios/nodes/{id}/updateName	[put]
 func (c *ScenarioNodeCtrl) UpdateName(ctx iris.Context) {
 	var req serverDomain.ScenarioNodeReq
 	err := ctx.ReadJSON(&req)
@@ -124,6 +170,15 @@ func (c *ScenarioNodeCtrl) UpdateName(ctx iris.Context) {
 }
 
 // Delete 删除
+// @Tags	场景模块/编排节点
+// @summary	删除节点
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @Param 	id				path	int								true	"节点ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/scenarios/nodes/{id}	[delete]
 func (c *ScenarioNodeCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -140,7 +195,16 @@ func (c *ScenarioNodeCtrl) Delete(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
-// Mode 移动
+// Move 移动
+// @Tags	场景模块/编排节点
+// @summary	移动节点
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization			header	string								true	"Authentication header"
+// @Param 	currProjectId			query	int									true	"当前项目ID"
+// @Param 	ScenarioNodeMoveReq		body	serverDomain.ScenarioNodeMoveReq	true	"移动节点的请求参数"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/scenarios/nodes/move	[put]
 func (c *ScenarioNodeCtrl) Move(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")
 

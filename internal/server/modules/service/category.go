@@ -10,10 +10,11 @@ import (
 )
 
 type CategoryService struct {
-	CategoryRepo *repo.CategoryRepo `inject:""`
-	EndpointRepo *repo.EndpointRepo `inject:""`
-	PlanRepo     *repo.PlanRepo     `inject:""`
-	ScenarioRepo *repo.ScenarioRepo `inject:""`
+	EndpointService *EndpointService   `inject:""`
+	CategoryRepo    *repo.CategoryRepo `inject:""`
+	EndpointRepo    *repo.EndpointRepo `inject:""`
+	PlanRepo        *repo.PlanRepo     `inject:""`
+	ScenarioRepo    *repo.ScenarioRepo `inject:""`
 }
 
 func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projectId, serveId int) (root *v1.Category, err error) {
@@ -70,8 +71,8 @@ func (s *CategoryService) UpdateName(req v1.CategoryReq) (err error) {
 	return
 }
 
-func (s *CategoryService) Delete(id uint) (err error) {
-	err = s.deleteNodeAndChildren(id)
+func (s *CategoryService) Delete(typ serverConsts.CategoryDiscriminator, projectId, id uint) (err error) {
+	err = s.deleteNodeAndChildren(typ, projectId, id)
 	return
 }
 
@@ -85,13 +86,36 @@ func (s *CategoryService) Move(srcId, targetId uint, pos serverConsts.DropPos, t
 	return
 }
 
-func (s *CategoryService) deleteNodeAndChildren(nodeId uint) (err error) {
-	err = s.CategoryRepo.Delete(nodeId)
-	if err == nil {
-		children, _ := s.CategoryRepo.GetChildren(nodeId)
-		for _, child := range children {
-			s.deleteNodeAndChildren(child.ID)
-		}
+func (s *CategoryService) deleteNodeAndChildren(typ serverConsts.CategoryDiscriminator, projectId, nodeId uint) (err error) {
+	//err = s.CategoryRepo.Delete(nodeId)
+	//if err == nil {
+	//	children, _ := s.CategoryRepo.GetChildren(nodeId)
+	//	for _, child := range children {
+	//		s.deleteNodeAndChildren(child.ID)
+	//	}
+	//}
+	child, err := s.CategoryRepo.GetAllChild(typ, projectId, int(nodeId))
+	if err != nil {
+		return
+	}
+
+	categoryIds := make([]uint, 0)
+	for _, v := range child {
+		categoryIds = append(categoryIds, v.ID)
+	}
+	categoryIds = append(categoryIds, nodeId)
+
+	if err = s.CategoryRepo.BatchDelete(categoryIds); err != nil {
+		return
+	}
+
+	switch typ {
+	case serverConsts.EndpointCategory:
+		err = s.EndpointService.DeleteByCategories(categoryIds)
+	case serverConsts.ScenarioCategory:
+		err = s.ScenarioRepo.DeleteByCategoryIds(categoryIds)
+	case serverConsts.PlanCategory:
+		err = s.PlanRepo.DeleteByCategoryIds(categoryIds)
 	}
 
 	return

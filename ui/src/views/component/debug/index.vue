@@ -1,61 +1,63 @@
 <template>
-  <div id="debug-index" class="dp-splits-v">
-    <div id="debug-content">
-      <Invocation :topVal="topVal"
-                  :showMethodSelection = "showMethodSelection"
-                  :onSave="saveDebugData"
-                  :onSaveAsCase="saveAsCase"
-                  :onSync="syncDebugData"
-                  :baseUrlDisabled="baseUrlDisabled"
-                  :urlDisabled="urlDisabled"/>
-      <DebugConfig />
-    </div>
-
-    <div id="debug-splitter" class="splitter"></div>
-
-    <div id="debug-right">
-      <a-tabs tabPosition="right" class="right-tab"
-              v-model:activeKey="rightTabKey"
-              :tabBarGutter="0"
-              @change="changeRightTab">
-
-        <a-tab-pane key="env">
-          <template #tab>
-            <span id="env-tab">
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>环境</template>
-                <EnvironmentOutlined/>
-              </a-tooltip>
-            </span>
-          </template>
-        </a-tab-pane>
-
-        <a-tab-pane key="history">
-          <template #tab>
-            <span id="his-tab">
-              <a-tooltip placement="left" overlayClassName="dp-tip-small">
-                <template #title>历史</template>
-                <HistoryOutlined/>
-              </a-tooltip>
-            </span>
-          </template>
-        </a-tab-pane>
-
-      </a-tabs>
-    </div>
-
-    <div v-if="rightTabKey==='env'"
-         :style="posStyleEnv"
-         class="right-float-tab dp-bg-white">
-      <div class="dp-bg-light">
-        <RequestEnv :onClose="closeRightTab" />
+  <div class="debug-index-wrapper">
+    <div id="debug-index" class="dp-splits-v">
+      <div id="debug-content">
+        <Invocation :topVal="topVal"
+                    :showMethodSelection = "showMethodSelection"
+                    :onSave="saveDebugData"
+                    :onSaveAsCase="saveAsCase"
+                    :onSync="syncDebugData"
+                    :baseUrlDisabled="baseUrlDisabled"
+                    :urlDisabled="urlDisabled"/>
+        <DebugConfig />
       </div>
-    </div>
-    <div v-if="rightTabKey==='history'"
-         :style="posStyleHis"
-         class="right-float-tab dp-bg-white">
-      <div class="dp-bg-light">
-        <RequestHistory :onClose="closeRightTab" />
+
+      <div id="debug-splitter" class="splitter"></div>
+
+      <div id="debug-right">
+        <a-tabs tabPosition="right" class="right-tab"
+                v-model:activeKey="rightTabKey"
+                :tabBarGutter="0"
+                @change="changeRightTab">
+
+          <a-tab-pane key="env">
+            <template #tab>
+              <span id="env-tab">
+                <a-tooltip placement="left" overlayClassName="dp-tip-small">
+                  <template #title>变量</template>
+                  <EnvironmentOutlined/>
+                </a-tooltip>
+              </span>
+            </template>
+          </a-tab-pane>
+
+          <a-tab-pane key="history">
+            <template #tab>
+              <span id="his-tab">
+                <a-tooltip placement="left" overlayClassName="dp-tip-small">
+                  <template #title>历史</template>
+                  <HistoryOutlined/>
+                </a-tooltip>
+              </span>
+            </template>
+          </a-tab-pane>
+
+        </a-tabs>
+      </div>
+
+      <div v-if="rightTabKey==='env'"
+           :style="posStyleEnv"
+           class="right-float-tab dp-bg-white">
+        <div class="dp-bg-light">
+          <RequestEnv :onClose="closeRightTab" />
+        </div>
+      </div>
+      <div v-if="rightTabKey==='history'"
+           :style="posStyleHis"
+           class="right-float-tab dp-bg-white">
+        <div class="dp-bg-light">
+          <RequestHistory :onClose="closeRightTab" />
+        </div>
       </div>
     </div>
   </div>
@@ -86,7 +88,6 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, Endpoint: Endpoint, ProjectGlobal: ProjectGlobal, Global: GlobalStateType }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const debugDataChanged = computed<any>(() => store.state.Debug.debugDataChanged);
 
 const props = defineProps({
   onSaveDebugData: {
@@ -141,35 +142,6 @@ const syncDebugData = async () => {
 const posStyleEnv = ref({})
 const posStyleHis = ref({})
 
-onMounted(() => {
-  console.log('onMounted in debug-index')
-  resize()
-})
-onUnmounted(() => {
-  console.log('onUnmounted in debug-index')
-  store.dispatch('Debug/resetDataAndInvocations');
-})
-
-watch(debugData, async () => { // changes from webpage
-  console.log('watch debugData', debugDataChanged.value)
-
-  let newVal = ''
-  if (debugDataChanged.value === 'refreshed') { // just refreshed in store
-    newVal = 'no'
-  } else {
-    newVal = 'yes'
-  }
-  await store.commit('Debug/setDebugDataChanged', newVal)
-}, {immediate: true, deep: true})
-onBeforeRouteLeave((to, from) => {
-  return true
-})
-
-const resize = () => {
-  resizeWidth('debug-index',
-      'debug-content', 'debug-splitter', 'debug-right', 500, 38)
-}
-
 const changeRightTab = () => {
   console.log('changeRightTab')
   posStyleEnv.value = getRightTabPanelPosition('env-tab')
@@ -180,12 +152,23 @@ const closeRightTab = () => {
   rightTabKey.value = ''
 }
 
+onMounted(() => {
+  console.log('onMounted in debug-index')
+})
+onUnmounted(() => {
+  console.log('onUnmounted in debug-index')
+  store.dispatch('Debug/resetDataAndInvocations');
+})
+// onBeforeRouteLeave((to, from) => {
+//   store.commit('clearInvokedMap')
+// })
+
 </script>
 
 <style lang="less">
 #debug-index #debug-right .right-tab {
-  //height: 100%;
-  height: calc(100vh - 152px);
+  height: 100%;
+  //height: calc(100vh - 152px);
   .ant-tabs-left-content {
     padding-left: 0px;
   }
@@ -222,23 +205,34 @@ const closeRightTab = () => {
 </style>
 
 <style lang="less" scoped>
-#debug-index {
-  display: flex;
+.debug-index-wrapper {
+  flex:1;
   height: 100%;
-  width: 100%;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 
-  #debug-content {
-    flex: 1;
-    width: 0;
-  }
+  #debug-index {
+    //border: 1px solid red;
+    display: flex;
+    //min-height: 460px;
+    flex:1;
+    //height: 100%;
+    width: 100%;
 
-  #debug-right {
-    width: 38px;
-    height: 100%;
-  }
-  #debug-splitter {
-    width: 1px;
-    background-color: #f0f0f0;
+    #debug-content {
+      flex: 1;
+      width: 0;
+    }
+
+    #debug-right {
+      width: 38px;
+      height: 100%;
+    }
+    #debug-splitter {
+      width: 1px;
+      background-color: #f0f0f0;
+    }
   }
 }
 </style>

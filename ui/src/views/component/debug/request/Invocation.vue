@@ -3,21 +3,28 @@
     <div class="toolbar">
       <div v-if="showMethodSelection" class="select-method">
         <a-select class="select-method"
-                  :options="methods"
                   v-model:value="debugData.method">
+          <template v-for="method in Methods">
+            <a-select-option v-if="hasDefinedMethod(method)"
+                             :key="method"
+                             :value="method">
+              {{ method }}
+            </a-select-option>
+          </template>
         </a-select>
       </div>
 
       <div v-if="debugData.usedBy !== UsedBy.DiagnoseDebug && debugData.processorInterfaceSrc !== UsedBy.DiagnoseDebug" class="base-url">
         <a-input placeholder="请输入地址"
-                 :disabled="baseUrlDisabled"
-                 v-model:value="debugData.baseUrl"/>
+                 v-model:value="debugData.baseUrl"
+                 :disabled="baseUrlDisabled" />
       </div>
 
       <div class="url">
         <a-input placeholder="请输入路径"
+                 v-model:value="debugData.url"
                  :disabled="urlDisabled"
-                 v-model:value="debugData.url"/>
+                 :title="urlDisabled ? '请在接口定义中修改' : ''" />
       </div>
 
       <div class="send">
@@ -28,7 +35,7 @@
 
       <div class="save">
         <a-button trigger="click" @click="save" class="dp-bg-light">
-          <SaveOutlined/>
+          <icon-svg class="icon dp-icon-with-text" type="save" />
           保存
         </a-button>
       </div>
@@ -69,9 +76,10 @@
 <script setup lang="ts">
 import {computed, defineProps, inject, onMounted, onUnmounted, PropType, ref, watch} from "vue";
 import {notification} from 'ant-design-vue';
-import {SaveOutlined, UndoOutlined} from '@ant-design/icons-vue';
+import {UndoOutlined} from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
+import IconSvg from "@/components/IconSvg";
 import {Methods, UsedBy} from "@/utils/enum";
 import {prepareDataForRequest} from "@/views/component/debug/service";
 import {NotificationKeyCommon} from "@/utils/const"
@@ -82,7 +90,8 @@ import useVariableReplace from "@/hooks/variable-replace";
 import {getToken} from "@/utils/localToken";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 import {serverList} from "@/views/project-settings/service";
-import {getArrSelectItems} from "@/utils/comm";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 
 const store = useStore<{ Debug: Debug, Endpoint,Global }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -125,7 +134,6 @@ const props = defineProps({
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} = useVariableReplace('endpointInterfaceUrl')
-const methods = getArrSelectItems(Methods)
 
 const servers = ref([] as any[])
 const listServer = async (serveId) => {
@@ -210,6 +218,8 @@ const save = (e) => {
   if (validateInfo()) {
      props.onSave(data)
   }
+
+  bus.emit(settings.eventConditionSave, {});
 }
 const saveAsCase = () => {
   // console.log('saveAsCase', debugData.value.url)
@@ -253,6 +263,12 @@ onMounted(() => {
 onUnmounted(() => {
   console.log('onUnmounted')
 })
+
+function hasDefinedMethod(method: string) {
+  return endpointDetail?.value?.interfaces?.some((item) => {
+    return item.method === method;
+  })
+}
 
 // const showContextMenu = ref(false)
 // const clearMenu = () => {

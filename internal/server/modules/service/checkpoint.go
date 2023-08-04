@@ -41,7 +41,7 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 //func (s *CheckpointService) CheckInterface(invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse, usedBy consts.UsedBy) (
 //	logCheckpoints []domain.ExecInterfaceCheckpoint, status consts.ResultStatus, err error) {
 //
-//	checkpoints, _ := s.CheckpointRepo.List(debugInterfaceId, endpointInterfaceId)
+//	checkpoints, _ := s.CheckpointRepo.GetScript(debugInterfaceId, endpointInterfaceId)
 //
 //	status = consts.Pass
 //	for _, checkpoint := range checkpoints {

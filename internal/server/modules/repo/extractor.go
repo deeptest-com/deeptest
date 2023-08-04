@@ -62,7 +62,7 @@ func (r *ExtractorRepo) Update(extractor *model.DebugConditionExtractor) (err er
 }
 
 func (r *ExtractorRepo) UpdateDesc(po *model.DebugConditionExtractor) (err error) {
-	desc := extractorHelper.GenDesc(po.Src, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
+	desc := extractorHelper.GenDesc(po.Variable, po.Src, po.Key, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
 	values := map[string]interface{}{
 		"desc": desc,
 	}
@@ -139,10 +139,10 @@ func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase) (
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariableByInterface(req domain.DebugInfo) (variables []domain.Variable, err error) {
+func (r *ExtractorRepo) ListExtractorVariableByInterface(conditionIds []uint) (variables []domain.Variable, err error) {
 	err = r.DB.Model(&model.DebugConditionExtractor{}).
 		Select("id, variable AS name, result AS value").
-		Where("debug_interface_id=?", req.DebugInterfaceId).
+		Where("condition_id IN (?)", conditionIds).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").
 		Find(&variables).Error
@@ -218,6 +218,8 @@ func (r *ExtractorRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogExt
 		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
 		Where("NOT deleted").
 		First(&ret).Error
+
+	ret.ConditionEntityType = consts.ConditionTypeExtractor
 
 	return
 }

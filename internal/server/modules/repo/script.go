@@ -114,5 +114,7 @@ func (r *ScriptRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogScript
 		Where("NOT deleted").
 		First(&ret).Error
 
+	ret.ConditionEntityType = consts.ConditionTypeScript
+
 	return
 }

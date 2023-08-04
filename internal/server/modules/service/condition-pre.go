@@ -12,13 +12,14 @@ type PreConditionService struct {
 	ScriptRepo       *repo.ScriptRepo       `inject:""`
 }
 
-func (s *PreConditionService) List(debugInterfaceId, endpointInterfaceId uint) (conditions []model.DebugPreCondition, err error) {
-	conditions, err = s.PreConditionRepo.List(debugInterfaceId, endpointInterfaceId)
+func (s *PreConditionService) GetScript(debugInterfaceId, endpointInterfaceId uint) (script model.DebugConditionScript, err error) {
+	conditions, err := s.PreConditionRepo.List(debugInterfaceId, endpointInterfaceId)
 
 	if len(conditions) == 0 {
 		condition := model.DebugPreCondition{
 			DebugInterfaceId:    debugInterfaceId,
 			EndpointInterfaceId: endpointInterfaceId,
+			EntityType:          consts.ConditionTypeScript,
 		}
 		err = s.Create(&condition)
 		script := s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)
@@ -27,6 +28,8 @@ func (s *PreConditionService) List(debugInterfaceId, endpointInterfaceId uint) (
 
 		conditions, err = s.PreConditionRepo.List(debugInterfaceId, endpointInterfaceId)
 	}
+
+	script, err = s.ScriptRepo.Get(conditions[0].EntityId)
 
 	return
 }

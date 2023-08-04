@@ -66,7 +66,7 @@
             <a-button
               type="link"
               @click="() => remove(record.id)"
-              :disabled="currentUser.projectRoles[projectId] !== 'admin' && currentUser.sysRoles.indexOf('admin') === -1"
+              :disabled="currentUser.projectRoles[currProject.id] !== 'admin' && currentUser.sysRoles.indexOf('admin') === -1"
               >移除</a-button
             >
           </template>
@@ -98,6 +98,7 @@ import EditPage from "../edit/invite.vue";
 import { SelectTypes } from "ant-design-vue/lib/select";
 import {QueryParams} from "@/types/data";
 import {inviteUser} from "@/views/user/info/service";
+import { message } from 'ant-design-vue';
 
 const router = useRouter();
 const store = useStore<{ Project: StateType; User: UserStateType,ProjectGlobal }>();
@@ -123,7 +124,7 @@ const data = reactive<Member>({
   username: "",
 });
 
-const projectId = Number(window.localStorage.getItem("currentProjectId"));
+
 const columns = [
   {
     title: "序号",
@@ -216,7 +217,7 @@ const remove = (userId: number) => {
     okText: "确认",
     cancelText: "取消",
     onOk: async () => {
-      removeMember(userId, projectId).then((json) => {
+      removeMember(userId, currProject.value.id).then((json) => {
         if (json.code === 0) {
           getMembers(queryParams.page);
 
@@ -250,7 +251,7 @@ const getRoles = () => {
 };
 
 const getSelectUserList = () => {
-  store.dispatch("Project/getNotExistedUserList", projectId);
+  store.dispatch("Project/getNotExistedUserList", currProject.value.id);
   return;
 };
 
@@ -263,7 +264,7 @@ const invite = () => {
 
 const ok= async (modelRef:any,callback:any)=>{
   inviteVisible.value = false;
-   await inviteUser(modelRef, projectId).then((json) => {
+   await inviteUser(modelRef, currProject.value.id).then((json) => {
       if (json.code === 0) {
         notification.success({
           key: NotificationKeyCommon,
@@ -283,10 +284,11 @@ const ok= async (modelRef:any,callback:any)=>{
 
 const handleChangeRole = async (val: any, record: any) => {
   await changeRole({
-    projectId: projectId,
+    projectId: currProject.value.id,
     projectRoleId: val,
     userId: record.id,
   });
+  message.success('操作成功',1);
 };
 
 

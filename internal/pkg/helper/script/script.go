@@ -3,6 +3,7 @@ package scriptHelper
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"path/filepath"
@@ -86,8 +87,15 @@ func GetScript(name ScriptType) string {
 	return ""
 }
 
-func GenResultMsg(po *domain.ScriptBase) (ret string) {
-	ret = fmt.Sprintf("%s%s，输出%s。",
+func GenResultMsg(po *domain.ScriptBase) {
+	name := "脚本"
+	if po.ConditionSrc == consts.ConditionSrcPre {
+		name = "预请求" + name
+	} else if po.ConditionSrc == consts.ConditionSrcPost {
+		name = "后处理" + name
+	}
+
+	po.ResultMsg = fmt.Sprintf("%s%s%s，输出\"%s\"。", name,
 		_i118Utils.Sprintf("exec"), _i118Utils.Sprintf(po.ResultStatus.String()),
 		po.Output)
 

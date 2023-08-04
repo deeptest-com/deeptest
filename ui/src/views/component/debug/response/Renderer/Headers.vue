@@ -1,7 +1,6 @@
 <template>
   <div class="headers-main">
-    <ParamGrid title="请求参数"
-               :list="responseData.headers || []" />
+    <ParamGrid :list="responseData.headers || []" />
   </div>
 </template>
 

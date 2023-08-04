@@ -14,7 +14,6 @@
                          @change-description="changeDescription"
                          @changeCategory="changeCategory"/>
     </template>
-
     <template #tabHeader>
       <div class="tab-header-items">
         <div class="tab-header-item"
@@ -28,13 +27,12 @@
       <div class="tab-header-btns">
         <a-button v-if="activeTabKey === 'request' && showFooter" type="primary" @click="save">
           <template #icon>
-            <SaveOutlined/>
+            <icon-svg class="icon dp-icon-with-text" type="save" />
           </template>
           保存
         </a-button>
       </div>
     </template>
-
     <template #tabContent>
       <div class="tab-pane">
         <EndpointDefine v-if="activeTabKey === 'request'"
@@ -49,7 +47,7 @@
 
         <Docs :onlyShowDocs="true"
               :showHeader="false"
-              v-if="activeTabKey === 'docs' && docsData"
+              v-if="activeTabKey === 'docs'"
               :data="docsData"
               @switchToDefineTab="switchToDefineTab"
               :show-menu="true"/> <!-- use v-if to force page reload-->
@@ -60,6 +58,7 @@
 
 <script lang="ts" setup>
 import {computed, defineEmits, defineProps, ref,} from 'vue';
+import IconSvg from "@/components/IconSvg";
 import EndpointBasicInfo from './EndpointBasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EndpointDefine from './Define/index.vue';
@@ -70,7 +69,6 @@ import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
 import {message} from "ant-design-vue";
-import {SaveOutlined} from '@ant-design/icons-vue';
 
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal,Global }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);

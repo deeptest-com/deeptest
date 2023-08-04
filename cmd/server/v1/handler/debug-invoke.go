@@ -46,11 +46,10 @@ func (c *DebugInvokeCtrl) SubmitResult(ctx iris.Context) {
 // @summary	调试记录列表
 // @accept	application/json
 // @Produce	application/json
-// @Param 	Authorization		header	string			true	"Authentication header"
-// @Param 	currProjectId		query	int				true	"当前项目ID"
-// @Param 	debugInterfaceId	query	int				true	"debugInterfaceId"
-// @Param 	endpointInterfaceId	query	int				true	"endpointInterfaceId"
-// @Param 	DebugReq 			query 	domain.DebugReq true 	"获取调试接口请求的请求体"
+// @Param 	Authorization		header	string	true	"Authentication header"
+// @Param 	currProjectId		query	int		true	"当前项目ID"
+// @Param 	debugInterfaceId	query	int		true	"debugInterfaceId"
+// @Param 	endpointInterfaceId	query	int		true	"endpointInterfaceId"
 // @success	200	{object}	_domain.Response{data=[]model.DebugInvoke}
 // @Router	/api/v1/debugs/invoke	[get]
 func (c *DebugInvokeCtrl) List(ctx iris.Context) {
@@ -121,6 +120,23 @@ func (c *DebugInvokeCtrl) GetResult(ctx iris.Context) {
 	}
 
 	result, err := c.DebugInvokeService.GetResult(invokeId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: result})
+}
+
+// GetLog 获取调用日志
+func (c *DebugInvokeCtrl) GetLog(ctx iris.Context) {
+	invokeId, err := ctx.URLParamInt("invokeId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	result, err := c.DebugInvokeService.GetLog(invokeId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

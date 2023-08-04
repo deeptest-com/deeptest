@@ -164,7 +164,7 @@ func (trie *hTrie) StartsWith(prefix string) bool {
 
 // 优先队列 所在的域
 
-// parseQueue for Heap, Container List
+// parseQueue for Heap, Container GetScript
 type parseQueue []*parseFunction
 
 // parseFunction 优先执行参数

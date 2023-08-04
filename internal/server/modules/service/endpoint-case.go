@@ -14,6 +14,8 @@ type EndpointCaseService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
+	PreConditionRepo      *repo.PreConditionRepo      `inject:""`
+	PostConditionRepo     *repo.PostConditionRepo     `inject:""`
 
 	EndpointService       *EndpointService       `inject:""`
 	DebugInterfaceService *DebugInterfaceService `inject:""`
@@ -97,7 +99,40 @@ func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po mod
 		DebugData: debugData,
 	}
 
-	po, err = s.Save(req)
+	s.CopyValueFromRequest(&po, req)
+
+	endpoint, err := s.EndpointRepo.Get(req.EndpointId)
+
+	// create new DebugInterface
+	url := req.DebugData.Url
+	if url == "" {
+		url = endpoint.Path
+	}
+
+	debugInterface := model.DebugInterface{}
+
+	s.DebugInterfaceService.CopyValueFromRequest(&debugInterface, req.DebugData)
+	debugInterface.Name = req.Name
+	debugInterface.Url = url
+
+	err = s.DebugInterfaceRepo.Save(&debugInterface)
+
+	// clone conditions
+	s.PreConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID)
+	s.PostConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID)
+
+	// save case
+	po.ProjectId = endpoint.ProjectId
+	po.ServeId = endpoint.ServeId
+	po.DebugInterfaceId = debugInterface.ID
+	err = s.EndpointCaseRepo.Save(&po)
+
+	if po.DebugInterfaceId > 0 {
+		values := map[string]interface{}{
+			"case_interface_id": po.ID,
+		}
+		err = s.DebugInterfaceRepo.UpdateDebugInfo(po.DebugInterfaceId, values)
+	}
 
 	return
 }

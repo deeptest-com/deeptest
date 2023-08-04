@@ -74,6 +74,10 @@ func GetContentProps(resp *domain.DebugResponse) {
 	if typeName == "text" || typeName == "plain" {
 		typeName = "text"
 	}
+
+	if arr1[0] == "image" {
+		typeName = strings.ToUpper(typeName)
+	}
 	resp.ContentLang = consts.HttpRespLangType(typeName)
 
 	if len(arr) > 1 {

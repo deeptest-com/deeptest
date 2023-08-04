@@ -15,7 +15,7 @@
       </div>
 
       <DebugComp
-          :topVal="'-36px'"
+          :topVal="'-3px'"
           :onSaveDebugData="saveCaseInterface"
           :urlDisabled="true"/>
     </div>
@@ -150,8 +150,13 @@ const back = () => {
 .endpoint-debug-cases-design-main {
   padding: 0px 0px 16px 16px;
   position: relative;
-
+  height: calc(100vh - 96px);
+  overflow: hidden;
   #endpoint-debug-cases-design-panel {
+    height: calc(100vh - 96px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     .name {
       display: flex;
       padding: 6px 0 6px 0;

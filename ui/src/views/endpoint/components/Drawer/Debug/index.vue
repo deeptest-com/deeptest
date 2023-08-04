@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div id="endpoint-debug-index" class="debug-page-container-top dp-splits-v" v-if="endpointDetail?.id && endpointDetail?.interfaces[0]?.id">
+  <div class="endpoint-debug-index-wrapper">
+    <div v-if="endpointDetail?.id && endpointDetail?.interfaces[0]?.id" id="endpoint-debug-index" class="debug-page-container-top dp-splits-v" >
       <div id="debug-top">
         <DebugMethod/>
       </div>
@@ -119,28 +119,31 @@ const saveAsCancel = () => {
 </script>
 
 <style lang="less" scoped>
-#endpoint-debug-index {
+.endpoint-debug-index-wrapper {
   height: 100%;
-  width: 100%;
-  display: flex;
-  min-height: calc(100vh - 96px);
-  flex-direction: column;
 
-  #debug-top {
-    display: flex;
-    margin: 12px 0;
-    height: 32px;
-    //margin-bottom: 12px;
-    align-items: center;
-    justify-content: space-between;
-    padding-right: 2px;
-  }
+  #endpoint-debug-index {
+    height: 100%;
+    width: 100%;
+    min-height: calc(100vh - 96px);
+    flex-direction: column;
 
-  #debug-bottom {
-    flex: 1;
-    //height: calc(100% - 46px);
-    height: calc(100vh - 152px);
+    #debug-top {
+      display: flex;
+      margin: 12px 0;
+      height: 32px;
+      align-items: center;
+      justify-content: space-between;
+      padding-right: 2px;
+    }
+
+    #debug-bottom {
+      flex:1;
+      display: flex;
+      flex-direction: column;
+    }
   }
 }
+
 </style>
 

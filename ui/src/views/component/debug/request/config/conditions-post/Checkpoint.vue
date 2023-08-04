@@ -21,7 +21,6 @@
       <a-form-item v-if="model.type === 'extractor'" label="变量名称" v-bind="validateInfos.extractorVariable">
         <a-select v-model:value="model.extractorVariable"
                   @blur="validate('extractorVariable', { trigger: 'blur' }).catch(() => {})">
-          <a-select-option key="" value=""></a-select-option>
           <a-select-option v-for="(item, idx) in variables" :key="idx" :value="item.name">
             {{ item.name }}
           </a-select-option>
@@ -31,7 +30,6 @@
       <a-form-item v-if="model.type !== 'judgement'" label="运算符" v-bind="validateInfos.operator">
         {{ void (options = model.type === 'responseStatus' ? operatorsForCode :
           isInArray(model.type, ['responseHeader', 'responseBody']) ? operatorsForString : operators) }}
-
         <a-select v-model:value="model.operator"
                   @blur="validate('operator', { trigger: 'change' }).catch(() => {})">
 

@@ -1,6 +1,6 @@
 <template>
-  <div id="debug-form">
-    <div id="top-panel">
+  <div id="debug-form-main">
+    <div id="debug-form-top">
       <div v-if="serverConfig.demoTestSite" class="dp-red">
         您正在访问演示站点，所有的接口请求将被重定向到{{serverConfig.demoTestSite}}。
       </div>
@@ -10,9 +10,9 @@
                         :showDebugDataUrl="false" />
     </div>
 
-    <div id="design-splitter-v" :hidden="!debugData.method" />
+    <div id="debug-form-splitter" :hidden="!debugData.method" />
 
-    <div id="bottom-panel">
+    <div id="debug-form-bottom">
       <InterfaceResponse v-if="debugData.method" />
     </div>
 
@@ -25,6 +25,7 @@ import {computed, onMounted, onUnmounted} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 
+import {resizeHeight} from "@/utils/dom";
 import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "../../endpoint/store";
@@ -33,7 +34,6 @@ import InterfaceRequest from './request/Index.vue';
 import InterfaceResponse from './response/Index.vue';
 import VariableSelection from './others/variable-replace/Selection.vue';
 import {StateType as GlobalStateType} from "@/store/global";
-import {StateType as UserStateType} from "@/store/user";
 
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug, Endpoint: Endpoint, ProjectGlobal: ProjectGlobal, Global: GlobalStateType }>();
@@ -42,39 +42,45 @@ const serverConfig = computed<any>(() => store.state.Global.serverConfig);
 
 onMounted(() => {
   console.log('onMounted debug-interface')
+  resize()
 })
 onUnmounted(() => {
   console.log('onUnmounted debug-interface')
   store.dispatch('Debug/resetDataAndInvocations');
 })
 
+function resize() {
+  resizeHeight('debug-form-main', 'debug-form-top',
+      'debug-form-splitter', 'debug-form-bottom',
+      300, 200)
+}
+
 </script>
 
 <style lang="less" scoped>
-#debug-form {
-  display: flex;
+#debug-form-main {
   flex-direction: column;
   height: calc(100% - 33px);
 
   padding: 0;
   position: relative;
 
-  #top-panel {
-    flex: 3;
-    height: 0;
+  #debug-form-top {
+    height: 60%;
 
     width: 100%;
     padding: 0;
   }
 
-  #bottom-panel {
-    flex: 2;
+  #debug-form-bottom {
+    height: 40%;
+
     width: 100%;
     padding: 0;
     overflow: auto;
   }
 
-  #design-splitter-v {
+  #debug-form-splitter {
     width: 100%;
     height: 2px;
     background-color: #e6e9ec;

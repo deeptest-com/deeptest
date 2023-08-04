@@ -25,7 +25,7 @@ func GenDesc(typ consts.CheckpointType, operator consts.ComparisonOperator, valu
 		nameDesc = fmt.Sprintf("表达式\"%s\"", expression)
 	}
 
-	ret = "断言 " + nameDesc
+	ret = nameDesc
 
 	return
 }

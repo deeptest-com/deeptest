@@ -63,18 +63,6 @@ const interfaceTabs = computed<any>(() => store.state.DiagnoseInterface.interfac
 const activeTabKey = ref('0')
 const spinning = computed(()=> store.state.Global.spinning )
 
-// function toChangeTab (key) {
-//   console.log('changeTab', key, debugDataChanged.value)
-//
-//   if (debugDataChanged.value !== 'yes') {
-//     changeTab(key)
-//   } else {
-//     confirmToSave(() => {
-//       changeTab(key)
-//     })
-//   }
-// }
-
 function changeTab(key) {
   console.log('changeTab', key)
   activeTabKey.value = key

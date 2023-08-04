@@ -37,7 +37,8 @@
                           type="script"
                           class="icon"  />
 
-                {{ element.desc || t(element.entityType) }}
+                <b>断言</b>&nbsp;
+                <span v-html="element.desc || t(element.entityType)" />
               </div>
               <div class="buttons">
                 <icon-svg class="icon dp-link-primary dp-icon-large" type="save"
@@ -252,7 +253,6 @@ const closeFullScreen = (item) => {
           display: flex;
           .title {
             flex: 1;
-            font-weight: bolder;
 
             .icon {
               margin-right: 3px;

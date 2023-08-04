@@ -6,7 +6,7 @@
         <span :style="{color: getMethodColor(requestData.method)}">
           {{requestData.method}}
         </span>&nbsp;
-        <span>{{requestData.url}}</span>
+        <span>{{requestData.fullUrlToDisplay}}</span>
       </div>
     </div>
 
@@ -53,7 +53,8 @@ const requestData = computed<any>(() => store.state.Debug.requestData);
 .info-main {
   height: 100%;
   overflow-y: auto;
-
+  max-height: 480px;
+  max-width: 758px;
   .content {
     padding: 10px 10px;
   }

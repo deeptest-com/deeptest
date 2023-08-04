@@ -49,6 +49,14 @@ func (s *ParserJsonService) updateJsonElem(docJson, selectContent string,
 	line := []rune(lines[startLine])
 
 	key := fmt.Sprintf("%s", consts.DeepestKey)
+
+	if string(line[startColumn-1:startColumn]) != "\"" {
+		key = "\"" + key
+	}
+	if string(line[endColumn:endColumn+1]) != "\"" {
+		key = key + "\""
+	}
+
 	newLine := string(line[:startColumn]) + key + string(line[endColumn:])
 	lines[startLine] = newLine
 

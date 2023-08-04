@@ -62,7 +62,7 @@ func (r *ExtractorRepo) Update(extractor *model.DebugConditionExtractor) (err er
 }
 
 func (r *ExtractorRepo) UpdateDesc(po *model.DebugConditionExtractor) (err error) {
-	desc := extractorHelper.GenDesc(po.Variable, po.Src, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
+	desc := extractorHelper.GenDesc(po.Variable, po.Src, po.Key, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
 	values := map[string]interface{}{
 		"desc": desc,
 	}

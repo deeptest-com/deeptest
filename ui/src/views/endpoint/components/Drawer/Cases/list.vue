@@ -60,7 +60,7 @@
 <script lang="ts" setup>
 import {computed, defineProps, provide, ref} from "vue";
 import {UsedBy} from "@/utils/enum";
-import {Empty} from "ant-design-vue";
+import {Empty, notification} from "ant-design-vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {DeleteOutlined, CopyOutlined} from '@ant-design/icons-vue';
@@ -70,6 +70,7 @@ import {confirmToDelete} from "@/utils/confirm";
 
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CaseEdit from "./edit.vue";
+import {NotificationKeyCommon} from "@/utils/const";
 
 provide('usedBy', UsedBy.InterfaceDebug)
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
@@ -130,7 +131,18 @@ const remove = (record) => {
 const copy  = (record) => {
   console.log('copy', record)
   store.dispatch('Endpoint/copyCase', record.id).then((po) => {
-    design(po)
+    if (po.id > 0) {
+      notification.success({
+        key: NotificationKeyCommon,
+        message: `复制成功`,
+      });
+      design(po)
+    } else {
+      notification.error({
+        key: NotificationKeyCommon,
+        message: `复制失败`,
+      });
+    }
   })
 }
 

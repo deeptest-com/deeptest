@@ -54,7 +54,7 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 	return
 }
 
-func GenDesc(varName string, src consts.ExtractorSrc, typ consts.ExtractorType,
+func GenDesc(varName string, src consts.ExtractorSrc, key string, typ consts.ExtractorType,
 	expression, boundaryStart, boundaryEnd string) (ret string) {
 	srcDesc := ""
 	if src == consts.Header {
@@ -64,7 +64,7 @@ func GenDesc(varName string, src consts.ExtractorSrc, typ consts.ExtractorType,
 	}
 
 	if src != consts.Body {
-		ret = fmt.Sprintf("<b>提取变量&nbsp;%s</b>&nbsp;&nbsp;%s", varName, srcDesc)
+		ret = fmt.Sprintf("<b>提取变量&nbsp;%s</b>&nbsp;&nbsp;%s&nbsp;%s", varName, srcDesc, key)
 		return
 	}
 
@@ -97,7 +97,7 @@ func GenDesc(varName string, src consts.ExtractorSrc, typ consts.ExtractorType,
 }
 
 func GenResultMsg(po *domain.ExtractorBase) (ret string) {
-	desc := GenDesc(po.Variable, po.Src, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
+	desc := GenDesc(po.Variable, po.Src, po.Key, po.Type, po.Expression, po.BoundaryStart, po.BoundaryEnd)
 
 	po.ResultMsg = fmt.Sprintf("%s，结果\"%s\"。", desc, po.Result)
 

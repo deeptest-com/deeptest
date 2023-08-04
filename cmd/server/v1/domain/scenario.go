@@ -125,3 +125,9 @@ type ScenarioPlanReqPaginate struct {
 	Ref        bool              `json:"ref"`
 	Keywords   string            `json:"keywords"`
 }
+
+type ScenarioCurlImportReq struct {
+	Content  string `json:"content"`
+	TargetId uint   `json:"targetId"`
+	CreateBy uint   `json:"createBy"`
+}

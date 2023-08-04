@@ -223,3 +223,24 @@ func (c *ScenarioNodeCtrl) Move(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+func (c *ScenarioNodeCtrl) ImportCurl(ctx iris.Context) {
+	req := serverDomain.ScenarioCurlImportReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	req.CreateBy = multi.GetUserId(ctx)
+	newNode, bizErr := c.ScenarioNodeService.ImportCurl(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.SystemErr.Code,
+			Msg:  bizErr.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: newNode})
+}

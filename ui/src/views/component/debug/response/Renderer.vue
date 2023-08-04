@@ -2,7 +2,7 @@
   <div class="response-renderer">
 <!--    {{invokedMap}} - {{debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId}}-->
     <template v-if="invokedMap[debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId] &&
-                    responseData.id">
+                    responseData.invokeId">
       <div class="left">
         <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
           <a-tab-pane key="body" :tab="title" class="uppercase">

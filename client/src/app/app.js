@@ -67,7 +67,7 @@ export class DeepTestApp {
 
         const mainWin = new BrowserWindow({
             show: false,
-            frame: false,
+            frame: true, // 不创建无边框窗口，不然都没法拖动
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,

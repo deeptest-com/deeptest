@@ -37,16 +37,10 @@
 import {defineEmits, defineProps, ref, watch,} from 'vue';
 
 import {RightOutlined} from '@ant-design/icons-vue';
-import {requestMethodOpts} from '@/config/constant';
+import {getMethodColor} from '@/utils/interface';
 
 const openKeysMap = ref<any>({});
 
-function getMethodColor(method: any) {
-  const item: any = requestMethodOpts.find((item: any) => {
-    return item.value === method;
-  });
-  return item.color || '#04C495';
-}
 
 
 const props = defineProps({

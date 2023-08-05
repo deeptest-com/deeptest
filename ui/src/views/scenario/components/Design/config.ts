@@ -13,27 +13,27 @@ export const DESIGN_MENU_CONFIG = [
         icon: 'arrange-interface',
         children: [
             {
-                key: 'add-child-interface-fromDefine',
+                key: 'add-child-interface-define',
                 title: '导入接口定义',
                 icon: 'interface',
             },
             {
-                key:'add-child-interface-fromTest',
+                key: 'add-child-interface-case',
                 title: '导入接口用例',
                 icon: 'arrange-case',
             },
             {
-                key: 'importQuickDebug',
+                key: 'add-child-interface-diagnose',
                 title: '导入快捷调试',
                 icon: 'arrange-debug',
             },
             {
-                key: 'customRequest',
+                key: 'add-child-interface-custom',
                 title: '自定义请求',
                 icon: 'arrange-http',
             },
             {
-                key: 'importCurl',
+                key: 'add-child-interface-curl',
                 title: 'cURL导入',
                 icon: 'arrange-url',
             }
@@ -47,18 +47,18 @@ export const DESIGN_MENU_CONFIG = [
             {
                 key: 'processor_loop',
                 title: '循环',
-                icon: 'arrange-var',
+                icon: 'arrange-loop',
                 children: [
                     {
                         title: '循环次数',
                         key: 'processor_loop_time',
                         icon: 'arrange-count',
                     },
-                    // {
-                    //     title: '数据送代',
-                    //     key: 'loopData',
-                    //     icon: 'arrange-database',
-                    // },
+                    {
+                        title: '循环列表',
+                        key: 'processor_loop_in',
+                        icon: 'arrange-loop-list',
+                    },
                     {
                         title: '循环直到',
                         key: 'processor_loop_until',
@@ -81,10 +81,21 @@ export const DESIGN_MENU_CONFIG = [
                 key: 'processor_logic',
                 title: '条件',
                 icon: 'arrange-if',
+                children: [
+                    {
+                        title: '如果',
+                        key: 'processor_logic_if',
+                        icon: 'arrange-logic-if',
+                    },
+                    {
+                        title: '否则',
+                        key: 'processor_logic_else',
+                        icon: 'arrange-logic-if',
+                    },]
             },
             // 等待时间
             {
-                key: 'processor_timer',
+                key: 'processor_time_default',
                 title: '等待时间',
                 icon: 'arrange-wait',
             },
@@ -105,7 +116,7 @@ export const DESIGN_MENU_CONFIG = [
                         icon: 'arrange-add',
                     },
                     {
-                        title: '删除Cookie',
+                        title: '设置Cookie',
                         key: 'processor_cookie_set',
                         icon: 'arrange-delete',
                     },
@@ -114,6 +125,39 @@ export const DESIGN_MENU_CONFIG = [
                         key: 'processor_cookie_clear',
                         icon: 'arrange-clear',
                     },
+                ]
+            },
+            {
+                key: 'processor_extractor',
+                title: '提取器',
+                icon: 'arrange-extractor',
+                children: [
+                    {
+                        title: '边界提取器',
+                        key: 'processor_extractor_boundary',
+                        icon: 'arrange-extractor-boundary',
+                    },
+                    {
+                        title: 'JSON提取器',
+                        key: 'processor_extractor_jsonquery',
+                        icon: 'arrange-extractor-json',
+                    },
+                    {
+                        title: 'HTML提取器',
+                        key: 'processor_extractor_htmlquery',
+                        icon: 'arrange-extractor-html',
+                    },
+                    {
+                        title: 'XML提取器',
+                        key: 'processor_extractor_xmlquery',
+                        icon: 'arrange-extractor-xml',
+                    },
+                    {
+                        title: '正则提取器',
+                        key: 'processor_extractor_regex',
+                        icon: 'arrange-extractor-regex',
+                    },
+                    // arrange-extractor-xml.svg
                 ]
             },
             //   变量
@@ -136,7 +180,7 @@ export const DESIGN_MENU_CONFIG = [
             },
             //  输出
             {
-                key: 'processor_print',
+                key: 'processor_print_default',
                 title: '输出',
                 icon: 'arrange-output',
             },
@@ -184,16 +228,79 @@ export const DESIGN_MENU_CONFIG = [
 
 export const DESIGN_TYPE_ICON_MAP = {
     'processor_group_default': 'arrange-group',
+
+    "processor_variable_set": "arrange-var",
+    "processor_variable_clear": "arrange-var",
+
+    "processor_cookie_get": "arrange-cookie",
+    'processor_cookie_set': 'arrange-cookie',
+    'processor_cookie_clear': 'arrange-cookie',
+
+    'processor_extractor_boundary': 'arrange-extractor',
+    'processor_extractor_jsonquery': 'arrange-extractor',
+    'processor_extractor_htmlquery': 'arrange-extractor',
+    'processor_extractor_xmlquery': 'arrange-extractor',
+    'processor_extractor_regx': 'arrange-extractor',
+
+
+    "processor_loop_break": "arrange-return",
+    "processor_loop_range": "arrange-range",
+    "processor_loop_in": "arrange-loop-list",
     'processor_loop_time': 'arrange-count',
     'processor_loop_until': 'arrange-untils',
-    "processor_variable_set": "arrange-var",
+
+    'processor_logic_if': 'arrange-logic-if',
+    'processor_logic_else': 'arrange-logic-if',
+
+    'processor_time_default': 'arrange-wait',
+
+    'processor_print_default': 'arrange-output',
+    'processor_assertion_default': 'arrange-assert',
+
+
 }
 
 
 /**
- * 根据 key 获取对应的分类
+ * 根据 菜单的key 对应的分类，用于保存场景编排时，根据分类保存到不同的字段
  * */
-export const processorCategoryMap = {
+export const menuKeyMapToProcessorCategory = {
     'processor_group': 'processor_group_default',
-    'processor_interface': 'processor_interface_default',
+
+
+    'processor_cookie_get': 'processor_cookie',
+    'processor_cookie_set': 'processor_cookie',
+    'processor_cookie_clear': 'processor_cookie',
+
+    "add-child-interface-define": "processor_interface",
+    "add-child-interface-case": "processor_interface",
+    "add-child-interface-diagnose": "processor_interface",
+    "add-child-interface-custom": "processor_interface",
+    "add-child-interface-curl": "processor_interface",
+
+    "processor_loop_time": "processor_loop",
+    "processor_loop_until": "processor_loop",
+    "processor_loop_range": "processor_loop",
+    "processor_loop_break": "processor_loop",
+    "processor_loop_in": "processor_loop",
+
+
+    'processor_logic_if': 'processor_logic',
+    'processor_logic_else': 'processor_logic',
+    'processor_time_default': 'processor_timer',
+
+    'processor_extractor_boundary': 'processor_extractor',
+    'processor_extractor_jsonquery': 'processor_extractor',
+    'processor_extractor_htmlquery': 'processor_extractor',
+    'processor_extractor_xmlquery': 'processor_extractor',
+    'processor_extractor_regx': 'processor_extractor',
+
+    'processor_variable_set': 'processor_variable',
+    'processor_variable_clear': 'processor_variable',
+
+    'processor_print_default': 'processor_print',
+    'processor_assertion_default': 'processor_assertion',
+
+
+
 }

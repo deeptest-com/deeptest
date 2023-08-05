@@ -103,6 +103,36 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDiagnose(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
 }
 
+// AddInterfacesFromCase 添加接口用例
+// @Tags	场景模块/编排节点
+// @summary	添加接口用例
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization						header	string										true	"Authentication header"
+// @Param 	currProjectId						query	int											true	"当前项目ID"
+// @Param 	ScenarioAddCasesFromTreeReq			body	serverDomain.ScenarioAddCasesFromTreeReq	true	"添加调接口用例的请求参数"
+// @success	200	{object}	_domain.Response{data=model.Processor}
+// @Router	/api/v1/scenarios/nodes/addInterfacesFromCase	[post]
+func (c *ScenarioNodeCtrl) AddInterfacesFromCase(ctx iris.Context) {
+	req := serverDomain.ScenarioAddCasesFromTreeReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	req.CreateBy = multi.GetUserId(ctx)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromCase(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.SystemErr.Code,
+		})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
+}
+
 // AddProcessor 添加
 // @Tags	场景模块/编排节点
 // @summary	新建处理器

@@ -299,14 +299,15 @@ func (s *EndpointCaseService) EndpointCaseToTos(pos []*model.EndpointCase) (tos 
 
 func (s *EndpointCaseService) EndpointCaseToTo(po *model.EndpointCase) (to *serverDomain.EndpointCaseTree) {
 	to = &serverDomain.EndpointCaseTree{
-		Id:         int64(po.ID),
-		Name:       po.Name,
-		Desc:       po.Desc,
-		Type:       serverConsts.EndpointCaseTreeTypeCase,
-		IsDir:      false,
-		EndpointId: po.EndpointId,
-		ProjectId:  po.ProjectId,
-		ServeId:    po.ServeId,
+		Id:               int64(po.ID),
+		Name:             po.Name,
+		Desc:             po.Desc,
+		Type:             serverConsts.EndpointCaseTreeTypeCase,
+		IsDir:            false,
+		EndpointId:       po.EndpointId,
+		DebugInterfaceId: po.DebugInterfaceId,
+		ProjectId:        po.ProjectId,
+		ServeId:          po.ServeId,
 	}
 
 	return

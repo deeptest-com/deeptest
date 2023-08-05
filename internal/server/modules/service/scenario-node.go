@@ -159,6 +159,20 @@ func (s *ScenarioNodeService) AddInterfacesFromDefine(req serverDomain.ScenarioA
 	return
 }
 
+func (s *ScenarioNodeService) AddInterfacesFromCase(req serverDomain.ScenarioAddCasesFromTreeReq) (ret model.Processor, err error) {
+	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
+
+	if !s.ScenarioNodeRepo.IsDir(targetProcessor) {
+		targetProcessor, _ = s.ScenarioProcessorRepo.Get(targetProcessor.ParentId)
+	}
+
+	for _, interfaceNode := range req.SelectedNodes {
+		ret, _ = s.createDirOrInterfaceFromCase(&interfaceNode, targetProcessor)
+	}
+
+	return
+}
+
 func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint, serveId *uint,
 	createBy uint, parentProcessor model.Processor, name string) (
 	ret model.Processor, err error) {
@@ -283,6 +297,68 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 
 		debugData.BaseUrl = "" // no need to bind to env in debug page
 		debugData.Url = debugInterfaceOfDiagnoseInterfaceNode.Url
+
+		debugData.UsedBy = consts.ScenarioDebug
+		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData)
+
+		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, debugInterface.ID)
+
+		ret = processor
+	}
+
+	return
+}
+
+func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomain.EndpointCaseTree, parentProcessor model.Processor) (
+	ret model.Processor, err error) {
+	if caseNode.IsDir && len(caseNode.Children) > 0 { // dir
+		processor := model.Processor{
+			Name:           caseNode.Name,
+			ScenarioId:     parentProcessor.ScenarioId,
+			EntityCategory: consts.ProcessorGroup,
+			EntityType:     consts.ProcessorGroupDefault,
+			ParentId:       parentProcessor.ID,
+			ProjectId:      parentProcessor.ProjectId,
+		}
+		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+		s.ScenarioNodeRepo.Save(&processor)
+
+		for _, child := range caseNode.Children {
+			s.createDirOrInterfaceFromCase(child, processor)
+		}
+	} else if !caseNode.IsDir { // interface
+		debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(caseNode.DebugInterfaceId)
+
+		processor := model.Processor{
+			Name: caseNode.Name,
+
+			EntityCategory:      consts.ProcessorInterface,
+			EntityType:          consts.ProcessorInterfaceDefault,
+			EntityId:            caseNode.DebugInterfaceId, // as debugInterfaceId
+			EndpointInterfaceId: debugData.EndpointInterfaceId,
+
+			Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
+
+			ParentId:   parentProcessor.ID,
+			ScenarioId: parentProcessor.ScenarioId,
+			ProjectId:  parentProcessor.ProjectId,
+			CreatedBy:  parentProcessor.CreatedBy,
+		}
+
+		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+		s.ScenarioNodeRepo.Save(&processor)
+
+		// convert or clone a debug interface obj
+		debugData.DebugInterfaceId = 0 // force to clone the old one
+
+		debugData.ScenarioProcessorId = processor.ID
+		debugData.ProcessorInterfaceSrc = consts.InterfaceSrcCase
+
+		debugInterfaceOfCaseNode, _ := s.DebugInterfaceRepo.Get(caseNode.DebugInterfaceId)
+		debugData.ServerId = debugInterfaceOfCaseNode.ServerId
+
+		debugData.BaseUrl = "" // no need to bind to env in debug page
+		debugData.Url = debugInterfaceOfCaseNode.Url
 
 		debugData.UsedBy = consts.ScenarioDebug
 		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData)

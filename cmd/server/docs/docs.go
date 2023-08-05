@@ -3798,6 +3798,66 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/endpoints/cases/loadTree": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设计器/接口用例"
+                ],
+                "summary": "分类接口用例树",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "服务ID",
+                        "name": "serveId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/serverDomain.EndpointCaseTree"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/endpoints/cases/saveDebugData": {
             "post": {
                 "consumes": [
@@ -10209,6 +10269,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/scenarios/nodes/addInterfacesFromCase": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/编排节点"
+                ],
+                "summary": "添加接口用例",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "添加调接口用例的请求参数",
+                        "name": "ScenarioAddCasesFromTreeReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ScenarioAddCasesFromTreeReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Processor"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/scenarios/nodes/addInterfacesFromDefine": {
             "post": {
                 "consumes": [
@@ -15366,6 +15485,23 @@ const docTemplate = `{
                 "ProcessorData"
             ]
         },
+        "consts.ProcessorInterfaceSrc": {
+            "type": "string",
+            "enum": [
+                "define",
+                "case",
+                "diagnose",
+                "curl",
+                "custom"
+            ],
+            "x-enum-varnames": [
+                "InterfaceSrcDefine",
+                "InterfaceSrcCase",
+                "InterfaceSrcDiagnose",
+                "InterfaceSrcCurl",
+                "InterfaceSrcCustom"
+            ]
+        },
         "consts.ProcessorType": {
             "type": "string",
             "enum": [
@@ -15565,15 +15701,15 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "interface_debug",
-                "scenario_debug",
+                "case_debug",
                 "diagnose_debug",
-                "case_debug"
+                "scenario_debug"
             ],
             "x-enum-varnames": [
                 "InterfaceDebug",
-                "ScenarioDebug",
+                "CaseDebug",
                 "DiagnoseDebug",
-                "CaseDebug"
+                "ScenarioDebug"
             ]
         },
         "convert.DataSyncType": {
@@ -15840,7 +15976,7 @@ const docTemplate = `{
                     }
                 },
                 "processorInterfaceSrc": {
-                    "$ref": "#/definitions/consts.UsedBy"
+                    "$ref": "#/definitions/consts.ProcessorInterfaceSrc"
                 },
                 "projectId": {
                     "type": "integer"
@@ -17234,7 +17370,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "processorInterfaceSrc": {
-                    "$ref": "#/definitions/consts.UsedBy"
+                    "$ref": "#/definitions/consts.ProcessorInterfaceSrc"
                 },
                 "projectId": {
                     "type": "integer"
@@ -19238,6 +19374,9 @@ const docTemplate = `{
                 "parentId": {
                     "type": "integer"
                 },
+                "processorInterfaceSrc": {
+                    "$ref": "#/definitions/consts.ProcessorInterfaceSrc"
+                },
                 "projectId": {
                     "type": "integer"
                 },
@@ -20278,6 +20417,19 @@ const docTemplate = `{
                 "After"
             ]
         },
+        "serverConsts.EndpointCaseTreeType": {
+            "type": "string",
+            "enum": [
+                "dir",
+                "endpoint",
+                "case"
+            ],
+            "x-enum-varnames": [
+                "EndpointCaseTreeTypeDir",
+                "EndpointCaseTreeTypeEndpoint",
+                "EndpointCaseTreeTypeCase"
+            ]
+        },
         "serverConsts.NodeCreateMode": {
             "type": "string",
             "enum": [
@@ -20878,6 +21030,59 @@ const docTemplate = `{
                 },
                 "usedBy": {
                     "type": "string"
+                }
+            }
+        },
+        "serverDomain.EndpointCaseTree": {
+            "type": "object",
+            "properties": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "children": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.EndpointCaseTree"
+                    }
+                },
+                "count": {
+                    "type": "integer"
+                },
+                "debugInterfaceId": {
+                    "type": "integer"
+                },
+                "desc": {
+                    "type": "string"
+                },
+                "endpointId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "isDir": {
+                    "type": "boolean"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "integer"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "serveId": {
+                    "type": "integer"
+                },
+                "slots": {
+                    "$ref": "#/definitions/iris.Map"
+                },
+                "type": {
+                    "$ref": "#/definitions/serverConsts.EndpointCaseTreeType"
+                },
+                "useId": {
+                    "type": "integer"
                 }
             }
         },
@@ -22142,6 +22347,23 @@ const docTemplate = `{
                 }
             }
         },
+        "serverDomain.ScenarioAddCasesFromTreeReq": {
+            "type": "object",
+            "properties": {
+                "createBy": {
+                    "type": "integer"
+                },
+                "selectedNodes": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/serverDomain.EndpointCaseTree"
+                    }
+                },
+                "targetId": {
+                    "type": "integer"
+                }
+            }
+        },
         "serverDomain.ScenarioAddInterfacesFromTreeReq": {
             "type": "object",
             "properties": {
@@ -22190,6 +22412,9 @@ const docTemplate = `{
                 },
                 "processorCategory": {
                     "$ref": "#/definitions/consts.ProcessorCategory"
+                },
+                "processorInterfaceSrc": {
+                    "$ref": "#/definitions/consts.ProcessorInterfaceSrc"
                 },
                 "processorType": {
                     "$ref": "#/definitions/consts.ProcessorType"

@@ -48,6 +48,8 @@ type DebugData struct {
 	EnvVars      []GlobalVar   `json:"envVars"`
 	GlobalVars   []GlobalVar   `json:"globalVars"`
 	GlobalParams []GlobalParam `json:"globalParams"`
+
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 }
 
 type Condition struct {

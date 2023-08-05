@@ -454,7 +454,8 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 		},
 		//ServeId:   parent.ServeId,
 		//ServerId:  server.ID,
-		ProjectId: targetProcessor.ProjectId,
+		ProjectId:             targetProcessor.ProjectId,
+		ProcessorInterfaceSrc: consts.InterfaceSrcCurl,
 
 		UsedBy: consts.ScenarioDebug,
 	}

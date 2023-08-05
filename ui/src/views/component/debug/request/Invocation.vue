@@ -156,7 +156,9 @@ const showBaseUrl = () => {
   const notShow = debugData.value.usedBy === UsedBy.DiagnoseDebug
       || (debugData.value.usedBy === UsedBy.ScenarioDebug &&
                 (debugData.value.processorInterfaceSrc === ProcessorInterfaceSrc.Diagnose ||
-                  debugData.value.processorInterfaceSrc === ProcessorInterfaceSrc.Custom))
+                  debugData.value.processorInterfaceSrc === ProcessorInterfaceSrc.Custom  ||
+                  debugData.value.processorInterfaceSrc === ProcessorInterfaceSrc.Curl
+                  ))
 
   return !notShow
 }

@@ -430,7 +430,7 @@ const diagnoseInterfaceNodesSelectionFinish = (interfaceNodes) => {
   const targetNode = treeDataMap.value[targetModelId]
   console.log('endpointInterfaceIdsSelectionFinish', interfaceNodes, targetNode)
 
-  store.dispatch('Scenario/addInterfacesFromTest', {
+  store.dispatch('Scenario/addInterfacesFromDiagnose', {
     selectedNodes: interfaceNodes,
     targetId: targetNode.id,
   }).then((newNode) => {

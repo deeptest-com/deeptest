@@ -10,6 +10,7 @@
                             @update="updateTitle"/>
         </div>
       </template>
+
       <!-- 基本信息 -->
       <template #basicInfo>
         <BasicInfo @change="changeBasicInfo"/>
@@ -44,6 +45,7 @@
         </div>
       </template>
     </DrawerLayout>
+
     <!-- 动态场景执行抽屉 -->
     <a-drawer
         :placement="'right'"
@@ -57,10 +59,12 @@
         @close="onCloseExecDrawer">
       <ExecInfo v-if="execDrawerVisible"/>
     </a-drawer>
+
     <EnvSelector
         :env-select-drawer-visible="selectEnvVisible"
         @on-cancel="cancelSelectExecEnv"
-        @on-ok="selectExecEnv"/>
+        @on-ok="selectExecEnv" />
+
     <!-- ::::静态数据：查看执行历史的详情 -->
     <a-drawer
         :placement="'right'"

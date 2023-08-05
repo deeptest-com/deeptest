@@ -357,9 +357,9 @@ const addNode = (mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
   if (processorCategory === 'interface' || processorCategory === 'processor_interface') { // show popup to select a interface
-    interfaceSelectionSrc.value = processorType
+    interfaceSelectionSrc.value = processorType.substr(processorType.lastIndexOf('-') + 1)
 
-    if (interfaceSelectionSrc.value.includes('' + ProcessorInterfaceSrc.Custom)) { // show interface create popup
+    if (interfaceSelectionSrc.value === '' + ProcessorInterfaceSrc.Custom) { // show interface create popup
       currentNode.value = {
         name: '',
         entityCategory: processorCategory,

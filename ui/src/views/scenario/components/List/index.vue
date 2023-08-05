@@ -39,6 +39,7 @@
         </a-form>
       </div>
     </div>
+
     <a-table
         v-if="list.length > 0"
         row-key="id"
@@ -123,6 +124,7 @@
     </a-table>
     <a-empty v-if="list.length === 0" :image="simpleImage"/>
   </div>
+
   <ScenarioCreate :visible="isEditVisible"
                   @cancel="isEditVisible = false"
                   :onFinish="onEditFinish">
@@ -132,7 +134,6 @@
       :env-select-drawer-visible="selectEnvVisible"
       @on-cancel="cancelSelectExecEnv"
       @on-ok="selectExecEnv"/>
-
 
   <DrawerDetail :destroyOnClose="true"
                 :visible="drawerVisible"
@@ -214,8 +215,6 @@ onMounted(async () => {
   getList(1, nodeDataCategory.value.id);
 })
 
-
-
 const loading = ref<boolean>(true);
 
 const getList = debounce(async (current: number, categoryId: number): Promise<void> => {
@@ -240,7 +239,7 @@ const exec = (id: number) => {
 
 
 const design = (id: number) => {
-  console.log('edit')
+  console.log('design')
   router.push(`/scenario/design/${id}`)
 }
 

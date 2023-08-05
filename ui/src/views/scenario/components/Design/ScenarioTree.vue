@@ -6,7 +6,7 @@
             placeholder="输入关键字过滤"
             class="search-input"
             v-model:value="keywords"/>
-        <TreeMenu>
+        <TreeMenu> @selectMenu="selectMenu" :treeNode="treeData?.[0]">
           <template #button>
             <PlusOutlined class="plus-icon" @click.prevent.stop/>
           </template>
@@ -25,7 +25,7 @@
             @drop="onDrop"
             @expand="onExpand"
             @select="selectNode"
-            :tree-data="treeData"
+            :tree-data="treeDataNeedRender"
             :replace-fields="replaceFields">
           <template #switcherIcon>
             <CaretDownOutlined/>
@@ -34,9 +34,11 @@
             <div class="tree-title" :draggable="dataRef.id === -1">
               <div class="title">
                 <!-- 标题前缀 -->
-                <span class="prefix-icon" v-if="dataRef.entityType !== 'processor_interface_default'">
-                <IconSvg :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
-              </span>
+                <span class="prefix-icon"
+                      v-if="dataRef?.entityType !== 'processor_interface_default'">
+                  <IconSvg v-if="DESIGN_TYPE_ICON_MAP[dataRef.entityType]"
+                           :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
+                </span>
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
                 <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET' )">{{
@@ -48,22 +50,16 @@
               </span>
               </div>
               <div class="icon" v-if="dataRef.id > 0">
-<!--                <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">-->
-<!--                  <template #button>-->
-<!--                    <PlusOutlined class="plus-icon"/>-->
-<!--                  </template>-->
-<!--                </TreeMenu>-->
-                <a-dropdown>
-                  <MoreOutlined/>
-                  <template #overlay>
-                    <TreeContextMenu :treeNode="dataRef" :onMenuClick="menuClick"/>
+                <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
+                  <template #button>
+                    <MoreOutlined/>
                   </template>
-                </a-dropdown>
+                </TreeMenu>
               </div>
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
+        <div v-if="!treeDataNeedRender" class="nodata-tip">请点击上方按钮添加分类 ~</div>
       </div>
     </div>
 
@@ -75,12 +71,12 @@
         @cancel="handleEditModalCancel"/>
 
     <InterfaceSelectionFromDefine
-        v-if="interfaceSelectionVisible && interfaceSelectionSrc===ProcessorInterfaceSrc.Define"
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Define)"
         :onFinish="endpointInterfaceIdsSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
     <InterfaceSelectionFromDiagnose
-        v-if="interfaceSelectionVisible && interfaceSelectionSrc===ProcessorInterfaceSrc.Diagnose"
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Diagnose)"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
         :onCancel="interfaceSelectionCancel" />
 
@@ -90,12 +86,12 @@
 import {computed, defineProps, onMounted, onUnmounted, ref, watch, getCurrentInstance} from "vue";
 
 import {useI18n} from "vue-i18n";
-import {Form, message} from 'ant-design-vue';
+import {Form, message, Modal} from 'ant-design-vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 import {filterTree} from "@/utils/tree";
-import {ProcessorInterface, ProcessorInterfaceSrc} from "@/utils/enum";
+import {ProcessorInterfaceSrc} from "@/utils/enum";
 import {DESIGN_TYPE_ICON_MAP} from "./config";
 import {getMethodColor} from "@/utils/dom";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
@@ -108,15 +104,12 @@ import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
 import {Scenario} from "@/views/scenario/data";
 import TreeContextMenu from "./components/TreeContextMenu.vue";
-
 import EditModal from "./components/edit.vue";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelectionFromDiagnose/main.vue";
 
 const props = defineProps<{}>()
-
 const useForm = Form.useForm;
-
 const {t} = useI18n();
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -136,11 +129,9 @@ const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult)
 watch(treeData, () => {
   console.log('832 watch treeData1', treeData.value)
   console.log('832 watch treeData2', treeDataNeedRender.value)
-
   if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
     tips.value = '右键树状节点操作'
   }
-
   getExpandedKeysCall()
 })
 
@@ -287,12 +278,18 @@ const menuClick = (menuKey: string, targetId: number) => {
   clearMenu()
 }
 
-function selectMenu(menuInfo,treeNode) {
-  // console.log(8322222,menuInfo,treeNode);
-  const targetModelId = treeNode.id;
-  // debugger;
-  const keyPath = menuInfo.keyPath;
+/**
+ * 选中的菜单key，对应的处理器类型
+ * */
+function selectMenu(menuInfo, treeNode) {
+  targetModelId = treeNode?.id;
   const key = menuInfo.key;
+  const mode = 'child';
+  const processorType = key;
+  // 检验必要字段
+  if (!targetModelId) return;
+  if (!key) return;
+
   if (key === 'edit') {
     edit(treeDataMap.value[targetModelId])
     return
@@ -301,36 +298,29 @@ function selectMenu(menuInfo,treeNode) {
     removeNode()
     return
   }
-
-  const mode = keyPath[0]
-  const processorCategory = keyPath[1];
-  const processorType = keyPath[2];
-
+  if (key === 'disable') {
+    disableNode()
+    return
+  }
+  if (key === 'enable') {
+    enableNode()
+    return
+  }
+  const processorCategory = menuKeyMapToProcessorCategory[key];
+  if (!processorCategory) return;
   const targetProcessorId = targetModelId
   const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
   const targetProcessorType = treeDataMap.value[targetModelId].entityType
-
   addNode(mode, processorCategory, processorType,
-      targetProcessorCategory, targetProcessorType, targetProcessorId)
+      targetProcessorCategory, targetProcessorType, targetProcessorId);
 }
 
 async function handleEditModalOk(model) {
   console.log('handleEditModalOk')
-
-  // convert data
-  model.processorCategory = 'processor_' + model.entityCategory
-  model.processorType = model.entityType
-
-  if (!model.id && model.entityType === ProcessorInterface.Interface) {
-    store.dispatch('Scenario/addProcessor', model).then((newNode) => {
-      console.log('addProcessor successfully', newNode)
-      selectNode([newNode.id], null)
-      expandOneKey(treeDataMap.value, model.mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
-      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
-    })
-
-    return
-  }
+  Object.assign(model, {
+    // projectId: currProject.value.id,
+    // serveId: currServe.value.id,
+  })
 
   const res = await store.dispatch('Scenario/saveProcessorInfo', model)
   if (res) {
@@ -349,27 +339,10 @@ const addNode = (mode, processorCategory, processorType,
   console.log('addNode', mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
-  if (processorCategory === 'interface') { // show popup to select a interface
+  if (processorCategory === 'interface' || processorCategory === 'processor_interface') { // show popup to select a interface
     interfaceSelectionSrc.value = processorType
-
-    if (interfaceSelectionSrc.value === ProcessorInterfaceSrc.Custom) { // show interface create popup
-      currentNode.value = {
-        name: '',
-        entityCategory: processorCategory,
-        entityType: ProcessorInterface.Interface,
-        processorInterfaceSrc: interfaceSelectionSrc.value,
-
-        targetProcessorCategory,
-        targetProcessorType,
-        targetProcessorId,
-        mode,
-      }
-    } else { // show selection popup
-      interfaceSelectionVisible.value = true
-    }
-
+    interfaceSelectionVisible.value = true
     return
-
   } else {
     store.dispatch('Scenario/addProcessor',
         {
@@ -429,17 +402,50 @@ const interfaceSelectionCancel = () => {
 
 const removeNode = () => {
   console.log('removeNode')
-
   const node = treeDataMap.value[targetModelId]
-
   const title = `确定删除名为${node.name}的节点吗？`
   const context = '该节点的所有子节点都将被删除！'
-
   confirmToDelete(title, context, () => {
     store.dispatch('Scenario/removeNode', targetModelId);
     selectNode([], null)
   })
 }
+
+const disableNode = () => {
+  const node = treeDataMap.value[targetModelId]
+  Modal.confirm({
+    okType: 'danger',
+    title: `确定禁用名为${node.name}的节点吗？`,
+    content: '将同时禁用步骤下的所有子步骤，禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？',
+    okText: () => '确定',
+    cancelText: () => '取消',
+    onOk: async () => {
+      await store.dispatch('Scenario/removeNode', targetModelId);
+      selectNode([], null)
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+};
+
+const enableNode = () => {
+  const node = treeDataMap.value[targetModelId]
+  Modal.confirm({
+    okType: 'danger',
+    title: `启用名为${node.name}的场景步骤吗？`,
+    content: '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？',
+    okText: () => '确定',
+    cancelText: () => '取消',
+    onOk: async () => {
+      await store.dispatch('Scenario/removeNode', targetModelId);
+      selectNode([], null)
+    },
+    onCancel() {
+      console.log('Cancel');
+    },
+  });
+};
 
 const clearMenu = () => {
   console.log('clearMenu')
@@ -463,10 +469,6 @@ async function onDrop(info: DropEvent) {
         }
       }
   )
-}
-
-function addTopNode() {
-  console.log('addTopNode');
 }
 
 let currentInstance
@@ -519,7 +521,7 @@ onUnmounted(() => {
   }
 
   .icon {
-    width: 40px;
+    width: 16px;
     display: flex;
     align-items: center;
     justify-content: center;

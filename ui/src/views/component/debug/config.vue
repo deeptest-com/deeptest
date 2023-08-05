@@ -69,7 +69,7 @@ function resize() {
   position: relative;
 
   #debug-form-top {
-    //flex: 3;
+    height: 100%;
     width: 100%;
     padding: 0;
   }

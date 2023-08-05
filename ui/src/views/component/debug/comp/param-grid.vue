@@ -50,7 +50,7 @@ const columns = [
 
 <style lang="less" scoped>
 .param-grid-main {
-  margin-bottom: 10px;
+  margin-bottom: 30px;
   .head {
   }
   .items {

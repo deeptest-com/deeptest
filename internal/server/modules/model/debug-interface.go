@@ -10,8 +10,8 @@ type DebugInterface struct {
 	CaseInterfaceId     uint `gorm:"default:0" json:"caseInterfaceId"`
 	DiagnoseInterfaceId uint `gorm:"default:0" json:"diagnoseInterfaceId"`
 
-	ScenarioProcessorId   uint          `gorm:"default:0" json:"scenarioProcessorId"`
-	ProcessorInterfaceSrc consts.UsedBy `json:"processorInterfaceSrc"`
+	ScenarioProcessorId   uint                         `gorm:"default:0" json:"scenarioProcessorId"`
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 
 	ServeId uint `json:"serveId"`
 	// used by DiagnoseInterface

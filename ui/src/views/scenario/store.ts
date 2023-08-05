@@ -13,7 +13,7 @@ import {
     updateNode,
     removeNode,
     moveNode,
-    addInterfacesFromDefine, addInterfacesFromTest, addProcessor,
+    addInterfacesFromDefine, addInterfacesFromDiagnose, addProcessor,
     saveProcessorName, saveProcessor, loadExecResult,
     getScenariosReports,
     getScenariosReportsDetail,
@@ -115,7 +115,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateCategoryId: Action<StateType, StateType>;
 
         addInterfacesFromDefine: Action<StateType, StateType>;
-        addInterfacesFromTest: Action<StateType, StateType>;
+        addInterfacesFromDiagnose: Action<StateType, StateType>;
         addProcessor: Action<StateType, StateType>;
 
         createNode: Action<StateType, StateType>;
@@ -380,9 +380,9 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async addInterfacesFromTest({commit, dispatch, state}, payload: any) {
+        async addInterfacesFromDiagnose({commit, dispatch, state}, payload: any) {
             try {
-                const resp = await addInterfacesFromTest(payload);
+                const resp = await addInterfacesFromDiagnose(payload);
 
                 await dispatch('loadScenario', state.scenarioId);
                 return resp.data;

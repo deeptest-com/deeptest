@@ -95,7 +95,7 @@ import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 import {filterTree} from "@/utils/tree";
-import {ProcessorInterfaceSrc} from "@/utils/enum";
+import {ProcessorInterface, ProcessorInterfaceSrc} from "@/utils/enum";
 import {DESIGN_TYPE_ICON_MAP} from "./config";
 import {getMethodColor} from "@/utils/dom";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
@@ -108,6 +108,7 @@ import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
 import {Scenario} from "@/views/scenario/data";
 import TreeContextMenu from "./components/TreeContextMenu.vue";
+
 import EditModal from "./components/edit.vue";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelectionFromDiagnose/main.vue";
@@ -315,10 +316,21 @@ function selectMenu(menuInfo,treeNode) {
 
 async function handleEditModalOk(model) {
   console.log('handleEditModalOk')
-  Object.assign(model, {
-    // projectId: currProject.value.id,
-    // serveId: currServe.value.id,
-  })
+
+  // convert data
+  model.processorCategory = 'processor_' + model.entityCategory
+  model.processorType = model.entityType
+
+  if (!model.id && model.entityType === ProcessorInterface.Interface) {
+    store.dispatch('Scenario/addProcessor', model).then((newNode) => {
+      console.log('addProcessor successfully', newNode)
+      selectNode([newNode.id], null)
+      expandOneKey(treeDataMap.value, model.mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
+      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+    })
+
+    return
+  }
 
   const res = await store.dispatch('Scenario/saveProcessorInfo', model)
   if (res) {
@@ -339,7 +351,23 @@ const addNode = (mode, processorCategory, processorType,
 
   if (processorCategory === 'interface') { // show popup to select a interface
     interfaceSelectionSrc.value = processorType
-    interfaceSelectionVisible.value = true
+
+    if (interfaceSelectionSrc.value === ProcessorInterfaceSrc.Custom) { // show interface create popup
+      currentNode.value = {
+        name: '',
+        entityCategory: processorCategory,
+        entityType: ProcessorInterface.Interface,
+        processorInterfaceSrc: interfaceSelectionSrc.value,
+
+        targetProcessorCategory,
+        targetProcessorType,
+        targetProcessorId,
+        mode,
+      }
+    } else { // show selection popup
+      interfaceSelectionVisible.value = true
+    }
+
     return
 
   } else {

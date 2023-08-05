@@ -1,6 +1,7 @@
 package repo
 
 import (
+	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/jinzhu/copier"
@@ -71,10 +72,10 @@ func (r *ScenarioProcessorRepo) UpdateName(id uint, name string) (err error) {
 	return
 }
 
-func (r *ScenarioProcessorRepo) SaveProcessorInfo(id uint, name, comments string) (err error) {
+func (r *ScenarioProcessorRepo) SaveProcessorInfo(req domain.ScenarioProcessorInfo) (err error) {
 	err = r.DB.Model(&model.Processor{}).
-		Where("id = ?", id).
-		Updates(map[string]interface{}{"name": name, "comments": comments}).Error
+		Where("id = ?", req.Id).
+		Updates(map[string]interface{}{"name": req.Name, "comments": req.Comments}).Error
 
 	return
 }
@@ -360,6 +361,15 @@ func (r *ScenarioProcessorRepo) Delete(id uint) (err error) {
 	err = r.DB.Model(&model.Processor{}).
 		Where("id=?", id).
 		Update("deleted", true).
+		Error
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) UpdateInterfaceId(id, debugInterfacceId uint) (err error) {
+	err = r.DB.Model(&model.Processor{}).
+		Where("id=?", id).
+		Update("entity_id", debugInterfacceId).
 		Error
 
 	return

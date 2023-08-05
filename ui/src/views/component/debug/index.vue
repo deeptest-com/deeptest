@@ -2,8 +2,7 @@
   <div class="debug-index-wrapper">
     <div id="debug-index" class="dp-splits-v">
       <div id="debug-content">
-        <Invocation :topVal="topVal"
-                    :showMethodSelection = "showMethodSelection"
+        <Invocation :showMethodSelection = "showMethodSelection"
                     :onSave="saveDebugData"
                     :onSaveAsCase="saveAsCase"
                     :onSync="syncDebugData"
@@ -209,7 +208,6 @@ onUnmounted(() => {
 .debug-index-wrapper {
   flex:1;
   height: 100%;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
 

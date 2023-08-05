@@ -76,6 +76,14 @@ func (r *DebugInterfaceRepo) Get(id uint) (po model.DebugInterface, err error) {
 	return
 }
 
+func (r *DebugInterfaceRepo) GetByCaseInterfaceId(caseInterfaceId uint) (po model.DebugInterface, err error) {
+	err = r.DB.
+		Where("case_interface_id=?", caseInterfaceId).
+		Where("NOT deleted").
+		First(&po).Error
+	return
+}
+
 func (r *DebugInterfaceRepo) GetDetail(interfId uint) (interf model.DebugInterface, err error) {
 	if interfId <= 0 {
 		return

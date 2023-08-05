@@ -54,9 +54,9 @@
     </div>
 
     <!-- 选择环境 -->
-    <div class="select-env" :style="{top: topVal}">
+    <div class="select-env" :style="{top: selectEnvTopPosition}">
       <a-select :value="serverId || null" @change="changeServer"
-                placeholder="请选择环境" class="select-env">
+                placeholder="请选择环境">
         <a-select-option v-for="(option, key) in servers" :key="key" :value="option.id">
           {{ option.description }}
         </a-select-option>
@@ -268,9 +268,18 @@ const validateInfo = () => {
   return true
 };
 
-
+const selectEnvTopPosition = ref('0px')
 onMounted(() => {
   console.log('onMounted')
+
+  const elems = document.getElementsByClassName('invocation-main')
+  if (elems.length === 0) return
+
+  const rect = elems[0].getBoundingClientRect()
+  if (!rect) return
+
+  const top = rect?.top
+  selectEnvTopPosition.value = top - 45 + 'px'
 })
 onUnmounted(() => {
   console.log('onUnmounted')
@@ -308,11 +317,15 @@ function hasDefinedMethod(method: string) {
 <style lang="less">
 .invocation-main {
   .select-env {
-    position: absolute;
+    position: fixed;
     z-index: 999999;
-    right: 0px;
+    right: 20px;
     width: 120px;
     height: 36px;
+
+    .ant-select {
+      width: 100%;
+    }
   }
 }
 </style>

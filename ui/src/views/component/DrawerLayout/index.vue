@@ -85,7 +85,7 @@ watch(() => {
   }
 
   .dp-drawer-content-tabs-header {
-    position: sticky;
+    //position: sticky;
     top: 0;
     display: flex;
     align-items: center;

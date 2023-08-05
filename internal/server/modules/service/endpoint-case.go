@@ -306,6 +306,7 @@ func (s *EndpointCaseService) EndpointCaseToTo(po *model.EndpointCase) (to *serv
 		IsDir:            false,
 		EndpointId:       po.EndpointId,
 		DebugInterfaceId: po.DebugInterfaceId,
+		CaseInterfaceId:  po.ID,
 		ProjectId:        po.ProjectId,
 		ServeId:          po.ServeId,
 	}

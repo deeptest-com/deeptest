@@ -1,7 +1,6 @@
 <template>
   <div class="processor_interface_default-main dp-relative">
-    <DebugComp :topVal="'-45px'"
-               :onSaveDebugData="saveScenarioInterface"
+    <DebugComp :onSaveDebugData="saveScenarioInterface"
                :onSyncDebugData="syncDebugData" />
   </div>
 </template>
@@ -78,35 +77,12 @@ const syncDebugData = async () => {
 
 onMounted(() => {
   console.log('onMounted')
-  resize()
 })
-
-const resize = () => {
-  resizeWidth('debug-index',
-      'debug-content', 'debug-splitter', 'debug-right', 500, 38)
-}
 
 </script>
 
 <style lang="less" scoped>
 .processor_interface_default-main {
   height: 100%;
-
-  #debug-index {
-    display: flex;
-    height: 100%;
-    width: 100%;
-
-    #debug-content {
-      flex: 1;
-      width: 0;
-      height: 100%;
-    }
-
-    #debug-right {
-      width: 38px;
-      height: 100%;
-    }
-  }
 }
 </style>

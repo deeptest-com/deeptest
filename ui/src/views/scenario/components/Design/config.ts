@@ -49,6 +49,7 @@ export const DESIGN_MENU_CONFIG = [
                 key: 'processor_loop',
                 title: '循环',
                 icon: 'arrange-loop',
+                hideInNodeTypes: ['processor_interface_default'],
                 children: [
                     {
                         title: '循环次数',
@@ -82,11 +83,13 @@ export const DESIGN_MENU_CONFIG = [
                 key: 'processor_logic',
                 title: '条件',
                 icon: 'arrange-if',
+                hideInNodeTypes: ['processor_interface_default'],
                 children: [
                     {
                         title: '如果',
                         key: 'processor_logic_if',
                         icon: 'arrange-logic-if',
+                        hideInNodeTypes: null,
                     },
                     {
                         title: '否则',
@@ -100,17 +103,21 @@ export const DESIGN_MENU_CONFIG = [
                 key: 'processor_time_default',
                 title: '等待时间',
                 icon: 'arrange-wait',
+                hideInNodeTypes: ['processor_interface_default'],
             },
             //    数据迭代
             {
                 key: 'processor_data',
                 title: '数据迭代',
                 icon: 'arrange-data-loop',
+                hideInNodeTypes: ['processor_interface_default'],
+
             },
             {
                 key: 'processor_cookie',
                 title: 'Cookie',
                 icon: 'arrange-cookie',
+                hideInNodeTypes: null,
                 children: [
                     {
                         title: '添加Cookie',
@@ -133,6 +140,7 @@ export const DESIGN_MENU_CONFIG = [
                 key: 'processor_extractor',
                 title: '提取器',
                 icon: 'arrange-extractor',
+                hideInNodeTypes: null,
                 children: [
                     {
                         title: '边界提取器',
@@ -167,6 +175,7 @@ export const DESIGN_MENU_CONFIG = [
                 key: 'processor_variable',
                 title: '变量',
                 icon: 'arrange-var',
+                hideInNodeTypes: null,
                 children: [
                     {
                         title: '添加变量',
@@ -185,25 +194,29 @@ export const DESIGN_MENU_CONFIG = [
                 key: 'processor_print_default',
                 title: '输出',
                 icon: 'arrange-output',
+                hideInNodeTypes: null,
             },
             //   断言
             {
                 key: 'processor_assertion_default',
                 title: '断言',
                 icon: 'arrange-assert',
+                hideInNodeTypes: null,
             },
             // 定制代码
             {
                 key: 'processor_custom_code',
                 title: '定制代码',
                 icon: 'arrange-code',
+                hideInNodeTypes: null,
             },
         ]
     },
     {
-        key: 'processor_group',
+        key: 'processor_group_default',
         title: '添加分组',
         icon: 'arrange-group',
+        hideInNodeTypes: null,
     },
     //  分割线
     {
@@ -270,7 +283,7 @@ export const DESIGN_TYPE_ICON_MAP = {
  * 根据 菜单的key 对应的分类，用于保存场景编排时，根据分类保存到不同的字段
  * */
 export const menuKeyMapToProcessorCategory = {
-    'processor_group': 'processor_group_default',
+    'processor_group_default': 'processor_group',
 
 
     'processor_cookie_get': 'processor_cookie',

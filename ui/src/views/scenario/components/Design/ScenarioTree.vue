@@ -120,7 +120,6 @@ const treeDataNeedRender = computed<any>(() => {
   return null
 });
 
-
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
 const selectedNode = computed<any>(() => store.state.Scenario.nodeData);
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);

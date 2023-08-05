@@ -54,7 +54,7 @@
     </div>
 
     <!-- 选择环境 -->
-    <div class="select-env" :style="{top: '-42px'}">
+    <div class="select-env" :style="{top: selectEnvTopPosition}">
       <a-select :value="serverId || null" @change="changeServer"
                 placeholder="请选择环境">
         <a-select-option v-for="(option, key) in servers" :key="key" :value="option.id">
@@ -279,7 +279,7 @@ onMounted(() => {
   if (!rect) return
 
   const top = rect?.top
-  selectEnvTopPosition.value = top - 45 + 'px'
+  selectEnvTopPosition.value = top - 50 + 'px'
 })
 onUnmounted(() => {
   console.log('onUnmounted')
@@ -317,7 +317,7 @@ function hasDefinedMethod(method: string) {
 <style lang="less">
 .invocation-main {
   .select-env {
-    position: absolute;
+    position: fixed;
     z-index: 999999;
     right: 20px;
     width: 120px;

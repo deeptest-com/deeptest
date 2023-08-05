@@ -76,15 +76,17 @@
         @ok="handleEditModalOk"
         @cancel="handleEditModalCancel"/>
 
+    <!--  选择接口弹窗  -->
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Define)"
         :onFinish="endpointInterfaceIdsSelectionFinish"
         :onCancel="interfaceSelectionCancel"/>
-
+    <!--  选择调试弹窗  -->
     <InterfaceSelectionFromDiagnose
-        v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes('ProcessorInterfaceSrc.Diagnose')"
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Diagnose)"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
         :onCancel="interfaceSelectionCancel"/>
+
 
   </div>
 </template>
@@ -286,6 +288,9 @@ const menuClick = (menuKey: string, targetId: number) => {
   clearMenu()
 }
 
+/**
+ * 选中的菜单key，对应的处理器类型
+ * */
 function selectMenu(menuInfo, treeNode) {
   targetModelId = treeNode?.id;
   const key = menuInfo.key;
@@ -311,7 +316,7 @@ function selectMenu(menuInfo, treeNode) {
     enableNode()
     return
   }
-  // debugger;
+  debugger;
   const processorCategory = menuKeyMapToProcessorCategory[key];
   if (!processorCategory) return;
   const targetProcessorId = targetModelId

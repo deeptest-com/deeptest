@@ -80,12 +80,12 @@
         v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Diagnose)"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
         :onCancel="interfaceSelectionCancel"/>
-    
+
     <!--  Curl导入弹窗  -->
     <InterfaceImportFromCurl
         v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Curl)"
         @onFinish="interfaceImportFromCurlFinish"
-        @onCancel="interfaceImportFromCurlCancel"/>    
+        @onCancel="interfaceImportFromCurlCancel"/>
   </div>
 </template>
 <script setup lang="ts">
@@ -204,7 +204,7 @@ const selectNode = (keys, e) => {
   }
 
   store.dispatch('Scenario/getNode', selectedData).then((ok) => {
-    if (ok && selectedData.entityType === ProcessorInterface.Interface) {
+    if (ok && selectedData?.entityType === ProcessorInterface.Interface) {
       // will cause watch event to load debug data in components/interface/interface.vue
       store.dispatch('Scenario/setScenarioProcessorIdForDebug', selectedData.id)
     }
@@ -529,7 +529,7 @@ const interfaceImportFromCurlFinish = (content:string)=>{
     expandOneKey(treeDataMap.value, newNode.id, expandedKeys.value) // expend new node
     setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
     })
-  
+
   interfaceSelectionVisible.value = false
 }
 

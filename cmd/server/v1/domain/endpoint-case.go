@@ -54,6 +54,7 @@ type EndpointCaseTree struct {
 	CategoryId       uint  `json:"categoryId"`
 	EndpointId       uint  `json:"endpointId"`
 	DebugInterfaceId uint  `json:"debugInterfaceId"`
+	CaseInterfaceId  uint  `json:"caseInterfaceId"`
 	ParentId         int64 `json:"parentId"`
 	ProjectId        uint  `json:"projectId"`
 	ServeId          uint  `json:"serveId"`

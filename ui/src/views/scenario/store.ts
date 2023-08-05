@@ -21,7 +21,7 @@ import {
     getScenariosReportsDetail,
     addPlans,
     getPlans,
-    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData, saveProcessorInfo,
+    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData, saveProcessorInfo,importCurl
 } from './service';
 
 import {
@@ -155,6 +155,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         saveDebugData: Action<StateType, StateType>;
         syncDebugData: Action<StateType, StateType>;
+
+        importCurl: Action<StateType, StateType>;
     }
 }
 
@@ -720,7 +722,17 @@ const StoreModel: ModuleType = {
             commit('setScenarioProcessorIdForDebug', resp.data.id)
             return resp.code === 0;
         },
+        async importCurl({state,dispatch}, payload) {
+            const res = await importCurl(payload);
+            await dispatch('loadScenario', state.scenarioId);
+            if (res.code === 0) {
+                return res.data;
+            }
+            return false;
+        },
     }
 };
 
 export default StoreModel;
+
+

@@ -14,10 +14,8 @@
                           @update="updateName" />
       </div>
 
-      <DebugComp
-          :topVal="'-3px'"
-          :onSaveDebugData="saveCaseInterface"
-          :urlDisabled="true"/>
+      <DebugComp :onSaveDebugData="saveCaseInterface"
+                 :urlDisabled="true"/>
     </div>
 
   </div>

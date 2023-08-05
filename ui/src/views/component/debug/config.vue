@@ -61,19 +61,20 @@ function resize() {
 #debug-form-main {
   flex-direction: column;
   height: calc(100% - 33px);
+  display: flex;
 
   padding: 0;
   position: relative;
 
   #debug-form-top {
-    height: 60%;
+    flex: 3;
 
     width: 100%;
     padding: 0;
   }
 
   #debug-form-bottom {
-    height: 40%;
+    flex: 2;
 
     width: 100%;
     padding: 0;

@@ -1,6 +1,7 @@
 <template>
   <div>
-    <DrawerLayout :visible="visible" @close="onCloseDrawer" :stickyKey="stickyKey">
+    <DrawerLayout :visible="visible" @close="onCloseDrawer" :stickyKey="stickyKey"
+                  class="scenario-interface-design">
       <!-- 头部信息  -->
       <template #header>
         <div class="header-text">
@@ -26,7 +27,7 @@
         </div>
         <div class="tab-header-btns">
           <div v-if="activeKey==='1'" class="exec-scenario-btn">
-            <a-button @click="exec" type="primary"><span>执行</span></a-button>
+            <a-button @click="exec" type="primary"><span>执行场景</span></a-button>
           </div>
         </div>
       </template>
@@ -240,10 +241,20 @@ async function changeBasicInfo(type, value) {
 async function cancel() {
   emit('close');
 }
-
-
 </script>
+
 <style lang="less" scoped>
+.scenario-interface-design {
+  .tab-header-btns {
+    position: relative;
+    .exec-scenario-btn {
+      position: absolute;
+      right: 206px;
+      top: -11px;
+    }
+  }
+}
+
 .drawer {
   margin-bottom: 60px;
 
@@ -257,8 +268,8 @@ async function cancel() {
 
       .exec-scenario-btn {
         position: absolute;
-        right: 218px;
-        top: -35px;
+        right: 518px;
+        top: -30px;
       }
     }
   }

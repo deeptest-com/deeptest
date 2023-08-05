@@ -12,8 +12,7 @@
                       :key="''+tab.id" :tab="getTitle(tab.title)"
                       class="dp-relative">
             <template v-if="debugData?.method" >
-              <DebugComp :topVal="'-40px'"
-                         :onSaveDebugData="saveDiagnoseInterface"
+              <DebugComp :onSaveDebugData="saveDiagnoseInterface"
                          :baseUrlDisabled="false" />
             </template>
           </a-tab-pane>

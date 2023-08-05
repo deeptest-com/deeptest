@@ -92,7 +92,7 @@ import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 import {filterTree} from "@/utils/tree";
 import {ProcessorInterfaceSrc} from "@/utils/enum";
-import {DESIGN_TYPE_ICON_MAP} from "./config";
+import {DESIGN_TYPE_ICON_MAP, menuKeyMapToProcessorCategory} from "./config";
 import {getMethodColor} from "@/utils/dom";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {PlusOutlined, CaretDownOutlined, MoreOutlined, FolderOpenOutlined, FolderOutlined} from '@ant-design/icons-vue';

@@ -122,10 +122,12 @@ const saveAsCancel = () => {
   height: 100%;
 
   #endpoint-debug-index {
-    height: 100%;
+    //height: 100%;
     width: 100%;
-    min-height: calc(100vh - 96px);
+    height: calc(100vh - 96px);
     flex-direction: column;
+    display: flex;
+    overflow: hidden;
 
     #debug-top {
       display: flex;

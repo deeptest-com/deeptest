@@ -37,14 +37,14 @@ const props = defineProps(['containerStyle'])
     width: 100%;
     position: relative;
     height: 100%;
-    .left {
+    .top {
       overflow-y: scroll;
       position: relative;
     }
 
-    .right {
+    .bottom {
       flex: 1;
-      overflow: scroll;
+      overflow-y: scroll;
     }
   }
 }

@@ -54,7 +54,7 @@
     </div>
 
     <!-- 选择环境 -->
-    <div class="select-env" :style="{top: selectEnvTopPosition}">
+    <div class="select-env" :style="{top: '-42px'}">
       <a-select :value="serverId || null" @change="changeServer"
                 placeholder="请选择环境">
         <a-select-option v-for="(option, key) in servers" :key="key" :value="option.id">
@@ -317,7 +317,7 @@ function hasDefinedMethod(method: string) {
 <style lang="less">
 .invocation-main {
   .select-env {
-    position: fixed;
+    position: absolute;
     z-index: 999999;
     right: 20px;
     width: 120px;

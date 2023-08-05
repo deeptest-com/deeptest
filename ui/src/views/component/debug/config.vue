@@ -1,21 +1,23 @@
 <template>
   <div id="debug-form-main">
-    <div id="debug-form-top">
-      <div v-if="serverConfig.demoTestSite" class="dp-red">
-        您正在访问演示站点，所有的接口请求将被重定向到{{serverConfig.demoTestSite}}。
-      </div>
+    <ContentPaneHorizontal>
+      <template #top>
+        <div id="debug-form-top">
+          <div v-if="serverConfig.demoTestSite" class="dp-red">
+            您正在访问演示站点，所有的接口请求将被重定向到{{serverConfig.demoTestSite}}。
+          </div>
 
-      <InterfaceRequest v-if="debugData.method"
-                        :showRequestInvocation="false"
-                        :showDebugDataUrl="false" />
-    </div>
-
-    <div id="debug-form-splitter" :hidden="!debugData.method" />
-
-    <div id="debug-form-bottom">
-      <InterfaceResponse v-if="debugData.method" />
-    </div>
-
+          <InterfaceRequest v-if="debugData.method"
+                            :showRequestInvocation="false"
+                            :showDebugDataUrl="false" />
+        </div>
+      </template>
+      <template #bottom>
+        <div id="debug-form-bottom">
+          <InterfaceResponse v-if="debugData.method" />
+        </div>
+      </template>
+    </ContentPaneHorizontal>
     <VariableSelection/>
   </div>
 </template>
@@ -29,7 +31,7 @@ import {resizeHeight} from "@/utils/dom";
 import {StateType as ProjectGlobal} from "@/store/project";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "../../endpoint/store";
-
+import ContentPaneHorizontal from "@/views/component/ContentPaneHorizontal/index.vue";
 import InterfaceRequest from './request/Index.vue';
 import InterfaceResponse from './response/Index.vue';
 import VariableSelection from './others/variable-replace/Selection.vue';
@@ -67,16 +69,15 @@ function resize() {
   position: relative;
 
   #debug-form-top {
-    flex: 3;
-
+    //flex: 3;
     width: 100%;
     padding: 0;
   }
 
   #debug-form-bottom {
-    flex: 2;
-
+    //flex: 2;
     width: 100%;
+    height: 100%;
     padding: 0;
     overflow: auto;
   }

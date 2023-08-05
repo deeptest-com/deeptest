@@ -55,7 +55,7 @@ export function resizeHeight(mainId: string, topId: string, splitterId: string, 
     const splitter = document.getElementById(splitterId) as any;
     const bottom = document.getElementById(bottomId) as any;
 
-    console.log(main, top, splitter, bottom)
+    // console.log(main, top, splitter, bottom)
 
     if (!splitter) return false
 
@@ -78,7 +78,7 @@ export function resizeHeight(mainId: string, topId: string, splitterId: string, 
             bottom.style.height = availableHeight - topNewHeight + 'px';
             bottom.style.flex = undefined
 
-            console.log('height: ', availableHeight, top.style.height, bottom.style.height)
+            // console.log('height: ', availableHeight, top.style.height, bottom.style.height)
 
             resizeHandler()
         };
@@ -183,7 +183,7 @@ export function getContextMenuStyle (x, y, height) {
 }
 
 export function getContextMenuStyle2(e) {
-    console.log('getContextMenuStyle2', e.clientY)
+    // console.log('getContextMenuStyle2', e.clientY)
 
     const style = {
         left: e.clientX + 'px',
@@ -194,7 +194,7 @@ export function getContextMenuStyle2(e) {
 }
 
 export function getRightTabPanelPosition(tabId) {
-    console.log('getRightTabPanelPosition', tabId)
+    // console.log('getRightTabPanelPosition', tabId)
 
     let ret = {}
 

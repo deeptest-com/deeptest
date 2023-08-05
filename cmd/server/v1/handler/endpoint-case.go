@@ -219,3 +219,16 @@ func (c *EndpointCaseCtrl) Remove(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
+
+func (c *EndpointCaseCtrl) LoadTree(ctx iris.Context) {
+	projectId, _ := ctx.URLParamInt("currProjectId")
+	serveId, _ := ctx.URLParamInt("serveId")
+
+	data, err := c.EndpointCaseService.LoadTree(uint(projectId), uint(serveId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}

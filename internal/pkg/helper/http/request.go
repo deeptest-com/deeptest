@@ -16,6 +16,7 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/andybalholm/brotli"
 	"github.com/fatih/color"
+	"go.uber.org/zap"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -23,6 +24,8 @@ import (
 	"strings"
 	"time"
 )
+
+var Logger *zap.Logger
 
 func Get(req domain.BaseRequest) (ret domain.DebugResponse, err error) {
 	return gets(req, consts.GET, true)
@@ -155,7 +158,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 	reqUrl := commUtils.RemoveLeftVariableSymbol(req.Url)
 	if _consts.Verbose {
-		_logUtils.Info(reqUrl)
+		Logger.Info(reqUrl)
 	}
 
 	jar := genCookies(req)

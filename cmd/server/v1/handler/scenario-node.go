@@ -224,11 +224,20 @@ func (c *ScenarioNodeCtrl) Move(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// ImportCurl 导入cURL命令
+// @Tags	场景模块/编排节点
+// @summary	导入cURL命令
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization				header	string								true	"Authentication header"
+// @Param 	DiagnoseCurlImportReq		body	serverDomain.ScenarioCurlImportReq	true	"导入cURL命令的请求体"
+// @success	200	{object}	_domain.Response{data=model.Processor}
+// @Router	/api/v1/scenarios/nodes/importCurl	[post]
 func (c *ScenarioNodeCtrl) ImportCurl(ctx iris.Context) {
 	req := serverDomain.ScenarioCurlImportReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 

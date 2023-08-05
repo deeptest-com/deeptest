@@ -80,7 +80,12 @@
         v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Diagnose)"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
         :onCancel="interfaceSelectionCancel"/>
-
+    
+    <!--  Curl导入弹窗  -->
+    <InterfaceImportFromCurl
+    v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Curl)"
+    @onFinish="interfaceImportFromCurlFinish"
+    @onCancel="interfaceImportFromCurlCancel"/>    
 
   </div>
 </template>
@@ -109,6 +114,7 @@ import TreeContextMenu from "./components/TreeContextMenu.vue";
 import EditModal from "./components/edit.vue";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelectionFromDiagnose/main.vue";
+import InterfaceImportFromCurl from "@/views/component/interfaceImportFromCurl";
 
 const props = defineProps<{}>()
 const useForm = Form.useForm;
@@ -448,6 +454,24 @@ async function onDrop(info: DropEvent) {
         }
       }
   )
+}
+
+const interfaceImportFromCurlFinish = (content:string)=>{
+  const targetNode = treeDataMap.value[targetModelId]
+  store.dispatch('Scenario/importCurl', {
+    content:content,targetId:targetNode.id
+  }).then((newNode) => {
+    console.log('importUrl successfully', newNode)
+    selectNode([newNode.id], null)
+    expandOneKey(treeDataMap.value, newNode.id, expandedKeys.value) // expend new node
+    setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+    })
+  
+  interfaceSelectionVisible.value = false
+}
+
+const interfaceImportFromCurlCancel = ()=>{
+  interfaceSelectionVisible.value = false
 }
 
 let currentInstance

@@ -410,3 +410,12 @@ export const showSubMenuItem = (entityType, category, type) => {
 
     return true
 }
+
+
+export async function importCurl(params:any): Promise<any> {
+    return request({
+        url: `/scenarios/nodes/importCurl`,
+        method: 'post',
+        data:params,
+    });
+}

@@ -337,6 +337,7 @@ func (s *ScenarioNodeService) ListToByScenario(id uint) (ret []*agentExec.Proces
 }
 
 func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq) (ret model.Processor, err error) {
+	//req.Content = "curl 'https://leyanapi.nancalcloud.com/api/v1/endpoint/detail?id=1783&ts=1691139567363&currProjectId=2&lang=zh-CN' \\\n  -H 'Accept: application/json, text/plain, */*' \\\n  -H 'Accept-Language: zh-CN,zh;q=0.9' \\\n  -H 'Authorization: Bearer WldJME16Z3lZelV6T0RSbFlXWXdaV0psWWpKbU56TTROR0U1TjJJd01UVS5OV1l3TkRBMU16WmlZekk1WldGa05UTmtOelF4WldRNVlUTXlaamczTURr' \\\n  -H 'Connection: keep-alive' \\\n  -H 'Cookie: td_cookie=3753276482; HWWAFSESID=8f1d573ac34f71a4c5; HWWAFSESTIME=1690431343235' \\\n  -H 'Referer: https://leyanapi.nancalcloud.com/' \\\n  -H 'Sec-Fetch-Dest: empty' \\\n  -H 'Sec-Fetch-Mode: cors' \\\n  -H 'Sec-Fetch-Site: same-origin' \\\n  -H 'User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36' \\\n  -H 'sec-ch-ua: \"Not/A)Brand\";v=\"99\", \"Google Chrome\";v=\"115\", \"Chromium\";v=\"115\"' \\\n  -H 'sec-ch-ua-mobile: ?0' \\\n  -H 'sec-ch-ua-platform: \"Windows\"' \\\n  --compressed"
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
 	if !s.ScenarioNodeRepo.IsDir(targetProcessor) {
@@ -346,8 +347,7 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 	curlObj := curlHelper.Parse(req.Content)
 	wf := curlObj.CreateTemporary(curlObj.CreateSession())
 
-	url := fmt.Sprintf("%s://%s%s", curlObj.ParsedURL.Scheme,
-		curlObj.ParsedURL.Host, curlObj.ParsedURL.Path)
+	url := fmt.Sprintf("%s://%s%s", curlObj.ParsedURL.Scheme, curlObj.ParsedURL.Host, curlObj.ParsedURL.Path)
 	title := fmt.Sprintf("%s %s", url, curlObj.Method)
 	queryParams := s.DiagnoseInterfaceService.getQueryParams(curlObj.ParsedURL.Query())
 	headers := s.DiagnoseInterfaceService.getHeaders(wf.Header)
@@ -390,13 +390,17 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 
 		Ordr: s.ScenarioNodeRepo.GetMaxOrder(targetProcessor.ID),
 
-		ParentId:   targetProcessor.ID,
-		ScenarioId: targetProcessor.ScenarioId,
-		ProjectId:  targetProcessor.ProjectId,
-		CreatedBy:  req.CreateBy,
+		ParentId:              targetProcessor.ID,
+		ScenarioId:            targetProcessor.ScenarioId,
+		ProjectId:             targetProcessor.ProjectId,
+		CreatedBy:             req.CreateBy,
+		ProcessorInterfaceSrc: consts.InterfaceSrcCurl,
 	}
 
-	s.ScenarioNodeRepo.Save(&processor)
+	err = s.ScenarioNodeRepo.Save(&processor)
+	if err != nil {
+		return
+	}
 
 	// update to new ScenarioProcessorId
 	values := map[string]interface{}{

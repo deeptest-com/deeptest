@@ -111,7 +111,6 @@ import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelection
 const props = defineProps<{}>()
 const useForm = Form.useForm;
 const {t} = useI18n();
-
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataNeedRender = computed<any>(() => {

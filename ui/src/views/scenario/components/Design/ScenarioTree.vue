@@ -183,10 +183,10 @@ const selectNode = (keys, e) => {
   }
 
   store.dispatch('Scenario/getNode', selectedData).then((ok) => {
-    if (ok && selectedNode.value.processorType === 'processor_interface_default') {
+    if (ok && selectedData.processorType === 'processor_interface_default') {
       // will cause watch event to load debug data in components/interface/interface.vue
-      store.dispatch('Scenario/setScenarioProcessorIdForDebug', selectedNode.value.processorID)
-      // store.dispatch('Scenario/setEndpointInterfaceIdForDebug', selectedNode.value.endpointInterfaceId)
+      store.dispatch('Scenario/setScenarioProcessorIdForDebug', selectedData.processorID)
+      // store.dispatch('Scenario/setEndpointInterfaceIdForDebug', selectedData.endpointInterfaceId)
     }
   })
 }
@@ -317,12 +317,14 @@ async function handleEditModalOk(model) {
   console.log('handleEditModalOk')
 
   // convert data
-  model.processorCategory = 'processor_' + model.entityCategory
+  model.processorCategory = model.entityCategory
   model.processorType = model.entityType
 
   if (!model.id && model.entityType === ProcessorInterface.Interface) {
     store.dispatch('Scenario/addProcessor', model).then((newNode) => {
       console.log('addProcessor successfully', newNode)
+      currentNode.value = null
+
       selectNode([newNode.id], null)
       expandOneKey(treeDataMap.value, model.mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
       setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)

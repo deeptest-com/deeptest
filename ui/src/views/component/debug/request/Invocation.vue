@@ -2,8 +2,7 @@
   <div class="invocation-main">
     <div class="toolbar">
       <div v-if="showMethodSelection" class="select-method">
-        <a-select class="select-method"
-                  v-model:value="debugData.method">
+        <a-select class="select-method" v-model:value="debugData.method">
           <template v-for="method in Methods">
             <a-select-option v-if="hasDefinedMethod(method)"
                              :key="method"
@@ -265,6 +264,9 @@ onUnmounted(() => {
 })
 
 function hasDefinedMethod(method: string) {
+  if (usedBy !== UsedBy.CaseDebug)
+    return true
+
   return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })

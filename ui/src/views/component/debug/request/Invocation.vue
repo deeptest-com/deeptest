@@ -13,7 +13,7 @@
         </a-select>
       </div>
 
-      <div v-if="debugData.usedBy !== UsedBy.DiagnoseDebug && debugData.processorInterfaceSrc !== UsedBy.DiagnoseDebug" class="base-url">
+      <div v-if="showBaseUrl()" class="base-url">
         <a-input placeholder="请输入地址"
                  v-model:value="debugData.baseUrl"
                  :disabled="baseUrlDisabled" />
@@ -79,7 +79,7 @@ import {UndoOutlined} from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import IconSvg from "@/components/IconSvg";
-import {Methods, UsedBy} from "@/utils/enum";
+import {Methods, ProcessorInterfaceSrc, UsedBy} from "@/utils/enum";
 import {prepareDataForRequest} from "@/views/component/debug/service";
 import {NotificationKeyCommon} from "@/utils/const"
 
@@ -148,6 +148,17 @@ const listServer = async (serveId) => {
     servers.value = res.data
   }
   console.log('servers', servers)
+}
+
+const showBaseUrl = () => {
+  console.log('showBaseUrl')
+
+  const notShow = debugData.value.usedBy === UsedBy.DiagnoseDebug
+      || (debugData.value.usedBy === UsedBy.ScenarioDebug &&
+                (debugData.value.processorInterfaceSrc === ProcessorInterfaceSrc.Diagnose ||
+                  debugData.value.processorInterfaceSrc === ProcessorInterfaceSrc.Custom))
+
+  return !notShow
 }
 
 const getEnvUrl = () => {

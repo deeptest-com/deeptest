@@ -32,23 +32,23 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug);
 
 watch(scenarioProcessorIdForDebug, () => {
-  console.log('watch scenarioProcessorIdForDebug', scenarioProcessorIdForDebug)
+  console.log('watch scenarioProcessorIdForDebug', scenarioProcessorIdForDebug.value)
   loadData()
-}, {deep: true})
+}, {immediate: true, deep: true})
 
-const loadData = debounce(async () => {
-  console.log('loadData', scenarioProcessorIdForDebug.value)
-  if (scenarioProcessorIdForDebug.value === 0) {
-    return
-  }
+function loadData() {
+  debounce(async () => {
+    console.log('loadData', scenarioProcessorIdForDebug.value)
 
-  store.dispatch('Debug/loadDataAndInvocations', {
-    scenarioProcessorId: scenarioProcessorIdForDebug.value,
-    usedBy: usedBy,
-  });
+    if (scenarioProcessorIdForDebug.value === 0) return
 
-}, 300)
-loadData()
+    store.dispatch('Debug/loadDataAndInvocations', {
+      scenarioProcessorId: scenarioProcessorIdForDebug.value,
+      usedBy: usedBy,
+    });
+
+  }, 300)()
+}
 
 const saveScenarioInterface = async (data) => {
   const obj = Object.assign({}, data)

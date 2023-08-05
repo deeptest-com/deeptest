@@ -249,8 +249,8 @@ async function cancel() {
     position: relative;
     .exec-scenario-btn {
       position: absolute;
-      right: 206px;
-      top: -11px;
+      right: 200px;
+      top: -16px;
     }
   }
 }

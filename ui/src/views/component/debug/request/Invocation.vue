@@ -271,15 +271,7 @@ const validateInfo = () => {
 const selectEnvTopPosition = ref('0px')
 onMounted(() => {
   console.log('onMounted')
-
-  const elems = document.getElementsByClassName('invocation-main')
-  if (elems.length === 0) return
-
-  const rect = elems[0].getBoundingClientRect()
-  if (!rect) return
-
-  const top = rect?.top
-  selectEnvTopPosition.value = top - 50 + 'px'
+  selectEnvTopPosition.value = getSelectEnvTopPosition()
 })
 onUnmounted(() => {
   console.log('onUnmounted')
@@ -292,6 +284,29 @@ function hasDefinedMethod(method: string) {
   return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })
+}
+
+const getSelectEnvTopPosition = () => {
+  const elems = document.getElementsByClassName('invocation-main')
+  if (elems.length === 0) return '0px'
+
+  const rect = elems[0].getBoundingClientRect()
+  if (!rect) return '0px'
+
+  const top = rect?.top
+
+  let val = 0
+  if (usedBy === UsedBy.ScenarioDebug) {
+    val = 50
+  } else if (usedBy === UsedBy.DiagnoseDebug) {
+    val = 40
+  } else if (usedBy === UsedBy.InterfaceDebug) {
+    val = 43
+  } else if (usedBy === UsedBy.CaseDebug) {
+    val = 34
+  }
+
+  return top - val + 'px'
 }
 
 // const showContextMenu = ref(false)
@@ -319,9 +334,8 @@ function hasDefinedMethod(method: string) {
   .select-env {
     position: fixed;
     z-index: 999999;
-    right: 20px;
+    right: 22px;
     width: 120px;
-    height: 36px;
 
     .ant-select {
       width: 100%;

@@ -6,7 +6,7 @@
             placeholder="输入关键字过滤"
             class="search-input"
             v-model:value="keywords"/>
-        <TreeMenu> @selectMenu="selectMenu" :treeNode="treeData?.[0]">
+        <TreeMenu  @selectMenu="selectMenu" :treeNode="treeData?.[0]">
           <template #button>
             <PlusOutlined class="plus-icon" @click.prevent.stop/>
           </template>

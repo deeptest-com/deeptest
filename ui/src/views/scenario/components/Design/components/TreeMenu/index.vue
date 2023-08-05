@@ -31,9 +31,7 @@ import MenuItem from "./MenuItem.vue";
  * 根据当前的节点类型，过滤掉不需要的菜单
  * */
 const menus = computed(() => {
-  console.log('832 menus', props?.treeNode);
   const nodeType = props?.treeNode?.entityType;
-
   if(!nodeType) {
     return [];
   }
@@ -55,14 +53,5 @@ const menus = computed(() => {
   })
 });
 
-
-watch(() => {
-  return menus.value;
-}, (newVal) => {
-  console.log('83222newVal', newVal);
-},{
-  deep: true,
-  immediate: true,
-})
 </script>
 

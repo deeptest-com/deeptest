@@ -6,7 +6,7 @@
             placeholder="输入关键字过滤"
             class="search-input"
             v-model:value="keywords"/>
-        <TreeMenu> @selectMenu="selectMenu" :treeNode="treeData?.[0]">
+        <TreeMenu  @selectMenu="selectMenu" :treeNode="treeData?.[0]">
           <template #button>
             <PlusOutlined class="plus-icon" @click.prevent.stop/>
           </template>
@@ -59,7 +59,7 @@
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeDataNeedRender" class="nodata-tip">请点击上方按钮添加分类 ~</div>
+        <div v-if="treeData?.[0]?.children?.length === 0" class="nodata-tip">请点击上方按钮添加分类 ~</div>
       </div>
     </div>
 
@@ -90,7 +90,7 @@ import {Form, message, Modal} from 'ant-design-vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
-import {filterTree} from "@/utils/tree";
+import {filterTree,filterByKeyword} from "@/utils/tree";
 import {ProcessorInterface, ProcessorInterfaceSrc} from "@/utils/enum";
 import {DESIGN_TYPE_ICON_MAP, menuKeyMapToProcessorCategory} from "./config";
 import {getMethodColor} from "@/utils/dom";
@@ -114,9 +114,14 @@ const {t} = useI18n();
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataNeedRender = computed<any>(() => {
-  if (treeData?.value?.[0]?.children?.length > 0) {
-    return treeData.value[0].children;
+  const children = treeData.value?.[0]?.children;
+  if (children?.length > 0) {
+    if(keywords.value) {
+      return filterByKeyword(children, keywords.value, 'name');
+    }
+    return children;
   }
+
   return null
 });
 

@@ -177,16 +177,17 @@ const selectNode = (keys, e) => {
   }
 
   const selectedData = treeDataMap.value[selectedKeys.value[0]]
+  console.log('selectedData', selectedData)
+
   if (selectedData && isRoot(selectedData.entityCategory)) {
     store.dispatch('Scenario/getNode', null)
     return
   }
 
   store.dispatch('Scenario/getNode', selectedData).then((ok) => {
-    if (ok && selectedData.processorType === 'processor_interface_default') {
+    if (ok && selectedData.entityType === ProcessorInterface.Interface) {
       // will cause watch event to load debug data in components/interface/interface.vue
-      store.dispatch('Scenario/setScenarioProcessorIdForDebug', selectedData.processorID)
-      // store.dispatch('Scenario/setEndpointInterfaceIdForDebug', selectedData.endpointInterfaceId)
+      store.dispatch('Scenario/setScenarioProcessorIdForDebug', selectedData.id)
     }
   })
 }

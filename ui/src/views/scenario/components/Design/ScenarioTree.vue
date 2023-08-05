@@ -25,7 +25,7 @@
             @drop="onDrop"
             @expand="onExpand"
             @select="selectNode"
-            :tree-data="treeData"
+            :tree-data="treeDataNeedRender"
             :replace-fields="replaceFields">
           <template #switcherIcon>
             <CaretDownOutlined/>
@@ -59,7 +59,7 @@
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
+        <div v-if="!treeDataNeedRender" class="nodata-tip">请点击上方按钮添加分类 ~</div>
       </div>
     </div>
 
@@ -131,7 +131,6 @@ const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult)
 watch(treeData, () => {
   console.log('832 watch treeData1', treeData.value)
   console.log('832 watch treeData2', treeDataNeedRender.value)
-
   if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
     tips.value = '右键树状节点操作'
   }

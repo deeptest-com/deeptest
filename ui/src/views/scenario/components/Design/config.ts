@@ -190,9 +190,9 @@ export const DESIGN_MENU_CONFIG = [
                 title: '断言',
                 icon: 'arrange-assert',
             },
-            //     定制代码
+            // 定制代码
             {
-                key: 'addCustomCode',
+                key: 'processor_custom_code',
                 title: '定制代码',
                 icon: 'arrange-code',
             },
@@ -301,6 +301,7 @@ export const menuKeyMapToProcessorCategory = {
     'processor_print_default': 'processor_print',
     'processor_assertion_default': 'processor_assertion',
 
-
+    // todo 定制代码对应的 类型确定
+    'processor_custom_code': 'processor_custom_code',
 
 }

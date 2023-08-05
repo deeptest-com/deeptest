@@ -55,12 +55,6 @@
                     <MoreOutlined/>
                   </template>
                 </TreeMenu>
-<!--                <a-dropdown>-->
-<!--                  <MoreOutlined/>-->
-<!--                  <template #overlay>-->
-<!--                    <TreeContextMenu :treeNode="dataRef" :onMenuClick="menuClick"/>-->
-<!--                  </template>-->
-<!--                </a-dropdown>-->
               </div>
             </div>
           </template>
@@ -76,15 +70,17 @@
         @ok="handleEditModalOk"
         @cancel="handleEditModalCancel"/>
 
+    <!--  选择接口弹窗  -->
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Define)"
         :onFinish="endpointInterfaceIdsSelectionFinish"
         :onCancel="interfaceSelectionCancel"/>
-
+    <!--  选择调试弹窗  -->
     <InterfaceSelectionFromDiagnose
-        v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes('ProcessorInterfaceSrc.Diagnose')"
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Diagnose)"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
         :onCancel="interfaceSelectionCancel"/>
+
 
   </div>
 </template>
@@ -257,35 +253,11 @@ const expandAll = () => {
 }
 
 let targetModelId = 0
-const menuClick = (menuKey: string, targetId: number) => {
-  console.log('menuClick', menuKey)
-  targetModelId = targetId
-  if (menuKey === 'edit') {
-    edit(treeDataMap.value[targetModelId])
-    return
-  }
-  if (menuKey === 'remove') {
-    removeNode()
-    return
-  }
-  // add-child-interface-interface
-  // add-child-interface-diagnose
-  // add-child-processor_logic-processor_logic_if
-  const arr = menuKey.split('-')
-  const mode = arr[1]
-  const processorCategory = arr[2]
-  const processorType = arr[3]
 
-  const targetProcessorId = targetModelId
-  const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
-  const targetProcessorType = treeDataMap.value[targetModelId].entityType
 
-  addNode(mode, processorCategory, processorType,
-      targetProcessorCategory, targetProcessorType, targetProcessorId)
-
-  clearMenu()
-}
-
+/**
+ * 选中的菜单key，对应的处理器类型
+ * */
 function selectMenu(menuInfo, treeNode) {
   targetModelId = treeNode?.id;
   const key = menuInfo.key;
@@ -311,14 +283,13 @@ function selectMenu(menuInfo, treeNode) {
     enableNode()
     return
   }
-  // debugger;
   const processorCategory = menuKeyMapToProcessorCategory[key];
   if (!processorCategory) return;
   const targetProcessorId = targetModelId
   const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
   const targetProcessorType = treeDataMap.value[targetModelId].entityType
   addNode(mode, processorCategory, processorType,
-      targetProcessorCategory, targetProcessorType, targetProcessorId)
+      targetProcessorCategory, targetProcessorType, targetProcessorId);
 }
 
 async function handleEditModalOk(model) {
@@ -529,7 +500,7 @@ onUnmounted(() => {
   }
 
   .icon {
-    width: 40px;
+    width: 16px;
     display: flex;
     align-items: center;
     justify-content: center;

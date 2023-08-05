@@ -79,3 +79,15 @@ const (
 func (e ProjectType) String() string {
 	return string(e)
 }
+
+type EndpointCaseTreeType string
+
+const (
+	EndpointCaseTreeTypeDir      EndpointCaseTreeType = "dir"
+	EndpointCaseTreeTypeEndpoint EndpointCaseTreeType = "endpoint"
+	EndpointCaseTreeTypeCase     EndpointCaseTreeType = "case"
+)
+
+func (e EndpointCaseTreeType) String() string {
+	return string(e)
+}

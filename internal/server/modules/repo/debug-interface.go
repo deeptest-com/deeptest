@@ -590,3 +590,21 @@ func (r *DebugInterfaceRepo) DeleteByProcessorIds(ids []uint) (err error) {
 
 	return
 }
+
+func (r *DebugInterfaceRepo) CreateDefault(src consts.ProcessorInterfaceSrc) (id uint, err error) {
+	po := model.DebugInterface{
+		ProcessorInterfaceSrc: src,
+
+		InterfaceBase: model.InterfaceBase{
+			InterfaceConfigBase: model.InterfaceConfigBase{
+				Method: consts.GET,
+			},
+		},
+	}
+
+	err = r.Save(&po)
+
+	id = po.ID
+
+	return
+}

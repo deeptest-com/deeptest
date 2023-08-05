@@ -85,9 +85,10 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 	}
 
 	ret = model.Processor{
-		Name:           req.Name,
-		EntityCategory: req.ProcessorCategory,
-		EntityType:     req.ProcessorType,
+		Name:                  req.Name,
+		EntityCategory:        req.ProcessorCategory,
+		EntityType:            req.ProcessorType,
+		ProcessorInterfaceSrc: req.ProcessorInterfaceSrc,
 
 		ScenarioId: targetProcessor.ScenarioId,
 		ProjectId:  req.ProjectId,
@@ -111,7 +112,11 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		s.ScenarioNodeRepo.Save(&targetProcessor)
 	}
 
-	if ret.EntityType == consts.ProcessorLogicElse { // create default entity
+	if ret.EntityType == consts.ProcessorInterfaceDefault { // create debug interface
+		debugInterfaceId, _ := s.DebugInterfaceService.CreateDefault(ret.ProcessorInterfaceSrc)
+		s.ScenarioProcessorRepo.UpdateInterfaceId(ret.ID, debugInterfaceId)
+
+	} else if ret.EntityType == consts.ProcessorLogicElse { // create default entity
 		entity := model.ProcessorLogic{
 			ProcessorEntityBase: agentExec.ProcessorEntityBase{
 				ProcessorID:       ret.ID,
@@ -125,7 +130,7 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 	return
 }
 
-func (s *ScenarioNodeService) AddInterfacesFromTest(req serverDomain.ScenarioAddInterfacesFromTreeReq) (ret model.Processor, err error) {
+func (s *ScenarioNodeService) AddInterfacesFromDiagnose(req serverDomain.ScenarioAddInterfacesFromTreeReq) (ret model.Processor, err error) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
 	if !s.ScenarioNodeRepo.IsDir(targetProcessor) {
@@ -175,7 +180,7 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	debugData.EndpointInterfaceId = endpointInterfaceId
 
 	debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved
-	debugData.ProcessorInterfaceSrc = consts.InterfaceDebug
+	debugData.ProcessorInterfaceSrc = consts.InterfaceSrcDefine
 
 	debugData.ServeId = *serveId
 
@@ -269,7 +274,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 		debugData.DebugInterfaceId = 0 // force to clone the old one
 
 		debugData.ScenarioProcessorId = processor.ID
-		debugData.ProcessorInterfaceSrc = consts.DiagnoseDebug
+		debugData.ProcessorInterfaceSrc = consts.InterfaceSrcDiagnose
 
 		debugData.ServeId = diagnoseInterfaceNode.ServeId
 

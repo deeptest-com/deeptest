@@ -132,9 +132,9 @@ export async function addInterfacesFromDefine(data): Promise<any> {
         data: data,
     });
 }
-export async function addInterfacesFromTest(data): Promise<any> {
+export async function addInterfacesFromDiagnose(data): Promise<any> {
     return request({
-        url: `/${apiPathNodes}/addInterfacesFromTest`,
+        url: `/${apiPathNodes}/addInterfacesFromDiagnose`,
         method: 'POST',
         data: data,
     });
@@ -169,7 +169,7 @@ export async function saveProcessorName(data: any): Promise<any> {
 }
 export async function saveProcessorInfo(data: any): Promise<any> {
     return request({
-        url: `/${apiPathProcessors}/saveProcessorInfo`,
+        url: `/${apiPathProcessors}/SaveBasicInfo`,
         method: 'PUT',
         data: data,
     });

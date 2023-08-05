@@ -9,6 +9,7 @@
                     :onSync="syncDebugData"
                     :baseUrlDisabled="baseUrlDisabled"
                     :urlDisabled="urlDisabled"/>
+
         <DebugConfig />
       </div>
 

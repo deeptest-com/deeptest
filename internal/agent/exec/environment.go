@@ -18,7 +18,7 @@ func GenRequestUrl(req *domain.BaseRequest, debugInterfaceId uint, baseUrl strin
 
 	req.Url = ReplacePathParams(req.Url, req.PathParams)
 
-	if req.ProcessorInterfaceSrc != consts.DiagnoseDebug {
+	if req.ProcessorInterfaceSrc != consts.InterfaceSrcDiagnose {
 		req.Url = _httpUtils.CombineUrls(baseUrl, req.Url)
 	}
 }

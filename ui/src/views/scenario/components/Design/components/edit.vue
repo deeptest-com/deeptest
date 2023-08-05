@@ -12,11 +12,11 @@
         :label-col="{ span: 6 }"
         :wrapper-col="{ span: 14 }">
 
-      <a-form-item :label="(formState.type === 'interface' ? '接口' : '目录') + '名称'" name="name">
+      <a-form-item :label="(formState.entityType === 'processor_interface_default' ? '接口' : '目录') + '名称'" name="name">
         <a-input placeholder="请输入名称" v-model:value="formState.name"/>
       </a-form-item>
 
-      <a-form-item :label="(formState.type === 'interface' ? '接口' : '目录') + '备注'" name="desc">
+      <a-form-item :label="(formState.entityType === 'processor_interface_default' ? '接口' : '目录') + '备注'" name="desc">
         <a-input placeholder="请输入备注" v-model:value="formState.comments"/>
       </a-form-item>
 
@@ -54,7 +54,12 @@ watch(props.nodeInfo, () => {
     comments: props?.nodeInfo?.comments,
     entityCategory: props?.nodeInfo?.entityCategory,
     entityType: props?.nodeInfo?.entityType,
-    parentId: props?.nodeInfo?.parentId,
+    processorInterfaceSrc: props?.nodeInfo?.processorInterfaceSrc,
+
+    targetProcessorCategory: props?.nodeInfo?.targetProcessorCategory,
+    targetProcessorType: props?.nodeInfo?.targetProcessorType,
+    targetProcessorId: props?.nodeInfo?.targetProcessorId,
+    mode: props?.nodeInfo?.mode,
   }
 }, { immediate: true, deep: true })
 

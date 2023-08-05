@@ -6,9 +6,9 @@
             placeholder="输入关键字过滤"
             class="search-input"
             v-model:value="keywords"/>
-        <TreeMenu @selectMenu="selectMenu" :treeNode="treeData?.[0]">
+        <TreeMenu  @selectMenu="selectMenu" :treeNode="treeData?.[0]">
           <template #button>
-            <PlusOutlined class="plus-icon"/>
+            <PlusOutlined class="plus-icon" @click.prevent.stop/>
           </template>
         </TreeMenu>
       </div>
@@ -25,7 +25,7 @@
             @drop="onDrop"
             @expand="onExpand"
             @select="selectNode"
-            :tree-data="treeData"
+            :tree-data="treeDataNeedRender"
             :replace-fields="replaceFields">
           <template #switcherIcon>
             <CaretDownOutlined/>
@@ -59,7 +59,7 @@
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeData" class="nodata-tip">请点击上方按钮添加分类 ~</div>
+        <div v-if="treeData?.[0]?.children?.length === 0" class="nodata-tip">请点击上方按钮添加分类 ~</div>
       </div>
     </div>
 
@@ -70,12 +70,11 @@
         @ok="handleEditModalOk"
         @cancel="handleEditModalCancel"/>
 
-    <!--  选择接口弹窗  -->
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Define)"
         :onFinish="endpointInterfaceIdsSelectionFinish"
-        :onCancel="interfaceSelectionCancel"/>
-    <!--  选择调试弹窗  -->
+        :onCancel="interfaceSelectionCancel" />
+
     <InterfaceSelectionFromDiagnose
         v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Diagnose)"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
@@ -83,10 +82,9 @@
     
     <!--  Curl导入弹窗  -->
     <InterfaceImportFromCurl
-    v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Curl)"
-    @onFinish="interfaceImportFromCurlFinish"
-    @onCancel="interfaceImportFromCurlCancel"/>    
-
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Curl)"
+        @onFinish="interfaceImportFromCurlFinish"
+        @onCancel="interfaceImportFromCurlCancel"/>    
   </div>
 </template>
 <script setup lang="ts">
@@ -97,8 +95,8 @@ import {Form, message, Modal} from 'ant-design-vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
-import {filterTree} from "@/utils/tree";
-import {ProcessorInterfaceSrc} from "@/utils/enum";
+import {filterTree,filterByKeyword} from "@/utils/tree";
+import {ProcessorInterface, ProcessorInterfaceSrc} from "@/utils/enum";
 import {DESIGN_TYPE_ICON_MAP, menuKeyMapToProcessorCategory} from "./config";
 import {getMethodColor} from "@/utils/dom";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
@@ -119,16 +117,19 @@ import InterfaceImportFromCurl from "@/views/component/interfaceImportFromCurl";
 const props = defineProps<{}>()
 const useForm = Form.useForm;
 const {t} = useI18n();
-
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataNeedRender = computed<any>(() => {
-  if (treeData?.value?.[0]?.children?.length > 0) {
-    return treeData.value[0].children;
+  const children = treeData.value?.[0]?.children;
+  if (children?.length > 0) {
+    if(keywords.value) {
+      return filterByKeyword(children, keywords.value, 'name');
+    }
+    return children;
   }
+
   return null
 });
-
 
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
 const selectedNode = computed<any>(() => store.state.Scenario.nodeData);
@@ -137,11 +138,9 @@ const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult)
 watch(treeData, () => {
   console.log('832 watch treeData1', treeData.value)
   console.log('832 watch treeData2', treeDataNeedRender.value)
-
   if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
     tips.value = '右键树状节点操作'
   }
-
   getExpandedKeysCall()
 })
 
@@ -195,10 +194,10 @@ const selectNode = (keys, e) => {
   }
 
   store.dispatch('Scenario/getNode', selectedData).then((ok) => {
-    if (ok && selectedNode.value.processorType === 'processor_interface_default') {
+    if (ok && selectedData.processorType === 'processor_interface_default') {
       // will cause watch event to load debug data in components/interface/interface.vue
-      store.dispatch('Scenario/setScenarioProcessorIdForDebug', selectedNode.value.processorID)
-      // store.dispatch('Scenario/setEndpointInterfaceIdForDebug', selectedNode.value.endpointInterfaceId)
+      store.dispatch('Scenario/setScenarioProcessorIdForDebug', selectedData.processorID)
+      // store.dispatch('Scenario/setEndpointInterfaceIdForDebug', selectedData.endpointInterfaceId)
     }
   })
 }
@@ -259,7 +258,34 @@ const expandAll = () => {
 }
 
 let targetModelId = 0
+const menuClick = (menuKey: string, targetId: number) => {
+  console.log('menuClick', menuKey)
+  targetModelId = targetId
+  if (menuKey === 'edit') {
+    edit(treeDataMap.value[targetModelId])
+    return
+  }
+  if (menuKey === 'remove') {
+    removeNode()
+    return
+  }
+  // add-child-interface-interface
+  // add-child-interface-diagnose
+  // add-child-processor_logic-processor_logic_if
+  const arr = menuKey.split('-')
+  const mode = arr[1]
+  const processorCategory = arr[2]
+  const processorType = arr[3]
 
+  const targetProcessorId = targetModelId
+  const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
+  const targetProcessorType = treeDataMap.value[targetModelId].entityType
+
+  addNode(mode, processorCategory, processorType,
+      targetProcessorCategory, targetProcessorType, targetProcessorId)
+
+  clearMenu()
+}
 
 /**
  * 选中的菜单key，对应的处理器类型
@@ -300,10 +326,23 @@ function selectMenu(menuInfo, treeNode) {
 
 async function handleEditModalOk(model) {
   console.log('handleEditModalOk')
-  Object.assign(model, {
-    // projectId: currProject.value.id,
-    // serveId: currServe.value.id,
-  })
+
+  // convert data
+  model.processorCategory = model.entityCategory
+  model.processorType = model.entityType
+
+  if (!model.id && model.entityType === ProcessorInterface.Interface) {
+    store.dispatch('Scenario/addProcessor', model).then((newNode) => {
+      console.log('addProcessor successfully', newNode)
+      currentNode.value = null
+
+      selectNode([newNode.id], null)
+      expandOneKey(treeDataMap.value, model.mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
+      setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+    })
+
+    return
+  }
 
   const res = await store.dispatch('Scenario/saveProcessorInfo', model)
   if (res) {
@@ -324,8 +363,25 @@ const addNode = (mode, processorCategory, processorType,
 
   if (processorCategory === 'interface' || processorCategory === 'processor_interface') { // show popup to select a interface
     interfaceSelectionSrc.value = processorType
-    interfaceSelectionVisible.value = true
+
+    if (interfaceSelectionSrc.value.includes('' + ProcessorInterfaceSrc.Custom)) { // show interface create popup
+      currentNode.value = {
+        name: '',
+        entityCategory: processorCategory,
+        entityType: ProcessorInterface.Interface,
+        processorInterfaceSrc: interfaceSelectionSrc.value,
+
+        targetProcessorCategory,
+        targetProcessorType,
+        targetProcessorId,
+        mode,
+      }
+    } else { // show selection popup
+      interfaceSelectionVisible.value = true
+    }
+
     return
+
   } else {
     store.dispatch('Scenario/addProcessor',
         {
@@ -340,7 +396,6 @@ const addNode = (mode, processorCategory, processorType,
     })
   }
 }
-
 
 const interfaceSelectionVisible = ref(false)
 const interfaceSelectionSrc = ref('')
@@ -393,7 +448,6 @@ const removeNode = () => {
     store.dispatch('Scenario/removeNode', targetModelId);
     selectNode([], null)
   })
-
 }
 
 const disableNode = () => {

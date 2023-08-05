@@ -16,7 +16,7 @@ func (m *ScenarioNodeModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 		index.Post("/addInterfacesFromDefine", m.ScenarioNodeCtrl.AddInterfacesFromDefine).Name = "添加定义接口"
-		index.Post("/addInterfacesFromTest", m.ScenarioNodeCtrl.AddInterfacesFromTest).Name = "添加调试接口"
+		index.Post("/addInterfacesFromDiagnose", m.ScenarioNodeCtrl.AddInterfacesFromDiagnose).Name = "添加调试接口"
 		index.Post("/addProcessor", m.ScenarioNodeCtrl.AddProcessor).Name = "新建处理器"
 
 		index.Put("/{id:uint}/updateName", m.ScenarioNodeCtrl.UpdateName).Name = "更新节点名称"

@@ -14,6 +14,7 @@ type EndpointCaseRepo struct {
 	EndpointRepo       *EndpointRepo       `inject:""`
 	DebugInterfaceRepo *DebugInterfaceRepo `inject:""`
 	ProjectRepo        *ProjectRepo        `inject:""`
+	CategoryRepo       *CategoryRepo       `inject:""`
 }
 
 func (r *EndpointCaseRepo) List(endpointId uint) (pos []model.EndpointCase, err error) {
@@ -110,5 +111,15 @@ func (r *EndpointCaseRepo) UpdateSerialNumber(id, projectId uint) (err error) {
 	err = r.DB.Model(&model.EndpointCase{}).
 		Where("id=?", id).
 		Update("serial_number", project.ShortName+"-TC-"+strconv.Itoa(int(id))).Error
+	return
+}
+
+func (r *EndpointCaseRepo) ListByProjectIdAndServeId(projectId, serveId uint) (endpointCases []*model.EndpointCase, err error) {
+	err = r.DB.Where("project_id = ? and serve_id = ? and not deleted and not disabled", projectId, serveId).Find(&endpointCases).Error
+	return
+}
+
+func (r *EndpointCaseRepo) GetEndpointCount(projectId, serveId uint) (result []serverDomain.EndpointCount, err error) {
+	err = r.DB.Raw("select count(id) count,endpoint_id from "+model.EndpointCase{}.TableName()+" where not deleted and not disabled and project_id=? and serve_id =? group by endpoint_id", projectId, serveId).Scan(&result).Error
 	return
 }

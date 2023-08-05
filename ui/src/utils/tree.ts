@@ -24,6 +24,7 @@ export function getSelectedTreeNode(checkedKeys, treeDataMapValue): any[] {
 
     return selectedNodes
 }
+
 const getChildren = (node, mp) => {
     mp[node.id] = true
 
@@ -43,8 +44,9 @@ export function filterTree(treeDataValue, keywords): number[] {
     for (let i = 0; i < flattenTreeList.length; i++) {
         const node = flattenTreeList[i];
 
-        const text = node.title?node.title:node.name
-        if (text.includes(keywords)) {
+        const text = node.title ? node.title : node.name;
+        // 兼容大小写问题
+        if (text.toLowerCase().includes(keywords.toLowerCase().trim())) {
             parentKeys.push(node.parentId);
             parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
         }
@@ -88,15 +90,18 @@ function findParentIds(nodeId, tree) {
  * @return {Array} 过滤后的树节点
  *
  * */
-export function filterByKeyword(children, keyword,field = 'title') {
+export function filterByKeyword(children, keyword, field = 'title') {
+    if (!keyword.trim()) return children;
+
     function filterChildren(node) {
         if (node?.children?.length) {
             node.children = node.children.filter((child) => {
                 return filterChildren(child);
             })
         }
-        return hasChildrenByKeyword(node, keyword,field);
+        return hasChildrenByKeyword(node, keyword, field);
     }
+
     return children.filter((menu) => {
         return filterChildren(menu);
     })
@@ -114,7 +119,7 @@ function hasChildrenByKeyword(node, keyword, field = 'title') {
 
     // 定义递归函数，用于遍历树节点
     function traverse(node) {
-        if (node?.[field]?.includes(keyword.trim())) {
+        if (node?.[field]?.toLowerCase()?.includes(keyword.toLowerCase().trim())) {
             result = true;
             return;
         }

@@ -6,7 +6,7 @@
             placeholder="输入关键字过滤"
             class="search-input"
             v-model:value="keywords"/>
-        <TreeMenu  @selectMenu="selectMenu" :treeNode="treeData?.[0]">
+        <TreeMenu @selectMenu="selectMenu" :treeNode="treeData?.[0]">
           <template #button>
             <PlusOutlined class="plus-icon" @click.prevent.stop/>
           </template>
@@ -59,7 +59,8 @@
             </div>
           </template>
         </a-tree>
-        <div v-if="treeData?.[0]?.children?.length === 0" class="nodata-tip">请点击上方按钮添加分类 ~</div>
+        <div v-if="showAddTip" class="nodata-tip">请点击上方按钮添加编排场景 ~</div>
+        <div v-if="showChangeKeywordTip" class="nodata-tip">搜索结果为空,请更换搜索关键词 ~</div>
       </div>
     </div>
 
@@ -73,12 +74,12 @@
     <InterfaceSelectionFromDefine
         v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Define)"
         :onFinish="endpointInterfaceIdsSelectionFinish"
-        :onCancel="interfaceSelectionCancel" />
+        :onCancel="interfaceSelectionCancel"/>
 
     <InterfaceSelectionFromDiagnose
         v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Diagnose)"
         :onFinish="diagnoseInterfaceNodesSelectionFinish"
-        :onCancel="interfaceSelectionCancel" />
+        :onCancel="interfaceSelectionCancel"/>
 
   </div>
 </template>
@@ -90,7 +91,7 @@ import {Form, message, Modal} from 'ant-design-vue';
 import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
-import {filterTree,filterByKeyword} from "@/utils/tree";
+import {filterTree, filterByKeyword} from "@/utils/tree";
 import {ProcessorInterface, ProcessorInterfaceSrc} from "@/utils/enum";
 import {DESIGN_TYPE_ICON_MAP, menuKeyMapToProcessorCategory} from "./config";
 import {getMethodColor} from "@/utils/dom";
@@ -103,27 +104,34 @@ import {getExpandedKeys, getSelectedKey, setExpandedKeys} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
 import {Scenario} from "@/views/scenario/data";
-import TreeContextMenu from "./components/TreeContextMenu.vue";
 import EditModal from "./components/edit.vue";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelectionFromDiagnose/main.vue";
+import cloneDeep from "lodash/cloneDeep";
 
 const props = defineProps<{}>()
-const useForm = Form.useForm;
 const {t} = useI18n();
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const treeData = computed<any>(() => store.state.Scenario.treeData);
 const treeDataNeedRender = computed<any>(() => {
-  const children = treeData.value?.[0]?.children;
+  const children = cloneDeep(treeData.value?.[0]?.children);
   if (children?.length > 0) {
-    if(keywords.value) {
-      return filterByKeyword(children, keywords.value, 'name');
-    }
-    return children;
+    return [...filterByKeyword(children, keywords.value, 'name')];
   }
-
-  return null
+  return []
 });
+
+const showChangeKeywordTip = computed(() => {
+  if(showAddTip.value) {
+    return false;
+  }
+  return keywords.value && treeDataNeedRender.value?.length === 0;
+})
+
+const showAddTip = computed(() => {
+  const children = treeData.value?.[0]?.children;
+  return !children?.length;
+})
 
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
 const selectedNode = computed<any>(() => store.state.Scenario.nodeData);
@@ -151,7 +159,7 @@ watch(() => {
 
 const keywords = ref('');
 watch(keywords, (newVal) => {
-  console.log('watch keywords', keywords)
+  console.log('watch keywords', keywords);
   expandedKeys.value = filterTree(treeData.value, newVal)
   autoExpandParent.value = true;
 });

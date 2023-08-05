@@ -1161,6 +1161,8 @@ definitions:
         items:
           $ref: '#/definitions/domain.GlobalVar'
         type: array
+      fullUrlToDisplay:
+        type: string
       globalParams:
         items:
           $ref: '#/definitions/domain.GlobalParam'
@@ -4051,8 +4053,20 @@ definitions:
     properties:
       $ref:
         type: string
+      allOf:
+        items:
+          $ref: '#/definitions/openapi.SchemaRef'
+        type: array
+      anyOf:
+        items:
+          $ref: '#/definitions/openapi.SchemaRef'
+        type: array
       items:
         $ref: '#/definitions/openapi.SchemaRef'
+      oneOf:
+        items:
+          $ref: '#/definitions/openapi.SchemaRef'
+        type: array
       properties:
         $ref: '#/definitions/openapi.Schemas'
       ref:
@@ -5383,6 +5397,15 @@ definitions:
         type: integer
       targetProcessorType:
         $ref: '#/definitions/consts.ProcessorType'
+    type: object
+  serverDomain.ScenarioCurlImportReq:
+    properties:
+      content:
+        type: string
+      createBy:
+        type: integer
+      targetId:
+        type: integer
     type: object
   serverDomain.ScenarioNodeMoveReq:
     properties:
@@ -12551,6 +12574,42 @@ paths:
                   $ref: '#/definitions/model.Processor'
               type: object
       summary: 新建处理器
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/importCurl:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 导入cURL命令的请求体
+        in: body
+        name: DiagnoseCurlImportReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioCurlImportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 导入cURL命令
       tags:
       - 场景模块/编排节点
   /api/v1/scenarios/nodes/move:

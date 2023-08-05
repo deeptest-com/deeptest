@@ -4228,7 +4228,7 @@ const docTemplate = `{
                 "tags": [
                     "环境管理"
                 ],
-                "summary": "环境列表(GetScript)",
+                "summary": "环境列表(List)",
                 "parameters": [
                     {
                         "type": "string",
@@ -10386,6 +10386,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/scenarios/nodes/importCurl": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/编排节点"
+                ],
+                "summary": "导入cURL命令",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "导入cURL命令的请求体",
+                        "name": "DiagnoseCurlImportReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ScenarioCurlImportReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Processor"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/scenarios/nodes/move": {
             "put": {
                 "consumes": [
@@ -15744,6 +15803,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/domain.GlobalVar"
                     }
                 },
+                "fullUrlToDisplay": {
+                    "type": "string"
+                },
                 "globalParams": {
                     "type": "array",
                     "items": {
@@ -20117,8 +20179,26 @@ const docTemplate = `{
                 "$ref": {
                     "type": "string"
                 },
+                "allOf": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/openapi.SchemaRef"
+                    }
+                },
+                "anyOf": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/openapi.SchemaRef"
+                    }
+                },
                 "items": {
                     "$ref": "#/definitions/openapi.SchemaRef"
+                },
+                "oneOf": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/openapi.SchemaRef"
+                    }
                 },
                 "properties": {
                     "$ref": "#/definitions/openapi.Schemas"
@@ -22125,6 +22205,20 @@ const docTemplate = `{
                 },
                 "targetProcessorType": {
                     "$ref": "#/definitions/consts.ProcessorType"
+                }
+            }
+        },
+        "serverDomain.ScenarioCurlImportReq": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createBy": {
+                    "type": "integer"
+                },
+                "targetId": {
+                    "type": "integer"
                 }
             }
         },

@@ -11,6 +11,7 @@ export const DESIGN_MENU_CONFIG = [
         key: 'addInterface',
         title: ' 添加请求',
         icon: 'arrange-interface',
+        hideInNodeTypes: ['processor_interface_default'],
         children: [
             {
                 key: 'add-child-interface-define',
@@ -91,6 +92,7 @@ export const DESIGN_MENU_CONFIG = [
                         title: '否则',
                         key: 'processor_logic_else',
                         icon: 'arrange-logic-if',
+                        hideInNodeTypes: ['processor_interface_default'],
                     },]
             },
             // 等待时间
@@ -207,18 +209,21 @@ export const DESIGN_MENU_CONFIG = [
     {
         key: 'divider',
         title: '分割线',
+        hideInNodeTypes: ['processor_root_default'],
     },
     //    禁用
     {
         key: 'disable',
         title: '禁用',
         icon: 'arrange-disable',
+        hideInNodeTypes: ['processor_root_default'],
     },
     // 删除
     {
         key: 'remove',
         title: '删除',
         icon: 'arrange-delete',
+        hideInNodeTypes: ['processor_root_default'],
     },
 ]
 

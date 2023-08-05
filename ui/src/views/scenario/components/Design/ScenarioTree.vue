@@ -134,7 +134,6 @@ watch(treeData, () => {
   if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
     tips.value = '右键树状节点操作'
   }
-
   getExpandedKeysCall()
 })
 

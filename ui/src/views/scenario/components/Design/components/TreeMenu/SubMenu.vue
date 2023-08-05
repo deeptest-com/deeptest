@@ -17,19 +17,13 @@
     </template>
   </a-sub-menu>
 </template>
-
 <script setup lang="ts">
-import {defineProps, createVNode} from "vue";
-import {useI18n} from "vue-i18n";
-import {Form} from 'ant-design-vue';
+import {defineProps} from "vue";
 import {CaretRightOutlined} from "@ant-design/icons-vue";
-// import {DESIGN_MENU_CONFIG} from "./config";
 import IconSvg from "@/components/IconSvg";
 import MenuItem from "./MenuItem.vue";
 import SubMenu from "./SubMenu.vue";
-
 const props = defineProps(['menu']);
-
 </script>
 
 <style lang="less" scoped>

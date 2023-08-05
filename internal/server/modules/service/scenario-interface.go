@@ -17,6 +17,7 @@ type ScenarioInterfaceService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
+	EndpointCaseRepo      *repo.EndpointCaseRepo      `inject:""`
 
 	ScenarioNodeService   *ScenarioNodeService   `inject:""`
 	DebugSceneService     *DebugSceneService     `inject:""`
@@ -24,6 +25,7 @@ type ScenarioInterfaceService struct {
 	SceneService          *SceneService          `inject:""`
 	EnvironmentService    *EnvironmentService    `inject:""`
 	DatapoolService       *DatapoolService       `inject:""`
+	EndpointCaseService   *EndpointCaseService   `inject:""`
 }
 
 func (s *ScenarioInterfaceService) GetDebugDataFromScenarioInterface(scenarioInterfaceId uint) (req domain.DebugData, err error) {
@@ -122,6 +124,10 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 	} else if debugInterface.EndpointInterfaceId > 0 {
 		serveId := uint(0)
 		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name)
+	} else if debugInterface.CaseInterfaceId > 0 {
+		endpointCase, _ := s.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
+		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&endpointCase)
+		s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor)
 	}
 
 	// must put below, since creation will use its DebugInterface

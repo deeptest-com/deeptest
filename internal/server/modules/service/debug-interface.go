@@ -140,6 +140,16 @@ func (s *DebugInterfaceService) GetDebugDataFromEndpointInterface(endpointInterf
 
 	return
 }
+func (s *DebugInterfaceService) GetDebugDataFromCaseInterface(caseInterfaceId uint) (debugData domain.DebugData, err error) {
+	debugInterface, err := s.DebugInterfaceRepo.GetByCaseInterfaceId(caseInterfaceId)
+	if err != nil {
+		return
+	}
+
+	debugData, err = s.GetDebugDataFromDebugInterface(debugInterface.ID)
+
+	return
+}
 
 func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointInterfaceId uint) (debugData domain.DebugData, err error) {
 	endpointInterface, err := s.EndpointInterfaceRepo.GetDetail(endpointInterfaceId)

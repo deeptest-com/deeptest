@@ -327,7 +327,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 			s.createDirOrInterfaceFromCase(child, processor)
 		}
 	} else if !caseNode.IsDir { // interface
-		debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(caseNode.DebugInterfaceId)
+		debugData, _ := s.DebugInterfaceService.GetDebugDataFromCaseInterface(uint(caseNode.Id))
 
 		processor := model.Processor{
 			Name: caseNode.Name,
@@ -354,7 +354,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		debugData.ScenarioProcessorId = processor.ID
 		debugData.ProcessorInterfaceSrc = consts.InterfaceSrcCase
 
-		debugInterfaceOfCaseNode, _ := s.DebugInterfaceRepo.Get(caseNode.DebugInterfaceId)
+		debugInterfaceOfCaseNode, _ := s.DebugInterfaceRepo.GetByCaseInterfaceId(uint(caseNode.Id))
+		debugData.Body = debugInterfaceOfCaseNode.Body
 		debugData.ServerId = debugInterfaceOfCaseNode.ServerId
 
 		debugData.BaseUrl = "" // no need to bind to env in debug page

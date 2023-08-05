@@ -30,10 +30,11 @@ type ScenarioAddInterfacesFromTreeReq struct {
 }
 
 type ScenarioAddScenarioReq struct {
-	Name              string                   `json:"name"`
-	Mode              string                   `json:"mode"`
-	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
-	ProcessorType     consts.ProcessorType     `json:"processorType"`
+	Name                  string                       `json:"name"`
+	Mode                  string                       `json:"mode"`
+	ProcessorCategory     consts.ProcessorCategory     `json:"processorCategory"`
+	ProcessorType         consts.ProcessorType         `json:"processorType"`
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 
 	TargetProcessorCategory consts.ProcessorCategory `json:"targetProcessorCategory"`
 	TargetProcessorType     consts.ProcessorType     `json:"targetProcessorType"`

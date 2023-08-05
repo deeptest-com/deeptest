@@ -1,5 +1,6 @@
 import {defineComponent,ref, reactive} from 'vue';
 import {Form} from 'ant-design-vue';
+import  './index.less';
 
 
 export default defineComponent({

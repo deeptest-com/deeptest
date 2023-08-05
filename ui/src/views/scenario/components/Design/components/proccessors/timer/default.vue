@@ -1,83 +1,97 @@
 <template>
-  <div class="processor_timer_default-main">
+  <div class="processor_group_default-main">
     <a-card :bordered="false">
-      <div>
-        <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form
+          ref="formRef"
+          :rules="rules"
+          :model="formState"
+          :label-col="{ span: 4 }"
+          :wrapper-col="{ span: 16 }">
 
-          <a-form-item label="休眠时间（秒）">
-            <a-input-number v-model:value="modelRef.sleepTime"/>
-          </a-form-item>
+        <a-form-item label="计时器名称" name="name">
+          <a-input-number v-model:value="formState.name"/>
+        </a-form-item>
 
-          <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
-          </a-form-item>
+        <a-form-item label="休眠时间（秒）" name="sleepTime">
+          <a-input-number v-model:value="formState.sleepTime"/>
+        </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
-            <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
-          </a-form-item>
-        </a-form>
-      </div>
+        <a-form-item label="备注" name="comments">
+          <a-input v-model:value="formState.comments"/>
+        </a-form-item>
+
+        <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
+          <a-button type="primary" @click.prevent="submit">保存</a-button>
+          <a-button style="margin-left: 10px" @click="reset">重置</a-button>
+        </a-form-item>
+      </a-form>
     </a-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
-import {useRouter} from "vue-router";
+import {computed, ref, watch} from "vue";
 import {useStore} from "vuex";
-import {useI18n} from "vue-i18n";
-import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
-
-const useForm = Form.useForm;
-
-const router = useRouter();
-
-const {t} = useI18n();
-
-const formRef = ref();
-
-const rulesRef = reactive({
-  name: [
-    {required: true, message: '请输入名称', trigger: 'blur'},
-  ],
-});
+import {message} from "ant-design-vue";
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
-const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
+const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
+const formState: any = ref({
+  name: '',
+  sleepTime: '',
+  comments: '',
+});
+const formRef: any = ref(null);
 
-const submitForm = async () => {
-  validate()
-      .then(() => {
-        store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
-          if (res === true) {
-            notification.success({
-              message: `保存成功`,
-            });
-          } else {
-            notification.error({
-              message: `保存失败`,
-            });
-          }
-        })
+watch(() => {
+  return nodeData.value;
+}, (val: any) => {
+  if (!val) return;
+  formState.value.name = val.name;
+  formState.value.sleepTime = val.sleepTime;
+  formState.value.comments = val.comments;
+});
+
+const rules = {
+  name: [
+    {required: true, message: '计时器名称必填', trigger: 'blur'},
+  ],
+  sleepTime: [
+    {required: true, message: '请输入休眠时间（秒）', trigger: 'blur'},
+  ],
+}
+
+const submit = async () => {
+  formRef.value
+      .validate()
+      .then(async () => {
+        // 下面代码改成 await 的方式
+        const res = await store.dispatch('Scenario/saveProcessor', {
+          ...nodeData.value,
+          sleepTime: formState.value.sleepTime,
+          comments: formState.value.comments,
+        });
+        if (res === true) {
+          message.success('保存成功');
+        } else {
+          message.error('保存失败');
+        }
       })
+      .catch(error => {
+        console.log('error', error);
+      });
 };
 
-/*const timerTypes = ref([
-  {value: 'application/json', label: 'application/json'},
-  {value: 'application/xml', label: 'application/xml'},
-])*/
+const reset = () => {
+  formRef.value.resetFields();
+};
 
-const labelCol = { span: 4 }
-const wrapperCol = { span: 18 }
 
 </script>
 
 <style lang="less" scoped>
-.processor_timer_default-main {
+.processor_group_default-main {
   .icons {
     text-align: right;
     line-height: 32px;

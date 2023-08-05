@@ -834,6 +834,20 @@ definitions:
     - ProcessorExtractor
     - ProcessorCookie
     - ProcessorData
+  consts.ProcessorInterfaceSrc:
+    enum:
+    - define
+    - case
+    - diagnose
+    - curl
+    - custom
+    type: string
+    x-enum-varnames:
+    - InterfaceSrcDefine
+    - InterfaceSrcCase
+    - InterfaceSrcDiagnose
+    - InterfaceSrcCurl
+    - InterfaceSrcCustom
   consts.ProcessorType:
     enum:
     - processor_root_default
@@ -999,15 +1013,15 @@ definitions:
   consts.UsedBy:
     enum:
     - interface_debug
-    - scenario_debug
-    - diagnose_debug
     - case_debug
+    - diagnose_debug
+    - scenario_debug
     type: string
     x-enum-varnames:
     - InterfaceDebug
-    - ScenarioDebug
-    - DiagnoseDebug
     - CaseDebug
+    - DiagnoseDebug
+    - ScenarioDebug
   convert.DataSyncType:
     enum:
     - full_cover
@@ -1186,7 +1200,7 @@ definitions:
           $ref: '#/definitions/domain.Param'
         type: array
       processorInterfaceSrc:
-        $ref: '#/definitions/consts.UsedBy'
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       projectId:
         type: integer
       queryParams:
@@ -2106,7 +2120,7 @@ definitions:
       preRequestScript:
         type: string
       processorInterfaceSrc:
-        $ref: '#/definitions/consts.UsedBy'
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       projectId:
         type: integer
       queryParams:
@@ -3430,6 +3444,8 @@ definitions:
         type: integer
       parentId:
         type: integer
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       projectId:
         type: integer
       scenarioId:
@@ -4123,6 +4139,16 @@ definitions:
     - Before
     - Inner
     - After
+  serverConsts.EndpointCaseTreeType:
+    enum:
+    - dir
+    - endpoint
+    - case
+    type: string
+    x-enum-varnames:
+    - EndpointCaseTreeTypeDir
+    - EndpointCaseTreeTypeEndpoint
+    - EndpointCaseTreeTypeCase
   serverConsts.NodeCreateMode:
     enum:
     - brother
@@ -4520,6 +4546,41 @@ definitions:
         type: integer
       usedBy:
         type: string
+    type: object
+  serverDomain.EndpointCaseTree:
+    properties:
+      categoryId:
+        type: integer
+      children:
+        items:
+          $ref: '#/definitions/serverDomain.EndpointCaseTree'
+        type: array
+      count:
+        type: integer
+      debugInterfaceId:
+        type: integer
+      desc:
+        type: string
+      endpointId:
+        type: integer
+      id:
+        type: integer
+      isDir:
+        type: boolean
+      name:
+        type: string
+      parentId:
+        type: integer
+      projectId:
+        type: integer
+      serveId:
+        type: integer
+      slots:
+        $ref: '#/definitions/iris.Map'
+      type:
+        $ref: '#/definitions/serverConsts.EndpointCaseTreeType'
+      useId:
+        type: integer
     type: object
   serverDomain.EndpointInterfaceReqPaginate:
     properties:
@@ -5355,6 +5416,17 @@ definitions:
     required:
     - name
     type: object
+  serverDomain.ScenarioAddCasesFromTreeReq:
+    properties:
+      createBy:
+        type: integer
+      selectedNodes:
+        items:
+          $ref: '#/definitions/serverDomain.EndpointCaseTree'
+        type: array
+      targetId:
+        type: integer
+    type: object
   serverDomain.ScenarioAddInterfacesFromTreeReq:
     properties:
       createBy:
@@ -5387,6 +5459,8 @@ definitions:
         type: string
       processorCategory:
         $ref: '#/definitions/consts.ProcessorCategory'
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       processorType:
         $ref: '#/definitions/consts.ProcessorType'
       projectId:
@@ -8336,6 +8410,43 @@ paths:
                   type: array
               type: object
       summary: 用例列表
+      tags:
+      - 设计器/接口用例
+  /api/v1/endpoints/cases/loadTree:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务ID
+        in: query
+        name: serveId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/serverDomain.EndpointCaseTree'
+                  type: array
+              type: object
+      summary: 分类接口用例树
       tags:
       - 设计器/接口用例
   /api/v1/endpoints/cases/saveDebugData:
@@ -12466,6 +12577,42 @@ paths:
           schema:
             $ref: '#/definitions/_domain.Response'
       summary: 更新节点名称
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/addInterfacesFromCase:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 添加调接口用例的请求参数
+        in: body
+        name: ScenarioAddCasesFromTreeReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioAddCasesFromTreeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 添加接口用例
       tags:
       - 场景模块/编排节点
   /api/v1/scenarios/nodes/addInterfacesFromDefine:

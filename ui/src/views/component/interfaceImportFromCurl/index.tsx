@@ -1,5 +1,6 @@
 import {defineComponent,ref, reactive} from 'vue';
 import {Form} from 'ant-design-vue';
+import  './index.less';
 
 
 export default defineComponent({
@@ -66,14 +67,14 @@ export default defineComponent({
       return (<>
         <a-modal
             title="请输入curl命令"
-            destroy-on-close={'true'}
-            visible={'true'}
+            destroy-on-close={true}
+            visible={true}
             onCancel={this.onCancel}
             onOk={this.onfinish}
             width="1000px"
        >
             <a-form >
-                <a-form-item label="" v-bind="validateInfos.content">
+                <a-form-item>
                 <a-textarea size={'large'} v-model={[this.modelRef.content,'value']}/>
                 </a-form-item>
                 <a-form-item>

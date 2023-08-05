@@ -220,6 +220,16 @@ func (c *EndpointCaseCtrl) Remove(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
+// LoadTree
+// @Tags	设计器/接口用例
+// @summary	分类接口用例树
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	serveId			query	int		true	"服务ID"
+// @success	200	{object}	_domain.Response{data=[]serverDomain.EndpointCaseTree}
+// @Router	/api/v1/endpoints/cases/loadTree	[get]
 func (c *EndpointCaseCtrl) LoadTree(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")
 	serveId, _ := ctx.URLParamInt("serveId")

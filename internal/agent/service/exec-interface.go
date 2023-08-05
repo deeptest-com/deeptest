@@ -39,7 +39,7 @@ func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err erro
 	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
 
 	req.BaseRequest.FullUrlToDisplay = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
-	if req.ProcessorInterfaceSrc != consts.DiagnoseDebug {
+	if req.ProcessorInterfaceSrc != consts.InterfaceSrcDiagnose {
 		req.BaseRequest.Url = req.BaseRequest.FullUrlToDisplay
 	}
 	logUtils.Info("requested url: " + req.BaseRequest.Url)

@@ -25,7 +25,7 @@ func (r *ServeRepo) ListVersion(serveId uint) (res []model.ServeVersion, err err
 	return
 }
 
-func (r *ServeRepo) ListByProject(projectId int) (pos []model.Serve, err error) {
+func (r *ServeRepo) ListByProject(projectId uint) (pos []model.Serve, err error) {
 	err = r.DB.
 		Where("project_id=?", projectId).
 		Where("NOT deleted").

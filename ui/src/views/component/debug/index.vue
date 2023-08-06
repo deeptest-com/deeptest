@@ -102,10 +102,6 @@ const props = defineProps({
     type: Function,
     required: false
   },
-  topVal: {
-    type: String,
-    required: true
-  },
   baseUrlDisabled: {
     type: Boolean,
     required: false,

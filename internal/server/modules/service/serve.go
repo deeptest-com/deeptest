@@ -28,7 +28,7 @@ type ServeService struct {
 }
 
 func (s *ServeService) ListByProject(projectId int, userId uint) (ret []model.Serve, currServe model.Serve, err error) {
-	ret, err = s.ServeRepo.ListByProject(projectId)
+	ret, err = s.ServeRepo.ListByProject(uint(projectId))
 
 	currServe, err = s.ServeRepo.GetCurrServeByUser(userId)
 
@@ -322,7 +322,7 @@ func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
 	if item.Switch == consts.SwitchOFF {
 		return
 	}
-	
+
 	taskId := item.ID
 	s.Cron.AddCommonTask(name, item.Cron, func() {
 		task, err := s.GetSwaggerSyncById(taskId)

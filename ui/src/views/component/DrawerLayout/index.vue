@@ -86,13 +86,13 @@ watch(() => {
 
   .dp-drawer-content-tabs-header {
     position: sticky;
+    //z-index: 9999;
     top: 0;
     display: flex;
     align-items: center;
     height: 48px;
     border-bottom: 1px solid #f0f0f0;
     margin: 0 16px;
-    z-index: 9999;
     background-color: #ffffff;
 
     :deep(.tab-header-items) {

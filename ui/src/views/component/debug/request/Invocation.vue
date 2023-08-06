@@ -97,10 +97,6 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 
 const props = defineProps({
-  topVal: {
-    type: String,
-    required: true
-  },
   onSave: {
     type: Function as PropType<(data) => void>,
     required: true

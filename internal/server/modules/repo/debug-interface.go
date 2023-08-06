@@ -9,8 +9,10 @@ import (
 )
 
 type DebugInterfaceRepo struct {
-	*BaseRepo `inject:""`
-	DB        *gorm.DB `inject:""`
+	*BaseRepo        `inject:""`
+	DB               *gorm.DB `inject:""`
+	*ServeRepo       `inject:""`
+	*ServeServerRepo `inject:""`
 }
 
 func (r *DebugInterfaceRepo) Tested(id uint) (res bool, err error) {
@@ -599,7 +601,7 @@ func (r *DebugInterfaceRepo) DeleteByProcessorIds(ids []uint) (err error) {
 	return
 }
 
-func (r *DebugInterfaceRepo) CreateDefault(src consts.ProcessorInterfaceSrc) (id uint, err error) {
+func (r *DebugInterfaceRepo) CreateDefault(src consts.ProcessorInterfaceSrc, projectId uint) (id uint, err error) {
 	po := model.DebugInterface{
 		ProcessorInterfaceSrc: src,
 
@@ -607,7 +609,16 @@ func (r *DebugInterfaceRepo) CreateDefault(src consts.ProcessorInterfaceSrc) (id
 			InterfaceConfigBase: model.InterfaceConfigBase{
 				Method: consts.GET,
 			},
+			ProjectId: projectId,
 		},
+	}
+
+	serves, _ := r.ServeRepo.ListByProject(projectId)
+	if len(serves) > 0 {
+		po.ServeId = serves[0].ID
+
+		server, _ := r.ServeServerRepo.GetDefaultByServe(po.ServeId)
+		po.ServerId = server.ID
 	}
 
 	err = r.Save(&po)

@@ -113,7 +113,8 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 	}
 
 	if ret.EntityType == consts.ProcessorInterfaceDefault { // create debug interface
-		debugInterfaceId, _ := s.DebugInterfaceService.CreateDefault(ret.ProcessorInterfaceSrc)
+		debugInterfaceId, _ := s.DebugInterfaceService.CreateDefault(ret.ProcessorInterfaceSrc, req.ProjectId)
+
 		s.ScenarioProcessorRepo.UpdateInterfaceId(ret.ID, debugInterfaceId)
 
 	} else if ret.EntityType == consts.ProcessorLogicElse { // create default entity

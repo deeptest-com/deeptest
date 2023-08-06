@@ -349,8 +349,8 @@ func (s *DebugInterfaceService) GetDebugInterfaceByEndpointCase(endpointCaseId u
 	return
 }
 
-func (s *DebugInterfaceService) CreateDefault(src consts.ProcessorInterfaceSrc) (id uint, err error) {
-	id, err = s.DebugInterfaceRepo.CreateDefault(src)
+func (s *DebugInterfaceService) CreateDefault(src consts.ProcessorInterfaceSrc, projectId uint) (id uint, err error) {
+	id, err = s.DebugInterfaceRepo.CreateDefault(src, projectId)
 
 	return
 }

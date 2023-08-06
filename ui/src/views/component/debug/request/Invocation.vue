@@ -54,14 +54,16 @@
     </div>
 
     <!-- 选择环境 -->
-    <div class="select-env" :style="{top: selectEnvTopPosition}">
-      <a-select :value="serverId || null" @change="changeServer"
-                placeholder="请选择环境">
-        <a-select-option v-for="(option, key) in servers" :key="key" :value="option.id">
-          {{ option.description }}
-        </a-select-option>
-      </a-select>
-    </div>
+    <Teleport to="body">
+      <div class="select-env-fixed" :style="{top: selectEnvTopPosition}">
+        <a-select :value="serverId || null" @change="changeServer"
+                  placeholder="请选择环境">
+          <a-select-option v-for="(option, key) in servers" :key="key" :value="option.id">
+            {{ option.description }}
+          </a-select-option>
+        </a-select>
+      </div>
+    </Teleport>
 
     <ContextMenu
         :isShow="showContextMenu"
@@ -73,7 +75,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, onMounted, onUnmounted, PropType, ref, watch} from "vue";
+import {computed, defineProps, inject, onMounted, onUnmounted, PropType, ref, watch, Teleport} from "vue";
 import {notification} from 'ant-design-vue';
 import {UndoOutlined} from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
@@ -326,16 +328,14 @@ const getSelectEnvTopPosition = () => {
 </script>
 
 <style lang="less">
-.invocation-main {
-  .select-env {
-    position: fixed;
-    z-index: 999999;
-    right: 22px;
-    width: 120px;
+.select-env-fixed { // related to body
+  position: fixed;
+  z-index: 99999;
+  right: 22px;
+  width: 120px;
 
-    .ant-select {
-      width: 100%;
-    }
+  .ant-select {
+    width: 100%;
   }
 }
 </style>

@@ -86,8 +86,10 @@ const {t} = useI18n();
 
 import {Param} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {getContextMenuStyle2} from "@/utils/dom";
+import {getContextMenuStyle2, handleParamsLinkPath} from "@/utils/dom";
 import useVariableReplace from "@/hooks/variable-replace";
+import {cloneByJSON} from "@/utils/object";
+import {defaultPathParams} from "@/config/constant";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -98,6 +100,9 @@ const onParamChange = (idx) => {
         && (debugData.value.pathParams[idx].name !== '' || debugData.value.pathParams[idx].value !== '')) {
     debugData.value.pathParams.push({paramIn: 'path'} as Param)
   }
+
+  const newPath = handleParamsLinkPath(debugData.value.url, debugData.value.pathParams)
+  store.commit('Debug/setUrl', newPath)
 };
 
 const add = () => {

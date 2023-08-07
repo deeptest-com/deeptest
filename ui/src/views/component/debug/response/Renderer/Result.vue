@@ -12,22 +12,23 @@
       </span>
     </div>
 
-    <div class="title">断言结果</div>
+    <template v-if="resultData?.length > 0">
+      <div class="title">断言结果</div>
+      <div v-for="(item, index) in resultData"
+           :key="index"
+           :class="getResultClass(item)" class="item">
 
-    <div v-for="(item, index) in resultData"
-         :key="index"
-         :class="getResultClass(item)" class="item">
+        <span v-if="item.resultStatus===ResultStatus.Pass">
+          <CheckCircleOutlined />
+        </span>
 
-      <span v-if="item.resultStatus===ResultStatus.Pass">
-        <CheckCircleOutlined />
-      </span>
+        <span v-if="item.resultStatus===ResultStatus.Fail">
+          <CloseCircleOutlined />
+        </span>&nbsp;
 
-      <span v-if="item.resultStatus===ResultStatus.Fail">
-        <CloseCircleOutlined />
-      </span>&nbsp;
-
-      <span>{{item.resultMsg}}</span>
-    </div>
+        <span>{{item.resultMsg}}</span>
+      </div>
+    </template>
   </div>
 </template>
 

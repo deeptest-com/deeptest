@@ -22,6 +22,7 @@
       <div class="url">
         <a-input placeholder="请输入路径"
                  v-model:value="debugData.url"
+                 @change="updatePath"
                  :disabled="urlDisabled"
                  :title="urlDisabled ? '请在接口定义中修改' : ''" />
       </div>
@@ -93,6 +94,9 @@ import ContextMenu from "@/views/component/debug/others/variable-replace/Context
 import {serverList} from "@/views/project-settings/service";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import {cloneByJSON} from "@/utils/object";
+import {defaultPathParams} from "@/config/constant";
+import {handlePathLinkParams} from "@/utils/dom";
 
 const store = useStore<{ Debug: Debug, Endpoint,Global }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -209,6 +213,7 @@ const send = async (e) => {
 
   if (validateInfo()) {
     store.commit("Global/setSpinning",true)
+
     const callData = {
       serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
       token: await getToken(),
@@ -217,6 +222,7 @@ const send = async (e) => {
     await store.dispatch('Debug/call', callData).finally(()=>{
       store.commit("Global/setSpinning",false)
     })
+
     store.commit("Global/setSpinning",false)
   }
 }
@@ -305,6 +311,13 @@ const getSelectEnvTopPosition = () => {
   }
 
   return top - val + 'px'
+}
+
+function updatePath(e) {
+  const path = e.target.value;
+
+  const ret = handlePathLinkParams(path, debugData.value?.pathParams)
+  store.commit('Debug/setPathParams', ret)
 }
 
 // const showContextMenu = ref(false)

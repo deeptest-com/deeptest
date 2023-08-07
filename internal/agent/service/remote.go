@@ -61,7 +61,8 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 
 	json.Unmarshal(bytes, &ret)
 
-	if req.Data.Name != "" {
+	// use the data from page if exist
+	if req.Data.Method != "" {
 		ret.DebugData = req.Data
 	}
 

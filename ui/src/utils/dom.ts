@@ -1,7 +1,8 @@
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
-import {requestMethodOpts} from "@/config/constant";
+import {defaultPathParams, requestMethodOpts} from "@/config/constant";
+import {cloneByJSON} from "@/utils/object";
 
 export function resizeWidth(mainId: string, leftId: string, splitterId: string, rightId: string,
                             leftMin: number, rightMin: number): boolean {
@@ -231,4 +232,66 @@ export const getMethodColor = (method) => {
     return requestMethodOpts.find((item: any) => {
         return item.value === method;
     })?.color
+}
+
+export function handlePathLinkParams(path, oldPathParams) {
+    // 支持字母下划线及中划线
+    const pathParams = oldPathParams || [];
+
+    const params: any = [];
+
+    const reg = /\{([\w-]+)\}/g
+    let param: any | Array<any> = reg.exec(path);
+
+    while (param !== null) {
+        params.push(param[1]);
+        param = reg.exec(path)
+    }
+
+    if (params.length < pathParams.length) {
+        pathParams.splice(params.length - 1);
+    }
+
+    params.forEach((item, index) => {
+        if (pathParams[index]) {
+            pathParams[index].name = item;
+        } else {
+            pathParams.push({
+                ...cloneByJSON(defaultPathParams),
+                name: item,
+            })
+        }
+    })
+
+    return pathParams
+}
+
+export function handleParamsLinkPath(path, oldPathParams) {
+    const pathParams = oldPathParams || [];
+
+    const params = pathParams.map(item => item.name);
+
+    // 正则支持字母下划线及中划线组成的路径参数
+    const paths = path.split(/(\{[\w-]*\})/g);
+
+    let idx = 0;
+    paths.forEach((item, index) => {
+        if (item && item.startsWith('{') && item.endsWith('}')) {
+            paths[index] = params[idx] ? `{${params[idx]}}` : '';
+            idx++;
+        }
+    })
+
+    if (params.length > idx) {
+        params.slice(idx).forEach((item) => {
+            paths.push(item ? `/{${item}}` : '')
+        })
+    }
+
+    const newPath = paths.filter((item) => {
+        return !!item
+    }).join('').replace('//', '/');
+
+
+    return newPath
 }

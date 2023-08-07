@@ -4,6 +4,11 @@
 
 
 /**
+ * 仅显示禁用和删除的操作的类型
+ * */
+const onlyShowDisableAndDeleteTypes = ['processor_time_default', 'processor_cookie_get', 'processor_cookie_set', 'processor_cookie_clear',"processor_assertion_default"];
+
+/**
  * 场景编排菜单配置
  * */
 export const DESIGN_MENU_CONFIG = [
@@ -11,7 +16,7 @@ export const DESIGN_MENU_CONFIG = [
         key: 'addInterface',
         title: ' 添加请求',
         icon: 'arrange-interface',
-        hideInNodeTypes: ['processor_interface_default','processor_time_default'],
+        hideInNodeTypes: ['processor_interface_default', ...onlyShowDisableAndDeleteTypes],
         children: [
             {
                 key: 'add-child-interface-define',
@@ -44,7 +49,7 @@ export const DESIGN_MENU_CONFIG = [
         key: 'addProcessor',
         title: '添加处理器',
         icon: 'arrange-control',
-        hideInNodeTypes: ['processor_time_default'],
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
         children: [
             {
                 key: 'processor_loop',
@@ -125,16 +130,19 @@ export const DESIGN_MENU_CONFIG = [
                         title: '添加Cookie',
                         key: 'processor_cookie_get',
                         icon: 'arrange-add',
+                        // showInNodeTypes: ['processor_interface_default'],
                     },
                     {
                         title: '设置Cookie',
                         key: 'processor_cookie_set',
                         icon: 'arrange-delete',
+                        // showInNodeTypes: ['processor_interface_default'],
                     },
                     {
                         title: '清空Cookie',
                         key: 'processor_cookie_clear',
                         icon: 'arrange-clear',
+                        // showInNodeTypes: ['processor_interface_default'],
                     },
                 ]
             },
@@ -218,13 +226,13 @@ export const DESIGN_MENU_CONFIG = [
         key: 'processor_group_default',
         title: '添加分组',
         icon: 'arrange-group',
-        hideInNodeTypes: ['processor_time_default'],
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
     },
     //  分割线
     {
         key: 'divider',
         title: '分割线',
-        hideInNodeTypes: ['processor_root_default','processor_time_default'],
+        hideInNodeTypes: ['processor_root_default', ...onlyShowDisableAndDeleteTypes],
     },
     //    禁用
     {

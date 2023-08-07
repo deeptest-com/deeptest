@@ -187,8 +187,7 @@ const expandNode = (keys: string[], e: any) => {
 }
 
 const selectNode = (keys, e) => {
-  console.log('selectNode', keys, e?.node.dataRef.id)
-
+  console.log('selectNode', keys,e.node?.dataRef, e?.node.dataRef.id)
   if (keys.length === 0 && e) {
     selectedKeys.value = [e.node.dataRef.id] // cancel un-select
     return

@@ -19,7 +19,7 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
+          <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
           </a-form-item>
         </a-form>

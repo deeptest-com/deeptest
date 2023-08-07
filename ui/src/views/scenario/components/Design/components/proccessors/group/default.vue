@@ -17,7 +17,6 @@
 
         <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
           <a-button type="primary" @click.prevent="submit">保存</a-button>
-          <a-button style="margin-left: 10px" @click="reset">重置</a-button>
         </a-form-item>
       </a-form>
     </a-card>
@@ -42,7 +41,6 @@ watch(() => {
   return nodeData.value;
 }, (val: any) => {
   if (!val) return;
-  debugger;
   formState.value.name = val.name || '分组';
   formState.value.comments = val.comments;
 });
@@ -79,12 +77,3 @@ const reset = () => {
 };
 
 </script>
-
-<style lang="less" scoped>
-.processor_group_default-main {
-  .icons {
-    text-align: right;
-    line-height: 32px;
-  }
-}
-</style>

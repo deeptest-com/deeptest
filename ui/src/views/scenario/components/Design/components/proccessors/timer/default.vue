@@ -20,7 +20,7 @@
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
           <a-button type="primary" @click.prevent="submit">保存</a-button>
-          <a-button style="margin-left: 10px" @click="reset">重置</a-button>
+<!--          <a-button style="margin-left: 10px" @click="reset">重置</a-button>-->
         </a-form-item>
       </a-form>
     </a-card>
@@ -90,11 +90,3 @@ const reset = () => {
 
 </script>
 
-<style lang="less" scoped>
-.processor_group_default-main {
-  .icons {
-    text-align: right;
-    line-height: 32px;
-  }
-}
-</style>

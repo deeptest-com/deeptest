@@ -195,11 +195,8 @@ const expandNode = (keys: string[], e: any) => {
 }
 
 const selectNode = (keys, e) => {
-  if (!e?.node?.dataRef?.id) {
-    return
-  }
-  console.log('selectNode', keys, e.node?.dataRef, e?.node.dataRef.id)
-  if (keys.length === 0 && e) {
+  console.log('selectNode', keys, e?.node?.dataRef, e?.node?.dataRef?.id)
+  if (keys.length === 0 && e && e?.node?.dataRef?.id) {
     selectedKeys.value = [e.node.dataRef.id] // cancel un-select
     return
   } else {
@@ -335,6 +332,8 @@ function selectMenu(menuInfo, treeNode) {
     enableNode()
     return
   }
+
+
   const processorCategory = menuKeyMapToProcessorCategory[key];
   if (!processorCategory) return;
   const targetProcessorId = targetModelId
@@ -382,6 +381,7 @@ const addNode = (mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
 
+  // 如果是添加接口，会弹框选择接口类型
   if (processorCategory === 'interface' || processorCategory === 'processor_interface') { // show popup to select a interface
     interfaceSelectionSrc.value = processorType.substr(processorType.lastIndexOf('-') + 1)
     if (interfaceSelectionSrc.value === '' + ProcessorInterfaceSrc.Custom) { // show interface create popup
@@ -399,8 +399,6 @@ const addNode = (mode, processorCategory, processorType,
       interfaceSelectionVisible.value = true
     }
 
-    return
-
   } else {
     store.dispatch('Scenario/addProcessor',
         {
@@ -408,7 +406,8 @@ const addNode = (mode, processorCategory, processorType,
           targetProcessorCategory, targetProcessorType, targetProcessorId,
           name: t(processorType)
         }).then((newNode) => {
-      console.log('addProcessor successfully', newNode)
+      console.log('addProcessor successfully', newNode);
+
       selectNode([newNode.id], null)
       expandOneKey(treeDataMap.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
       setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)

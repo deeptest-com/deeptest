@@ -1,90 +1,76 @@
 <template>
-  <div class="processor_loop_break-main">
+  <div class="processor_group_default-main">
     <a-card :bordered="false">
-      <div>
-        <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
+      <a-form
+          ref="formRef"
+          :rules="rules"
+          :model="formState"
+          :label-col="{ span: 4 }"
+          :wrapper-col="{ span: 16 }">
+        <a-form-item label="跳出如果满足" name="breakIfExpression">
+          <a-input  v-model:value="formState.breakIfExpression"/>
+          <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}'})}}</div>
+        </a-form-item>
 
-          <a-form-item label="跳出如果满足">
-            <a-input v-model:value="modelRef.breakIfExpression"/>
-            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}'})}}</div>
-          </a-form-item>
+        <a-form-item label="备注" name="comments">
+          <a-input v-model:value="formState.comments"/>
+        </a-form-item>
 
-          <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
-          </a-form-item>
-
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
-            <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
-          </a-form-item>
-        </a-form>
-      </div>
+        <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
+          <a-button type="primary" @click.prevent="submit">保存</a-button>
+        </a-form-item>
+      </a-form>
     </a-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
-import {useRouter} from "vue-router";
+import {computed, ref, watch} from "vue";
 import {useStore} from "vuex";
-import {useI18n} from "vue-i18n";
-import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
-import {NotificationKeyCommon} from "@/utils/const";
-
-const useForm = Form.useForm;
-
-const router = useRouter();
-
+import {message} from "ant-design-vue";
+import {useI18n} from "vue-i18n";
 const {t} = useI18n();
+const store = useStore<{ Scenario: ScenarioStateType; }>();
+const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
+const formState: any = ref({
+  breakIfExpression: '',
+  comments: '',
+});
+const formRef: any = ref(null);
 
-const formRef = ref();
-
-const rulesRef = reactive({
+watch(() => {
+  return nodeData.value;
+}, (val: any) => {
+  if (!val) return;
+  formState.value.breakIfExpression = val.breakIfExpression;
+  formState.value.comments = val.comments;
 });
 
-const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
-const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
+const rules = {
+  breakIfExpression: [
+    {required: true, message: '请输入跳出循环满足的条件表达式', trigger: 'blur'},
+  ],
+}
 
-const submitForm = async () => {
-  validate()
-      .then(() => {
-        store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
-          if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
-          } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
-          }
-        })
+const submit = async () => {
+  formRef.value
+      .validate()
+      .then(async () => {
+        // 下面代码改成 await 的方式
+        const res = await store.dispatch('Scenario/saveProcessor', {
+          ...nodeData.value,
+          breakIfExpression: formState.value.breakIfExpression,
+        });
+        if (res === true) {
+          message.success('保存成功');
+        } else {
+          message.error('保存失败');
+        }
       })
+      .catch(error => {
+        console.log('error', error);
+      });
 };
 
-onMounted(() => {
-  console.log('onMounted')
-})
-
-onUnmounted(() => {
-  console.log('onUnmounted')
-})
-
-const labelCol = { span: 4 }
-const wrapperCol = { span: 16 }
-
 </script>
-
-<style lang="less" scoped>
-.processor_loop_break-main {
-  .icons {
-    text-align: right;
-    line-height: 32px;
-  }
-}
-</style>

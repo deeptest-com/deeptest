@@ -14,9 +14,8 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
+          <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -29,10 +28,9 @@ import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form, notification} from 'ant-design-vue';
+import {Form, message} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {getCompareOpts} from "@/utils/compare";
-import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;
 
@@ -59,41 +57,22 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            message.success('保存成功');
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            message.error('保存失败');
           }
         })
       })
 };
 
 onMounted(() => {
-  console.log('onMounted')
   if (!modelRef.value.leftValue) modelRef.value.leftValue = ''
   if (!modelRef.value.expression) modelRef.value.expression = ''
   if (!modelRef.value.operator) modelRef.value.operator = ''
 })
 
-onUnmounted(() => {
-  console.log('onUnmounted')
-})
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }
 
 </script>
-
-<style lang="less" scoped>
-.processor_login_if-main {
-  .icons {
-    text-align: right;
-    line-height: 32px;
-  }
-}
-</style>

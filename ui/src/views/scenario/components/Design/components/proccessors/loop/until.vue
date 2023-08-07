@@ -1,3 +1,4 @@
+<!-- ::::迭代直到 -->
 <template>
   <div class="processor_loop_until-main">
     <a-card :bordered="false">
@@ -14,9 +15,9 @@
             <a-input v-model:value="modelRef.comments"/>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
+          <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
+<!--            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>-->
           </a-form-item>
         </a-form>
       </div>
@@ -29,9 +30,8 @@ import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form, message, notification} from 'ant-design-vue';
+import {Form, message} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 
 const useForm = Form.useForm;
 
@@ -56,20 +56,16 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              message: `保存成功`,
-            });
+            message.success('保存成功');
           } else {
-            notification.error({
-              message: `保存失败`,
-            });
+            message.error('保存失败');
+
           }
         })
       })
 };
 
 onMounted(() => {
-  console.log('onMounted')
   if (!modelRef.value.untilExpression) modelRef.value.untilExpression = ''
 })
 

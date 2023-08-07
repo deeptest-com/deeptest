@@ -97,6 +97,7 @@ export const DESIGN_MENU_CONFIG = [
                         key: 'processor_logic_else',
                         icon: 'arrange-logic-if',
                         hideInNodeTypes: ['processor_interface_default'],
+                        showInNodeTypes: ['processor_logic_if'],
                     },]
             },
             // 等待时间

@@ -8,7 +8,7 @@
           :label-col="{ span: 4 }"
           :wrapper-col="{ span: 16 }">
         <a-form-item label="分组名称" name="name">
-          <a-input v-model:value="formState.name"/>
+          <a-input  v-model:value="formState.name"/>
         </a-form-item>
 
         <a-form-item label="备注" name="comments">
@@ -41,9 +41,9 @@ const formRef: any = ref(null);
 watch(() => {
   return nodeData.value;
 }, (val: any) => {
-  debugger;
   if (!val) return;
-  formState.value.name = val.name;
+  debugger;
+  formState.value.name = val.name || '分组';
   formState.value.comments = val.comments;
 });
 
@@ -77,7 +77,6 @@ const submit = async () => {
 const reset = () => {
   formRef.value.resetFields();
 };
-
 
 </script>
 

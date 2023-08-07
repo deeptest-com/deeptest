@@ -27,6 +27,7 @@ import {DESIGN_MENU_CONFIG} from "../../config";
 import SubMenu from "./SubMenu.vue";
 import MenuItem from "./MenuItem.vue";
 
+
 /**
  * 根据当前的节点类型，过滤掉不需要的菜单
  * */

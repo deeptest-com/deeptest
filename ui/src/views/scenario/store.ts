@@ -35,6 +35,7 @@ import {
 } from "@/services/category";
 
 import {getNodeMap} from "@/services/tree";
+import {getSnippet} from "@/views/component/debug/service";
 
 export interface StateType {
     scenarioId: number;
@@ -84,6 +85,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTreeDataMapItem: Mutation<StateType>;
         setTreeDataMapItemProp: Mutation<StateType>;
         setNode: Mutation<StateType>;
+        setCodeContent: Mutation<StateType>;
 
         // tree of scenario categories
         setTreeDataCategory: Mutation<StateType>;
@@ -131,6 +133,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         saveProcessorInfo: Action<StateType, StateType>;
         saveProcessor: Action<StateType, StateType>;
+        addSnippet: Action<StateType, StateType>;
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
@@ -240,6 +243,10 @@ const StoreModel: ModuleType = {
         },
         setNode(state, data) {
             state.nodeData = data;
+        },
+        setCodeContent(state, content) {
+            console.log('setCodeContent', content)
+            state.nodeData.content = content;
         },
 
         setTreeDataCategory(state, data) {
@@ -515,7 +522,7 @@ const StoreModel: ModuleType = {
         async saveProcessor({commit, dispatch, state}, payload: any) {
             const jsn = await saveProcessor(payload)
             if (jsn.code === 0) {
-                // commit('setNode', jsn.data);
+                commit('setNode', jsn.data);
                 commit('setTreeDataMapItemProp', {
                     id: jsn.data.processorID,
                     prop: 'name',
@@ -525,6 +532,16 @@ const StoreModel: ModuleType = {
             } else {
                 return false
             }
+        },
+        async addSnippet({commit, dispatch, state}, name: string) {
+            const json = await getSnippet(name)
+            if (json.code === 0) {
+                let script = (state.nodeData.content ? state.nodeData.content: '') + '\n' +  json.data.script
+                script = script.trim()
+                commit('setCodeContent', script);
+            }
+
+            return true;
         },
 
         // category tree

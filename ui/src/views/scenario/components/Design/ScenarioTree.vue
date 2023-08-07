@@ -600,7 +600,7 @@ onUnmounted(() => {
 
 .method-tag {
   transform: scale(0.7);
-  margin-left: -6px; // move to left to offset the transform
+  margin-left: -6px; // move to left to offset the space caused by transform
   margin-right: 3px;
 }
 

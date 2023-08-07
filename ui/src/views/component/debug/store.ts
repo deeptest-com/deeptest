@@ -112,6 +112,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setScript: Mutation<StateType>;
         setScriptContent: Mutation<StateType>;
 
+        setPathParams: Mutation<StateType>;
         setShareVars: Mutation<StateType>;
         setEnvVars: Mutation<StateType>;
         setGlobalVars: Mutation<StateType>;
@@ -247,6 +248,10 @@ const StoreModel: ModuleType = {
             state.scriptData.content = content;
         },
 
+        setPathParams(state, payload) {
+            console.log('set debugData pathParams')
+            state.debugData.pathParams = payload;
+        },
         setShareVars(state, payload) {
             console.log('set debugData shareVars')
             state.debugData.shareVars = payload;

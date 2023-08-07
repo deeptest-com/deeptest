@@ -8,7 +8,7 @@
       wrapClassName="dp-full-modal processor-edit-fullscreen">
 
     <div class="content">
-      <div class="processor-form">{{model}}
+      <div class="processor-form">
         <ProcessorCustomCodeEdit v-if="model.entityType === ProcessorCustomCode.CustomCodeDefault"
                                  :processor="model"
                                  :finish="onCancel" />

@@ -60,6 +60,7 @@ import {PlusOutlined, DeleteOutlined, RightOutlined, DownOutlined} from '@ant-de
 import Field from './Field.vue'
 import {Endpoint} from "@/views/endpoint/data";
 import {cloneByJSON} from "@/utils/object";
+import {handleParamsLinkPath, handlePathLinkParams} from "@/utils/dom";
 
 const props = defineProps({});
 const emit = defineEmits([]);
@@ -117,7 +118,12 @@ function addPathParams() {
     ...endpointDetail.value,
     pathParams: endpointDetail.value.pathParams
   })
-  handleParamsLinkPath();
+
+  const newPath = handleParamsLinkPath(endpointDetail.value.path, endpointDetail.value.pathParams);
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    path: newPath,
+  });
 }
 
 /**
@@ -129,7 +135,12 @@ function deletePathParams(index) {
     ...endpointDetail.value,
     pathParams: endpointDetail.value.pathParams
   })
-  handleParamsLinkPath();
+
+  const newPath = handleParamsLinkPath(endpointDetail.value.path, endpointDetail.value.pathParams);
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    path: newPath,
+  });
 }
 
 /**
@@ -137,73 +148,13 @@ function deletePathParams(index) {
  * */
 function handleChange(data) {
   endpointDetail.value.pathParams[data.index] = data;
+
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
     pathParams: endpointDetail.value.pathParams
   })
-  handleParamsLinkPath();
-}
 
-/**
- * path 变动，联动 pathParams
- * */
-function handlePathLinkParams() {
-  // 支持字母下划线及中划线
-  let reg = /\{([\w-]+)\}/g
-  let path = endpointDetail.value.path;
-  let pathParams = endpointDetail.value?.pathParams || [];
-  const params: any = [];
-  let param: any | Array<any> = reg.exec(path);
-  while (param !== null) {
-    params.push(param[1]);
-    param = reg.exec(path)
-  }
-  if (params.length < pathParams.length) {
-    pathParams.splice(params.length - 1);
-  }
-  params.forEach((item, index) => {
-    if (pathParams[index]) {
-      pathParams[index].name = item;
-    } else {
-      pathParams.push({
-        ...cloneByJSON(defaultPathParams),
-        name: item,
-      })
-    }
-  })
-  store.commit('Endpoint/setEndpointDetail', {
-    ...endpointDetail.value,
-    pathParams: endpointDetail.value.pathParams
-  })
-}
-
-/**
- * pathParams 变动，联动 Path
- * params = [a1,a2]
- * {a}/xxx{b} ===> {a1}/xxx{a2}
- * */
-function handleParamsLinkPath() {
-  let path = endpointDetail.value.path;
-  let pathParams = endpointDetail.value.pathParams || [];
-  let params = pathParams.map(item => item.name);
-  // 正则支持字母下划线及中划线组成的路径参数
-  let paths = path.split(/(\{[\w-]*\})/g);
-
-  let idx = 0;
-  paths.forEach((item, index) => {
-    if (item && item.startsWith('{') && item.endsWith('}')) {
-      paths[index] = params[idx] ? `{${params[idx]}}` : '';
-      idx++;
-    }
-  })
-  if (params.length > idx) {
-    params.slice(idx).forEach((item) => {
-      paths.push(item ? `/{${item}}` : '')
-    })
-  }
-  let newPath = paths.filter((item) => {
-    return !!item
-  }).join('').replace('//', '/');
+  const newPath = handleParamsLinkPath(endpointDetail.value.path, endpointDetail.value.pathParams);
 
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
@@ -216,13 +167,19 @@ function handleParamsLinkPath() {
  * */
 function updatePath(e) {
   const path = e.target.value;
+
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
     path: path,
   });
-  handlePathLinkParams();
-}
 
+  const pathParams = handlePathLinkParams(path, endpointDetail.value?.pathParams);
+
+  store.commit('Endpoint/setEndpointDetail', {
+    ...endpointDetail.value,
+    pathParams
+  })
+}
 
 </script>
 <style lang="less" scoped>

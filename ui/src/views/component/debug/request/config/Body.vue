@@ -23,7 +23,7 @@
             <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
 
-          <a-tooltip overlayClassName="dp-tip-small">
+<!--      <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全部清除</template>
             <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
@@ -36,7 +36,7 @@
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>导入</template>
             <ImportOutlined class="dp-icon-btn dp-trans-80" />
-          </a-tooltip>
+          </a-tooltip>-->
         </a-col>
       </a-row>
     </div>

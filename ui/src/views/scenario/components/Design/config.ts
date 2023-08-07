@@ -23,6 +23,9 @@ const onlyShowDisableAndDeleteTypes = [
     'processor_extractor_htmlquery',
     'processor_extractor_xmlquery',
     'processor_extractor_regex',
+    // 跳出循环也是叶子结点
+    'processor_loop_break',
+
 ];
 
 /**
@@ -98,6 +101,7 @@ export const DESIGN_MENU_CONFIG = [
                         title: '跳出循环',
                         key: 'processor_loop_break',
                         icon: 'arrange-return',
+                        showInNodeTypes: ['processor_loop_time', 'processor_loop_in', 'processor_loop_until', 'processor_loop_range'],
                     },
                 ]
             },
@@ -144,7 +148,7 @@ export const DESIGN_MENU_CONFIG = [
                 hideInNodeTypes: null,
                 children: [
                     {
-                        title: '添加Cookie',
+                        title: '获取Cookie',
                         key: 'processor_cookie_get',
                         icon: 'arrange-add',
                         // showInNodeTypes: ['processor_interface_default'],
@@ -167,7 +171,7 @@ export const DESIGN_MENU_CONFIG = [
                 key: 'processor_extractor',
                 title: '提取器',
                 icon: 'arrange-extractor',
-                hideInNodeTypes: null,
+                showInNodeTypes: ['processor_interface_default'],
                 children: [
                     {
                         title: '边界提取器',

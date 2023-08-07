@@ -66,11 +66,6 @@
   import {filterTree, getSelectedTreeNode} from "@/utils/tree";
 
   
-  const fieldNames = {
-    title:'name',
-    key:'id',
-    }
-
   const store = useStore<{Endpoint:any, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType,DiagnoseInterface }>();
   const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
   const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
@@ -84,6 +79,11 @@
       required: true,
     },
   })
+
+  const fieldNames = {
+    title:'name',
+    key:'id',
+  }
   
   const serves = ref([] as any[]);
   const serveId = ref(0)
@@ -97,15 +97,7 @@
   
     console.log('selectedNodes', selectedNodes)
   }
-  const getChildren = (node, mp) => {
-    mp[node.id] = true
-  
-    if (node.children) {
-      node.children.forEach((child, index) => {
-        getChildren(child, mp)
-      })
-    }
-  }
+
   
   const loadServe = async () => {
     listServe().then((json) => {
@@ -117,9 +109,10 @@
     })
   }
 
-  loadServe()
-  
-  const replaceFields = {key: 'id'};
+  onMounted(()=>{
+    loadServe()
+  })
+
   const searchValue = ref('');
   const expandedKeys = ref<number[]>([]);
   const autoExpandParent = ref<boolean>(false);

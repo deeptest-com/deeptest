@@ -4,6 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/kataras/iris/v12"
+	uuid "github.com/satori/go.uuid"
 )
 
 type EndpointCase struct {
@@ -44,7 +45,8 @@ type EndpointCaseSaveReq struct {
 }
 
 type EndpointCaseTree struct {
-	Id int64 `json:"id"`
+	Key uuid.UUID `json:"key"`
+	Id  int64     `json:"id"`
 
 	Name  string                            `json:"name"`
 	Desc  string                            `json:"desc"`

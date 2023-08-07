@@ -49,6 +49,7 @@ func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err erro
 	} else {
 		req.BaseRequest.Url = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
 	}
+
 	req.BaseRequest.FullUrlToDisplay = req.BaseRequest.Url
 	logUtils.Info("requested url: " + req.BaseRequest.Url)
 

@@ -45,8 +45,8 @@ type EndpointCaseSaveReq struct {
 }
 
 type EndpointCaseTree struct {
-	Key uuid.UUID `json:"key"`
-	Id  int64     `json:"id"`
+	Key int64     `json:"key"`
+	Id  uuid.UUID `json:"id"`
 
 	Name  string                            `json:"name"`
 	Desc  string                            `json:"desc"`

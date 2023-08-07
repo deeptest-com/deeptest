@@ -328,7 +328,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 			s.createDirOrInterfaceFromCase(child, processor)
 		}
 	} else if !caseNode.IsDir { // interface
-		debugData, _ := s.DebugInterfaceService.GetDebugDataFromCaseInterface(uint(caseNode.Id))
+		debugData, _ := s.DebugInterfaceService.GetDebugDataFromCaseInterface(uint(caseNode.Key))
 
 		processor := model.Processor{
 			Name: caseNode.Name,
@@ -355,7 +355,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		debugData.ScenarioProcessorId = processor.ID
 		debugData.ProcessorInterfaceSrc = consts.InterfaceSrcCase
 
-		debugInterfaceOfCaseNode, _ := s.DebugInterfaceRepo.GetByCaseInterfaceId(uint(caseNode.Id))
+		debugInterfaceOfCaseNode, _ := s.DebugInterfaceRepo.GetByCaseInterfaceId(uint(caseNode.Key))
 		debugData.Body = debugInterfaceOfCaseNode.Body
 		debugData.ServerId = debugInterfaceOfCaseNode.ServerId
 

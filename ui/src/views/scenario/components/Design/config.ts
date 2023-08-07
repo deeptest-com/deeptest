@@ -101,7 +101,6 @@ export const DESIGN_MENU_CONFIG = [
                         title: '跳出循环',
                         key: 'processor_loop_break',
                         icon: 'arrange-return',
-                        showInNodeTypes: ['processor_loop_time', 'processor_loop_in', 'processor_loop_until', 'processor_loop_range'],
                     },
                 ]
             },
@@ -135,7 +134,7 @@ export const DESIGN_MENU_CONFIG = [
             },
             //    数据迭代
             {
-                key: 'processor_data',
+                key: 'processor_data_default',
                 title: '数据迭代',
                 icon: 'arrange-data-loop',
                 hideInNodeTypes: ['processor_interface_default'],
@@ -306,6 +305,8 @@ export const DESIGN_TYPE_ICON_MAP = {
     'processor_print_default': 'arrange-output',
     'processor_assertion_default': 'arrange-assert',
     'processor_custom_code': 'arrange-code',
+
+    'processor_data_default': 'arrange-data-loop',
 }
 
 
@@ -351,5 +352,9 @@ export const menuKeyMapToProcessorCategory = {
 
     // todo 定制代码对应的 类型确定
     'processor_custom_code': 'processor_custom_code',
+
+
+    // 数据处理
+    'processor_data_default': 'processor_data',
 
 }

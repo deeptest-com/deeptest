@@ -290,7 +290,7 @@ func (s *EndpointCaseService) EndpointToTo(po *model.Endpoint) (to *serverDomain
 	return
 }
 
-func (s *EndpointCaseService) EndpointCaseToTos(pos []*model.EndpointCase) (tos []*serverDomain.EndpointCaseTree) {
+func (s *EndpointCaseService) EndpointCaseToTos(pos []*serverDomain.InterfaceCase) (tos []*serverDomain.EndpointCaseTree) {
 	for _, po := range pos {
 		to := s.EndpointCaseToTo(po)
 
@@ -300,11 +300,12 @@ func (s *EndpointCaseService) EndpointCaseToTos(pos []*model.EndpointCase) (tos 
 	return
 }
 
-func (s *EndpointCaseService) EndpointCaseToTo(po *model.EndpointCase) (to *serverDomain.EndpointCaseTree) {
+func (s *EndpointCaseService) EndpointCaseToTo(po *serverDomain.InterfaceCase) (to *serverDomain.EndpointCaseTree) {
 	to = &serverDomain.EndpointCaseTree{
 		Id:               uuid.NewV4(),
 		Key:              int64(po.ID),
 		Name:             po.Name,
+		Method:           po.Method,
 		Desc:             po.Desc,
 		Type:             serverConsts.EndpointCaseTreeTypeCase,
 		IsDir:            false,

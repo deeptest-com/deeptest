@@ -48,10 +48,11 @@ type EndpointCaseTree struct {
 	Key int64     `json:"key"`
 	Id  uuid.UUID `json:"id"`
 
-	Name  string                            `json:"name"`
-	Desc  string                            `json:"desc"`
-	Type  serverConsts.EndpointCaseTreeType `json:"type"`
-	IsDir bool                              `json:"isDir"`
+	Name   string                            `json:"name"`
+	Method string                            `json:"method"`
+	Desc   string                            `json:"desc"`
+	Type   serverConsts.EndpointCaseTreeType `json:"type"`
+	IsDir  bool                              `json:"isDir"`
 
 	CategoryId       uint  `json:"categoryId"`
 	EndpointId       uint  `json:"endpointId"`
@@ -70,4 +71,15 @@ type EndpointCaseTree struct {
 type EndpointCount struct {
 	Count      int64
 	EndpointId int64
+}
+
+type InterfaceCase struct {
+	ID               uint   `json:"ID"`
+	Name             string `json:"name"`
+	Method           string `json:"method"`
+	Desc             string `json:"desc"`
+	EndpointId       uint   `json:"endpointId"`
+	ServeId          uint   `json:"serveId"`
+	ProjectId        uint   `json:"projectId"`
+	DebugInterfaceId uint   `json:"debugInterfaceId"`
 }

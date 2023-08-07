@@ -1,6 +1,7 @@
 package service
 
 import (
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -126,7 +127,10 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name)
 	} else if debugInterface.CaseInterfaceId > 0 {
 		endpointCase, _ := s.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
-		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&endpointCase)
+		interfaceCase := serverDomain.InterfaceCase{}
+		copier.CopyWithOption(interfaceCase, endpointCase, copier.Option{DeepCopy: true})
+
+		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&interfaceCase)
 		s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor)
 	}
 

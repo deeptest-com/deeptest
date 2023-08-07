@@ -106,7 +106,6 @@ async function handleGenerateExample(examples: any) {
 }
 
 function handleChangeMediaType(mediaType: string) {
-  debugger
   selectedMethodDetail.value.requestBody.mediaType = mediaType;
   store.commit('Endpoint/setSelectedMethodDetail', {
     ...selectedMethodDetail.value

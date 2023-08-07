@@ -79,8 +79,10 @@ const save = async () => {
 
   .header {
     height: 32px;
-    padding: 2px 3px;
-    border-bottom: 1px solid #d9d9d9;
+    padding: 3px 8px;
+    border: 1px solid #d9d9d9;
+    background-color: #fafafa;
+    border-radius: 3px;
   }
 
   .content {

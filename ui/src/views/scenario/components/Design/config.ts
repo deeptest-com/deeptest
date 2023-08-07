@@ -4,6 +4,31 @@
 
 
 /**
+ * 仅显示禁用和删除的操作的类型
+ * */
+const onlyShowDisableAndDeleteTypes = [
+    'processor_time_default',
+    // cookie 相关
+    'processor_cookie_get',
+    'processor_cookie_set',
+    'processor_cookie_clear',
+    "processor_assertion_default",
+    'processor_custom_code',
+    'processor_print_default',
+    'processor_variable_set',
+    "processor_variable_clear",
+    // 提取器相关
+    'processor_extractor_boundary',
+    'processor_extractor_jsonquery',
+    'processor_extractor_htmlquery',
+    'processor_extractor_xmlquery',
+    'processor_extractor_regex',
+    // 跳出循环也是叶子结点
+    'processor_loop_break',
+
+];
+
+/**
  * 场景编排菜单配置
  * */
 export const DESIGN_MENU_CONFIG = [
@@ -11,7 +36,7 @@ export const DESIGN_MENU_CONFIG = [
         key: 'addInterface',
         title: ' 添加请求',
         icon: 'arrange-interface',
-        hideInNodeTypes: ['processor_interface_default','processor_time_default'],
+        hideInNodeTypes: ['processor_interface_default', ...onlyShowDisableAndDeleteTypes],
         children: [
             {
                 key: 'add-child-interface-define',
@@ -44,7 +69,7 @@ export const DESIGN_MENU_CONFIG = [
         key: 'addProcessor',
         title: '添加处理器',
         icon: 'arrange-control',
-        hideInNodeTypes: ['processor_time_default'],
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
         children: [
             {
                 key: 'processor_loop',
@@ -76,6 +101,7 @@ export const DESIGN_MENU_CONFIG = [
                         title: '跳出循环',
                         key: 'processor_loop_break',
                         icon: 'arrange-return',
+                        showInNodeTypes: ['processor_loop_time', 'processor_loop_in', 'processor_loop_until', 'processor_loop_range'],
                     },
                 ]
             },
@@ -122,19 +148,22 @@ export const DESIGN_MENU_CONFIG = [
                 hideInNodeTypes: null,
                 children: [
                     {
-                        title: '添加Cookie',
+                        title: '获取Cookie',
                         key: 'processor_cookie_get',
                         icon: 'arrange-add',
+                        // showInNodeTypes: ['processor_interface_default'],
                     },
                     {
                         title: '设置Cookie',
                         key: 'processor_cookie_set',
                         icon: 'arrange-delete',
+                        // showInNodeTypes: ['processor_interface_default'],
                     },
                     {
                         title: '清空Cookie',
                         key: 'processor_cookie_clear',
                         icon: 'arrange-clear',
+                        // showInNodeTypes: ['processor_interface_default'],
                     },
                 ]
             },
@@ -142,7 +171,7 @@ export const DESIGN_MENU_CONFIG = [
                 key: 'processor_extractor',
                 title: '提取器',
                 icon: 'arrange-extractor',
-                hideInNodeTypes: null,
+                showInNodeTypes: ['processor_interface_default'],
                 children: [
                     {
                         title: '边界提取器',
@@ -218,13 +247,13 @@ export const DESIGN_MENU_CONFIG = [
         key: 'processor_group_default',
         title: '添加分组',
         icon: 'arrange-group',
-        hideInNodeTypes: ['processor_time_default'],
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
     },
     //  分割线
     {
         key: 'divider',
         title: '分割线',
-        hideInNodeTypes: ['processor_root_default','processor_time_default'],
+        hideInNodeTypes: ['processor_root_default', ...onlyShowDisableAndDeleteTypes],
     },
     //    禁用
     {

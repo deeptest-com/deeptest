@@ -3,7 +3,6 @@
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-
           <a-form-item label="输出" v-bind="validateInfos.rightValue">
             <a-input v-model:value="modelRef.rightValue"
                      @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})" />
@@ -26,7 +25,7 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
-import {Form, message, notification} from "ant-design-vue";
+import {Form, message} from "ant-design-vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -56,19 +55,14 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              message: `保存成功`,
-            });
+            message.success('保存成功');
           } else {
-            notification.error({
-              message: `保存失败`,
-            });
+            message.error('保存失败');
           }
         })
       })
 };
 
-const optOptions = getCompareOpts()
 
 onMounted(() => {
   console.log('onMounted')
@@ -86,11 +80,3 @@ const wrapperCol = { span: 16 }
 
 </script>
 
-<style lang="less" scoped>
-.processor_print_default-main {
-  .icons {
-    text-align: right;
-    line-height: 32px;
-  }
-}
-</style>

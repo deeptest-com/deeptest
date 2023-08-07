@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
+	uuid "github.com/satori/go.uuid"
 )
 
 type EndpointCaseService struct {
@@ -249,6 +250,7 @@ func (s *EndpointCaseService) CategoryToTos(pos []*model.Category) (tos []*serve
 
 func (s *EndpointCaseService) CategoryToTo(po *model.Category) (to *serverDomain.EndpointCaseTree) {
 	to = &serverDomain.EndpointCaseTree{
+		Key:       uuid.NewV4(),
 		Id:        int64(po.ID),
 		Name:      po.Name,
 		Desc:      po.Desc,
@@ -274,6 +276,7 @@ func (s *EndpointCaseService) EndpointToTos(pos []*model.Endpoint) (tos []*serve
 
 func (s *EndpointCaseService) EndpointToTo(po *model.Endpoint) (to *serverDomain.EndpointCaseTree) {
 	to = &serverDomain.EndpointCaseTree{
+		Key:        uuid.NewV4(),
 		Id:         int64(po.ID),
 		Name:       po.Title,
 		Desc:       po.Description,
@@ -299,6 +302,7 @@ func (s *EndpointCaseService) EndpointCaseToTos(pos []*model.EndpointCase) (tos 
 
 func (s *EndpointCaseService) EndpointCaseToTo(po *model.EndpointCase) (to *serverDomain.EndpointCaseTree) {
 	to = &serverDomain.EndpointCaseTree{
+		Key:              uuid.NewV4(),
 		Id:               int64(po.ID),
 		Name:             po.Name,
 		Desc:             po.Desc,

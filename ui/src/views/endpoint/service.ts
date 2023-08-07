@@ -1,5 +1,6 @@
 import request, {ResponseData} from '@/utils/request';
 import {QueryParams} from "@/types/data";
+import   {QueryCaseTreeParams} from './data.d'
 import {Interface} from "@/views/component/debug/data";
 
 const apiPath = 'endpoints';
@@ -272,3 +273,13 @@ export async function updateTag(data: any): Promise<any> {
         data: data
     });
 }
+
+
+export async function loadCaseTree(data: QueryCaseTreeParams): Promise<any> {
+    return request({
+        url: `/endpoints/cases/loadTree?serveId=${data.serveId}`,
+        method: 'GET',
+    });
+}
+
+

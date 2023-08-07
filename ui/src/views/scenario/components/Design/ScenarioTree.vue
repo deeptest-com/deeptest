@@ -5,6 +5,7 @@
         <a-input-search
             placeholder="输入关键字过滤"
             class="search-input"
+            allowClear
             v-model:value="keywords"/>
         <TreeMenu @selectMenu="selectMenu" :treeNode="treeData?.[0]">
           <template #button>
@@ -87,6 +88,12 @@
         v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Curl)"
         @onFinish="interfaceImportFromCurlFinish"
         @onCancel="interfaceImportFromCurlCancel"/>
+
+    <InterfaceSelectionFromDefineCase
+        v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Case)"
+        :onFinish="endpointCaseSelectionFinish"
+        :onCancel="endpointCaseSelectionCancel"/>
+
   </div>
 </template>
 <script setup lang="ts">
@@ -114,7 +121,8 @@ import EditModal from "./components/edit.vue";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelectionFromDiagnose/main.vue";
 import cloneDeep from "lodash/cloneDeep";
-import InterfaceImportFromCurl from "@/views/component/interfaceImportFromCurl";
+import InterfaceImportFromCurl from "@/views/component/InterfaceImportFromCurl/index.tsx";
+import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue";
 
 const props = defineProps<{}>()
 const {t} = useI18n();
@@ -129,7 +137,7 @@ const treeDataNeedRender = computed<any>(() => {
 });
 
 const showChangeKeywordTip = computed(() => {
-  if(showAddTip.value) {
+  if (showAddTip.value) {
     return false;
   }
   return keywords.value && treeDataNeedRender.value?.length === 0;
@@ -187,8 +195,10 @@ const expandNode = (keys: string[], e: any) => {
 }
 
 const selectNode = (keys, e) => {
-  console.log('selectNode', keys, e?.node.dataRef.id)
-
+  if (!e?.node?.dataRef?.id) {
+    return
+  }
+  console.log('selectNode', keys, e.node?.dataRef, e?.node.dataRef.id)
   if (keys.length === 0 && e) {
     selectedKeys.value = [e.node.dataRef.id] // cancel un-select
     return
@@ -371,16 +381,15 @@ const addNode = (mode, processorCategory, processorType,
   console.log('addNode', mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
+
   if (processorCategory === 'interface' || processorCategory === 'processor_interface') { // show popup to select a interface
     interfaceSelectionSrc.value = processorType.substr(processorType.lastIndexOf('-') + 1)
-
     if (interfaceSelectionSrc.value === '' + ProcessorInterfaceSrc.Custom) { // show interface create popup
       currentNode.value = {
         name: '',
         entityCategory: processorCategory,
         entityType: ProcessorInterface.Interface,
         processorInterfaceSrc: interfaceSelectionSrc.value,
-
         targetProcessorCategory,
         targetProcessorType,
         targetProcessorId,
@@ -520,21 +529,44 @@ async function onDrop(info: DropEvent) {
   )
 }
 
-const interfaceImportFromCurlFinish = (content:string)=>{
+const interfaceImportFromCurlFinish = (content: string) => {
   const targetNode = treeDataMap.value[targetModelId]
   store.dispatch('Scenario/importCurl', {
-    content:content,targetId:targetNode.id
+    content: content, targetId: targetNode.id
   }).then((newNode) => {
     console.log('importUrl successfully', newNode)
     selectNode([newNode.id], null)
     expandOneKey(treeDataMap.value, newNode.id, expandedKeys.value) // expend new node
     setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
-    })
+  })
 
   interfaceSelectionVisible.value = false
 }
 
-const interfaceImportFromCurlCancel = ()=>{
+const interfaceImportFromCurlCancel = () => {
+  interfaceSelectionVisible.value = false
+}
+
+const endpointCaseSelectionFinish = (interfaceNodes: any) => {
+  const targetNode = treeDataMap.value[targetModelId]
+  console.log('endpointCaseSelectionFinish', interfaceNodes, targetNode)
+
+  store.dispatch('Scenario/addInterfacesFromCase', {
+    selectedNodes: interfaceNodes,
+    targetId: targetNode.id,
+  }).then((newNode) => {
+    console.log('addInterfaces successfully', newNode)
+
+    interfaceSelectionVisible.value = false
+    selectNode([newNode.id], null)
+    expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
+    setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
+  })
+
+  interfaceSelectionVisible.value = false
+}
+
+const endpointCaseSelectionCancel = () => {
   interfaceSelectionVisible.value = false
 }
 

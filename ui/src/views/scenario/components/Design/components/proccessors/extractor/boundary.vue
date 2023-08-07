@@ -39,13 +39,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;
 
@@ -76,31 +75,24 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            message.success('保存成功');
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            message.error('保存失败');
           }
         })
       })
 };
 
-if (!modelRef.value.variableName) modelRef.value.variableName = ''
-if (!modelRef.value.boundaryStart) modelRef.value.boundaryStart = ''
-if (!modelRef.value.boundaryEnd) modelRef.value.boundaryEnd = ''
-if (!modelRef.value.boundaryIndex) modelRef.value.boundaryIndex = 0
+onMounted(() => {
+  if (!modelRef.value.variableName) modelRef.value.variableName = ''
+  if (!modelRef.value.boundaryStart) modelRef.value.boundaryStart = ''
+  if (!modelRef.value.boundaryEnd) modelRef.value.boundaryEnd = ''
+  if (!modelRef.value.boundaryIndex) modelRef.value.boundaryIndex = 0
+})
+
+
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }
 
 </script>
-
-<style lang="less" scoped>
-.processor_extractor_boundary-main {
-}
-</style>

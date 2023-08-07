@@ -5,6 +5,7 @@ import {
     Endpoint,
     QueryResult,
     QueryParams,
+    QueryCaseTreeParams,
     filterFormState
 } from './data.d';
 import {
@@ -31,7 +32,7 @@ import {
     expireEndpoint,
     getEndpointDetail,
     getEndpointList,
-    saveEndpoint, copyEndpointCase,
+    saveEndpoint, copyEndpointCase,loadCaseTree
 } from './service';
 
 import {
@@ -78,6 +79,8 @@ export interface StateType {
     caseList: any[];
     caseDetail: any;
     tagList: any;
+    caseTree:any;
+    caseTreeMap:any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -110,6 +113,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setEndpointCaseList: Mutation<StateType>;
         setEndpointCaseDetail: Mutation<StateType>;
         setEndpointTagList: Mutation<StateType>;
+
+        setCaseTree: Mutation<StateType>;
+        setCaseTreeMap:Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -157,6 +163,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getEndpointList: Action<StateType, StateType>;
         getEndpointTagList: Action<StateType, StateType>;
         updateEndpointTag: Action<StateType, StateType>;
+        getCaseTree: Action<StateType, StateType>;
     }
 }
 
@@ -196,6 +203,8 @@ const initState: StateType = {
     caseList: [],
     caseDetail: {},
     tagList:[],
+    caseTree:[],
+    caseTreeMap:[],
 };
 
 const StoreModel: ModuleType = {
@@ -312,6 +321,12 @@ const StoreModel: ModuleType = {
         },
         setEndpointTagList(state, payload) {
             state.tagList = payload;
+        },
+        setCaseTree(state,payload){
+            state.caseTree = payload
+        },
+        setCaseTreeMap(state,payload){
+            state.caseTreeMap = payload
         }
     },
     actions: {
@@ -847,6 +862,24 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
+        async getCaseTree({ commit }, payload: QueryCaseTreeParams){
+            try {
+                const response: ResponseData = await loadCaseTree(payload);
+                if (response.code != 0) return;
+
+                //commit('setQueryParams', payload);
+                commit('setCaseTree', response.data);
+
+                const data = {id: 0, children: response.data} // covert arr to obj
+                const mp = genNodeMap(data)
+                commit('setCaseTreeMap', mp);
+
+                return true;
+            } catch (error) {
+                return false;
+            }
+
+        }
 
 
     },

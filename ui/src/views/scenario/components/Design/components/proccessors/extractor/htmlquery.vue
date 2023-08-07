@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
+import {computed, reactive, ref,onMounted} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
@@ -63,29 +63,23 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            message.success('保存成功');
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            message.error('保存失败');
           }
         })
       })
 };
 
-if (!modelRef.value.variable) modelRef.value.variable = ''
-if (!modelRef.value.expression) modelRef.value.expression = ''
+onMounted(() => {
+  if (!modelRef.value.variable) modelRef.value.variable = ''
+  if (!modelRef.value.expression) modelRef.value.expression = ''
+})
+
+
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }
 
 </script>
 
-<style lang="less" scoped>
-.processor_extractor_htmlquery-main {
-}
-</style>

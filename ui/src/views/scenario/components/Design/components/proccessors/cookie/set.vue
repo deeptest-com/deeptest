@@ -44,8 +44,6 @@ import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
-import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;
 
@@ -73,15 +71,9 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            message.success('保存成功');
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            message.error('保存失败');
           }
         })
       })

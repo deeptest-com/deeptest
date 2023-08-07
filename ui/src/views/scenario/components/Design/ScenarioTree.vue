@@ -550,7 +550,7 @@ const interfaceImportFromCurlCancel = () => {
 const endpointCaseSelectionFinish = (interfaceNodes: any) => {
   const targetNode = treeDataMap.value[targetModelId]
   console.log('endpointCaseSelectionFinish', interfaceNodes, targetNode)
-
+  
   store.dispatch('Scenario/addInterfacesFromCase', {
     selectedNodes: interfaceNodes,
     targetId: targetNode.id,
@@ -562,6 +562,7 @@ const endpointCaseSelectionFinish = (interfaceNodes: any) => {
     expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
     setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
   })
+  
 
   interfaceSelectionVisible.value = false
 }

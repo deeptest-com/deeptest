@@ -6,7 +6,24 @@
 /**
  * 仅显示禁用和删除的操作的类型
  * */
-const onlyShowDisableAndDeleteTypes = ['processor_time_default', 'processor_cookie_get', 'processor_cookie_set', 'processor_cookie_clear',"processor_assertion_default"];
+const onlyShowDisableAndDeleteTypes = [
+    'processor_time_default',
+    // cookie 相关
+    'processor_cookie_get',
+    'processor_cookie_set',
+    'processor_cookie_clear',
+    "processor_assertion_default",
+    'processor_custom_code',
+    'processor_print_default',
+    'processor_variable_set',
+    "processor_variable_clear",
+    // 提取器相关
+    'processor_extractor_boundary',
+    'processor_extractor_jsonquery',
+    'processor_extractor_htmlquery',
+    'processor_extractor_xmlquery',
+    'processor_extractor_regex',
+];
 
 /**
  * 场景编排菜单配置

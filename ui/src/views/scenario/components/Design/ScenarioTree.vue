@@ -91,7 +91,7 @@
     <InterfaceSelectionFromDefineCase
     v-if="interfaceSelectionVisible && interfaceSelectionSrc.includes(ProcessorInterfaceSrc.Case)"
        :onFinish="endpointCaseSelectionFinish"
-       :onCancel="endpointCaseSelectionCancel"/>    
+       :onCancel="endpointCaseSelectionCancel"/>
   </div>
 </template>
 <script setup lang="ts">
@@ -193,6 +193,9 @@ const expandNode = (keys: string[], e: any) => {
 }
 
 const selectNode = (keys, e) => {
+  if(!e?.node?.dataRef?.id) {
+    return
+  }
   console.log('selectNode', keys,e.node?.dataRef, e?.node.dataRef.id)
   if (keys.length === 0 && e) {
     selectedKeys.value = [e.node.dataRef.id] // cancel un-select

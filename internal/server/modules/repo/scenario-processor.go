@@ -58,6 +58,9 @@ func (r *ScenarioProcessorRepo) GetEntity(processorId uint) (ret interface{}, er
 	case consts.ProcessorData:
 		ret, _ = r.GetData(processor)
 
+	case consts.ProcessorCustomCode:
+		ret, _ = r.GetCustomCode(processor)
+
 	default:
 	}
 
@@ -230,6 +233,20 @@ func (r *ScenarioProcessorRepo) GetExtractor(processor model.Processor) (ret mod
 }
 
 func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.ProcessorData, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
+
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
+	} else {
+		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
+	}
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetCustomCode(processor model.Processor) (ret model.ProcessorData, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {

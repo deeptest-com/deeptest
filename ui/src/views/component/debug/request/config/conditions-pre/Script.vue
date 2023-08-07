@@ -34,7 +34,6 @@ import {computed, defineProps, inject, onBeforeUnmount, onMounted, reactive, ref
 import {message, Form, notification} from 'ant-design-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
 import {UsedBy} from "@/utils/enum";
 
 import {StateType as Debug} from "@/views/component/debug/store";

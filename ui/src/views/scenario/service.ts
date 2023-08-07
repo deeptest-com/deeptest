@@ -269,7 +269,6 @@ export function getRequestBodyTypes() {
 
 export function getProcessorCategories() {
     const ret = getEnumSelectItems(ProcessorCategory)
-    console.log('====', ret)
     return ret
 }
 

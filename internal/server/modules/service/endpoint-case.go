@@ -205,8 +205,8 @@ func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDo
 }
 
 func (s *EndpointCaseService) GetTree(projectId, serveId uint) (root *serverDomain.EndpointCaseTree, err error) {
-	categories, err := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, projectId, serveId)
-	if err != nil {
+	categories, err := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, projectId, 0)
+	if err != nil || len(categories) == 0 {
 		return
 	}
 	categoryTos := s.CategoryToTos(categories)
@@ -366,7 +366,7 @@ func (s *EndpointCaseService) isChild(child, parent *serverDomain.EndpointCaseTr
 
 func (s *EndpointCaseService) mountCount(root *serverDomain.EndpointCaseTree, projectId, serveId uint) {
 	endpointCount, err := s.EndpointCaseRepo.GetEndpointCount(projectId, serveId)
-	if err != nil {
+	if err != nil || len(endpointCount) == 0 {
 		return
 	}
 

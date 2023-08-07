@@ -35,6 +35,8 @@
     <ProcessorDataExcel   v-else-if="selectedNode.processorType === 'processor_data_excel'" />
     <ProcessorDataZenData v-else-if="selectedNode.processorType === 'processor_data_zendata'" />
 
+    <ProcessorCustomCode v-else-if="selectedNode.processorType === 'processor_custom_code'" />
+
     <span v-else></span>
 
   </div>
@@ -79,6 +81,7 @@ import ProcessorCookieClear from "./proccessors/cookie/clear.vue"
 import ProcessorDataText   from "./proccessors/data/text.vue"
 import ProcessorDataExcel  from "./proccessors/data/excel.vue"
 import ProcessorDataZenData from "./proccessors/data/zendata.vue"
+import ProcessorCustomCode from "./proccessors/custom_code/default.vue"
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; }>();

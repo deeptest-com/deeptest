@@ -276,8 +276,7 @@ export const DESIGN_TYPE_ICON_MAP = {
 
     'processor_print_default': 'arrange-output',
     'processor_assertion_default': 'arrange-assert',
-
-
+    'processor_custom_code': 'arrange-code',
 }
 
 

@@ -405,8 +405,9 @@ const (
 	ProcessorAssertion ProcessorCategory = "processor_assertion"
 	ProcessorExtractor ProcessorCategory = "processor_extractor"
 
-	ProcessorCookie ProcessorCategory = "processor_cookie"
-	ProcessorData   ProcessorCategory = "processor_data"
+	ProcessorCookie     ProcessorCategory = "processor_cookie"
+	ProcessorData       ProcessorCategory = "processor_data"
+	ProcessorCustomCode ProcessorCategory = "processor_custom_code"
 )
 
 func (e ProcessorCategory) ToString() string {
@@ -455,6 +456,7 @@ const (
 	ProcessorDataText  ProcessorType = "processor_data_text"
 	ProcessorDataExcel ProcessorType = "processor_data_excel"
 	//ProcessorDataZenData ProcessorType = "processor_data_zendata"
+	ProcessorCustomCodeDefault ProcessorType = "processor_custom_code_default"
 )
 
 func (e ProcessorType) ToString() string {

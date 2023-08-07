@@ -55,7 +55,7 @@
 
     <!-- 选择环境 -->
     <Teleport to="body">
-      <div class="select-env-fixed" :style="{top: selectEnvTopPosition}">
+      <div v-if="showBaseUrl()" class="select-env-fixed" :style="{top: selectEnvTopPosition}">
         <a-select :value="serverId || null" @change="changeServer"
                   placeholder="请选择环境">
           <a-select-option v-for="(option, key) in servers" :key="key" :value="option.id">

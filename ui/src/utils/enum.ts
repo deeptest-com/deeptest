@@ -121,6 +121,10 @@ export enum ProcessorData {
     // ZenData = "processor_data_zendata",
 }
 
+export enum ProcessorCustomCode {
+    CustomCodeDefault = "processor_custom_code_default",
+}
+
 export enum RequestBodyType {
     'application/json'= 'application/json',
     'application/xml' = 'application/xml',

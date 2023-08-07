@@ -43,7 +43,7 @@
 import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
+import { QuestionCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {UsedBy} from "@/utils/enum";

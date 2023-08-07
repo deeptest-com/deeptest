@@ -19,34 +19,43 @@
                  :disabled="baseUrlDisabled" />
       </div>
 
-      <div class="url">
+      <div class="url"
+           :class="[isPathValid ? '' : 'dp-field-error']">
         <a-input placeholder="请输入路径"
                  v-model:value="debugData.url"
-                 @change="updatePath"
+                 @change="pathUpdated"
                  :disabled="urlDisabled"
-                 :title="urlDisabled ? '请在接口定义中修改' : ''" />
+                 :title="urlDisabled ? '请在接口定义中修改' : ''"/>
       </div>
 
       <div class="send">
-        <a-button type="primary" trigger="click" @click="send">
+        <a-button type="primary" trigger="click"
+                  @click="send"
+                  :disabled="!isPathValid">
           <span>发送</span>
         </a-button>
       </div>
 
       <div class="save">
-        <a-button trigger="click" @click="save" class="dp-bg-light">
+        <a-button trigger="click"  class="dp-bg-light"
+                  @click="save"
+                  :disabled="!isPathValid">
           <icon-svg class="icon dp-icon-with-text" type="save" />
           保存
         </a-button>
       </div>
 
-      <div v-if="usedBy === UsedBy.InterfaceDebug" class="save-as-case">
+      <div v-if="usedBy === UsedBy.InterfaceDebug"
+           :disabled="!isPathValid"
+           class="save-as-case">
         <a-button trigger="click" @click="saveAsCase" class="dp-bg-light">
           另存为用例
         </a-button>
       </div>
 
-      <div v-if="usedBy === UsedBy.ScenarioDebug" class="sync">
+      <div v-if="usedBy === UsedBy.ScenarioDebug"
+           :disabled="!isPathValid"
+           class="sync">
         <a-button trigger="click" @click="sync" class="dp-bg-light">
           <UndoOutlined/>
           同步
@@ -313,11 +322,23 @@ const getSelectEnvTopPosition = () => {
   return top - val + 'px'
 }
 
-function updatePath(e) {
-  const path = e.target.value;
+function pathUpdated(e) {
+  const path = e.target.value.trim();
+
+  if (!validatePath()) {
+    return
+  }
 
   const ret = handlePathLinkParams(path, debugData.value?.pathParams)
   store.commit('Debug/setPathParams', ret)
+}
+
+const isPathValid = computed(() => {return validatePath()})
+function validatePath() {
+  const regx = /^https?:\/\/.*$/g;
+  const isMatch = showBaseUrl() || regx.test(debugData.value?.url)
+
+  return isMatch
 }
 
 // const showContextMenu = ref(false)
@@ -370,6 +391,17 @@ function updatePath(e) {
 
     .url {
       flex: 1;
+      &.dp-field-error {
+        border: 1px solid red !important;
+      }
+
+      input {
+        &:focus {
+          border: 1px solid #d9d9d9 !important;
+          outline: none  !important;
+          box-shadow: none  !important;
+        }
+      }
     }
 
     .send {

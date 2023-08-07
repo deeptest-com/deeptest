@@ -119,8 +119,8 @@ import EditModal from "./components/edit.vue";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelectionFromDiagnose/main.vue";
 import cloneDeep from "lodash/cloneDeep";
-import InterfaceImportFromCurl from "@/views/component/interfaceImportFromCurl";
-import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue"
+import InterfaceImportFromCurl from "@/views/component/InterfaceImportFromCurl/index.tsx";
+import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue";
 
 const props = defineProps<{}>()
 const {t} = useI18n();

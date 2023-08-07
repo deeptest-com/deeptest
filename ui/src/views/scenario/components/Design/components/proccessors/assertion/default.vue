@@ -3,7 +3,6 @@
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-
           <a-form-item label="判断表达式" v-bind="validateInfos.expression">
             <a-input v-model:value="modelRef.expression"
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
@@ -16,7 +15,6 @@
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -26,13 +24,11 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
-import {Form, message, notification} from "ant-design-vue";
+import {Form, message} from "ant-design-vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
-import {getCompareOpts} from "@/utils/compare";
-import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;
 
@@ -57,21 +53,14 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            message.success('保存成功');
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            message.error('保存失败');
           }
         })
       })
 };
 
-const optOptions = getCompareOpts()
 
 onMounted(() => {
   console.log('onMounted')
@@ -89,11 +78,3 @@ const wrapperCol = { span: 16 }
 
 </script>
 
-<style lang="less" scoped>
-.processor_assertion_default-main {
-  .icons {
-    text-align: right;
-    line-height: 32px;
-  }
-}
-</style>

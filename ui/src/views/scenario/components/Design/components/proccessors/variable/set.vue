@@ -21,7 +21,6 @@
 
           <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -91,11 +90,3 @@ const wrapperCol = { span: 16 }
 
 </script>
 
-<style lang="less" scoped>
-.processor_variable_set-main {
-  .icons {
-    text-align: right;
-    line-height: 32px;
-  }
-}
-</style>

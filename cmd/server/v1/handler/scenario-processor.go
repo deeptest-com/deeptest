@@ -165,6 +165,12 @@ func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 		err = c.ScenarioProcessorService.SaveData(&entity)
 		po = entity
 
+	} else if processorCategory == consts.ProcessorCustomCode {
+		var entity model.ProcessorCustomCode
+		err = ctx.ReadJSON(&entity)
+		err = c.ScenarioProcessorService.SaveCustomCode(&entity)
+		po = entity
+
 	}
 
 	if err != nil {

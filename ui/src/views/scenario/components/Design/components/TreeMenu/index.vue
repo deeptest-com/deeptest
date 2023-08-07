@@ -39,9 +39,13 @@ const menus = computed(() => {
   const src = cloneDeep(DESIGN_MENU_CONFIG);
   // 递归过滤
   function filterMenu(menu) {
-    if(menu?.hideInNodeTypes?.includes(nodeType)) {
+    // 如果有 showInNodeTypes，且当前节点类型不在 showInNodeTypes 中，则不显示
+    if(menu?.showInNodeTypes?.length && !menu?.showInNodeTypes?.includes(nodeType)) {
+      return false;
+    }else if(menu?.hideInNodeTypes?.includes(nodeType)) {
       return false;
     }
+
     if (menu?.children?.length) {
       menu.children = menu.children.filter((subMenu:any) => {
         return filterMenu(subMenu);

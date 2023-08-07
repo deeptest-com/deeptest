@@ -866,11 +866,8 @@ const StoreModel: ModuleType = {
             try {
                 const response: ResponseData = await loadCaseTree(payload);
                 if (response.code != 0) return;
-
-                //commit('setQueryParams', payload);
                 commit('setCaseTree', response.data);
-
-                const data = {id: 0, children: response.data} // covert arr to obj
+                const data = {id: 0, children: response.data} 
                 const mp = genNodeMap(data)
                 commit('setCaseTreeMap', mp);
 

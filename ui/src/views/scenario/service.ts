@@ -418,3 +418,11 @@ export async function importCurl(params:any): Promise<any> {
         data:params,
     });
 }
+
+export async function addInterfacesFromCase(params:any): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/addInterfacesFromCase`,
+        method: 'post',
+        data:params,
+    });
+}

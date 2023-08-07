@@ -120,7 +120,7 @@ import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFr
 import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelectionFromDiagnose/main.vue";
 import cloneDeep from "lodash/cloneDeep";
 import InterfaceImportFromCurl from "@/views/component/interfaceImportFromCurl";
-import InterfaceSelectionFromDefineCase from "@/views/component/interfaceSelectionFromDefineCase/index.vue"
+import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue"
 
 const props = defineProps<{}>()
 const {t} = useI18n();
@@ -546,18 +546,22 @@ const interfaceImportFromCurlCancel = ()=>{
   interfaceSelectionVisible.value = false
 }
 
-const endpointCaseSelectionFinish = (content:string)=>{
+const endpointCaseSelectionFinish = (interfaceNodes:any)=>{
   const targetNode = treeDataMap.value[targetModelId]
-  /*
-  store.dispatch('Scenario/importCurl', {
-    content:content,targetId:targetNode.id
+  console.log('endpointCaseSelectionFinish', interfaceNodes, targetNode)
+
+  store.dispatch('Scenario/addInterfacesFromCase', {
+    selectedNodes: interfaceNodes,
+    targetId: targetNode.id,
   }).then((newNode) => {
-    console.log('importUrl successfully', newNode)
+    console.log('addInterfaces successfully', newNode)
+
+    interfaceSelectionVisible.value = false
     selectNode([newNode.id], null)
-    expandOneKey(treeDataMap.value, newNode.id, expandedKeys.value) // expend new node
+    expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
     setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
-    })
-   */
+  })
+
   interfaceSelectionVisible.value = false
 }
 

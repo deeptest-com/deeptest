@@ -21,7 +21,7 @@ import {
     getScenariosReportsDetail,
     addPlans,
     getPlans,
-    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData, saveProcessorInfo,importCurl
+    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData, saveProcessorInfo,importCurl,addInterfacesFromCase
 } from './service';
 
 import {
@@ -160,6 +160,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         syncDebugData: Action<StateType, StateType>;
 
         importCurl: Action<StateType, StateType>;
+        addInterfacesFromCase: Action<StateType, StateType>;
     }
 }
 
@@ -746,6 +747,16 @@ const StoreModel: ModuleType = {
                 return res.data;
             }
             return false;
+        },
+        async addInterfacesFromCase({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await addInterfacesFromCase(payload);
+
+                await dispatch('loadScenario', state.scenarioId);
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
         },
     }
 };

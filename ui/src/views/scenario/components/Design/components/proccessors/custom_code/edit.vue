@@ -38,8 +38,8 @@
 <script setup lang="ts">
 import {computed, ref, watch} from "vue";
 import {useStore} from "vuex";
-import {message} from "ant-design-vue";
-import {MonacoOptions} from "@/utils/const";
+import {message, notification} from "ant-design-vue";
+import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 
@@ -57,24 +57,6 @@ const editorOptions = ref(Object.assign({
     }, MonacoOptions
 ))
 
-const addSnippet = (snippetName) => {
-  store.dispatch('Debug/addSnippet', snippetName)
-}
-const editorChange = (newScriptCode) => {
-  modelRef.value.content = newScriptCode;
-}
-
-const fullscreen = ref(false)
-
-const openFullscreen = () => {
-  console.log('openFullscreen')
-  fullscreen.value = true
-}
-const closeFullScreen = () => {
-  console.log('closeFullScreen')
-  fullscreen.value = false
-}
-
 const save = async () => {
   const res = await store.dispatch('Scenario/saveProcessor', {
     ...modelRef.value,
@@ -82,10 +64,33 @@ const save = async () => {
   })
 
   if (res === true) {
-    message.success('保存成功');
+    notification.success({
+      key: NotificationKeyCommon,
+      message: `保存成功`,
+    });
   } else {
-    message.error('保存失败');
+    notification.error({
+      key: NotificationKeyCommon,
+      message: `保存失败`,
+    });
   }
+}
+
+const addSnippet = (snippetName) => {
+  store.dispatch('Scenario/addSnippet', snippetName)
+}
+const editorChange = (newScriptCode) => {
+  modelRef.value.content = newScriptCode;
+}
+
+const fullscreen = ref(false)
+const openFullscreen = () => {
+  console.log('openFullscreen')
+  fullscreen.value = true
+}
+const closeFullScreen = () => {
+  console.log('closeFullScreen')
+  fullscreen.value = false
 }
 
 const timestamp = ref('')

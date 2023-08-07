@@ -98,6 +98,11 @@ func (s *ScenarioProcessorService) SaveData(req *model.ProcessorData) (err error
 	return
 }
 
+func (s *ScenarioProcessorService) SaveCustomCode(req *model.ProcessorCustomCode) (err error) {
+	err = s.ScenarioProcessorRepo.SaveCustomCode(req)
+	return
+}
+
 func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor) (ret agentExec.IProcessorEntity, err error) {
 	processor, _ := s.ScenarioProcessorRepo.Get(processorTo.ID)
 

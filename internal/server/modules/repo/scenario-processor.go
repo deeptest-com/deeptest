@@ -246,7 +246,7 @@ func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.Pr
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetCustomCode(processor model.Processor) (ret model.ProcessorData, err error) {
+func (r *ScenarioProcessorRepo) GetCustomCode(processor model.Processor) (ret model.ProcessorCustomCode, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
@@ -335,6 +335,13 @@ func (r *ScenarioProcessorRepo) SaveExtractor(po *model.ProcessorExtractor) (err
 func (r *ScenarioProcessorRepo) SaveData(po *model.ProcessorData) (err error) {
 	err = r.DB.Save(po).Error
 
+	r.UpdateEntityId(po.ProcessorID, po.ID)
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) SaveCustomCode(po *model.ProcessorCustomCode) (err error) {
+	err = r.DB.Save(po).Error
 	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return

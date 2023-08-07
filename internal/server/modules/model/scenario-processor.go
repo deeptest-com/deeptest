@@ -210,7 +210,7 @@ type ProcessorCustomCode struct {
 }
 
 func (ProcessorCustomCode) TableName() string {
-	return "biz_custom_code"
+	return "biz_processor_custom_code"
 }
 
 type ProcessorComm struct {

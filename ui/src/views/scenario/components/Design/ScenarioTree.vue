@@ -39,12 +39,13 @@
                   <IconSvg v-if="DESIGN_TYPE_ICON_MAP[dataRef.entityType]"
                            :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
                 </span>
+
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
-                <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET' )">{{
-                    dataRef.method || "GET"
-                  }}</a-tag>
-              </span>
+                  <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET' )">{{
+                      dataRef.method || "GET"
+                    }}</a-tag>
+                </span>
                 <span class="title-text">
                 {{ dataRef.name }}
               </span>
@@ -568,6 +569,7 @@ onUnmounted(() => {
 
 .method-tag {
   transform: scale(0.7);
+  margin-left: -6px; // move to left to offset the transform
   margin-right: 3px;
 }
 

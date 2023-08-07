@@ -1,82 +1,90 @@
 <template>
   <div class="processor_custom_code-main">
-    <a-card :bordered="false">
-      <a-form ref="formRef"
-              :rules="rules"
-              :model="formState"
-              :label-col="{ span: 4 }"
-              :wrapper-col="{ span: 16 }">
+    <div class="header">
+      <a-row type="flex" class="row">
+        <a-col flex="1" class="left">
+          <icon-svg type="script" class="icon" />&nbsp;
+          <span>JavaScript代码</span>
+        </a-col>
 
-        <a-form-item label="分组名称" name="name">
-          <a-input v-model:value="formState.name"/>
-        </a-form-item>
+        <a-col flex="100px" class="dp-right">
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>帮助</template>
+            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
+          </a-tooltip>
 
-        <a-form-item label="备注" name="comments">
-          <a-input v-model:value="formState.comments"/>
-        </a-form-item>
+          <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>全屏</template>
+            <FullscreenOutlined @click.stop="openFullscreen()"  class="dp-icon-btn dp-trans-80" />
+          </a-tooltip>
 
-        <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
-          <a-button type="primary" @click.prevent="submit">保存</a-button>
-          <a-button style="margin-left: 10px" @click="reset">重置</a-button>
-        </a-form-item>
-      </a-form>
-    </a-card>
+        </a-col>
+      </a-row>
+    </div>
+
+    <div class="content">
+      <ProcessorCustomCodeEdit />
+    </div>
+
+    <ProcessorPopup v-if="modelRef.processorID > 0 && fullscreen"
+                    :visible="fullscreen"
+                    :onCancel="closeFullScreen" />
   </div>
 </template>
 
 <script setup lang="ts">
 import {computed, ref, watch} from "vue";
 import {useStore} from "vuex";
-import {StateType as ScenarioStateType} from "../../../../../store";
 import {message} from "ant-design-vue";
+import { QuestionCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
+import IconSvg from "@/components/IconSvg";
+import {StateType as ScenarioStateType} from "../../../../../store";
+import ProcessorCustomCodeEdit from "./edit.vue";
+import ProcessorPopup from "../../common/ProcessorPopup.vue";
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
-const formState: any = ref({
-  name: '',
-  comments: '',
-});
-const formRef: any = ref(null);
+const modelRef: any = computed<boolean>(() => store.state.Scenario.nodeData);
 
-watch(() => {
-  return nodeData.value;
-}, (val: any) => {
-  debugger;
-  if (!val) return;
-  formState.value.name = val.name;
-  formState.value.comments = val.comments;
-});
+const fullscreen = ref(false)
 
-const rules = {}
+const openFullscreen = () => {
+  console.log('openFullscreen')
+  fullscreen.value = true
+}
+const closeFullScreen = () => {
+  console.log('closeFullScreen')
+  fullscreen.value = false
+}
 
-const submit = async () => {
-  formRef.value.validate().then(async () => {
-    const res = await store.dispatch('Scenario/saveProcessor', {
-      ...nodeData.value,
-      name: formState.value.name,
-      comments: formState.value.comments,
-    });
-    if (res === true) {
-      message.success('保存成功');
-    } else {
-      message.error('保存失败');
-    }
+const save = async () => {
+  const res = await store.dispatch('Scenario/saveProcessor', {
+    ...modelRef.value,
+    content: modelRef.value.content,
   })
-      .catch(error => {
-        console.log('error', error);
-      });
-};
 
-const reset = () => {
-  formRef.value.resetFields();
-};
+  if (res === true) {
+    message.success('保存成功');
+  } else {
+    message.error('保存失败');
+  }
+}
+
 </script>
 
 <style lang="less" scoped>
 .processor_custom_code-main {
-  .icons {
-    text-align: right;
-    line-height: 32px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  .header {
+    height: 32px;
+    padding: 2px 3px;
+    border-bottom: 1px solid #d9d9d9;
+  }
+
+  .content {
+    flex: 1;
   }
 }
 </style>

@@ -38,10 +38,19 @@ func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err erro
 	// gen url
 	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
 
-	req.BaseRequest.FullUrlToDisplay = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
-	if req.ProcessorInterfaceSrc != consts.InterfaceSrcDiagnose {
-		req.BaseRequest.Url = req.BaseRequest.FullUrlToDisplay
+	notUseBaseUrl := req.UsedBy == consts.DiagnoseDebug ||
+		(req.UsedBy == consts.ScenarioDebug &&
+			req.ProcessorInterfaceSrc == consts.InterfaceSrcDiagnose ||
+			req.ProcessorInterfaceSrc == consts.InterfaceSrcCustom ||
+			req.ProcessorInterfaceSrc == consts.InterfaceSrcCurl)
+
+	if notUseBaseUrl {
+		req.BaseRequest.Url = reqUri
+	} else {
+		req.BaseRequest.Url = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
 	}
+
+	req.BaseRequest.FullUrlToDisplay = req.BaseRequest.Url
 	logUtils.Info("requested url: " + req.BaseRequest.Url)
 
 	// send request

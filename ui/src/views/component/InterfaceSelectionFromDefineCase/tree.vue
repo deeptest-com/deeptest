@@ -81,8 +81,7 @@
   })
 
   const fieldNames = {
-    title:'name',
-    key:'id',
+    title:'name'
   }
   
   const serves = ref([] as any[]);
@@ -109,12 +108,9 @@
     })
   }
 
-  onMounted(()=>{
-    loadServe()
-  })
 
   const searchValue = ref('');
-  const expandedKeys = ref<number[]>([]);
+  const expandedKeys = ref<string[]>([]);
   const autoExpandParent = ref<boolean>(false);
   
   async function loadTreeData() {
@@ -159,7 +155,7 @@
         return;
       }
       arr.forEach((item, index) => {
-        keys.push(item.id);
+        keys.push(item.key);
         if (Array.isArray(item.children)) {
           fn(item.children)
         }
@@ -172,6 +168,7 @@
   
   onMounted(async () => {
     console.log('onMounted')
+    loadServe()
   })
   
   </script>

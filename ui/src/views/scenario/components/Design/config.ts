@@ -11,7 +11,7 @@ export const DESIGN_MENU_CONFIG = [
         key: 'addInterface',
         title: ' 添加请求',
         icon: 'arrange-interface',
-        hideInNodeTypes: ['processor_interface_default'],
+        hideInNodeTypes: ['processor_interface_default','processor_time_default'],
         children: [
             {
                 key: 'add-child-interface-define',
@@ -44,6 +44,7 @@ export const DESIGN_MENU_CONFIG = [
         key: 'addProcessor',
         title: '添加处理器',
         icon: 'arrange-control',
+        hideInNodeTypes: ['processor_time_default'],
         children: [
             {
                 key: 'processor_loop',
@@ -216,13 +217,13 @@ export const DESIGN_MENU_CONFIG = [
         key: 'processor_group_default',
         title: '添加分组',
         icon: 'arrange-group',
-        hideInNodeTypes: null,
+        hideInNodeTypes: ['processor_time_default'],
     },
     //  分割线
     {
         key: 'divider',
         title: '分割线',
-        hideInNodeTypes: ['processor_root_default'],
+        hideInNodeTypes: ['processor_root_default','processor_time_default'],
     },
     //    禁用
     {

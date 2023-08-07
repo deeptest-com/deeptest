@@ -1,5 +1,6 @@
 <template>
   <div class="dp-tree-context-menu" :set="mode = treeNode.isDir ? 'child' : 'brother'">
+    {{processorCategories}}
     <a-menu @click="menuClick" trigger="['click']" mode="vertical">
       {{void ( menuItems = getMenu(treeNode.entityCategory) )}}
 

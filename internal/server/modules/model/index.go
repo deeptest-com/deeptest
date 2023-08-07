@@ -63,6 +63,7 @@ var (
 		&ProcessorData{},
 		&ProcessorCookie{},
 		&ProcessorExtractor{},
+		&ProcessorCustomCode{},
 
 		&ScenarioReport{},
 		&PlanReport{},

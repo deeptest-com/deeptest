@@ -155,6 +155,8 @@ export default {
     'processor_data_excel':  'Excel数据',
     'processor_data_zendata':  'ZenData数据',
 
+    'processor_custom_code':  '自定义代码',
+
     'pass': '通过',
     'fail': '失败',
     'skip': '跳过',

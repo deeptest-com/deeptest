@@ -197,6 +197,22 @@ func (ProcessorCookie) TableName() string {
 	return "biz_processor_cookie"
 }
 
+type ProcessorCustomCode struct {
+	BaseModel
+	agentExec.ProcessorEntityBase
+
+	Content string `gorm:"type:longtext;" json:"content" yaml:"content"`
+	Desc    string `json:"desc" yaml:"desc"`
+
+	//Output       string              `gorm:"type:longtext;" json:"output"`
+	//ResultStatus consts.ResultStatus `json:"resultStatus"`
+	//ResultMsg    string              `json:"resultMsg"`
+}
+
+func (ProcessorCustomCode) TableName() string {
+	return "biz_custom_code"
+}
+
 type ProcessorComm struct {
 	Id uint `json:"id" yaml:"id"`
 	agentExec.ProcessorEntityBase

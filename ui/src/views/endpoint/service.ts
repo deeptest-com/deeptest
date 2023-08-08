@@ -287,7 +287,7 @@ export function reBuildTree(node:any,parentId:any) {
   
    let newNode:any
     if (node?.count > 0 || !node?.isDir) {
-       // debugger
+
          newNode = Object.assign({},node)
       
         //newNode.parentId = parentId

@@ -238,6 +238,10 @@ func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.Pr
 	if ret.ID == 0 {
 		comm := r.genProcessorComm(processor)
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
+
+		if ret.RepeatTimes == 0 {
+			ret.RepeatTimes = 1
+		}
 	} else {
 		ret.Name = processor.Name
 		ret.ParentID = processor.ParentId
@@ -394,6 +398,15 @@ func (r *ScenarioProcessorRepo) UpdateInterfaceId(id, debugInterfacceId uint) (e
 	err = r.DB.Model(&model.Processor{}).
 		Where("id=?", id).
 		Update("entity_id", debugInterfacceId).
+		Error
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) UpdateMethod(id uint, method consts.HttpMethod) (err error) {
+	err = r.DB.Model(&model.Processor{}).
+		Where("id=?", id).
+		Update("method", method).
 		Error
 
 	return

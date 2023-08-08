@@ -103,6 +103,9 @@ func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug mo
 
 	err = s.ScenarioInterfaceRepo.SaveDebugData(&debug)
 
+	//更新执行器method
+	s.ScenarioProcessorRepo.UpdateMethod(debug.ScenarioProcessorId, debug.Method)
+	
 	return
 }
 
@@ -128,7 +131,7 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 	} else if debugInterface.CaseInterfaceId > 0 {
 		endpointCase, _ := s.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
 		interfaceCase := serverDomain.InterfaceCase{}
-		copier.CopyWithOption(interfaceCase, endpointCase, copier.Option{DeepCopy: true})
+		copier.CopyWithOption(&interfaceCase, &endpointCase, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 
 		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&interfaceCase)
 		s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor)

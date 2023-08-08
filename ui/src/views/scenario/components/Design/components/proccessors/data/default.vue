@@ -4,57 +4,61 @@
       <div class="top-header-tip">
         <a-alert message="说明：数据迭代处理器将循环读取文件中的行内容，并将读取的内容赋值给指定的变量" type="info" show-icon/>
       </div>
+
       <a-form
           ref="formRef"
-          :rules="rules"
           :model="formState"
           :label-col="{ span: 4 }"
-          @submit.prevent.stop
+          @submit.prevent
           :wrapper-col="{ span: 16 }">
-        <a-form-item label="变量名称" name="variableName">
-          <a-input v-model:value="formState.variableName"/>
+        <a-form-item label="变量名称" name="variableName" v-bind="validateInfos.variableName" required>
+          <a-input v-model:value="formState.variableName"
+                   @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})" />
+
           <div v-if="formState.variableName" class="dp-input-tip">
-            可使用 {{ '${' + formState.variableName + '.列名' + '}' }} 访问数据变量，如变量名为pet，${pet.name}
+            可使用 {{ '${' + formState.variableName + '.列名' + '}' }} 访问数据变量
           </div>
         </a-form-item>
 
         <a-form-item label="上传文件" name="url">
           <div class="upload-file">
             <div class="upload-container">
-              <a-upload :fileList="fileList"
-                        :remove="remove"
-                        :customRequest="customUpload"
+              <a-upload :beforeUpload="upload"
+                        :fileList="fileList"
                         :showUploadList="true"
                         :accept="'.xls, .xlsx, .csv, .txt'">
-                <div class="upload-btns">
-                  <a-button>
-                    <UploadOutlined/>
-                    选择文件
-                  </a-button>
-                </div>
+                <a-button>
+                  <UploadOutlined/>上传文件
+                </a-button>
               </a-upload>
             </div>
+            <div class="upload-path">
+              <span class="dp-input-tip">仅支持excel、csv、 text三种文件格式</span>
+            </div>
           </div>
-          <div>
-            <span class="dp-input-tip">仅支持excel、csv、 text三种文件格式</span>
-          </div>
-
+          <div>{{formState.url}}</div>
         </a-form-item>
 
-        <a-form-item label="分隔符" name="separator">
+        <a-form-item label="分隔符" name="separator"
+                     v-if="formState.format === 'txt'"
+                     v-bind="validateInfos.separator">
           <a-input style="width: 200px;"
-                   v-model:value="formState.separator"/>
+                   v-model:value="formState.separator"
+                   @blur="validate('separator', { trigger: 'blur' }).catch(() => {})"/>
+
           <div class="dp-input-tip">一行多列内容可以使用分隔符来分隔</div>
         </a-form-item>
 
         <a-form-item label="重复次数" name="repeatTimes">
           <a-input-number style="width: 200px;"
                           v-model:value="formState.repeatTimes"/>
+
           <div class="dp-input-tip">将按指定次数循环读取文件内容</div>
         </a-form-item>
 
         <a-form-item label="是否随机" name="isRand">
           <a-switch v-model:checked="formState.isRand"/>
+
           <div class="dp-input-tip">开关打开，将按照随机顺序读取文件行内容</div>
         </a-form-item>
 
@@ -85,19 +89,18 @@ import {uploadRequest} from "@/utils/upload";
 const useForm = Form.useForm;
 
 const router = useRouter();
-
 const {t} = useI18n();
 
 const formRef = ref();
 
-const rules: any = ref({
+const rulesRef = ref({
   variableName: [
     {required: true, message: '请输入变量名称', trigger: 'blur'},
   ],
   url: [
     {required: true, message: '请选择文件', trigger: 'blur'},
   ],
-});
+} as any)
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
@@ -105,69 +108,47 @@ const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
 const formState = ref({
   variableName: '',
   url: '',
+  format: '',
   separator: '',
   repeatTimes: 1,
   isRand: false,
   comments: '',
 });
 
-const fileList:any = ref([]);
+const {resetFields, validate, validateInfos} = useForm(formState, rulesRef);
 
-const remove = () => {
-  formState.value.url = '';
-  fileList.value = [];
-};
-const customUpload = async (e) => {
-  const res = await uploadRequest(e.file)
-  if (res.path) {
-    message.success('上传成功');
-    formState.value.url = res.path;
-    e.onSuccess(res, e);
-    fileList.value = [{
-      uid: '-1',
-      name: e.file.name,
-      status: 'done',
-      url: res.path,
-    }];
-  } else {
-    message.error('上传失败');
+const fileList = ref([]);
+const upload = async (file, fileList) => {
+  const res = await uploadRequest(file)
+  formState.value.url = res.path;
+  formState.value.format = res.format;
+
+  if(formState.value.format === 'txt') {
+    formState.value.separator = ',';
   }
-};
 
+  return false
+}
 
-watch(() => {
-  return nodeData.value;
-}, (val: any) => {
+watch(nodeData, (val: any) => {
+  console.log('watch nodeData')
   if (!val) return;
+
   formState.value.variableName = val.variableName;
   formState.value.url = val.url;
   formState.value.separator = val.separator;
-  formState.value.repeatTimes = val.repeatTimes;
+  formState.value.repeatTimes = val.repeatTimes || 1;
   formState.value.isRand = val.isRand;
   formState.value.comments = val.comments;
+}, {deep: true, immediate: true});
 
-  // 初始化文件列表
-  if (val.url) {
-    fileList.value = [{
-      uid: '-1',
-      name: val.url,
-      status: 'done',
-      url: val.url,
-    }];
-  }
-});
-
-// 监听 url 变化，如果是以 .txt 文件结尾的，分隔符必填
-watch(() => {
-  return formState.value.url;
-}, (val: any) => {
-  //  .txt 结尾
-  if (val.endsWith('.txt')) {
-    rules.value.separator = [
+watch(formState, (val: any) => {
+  if(val.format === 'txt') {
+    rulesRef.value.separator = [
       {required: true, message: '请输入分隔符', trigger: 'blur'},
     ]
-  }else {
-    delete rules.value.separator
+  } else {
+    rulesRef.value.separator = []
   }
 }, {deep: true});
 
@@ -198,19 +179,5 @@ const submit = async () => {
 .top-header-tip {
   position: relative;
   margin: 6px auto 24px 60px;
-}
-
-.upload-container {
-  width: 600px;
-}
-
-.upload-file {
-  margin-bottom: 8px;
-}
-
-.upload-btns {
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 </style>

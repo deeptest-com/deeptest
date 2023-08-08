@@ -502,6 +502,19 @@ func (e DataSource) ToString() string {
 	return string(e)
 }
 
+type DataFileFormat string
+
+const (
+	FormatText    DataFileFormat = "text"
+	FormatExcel   DataFileFormat = "excel"
+	FormatCsv     DataFileFormat = "csv"
+	FormatUnknown DataFileFormat = "unknown"
+)
+
+func (e DataFileFormat) ToString() string {
+	return string(e)
+}
+
 type TimeUnit string
 
 const (

@@ -141,13 +141,6 @@ watch((currProject), async (newVal) => {
 }, {
   immediate: true
 })
-watch((currServe), async (newVal) => {
-  console.log('watch currProject', currProject?.value.id, currServe?.value.id)
-  await loadTreeData();
-  await getServeServers()
-}, {
-  immediate: true
-})
 
 watch(searchValue, (newVal) => {
   expandedKeys.value = filterTree(treeData.value, newVal)

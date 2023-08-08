@@ -282,7 +282,7 @@ func (s *EndpointCaseService) EndpointToTo(po *model.Endpoint) (to *serverDomain
 		Desc:       po.Description,
 		Type:       serverConsts.EndpointCaseTreeTypeEndpoint,
 		IsDir:      true,
-		CategoryId: uint(po.CategoryId),
+		CategoryId: po.CategoryId,
 		ProjectId:  po.ProjectId,
 		ServeId:    po.ServeId,
 	}
@@ -361,7 +361,7 @@ func (s *EndpointCaseService) isChild(child, parent *serverDomain.EndpointCaseTr
 	case serverConsts.EndpointCaseTreeTypeDir:
 		res = child.ParentId == parent.Key
 	case serverConsts.EndpointCaseTreeTypeEndpoint:
-		res = int64(child.CategoryId) == parent.Key
+		res = child.CategoryId == parent.Key
 	case serverConsts.EndpointCaseTreeTypeCase:
 		res = child.EndpointId == uint(parent.Key)
 	}

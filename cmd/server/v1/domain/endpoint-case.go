@@ -54,7 +54,7 @@ type EndpointCaseTree struct {
 	Type   serverConsts.EndpointCaseTreeType `json:"type"`
 	IsDir  bool                              `json:"isDir"`
 
-	CategoryId       uint  `json:"categoryId"`
+	CategoryId       int64 `json:"categoryId"`
 	EndpointId       uint  `json:"endpointId"`
 	DebugInterfaceId uint  `json:"debugInterfaceId"`
 	CaseInterfaceId  uint  `json:"caseInterfaceId"`

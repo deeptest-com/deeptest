@@ -36,8 +36,13 @@
         </template>
 
         <template #title="nodeProps">
-          <span v-if="nodeProps.dataRef.isDir">{{nodeProps.dataRef.name+'('+nodeProps.dataRef.count+')'}}</span>
-          <span v-else>{{nodeProps.dataRef.name+"-"+nodeProps.dataRef.method}}</span>
+          <span v-if="nodeProps.dataRef.type == 'dir' || nodeProps.dataRef.type == ''"><FolderOpenOutlined/> {{nodeProps.dataRef.name+' ('+nodeProps.dataRef.count+')'}}</span>
+          <span v-if="nodeProps.dataRef.type == 'endpoint'"><ApiOutlined /> {{nodeProps.dataRef.name}}</span>
+          <span v-if="nodeProps.dataRef.type == 'case'"><ShareAltOutlined /> {{nodeProps.dataRef.name}}
+            <a-tag class="method-tag" :color="getMethodColor(nodeProps.dataRef.method || 'GET', nodeProps.dataRef.disable)">{{
+                      nodeProps.dataRef.method || "GET"
+                    }}</a-tag>
+          </span>
           <!--
                       <div class="tree-title" :draggable="nodeProps?.dataRef?.id === -1">
                           <span class="tree-title-text" v-if="nodeProps?.dataRef?.name.indexOf(searchValue) > -1">
@@ -59,7 +64,7 @@
 
 <script setup lang="ts">
 import {computed, defineProps, onMounted, ref, watch} from 'vue';
-import {CaretDownOutlined,} from '@ant-design/icons-vue';
+import {CaretDownOutlined,FolderOpenOutlined,ApiOutlined,ShareAltOutlined} from '@ant-design/icons-vue';
 import {useStore} from "vuex";
 
 import {StateType as ProjectStateType} from "@/store/project";
@@ -67,6 +72,7 @@ import {StateType as ServeStateType} from "@/store/serve";
 
 import {listServe} from "@/services/serve";
 import {filterTree, getSelectedTreeNode} from "@/utils/tree";
+import {getMethodColor} from "@/utils/dom";
 
 
 const store = useStore<{ Endpoint: any, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType, DiagnoseInterface }>();

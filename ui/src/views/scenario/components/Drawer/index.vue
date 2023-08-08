@@ -250,6 +250,17 @@ async function cancel() {
   emit('close');
 }
 
+watch(() => {
+  return props.visible
+},(newVal) => {
+//  关闭时，需要清空数据
+//   if(!newVal) {
+//
+//   }
+})
+
+
+
 const isShowSync = computed(() => {
   const ret = debugData.value.processorInterfaceSrc !== ProcessorInterfaceSrc.Custom  &&
       debugData.value.processorInterfaceSrc !== ProcessorInterfaceSrc.Curl

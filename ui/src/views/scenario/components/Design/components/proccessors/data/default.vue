@@ -43,7 +43,7 @@
                      v-if="formState.format === 'txt'"
                      v-bind="validateInfos.separator">
           <a-input style="width: 200px;"
-                    v-model:value="formState.separator"
+                   v-model:value="formState.separator"
                    @blur="validate('separator', { trigger: 'blur' }).catch(() => {})"/>
 
           <div class="dp-input-tip">一行多列内容可以使用分隔符来分隔</div>

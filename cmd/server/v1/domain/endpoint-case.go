@@ -66,6 +66,7 @@ type EndpointCaseTree struct {
 	Children []*EndpointCaseTree `json:"children"`
 	Slots    iris.Map            `json:"slots"`
 	Count    int64               `json:"count"`
+	Ordr     int                 `json:"ordr"`
 }
 
 type EndpointCount struct {

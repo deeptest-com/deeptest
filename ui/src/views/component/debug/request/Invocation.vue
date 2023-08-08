@@ -142,6 +142,7 @@ const props = defineProps({
   },
 })
 const usedBy = inject('usedBy') as UsedBy
+const containerScrollTop = inject('containerScrollTop') as any;
 const {t} = useI18n();
 const {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} = useVariableReplace('endpointInterfaceUrl')
 
@@ -322,7 +323,7 @@ const getSelectEnvTopPosition = () => {
   } else if (usedBy === UsedBy.DiagnoseDebug) {
     val = 40
   } else if (usedBy === UsedBy.InterfaceDebug) {
-    val = 43
+    val = 96
   } else if (usedBy === UsedBy.CaseDebug) {
     val = 34
   }
@@ -366,7 +367,11 @@ function validatePath() {
 //   }
 //   showContextMenu.value = false
 // }
-
+watch(() => {
+  return containerScrollTop && containerScrollTop.value;
+}, val => {
+  selectEnvTopPosition.value = getSelectEnvTopPosition();
+})
 </script>
 
 <style lang="less">

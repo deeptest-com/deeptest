@@ -118,7 +118,7 @@ func (r *EndpointCaseRepo) ListByProjectIdAndServeId(projectId, serveId uint) (e
 	err = r.DB.Model(&model.EndpointCase{}).
 		Joins("left join biz_debug_interface d on biz_endpoint_case.debug_interface_id=d.id").
 		Select("biz_endpoint_case.*, d.method as method").
-		Where("biz_endpoint_case.project_id = ? and biz_endpoint_case.serve_id = ? and not biz_endpoint_case.deleted and not biz_endpoint_case.disabled", projectId, serveId).
+		Where("biz_endpoint_case.project_id = ? and biz_endpoint_case.serve_id = ? and processor_interface_src = '' and not biz_endpoint_case.deleted and not biz_endpoint_case.disabled", projectId, serveId).
 		Find(&endpointCases).Error
 	//err = r.DB.Where("project_id = ? and serve_id = ? and not deleted and not disabled", projectId, serveId).Find(&endpointCases).Error
 	return

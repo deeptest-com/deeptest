@@ -238,6 +238,10 @@ func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.Pr
 	if ret.ID == 0 {
 		comm := r.genProcessorComm(processor)
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
+
+		if ret.RepeatTimes == 0 {
+			ret.RepeatTimes = 1
+		}
 	} else {
 		ret.Name = processor.Name
 		ret.ParentID = processor.ParentId

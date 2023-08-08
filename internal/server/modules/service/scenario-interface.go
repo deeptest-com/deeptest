@@ -131,7 +131,7 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 	} else if debugInterface.CaseInterfaceId > 0 {
 		endpointCase, _ := s.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
 		interfaceCase := serverDomain.InterfaceCase{}
-		copier.CopyWithOption(interfaceCase, endpointCase, copier.Option{DeepCopy: true})
+		copier.CopyWithOption(&interfaceCase, &endpointCase, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 
 		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&interfaceCase)
 		s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor)

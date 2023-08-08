@@ -148,7 +148,6 @@
 import {computed, onMounted, reactive, ref, watch, createVNode} from "vue";
 import {Empty} from 'ant-design-vue';
 import {MoreOutlined} from "@ant-design/icons-vue";
-import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Scenario} from '../../data.d';
 import {useStore} from "vuex";
 import {momentUtc} from "@/utils/datetime";

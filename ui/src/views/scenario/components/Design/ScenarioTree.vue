@@ -18,7 +18,6 @@
             class="deeptest-tree"
             draggable
             blockNode
-            showIcon
             :expandAction="false"
             :expandedKeys="expandedKeys"
             :auto-expand-parent="autoExpandParent"
@@ -32,15 +31,15 @@
             <CaretDownOutlined/>
           </template>
           <template #title="{dataRef}">
-            <div class="tree-title" :draggable="dataRef.id === -1">
+            <div class="tree-title"
+                 :class="{'dp-tree-border':showBorderScenarioType.includes(dataRef?.entityType)}"
+                 :draggable="dataRef.id === -1">
               <div class="title" :class="[dataRef.disable ? 'dp-disabled' : '']">
                 <!-- 标题前缀 -->
-                <span class="prefix-icon"
-                      v-if="dataRef?.entityType !== 'processor_interface_default'">
+                <span class="prefix-icon">
                   <IconSvg v-if="DESIGN_TYPE_ICON_MAP[dataRef.entityType]"
                            :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
                 </span>
-
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
                   <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET', dataRef.disable)">{{
@@ -123,7 +122,7 @@ import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelection
 import cloneDeep from "lodash/cloneDeep";
 import InterfaceImportFromCurl from "@/views/component/InterfaceImportFromCurl/index.tsx";
 import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue";
-
+import {showBorderScenarioType} from "./config";
 const props = defineProps<{}>()
 const {t} = useI18n();
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -562,6 +561,22 @@ onUnmounted(() => {
 <style lang="less" scoped>
 .scenario-tree-main {
   background: #ffffff;
+  :deep(.ant-tree-child-tree-open:has(.tree-title.dp-tree-border)) {
+    //outline: 1px solid #f0f0f0;
+    //outline-offset: -2px;
+    //margin-bottom: 5px;
+    //border-radius: 4px;
+    position: relative;
+    &:before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 11px;
+      height: 100%;
+      width: 1px;
+      background: #f0f0f0;
+    }
+  }
 }
 
 .tree-filter {
@@ -604,6 +619,11 @@ onUnmounted(() => {
     align-items: center;
     justify-content: center;
   }
+  .prefix-req-method{
+
+  }
+
+
 }
 
 </style>

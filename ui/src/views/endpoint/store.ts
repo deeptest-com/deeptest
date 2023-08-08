@@ -853,10 +853,9 @@ const StoreModel: ModuleType = {
         },
         async updateEndpointTag({ dispatch }, payload: any) {
             const jsn = await updateTag(payload)
-            //console.log(payload,"+++++")
+           
             if (jsn.code === 0) {
                 await dispatch("getEndpointTagList")
-                //await dispatch('loadList', {projectId: payload.projectId});
                 return true;
             } else {
                 return false
@@ -865,14 +864,13 @@ const StoreModel: ModuleType = {
         async getCaseTree({ commit }, payload: QueryCaseTreeParams){
             try {
                 const response: ResponseData = await loadCaseTree(payload);
-                // debugger
+             
                 if (response.code != 0) return;
-                // debugger
+              
                 const data = {id: 0,count:1, children: response.data} 
-                console.log("11111",data)
+            
                 const newData = reBuildTree(data,0)
-                console.log("123232",newData)
-                // debugger
+        
                 commit('setCaseTree', newData.children);
                 const data1 = {id: 0, children: newData.children} 
                 const mp = genNodeMap(data1)
@@ -880,6 +878,7 @@ const StoreModel: ModuleType = {
 
                 return true;
             } catch (error) {
+                
                 return false;
             }
 

@@ -25,7 +25,6 @@ const onlyShowDisableAndDeleteTypes = [
     'processor_extractor_regex',
     // 跳出循环也是叶子结点
     'processor_loop_break',
-
 ];
 
 /**
@@ -192,11 +191,11 @@ export const DESIGN_MENU_CONFIG = [
                         key: 'processor_extractor_xmlquery',
                         icon: 'arrange-extractor-xml',
                     },
-                    {
-                        title: '正则提取器',
-                        key: 'processor_extractor_regex',
-                        icon: 'arrange-extractor-regex',
-                    },
+                    // {
+                    //     title: '正则提取器',
+                    //     key: 'processor_extractor_regex',
+                    //     icon: 'arrange-extractor-regex',
+                    // },
                     // arrange-extractor-xml.svg
                 ]
             },
@@ -282,6 +281,16 @@ export const DESIGN_MENU_CONFIG = [
  * */
 
 export const DESIGN_TYPE_ICON_MAP = {
+
+
+    'processor_interface_default': 'interface',
+    'add-child-interface-define': 'interface',
+    'add-child-interface-case': 'arrange-case',
+    'add-child-interface-diagnose': 'arrange-debug',
+    'add-child-interface-custom': 'arrange-http',
+    'add-child-interface-curl': 'arrange-url',
+
+
     'processor_group_default': 'arrange-group',
 
     "processor_variable_set": "arrange-var",
@@ -365,3 +374,20 @@ export const menuKeyMapToProcessorCategory = {
     'processor_data_default': 'processor_data',
 
 }
+
+
+/**
+ * 展示边框的场景编排类型
+ * */
+export const showBorderScenarioType = [
+    // 接口
+    'processor_interface_default',
+    'processor_group_default',
+    'processor_loop_time',
+    'processor_loop_until',
+    'processor_loop_range',
+    'processor_loop_in',
+    'processor_logic_if',
+    // 数据处理
+    'processor_data_default',
+]

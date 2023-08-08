@@ -117,7 +117,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromCase(ctx iris.Context) {
 	req := serverDomain.ScenarioAddCasesFromTreeReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 

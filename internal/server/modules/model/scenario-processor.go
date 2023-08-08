@@ -11,8 +11,9 @@ type Processor struct {
 	BaseModel
 	CreatedBy uint `json:"createdBy"`
 
-	Name     string `json:"name" yaml:"name"`
-	Comments string `json:"comments" yaml:"comments"`
+	Name     string            `json:"name" yaml:"name"`
+	Comments string            `json:"comments" yaml:"comments"`
+	Method   consts.HttpMethod `json:"method" yaml:"method"`
 
 	ParentId   uint `json:"parentId"`
 	ScenarioId uint `json:"scenarioId"`

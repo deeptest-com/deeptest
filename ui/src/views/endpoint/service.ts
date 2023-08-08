@@ -284,27 +284,25 @@ export async function loadCaseTree(data: QueryCaseTreeParams): Promise<any> {
 
 
 export function reBuildTree(node:any,parentId:any) {
-   // debugger
-   //let newNode:any
+  
+   let newNode:any
     if (node?.count > 0 || !node?.isDir) {
-       // debugger
-        const newNode = Object.assign({},node)
-        //newNode.name = node.name
-        //.isDir = node.isDir
-        //newNode.Method = 
-        newNode.parentId = parentId
-        newNode.children = []
-      // debugger
-        node.children.forEach((child:any)=>{
-           // debugger
-            const newChild = reBuildTree(child,node.id)
-            if (newChild) {
-                newNode.children.push(newChild)
-            }
-        })
 
+         newNode = Object.assign({},node)
+      
+        //newNode.parentId = parentId
+        newNode.children = []
+        if (node?.children) {
+            node?.children.forEach((child:any)=>{
+          
+                const newChild = reBuildTree(child,node.id)
+                if (newChild) {
+                    newNode.children.push(newChild)
+                }
+            })
+        }
         return newNode
     }
     
-    return undefined
+    return newNode
 }

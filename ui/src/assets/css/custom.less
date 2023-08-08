@@ -78,7 +78,10 @@
   color: @success-color;
 }
 .dp-disabled {
-  color: @disabled-color;
+  color: @disabled-color !important;
+  .ant-tag-default {
+    color: @disabled-color !important;
+  }
 }
 
 .dp-btn-gap {
@@ -332,7 +335,10 @@
     flex: 1;
   }
   .upload-container {
-    width: 46px;
+    width: 120px;
+  }
+  .upload-path {
+    flex: 1;
   }
 }
 

@@ -213,12 +213,14 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
 
 	// save scenario interface
-	if name == "" {
-		name = endpointInterface.Name + "-" + string(endpointInterface.Method)
-	}
+	/*
+		if name == "" {
+			name = endpointInterface.Name + "-" + string(endpointInterface.Method)
+		}
+	*/
 	processor := model.Processor{
-		Name: name,
-
+		Name:                endpointInterface.Name,
+		Method:              endpointInterface.Method,
 		EntityCategory:      consts.ProcessorInterface,
 		EntityType:          consts.ProcessorInterfaceDefault,
 		EntityId:            debugInterface.ID, // as debugInterfaceId
@@ -268,8 +270,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 
 	} else if !diagnoseInterfaceNode.IsDir { // interface
 		processor := model.Processor{
-			Name: diagnoseInterfaceNode.Title,
-
+			Name:                diagnoseInterfaceNode.Title,
+			Method:              debugData.Method,
 			EntityCategory:      consts.ProcessorInterface,
 			EntityType:          consts.ProcessorInterfaceDefault,
 			EntityId:            diagnoseInterfaceNode.DebugInterfaceId, // as debugInterfaceId
@@ -329,11 +331,11 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 			s.createDirOrInterfaceFromCase(child, processor)
 		}
 	} else if !caseNode.IsDir { // interface
-		debugData, _ := s.DebugInterfaceService.GetDebugDataFromCaseInterface(caseNode.CaseInterfaceId)
+		debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(caseNode.DebugInterfaceId)
 
 		processor = model.Processor{
-			Name: caseNode.Name,
-
+			Name:                caseNode.Name,
+			Method:              debugData.Method,
 			EntityCategory:      consts.ProcessorInterface,
 			EntityType:          consts.ProcessorInterfaceDefault,
 			EntityId:            caseNode.DebugInterfaceId, // as debugInterfaceId
@@ -364,7 +366,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		debugData.Url = debugInterfaceOfCaseNode.Url
 
 		debugData.UsedBy = consts.ScenarioDebug
-		debugData.CaseInterfaceId = 0
+
 		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData)
 
 		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, debugInterface.ID)
@@ -437,7 +439,7 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 	wf := curlObj.CreateTemporary(curlObj.CreateSession())
 
 	url := fmt.Sprintf("%s://%s%s", curlObj.ParsedURL.Scheme, curlObj.ParsedURL.Host, curlObj.ParsedURL.Path)
-	title := fmt.Sprintf("%s %s", url, curlObj.Method)
+	//title := fmt.Sprintf("%s %s", url, curlObj.Method)
 	queryParams := s.DiagnoseInterfaceService.getQueryParams(curlObj.ParsedURL.Query())
 	headers := s.DiagnoseInterfaceService.getHeaders(wf.Header)
 	cookies := s.DiagnoseInterfaceService.getCookies(wf.Cookies)
@@ -449,7 +451,7 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 	}
 
 	debugData := domain.DebugData{
-		Name:    title,
+		Name:    url,
 		BaseUrl: "",
 		BaseRequest: domain.BaseRequest{
 			Method:      s.DiagnoseInterfaceService.getMethod(bodyType, curlObj.Method),
@@ -471,8 +473,8 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
 
 	processor := model.Processor{
-		Name: title,
-
+		Name:                url,
+		Method:              debugData.Method,
 		EntityCategory:      consts.ProcessorInterface,
 		EntityType:          consts.ProcessorInterfaceDefault,
 		EntityId:            debugInterface.ID, // as debugInterfaceId

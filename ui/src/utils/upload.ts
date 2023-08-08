@@ -35,6 +35,7 @@ export async function uploadRequest(file: any, params?: any) {
 
     if (resp.data.code === 0) {
         ret.path = resp.data.data.path
+        ret.format = resp.data.data.format
         ret.data = resp.data.data.data
     }
 

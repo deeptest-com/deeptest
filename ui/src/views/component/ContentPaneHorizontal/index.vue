@@ -5,11 +5,11 @@
   <div class="container" :style="containerStyle || {}">
     <div class="content">
       <multipane class="vertical-panes" layout="horizontal">
-        <div class="pane top" :style="{ minHeight: '150px', height: '300px', maxHeight: '700px' }">
+        <div class="pane top" :style="{ minHeight: '150px', height: '60%', maxHeight: '700px' }">
           <slot name="top"/>
         </div>
         <multipane-resizer/>
-        <div class="pane bottom" :style="{ flexGrow: 1  }">
+        <div class="pane bottom" :style="{ minHeight: '100px', height: '40%',  flexGrow: 1  }">
           <slot name="bottom"/>
         </div>
       </multipane>

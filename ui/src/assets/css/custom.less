@@ -78,7 +78,10 @@
   color: @success-color;
 }
 .dp-disabled {
-  color: @disabled-color;
+  color: @disabled-color !important;
+  .ant-tag-default {
+    color: @disabled-color !important;
+  }
 }
 
 .dp-btn-gap {

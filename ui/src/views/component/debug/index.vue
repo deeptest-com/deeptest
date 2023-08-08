@@ -81,7 +81,7 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "../../endpoint/store";
 
 import {StateType as GlobalStateType} from "@/store/global";
-import {getRightTabPanelPosition, resizeWidth} from "@/utils/dom";
+import {getRightTabPanelPosition} from "@/utils/dom";
 import {UsedBy} from "@/utils/enum";
 const usedBy = inject('usedBy') as UsedBy
 
@@ -208,11 +208,8 @@ onUnmounted(() => {
   flex-direction: column;
 
   #debug-index {
-    //border: 1px solid red;
     display: flex;
-    //min-height: 460px;
     flex:1;
-    //height: 100%;
     width: 100%;
 
     #debug-content {

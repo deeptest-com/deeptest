@@ -24,6 +24,7 @@
             :auto-expand-parent="autoExpandParent"
             v-model:selectedKeys="selectedKeys"
             @drop="onDrop"
+            @dragstart="onDragstart"
             @expand="onExpand"
             @select="selectNode"
             :tree-data="treeDataNeedRender"
@@ -53,9 +54,9 @@
               </div>
               <div class="icon" v-if="dataRef.id > 0"
                    :style="dataRef.entityType === 'processor_logic_if'? {width:'60px'} : null">
-                <a  href="javascript:void (0)" type="link" @click.stop="() => {
+                <a href="javascript:void (0)" type="link" @click.stop="() => {
                   addElse(dataRef)
-                }" class="add-else-tag" v-if="dataRef.entityType === 'processor_logic_if'">+else</a>
+                }" class="add-else-tag" v-if="showElse(dataRef)">+ else</a>
                 <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
                   <template #button>
                     <MoreOutlined style="min-width: 14px"/>
@@ -315,7 +316,7 @@ const menuClick = (menuKey: string, targetId: number) => {
 function selectMenu(menuInfo, treeNode) {
   targetModelId = treeNode?.id;
   const key = menuInfo.key;
-  const mode = 'child';
+  let mode = 'child';
   const processorType = key;
   // 检验必要字段
   if (!targetModelId) return;
@@ -335,14 +336,16 @@ function selectMenu(menuInfo, treeNode) {
   }
   // 如果是 逻辑 else，则需要添加到父节点，即 if 节点下
   if (key === 'processor_logic_else') {
-    targetModelId = treeDataMap.value[targetModelId].parentId;
-    if (!targetModelId) return;
+    // targetModelId = treeDataMap.value[targetModelId].parentId;
+    // if (!targetModelId) return;
     // 如果已经存在 else 节点，则不允许添加
-    const children = treeDataMap?.value[targetModelId]?.children || [];
-    if (children.some(item => item.entityType === 'processor_logic_else')) {
-      message.error('已经存在 else 节点，不允许再添加');
+    // 另外目标节点已经有 else节点了，也不能再添加
+    const repeat = checkElseRepeat(treeNode);
+    debugger;
+    if (repeat) {
       return;
     }
+    mode = 'brother'
   }
 
   const processorCategory = menuKeyMapToProcessorCategory[key];
@@ -356,21 +359,55 @@ function selectMenu(menuInfo, treeNode) {
 
 }
 
-const addElse = (treeNode) => {
-  debugger;
-  targetModelId = treeNode?.id;
-  targetModelId = treeDataMap.value[targetModelId].parentId;
-  if (!targetModelId) return;
+/**
+ * 判断当前的 if 节点是否有已经配对的 else 节点
+ *
+ * */
+
+function showElse(dataRef) {
+  if (dataRef?.entityType !== 'processor_logic_if') return false;
+  let hasElse = true;
+  const id = dataRef.id;
+  const parentId = treeDataMap?.value[id]?.parentId;
+  const children = treeDataMap?.value?.[parentId]?.children || [];
+  const index = children?.findIndex(item => item.id === id);
+  const nextNode = children?.[index + 1];
+  if (nextNode?.entityType === 'processor_logic_else') {
+    hasElse = false;
+  }
+  return hasElse;
+}
+
+/**
+ * 检测是否存在重复的 else 节点
+ * */
+function checkElseRepeat(node) {
   // 如果已经存在 else 节点，则不允许添加
-  const children = treeDataMap?.value[targetModelId]?.children || [];
-  if (children.some(item => item.entityType === 'processor_logic_else')) {
-    message.error('已经存在 else 节点，不允许再添加');
+  let exist = false;
+  const parentId = node?.parentId;
+  const children = treeDataMap?.value?.[parentId]?.children;
+  const currentIndex = children?.findIndex(item => item.id === node.id);
+  const nextNode = children?.[currentIndex + 1];
+  if(nextNode?.entityType === 'processor_logic_else') {
+    message.warning('已经存在 else 节点，不允许再添加');
+    exist = true;
+  }
+  return exist;
+}
+
+const addElse = (treeNode) => {
+  targetModelId = treeNode?.id;
+  if (!targetModelId) return;
+  // 另外目标节点已经有 else节点了，也不能再添加
+  const repeat = checkElseRepeat(treeNode);
+  if (repeat) {
     return;
   }
+
   const targetProcessorId = targetModelId
   const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
   const targetProcessorType = treeDataMap.value[targetModelId].entityType
-  const mode = 'child';
+  const mode = 'brother';
   addNode(mode, 'processor_logic', 'processor_logic_else',
       targetProcessorCategory, targetProcessorType, targetProcessorId);
 }
@@ -493,7 +530,17 @@ const removeNode = () => {
   console.log('removeNode')
   const node = treeDataMap.value[targetModelId]
   const title = `确定删除名为${node.name}的节点吗？`
-  const context = '该节点的所有子节点都将被删除！'
+  let context = '该节点的所有子节点都将被删除！'
+
+  // 如果是 if 节点，则需要判断是否有 else 节点，如果有，则需要提示
+  if (node.entityType === 'processor_logic_if') {
+    const parentNode = treeDataMap.value[node.parentId];
+    const currentIndex = parentNode?.children?.findIndex(item => item.id === node.id);
+    const nextNode = parentNode?.children?.[currentIndex + 1];
+    if (nextNode && nextNode.entityType === 'processor_logic_else') {
+      context = '该节点的所有子节点都将被删除, 且将同时删除关联的 Else处理器，Else处理器不可单独使用,删除后将无法恢复，是否确定删除？'
+    }
+  }
   confirmToDelete(title, context, () => {
     store.dispatch('Scenario/removeNode', targetModelId);
     selectNode([], null)
@@ -528,11 +575,37 @@ const clearMenu = () => {
 async function onDrop(info: DropEvent) {
   const dropKey = info.node.eventKey;
   const dragKey = info.dragNode.eventKey;
+  const event = info.event;
+  // 源节点
+  const dragNodeInfo = info.dragNode.dataRef;
+  // 目标节点
+  const dropNodeInfo = info.node.dataRef;
+
+  // else 节点不能移动到非 if节点下
+  if (dragNodeInfo?.entityType === 'processor_logic_else' && dropNodeInfo?.entityType !== 'processor_logic_if') {
+    message.warning('else 节点只能拖动到 If节点后');
+    event.preventDefault();
+    return;
+  }
+
+
   const pos = info.node.pos.split('-');
   let dropPosition = info.dropPosition - Number(pos[pos.length - 1]);
 
   if (isInterface(treeDataMap.value[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
+
+  // 且 else节点需要拖动到 if节点后
+  // 0 表示移动到目标节点的子节点，-1 表示移动到目标节点的前面， 1表示移动到目标节点的后面
+  if (dragNodeInfo?.entityType === 'processor_logic_else' && dropNodeInfo?.entityType === 'processor_logic_if') {
+    // 另外目标节点已经有 else节点了，也不能再添加
+    const repeat = checkElseRepeat(dropNodeInfo);
+    if (repeat) {
+      return;
+    }
+    dropPosition = 1;
+  }
+
 
   store.dispatch('Scenario/moveNode', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition}).then(
       (result) => {
@@ -542,6 +615,23 @@ async function onDrop(info: DropEvent) {
         }
       }
   )
+}
+
+/**
+ * 开始拖拽，阻止某些节点不让多动
+ * */
+function onDragstart({event, node}) {
+  const nodeInfo = node.dataRef;
+  // else节点 只能由 if 节点拖动带过去
+  // if(nodeInfo?.entityType === 'processor_logic_else') {
+  //   message.warning('else节点不能拖动，您可以拖动 Else 对应的 If 节点');
+  //   event.preventDefault();
+  // }
+  // if 节点不能移动到非 if节点下
+  // if(nodeInfo.processorCategory === ProcessorCategory.Scenario) {
+
+  // }
+  // return false;
 }
 
 const interfaceImportFromCurlFinish = (content: string) => {
@@ -664,7 +754,7 @@ onUnmounted(() => {
 
   }
 
-  .add-else-tag{
+  .add-else-tag {
     margin-right: 6px;
     color: #1890ff;
     cursor: pointer;

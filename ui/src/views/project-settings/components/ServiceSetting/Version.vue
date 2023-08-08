@@ -36,7 +36,7 @@ import { useStore } from 'vuex';
 import { message, Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined } from '@ant-design/icons-vue';
 import CustomForm from '../common/CustomForm.vue';
-import EmptyCom from '@/components/Empty/index.vue';
+import EmptyCom from '@/components/TableEmpty/index.vue';
 import { StateType as ProjectSettingStateType } from '../../store';
 import { versionColumns } from '../../config';
 

@@ -71,7 +71,7 @@ import { computed, createVNode, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
 import { message, Modal } from "ant-design-vue";
 import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
-import EmptyCom from "@/components/Empty/index.vue";
+import EmptyCom from "@/components/TableEmpty/index.vue";
 import PermissionButton from "@/components/PermissionButton/index.vue";
 import { globalVarsColumns } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";

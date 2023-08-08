@@ -89,7 +89,7 @@ import { Modal } from 'ant-design-vue';
 import { ExclamationCircleOutlined, MoreOutlined } from '@ant-design/icons-vue';
 import CustomForm from '../common/CustomForm.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-import EmptyCom from '@/components/Empty/index.vue';
+import EmptyCom from '@/components/TableEmpty/index.vue';
 import Drawer from './Drawer.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';

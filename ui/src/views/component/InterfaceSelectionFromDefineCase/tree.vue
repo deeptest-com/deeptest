@@ -1,24 +1,20 @@
 <template>
   <div class="tree-main">
     <div class="tree-filters">
-      <a-row type="flex">
-        <a-col :flex="2">
-          <a-select style="width: 220px" :bordered="true"
-                    :placeholder="'请选择服务'"
-                    v-model:value="serveId"
-                    @change="selectServe">
-            <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
-          </a-select>
-        </a-col>
-
-        <a-col :flex="3">
-          <a-input-search
-              style="display: flex;justify-content: end;width: 300px;margin-bottom: 16px; "
-              placeholder="请输入关键词"
-              enter-button
-              v-model:value="searchValue"/>
-        </a-col>
-      </a-row>
+      <a-select 
+        style="width: 100%;margin-bottom: 20px;" 
+        :bordered="true"
+        :placeholder="'请选择服务'"
+        v-model:value="serveId"
+        @change="selectServe">
+        <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+      </a-select>
+      <a-input-search
+        style="display: flex;justify-content: end;width: 100%;margin-bottom: 16px; "
+        placeholder="请输入关键词"
+        enter-button
+        v-model:value="searchValue"
+      />
     </div>
 
     <div class="tree-container">
@@ -57,7 +53,12 @@
   
       </a-tree>
 
-      <div v-if="!treeData" class="nodata-tip">空</div>
+      <div v-if="!treeData.length" class="nodata-tip">
+        <div class="empty-container">
+          <img src="@/assets/images/empty.png" alt="">
+          <span>暂无数据</span>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -70,6 +71,7 @@ import {useStore} from "vuex";
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ServeStateType} from "@/store/serve";
 
+import Empty from '@/components/Empty/index.vue';
 import {listServe} from "@/services/serve";
 import {filterTree, getSelectedTreeNode} from "@/utils/tree";
 import {getMethodColor} from "@/utils/dom";
@@ -193,6 +195,8 @@ onMounted(async () => {
 
   .tree-container {
     background: #ffffff;
+    max-height: 400px;
+    overflow-y: scroll;
 
     .tree-title {
       position: relative;
@@ -216,4 +220,26 @@ onMounted(async () => {
   }
 }
 
+.empty-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+
+    img {
+        width: 90px;
+        height: 90px;
+        margin-bottom: 8px;
+    }
+
+    span {
+        font-size: 12px;
+        line-height: 20px;
+        text-align: center;
+        color: rgba(0, 0, 0, 0.46);
+    }
+}
 </style>

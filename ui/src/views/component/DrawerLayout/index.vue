@@ -39,7 +39,11 @@ import {
   ref,
   defineProps,
   defineEmits,
-  computed, watch,
+  computed, 
+  watch, 
+  onUnmounted, 
+  onMounted,
+  provide,
 } from 'vue';
 
 import {useStore} from "vuex";
@@ -57,6 +61,12 @@ const contentRef: any = ref(null)
 
 const spinning = computed( ()=>store.state.Global.spinning )
 
+const containerScrollTop = ref(0);
+
+const onScroll = (event) => {
+  containerScrollTop.value = (event.target && event.target.scrollTop) || 0;
+};
+
 
 watch(() => {
   return props.stickyKey;
@@ -66,7 +76,21 @@ watch(() => {
   }
 })
 
+watch(() => {
+  return contentRef.value;
+}, val => {
+  if (val) {
+    val.addEventListener('scroll', onScroll);
+  }
+})
 
+onUnmounted(() => {
+  if (contentRef.value) {
+    contentRef.value.removeEventListener('scroll', onScroll);
+  }
+});
+
+provide('containerScrollTop', computed(() => containerScrollTop.value));
 </script>
 
 <style lang="less" scoped>

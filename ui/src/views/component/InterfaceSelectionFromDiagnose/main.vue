@@ -6,7 +6,7 @@
       :visible="true"
       :onCancel="onCancel"
       wrapClassName="modal-tree-selection"
-      width="1000px">
+      width="400px">
     <div class="interface-selection-main">
         <Tree :selectInterfaces="onSelectInterfaces" />
     </div>

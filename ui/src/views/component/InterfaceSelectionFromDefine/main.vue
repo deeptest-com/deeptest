@@ -6,6 +6,7 @@
       :visible="true"
       :onCancel="onCancel"
       wrapClassName="modal-tree-selection"
+      :bodyStyle="{ padding: '0 24px' }"
       width="1000px">
 
     <div class="interface-selection-main">
@@ -83,9 +84,12 @@ const onCancel = () => {
 <style lang="less" scoped>
 .interface-selection-main {
   display: flex;
+  max-height: 500px;
 
   .left {
     width: 260px;
+    overflow: hidden;
+    height: 500px;
   }
 
   .right {

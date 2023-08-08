@@ -290,7 +290,7 @@ export function reBuildTree(node:any,parentId:any) {
        // debugger
          newNode = Object.assign({},node)
       
-        newNode.parentId = parentId
+        //newNode.parentId = parentId
         newNode.children = []
         if (node?.children) {
             node?.children.forEach((child:any)=>{

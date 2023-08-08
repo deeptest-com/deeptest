@@ -75,7 +75,7 @@ func (r *ScenarioProcessorRepo) UpdateName(id uint, name string) (err error) {
 	return
 }
 
-func (r *ScenarioProcessorRepo) SaveProcessorInfo(req domain.ScenarioProcessorInfo) (err error) {
+func (r *ScenarioProcessorRepo) SaveBasicInfo(req domain.ScenarioProcessorInfo) (err error) {
 	err = r.DB.Model(&model.Processor{}).
 		Where("id = ?", req.Id).
 		Updates(map[string]interface{}{"name": req.Name, "comments": req.Comments}).Error

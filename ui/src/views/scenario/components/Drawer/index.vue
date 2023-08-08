@@ -25,9 +25,14 @@
             <span>{{ tab.label }}</span>
           </div>
         </div>
+
         <div class="tab-header-btns">
-          <div v-if="activeKey==='1'" class="exec-scenario-btn">
-            <a-button @click="exec" type="primary"><span>执行场景</span></a-button>
+          <div v-if="activeKey==='1'"
+               :style="{right: isShowSync ? '200px' : '110px'}"
+               class="exec-scenario-btn">
+            <a-button @click="exec" type="primary">
+              <span>执行场景</span>
+            </a-button>
           </div>
         </div>
       </template>
@@ -98,8 +103,9 @@ import BasicInfo from './BasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 
 import {useStore} from "vuex";
-import {PaginationConfig, Scenario} from "@/views/Scenario/data";
-import {message} from "ant-design-vue";
+import {Scenario} from "@/views/Scenario/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+import {StateType as ScenarioStateType} from "../../store";
 import Design from "../Design/index.vue"
 import PlanList from "./PlanList.vue";
 import ExecList from "./ExecList.vue";
@@ -107,9 +113,11 @@ import ExecInfo  from "../Exec/index.vue";
 import EnvSelector from "@/views/component/EnvSelector/index.vue";
 import ExecListDetail from "./ExecListDetail.vue";
 import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
-const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal,Report }>();
+import {ProcessorInterfaceSrc, UsedBy} from "@/utils/enum";
+
+const store = useStore<{ Debug: Debug, Scenario: ScenarioStateType, ProjectGlobal, ServeGlobal, Report }>();
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
-const pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
+const debugData = computed<any>(() => store.state.Debug.debugData);
 
 const props = defineProps({
   visible: {
@@ -241,6 +249,14 @@ async function changeBasicInfo(type, value) {
 async function cancel() {
   emit('close');
 }
+
+const isShowSync = computed(() => {
+  const ret = debugData.value.processorInterfaceSrc !== ProcessorInterfaceSrc.Custom  &&
+      debugData.value.processorInterfaceSrc !== ProcessorInterfaceSrc.Curl
+
+  return ret
+})
+
 </script>
 
 <style lang="less" scoped>
@@ -249,7 +265,7 @@ async function cancel() {
     position: relative;
     .exec-scenario-btn {
       position: absolute;
-      right: 200px;
+      //right: 200px;
       top: -16px;
     }
   }
@@ -265,12 +281,6 @@ async function cancel() {
       height: 100%;
       width: 100%;
       position: relative;
-
-      .exec-scenario-btn {
-        position: absolute;
-        right: 518px;
-        top: -30px;
-      }
     }
   }
 

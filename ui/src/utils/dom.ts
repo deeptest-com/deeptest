@@ -228,7 +228,11 @@ function getRightTabTop() {
     return 100
 }
 
-export const getMethodColor = (method) => {
+export const getMethodColor = (method, disabled) => {
+    if (disabled) {
+        return 'default'
+    }
+
     return requestMethodOpts.find((item: any) => {
         return item.value === method;
     })?.color

@@ -79,7 +79,7 @@ func (c *ScenarioProcessorCtrl) SaveBasicInfo(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScenarioProcessorService.SaveProcessorInfo(req)
+	err = c.ScenarioProcessorService.SaveBasicInfo(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

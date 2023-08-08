@@ -226,6 +226,32 @@ func (c *ScenarioNodeCtrl) Delete(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// DisableOrNot 禁用
+// @Tags	场景模块/编排节点
+// @summary	禁用节点
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @Param 	id				path	int								true	"节点ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/scenarios/nodes/{id}/disableOrNot	[post]
+func (c *ScenarioNodeCtrl) DisableOrNot(ctx iris.Context) {
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	err = c.ScenarioNodeService.DisableOrNot(uint(id))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
 // Move 移动
 // @Tags	场景模块/编排节点
 // @summary	移动节点

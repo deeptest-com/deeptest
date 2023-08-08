@@ -22,6 +22,7 @@ func (m *ScenarioNodeModule) Party() module.WebModule {
 
 		index.Put("/{id:uint}/updateName", m.ScenarioNodeCtrl.UpdateName).Name = "更新节点名称"
 		index.Delete("/{id:uint}", m.ScenarioNodeCtrl.Delete).Name = "删除节点"
+		index.Post("/{id:uint}/disableOrNot", m.ScenarioNodeCtrl.DisableOrNot).Name = "删除节点"
 		index.Post("/move", m.ScenarioNodeCtrl.Move).Name = "移动节点"
 		index.Post("/importCurl", m.ScenarioNodeCtrl.ImportCurl).Name = "curl导入"
 	}

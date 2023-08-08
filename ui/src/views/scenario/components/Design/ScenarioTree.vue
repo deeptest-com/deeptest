@@ -33,7 +33,7 @@
           </template>
           <template #title="{dataRef}">
             <div class="tree-title" :draggable="dataRef.id === -1">
-              <div class="title">
+              <div class="title" :class="[dataRef.disable ? 'dp-disabled' : '']">
                 <!-- 标题前缀 -->
                 <span class="prefix-icon"
                       v-if="dataRef?.entityType !== 'processor_interface_default'">
@@ -43,11 +43,11 @@
 
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
-                  <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET' )">{{
+                  <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET', dataRef.disable)">{{
                       dataRef.method || "GET"
                     }}</a-tag>
                 </span>
-                <span class="title-text">
+                <span class="title-text" :title="dataRef.name">
                 {{ dataRef.name }}
               </span>
               </div>
@@ -324,15 +324,10 @@ function selectMenu(menuInfo, treeNode) {
     removeNode()
     return
   }
-  if (key === 'disable') {
-    disableNode()
+  if (key === 'disable' || key === 'enable') {
+    disableNodeOrNot()
     return
   }
-  if (key === 'enable') {
-    enableNode()
-    return
-  }
-
 
   const processorCategory = menuKeyMapToProcessorCategory[key];
   if (!processorCategory) return;
@@ -350,7 +345,7 @@ async function handleEditModalOk(model) {
   model.processorCategory = model.entityCategory
   model.processorType = model.entityType
 
-  if (!model.id && model.entityType === ProcessorInterface.Interface) {
+  if (!model.id && model.entityType === ProcessorInterface.Interface) { // create interface
     store.dispatch('Scenario/addProcessor', model).then((newNode) => {
       console.log('addProcessor successfully', newNode)
       currentNode.value = null
@@ -380,7 +375,6 @@ const addNode = (mode, processorCategory, processorType,
   console.log('addNode', mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
-
   // 如果是添加接口，会弹框选择接口类型
   if (processorCategory === 'interface' || processorCategory === 'processor_interface') { // show popup to select a interface
     interfaceSelectionSrc.value = processorType.substr(processorType.lastIndexOf('-') + 1)
@@ -399,6 +393,8 @@ const addNode = (mode, processorCategory, processorType,
       interfaceSelectionVisible.value = true
     }
 
+    return
+
   } else {
     store.dispatch('Scenario/addProcessor',
         {
@@ -406,8 +402,7 @@ const addNode = (mode, processorCategory, processorType,
           targetProcessorCategory, targetProcessorType, targetProcessorId,
           name: t(processorType)
         }).then((newNode) => {
-      console.log('addProcessor successfully', newNode);
-
+      console.log('addProcessor successfully', newNode)
       selectNode([newNode.id], null)
       expandOneKey(treeDataMap.value, mode === 'parent' ? newNode.id : newNode.parentId, expandedKeys.value) // expend new node
       setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
@@ -468,34 +463,18 @@ const removeNode = () => {
   })
 }
 
-const disableNode = () => {
+const disableNodeOrNot = () => {
   const node = treeDataMap.value[targetModelId]
+  const action = node.disable ? '启用' : '禁用'
+
   Modal.confirm({
     okType: 'danger',
-    title: `确定禁用名为${node.name}的节点吗？`,
+    title: `确定${action}名为${node.name}的节点吗？`,
     content: '将同时禁用步骤下的所有子步骤，禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？',
     okText: () => '确定',
     cancelText: () => '取消',
     onOk: async () => {
-      await store.dispatch('Scenario/removeNode', targetModelId);
-      selectNode([], null)
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-  });
-};
-
-const enableNode = () => {
-  const node = treeDataMap.value[targetModelId]
-  Modal.confirm({
-    okType: 'danger',
-    title: `启用名为${node.name}的场景步骤吗？`,
-    content: '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？',
-    okText: () => '确定',
-    cancelText: () => '取消',
-    onOk: async () => {
-      await store.dispatch('Scenario/removeNode', targetModelId);
+      await store.dispatch('Scenario/disableNodeOrNot', targetModelId);
       selectNode([], null)
     },
     onCancel() {
@@ -549,7 +528,7 @@ const interfaceImportFromCurlCancel = () => {
 const endpointCaseSelectionFinish = (interfaceNodes: any) => {
   const targetNode = treeDataMap.value[targetModelId]
   console.log('endpointCaseSelectionFinish', interfaceNodes, targetNode)
-  
+
   store.dispatch('Scenario/addInterfacesFromCase', {
     selectedNodes: interfaceNodes,
     targetId: targetNode.id,
@@ -561,7 +540,6 @@ const endpointCaseSelectionFinish = (interfaceNodes: any) => {
     expandOneKey(treeDataMap.value, newNode.parentId, expandedKeys.value) // expend new node
     setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value)
   })
-  
 
   interfaceSelectionVisible.value = false
 }

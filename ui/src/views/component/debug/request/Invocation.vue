@@ -53,7 +53,7 @@
         </a-button>
       </div>
 
-      <div v-if="usedBy === UsedBy.ScenarioDebug"
+      <div v-if="isShowSync"
            :disabled="!isPathValid"
            class="sync">
         <a-button trigger="click" @click="sync" class="dp-bg-light">
@@ -173,6 +173,14 @@ const showBaseUrl = () => {
 
   return !notShow
 }
+
+const isShowSync = computed(() => {
+  const ret = usedBy === UsedBy.ScenarioDebug && (
+      debugData.value.processorInterfaceSrc !== ProcessorInterfaceSrc.Custom  &&
+      debugData.value.processorInterfaceSrc !== ProcessorInterfaceSrc.Curl)
+
+  return ret
+})
 
 const getEnvUrl = () => {
   console.log('getEnvUrl', debugData?.value)

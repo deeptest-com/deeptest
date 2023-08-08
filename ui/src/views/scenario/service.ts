@@ -103,18 +103,10 @@ export async function removeNode(id: number): Promise<any> {
     });
 }
 
-// todo 接口待确定，待联调
-export async function disableNode(id: number): Promise<any> {
+export async function disableNodeOrNot(id: number): Promise<any> {
     return request({
-        url: `/${apiPathNodes}/${id}`,
-        method: 'delete',
-    });
-}
-// todo 接口待确定，待联调
-export async function enabledNode(id: number): Promise<any> {
-    return request({
-        url: `/${apiPathNodes}/${id}`,
-        method: 'delete',
+        url: `/${apiPathNodes}/${id}/disableOrNot`,
+        method: 'post',
     });
 }
 
@@ -169,7 +161,7 @@ export async function saveProcessorName(data: any): Promise<any> {
 }
 export async function saveProcessorInfo(data: any): Promise<any> {
     return request({
-        url: `/${apiPathProcessors}/SaveBasicInfo`,
+        url: `/${apiPathProcessors}/saveProcessorInfo`,
         method: 'PUT',
         data: data,
     });

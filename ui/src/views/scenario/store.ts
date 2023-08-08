@@ -12,11 +12,10 @@ import {
     createNode,
     updateNode,
     removeNode,
-    disableNode,
-    enabledNode,
+    disableNodeOrNot,
     moveNode,
     addInterfacesFromDefine, addInterfacesFromDiagnose, addProcessor,
-    saveProcessorName, saveProcessor, loadExecResult,
+    saveProcessor, loadExecResult,
     getScenariosReports,
     getScenariosReportsDetail,
     addPlans,
@@ -125,8 +124,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         createNode: Action<StateType, StateType>;
         updateNode: Action<StateType, StateType>;
         removeNode: Action<StateType, StateType>;
-        enabledNode: Action<StateType, StateType>;
-        disableNode: Action<StateType, StateType>;
+        disableNodeOrNot: Action<StateType, StateType>;
         moveNode: Action<StateType, StateType>;
         saveTreeMapItem: Action<StateType, StateType>;
         saveTreeMapItemProp: Action<StateType, StateType>;
@@ -475,18 +473,9 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async disableNode({commit, dispatch, state}, payload: number) {
+        async disableNodeOrNot({commit, dispatch, state}, payload: number) {
             try {
-                await disableNode(payload);
-                await dispatch('loadScenario', state.scenarioId);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-        async enabledNode({commit, dispatch, state}, payload: number) {
-            try {
-                await enabledNode(payload);
+                await disableNodeOrNot(payload);
                 await dispatch('loadScenario', state.scenarioId);
                 return true;
             } catch (error) {
@@ -515,6 +504,10 @@ const StoreModel: ModuleType = {
                     id: payload.id,
                     prop: 'name',
                     value: payload.name});
+                commit('setTreeDataMapItemProp', {
+                    id: payload.id,
+                    prop: 'comments',
+                    value: payload.comments});
                 return true;
             } else {
                 return false

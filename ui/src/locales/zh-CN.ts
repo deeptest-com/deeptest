@@ -154,6 +154,7 @@ export default {
     'processor_data_text':  '文本数据',
     'processor_data_excel':  'Excel数据',
     'processor_data_zendata':  'ZenData数据',
+    'processor_data_default':  '数据迭代',
 
     'processor_custom_code':  '自定义代码',
 

@@ -35,7 +35,7 @@
   })
   
   const selectInterfaces = ref([])
-  const onSelectInterfaces = (data) => {
+  const onSelectInterfaces = (data:any) => {
     console.log('onSelectInterfaces', data)
     selectInterfaces.value = data
   }

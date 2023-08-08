@@ -25,9 +25,7 @@
       <a-tree
           class="deeptest-tree"
           showIcon
-          :checkable="true"
-          :expandedKeys="expandedKeys"
-          :auto-expand-parent="autoExpandParent"
+          checkable
           :tree-data="treeData"
           :replaceFields="fieldNames"
           @check="onChecked"
@@ -36,7 +34,7 @@
         <template #switcherIcon>
           <CaretDownOutlined/>
         </template>
-
+<!--
         <template #title="nodeProps">
                       <div class="tree-title" :draggable="nodeProps?.dataRef?.id === -1">
                           <span class="tree-title-text" v-if="nodeProps?.dataRef?.name.indexOf(searchValue) > -1">
@@ -47,6 +45,7 @@
                         <span class="tree-title-text" v-else>{{ nodeProps?.dataRef?.name }}</span>
                       </div>
         </template>
+    --->
       </a-tree>
 
       <div v-if="!treeData" class="nodata-tip">空</div>
@@ -71,12 +70,9 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
 const treeData = computed<any>(() => store.state.Endpoint.caseTree);
-const treeDataMap = computed<any>(() => store.state.Endpoint.treeDataMap);
+const treeDataMap = computed<any>(() => store.state.Endpoint.caseTreeMap);
 
 
-watch(() => treeData.value, (newVal) => {
-  console.log(8322222,newVal);
-})
 const props = defineProps({
   selectInterfaces: {
     type: Function,
@@ -94,8 +90,7 @@ const serveId = ref(0)
 
 
 const onChecked = (checkedKeys, e) => {
-  console.log('onChecked', checkedKeys, e.checkedNodes)
-
+  console.log('onChecked', checkedKeys,treeDataMap.value)  
   const selectedNodes = getSelectedTreeNode(checkedKeys, treeDataMap.value)
   props.selectInterfaces(selectedNodes)
 
@@ -124,7 +119,7 @@ const autoExpandParent = ref<boolean>(false);
 async function loadTreeData() {
   if (currProject?.value?.id > 0 && currServe?.value?.id > 0) {
     await store.dispatch('Endpoint/getCaseTree', {currProjectId: currProject.value.id, serveId: currServe.value.id});
-    expandAll();
+   // expandAll();
   }
 }
 
@@ -150,7 +145,7 @@ watch((currServe), async (newVal) => {
 watch(searchValue, (newVal) => {
   expandedKeys.value = filterTree(treeData.value, newVal)
   console.log('searchValue', expandedKeys.value)
-  autoExpandParent.value = true;
+  //autoExpandParent.value = true;
 });
 
 // 展开所有

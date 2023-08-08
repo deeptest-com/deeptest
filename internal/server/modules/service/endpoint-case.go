@@ -212,7 +212,7 @@ func (s *EndpointCaseService) GetTree(projectId, serveId uint) (root *serverDoma
 	}
 	categoryTos := s.CategoryToTos(categories)
 
-	categoryTos = append(categoryTos, &serverDomain.EndpointCaseTree{Id: -1, Name: "未分类", ParentId: int64(categories[0].ID), Slots: iris.Map{"icon": "icon"}})
+	categoryTos = append(categoryTos, &serverDomain.EndpointCaseTree{Key: -1, Id: uuid.NewV4(), Name: "未分类", ParentId: int64(categories[0].ID), Slots: iris.Map{"icon": "icon"}})
 
 	endpoints, err := s.EndpointRepo.ListByProjectIdAndServeId(projectId, serveId, false)
 	if err != nil {
@@ -250,8 +250,8 @@ func (s *EndpointCaseService) CategoryToTos(pos []*model.Category) (tos []*serve
 
 func (s *EndpointCaseService) CategoryToTo(po *model.Category) (to *serverDomain.EndpointCaseTree) {
 	to = &serverDomain.EndpointCaseTree{
-		Key:       uuid.NewV4(),
-		Id:        int64(po.ID),
+		Id:        uuid.NewV4(),
+		Key:       int64(po.ID),
 		Name:      po.Name,
 		Desc:      po.Desc,
 		Type:      serverConsts.EndpointCaseTreeTypeDir,
@@ -276,8 +276,8 @@ func (s *EndpointCaseService) EndpointToTos(pos []*model.Endpoint) (tos []*serve
 
 func (s *EndpointCaseService) EndpointToTo(po *model.Endpoint) (to *serverDomain.EndpointCaseTree) {
 	to = &serverDomain.EndpointCaseTree{
-		Key:        uuid.NewV4(),
-		Id:         int64(po.ID),
+		Id:         uuid.NewV4(),
+		Key:        int64(po.ID),
 		Name:       po.Title,
 		Desc:       po.Description,
 		Type:       serverConsts.EndpointCaseTreeTypeEndpoint,
@@ -290,7 +290,7 @@ func (s *EndpointCaseService) EndpointToTo(po *model.Endpoint) (to *serverDomain
 	return
 }
 
-func (s *EndpointCaseService) EndpointCaseToTos(pos []*model.EndpointCase) (tos []*serverDomain.EndpointCaseTree) {
+func (s *EndpointCaseService) EndpointCaseToTos(pos []*serverDomain.InterfaceCase) (tos []*serverDomain.EndpointCaseTree) {
 	for _, po := range pos {
 		to := s.EndpointCaseToTo(po)
 
@@ -300,11 +300,12 @@ func (s *EndpointCaseService) EndpointCaseToTos(pos []*model.EndpointCase) (tos 
 	return
 }
 
-func (s *EndpointCaseService) EndpointCaseToTo(po *model.EndpointCase) (to *serverDomain.EndpointCaseTree) {
+func (s *EndpointCaseService) EndpointCaseToTo(po *serverDomain.InterfaceCase) (to *serverDomain.EndpointCaseTree) {
 	to = &serverDomain.EndpointCaseTree{
-		Key:              uuid.NewV4(),
-		Id:               int64(po.ID),
+		Id:               uuid.NewV4(),
+		Key:              int64(po.ID),
 		Name:             po.Name,
+		Method:           po.Method,
 		Desc:             po.Desc,
 		Type:             serverConsts.EndpointCaseTreeTypeCase,
 		IsDir:            false,
@@ -358,11 +359,11 @@ func (s *EndpointCaseService) isChild(child, parent *serverDomain.EndpointCaseTr
 	}
 	switch typ {
 	case serverConsts.EndpointCaseTreeTypeDir:
-		res = child.ParentId == parent.Id
+		res = child.ParentId == parent.Key
 	case serverConsts.EndpointCaseTreeTypeEndpoint:
-		res = int64(child.CategoryId) == parent.Id
+		res = int64(child.CategoryId) == parent.Key
 	case serverConsts.EndpointCaseTreeTypeCase:
-		res = child.EndpointId == uint(parent.Id)
+		res = child.EndpointId == uint(parent.Key)
 	}
 
 	return
@@ -390,7 +391,7 @@ func (s *EndpointCaseService) mountCountOnNode(root *serverDomain.EndpointCaseTr
 	case serverConsts.EndpointCaseTreeTypeDir:
 		root.Count = 0
 	case serverConsts.EndpointCaseTreeTypeEndpoint:
-		root.Count = data[root.Id]
+		root.Count = data[root.Key]
 	}
 	for _, children := range root.Children {
 		root.Count += s.mountCountOnNode(children, data)

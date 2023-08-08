@@ -48,10 +48,9 @@
                     }}</a-tag>
                 </span>
                 <span class="title-text" :title="dataRef.name">
-                  {{ dataRef.name }}
-                </span>
+                {{ dataRef.name }}
+              </span>
               </div>
-
               <div class="icon" v-if="dataRef.id > 0">
                 <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
                   <template #button>
@@ -114,7 +113,7 @@ import {PlusOutlined, CaretDownOutlined, MoreOutlined, FolderOpenOutlined, Folde
 import {expandAllKeys, expandOneKey} from "@/services/tree";
 import TreeMenu from "./components/TreeMenu/index.vue";
 import IconSvg from "@/components/IconSvg";
-import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
+import {getExpandedKeys, getSelectedKey, setExpandedKeys} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
 import {Scenario} from "@/views/scenario/data";
@@ -196,11 +195,8 @@ const expandNode = (keys: string[], e: any) => {
 }
 
 const selectNode = (keys, e) => {
-  if (!e?.node?.dataRef?.id) {
-    return
-  }
-  console.log('selectNode', keys, e.node?.dataRef, e?.node.dataRef.id)
-  if (keys.length === 0 && e) {
+  console.log('selectNode', keys, e?.node?.dataRef, e?.node?.dataRef?.id)
+  if (keys.length === 0 && e && e?.node?.dataRef?.id) {
     selectedKeys.value = [e.node.dataRef.id] // cancel un-select
     return
   } else {
@@ -379,7 +375,7 @@ const addNode = (mode, processorCategory, processorType,
   console.log('addNode', mode, processorCategory, processorType,
       targetProcessorCategory, targetProcessorType, targetProcessorId)
 
-
+  // 如果是添加接口，会弹框选择接口类型
   if (processorCategory === 'interface' || processorCategory === 'processor_interface') { // show popup to select a interface
     interfaceSelectionSrc.value = processorType.substr(processorType.lastIndexOf('-') + 1)
     if (interfaceSelectionSrc.value === '' + ProcessorInterfaceSrc.Custom) { // show interface create popup

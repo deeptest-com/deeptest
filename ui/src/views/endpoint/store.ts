@@ -853,10 +853,9 @@ const StoreModel: ModuleType = {
         },
         async updateEndpointTag({ dispatch }, payload: any) {
             const jsn = await updateTag(payload)
-            //console.log(payload,"+++++")
+           
             if (jsn.code === 0) {
                 await dispatch("getEndpointTagList")
-                //await dispatch('loadList', {projectId: payload.projectId});
                 return true;
             } else {
                 return false

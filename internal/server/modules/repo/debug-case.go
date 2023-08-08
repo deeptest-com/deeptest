@@ -116,7 +116,7 @@ func (r *EndpointCaseRepo) UpdateSerialNumber(id, projectId uint) (err error) {
 
 func (r *EndpointCaseRepo) ListByProjectIdAndServeId(projectId, serveId uint) (endpointCases []*serverDomain.InterfaceCase, err error) {
 	err = r.DB.Model(&model.EndpointCase{}).
-		Joins("left join biz_debug_interface d on biz_endpoint_case.id=d.case_interface_id").
+		Joins("left join biz_debug_interface d on biz_endpoint_case.debug_interface_id=d.id").
 		Select("biz_endpoint_case.*, d.method as method").
 		Where("biz_endpoint_case.project_id = ? and biz_endpoint_case.serve_id = ? and not biz_endpoint_case.deleted and not biz_endpoint_case.disabled", projectId, serveId).
 		Find(&endpointCases).Error

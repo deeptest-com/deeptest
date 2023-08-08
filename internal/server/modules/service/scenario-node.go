@@ -213,12 +213,14 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
 
 	// save scenario interface
-	if name == "" {
-		name = endpointInterface.Name + "-" + string(endpointInterface.Method)
-	}
+	/*
+		if name == "" {
+			name = endpointInterface.Name + "-" + string(endpointInterface.Method)
+		}
+	*/
 	processor := model.Processor{
-		Name: name,
-
+		Name:                endpointInterface.Name,
+		Method:              endpointInterface.Method,
 		EntityCategory:      consts.ProcessorInterface,
 		EntityType:          consts.ProcessorInterfaceDefault,
 		EntityId:            debugInterface.ID, // as debugInterfaceId
@@ -268,8 +270,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 
 	} else if !diagnoseInterfaceNode.IsDir { // interface
 		processor := model.Processor{
-			Name: diagnoseInterfaceNode.Title,
-
+			Name:                diagnoseInterfaceNode.Title,
+			Method:              debugData.Method,
 			EntityCategory:      consts.ProcessorInterface,
 			EntityType:          consts.ProcessorInterfaceDefault,
 			EntityId:            diagnoseInterfaceNode.DebugInterfaceId, // as debugInterfaceId
@@ -332,8 +334,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		debugData, _ := s.DebugInterfaceService.GetDebugDataFromCaseInterface(caseNode.CaseInterfaceId)
 
 		processor = model.Processor{
-			Name: caseNode.Name,
-
+			Name:                caseNode.Name,
+			Method:              debugData.Method,
 			EntityCategory:      consts.ProcessorInterface,
 			EntityType:          consts.ProcessorInterfaceDefault,
 			EntityId:            caseNode.DebugInterfaceId, // as debugInterfaceId
@@ -471,8 +473,8 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
 
 	processor := model.Processor{
-		Name: title,
-
+		Name:                title,
+		Method:              debugData.Method,
 		EntityCategory:      consts.ProcessorInterface,
 		EntityType:          consts.ProcessorInterfaceDefault,
 		EntityId:            debugInterface.ID, // as debugInterfaceId

@@ -103,6 +103,9 @@ func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug mo
 
 	err = s.ScenarioInterfaceRepo.SaveDebugData(&debug)
 
+	//更新执行器method
+	s.ScenarioProcessorRepo.UpdateMethod(debug.ScenarioProcessorId, debug.Method)
+	
 	return
 }
 

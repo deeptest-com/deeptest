@@ -1,24 +1,19 @@
 <template>
   <div class="tree-main">
     <div class="tree-filters">
-      <a-row type="flex">
-        <a-col :flex="2">
-          <a-select style="width: 220px" :bordered="true"
-                    :placeholder="'请选择服务'"
-                    v-model:value="serveId"
-                    @change="selectServe">
-            <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
-          </a-select>
-        </a-col>
-
-        <a-col :flex="3">
-          <a-input-search
-              style="display: flex;justify-content: end;width: 300px;margin-bottom: 16px; "
-              placeholder="请输入关键词"
-              enter-button
-              v-model:value="searchValue"/>
-        </a-col>
-      </a-row>
+      <a-select 
+        style="width: 100%;margin-bottom: 20px" 
+        :bordered="true"
+        :placeholder="'请选择服务'"
+        v-model:value="serveId"
+        @change="selectServe">
+        <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
+      </a-select>
+      <a-input-search
+        style="display: flex;justify-content: end;width: 100%;margin-bottom: 16px; "
+        placeholder="请输入关键词"
+        enter-button
+        v-model:value="searchValue"/>
     </div>
 
     <div class="tree-container">
@@ -48,7 +43,9 @@
         </template>
       </a-tree>
 
-      <div v-if="!treeData" class="nodata-tip">空</div>
+      <div v-if="!treeData.length" class="nodata-tip">
+        <Empty />
+      </div>
     </div>
   </div>
 </template>
@@ -58,6 +55,7 @@ import {computed, defineProps, onMounted, ref, watch} from 'vue';
 import {CaretDownOutlined,} from '@ant-design/icons-vue';
 import {useStore} from "vuex";
 
+import Empty from "@/components/Empty";
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as DiagnoseInterfaceStateType} from '@/views/diagnose/store';
 import {StateType as ServeStateType} from "@/store/serve";
@@ -190,6 +188,8 @@ onMounted(async () => {
 
   .tree-container {
     background: #ffffff;
+    max-height: 500px;
+    overflow-y: hidden;
 
     .tree-title {
       position: relative;

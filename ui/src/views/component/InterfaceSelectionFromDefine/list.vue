@@ -27,6 +27,7 @@
         }"
         :columns="columns"
         :data-source="interfaces"
+        :scroll="{ y: 310 }"
         rowKey="id">
 
       <template #colName="{text}">
@@ -39,7 +40,12 @@
 
       <template #colUrl="{text}">
         <div class="customPathColRender">
-          <a-tag>{{ text }}</a-tag>
+          <a-tooltip placement="topLeft">
+            <template #title>
+              <span>{{ text }}</span>
+            </template>
+            <a-tag>{{ text }}</a-tag>
+          </a-tooltip>
         </div>
       </template>
     </a-table>
@@ -48,7 +54,7 @@
 <script setup lang="ts">
 import {
   computed, reactive, toRefs, ref, onMounted,
-  watch, defineProps
+  watch, defineProps, nextTick
 } from 'vue';
 import {useRouter} from 'vue-router';
 import debounce from "lodash.debounce";
@@ -84,7 +90,7 @@ const props = defineProps({
 
 const pagination = ref<any>({
   total: 0,
-  page: 1,
+  current: 1,
   pageSize: 10,
   showSizeChanger: true,
   showQuickJumper: true,
@@ -96,7 +102,7 @@ watch(() => {return props.categoryId}, () => {
 }, {deep: false})
 
 const loadList = debounce(async (page, pageSize) => {
-  pagination.value.page = page
+  pagination.value.current = page
   pagination.value.pageSize = pageSize
   const data = {
     serveId: props.serveId,
@@ -104,7 +110,7 @@ const loadList = debounce(async (page, pageSize) => {
     projectId: currProject.value.id,
     keywords: filters.value.keywords,
   }
-  const result = await listEndpointInterface(data, pagination.value)
+  const result = await listEndpointInterface(data, { ...pagination.value, page: pagination.value.current })
   console.log('listEndpointInterface', result)
   interfaces.value = result?.list
   pagination.value.total = result?.total
@@ -112,7 +118,9 @@ const loadList = debounce(async (page, pageSize) => {
 
 const selectCategory = async () => {
   console.log('selectCategory', props.categoryId)
-  loadList(pagination.value.page, pagination.value.pageSize)
+  pagination.value.current = 1;
+  await nextTick();
+  loadList(pagination.value.current, pagination.value.pageSize)
 }
 
 watch(props, () => {
@@ -141,7 +149,7 @@ const columns = [
     customRender: ({
                      text,
                      index
-                   }: { text: any; index: number }) => (pagination.value.page - 1) * pagination.value.pageSize + index + 1,
+                   }: { text: any; index: number }) => (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
   },
   {
     title: '端点名称',
@@ -151,23 +159,39 @@ const columns = [
   {
     title: '请求方法',
     dataIndex: 'method',
+    width: 100,
     slots: {customRender: 'colMethod'},
   },
   {
     title: '路径',
+    width: 200,
     dataIndex: 'url',
     slots: {customRender: 'colUrl'},
   }
 ];
 
 onMounted(async () => {
-  await loadList(pagination.value.page, pagination.value.pageSize)
+  await loadList(pagination.value.current, pagination.value.pageSize)
 })
 </script>
 
 <style scoped lang="less">
 .interface-list-main {
   margin: 0;
+  padding-top: 20px;
+
+  :deep(.ant-table) {
+    .ant-table-body {
+      overflow-x: hidden;
+    }
+  }
+
+  :deep(.ant-tag) {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    cursor: pointer;
+  }
 
   .table-toolbar {
     display: flex;

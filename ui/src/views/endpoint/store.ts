@@ -865,14 +865,14 @@ const StoreModel: ModuleType = {
         async getCaseTree({ commit }, payload: QueryCaseTreeParams){
             try {
                 const response: ResponseData = await loadCaseTree(payload);
-                debugger
+                // debugger
                 if (response.code != 0) return;
-                debugger
+                // debugger
                 const data = {id: 0,count:1, children: response.data} 
                 console.log("11111",data)
                 const newData = reBuildTree(data,0)
                 console.log("123232",newData)
-                debugger
+                // debugger
                 commit('setCaseTree', newData.children);
                 const data1 = {id: 0, children: newData.children} 
                 const mp = genNodeMap(data1)

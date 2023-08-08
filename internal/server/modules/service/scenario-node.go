@@ -311,9 +311,9 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 }
 
 func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomain.EndpointCaseTree, parentProcessor model.Processor) (
-	ret model.Processor, err error) {
+	processor model.Processor, err error) {
 	if caseNode.IsDir && len(caseNode.Children) > 0 { // dir
-		processor := model.Processor{
+		processor = model.Processor{
 			Name:           caseNode.Name,
 			ScenarioId:     parentProcessor.ScenarioId,
 			EntityCategory: consts.ProcessorGroup,
@@ -328,9 +328,9 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 			s.createDirOrInterfaceFromCase(child, processor)
 		}
 	} else if !caseNode.IsDir { // interface
-		debugData, _ := s.DebugInterfaceService.GetDebugDataFromCaseInterface(uint(caseNode.Key))
+		debugData, _ := s.DebugInterfaceService.GetDebugDataFromCaseInterface(caseNode.CaseInterfaceId)
 
-		processor := model.Processor{
+		processor = model.Processor{
 			Name: caseNode.Name,
 
 			EntityCategory:      consts.ProcessorInterface,
@@ -363,11 +363,11 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		debugData.Url = debugInterfaceOfCaseNode.Url
 
 		debugData.UsedBy = consts.ScenarioDebug
+		debugData.CaseInterfaceId = 0
 		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData)
 
 		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, debugInterface.ID)
 
-		ret = processor
 	}
 
 	return

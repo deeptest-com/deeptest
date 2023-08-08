@@ -67,8 +67,6 @@ export default {
           //   return pane.style.width = '0px'
           // }
 
-          console.log(layout, topOrLeftPane)
-
           if (layout === LAYOUT_VERTICAL) {
             let containerWidth = container.clientWidth;
             let paneWidth = initialSize + offset;

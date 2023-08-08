@@ -44,18 +44,11 @@ const serverConfig = computed<any>(() => store.state.Global.serverConfig);
 
 onMounted(() => {
   console.log('onMounted debug-interface')
-  resize()
 })
 onUnmounted(() => {
   console.log('onUnmounted debug-interface')
   store.dispatch('Debug/resetDataAndInvocations');
 })
-
-function resize() {
-  resizeHeight('debug-form-main', 'debug-form-top',
-      'debug-form-splitter', 'debug-form-bottom',
-      300, 200)
-}
 
 </script>
 

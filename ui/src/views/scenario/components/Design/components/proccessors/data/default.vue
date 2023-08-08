@@ -51,7 +51,7 @@
 
         <a-form-item label="重复次数" name="repeatTimes">
           <a-input-number style="width: 200px;"
-                          v-bind="validateInfos.repeatTimes"/>
+                          v-model:value="formState.repeatTimes"/>
 
           <div class="dp-input-tip">将按指定次数循环读取文件内容</div>
         </a-form-item>
@@ -89,7 +89,6 @@ import {uploadRequest} from "@/utils/upload";
 const useForm = Form.useForm;
 
 const router = useRouter();
-
 const {t} = useI18n();
 
 const formRef = ref();
@@ -132,6 +131,7 @@ const upload = async (file, fileList) => {
 }
 
 watch(nodeData, (val: any) => {
+  console.log('watch nodeData')
   if (!val) return;
 
   formState.value.variableName = val.variableName;

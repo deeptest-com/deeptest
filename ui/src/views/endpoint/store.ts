@@ -32,7 +32,7 @@ import {
     expireEndpoint,
     getEndpointDetail,
     getEndpointList,
-    saveEndpoint, copyEndpointCase,loadCaseTree
+    saveEndpoint, copyEndpointCase,loadCaseTree,reBuildTree
 } from './service';
 
 import {
@@ -865,10 +865,17 @@ const StoreModel: ModuleType = {
         async getCaseTree({ commit }, payload: QueryCaseTreeParams){
             try {
                 const response: ResponseData = await loadCaseTree(payload);
+                debugger
                 if (response.code != 0) return;
-                commit('setCaseTree', response.data);
-                const data = {id: 0, children: response.data} 
-                const mp = genNodeMap(data)
+                debugger
+                const data = {id: 0,count:1, children: response.data} 
+                console.log("11111",data)
+                const newData = reBuildTree(data,0)
+                console.log("123232",newData)
+                debugger
+                commit('setCaseTree', newData.children);
+                const data1 = {id: 0, children: newData.children} 
+                const mp = genNodeMap(data1)
                 commit('setCaseTreeMap', mp);
 
                 return true;

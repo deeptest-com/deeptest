@@ -212,7 +212,7 @@ func (s *EndpointCaseService) GetTree(projectId, serveId uint) (root *serverDoma
 	}
 	categoryTos := s.CategoryToTos(categories)
 
-	categoryTos = append(categoryTos, &serverDomain.EndpointCaseTree{Key: -1, Id: uuid.NewV4(), Name: "未分类", ParentId: int64(categories[0].ID), Slots: iris.Map{"icon": "icon"}})
+	categoryTos = append(categoryTos, &serverDomain.EndpointCaseTree{Key: -1, IsDir: true, Id: uuid.NewV4(), Name: "未分类", ParentId: int64(categories[0].ID), Slots: iris.Map{"icon": "icon"}})
 
 	endpoints, err := s.EndpointRepo.ListByProjectIdAndServeId(projectId, serveId, false)
 	if err != nil {

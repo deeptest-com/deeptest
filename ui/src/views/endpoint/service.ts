@@ -1,7 +1,7 @@
 import request, {ResponseData} from '@/utils/request';
 import {QueryParams} from "@/types/data";
 import   {QueryCaseTreeParams} from './data.d'
-import {Interface} from "@/views/component/debug/data";
+
 
 const apiPath = 'endpoints';
 const apiPathInterface = 'endpoints/interfaces';
@@ -283,3 +283,28 @@ export async function loadCaseTree(data: QueryCaseTreeParams): Promise<any> {
 }
 
 
+export function reBuildTree(node:any,parentId:any) {
+   // debugger
+   //let newNode:any
+    if (node?.count > 0 || !node?.isDir) {
+       // debugger
+        const newNode = Object.assign({},node)
+        //newNode.name = node.name
+        //.isDir = node.isDir
+        //newNode.Method = 
+        newNode.parentId = parentId
+        newNode.children = []
+      // debugger
+        node.children.forEach((child:any)=>{
+           // debugger
+            const newChild = reBuildTree(child,node.id)
+            if (newChild) {
+                newNode.children.push(newChild)
+            }
+        })
+
+        return newNode
+    }
+    
+    return undefined
+}

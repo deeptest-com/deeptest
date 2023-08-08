@@ -34,8 +34,11 @@
         <template #switcherIcon>
           <CaretDownOutlined/>
         </template>
-<!--
+
         <template #title="nodeProps">
+          <span v-if="nodeProps.dataRef.isDir">{{nodeProps.dataRef.name+'('+nodeProps.dataRef.count+')'}}</span>
+          <span v-else>{{nodeProps.dataRef.name+"-"+nodeProps.dataRef.method}}</span>
+          <!--
                       <div class="tree-title" :draggable="nodeProps?.dataRef?.id === -1">
                           <span class="tree-title-text" v-if="nodeProps?.dataRef?.name.indexOf(searchValue) > -1">
                             <span>{{ nodeProps?.dataRef?.name.substr(0, nodeProps?.dataRef?.name.indexOf(searchValue)) }}</span>
@@ -44,8 +47,9 @@
                           </span>
                         <span class="tree-title-text" v-else>{{ nodeProps?.dataRef?.name }}</span>
                       </div>
+                        --->
         </template>
-    --->
+  
       </a-tree>
 
       <div v-if="!treeData" class="nodata-tip">空</div>

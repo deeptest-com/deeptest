@@ -36,8 +36,8 @@ func (s *ScenarioProcessorService) UpdateName(req agentExec.ProcessorEntityBase)
 	return
 }
 
-func (s *ScenarioProcessorService) SaveProcessorInfo(req domain.ScenarioProcessorInfo) (err error) {
-	err = s.ScenarioProcessorRepo.SaveProcessorInfo(req)
+func (s *ScenarioProcessorService) SaveBasicInfo(req domain.ScenarioProcessorInfo) (err error) {
+	err = s.ScenarioProcessorRepo.SaveBasicInfo(req)
 	return
 }
 

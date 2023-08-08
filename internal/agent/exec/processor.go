@@ -10,7 +10,8 @@ import (
 
 type Processor struct {
 	ProcessorBase
-	Entity IProcessorEntity `json:"entity"`
+	Entity  IProcessorEntity `json:"entity"`
+	Disable bool             `json:"disable"`
 }
 
 type ProcessorMsg struct {

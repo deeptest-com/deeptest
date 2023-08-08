@@ -63,6 +63,7 @@ func (s *ScenarioNodeService) ToTos(pos []*model.Processor, withDetail bool) (to
 			},
 		}
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
+		to.Disable = po.Disabled
 
 		if withDetail {
 			entity, _ := s.ScenarioProcessorService.GetEntityTo(&to)
@@ -85,7 +86,7 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 	}
 
 	ret = model.Processor{
-		Name:                  req.Name,
+		Name:                  strings.TrimSpace(req.Name),
 		EntityCategory:        req.ProcessorCategory,
 		EntityType:            req.ProcessorType,
 		ProcessorInterfaceSrc: req.ProcessorInterfaceSrc,
@@ -384,6 +385,12 @@ func (s *ScenarioNodeService) Delete(id uint) (err error) {
 	return
 }
 
+func (s *ScenarioNodeService) DisableOrNot(id uint) (err error) {
+	err = s.disableScenarioNodeAndChildren(id)
+
+	return
+}
+
 func (s *ScenarioNodeService) Move(srcId, targetId uint, pos serverConsts.DropPos, projectId uint) (
 	srcScenarioNode model.Processor, err error) {
 	srcScenarioNode, err = s.ScenarioNodeRepo.Get(srcId)
@@ -395,13 +402,12 @@ func (s *ScenarioNodeService) Move(srcId, targetId uint, pos serverConsts.DropPo
 }
 
 func (s *ScenarioNodeService) deleteScenarioNodeAndChildren(nodeId uint) (err error) {
-	err = s.ScenarioNodeRepo.Delete(nodeId)
-	if err == nil {
-		children, _ := s.ScenarioNodeRepo.GetChildren(nodeId)
-		for _, child := range children {
-			s.deleteScenarioNodeAndChildren(child.ID)
-		}
-	}
+	err = s.ScenarioNodeRepo.DeleteWithChildren(nodeId)
+
+	return
+}
+func (s *ScenarioNodeService) disableScenarioNodeAndChildren(nodeId uint) (err error) {
+	err = s.ScenarioNodeRepo.DisableWithChildren(nodeId)
 
 	return
 }

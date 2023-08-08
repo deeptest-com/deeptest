@@ -132,7 +132,7 @@ func (r *ScenarioNodeRepo) UpdateName(id int, name string) (err error) {
 	return
 }
 
-func (r *ScenarioNodeRepo) Delete(id uint) (err error) {
+func (r *ScenarioNodeRepo) DeleteWithChildren(id uint) (err error) {
 	node, err := r.Get(id)
 
 	ids := []uint{}
@@ -147,6 +147,23 @@ func (r *ScenarioNodeRepo) Delete(id uint) (err error) {
 		Update("deleted", true).Error
 
 	err = r.DebugInterfaceRepo.DeleteByProcessorIds(ids)
+
+	return
+}
+
+func (r *ScenarioNodeRepo) DisableWithChildren(id uint) (err error) {
+	node, err := r.Get(id)
+
+	ids := []uint{}
+	if !r.IsDir(node) {
+		ids = append(ids, id)
+	} else {
+		ids, _ = r.GetAllChildIdsSimple(id, model.Processor{}.TableName())
+	}
+
+	err = r.DB.Model(&model.Processor{}).
+		Where("id IN (?)", ids).
+		Update("disabled", !node.Disabled).Error
 
 	return
 }

@@ -33,7 +33,7 @@
           </template>
           <template #title="{dataRef}">
             <div class="tree-title" :draggable="dataRef.id === -1">
-              <div class="title">
+              <div class="title" :class="[dataRef.disable ? 'dp-disabled' : '']">
                 <!-- 标题前缀 -->
                 <span class="prefix-icon"
                       v-if="dataRef?.entityType !== 'processor_interface_default'">
@@ -43,14 +43,15 @@
 
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
-                  <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET' )">{{
+                  <a-tag class="method-tag" :color="getMethodColor(dataRef.method || 'GET', dataRef.disable)">{{
                       dataRef.method || "GET"
                     }}</a-tag>
                 </span>
-                <span class="title-text">
-                {{ dataRef.name }}
-              </span>
+                <span class="title-text" :title="dataRef.name">
+                  {{ dataRef.name }}
+                </span>
               </div>
+
               <div class="icon" v-if="dataRef.id > 0">
                 <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
                   <template #button>
@@ -113,7 +114,7 @@ import {PlusOutlined, CaretDownOutlined, MoreOutlined, FolderOpenOutlined, Folde
 import {expandAllKeys, expandOneKey} from "@/services/tree";
 import TreeMenu from "./components/TreeMenu/index.vue";
 import IconSvg from "@/components/IconSvg";
-import {getExpandedKeys, getSelectedKey, setExpandedKeys} from "@/utils/cache";
+import {getExpandedKeys, setExpandedKeys} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "../../store";
 import {isRoot, updateNodeName, isInterface} from "../../service";
 import {Scenario} from "@/views/scenario/data";
@@ -327,14 +328,11 @@ function selectMenu(menuInfo, treeNode) {
     removeNode()
     return
   }
-  if (key === 'disable') {
-    disableNode()
+  if (key === 'disable' || key === 'enable') {
+    disableNodeOrNot()
     return
   }
-  if (key === 'enable') {
-    enableNode()
-    return
-  }
+
   const processorCategory = menuKeyMapToProcessorCategory[key];
   if (!processorCategory) return;
   const targetProcessorId = targetModelId
@@ -351,7 +349,7 @@ async function handleEditModalOk(model) {
   model.processorCategory = model.entityCategory
   model.processorType = model.entityType
 
-  if (!model.id && model.entityType === ProcessorInterface.Interface) {
+  if (!model.id && model.entityType === ProcessorInterface.Interface) { // create interface
     store.dispatch('Scenario/addProcessor', model).then((newNode) => {
       console.log('addProcessor successfully', newNode)
       currentNode.value = null
@@ -469,34 +467,18 @@ const removeNode = () => {
   })
 }
 
-const disableNode = () => {
+const disableNodeOrNot = () => {
   const node = treeDataMap.value[targetModelId]
+  const action = node.disable ? '启用' : '禁用'
+
   Modal.confirm({
     okType: 'danger',
-    title: `确定禁用名为${node.name}的节点吗？`,
+    title: `确定${action}名为${node.name}的节点吗？`,
     content: '将同时禁用步骤下的所有子步骤，禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？',
     okText: () => '确定',
     cancelText: () => '取消',
     onOk: async () => {
-      await store.dispatch('Scenario/removeNode', targetModelId);
-      selectNode([], null)
-    },
-    onCancel() {
-      console.log('Cancel');
-    },
-  });
-};
-
-const enableNode = () => {
-  const node = treeDataMap.value[targetModelId]
-  Modal.confirm({
-    okType: 'danger',
-    title: `启用名为${node.name}的场景步骤吗？`,
-    content: '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？',
-    okText: () => '确定',
-    cancelText: () => '取消',
-    onOk: async () => {
-      await store.dispatch('Scenario/removeNode', targetModelId);
+      await store.dispatch('Scenario/disableNodeOrNot', targetModelId);
       selectNode([], null)
     },
     onCancel() {

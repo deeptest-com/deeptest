@@ -255,10 +255,17 @@ export const DESIGN_MENU_CONFIG = [
         title: '分割线',
         hideInNodeTypes: ['processor_root_default', ...onlyShowDisableAndDeleteTypes],
     },
+    //   修改名字
+    {
+        key: 'edit',
+        title: '编辑',
+        icon: 'edit',
+        hideInNodeTypes: ['processor_root_default'],
+    },
     //    禁用
     {
         key: 'disable',
-        title: '禁用',
+        title: '禁用/启用',
         icon: 'arrange-disable',
         hideInNodeTypes: ['processor_root_default'],
     },

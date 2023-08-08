@@ -181,7 +181,7 @@ onMounted(async () => {
 
   .tree-container {
     background: #ffffff;
-    max-height: 500px;
+    max-height: 400px;
     overflow-y: hidden;
 
     .tree-title {

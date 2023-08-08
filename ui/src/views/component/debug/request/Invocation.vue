@@ -368,7 +368,7 @@ function validatePath() {
 //   showContextMenu.value = false
 // }
 watch(() => {
-  return containerScrollTop.value;
+  return containerScrollTop && containerScrollTop.value;
 }, val => {
   selectEnvTopPosition.value = getSelectEnvTopPosition();
 })

@@ -4,46 +4,52 @@
       <div class="top-header-tip">
         <a-alert message="说明：数据迭代处理器将循环读取文件中的行内容，并将读取的内容赋值给指定的变量" type="info" show-icon/>
       </div>
-
       <a-form
           ref="formRef"
           :rules="rules"
           :model="formState"
           :label-col="{ span: 4 }"
-          @submit.prevent
+          @submit.prevent.stop
           :wrapper-col="{ span: 16 }">
         <a-form-item label="变量名称" name="variableName">
           <a-input v-model:value="formState.variableName"/>
           <div v-if="formState.variableName" class="dp-input-tip">
-            可使用 {{ '${' + formState.variableName + '.列名' + '}' }} 访问数据变量
+            可使用 {{ '${' + formState.variableName + '.列名' + '}' }} 访问数据变量，如变量名为pet，${pet.name}
           </div>
         </a-form-item>
 
         <a-form-item label="上传文件" name="url">
           <div class="upload-file">
             <div class="upload-container">
-              <a-upload :beforeUpload="upload"
-                        :fileList="fileList"
+              <a-upload :fileList="fileList"
+                        :remove="remove"
+                        :customRequest="customUpload"
                         :showUploadList="true"
                         :accept="'.xls, .xlsx, .csv, .txt'">
-                <a-button>
-                  <UploadOutlined/>上传文件
-                </a-button>
+                <div class="upload-btns">
+                  <a-button>
+                    <UploadOutlined/>
+                    选择文件
+                  </a-button>
+                </div>
               </a-upload>
             </div>
           </div>
-          <span class="dp-input-tip">仅支持excel、csv、 text三种文件格式</span>
+          <div>
+            <span class="dp-input-tip">仅支持excel、csv、 text三种文件格式</span>
+          </div>
+
         </a-form-item>
 
         <a-form-item label="分隔符" name="separator">
           <a-input style="width: 200px;"
-              v-model:value="formState.separator"/>
+                   v-model:value="formState.separator"/>
           <div class="dp-input-tip">一行多列内容可以使用分隔符来分隔</div>
         </a-form-item>
 
         <a-form-item label="重复次数" name="repeatTimes">
           <a-input-number style="width: 200px;"
-              v-model:value="formState.repeatTimes"/>
+                          v-model:value="formState.repeatTimes"/>
           <div class="dp-input-tip">将按指定次数循环读取文件内容</div>
         </a-form-item>
 
@@ -74,9 +80,6 @@ import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {UploadOutlined} from "@ant-design/icons-vue";
-import settings from "@/config/settings";
-import {getUrls} from "@/utils/request";
-import {getToken} from "@/utils/localToken";
 import {uploadRequest} from "@/utils/upload";
 
 const useForm = Form.useForm;
@@ -87,7 +90,7 @@ const {t} = useI18n();
 
 const formRef = ref();
 
-const rules:any = ref({
+const rules: any = ref({
   variableName: [
     {required: true, message: '请输入变量名称', trigger: 'blur'},
   ],
@@ -96,10 +99,8 @@ const rules:any = ref({
   ],
 });
 
-
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
-
 
 const formState = ref({
   variableName: '',
@@ -110,20 +111,29 @@ const formState = ref({
   comments: '',
 });
 
+const fileList:any = ref([]);
 
-const fileList = ref([]);
-const upload = async (file, fileList) => {
-  // debugger;
-  const res = await uploadRequest(file)
-  formState.value.url = res.path;
-  // debugger;
-  // fileList.value = [{
-  //   ...file,
-  //   status: 'done',
-  //   url: res.path,
-  // }];
-  return false
-}
+const remove = () => {
+  formState.value.url = '';
+  fileList.value = [];
+};
+const customUpload = async (e) => {
+  const res = await uploadRequest(e.file)
+  if (res.path) {
+    message.success('上传成功');
+    formState.value.url = res.path;
+    e.onSuccess(res, e);
+    fileList.value = [{
+      uid: '-1',
+      name: e.file.name,
+      status: 'done',
+      url: res.path,
+    }];
+  } else {
+    message.error('上传失败');
+  }
+};
+
 
 watch(() => {
   return nodeData.value;
@@ -135,20 +145,30 @@ watch(() => {
   formState.value.repeatTimes = val.repeatTimes;
   formState.value.isRand = val.isRand;
   formState.value.comments = val.comments;
+
+  // 初始化文件列表
+  if (val.url) {
+    fileList.value = [{
+      uid: '-1',
+      name: val.url,
+      status: 'done',
+      url: val.url,
+    }];
+  }
 });
 
+// 监听 url 变化，如果是以 .txt 文件结尾的，分隔符必填
 watch(() => {
   return formState.value.url;
 }, (val: any) => {
-  if (!val) return;
   //  .txt 结尾
-  if(val.endsWith('.txt')) {
+  if (val.endsWith('.txt')) {
     rules.value.separator = [
       {required: true, message: '请输入分隔符', trigger: 'blur'},
     ]
+  }else {
+    delete rules.value.separator
   }
-
-
 }, {deep: true});
 
 const submit = async () => {
@@ -178,5 +198,19 @@ const submit = async () => {
 .top-header-tip {
   position: relative;
   margin: 6px auto 24px 60px;
+}
+
+.upload-container {
+  width: 600px;
+}
+
+.upload-file {
+  margin-bottom: 8px;
+}
+
+.upload-btns {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

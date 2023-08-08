@@ -439,7 +439,7 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 	wf := curlObj.CreateTemporary(curlObj.CreateSession())
 
 	url := fmt.Sprintf("%s://%s%s", curlObj.ParsedURL.Scheme, curlObj.ParsedURL.Host, curlObj.ParsedURL.Path)
-	title := fmt.Sprintf("%s %s", url, curlObj.Method)
+	//title := fmt.Sprintf("%s %s", url, curlObj.Method)
 	queryParams := s.DiagnoseInterfaceService.getQueryParams(curlObj.ParsedURL.Query())
 	headers := s.DiagnoseInterfaceService.getHeaders(wf.Header)
 	cookies := s.DiagnoseInterfaceService.getCookies(wf.Cookies)
@@ -451,7 +451,7 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 	}
 
 	debugData := domain.DebugData{
-		Name:    title,
+		Name:    url,
 		BaseUrl: "",
 		BaseRequest: domain.BaseRequest{
 			Method:      s.DiagnoseInterfaceService.getMethod(bodyType, curlObj.Method),
@@ -473,7 +473,7 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
 
 	processor := model.Processor{
-		Name:                title,
+		Name:                url,
 		Method:              debugData.Method,
 		EntityCategory:      consts.ProcessorInterface,
 		EntityType:          consts.ProcessorInterfaceDefault,

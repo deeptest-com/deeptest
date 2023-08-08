@@ -51,10 +51,14 @@
                 {{ dataRef.name }}
               </span>
               </div>
-              <div class="icon" v-if="dataRef.id > 0">
+              <div class="icon" v-if="dataRef.id > 0"
+                   :style="dataRef.entityType === 'processor_logic_if'? {width:'60px'} : null">
+                <a  href="javascript:void (0)" type="link" @click.stop="() => {
+                  addElse(dataRef)
+                }" class="add-else-tag" v-if="dataRef.entityType === 'processor_logic_if'">+else</a>
                 <TreeMenu @selectMenu="selectMenu" :treeNode="dataRef">
                   <template #button>
-                    <MoreOutlined/>
+                    <MoreOutlined style="min-width: 14px"/>
                   </template>
                 </TreeMenu>
               </div>
@@ -124,6 +128,7 @@ import cloneDeep from "lodash/cloneDeep";
 import InterfaceImportFromCurl from "@/views/component/InterfaceImportFromCurl/index.tsx";
 import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue";
 import {showBorderScenarioType} from "./config";
+
 const props = defineProps<{}>()
 const {t} = useI18n();
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -328,6 +333,17 @@ function selectMenu(menuInfo, treeNode) {
     disableNodeOrNot()
     return
   }
+  // 如果是 逻辑 else，则需要添加到父节点，即 if 节点下
+  if (key === 'processor_logic_else') {
+    targetModelId = treeDataMap.value[targetModelId].parentId;
+    if (!targetModelId) return;
+    // 如果已经存在 else 节点，则不允许添加
+    const children = treeDataMap?.value[targetModelId]?.children || [];
+    if (children.some(item => item.entityType === 'processor_logic_else')) {
+      message.error('已经存在 else 节点，不允许再添加');
+      return;
+    }
+  }
 
   const processorCategory = menuKeyMapToProcessorCategory[key];
   if (!processorCategory) return;
@@ -335,6 +351,27 @@ function selectMenu(menuInfo, treeNode) {
   const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
   const targetProcessorType = treeDataMap.value[targetModelId].entityType
   addNode(mode, processorCategory, processorType,
+      targetProcessorCategory, targetProcessorType, targetProcessorId);
+
+
+}
+
+const addElse = (treeNode) => {
+  debugger;
+  targetModelId = treeNode?.id;
+  targetModelId = treeDataMap.value[targetModelId].parentId;
+  if (!targetModelId) return;
+  // 如果已经存在 else 节点，则不允许添加
+  const children = treeDataMap?.value[targetModelId]?.children || [];
+  if (children.some(item => item.entityType === 'processor_logic_else')) {
+    message.error('已经存在 else 节点，不允许再添加');
+    return;
+  }
+  const targetProcessorId = targetModelId
+  const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
+  const targetProcessorType = treeDataMap.value[targetModelId].entityType
+  const mode = 'child';
+  addNode(mode, 'processor_logic', 'processor_logic_else',
       targetProcessorCategory, targetProcessorType, targetProcessorId);
 }
 
@@ -562,13 +599,15 @@ onUnmounted(() => {
 <style lang="less" scoped>
 .scenario-tree-main {
   background: #ffffff;
+
   :deep(.ant-tree-child-tree-open:has(.tree-title.dp-tree-border)) {
     //outline: 1px solid #f0f0f0;
     //outline-offset: -2px;
     //margin-bottom: 5px;
     //border-radius: 4px;
     position: relative;
-    &:before{
+
+    &:before {
       content: '';
       position: absolute;
       top: 0;
@@ -618,10 +657,18 @@ onUnmounted(() => {
     width: 16px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: end;
   }
-  .prefix-req-method{
 
+  .prefix-req-method {
+
+  }
+
+  .add-else-tag{
+    margin-right: 6px;
+    color: #1890ff;
+    cursor: pointer;
+    //transform: scale(0.8);
   }
 
 

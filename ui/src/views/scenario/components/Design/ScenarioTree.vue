@@ -18,6 +18,7 @@
             class="deeptest-tree"
             draggable
             blockNode
+            :showIcon="false"
             :expandAction="false"
             :expandedKeys="expandedKeys"
             :auto-expand-parent="autoExpandParent"
@@ -36,7 +37,7 @@
                  :draggable="dataRef.id === -1">
               <div class="title" :class="[dataRef.disable ? 'dp-disabled' : '']">
                 <!-- 标题前缀 -->
-                <span class="prefix-icon">
+                <span class="prefix-icon" v-if="dataRef?.entityType !== 'processor_interface_default'">
                   <IconSvg v-if="DESIGN_TYPE_ICON_MAP[dataRef.entityType]"
                            :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
                 </span>

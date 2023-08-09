@@ -241,11 +241,12 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 		EndpointInterfaceId: debugInterface.EndpointInterfaceId,
 
 		//Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
-		Ordr:       order,
-		ParentId:   parentProcessor.ID,
-		ScenarioId: parentProcessor.ScenarioId,
-		ProjectId:  parentProcessor.ProjectId,
-		CreatedBy:  createBy,
+		Ordr:                  order,
+		ParentId:              parentProcessor.ID,
+		ScenarioId:            parentProcessor.ScenarioId,
+		ProjectId:             parentProcessor.ProjectId,
+		CreatedBy:             createBy,
+		ProcessorInterfaceSrc: consts.InterfaceSrcDefine,
 	}
 
 	s.ScenarioNodeRepo.Save(&processor)

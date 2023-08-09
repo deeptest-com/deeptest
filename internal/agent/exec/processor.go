@@ -41,8 +41,9 @@ type ProcessorBase struct {
 	IsDir     bool            `json:"isDir"`
 	EntityRaw json.RawMessage `json:"entityRaw"`
 
-	Parent *Processor                      `json:"-"`
-	Result *agentDomain.ScenarioExecResult `json:"result"`
+	Parent                *Processor                      `json:"-"`
+	Result                *agentDomain.ScenarioExecResult `json:"result"`
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc    `json:"rocessorInterfaceSrc"`
 
 	Session Session `json:"-"`
 }

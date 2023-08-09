@@ -309,26 +309,18 @@ function hasDefinedMethod(method: string) {
 }
 
 const getSelectEnvTopPosition = () => {
-  const elems = document.getElementsByClassName('invocation-main')
-  if (elems.length === 0) return '0px'
+  const elems = document.getElementsByClassName('tab-header-items')
+  const selectEnvEl = document.getElementsByClassName('select-env-fixed');
+  if (elems.length === 0 || selectEnvEl.length === 0) return '0px'
 
   const rect = elems[0].getBoundingClientRect()
-  if (!rect) return '0px'
+  const selecEnvRect = selectEnvEl[0].getBoundingClientRect()
+  if (!rect || !selecEnvRect) return '0px'
 
-  const top = rect?.top
+  const { height = 0, top = 0 } = rect;
+  const { height: envElHeight = 0 } = selecEnvRect;
 
-  let val = 0
-  if (usedBy === UsedBy.ScenarioDebug) {
-    val = 50
-  } else if (usedBy === UsedBy.DiagnoseDebug) {
-    val = 40
-  } else if (usedBy === UsedBy.InterfaceDebug) {
-    val = 96
-  } else if (usedBy === UsedBy.CaseDebug) {
-    val = 34
-  }
-
-  return top - val + 'px'
+  return `${top + (height - envElHeight) / 2}px`
 }
 
 function pathUpdated(e) {

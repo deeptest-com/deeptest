@@ -101,11 +101,7 @@ func (s *DiagnoseInterfaceService) Move(srcId, targetId uint, pos serverConsts.D
 }
 
 func (s *DiagnoseInterfaceService) SaveDebugData(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
-	if req.DebugInterfaceId > 0 {
-		s.DebugInterfaceService.Update(req, req.DebugInterfaceId)
-	} else {
-		s.DebugInterfaceService.Create(req)
-	}
+	s.DebugInterfaceService.CreateOrUpdate(req)
 
 	return
 }

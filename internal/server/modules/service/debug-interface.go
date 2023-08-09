@@ -85,9 +85,9 @@ func (s *DebugInterfaceService) GetDetail(id uint) (ret model.DebugInterface, er
 
 func (s *DebugInterfaceService) CreateOrUpdate(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
 	if req.DebugInterfaceId > 0 {
-		debugInterface, err = s.Create(req)
-	} else {
 		debugInterface, err = s.Update(req, req.DebugInterfaceId)
+	} else {
+		debugInterface, err = s.Create(req)
 	}
 
 	return

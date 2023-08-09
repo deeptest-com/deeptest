@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_interface_default-main dp-relative">
+  <div class="processor_interface_default-main dp-relative  dp-proccessors-container">
     <ProcessorHeader/>
     <DebugComp :onSaveDebugData="saveScenarioInterface"
                :onSyncDebugData="syncDebugData" />

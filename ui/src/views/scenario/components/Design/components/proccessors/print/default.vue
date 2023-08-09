@@ -1,5 +1,6 @@
 <template>
-  <div class="processor_print_default-main">
+  <div class="processor_print_default-main dp-proccessors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -31,7 +32,7 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 import {getCompareOpts} from "@/utils/compare";
-
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const useForm = Form.useForm;
 
 const router = useRouter();

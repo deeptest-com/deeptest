@@ -1,5 +1,6 @@
 <template>
-  <div class="processor_custom_code-edit">
+  <div class="processor_custom_code-edit dp-proccessors-container">
+    <ProcessorHeader/>
     <div class="content">
       <div class="codes">
         <MonacoEditor theme="vs" language="typescript" class="editor"
@@ -42,7 +43,7 @@ import {message, notification} from "ant-design-vue";
 import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
-
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef: any = computed<boolean>(() => store.state.Scenario.nodeData);
 

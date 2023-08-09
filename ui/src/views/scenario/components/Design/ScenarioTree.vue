@@ -392,7 +392,7 @@ function checkElseRepeat(node) {
   const currentIndex = children?.findIndex(item => item.id === node.id);
   const nextNode = children?.[currentIndex + 1];
   if(nextNode?.entityType === 'processor_logic_else') {
-    message.warning('已经存在 else 节点，不允许再添加');
+
     exist = true;
   }
   return exist;
@@ -404,6 +404,7 @@ const addElse = (treeNode) => {
   // 另外目标节点已经有 else节点了，也不能再添加
   const repeat = checkElseRepeat(treeNode);
   if (repeat) {
+    message.warning('已经存在 else 节点，不允许再添加');
     return;
   }
 
@@ -605,6 +606,7 @@ async function onDrop(info: DropEvent) {
     // 另外目标节点已经有 else节点了，也不能再添加
     const repeat = checkElseRepeat(dropNodeInfo);
     if (repeat) {
+      message.warning('已经存在 else 节点，不允许再添加');
       return;
     }
     dropPosition = 1;
@@ -627,10 +629,11 @@ async function onDrop(info: DropEvent) {
 function onDragstart({event, node}) {
   const nodeInfo = node.dataRef;
   // else节点 只能由 if 节点拖动带过去
-  // if(nodeInfo?.entityType === 'processor_logic_else') {
-  //   message.warning('else节点不能拖动，您可以拖动 Else 对应的 If 节点');
-  //   event.preventDefault();
-  // }
+  if(nodeInfo?.entityType === 'processor_logic_if' && checkElseRepeat(nodeInfo)) {
+    message.warning('else节点不能拖动，您可以拖动 Else 对应的 If 节点');
+    nodeInfo.title = 'wode'
+    // event.preventDefault();
+  }
   // if 节点不能移动到非 if节点下
   // if(nodeInfo.processorCategory === ProcessorCategory.Scenario) {
 
@@ -790,7 +793,13 @@ onUnmounted(() => {
   }
 
 
-
+  .draggable {
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+    margin: 10px;
+    cursor: grab;
+  }
 
 }
 

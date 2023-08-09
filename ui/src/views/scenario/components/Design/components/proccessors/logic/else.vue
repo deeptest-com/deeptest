@@ -1,5 +1,6 @@
 <template>
-  <div class="processor_login_else-main">
+  <div class="processor_login_else-main  dp-proccessors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <a-form
           ref="formRef"
@@ -25,6 +26,7 @@ import {computed, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {message} from "ant-design-vue";
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);

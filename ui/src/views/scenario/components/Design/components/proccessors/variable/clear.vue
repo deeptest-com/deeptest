@@ -1,5 +1,6 @@
 <template>
-  <div class="processor_variable_clear-main">
+  <div class="processor_variable_clear-main dp-proccessors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -29,7 +30,7 @@ import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const useForm = Form.useForm;
 
 const router = useRouter();

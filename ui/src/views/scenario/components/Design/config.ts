@@ -148,16 +148,16 @@ export const DESIGN_MENU_CONFIG = [
                 icon: 'arrange-cookie',
                 hideInNodeTypes: null,
                 children: [
-                    {
-                        title: '获取Cookie',
-                        key: 'processor_cookie_get',
-                        icon: 'arrange-add',
-                        // showInNodeTypes: ['processor_interface_default'],
-                    },
+                    // {
+                    //     title: '获取Cookie',
+                    //     key: 'processor_cookie_get',
+                    //     icon: 'arrange-add',
+                    //     // showInNodeTypes: ['processor_interface_default'],
+                    // },
                     {
                         title: '设置Cookie',
                         key: 'processor_cookie_set',
-                        icon: 'arrange-delete',
+                        icon: 'setting-dark',
                         // showInNodeTypes: ['processor_interface_default'],
                     },
                     {
@@ -168,40 +168,40 @@ export const DESIGN_MENU_CONFIG = [
                     },
                 ]
             },
-            {
-                key: 'processor_extractor',
-                title: '提取器',
-                icon: 'arrange-extractor',
-                showInNodeTypes: ['processor_interface_default'],
-                children: [
-                    {
-                        title: '边界提取器',
-                        key: 'processor_extractor_boundary',
-                        icon: 'arrange-extractor-boundary',
-                    },
-                    {
-                        title: 'JSON提取器',
-                        key: 'processor_extractor_jsonquery',
-                        icon: 'arrange-extractor-json',
-                    },
-                    {
-                        title: 'HTML提取器',
-                        key: 'processor_extractor_htmlquery',
-                        icon: 'arrange-extractor-html',
-                    },
-                    {
-                        title: 'XML提取器',
-                        key: 'processor_extractor_xmlquery',
-                        icon: 'arrange-extractor-xml',
-                    },
-                    // {
-                    //     title: '正则提取器',
-                    //     key: 'processor_extractor_regex',
-                    //     icon: 'arrange-extractor-regex',
-                    // },
-                    // arrange-extractor-xml.svg
-                ]
-            },
+            // {
+            //     key: 'processor_extractor',
+            //     title: '提取器',
+            //     icon: 'arrange-extractor',
+            //     showInNodeTypes: ['processor_interface_default'],
+            //     children: [
+            //         {
+            //             title: '边界提取器',
+            //             key: 'processor_extractor_boundary',
+            //             icon: 'arrange-extractor-boundary',
+            //         },
+            //         {
+            //             title: 'JSON提取器',
+            //             key: 'processor_extractor_jsonquery',
+            //             icon: 'arrange-extractor-json',
+            //         },
+            //         {
+            //             title: 'HTML提取器',
+            //             key: 'processor_extractor_htmlquery',
+            //             icon: 'arrange-extractor-html',
+            //         },
+            //         {
+            //             title: 'XML提取器',
+            //             key: 'processor_extractor_xmlquery',
+            //             icon: 'arrange-extractor-xml',
+            //         },
+            //         // {
+            //         //     title: '正则提取器',
+            //         //     key: 'processor_extractor_regex',
+            //         //     icon: 'arrange-extractor-regex',
+            //         // },
+            //         // arrange-extractor-xml.svg
+            //     ]
+            // },
             //   变量
             {
                 key: 'processor_variable',
@@ -401,3 +401,38 @@ export const showLineScenarioType = [
     // 数据处理
     'processor_data_default',
 ]
+
+/**
+ * 各节点类型对应的文案
+ * */
+export const scenarioTypeMapToText = {
+    'processor_interface_default': '接口',
+    'processor_group_default': '分组',
+    'processor_time_default': '定时器',
+    'processor_print_default': '输出',
+    'processor_assertion_default': '断言',
+    'processor_data_default': '数据处理',
+    'add-child-interface-define': '接口',
+    'add-child-interface-case': '接口',
+    'add-child-interface-diagnose': '接口',
+    'add-child-interface-custom': '接口',
+    'add-child-interface-curl': '接口',
+    'processor_cookie_get': '获取 Cookie',
+    'processor_cookie_set': '设置 Cookie',
+    'processor_cookie_clear': '清除 Cookie',
+    'processor_loop_break': '跳出循环',
+    'processor_loop_time': '循环次数',
+    'processor_loop_until': '循环直到',
+    'processor_loop_range': '循环区间',
+    'processor_loop_in': '循环列表',
+    'processor_logic_if': '如果',
+    'processor_logic_else': '否则',
+
+    'processor_extractor_boundary': '边界提取',
+    'processor_extractor_jsonquery': 'JSON 提取',
+    'processor_extractor_htmlquery': 'HTML 提取',
+    'processor_extractor_xmlquery': 'XML 提取',
+    'processor_variable_set': '设置变量',
+    'processor_variable_clear': '清除变量',
+    'processor_custom_code': '自定义代码',
+}

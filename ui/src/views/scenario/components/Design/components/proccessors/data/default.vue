@@ -1,5 +1,6 @@
 <template>
-  <div class="processor_data_excel-main">
+  <div class="processor_data_excel-main dp-proccessors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div class="top-header-tip">
         <a-alert message="说明：数据迭代处理器将循环读取文件中的行内容，并将读取的内容赋值给指定的变量" type="info" show-icon/>
@@ -85,7 +86,7 @@ import {Form, message} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {UploadOutlined} from "@ant-design/icons-vue";
 import {uploadRequest} from "@/utils/upload";
-
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const useForm = Form.useForm;
 
 const router = useRouter();

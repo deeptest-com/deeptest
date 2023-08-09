@@ -57,7 +57,6 @@
   .modal-tree-selection {
     .ant-modal {
       .ant-modal-content {
-        width: 600px;
         .ant-modal-body {
         }
       }

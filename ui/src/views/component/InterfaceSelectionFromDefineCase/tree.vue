@@ -25,7 +25,6 @@
           :tree-data="treeData"
           :replaceFields="fieldNames"
           @check="onChecked"
-          :defaultExpandAll="true"
       >
 
         <template #switcherIcon>

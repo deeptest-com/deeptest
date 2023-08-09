@@ -113,7 +113,7 @@ import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
 import {message, Modal} from 'ant-design-vue';
 import { SelectTypes } from 'ant-design-vue/es/select';
-import EmptyCom from '@/components/Empty/index.vue';
+import EmptyCom from '@/components/TableEmpty/index.vue';
 import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
 
 

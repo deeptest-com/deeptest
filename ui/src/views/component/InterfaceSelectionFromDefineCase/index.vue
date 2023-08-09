@@ -6,7 +6,7 @@
         :visible="true"
         :onCancel="onCancel"
         wrapClassName="modal-tree-selection"
-        width="1000px">
+        width="400px">
       <div class="interface-selection-main">
           <Tree :selectInterfaces="onSelectInterfaces" />
       </div>
@@ -53,6 +53,7 @@
   </script>
   
   <style lang="less">
+  
   .modal-tree-selection {
     .ant-modal {
       .ant-modal-content {
@@ -61,10 +62,9 @@
       }
     }
   }
-  </style>
-  
-  <style lang="less" scoped>
+
   .interface-selection-main {
   }
   </style>
+
   

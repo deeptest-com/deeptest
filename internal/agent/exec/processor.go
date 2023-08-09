@@ -21,8 +21,9 @@ type ProcessorMsg struct {
 type ProcessorBase struct {
 	ID uint `json:"id"`
 
-	Name     string `json:"name"`
-	Comments string `json:"comments"`
+	Name     string            `json:"name"`
+	Comments string            `json:"comments"`
+	Method   consts.HttpMethod `json:"method" yaml:"method"`
 
 	ParentId   uint `json:"parentId"`
 	ScenarioId uint `json:"scenarioId"`

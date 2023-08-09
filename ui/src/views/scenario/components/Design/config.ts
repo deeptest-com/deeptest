@@ -377,9 +377,9 @@ export const menuKeyMapToProcessorCategory = {
 
 
 /**
- * 展示边框的场景编排类型
+ * 展示目录竖线的场景编排类型
  * */
-export const showBorderScenarioType = [
+export const showLineScenarioType = [
     // 接口
     'processor_interface_default',
     'processor_group_default',

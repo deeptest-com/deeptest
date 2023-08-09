@@ -252,11 +252,11 @@ async function cancel() {
 
 watch(() => {
   return props.visible
-},(newVal) => {
-//  关闭时，需要清空数据
-//   if(!newVal) {
-//
-//   }
+},async (newVal) => {
+ // 关闭时，需要清空数据
+  if(!newVal) {
+    await store.dispatch('Scenario/getScenario', 0);
+  }
 })
 
 

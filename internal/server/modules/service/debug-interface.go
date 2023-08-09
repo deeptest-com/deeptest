@@ -116,6 +116,9 @@ func (s *DebugInterfaceService) Update(req domain.DebugData, debugInterfaceId ui
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
+	// 更新method
+	s.DiagnoseInterfaceRepo.UpdateMethod(debugInterface.DiagnoseInterfaceId, debugInterface.Method)
+
 	return
 }
 

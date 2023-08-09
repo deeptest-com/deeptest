@@ -6,7 +6,7 @@
       :visible="true"
       :onCancel="onCancel"
       wrapClassName="modal-tree-selection"
-      width="1000px">
+      width="400px">
     <div class="interface-selection-main">
         <Tree :selectInterfaces="onSelectInterfaces" />
     </div>
@@ -22,7 +22,6 @@
 import {defineProps, ref} from "vue";
 
 import Tree from "./tree.vue"
-import List from "./list.vue"
 
 const props = defineProps({
   onFinish: {

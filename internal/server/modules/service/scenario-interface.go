@@ -103,6 +103,9 @@ func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug mo
 
 	err = s.ScenarioInterfaceRepo.SaveDebugData(&debug)
 
+	//更新执行器method
+	s.ScenarioProcessorRepo.UpdateMethod(debug.ScenarioProcessorId, debug.Method)
+
 	return
 }
 
@@ -120,18 +123,18 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 	if debugInterface.DiagnoseInterfaceId > 0 {
 		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(debugInterface.DiagnoseInterfaceId)
 		diagnoseInterfaceTo := s.DiagnoseInterfaceRepo.ToTo(&diagnoseInterface)
-		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromDiagnose(diagnoseInterfaceTo, parentProcessor)
+		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromDiagnose(diagnoseInterfaceTo, parentProcessor, scenarioProcessor.Ordr)
 
 	} else if debugInterface.EndpointInterfaceId > 0 {
 		serveId := uint(0)
-		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name)
+		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name, scenarioProcessor.Ordr)
 	} else if debugInterface.CaseInterfaceId > 0 {
 		endpointCase, _ := s.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
 		interfaceCase := serverDomain.InterfaceCase{}
 		copier.CopyWithOption(&interfaceCase, &endpointCase, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 
 		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&interfaceCase)
-		s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor)
+		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor, scenarioProcessor.Ordr)
 	}
 
 	// must put below, since creation will use its DebugInterface

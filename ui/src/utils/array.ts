@@ -30,7 +30,7 @@ export function unique<T>(arr: Array<T>): Array<T> {
 
 export function isInArray(item, arr) {
   for(let i = 0; i < arr.length; i++){
-    if(item === arr[i]){
+    if(item == arr[i]){
       return true;
     }
   }

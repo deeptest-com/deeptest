@@ -402,3 +402,12 @@ func (r *ScenarioProcessorRepo) UpdateInterfaceId(id, debugInterfacceId uint) (e
 
 	return
 }
+
+func (r *ScenarioProcessorRepo) UpdateMethod(id uint, method consts.HttpMethod) (err error) {
+	err = r.DB.Model(&model.Processor{}).
+		Where("id=?", id).
+		Update("method", method).
+		Error
+
+	return
+}

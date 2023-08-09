@@ -1,8 +1,14 @@
 <template>
-     <div class="empty-container">
-        <img src="@/assets/images/empty.png" alt="">
-        <span>{{ text || '暂无数据' }}</span>
-    </div>
+    <!-- 表格无数据时的 展示 使用ConfigProvider定义组件空状态 -->
+    <a-config-provider>
+        <template #renderEmpty>
+            <div class="empty-container">
+                <img src="@/assets/images/empty.png" alt="">
+                <span>{{ text || '暂无数据' }}</span>
+            </div>
+        </template>
+        <slot name="content"></slot>
+    </a-config-provider>
 </template>
 <script setup lang="ts">
 import { defineProps } from 'vue';

@@ -10,7 +10,7 @@
       </div>
     </div>
     <div class="right">
-      <IconSvg :type="'interface'" class="prefix-icon-svg"/>
+      <IconSvg :type="'arrange-link'" class="prefix-icon-svg" />
       绑定接口：<a href="javascript:void (0)">{{ nodeData?.name }}</a>
     </div>
   </div>

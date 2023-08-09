@@ -138,12 +138,22 @@ body {
   position: fixed;
   border: 1px solid #e6e9ec;
   border-radius: 6px;
-  z-index: 99;
+  z-index: 999999;
   width: 360px;
   right: 38px;
 
   .dp-bg-light {
     height: 100%;
     padding: 12px 8px 12px 12px;
+  }
+}
+
+.ant-modal-root {
+  .ant-modal-wrap {
+    z-index: 1002;
+  }
+  
+  .ant-modal-mask {
+    z-index: 1002;
   }
 }

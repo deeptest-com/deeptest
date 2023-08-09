@@ -101,16 +101,9 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 	// Extractor
 	if checkpoint.Type == consts.Extractor {
-		var variable domain.ExecVariable
+		variable, _ := GetVariable(CurrScenarioProcessorId, checkpoint.ExtractorVariable)
 
-		// get extractor variable value saved by previous extract opt
-		if processorId > 0 { // exec interface processor in scenario
-			variable, _ = GetVariableInScope(processorId, checkpoint.ExtractorVariable)
-			checkpoint.ActualResult = variable.Value.(string)
-
-		} else { // exec by interface invocation
-			checkpoint.ActualResult = getValueFromShareVar(checkpoint.ExtractorVariable)
-		}
+		checkpoint.ActualResult = fmt.Sprintf("%v", variable.Value)
 
 		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
 

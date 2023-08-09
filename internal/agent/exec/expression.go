@@ -2,6 +2,7 @@ package agentExec
 
 import (
 	"github.com/Knetic/govaluate"
+	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
@@ -29,7 +30,7 @@ var (
 	}
 )
 
-// called by server checkpoint service
+// called by checkpoint
 func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret interface{}, err error) {
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
@@ -77,7 +78,7 @@ func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain
 
 	for _, variableName := range variables {
 		var vari domain.ExecVariable
-		vari, err = GetVariableInScope(scopeId, variableName)
+		vari, err = GetVariable(scopeId, variableName)
 		if err == nil {
 			ret[variableName] = vari.Value
 		}
@@ -99,7 +100,8 @@ func generateGovaluateParamsWithVariables(expression string) (
 		varNameWithoutPlus := strings.TrimLeft(varName, "+")
 
 		var valObj interface{}
-		valStr := getVariableValue(varNameWithoutPlus)
+		variable, _ := GetVariable(CurrScenarioProcessorId, varNameWithoutPlus)
+		valStr := valueUtils.InterfaceToStr(variable.Value)
 
 		if varNameWithoutPlus != varName { // is a number like ${+id}
 			valObj = _stringUtils.StrToInt(valStr)

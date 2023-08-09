@@ -83,25 +83,38 @@ func (s *DebugInterfaceService) GetDetail(id uint) (ret model.DebugInterface, er
 	return
 }
 
-func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
-	s.CopyValueFromRequest(&debugInterface, req)
-
-	if req.DebugInterfaceId > 0 { // to update if already loading from a debugInterface
-		debugInterface.ID = req.DebugInterfaceId
+func (s *DebugInterfaceService) CreateOrUpdate(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
+	if req.DebugInterfaceId > 0 {
+		debugInterface, err = s.Update(req, req.DebugInterfaceId)
 	} else {
-		debugInterface.ServeId = req.ServeId
+		debugInterface, err = s.Create(req)
 	}
+
+	return
+}
+
+func (s *DebugInterfaceService) Create(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
+	s.CopyValueFromRequest(&debugInterface, req)
+	debugInterface.ServeId = req.ServeId
+	debugInterface.ID = 0
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
 	// first time to save a debug interface that convert from endpoint interface, clone conditions
 	// it's different from cloning data between two debug interfaces when do importing
-	if req.DebugInterfaceId <= 0 {
-		s.PreConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
-		s.PostConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
+	s.PreConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
+	s.PostConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
 
-		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
-	}
+	s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
+
+	return
+}
+
+func (s *DebugInterfaceService) Update(req domain.DebugData, debugInterfaceId uint) (debugInterface model.DebugInterface, err error) {
+	s.CopyValueFromRequest(&debugInterface, req)
+	debugInterface.ID = debugInterfaceId
+
+	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
 	// 更新method
 	s.DiagnoseInterfaceRepo.UpdateMethod(debugInterface.DiagnoseInterfaceId, debugInterface.Method)
@@ -109,13 +122,16 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model
 	return
 }
 
-func (s *DebugInterfaceService) SaveAs(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
+func (s *DebugInterfaceService) SaveAs(req domain.DebugData, srcDebugInterfaceId uint) (debugInterface model.DebugInterface, err error) {
 	s.CopyValueFromRequest(&debugInterface, req)
+	debugInterface.ServeId = req.ServeId
+	req.DebugInterfaceId = 0
+	debugInterface.ID = 0
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
-	s.PreConditionRepo.CloneAll(req.DebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
-	s.PostConditionRepo.CloneAll(req.DebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
+	s.PreConditionRepo.CloneAll(srcDebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
+	s.PostConditionRepo.CloneAll(srcDebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
 
 	return
 }

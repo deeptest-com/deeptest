@@ -101,7 +101,7 @@ func (s *DiagnoseInterfaceService) Move(srcId, targetId uint, pos serverConsts.D
 }
 
 func (s *DiagnoseInterfaceService) SaveDebugData(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
-	s.DebugInterfaceService.Save(req)
+	s.DebugInterfaceService.CreateOrUpdate(req)
 
 	return
 }
@@ -160,7 +160,7 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 		UsedBy: consts.DiagnoseDebug,
 	}
 
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, 0)
 
 	// save test interface
 	diagnoseInterface := model.DiagnoseInterface{
@@ -210,7 +210,6 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 
 	// convert or clone a debug interface obj
 	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(uint(endpointInterfaceId))
-	debugData.DebugInterfaceId = 0 // force to clone the old one
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
 	debugData.ServeId = parent.ServeId
 
@@ -224,7 +223,8 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 	debugData.Url = _httpUtils.CombineUrls(server.Url, debugData.Url)
 
 	debugData.UsedBy = consts.DiagnoseDebug
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
+	srcDebugInterfaceId := debugData.DebugInterfaceId
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
 
 	// save test interface
 	diagnoseInterface := model.DiagnoseInterface{

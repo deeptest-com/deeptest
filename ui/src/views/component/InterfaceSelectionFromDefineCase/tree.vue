@@ -2,7 +2,7 @@
   <div class="tree-main">
     <div class="tree-filters">
       <a-select 
-        style="width: 100%;margin-bottom: 20px;" 
+        style="margin-right: 20px; width: 100%"
         :bordered="true"
         :placeholder="'请选择服务'"
         v-model:value="serveId"
@@ -10,7 +10,7 @@
         <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
       </a-select>
       <a-input-search
-        style="display: flex;justify-content: end;width: 100%;margin-bottom: 16px; "
+        style="width: 100%"
         placeholder="请输入关键词"
         enter-button
         v-model:value="searchValue"
@@ -186,7 +186,10 @@ onMounted(async () => {
 <style scoped lang="less">
 .tree-main {
   .tree-filters {
-    margin-bottom: 0;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   .tree-container {

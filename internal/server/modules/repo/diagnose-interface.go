@@ -97,6 +97,7 @@ func (r *DiagnoseInterfaceRepo) ToTo(po *model.DiagnoseInterface) (to *serverDom
 		ServeId:          po.ServeId,
 		DebugInterfaceId: po.DebugInterfaceId,
 		Method:           po.Method,
+		IsDir:            true,
 	}
 
 	if po.Type == serverConsts.DiagnoseInterfaceTypeInterface {

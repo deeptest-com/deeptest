@@ -63,8 +63,10 @@ func (entity ProcessorExtractor) Run(processor *Processor, session *Session) (er
 	}
 
 	SetVariable(processor.ParentId, entity.Variable, entity.Result, consts.Public) // set in parent scope
+
 	//processor.Result.Summary = fmt.Sprintf("将结果\"%v\"赋予变量\"%s\"。", entity.Result, entity.Variable)
 	processor.Result.Summary = fmt.Sprintf("将结果赋予变量\"%s\"。", entity.Variable)
+
 	detail := map[string]interface{}{"提取器类型": entity.ProcessorType, "元素路径": entity.Expression, "变量": entity.Variable, "值": entity.Result}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	processor.AddResultToParent()

@@ -371,9 +371,6 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 
 		s.ScenarioNodeRepo.Save(&processor)
 
-		// convert or clone a debug interface obj
-		debugData.DebugInterfaceId = 0 // force to clone the old one
-
 		debugData.ScenarioProcessorId = processor.ID
 		debugData.ProcessorInterfaceSrc = consts.InterfaceSrcCase
 

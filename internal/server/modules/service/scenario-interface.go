@@ -125,9 +125,6 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 		diagnoseInterfaceTo := s.DiagnoseInterfaceRepo.ToTo(&diagnoseInterface)
 		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromDiagnose(diagnoseInterfaceTo, parentProcessor, scenarioProcessor.Ordr)
 
-	} else if debugInterface.EndpointInterfaceId > 0 {
-		serveId := uint(0)
-		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name, scenarioProcessor.Ordr)
 	} else if debugInterface.CaseInterfaceId > 0 {
 		endpointCase, _ := s.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
 		interfaceCase := serverDomain.InterfaceCase{}
@@ -135,6 +132,9 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 
 		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&interfaceCase)
 		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor, scenarioProcessor.Ordr)
+	} else if debugInterface.EndpointInterfaceId > 0 {
+		serveId := uint(0)
+		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name, scenarioProcessor.Ordr)
 	}
 
 	// must put below, since creation will use its DebugInterface

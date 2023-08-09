@@ -102,9 +102,17 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		ret.ParentId = targetProcessor.ParentId
 	} else if req.Mode == "parent" && req.TargetProcessorCategory == consts.ProcessorInterface {
 		ret.ParentId = targetProcessor.ParentId
+	} else if req.Mode == "siblings" {
+		ret.ParentId = targetProcessor.ParentId
 	}
 
-	ret.Ordr = s.ScenarioNodeRepo.GetMaxOrder(ret.ParentId)
+	//相邻节点需要插空，其他节点后移
+	if req.Mode == "siblings" {
+		s.ScenarioNodeRepo.MoveMaxOrder(ret.ParentId, uint(targetProcessor.Ordr), 1)
+		ret.Ordr = targetProcessor.Ordr + 1
+	} else {
+		ret.Ordr = s.ScenarioNodeRepo.GetMaxOrder(ret.ParentId)
+	}
 
 	s.ScenarioNodeRepo.Save(&ret)
 

@@ -60,7 +60,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	DealwithCookies(&baseRequest, entity.ProcessorID)
 
 	// gen request url
-	GenRequestUrl(&baseRequest, processor.EntityId, entity.BaseUrl)
+	GenRequestUrlWithBaseUrlAndPathParam(&baseRequest, processor.EntityId, entity.BaseUrl)
 
 	// send request
 	//startTime := time.UnixNano()

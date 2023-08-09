@@ -1,8 +1,6 @@
 package agentExec
 
 import (
-	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
 	"strings"
@@ -16,17 +14,23 @@ var (
 	CurrScenarioProcessorId = uint(0)
 	CurrDebugInterfaceId    = uint(0)
 
-	CachedShareVarByProcessorForRead map[uint]domain.VarKeyValuePair
+	//CachedShareVarByProcessorForRead map[uint]domain.VarKeyValuePair
 
-	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario
-	ScopedVariables = map[uint][]domain.ExecVariable{} // only for scenario
+	ScopedVariables = map[uint][]domain.ExecVariable{} // for scenario and debug
 	ScopedCookies   = map[uint][]domain.ExecCookie{}   // only for scenario
+	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario (processId -> ancestorProcessIds)
 
-	ExecScene      = domain.ExecScene{}
-	DatapoolCursor = map[string]int{}
+	ExecScene      = domain.ExecScene{} // for scenario and debug, from server
+	DatapoolCursor = map[string]int{}   // only for scenario
 )
 
-func InitExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable) {
+func InitDebugExecContext() (variables []domain.ExecVariable) {
+	ScopedVariables = map[uint][]domain.ExecVariable{}
+
+	return
+}
+
+func InitScenarioExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable) {
 	ComputerScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
 
 	ExecScene = execObj.ExecScene
@@ -34,55 +38,27 @@ func InitExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable)
 
 	ScopedVariables = map[uint][]domain.ExecVariable{}
 	ScopedCookies = map[uint][]domain.ExecCookie{}
-	CachedShareVarByProcessorForRead = map[uint]domain.VarKeyValuePair{}
 
 	return
 }
 
-func GetCachedVariableMapInContext(processorId uint) (ret domain.VarKeyValuePair) {
-	ret = domain.VarKeyValuePair{}
+func GetValidScopeIds(id uint) (ret *[]uint) {
+	ret = &[]uint{}
 
-	variables := listCachedVariable(processorId)
-
-	for _, item := range variables {
-		valMap, isMap := item.Value.(domain.VarKeyValuePair)
-
-		if isMap {
-			for propKey, v := range valMap {
-				ret[fmt.Sprintf("%s.%s", item.Name, propKey)] = v
-			}
-		} else {
-			ret[item.Name] = item.Value
-		}
-	}
-
-	return
-}
-func listCachedVariable(processorId uint) (variables []domain.ExecVariable) {
-	effectiveScopeIds := ScopeHierarchy[processorId]
-
-	if effectiveScopeIds == nil {
-		effectiveScopeIds = &[]uint{uint(0)}
-	}
-
-	if effectiveScopeIds == nil {
+	if id == 0 {
+		*ret = append(*ret, id)
 		return
 	}
 
-	for _, id := range *effectiveScopeIds {
-		for _, vari := range ScopedVariables[id] {
-			if vari.Scope == consts.Public || (vari.Scope == consts.Private && id == processorId) {
-				variables = append(variables, vari)
-			}
-		}
-	}
+	ret = ScopeHierarchy[id]
 
 	return
 }
 
-func EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath string) (
+// like {name.prop}
+func EvaluateVariablePropExpressionValue(variable domain.ExecVariable, propExpression string) (
 	ret domain.ExecVariable, ok bool) {
-	arr := strings.Split(variablePath, ".")
+	arr := strings.Split(propExpression, ".")
 	variableName := arr[0]
 
 	if variable.Name == variableName {
@@ -94,7 +70,6 @@ func EvaluateVariableExpressionValue(variable domain.ExecVariable, variablePath 
 		}
 
 		ok = true
-
 	}
 
 	return

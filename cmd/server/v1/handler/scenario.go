@@ -138,6 +138,7 @@ func (c *ScenarioCtrl) Create(ctx iris.Context) {
 	req.CreateUserName = multi.GetUsername(ctx)
 	req.CreateUserId = multi.GetUserId(ctx)
 	req.Status = consts.Draft
+
 	po, err := c.ScenarioService.Create(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil})

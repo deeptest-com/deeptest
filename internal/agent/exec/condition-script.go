@@ -61,7 +61,8 @@ func InitJsRuntime() {
 	})
 
 	MyVm.JsRuntime.Set("getVariable", func(name string) interface{} {
-		return getVariableValue(name)
+		vari, _ := GetVariable(CurrScenarioProcessorId, name)
+		return vari.Value
 	})
 	MyVm.JsRuntime.Set("setVariable", func(name, val string) {
 		SetVariable(CurrScenarioProcessorId, name, val, consts.Public)

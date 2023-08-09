@@ -53,7 +53,7 @@ func ExecScenario(execObj *agentExec.ScenarioExecObj, wsMsg *websocket.Message) 
 
 	RestoreEntityFromRawAndSetParent(execObj.RootProcessor)
 
-	agentExec.InitExecContext(execObj)
+	agentExec.InitScenarioExecContext(execObj)
 	agentExec.InitJsRuntime()
 
 	// start msg

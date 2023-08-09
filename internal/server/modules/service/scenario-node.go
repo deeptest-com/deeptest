@@ -192,7 +192,7 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 
 	// convert or clone a debug interface obj
 	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(endpointInterfaceId)
-	debugData.DebugInterfaceId = 0 // force to clone the old one
+
 	debugData.EndpointInterfaceId = endpointInterfaceId
 
 	debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved
@@ -210,7 +210,8 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	debugData.BaseUrl = server.Url
 
 	debugData.UsedBy = consts.ScenarioDebug
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
+	srcDebugInterfaceId := debugData.DebugInterfaceId
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
 
 	// save scenario interface
 	if name == "" {
@@ -287,8 +288,6 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 		s.ScenarioNodeRepo.Save(&processor)
 
 		// convert or clone a debug interface obj
-		debugData.DebugInterfaceId = 0 // force to clone the old one
-
 		debugData.ScenarioProcessorId = processor.ID
 		debugData.ProcessorInterfaceSrc = consts.InterfaceSrcDiagnose
 
@@ -301,7 +300,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 		debugData.Url = debugInterfaceOfDiagnoseInterfaceNode.Url
 
 		debugData.UsedBy = consts.ScenarioDebug
-		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData)
+		srcDebugInterfaceId := debugData.DebugInterfaceId
+		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
 
 		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, debugInterface.ID)
 
@@ -364,8 +364,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		debugData.Url = debugInterfaceOfCaseNode.Url
 
 		debugData.UsedBy = consts.ScenarioDebug
-
-		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData)
+		srcDebugInterfaceId := debugData.DebugInterfaceId
+		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
 
 		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, debugInterface.ID)
 
@@ -468,7 +468,7 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 		UsedBy: consts.ScenarioDebug,
 	}
 
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, 0)
 
 	processor := model.Processor{
 		Name: title,

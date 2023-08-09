@@ -34,7 +34,11 @@
           </template>
           <template #title="{dataRef}">
             <div class="tree-title"
-                 :class="{'dp-tree-border':showBorderScenarioType.includes(dataRef?.entityType)}"
+                 :class="{
+                  'dp-tree-border':showLineScenarioType.includes(dataRef?.entityType),
+                  'dp-tree-if':dataRef?.entityType === 'processor_logic_if',
+                  'dp-tree-else':dataRef?.entityType === 'processor_logic_else'
+                 }"
                  :draggable="dataRef.id === -1">
               <div class="title" :class="[dataRef.disable ? 'dp-disabled' : '']">
                 <!-- 标题前缀 -->
@@ -128,7 +132,7 @@ import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelection
 import cloneDeep from "lodash/cloneDeep";
 import InterfaceImportFromCurl from "@/views/component/InterfaceImportFromCurl/index.tsx";
 import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue";
-import {showBorderScenarioType} from "./config";
+import {showLineScenarioType} from "./config";
 
 const props = defineProps<{}>()
 const {t} = useI18n();
@@ -549,12 +553,13 @@ const removeNode = () => {
 
 const disableNodeOrNot = () => {
   const node = treeDataMap.value[targetModelId]
-  const action = node.disable ? '启用' : '禁用'
+  const action = node.disable ? '启用' : '禁用';
+  const content = node.disable ? '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？' : '禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？';
 
   Modal.confirm({
     okType: 'danger',
-    title: `确定${action}名为${node.name}的节点吗？`,
-    content: '将同时禁用步骤下的所有子步骤，禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？',
+    title: `确定${action}名为【${node.name}】的场景吗？`,
+    content: content,
     okText: () => '确定',
     cancelText: () => '取消',
     onOk: async () => {
@@ -696,7 +701,6 @@ onUnmounted(() => {
     //margin-bottom: 5px;
     //border-radius: 4px;
     position: relative;
-
     &:before {
       content: '';
       position: absolute;
@@ -705,6 +709,24 @@ onUnmounted(() => {
       height: 100%;
       width: 1px;
       background: #f0f0f0;
+    }
+  }
+
+  :deep(.ant-tree-treenode-switcher-close:has(.tree-title.dp-tree-else)) {
+    //position: relative;
+    &:before {
+      //content: '';
+      //position: absolute;
+      //top: 0;
+      //left: 11px;
+      //height: 100%;
+      //width: 1px;
+      //background: #f0f0f0;
+      //
+      //outline: 1px solid #f0f0f0;
+      //outline-offset: -2px;
+      //margin-bottom: 5px;
+      //border-radius: 4px;
     }
   }
 }

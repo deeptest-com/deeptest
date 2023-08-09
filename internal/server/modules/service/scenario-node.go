@@ -264,19 +264,21 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(diagnoseInterfaceNode.DebugInterfaceId)
 
 	if diagnoseInterfaceNode.IsDir && len(diagnoseInterfaceNode.Children) > 0 { // dir
-		processor := model.Processor{
-			Name:           diagnoseInterfaceNode.Title,
-			ScenarioId:     parentProcessor.ScenarioId,
-			EntityCategory: consts.ProcessorGroup,
-			EntityType:     consts.ProcessorGroupDefault,
-			ParentId:       parentProcessor.ID,
-			ProjectId:      parentProcessor.ProjectId,
-		}
-		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-		s.ScenarioNodeRepo.Save(&processor)
+		/*
+			processor := model.Processor{
+				Name:           diagnoseInterfaceNode.Title,
+				ScenarioId:     parentProcessor.ScenarioId,
+				EntityCategory: consts.ProcessorGroup,
+				EntityType:     consts.ProcessorGroupDefault,
+				ParentId:       parentProcessor.ID,
+				ProjectId:      parentProcessor.ProjectId,
+			}
+			processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+			s.ScenarioNodeRepo.Save(&processor)
+		*/
 
 		for _, child := range diagnoseInterfaceNode.Children {
-			s.createDirOrInterfaceFromDiagnose(child, processor, 0)
+			s.createDirOrInterfaceFromDiagnose(child, parentProcessor, 0)
 		}
 
 	} else if !diagnoseInterfaceNode.IsDir { // interface

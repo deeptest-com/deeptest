@@ -4,7 +4,7 @@
 
 
 /**
- * 仅显示禁用和删除的操作的类型
+ * 仅显示禁用和删除的操作的类型，即叶子节点
  * */
 const onlyShowDisableAndDeleteTypes = [
     'processor_time_default',
@@ -25,6 +25,9 @@ const onlyShowDisableAndDeleteTypes = [
     'processor_extractor_regex',
     // 跳出循环也是叶子结点
     'processor_loop_break',
+
+    // 请求也是叶子结点
+    'processor_interface_default',
 ];
 
 /**
@@ -263,8 +266,15 @@ export const DESIGN_MENU_CONFIG = [
     //    禁用
     {
         key: 'disable',
-        title: '禁用/启用',
-        icon: 'arrange-disable',
+        title: '禁用',
+        icon: 'arrange-disabled',
+        hideInNodeTypes: ['processor_root_default'],
+    },
+    //    禁用
+    {
+        key: 'enable',
+        title: '启用',
+        icon: 'arrange-enable',
         hideInNodeTypes: ['processor_root_default'],
     },
     // 删除

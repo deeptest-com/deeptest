@@ -1,5 +1,6 @@
 <template>
   <div class="processor_interface_default-main dp-relative">
+    <ProcessorHeader/>
     <DebugComp :onSaveDebugData="saveScenarioInterface"
                :onSyncDebugData="syncDebugData" />
   </div>
@@ -16,6 +17,7 @@ import {UsedBy} from "@/utils/enum";
 import {resizeWidth} from "@/utils/dom";
 import {NotificationKeyCommon} from "@/utils/const";
 import DebugComp from '@/views/component/debug/index.vue';
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Scenario} from "@/views/scenario/store";
@@ -27,10 +29,11 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
+
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug);
 
-watch(scenarioProcessorIdForDebug, () => {
+watch(scenarioProcessorIdForDebug,  () => {
   console.log('watch scenarioProcessorIdForDebug', scenarioProcessorIdForDebug.value)
   loadData()
 }, {immediate: true, deep: true})
@@ -41,7 +44,7 @@ function loadData() {
 
     if (scenarioProcessorIdForDebug.value === 0) return
 
-    store.dispatch('Debug/loadDataAndInvocations', {
+   await store.dispatch('Debug/loadDataAndInvocations', {
       scenarioProcessorId: scenarioProcessorIdForDebug.value,
       usedBy: usedBy,
     });
@@ -72,7 +75,7 @@ const saveScenarioInterface = async (data) => {
 
 const syncDebugData = async () => {
   console.log('syncDebugData')
-  store.dispatch('Scenario/syncDebugData')
+  await store.dispatch('Scenario/syncDebugData')
 };
 
 onMounted(() => {

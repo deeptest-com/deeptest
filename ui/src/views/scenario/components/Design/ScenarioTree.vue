@@ -713,6 +713,7 @@ onUnmounted(() => {
 
   :deep(.ant-tree-treenode-switcher-close:has(.tree-title.dp-tree-else)) {
     //position: relative;
+
     &:before {
       //content: '';
       //position: absolute;
@@ -728,6 +729,12 @@ onUnmounted(() => {
       //border-radius: 4px;
     }
   }
+
+  :deep(.ant-tree-treenode-switcher-close .tree-title.dp-tree-else  .prefix-icon){
+    visibility: hidden;
+  }
+
+
 }
 
 .tree-filter {
@@ -768,7 +775,7 @@ onUnmounted(() => {
     width: 16px;
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
   }
 
   .prefix-req-method {
@@ -781,6 +788,8 @@ onUnmounted(() => {
     cursor: pointer;
     //transform: scale(0.8);
   }
+
+
 
 
 }

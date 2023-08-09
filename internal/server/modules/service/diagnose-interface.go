@@ -100,12 +100,6 @@ func (s *DiagnoseInterfaceService) Move(srcId, targetId uint, pos serverConsts.D
 	return
 }
 
-func (s *DiagnoseInterfaceService) SaveDebugData(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
-	s.DebugInterfaceService.CreateOrUpdate(req)
-
-	return
-}
-
 func (s *DiagnoseInterfaceService) CopyValueFromRequest(interf *model.DiagnoseInterface, req serverDomain.DiagnoseInterfaceSaveReq) {
 	copier.CopyWithOption(interf, req, copier.Option{
 		DeepCopy: true,

@@ -241,11 +241,12 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 		EndpointInterfaceId: debugInterface.EndpointInterfaceId,
 
 		//Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
-		Ordr:       order,
-		ParentId:   parentProcessor.ID,
-		ScenarioId: parentProcessor.ScenarioId,
-		ProjectId:  parentProcessor.ProjectId,
-		CreatedBy:  createBy,
+		Ordr:                  order,
+		ParentId:              parentProcessor.ID,
+		ScenarioId:            parentProcessor.ScenarioId,
+		ProjectId:             parentProcessor.ProjectId,
+		CreatedBy:             createBy,
+		ProcessorInterfaceSrc: consts.InterfaceSrcDefine,
 	}
 
 	s.ScenarioNodeRepo.Save(&processor)
@@ -299,10 +300,11 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 			//Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
 			Ordr: order,
 
-			ParentId:   parentProcessor.ID,
-			ScenarioId: parentProcessor.ScenarioId,
-			ProjectId:  parentProcessor.ProjectId,
-			CreatedBy:  parentProcessor.CreatedBy,
+			ParentId:              parentProcessor.ID,
+			ScenarioId:            parentProcessor.ScenarioId,
+			ProjectId:             parentProcessor.ProjectId,
+			CreatedBy:             parentProcessor.CreatedBy,
+			ProcessorInterfaceSrc: consts.InterfaceSrcDiagnose,
 		}
 
 		//processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
@@ -356,17 +358,18 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 			order = s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID)
 		}
 		processor = model.Processor{
-			Name:                caseNode.Name,
-			Method:              debugData.Method,
-			EntityCategory:      consts.ProcessorInterface,
-			EntityType:          consts.ProcessorInterfaceDefault,
-			EntityId:            caseNode.DebugInterfaceId, // as debugInterfaceId
-			EndpointInterfaceId: debugData.EndpointInterfaceId,
-			Ordr:                order,
-			ParentId:            parentProcessor.ID,
-			ScenarioId:          parentProcessor.ScenarioId,
-			ProjectId:           parentProcessor.ProjectId,
-			CreatedBy:           parentProcessor.CreatedBy,
+			Name:                  caseNode.Name,
+			Method:                debugData.Method,
+			EntityCategory:        consts.ProcessorInterface,
+			EntityType:            consts.ProcessorInterfaceDefault,
+			EntityId:              caseNode.DebugInterfaceId, // as debugInterfaceId
+			EndpointInterfaceId:   debugData.EndpointInterfaceId,
+			Ordr:                  order,
+			ParentId:              parentProcessor.ID,
+			ScenarioId:            parentProcessor.ScenarioId,
+			ProjectId:             parentProcessor.ProjectId,
+			CreatedBy:             parentProcessor.CreatedBy,
+			ProcessorInterfaceSrc: consts.InterfaceSrcCase,
 		}
 
 		s.ScenarioNodeRepo.Save(&processor)

@@ -2,15 +2,23 @@
   <a-spin :spinning="spinning">
   <div class="diagnose-interface-design-main">
       <div id="diagnose-interface-debug-panel">
-        <a-tabs class="dp-tabs-full-height" type="editable-card"
-                :hideAdd="true"
-                v-if="interfaceTabs?.length"
-                :activeKey="activeTabKey"
-                @edit="onTabEdit"
-                @change="changeTab">
-          <a-tab-pane v-for="tab in interfaceTabs"
-                      :key="''+tab.id" :tab="getTitle(tab.title)"
-                      class="dp-relative">
+        <a-tabs 
+          class="dp-tabs-full-height" 
+          type="editable-card"
+          :hideAdd="true"
+          :closable="true"
+          v-if="interfaceTabs?.length"
+          :activeKey="activeTabKey"
+          @edit="onTabEdit"
+          @change="changeTab">
+          <a-tab-pane 
+            v-for="tab in interfaceTabs"
+            :title="tab.title"
+            :key="''+tab.id" 
+            class="dp-relative">
+            <template #tab>
+              <span :title="tab.title">{{ getTitle(tab.title) }}</span>
+            </template>
             <template v-if="debugData?.method" >
               <DebugComp :onSaveDebugData="saveDiagnoseInterface"
                          :baseUrlDisabled="false" />

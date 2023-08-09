@@ -56,12 +56,9 @@ import {
   computed, reactive, toRefs, ref, onMounted,
   watch, defineProps, nextTick
 } from 'vue';
-import {useRouter} from 'vue-router';
 import debounce from "lodash.debounce";
-import EndpointTree from './list/tree.vue';
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {useStore} from "vuex";
-import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";

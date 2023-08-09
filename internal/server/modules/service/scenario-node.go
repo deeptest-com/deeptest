@@ -322,22 +322,26 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 
 func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomain.EndpointCaseTree, parentProcessor model.Processor, order int) (
 	processor model.Processor, err error) {
-	if caseNode.IsDir && len(caseNode.Children) > 0 { // dir
-		processor = model.Processor{
-			Name:           caseNode.Name,
-			ScenarioId:     parentProcessor.ScenarioId,
-			EntityCategory: consts.ProcessorGroup,
-			EntityType:     consts.ProcessorGroupDefault,
-			ParentId:       parentProcessor.ID,
-			ProjectId:      parentProcessor.ProjectId,
+	if caseNode.IsDir { // dir
+		if len(caseNode.Children) > 1 {
+			processor = model.Processor{
+				Name:           caseNode.Name,
+				ScenarioId:     parentProcessor.ScenarioId,
+				EntityCategory: consts.ProcessorGroup,
+				EntityType:     consts.ProcessorGroupDefault,
+				ParentId:       parentProcessor.ID,
+				ProjectId:      parentProcessor.ProjectId,
+			}
+			processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+			s.ScenarioNodeRepo.Save(&processor)
+
+			parentProcessor = processor
 		}
-		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-		s.ScenarioNodeRepo.Save(&processor)
 
 		for _, child := range caseNode.Children {
-			s.createDirOrInterfaceFromCase(child, processor, 0)
+			s.createDirOrInterfaceFromCase(child, parentProcessor, 0)
 		}
-	} else if !caseNode.IsDir { // interface
+	} else { // interface
 		debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(caseNode.DebugInterfaceId)
 
 		if order == 0 {

@@ -1,9 +1,9 @@
 <template>
-  <div class="processor_cookie_clear-main">
+  <div class="processor_cookie_clear-main dp-proccessors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-
           <a-form-item label="Cookie名称" v-bind="validateInfos.cookieName">
             <a-input v-model:value="modelRef.cookieName"
                      @blur="validate('cookieName', { trigger: 'blur' }).catch(() => {})"/>
@@ -30,7 +30,7 @@ import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const useForm = Form.useForm;
 
 const router = useRouter();

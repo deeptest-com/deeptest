@@ -1,5 +1,6 @@
 <template>
-  <div class="processor_data_excel-main">
+  <div class="processor_data_excel-main dp-proccessors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -74,7 +75,7 @@ import settings from "@/config/settings";
 import {getUrls} from "@/utils/request";
 import {getToken} from "@/utils/localToken";
 import {uploadRequest} from "@/utils/upload";
-
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const useForm = Form.useForm;
 
 const router = useRouter();

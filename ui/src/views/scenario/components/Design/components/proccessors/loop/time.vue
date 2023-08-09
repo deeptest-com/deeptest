@@ -1,6 +1,7 @@
 <!-- ::::迭代次数 -->
 <template>
-  <div class="processor_loop_time-main">
+  <div class="processor_loop_time-main dp-proccessors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -36,6 +37,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 
 

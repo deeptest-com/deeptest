@@ -1,5 +1,7 @@
 <template>
-  <div class="processor_extractor_htmlquery-main">
+  <div class="processor_extractor_htmlquery-main dp-proccessors-container">
+    <ProcessorHeader/>
+
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">

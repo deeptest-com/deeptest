@@ -1,5 +1,7 @@
 <template>
-  <div class="processor_login_if-main">
+  <div class="processor_login_if-main dp-proccessors-container">
+    <ProcessorHeader/>
+
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -30,6 +32,8 @@ import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
+
 import {getCompareOpts} from "@/utils/compare";
 
 const useForm = Form.useForm;

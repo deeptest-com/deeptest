@@ -134,14 +134,16 @@
       :env-select-drawer-visible="selectEnvVisible"
       @on-cancel="cancelSelectExecEnv"
       @on-ok="selectExecEnv"/>
-
-  <DrawerDetail :destroyOnClose="true"
-                :visible="drawerVisible"
-                :drawerTabKey="drawerTabKey"
-                :execVisible="execVisible"
-                @refreshList="refreshList"
-                @closeExecDrawer="execVisible = false"
-                @close="drawerVisible = false;"/>
+  <div v-if="drawerVisible">
+    <DrawerDetail 
+      :destroyOnClose="true"
+      :visible="drawerVisible"
+      :drawerTabKey="drawerTabKey"
+      :execVisible="execVisible"
+      @refreshList="refreshList"
+      @closeExecDrawer="execVisible = false"
+      @close="drawerVisible = false;"/>
+  </div>  
 </template>
 
 <script setup lang="ts">

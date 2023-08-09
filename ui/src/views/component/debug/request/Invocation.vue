@@ -163,8 +163,6 @@ const listServer = async (serveId) => {
 }
 
 const showBaseUrl = () => {
-  console.log('showBaseUrl')
-
   const notShow = debugData.value.usedBy === UsedBy.DiagnoseDebug
       || (debugData.value.usedBy === UsedBy.ScenarioDebug &&
                 (debugData.value.processorInterfaceSrc === ProcessorInterfaceSrc.Diagnose ||

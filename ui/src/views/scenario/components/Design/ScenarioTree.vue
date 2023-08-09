@@ -345,11 +345,10 @@ function selectMenu(menuInfo, treeNode) {
     // 如果已经存在 else 节点，则不允许添加
     // 另外目标节点已经有 else节点了，也不能再添加
     const repeat = checkElseRepeat(treeNode);
-    debugger;
     if (repeat) {
       return;
     }
-    mode = 'brother'
+    mode = 'siblings';
   }
 
   const processorCategory = menuKeyMapToProcessorCategory[key];
@@ -411,7 +410,7 @@ const addElse = (treeNode) => {
   const targetProcessorId = targetModelId
   const targetProcessorCategory = treeDataMap.value[targetModelId].entityCategory
   const targetProcessorType = treeDataMap.value[targetModelId].entityType
-  const mode = 'brother';
+  const mode = 'siblings';
   addNode(mode, 'processor_logic', 'processor_logic_else',
       targetProcessorCategory, targetProcessorType, targetProcessorId);
 }

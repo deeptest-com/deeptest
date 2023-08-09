@@ -41,22 +41,21 @@
     </div>
 
     <a-table
-        v-if="list.length > 0"
-        row-key="id"
-        :columns="columns"
-        :data-source="list"
-        :loading="loading"
-        :pagination="{
-                ...pagination,
-                onChange: (page) => {
-                    getList(page, nodeDataCategory.id);
-                },
-                onShowSizeChange: (page, size) => {
-                    pagination.pageSize = size
-                    getList(page, nodeDataCategory.id);
-                },
-            }"
-        class="dp-table">
+      row-key="id"
+      :columns="columns"
+      :data-source="list"
+      :loading="loading"
+      :pagination="{
+        ...pagination,
+        onChange: (page) => {
+            getList(page, nodeDataCategory.id);
+        },
+        onShowSizeChange: (page, size) => {
+            pagination.pageSize = size
+            getList(page, nodeDataCategory.id);
+        },
+      }"
+      class="dp-table">
 
       <template #name="{ record ,text }">
         <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
@@ -122,7 +121,6 @@
         </a-dropdown>
       </template>
     </a-table>
-    <a-empty v-if="list.length === 0" :image="simpleImage"/>
   </div>
 
   <ScenarioCreate :visible="isEditVisible"

@@ -252,5 +252,5 @@ func (r *ScenarioNodeRepo) UpdateEntityId(id, entityId uint) error {
 }
 
 func (r *ScenarioNodeRepo) MoveMaxOrder(parentId, order, step uint) (err error) {
-	return r.DB.Model(model.Processor{}).Where("parent_id=? and ordr>?", parentId, order).Update("ordr=ordr+?", step).Error
+	return r.DB.Model(model.Processor{}).Where("parent_id=? and ordr>?", parentId, order).Update("ordr", gorm.Expr("ordr + ?", step)).Error
 }

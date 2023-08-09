@@ -33,6 +33,7 @@ import MenuItem from "./MenuItem.vue";
  * */
 const menus = computed(() => {
   const nodeType = props?.treeNode?.entityType;
+  const disable = props?.treeNode?.disable;
   if(!nodeType) {
     return [];
   }
@@ -43,6 +44,14 @@ const menus = computed(() => {
     if(menu?.showInNodeTypes?.length && !menu?.showInNodeTypes?.includes(nodeType)) {
       return false;
     }else if(menu?.hideInNodeTypes?.includes(nodeType)) {
+      return false;
+    }
+    // 如果有 disabled，且当前节点 disabled 为 true，则不显示
+    if(menu.key === 'disable' && disable) {
+      return false;
+    }
+    // 如果是启用状态
+    if(menu.key === 'enable' && !disable) {
       return false;
     }
 

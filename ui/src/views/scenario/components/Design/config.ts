@@ -256,13 +256,13 @@ export const DESIGN_MENU_CONFIG = [
         title: '分割线',
         hideInNodeTypes: ['processor_root_default', ...onlyShowDisableAndDeleteTypes],
     },
-    //   修改名字
-    {
-        key: 'edit',
-        title: '编辑',
-        icon: 'edit',
-        hideInNodeTypes: ['processor_root_default'],
-    },
+    // //   修改名字
+    // {
+    //     key: 'edit',
+    //     title: '编辑',
+    //     icon: 'edit',
+    //     hideInNodeTypes: ['processor_root_default'],
+    // },
     //    禁用
     {
         key: 'disable',
@@ -299,6 +299,11 @@ export const DESIGN_TYPE_ICON_MAP = {
     'add-child-interface-diagnose': 'arrange-debug',
     'add-child-interface-custom': 'arrange-http',
     'add-child-interface-curl': 'arrange-url',
+    'case': 'arrange-case',
+    'diagnose': 'arrange-debug',
+    'custom': 'arrange-http',
+    'curl': 'arrange-url',
+
 
 
     'processor_group_default': 'arrange-group',
@@ -407,6 +412,13 @@ export const showLineScenarioType = [
  * */
 export const scenarioTypeMapToText = {
     'processor_interface_default': '接口',
+
+    'define': '接口定义',
+    'case': '接口用例',
+    'diagnose': '接口调试',
+    'custom': '自定义请求',
+    'curl': 'cURL导入请求',
+
     'processor_group_default': '分组',
     'processor_time_default': '定时器',
     'processor_print_default': '输出',

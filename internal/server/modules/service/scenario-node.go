@@ -28,6 +28,8 @@ type ScenarioNodeService struct {
 	ExtractorRepo            *repo.ExtractorRepo         `inject:""`
 	CheckpointRepo           *repo.CheckpointRepo        `inject:""`
 	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
+	PreConditionRepo         *repo.PreConditionRepo      `inject:""`
+	PostConditionRepo        *repo.PostConditionRepo     `inject:""`
 
 	DebugInterfaceService    *DebugInterfaceService    `inject:""`
 	DiagnoseInterfaceService *DiagnoseInterfaceService `inject:""`
@@ -332,26 +334,22 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 
 func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomain.EndpointCaseTree, parentProcessor model.Processor, order int) (
 	processor model.Processor, err error) {
-	if caseNode.IsDir { // dir
-		if len(caseNode.Children) > 1 {
-			processor = model.Processor{
-				Name:           caseNode.Name,
-				ScenarioId:     parentProcessor.ScenarioId,
-				EntityCategory: consts.ProcessorGroup,
-				EntityType:     consts.ProcessorGroupDefault,
-				ParentId:       parentProcessor.ID,
-				ProjectId:      parentProcessor.ProjectId,
-			}
-			processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-			s.ScenarioNodeRepo.Save(&processor)
-
-			parentProcessor = processor
+	if caseNode.IsDir && len(caseNode.Children) > 0 { // dir
+		/*processor = model.Processor{
+			Name:           caseNode.Name,
+			ScenarioId:     parentProcessor.ScenarioId,
+			EntityCategory: consts.ProcessorGroup,
+			EntityType:     consts.ProcessorGroupDefault,
+			ParentId:       parentProcessor.ID,
+			ProjectId:      parentProcessor.ProjectId,
 		}
+		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+		s.ScenarioNodeRepo.Save(&processor)*/
 
 		for _, child := range caseNode.Children {
 			s.createDirOrInterfaceFromCase(child, parentProcessor, 0)
 		}
-	} else { // interface
+	} else if !caseNode.IsDir { // interface
 		debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(caseNode.DebugInterfaceId)
 
 		if order == 0 {
@@ -372,9 +370,6 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		}
 
 		s.ScenarioNodeRepo.Save(&processor)
-
-		// convert or clone a debug interface obj
-		debugData.DebugInterfaceId = 0 // force to clone the old one
 
 		debugData.ScenarioProcessorId = processor.ID
 		debugData.ProcessorInterfaceSrc = consts.InterfaceSrcCase

@@ -22,7 +22,11 @@ func (s *PreConditionService) GetScript(debugInterfaceId, endpointInterfaceId ui
 			EntityType:          consts.ConditionTypeScript,
 		}
 		err = s.Create(&condition)
-		script := s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)
+
+		script, _ = s.ScriptRepo.GetByCondition(condition.ID)
+		if script.ID == 0 {
+			script = s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)
+		}
 
 		s.PreConditionRepo.UpdateEntityId(condition.ID, script.ID)
 

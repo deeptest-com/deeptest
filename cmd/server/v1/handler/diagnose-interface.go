@@ -118,7 +118,7 @@ func (c *DiagnoseInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.DiagnoseInterfaceService.SaveDebugData(req)
+	_, err = c.DebugInterfaceService.CreateOrUpdate(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

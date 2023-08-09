@@ -9,7 +9,7 @@
 
     <div class="content">
       <div class="processor-form">
-        <ProcessorCustomCodeEdit v-if="model.entityType === ProcessorCustomCode.CustomCodeDefault"
+        <ProcessorCustomCodeEdit v-if="model.processorType === ProcessorCategory.ProcessorCustomCode"
                                  :processor="model"
                                  :finish="onCancel" />
       </div>
@@ -20,7 +20,7 @@
 
 <script setup lang="ts">
 import {computed, defineProps, inject, ref} from "vue";
-import {ProcessorCustomCode} from "@/utils/enum";
+import {ProcessorCategory} from "@/utils/enum";
 import ProcessorCustomCodeEdit from "../proccessors/custom_code/edit.vue";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";

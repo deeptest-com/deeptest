@@ -12,7 +12,7 @@
       </a-select>
     -->
       <a-input-search
-        style="display: flex;justify-content: end;width: 100%;margin-bottom: 16px; "
+        style="display: flex;justify-content: end;width: 300px;margin-bottom: 16px; "
         placeholder="请输入关键词"
         enter-button
         v-model:value="searchValue"/>
@@ -35,12 +35,19 @@
         <template #title="nodeProps">
 
           <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
-            <span v-if="nodeProps.dataRef.type == 'dir' || nodeProps.dataRef.type == ''"><FolderOpenOutlined/> {{nodeProps.dataRef.title+' ('+nodeProps.dataRef.count+')'}}</span>
-          <span v-if="nodeProps.dataRef.type == 'interface'"><ShareAltOutlined /> {{nodeProps.dataRef.title}}
-            <a-tag class="method-tag" :color="getMethodColor(nodeProps.dataRef.method || 'GET', nodeProps.dataRef.disable)">{{
-                      nodeProps.dataRef.method || "GET"
-                    }}</a-tag>
-          </span>
+            <template v-if="nodeProps.dataRef.type == 'dir' || nodeProps.dataRef.type == ''">
+              <span style="margin-right: 8px"><FolderOpenOutlined/></span>
+              <span>{{nodeProps.dataRef.title+' ('+nodeProps.dataRef.count+')'}}</span>
+            </template>
+            <template v-else>
+              <span style="margin-right: 8px"><ShareAltOutlined/></span>
+              <a-tag 
+                class="method-tag" 
+                :color="getMethodColor(nodeProps.dataRef.method || 'GET', nodeProps.dataRef.disable)">
+                {{ nodeProps.dataRef.method || "GET" }}
+              </a-tag>
+              <span :title="nodeProps.dataRef.title" class="interface-name">{{nodeProps.dataRef.title}}</span>
+            </template>
             <!--
               <span class="tree-title-text" v-if="nodeProps.dataRef.title.indexOf(searchValue) > -1">
                 <span>{{ nodeProps.dataRef.title.substr(0, nodeProps.dataRef.title.indexOf(searchValue)) }}</span>
@@ -190,10 +197,13 @@ onMounted(async () => {
   .tree-container {
     background: #ffffff;
     max-height: 400px;
-    overflow-y: hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
 
     .tree-title {
       position: relative;
+      display: flex;
+      align-items: center;
 
       .tree-title-text {
         display: inline-block;
@@ -204,6 +214,13 @@ onMounted(async () => {
         position: absolute;
         right: -8px;
         width: 20px;
+      }
+
+      .interface-name {
+        display: inline-block;
+        max-width: 400px;
+        text-overflow: ellipsis;
+        overflow: hidden;
       }
     }
 

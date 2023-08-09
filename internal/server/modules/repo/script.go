@@ -21,6 +21,14 @@ func (r *ScriptRepo) Get(id uint) (script model.DebugConditionScript, err error)
 	return
 }
 
+func (r *ScriptRepo) GetByCondition(conditionId uint) (script model.DebugConditionScript, err error) {
+	err = r.DB.
+		Where("condition_id=?", conditionId).
+		Where("NOT deleted").
+		First(&script).Error
+	return
+}
+
 func (r *ScriptRepo) GetByName(name string, interfaceId uint) (script model.DebugConditionScript, err error) {
 	var scripts []model.DebugConditionScript
 

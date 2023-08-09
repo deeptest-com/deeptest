@@ -33,12 +33,17 @@
         </template>
 
         <template #title="nodeProps">
-          <span v-if="nodeProps.dataRef.type == 'dir' || nodeProps.dataRef.type == ''"><FolderOpenOutlined/> {{nodeProps.dataRef.name+' ('+nodeProps.dataRef.count+')'}}</span>
-          <span v-if="nodeProps.dataRef.type == 'endpoint'"><ApiOutlined /> {{nodeProps.dataRef.name}}</span>
-          <span v-if="nodeProps.dataRef.type == 'case'"><ShareAltOutlined /> {{nodeProps.dataRef.name}}
-            <a-tag class="method-tag" :color="getMethodColor(nodeProps.dataRef.method || 'GET', nodeProps.dataRef.disable)">{{
-                      nodeProps.dataRef.method || "GET"
-                    }}</a-tag>
+          <span v-if="nodeProps.dataRef.type == 'dir' || nodeProps.dataRef.type == ''"><FolderOpenOutlined  style="margin-right: 4px"/> {{nodeProps.dataRef.name+' ('+nodeProps.dataRef.count+')'}}</span>
+          <span v-if="nodeProps.dataRef.type == 'endpoint'"><ApiOutlined  style="margin-right: 4px"/> {{nodeProps.dataRef.name}}</span>
+          <span v-if="nodeProps.dataRef.type == 'case'">
+            <ShareAltOutlined style="margin-right: 4px" /> 
+            <a-tag 
+              class="method-tag" 
+              style="margin-right: 8px;"
+              :color="getMethodColor(nodeProps.dataRef.method || 'GET', nodeProps.dataRef.disable)">
+              {{ nodeProps.dataRef.method || "GET" }}
+            </a-tag>
+            {{nodeProps.dataRef.name}}
           </span>
           <!--
                       <div class="tree-title" :draggable="nodeProps?.dataRef?.id === -1">

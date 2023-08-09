@@ -553,12 +553,13 @@ const removeNode = () => {
 
 const disableNodeOrNot = () => {
   const node = treeDataMap.value[targetModelId]
-  const action = node.disable ? '启用' : '禁用'
+  const action = node.disable ? '启用' : '禁用';
+  const content = node.disable ? '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？' : '禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？';
 
   Modal.confirm({
     okType: 'danger',
-    title: `确定${action}名为${node.name}的节点吗？`,
-    content: '将同时禁用步骤下的所有子步骤，禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？',
+    title: `确定${action}名为【${node.name}】的场景吗？`,
+    content: content,
     okText: () => '确定',
     cancelText: () => '取消',
     onOk: async () => {

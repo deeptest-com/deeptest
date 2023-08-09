@@ -295,7 +295,9 @@ const drawerTabKey: any = ref<string>('1');
 async function editScenario(record: any, tab: string) {
   drawerVisible.value = true;
   drawerTabKey.value = tab;
-  await store.dispatch('Scenario/getScenario', record.id);
+
+  store.dispatch('Scenario/getNode', null) // clear right page
+  store.dispatch('Scenario/getScenario', record.id);
 }
 
 async function cancelSelectExecEnv(record: any) {

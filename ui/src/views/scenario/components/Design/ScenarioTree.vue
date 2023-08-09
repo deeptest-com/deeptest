@@ -20,8 +20,8 @@
             blockNode
             :showIcon="false"
             :expandAction="false"
-            :expandedKeys="expandedKeys"
             :auto-expand-parent="autoExpandParent"
+            :expandedKeys="expandedKeys"
             v-model:selectedKeys="selectedKeys"
             @drop="onDrop"
             @dragstart="onDragstart"
@@ -158,13 +158,18 @@ const showAddTip = computed(() => {
   return !children?.length;
 })
 
-const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap);
-const selectedNode = computed<any>(() => store.state.Scenario.nodeData);
-const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
+const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap)
+const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult)
+const scenarioCount = computed<any>(() => store.state.Scenario.scenarioCount)
+
+watch(scenarioCount, () => {
+  console.log('watch scenarioCount', scenarioCount.value)
+  selectedKeys.value = []
+})
 
 watch(treeData, () => {
-  console.log('832 watch treeData1', treeData.value)
-  console.log('832 watch treeData2', treeDataNeedRender.value)
+  console.log('watch treeData1', treeData.value, treeDataNeedRender.value)
+
   if (!treeData.value[0].children || treeData.value[0].children.length === 0) {
     tips.value = '右键树状节点操作'
   }
@@ -681,7 +686,7 @@ const endpointCaseSelectionCancel = () => {
 
 let currentInstance
 onMounted(() => {
-  console.log('onMounted')
+  console.log('scenario tree onMounted')
   currentInstance = getCurrentInstance()
   document.addEventListener("click", clearMenu)
 })

@@ -64,6 +64,8 @@ export interface StateType {
     scenariosReports: any[];
     linkedPlans: any[];
     notLinkedPlans: any[];
+
+    scenarioCount: number,
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -104,6 +106,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setScenariosReports: Mutation<StateType>;
         setLinkedPlans: Mutation<StateType>;
         setNotLinkedPlans: Mutation<StateType>;
+
+        increaseScenarioCount: Mutation<StateType>;
     };
     actions: {
         setScenarioProcessorIdForDebug: Action<StateType, StateType>;
@@ -198,6 +202,8 @@ const initState: StateType = {
     scenariosReports: [],
     linkedPlans: [],
     notLinkedPlans: [],
+
+    scenarioCount: 0,
 };
 
 const StoreModel: ModuleType = {
@@ -297,6 +303,10 @@ const StoreModel: ModuleType = {
         setNotLinkedPlans(state, payload) {
             state.notLinkedPlans = payload;
         },
+
+        increaseScenarioCount(state) {
+            state.scenarioCount += 1;
+        },
     },
     actions: {
         async setScenarioProcessorIdForDebug({commit, dispatch, state}, id) {
@@ -332,6 +342,8 @@ const StoreModel: ModuleType = {
             }
         },
         async getScenario({commit}, id: number) {
+            commit('increaseScenarioCount')
+
             if (id === 0) {
                 commit('setDetail', {
                     ...initState.detailResult,

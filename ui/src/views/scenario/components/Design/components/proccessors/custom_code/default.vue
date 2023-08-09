@@ -26,8 +26,9 @@
       <ProcessorCustomCodeEdit />
     </div>
 
-    <ProcessorPopup v-if="modelRef.processorID > 0 && fullscreen"
+    <ProcessorPopup v-if="fullscreen"
                     :visible="fullscreen"
+                    :model="modelRef"
                     :onCancel="closeFullScreen" />
   </div>
 </template>

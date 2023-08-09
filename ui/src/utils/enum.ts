@@ -55,6 +55,8 @@ export enum ProcessorCategory {
     ProcessorTimer = "processor_timer",
     ProcessorPrint = "processor_print",
     ProcessorAssertion = "processor_assertion",
+    ProcessorCustomCode = "processor_custom_code",
+
 }
 export enum ProcessorInterface {
     Interface = "processor_interface_default",

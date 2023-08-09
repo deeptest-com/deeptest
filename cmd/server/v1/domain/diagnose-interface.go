@@ -1,6 +1,7 @@
 package serverDomain
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/kataras/iris/v12"
 )
@@ -22,6 +23,8 @@ type DiagnoseInterface struct {
 	Ordr     int                  `json:"ordr"`
 	Children []*DiagnoseInterface `json:"children"`
 	Slots    iris.Map             `json:"slots"`
+	Count    int                  `json:"count"`
+	Method   consts.HttpMethod    `json:"method"`
 }
 
 type DiagnoseInterfaceLoadReq struct {

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/kataras/iris/v12"
 )
@@ -23,8 +24,9 @@ type DiagnoseInterface struct {
 	Children []*DiagnoseInterface `gorm:"-" json:"children"`
 	Slots    iris.Map             `gorm:"-" json:"slots"`
 
-	DebugInterfaceId uint            `gorm:"default:0" json:"debugInterfaceId"`
-	DebugData        *DebugInterface `gorm:"-" json:"debugData"`
+	DebugInterfaceId uint              `gorm:"default:0" json:"debugInterfaceId"`
+	DebugData        *DebugInterface   `gorm:"-" json:"debugData"`
+	Method           consts.HttpMethod `json:"method"`
 }
 
 func (DiagnoseInterface) TableName() string {

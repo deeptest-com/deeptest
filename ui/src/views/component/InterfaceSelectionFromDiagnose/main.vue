@@ -22,7 +22,6 @@
 import {defineProps, ref} from "vue";
 
 import Tree from "./tree.vue"
-import List from "./list.vue"
 
 const props = defineProps({
   onFinish: {

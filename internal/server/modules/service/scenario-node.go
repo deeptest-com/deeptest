@@ -140,7 +140,7 @@ func (s *ScenarioNodeService) AddInterfacesFromDiagnose(req serverDomain.Scenari
 	}
 
 	for _, interfaceNode := range req.SelectedNodes {
-		ret, _ = s.createDirOrInterfaceFromDiagnose(&interfaceNode, targetProcessor)
+		ret, _ = s.createDirOrInterfaceFromDiagnose(&interfaceNode, targetProcessor, 0)
 	}
 
 	return
@@ -155,7 +155,7 @@ func (s *ScenarioNodeService) AddInterfacesFromDefine(req serverDomain.ScenarioA
 
 	serveId := uint(0)
 	for _, interfaceId := range req.InterfaceIds {
-		ret, err = s.createInterfaceFromDefine(uint(interfaceId), &serveId, req.CreateBy, targetProcessor, "")
+		ret, err = s.createInterfaceFromDefine(uint(interfaceId), &serveId, req.CreateBy, targetProcessor, "", 0)
 	}
 
 	return
@@ -169,14 +169,14 @@ func (s *ScenarioNodeService) AddInterfacesFromCase(req serverDomain.ScenarioAdd
 	}
 
 	for _, interfaceNode := range req.SelectedNodes {
-		ret, _ = s.createDirOrInterfaceFromCase(&interfaceNode, targetProcessor)
+		ret, _ = s.createDirOrInterfaceFromCase(&interfaceNode, targetProcessor, 0)
 	}
 
 	return
 }
 
 func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint, serveId *uint,
-	createBy uint, parentProcessor model.Processor, name string) (
+	createBy uint, parentProcessor model.Processor, name string, order int) (
 	ret model.Processor, err error) {
 
 	endpointInterface, err := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
@@ -218,6 +218,9 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 			name = endpointInterface.Name + "-" + string(endpointInterface.Method)
 		}
 	*/
+	if order == 0 {
+		order = s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID)
+	}
 	processor := model.Processor{
 		Name:                endpointInterface.Name,
 		Method:              endpointInterface.Method,
@@ -226,8 +229,8 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 		EntityId:            debugInterface.ID, // as debugInterfaceId
 		EndpointInterfaceId: debugInterface.EndpointInterfaceId,
 
-		Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
-
+		//Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
+		Ordr:       order,
 		ParentId:   parentProcessor.ID,
 		ScenarioId: parentProcessor.ScenarioId,
 		ProjectId:  parentProcessor.ProjectId,
@@ -247,7 +250,7 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	return
 }
 
-func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterfaceNode *serverDomain.DiagnoseInterface, parentProcessor model.Processor) (
+func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterfaceNode *serverDomain.DiagnoseInterface, parentProcessor model.Processor, order int) (
 	ret model.Processor, err error) {
 
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(diagnoseInterfaceNode.DebugInterfaceId)
@@ -265,10 +268,13 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 		s.ScenarioNodeRepo.Save(&processor)
 
 		for _, child := range diagnoseInterfaceNode.Children {
-			s.createDirOrInterfaceFromDiagnose(child, processor)
+			s.createDirOrInterfaceFromDiagnose(child, processor, 0)
 		}
 
 	} else if !diagnoseInterfaceNode.IsDir { // interface
+		if order == 0 {
+			order = s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID)
+		}
 		processor := model.Processor{
 			Name:                diagnoseInterfaceNode.Title,
 			Method:              debugData.Method,
@@ -277,7 +283,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 			EntityId:            diagnoseInterfaceNode.DebugInterfaceId, // as debugInterfaceId
 			EndpointInterfaceId: debugData.EndpointInterfaceId,
 
-			Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
+			//Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
+			Ordr: order,
 
 			ParentId:   parentProcessor.ID,
 			ScenarioId: parentProcessor.ScenarioId,
@@ -285,7 +292,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 			CreatedBy:  parentProcessor.CreatedBy,
 		}
 
-		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+		//processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 		s.ScenarioNodeRepo.Save(&processor)
 
 		// convert or clone a debug interface obj
@@ -313,26 +320,33 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 	return
 }
 
-func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomain.EndpointCaseTree, parentProcessor model.Processor) (
+func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomain.EndpointCaseTree, parentProcessor model.Processor, order int) (
 	processor model.Processor, err error) {
-	if caseNode.IsDir && len(caseNode.Children) > 0 { // dir
-		processor = model.Processor{
-			Name:           caseNode.Name,
-			ScenarioId:     parentProcessor.ScenarioId,
-			EntityCategory: consts.ProcessorGroup,
-			EntityType:     consts.ProcessorGroupDefault,
-			ParentId:       parentProcessor.ID,
-			ProjectId:      parentProcessor.ProjectId,
+	if caseNode.IsDir { // dir
+		if len(caseNode.Children) > 1 {
+			processor = model.Processor{
+				Name:           caseNode.Name,
+				ScenarioId:     parentProcessor.ScenarioId,
+				EntityCategory: consts.ProcessorGroup,
+				EntityType:     consts.ProcessorGroupDefault,
+				ParentId:       parentProcessor.ID,
+				ProjectId:      parentProcessor.ProjectId,
+			}
+			processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
+			s.ScenarioNodeRepo.Save(&processor)
+
+			parentProcessor = processor
 		}
-		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-		s.ScenarioNodeRepo.Save(&processor)
 
 		for _, child := range caseNode.Children {
-			s.createDirOrInterfaceFromCase(child, processor)
+			s.createDirOrInterfaceFromCase(child, parentProcessor, 0)
 		}
-	} else if !caseNode.IsDir { // interface
+	} else { // interface
 		debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(caseNode.DebugInterfaceId)
 
+		if order == 0 {
+			order = s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID)
+		}
 		processor = model.Processor{
 			Name:                caseNode.Name,
 			Method:              debugData.Method,
@@ -340,16 +354,13 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 			EntityType:          consts.ProcessorInterfaceDefault,
 			EntityId:            caseNode.DebugInterfaceId, // as debugInterfaceId
 			EndpointInterfaceId: debugData.EndpointInterfaceId,
-
-			Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
-
-			ParentId:   parentProcessor.ID,
-			ScenarioId: parentProcessor.ScenarioId,
-			ProjectId:  parentProcessor.ProjectId,
-			CreatedBy:  parentProcessor.CreatedBy,
+			Ordr:                order,
+			ParentId:            parentProcessor.ID,
+			ScenarioId:          parentProcessor.ScenarioId,
+			ProjectId:           parentProcessor.ProjectId,
+			CreatedBy:           parentProcessor.CreatedBy,
 		}
 
-		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 		s.ScenarioNodeRepo.Save(&processor)
 
 		// convert or clone a debug interface obj

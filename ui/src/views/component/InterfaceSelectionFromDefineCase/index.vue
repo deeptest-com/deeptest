@@ -53,6 +53,7 @@
   </script>
   
   <style lang="less">
+  
   .modal-tree-selection {
     .ant-modal {
       .ant-modal-content {
@@ -61,10 +62,9 @@
       }
     }
   }
-  </style>
-  
-  <style lang="less" scoped>
+
   .interface-selection-main {
   }
   </style>
+
   

@@ -2,6 +2,7 @@ package repo
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/kataras/iris/v12"
@@ -28,8 +29,17 @@ func (r *DiagnoseInterfaceRepo) GetTree(projectId, serveId uint) (root *serverDo
 
 	root = &serverDomain.DiagnoseInterface{}
 	r.makeTree(tos, root)
+	r.mountCount(root)
 
 	return
+}
+
+func (r *DiagnoseInterfaceRepo) mountCount(root *serverDomain.DiagnoseInterface) (count int) {
+	for _, child := range root.Children {
+		root.Count += r.mountCount(child)
+	}
+	return root.Count
+
 }
 
 func (r *DiagnoseInterfaceRepo) ListByProject(projectId, serveId uint) (pos []*model.DiagnoseInterface, err error) {
@@ -86,10 +96,12 @@ func (r *DiagnoseInterfaceRepo) ToTo(po *model.DiagnoseInterface) (to *serverDom
 		ParentId:         int64(po.ParentId),
 		ServeId:          po.ServeId,
 		DebugInterfaceId: po.DebugInterfaceId,
+		Method:           po.Method,
 	}
 
 	if po.Type == serverConsts.DiagnoseInterfaceTypeInterface {
 		to.IsDir = false
+		to.Count = 1
 	}
 
 	return
@@ -278,6 +290,14 @@ func (r *DiagnoseInterfaceRepo) UpdateDebugInfo(interf *model.DiagnoseInterface)
 
 func (r *DiagnoseInterfaceRepo) CreateInterfaceFromCurl(interf *model.DiagnoseInterface, parent model.DiagnoseInterface) (
 	err error) {
+
+	return
+}
+
+func (r *DiagnoseInterfaceRepo) UpdateMethod(id uint, method consts.HttpMethod) (err error) {
+	err = r.DB.Model(&model.DiagnoseInterface{}).
+		Where("id = ?", id).
+		Update("method", method).Error
 
 	return
 }

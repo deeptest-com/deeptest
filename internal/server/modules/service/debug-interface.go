@@ -103,6 +103,9 @@ func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model
 		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
 	}
 
+	// 更新method
+	s.DiagnoseInterfaceRepo.UpdateMethod(debugInterface.DiagnoseInterfaceId, debugInterface.Method)
+
 	return
 }
 

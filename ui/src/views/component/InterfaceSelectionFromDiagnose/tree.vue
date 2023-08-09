@@ -23,8 +23,6 @@
           class="deeptest-tree"
           showIcon
           :checkable="true"
-          :expandedKeys="expandedKeys"
-          :auto-expand-parent="autoExpandParent"
           :tree-data="treeData"
           @check="onChecked"
           :replace-fields="replaceFields"
@@ -35,13 +33,22 @@
         </template>
 
         <template #title="nodeProps">
+
           <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
+            <span v-if="nodeProps.dataRef.type == 'dir' || nodeProps.dataRef.type == ''"><FolderOpenOutlined/> {{nodeProps.dataRef.title+' ('+nodeProps.dataRef.count+')'}}</span>
+          <span v-if="nodeProps.dataRef.type == 'interface'"><ShareAltOutlined /> {{nodeProps.dataRef.title}}
+            <a-tag class="method-tag" :color="getMethodColor(nodeProps.dataRef.method || 'GET', nodeProps.dataRef.disable)">{{
+                      nodeProps.dataRef.method || "GET"
+                    }}</a-tag>
+          </span>
+            <!--
               <span class="tree-title-text" v-if="nodeProps.dataRef.title.indexOf(searchValue) > -1">
                 <span>{{ nodeProps.dataRef.title.substr(0, nodeProps.dataRef.title.indexOf(searchValue)) }}</span>
                 <span style="color: #f50">{{ searchValue }}</span>
                 <span>{{ nodeProps.dataRef.title.substr(nodeProps.dataRef.title.indexOf(searchValue) + searchValue.length) }}</span>
               </span>
             <span class="tree-title-text" v-else>{{ nodeProps.dataRef.title }}</span>
+            -->
           </div>
         </template>
       </a-tree>
@@ -55,7 +62,7 @@
 
 <script setup lang="ts">
 import {computed, defineProps, onMounted, ref, watch} from 'vue';
-import {CaretDownOutlined,} from '@ant-design/icons-vue';
+import {CaretDownOutlined,FolderOpenOutlined,ShareAltOutlined} from '@ant-design/icons-vue';
 import {useStore} from "vuex";
 
 import Empty from "@/components/Empty";
@@ -64,14 +71,27 @@ import {StateType as DiagnoseInterfaceStateType} from '@/views/diagnose/store';
 import {StateType as ServeStateType} from "@/store/serve";
 
 import {listServe} from "@/services/serve";
-import {filterTree, getSelectedTreeNode} from "@/utils/tree";
-import {isInArray} from "@/utils/array";
+import {getSelectedTreeNode,filterByKeyword} from "@/utils/tree";
+import cloneDeep from "lodash/cloneDeep";
+import {getMethodColor} from "@/utils/dom";
 
 const store = useStore<{ DiagnoseInterface: DiagnoseInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
-const treeData = computed<any>(() => store.state.DiagnoseInterface.treeData);
+//const treeData = computed<any>(() => store.state.DiagnoseInterface.treeData);
+const treeData = computed<any[]>(() => {
+
+  if (store.state.DiagnoseInterface.treeData?.length <= 0) {
+     return []
+  }
+
+  const children = cloneDeep(store.state.DiagnoseInterface.treeData[0].children);
+  if (children?.length > 0) {
+    return [...filterByKeyword(children, searchValue.value, 'title')];
+  }
+  return []
+})
 const treeDataMap = computed<any>(() => store.state.DiagnoseInterface.treeDataMap);
 
 const props = defineProps({
@@ -125,29 +145,14 @@ async function loadTreeData() {
   }
 }
 
-async function getServeServers() {
-  await store.dispatch('DiagnoseInterface/getServeServers', {
-    id: currServe.value.id,
-  })
-}
-
-const selectServe = () => {
-  console.log('selectServe', serveId.value)
-}
 
 watch((currProject), async (newVal) => {
-  console.log('watch currProject', currProject?.value.id, currServe?.value.id)
+  console.log('watch currProject', currProject?.value.id)
   await loadTreeData();
-  await getServeServers()
 }, {
   immediate: true
 })
 
-watch(searchValue, (newVal) => {
-  expandedKeys.value = filterTree(treeData.value, newVal)
-  console.log('searchValue', expandedKeys.value)
-  autoExpandParent.value = true;
-});
 
 // 展开所有
 function expandAll() {

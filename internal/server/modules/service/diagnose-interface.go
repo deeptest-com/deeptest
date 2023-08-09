@@ -128,7 +128,7 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 
 	url := fmt.Sprintf("%s://%s%s", curlObj.ParsedURL.Scheme,
 		curlObj.ParsedURL.Host, curlObj.ParsedURL.Path)
-	title := fmt.Sprintf("%s %s", url, curlObj.Method)
+	//title := fmt.Sprintf("%s %s", url, curlObj.Method)
 	queryParams := s.getQueryParams(curlObj.ParsedURL.Query())
 	headers := s.getHeaders(wf.Header)
 	cookies := s.getCookies(wf.Cookies)
@@ -141,7 +141,7 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	}
 
 	debugData := domain.DebugData{
-		Name:    title,
+		Name:    url,
 		BaseUrl: "",
 		BaseRequest: domain.BaseRequest{
 			Method:      s.getMethod(bodyType, curlObj.Method),
@@ -163,10 +163,10 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 
 	// save test interface
 	diagnoseInterface := model.DiagnoseInterface{
-		Title: title,
-		Type:  serverConsts.DiagnoseInterfaceTypeInterface,
-		Ordr:  s.DiagnoseInterfaceRepo.GetMaxOrder(parent.ID),
-
+		Title:            url,
+		Type:             serverConsts.DiagnoseInterfaceTypeInterface,
+		Ordr:             s.DiagnoseInterfaceRepo.GetMaxOrder(parent.ID),
+		Method:           debugData.Method,
 		DebugInterfaceId: debugInterface.ID,
 		ParentId:         parent.ID,
 		ServeId:          parent.ServeId,

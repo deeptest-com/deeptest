@@ -53,18 +53,19 @@
   </script>
   
   <style lang="less">
+  
   .modal-tree-selection {
     .ant-modal {
       .ant-modal-content {
+        width: 600px;
         .ant-modal-body {
         }
       }
     }
   }
-  </style>
-  
-  <style lang="less" scoped>
+
   .interface-selection-main {
   }
   </style>
+
   

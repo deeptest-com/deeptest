@@ -773,7 +773,7 @@ onUnmounted(() => {
     width: 16px;
     display: flex;
     align-items: center;
-    justify-content: end;
+    justify-content: flex-end;
   }
 
   .prefix-req-method {

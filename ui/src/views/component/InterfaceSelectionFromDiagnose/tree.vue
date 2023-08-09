@@ -1,6 +1,7 @@
 <template>
   <div class="tree-main">
     <div class="tree-filters">
+      <!--
       <a-select 
         style="width: 100%;margin-bottom: 20px" 
         :bordered="true"
@@ -9,6 +10,7 @@
         @change="selectServe">
         <a-select-option v-for="item in serves" :key="item.id" :value="item.id">{{ item.name }}</a-select-option>
       </a-select>
+    -->
       <a-input-search
         style="display: flex;justify-content: end;width: 100%;margin-bottom: 16px; "
         placeholder="请输入关键词"
@@ -25,7 +27,8 @@
           :auto-expand-parent="autoExpandParent"
           :tree-data="treeData"
           @check="onChecked"
-          :replace-fields="replaceFields">
+          :replace-fields="replaceFields"
+          >
 
         <template #switcherIcon>
           <CaretDownOutlined/>

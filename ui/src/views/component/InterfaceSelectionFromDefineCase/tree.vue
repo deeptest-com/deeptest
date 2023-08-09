@@ -25,6 +25,7 @@
           :tree-data="treeData"
           :replaceFields="fieldNames"
           @check="onChecked"
+          :defaultExpandAll="true"
       >
 
         <template #switcherIcon>
@@ -71,17 +72,23 @@ import {useStore} from "vuex";
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ServeStateType} from "@/store/serve";
 
-import Empty from '@/components/Empty/index.vue';
 import {listServe} from "@/services/serve";
-import {filterTree, getSelectedTreeNode} from "@/utils/tree";
+import {getSelectedTreeNode,filterByKeyword} from "@/utils/tree";
 import {getMethodColor} from "@/utils/dom";
+import cloneDeep from "lodash/cloneDeep";
 
 
 const store = useStore<{ Endpoint: any, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType, DiagnoseInterface }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
-const treeData = computed<any>(() => store.state.Endpoint.caseTree);
+const treeData = computed<any>(() => {
+  const children = cloneDeep(store.state.Endpoint.caseTree);
+  if (children?.length > 0) {
+    return [...filterByKeyword(children, searchValue.value, 'name')];
+  }
+  return []
+})
 const treeDataMap = computed<any>(() => store.state.Endpoint.caseTreeMap);
 
 
@@ -126,39 +133,28 @@ onMounted(() => {
 
 const searchValue = ref('');
 const expandedKeys = ref<number[]>([]);
-const autoExpandParent = ref<boolean>(false);
 
-async function loadTreeData() {
-  if (currProject?.value?.id > 0 && currServe?.value?.id > 0) {
-    await store.dispatch('Endpoint/getCaseTree', {currProjectId: currProject.value.id, serveId: currServe.value.id});
+async function loadTreeData(serveId:number) {
+  if (currProject?.value?.id > 0 ) {
+    await store.dispatch('Endpoint/getCaseTree', {currProjectId: currProject.value.id, serveId: serveId});
    // expandAll();
   }
 }
 
-async function getServeServers() {
-  await store.dispatch('DiagnoseInterface/getServeServers', {
-    id: currServe.value.id,
-  })
-}
 
 const selectServe = () => {
   console.log('selectServe', serveId.value)
+  loadTreeData(serveId.value)
 }
 
 
-watch((currServe), async (newVal) => {
+watch((currServe.value), async (newVal) => {
   console.log('watch currProject', currProject?.value.id, currServe?.value.id)
-  await loadTreeData();
-  await getServeServers()
+  await loadTreeData(currServe?.value.id);
 }, {
   immediate: true
 })
 
-watch(searchValue, (newVal) => {
-  expandedKeys.value = filterTree(treeData.value, newVal)
-  console.log('searchValue', expandedKeys.value)
-  //autoExpandParent.value = true;
-});
 
 // 展开所有
 function expandAll() {

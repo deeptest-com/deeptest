@@ -70,6 +70,7 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 
 		err = s.DebugInterfaceRepo.Save(&debugInterface)
 		diagnoseInterface.DebugInterfaceId = debugInterface.ID
+		diagnoseInterface.Method = debugInterface.Method
 	}
 
 	err = s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
@@ -227,10 +228,10 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 
 	// save test interface
 	diagnoseInterface := model.DiagnoseInterface{
-		Title: endpointInterface.Name + "-" + string(endpointInterface.Method),
-		Type:  serverConsts.DiagnoseInterfaceTypeInterface,
-		Ordr:  s.DiagnoseInterfaceRepo.GetMaxOrder(parent.ID),
-
+		Title:            endpointInterface.Name,
+		Type:             serverConsts.DiagnoseInterfaceTypeInterface,
+		Ordr:             s.DiagnoseInterfaceRepo.GetMaxOrder(parent.ID),
+		Method:           debugData.Method,
 		DebugInterfaceId: debugInterface.ID,
 		ParentId:         parent.ID,
 		ServeId:          parent.ServeId,

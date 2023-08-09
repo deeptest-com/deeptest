@@ -58,8 +58,8 @@
                   onChange: (page) => {
                     loadList(page,pagination.pageSize);
                   },
-                  onShowSizeChange: (page, size) => {
-                    loadList(page,size);
+                  onShowSizeChange: (_page, size) => {
+                    loadList(1,size);
                   },
               }"
                        :scroll="{ x: '1280px' || true }"
@@ -416,7 +416,7 @@ async function handleCreateApi(data) {
     "categoryId": data.categoryId || null,
     "curl": data.curl || null,
   });
-  await refreshList();
+  await refreshList('reset');
   createApiModalVisible.value = false;
 }
 
@@ -445,7 +445,7 @@ async function handleImport(data, callback) {
 
   // 导入成功，重新拉取列表 ，并且关闭弹窗
   if (res) {
-    await refreshList();
+    await refreshList('reset');
     if (callback) {
       callback();
     }
@@ -477,7 +477,7 @@ const loadList = debounce(async (page, size, opts?: any) => {
     "projectId": currProject.value.id,
     "page": page,
     "pageSize": size,
-    opts,
+    ...opts,
   });
   // await store.dispatch('Endpoint/loadCategory');
   fetching.value = false;
@@ -486,7 +486,7 @@ const loadList = debounce(async (page, size, opts?: any) => {
 
 async function handleTableFilter(state) {
   filterState.value = state;
-  await loadList(pagination.value.current, pagination.value.pageSize, state);
+  await loadList(1, pagination.value.pageSize, state);
 }
 
 const filter = ref()
@@ -495,7 +495,7 @@ const filter = ref()
 watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
   const [newProjectId, newServeId] = newVal;
   if (newProjectId !== undefined) {
-    await loadList(pagination.value.current, pagination.value.pageSize, {
+    await loadList(1, pagination.value.pageSize, {
       serveId: newServeId || 0,
     });
     await store.dispatch('Endpoint/getEndpointTagList');
@@ -511,8 +511,8 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
   immediate: true
 })
 
-async function refreshList() {
-  await loadList(pagination.value.current, pagination.value.pageSize);
+async function refreshList(resetPage?: string) {
+  await loadList(resetPage ? 1 : pagination.value.current, pagination.value.pageSize);
 }
 
 watch(

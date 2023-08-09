@@ -31,7 +31,7 @@
           </template>
 
           <template #title="nodeProps">
-            <div class="tree-title" :draggable="nodeProps.dataRef.id === -1">
+            <div class="tree-title" :title="nodeProps.dataRef.title" :draggable="nodeProps.dataRef.id === -1">
               <span class="tree-title-text" v-if="nodeProps.dataRef.title.indexOf(keywords) > -1">
                 <span>{{nodeProps.dataRef.title.substr(0, nodeProps.dataRef.title.indexOf(keywords))}}</span>
                 <span style="color: #f50">{{keywords}}</span>

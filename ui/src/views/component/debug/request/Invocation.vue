@@ -367,7 +367,7 @@ watch(() => {
 <style lang="less">
 .select-env-fixed { // related to body
   position: fixed;
-  z-index: 99999;
+  z-index: 1001;
   right: 22px;
   width: 120px;
 

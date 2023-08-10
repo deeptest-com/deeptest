@@ -414,19 +414,6 @@ function checkElseRepeat(node) {
   return exist;
 }
 
-// 更新标题
-// async function updateNodeTitle(nodeData,title) {
-//   store.dispatch('Scenario/saveProcessor', {
-//     ...nodeData,
-//     name:title,
-//   }).then((res) => {
-//     if (res === true) {
-//       message.success('修改场景名称成功');
-//     } else {
-//       message.error('修改场景名称失败');
-//     }
-//   })
-// }
 
 const addElse = (treeNode) => {
   targetModelId = treeNode?.id;

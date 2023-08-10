@@ -28,19 +28,12 @@ import {message} from "ant-design-vue";
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
-const debugData = computed<any>(() => store.state.Debug.debugData);
+
 
 const linkedInterfaceName = computed(() => {
-  return debugData?.value?.name || nodeData?.value?.name;
+  return nodeData?.value?.srcName || nodeData?.value?.name;
 })
 
-// watch(() => {
-//   return debugData?.value?.method
-// }, async (newVal) => {
-//   if (newVal) {
-//     await updateMethod(newVal);
-//   }
-// }, {deep: false});
 
 const showRight = computed(() => {
   return nodeData.value?.processorType === 'processor_interface_default';
@@ -67,19 +60,6 @@ async function updateTitle(title) {
   store.dispatch('Scenario/saveProcessor', {
     ...nodeData.value,
     name: title,
-  }).then((res) => {
-    if (res === true) {
-      message.success('修改场景名称成功');
-    } else {
-      message.error('修改场景名称失败');
-    }
-  })
-}
-
-async function updateMethod(title) {
-  store.dispatch('Scenario/saveProcessor', {
-    ...nodeData.value,
-    method: title,
   }).then((res) => {
     if (res === true) {
       message.success('修改场景名称成功');

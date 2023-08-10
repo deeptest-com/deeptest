@@ -28,7 +28,7 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
-
+const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug);
 
@@ -58,8 +58,20 @@ const saveScenarioInterface = async (data) => {
   delete obj.globalEnvVars
   delete obj.globalParamVars
 
-  const res = await store.dispatch('Scenario/saveDebugData', obj)
+  const res = await store.dispatch('Scenario/saveDebugData', obj);
+
   if (res === true) {
+    // 同步节点数据，更新节点名称或者 Method 方法
+    // await store.dispatch('Scenario/getNode', nodeData.value);
+    if(nodeData?.value?.method !== obj?.method && nodeData?.value?.id){
+      store.commit('Scenario/setTreeDataMapItemProp', {
+        id: nodeData.value.id,
+        prop: 'method',
+        value: obj.method,
+      });
+    }
+
+
     notification.success({
       key: NotificationKeyCommon,
       message: `保存成功`,

@@ -452,6 +452,7 @@ const StoreModel: ModuleType = {
                 const response = await getNode(payload.id);
                 const {data} = response;
 
+
                 commit('setNode', data);
                 return true;
             } catch (error) {

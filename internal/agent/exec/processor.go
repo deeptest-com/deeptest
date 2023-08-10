@@ -43,7 +43,7 @@ type ProcessorBase struct {
 
 	Parent                *Processor                      `json:"-"`
 	Result                *agentDomain.ScenarioExecResult `json:"result"`
-	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc    `json:"rocessorInterfaceSrc"`
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc    `json:"processorInterfaceSrc"`
 
 	Session Session `json:"-"`
 }

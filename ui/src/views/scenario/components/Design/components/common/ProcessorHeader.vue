@@ -42,7 +42,6 @@ const linkedInterfaceName = computed(() => {
 //   }
 // }, {deep: false});
 
-
 const showRight = computed(() => {
   return nodeData.value?.processorType === 'processor_interface_default';
 })

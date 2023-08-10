@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -58,6 +59,7 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 		ExpiresIn:     multi.RedisSessionTimeoutWeb.Milliseconds(),
 	}
 
+	fmt.Println(111)
 	ret.Token, _, err = multi.AuthDriver.GenerateToken(claims)
 	if err != nil {
 		return

@@ -18,10 +18,10 @@
         </a-col>
 
         <a-col flex="100px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
+<!--          <a-tooltip overlayClassName="dp-tip-small">-->
+<!--            <template #title>帮助</template>-->
+<!--            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>-->
+<!--          </a-tooltip>-->
 
 <!--      <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全部清除</template>

@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
+import {computed, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {Form, message} from "ant-design-vue";
@@ -47,7 +47,7 @@ watch(nodeData, (val: any) => {
   formState.value.comments = val.comments || null;
 },{immediate: true, deep: true});
 
-const rulesRef = ref({
+const rulesRef = reactive({
   name: [
     {required: true, message: '计时器名称必填', trigger: 'blur'},
   ],

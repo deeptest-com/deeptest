@@ -7,7 +7,7 @@
         <div class="header-text">
           <span class="serialNumber">[{{ detailResult.serialNumber }}]</span>
           <EditAndShowField placeholder="修改标题"
-                            :value="detailResult?.title || ''"
+                            :value="detailResult?.name || ''"
                             @update="updateTitle"/>
         </div>
       </template>
@@ -118,6 +118,12 @@ import {ProcessorInterfaceSrc, UsedBy} from "@/utils/enum";
 const store = useStore<{ Debug: Debug, Scenario: ScenarioStateType, ProjectGlobal, ServeGlobal, Report }>();
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 const debugData = computed<any>(() => store.state.Debug.debugData);
+
+console.log(
+  '%c Scenario-detailResult',
+  'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: green;',
+  detailResult
+)
 
 const props = defineProps({
   visible: {

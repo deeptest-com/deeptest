@@ -26,7 +26,7 @@
           </a-form-item>
 
           <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-textarea v-model:value="modelRef.comments"/>
+            <a-textarea v-model:value="modelRef.comments" :rows="3"/>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
@@ -44,7 +44,7 @@ import {computed, onMounted, onUnmounted, reactive, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form, message, notification} from 'ant-design-vue';
+import {Form, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {NotificationKeyCommon} from "@/utils/const";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
@@ -74,9 +74,13 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            message.success('保存成功');
+            notification.success({
+              message: `保存成功`,
+            });
           } else {
-            message.error('保存失败');
+            notification.error({
+              message: `保存失败`,
+            });
           }
         })
       })

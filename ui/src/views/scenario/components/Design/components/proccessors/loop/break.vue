@@ -12,7 +12,7 @@
         </a-form-item>
 
         <a-form-item label="备注" name="comments">
-          <a-textarea v-model:value="formState.comments"/>
+          <a-textarea v-model:value="formState.comments" :rows="3"/>
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
@@ -27,7 +27,7 @@
 import {computed, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {Form, message} from "ant-design-vue";
+import {Form, notification} from "ant-design-vue";
 import {useI18n} from "vue-i18n";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const {t} = useI18n();
@@ -66,9 +66,13 @@ const submit = async () => {
           breakIfExpression: formState.value.breakIfExpression,
         });
         if (res === true) {
-          message.success('保存成功');
+          notification.success({
+            message: `保存成功`,
+          });
         } else {
-          message.error('保存失败');
+          notification.error({
+            message: `保存失败`,
+          });
         }
       })
       .catch(error => {

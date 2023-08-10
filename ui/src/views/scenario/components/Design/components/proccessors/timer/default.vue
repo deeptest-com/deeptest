@@ -15,7 +15,7 @@
                           style="width: 200px"/>
         </a-form-item>
         <a-form-item label="备注" name="comments">
-          <a-textarea v-model:value="formState.comments"/>
+          <a-textarea v-model:value="formState.comments" :rows="3"/>
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
           <a-button type="primary" @click.prevent="submit">保存</a-button>
@@ -30,7 +30,7 @@
 import {computed, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {Form, message} from "ant-design-vue";
+import {Form, notification} from "ant-design-vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
@@ -70,9 +70,13 @@ const submit = async () => {
           comments: formState.value.comments,
         });
         if (res === true) {
-          message.success('保存成功');
+          notification.success({
+            message: `保存成功`,
+          });
         } else {
-          message.error('保存失败');
+          notification.error({
+            message: `保存失败`,
+          });
         }
       })
       .catch(error => {

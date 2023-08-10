@@ -37,9 +37,10 @@
 </template>
 
 <script setup lang="ts">
-import {inject, ref} from "vue";
+import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {UsedBy} from "@/utils/enum";
+import {StateType as Debug} from "@/views/component/debug/store";
 
 import QueryParameters from "./config/QueryParameters.vue";
 import PathParameters from "./config/PathParameters.vue";
@@ -50,11 +51,20 @@ import Authorization from "./config/Authorization.vue";
 import PreCondition from "./config/ConditionPre.vue";
 import PostCondition from "./config/ConditionPost.vue";
 import Assertion from "./config/Assertion.vue";
+import {useStore} from "vuex";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
+const store = useStore<{  Debug: Debug }>()
+const debugData = computed<any>(() => store.state.Debug.debugData)
+
 const activeKey = ref('query-param');
+
+watch(() => debugData.value.debugInterfaceId, (newVal) => {
+  console.log('watch debugData')
+  activeKey.value = 'query-param'
+}, {immediate: true, deep: true});
 
 </script>
 

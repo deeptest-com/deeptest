@@ -158,6 +158,12 @@ export default {
 
     'processor_custom_code':  '自定义代码',
 
+    'processor_interface_src_define': "接口",
+    'processor_interface_src_case': "接口用例",
+    'processor_interface_src_diagnose': "快捷调试",
+    // 'processor_interface_src_curl': "CUrl",
+    // 'processor_interface_src_custom': "自定义",
+
     'pass': '通过',
     'fail': '失败',
     'skip': '跳过',

@@ -223,12 +223,6 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	srcDebugInterfaceId := debugData.DebugInterfaceId
 	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
 
-	// save scenario interface
-	/*
-		if name == "" {
-			name = endpointInterface.Name + "-" + string(endpointInterface.Method)
-		}
-	*/
 	if order == 0 {
 		order = s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID)
 	}

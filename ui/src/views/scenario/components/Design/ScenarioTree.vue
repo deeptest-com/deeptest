@@ -37,14 +37,24 @@
                  :class="{
                   'dp-tree-border':showLineScenarioType.includes(dataRef?.entityType),
                   'dp-tree-if':dataRef?.entityType === 'processor_logic_if',
-                  'dp-tree-else':dataRef?.entityType === 'processor_logic_else'
+                  'dp-tree-else':dataRef?.entityType === 'processor_logic_else',
+                  'dp-tree-if-has-else':dataRef?.entityType === 'processor_logic_if' && checkElseRepeat(dataRef),
                  }"
                  :draggable="dataRef.id === -1">
               <div class="title" :class="[dataRef.disable ? 'dp-disabled' : '']">
                 <!-- 标题前缀 -->
-                <span class="prefix-icon" v-if="dataRef?.entityType !== 'processor_interface_default'">
+                <span class="prefix-icon"
+                      v-if="!['processor_interface_default'].includes(dataRef?.entityType)">
                   <IconSvg v-if="DESIGN_TYPE_ICON_MAP[dataRef.entityType]"
                            :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
+                </span>
+                <!-- 逻辑：if/else -->
+                <span class="prefix-logic"
+                      v-if="['processor_logic_if','processor_logic_else'].includes(dataRef?.entityType)">
+                      <a-typography-text
+                          strong
+                          style=" display: inline-block; text-align: left;margin-right: 4px;"
+                          :type="dataRef.entityType === 'processor_logic_if' ? 'success' : 'danger'">{{ dataRef.entityType === 'processor_logic_if' ? 'if' : 'else' }}</a-typography-text>
                 </span>
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
@@ -532,6 +542,7 @@ const diagnoseInterfaceNodesSelectionFinish = (interfaceNodes) => {
   const targetNode = treeDataMap.value[targetModelId]
   console.log('endpointInterfaceIdsSelectionFinish', interfaceNodes, targetNode)
 
+
   store.dispatch('Scenario/addInterfacesFromDiagnose', {
     selectedNodes: interfaceNodes,
     targetId: targetNode.id,
@@ -643,13 +654,13 @@ async function onDrop(info: DropEvent) {
     return;
   }
   // 跳出迭代不能 移动到 非迭代场景节点 下
-  else if (dragNodeInfo?.entityType === 'processor_loop_break' ) {
-    if(!loopIteratorTypes.includes(dropNodeInfo?.entityType) ){
+  else if (dragNodeInfo?.entityType === 'processor_loop_break') {
+    if (!loopIteratorTypes.includes(dropNodeInfo?.entityType)) {
       event.preventDefault();
       message.warning('跳出循环只能移动到循环迭代器里');
       return;
     }
-    if(dropPosition !== 0){
+    if (dropPosition !== 0) {
       event.preventDefault();
       message.warning('跳出循环只能移动到循环迭代器里');
       return;
@@ -681,16 +692,12 @@ async function onDrop(info: DropEvent) {
 function onDragstart({event, node}) {
   const nodeInfo = node.dataRef;
   // else节点 只能由 if 节点拖动带过去
-  if (nodeInfo?.entityType === 'processor_logic_if' && checkElseRepeat(nodeInfo)) {
-    message.warning('else节点不能拖动，您可以拖动 Else 对应的 If 节点');
-    nodeInfo.title = 'wode'
-    // event.preventDefault();
-  }
-  // if 节点不能移动到非 if节点下
-  // if(nodeInfo.processorCategory === ProcessorCategory.Scenario) {
-
+  // if (nodeInfo?.entityType === 'processor_logic_if' && checkElseRepeat(nodeInfo)) {
+  //   message.warning('else节点不能拖动，您可以拖动 Else 对应的 If 节点');
+  //   nodeInfo.title = 'wode'
+  //   // event.preventDefault();
   // }
-  // return false;
+
 }
 
 const interfaceImportFromCurlFinish = (content: string) => {
@@ -749,16 +756,7 @@ onUnmounted(() => {
 .scenario-tree-main {
   background: #ffffff;
 
-  //:deep(li) {
-  //  height: 32px;
-  //  padding:0;
-  //}
-
   :deep(.ant-tree-child-tree-open:has(.tree-title.dp-tree-border)) {
-    //outline: 1px solid #f0f0f0;
-    //outline-offset: -2px;
-    //margin-bottom: 5px;
-    //border-radius: 4px;
     position: relative;
 
     &:before {
@@ -772,30 +770,9 @@ onUnmounted(() => {
     }
   }
 
-  :deep(.ant-tree-treenode-switcher-close:has(.tree-title.dp-tree-else)) {
-    //position: relative;
-
-    &:before {
-      //content: '';
-      //position: absolute;
-      //top: 0;
-      //left: 11px;
-      //height: 100%;
-      //width: 1px;
-      //background: #f0f0f0;
-      //
-      //outline: 1px solid #f0f0f0;
-      //outline-offset: -2px;
-      //margin-bottom: 5px;
-      //border-radius: 4px;
-    }
-  }
-
   :deep(.ant-tree-treenode-switcher-close .tree-title.dp-tree-else  .prefix-icon) {
     //visibility: hidden;
   }
-
-
 }
 
 .tree-filter {

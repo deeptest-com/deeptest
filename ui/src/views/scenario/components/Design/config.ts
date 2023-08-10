@@ -112,7 +112,7 @@ export const DESIGN_MENU_CONFIG = [
             // 条件
             {
                 key: 'processor_logic_if',
-                title: '条件',
+                title: '条件分支',
                 icon: 'arrange-if',
                 hideInNodeTypes: ['processor_interface_default'],
                 // children: [

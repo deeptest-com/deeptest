@@ -35,7 +35,7 @@ const showRight = computed(() => {
 
 const icon = computed(() => {
   // todo 后端接口拼写错误
-  const processorInterfaceSrc = nodeData.value?.rocessorInterfaceSrc;
+  const processorInterfaceSrc = nodeData.value?.processorInterfaceSrc;
   if (processorInterfaceSrc) {
     return DESIGN_TYPE_ICON_MAP[processorInterfaceSrc] || 'interface';
   }

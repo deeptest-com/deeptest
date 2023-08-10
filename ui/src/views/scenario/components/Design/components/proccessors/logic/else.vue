@@ -40,6 +40,8 @@ watch(() => {
 }, (val: any) => {
   if (!val) return;
   formState.value.comments = val.comments || '';
+},{
+  immediate: true,
 });
 
 const rules = {

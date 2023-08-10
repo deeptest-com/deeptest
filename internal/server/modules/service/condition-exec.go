@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -18,8 +19,9 @@ type ExecConditionService struct {
 	ShareVarService *ShareVarService `inject:""`
 }
 
-func (s *ExecConditionService) SavePreConditionResult(invokeId uint, preConditions []domain.InterfaceExecCondition,
-	usedBy consts.UsedBy) (err error) {
+func (s *ExecConditionService) SavePreConditionResult(invokeId,
+	debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, usedBy consts.UsedBy,
+	preConditions []domain.InterfaceExecCondition) (err error) {
 
 	for _, condition := range preConditions {
 		if condition.Type == consts.ConditionTypeScript {
@@ -29,6 +31,12 @@ func (s *ExecConditionService) SavePreConditionResult(invokeId uint, preConditio
 
 			s.ScriptRepo.UpdateResult(scriptBase)
 			s.ScriptRepo.CreateLog(scriptBase)
+
+			for _, settings := range scriptBase.VariableSettings {
+				s.ShareVarService.Save(settings.Name, valueUtils.InterfaceToStr(settings.Value),
+					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
+					consts.Public, usedBy)
+			}
 		}
 	}
 
@@ -68,6 +76,12 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 
 			s.ScriptRepo.UpdateResult(scriptBase)
 			s.ScriptRepo.CreateLog(scriptBase)
+
+			for _, settings := range scriptBase.VariableSettings {
+				s.ShareVarService.Save(settings.Name, valueUtils.InterfaceToStr(settings.Value),
+					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
+					consts.Public, usedBy)
+			}
 		}
 	}
 

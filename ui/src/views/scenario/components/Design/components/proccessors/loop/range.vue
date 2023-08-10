@@ -1,6 +1,7 @@
 <!-- ::::迭代区间 -->
 <template>
-  <div class="processor_loop_range-main">
+  <div class="processor_loop_range-main dp-proccessors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -43,6 +44,7 @@ import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import {NotificationKeyCommon} from "@/utils/const";
 
 const useForm = Form.useForm;

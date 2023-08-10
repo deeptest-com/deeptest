@@ -1,5 +1,6 @@
 <template>
-  <div class="processor_thread_group_default-main">
+  <div class="processor_thread_group_default-main dp-proccessors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -26,7 +27,7 @@ import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
-
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const useForm = Form.useForm;
 
 const router = useRouter();

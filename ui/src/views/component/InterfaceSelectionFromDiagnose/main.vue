@@ -1,12 +1,13 @@
 <template>
   <a-modal
-      title="请选择接口"
-      :destroy-on-close="true"
-      :mask-closable="false"
-      :visible="true"
-      :onCancel="onCancel"
-      wrapClassName="modal-tree-selection"
-      width="500px">
+    title="请选择接口"
+    :destroy-on-close="true"
+    :mask-closable="false"
+    :visible="true"
+    :onCancel="onCancel"
+    wrapClassName="modal-tree-selection"
+    width="600px"
+  >
     <div class="interface-selection-main">
         <Tree :selectInterfaces="onSelectInterfaces" />
     </div>

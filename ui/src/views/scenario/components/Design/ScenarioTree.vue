@@ -54,7 +54,12 @@
                 </span>
                 <span class="title-text" :title="dataRef.name">
                 {{ dataRef.name }}
-              </span>
+<!--                  <EditAndShow placeholder="修改名称"-->
+<!--                               :value="dataRef?.name || ''"-->
+<!--                               @update="(title) => {-->
+<!--                                  updateNodeTitle(dataRef, title)-->
+<!--                               }" />-->
+                </span>
               </div>
               <div class="icon" v-if="dataRef.id > 0"
                    :style="dataRef.entityType === 'processor_logic_if'? {width:'60px'} : null">
@@ -133,7 +138,7 @@ import cloneDeep from "lodash/cloneDeep";
 import InterfaceImportFromCurl from "@/views/component/InterfaceImportFromCurl/index.tsx";
 import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue";
 import {showLineScenarioType} from "./config";
-
+import EditAndShow from "@/components/EditAndShow/index.vue";
 const props = defineProps<{}>()
 const {t} = useI18n();
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -397,11 +402,25 @@ function checkElseRepeat(node) {
   const currentIndex = children?.findIndex(item => item.id === node.id);
   const nextNode = children?.[currentIndex + 1];
   if(nextNode?.entityType === 'processor_logic_else') {
-    message.warning('已经存在 else 节点，不允许再添加');
+
     exist = true;
   }
   return exist;
 }
+
+// 更新标题
+// async function updateNodeTitle(nodeData,title) {
+//   store.dispatch('Scenario/saveProcessor', {
+//     ...nodeData,
+//     name:title,
+//   }).then((res) => {
+//     if (res === true) {
+//       message.success('修改场景名称成功');
+//     } else {
+//       message.error('修改场景名称失败');
+//     }
+//   })
+// }
 
 const addElse = (treeNode) => {
   targetModelId = treeNode?.id;
@@ -409,6 +428,7 @@ const addElse = (treeNode) => {
   // 另外目标节点已经有 else节点了，也不能再添加
   const repeat = checkElseRepeat(treeNode);
   if (repeat) {
+    message.warning('已经存在 else 节点，不允许再添加');
     return;
   }
 
@@ -557,7 +577,7 @@ const removeNode = () => {
 
 const disableNodeOrNot = () => {
   const node = treeDataMap.value[targetModelId]
-  const action = node.disable ? '启用' : '禁用';
+  const action = node.disable ?  '启用' : '禁用';
   const content = node.disable ? '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？' : '禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？';
 
   Modal.confirm({
@@ -610,6 +630,7 @@ async function onDrop(info: DropEvent) {
     // 另外目标节点已经有 else节点了，也不能再添加
     const repeat = checkElseRepeat(dropNodeInfo);
     if (repeat) {
+      message.warning('已经存在 else 节点，不允许再添加');
       return;
     }
     dropPosition = 1;
@@ -632,10 +653,11 @@ async function onDrop(info: DropEvent) {
 function onDragstart({event, node}) {
   const nodeInfo = node.dataRef;
   // else节点 只能由 if 节点拖动带过去
-  // if(nodeInfo?.entityType === 'processor_logic_else') {
-  //   message.warning('else节点不能拖动，您可以拖动 Else 对应的 If 节点');
-  //   event.preventDefault();
-  // }
+  if(nodeInfo?.entityType === 'processor_logic_if' && checkElseRepeat(nodeInfo)) {
+    message.warning('else节点不能拖动，您可以拖动 Else 对应的 If 节点');
+    nodeInfo.title = 'wode'
+    // event.preventDefault();
+  }
   // if 节点不能移动到非 if节点下
   // if(nodeInfo.processorCategory === ProcessorCategory.Scenario) {
 
@@ -699,6 +721,11 @@ onUnmounted(() => {
 .scenario-tree-main {
   background: #ffffff;
 
+  //:deep(li) {
+  //  height: 32px;
+  //  padding:0;
+  //}
+
   :deep(.ant-tree-child-tree-open:has(.tree-title.dp-tree-border)) {
     //outline: 1px solid #f0f0f0;
     //outline-offset: -2px;
@@ -718,6 +745,7 @@ onUnmounted(() => {
 
   :deep(.ant-tree-treenode-switcher-close:has(.tree-title.dp-tree-else)) {
     //position: relative;
+
     &:before {
       //content: '';
       //position: absolute;
@@ -733,6 +761,12 @@ onUnmounted(() => {
       //border-radius: 4px;
     }
   }
+
+  :deep(.ant-tree-treenode-switcher-close .tree-title.dp-tree-else  .prefix-icon){
+    visibility: hidden;
+  }
+
+
 }
 
 .tree-filter {
@@ -759,6 +793,7 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  height: 24px;
 
   .title {
     flex: 1;
@@ -766,7 +801,10 @@ onUnmounted(() => {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    display: inline-block;
+    //display: inline-block;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
   }
 
   .icon {
@@ -787,6 +825,14 @@ onUnmounted(() => {
     //transform: scale(0.8);
   }
 
+
+  .draggable {
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+    margin: 10px;
+    cursor: grab;
+  }
 
 }
 

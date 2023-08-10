@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Drag and Drop Effect</title>
+    <style>
+        .draggable {
+            width: 100px;
+            height: 100px;
+            background-color: lightblue;
+            margin: 10px;
+            cursor: grab;
+        }
+    </style>
+</head>
+<body>
+<div class="draggable" draggable="true" ondragstart="handleDragStart(event)">Drag Me</div>
+<div class="dropzone" ondragover="handleDragOver(event)" ondrop="handleDrop(event)">Drop Zone</div>
+
+<script>
+    function handleDragStart(event) {
+        const target = event.target;
+
+        // 设置拖动的数据
+        event.dataTransfer.setData('text/plain', target.textContent);
+
+        // 自定义拖动效果，可以使用 CSS 自定义样式
+        event.dataTransfer.dropEffect = 'move';
+        target.style.opacity = '0.5';
+    }
+
+    function handleDragOver(event) {
+        // 阻止默认行为，允许放置
+        event.preventDefault();
+
+        // 自定义拖动效果，可以使用 CSS 自定义样式
+        event.dataTransfer.dropEffect = 'move';
+    }
+
+    function handleDrop(event) {
+        // 阻止默认行为，以便处理拖放数据
+        event.preventDefault();
+
+        // 获取拖放的数据
+        const data = event.dataTransfer.getData('text/plain');
+
+        // 在这里处理拖放的数据
+        console.log('Dropped:', data);
+
+        // 还原拖动元素的样式
+        const draggable = document.querySelector('.draggable');
+        draggable.style.opacity = '1';
+    }
+</script>
+</body>
+</html>

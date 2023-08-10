@@ -34,6 +34,7 @@ func (s *PreConditionService) GetScript(debugInterfaceId, endpointInterfaceId ui
 	}
 
 	script, err = s.ScriptRepo.Get(conditions[0].EntityId)
+	script.ConditionEntityType = consts.ConditionTypeScript
 
 	return
 }

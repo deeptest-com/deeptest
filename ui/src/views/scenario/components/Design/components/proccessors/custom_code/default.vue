@@ -1,5 +1,6 @@
 <template>
-  <div class="processor_custom_code-main">
+  <div class="processor_custom_code-main dp-proccessors-container">
+    <ProcessorHeader/>
     <div class="header">
       <a-row type="flex" class="row">
         <a-col flex="1" class="left">
@@ -42,7 +43,7 @@ import IconSvg from "@/components/IconSvg";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import ProcessorCustomCodeEdit from "./edit.vue";
 import ProcessorPopup from "../../common/ProcessorPopup.vue";
-
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef: any = computed<boolean>(() => store.state.Scenario.nodeData);
 

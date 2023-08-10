@@ -74,6 +74,8 @@ type ScriptBase struct {
 	InvokeId            uint                 `json:"invokeId"`                     // for log only
 
 	Disabled bool `json:"disabled"`
+
+	VariableSettings []ExecVariable `gorm:"-" json:"variableSettings"`
 }
 
 func (condition ScriptBase) GetType() consts.ConditionType {

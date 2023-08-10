@@ -365,7 +365,7 @@ func (r *ScenarioProcessorRepo) UpdateEntityId(id, entityId uint) (err error) {
 }
 
 func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret model.ProcessorComm) {
-	ret.Id = 0
+	ret.Id = processor.ID
 	ret.Name = processor.Name
 	ret.Comments = processor.Comments
 

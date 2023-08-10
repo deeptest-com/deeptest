@@ -8,7 +8,7 @@
                     :onSync="syncDebugData"
                     :baseUrlDisabled="baseUrlDisabled"
                     :urlDisabled="urlDisabled" />
-        <Name v-if="usedBy === UsedBy.ScenarioDebug" />
+<!--        <Name v-if="usedBy === UsedBy.ScenarioDebug" />-->
         <DebugConfig />
       </div>
 

@@ -25,7 +25,6 @@ import EditAndShow from "@/components/EditAndShow/index.vue";
 import IconSvg from "@/components/IconSvg";
 import {DESIGN_TYPE_ICON_MAP, scenarioTypeMapToText} from "../../config";
 import {message} from "ant-design-vue";
-import {raw} from "body-parser";
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
@@ -35,13 +34,13 @@ const linkedInterfaceName = computed(() => {
   return debugData?.value?.name || nodeData?.value?.name;
 })
 
-watch(() => {
-  return debugData?.value?.method
-}, async (newVal) => {
-  if (newVal) {
-    await updateMethod(newVal);
-  }
-}, {deep: false});
+// watch(() => {
+//   return debugData?.value?.method
+// }, async (newVal) => {
+//   if (newVal) {
+//     await updateMethod(newVal);
+//   }
+// }, {deep: false});
 
 
 const showRight = computed(() => {

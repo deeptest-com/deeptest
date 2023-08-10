@@ -78,7 +78,7 @@ import {computed, reactive, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form, message} from 'ant-design-vue';
+import {Form, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {UploadOutlined} from "@ant-design/icons-vue";
 import {uploadRequest} from "@/utils/upload";
@@ -173,9 +173,13 @@ const submit = async () => {
           ...formState.value,
         });
         if (res === true) {
-          message.success('保存成功');
+          notification.success({
+            message: `保存成功`,
+          });
         } else {
-          message.error('保存失败');
+          notification.error({
+            message: `保存失败`,
+          });
         }
       })
       .catch(error => {

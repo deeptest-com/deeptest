@@ -30,7 +30,7 @@
 import {computed, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {Form, message} from "ant-design-vue";
+import {Form, notification} from "ant-design-vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
@@ -70,9 +70,13 @@ const submit = async () => {
           comments: formState.value.comments,
         });
         if (res === true) {
-          message.success('保存成功');
+          notification.success({
+            message: `保存成功`,
+          });
         } else {
-          message.error('保存失败');
+          notification.error({
+            message: `保存失败`,
+          });
         }
       })
       .catch(error => {

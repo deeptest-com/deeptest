@@ -62,9 +62,13 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            message.success('保存成功');
+            notification.success({
+              message: `保存成功`,
+            });
           } else {
-            message.error('保存失败');
+            notification.error({
+              message: `保存失败`,
+            });
           }
         })
       })

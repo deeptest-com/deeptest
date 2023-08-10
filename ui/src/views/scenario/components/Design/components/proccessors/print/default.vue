@@ -26,7 +26,7 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
-import {Form, message} from "ant-design-vue";
+import {Form, notification} from "ant-design-vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
@@ -56,9 +56,13 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            message.success('保存成功');
+            notification.success({
+              message: `保存成功`,
+            });
           } else {
-            message.error('保存失败');
+            notification.error({
+              message: `保存失败`,
+            });
           }
         })
       })

@@ -9,8 +9,8 @@
                      @update="updateTitle"/>
       </div>
     </div>
-    <div class="right">
-      <IconSvg :type="'arrange-link'" class="prefix-icon-svg" />
+    <div class="right" v-if="showRight">
+      <IconSvg :type="'arrange-link'" class="prefix-icon-svg"/>
       绑定接口：<a href="javascript:void (0)">{{ nodeData?.name }}</a>
     </div>
   </div>
@@ -29,6 +29,10 @@ import {message} from "ant-design-vue";
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
 
+const showRight = computed(() => {
+  return nodeData.value?.processorType === 'processor_interface_default';
+})
+
 const icon = computed(() => {
   // todo 后端接口拼写错误
   const processorInterfaceSrc = nodeData.value?.rocessorInterfaceSrc;
@@ -37,6 +41,7 @@ const icon = computed(() => {
   }
   return DESIGN_TYPE_ICON_MAP[nodeData?.value?.processorType] || 'interface';
 });
+
 const scenarioType = computed(() => {
   const processorInterfaceSrc = nodeData.value?.rocessorInterfaceSrc;
   if (processorInterfaceSrc) {

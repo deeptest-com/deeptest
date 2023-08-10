@@ -365,12 +365,12 @@ func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
 
 // ListServer
 // @Tags	服务管理
-// @summary	服务列表(不分页)
+// @summary	环境列表(不分页)
 // @accept 	application/json
 // @Produce application/json
 // @Param	Authorization		header	string						true	"Authentication header"
 // @Param 	currProjectId		query	int							true	"当前项目ID"
-// @Param 	ServeServer			body	serverDomain.ServeServer	true	"服务列表的请求参数"
+// @Param 	ServeServer			body	serverDomain.ServeServer	true	"环境列表的请求参数"
 // @success	200	{object}	_domain.Response{data=[]model.ServeServer}
 // @Router	/api/v1/serves/server/list	[post]
 func (c *ServeCtrl) ListServer(ctx iris.Context) {

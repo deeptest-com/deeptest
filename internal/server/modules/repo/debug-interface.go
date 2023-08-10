@@ -9,10 +9,12 @@ import (
 )
 
 type DebugInterfaceRepo struct {
-	*BaseRepo        `inject:""`
-	DB               *gorm.DB `inject:""`
-	*ServeRepo       `inject:""`
-	*ServeServerRepo `inject:""`
+	*BaseRepo             `inject:""`
+	DB                    *gorm.DB `inject:""`
+	*ServeRepo            `inject:""`
+	*ServeServerRepo      `inject:""`
+	EndpointCaseRepo      *EndpointCaseRepo      `inject:""`
+	DiagnoseInterfaceRepo *DiagnoseInterfaceRepo `inject:""`
 }
 
 func (r *DebugInterfaceRepo) Tested(id uint) (res bool, err error) {
@@ -624,6 +626,36 @@ func (r *DebugInterfaceRepo) CreateDefault(src consts.ProcessorInterfaceSrc, pro
 	err = r.Save(&po)
 
 	id = po.ID
+
+	return
+}
+
+func (r *DebugInterfaceRepo) GetSourceNameById(id uint) (name string, err error) {
+	debugInterface, err := r.Get(id)
+	if err != nil {
+		return
+	}
+
+	switch debugInterface.ProcessorInterfaceSrc {
+	case consts.InterfaceSrcDefine:
+		endpointInterface, err := r.EndpointInterfaceRepo.Get(debugInterface.EndpointInterfaceId)
+		if err != nil {
+			return "", err
+		}
+		name = endpointInterface.Name
+	case consts.InterfaceSrcCase:
+		endpointCase, err := r.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
+		if err != nil {
+			return "", err
+		}
+		name = endpointCase.Name
+	case consts.InterfaceSrcDiagnose:
+		diagnoseInterface, err := r.DiagnoseInterfaceRepo.Get(debugInterface.DiagnoseInterfaceId)
+		if err != nil {
+			return "", err
+		}
+		name = diagnoseInterface.Title
+	}
 
 	return
 }

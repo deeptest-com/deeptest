@@ -66,6 +66,7 @@ export default defineComponent({
     render(){
       return (<>
         <a-modal
+            class="interface-import-curl"
             title="请输入curl命令"
             destroy-on-close={true}
             visible={true}

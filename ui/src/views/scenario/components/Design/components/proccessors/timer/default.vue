@@ -17,7 +17,7 @@
                           style="width: 200px"/>
         </a-form-item>
         <a-form-item label="备注" name="comments">
-          <a-textarea v-model:value="formState.comments"/>
+          <a-textarea v-model:value="formState.comments" :rows="3"/>
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
           <a-button type="primary" @click.prevent="submit">保存</a-button>

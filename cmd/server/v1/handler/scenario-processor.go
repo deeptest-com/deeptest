@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -177,6 +178,8 @@ func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 		err = c.ScenarioProcessorService.SaveData(&entity)
 		po = entity
 
+	} else {
+		err = errors.New("wrong processorCategory: " + processorCategory.ToString())
 	}
 
 	if err != nil {

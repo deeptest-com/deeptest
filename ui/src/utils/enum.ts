@@ -226,3 +226,10 @@ export enum ProjectType {
     Full = 'full',
     Debug = 'debug'
 }
+
+export enum DataFileExt {
+    XLS = '.xls',
+    XLSX = '.xlsx',
+    CSV = '.csv',
+    TXT = '.txt'
+}

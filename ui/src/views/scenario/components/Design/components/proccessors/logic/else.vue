@@ -3,8 +3,6 @@
     <ProcessorHeader/>
     <a-card :bordered="false">
       <a-form
-          ref="formRef"
-          :rules="rules"
           :model="formState"
           :label-col="{ span: 4 }"
           :wrapper-col="{ span: 16 }">
@@ -25,15 +23,15 @@
 import {computed, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {message} from "ant-design-vue";
+import {Form, message} from "ant-design-vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
+const useForm = Form.useForm;
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
 const formState: any = ref({
   comments: '',
 });
-const formRef: any = ref(null);
 
 watch(() => {
   return nodeData.value;
@@ -44,15 +42,15 @@ watch(() => {
   immediate: true,
 });
 
-const rules = {
+const rulesRef = {
   name: [
     {required: true, message: '请输入名称', trigger: 'blur'},
   ],
 }
+const {resetFields, validate, validateInfos} = useForm(formState, rulesRef);
 
 const submit = async () => {
-  formRef.value
-      .validate()
+  validate()
       .then(async () => {
         // 下面代码改成 await 的方式
         const res = await store.dispatch('Scenario/saveProcessor', {

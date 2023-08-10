@@ -8,16 +8,16 @@
           :model="formState"
           :label-col="{ span: 4 }"
           :wrapper-col="{ span: 16 }">
-        <a-form-item label="计时器名称" name="name">
+        <!-- <a-form-item label="计时器名称" name="name">
           <a-input v-model:value="formState.name" style="width: 200px"/>
-        </a-form-item>
+        </a-form-item> -->
         <a-form-item label="休眠时间（秒）" name="sleepTime">
           <a-input-number :defaultValue="0"
                           v-model:value="formState.sleepTime"
                           style="width: 200px"/>
         </a-form-item>
         <a-form-item label="备注" name="comments">
-          <a-input v-model:value="formState.comments"/>
+          <a-textarea v-model:value="formState.comments"/>
         </a-form-item>
         <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
           <a-button type="primary" @click.prevent="submit">保存</a-button>
@@ -50,6 +50,8 @@ watch(() => {
   formState.value.name = val.name || null;
   formState.value.sleepTime = val.sleepTime + 0 || 0;
   formState.value.comments = val.comments || null;
+},{
+  immediate: true,
 });
 
 const rules = {

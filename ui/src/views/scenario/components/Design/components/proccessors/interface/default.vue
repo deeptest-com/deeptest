@@ -14,7 +14,6 @@ import {notification} from 'ant-design-vue';
 import {useStore} from "vuex";
 
 import {UsedBy} from "@/utils/enum";
-import {resizeWidth} from "@/utils/dom";
 import {NotificationKeyCommon} from "@/utils/const";
 import DebugComp from '@/views/component/debug/index.vue';
 import ProcessorHeader from '../../common/ProcessorHeader.vue';

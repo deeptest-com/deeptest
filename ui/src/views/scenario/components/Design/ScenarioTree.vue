@@ -37,14 +37,24 @@
                  :class="{
                   'dp-tree-border':showLineScenarioType.includes(dataRef?.entityType),
                   'dp-tree-if':dataRef?.entityType === 'processor_logic_if',
-                  'dp-tree-else':dataRef?.entityType === 'processor_logic_else'
+                  'dp-tree-else':dataRef?.entityType === 'processor_logic_else',
+                  'dp-tree-if-has-else':dataRef?.entityType === 'processor_logic_if' && checkElseRepeat(dataRef),
                  }"
                  :draggable="dataRef.id === -1">
               <div class="title" :class="[dataRef.disable ? 'dp-disabled' : '']">
                 <!-- 标题前缀 -->
-                <span class="prefix-icon" v-if="dataRef?.entityType !== 'processor_interface_default'">
+                <span class="prefix-icon"
+                      v-if="!['processor_interface_default'].includes(dataRef?.entityType)">
                   <IconSvg v-if="DESIGN_TYPE_ICON_MAP[dataRef.entityType]"
                            :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
+                </span>
+                <!-- 逻辑：if/else -->
+                <span class="prefix-logic"
+                      v-if="['processor_logic_if','processor_logic_else'].includes(dataRef?.entityType)">
+                      <a-typography-text
+                          strong
+                          style=" display: inline-block; text-align: left;margin-right: 4px;"
+                          :type="dataRef.entityType === 'processor_logic_if' ? 'success' : 'danger'">{{ dataRef.entityType === 'processor_logic_if' ? 'if' : 'else' }}</a-typography-text>
                 </span>
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
@@ -54,11 +64,6 @@
                 </span>
                 <span class="title-text" :title="dataRef.name">
                 {{ dataRef.name }}
-<!--                  <EditAndShow placeholder="修改名称"-->
-<!--                               :value="dataRef?.name || ''"-->
-<!--                               @update="(title) => {-->
-<!--                                  updateNodeTitle(dataRef, title)-->
-<!--                               }" />-->
                 </span>
               </div>
               <div class="icon" v-if="dataRef.id > 0"
@@ -137,8 +142,9 @@ import InterfaceSelectionFromDiagnose from "@/views/component/InterfaceSelection
 import cloneDeep from "lodash/cloneDeep";
 import InterfaceImportFromCurl from "@/views/component/InterfaceImportFromCurl/index.tsx";
 import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue";
-import {showLineScenarioType} from "./config";
+import {showLineScenarioType, onlyShowDisableAndDeleteTypes, loopIteratorTypes} from "./config";
 import EditAndShow from "@/components/EditAndShow/index.vue";
+
 const props = defineProps<{}>()
 const {t} = useI18n();
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -401,7 +407,7 @@ function checkElseRepeat(node) {
   const children = treeDataMap?.value?.[parentId]?.children;
   const currentIndex = children?.findIndex(item => item.id === node.id);
   const nextNode = children?.[currentIndex + 1];
-  if(nextNode?.entityType === 'processor_logic_else') {
+  if (nextNode?.entityType === 'processor_logic_else') {
 
     exist = true;
   }
@@ -536,6 +542,7 @@ const diagnoseInterfaceNodesSelectionFinish = (interfaceNodes) => {
   const targetNode = treeDataMap.value[targetModelId]
   console.log('endpointInterfaceIdsSelectionFinish', interfaceNodes, targetNode)
 
+
   store.dispatch('Scenario/addInterfacesFromDiagnose', {
     selectedNodes: interfaceNodes,
     targetId: targetNode.id,
@@ -577,7 +584,7 @@ const removeNode = () => {
 
 const disableNodeOrNot = () => {
   const node = treeDataMap.value[targetModelId]
-  const action = node.disable ?  '启用' : '禁用';
+  const action = node.disable ? '启用' : '禁用';
   const content = node.disable ? '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？' : '禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？';
 
   Modal.confirm({
@@ -610,14 +617,6 @@ async function onDrop(info: DropEvent) {
   // 目标节点
   const dropNodeInfo = info.node.dataRef;
 
-  // else 节点不能移动到非 if节点下
-  if (dragNodeInfo?.entityType === 'processor_logic_else' && dropNodeInfo?.entityType !== 'processor_logic_if') {
-    message.warning('else 节点只能拖动到 If节点后');
-    event.preventDefault();
-    return;
-  }
-
-
   const pos = info.node.pos.split('-');
   let dropPosition = info.dropPosition - Number(pos[pos.length - 1]);
 
@@ -625,8 +624,15 @@ async function onDrop(info: DropEvent) {
   console.log(dragKey, dropKey, dropPosition);
 
   // 且 else节点需要拖动到 if节点后
-  // 0 表示移动到目标节点的子节点，-1 表示移动到目标节点的前面， 1表示移动到目标节点的后面
-  if (dragNodeInfo?.entityType === 'processor_logic_else' && dropNodeInfo?.entityType === 'processor_logic_if') {
+  // 0  表示移动到目标节点的子节点
+  //-1 表示移动到目标节点的前面，
+  // 1  表示移动到目标节点的后面
+  // else 节点不能移动到非 if节点后
+  if (dragNodeInfo?.entityType === 'processor_logic_else' && dropNodeInfo?.entityType !== 'processor_logic_if') {
+    message.warning('else 节点只能拖动到 If节点后');
+    event.preventDefault();
+    return;
+  } else if (dragNodeInfo?.entityType === 'processor_logic_else' && dropNodeInfo?.entityType === 'processor_logic_if') {
     // 另外目标节点已经有 else节点了，也不能再添加
     const repeat = checkElseRepeat(dropNodeInfo);
     if (repeat) {
@@ -634,6 +640,39 @@ async function onDrop(info: DropEvent) {
       return;
     }
     dropPosition = 1;
+  }
+  // 非 else 节点不能移动到 if节点后
+  else if (dragNodeInfo?.entityType !== 'processor_logic_else' && dropNodeInfo?.entityType === 'processor_logic_if' && dropPosition === 1) {
+    message.warning('非 else 节点不能拖动到 If节点后');
+    event.preventDefault();
+    return;
+  }
+  // 任何节点都不能移动到 else节点前
+  else if (dropNodeInfo?.entityType === 'processor_logic_else' && dropPosition === -1) {
+    message.warning('任何节点都不能拖动到 Else 节点前');
+    event.preventDefault();
+    return;
+  }
+  // 跳出迭代不能 移动到 非迭代场景节点 下
+  else if (dragNodeInfo?.entityType === 'processor_loop_break') {
+    if (!loopIteratorTypes.includes(dropNodeInfo?.entityType)) {
+      event.preventDefault();
+      message.warning('跳出循环只能移动到循环迭代器里');
+      return;
+    }
+    if (dropPosition !== 0) {
+      event.preventDefault();
+      message.warning('跳出循环只能移动到循环迭代器里');
+      return;
+    }
+  }
+  // 以下是叶子节点，不能移动到叶子节点下
+  else if (onlyShowDisableAndDeleteTypes.includes(dropNodeInfo?.entityType) && dropPosition === 0) {
+    message.warning('不能移动该改场景下');
+    event.preventDefault();
+    return;
+  } else {
+    console.log('else 其他拖动场景');
   }
 
 
@@ -653,16 +692,12 @@ async function onDrop(info: DropEvent) {
 function onDragstart({event, node}) {
   const nodeInfo = node.dataRef;
   // else节点 只能由 if 节点拖动带过去
-  if(nodeInfo?.entityType === 'processor_logic_if' && checkElseRepeat(nodeInfo)) {
-    message.warning('else节点不能拖动，您可以拖动 Else 对应的 If 节点');
-    nodeInfo.title = 'wode'
-    // event.preventDefault();
-  }
-  // if 节点不能移动到非 if节点下
-  // if(nodeInfo.processorCategory === ProcessorCategory.Scenario) {
-
+  // if (nodeInfo?.entityType === 'processor_logic_if' && checkElseRepeat(nodeInfo)) {
+  //   message.warning('else节点不能拖动，您可以拖动 Else 对应的 If 节点');
+  //   nodeInfo.title = 'wode'
+  //   // event.preventDefault();
   // }
-  // return false;
+
 }
 
 const interfaceImportFromCurlFinish = (content: string) => {
@@ -721,17 +756,9 @@ onUnmounted(() => {
 .scenario-tree-main {
   background: #ffffff;
 
-  //:deep(li) {
-  //  height: 32px;
-  //  padding:0;
-  //}
-
   :deep(.ant-tree-child-tree-open:has(.tree-title.dp-tree-border)) {
-    //outline: 1px solid #f0f0f0;
-    //outline-offset: -2px;
-    //margin-bottom: 5px;
-    //border-radius: 4px;
     position: relative;
+
     &:before {
       content: '';
       position: absolute;
@@ -743,30 +770,9 @@ onUnmounted(() => {
     }
   }
 
-  :deep(.ant-tree-treenode-switcher-close:has(.tree-title.dp-tree-else)) {
-    //position: relative;
-
-    &:before {
-      //content: '';
-      //position: absolute;
-      //top: 0;
-      //left: 11px;
-      //height: 100%;
-      //width: 1px;
-      //background: #f0f0f0;
-      //
-      //outline: 1px solid #f0f0f0;
-      //outline-offset: -2px;
-      //margin-bottom: 5px;
-      //border-radius: 4px;
-    }
+  :deep(.ant-tree-treenode-switcher-close .tree-title.dp-tree-else  .prefix-icon) {
+    //visibility: hidden;
   }
-
-  :deep(.ant-tree-treenode-switcher-close .tree-title.dp-tree-else  .prefix-icon){
-    visibility: hidden;
-  }
-
-
 }
 
 .tree-filter {

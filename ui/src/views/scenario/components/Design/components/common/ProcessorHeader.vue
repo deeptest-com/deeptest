@@ -11,13 +11,13 @@
     </div>
     <div class="right" v-if="showRight">
       <IconSvg :type="'arrange-link'" class="prefix-icon-svg"/>
-      绑定接口：<a href="javascript:void (0)">{{ nodeData?.name }}</a>
+      绑定接口：<a href="javascript:void (0)">{{ linkedInterfaceName }}</a>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed} from "vue";
+import {computed, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Scenario} from "@/views/scenario/store";
@@ -25,17 +25,31 @@ import EditAndShow from "@/components/EditAndShow/index.vue";
 import IconSvg from "@/components/IconSvg";
 import {DESIGN_TYPE_ICON_MAP, scenarioTypeMapToText} from "../../config";
 import {message} from "ant-design-vue";
+import {raw} from "body-parser";
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
+const debugData = computed<any>(() => store.state.Debug.debugData);
+
+const linkedInterfaceName = computed(() => {
+  return debugData?.value?.name || nodeData?.value?.name;
+})
+
+watch(() => {
+  return debugData?.value?.method
+}, async (newVal) => {
+  if (newVal) {
+    await updateMethod(newVal);
+  }
+}, {deep: false});
+
 
 const showRight = computed(() => {
   return nodeData.value?.processorType === 'processor_interface_default';
 })
 
 const icon = computed(() => {
-  // todo 后端接口拼写错误
-  const processorInterfaceSrc = nodeData.value?.rocessorInterfaceSrc;
+  const processorInterfaceSrc = nodeData.value?.processorInterfaceSrc;
   if (processorInterfaceSrc) {
     return DESIGN_TYPE_ICON_MAP[processorInterfaceSrc] || 'interface';
   }
@@ -43,7 +57,7 @@ const icon = computed(() => {
 });
 
 const scenarioType = computed(() => {
-  const processorInterfaceSrc = nodeData.value?.rocessorInterfaceSrc;
+  const processorInterfaceSrc = nodeData.value?.processorInterfaceSrc;
   if (processorInterfaceSrc) {
     return scenarioTypeMapToText[processorInterfaceSrc] || '接口定义';
   }
@@ -55,6 +69,19 @@ async function updateTitle(title) {
   store.dispatch('Scenario/saveProcessor', {
     ...nodeData.value,
     name: title,
+  }).then((res) => {
+    if (res === true) {
+      message.success('修改场景名称成功');
+    } else {
+      message.error('修改场景名称失败');
+    }
+  })
+}
+
+async function updateMethod(title) {
+  store.dispatch('Scenario/saveProcessor', {
+    ...nodeData.value,
+    method: title,
   }).then((res) => {
     if (res === true) {
       message.success('修改场景名称成功');
@@ -94,6 +121,10 @@ async function updateTitle(title) {
   }
 
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  .prefix-icon-svg {
+    margin-right: 3px;
+  }
 }
 
 </style>

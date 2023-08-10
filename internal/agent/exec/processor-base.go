@@ -9,10 +9,11 @@ type ProcessorEntityBase struct {
 	Comments string `json:"comments"`
 	Default  string `json:"default"`
 
-	ProcessorID       uint                     `json:"processorID" yaml:"processorID"`
-	ProcessorCategory consts.ProcessorCategory `json:"processorCategory" yaml:"processorCategory"`
-	ProcessorType     consts.ProcessorType     `json:"processorType" yaml:"processorType"`
-	ParentID          uint                     `json:"parentID" yaml:"parentID"`
+	ProcessorID           uint                         `json:"processorID" yaml:"processorID"`
+	ProcessorCategory     consts.ProcessorCategory     `json:"processorCategory" yaml:"processorCategory"`
+	ProcessorType         consts.ProcessorType         `json:"processorType" yaml:"processorType"`
+	ParentID              uint                         `json:"parentID" yaml:"parentID"`
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 }
 
 type IProcessorEntity interface {

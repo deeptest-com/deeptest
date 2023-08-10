@@ -1,6 +1,6 @@
 <template>
   <div class="processor_custom_code-edit dp-proccessors-container">
-    <ProcessorHeader/>
+    <ProcessorHeader v-if="fullscreen"/>
     <div class="content">
       <div class="codes">
         <MonacoEditor theme="vs" language="typescript" class="editor"
@@ -37,7 +37,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
+import {computed, ref, watch, inject} from "vue";
 import {useStore} from "vuex";
 import {message, notification} from "ant-design-vue";
 import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
@@ -46,6 +46,8 @@ import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef: any = computed<boolean>(() => store.state.Scenario.nodeData);
+
+const fullscreen = inject('fullscreen');
 
 const editorOptions = ref(Object.assign({
       usedWith: 'request',
@@ -82,16 +84,6 @@ const addSnippet = (snippetName) => {
 }
 const editorChange = (newScriptCode) => {
   modelRef.value.content = newScriptCode;
-}
-
-const fullscreen = ref(false)
-const openFullscreen = () => {
-  console.log('openFullscreen')
-  fullscreen.value = true
-}
-const closeFullScreen = () => {
-  console.log('closeFullScreen')
-  fullscreen.value = false
 }
 
 const timestamp = ref('')

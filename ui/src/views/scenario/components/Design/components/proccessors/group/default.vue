@@ -8,9 +8,6 @@
           :model="formState"
           :label-col="{ span: 4 }"
           :wrapper-col="{ span: 16 }">
-        <a-form-item label="分组名称" name="name">
-          <a-input  v-model:value="formState.name"/>
-        </a-form-item>
 
         <a-form-item label="备注" name="comments">
           <a-input v-model:value="formState.comments"/>
@@ -45,12 +42,12 @@ watch(() => {
   if (!val) return;
   formState.value.name = val.name || '分组';
   formState.value.comments = val.comments;
+},{
+  immediate: true
 });
 
 const rules = {
-  name: [
-    {required: true, message: '请输入名称', trigger: 'blur'},
-  ],
+
 }
 
 const submit = async () => {

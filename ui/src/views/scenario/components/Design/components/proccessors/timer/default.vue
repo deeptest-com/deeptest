@@ -50,6 +50,8 @@ watch(() => {
   formState.value.name = val.name || null;
   formState.value.sleepTime = val.sleepTime + 0 || 0;
   formState.value.comments = val.comments || null;
+},{
+  immediate: true,
 });
 
 const rules = {

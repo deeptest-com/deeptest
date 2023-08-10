@@ -48,6 +48,8 @@ watch(() => {
   if (!val) return;
   formState.value.breakIfExpression = val.breakIfExpression;
   formState.value.comments = val.comments;
+},{
+  immediate: true,
 });
 
 const rules = {

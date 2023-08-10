@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_login_else-main  dp-proccessors-container">
+  <div class="processor_login_else-main  dp-processors-container">
     <ProcessorHeader/>
     <a-card :bordered="false">
       <a-form

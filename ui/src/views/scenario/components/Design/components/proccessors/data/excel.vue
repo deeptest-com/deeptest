@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_data_excel-main dp-proccessors-container">
+  <div class="processor_data_excel-main dp-processors-container">
     <ProcessorHeader/>
     <a-card :bordered="false">
       <div>

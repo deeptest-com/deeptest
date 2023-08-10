@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_custom_code-edit dp-proccessors-container">
+  <div class="processor_custom_code-edit dp-processors-container">
     <ProcessorHeader v-if="fullscreen"/>
     <div class="content">
       <div class="codes">

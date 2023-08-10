@@ -1,6 +1,6 @@
 <!-- ::::迭代区间 -->
 <template>
-  <div class="processor_loop_range-main dp-proccessors-container">
+  <div class="processor_loop_range-main dp-processors-container">
     <ProcessorHeader/>
     <a-card :bordered="false">
       <div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_group_default-main  dp-proccessors-container">
+  <div class="processor_group_default-main  dp-processors-container">
     <ProcessorHeader/>
     <a-card :bordered="false">
       <a-form

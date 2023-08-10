@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_data_excel-main dp-proccessors-container">
+  <div class="processor_data_excel-main dp-processors-container">
     <ProcessorHeader/>
     <a-card :bordered="false">
       <div class="top-header-tip">
@@ -21,22 +21,21 @@
           </div>
         </a-form-item>
 
-        <a-form-item label="上传文件" name="url">
+        <a-form-item label="上传文件" name="url" v-bind="validateInfos.url" required>
           <div class="upload-file">
             <div class="upload-container">
               <a-upload :beforeUpload="upload"
                         :fileList="fileList"
                         :showUploadList="true"
                         :accept="'.xls, .xlsx, .csv, .txt'">
-                <a-button>
-                  <UploadOutlined/>上传文件
-                </a-button>
+                <a-button><UploadOutlined/>上传文件</a-button>
               </a-upload>
             </div>
             <div class="upload-path">
               <span class="dp-input-tip">仅支持excel、csv、 text三种文件格式</span>
             </div>
           </div>
+
           <div>{{formState.url}}</div>
         </a-form-item>
 
@@ -93,13 +92,12 @@ const router = useRouter();
 const {t} = useI18n();
 
 const formRef = ref();
-
 const rulesRef = ref({
   variableName: [
     {required: true, message: '请输入变量名称', trigger: 'blur'},
   ],
   url: [
-    {required: true, message: '请选择文件', trigger: 'blur'},
+    {required: true, message: '请上传文件', trigger: 'blur'},
   ],
 } as any)
 

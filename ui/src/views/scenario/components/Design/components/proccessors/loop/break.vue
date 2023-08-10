@@ -24,7 +24,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
+import {computed, reactive, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {Form, message} from "ant-design-vue";
@@ -50,11 +50,11 @@ watch(() => {
   immediate: true,
 });
 
-const rulesRef = {
+const rulesRef = reactive({
   breakIfExpression: [
     {required: true, message: '请输入跳出循环满足的条件表达式', trigger: 'blur'},
   ],
-}
+})
 const {resetFields, validate, validateInfos} = useForm(formState, rulesRef);
 
 const submit = async () => {

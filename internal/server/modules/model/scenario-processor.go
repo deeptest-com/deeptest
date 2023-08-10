@@ -218,6 +218,8 @@ type ProcessorComm struct {
 	Id uint `json:"id" yaml:"id"`
 	agentExec.ProcessorEntityBase
 
-	EntityId            uint `json:"entityId"`
-	EndpointInterfaceId uint `json:"endpointInterfaceId"`
+	EntityId            uint              `json:"entityId"`
+	EndpointInterfaceId uint              `json:"endpointInterfaceId"`
+	Method              consts.HttpMethod `json:"method"`
+	SrcName             string            `json:"srcName"`
 }

@@ -11,9 +11,10 @@ import (
 type ScenarioProcessorRepo struct {
 	DB *gorm.DB `inject:""`
 
-	ScenarioNodeRepo *ScenarioNodeRepo `inject:""`
-	ExtractorRepo    *ExtractorRepo    `inject:""`
-	CheckpointRepo   *CheckpointRepo   `inject:""`
+	ScenarioNodeRepo   *ScenarioNodeRepo   `inject:""`
+	ExtractorRepo      *ExtractorRepo      `inject:""`
+	CheckpointRepo     *CheckpointRepo     `inject:""`
+	DebugInterfaceRepo *DebugInterfaceRepo `inject:""`
 }
 
 func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err error) {
@@ -103,6 +104,9 @@ func (r *ScenarioProcessorRepo) GetInterface(processor model.Processor) (ret mod
 	ret = r.genProcessorComm(processor)
 	ret.EntityId = processor.EntityId
 	ret.ProcessorInterfaceSrc = processor.ProcessorInterfaceSrc
+	ret.Method = processor.Method
+	srcName, _ := r.DebugInterfaceRepo.GetSourceNameById(processor.EntityId)
+	ret.SrcName = srcName
 
 	return
 }

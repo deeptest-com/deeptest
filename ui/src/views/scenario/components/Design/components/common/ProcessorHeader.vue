@@ -43,7 +43,7 @@ const icon = computed(() => {
 });
 
 const scenarioType = computed(() => {
-  const processorInterfaceSrc = nodeData.value?.rocessorInterfaceSrc;
+  const processorInterfaceSrc = nodeData.value?.processorInterfaceSrc;
   if (processorInterfaceSrc) {
     return scenarioTypeMapToText[processorInterfaceSrc] || '接口定义';
   }

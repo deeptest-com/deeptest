@@ -2,11 +2,14 @@
  * 场景编排配置相关
  * */
 
-
+/**
+ * 循环相关的迭代器
+ * */
+export const loopIteratorTypes = ['processor_loop_time', 'processor_loop_in', 'processor_loop_until', 'processor_loop_range', 'processor_data_default'];
 /**
  * 仅显示禁用和删除的操作的类型，即叶子节点
  * */
-const onlyShowDisableAndDeleteTypes = [
+export const onlyShowDisableAndDeleteTypes = [
     'processor_time_default',
     // cookie 相关
     'processor_cookie_get',
@@ -25,7 +28,6 @@ const onlyShowDisableAndDeleteTypes = [
     'processor_extractor_regex',
     // 跳出循环也是叶子结点
     'processor_loop_break',
-
     // 请求也是叶子结点
     'processor_interface_default',
 ];
@@ -103,29 +105,31 @@ export const DESIGN_MENU_CONFIG = [
                         title: '跳出循环',
                         key: 'processor_loop_break',
                         icon: 'arrange-return',
+                        showInNodeTypes: [...loopIteratorTypes],
                     },
                 ]
             },
             // 条件
             {
-                key: 'processor_logic',
+                key: 'processor_logic_if',
                 title: '条件',
                 icon: 'arrange-if',
                 hideInNodeTypes: ['processor_interface_default'],
-                children: [
-                    {
-                        title: '如果',
-                        key: 'processor_logic_if',
-                        icon: 'arrange-logic-if',
-                        hideInNodeTypes: null,
-                    },
-                    {
-                        title: '否则',
-                        key: 'processor_logic_else',
-                        icon: 'arrange-logic-if',
-                        hideInNodeTypes: ['processor_interface_default'],
-                        showInNodeTypes: ['processor_logic_if'],
-                    },]
+                // children: [
+                //     {
+                //         title: '如果',
+                //         key: 'processor_logic_if',
+                //         icon: 'arrange-logic-if',
+                //         hideInNodeTypes: null,
+                //     },
+                //     {
+                //         title: '否则',
+                //         key: 'processor_logic_else',
+                //         icon: 'arrange-logic-if',
+                //         hideInNodeTypes: ['processor_interface_default'],
+                //         showInNodeTypes: ['processor_logic_if'],
+                //     }
+                // ]
             },
             // 等待时间
             {
@@ -140,7 +144,6 @@ export const DESIGN_MENU_CONFIG = [
                 title: '数据迭代',
                 icon: 'arrange-data-loop',
                 hideInNodeTypes: ['processor_interface_default'],
-
             },
             {
                 key: 'processor_cookie',
@@ -291,8 +294,6 @@ export const DESIGN_MENU_CONFIG = [
  * */
 
 export const DESIGN_TYPE_ICON_MAP = {
-
-
     'processor_interface_default': 'interface',
     'add-child-interface-define': 'interface',
     'add-child-interface-case': 'arrange-case',
@@ -303,8 +304,6 @@ export const DESIGN_TYPE_ICON_MAP = {
     'diagnose': 'arrange-debug',
     'custom': 'arrange-http',
     'curl': 'arrange-url',
-
-
 
     'processor_group_default': 'arrange-group',
 
@@ -411,7 +410,7 @@ export const showLineScenarioType = [
  * 各节点类型对应的文案
  * */
 export const scenarioTypeMapToText = {
-    'processor_interface_default': '接口',
+    'processor_interface_default': '接口定义',
 
     'define': '接口定义',
     'case': '接口用例',
@@ -437,8 +436,8 @@ export const scenarioTypeMapToText = {
     'processor_loop_until': '循环直到',
     'processor_loop_range': '循环区间',
     'processor_loop_in': '循环列表',
-    'processor_logic_if': '如果',
-    'processor_logic_else': '否则',
+    'processor_logic_if': 'if',
+    'processor_logic_else': 'else',
 
     'processor_extractor_boundary': '边界提取',
     'processor_extractor_jsonquery': 'JSON 提取',

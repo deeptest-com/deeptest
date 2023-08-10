@@ -447,3 +447,17 @@ export const scenarioTypeMapToText = {
     'processor_variable_clear': '清除变量',
     'processor_custom_code': '自定义代码',
 }
+
+
+/**
+ * 场景绑定接口的类型对应的文案
+ * */
+export const scenarioTypeMapToBindText = {
+
+    'define': '绑定接口',
+    'case': '绑定接口用例',
+    'diagnose': '绑定快捷调试',
+    // 'custom': '自定义请求导入',
+    // 'curl': 'cURL导入',
+
+}

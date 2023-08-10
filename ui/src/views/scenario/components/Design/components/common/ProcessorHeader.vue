@@ -9,9 +9,9 @@
                      @update="updateTitle"/>
       </div>
     </div>
-    <div class="right" v-if="showRight">
+    <div class="right" v-if="showRight && scenarioTypeBindText">
       <IconSvg :type="'arrange-link'" class="prefix-icon-svg"/>
-      绑定接口：<a href="javascript:void (0)">{{ linkedInterfaceName }}</a>
+      {{scenarioTypeBindText}}：<a href="javascript:void (0)">{{ linkedInterfaceName }}</a>
     </div>
   </div>
 </template>
@@ -23,7 +23,7 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Scenario} from "@/views/scenario/store";
 import EditAndShow from "@/components/EditAndShow/index.vue";
 import IconSvg from "@/components/IconSvg";
-import {DESIGN_TYPE_ICON_MAP, scenarioTypeMapToText} from "../../config";
+import {DESIGN_TYPE_ICON_MAP, scenarioTypeMapToText,scenarioTypeMapToBindText} from "../../config";
 import {message} from "ant-design-vue";
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
@@ -47,12 +47,20 @@ const icon = computed(() => {
   return DESIGN_TYPE_ICON_MAP[nodeData?.value?.processorType] || 'interface';
 });
 
+
+
 const scenarioType = computed(() => {
   const processorInterfaceSrc = nodeData.value?.processorInterfaceSrc;
   if (processorInterfaceSrc) {
     return scenarioTypeMapToText[processorInterfaceSrc] || '接口定义';
   }
   return scenarioTypeMapToText[nodeData.value?.processorType] || '接口定义';
+});
+
+
+const scenarioTypeBindText = computed(() => {
+  const processorInterfaceSrc = nodeData.value?.processorInterfaceSrc;
+  return scenarioTypeMapToBindText[processorInterfaceSrc]
 });
 
 // 更新标题

@@ -35,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
+import {computed, ref, watch, provide} from "vue";
 import {useStore} from "vuex";
 import {message} from "ant-design-vue";
 import { QuestionCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
@@ -70,6 +70,8 @@ const save = async () => {
     message.error('保存失败');
   }
 }
+
+provide('fullscreen', computed(() => fullscreen.value));
 
 </script>
 

@@ -39,7 +39,6 @@ watch(() => {
   return debugData?.value?.method
 }, async (newVal) => {
   if (newVal) {
-    debugger;
     await updateMethod(newVal);
   }
 }, {deep: false});

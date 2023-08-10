@@ -78,9 +78,12 @@ func InitJsRuntime() {
 		return vari.Value
 	})
 	MyVm.JsRuntime.Set("setVariable", func(name, val string) {
-		ret, _ := SetVariable(CurrScenarioProcessorId, name, val, consts.Public)
+		ret, err := SetVariable(CurrScenarioProcessorId, name, val, consts.Public)
 
-		VariableSettings = append(VariableSettings, ret)
+		if err == nil {
+			VariableSettings = append(VariableSettings, ret)
+		}
+
 		return
 	})
 	MyVm.JsRuntime.Set("clearVariable", func(name string) {

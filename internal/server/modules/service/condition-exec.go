@@ -27,6 +27,10 @@ func (s *ExecConditionService) SavePreConditionResult(invokeId,
 		if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
+			if scriptBase.Disabled {
+				continue
+			}
+
 			scriptBase.InvokeId = invokeId
 
 			s.ScriptRepo.UpdateResult(scriptBase)
@@ -51,19 +55,28 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 		if condition.Type == consts.ConditionTypeExtractor {
 			var extractorBase domain.ExtractorBase
 			json.Unmarshal(condition.Raw, &extractorBase)
+			if extractorBase.Disabled {
+				continue
+			}
+
 			extractorBase.InvokeId = invokeId
 
 			s.ExtractorRepo.UpdateResult(extractorBase)
 			s.ExtractorRepo.CreateLog(extractorBase)
 
-			// add all ids for easy to load
-			s.ShareVarService.Save(extractorBase.Variable, extractorBase.Result,
-				invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
-				extractorBase.Scope, usedBy)
+			if extractorBase.ResultStatus == consts.Pass {
+				s.ShareVarService.Save(extractorBase.Variable, extractorBase.Result,
+					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
+					extractorBase.Scope, usedBy)
+			}
 
 		} else if condition.Type == consts.ConditionTypeCheckpoint {
 			var checkpointBase domain.CheckpointBase
 			json.Unmarshal(condition.Raw, &checkpointBase)
+			if checkpointBase.Disabled {
+				continue
+			}
+
 			checkpointBase.InvokeId = invokeId
 
 			s.CheckpointRepo.UpdateResult(checkpointBase)
@@ -72,6 +85,10 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 		} else if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
+			if scriptBase.Disabled {
+				continue
+			}
+
 			scriptBase.InvokeId = invokeId
 
 			s.ScriptRepo.UpdateResult(scriptBase)

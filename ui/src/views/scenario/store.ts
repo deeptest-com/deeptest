@@ -247,6 +247,7 @@ const StoreModel: ModuleType = {
             state.treeDataMap[payload.id][payload.prop] = payload.value
         },
         setNode(state, data) {
+            console.log('=== setNode', data)
             state.nodeData = data;
         },
         setCodeContent(state, content) {
@@ -741,8 +742,8 @@ const StoreModel: ModuleType = {
         },
         async syncDebugData({commit, state, dispatch}) {
             const resp = await  syncDebugData(state.scenarioProcessorIdForDebug)
-            dispatch('loadScenario', state.scenarioId);
-            commit('setScenarioProcessorIdForDebug', resp.data.id)
+            // dispatch('loadScenario', state.scenarioId);
+            // commit('setScenarioProcessorIdForDebug', resp.data.id)
             return resp.code === 0;
         },
         async importCurl({state,dispatch}, payload) {

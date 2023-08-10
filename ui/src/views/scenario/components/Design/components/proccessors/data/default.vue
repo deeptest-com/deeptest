@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch} from "vue";
+import {computed, reactive, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
@@ -92,7 +92,7 @@ const router = useRouter();
 const {t} = useI18n();
 
 const formRef = ref();
-const rulesRef = ref({
+const rulesRef = reactive({
   variableName: [
     {required: true, message: '请输入变量名称', trigger: 'blur'},
   ],

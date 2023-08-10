@@ -200,11 +200,13 @@ func (r *ExtractorRepo) CreateDefault(conditionId uint) (po model.DebugCondition
 		ExtractorBase: domain.ExtractorBase{
 			ConditionId: conditionId,
 
-			Src:        consts.Body,
-			Type:       consts.Boundary,
-			Expression: "",
-			Variable:   "",
-			Scope:      consts.Public,
+			Src:           consts.Body,
+			Type:          consts.Boundary,
+			Expression:    "",
+			Variable:      "x",
+			BoundaryStart: "_prefix",
+			BoundaryEnd:   "_postfix",
+			Scope:         consts.Public,
 		},
 	}
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_custom_code-main dp-proccessors-container">
+  <div class="processor_custom_code-main dp-processors-container">
     <ProcessorHeader/>
     <div class="header">
       <a-row type="flex" class="row">

@@ -1,5 +1,5 @@
 <template>
-  <div class="scenario-processor-edit-main dp-proccessors-container">
+  <div class="scenario-processor-edit-main dp-processors-container">
     <!--    <ProcessorThreadDefault v-if="selectedNode.processorType === 'processor_thread_default'" />-->
 
     <ProcessorInterfaceDefault v-if="selectedNode.processorType === 'processor_interface_default'" />

@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_custom_code-edit dp-proccessors-container">
+  <div class="processor_custom_code-edit dp-processors-container">
     <ProcessorHeader v-if="fullscreen"/>
     <div class="content">
       <div class="codes">
@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <a-row>
+    <a-row class="buttons">
       <a-col offset="2">
         <a-button type="primary" @click.prevent="save">保存</a-button>
       </a-col>
@@ -99,7 +99,7 @@ watch(modelRef, (newVal) => {
   width: 100%;
 
   .content {
-    height: calc(100% - 32px);
+    height: calc(100% - 110px);
     display: flex;
 
     & > div {
@@ -108,6 +108,10 @@ watch(modelRef, (newVal) => {
 
     .codes {
       flex: 1;
+      .editor {
+        height: 100%;
+        min-height: 160px;
+      }
     }
 
     .refer {
@@ -125,14 +129,9 @@ watch(modelRef, (newVal) => {
     }
   }
 
-  .codes {
-    height: 100%;
-    min-height: 160px;
-
-    .editor {
-      height: 100%;
-      min-height: 160px;
-    }
-  }
+  //.buttons {
+  //  position: sticky;
+  //  bottom: 3px;
+  //}
 }
 </style>

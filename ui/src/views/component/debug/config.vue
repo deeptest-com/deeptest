@@ -61,6 +61,10 @@ onUnmounted(() => {
   padding: 0;
   position: relative;
 
+  .container {
+    margin-top: 0px !important;
+  }
+
   #debug-form-top {
     height: 100%;
     width: 100%;

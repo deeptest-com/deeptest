@@ -17,6 +17,7 @@ func ExecPreConditions(obj *InterfaceExecObj) (err error) {
 
 			err = ExecScript(&scriptBase)
 			scriptHelper.GenResultMsg(&scriptBase)
+			scriptBase.VariableSettings = VariableSettings
 
 			obj.PreConditions[index].Raw, _ = json.Marshal(scriptBase)
 		}
@@ -31,16 +32,25 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 			var extractorBase domain.ExtractorBase
 			json.Unmarshal(condition.Raw, &extractorBase)
 
+			if extractorBase.Disabled || extractorBase.Variable == "" {
+				continue
+			}
+
 			err = ExecExtract(&extractorBase, resp)
 			extractorHelper.GenResultMsg(&extractorBase)
 
-			SetVariable(0, extractorBase.Variable, extractorBase.Result, consts.Public)
+			if extractorBase.ResultStatus == consts.Pass {
+				SetVariable(0, extractorBase.Variable, extractorBase.Result, consts.Public)
+			}
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(extractorBase)
 
 		} else if condition.Type == consts.ConditionTypeCheckpoint {
 			var checkpointBase domain.CheckpointBase
 			json.Unmarshal(condition.Raw, &checkpointBase)
+			if checkpointBase.Disabled {
+				continue
+			}
 
 			err = ExecCheckPoint(&checkpointBase, resp, 0)
 			checkpointHelper.GenResultMsg(&checkpointBase)
@@ -50,9 +60,13 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 		} else if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
+			if scriptBase.Disabled {
+				continue
+			}
 
 			err = ExecScript(&scriptBase)
 			scriptHelper.GenResultMsg(&scriptBase)
+			scriptBase.VariableSettings = VariableSettings
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(scriptBase)
 		}

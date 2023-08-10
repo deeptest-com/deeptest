@@ -7,8 +7,8 @@
                     :onSaveAsCase="saveAsCase"
                     :onSync="syncDebugData"
                     :baseUrlDisabled="baseUrlDisabled"
-                    :urlDisabled="urlDisabled"/>
-
+                    :urlDisabled="urlDisabled" />
+        <Name v-if="usedBy === UsedBy.ScenarioDebug" />
         <DebugConfig />
       </div>
 
@@ -68,7 +68,6 @@
 
 <script setup lang="ts">
 import {computed, defineProps, inject, onBeforeUnmount, onMounted, onUnmounted, ref, watch} from "vue";
-import { onBeforeRouteLeave } from 'vue-router';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 
@@ -76,6 +75,7 @@ import {EnvironmentOutlined, HistoryOutlined} from '@ant-design/icons-vue';
 import Invocation from '@/views/component/debug/request/Invocation.vue'
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
+import Name from '@/views/component/debug/others/name.vue';
 import DebugConfig  from './config.vue';
 
 import {StateType as ProjectGlobal} from "@/store/project";
@@ -217,6 +217,10 @@ onUnmounted(() => {
     #debug-content {
       flex: 1;
       width: 0;
+
+      .interface-name {
+        padding-top: 16px;
+      }
     }
 
     #debug-right {

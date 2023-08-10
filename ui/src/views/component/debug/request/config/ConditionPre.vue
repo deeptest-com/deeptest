@@ -32,7 +32,7 @@
       <Script />
     </div>
 
-    <FullScreenPopup v-if="scriptData.id > 0 && fullscreen"
+    <FullScreenPopup v-if="fullscreen"
                      :visible="fullscreen"
                      :model="scriptData"
                      :onCancel="closeFullScreen" />

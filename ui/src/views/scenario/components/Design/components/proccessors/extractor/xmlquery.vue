@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_extractor_xmlquery-main dp-proccessors-container">
+  <div class="processor_extractor_xmlquery-main dp-processors-container">
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">

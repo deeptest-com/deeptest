@@ -1,5 +1,5 @@
 <template>
-  <div class="processor_cookie_get-main dp-proccessors-container">
+  <div class="processor_cookie_get-main dp-processors-container">
     <ProcessorHeader/>
     <a-card :bordered="false">
       <div>

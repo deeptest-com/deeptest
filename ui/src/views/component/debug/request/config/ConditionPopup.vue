@@ -1,6 +1,6 @@
 <template>
   <a-modal
-      :title="'配置'+t(model.entityType)"
+      :title="'配置'"
       :visible="visible"
       :footer="null"
       @cancel="cancel"
@@ -17,9 +17,13 @@
                     :condition="model"
                     :finish="onCancel" />
 
-        <Script v-if="model.entityType === ConditionType.script"
+        <PreScript v-if="model.conditionEntityType === ConditionType.script"
                 :condition="model"
                 :finish="onCancel" />
+
+        <PostScript v-if="model.entityType === ConditionType.script"
+                    :condition="model"
+                    :finish="onCancel" />
       </div>
 
       <div class="buttons">
@@ -36,14 +40,16 @@
 <script setup lang="ts">
 import {computed, defineProps, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
-const {t} = useI18n();
 
 import {ConditionType} from "@/utils/enum";
 import Extractor from "./conditions-post/Extractor.vue";
 import Checkpoint from "./conditions-post/Checkpoint.vue";
-import Script from "./conditions-post/Script.vue";
+import PreScript from "./conditions-pre/Script.vue";
+import PostScript from "./conditions-post/Script.vue";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+
+const {t} = useI18n();
 
 const props = defineProps({
   visible: {

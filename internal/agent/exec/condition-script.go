@@ -15,6 +15,8 @@ import (
 var (
 	MyVm      JsVm
 	MyRequire *require.RequireModule
+
+	VariableSettings []domain.ExecVariable
 )
 
 type JsVm struct {
@@ -22,6 +24,7 @@ type JsVm struct {
 }
 
 func ExecScript(scriptObj *domain.ScriptBase) (err error) {
+	VariableSettings = []domain.ExecVariable{}
 	if MyVm.JsRuntime == nil {
 		InitJsRuntime()
 	}
@@ -52,9 +55,19 @@ func InitJsRuntime() {
 	MyVm.JsRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
 		rowIndex := getDatapoolRow(dpName, seq, ExecScene.Datapools)
 
+		if ExecScene.Datapools[dpName] == nil {
+			ret = "DATAPOOL_NOT_FOUND: " + dpName
+			return
+		}
+
+		if rowIndex > len(ExecScene.Datapools[dpName])-1 {
+			ret = "DATAPOOL_INDEX_OUT_OF_RANGE"
+			return
+		}
+
 		ret = ExecScene.Datapools[dpName][rowIndex][field]
 		if ret == nil {
-			ret = "NOT_FOUND"
+			ret = "DATAPOOL_VARIABLE_NOT_FOUND: " + field
 		}
 
 		return
@@ -65,7 +78,13 @@ func InitJsRuntime() {
 		return vari.Value
 	})
 	MyVm.JsRuntime.Set("setVariable", func(name, val string) {
-		SetVariable(CurrScenarioProcessorId, name, val, consts.Public)
+		ret, err := SetVariable(CurrScenarioProcessorId, name, val, consts.Public)
+
+		if err == nil {
+			VariableSettings = append(VariableSettings, ret)
+		}
+
+		return
 	})
 	MyVm.JsRuntime.Set("clearVariable", func(name string) {
 		ClearVariable(CurrScenarioProcessorId, name)

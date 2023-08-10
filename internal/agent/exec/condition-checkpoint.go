@@ -11,11 +11,6 @@ import (
 )
 
 func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, processorId uint) (err error) {
-	if checkpoint.Disabled {
-		checkpoint.ResultStatus = "Disabled"
-		return
-	}
-
 	checkpoint.ResultStatus = consts.Pass
 
 	// Response ResultStatus

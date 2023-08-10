@@ -13,11 +13,6 @@ import (
 func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err error) {
 	result := ""
 
-	if extractor.Disabled {
-		result = ""
-		return
-	}
-
 	if extractor.Src == consts.Header {
 		for _, h := range resp.Headers {
 			if h.Name == extractor.Key {

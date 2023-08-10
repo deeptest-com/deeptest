@@ -63,7 +63,10 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 
 	invoke, err := s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
 
-	s.ExecConditionService.SavePreConditionResult(invoke.ID, req.PreConditions, usedBy)
+	s.ExecConditionService.SavePreConditionResult(invoke.ID,
+		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
+		serveId, processorId, scenarioId, usedBy,
+		req.PreConditions)
 
 	s.ExecConditionService.SavePostConditionResult(invoke.ID,
 		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,

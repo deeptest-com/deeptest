@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -62,9 +61,11 @@ func (s *ScenarioProcessorService) SaveLogic(req *model.ProcessorLogic) (err err
 }
 
 func (s *ScenarioProcessorService) SaveLoop(req *model.ProcessorLoop) (err error) {
-	if req.ProcessorType == consts.ProcessorLoopTime {
-		req.Name = fmt.Sprintf("迭代%d次", req.Times)
-	}
+	/*
+		if req.ProcessorType == consts.ProcessorLoopTime {
+			req.Name = fmt.Sprintf("迭代%d次", req.Times)
+		}
+	*/
 
 	err = s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 

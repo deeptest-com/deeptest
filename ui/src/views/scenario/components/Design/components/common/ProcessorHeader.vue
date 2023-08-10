@@ -110,14 +110,24 @@ async function updateMethod(title) {
     margin-right: 16px;
   }
 
+  .left{
+    width: 400px;
+  }
+
   .name {
-    width: 300px;
+    width: 200px;
     display: inline-block;
   }
 
   .right {
     text-align: right;
     margin-right: 16px;
+    flex:1;
+    max-width: 400px;
+  //  超出省略号
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   border-bottom: 1px solid rgba(0, 0, 0, 0.06);

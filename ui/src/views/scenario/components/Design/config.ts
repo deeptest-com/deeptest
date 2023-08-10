@@ -412,11 +412,11 @@ export const showLineScenarioType = [
 export const scenarioTypeMapToText = {
     'processor_interface_default': '接口定义',
 
-    'define': '接口定义',
-    'case': '接口用例',
-    'diagnose': '接口调试',
-    'custom': '自定义请求',
-    'curl': 'cURL导入请求',
+    'define': '接口定义导入',
+    'case': '接口用例导入',
+    'diagnose': '接口调试导入',
+    'custom': '自定义请求导入',
+    'curl': 'cURL导入',
 
     'processor_group_default': '分组',
     'processor_time_default': '定时器',

@@ -6,12 +6,8 @@
         <a-alert message="说明：数据迭代处理器将循环读取文件中的行内容，并将读取的内容赋值给指定的变量" type="info" show-icon/>
       </div>
 
-      <a-form
-          ref="formRef"
-          :model="formState"
-          :label-col="{ span: 4 }"
-          @submit.prevent
-          :wrapper-col="{ span: 16 }">
+      <a-form :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }"
+          @submit.prevent>
         <a-form-item label="变量名称" name="variableName" v-bind="validateInfos.variableName" required>
           <a-input v-model:value="formState.variableName"
                    @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})" />
@@ -25,14 +21,15 @@
           <div class="upload-file">
             <div class="upload-container">
               <a-upload :beforeUpload="upload"
-                        :fileList="fileList"
-                        :showUploadList="true"
-                        :accept="'.xls, .xlsx, .csv, .txt'">
+                        :showUploadList="false"
+                        :accept="extStr">
                 <a-button><UploadOutlined/>上传文件</a-button>
               </a-upload>
             </div>
             <div class="upload-path">
-              <span class="dp-input-tip">仅支持excel、csv、 text三种文件格式</span>
+              <span class="dp-input-tip" :class="[isWrongFileFormat ? 'dp-red' : '']">
+                仅支持excel、csv、 text三种格式文件
+              </span>
             </div>
           </div>
 
@@ -86,6 +83,9 @@ import {StateType as ScenarioStateType} from "../../../../../store";
 import {UploadOutlined} from "@ant-design/icons-vue";
 import {uploadRequest} from "@/utils/upload";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
+import {getEnumArr} from "@/utils/comm";
+import {DataFileExt} from "@/utils/enum";
+import {isInArray} from "@/utils/array";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -104,6 +104,10 @@ const rulesRef = ref({
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
 
+const extArr = getEnumArr(DataFileExt)
+const extStr = extArr.join(',')
+console.log(extStr)
+
 const formState = ref({
   variableName: '',
   url: '',
@@ -116,8 +120,18 @@ const formState = ref({
 
 const {resetFields, validate, validateInfos} = useForm(formState, rulesRef);
 
-const fileList = ref([]);
-const upload = async (file, fileList) => {
+const isWrongFileFormat = ref(false)
+const upload = async (file) => {
+  const ext = file.name.substr(file.name.lastIndexOf('.'))
+  console.log('upload', file, ext)
+
+  if (!isInArray(ext, extArr)) {
+    isWrongFileFormat.value = true
+    return false
+  } else {
+    isWrongFileFormat.value = false
+  }
+
   const res = await uploadRequest(file)
   formState.value.url = res.path;
   formState.value.format = res.format;
@@ -152,9 +166,7 @@ watch(formState, (val: any) => {
 }, {deep: true});
 
 const submit = async () => {
-  formRef.value
-      .validate()
-      .then(async () => {
+  validate().then(async () => {
         // 下面代码改成 await 的方式
         const res = await store.dispatch('Scenario/saveProcessor', {
           ...nodeData.value,

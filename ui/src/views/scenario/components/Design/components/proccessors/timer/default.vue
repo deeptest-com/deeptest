@@ -3,8 +3,6 @@
     <ProcessorHeader/>
     <a-card :bordered="false">
       <a-form
-          ref="formRef"
-          :rules="rules"
           :model="formState"
           :label-col="{ span: 4 }"
           :wrapper-col="{ span: 16 }">
@@ -32,7 +30,7 @@
 import {computed, ref, watch} from "vue";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {message} from "ant-design-vue";
+import {Form, message} from "ant-design-vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
@@ -41,20 +39,15 @@ const formState: any = ref({
   sleepTime: 0,
   comments: null,
 });
-const formRef: any = ref(null);
 
-watch(() => {
-  return nodeData.value;
-}, (val: any) => {
+watch(nodeData, (val: any) => {
   if (!val) return;
   formState.value.name = val.name || null;
   formState.value.sleepTime = val.sleepTime + 0 || 0;
   formState.value.comments = val.comments || null;
-},{
-  immediate: true,
-});
+},{immediate: true, deep: true});
 
-const rules = {
+const rulesRef = ref({
   name: [
     {required: true, message: '计时器名称必填', trigger: 'blur'},
   ],
@@ -62,11 +55,12 @@ const rules = {
     {type: 'number', message: '休眠时间必须为数字'},
     {required: true, message: '休眠时间必填'},
   ],
-}
+})
+const useForm = Form.useForm;
+const {resetFields, validate, validateInfos} = useForm(formState, rulesRef);
 
 const submit = async () => {
-  formRef.value
-      .validate()
+  validate()
       .then(async () => {
         // 下面代码改成 await 的方式
         const res = await store.dispatch('Scenario/saveProcessor', {
@@ -87,7 +81,7 @@ const submit = async () => {
 };
 
 const reset = () => {
-  formRef.value.resetFields();
+  resetFields();
 };
 
 

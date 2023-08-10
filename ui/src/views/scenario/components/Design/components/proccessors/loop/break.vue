@@ -14,7 +14,7 @@
         </a-form-item>
 
         <a-form-item label="备注" name="comments">
-          <a-input v-model:value="formState.comments"/>
+          <a-textarea v-model:value="formState.comments"/>
         </a-form-item>
 
         <a-form-item :wrapper-col="{ span: 16, offset: 4 }">

@@ -38,7 +38,9 @@
 
     <ProcessorCustomCode v-else-if="selectedNode.processorType === 'processor_custom_code'" />
 
-    <span v-else></span>
+    <span v-else>
+      <a-empty style="margin-top: 100px;" :description="'请先在左侧目录上选择编排场景'"/>
+    </span>
 
   </div>
 </template>

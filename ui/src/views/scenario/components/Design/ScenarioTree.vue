@@ -54,7 +54,9 @@
                       <a-typography-text
                           strong
                           style=" display: inline-block; text-align: left;margin-right: 4px;"
-                          :type="dataRef.entityType === 'processor_logic_if' ? 'success' : 'danger'">{{ dataRef.entityType === 'processor_logic_if' ? 'if' : 'else' }}</a-typography-text>
+                          :type="dataRef.entityType === 'processor_logic_if' ? 'success' : 'danger'">{{
+                          dataRef.entityType === 'processor_logic_if' ? 'if' : 'else'
+                        }}</a-typography-text>
                 </span>
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
@@ -408,10 +410,26 @@ function checkElseRepeat(node) {
   const currentIndex = children?.findIndex(item => item.id === node.id);
   const nextNode = children?.[currentIndex + 1];
   if (nextNode?.entityType === 'processor_logic_else') {
-
     exist = true;
   }
   return exist;
+}
+
+/**
+ * 检测 当前 if 节点 是否有匹配的 else 节点，用户控制 if 不能拖动到自己匹配的 else 节点下
+ * */
+function checkIfElseIsMatch(ifNode, elseNode) {
+  let match = false;
+  const parentId = ifNode?.parentId;
+  const children = treeDataMap?.value?.[parentId]?.children;
+  const ifNodeIndex = children?.findIndex(item => item.id === ifNode.id);
+  const nextNode = children?.[ifNodeIndex + 1];
+  if (nextNode?.entityType === 'processor_logic_else') {
+    if (nextNode?.id === elseNode?.id) {
+      match = true;
+    }
+  }
+  return match;
 }
 
 
@@ -611,6 +629,7 @@ async function onDrop(info: DropEvent) {
   if (isInterface(treeDataMap.value[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
 
+
   // 且 else节点需要拖动到 if节点后
   // 0  表示移动到目标节点的子节点
   //-1 表示移动到目标节点的前面，
@@ -634,6 +653,14 @@ async function onDrop(info: DropEvent) {
     message.warning('非 else 节点不能拖动到 If节点后');
     event.preventDefault();
     return;
+  }
+  //  if 节点不能移动到 自己匹配的 else 节点下
+  else if (dragNodeInfo?.entityType === 'processor_logic_if' && dropNodeInfo?.entityType === 'processor_logic_else' && dropPosition === 0) {
+    if (checkIfElseIsMatch(dragNodeInfo, dropNodeInfo)) {
+      message.warning('if 节点不能移动到 自己匹配的 else 节点下');
+      event.preventDefault();
+      return;
+    }
   }
   // 任何节点都不能移动到 else节点前
   else if (dropNodeInfo?.entityType === 'processor_logic_else' && dropPosition === -1) {
@@ -677,7 +704,7 @@ async function onDrop(info: DropEvent) {
 
 watch(() => {
   return expandedKeys.value
-},(value, oldValue, onCleanup) => {
+}, (value, oldValue, onCleanup) => {
   console.log('expandedKeys', value, oldValue)
 })
 

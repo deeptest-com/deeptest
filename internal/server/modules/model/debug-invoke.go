@@ -23,6 +23,9 @@ type InvocationBase struct {
 	ReqContent  string `json:"reqContent,omitempty" gorm:"type:longtext"`
 	RespContent string `json:"respContent,omitempty" gorm:"type:longtext"`
 
+	PreConditionsContent  string `json:"preConditionsContent,omitempty" gorm:"type:longtext"`
+	PostConditionsContent string `json:"postConditionsContent,omitempty" gorm:"type:longtext"`
+
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode"`
 	HttpRespStatusContent string              `json:"httpStatusContent"`
 

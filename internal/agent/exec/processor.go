@@ -118,11 +118,6 @@ func (p *Processor) RestoreEntity() (err error) {
 		json.Unmarshal(bytes, &ret)
 		p.Entity = ret
 
-	case consts.ProcessorExtractor:
-		ret := ProcessorExtractor{}
-		json.Unmarshal(bytes, &ret)
-		p.Entity = ret
-
 	case consts.ProcessorData:
 		ret := ProcessorData{}
 		json.Unmarshal(bytes, &ret)

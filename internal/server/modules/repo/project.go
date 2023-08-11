@@ -850,14 +850,6 @@ func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceId
 			err = r.ScenarioProcessorRepo.SaveAssertion(&entity)
 			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
 
-		} else if processorCategory == consts.ProcessorExtractor {
-			var entity model.ProcessorExtractor
-			_commUtils.Map2Struct(item, &entity)
-			entity.ProcessorID = processor.ID
-			entity.ParentID = parentId
-			err = r.ScenarioProcessorRepo.SaveExtractor(&entity)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
-
 		} else if processorCategory == consts.ProcessorData {
 			var entity model.ProcessorData
 			_commUtils.Map2Struct(item, &entity)

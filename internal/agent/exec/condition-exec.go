@@ -45,18 +45,6 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(extractorBase)
 
-		} else if condition.Type == consts.ConditionTypeCheckpoint {
-			var checkpointBase domain.CheckpointBase
-			json.Unmarshal(condition.Raw, &checkpointBase)
-			if checkpointBase.Disabled {
-				continue
-			}
-
-			err = ExecCheckPoint(&checkpointBase, resp, 0)
-			checkpointHelper.GenResultMsg(&checkpointBase)
-
-			obj.PostConditions[index].Raw, _ = json.Marshal(checkpointBase)
-
 		} else if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
@@ -69,6 +57,22 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 			scriptBase.VariableSettings = VariableSettings
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(scriptBase)
+		}
+	}
+
+	for index, condition := range obj.PostConditions {
+		if condition.Type == consts.ConditionTypeCheckpoint {
+			var checkpointBase domain.CheckpointBase
+			json.Unmarshal(condition.Raw, &checkpointBase)
+			if checkpointBase.Disabled {
+				continue
+			}
+
+			err = ExecCheckPoint(&checkpointBase, resp, 0)
+			checkpointHelper.GenResultMsg(&checkpointBase)
+
+			obj.PostConditions[index].Raw, _ = json.Marshal(checkpointBase)
+
 		}
 	}
 

@@ -42,21 +42,25 @@ func (s *ScenarioProcessorService) SaveBasicInfo(req domain.ScenarioProcessorInf
 
 func (s *ScenarioProcessorService) SaveGroup(req *model.ProcessorGroup) (err error) {
 	err = s.ScenarioProcessorRepo.SaveGroup(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
 
 func (s *ScenarioProcessorService) SaveTimer(req *model.ProcessorTimer) (err error) {
 	err = s.ScenarioProcessorRepo.SaveTimer(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
 
 func (s *ScenarioProcessorService) SavePrint(req *model.ProcessorPrint) (err error) {
 	err = s.ScenarioProcessorRepo.SavePrint(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
 
 func (s *ScenarioProcessorService) SaveLogic(req *model.ProcessorLogic) (err error) {
 	err = s.ScenarioProcessorRepo.SaveLogic(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
 
@@ -76,31 +80,44 @@ func (s *ScenarioProcessorService) SaveLoop(req *model.ProcessorLoop) (err error
 
 func (s *ScenarioProcessorService) SaveVariable(req *model.ProcessorVariable) (err error) {
 	err = s.ScenarioProcessorRepo.SaveVariable(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
 
 func (s *ScenarioProcessorService) SaveCookie(req *model.ProcessorCookie) (err error) {
 	err = s.ScenarioProcessorRepo.SaveCookie(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
 
 func (s *ScenarioProcessorService) SaveAssertion(req *model.ProcessorAssertion) (err error) {
 	err = s.ScenarioProcessorRepo.SaveAssertion(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
 
+/*
 func (s *ScenarioProcessorService) SaveExtractor(req *model.ProcessorExtractor) (err error) {
 	err = s.ScenarioProcessorRepo.SaveExtractor(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
+*/
 
 func (s *ScenarioProcessorService) SaveData(req *model.ProcessorData) (err error) {
 	err = s.ScenarioProcessorRepo.SaveData(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
 
 func (s *ScenarioProcessorService) SaveCustomCode(req *model.ProcessorCustomCode) (err error) {
 	err = s.ScenarioProcessorRepo.SaveCustomCode(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+	return
+}
+
+func (s *ScenarioProcessorService) SaveInterface(req *agentExec.ProcessorEntityBase) (err error) {
+	err = s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
 
@@ -172,12 +189,12 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		entityPo, _ := s.ScenarioProcessorRepo.GetAssertion(processor)
 		ret = agentExec.ProcessorAssertion{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
-
-	case consts.ProcessorExtractor:
-		entityPo, _ := s.ScenarioProcessorRepo.GetExtractor(processor)
-		ret = agentExec.ProcessorExtractor{}
-		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
-
+		/*
+			case consts.ProcessorExtractor:
+				entityPo, _ := s.ScenarioProcessorRepo.GetExtractor(processor)
+				ret = agentExec.ProcessorExtractor{}
+				copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+		*/
 	case consts.ProcessorData:
 		entityPo, _ := s.ScenarioProcessorRepo.GetData(processor)
 		ret = agentExec.ProcessorData{}

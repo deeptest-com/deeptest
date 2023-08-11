@@ -256,12 +256,6 @@ func (s *DebugInterfaceService) GetScenarioIdForDebugInterface(processorId uint)
 	return
 }
 
-func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
-	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
-
-	return
-}
-
 func (s *DebugInterfaceService) GenSample(projectId, serveId uint) (ret *model.DebugInterface, err error) {
 	return
 }
@@ -370,6 +364,12 @@ func (s *DebugInterfaceService) GetDebugInterfaceByEndpointCase(endpointCaseId u
 
 func (s *DebugInterfaceService) CreateDefault(src consts.ProcessorInterfaceSrc, projectId uint) (id uint, err error) {
 	id, err = s.DebugInterfaceRepo.CreateDefault(src, projectId)
+
+	return
+}
+
+func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
+	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return
 }

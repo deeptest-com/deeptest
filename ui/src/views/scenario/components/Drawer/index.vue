@@ -278,13 +278,12 @@ const isShowSync = computed(() => {
 
 <style lang="less" scoped>
 .scenario-interface-design {
+
+  .tab-header-items {
+    width: unset !important;
+  }
   .tab-header-btns {
-    position: relative;
-    .exec-scenario-btn {
-      position: absolute;
-      //right: 200px;
-      top: -16px;
-    }
+    width: unset !important;
   }
 }
 

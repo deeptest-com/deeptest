@@ -96,11 +96,13 @@ func (s *ScenarioProcessorService) SaveAssertion(req *model.ProcessorAssertion) 
 	return
 }
 
+/*
 func (s *ScenarioProcessorService) SaveExtractor(req *model.ProcessorExtractor) (err error) {
 	err = s.ScenarioProcessorRepo.SaveExtractor(req)
 	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
+*/
 
 func (s *ScenarioProcessorService) SaveData(req *model.ProcessorData) (err error) {
 	err = s.ScenarioProcessorRepo.SaveData(req)
@@ -187,12 +189,12 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		entityPo, _ := s.ScenarioProcessorRepo.GetAssertion(processor)
 		ret = agentExec.ProcessorAssertion{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
-
-	case consts.ProcessorExtractor:
-		entityPo, _ := s.ScenarioProcessorRepo.GetExtractor(processor)
-		ret = agentExec.ProcessorExtractor{}
-		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
-
+		/*
+			case consts.ProcessorExtractor:
+				entityPo, _ := s.ScenarioProcessorRepo.GetExtractor(processor)
+				ret = agentExec.ProcessorExtractor{}
+				copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+		*/
 	case consts.ProcessorData:
 		entityPo, _ := s.ScenarioProcessorRepo.GetData(processor)
 		ret = agentExec.ProcessorData{}

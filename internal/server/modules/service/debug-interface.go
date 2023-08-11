@@ -24,7 +24,6 @@ type DebugInterfaceService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	ExtractorRepo         *repo.ExtractorRepo         `inject:""`
 	CheckpointRepo        *repo.CheckpointRepo        `inject:""`
-	DebugInvokeRepo       *repo.DebugInvokeRepo       `inject:""`
 
 	DebugSceneService        *DebugSceneService        `inject:""`
 	ScenarioInterfaceService *ScenarioInterfaceService `inject:""`

@@ -43,7 +43,7 @@ function loadData() {
 
     if (scenarioProcessorIdForDebug.value === 0) return
 
-   await store.dispatch('Debug/loadDataAndInvocations', {
+    await store.dispatch('Debug/loadDataAndInvocations', {
       scenarioProcessorId: scenarioProcessorIdForDebug.value,
       usedBy: usedBy,
     });

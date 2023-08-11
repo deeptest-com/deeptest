@@ -272,7 +272,8 @@ func (r *ScenarioProcessorRepo) GetCustomCode(processor model.Processor) (ret mo
 func (r *ScenarioProcessorRepo) SaveGroup(po *model.ProcessorGroup) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorID, po.ID)
+	_ = r.UpdateEntityId(po.ProcessorID, po.ID)
+	_ = r.UpdateName(po.ProcessorID, po.Name)
 
 	return
 }
@@ -416,3 +417,25 @@ func (r *ScenarioProcessorRepo) UpdateMethod(id uint, method consts.HttpMethod) 
 
 	return
 }
+
+//func (r *ScenarioProcessorRepo) SwitchEntityInterface(id, debugInterFaceId uint) (err error) {
+//	processor, _ := r.Get(id)
+//	oldDebugInterFaceId := processor.EntityId
+//
+//	r.DB.Transaction(func(tx *gorm.DB) error {
+//		err = r.DebugInterfaceRepo.UpdateProcessorId(debugInterFaceId, id)
+//		if err != nil {
+//			return err
+//		}
+//
+//		err = r.UpdateEntityId(id, debugInterFaceId)
+//		if err != nil {
+//			return err
+//		}
+//
+//		err = r.DebugInterfaceRepo.Delete(oldDebugInterFaceId)
+//		return err
+//	})
+//
+//	return
+//}

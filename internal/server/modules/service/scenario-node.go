@@ -163,8 +163,9 @@ func (s *ScenarioNodeService) AddInterfacesFromDefine(req serverDomain.ScenarioA
 		targetProcessor, _ = s.ScenarioProcessorRepo.Get(targetProcessor.ParentId)
 	}
 
+	serveId := uint(0)
 	for _, interfaceId := range req.InterfaceIds {
-		ret, err = s.createInterfaceFromDefine(uint(interfaceId), req.CreateBy, targetProcessor, "", 0)
+		ret, err = s.createInterfaceFromDefine(uint(interfaceId), &serveId, req.CreateBy, targetProcessor, "", 0)
 	}
 
 	return
@@ -184,52 +185,7 @@ func (s *ScenarioNodeService) AddInterfacesFromCase(req serverDomain.ScenarioAdd
 	return
 }
 
-func (s *ScenarioNodeService) getInterfaceFromDefine(endpointInterfaceId uint) (
-	ret domain.DebugData, err error) {
-
-	endpointInterface, err := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-	if err != nil {
-		return
-	}
-
-	// convert or clone a debug interface obj
-	ret, err = s.DebugInterfaceService.GetDebugDataFromEndpointInterface(endpointInterfaceId)
-	ret.EndpointInterfaceId = endpointInterfaceId
-
-	ret.ProcessorInterfaceSrc = consts.InterfaceSrcDefine
-
-	endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
-	ret.ServeId = endpoint.ServeId
-
-	if ret.ServerId == 0 {
-		server, _ := s.ServeServerRepo.GetDefaultByServe(ret.ServeId)
-		ret.ServerId = server.ID
-	}
-
-	server, _ := s.ServeServerRepo.Get(ret.ServerId)
-	ret.ServerId = server.ID
-	ret.BaseUrl = server.Url
-
-	ret.UsedBy = consts.ScenarioDebug
-
-	return
-}
-func (s *ScenarioNodeService) getInterfaceFromDiagnose(diagnoseInterfaceId uint) (
-	ret domain.DebugData, err error) {
-
-	ret, _ = s.DebugInterfaceService.GetDebugDataFromDebugInterface(diagnoseInterfaceId)
-
-	return
-}
-func (s *ScenarioNodeService) getInterfaceFromCase(caseInterfaceId uint) (
-	ret domain.DebugData, err error) {
-
-	ret, _ = s.DebugInterfaceService.GetDebugDataFromDebugInterface(caseInterfaceId)
-
-	return
-}
-
-func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint,
+func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint, serveId *uint,
 	createBy uint, parentProcessor model.Processor, name string, order int) (
 	ret model.Processor, err error) {
 
@@ -238,9 +194,32 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 		return
 	}
 
-	debugData, err := s.getInterfaceFromDefine(endpointInterfaceId)
-	debugData.ScenarioProcessorId = 0 // will be updated later
+	// get serve id once
+	if *serveId == 0 {
+		endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+		*serveId = endpoint.ServeId
+	}
 
+	// convert or clone a debug interface obj
+	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(endpointInterfaceId)
+
+	debugData.EndpointInterfaceId = endpointInterfaceId
+
+	debugData.ScenarioProcessorId = 0 // will be update after ScenarioProcessor saved
+	debugData.ProcessorInterfaceSrc = consts.InterfaceSrcDefine
+
+	debugData.ServeId = *serveId
+
+	if debugData.ServerId == 0 {
+		server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+		debugData.ServerId = server.ID
+	}
+
+	server, _ := s.ServeServerRepo.Get(debugData.ServerId)
+	debugData.ServerId = server.ID
+	debugData.BaseUrl = server.Url
+
+	debugData.UsedBy = consts.ScenarioDebug
 	srcDebugInterfaceId := debugData.DebugInterfaceId
 	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
 
@@ -267,7 +246,10 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	s.ScenarioNodeRepo.Save(&processor)
 
 	// update to new ScenarioProcessorId
-	s.DebugInterfaceRepo.UpdateProcessorId(debugInterface.ID, processor.ID)
+	values := map[string]interface{}{
+		"scenario_processor_id": processor.ID,
+	}
+	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
 
 	ret = processor
 
@@ -526,7 +508,10 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 	}
 
 	// update to new ScenarioProcessorId
-	s.DebugInterfaceRepo.UpdateProcessorId(debugInterface.ID, processor.ID)
+	values := map[string]interface{}{
+		"scenario_processor_id": processor.ID,
+	}
+	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
 
 	ret = processor
 

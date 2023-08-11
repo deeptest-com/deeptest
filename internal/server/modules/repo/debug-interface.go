@@ -281,6 +281,15 @@ func (r *DebugInterfaceRepo) RemoveCookie(id uint) (err error) {
 	return
 }
 
+func (r *DebugInterfaceRepo) UpdateProcessorId(id, processorId uint) (err error) {
+	values := map[string]interface{}{
+		"scenario_processor_id": processorId,
+	}
+	err = r.UpdateDebugInfo(id, values)
+
+	return
+}
+
 func (r *DebugInterfaceRepo) UpdateBodyFormData(id uint, items []model.DebugInterfaceBodyFormDataItem) (err error) {
 	err = r.RemoveBodyFormData(id)
 

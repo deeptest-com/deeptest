@@ -110,7 +110,9 @@ func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug mo
 	return
 }
 
-func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, createBy uint) (newProcessor model.Processor, err error) {
+func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, createBy uint) (
+	newProcessor model.Processor, err error) {
+
 	scenarioProcessor, _ := s.ScenarioProcessorRepo.Get(uint(scenarioProcessorId))
 	parentProcessor, _ := s.ScenarioProcessorRepo.Get(scenarioProcessor.ParentId)
 	debugInterface, _ := s.DebugInterfaceRepo.Get(scenarioProcessor.EntityId)
@@ -131,6 +133,8 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 		serveId := uint(0)
 		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name, scenarioProcessor.Ordr)
 	}
+
+	s.DebugInvokeRepo.ChangeProcessOwner(scenarioProcessor.ID, newProcessor.ID)
 
 	// must put below, since creation will use its DebugInterface
 	s.DebugInterfaceRepo.Delete(scenarioProcessor.EntityId)

@@ -22,3 +22,11 @@ func (r *DebugInvokeRepo) Save(invocation *model.DebugInvoke) (err error) {
 	err = r.DB.Save(invocation).Error
 	return
 }
+
+func (r *DebugInvokeRepo) ChangeProcessOwner(oldProcessId, newProcessId uint) (err error) {
+	err = r.DB.Model(&model.DebugInvoke{}).
+		Where("scenario_processor_id = ?", oldProcessId).
+		Update("scenario_processor_id", newProcessId).Error
+
+	return
+}

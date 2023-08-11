@@ -18,7 +18,6 @@ type ScenarioInterfaceService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
 	EndpointCaseRepo      *repo.EndpointCaseRepo      `inject:""`
-	DebugInvokeRepo       *repo.DebugInvokeRepo       `inject:""`
 
 	ScenarioNodeService   *ScenarioNodeService   `inject:""`
 	DebugSceneService     *DebugSceneService     `inject:""`

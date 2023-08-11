@@ -272,7 +272,8 @@ func (r *ScenarioProcessorRepo) GetCustomCode(processor model.Processor) (ret mo
 func (r *ScenarioProcessorRepo) SaveGroup(po *model.ProcessorGroup) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorID, po.ID)
+	_ = r.UpdateEntityId(po.ProcessorID, po.ID)
+	_ = r.UpdateName(po.ProcessorID, po.Name)
 
 	return
 }

@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -173,9 +174,9 @@ func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 		po = entity
 
 	} else if processorCategory == consts.ProcessorInterface {
-		var entity model.ProcessorData
+		var entity agentExec.ProcessorEntityBase
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveData(&entity)
+		err = c.ScenarioProcessorService.SaveInterface(&entity)
 		po = entity
 
 	} else {

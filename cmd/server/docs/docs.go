@@ -4228,7 +4228,7 @@ const docTemplate = `{
                 "tags": [
                     "环境管理"
                 ],
-                "summary": "环境列表(GetScript)",
+                "summary": "环境列表(List)",
                 "parameters": [
                     {
                         "type": "string",
@@ -12441,6 +12441,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/serves/server/changeServer": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "切换环境",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "服务列表的请求参数",
+                        "name": "ServeServer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeServer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.ServeServer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/serves/server/list": {
             "post": {
                 "consumes": [
@@ -15743,6 +15802,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/domain.GlobalVar"
                     }
+                },
+                "fullUrlToDisplay": {
+                    "type": "string"
                 },
                 "globalParams": {
                     "type": "array",
@@ -20094,6 +20156,9 @@ const docTemplate = `{
                 "currServeId": {
                     "type": "integer"
                 },
+                "currServerId": {
+                    "type": "integer"
+                },
                 "disabled": {
                     "type": "boolean"
                 },
@@ -20117,8 +20182,26 @@ const docTemplate = `{
                 "$ref": {
                     "type": "string"
                 },
+                "allOf": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/openapi.SchemaRef"
+                    }
+                },
+                "anyOf": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/openapi.SchemaRef"
+                    }
+                },
                 "items": {
                     "$ref": "#/definitions/openapi.SchemaRef"
+                },
+                "oneOf": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/openapi.SchemaRef"
+                    }
                 },
                 "properties": {
                     "$ref": "#/definitions/openapi.Schemas"

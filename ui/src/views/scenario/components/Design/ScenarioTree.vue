@@ -543,6 +543,7 @@ const diagnoseInterfaceNodesSelectionFinish = (interfaceNodes) => {
   })
 }
 
+
 const interfaceSelectionCancel = () => {
   console.log('interfaceSelectionCancel')
   interfaceSelectionVisible.value = false
@@ -666,12 +667,19 @@ async function onDrop(info: DropEvent) {
   store.dispatch('Scenario/moveNode', {dragKey: dragKey, dropKey: dropKey, dropPos: dropPosition}).then(
       (result) => {
         if (result) {
-          expandOneKey(treeDataMap.value, dropKey, expandedKeys.value) // expend parent node
-          setExpandedKeys('category', treeData.value[0].scenarioId, expandedKeys.value)
+          selectNode([dragKey], null);
+          expandOneKey(treeDataMap.value, dragKey, expandedKeys.value) // expend parent node
+          setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value);
         }
       }
   )
 }
+
+watch(() => {
+  return expandedKeys.value
+},(value, oldValue, onCleanup) => {
+  console.log('expandedKeys', value, oldValue)
+})
 
 /**
  * 开始拖拽，阻止某些节点不让多动

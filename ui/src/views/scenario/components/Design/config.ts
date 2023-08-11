@@ -415,7 +415,7 @@ export const scenarioTypeMapToText = {
     'define': '接口定义导入',
     'case': '接口用例导入',
     'diagnose': '接口调试导入',
-    'custom': '自定义请求导入',
+    'custom': '自定义请求',
     'curl': 'cURL导入',
 
     'processor_group_default': '分组',

@@ -1,7 +1,6 @@
 package service
 
 import (
-	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -116,31 +115,24 @@ func (s *ScenarioInterfaceService) CopyValueFromRequest(interf *model.DebugInter
 	return
 }
 
-func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, createBy uint) (newProcessor model.Processor, err error) {
+func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, createBy uint) (ret domain.DebugData, err error) {
 	scenarioProcessor, _ := s.ScenarioProcessorRepo.Get(uint(scenarioProcessorId))
-	parentProcessor, _ := s.ScenarioProcessorRepo.Get(scenarioProcessor.ParentId)
 	debugInterface, _ := s.DebugInterfaceRepo.Get(scenarioProcessor.EntityId)
 
 	if debugInterface.DiagnoseInterfaceId > 0 {
-		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(debugInterface.DiagnoseInterfaceId)
-		diagnoseInterfaceTo := s.DiagnoseInterfaceRepo.ToTo(&diagnoseInterface)
-		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromDiagnose(diagnoseInterfaceTo, parentProcessor, scenarioProcessor.Ordr)
+		ret, _ = s.ScenarioNodeService.getInterfaceFromDiagnose(debugInterface.DiagnoseInterfaceId)
 
 	} else if debugInterface.CaseInterfaceId > 0 {
-		endpointCase, _ := s.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
-		interfaceCase := serverDomain.InterfaceCase{}
-		copier.CopyWithOption(&interfaceCase, &endpointCase, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+		ret, _ = s.ScenarioNodeService.getInterfaceFromDefine(debugInterface.CaseInterfaceId)
 
-		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&interfaceCase)
-		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor, scenarioProcessor.Ordr)
 	} else if debugInterface.EndpointInterfaceId > 0 {
-		serveId := uint(0)
-		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name, scenarioProcessor.Ordr)
+		ret, _ = s.ScenarioNodeService.getInterfaceFromDefine(debugInterface.EndpointInterfaceId)
+
 	}
 
-	// must put below, since creation will use its DebugInterface
-	s.DebugInterfaceRepo.Delete(scenarioProcessor.EntityId)
-	s.ScenarioProcessorRepo.Delete(scenarioProcessor.ID)
+	ret.DebugInterfaceId = 0
+	ret.ScenarioProcessorId = uint(scenarioProcessorId)
+	ret.IsScenarioProcessorReset = true
 
 	return
 }

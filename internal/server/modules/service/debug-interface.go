@@ -108,6 +108,11 @@ func (s *DebugInterfaceService) Create(req domain.DebugData) (debugInterface mod
 
 	s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
 
+	// update processor entityId and delete old one if reset
+	if req.IsScenarioProcessorReset {
+		s.ScenarioProcessorRepo.SwitchEntityInterface(req.ScenarioProcessorId, debugInterface.ID)
+	}
+
 	return
 }
 

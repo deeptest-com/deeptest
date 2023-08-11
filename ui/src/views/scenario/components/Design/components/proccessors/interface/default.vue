@@ -86,8 +86,11 @@ const saveScenarioInterface = async (data) => {
 
 const syncDebugData = async () => {
   console.log('syncDebugData')
-  await store.dispatch('Scenario/syncDebugData')
-};
+  const resp = await store.dispatch('Scenario/syncDebugData')
+  if (resp.code === 0) {
+    await store.commit('Debug/setDebugData', resp.data)
+  }
+}
 
 onMounted(() => {
   console.log('onMounted')

@@ -745,7 +745,7 @@ const StoreModel: ModuleType = {
             const resp = await  syncDebugData(state.scenarioProcessorIdForDebug)
             // dispatch('loadScenario', state.scenarioId);
             // commit('setScenarioProcessorIdForDebug', resp.data.id)
-            return resp.code === 0;
+            return resp
         },
         async importCurl({state,dispatch}, payload) {
             const res = await importCurl(payload);

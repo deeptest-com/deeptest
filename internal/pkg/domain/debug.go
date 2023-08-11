@@ -50,6 +50,8 @@ type DebugData struct {
 	GlobalParams []GlobalParam `json:"globalParams"`
 
 	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
+
+	IsScenarioProcessorReset bool `json:"isReset"`
 }
 
 type Condition struct {

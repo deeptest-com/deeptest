@@ -93,7 +93,7 @@ func (s *ScenarioInterfaceService) SetProps(
 //}
 
 func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug model.DebugInterface, err error) {
-	s.CopyValueFromRequest(&debug, req)
+	s.DebugInterfaceService.CopyValueFromRequest(&debug, req)
 
 	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
 	//debug.EndpointId = endpointInterface.EndpointId
@@ -106,12 +106,6 @@ func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug mo
 
 	//更新执行器method
 	s.ScenarioProcessorRepo.UpdateMethod(debug.ScenarioProcessorId, debug.Method)
-
-	return
-}
-
-func (s *ScenarioInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
-	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return
 }

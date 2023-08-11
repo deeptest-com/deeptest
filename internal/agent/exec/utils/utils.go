@@ -23,7 +23,6 @@ var (
 		consts.ProcessorPrint.ToString(),
 		consts.ProcessorVariable.ToString(),
 		consts.ProcessorAssertion.ToString(),
-		consts.ProcessorExtractor.ToString(),
 		consts.ProcessorCookie.ToString(),
 	}
 )

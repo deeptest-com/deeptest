@@ -65,6 +65,7 @@ type Condition struct {
 }
 
 type InterfaceExecCondition struct {
-	Type consts.ConditionType `json:"debugData"`
+	Type consts.ConditionType `json:"type"`
+	Desc string               `json:"desc"`
 	Raw  json.RawMessage      `json:"raw"`
 }

@@ -4,6 +4,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"sort"
 	"time"
 )
 
@@ -221,48 +222,47 @@ func (s *SummaryProjectUserRankingService) ForMap(userTotal []model.UserTotal) (
 }
 
 func (s *SummaryProjectUserRankingService) SortRanking(data []model.SummaryProjectUserRanking) (ret []model.SummaryProjectUserRanking, err error) {
-	length := len(data)
-	for i := 0; i < length; i++ {
-		max := data[i].TestCaseTotal
 
-		for x := i + 1; x < length; x++ {
-			if data[x].TestCaseTotal > max {
-
-				tmp := data[i]
-				data[i] = data[x]
-				data[x] = tmp
-				data[i].Sort = int64(x + 1)
-				data[x].Sort = int64(x)
-			} else {
-				data[i].Sort = int64(x)
-				data[x].Sort = int64(x + 1)
-			}
+	sort.Slice(data, func(i, j int) bool {
+		if data[i].TestCaseTotal != data[j].TestCaseTotal {
+			// 根据 value 值从大到小排序
+			return data[i].TestCaseTotal > data[j].TestCaseTotal
+		} else {
+			// 如果 value 值相等，根据 desc 值从大到小排序
+			return data[i].ScenarioTotal > data[j].ScenarioTotal
 		}
+	})
+
+	for i, value := range data {
+		value.Sort = int64(i + 1) // 按照排序后的位置重新赋值 index
+		data[i] = value
 	}
+
 	ret = data
+
 	return
 }
 
-func (s *SummaryProjectUserRankingService) SortRankingList(data v1.ResRankingList) (ret v1.ResRankingList, err error) {
-	list := data.UserRankingList
-	length := len(list)
-	for i := 0; i < length; i++ {
-		max := list[i].TestCaseTotal
-		for x := i + 1; x < length; x++ {
-			if list[x].TestCaseTotal > max {
-				tmp := list[i]
-				list[i] = list[x]
-				list[x] = tmp
-				list[i].Sort = int64(x)
-				list[i].Sort = int64(x + 1)
-				list[x].Sort = int64(x)
-			} else {
-				list[i].Sort = int64(x)
-				list[x].Sort = int64(x + 1)
-			}
+func (s *SummaryProjectUserRankingService) SortRankingList(req v1.ResRankingList) (ret v1.ResRankingList, err error) {
+	data := req.UserRankingList
+
+	sort.Slice(data, func(i, j int) bool {
+		if data[i].TestCaseTotal != data[j].TestCaseTotal {
+			// 根据 value 值从大到小排序
+			return data[i].TestCaseTotal > data[j].TestCaseTotal
+		} else {
+			// 如果 value 值相等，根据 desc 值从大到小排序
+			return data[i].ScenarioTotal > data[j].ScenarioTotal
 		}
+	})
+
+	for i, value := range data {
+		value.Sort = int64(i + 1) // 按照排序后的位置重新赋值 index
+		data[i] = value
 	}
-	ret = data
+
+	ret.UserRankingList = data
+
 	return
 }
 
@@ -284,6 +284,7 @@ func (s *SummaryProjectUserRankingService) GetRanking(projectId int64) (rankings
 		rankings = append(rankings, ranking)
 	}
 	if len(rankings) != 0 {
+
 		rankings, err = s.SortRanking(rankings)
 	}
 

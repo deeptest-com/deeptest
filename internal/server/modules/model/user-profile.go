@@ -5,6 +5,7 @@ type SysUserProfile struct {
 
 	Phone         string `json:"phone"`
 	CurrServeId   uint   `json:"currServeId"`
+	CurrServerId  uint   `json:"currServerId"`
 	CurrProjectId uint   `json:"currProjectId"`
 
 	UserId uint `json:"userId"`

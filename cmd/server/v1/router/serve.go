@@ -29,6 +29,7 @@ func (m *ServeModule) Party() module.WebModule {
 		public.Put("/version/expire", m.ServeCtrl.ExpireVersion).Name = "禁用版本"
 
 		public.Post("/server/list", m.ServeCtrl.ListServer).Name = "服务列表"
+		public.Post("/server/changeServer", m.ServeCtrl.ChangeServer).Name = "切换环境"
 
 		public.Post("/schema/save", m.ServeCtrl.SaveSchema).Name = "保存Schema"
 		public.Post("/schema/list", m.ServeCtrl.ListSchema).Name = "Schema列表"

@@ -11,7 +11,7 @@
           <a-textarea v-model:value="formState.comments" :rows="3"/>
         </a-form-item>
 
-        <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
+        <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
           <a-button type="primary" @click.prevent="submit">保存</a-button>
         </a-form-item>
       </a-form>
@@ -72,16 +72,3 @@ const reset = () => {
 };
 
 </script>
-
-<style lang="less">
-.ant-form-horizontal {
-.ant-form-item-control-input {
-  .ant-form-item-control-input-content{
-    .ant-btn-primary {
-      float:right;
-    }
-  }
-}
-
-}
-</style>

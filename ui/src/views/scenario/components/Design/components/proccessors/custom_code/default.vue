@@ -10,6 +10,10 @@
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
+            <template #title>保存</template>
+            <SaveOutlined @click.stop="save()" style="font-size: 16px;" class="dp-icon-btn dp-trans-80"/>
+          </a-tooltip>
+          <a-tooltip overlayClassName="dp-tip-small">
             <template #title>帮助</template>
             <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
@@ -24,7 +28,7 @@
     </div>
 
     <div class="content">
-      <ProcessorCustomCodeEdit />
+      <ProcessorCustomCodeEdit ref="processCodeEdit" />
     </div>
 
     <ProcessorPopup v-if="fullscreen"
@@ -37,8 +41,8 @@
 <script setup lang="ts">
 import {computed, ref, watch, provide} from "vue";
 import {useStore} from "vuex";
-import {message} from "ant-design-vue";
-import { QuestionCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
+import {message, notification} from "ant-design-vue";
+import { QuestionCircleOutlined, FullscreenOutlined, SaveOutlined } from '@ant-design/icons-vue';
 import IconSvg from "@/components/IconSvg";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import ProcessorCustomCodeEdit from "./edit.vue";
@@ -48,6 +52,7 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef: any = computed<boolean>(() => store.state.Scenario.nodeData);
 
 const fullscreen = ref(false)
+const processCodeEdit = ref();
 
 const openFullscreen = () => {
   console.log('openFullscreen')
@@ -65,9 +70,13 @@ const save = async () => {
   })
 
   if (res === true) {
-    message.success('保存成功');
+    notification.success({
+      message: '保存成功',
+    });
   } else {
-    message.error('保存失败');
+    notification.error({
+      message: '保存失败',
+    });
   }
 }
 

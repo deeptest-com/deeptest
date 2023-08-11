@@ -18,7 +18,7 @@
             <a-textarea v-model:value="modelRef.comments" :rows="3"/>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
+          <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
@@ -36,6 +36,7 @@ import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {NotificationKeyCommon} from "@/utils/const";
+import debounce from "lodash.debounce";
 
 const useForm = Form.useForm;
 
@@ -58,7 +59,7 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
@@ -73,7 +74,7 @@ const submitForm = async () => {
           }
         })
       })
-};
+}, 300);
 
 onMounted(() => {
   if (!modelRef.value.variable) modelRef.value.variable = ''

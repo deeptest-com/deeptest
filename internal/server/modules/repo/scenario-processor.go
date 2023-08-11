@@ -427,6 +427,11 @@ func (r *ScenarioProcessorRepo) SwitchEntityInterface(id, debugInterFaceId uint)
 			return err
 		}
 
+		err = r.UpdateEntityId(id, debugInterFaceId)
+		if err != nil {
+			return err
+		}
+
 		err = r.DebugInterfaceRepo.Delete(oldDebugInterFaceId)
 		return err
 	})

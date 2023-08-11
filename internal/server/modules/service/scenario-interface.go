@@ -106,6 +106,11 @@ func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug mo
 	//更新执行器method
 	s.ScenarioProcessorRepo.UpdateMethod(debug.ScenarioProcessorId, debug.Method)
 
+	// update processor entityId and delete old one if reset
+	if req.IsScenarioProcessorReset {
+		s.ScenarioProcessorRepo.SwitchEntityInterface(req.ScenarioProcessorId, debug.ID)
+	}
+
 	return
 }
 

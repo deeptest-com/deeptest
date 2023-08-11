@@ -65,9 +65,9 @@ const saveScenarioInterface = async (data) => {
   if (res === true) {
     // 同步节点数据，更新节点名称或者 Method 方法
     // await store.dispatch('Scenario/getNode', nodeData.value);
-    if(nodeData?.value?.method !== obj?.method && nodeData?.value?.id){
+    if(nodeData?.value?.method !== obj?.method && nodeData?.value?.processorID){
       store.commit('Scenario/setTreeDataMapItemProp', {
-        id: nodeData.value.id,
+        id: nodeData.value.processorID,
         prop: 'method',
         value: obj.method,
       });

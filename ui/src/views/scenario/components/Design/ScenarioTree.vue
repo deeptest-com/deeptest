@@ -25,6 +25,7 @@
             v-model:selectedKeys="selectedKeys"
             @drop="onDrop"
             @dragstart="onDragstart"
+            @dragend="onDragEnd"
             @expand="onExpand"
             @select="selectNode"
             :tree-data="treeDataNeedRender"
@@ -38,7 +39,7 @@
                   'dp-tree-border':showLineScenarioType.includes(dataRef?.entityType),
                   'dp-tree-if':dataRef?.entityType === 'processor_logic_if',
                   'dp-tree-else':dataRef?.entityType === 'processor_logic_else',
-                  'dp-tree-if-has-else':dataRef?.entityType === 'processor_logic_if' && checkElseRepeat(dataRef),
+                  'dp-tree-if-has-else':dataRef?.entityType === 'processor_logic_if' && checkIfHasElse(dataRef),
                  }"
                  :draggable="dataRef.id === -1">
               <div class="title" :class="[dataRef.disable ? 'dp-disabled' : '']">
@@ -362,7 +363,7 @@ function selectMenu(menuInfo, treeNode) {
     // if (!targetModelId) return;
     // 如果已经存在 else 节点，则不允许添加
     // 另外目标节点已经有 else节点了，也不能再添加
-    const repeat = checkElseRepeat(treeNode);
+    const repeat = checkIfHasElse(treeNode);
     if (repeat) {
       return;
     }
@@ -400,9 +401,9 @@ function showElse(dataRef) {
 }
 
 /**
- * 检测是否存在重复的 else 节点
+ * 检测 当前 if 节点 是否有匹配的 else 节点
  * */
-function checkElseRepeat(node) {
+function checkIfHasElse(node) {
   // 如果已经存在 else 节点，则不允许添加
   let exist = false;
   const parentId = node?.parentId;
@@ -437,7 +438,7 @@ const addElse = (treeNode) => {
   targetModelId = treeNode?.id;
   if (!targetModelId) return;
   // 另外目标节点已经有 else节点了，也不能再添加
-  const repeat = checkElseRepeat(treeNode);
+  const repeat = checkIfHasElse(treeNode);
   if (repeat) {
     message.warning('已经存在 else 节点，不允许再添加');
     return;
@@ -629,6 +630,10 @@ async function onDrop(info: DropEvent) {
   if (isInterface(treeDataMap.value[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
 
+  if(elseNodeRef.value) {
+    elseNodeRef.value.hidden = false;
+  }
+
 
   // 且 else节点需要拖动到 if节点后
   // 0  表示移动到目标节点的子节点
@@ -641,7 +646,7 @@ async function onDrop(info: DropEvent) {
     return;
   } else if (dragNodeInfo?.entityType === 'processor_logic_else' && dropNodeInfo?.entityType === 'processor_logic_if') {
     // 另外目标节点已经有 else节点了，也不能再添加
-    const repeat = checkElseRepeat(dropNodeInfo);
+    const repeat = checkIfHasElse(dropNodeInfo);
     if (repeat) {
       message.warning('已经存在 else 节点，不允许再添加');
       return;
@@ -708,18 +713,27 @@ watch(() => {
   console.log('expandedKeys', value, oldValue)
 })
 
+
+
+const elseNodeRef:any = ref(null);
 /**
  * 开始拖拽，阻止某些节点不让多动
  * */
 function onDragstart({event, node}) {
   const nodeInfo = node.dataRef;
   // else节点 只能由 if 节点拖动带过去
-  // if (nodeInfo?.entityType === 'processor_logic_if' && checkElseRepeat(nodeInfo)) {
-  //   message.warning('else节点不能拖动，您可以拖动 Else 对应的 If 节点');
-  //   nodeInfo.title = 'wode'
-  //   // event.preventDefault();
-  // }
-
+  if (nodeInfo?.entityType === 'processor_logic_if' && checkIfHasElse(nodeInfo)) {
+    event.target.parentNode.nextSibling.hidden  = false
+    elseNodeRef.value = event?.target?.parentNode?.nextSibling;
+    if(elseNodeRef.value) {
+      elseNodeRef.value.hidden = true;
+    }
+  }
+}
+function onDragEnd() {
+  if(elseNodeRef.value) {
+    elseNodeRef.value.hidden = false;
+  }
 }
 
 const interfaceImportFromCurlFinish = (content: string) => {

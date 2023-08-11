@@ -12549,9 +12549,17 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.ServeServer"
+                                            "type": "object",
+                                            "properties": {
+                                                " currServer": {
+                                                    "$ref": "#/definitions/model.ServeServer"
+                                                },
+                                                "servers": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/model.ServeServer"
+                                                    }
+                                                }
                                             }
                                         }
                                     }

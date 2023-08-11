@@ -371,7 +371,7 @@ func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
 // @Param	Authorization		header	string						true	"Authentication header"
 // @Param 	currProjectId		query	int							true	"当前项目ID"
 // @Param 	ServeServer			body	serverDomain.ServeServer	true	"服务列表的请求参数"
-// @success	200	{object}	_domain.Response{data=[]model.ServeServer}
+// @success	200	{object}	_domain.Response{data=object{servers=[]model.ServeServer, currServer=model.ServeServer}}
 // @Router	/api/v1/serves/server/list	[post]
 func (c *ServeCtrl) ListServer(ctx iris.Context) {
 	var req serverDomain.ServeServer

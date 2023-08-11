@@ -13612,9 +13612,14 @@ paths:
             - $ref: '#/definitions/_domain.Response'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.ServeServer'
-                  type: array
+                  properties:
+                    ' currServer':
+                      $ref: '#/definitions/model.ServeServer'
+                    servers:
+                      items:
+                        $ref: '#/definitions/model.ServeServer'
+                      type: array
+                  type: object
               type: object
       summary: 服务列表(不分页)
       tags:

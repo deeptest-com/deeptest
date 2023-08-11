@@ -63,7 +63,7 @@
           <a-textarea v-model:value="formState.comments" :rows="3"/>
         </a-form-item>
 
-        <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
+        <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
           <a-button type="primary" @click.prevent="submit">保存</a-button>
         </a-form-item>
 
@@ -79,6 +79,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, notification} from 'ant-design-vue';
+import debounce from "lodash.debounce";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {UploadOutlined} from "@ant-design/icons-vue";
 import {uploadRequest} from "@/utils/upload";
@@ -165,7 +166,7 @@ watch(formState, (val: any) => {
   }
 }, {deep: true});
 
-const submit = async () => {
+const submit = debounce(async () => {
   validate().then(async () => {
         // 下面代码改成 await 的方式
         const res = await store.dispatch('Scenario/saveProcessor', {
@@ -185,7 +186,7 @@ const submit = async () => {
       .catch(error => {
         console.log('error', error);
       });
-};
+}, 300);
 
 
 </script>

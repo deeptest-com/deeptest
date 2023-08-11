@@ -114,6 +114,67 @@ func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId
 	return
 }
 
+func (r *PostConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uint, preConditions []domain.InterfaceExecCondition) (err error) {
+	r.removeAll(debugInterfaceId, endpointInterfaceId)
+
+	for _, item := range preConditions {
+		// clone condition po
+		condition := model.DebugPostCondition{
+			EntityType:          item.Type,
+			DebugInterfaceId:    debugInterfaceId,
+			EndpointInterfaceId: endpointInterfaceId,
+			Desc:                item.Desc,
+		}
+		r.Save(&condition)
+
+		// clone condition entity
+		var entityId uint
+		if item.Type == consts.ConditionTypeExtractor {
+			extractor := domain.ExtractorBase{}
+			json.Unmarshal(item.Raw, &extractor)
+
+			entity := model.DebugConditionExtractor{}
+
+			copier.CopyWithOption(&entity, extractor, copier.Option{DeepCopy: true})
+			entity.ID = 0
+			entity.ConditionId = condition.ID
+
+			r.ExtractorRepo.Save(&entity)
+			entityId = entity.ID
+
+		} else if item.Type == consts.ConditionTypeCheckpoint {
+			checkpoint := domain.CheckpointBase{}
+			json.Unmarshal(item.Raw, &checkpoint)
+
+			entity := model.DebugConditionCheckpoint{}
+
+			copier.CopyWithOption(&entity, checkpoint, copier.Option{DeepCopy: true})
+			entity.ID = 0
+			entity.ConditionId = condition.ID
+
+			r.CheckpointRepo.Save(&entity)
+			entityId = entity.ID
+
+		} else if item.Type == consts.ConditionTypeScript {
+			script := domain.ScriptBase{}
+			json.Unmarshal(item.Raw, &script)
+
+			entity := model.DebugConditionScript{}
+
+			copier.CopyWithOption(&entity, script, copier.Option{DeepCopy: true})
+			entity.ID = 0
+			entity.ConditionId = condition.ID
+
+			r.ScriptRepo.Save(&entity)
+			entityId = entity.ID
+		}
+
+		err = r.UpdateEntityId(condition.ID, entityId)
+	}
+
+	return
+}
+
 func (r *PostConditionRepo) Delete(id uint) (err error) {
 	po, _ := r.Get(id)
 
@@ -123,7 +184,7 @@ func (r *PostConditionRepo) Delete(id uint) (err error) {
 		Error
 
 	if po.EntityType == consts.ConditionTypeExtractor {
-		r.ScriptRepo.DeleteByCondition(id)
+		r.ExtractorRepo.DeleteByCondition(id)
 	} else if po.EntityType == consts.ConditionTypeCheckpoint {
 		r.CheckpointRepo.DeleteByCondition(id)
 	} else if po.EntityType == consts.ConditionTypeScript {
@@ -178,6 +239,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 
 			entity, _ := r.ExtractorRepo.Get(po.EntityId)
 			copier.CopyWithOption(&extractor, entity, copier.Option{DeepCopy: true})
+			extractor.ConditionEntityType = typ
 			extractor.ConditionId = po.ID
 			extractor.ConditionEntityId = po.EntityId
 
@@ -185,6 +247,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			condition := domain.InterfaceExecCondition{
 				Type: typ,
 				Raw:  raw,
+				Desc: po.Desc,
 			}
 
 			ret = append(ret, condition)
@@ -194,6 +257,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 
 			entity, _ := r.CheckpointRepo.Get(po.EntityId)
 			copier.CopyWithOption(&checkpoint, entity, copier.Option{DeepCopy: true})
+			checkpoint.ConditionEntityType = typ
 			checkpoint.ConditionId = po.ID
 			checkpoint.ConditionEntityId = po.EntityId
 
@@ -201,6 +265,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			condition := domain.InterfaceExecCondition{
 				Type: typ,
 				Raw:  raw,
+				Desc: po.Desc,
 			}
 
 			ret = append(ret, condition)
@@ -222,6 +287,16 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			ret = append(ret, condition)
 		}
 
+	}
+
+	return
+}
+
+func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint) (err error) {
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "")
+
+	for _, po := range pos {
+		r.Delete(po.ID)
 	}
 
 	return

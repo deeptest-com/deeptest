@@ -9,7 +9,7 @@
                      @update="updateTitle"/>
       </div>
     </div>
-<!--    <div class="right" v-if="showRight && scenarioTypeBindText">
+<!-- <div class="right" v-if="showRight && scenarioTypeBindText">
       <IconSvg :type="'arrange-link'" class="prefix-icon-svg"/>
       {{scenarioTypeBindText}}：<a href="javascript:void (0)">{{ linkedInterfaceName }}</a>
     </div>-->
@@ -29,13 +29,6 @@ import {message} from "ant-design-vue";
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
 
-/*const linkedInterfaceName = computed(() => {
-  return nodeData?.value?.srcName || nodeData?.value?.name;
-})
-const showRight = computed(() => {
-  return nodeData.value?.processorType === 'processor_interface_default';
-})*/
-
 const icon = computed(() => {
   const processorInterfaceSrc = nodeData.value?.processorInterfaceSrc;
   if (processorInterfaceSrc) {
@@ -51,11 +44,6 @@ const scenarioType = computed(() => {
   }
   return scenarioTypeMapToText[nodeData.value?.processorType] || '接口定义';
 });
-
-// const scenarioTypeBindText = computed(() => {
-//   const processorInterfaceSrc = nodeData.value?.processorInterfaceSrc;
-//   return scenarioTypeMapToBindText[processorInterfaceSrc]
-// });
 
 // 更新标题
 async function updateTitle(title) {

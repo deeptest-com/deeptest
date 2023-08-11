@@ -53,9 +53,6 @@ func (r *ScenarioProcessorRepo) GetEntity(processorId uint) (ret interface{}, er
 	case consts.ProcessorAssertion:
 		ret, _ = r.GetAssertion(processor)
 
-	case consts.ProcessorExtractor:
-		ret, _ = r.GetExtractor(processor)
-
 	case consts.ProcessorData:
 		ret, _ = r.GetData(processor)
 
@@ -223,20 +220,6 @@ func (r *ScenarioProcessorRepo) GetAssertion(processor model.Processor) (ret mod
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetExtractor(processor model.Processor) (ret model.ProcessorExtractor, err error) {
-	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
-
-	if ret.ID == 0 {
-		comm := r.genProcessorComm(processor)
-		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
-	} else {
-		ret.Name = processor.Name
-		ret.ParentID = processor.ParentId
-	}
-
-	return
-}
-
 func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.ProcessorData, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
@@ -327,14 +310,6 @@ func (r *ScenarioProcessorRepo) SaveCookie(po *model.ProcessorCookie) (err error
 }
 
 func (r *ScenarioProcessorRepo) SaveAssertion(po *model.ProcessorAssertion) (err error) {
-	err = r.DB.Save(po).Error
-
-	r.UpdateEntityId(po.ProcessorID, po.ID)
-
-	return
-}
-
-func (r *ScenarioProcessorRepo) SaveExtractor(po *model.ProcessorExtractor) (err error) {
 	err = r.DB.Save(po).Error
 
 	r.UpdateEntityId(po.ProcessorID, po.ID)

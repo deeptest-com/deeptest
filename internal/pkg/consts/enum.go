@@ -403,7 +403,6 @@ const (
 	ProcessorPrint     ProcessorCategory = "processor_print"
 	ProcessorVariable  ProcessorCategory = "processor_variable"
 	ProcessorAssertion ProcessorCategory = "processor_assertion"
-	ProcessorExtractor ProcessorCategory = "processor_extractor"
 
 	ProcessorCookie     ProcessorCategory = "processor_cookie"
 	ProcessorData       ProcessorCategory = "processor_data"

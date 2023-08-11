@@ -28,6 +28,8 @@ type DebugInvokeService struct {
 	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
 	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
 	ScriptRepo        *repo.ScriptRepo        `inject:""`
+
+	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
 }
 
 func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (err error) {
@@ -61,7 +63,7 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 		projectId = caseInterface.ProjectId
 	}
 
-	invoke, err := s.Create(req.Request, req.Response, serveId, processorId, scenarioId, projectId)
+	invoke, err := s.Create(req, serveId, processorId, scenarioId, projectId)
 
 	s.ExecConditionService.SavePreConditionResult(invoke.ID,
 		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
@@ -80,10 +82,10 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 	return
 }
 
-func (s *DebugInvokeService) Create(debugData domain.DebugData, resp domain.DebugResponse,
+func (s *DebugInvokeService) Create(req domain.SubmitDebugResultRequest,
 	serveId, scenarioProcessorId, scenarioId, projectId uint) (po model.DebugInvoke, err error) {
 
-	debugInterface, _ := s.DebugInterfaceRepo.Get(debugData.DebugInterfaceId)
+	debugInterface, _ := s.DebugInterfaceRepo.Get(req.Request.DebugInterfaceId)
 
 	po = model.DebugInvoke{
 		ServeId: serveId,
@@ -93,17 +95,23 @@ func (s *DebugInvokeService) Create(debugData domain.DebugData, resp domain.Debu
 
 		InvocationBase: model.InvocationBase{
 			Name:                time.Now().Format("01-02 15:04:05"),
-			EndpointInterfaceId: debugData.EndpointInterfaceId,
+			EndpointInterfaceId: req.Request.EndpointInterfaceId,
 			DebugInterfaceId:    debugInterface.ID, // may be 0
 			ProjectId:           projectId,
 		},
 	}
 
-	bytesDebugData, _ := json.Marshal(debugData)
+	bytesDebugData, _ := json.Marshal(req.Request)
 	po.ReqContent = string(bytesDebugData)
 
-	bytesResp, _ := json.Marshal(resp)
+	bytesResp, _ := json.Marshal(req.Response)
 	po.RespContent = string(bytesResp)
+
+	bytesPreConditions, _ := json.Marshal(req.PreConditions)
+	po.PreConditionsContent = string(bytesPreConditions)
+
+	bytesPostConditions, _ := json.Marshal(req.PostConditions)
+	po.PostConditionsContent = string(bytesPostConditions)
 
 	err = s.DebugInvokeRepo.Save(&po)
 
@@ -206,14 +214,39 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 	return
 }
 
-func (s *DebugInvokeService) GetAsInterface(id int) (
-	debugData domain.DebugData, resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
+func (s *DebugInvokeService) GetAsInterface(id int) (debugData domain.DebugData,
+	resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
 
 	invocation, err := s.DebugInvokeRepo.Get(uint(id))
 
+	// deal with query params
 	json.Unmarshal([]byte(invocation.ReqContent), &debugData)
+	queryParams := []domain.Param{}
+	for _, param := range debugData.QueryParams {
+		if param.ParamIn == consts.ParamInQuery { // ignore params from project settings
+			queryParams = append(queryParams, param)
+		}
+	}
+	debugData.QueryParams = queryParams
 
-	json.Unmarshal([]byte(invocation.ReqContent), &resultReq)
+	// update request data
+	debugPo := model.DebugInterface{}
+	s.DebugInterfaceService.CopyValueFromRequest(&debugPo, debugData)
+	if resultReq.DebugInterfaceId > 0 {
+		debugPo.ID = resultReq.DebugInterfaceId
+	}
+	err = s.ScenarioInterfaceRepo.SaveDebugData(&debugPo)
+
+	// save pre/post conditions
+	preConditions := []domain.InterfaceExecCondition{}
+	postConditions := []domain.InterfaceExecCondition{}
+	json.Unmarshal([]byte(invocation.PreConditionsContent), &preConditions)
+	json.Unmarshal([]byte(invocation.PostConditionsContent), &postConditions)
+	s.PreConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, preConditions)
+	s.PostConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, postConditions)
+
+	// response data to show
+	resultReq = debugData
 	json.Unmarshal([]byte(invocation.RespContent), &resultResp)
 
 	return

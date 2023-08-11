@@ -21,6 +21,8 @@ import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Scenario} from "@/views/scenario/store";
 import debounce from "lodash.debounce";
+import {confirmToDo} from "@/utils/confirm";
+import {scenarioTypeMapToText} from "@/views/scenario/components/Design/config";
 
 provide('usedBy', UsedBy.ScenarioDebug)
 
@@ -86,8 +88,18 @@ const saveScenarioInterface = async (data) => {
 
 const syncDebugData = async () => {
   console.log('syncDebugData')
-  await store.dispatch('Scenario/syncDebugData')
+  confirmToDo(`确定再次从` + getSrcName() + `？`, '已有数据将被删除。', () => {
+    store.dispatch('Scenario/syncDebugData')
+  })
 };
+
+function getSrcName() {
+  const processorInterfaceSrc = nodeData.value?.processorInterfaceSrc;
+  if (processorInterfaceSrc) {
+    return scenarioTypeMapToText[processorInterfaceSrc] || '接口定义';
+  }
+  return scenarioTypeMapToText[nodeData.value?.processorType] || '接口定义';
+}
 
 onMounted(() => {
   console.log('onMounted')

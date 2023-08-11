@@ -65,7 +65,7 @@
 
     <!-- 选择环境 -->
     <Teleport to="body">
-      <div v-if="showBaseUrl()" class="select-env-fixed" :style="{top: selectEnvTopPosition}">
+      <div v-if="showBaseUrl()" class="select-env-fixed" :style="{top: selectEnvTopPosition, right: selectEnvLeftPosition}">
         <a-select :value="serverId || null" @change="changeServer"
                   placeholder="请选择环境">
           <a-select-option v-for="(option, key) in servers" :key="key" :value="option.id">
@@ -289,9 +289,11 @@ const validateInfo = () => {
 };
 
 const selectEnvTopPosition = ref('0px')
+const selectEnvLeftPosition = ref('0px');
 onMounted(() => {
   console.log('onMounted')
   selectEnvTopPosition.value = getSelectEnvTopPosition()
+  selectEnvLeftPosition.value = getSelectEnvLeftPosition()
 })
 onUnmounted(() => {
   console.log('onUnmounted')
@@ -320,6 +322,22 @@ const getSelectEnvTopPosition = () => {
 
   return `${top + (height - envElHeight) / 2}px`
 }
+
+const getSelectEnvLeftPosition = () => {
+  const elems = document.getElementsByClassName('tab-header-btns');
+  if (elems.length === 0) {
+    return '22px';
+  }
+  if (elems[0].children.length === 0) {
+    return '22px';
+  }
+  const rect = elems[0].getBoundingClientRect();
+  if (!rect) {
+    return '22px'
+  }
+  const { width = 0 } = rect;
+  return `${width + 16 + 20}px`
+};
 
 function pathUpdated(e) {
   const path = e.target.value.trim();

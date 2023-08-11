@@ -96,6 +96,7 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		ScenarioId: targetProcessor.ScenarioId,
 		ProjectId:  req.ProjectId,
 		CreatedBy:  req.CreateBy,
+		BaseModel:  model.BaseModel{Disabled: targetProcessor.Disabled},
 	}
 
 	if req.Mode == "child" {
@@ -241,6 +242,7 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 		ProjectId:             parentProcessor.ProjectId,
 		CreatedBy:             createBy,
 		ProcessorInterfaceSrc: consts.InterfaceSrcDefine,
+		BaseModel:             model.BaseModel{Disabled: parentProcessor.Disabled},
 	}
 
 	s.ScenarioNodeRepo.Save(&processor)
@@ -299,6 +301,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 			ProjectId:             parentProcessor.ProjectId,
 			CreatedBy:             parentProcessor.CreatedBy,
 			ProcessorInterfaceSrc: consts.InterfaceSrcDiagnose,
+			BaseModel:             model.BaseModel{Disabled: parentProcessor.Disabled},
 		}
 
 		//processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
@@ -364,6 +367,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 			ProjectId:             parentProcessor.ProjectId,
 			CreatedBy:             parentProcessor.CreatedBy,
 			ProcessorInterfaceSrc: consts.InterfaceSrcCase,
+			BaseModel:             model.BaseModel{Disabled: parentProcessor.Disabled},
 		}
 
 		s.ScenarioNodeRepo.Save(&processor)
@@ -410,8 +414,17 @@ func (s *ScenarioNodeService) Move(srcId, targetId uint, pos serverConsts.DropPo
 	srcScenarioNode model.Processor, err error) {
 	srcScenarioNode, err = s.ScenarioNodeRepo.Get(srcId)
 
-	srcScenarioNode.ParentId, srcScenarioNode.Ordr = s.ScenarioNodeRepo.UpdateOrder(pos, targetId)
+	//获取下一个节点，如果是else准备移动
+	srcScenarioNextNode, nextNodeErr := s.ScenarioNodeRepo.GetNextNode(srcId)
+
+	srcScenarioNode.ParentId, srcScenarioNode.Ordr, srcScenarioNode.Disabled = s.ScenarioNodeRepo.UpdateOrder(pos, targetId)
+
 	err = s.ScenarioNodeRepo.UpdateOrdAndParent(srcScenarioNode)
+
+	//判断节点是else一起移动
+	if nextNodeErr == nil && srcScenarioNextNode.EntityType == consts.ProcessorLogicElse {
+		s.Move(srcScenarioNextNode.ID, srcScenarioNode.ID, serverConsts.After, srcScenarioNode.ProjectId)
+	}
 
 	return
 }
@@ -500,6 +513,7 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 		ProjectId:             targetProcessor.ProjectId,
 		CreatedBy:             req.CreateBy,
 		ProcessorInterfaceSrc: consts.InterfaceSrcCurl,
+		BaseModel:             model.BaseModel{Disabled: targetProcessor.Disabled},
 	}
 
 	err = s.ScenarioNodeRepo.Save(&processor)

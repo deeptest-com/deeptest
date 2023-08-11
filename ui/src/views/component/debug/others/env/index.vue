@@ -25,12 +25,12 @@
                     <ClearOutlined @click="clearShareVar" class="dp-icon-btn dp-trans-80"/>
                   </a-tooltip>
                 </span>
-                <span class="dp-link">
+                <!-- <span class="dp-link">
                   <a-tooltip overlayClassName="dp-tip-small">
                     <template #title>帮助</template>
                     <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
                   </a-tooltip>
-                </span>
+                </span> -->
               </div>
             </div>
 
@@ -69,12 +69,12 @@
                 环境变量
               </div>
               <div class="right">
-                <span class="dp-link">
+                <!-- <span class="dp-link">
                   <a-tooltip overlayClassName="dp-tip-small">
                     <template #title>帮助</template>
                     <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
                   </a-tooltip>
-                </span>
+                </span> -->
               </div>
             </div>
 
@@ -111,12 +111,12 @@
                 全局变量
               </div>
               <div class="right">
-                <span class="dp-link">
+                <!-- <span class="dp-link">
                   <a-tooltip overlayClassName="dp-tip-small">
                     <template #title>帮助</template>
                     <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
                   </a-tooltip>
-                </span>
+                </span> -->
               </div>
             </div>
 
@@ -153,12 +153,12 @@
                 全局参数
               </div>
               <div class="right">
-                <span class="dp-link">
+                <!-- <span class="dp-link">
                   <a-tooltip overlayClassName="dp-tip-small">
                     <template #title>帮助</template>
                     <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
                   </a-tooltip>
-                </span>
+                </span> -->
               </div>
             </div>
 
@@ -259,6 +259,7 @@ const close = () => {
     line-height: 32px;
     display: flex;
     .title {
+      font-size: 16px;
       flex: 1;
       font-weight: bolder;
     }
@@ -309,6 +310,7 @@ const close = () => {
             .left {
               flex: 1;
               display: flex;
+              font-weight: bold;
 
               .name {
                 margin-left: 0;

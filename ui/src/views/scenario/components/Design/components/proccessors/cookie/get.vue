@@ -29,7 +29,7 @@
             <a-textarea v-model:value="modelRef.comments" :rows="3"/>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
+          <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
@@ -44,6 +44,7 @@ import {computed, onMounted, onUnmounted, reactive, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
+import debounce from "lodash.debounce";
 import {Form, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {NotificationKeyCommon} from "@/utils/const";
@@ -69,7 +70,7 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
@@ -84,7 +85,7 @@ const submitForm = async () => {
           }
         })
       })
-};
+}, 300);
 
 onMounted(() => {
   console.log('onMounted')

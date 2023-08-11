@@ -88,7 +88,7 @@ func (r *ScenarioNodeRepo) Save(processor *model.Processor) (err error) {
 	return
 }
 
-func (r *ScenarioNodeRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int) {
+func (r *ScenarioNodeRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int, disabled bool) {
 	if pos == serverConsts.Inner {
 		parentId = targetId
 
@@ -120,6 +120,9 @@ func (r *ScenarioNodeRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) 
 		ordr = brother.Ordr + 1
 
 	}
+
+	parentNode, _ := r.Get(parentId)
+	disabled = parentNode.Disabled
 
 	return
 }
@@ -175,7 +178,7 @@ func (r *ScenarioNodeRepo) GetChildren(nodeId uint) (children []*model.Processor
 
 func (r *ScenarioNodeRepo) UpdateOrdAndParent(node model.Processor) (err error) {
 	err = r.DB.Model(&node).
-		Updates(model.Processor{Ordr: node.Ordr, ParentId: node.ParentId}).
+		Updates(model.Processor{Ordr: node.Ordr, ParentId: node.ParentId, BaseModel: model.BaseModel{Disabled: node.Disabled}}).
 		Error
 
 	return
@@ -253,4 +256,16 @@ func (r *ScenarioNodeRepo) UpdateEntityId(id, entityId uint) error {
 
 func (r *ScenarioNodeRepo) MoveMaxOrder(parentId, order, step uint) (err error) {
 	return r.DB.Model(model.Processor{}).Where("parent_id=? and ordr>?", parentId, order).Update("ordr", gorm.Expr("ordr + ?", step)).Error
+}
+
+func (r *ScenarioNodeRepo) GetNextNode(id uint) (processor model.Processor, err error) {
+	node, err := r.Get(id)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Where("parent_id = ? and ordr > ?", node.ParentId, node.Ordr).Order("ordr ASC").First(&processor).Error
+
+	return
+
 }

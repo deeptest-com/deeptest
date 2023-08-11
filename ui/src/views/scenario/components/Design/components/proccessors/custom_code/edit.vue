@@ -28,7 +28,7 @@
       </div>
     </div>
 
-    <a-row class="buttons">
+    <a-row class="buttons" v-if="fullscreen">
       <a-col offset="2">
         <a-button type="primary" @click.prevent="save">保存</a-button>
       </a-col>

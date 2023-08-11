@@ -93,10 +93,21 @@ const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 
 </script>
 
+<style lang="less">
+
+</style>
+
 <style lang="less" scoped>
 .scenario-processor-edit-main {
   height: 100%;
 
+  :deep(.ant-form) {
+    .ant-row.ant-form-item.processor-btn {
+      .ant-form-item-control-input > .ant-form-item-control-input-content {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+  }
 }
-
 </style>

@@ -35,6 +35,7 @@ import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
+import debounce from "lodash.debounce";
 
 const useForm = Form.useForm;
 
@@ -57,7 +58,7 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
@@ -72,7 +73,7 @@ const submitForm = async () => {
           }
         })
       })
-};
+}, 300);
 onMounted(() => {
   if (!modelRef.value.variable) modelRef.value.variable = ''
   if (!modelRef.value.expression) modelRef.value.expression = ''

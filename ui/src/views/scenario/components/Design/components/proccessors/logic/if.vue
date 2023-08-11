@@ -30,6 +30,7 @@ import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
+import debounce from "lodash.debounce";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
@@ -56,7 +57,7 @@ const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const operators = getCompareOpts()
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
@@ -71,7 +72,7 @@ const submitForm = async () => {
           }
         })
       })
-};
+}, 300);
 
 onMounted(() => {
   if (!modelRef.value.leftValue) modelRef.value.leftValue = ''

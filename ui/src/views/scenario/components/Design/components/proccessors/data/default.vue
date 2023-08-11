@@ -79,6 +79,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, notification} from 'ant-design-vue';
+import debounce from "lodash.debounce";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {UploadOutlined} from "@ant-design/icons-vue";
 import {uploadRequest} from "@/utils/upload";
@@ -165,7 +166,7 @@ watch(formState, (val: any) => {
   }
 }, {deep: true});
 
-const submit = async () => {
+const submit = debounce(async () => {
   validate().then(async () => {
         // 下面代码改成 await 的方式
         const res = await store.dispatch('Scenario/saveProcessor', {
@@ -185,7 +186,7 @@ const submit = async () => {
       .catch(error => {
         console.log('error', error);
       });
-};
+}, 300);
 
 
 </script>

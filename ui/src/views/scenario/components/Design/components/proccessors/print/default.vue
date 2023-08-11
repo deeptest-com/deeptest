@@ -33,6 +33,7 @@ import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 import {getCompareOpts} from "@/utils/compare";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
+import debounce from "lodash.debounce";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -51,7 +52,7 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
@@ -66,7 +67,7 @@ const submitForm = async () => {
           }
         })
       })
-};
+}, 300);
 
 
 onMounted(() => {

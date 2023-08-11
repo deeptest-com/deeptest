@@ -32,6 +32,7 @@ import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {Form, notification} from "ant-design-vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
+import debounce from "lodash.debounce";
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
 const formState: any = ref({
@@ -59,7 +60,7 @@ const rulesRef = reactive({
 const useForm = Form.useForm;
 const {resetFields, validate, validateInfos} = useForm(formState, rulesRef);
 
-const submit = async () => {
+const submit = debounce(async () => {
   validate()
       .then(async () => {
         // 下面代码改成 await 的方式
@@ -82,7 +83,7 @@ const submit = async () => {
       .catch(error => {
         console.log('error', error);
       });
-};
+}, 300);
 
 const reset = () => {
   resetFields();

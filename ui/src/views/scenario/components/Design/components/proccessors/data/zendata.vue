@@ -55,6 +55,7 @@ import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
 import {NotificationKeyCommon} from "@/utils/const";
+import debounce from "lodash.debounce";
 
 const useForm = Form.useForm;
 
@@ -77,7 +78,7 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
@@ -94,7 +95,7 @@ const submitForm = async () => {
           }
         })
       })
-};
+}, 300);
 
 onMounted(() => {
   console.log('onMounted')

@@ -79,6 +79,7 @@ import {getUrls} from "@/utils/request";
 import {getToken} from "@/utils/localToken";
 import settings from "@/config/settings";
 import {uploadRequest} from "@/utils/upload";
+import debounce from "lodash.debounce";
 
 const useForm = Form.useForm;
 
@@ -104,7 +105,7 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
@@ -121,7 +122,7 @@ const submitForm = async () => {
           }
         })
       })
-};
+}, 300);
 
 const isElectron = ref(!!window.require)
 let ipcRenderer = undefined as any

@@ -17,14 +17,15 @@ type Schemas map[string]*SchemaRef
 
 type Schema struct {
 	openapi3.ExtensionProps
-	Type       string     `json:"type,omitempty" yaml:"type,omitempty"`
-	Items      *SchemaRef `json:"items,omitempty" yaml:"items,omitempty"`
-	Properties Schemas    `json:"properties,omitempty" yaml:"properties,omitempty"`
-	AllOf      SchemaRefs `json:"allOf,omitempty" yaml:"allOf,omitempty"`
-	OneOf      SchemaRefs `json:"oneOf,omitempty" yaml:"allOf,omitempty"`
-	AnyOf      SchemaRefs `json:"anyOf,omitempty" yaml:"allOf,omitempty"`
-	Ref        string     `json:"ref,omitempty" yaml:"ref,omitempty"`
-	RefExt     string     `json:"$ref,omitempty" yaml:"ref,omitempty"`
+	Type        string     `json:"type,omitempty" yaml:"type,omitempty"`
+	Items       *SchemaRef `json:"items,omitempty" yaml:"items,omitempty"`
+	Properties  Schemas    `json:"properties,omitempty" yaml:"properties,omitempty"`
+	AllOf       SchemaRefs `json:"allOf,omitempty" yaml:"allOf,omitempty"`
+	OneOf       SchemaRefs `json:"oneOf,omitempty" yaml:"allOf,omitempty"`
+	AnyOf       SchemaRefs `json:"anyOf,omitempty" yaml:"allOf,omitempty"`
+	Ref         string     `json:"ref,omitempty" yaml:"ref,omitempty"`
+	RefExt      string     `json:"$ref,omitempty" yaml:"ref,omitempty"`
+	Description string     `json:"description,omitempty" yaml:"description,omitempty"`
 }
 
 func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
@@ -34,6 +35,7 @@ func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
 	if err != nil {
 		return
 	}
+
 	return
 }
 

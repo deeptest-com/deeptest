@@ -94,9 +94,11 @@ const wrapperCol = { span: 16 }
 
 <style lang="less" scoped>
 .processor_loop_time-main {
+  
   .icons {
     text-align: right;
     line-height: 32px;
   }
 }
+
 </style>

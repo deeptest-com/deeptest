@@ -77,32 +77,32 @@ export const DESIGN_MENU_CONFIG = [
         children: [
             {
                 key: 'processor_loop',
-                title: '循环',
+                title: '迭代',
                 icon: 'arrange-loop',
                 hideInNodeTypes: ['processor_interface_default'],
                 children: [
                     {
-                        title: '循环次数',
+                        title: '迭代次数',
                         key: 'processor_loop_time',
                         icon: 'arrange-count',
                     },
                     {
-                        title: '循环列表',
+                        title: '迭代列表',
                         key: 'processor_loop_in',
                         icon: 'arrange-loop-list',
                     },
                     {
-                        title: '循环直到',
+                        title: '迭代直到',
                         key: 'processor_loop_until',
                         icon: 'arrange-untils'
                     },
                     {
-                        title: '循环区间',
+                        title: '迭代区间',
                         key: 'processor_loop_range',
                         icon: 'arrange-range',
                     },
                     {
-                        title: '跳出循环',
+                        title: '迭代循环',
                         key: 'processor_loop_break',
                         icon: 'arrange-return',
                         showInNodeTypes: [...loopIteratorTypes],
@@ -241,7 +241,7 @@ export const DESIGN_MENU_CONFIG = [
             // 定制代码
             {
                 key: 'processor_custom_code',
-                title: '定制代码',
+                title: '自定义代码',
                 icon: 'arrange-code',
                 hideInNodeTypes: null,
             },
@@ -422,7 +422,7 @@ export const scenarioTypeMapToText = {
     'processor_time_default': '定时器',
     'processor_print_default': '输出',
     'processor_assertion_default': '断言',
-    'processor_data_default': '数据处理',
+    'processor_data_default': '数据迭代',
     'add-child-interface-define': '接口',
     'add-child-interface-case': '接口',
     'add-child-interface-diagnose': '接口',
@@ -431,11 +431,11 @@ export const scenarioTypeMapToText = {
     'processor_cookie_get': '获取 Cookie',
     'processor_cookie_set': '设置 Cookie',
     'processor_cookie_clear': '清除 Cookie',
-    'processor_loop_break': '跳出循环',
-    'processor_loop_time': '循环次数',
-    'processor_loop_until': '循环直到',
-    'processor_loop_range': '循环区间',
-    'processor_loop_in': '循环列表',
+    'processor_loop_break': '跳出迭代',
+    'processor_loop_time': '迭代次数',
+    'processor_loop_until': '迭代直到',
+    'processor_loop_range': '迭代区间',
+    'processor_loop_in': '迭代列表',
     'processor_logic_if': 'if',
     'processor_logic_else': 'else',
 

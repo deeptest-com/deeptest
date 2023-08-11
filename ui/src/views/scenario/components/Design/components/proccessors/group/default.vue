@@ -72,3 +72,16 @@ const reset = () => {
 };
 
 </script>
+
+<style lang="less">
+.ant-form-horizontal {
+.ant-form-item-control-input {
+  .ant-form-item-control-input-content{
+    .ant-btn-primary {
+      float:right;
+    }
+  }
+}
+
+}
+</style>

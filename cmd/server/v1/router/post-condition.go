@@ -14,7 +14,7 @@ type PostConditionModule struct {
 // Party 后置条件
 func (m *PostConditionModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("", m.PostConditionCtrl.List).Name = "前置条件列表"
 		index.Post("/", m.PostConditionCtrl.Create).Name = "新建后置条件"

@@ -14,7 +14,7 @@ type ScriptModule struct {
 // Party 脚本
 func (m *ScriptModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/{id:uint}", m.ScriptCtrl.Get).Name = "脚本详情"
 		index.Put("/", m.ScriptCtrl.Update).Name = "更新脚本"

@@ -14,7 +14,7 @@ type PlanModule struct {
 // Party 计划
 func (m *PlanModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/", m.PlanCtrl.List).Name = "计划列表"
 		index.Get("/{id:uint}", m.PlanCtrl.Get).Name = "计划详情"

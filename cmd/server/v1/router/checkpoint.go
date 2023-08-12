@@ -14,7 +14,7 @@ type CheckpointModule struct {
 // Party 检查点
 func (m *CheckpointModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/{id:uint}", m.CheckpointCtrl.Get).Name = "检查点详情"
 		index.Put("/", m.CheckpointCtrl.Update).Name = "更新检查点"

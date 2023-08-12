@@ -104,7 +104,11 @@
                     {{username(record.createUser)}}
                   </div>
                 </template>
-
+                <template #colUpdateUser="{record}">
+                  <div class="customTagsColRender">
+                    {{username(record.updateUser)}}
+                  </div>
+                </template>
                 <template #colPath="{text}">
                   <div class="customPathColRender">
                     <a-tag>{{ text }}</a-tag>
@@ -237,6 +241,13 @@ const columns = [
     title: '创建人',
     dataIndex: 'createUser',
     slots: {customRender: 'colCreateUser'},
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: '更新人',
+    dataIndex: 'updateUser',
+    slots: {customRender: 'colUpdateUser'},
     width: 100,
     ellipsis: true
   },

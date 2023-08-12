@@ -20,7 +20,8 @@
         <a-form-item label="上传文件" name="url" v-bind="validateInfos.url" required>
           <div class="upload-file">
             <div class="upload-container">
-              <a-upload :beforeUpload="upload"
+              <a-upload
+                        :customRequest="upload"
                         :showUploadList="false"
                         :accept="extStr">
                 <a-button><UploadOutlined/>上传文件</a-button>
@@ -122,7 +123,27 @@ const formState = ref({
 const {resetFields, validate, validateInfos} = useForm(formState, rulesRef);
 
 const isWrongFileFormat = ref(false)
-const upload = async (file) => {
+
+
+// const customUpload = async (e) => {
+//   const res = await uploadRequest(e.file)
+//   if (res.path) {
+//     message.success('上传成功');
+//     formState.value.url = res.path;
+//     e.onSuccess(res, e);
+//     fileList.value = [{
+//       uid: '-1',
+//       name: e.file.name,
+//       status: 'done',
+//       url: res.path,
+//     }];
+//   } else {
+//     message.error('上传失败');
+//   }
+// };
+
+const upload = async (e) => {
+  const file = e.file;
   const ext = file.name.substr(file.name.lastIndexOf('.'))
   console.log('upload', file, ext)
 
@@ -157,6 +178,9 @@ watch(nodeData, (val: any) => {
 }, {deep: true, immediate: true});
 
 watch(formState, (val: any) => {
+  if(!rulesRef.value) {
+    return
+  }
   if(val.format === 'txt') {
     rulesRef.value.separator = [
       {required: true, message: '请输入分隔符', trigger: 'blur'},

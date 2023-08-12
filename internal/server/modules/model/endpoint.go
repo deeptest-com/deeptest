@@ -11,6 +11,7 @@ type Endpoint struct {
 	Path         string              `json:"path"`
 	Version      string              `json:"version"`
 	CreateUser   string              `json:"createUser"`
+	UpdateUser   string              `json:"updateUser"`
 	Status       int64               `json:"status"`
 	CategoryId   int64               `json:"categoryId"`
 	PathParams   []EndpointPathParam `gorm:"-" json:"pathParams"`

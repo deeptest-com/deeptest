@@ -171,6 +171,7 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 		ParentId:         parent.ID,
 		ServeId:          parent.ServeId,
 		ProjectId:        parent.ProjectId,
+		CreatedBy:        req.CreateBy,
 	}
 	s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
 

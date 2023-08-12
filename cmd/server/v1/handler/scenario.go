@@ -164,8 +164,8 @@ func (c *ScenarioCtrl) Update(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	req.CreateUserName = multi.GetUsername(ctx)
-	req.CreateUserId = multi.GetUserId(ctx)
+	req.UpdateUserName = multi.GetUsername(ctx)
+	req.UpdateUserId = multi.GetUserId(ctx)
 	err = c.ScenarioService.Update(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -290,7 +290,10 @@ func (c *ScenarioCtrl) UpdateStatus(ctx iris.Context) {
 	if status == "" {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 	}
-	err := c.ScenarioService.UpdateStatus(uint(id), consts.TestStatus(status))
+
+	updateUserId := multi.GetUserId(ctx)
+	updateUserName := multi.GetUsername(ctx)
+	err := c.ScenarioService.UpdateStatus(uint(id), consts.TestStatus(status), updateUserId, updateUserName)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -315,7 +318,10 @@ func (c *ScenarioCtrl) UpdatePriority(ctx iris.Context) {
 	if priority == "" {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 	}
-	err := c.ScenarioService.UpdatePriority(uint(id), priority)
+
+	updateUserId := multi.GetUserId(ctx)
+	updateUserName := multi.GetUsername(ctx)
+	err := c.ScenarioService.UpdatePriority(uint(id), priority, updateUserId, updateUserName)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {

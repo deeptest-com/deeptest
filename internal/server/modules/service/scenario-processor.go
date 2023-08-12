@@ -116,7 +116,7 @@ func (s *ScenarioProcessorService) SaveCustomCode(req *model.ProcessorCustomCode
 	return
 }
 
-func (s *ScenarioProcessorService) SaveInterface(req *agentExec.ProcessorEntityBase) (err error) {
+func (s *ScenarioProcessorService) SaveInterface(req *model.ProcessorComm) (err error) {
 	err = s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }

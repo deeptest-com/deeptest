@@ -21,7 +21,7 @@
 
       <div class="url"
            :class="[isPathValid  ? '' :  'dp-field-error' ]">
-        <a-tooltip placement="top" :visible="!isPathValid"  overlayClassName="dp-tip-small" :title="'请输入合法的路径'">
+        <a-tooltip placement="bottom" :visible="!isPathValid"  overlayClassName="dp-tip-small" :title="'请输入合法的路径'">
           <a-input placeholder="请输入路径"
                    v-model:value="debugData.url"
                    @change="pathUpdated"

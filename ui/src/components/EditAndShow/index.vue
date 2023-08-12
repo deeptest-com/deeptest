@@ -6,6 +6,7 @@
              class="input"
              :placeholder="placeholder || '请输入内容'"
              :size="'small'"
+             @keydown.enter="updateField"
              v-model:value="fieldValue" />
 
     <a-space :size="8">

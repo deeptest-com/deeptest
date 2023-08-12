@@ -20,12 +20,15 @@
       </div>
 
       <div class="url"
-           :class="[isPathValid ? '' : 'dp-field-error']">
-        <a-input placeholder="请输入路径"
-                 v-model:value="debugData.url"
-                 @change="pathUpdated"
-                 :disabled="urlDisabled"
-                 :title="urlDisabled ? '请在接口定义中修改' : ''"/>
+           :class="[isPathValid  ? '' :  'dp-field-error' ]">
+        <a-tooltip placement="top" :visible="!isPathValid"  overlayClassName="dp-tip-small" :title="'请输入合法的路径'">
+          <a-input placeholder="请输入路径"
+                   v-model:value="debugData.url"
+                   @change="pathUpdated"
+                   :disabled="urlDisabled"
+                   @blur="blur"
+                   :title="urlDisabled ? '请在接口定义中修改' : ''"/>
+        </a-tooltip>
       </div>
 
       <div class="send">
@@ -350,9 +353,10 @@ function pathUpdated(e) {
   store.commit('Debug/setPathParams', ret)
 }
 
+
 const isPathValid = computed(() => {return validatePath()})
 function validatePath() {
-  const regx = /^https?:\/\/.*$/g;
+  const regx = /^https?:\/\/.+$/g;
   const isMatch = showBaseUrl() || regx.test(debugData.value?.url)
 
   return isMatch

@@ -93,7 +93,7 @@ const router = useRouter();
 const {t} = useI18n();
 
 const formRef = ref();
-const rulesRef = reactive({
+const rulesRef:any = reactive({
   variableName: [
     {required: true, message: '请输入变量名称', trigger: 'blur'},
   ],
@@ -137,7 +137,7 @@ const upload = async (file) => {
   formState.value.url = res.path;
   formState.value.format = res.format;
 
-  if(formState.value.format === 'txt') {
+  if(formState?.value?.format === 'txt') {
     formState.value.separator = ',';
   }
 
@@ -162,7 +162,9 @@ watch(formState, (val: any) => {
       {required: true, message: '请输入分隔符', trigger: 'blur'},
     ]
   } else {
-    rulesRef.value.separator = []
+    if(rulesRef.value) {
+      rulesRef.value.separator = []
+    }
   }
 }, {deep: true});
 

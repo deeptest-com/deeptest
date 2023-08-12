@@ -26,7 +26,7 @@
       </a-dropdown>
 
       <!--  切换Agent -->
-      <a-dropdown placement="bottomRight" v-if="isElectronEnv" >
+      <a-dropdown placement="bottomRight" >
         <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 12px;">
           <EnvironmentOutlined class="user-icon"/>
           <span class="user-name">{{currentAgentLabel}}</span>
@@ -136,7 +136,6 @@ export default defineComponent({
 
     function changeAgentEnv(event:any) {
       const {key} = event;
-      console.log('832',key);
       window.localStorage.setItem('dp-cache-agent-value',key);
       window.location.reload();
     }

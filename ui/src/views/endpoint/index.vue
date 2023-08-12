@@ -14,6 +14,7 @@
                   code="ENDPOINT-ADD"
                   type="primary"
                   :loading="loading"
+                  action="create"
                   @handle-access="handleCreateEndPoint"/>
               <a-dropdown :trigger="['hover']" :placement="'bottomLeft'">
                 <a class="ant-dropdown-link" @click.prevent>
@@ -126,6 +127,8 @@
                               size="small"
                               type="link"
                               :code="menuItem.code"
+                              :dataCreateUser="record.createUser"
+                              :action="menuItem.text ==='删除' ? 'delete' : ''"
                               @handle-access="menuItem.action(record)"/>
                         </a-menu-item>
                       </a-menu>

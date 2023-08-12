@@ -24,7 +24,7 @@ import {StateType as Scenario} from "@/views/scenario/store";
 import EditAndShow from "@/components/EditAndShow/index.vue";
 import IconSvg from "@/components/IconSvg";
 import {DESIGN_TYPE_ICON_MAP, scenarioTypeMapToText,scenarioTypeMapToBindText} from "../../config";
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
@@ -64,9 +64,13 @@ async function updateTitle(title) {
     name: title,
   }).then((res) => {
     if (res === true) {
-      message.success('修改场景名称成功');
+      notification.success({
+        message: '修改场景名称成功',
+      });
     } else {
-      message.error('修改场景名称失败');
+      notification.success({
+        message: '修改场景名称失败',
+      });
     }
   })
 }

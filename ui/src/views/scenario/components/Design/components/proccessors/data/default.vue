@@ -144,7 +144,7 @@ const isWrongFileFormat = ref(false)
 
 const upload = async (e) => {
   const file = e.file;
-  const ext = file.name.substr(file.name.lastIndexOf('.'))
+  const ext = file.name.substr(file.name.lastIndexOf('.'));
   console.log('upload', file, ext)
 
   if (!isInArray(ext, extArr)) {

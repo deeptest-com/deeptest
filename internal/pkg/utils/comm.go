@@ -80,6 +80,15 @@ func GetDataFileFormat(pth string) (ret consts.DataFileFormat) {
 		return
 	}
 
-	ret = consts.DataFileFormat(arr[1])
+	if arr[1] == "xls" || arr[1] == "xlsx" {
+		ret = consts.FormatExcel
+	} else if arr[1] == "csv" {
+		ret = consts.FormatCsv
+	} else if arr[1] == "txt" {
+		ret = consts.FormatText
+	} else {
+		ret = consts.DataFileFormat(arr[1])
+	}
+
 	return
 }

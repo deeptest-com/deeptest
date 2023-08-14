@@ -452,9 +452,7 @@ const (
 	ProcessorCookieSet   ProcessorType = "processor_cookie_set"
 	ProcessorCookieClear ProcessorType = "processor_cookie_clear"
 
-	ProcessorDataText  ProcessorType = "processor_data_text"
-	ProcessorDataExcel ProcessorType = "processor_data_excel"
-	//ProcessorDataZenData ProcessorType = "processor_data_zendata"
+	ProcessorDataDefault       ProcessorType = "processor_data_default"
 	ProcessorCustomCodeDefault ProcessorType = "processor_custom_code_default"
 )
 

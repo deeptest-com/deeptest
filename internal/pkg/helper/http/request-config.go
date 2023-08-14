@@ -23,15 +23,15 @@ func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
 			continue
 		}
 
-		domain := strings.TrimSpace(c.Domain)
+		//domain := strings.TrimSpace(c.Domain)
 		//if domain == "127.0.0.1" {
 		//	domain = "localhost"
 		//}
 
 		coo := http.Cookie{
-			Name:    c.Name,
-			Value:   _stringUtils.InterfToStr(c.Value),
-			Domain:  domain,
+			Name:  c.Name,
+			Value: _stringUtils.InterfToStr(c.Value),
+			//Domain:  domain,
 			Expires: *c.ExpireTime,
 			Path:    c.Path,
 		}

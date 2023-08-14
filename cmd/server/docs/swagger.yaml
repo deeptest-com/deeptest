@@ -360,6 +360,8 @@ definitions:
         type: array
       comments:
         type: string
+      disable:
+        type: boolean
       endpointInterfaceId:
         type: integer
       entity: {}
@@ -377,12 +379,16 @@ definitions:
         type: integer
       isDir:
         type: boolean
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       name:
         type: string
       ordr:
         type: integer
       parentId:
         type: integer
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       projectId:
         type: integer
       result:
@@ -418,12 +424,16 @@ definitions:
         type: integer
       isDir:
         type: boolean
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       name:
         type: string
       ordr:
         type: integer
       parentId:
         type: integer
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       projectId:
         type: integer
       result:
@@ -817,9 +827,9 @@ definitions:
     - processor_print
     - processor_variable
     - processor_assertion
-    - processor_extractor
     - processor_cookie
     - processor_data
+    - processor_custom_code
     type: string
     x-enum-varnames:
     - ProcessorRoot
@@ -831,9 +841,9 @@ definitions:
     - ProcessorPrint
     - ProcessorVariable
     - ProcessorAssertion
-    - ProcessorExtractor
     - ProcessorCookie
     - ProcessorData
+    - ProcessorCustomCode
   consts.ProcessorInterfaceSrc:
     enum:
     - define
@@ -874,6 +884,7 @@ definitions:
     - processor_cookie_clear
     - processor_data_text
     - processor_data_excel
+    - processor_custom_code_default
     type: string
     x-enum-varnames:
     - ProcessorRootDefault
@@ -900,6 +911,7 @@ definitions:
     - ProcessorCookieClear
     - ProcessorDataText
     - ProcessorDataExcel
+    - ProcessorCustomCodeDefault
   consts.ProgressStatus:
     enum:
     - start
@@ -1478,6 +1490,20 @@ definitions:
           $ref: '#/definitions/domain.GlobalVar'
         type: array
     type: object
+  domain.ExecVariable:
+    properties:
+      expression:
+        type: string
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      isShare:
+        $ref: '#/definitions/consts.ExtractorScope'
+      name:
+        type: string
+      value: {}
+    type: object
   domain.ExtractorBase:
     properties:
       boundaryEnd:
@@ -1586,12 +1612,14 @@ definitions:
     type: object
   domain.InterfaceExecCondition:
     properties:
-      debugData:
-        $ref: '#/definitions/consts.ConditionType'
+      desc:
+        type: string
       raw:
         items:
           type: integer
         type: array
+      type:
+        $ref: '#/definitions/consts.ConditionType'
     type: object
   domain.InterfaceToEnvMap:
     additionalProperties:
@@ -1763,6 +1791,10 @@ definitions:
         type: string
       resultStatus:
         $ref: '#/definitions/consts.ResultStatus'
+      variableSettings:
+        items:
+          $ref: '#/definitions/domain.ExecVariable'
+        type: array
     type: object
   domain.SubmitDebugResultRequest:
     properties:
@@ -2363,6 +2395,10 @@ definitions:
         type: integer
       name:
         type: string
+      postConditionsContent:
+        type: string
+      preConditionsContent:
+        type: string
       projectId:
         type: integer
       reqContent:
@@ -2404,6 +2440,8 @@ definitions:
         type: integer
       isLeaf:
         type: boolean
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       name:
         type: string
       ordr:
@@ -3222,6 +3260,8 @@ definitions:
         type: integer
       createdAt:
         type: string
+      currEnvId:
+        type: integer
       desc:
         type: string
       disabled:
@@ -3438,6 +3478,8 @@ definitions:
         $ref: '#/definitions/consts.ProcessorType'
       id:
         type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       name:
         type: string
       ordr:
@@ -3477,6 +3519,8 @@ definitions:
         $ref: '#/definitions/consts.ProcessorCategory'
       processorID:
         type: integer
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       processorType:
         $ref: '#/definitions/consts.ProcessorType'
       repeatTimes:
@@ -3671,6 +3715,8 @@ definitions:
         type: string
       createdAt:
         type: string
+      currEnvId:
+        type: integer
       desc:
         type: string
       disabled:
@@ -3710,6 +3756,8 @@ definitions:
         type: string
       createdAt:
         type: string
+      currEnvId:
+        type: integer
       desc:
         type: string
       disabled:
@@ -4079,6 +4127,8 @@ definitions:
         items:
           $ref: '#/definitions/openapi.SchemaRef'
         type: array
+      description:
+        type: string
       items:
         $ref: '#/definitions/openapi.SchemaRef'
       oneOf:
@@ -4331,6 +4381,8 @@ definitions:
         items:
           $ref: '#/definitions/serverDomain.DiagnoseInterface'
         type: array
+      count:
+        type: integer
       debugInterfaceId:
         type: integer
       desc:
@@ -4339,6 +4391,8 @@ definitions:
         type: integer
       isDir:
         type: boolean
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       ordr:
         type: integer
       parentId:
@@ -4551,6 +4605,8 @@ definitions:
     type: object
   serverDomain.EndpointCaseTree:
     properties:
+      caseInterfaceId:
+        type: integer
       categoryId:
         type: integer
       children:
@@ -4566,11 +4622,17 @@ definitions:
       endpointId:
         type: integer
       id:
-        type: integer
+        type: string
       isDir:
         type: boolean
+      key:
+        type: integer
+      method:
+        type: string
       name:
         type: string
+      ordr:
+        type: integer
       parentId:
         type: integer
       projectId:
@@ -5131,6 +5193,8 @@ definitions:
         type: string
       createdAt:
         type: string
+      currEnvId:
+        type: integer
       execEnv:
         description: 执行环境
         type: string
@@ -12545,6 +12609,36 @@ paths:
       summary: 删除节点
       tags:
       - 场景模块/编排节点
+  /api/v1/scenarios/nodes/{id}/disableOrNot:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 禁用节点
+      tags:
+      - 场景模块/编排节点
   /api/v1/scenarios/nodes/{id}/updateName:
     put:
       consumes:
@@ -12735,11 +12829,6 @@ paths:
         name: Authorization
         required: true
         type: string
-      - description: 当前项目ID
-        in: query
-        name: currProjectId
-        required: true
-        type: integer
       - description: 导入cURL命令的请求体
         in: body
         name: DiagnoseCurlImportReq
@@ -13788,7 +13877,7 @@ paths:
         name: currProjectId
         required: true
         type: integer
-      - description: 服务列表的请求参数
+      - description: 环境列表的请求参数
         in: body
         name: ServeServer
         required: true
@@ -13813,7 +13902,7 @@ paths:
                       type: array
                   type: object
               type: object
-      summary: 服务列表(不分页)
+      summary: 环境列表(不分页)
       tags:
       - 服务管理
   /api/v1/serves/swaggerSyncDetail:

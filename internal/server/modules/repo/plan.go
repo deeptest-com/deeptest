@@ -447,3 +447,7 @@ func (r *PlanRepo) DeleteByCategoryIds(categoryIds []uint) (err error) {
 
 	return
 }
+
+func (r *PlanRepo) UpdateCurrEnvId(id, currEnvId uint) error {
+	return r.DB.Model(&model.Plan{}).Where("id = ?", id).Update("cur_env_id", currEnvId).Error
+}

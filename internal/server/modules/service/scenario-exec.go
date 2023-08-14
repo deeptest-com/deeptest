@@ -58,6 +58,7 @@ func (s *ScenarioExecService) LoadExecData(scenarioId, environmentId uint) (ret 
 	// get variables
 	s.SceneService.LoadEnvVarMapByScenario(&ret.ExecScene, scenarioId, environmentId)
 	s.SceneService.LoadProjectSettings(&ret.ExecScene, scenario.ProjectId)
+	_ = s.ScenarioRepo.UpdateCurrEnvId(scenario.ID, environmentId)
 
 	return
 }

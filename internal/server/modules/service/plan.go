@@ -72,6 +72,7 @@ func (s *PlanService) GetById(id uint, detail bool) (ret v1.PlanAndReportDetail,
 	ret.CreatedAt = plan.CreatedAt
 	ret.UpdatedAt = plan.UpdatedAt
 	ret.Status = plan.Status
+	ret.CurrEnvId = plan.CurrEnvId
 	ret.TestPassRate = testPassRate
 	ret.ExecTimes = planExecTimes
 	if lastPlanReport.ID != 0 {

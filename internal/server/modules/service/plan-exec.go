@@ -49,6 +49,8 @@ func (s *PlanExecService) LoadExecData(planId, environmentId int) (ret agentExec
 
 	ret.Name = plan.Name
 
+	_ = s.PlanRepo.UpdateCurrEnvId(plan.ID, uint(environmentId))
+
 	return
 }
 

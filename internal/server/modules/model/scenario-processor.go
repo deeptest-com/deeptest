@@ -222,4 +222,6 @@ type ProcessorComm struct {
 	EndpointInterfaceId uint              `json:"endpointInterfaceId"`
 	Method              consts.HttpMethod `json:"method"`
 	SrcName             string            `json:"srcName"`
+
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 }

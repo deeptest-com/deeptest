@@ -2,6 +2,7 @@ package agentExec
 
 import (
 	"fmt"
+	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
@@ -19,7 +20,8 @@ func GenRequestUrlWithBaseUrlAndPathParam(req *domain.BaseRequest, debugInterfac
 
 	req.Url = ReplacePathParams(req.Url, req.PathParams)
 
-	if req.ProcessorInterfaceSrc != consts.InterfaceSrcDiagnose {
+	notUseBaseUrl := execUtils.IsUseBaseUrl(consts.ScenarioDebug, req.ProcessorInterfaceSrc)
+	if !notUseBaseUrl {
 		req.Url = _httpUtils.CombineUrls(baseUrl, req.Url)
 	}
 }

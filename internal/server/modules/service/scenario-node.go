@@ -14,6 +14,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
+	"log"
 	"strings"
 )
 
@@ -70,6 +71,8 @@ func (s *ScenarioNodeService) ToTos(pos []*model.Processor, withDetail bool) (to
 		if withDetail {
 			entity, _ := s.ScenarioProcessorService.GetEntityTo(&to)
 			to.EntityRaw, _ = json.Marshal(entity)
+
+			log.Println("")
 		}
 
 		// just to avoid json marshal error for IProcessorEntity

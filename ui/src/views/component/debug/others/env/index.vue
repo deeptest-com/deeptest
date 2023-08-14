@@ -318,6 +318,7 @@ const close = () => {
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
+                font-weight: normal;
               }
 
               .val {

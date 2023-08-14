@@ -69,10 +69,10 @@ const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 
-const serveServers: any = computed<Endpoint>(() => store.state.Endpoint.serveServers);
+const serveServers: any = computed<any>(() => store.state.Debug.serves);
 
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
-const currentServerId = ref(endpointDetail?.value?.serverId || null);
+const currentServerId = computed(() => store.state.Debug.currServe.id || endpointDetail?.value?.serverId || null );
 const currentEnvURL = computed(() => {
   return serveServers.value?.find((item) => {
     return currentServerId.value === item.id;
@@ -91,8 +91,8 @@ function addEnv() {
   window.open(`/#/project-setting/enviroment/envdetail`, '_blank')
 }
 
-function changeServer(val) {
-  currentServerId.value = val;
+async function changeServer(val) {
+  await store.dispatch('Debug/changeServer', { serverId: val, requestEnvVars: true }); // 切换环境
   endpointDetail.value.serverId = val;
   store.commit('Endpoint/setEndpointDetail', {
     ...endpointDetail.value,
@@ -100,8 +100,8 @@ function changeServer(val) {
 }
 
 async function getServeServers() {
-    await store.dispatch('Endpoint/getServerList', {
-      id: currServe.value.id,
+    await store.dispatch('Debug/listServes', {
+      serveId: currServe.value.id,
     })
 }
 

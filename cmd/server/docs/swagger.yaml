@@ -4054,6 +4054,8 @@ definitions:
         type: integer
       currServeId:
         type: integer
+      currServerId:
+        type: integer
       disabled:
         type: boolean
       id:
@@ -13735,6 +13737,42 @@ paths:
       summary: 保存授权
       tags:
       - 服务管理/授权
+  /api/v1/serves/server/changeServer:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务列表的请求参数
+        in: body
+        name: ServeServer
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeServer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.ServeServer'
+              type: object
+      summary: 切换环境
+      tags:
+      - 服务管理
   /api/v1/serves/server/list:
     post:
       consumes:
@@ -13766,9 +13804,14 @@ paths:
             - $ref: '#/definitions/_domain.Response'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.ServeServer'
-                  type: array
+                  properties:
+                    ' currServer':
+                      $ref: '#/definitions/model.ServeServer'
+                    servers:
+                      items:
+                        $ref: '#/definitions/model.ServeServer'
+                      type: array
+                  type: object
               type: object
       summary: 服务列表(不分页)
       tags:

@@ -398,6 +398,42 @@ func (r *ServeRepo) SetCurrServeByUser(serveId, userId uint) (err error) {
 	return
 }
 
+func (r *ServeRepo) GetCurrServerByUser(userId uint) (currServer model.ServeServer, err error) {
+	var user model.SysUser
+	err = r.DB.Preload("Profile").
+		Where("id = ?", userId).
+		First(&user).
+		Error
+	if err != nil {
+		return
+	}
+
+	// may be null
+	err = r.DB.Model(&model.ServeServer{}).
+		Where("environment_id = ?", user.Profile.CurrServerId).
+		First(&currServer).Error
+	if err != nil {
+		return
+	}
+
+	environment, err := r.EnvironmentRepo.Get(user.Profile.CurrServerId)
+	if err != nil {
+		return
+	}
+	currServer.EnvironmentName = environment.Name
+	currServer.Sort = environment.Sort
+
+	return
+}
+
+func (r *ServeRepo) SetCurrServerByUser(serverId, userId uint) (err error) {
+	err = r.DB.Model(&model.SysUserProfile{}).
+		Where("user_id = ?", userId).
+		Update("curr_server_id", serverId).Error
+
+	return
+}
+
 func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		if serve.ID == 0 { //生成目录树跟节点

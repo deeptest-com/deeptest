@@ -12619,6 +12619,65 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/serves/server/changeServer": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "切换环境",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "服务列表的请求参数",
+                        "name": "ServeServer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeServer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.ServeServer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/serves/server/list": {
             "post": {
                 "consumes": [
@@ -12668,9 +12727,17 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.ServeServer"
+                                            "type": "object",
+                                            "properties": {
+                                                " currServer": {
+                                                    "$ref": "#/definitions/model.ServeServer"
+                                                },
+                                                "servers": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/model.ServeServer"
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -20293,6 +20360,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "currServeId": {
+                    "type": "integer"
+                },
+                "currServerId": {
                     "type": "integer"
                 },
                 "disabled": {

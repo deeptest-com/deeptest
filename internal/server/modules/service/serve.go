@@ -128,7 +128,7 @@ func (s *ServeService) ListServer(req v1.ServeServer, userId uint) (res []model.
 	}
 
 	currServer, err = s.ServeRepo.GetCurrServerByUser(userId)
-	if currServer.ServeId != req.ServerId {
+	if currServer.ServeId != req.ServeId {
 		if len(res) != 0 {
 			currServer, err = s.ChangeServer(res[0].EnvironmentId, userId)
 		}

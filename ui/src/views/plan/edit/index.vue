@@ -54,7 +54,6 @@
         <div style="padding-top: 20px"  v-if="activeKey === 'test-report'">
           <ReportList :show-report-list="activeKey === 'test-report'" />
         </div>
-
       </div>
     </template>
   </DrawerLayout>
@@ -151,7 +150,7 @@ function onCancel() {
 }
 
 function handleEnvSelect() {
-    emits('onSelectEnv');
+    emits('onSelectEnv',planDetail.value);
 }
 
 function handleChangeStatus(value) {

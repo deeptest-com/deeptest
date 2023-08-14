@@ -127,7 +127,10 @@
     :scene="ReportDetailType.ExecPlan"
     @on-close="execReportVisible = false"
   />
-  <EnvSelector @on-cancel="envSelectVisible = false" :env-select-drawer-visible="envSelectVisible" @on-ok="onExec" />
+  <EnvSelector @on-cancel="envSelectVisible = false;execEnvId= null"
+               :execEnvId="execEnvId"
+               :env-select-drawer-visible="envSelectVisible"
+               @on-ok="onExec" />
 </template>
 
 <script setup lang="ts">
@@ -236,27 +239,32 @@ const getList = debounce(async (current: number): Promise<void> => {
 }, 300);
 
 const onExec = async () => {
-  editDrawerVisible.value = false;
+  // editDrawerVisible.value = false;
   envSelectVisible.value = false;
   await store.dispatch('Plan/initExecResult');
+  // 执行完后，重新拉取列表数据，保证 列表中 curEnvId 为最新的
+  await getList(pagination.value.current);
   execReportVisible.value = true;
 }
 
+const execEnvId = ref(null);
 const exec = async (record: any) => {
   await getCurrentPalnInfo(record);
+  execEnvId.value = record.currEnvId;
   envSelectVisible.value = true;
 };
 
-const handleEnvSelect = () => {
-  editDrawerVisible.value = false;
+const handleEnvSelect = (planDetail) => {
+  // editDrawerVisible.value = false;
   envSelectVisible.value = true;
+  execEnvId.value = planDetail.currEnvId;
+
 }
 
 const report = async (record: any) => {
   await getCurrentPalnInfo(record);
   editTabActiveKey.value = 'test-report';
   editDrawerVisible.value = true;
-
 };
 
 const clone = async (id: number) => {

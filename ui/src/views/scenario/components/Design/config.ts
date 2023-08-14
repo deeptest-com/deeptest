@@ -82,27 +82,27 @@ export const DESIGN_MENU_CONFIG = [
                 hideInNodeTypes: ['processor_interface_default'],
                 children: [
                     {
-                        title: '迭代次数',
+                        title: '循环次数',
                         key: 'processor_loop_time',
                         icon: 'arrange-count',
                     },
                     {
-                        title: '迭代列表',
+                        title: '循环列表',
                         key: 'processor_loop_in',
                         icon: 'arrange-loop-list',
                     },
                     {
-                        title: '迭代直到',
+                        title: '循环直到',
                         key: 'processor_loop_until',
                         icon: 'arrange-untils'
                     },
                     {
-                        title: '迭代区间',
+                        title: '循环区间',
                         key: 'processor_loop_range',
                         icon: 'arrange-range',
                     },
                     {
-                        title: '迭代跳出',
+                        title: '跳出循环',
                         key: 'processor_loop_break',
                         icon: 'arrange-return',
                         showInNodeTypes: [...loopIteratorTypes],
@@ -213,7 +213,7 @@ export const DESIGN_MENU_CONFIG = [
                 hideInNodeTypes: null,
                 children: [
                     {
-                        title: '设置变量',
+                        title: '添加变量',
                         key: 'processor_variable_set',
                         icon: 'arrange-add',
                     },

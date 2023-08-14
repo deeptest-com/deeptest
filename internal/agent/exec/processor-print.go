@@ -7,6 +7,7 @@ import (
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
+	"strings"
 	"time"
 )
 
@@ -35,6 +36,8 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 	}
 
 	value := ReplaceVariableValue(entity.RightValue)
+	value = strings.TrimSpace(value)
+
 	//processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。", entity.RightValue, value), "<nil>", "空")
 	processor.Result.Summary = fmt.Sprintf("%s", entity.RightValue)
 	detail := map[string]interface{}{"结果": value}

@@ -23,13 +23,24 @@ func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
 			continue
 		}
 
-		cookies = append(cookies, &http.Cookie{
+		domain := strings.TrimSpace(c.Domain)
+		//if domain == "127.0.0.1" {
+		//	domain = "localhost"
+		//}
+
+		coo := http.Cookie{
 			Name:    c.Name,
 			Value:   _stringUtils.InterfToStr(c.Value),
-			Domain:  "localhost",
+			Domain:  domain,
 			Expires: *c.ExpireTime,
 			Path:    c.Path,
-		})
+		}
+		if c.ExpireTime != nil {
+			coo.Expires = *c.ExpireTime
+		}
+
+		cookies = append(cookies, &coo)
+
 		mp[key] = true
 	}
 

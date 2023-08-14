@@ -412,8 +412,11 @@ func (r *ServeRepo) GetCurrServerByUser(userId uint) (currServer model.ServeServ
 	err = r.DB.Model(&model.ServeServer{}).
 		Where("environment_id = ?", user.Profile.CurrServerId).
 		First(&currServer).Error
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return
+	}
+	if currServer.ID == 0 || err == gorm.ErrRecordNotFound {
+		return currServer, nil
 	}
 
 	environment, err := r.EnvironmentRepo.Get(user.Profile.CurrServerId)

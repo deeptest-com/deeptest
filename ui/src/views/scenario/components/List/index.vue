@@ -130,10 +130,11 @@
 
   <EnvSelector
       :env-select-drawer-visible="selectEnvVisible"
+      :execEnvId="execEnvId"
       @on-cancel="cancelSelectExecEnv"
       @on-ok="selectExecEnv"/>
   <div v-if="drawerVisible">
-    <DrawerDetail 
+    <DrawerDetail
       :destroyOnClose="true"
       :visible="drawerVisible"
       :drawerTabKey="drawerTabKey"
@@ -141,7 +142,7 @@
       @refreshList="refreshList"
       @closeExecDrawer="execVisible = false"
       @close="drawerVisible = false;"/>
-  </div>  
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -300,9 +301,11 @@ async function editScenario(record: any, tab: string) {
   store.dispatch('Scenario/getScenario', record.id);
 }
 
+const execEnvId = ref<number | null>(null);
 async function cancelSelectExecEnv(record: any) {
   selectEnvVisible.value = false;
   selectedExecScenario.value = null;
+  execEnvId.value = null;
 }
 
 async function selectExecEnv() {
@@ -315,6 +318,7 @@ async function selectExecEnv() {
 async function execScenario(record: any) {
   selectEnvVisible.value = true;
   selectedExecScenario.value = record;
+  execEnvId.value = record.currEnvId;
 }
 
 async function handleChangeStatus(value: any, record: any,) {

@@ -127,7 +127,10 @@
     :scene="ReportDetailType.ExecPlan"
     @on-close="execReportVisible = false"
   />
-  <EnvSelector @on-cancel="envSelectVisible = false" :env-select-drawer-visible="envSelectVisible" @on-ok="onExec" />
+  <EnvSelector @on-cancel="envSelectVisible = false;execEnvId= null"
+               :execEnvId="execEnvId"
+               :env-select-drawer-visible="envSelectVisible"
+               @on-ok="onExec" />
 </template>
 
 <script setup lang="ts">
@@ -242,8 +245,10 @@ const onExec = async () => {
   execReportVisible.value = true;
 }
 
+const execEnvId = ref(null);
 const exec = async (record: any) => {
   await getCurrentPalnInfo(record);
+  execEnvId.value = record.currEnvId;
   envSelectVisible.value = true;
 };
 
@@ -256,7 +261,6 @@ const report = async (record: any) => {
   await getCurrentPalnInfo(record);
   editTabActiveKey.value = 'test-report';
   editDrawerVisible.value = true;
-
 };
 
 const clone = async (id: number) => {

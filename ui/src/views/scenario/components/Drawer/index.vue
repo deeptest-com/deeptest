@@ -68,6 +68,7 @@
 
     <EnvSelector
         :env-select-drawer-visible="selectEnvVisible"
+        :execEnvId="execEnvId"
         @on-cancel="cancelSelectExecEnv"
         @on-ok="selectExecEnv" />
 
@@ -116,7 +117,7 @@ import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
 import {ProcessorInterfaceSrc, UsedBy} from "@/utils/enum";
 
 const store = useStore<{ Debug: Debug, Scenario: ScenarioStateType, ProjectGlobal, ServeGlobal, Report }>();
-const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
+const detailResult:any = computed<Scenario>(() => store.state.Scenario.detailResult);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 
 console.log(
@@ -168,8 +169,10 @@ const selectEnvVisible = ref(false);
 
 // 执行历史详情
 const execListDetailVisible = ref(false);
+const execEnvId = ref(null);
 async function cancelSelectExecEnv(record: any) {
   selectEnvVisible.value = false;
+  execEnvId.value = null;
 }
 
 async function showDetail(record:any) {
@@ -197,6 +200,7 @@ function onCloseExecDrawer() {
 
 function exec() {
   selectEnvVisible.value = true;
+  execEnvId.value = detailResult?.value?.currentEnvId;
 }
 
 watch(() => {

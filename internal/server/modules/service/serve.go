@@ -116,14 +116,33 @@ func (s *ServeService) DisableVersionById(id uint) (err error) {
 	return
 }
 
-func (s *ServeService) ListServer(req v1.ServeServer) (res []model.ServeServer, err error) {
+func (s *ServeService) ListServer(req v1.ServeServer, userId uint) (res []model.ServeServer, currServer model.ServeServer, err error) {
 	if req.ServeId == 0 {
 		server, _ := s.ServeServerRepo.Get(req.ServerId)
 		req.ServeId = server.ServeId
 	}
 
 	res, err = s.ServeRepo.ListServer(req.ServeId)
+	if err != nil {
+		return
+	}
 
+	currServer, err = s.ServeRepo.GetCurrServerByUser(userId)
+	if currServer.ServeId != req.ServerId {
+		if len(res) != 0 {
+			currServer, err = s.ChangeServer(res[0].EnvironmentId, userId)
+		}
+	}
+
+	return
+}
+
+func (s *ServeService) ChangeServer(serverId, userId uint) (currServer model.ServeServer, err error) {
+	if err = s.ServeRepo.SetCurrServerByUser(serverId, userId); err != nil {
+		return
+	}
+
+	currServer, err = s.ServeRepo.GetCurrServerByUser(userId)
 	return
 }
 

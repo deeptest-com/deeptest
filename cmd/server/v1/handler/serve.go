@@ -371,7 +371,7 @@ func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
 // @Param	Authorization		header	string						true	"Authentication header"
 // @Param 	currProjectId		query	int							true	"当前项目ID"
 // @Param 	ServeServer			body	serverDomain.ServeServer	true	"环境列表的请求参数"
-// @success	200	{object}	_domain.Response{data=[]model.ServeServer}
+// @success	200	{object}	_domain.Response{data=object{servers=[]model.ServeServer, currServer=model.ServeServer}}
 // @Router	/api/v1/serves/server/list	[post]
 func (c *ServeCtrl) ListServer(ctx iris.Context) {
 	var req serverDomain.ServeServer
@@ -381,10 +381,47 @@ func (c *ServeCtrl) ListServer(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+	userId := multi.GetUserId(ctx)
 
-	res, _ := c.ServeService.ListServer(req)
+	servers, currServer, err := c.ServeService.ListServer(req, userId)
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ret := iris.Map{"servers": servers, "currServer": currServer}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: ret})
+}
+
+// ChangeServer
+// @Tags	服务管理
+// @summary	切换环境
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization		header	string						true	"Authentication header"
+// @Param 	currProjectId		query	int							true	"当前项目ID"
+// @Param 	ServeServer			body	serverDomain.ServeServer	true	"服务列表的请求参数"
+// @success	200	{object}	_domain.Response{data=model.ServeServer}
+// @Router	/api/v1/serves/server/changeServer	[post]
+func (c *ServeCtrl) ChangeServer(ctx iris.Context) {
+	var req serverDomain.ServeServer
+
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	userId := multi.GetUserId(ctx)
+
+	currServer, err := c.ServeService.ChangeServer(req.ServerId, userId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: currServer})
 }
 
 func (c *ServeCtrl) SaveServer(ctx iris.Context) {

@@ -19,6 +19,7 @@ type Scenario struct {
 	CreateUserName string            `json:"createUserName"`
 	Priority       string            `json:"priority"`
 	Type           consts.TestType   `json:"type"`
+	CurrEnvId      uint              `json:"currEnvId"`
 }
 
 func (Scenario) TableName() string {

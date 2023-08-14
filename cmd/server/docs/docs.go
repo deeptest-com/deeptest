@@ -10526,13 +10526,6 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "type": "integer",
-                        "description": "当前项目ID",
-                        "name": "currProjectId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
                         "description": "导入cURL命令的请求体",
                         "name": "DiagnoseCurlImportReq",
                         "in": "body",
@@ -10623,6 +10616,51 @@ const docTemplate = `{
                     "场景模块/编排节点"
                 ],
                 "summary": "删除节点",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "节点ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/scenarios/nodes/{id}/disableOrNot": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "场景模块/编排节点"
+                ],
+                "summary": "禁用节点",
                 "parameters": [
                     {
                         "type": "string",
@@ -12619,7 +12657,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/serves/server/list": {
+        "/api/v1/serves/server/changeServer": {
             "post": {
                 "consumes": [
                     "application/json"
@@ -12630,7 +12668,7 @@ const docTemplate = `{
                 "tags": [
                     "服务管理"
                 ],
-                "summary": "服务列表(不分页)",
+                "summary": "切换环境",
                 "parameters": [
                     {
                         "type": "string",
@@ -12668,9 +12706,76 @@ const docTemplate = `{
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/model.ServeServer"
+                                            "$ref": "#/definitions/model.ServeServer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/serves/server/list": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "服务管理"
+                ],
+                "summary": "环境列表(不分页)",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "环境列表的请求参数",
+                        "name": "ServeServer",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.ServeServer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                " currServer": {
+                                                    "$ref": "#/definitions/model.ServeServer"
+                                                },
+                                                "servers": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "$ref": "#/definitions/model.ServeServer"
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -14885,6 +14990,9 @@ const docTemplate = `{
                 "comments": {
                     "type": "string"
                 },
+                "disable": {
+                    "type": "boolean"
+                },
                 "endpointInterfaceId": {
                     "type": "integer"
                 },
@@ -14910,6 +15018,9 @@ const docTemplate = `{
                 "isDir": {
                     "type": "boolean"
                 },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -14918,6 +15029,9 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "type": "integer"
+                },
+                "processorInterfaceSrc": {
+                    "$ref": "#/definitions/consts.ProcessorInterfaceSrc"
                 },
                 "projectId": {
                     "type": "integer"
@@ -14972,6 +15086,9 @@ const docTemplate = `{
                 "isDir": {
                     "type": "boolean"
                 },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -14980,6 +15097,9 @@ const docTemplate = `{
                 },
                 "parentId": {
                     "type": "integer"
+                },
+                "processorInterfaceSrc": {
+                    "$ref": "#/definitions/consts.ProcessorInterfaceSrc"
                 },
                 "projectId": {
                     "type": "integer"
@@ -15466,9 +15586,9 @@ const docTemplate = `{
                 "processor_print",
                 "processor_variable",
                 "processor_assertion",
-                "processor_extractor",
                 "processor_cookie",
-                "processor_data"
+                "processor_data",
+                "processor_custom_code"
             ],
             "x-enum-varnames": [
                 "ProcessorRoot",
@@ -15480,9 +15600,9 @@ const docTemplate = `{
                 "ProcessorPrint",
                 "ProcessorVariable",
                 "ProcessorAssertion",
-                "ProcessorExtractor",
                 "ProcessorCookie",
-                "ProcessorData"
+                "ProcessorData",
+                "ProcessorCustomCode"
             ]
         },
         "consts.ProcessorInterfaceSrc": {
@@ -15528,7 +15648,8 @@ const docTemplate = `{
                 "processor_cookie_set",
                 "processor_cookie_clear",
                 "processor_data_text",
-                "processor_data_excel"
+                "processor_data_excel",
+                "processor_custom_code_default"
             ],
             "x-enum-varnames": [
                 "ProcessorRootDefault",
@@ -15554,7 +15675,8 @@ const docTemplate = `{
                 "ProcessorCookieSet",
                 "ProcessorCookieClear",
                 "ProcessorDataText",
-                "ProcessorDataExcel"
+                "ProcessorDataExcel",
+                "ProcessorCustomCodeDefault"
             ]
         },
         "consts.ProgressStatus": {
@@ -16395,6 +16517,27 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.ExecVariable": {
+            "type": "object",
+            "properties": {
+                "expression": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "interfaceId": {
+                    "type": "integer"
+                },
+                "isShare": {
+                    "$ref": "#/definitions/consts.ExtractorScope"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "value": {}
+            }
+        },
         "domain.ExtractorBase": {
             "type": "object",
             "properties": {
@@ -16560,14 +16703,17 @@ const docTemplate = `{
         "domain.InterfaceExecCondition": {
             "type": "object",
             "properties": {
-                "debugData": {
-                    "$ref": "#/definitions/consts.ConditionType"
+                "desc": {
+                    "type": "string"
                 },
                 "raw": {
                     "type": "array",
                     "items": {
                         "type": "integer"
                     }
+                },
+                "type": {
+                    "$ref": "#/definitions/consts.ConditionType"
                 }
             }
         },
@@ -16828,6 +16974,12 @@ const docTemplate = `{
                 },
                 "resultStatus": {
                     "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "variableSettings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.ExecVariable"
+                    }
                 }
             }
         },
@@ -17739,6 +17891,12 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
+                "postConditionsContent": {
+                    "type": "string"
+                },
+                "preConditionsContent": {
+                    "type": "string"
+                },
                 "projectId": {
                     "type": "integer"
                 },
@@ -17800,6 +17958,9 @@ const docTemplate = `{
                 },
                 "isLeaf": {
                     "type": "boolean"
+                },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
                 },
                 "name": {
                     "type": "string"
@@ -19043,6 +19204,9 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "currEnvId": {
+                    "type": "integer"
+                },
                 "desc": {
                     "type": "string"
                 },
@@ -19365,6 +19529,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -19423,6 +19590,9 @@ const docTemplate = `{
                 },
                 "processorID": {
                     "type": "integer"
+                },
+                "processorInterfaceSrc": {
+                    "$ref": "#/definitions/consts.ProcessorInterfaceSrc"
                 },
                 "processorType": {
                     "$ref": "#/definitions/consts.ProcessorType"
@@ -19717,6 +19887,9 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "currEnvId": {
+                    "type": "integer"
+                },
                 "desc": {
                     "type": "string"
                 },
@@ -19775,6 +19948,9 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "type": "string"
+                },
+                "currEnvId": {
+                    "type": "integer"
                 },
                 "desc": {
                     "type": "string"
@@ -20295,6 +20471,9 @@ const docTemplate = `{
                 "currServeId": {
                     "type": "integer"
                 },
+                "currServerId": {
+                    "type": "integer"
+                },
                 "disabled": {
                     "type": "boolean"
                 },
@@ -20329,6 +20508,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/openapi.SchemaRef"
                     }
+                },
+                "description": {
+                    "type": "string"
                 },
                 "items": {
                     "$ref": "#/definitions/openapi.SchemaRef"
@@ -20702,6 +20884,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/serverDomain.DiagnoseInterface"
                     }
                 },
+                "count": {
+                    "type": "integer"
+                },
                 "debugInterfaceId": {
                     "type": "integer"
                 },
@@ -20713,6 +20898,9 @@ const docTemplate = `{
                 },
                 "isDir": {
                     "type": "boolean"
+                },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
                 },
                 "ordr": {
                     "type": "integer"
@@ -21036,6 +21224,9 @@ const docTemplate = `{
         "serverDomain.EndpointCaseTree": {
             "type": "object",
             "properties": {
+                "caseInterfaceId": {
+                    "type": "integer"
+                },
                 "categoryId": {
                     "type": "integer"
                 },
@@ -21058,13 +21249,22 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "id": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "isDir": {
                     "type": "boolean"
                 },
+                "key": {
+                    "type": "integer"
+                },
+                "method": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
                 },
                 "parentId": {
                     "type": "integer"
@@ -21914,6 +22114,9 @@ const docTemplate = `{
                 },
                 "createdAt": {
                     "type": "string"
+                },
+                "currEnvId": {
+                    "type": "integer"
                 },
                 "execEnv": {
                     "description": "执行环境",

@@ -36,6 +36,8 @@ func (s *PlanExecService) LoadExecResult(planId int) (result domain.Report, err 
 }
 
 func (s *PlanExecService) LoadExecData(planId, environmentId int) (ret agentExec.PlanExecObj, err error) {
+	_ = s.PlanRepo.UpdateCurrEnvId(uint(planId), uint(environmentId))
+
 	plan, err := s.PlanRepo.Get(uint(planId))
 	if err != nil {
 		return

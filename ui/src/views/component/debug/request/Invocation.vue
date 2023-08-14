@@ -160,7 +160,8 @@ const listServer = async (serveId) => {
     serveId: serveId
   });
   if (res.code === 0) {
-    servers.value = res.data
+    // res.data = { currServer, servers }
+    servers.value = res.data.servers
   }
   console.log('servers', servers)
 }

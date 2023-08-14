@@ -200,7 +200,8 @@ function onCloseExecDrawer() {
 
 function exec() {
   selectEnvVisible.value = true;
-  execEnvId.value = detailResult?.value?.currentEnvId;
+  // debugger;
+  execEnvId.value = detailResult?.value?.currEnvId;
 }
 
 watch(() => {

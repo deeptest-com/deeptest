@@ -313,6 +313,8 @@ async function selectExecEnv() {
   drawerVisible.value = false;
   execVisible.value = true;
   await store.dispatch('Scenario/getScenario', selectedExecScenario?.value?.id);
+  // 执行完后，会修改列表的字段，所以需要重新拉取列表
+  await refreshList();
 }
 
 async function execScenario(record: any) {

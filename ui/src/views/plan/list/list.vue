@@ -239,9 +239,11 @@ const getList = debounce(async (current: number): Promise<void> => {
 }, 300);
 
 const onExec = async () => {
-  editDrawerVisible.value = false;
+  // editDrawerVisible.value = false;
   envSelectVisible.value = false;
   await store.dispatch('Plan/initExecResult');
+  // 执行完后，重新拉取列表数据，保证 列表中 curEnvId 为最新的
+  await getList(pagination.value.current);
   execReportVisible.value = true;
 }
 
@@ -252,9 +254,11 @@ const exec = async (record: any) => {
   envSelectVisible.value = true;
 };
 
-const handleEnvSelect = () => {
-  editDrawerVisible.value = false;
+const handleEnvSelect = (planDetail) => {
+  // editDrawerVisible.value = false;
   envSelectVisible.value = true;
+  execEnvId.value = planDetail.currEnvId;
+
 }
 
 const report = async (record: any) => {

@@ -6,6 +6,7 @@ import (
 	agentUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
 	"time"
@@ -44,7 +45,7 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 	}
 
 	if entity.ProcessorType == consts.ProcessorLoopBreak {
-		processor.Result.WillBreak, processor.Result.Summary = entity.getBeak()
+		processor.Result.WillBreak, processor.Result.Summary, processor.Result.Detail = entity.getBeak()
 
 		processor.AddResultToParent()
 		if processor.Result.WillBreak {
@@ -143,7 +144,7 @@ LABEL:
 	return
 }
 
-func (entity *ProcessorLoop) getBeak() (ret bool, msg string) {
+func (entity *ProcessorLoop) getBeak() (ret bool, msg string, detailStr string) {
 	breakFrom := entity.ParentID
 	breakIfExpress := entity.BreakIfExpression
 
@@ -155,6 +156,9 @@ func (entity *ProcessorLoop) getBeak() (ret bool, msg string) {
 	} else {
 		msg = "假"
 	}
+
+	detail := map[string]interface{}{"表达式": breakIfExpress + " 为 " + msg}
+	detailStr = commonUtils.JsonEncode(detail)
 
 	return
 }

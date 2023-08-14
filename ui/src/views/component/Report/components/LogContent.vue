@@ -3,7 +3,7 @@
     <div class="log-content-content">
       <a-descriptions bordered :size="'small'"  >
         <a-descriptions-item  v-for="detail in detailList" :key="detail.label" :label="detail.label">
-          {{detail.value}}
+          {{detail.value}}  111 = {{detailList}} =
         </a-descriptions-item>
       </a-descriptions>
     </div>

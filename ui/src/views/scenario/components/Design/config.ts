@@ -213,7 +213,7 @@ export const DESIGN_MENU_CONFIG = [
                 hideInNodeTypes: null,
                 children: [
                     {
-                        title: '添加变量',
+                        title: '设置变量',
                         key: 'processor_variable_set',
                         icon: 'arrange-add',
                     },

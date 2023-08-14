@@ -600,11 +600,11 @@ const StoreModel: ModuleType = {
                 serveId: payload.id
             });
             if (res.code === 0) {
-                res.data.forEach((item: any) => {
+                (res.data.servers || []).forEach((item: any) => {
                     item.label = item.description;
                     item.value = item.id;
                 })
-                commit('setServerList', res.data || null);
+                commit('setServerList', res.data.servers || null);
             } else {
                 return false
             }

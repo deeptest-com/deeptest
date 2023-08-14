@@ -58,7 +58,6 @@ func (s *ScenarioExecService) LoadExecData(scenarioId, environmentId uint) (ret 
 	// get variables
 	s.SceneService.LoadEnvVarMapByScenario(&ret.ExecScene, scenarioId, environmentId)
 	s.SceneService.LoadProjectSettings(&ret.ExecScene, scenario.ProjectId)
-	_ = s.ScenarioRepo.UpdateCurrEnvId(scenario.ID, environmentId)
 
 	return
 }
@@ -199,7 +198,7 @@ func (s *ScenarioExecService) summarizeInterface(report *model.ScenarioReport) {
 }
 
 func (s *ScenarioExecService) GetScenarioNormalData(id, environmentId uint) (ret execDomain.Report, err error) {
-
+	_ = s.ScenarioRepo.UpdateCurrEnvId(id, environmentId)
 	ret.ScenarioId = id
 
 	environment, err := s.EnvironmentRepo.Get(environmentId)

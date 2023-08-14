@@ -340,5 +340,5 @@ func (r *ScenarioRepo) DeleteByCategoryIds(categoryIds []uint) (err error) {
 }
 
 func (r *ScenarioRepo) UpdateCurrEnvId(id, currEnvId uint) error {
-	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Update("cur_env_id", currEnvId).Error
+	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Update("curr_env_id", currEnvId).Error
 }

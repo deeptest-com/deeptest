@@ -25,6 +25,11 @@ export const agentUrlOpts = [
         value: 'test',
         url: 'https://leyanapi-test.nancalcloud.com/agent/api/v1',
     },
+    {
+        label: '开发环境',
+        value: 'dev',
+        url: 'https://leyanapi-dev.nancalcloud.com/agent/api/v1',
+    },
 ];
 
 

@@ -26,7 +26,7 @@
       </a-dropdown>
 
       <!--  切换Agent -->
-      <a-dropdown placement="bottomRight" >
+      <a-dropdown placement="bottomRight" v-if="isLyEnv">
         <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 12px;">
           <EnvironmentOutlined class="user-icon"/>
           <span class="user-name">{{currentAgentLabel}}</span>
@@ -148,6 +148,8 @@ export default defineComponent({
       router.replace({path: '/user-manage/index'})
     }
 
+    const isLyEnv = process?.env?.VUE_APP_DEPLOY_ENV === 'ly';
+
     return {
       t,
       currentUser,
@@ -161,7 +163,8 @@ export default defineComponent({
       changeAgentEnv,
       agentUrlOpts,
       isElectronEnv,
-      currentAgentLabel
+      currentAgentLabel,
+      isLyEnv
     }
   }
 })

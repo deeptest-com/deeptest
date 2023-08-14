@@ -55,6 +55,7 @@ import {
     serverList,
     getSchemaList, getSchemaDetail
 } from "@/views/project-settings/service";
+import { changeServe } from '../project-settings/service';
 
 
 export interface StateType {
@@ -70,6 +71,7 @@ export interface StateType {
     endpointDetail: any,
     endpointDetailYamlCode: any,
     serveServers: any[]; // serve list
+    currServer: any; // current server 当前选中的环境
     securityOpts: any[];
     interfaceMethodToObjMap: any;
     refsOptions: any;
@@ -100,6 +102,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         clearFilterState: Mutation<StateType>;
         setEndpointDetail: Mutation<StateType>;
         setServerList: Mutation<StateType>;
+        setCurrServer: Mutation<StateType>;
         setSecurityOpts: Mutation<StateType>;
         setYamlCode: Mutation<StateType>;
         setStatus: Mutation<StateType>;
@@ -140,6 +143,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getEndpointDetail: Action<StateType, StateType>;
         updateEndpointDetail: Action<StateType, StateType>;
         getServerList: Action<StateType, StateType>;
+        changeServer: Action<StateType, StateType>;
         getSecurityList: Action<StateType, StateType>;
         getYamlCode: Action<StateType, StateType>;
         updateStatus: Action<StateType, StateType>;
@@ -195,6 +199,7 @@ const initState: StateType = {
     endpointDetail: null,
     endpointDetailYamlCode: null,
     serveServers: [],
+    currServer: {},
     securityOpts: [],
     interfaceMethodToObjMap: {},
     refsOptions: {},
@@ -263,6 +268,9 @@ const StoreModel: ModuleType = {
         },
         setServerList(state, payload) {
             state.serveServers = payload;
+        },
+        setCurrServer(state, payload) {
+            state.currServer = payload;
         },
         setSecurityOpts(state, payload) {
             state.securityOpts = payload;
@@ -594,7 +602,7 @@ const StoreModel: ModuleType = {
             }
         },
 
-        // 获取项目的服务
+        // 获取项目的服务环境列表
         async getServerList({commit}, payload: any) {
             const res = await serverList({
                 serveId: payload.id
@@ -605,8 +613,15 @@ const StoreModel: ModuleType = {
                     item.value = item.id;
                 })
                 commit('setServerList', res.data.servers || null);
+                commit('setCurrServer', res.data.currServer);
             } else {
                 return false
+            }
+        },
+        async changeServer({ commit, state }, serverId: number) {
+            const res = await changeServe({ serverId });
+            if (res.code === 0) {
+                commit('setCurrServer', res.data);
             }
         },
         async getSecurityList({commit}, payload: any) {

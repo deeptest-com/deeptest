@@ -34,6 +34,7 @@ import {
     getInvocationLog,
     getPreConditionScript,
 } from './service';
+import { serverList, changeServe } from '@/views/project-settings/service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
@@ -61,6 +62,9 @@ export interface StateType {
     extractorData: any;
     checkpointData: any;
     scriptData: any;
+
+    serves: any[];
+    currServe: any;
 }
 const initState: StateType = {
     debugInfo: {} as DebugInfo,
@@ -83,6 +87,9 @@ const initState: StateType = {
     extractorData: {} as Extractor,
     checkpointData: {} as Checkpoint,
     scriptData: {} as Script,
+
+    serves: [],
+    currServe: [],
 };
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -120,6 +127,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setUrl: Mutation<StateType>;
         setBaseUrl: Mutation<StateType>;
         setBody: Mutation<StateType>;
+
+        setServes: Mutation<StateType>; // 获取环境列表
+        setCurrServe: Mutation<StateType>; // 设置当前所选环境
     };
     actions: {
         loadDataAndInvocations: Action<StateType, StateType>;
@@ -168,6 +178,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateBody: Action<StateType, StateType>;
 
         changeServer: Action<StateType, StateType>;
+        listServes: Action<StateType, StateType>;
     };
 }
 
@@ -277,6 +288,13 @@ const StoreModel: ModuleType = {
             console.log('set debugData body')
             state.debugData.body = payload;
         },
+        setServes(state, payload) {
+            console.log('292---- ', payload);
+            state.serves = payload || [];
+        },
+        setCurrServe(state, payload) {
+            state.currServe = payload;
+        }
     },
     actions: {
         // debug
@@ -705,17 +723,33 @@ const StoreModel: ModuleType = {
             return true;
         },
 
-        async changeServer({commit, dispatch, state}, serverId: number) {
-            console.log('changeServer in DebugStore', serverId)
-
-            const json = await listEnvVarByServer(serverId)
-            if (json.code === 0) {
-                commit('setServerId', serverId);
-                commit('setEnvVars', json.data);
+        async changeServer({commit, dispatch, state}, payload: {serverId: number, requestEnvVars: boolean}) {
+            const { serverId, requestEnvVars = true } = payload;
+            const res = await changeServe({ serverId });
+            if (res.code === 0) {
+                commit('setCurrServe', res.data);
             }
-
+            if (requestEnvVars) {
+                const json = await listEnvVarByServer(serverId)
+                if (json.code === 0) {
+                    commit('setServerId', serverId);
+                    commit('setEnvVars', json.data);
+                }
+            }
             return true;
         },
+
+        async listServes({ commit }, payload: { serveId: number }) {
+            const res = await serverList(payload);
+            if (res.code === 0) {
+                (res.data.servers || []).forEach((item: any) => {
+                    item.label = item.description;
+                    item.value = item.id;
+                });
+                commit('setServes', res.data.servers);
+                commit('setCurrServe', res.data.currServer);
+            }
+        }
     }
 };
 

@@ -500,7 +500,7 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
     });
     await store.dispatch('Endpoint/getEndpointTagList');
     if (newServeId) {
-      await store.dispatch('Endpoint/getServerList', {id: newServeId});
+      await store.dispatch('Debug/listServes', {serveId: newServeId});
       // 获取授权列表
       await store.dispatch('Endpoint/getSecurityList', {id: newServeId});
     }

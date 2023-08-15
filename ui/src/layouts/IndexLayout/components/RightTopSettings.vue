@@ -28,15 +28,17 @@
       <!--  切换Agent -->
       <a-dropdown placement="bottomRight" v-if="isLyEnv">
         <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 12px;">
-          <EnvironmentOutlined class="user-icon"/>
+          <IconSvg type="top-right-web"/>
           <span class="user-name">{{currentAgentLabel}}</span>
           <DownOutlined class="user-icon"/>
         </a>
         <template #overlay>
           <a-menu @click="changeAgentEnv">
-            <a-menu-item  v-for="agent in agentUrlOpts" :key="agent.value" :disabled="agent.label === currentAgentLabel">
-              {{agent.label}}
-            </a-menu-item>
+              <a-menu-item  v-for="agent in agentUrlOpts" :key="agent.value" :disabled="agent.label === currentAgentLabel">
+                <a-tooltip placement="left" :title="agent.desc">
+                {{agent.label}}
+                </a-tooltip>
+              </a-menu-item>
           </a-menu>
         </template>
       </a-dropdown>
@@ -57,7 +59,7 @@
 <script lang="ts">
 import {computed, defineComponent, ref} from "vue";
 import {useStore} from "vuex";
-import {agentUrlOpts, getAgentLabel, isElectronEnv} from '@/utils/env'
+import {agentUrlOpts, getAgentLabel} from '@/utils/env'
 import {
   DownOutlined,
   SettingOutlined,
@@ -65,10 +67,9 @@ import {
   LogoutOutlined,
   FullscreenOutlined,
   FullscreenExitOutlined,
-  EnvironmentOutlined
 } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
-// import IconSvg from "@/components/IconSvg";
+import IconSvg from "@/components/IconSvg";
 import {CurrentUser, StateType as UserStateType} from "@/store/user";
 import {useRouter} from "vue-router";
 import {useClipboard, useFullscreen} from '@vueuse/core';
@@ -77,8 +78,8 @@ export default defineComponent({
   name: 'RightTopSettings',
   components: {
     DownOutlined,
-    SettingOutlined, UserOutlined, LogoutOutlined,EnvironmentOutlined,
-    // IconSvg
+    SettingOutlined, UserOutlined, LogoutOutlined,
+    IconSvg,
     FullscreenOutlined,
     FullscreenExitOutlined
   },
@@ -162,7 +163,6 @@ export default defineComponent({
       isFullscreen,
       changeAgentEnv,
       agentUrlOpts,
-      isElectronEnv,
       currentAgentLabel,
       isLyEnv
     }

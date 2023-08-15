@@ -29,7 +29,7 @@
           <DownOutlined class="user-icon"/>
         </a>
         <template #overlay>
-          <a-menu @click="onMenuClick" ：>
+          <a-menu @click="onMenuClick">
             <a-menu-item key="profile">
               <SettingOutlined class="settings"/>
               个人信息

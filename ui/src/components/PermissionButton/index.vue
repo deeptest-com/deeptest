@@ -62,23 +62,24 @@ const handleClick = (e) => {
 }
 
 const hasPermission = () => {
-  let hasPermissionButton = false
-  let filterUserName = ["undefined", "", currentUser.value.username]
-  if (currentUser.value.sysRoles.indexOf('admin') != -1) {
-    return true
-  }
-  if (currentUser.value.projectRoles[currProject.value.id] == 'admin') {
-    return true
-  }
-  if (permissionButtonMap.value[PermissionButtonType[`${props.code}`]] && props.action != 'delete') {
-    return true
-  }
-  if (permissionButtonMap.value[PermissionButtonType[`${props.code}`]] && props.action == 'delete' && filterUserName.indexOf(props.dataCreateUser) > -1)  {
-    return true
-  }
+  // let hasPermissionButton = false
+  // let filterUserName = ["undefined", "", currentUser.value.username]
+  // if (currentUser.value.sysRoles.indexOf('admin') != -1) {
+  //   return true
+  // }
+  // if (currentUser.value.projectRoles[currProject.value.id] == 'admin') {
+  //   return true
+  // }
+  // if (permissionButtonMap.value[PermissionButtonType[`${props.code}`]] && props.action != 'delete') {
+  //   return true
+  // }
+  // if (permissionButtonMap.value[PermissionButtonType[`${props.code}`]] && props.action == 'delete' && filterUserName.indexOf(props.dataCreateUser) > -1)  {
+  //   return true
+  // }
 
+    const hasPermissionButton = permissionButtonMap.value[PermissionButtonType[`${props.code}`]];
   return hasPermissionButton
-    // const hasPermissionButton = permissionButtonMap.value[PermissionButtonType[`${props.code}`]];
+
 }
 
 // 判断权限方法

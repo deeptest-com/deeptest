@@ -9,9 +9,11 @@
 
     <div class="content">
       <div class="processor-form">
-        <ProcessorCustomCodeEdit v-if="model.processorType === ProcessorCategory.ProcessorCustomCode"
-                                 :processor="model"
-                                 :finish="onCancel" />
+        <ProcessorCustomCodeEdit 
+          v-if="model.processorType === ProcessorCategory.ProcessorCustomCode"
+          :processor="model"
+          @cancel="cancel"
+        />
       </div>
     </div>
 
@@ -37,11 +39,9 @@ const props = defineProps({
     required: true,
     type: Object,
   },
-  onCancel: {
-    required: true,
-    type: Function,
-  },
 })
+
+const emits = defineEmits(['updateScreen']);
 
 const save = (item) => {
   console.log('save', item)
@@ -49,8 +49,7 @@ const save = (item) => {
 }
 
 const cancel = () => {
-  console.log('cancel')
-  props.onCancel()
+  emits('updateScreen', false);
 }
 
 const wrapperCol = { span: 18, offset:4 }

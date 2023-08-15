@@ -220,11 +220,12 @@ const StoreModel: ModuleType = {
                 serveId: payload.id
             });
             if (res.code === 0) {
-                (res.data.servers || []).forEach((item: any) => {
-                    item.label = item.description;
-                    item.value = item.id;
+                const servers = (res.data.servers || []).map((item: any) => {
+                    item.label = item.environmentName;
+                    item.value = item.environmentId;
+                    return item;
                 })
-                commit('setServeServers', res.data || null);
+                commit('setServeServers', servers);
             } else {
                 return false
             }

@@ -806,11 +806,12 @@ const StoreModel: ModuleType = {
         async listServes({ commit }, payload: { serveId: number }) {
             const res = await serverList(payload);
             if (res.code === 0) {
-                (res.data.servers || []).forEach((item: any) => {
-                    item.label = item.description;
-                    item.value = item.id;
-                });
-                commit('setServes', res.data.servers);
+                const servers = (res.data.servers || []).map((item: any) => {
+                    item.label = item.environmentName;
+                    item.value = item.environmentId;
+                    return item;
+                })
+                commit('setServes', servers);
                 commit('setCurrServe', res.data.currServer);
             }
         }

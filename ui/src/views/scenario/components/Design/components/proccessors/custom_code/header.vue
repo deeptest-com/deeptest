@@ -9,10 +9,11 @@
       <a-col flex="100px" class="dp-right">
         <a-tooltip overlayClassName="dp-tip-small">
           <template #title>保存</template>
-          <SaveOutlined
+          <icon-svg
+            class="icon dp-link-primary dp-icon-large"
+            type="save"
+            title="保存"
             @click.stop="save()"
-            style="font-size: 16px"
-            class="dp-icon-btn dp-trans-80"
           />
         </a-tooltip>
         <!-- <a-tooltip overlayClassName="dp-tip-small">
@@ -93,4 +94,5 @@ const save = async () => {
   background-color: #fafafa;
   border-radius: 3px;
 }
+
 </style>

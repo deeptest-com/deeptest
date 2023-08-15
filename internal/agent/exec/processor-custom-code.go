@@ -46,7 +46,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 	//scriptBase.VariableSettings = VariableSettings
 
 	for _, item := range VariableSettings {
-		SetVariable(processor.Parent.ID, item.Name, item.Value, consts.Public)
+		SetVariable(processor.ParentId, item.Name, item.Value, consts.Public)
 	}
 
 	processor.Result.ScriptsResult = append(processor.Result.ScriptsResult, scriptBase)

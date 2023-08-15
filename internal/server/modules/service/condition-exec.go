@@ -13,6 +13,7 @@ type ExecConditionService struct {
 	PostConditionRepo *repo.PostConditionRepo `inject:""`
 
 	ExtractorRepo  *repo.ExtractorRepo  `inject:""`
+	CookieRepo     *repo.CookieRepo     `inject:""`
 	CheckpointRepo *repo.CheckpointRepo `inject:""`
 	ScriptRepo     *repo.ScriptRepo     `inject:""`
 
@@ -68,6 +69,24 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 				s.ShareVarService.Save(extractorBase.Variable, extractorBase.Result,
 					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 					extractorBase.Scope, usedBy)
+			}
+
+		} else if condition.Type == consts.ConditionTypeCookie {
+			var cookieBase domain.CookieBase
+			json.Unmarshal(condition.Raw, &cookieBase)
+			if cookieBase.Disabled {
+				continue
+			}
+
+			cookieBase.InvokeId = invokeId
+
+			s.CookieRepo.UpdateResult(cookieBase)
+			s.CookieRepo.CreateLog(cookieBase)
+
+			if cookieBase.ResultStatus == consts.Pass {
+				s.ShareVarService.Save(cookieBase.VariableName, cookieBase.Result,
+					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
+					consts.Public, usedBy)
 			}
 
 		} else if condition.Type == consts.ConditionTypeCheckpoint {

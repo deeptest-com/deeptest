@@ -33,10 +33,10 @@ import {
     getInvocationResult,
     getInvocationLog,
     getPreConditionScript,
-    saveResponseDefine,
+    saveResponseDefine, removeCookie, quickCreateCookie, saveCookie, getCookie,
 } from './service';
 import { serverList, changeServe } from '@/views/project-settings/service';
-import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
+import {Checkpoint, Cookie, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
 import {listEnvVarByServer} from "@/services/environment";
@@ -63,6 +63,7 @@ export interface StateType {
     extractorData: any;
     checkpointData: any;
     scriptData: any;
+    cookieData: any;
 
     serves: any[];
     currServe: any;
@@ -88,6 +89,7 @@ const initState: StateType = {
     extractorData: {} as Extractor,
     checkpointData: {} as Checkpoint,
     scriptData: {} as Script,
+    cookieData: {} as Cookie,
 
     serves: [],
     currServe: [],
@@ -119,6 +121,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setCheckpoint: Mutation<StateType>;
         setScript: Mutation<StateType>;
         setScriptContent: Mutation<StateType>;
+        setCookie: Mutation<StateType>;
 
         setPathParams: Mutation<StateType>;
         setShareVars: Mutation<StateType>;
@@ -161,6 +164,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
         quickCreateExtractor: Action<StateType, StateType>;
         removeExtractor: Action<StateType, StateType>;
 
+        getCookie: Action<StateType, StateType>;
+        saveCookie: Action<StateType, StateType>;
+        quickCreateCookie: Action<StateType, StateType>;
+        removeCookie: Action<StateType, StateType>;
+
         getCheckpoint: Action<StateType, StateType>;
         saveCheckpoint: Action<StateType, StateType>;
         removeCheckpoint: Action<StateType, StateType>;
@@ -179,7 +187,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateBody: Action<StateType, StateType>;
 
         changeServer: Action<StateType, StateType>;
-        
+
         saveResponseDefine:Action<StateType, StateType>
 
         listServes: Action<StateType, StateType>;
@@ -257,6 +265,9 @@ const StoreModel: ModuleType = {
         },
         setScript(state, payload) {
             state.scriptData = payload;
+        },
+        setCookie(state, payload) {
+            state.cookieData = payload;
         },
         setScriptContent(state, content) {
             console.log('setScriptContent', content)
@@ -598,6 +609,47 @@ const StoreModel: ModuleType = {
         async removeExtractor({commit, dispatch, state}, payload) {
             try {
                 await removeExtractor(payload.id);
+
+                dispatch('listPostCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        // cookie
+        async getCookie({commit}, id: number) {
+            try {
+                const response = await getCookie(id);
+                const {data} = response;
+
+                commit('setCookie', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async saveCookie({commit, dispatch, state}, payload: any) {
+            try {
+                await saveCookie(payload);
+                dispatch('listPostCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async quickCreateCookie({commit, dispatch, state}, payload: any) {
+            try {
+                await quickCreateCookie(payload);
+                dispatch('listPostCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeCookie({commit, dispatch, state}, payload) {
+            try {
+                await removeCookie(payload.id);
 
                 dispatch('listPostCondition');
                 return true;

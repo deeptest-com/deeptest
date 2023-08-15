@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	checkpointHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/checkpoint"
+	cookieHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/cookie"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -144,6 +145,34 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, sessi
 			}
 
 			processor.Result.ExtractorsResult = append(processor.Result.ExtractorsResult, extractorBase)
+
+		} else if condition.Type == consts.ConditionTypeCookie {
+			var cookieBase domain.CookieBase
+			json.Unmarshal(condition.Raw, &cookieBase)
+
+			if cookieBase.Disabled {
+				continue
+			}
+
+			brother, ok := getPreviousBrother(*processor)
+			if !ok || brother.EntityType != consts.ProcessorInterfaceDefault {
+				processor.Result.Summary = fmt.Sprintf("先前节点不是接口，无法应用提取器。")
+				processor.AddResultToParent()
+				execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+				return
+			}
+
+			resp := domain.DebugResponse{}
+			json.Unmarshal([]byte(brother.Result.RespContent), &resp)
+
+			err = ExecCookie(&cookieBase, resp)
+			cookieHelper.GenResultMsg(&cookieBase)
+
+			if cookieBase.ResultStatus == consts.Pass {
+				SetVariable(processor.ParentId, cookieBase.VariableName, cookieBase.Result, consts.Public)
+			}
+
+			processor.Result.CookiesResult = append(processor.Result.CookiesResult, cookieBase)
 
 		} else if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase

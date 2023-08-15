@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	checkpointHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/checkpoint"
+	cookieHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/cookie"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 )
@@ -44,6 +45,23 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 			}
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(extractorBase)
+
+		} else if condition.Type == consts.ConditionTypeCookie {
+			var cookieBase domain.CookieBase
+			json.Unmarshal(condition.Raw, &cookieBase)
+
+			if cookieBase.Disabled {
+				continue
+			}
+
+			err = ExecCookie(&cookieBase, resp)
+			cookieHelper.GenResultMsg(&cookieBase)
+
+			if cookieBase.ResultStatus == consts.Pass {
+				SetVariable(0, cookieBase.VariableName, cookieBase.Result, consts.Public)
+			}
+
+			obj.PostConditions[index].Raw, _ = json.Marshal(cookieBase)
 
 		} else if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase

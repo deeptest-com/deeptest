@@ -60,6 +60,15 @@ func (ExecLogExtractor) TableName() string {
 	return "biz_exec_log_extractor"
 }
 
+type ExecLogCookie struct {
+	DebugConditionCookie
+	InvokeId uint `json:"invokeId"`
+}
+
+func (ExecLogCookie) TableName() string {
+	return "biz_exec_log_cookie"
+}
+
 type ExecLogCheckpoint struct {
 	DebugConditionCheckpoint
 	InvokeId uint `json:"invokeId"`

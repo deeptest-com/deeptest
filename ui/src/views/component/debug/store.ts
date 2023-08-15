@@ -33,6 +33,7 @@ import {
     getInvocationResult,
     getInvocationLog,
     getPreConditionScript,
+    saveResponseDefine,
 } from './service';
 import { serverList, changeServe } from '@/views/project-settings/service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
@@ -178,6 +179,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateBody: Action<StateType, StateType>;
 
         changeServer: Action<StateType, StateType>;
+        
+        saveResponseDefine:Action<StateType, StateType>
+
         listServes: Action<StateType, StateType>;
     };
 }
@@ -739,6 +743,14 @@ const StoreModel: ModuleType = {
             return true;
         },
 
+        async saveResponseDefine({commit, dispatch, state}, payload: any) {
+            try {
+                await saveResponseDefine(payload);
+                return true
+            } catch (error) {
+                return false;
+            }
+        },
         async listServes({ commit }, payload: { serveId: number }) {
             const res = await serverList(payload);
             if (res.code === 0) {

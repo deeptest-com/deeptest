@@ -1,84 +1,37 @@
 <template>
   <div class="processor_custom_code-main dp-processors-container">
     <ProcessorHeader/>
-    <div class="header">
-      <a-row type="flex" class="row">
-        <a-col flex="1" class="left">
-          <icon-svg type="script" class="icon" />&nbsp;
-          <span>JavaScript代码</span>
-        </a-col>
-
-        <a-col flex="100px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>保存</template>
-            <SaveOutlined @click.stop="save()" style="font-size: 16px;" class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
-
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>全屏</template>
-            <FullscreenOutlined @click.stop="openFullscreen()"  class="dp-icon-btn dp-trans-80" />
-          </a-tooltip>
-
-        </a-col>
-      </a-row>
-    </div>
-
+    <CustomCodeHeader mode="smart" @update-screen="updateScreen" />
     <div class="content">
       <ProcessorCustomCodeEdit ref="processCodeEdit" />
     </div>
 
-    <ProcessorPopup v-if="fullscreen"
-                    :visible="fullscreen"
-                    :model="modelRef"
-                    :onCancel="closeFullScreen" />
+    <ProcessorPopup 
+      v-if="fullscreen"
+      :visible="fullscreen"
+      @update-screen="updateScreen"
+      :model="modelRef" />
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch, provide} from "vue";
+import {computed, ref, provide} from "vue";
 import {useStore} from "vuex";
-import {message, notification} from "ant-design-vue";
-import { QuestionCircleOutlined, FullscreenOutlined, SaveOutlined } from '@ant-design/icons-vue';
-import IconSvg from "@/components/IconSvg";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import ProcessorCustomCodeEdit from "./edit.vue";
 import ProcessorPopup from "../../common/ProcessorPopup.vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
+import CustomCodeHeader from './header.vue';
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef: any = computed<boolean>(() => store.state.Scenario.nodeData);
 
-const fullscreen = ref(false)
+const fullscreen = ref(false);
 const processCodeEdit = ref();
 
-const openFullscreen = () => {
-  console.log('openFullscreen')
-  fullscreen.value = true
-}
-const closeFullScreen = () => {
-  console.log('closeFullScreen')
-  fullscreen.value = false
-}
-
-const save = async () => {
-  const res = await store.dispatch('Scenario/saveProcessor', {
-    ...modelRef.value,
-    content: modelRef.value.content,
-  })
-
-  if (res === true) {
-    notification.success({
-      message: '保存成功',
-    });
-  } else {
-    notification.error({
-      message: '保存失败',
-    });
-  }
-}
+const updateScreen = (e) => {
+  console.log(e);
+  fullscreen.value = e;
+};
 
 provide('fullscreen', computed(() => fullscreen.value));
 

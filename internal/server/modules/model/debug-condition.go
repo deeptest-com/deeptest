@@ -72,3 +72,13 @@ type DebugConditionScript struct {
 func (DebugConditionScript) TableName() string {
 	return "biz_debug_condition_script"
 }
+
+type DebugConditionResponseDefine struct {
+	BaseModel
+	domain.ResponseDefineBase
+	Disabled bool `json:"disabled,omitempty" gorm:"default:false"`
+}
+
+func (DebugConditionResponseDefine) TableName() string {
+	return "biz_debug_condition_response_define"
+}

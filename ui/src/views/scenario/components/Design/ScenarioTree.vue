@@ -581,7 +581,7 @@ const removeNode = () => {
   console.log('removeNode')
   const node = treeDataMap.value[targetModelId]
   const title = `确定删除名为${node.name}的节点吗？`
-  let context = '该节点的所有子节点都将被删除！'
+  let context = node.entityCategory === "processor_interface" ? '' : '该节点的所有子节点都将被删除！'
 
   // 如果是 if 节点，则需要判断是否有 else 节点，如果有，则需要提示
   if (node.entityType === 'processor_logic_if') {

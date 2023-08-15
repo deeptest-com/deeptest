@@ -408,8 +408,11 @@ func (r *EndpointInterfaceRepo) UpdateResponseBodies(interfaceId uint, responseB
 	if err != nil {
 		return
 	}
-
+	codes := map[string]bool{}
 	for _, responseBody := range responseBodies {
+		if _, ok := codes[responseBody.Code]; ok {
+			continue
+		}
 		responseBody.InterfaceId = interfaceId
 
 		err = r.BaseRepo.Save(responseBody.ID, &responseBody)
@@ -442,7 +445,7 @@ func (r *EndpointInterfaceRepo) UpdateResponseBodies(interfaceId uint, responseB
 				return
 			}
 		}
-
+		codes[responseBody.Code] = true
 	}
 	return
 }
@@ -838,5 +841,20 @@ func (r *EndpointInterfaceRepo) RemoveAll(id uint) (err error) {
 
 func (r *EndpointInterfaceRepo) GetByItem(sourceType consts.SourceType, endpointId uint, method consts.HttpMethod) (res model.EndpointInterface, err error) {
 	err = r.DB.First(&res, "not deleted AND source_type = ? AND endpoint_id=? and method=?", sourceType, endpointId, method).Error
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetResponseCodes(endpointInterfaceId uint) (codes []string) {
+
+	responseBodies, err := r.GetResponseBodies([]uint{endpointInterfaceId})
+	if err != nil {
+		return
+	}
+	responseBody := responseBodies[endpointInterfaceId]
+
+	for _, item := range responseBody {
+		codes = append(codes, item.Code)
+	}
+
 	return
 }

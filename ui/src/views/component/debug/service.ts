@@ -24,6 +24,8 @@ const apiScript = 'scripts'
 
 const apiParser = 'parser'
 
+const apiResponseDefine = 'responseDefine'
+
 // debug interface
 export async function loadData(data): Promise<any> {
     return request({
@@ -396,6 +398,14 @@ export async function getSnippet(name): Promise<any> {
         url: `/${apiSnippets}`,
         method: 'GET',
         params
+    });
+}
+
+export async function saveResponseDefine(data): Promise<any> {
+    return request({
+        url: `/${apiResponseDefine}`,
+        method:'PUT',
+        data: data,
     });
 }
 

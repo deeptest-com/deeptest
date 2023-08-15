@@ -112,5 +112,7 @@ var (
 		&ProjectMemberAudit{},
 
 		&SwaggerSync{},
+
+		&DebugConditionResponseDefine{},
 	}
 )

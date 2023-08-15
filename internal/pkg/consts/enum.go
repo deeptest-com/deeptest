@@ -283,17 +283,19 @@ const (
 type ConditionType string
 
 const (
-	ConditionTypeExtractor  ConditionType = "extractor"
-	ConditionTypeCheckpoint ConditionType = "checkpoint"
-	ConditionTypeScript     ConditionType = "script"
+	ConditionTypeExtractor      ConditionType = "extractor"
+	ConditionTypeCheckpoint     ConditionType = "checkpoint"
+	ConditionTypeScript         ConditionType = "script"
+	ConditionTypeResponseDefine ConditionType = "responseDefine"
 )
 
 type ConditionCategory string
 
 const (
-	ConditionCategoryResult  ConditionCategory = "result"
-	ConditionCategoryConsole ConditionCategory = "console"
-	ConditionCategoryAll     ConditionCategory = "all"
+	ConditionCategoryResult   ConditionCategory = "result"
+	ConditionCategoryConsole  ConditionCategory = "console"
+	ConditionCategoryAll      ConditionCategory = "all"
+	ConditionCategoryResponse ConditionCategory = "response"
 )
 
 type ExtractorSrc string

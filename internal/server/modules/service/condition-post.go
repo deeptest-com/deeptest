@@ -42,6 +42,8 @@ func (s *PostConditionService) Create(condition *model.DebugPostCondition) (err 
 	} else if condition.EntityType == consts.ConditionTypeScript {
 		po := s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPost)
 		entityId = po.ID
+	} else if condition.EntityType == consts.ConditionTypeResponseDefine {
+		//保存定义结构体
 	}
 
 	err = s.PostConditionRepo.UpdateEntityId(condition.ID, entityId)

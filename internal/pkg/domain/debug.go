@@ -50,9 +50,11 @@ type DebugData struct {
 	GlobalParams []GlobalParam `json:"globalParams"`
 
 	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
+	ResponseDefine        Condition                    `json:"responseDefine"`
 }
 
 type Condition struct {
+	ID   uint   `json:"id"`
 	Name string `json:"name"`
 	Desc string `json:"desc"`
 

@@ -32,8 +32,7 @@ func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
 			Name:  c.Name,
 			Value: _stringUtils.InterfToStr(c.Value),
 			//Domain:  domain,
-			Expires: *c.ExpireTime,
-			Path:    c.Path,
+			Path: c.Path,
 		}
 		if c.ExpireTime != nil {
 			coo.Expires = *c.ExpireTime

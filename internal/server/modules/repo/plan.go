@@ -85,6 +85,7 @@ func (r *PlanRepo) CombineUserName(data []*model.Plan) {
 	for _, v := range data {
 		userIds = append(userIds, v.AdminId)
 		userIds = append(userIds, v.UpdateUserId)
+		userIds = append(userIds, v.CreateUserId)
 	}
 	userIds = commonUtils.ArrayRemoveUintDuplication(userIds)
 
@@ -101,6 +102,9 @@ func (r *PlanRepo) CombineUserName(data []*model.Plan) {
 		}
 		if updateUserName, ok := userIdNameMap[v.UpdateUserId]; ok {
 			v.UpdateUserName = updateUserName
+		}
+		if createUserName, ok := userIdNameMap[v.CreateUserId]; ok {
+			v.CreateUserName = createUserName
 		}
 	}
 }

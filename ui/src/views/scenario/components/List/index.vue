@@ -99,6 +99,18 @@
         </div>
       </template>
 
+      <template #colCreateUserName="{record}">
+        <div class="customTagsColRender">
+          {{username(record.createUserName)}}
+        </div>
+      </template>
+
+      <template #colUpdateUserName="{record}">
+        <div class="customTagsColRender">
+          {{username(record.updateUserName)}}
+        </div>
+      </template>
+
       <template #action="{ record }">
         <a-dropdown>
           <MoreOutlined/>
@@ -184,7 +196,7 @@ interface DataType {
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 const router = useRouter();
-const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType }>();
+const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(() => store.state.Scenario.nodeDataCategory);
 const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
@@ -194,6 +206,7 @@ let queryParams = reactive<QueryParams>({
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
 
+const userList = computed<any>(() => store.state.Project.userList);
 const currModelId = ref(0)
 
 watch(nodeDataCategory, () => {
@@ -212,6 +225,7 @@ watch(queryParams, () => {
 
 onMounted(async () => {
   getList(1, nodeDataCategory.value.id);
+  getUserList()
 })
 
 
@@ -233,6 +247,11 @@ const getList = debounce(async (current: number, categoryId: number): Promise<vo
   loading.value = false
 }, 300)
 
+
+const getUserList = () => {
+  store.dispatch('Project/getUserList')
+
+}
 const exec = (id: number) => {
   console.log('exec')
   router.push(`/scenario/exec/${id}`)
@@ -404,6 +423,14 @@ const columns = [
   {
     title: '创建人',
     dataIndex: 'createUserName',
+    slots: {customRender: 'colCreateUserName'},
+    ellipsis: true,
+    width: '80px',
+  },
+  {
+    title: '更新人',
+    dataIndex: 'updateUserName',
+    slots: {customRender: 'colUpdateUserName'},
     ellipsis: true,
     width: '80px',
   },
@@ -421,6 +448,11 @@ const columns = [
     slots: {customRender: 'action'},
   },
 ];
+
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
+}
 
 onMounted(() => {
   console.log('onMounted')

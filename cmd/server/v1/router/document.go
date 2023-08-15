@@ -13,7 +13,7 @@ type DocumentModule struct {
 
 func (m *DocumentModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
-		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 		public.Post("/share", m.DocumentCtrl.GetShareLink).Name = "生成分享接口文档的链接"
 		public.Get("/get_share_content", m.DocumentCtrl.GetContentsByShareLink).Name = "查看分享的文档"
 		public.Get("/share_detail", m.DocumentCtrl.GetDocumentDetail).Name = "查看分享的文档详情"

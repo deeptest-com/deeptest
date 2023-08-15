@@ -51,6 +51,14 @@ func (s *DiagnoseInterfaceService) Get(id int) (ret model.DiagnoseInterface, err
 func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveReq) (diagnoseInterface model.DiagnoseInterface, err error) {
 	s.CopyValueFromRequest(&diagnoseInterface, req)
 
+	if diagnoseInterface.ID != 0 {
+		oldDiagnoseInterface, err := s.DiagnoseInterfaceRepo.Get(diagnoseInterface.ID)
+		if err != nil {
+			return diagnoseInterface, err
+		}
+		diagnoseInterface.CreatedBy = oldDiagnoseInterface.CreatedBy
+	}
+
 	if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
 		server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
 
@@ -171,6 +179,7 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 		ParentId:         parent.ID,
 		ServeId:          parent.ServeId,
 		ProjectId:        parent.ProjectId,
+		CreatedBy:        req.CreateBy,
 	}
 	s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
 

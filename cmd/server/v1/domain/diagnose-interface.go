@@ -36,6 +36,8 @@ type DiagnoseInterfaceSaveReq struct {
 	ParentId  uint   `json:"parentId"`
 	ServeId   uint   `json:"serveId"`
 	ProjectId uint   `json:"projectId"`
+	CreatedBy uint   `json:"createdBy"`
+	UpdatedBy uint   `json:"updatedBy"`
 
 	Type serverConsts.DiagnoseInterfaceType `json:"type"`
 }

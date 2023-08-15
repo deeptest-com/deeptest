@@ -13,6 +13,7 @@ type Plan struct {
 	ProjectId      uint              `json:"projectId"`
 	SerialNumber   string            `json:"serialNumber"`
 	AdminId        uint              `json:"adminId"` //负责人ID
+	CreateUserId   uint              `json:"createUserId"`
 	UpdateUserId   uint              `json:"updateUserId"`
 	Status         consts.TestStatus `json:"status"`
 	TestStage      consts.TestStage  `json:"testStage"`
@@ -21,6 +22,7 @@ type Plan struct {
 	TestPassRate   string            `gorm:"-" json:"testPassRate"`
 	AdminName      string            `gorm:"-" json:"adminName"`      //负责人姓名
 	UpdateUserName string            `gorm:"-" json:"updateUserName"` //最近更新人姓名
+	CreateUserName string            `gorm:"-" json:"createUserName"` //创建人姓名
 }
 
 func (Plan) TableName() string {

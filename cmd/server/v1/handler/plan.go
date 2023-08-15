@@ -113,6 +113,7 @@ func (c *PlanCtrl) Create(ctx iris.Context) {
 		return
 	}
 
+	req.CreateUserId = multi.GetUserId(ctx)
 	req.ProjectId = uint(projectId)
 	req.Status = consts.Draft
 	po, bizErr := c.PlanService.Create(req)

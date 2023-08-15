@@ -14,7 +14,7 @@ type DiagnoseInterfaceModule struct {
 // Party 脚本
 func (m *DiagnoseInterfaceModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/", m.DiagnoseInterfaceCtrl.Load).Name = "获取测试接口"
 		index.Get("/{id:uint}", m.DiagnoseInterfaceCtrl.Get).Name = "获取测试接口"

@@ -14,6 +14,7 @@
                   code="ENDPOINT-ADD"
                   type="primary"
                   :loading="loading"
+                  action="create"
                   @handle-access="handleCreateEndPoint"/>
               <a-dropdown :trigger="['hover']" :placement="'bottomLeft'">
                 <a class="ant-dropdown-link" @click.prevent>
@@ -104,7 +105,11 @@
                     {{username(record.createUser)}}
                   </div>
                 </template>
-
+                <template #colUpdateUser="{record}">
+                  <div class="customTagsColRender">
+                    {{username(record.updateUser)}}
+                  </div>
+                </template>
                 <template #colPath="{text}">
                   <div class="customPathColRender">
                     <a-tag>{{ text }}</a-tag>
@@ -122,6 +127,8 @@
                               size="small"
                               type="link"
                               :code="menuItem.code"
+                              :dataCreateUser="record.createUser"
+                              :action="menuItem.text ==='删除' ? 'delete' : ''"
                               @handle-access="menuItem.action(record)"/>
                         </a-menu-item>
                       </a-menu>
@@ -237,6 +244,13 @@ const columns = [
     title: '创建人',
     dataIndex: 'createUser',
     slots: {customRender: 'colCreateUser'},
+    width: 100,
+    ellipsis: true
+  },
+  {
+    title: '更新人',
+    dataIndex: 'updateUser',
+    slots: {customRender: 'colUpdateUser'},
     width: 100,
     ellipsis: true
   },

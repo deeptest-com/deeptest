@@ -111,5 +111,6 @@ var (
 		&ProjectMemberAudit{},
 
 		&SwaggerSync{},
+		&SysConfig{},
 	}
 )

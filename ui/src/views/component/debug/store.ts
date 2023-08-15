@@ -754,11 +754,12 @@ const StoreModel: ModuleType = {
         async listServes({ commit }, payload: { serveId: number }) {
             const res = await serverList(payload);
             if (res.code === 0) {
-                (res.data.servers || []).forEach((item: any) => {
+                const servers = (res.data.servers || []).map((item: any) => {
                     item.label = item.environmentName;
                     item.value = item.environmentId;
-                });
-                commit('setServes', res.data.servers);
+                    return item;
+                })
+                commit('setServes', servers);
                 commit('setCurrServe', res.data.currServer);
             }
         }

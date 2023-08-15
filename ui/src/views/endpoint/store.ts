@@ -609,8 +609,8 @@ const StoreModel: ModuleType = {
             });
             if (res.code === 0) {
                 (res.data.servers || []).forEach((item: any) => {
-                    item.label = item.description;
-                    item.value = item.id;
+                    item.label = item.environmentName;
+                    item.value = item.environmentId;
                 })
                 commit('setServerList', res.data.servers || null);
                 commit('setCurrServer', res.data.currServer);

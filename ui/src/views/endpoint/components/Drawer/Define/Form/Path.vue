@@ -72,7 +72,7 @@ const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const serveServers: any = computed<any>(() => store.state.Debug.serves);
 
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
-const currentServerId = computed(() => store.state.Debug.currServe.id || endpointDetail?.value?.serverId || null );
+const currentServerId = computed(() => store.state.Debug.currServe.environmentId || null );
 const currentEnvURL = computed(() => {
   return serveServers.value?.find((item) => {
     return currentServerId.value === item.id;

@@ -755,8 +755,8 @@ const StoreModel: ModuleType = {
             const res = await serverList(payload);
             if (res.code === 0) {
                 (res.data.servers || []).forEach((item: any) => {
-                    item.label = item.description;
-                    item.value = item.id;
+                    item.label = item.environmentName;
+                    item.value = item.environmentId;
                 });
                 commit('setServes', res.data.servers);
                 commit('setCurrServe', res.data.currServer);

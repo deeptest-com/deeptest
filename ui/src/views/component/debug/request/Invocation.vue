@@ -199,7 +199,7 @@ watch(debugData, (newVal) => {
 }, {immediate: true, deep: true});
 
 const serverId = computed(() => {
-  return store.state.Debug.currServe.id || debugData?.value?.serverId || endpointDetail?.value?.serverId || servers.value[0]?.id || 0
+  return store.state.Debug.currServe.environmentId || 0
 });
 
 function changeServer(id) {

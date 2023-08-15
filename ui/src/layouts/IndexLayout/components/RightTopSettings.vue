@@ -1,6 +1,27 @@
 <template>
   <div :class="['indexlayout-top-settings', theme]">
     <div class="user-info">
+
+      <!--  切换Agent -->
+      <a-dropdown placement="bottomRight" v-if="isLyEnv">
+        <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 12px;">
+          <IconSvg type="top-right-web"/>
+          <span class="user-name">{{ currentAgentLabel }}</span>
+          <DownOutlined class="user-icon"/>
+        </a>
+        <template #overlay>
+          <a-menu @click="changeAgentEnv">
+            <a-menu-item v-for="agent in agentUrlOpts" :key="agent.value"
+                         :style="agent.label === currentAgentLabel ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
+              <a-tooltip placement="left" :title="agent.desc">
+                {{ agent.label }}
+              </a-tooltip>
+            </a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
+
+      <!-- ::::用户信息 -->
       <a-dropdown placement="bottomRight">
         <a class="indexlayout-top-usermenu ant-dropdown-link">
           <UserOutlined class="user-icon"/>
@@ -8,7 +29,7 @@
           <DownOutlined class="user-icon"/>
         </a>
         <template #overlay>
-          <a-menu @click="onMenuClick">
+          <a-menu @click="onMenuClick" ：>
             <a-menu-item key="profile">
               <SettingOutlined class="settings"/>
               个人信息
@@ -25,35 +46,19 @@
         </template>
       </a-dropdown>
 
-      <!--  切换Agent -->
-      <a-dropdown placement="bottomRight" v-if="isLyEnv">
-        <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 12px;">
-          <IconSvg type="top-right-web"/>
-          <span class="user-name">{{currentAgentLabel}}</span>
-          <DownOutlined class="user-icon"/>
-        </a>
-        <template #overlay>
-          <a-menu @click="changeAgentEnv">
-              <a-menu-item  v-for="agent in agentUrlOpts" :key="agent.value" :disabled="agent.label === currentAgentLabel">
-                <a-tooltip placement="left" :title="agent.desc">
-                {{agent.label}}
-                </a-tooltip>
-              </a-menu-item>
-          </a-menu>
-        </template>
-      </a-dropdown>
 
       <a-tooltip placement="bottom" @click="toggle">
         <template #title>{{ isFullscreen ? '退出全屏' : '全屏' }}</template>
         <a-button type="text" class="share-btn">
-          <FullscreenOutlined v-if="isFullscreen" :style="{'font-size': '14px','color':theme === 'white-theme' ? '#fff' : '#8A8A8A'}"/>
-          <FullscreenExitOutlined v-if="!isFullscreen" :style="{'font-size': '14px','color':theme === 'white-theme' ? '#fff' : '#8A8A8A'}"/>
+          <FullscreenOutlined v-if="isFullscreen"
+                              :style="{'font-size': '14px','color':theme === 'white-theme' ? '#fff' : '#8A8A8A'}"/>
+          <FullscreenExitOutlined v-if="!isFullscreen"
+                                  :style="{'font-size': '14px','color':theme === 'white-theme' ? '#fff' : '#8A8A8A'}"/>
         </a-button>
       </a-tooltip>
 
 
     </div>
-
   </div>
 </template>
 <script lang="ts">
@@ -135,9 +140,9 @@ export default defineComponent({
     }
 
 
-    function changeAgentEnv(event:any) {
+    function changeAgentEnv(event: any) {
       const {key} = event;
-      window.localStorage.setItem('dp-cache-agent-value',key);
+      window.localStorage.setItem('dp-cache-agent-value', key);
       window.location.reload();
     }
 
@@ -150,6 +155,8 @@ export default defineComponent({
     }
 
     const isLyEnv = process?.env?.VUE_APP_DEPLOY_ENV === 'ly';
+
+
 
     return {
       t,
@@ -164,7 +171,7 @@ export default defineComponent({
       changeAgentEnv,
       agentUrlOpts,
       currentAgentLabel,
-      isLyEnv
+      isLyEnv,
     }
   }
 })

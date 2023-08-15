@@ -112,3 +112,5 @@ func (c *PostConditionCtrl) Move(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+

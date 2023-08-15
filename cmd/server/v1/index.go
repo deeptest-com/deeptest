@@ -69,6 +69,8 @@ type IndexModule struct {
 
 	ConfigModule *router.ConfigModule `inject:""`
 	TestsModule  *router.TestsModule  `inject:""`
+
+	ResponseDefineModule *router.ResponseDefineModule `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -144,6 +146,7 @@ func (m *IndexModule) Party() module.WebModule {
 
 		m.ConfigModule.Party(),
 		m.TestsModule.Party(),
+		m.ResponseDefineModule.Party(),
 	}
 	return module.NewModule(consts.ApiPath, handler, modules...)
 }

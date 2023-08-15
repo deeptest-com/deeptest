@@ -33,6 +33,7 @@ import {
     getInvocationResult,
     getInvocationLog,
     getPreConditionScript,
+    saveResponseDefine,
 } from './service';
 import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
@@ -168,6 +169,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateBody: Action<StateType, StateType>;
 
         changeServer: Action<StateType, StateType>;
+        
+        saveResponseDefine:Action<StateType, StateType>
+
     };
 }
 
@@ -715,6 +719,15 @@ const StoreModel: ModuleType = {
             }
 
             return true;
+        },
+
+        async saveResponseDefine({commit, dispatch, state}, payload: any) {
+            try {
+                await saveResponseDefine(payload);
+                return true
+            } catch (error) {
+                return false;
+            }
         },
     }
 };

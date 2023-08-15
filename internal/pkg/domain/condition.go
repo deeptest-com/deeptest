@@ -81,3 +81,25 @@ type ScriptBase struct {
 func (condition ScriptBase) GetType() consts.ConditionType {
 	return consts.ConditionTypeScript
 }
+
+type ResponseDefineBase struct {
+	ResponseCode string   `json:"responseCode"`
+	Schema       string   `gorm:"-" json:"schema"`
+	Codes        []string `gorm:"-" json:"codes"`
+	Code         string   `json:"code"`
+
+	Output       string              `gorm:"type:longtext;" json:"output"`
+	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	ResultMsg    string              `json:"resultMsg"`
+
+	ConditionId         uint                 `json:"conditionId"`
+	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object
+	ConditionEntityType consts.ConditionType `gorm:"-" json:"conditionEntityType"` // for log only
+	InvokeId            uint                 `json:"invokeId"`                     // for log only
+
+	Disabled bool `json:"disabled"`
+}
+
+func (condition ResponseDefineBase) GetType() consts.ConditionType {
+	return consts.ConditionTypeResponseDefine
+}

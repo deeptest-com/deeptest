@@ -57,11 +57,9 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 			scriptBase.VariableSettings = VariableSettings
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(scriptBase)
-		}
-	}
 
-	for index, condition := range obj.PostConditions {
-		if condition.Type == consts.ConditionTypeCheckpoint {
+		} else if condition.Type == consts.ConditionTypeCheckpoint {
+
 			var checkpointBase domain.CheckpointBase
 			json.Unmarshal(condition.Raw, &checkpointBase)
 			if checkpointBase.Disabled {
@@ -72,7 +70,16 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 			checkpointHelper.GenResultMsg(&checkpointBase)
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(checkpointBase)
+		} else if condition.Type == consts.ConditionTypeResponseDefine {
+			var responseDefineBase domain.ResponseDefineBase
+			json.Unmarshal(condition.Raw, &responseDefineBase)
+			if responseDefineBase.Disabled {
+				continue
+			}
 
+			err = ExecResponseDefine(&responseDefineBase, resp)
+			obj.PostConditions[index].Raw, _ = json.Marshal(responseDefineBase)
+			//openapi.GenResultMsg(&responseDefineBase)
 		}
 	}
 

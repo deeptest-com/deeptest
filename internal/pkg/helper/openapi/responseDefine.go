@@ -1,0 +1,42 @@
+package openapi
+
+import "github.com/aaronchen2k/deeptest/internal/pkg/domain"
+
+func GenDesc() (ret string) {
+	/*
+		nameDesc := ""
+
+		opt := fmt.Sprintf("%v", operator)
+		optName := _i118Utils.Sprintf(opt)
+		if typ == consts.ResponseStatus {
+			nameDesc = _i118Utils.Sprintf("usage")
+			nameDesc = fmt.Sprintf("状态码%s\"%s\"", optName, value)
+		} else if typ == consts.ResponseHeader {
+			nameDesc = fmt.Sprintf("响应头%s%s\"%s\"", expression, optName, value)
+		} else if typ == consts.ResponseBody {
+			nameDesc = fmt.Sprintf("响应体%s\"%s\"", optName, value)
+		} else if typ == consts.Extractor {
+			nameDesc = fmt.Sprintf("提取器%s%s\"%s\"", extractorVariable, optName, value)
+		} else if typ == consts.Judgement {
+			nameDesc = fmt.Sprintf("表达式\"%s\"", expression)
+		}
+	*/
+
+	//ret = nameDesc
+
+	return
+}
+
+func GenResultMsg(po *domain.ResponseDefineBase) {
+	/*
+		desc := GenDesc(po.Type, po.Operator, po.Value, po.Expression, po.ExtractorVariable)
+
+		po.ResultMsg = fmt.Sprintf("%s", desc)
+
+		if po.ResultStatus != consts.Pass {
+			po.ResultMsg += fmt.Sprintf("，实际结果\"%s\"。", po.ActualResult)
+		}
+	*/
+
+	return
+}

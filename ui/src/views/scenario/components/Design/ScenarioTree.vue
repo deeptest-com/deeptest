@@ -174,6 +174,7 @@ const showAddTip = computed(() => {
 
 const treeDataMap = computed<any>(() => store.state.Scenario.treeDataMap)
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult)
+const scenarioProcessorIdForDebug = computed<number>(() => store.state.Scenario.scenarioProcessorIdForDebug)
 const scenarioCount = computed<any>(() => store.state.Scenario.scenarioCount)
 
 watch(scenarioCount, () => {
@@ -200,6 +201,14 @@ watch(() => {
 }, {
   immediate: true
 })
+
+watch(scenarioProcessorIdForDebug, async (newVal) => {
+  console.log('watch scenarioProcessorIdForDebug', scenarioProcessorIdForDebug.value)
+  if (scenarioProcessorIdForDebug.value) {
+    // just select node, not to fire getNode event again
+    selectedKeys.value = [scenarioProcessorIdForDebug.value]
+  }
+}, {immediate: false})
 
 const keywords = ref('');
 watch(keywords, (newVal) => {

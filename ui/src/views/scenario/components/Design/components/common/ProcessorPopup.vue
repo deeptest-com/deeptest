@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, ref} from "vue";
+import {computed, defineProps, defineEmits, inject, ref} from "vue";
 import {ProcessorCategory} from "@/utils/enum";
 import ProcessorCustomCodeEdit from "../proccessors/custom_code/edit.vue";
 import bus from "@/utils/eventBus";

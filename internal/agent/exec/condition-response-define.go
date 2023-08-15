@@ -12,6 +12,9 @@ import (
 )
 
 func ExecResponseDefine(responseDefine *domain.ResponseDefineBase, res domain.DebugResponse) (err error) {
+	if responseDefine.Code == "" {
+		responseDefine.Code = "200"
+	}
 	code, err := strconv.Atoi(responseDefine.Code)
 	if err != nil {
 		panic(err)

@@ -97,7 +97,7 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 
 	dealwithQueryParams(req, httpReq)
 	dealwithHeader(req, httpReq)
-	dealwithCookie(req, httpReq)
+	//dealwithCookie(req, httpReq)
 
 	startTime := time.Now().UnixMilli()
 

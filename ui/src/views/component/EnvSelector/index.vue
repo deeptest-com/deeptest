@@ -1,72 +1,86 @@
 <template>
-    <a-modal
-        title="选择执行环境"
-        :visible="envSelectDrawerVisible"
-        class="env-selector"
-        :closable="true"
-        @cancel="onCancel"
-        @ok="save"
-        width="600px">
-        <div class="env-selector-main">
-            <a-form :label-col="labelCol" :wrapper-col="wrapperCol" :ref="formRef">
-                <a-form-item
-                    label="执行环境"
-                    has-feedback
-                    :rules="[{ required: true, message: '请选择执行环境' }]"
-                    >
-                    <a-select @change="changeEnv" v-model:value="currEnvId" placeholder="请选择" :options="envList" />
-                </a-form-item>
-            </a-form>
-        </div>
-    </a-modal>
+  <a-modal
+      title="选择执行环境"
+      :visible="envSelectDrawerVisible"
+      class="env-selector"
+      :closable="true"
+      @cancel="onCancel"
+      @ok="save"
+      width="600px">
+    <div class="env-selector-main">
+      <a-form :label-col="labelCol" :wrapper-col="wrapperCol" :ref="formRef">
+        <a-form-item
+            label="执行环境"
+            has-feedback
+            :rules="[{ required: true, message: '请选择执行环境' }]">
+          <a-select @change="changeEnv" v-model:value="currEnvId" placeholder="请选择" :options="envList"/>
+        </a-form-item>
+      </a-form>
+    </div>
+  </a-modal>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, reactive, computed, watch } from 'vue';
-import { useStore } from 'vuex';
-import { Form } from 'ant-design-vue';
-import { StateType as ProjectStateType } from "@/store/project";
-import { StateType as ProjectSettingStateType } from "@/views/project-settings/store";
+import {defineProps, defineEmits, ref, reactive, computed, watch} from 'vue';
+import {useStore} from 'vuex';
+import {Form} from 'ant-design-vue';
+import {StateType as ProjectStateType} from "@/store/project";
+import {StateType as ProjectSettingStateType} from "@/views/project-settings/store";
+import {Scenario} from "@/views/scenario/data";
 
-const props = defineProps<{
-    envSelectDrawerVisible: Boolean
-}>();
+const props = defineProps([
+  'envSelectDrawerVisible',
+  'execEnvId'
+])
 
 const useForm = Form.useForm;
 const emits = defineEmits(['onCancel', 'onOk']);
-const store = useStore<{ Plan, ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType }>();
+const store = useStore<{ Plan, ProjectSetting: ProjectSettingStateType, ProjectGlobal: ProjectStateType, Scenario }>();
 const envList = computed<any>(() => store.state.ProjectSetting.envList);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const selectEnvId = computed<any>(() => store.state.ProjectSetting.selectEnvId);
-// activity.esm-bundler.js:1188 Write operation failed: computed value is readonly
-const currEnvId = computed({
-    get() {
-        return selectEnvId.value;
-    },
-    set(val) {
-        return val;
-    }
-});
-const labelCol = { span: 5 };
-const wrapperCol = { span: 17 };
+// const envId: any = computed<Scenario>(() => store.state.Scenario.detailResult?.currEnvId);
+const currEnvId = ref(null);
+
+const labelCol = {span: 5};
+const wrapperCol = {span: 17};
 const formRef = ref();
 
 function onCancel() {
-    emits('onCancel');
+  emits('onCancel');
 }
 
 async function changeEnv(value) {
-    await store.dispatch('ProjectSetting/saveEnvId', value);
+  currEnvId.value = value;
+  await store.dispatch('ProjectSetting/saveEnvId', value);
 }
 
 async function save() {
-    emits('onOk');
+  emits('onOk');
 }
 
-watch(props, (val) => {
-    if (val.envSelectDrawerVisible) {
-        store.dispatch('ProjectSetting/getEnvsList', {
-            projectId: currProject.value.id
-        });
-    }
+watch(() => {
+  return props.envSelectDrawerVisible
+}, (val) => {
+  if (val) {
+    store.dispatch('ProjectSetting/getEnvsList', {
+      projectId: currProject.value.id
+    });
+  }
 })
+
+watch(() => {
+  return [props.execEnvId, selectEnvId.value]
+}, ([val1, val2]) => {
+  if (val1) {
+    currEnvId.value = val1;
+  } else if (!val1 && val2) {
+    currEnvId.value = val2;
+  } else {
+    currEnvId.value = null;
+  }
+}, {
+  immediate: true
+});
+
+
 </script>

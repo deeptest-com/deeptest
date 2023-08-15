@@ -12,7 +12,9 @@
           </template>
         </a-select>
       </div>
-
+      <div id="env-selector">
+        <EnvSelector :show="showBaseUrl()" :server-id="serverId" @change="changeServer" :disabled="usedBy === UsedBy.ScenarioDebug" />
+      </div>
       <div v-if="showBaseUrl()" class="base-url">
         <a-input placeholder="请输入地址"
                  v-model:value="debugData.baseUrl"
@@ -66,18 +68,6 @@
       </div>
     </div>
 
-    <!-- 选择环境 -->
-    <Teleport to="body">
-      <div v-if="showBaseUrl()" class="select-env-fixed" :style="{top: selectEnvTopPosition, right: selectEnvLeftPosition}">
-        <a-select :value="serverId || null" @change="changeServer"
-                  placeholder="请选择环境">
-          <a-select-option v-for="(option, key) in servers" :key="key" :value="option.id">
-            {{ option.description }}
-          </a-select-option>
-        </a-select>
-      </div>
-    </Teleport>
-
     <ContextMenu
         :isShow="showContextMenu"
         :style="contextMenuStyle"
@@ -103,9 +93,9 @@ import {Endpoint} from "@/views/endpoint/data";
 import useVariableReplace from "@/hooks/variable-replace";
 import {getToken} from "@/utils/localToken";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
-import {serverList} from "@/views/project-settings/service";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import EnvSelector from "./config/EnvSelector.vue";
 import {cloneByJSON} from "@/utils/object";
 import {defaultPathParams} from "@/config/constant";
 import {handlePathLinkParams} from "@/utils/dom";
@@ -113,6 +103,7 @@ import {handlePathLinkParams} from "@/utils/dom";
 const store = useStore<{ Debug: Debug, Endpoint,Global }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const servers = computed<any[]>(() => store.state.Debug.serves);
 
 const props = defineProps({
   onSave: {
@@ -145,24 +136,11 @@ const props = defineProps({
   },
 })
 const usedBy = inject('usedBy') as UsedBy
-const containerScrollTop = inject('containerScrollTop') as any;
 const {t} = useI18n();
 const {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} = useVariableReplace('endpointInterfaceUrl')
 
-const servers = ref([] as any[])
 const listServer = async (serveId) => {
-  servers.value = []
-  if (!serveId) {
-    return
-  }
-
-  const res = await serverList({
-    serveId: serveId
-  });
-  if (res.code === 0) {
-    servers.value = res.data
-  }
-  console.log('servers', servers)
+  await store.dispatch('Debug/listServes', { serveId })
 }
 
 const showBaseUrl = () => {
@@ -219,11 +197,11 @@ watch(debugData, (newVal) => {
 }, {immediate: true, deep: true});
 
 const serverId = computed(() => {
-  return debugData?.value?.serverId || endpointDetail?.value?.serverId || servers.value[0]?.id || 0
+  return store.state.Debug.currServe.id || debugData?.value?.serverId || endpointDetail?.value?.serverId || servers.value[0]?.id || 0
 });
 
 function changeServer(id) {
-  store.dispatch('Debug/changeServer', id)
+  store.dispatch('Debug/changeServer', { serverId: id, requestEnvVars: false })
 }
 
 const send = async (e) => {
@@ -291,13 +269,6 @@ const validateInfo = () => {
   return true
 };
 
-const selectEnvTopPosition = ref('0px')
-const selectEnvLeftPosition = ref('0px');
-onMounted(() => {
-  console.log('onMounted')
-  selectEnvTopPosition.value = getSelectEnvTopPosition()
-  selectEnvLeftPosition.value = getSelectEnvLeftPosition()
-})
 onUnmounted(() => {
   console.log('onUnmounted')
 })
@@ -310,37 +281,6 @@ function hasDefinedMethod(method: string) {
     return item.method === method;
   })
 }
-
-const getSelectEnvTopPosition = () => {
-  const elems = document.getElementsByClassName('tab-header-items')
-  const selectEnvEl = document.getElementsByClassName('select-env-fixed');
-  if (elems.length === 0 || selectEnvEl.length === 0) return '0px'
-
-  const rect = elems[0].getBoundingClientRect()
-  const selecEnvRect = selectEnvEl[0].getBoundingClientRect()
-  if (!rect || !selecEnvRect) return '0px'
-
-  const { height = 0, top = 0 } = rect;
-  const { height: envElHeight = 0 } = selecEnvRect;
-
-  return `${top + (height - envElHeight) / 2}px`
-}
-
-const getSelectEnvLeftPosition = () => {
-  const elems = document.getElementsByClassName('tab-header-btns');
-  if (elems.length === 0) {
-    return '22px';
-  }
-  if (elems[0].children.length === 0) {
-    return '22px';
-  }
-  const rect = elems[0].getBoundingClientRect();
-  if (!rect) {
-    return '22px'
-  }
-  const { width = 0 } = rect;
-  return `${width + 16 + 20}px`
-};
 
 function pathUpdated(e) {
   const path = e.target.value.trim();
@@ -379,25 +319,7 @@ function validatePath() {
 //   }
 //   showContextMenu.value = false
 // }
-watch(() => {
-  return containerScrollTop && containerScrollTop.value;
-}, val => {
-  selectEnvTopPosition.value = getSelectEnvTopPosition();
-})
 </script>
-
-<style lang="less">
-.select-env-fixed { // related to body
-  position: fixed;
-  z-index: 1001;
-  right: 22px;
-  width: 120px;
-
-  .ant-select {
-    width: 100%;
-  }
-}
-</style>
 
 <style lang="less" scoped>
 .invocation-main {

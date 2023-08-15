@@ -138,6 +138,7 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		interfaceEntity.ParentID = processor.ParentId
 		interfaceEntity.ProcessorCategory = consts.ProcessorInterface
 		interfaceEntity.ProcessorType = consts.ProcessorInterfaceDefault
+		interfaceEntity.ProcessorInterfaceSrc = debugData.ProcessorInterfaceSrc
 
 		interfaceEntity.PreConditions, _ = s.PreConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId)
 		interfaceEntity.PostConditions, _ = s.PostConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId)
@@ -189,15 +190,15 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		entityPo, _ := s.ScenarioProcessorRepo.GetAssertion(processor)
 		ret = agentExec.ProcessorAssertion{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
-		/*
-			case consts.ProcessorExtractor:
-				entityPo, _ := s.ScenarioProcessorRepo.GetExtractor(processor)
-				ret = agentExec.ProcessorExtractor{}
-				copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
-		*/
+
 	case consts.ProcessorData:
 		entityPo, _ := s.ScenarioProcessorRepo.GetData(processor)
 		ret = agentExec.ProcessorData{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorCustomCode:
+		entityPo, _ := s.ScenarioProcessorRepo.GetCustomCode(processor)
+		ret = agentExec.ProcessorCustomCode{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
 	default:

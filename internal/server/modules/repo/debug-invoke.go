@@ -23,7 +23,7 @@ func (r *DebugInvokeRepo) Save(invocation *model.DebugInvoke) (err error) {
 	return
 }
 
-func (r *DebugInvokeRepo) ChangeProcessOwner(oldProcessId, newProcessId, debugInterfaceId, endpointInterfaceId uint) (err error) {
+func (r *DebugInvokeRepo) ChangeProcessorOwner(oldProcessId, newProcessId, debugInterfaceId, endpointInterfaceId uint) (err error) {
 	values := map[string]interface{}{
 		"scenario_processor_id": newProcessId,
 		"debug_interface_id":    debugInterfaceId,
@@ -31,7 +31,7 @@ func (r *DebugInvokeRepo) ChangeProcessOwner(oldProcessId, newProcessId, debugIn
 	}
 
 	err = r.DB.Model(&model.DebugInvoke{}).
-		Where("scenario_processor_id = ?", oldProcessId).
+		Where("scenario_processor_id = ? AND NOT deleted", oldProcessId).
 		Updates(values).Error
 
 	return

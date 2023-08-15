@@ -114,22 +114,9 @@ func GetPrecision(base float64, step interface{}) (precision int, newStep float6
 	return
 }
 
-func InterfaceToStr(val interface{}) string {
-	str := "n/a"
-
-	switch val.(type) {
-	case int64:
-		str = strconv.FormatInt(val.(int64), 10)
-	case float64:
-		precision, _ := GetPrecision(val.(float64), nil)
-		str = strconv.FormatFloat(val.(float64), 'f', precision, 64)
-	case byte:
-		str = string(val.(byte))
-	case string:
-		str = val.(string)
-	default:
-	}
-	return str
+func InterfaceToStr(val interface{}) (ret string) {
+	ret = fmt.Sprintf("%v", val)
+	return
 }
 
 func ChangePrecision(flt float64, precision int) float64 {

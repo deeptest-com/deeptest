@@ -1,24 +1,26 @@
 package agentExec
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
-	"strings"
 	"time"
 )
 
-type ProcessorPrint struct {
+type ProcessorCustomCode struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntityBase
 
-	RightValue string `json:"rightValue" yaml:"rightValue"`
+	Content string `gorm:"type:longtext;" json:"content" yaml:"content"`
+	Desc    string `json:"desc" yaml:"desc"`
 }
 
-func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (err error) {
 	logUtils.Infof("print entity")
 
 	startTime := time.Now()
@@ -35,12 +37,22 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
-	value := ReplaceVariableValue(entity.RightValue)
-	value = strings.TrimSpace(value)
+	scriptBase := domain.ScriptBase{
+		Content: entity.Content,
+	}
 
-	//processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。", entity.RightValue, value), "<nil>", "空")
-	processor.Result.Summary = fmt.Sprintf("%s", entity.RightValue)
-	detail := map[string]interface{}{"结果": value}
+	err = ExecScript(&scriptBase)
+	scriptHelper.GenResultMsg(&scriptBase)
+	//scriptBase.VariableSettings = VariableSettings
+
+	for _, item := range VariableSettings {
+		SetVariable(processor.Parent.ID, item.Name, item.Value, consts.Public)
+	}
+
+	processor.Result.ScriptsResult = append(processor.Result.ScriptsResult, scriptBase)
+
+	processor.Result.Summary = scriptBase.ResultStatus.String()
+	detail := map[string]interface{}{"结果": scriptBase.ResultMsg}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()

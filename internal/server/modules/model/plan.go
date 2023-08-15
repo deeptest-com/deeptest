@@ -21,6 +21,7 @@ type Plan struct {
 	TestPassRate   string            `gorm:"-" json:"testPassRate"`
 	AdminName      string            `gorm:"-" json:"adminName"`      //负责人姓名
 	UpdateUserName string            `gorm:"-" json:"updateUserName"` //最近更新人姓名
+	CurrEnvId      uint              `json:"currEnvId"`
 }
 
 func (Plan) TableName() string {

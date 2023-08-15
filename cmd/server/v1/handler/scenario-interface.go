@@ -61,11 +61,11 @@ func (c *ScenarioInterfaceCtrl) ResetDebugData(ctx iris.Context) {
 		return
 	}
 
-	debugData, err := c.ScenarioInterfaceService.ResetDebugData(scenarioProcessorId, createBy)
+	newProcessor, err := c.ScenarioInterfaceService.ResetDebugData(scenarioProcessorId, createBy)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: debugData})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: newProcessor})
 }

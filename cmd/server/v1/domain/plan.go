@@ -40,6 +40,7 @@ type PlanAndReportDetail struct {
 	ExecutorName   string            `json:"executorName"`   //执行人姓名
 	ExecTime       *time.Time        `json:"execTime"`       //执行时间
 	ExecEnv        string            `json:"execEnv"`        //执行环境
+	CurrEnvId      uint              `json:"currEnvId"`
 }
 
 type PlanScenariosReqPaginate struct {

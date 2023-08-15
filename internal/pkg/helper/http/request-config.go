@@ -15,6 +15,7 @@ func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
 	ret, _ = cookiejar.New(nil)
 
 	var cookies []*http.Cookie
+
 	mp := map[string]bool{}
 	for _, c := range req.Cookies {
 		key := fmt.Sprintf("%s=%s", c.Name, c.Domain)
@@ -22,11 +23,23 @@ func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
 			continue
 		}
 
-		cookies = append(cookies, &http.Cookie{
-			Name:   c.Name,
-			Value:  _stringUtils.InterfToStr(c.Value),
-			Domain: c.Domain,
-		})
+		//domain := strings.TrimSpace(c.Domain)
+		//if domain == "127.0.0.1" {
+		//	domain = "localhost"
+		//}
+
+		coo := http.Cookie{
+			Name:  c.Name,
+			Value: _stringUtils.InterfToStr(c.Value),
+			//Domain:  domain,
+			Path: c.Path,
+		}
+		if c.ExpireTime != nil {
+			coo.Expires = *c.ExpireTime
+		}
+
+		cookies = append(cookies, &coo)
+
 		mp[key] = true
 	}
 

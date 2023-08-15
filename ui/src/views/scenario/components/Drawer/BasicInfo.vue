@@ -65,7 +65,6 @@ import {Scenario} from "@/views/Scenario/data";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowTreeSelect from '@/components/EditAndShowTreeSelect/index.vue';
-import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import {momentUtc} from '@/utils/datetime';
 
 const props = defineProps({})

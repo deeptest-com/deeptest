@@ -52,7 +52,7 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 		Username:      req.Username,
 		AuthorityId:   "",
 		AuthorityType: multi.AdminAuthority,
-		LoginType:     multi.LoginTypeWeb,
+		LoginType:     multi.LoginTypeApp,
 		AuthType:      multi.AuthPwd,
 		CreationDate:  time.Now().Local().Unix(),
 		ExpiresIn:     multi.RedisSessionTimeoutWeb.Milliseconds(),

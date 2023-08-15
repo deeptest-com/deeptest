@@ -1,13 +1,17 @@
 package agentExec
 
 import (
+	"errors"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
+	"math/rand"
 	"time"
 )
 
@@ -103,10 +107,31 @@ func (entity *ProcessorData) GenerateLoopList() (ret agentDomain.ExecIterator, e
 		logUtils.Infof("Download file %s failed", pth)
 	}
 
-	if entity.ProcessorType == consts.ProcessorDataText {
+	if entity.ProcessorType != consts.ProcessorDataDefault {
+		err = errors.New("wrong data processor")
+		return
+	}
+
+	format := commUtils.GetDataFileFormat(pth)
+	if format == consts.FormatText || format == consts.FormatCsv {
 		ret.Data, err = ReadDataFromText(pth, entity.Separator)
-	} else if entity.ProcessorType == consts.ProcessorDataExcel {
+	} else if format == consts.FormatExcel {
 		ret.Data, err = ReadDataFromExcel(pth)
+	}
+
+	if entity.IsRand {
+		ret.Data = randArr(ret.Data)
+	}
+
+	return
+}
+
+func randArr(arr []domain.VarKeyValuePair) (ret []domain.VarKeyValuePair) {
+	rand.Seed(time.Now().Unix())
+
+	for range arr {
+		rand := rand.Intn(len(arr))
+		ret = append(ret, arr[rand])
 	}
 
 	return

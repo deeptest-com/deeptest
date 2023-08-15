@@ -3,6 +3,7 @@ package service
 import (
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
@@ -42,11 +43,7 @@ func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err erro
 	// gen url
 	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
 
-	notUseBaseUrl := req.UsedBy == consts.DiagnoseDebug ||
-		(req.UsedBy == consts.ScenarioDebug &&
-			req.ProcessorInterfaceSrc == consts.InterfaceSrcDiagnose ||
-			req.ProcessorInterfaceSrc == consts.InterfaceSrcCustom ||
-			req.ProcessorInterfaceSrc == consts.InterfaceSrcCurl)
+	notUseBaseUrl := execUtils.IsUseBaseUrl(req.UsedBy, req.ProcessorInterfaceSrc)
 
 	if notUseBaseUrl {
 		req.BaseRequest.Url = reqUri

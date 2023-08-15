@@ -44,6 +44,7 @@ func SetCookie(processorId uint, cookieName string, cookieValue interface{}, dom
 		Value: cookieValue,
 
 		Domain:     domainName,
+		Path:       "/",
 		ExpireTime: expireTime,
 	}
 

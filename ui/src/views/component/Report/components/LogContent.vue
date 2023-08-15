@@ -2,7 +2,9 @@
   <div class="log-content" v-if="detailList.length">
     <div class="log-content-content">
       <a-descriptions bordered :size="'small'"  >
-        <a-descriptions-item  v-for="detail in detailList" :key="detail.label" :label="detail.label">{{detail.value}}</a-descriptions-item>
+        <a-descriptions-item  v-for="detail in detailList" :key="detail.label" :label="detail.label">
+          {{detail.value}}
+        </a-descriptions-item>
       </a-descriptions>
     </div>
 

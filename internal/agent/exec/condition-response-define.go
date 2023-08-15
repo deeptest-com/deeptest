@@ -34,7 +34,10 @@ func ExecResponseDefine(responseDefine *domain.ResponseDefineBase, res domain.De
 
 	schema := new(responseDefineHelpper.SchemaRef)
 	commonUtils.JsonDecode(responseDefine.Schema, schema)
-	ret := responseDefineHelpper.NewSchema2conv().AssertDataForSchema(schema, res.Content)
+	var obj interface{}
+	commonUtils.JsonDecode(res.Content, &obj)
+	newSchema2conv := responseDefineHelpper.NewSchema2conv()
+	ret := newSchema2conv.AssertDataForSchema(schema, obj)
 	if !ret {
 		responseDefine.ResultStatus = consts.Fail
 		responseDefine.ResultMsg = "返回数据结构与接口定义不一致"

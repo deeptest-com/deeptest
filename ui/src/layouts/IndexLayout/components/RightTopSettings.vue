@@ -5,7 +5,7 @@
       <!--  切换Agent -->
       <a-dropdown placement="bottomRight" v-if="isLyEnv">
         <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 12px;">
-          <IconSvg type="top-right-web"/>
+          <IconSvg type="top-right-web" class="top-right-icon"/>
           <span class="user-name">{{ currentAgentLabel }}</span>
           <DownOutlined class="user-icon"/>
         </a>
@@ -282,5 +282,9 @@ export default defineComponent({
 .settings {
   display: inline-block;
   margin-right: 16px;
+}
+
+.top-right-icon{
+  transform: scale(1.2);
 }
 </style>

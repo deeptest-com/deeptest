@@ -81,7 +81,7 @@ func (s *LdapService) LdapUserInfo(req v1.LoginReq) (userBase v1.UserBase, err e
 		// 搜索到正确的用户,可以解析用户或者使用其他信息
 		for _, entry := range searchResult.Entries {
 			userBase.Name = entry.GetAttributeValue("displayName")
-			userBase.Username = entry.GetAttributeValue("givenName")
+			userBase.Username = entry.GetAttributeValue("uid")
 			userBase.Email = entry.GetAttributeValue("mail")
 			for _, attribute := range entry.Attributes {
 				fmt.Printf("%s: %s\n", attribute.Name, attribute.Values)

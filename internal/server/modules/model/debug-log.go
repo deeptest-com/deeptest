@@ -77,3 +77,12 @@ type ExecLogScript struct {
 func (ExecLogScript) TableName() string {
 	return "biz_exec_log_script"
 }
+
+type ExecLogResponseDefine struct {
+	DebugConditionResponseDefine
+	InvokeId uint `json:"invokeId"`
+}
+
+func (ExecLogResponseDefine) TableName() string {
+	return "biz_exec_log_response_define"
+}

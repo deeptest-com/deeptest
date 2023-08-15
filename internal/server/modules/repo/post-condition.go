@@ -31,7 +31,7 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 	}
 
 	if typ == consts.ConditionCategoryResult {
-		db.Where("entity_type = ?", consts.ConditionTypeCheckpoint)
+		db.Where("entity_type = ? or entity_type = ?", consts.ConditionTypeCheckpoint, consts.ConditionTypeResponseDefine)
 	} else if typ == consts.ConditionCategoryConsole {
 		db.Where("entity_type != ?", consts.ConditionTypeCheckpoint)
 	} else if typ == consts.ConditionCategoryResponse {
@@ -293,7 +293,15 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 
 		} else if typ == consts.ConditionTypeResponseDefine {
 			responseDefine := domain.ResponseDefineBase{}
-			responseDefine.Schema = ""
+
+			entity, _ := r.ResponseDefineRepo.Get(po.EntityId)
+			copier.CopyWithOption(&responseDefine, entity, copier.Option{DeepCopy: true})
+			responseDefine.ConditionId = po.ID
+			responseDefine.ConditionEntityId = po.EntityId
+			responseBody := r.EndpointInterfaceRepo.GetResponse(endpointInterfaceId, entity.Code)
+			responseDefine.Schema = responseBody.SchemaItem.Content
+			responseDefine.Code = entity.Code
+			responseDefine.MediaType = responseBody.MediaType
 
 			raw, _ := json.Marshal(responseDefine)
 			condition := domain.InterfaceExecCondition{
@@ -325,7 +333,7 @@ func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpoi
 		return
 	}
 
-	po, err := r.GetByDebugInterfaceId(debugInterfaceId, by)
+	po, err := r.GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId, by)
 	if err == gorm.ErrRecordNotFound {
 		po, err = r.saveDefault(debugInterfaceId, endpointInterfaceId, by)
 		if err != nil {
@@ -342,9 +350,9 @@ func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpoi
 	return
 }
 
-func (r *PostConditionRepo) GetByDebugInterfaceId(debugInterfaceId uint, by consts.UsedBy) (po model.DebugPostCondition, err error) {
+func (r *PostConditionRepo) GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (po model.DebugPostCondition, err error) {
 	err = r.DB.
-		Where("debug_interface_id=? and used_by=? and entity_type=?", debugInterfaceId, by, consts.ConditionTypeResponseDefine).
+		Where("debug_interface_id=? and endpoint_interface_id=? and used_by=? and entity_type=?", debugInterfaceId, endpointInterfaceId, by, consts.ConditionTypeResponseDefine).
 		Where("NOT deleted").
 		First(&po).Error
 	return

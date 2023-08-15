@@ -96,8 +96,8 @@ type ResponseDefineBase struct {
 	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object
 	ConditionEntityType consts.ConditionType `gorm:"-" json:"conditionEntityType"` // for log only
 	InvokeId            uint                 `json:"invokeId"`                     // for log only
-
-	Disabled bool `json:"disabled"`
+	MediaType           string               `json:"mediaType"`
+	Disabled            bool                 `json:"disabled"`
 }
 
 func (condition ResponseDefineBase) GetType() consts.ConditionType {

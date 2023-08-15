@@ -23,11 +23,12 @@ type DebugInvokeService struct {
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 	ExecConditionService  *ExecConditionService  `inject:""`
 
-	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
-	PostConditionRepo *repo.PostConditionRepo `inject:""`
-	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
-	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
-	ScriptRepo        *repo.ScriptRepo        `inject:""`
+	PreConditionRepo   *repo.PreConditionRepo   `inject:""`
+	PostConditionRepo  *repo.PostConditionRepo  `inject:""`
+	ExtractorRepo      *repo.ExtractorRepo      `inject:""`
+	CheckpointRepo     *repo.CheckpointRepo     `inject:""`
+	ScriptRepo         *repo.ScriptRepo         `inject:""`
+	ResponseDefineRepo *repo.ResponseDefineRepo `inject:""`
 
 	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
 }
@@ -168,6 +169,8 @@ func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err
 		} else if typ == consts.ConditionTypeScript {
 			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
 
+		} else if typ == consts.ConditionTypeResponseDefine {
+			log, _ = s.ResponseDefineRepo.GetLog(condition.ID, uint(invokeId))
 		}
 
 		results = append(results, log)

@@ -293,7 +293,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 			Method:              debugData.Method,
 			EntityCategory:      consts.ProcessorInterface,
 			EntityType:          consts.ProcessorInterfaceDefault,
-			EntityId:            diagnoseInterfaceNode.DebugInterfaceId, // as debugInterfaceId
+			EntityId:            0, // as debugInterfaceId
 			EndpointInterfaceId: debugData.EndpointInterfaceId,
 
 			//Ordr: s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID),
@@ -326,7 +326,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 		srcDebugInterfaceId := debugData.DebugInterfaceId
 		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
 
-		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, debugInterface.ID)
+		processor.EntityId = debugInterface.ID
+		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, processor.EntityId)
 
 		ret = processor
 	}
@@ -362,7 +363,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 			Method:                debugData.Method,
 			EntityCategory:        consts.ProcessorInterface,
 			EntityType:            consts.ProcessorInterfaceDefault,
-			EntityId:              caseNode.DebugInterfaceId, // as debugInterfaceId
+			EntityId:              0, // as debugInterfaceId
 			EndpointInterfaceId:   debugData.EndpointInterfaceId,
 			Ordr:                  order,
 			ParentId:              parentProcessor.ID,
@@ -389,7 +390,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		srcDebugInterfaceId := debugData.DebugInterfaceId
 		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
 
-		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, debugInterface.ID)
+		processor.EntityId = debugInterface.ID
+		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, processor.EntityId)
 
 	}
 

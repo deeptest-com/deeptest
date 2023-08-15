@@ -129,12 +129,14 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 
 		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&interfaceCase)
 		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor, scenarioProcessor.Ordr)
+
 	} else if debugInterface.EndpointInterfaceId > 0 {
 		serveId := uint(0)
 		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name, scenarioProcessor.Ordr)
+
 	}
 
-	s.DebugInvokeRepo.ChangeProcessOwner(scenarioProcessor.ID, newProcessor.ID, newProcessor.EntityId, newProcessor.EndpointInterfaceId)
+	s.DebugInvokeRepo.ChangeProcessorOwner(scenarioProcessor.ID, newProcessor.ID, newProcessor.EntityId, newProcessor.EndpointInterfaceId)
 
 	// must put below, since creation will use its DebugInterface
 	s.DebugInterfaceRepo.Delete(scenarioProcessor.EntityId)

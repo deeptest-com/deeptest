@@ -9,8 +9,7 @@ import bus from "@/utils/eventBus";
 import settings from '@/config/settings';
 import {getToken} from '@/utils/localToken';
 import {getCache} from '@/utils/localCache';
-import {ref} from "vue";
-import {getAgentUrl} from '@/utils/env';
+
 
 export interface ResponseData {
     code: number;
@@ -32,26 +31,9 @@ export const getUrls = () => {
     const isElectron = !!window.require
     const nodeEnv = process.env.NODE_ENV
     console.log(`isElectron=${isElectron}, nodeEnv=${nodeEnv}, locationHref=${window.location.href}`)
-
     const serverUrl = process.env.VUE_APP_API_SERVER
-    // const agentUrl = process.env.VUE_APP_API_AGENT
-    const agentUrl = process.env.VUE_APP_DEPLOY_ENV === 'ly' ? getAgentUrl() : process.env.VUE_APP_API_AGENT;
-    /*
-        if (nodeEnv === 'production' && !isElectron) { // load ui page from server
-            const location = unescape(window.location.href);
-
-            serverUrl = location.split('#')[0].split('index.html')[0];
-            if (!serverUrl.endsWith('/')) {
-                serverUrl += '/'
-            }
-            serverUrl = serverUrl + 'api/v1'
-
-            agentUrl = serverUrl.replace('8085', '8086')
-        }
-    */
+    const agentUrl = process.env.VUE_APP_API_AGENT
     console.log(`serverUrl=${serverUrl}, agentUrl=${agentUrl}`)
-
-
     return {serverUrl, agentUrl}
 }
 
@@ -61,6 +43,7 @@ const request = axios.create({
     withCredentials: true, // 跨域请求时发送cookie
     timeout: 0
 });
+
 const requestAgent = axios.create({
     baseURL: agentUrl
 });
@@ -192,6 +175,10 @@ export default function (config: AxiosRequestConfig): AxiosPromise<any> {
     return request(config).then((response: AxiosResponse) => response.data).catch(error => errorHandler(error));
 }
 
-export function requestToAgent(config: AxiosRequestConfig): AxiosPromise<any> {
+export function requestToAgent(config: AxiosRequestConfig | any): AxiosPromise<any> {
+    // Agent 可代理，根据下发的agentUrl进行代理
+    if(process.env.VUE_APP_DEPLOY_ENV === 'ly' && config.agentUrl){
+        requestAgent.defaults.baseURL = config.agentUrl;
+    }
     return requestAgent(config).then((response: AxiosResponse) => response.data).catch(error => errorHandler(error));
 }

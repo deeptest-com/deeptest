@@ -4,7 +4,7 @@ import {DebugInfo, Interface, OAuth20} from "./data";
 import {isInArray} from "@/utils/array";
 import {ConditionCategory, UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
-
+import {getAgentUrl} from '@/utils/agentEnv';
 const apiPath = 'debugs';
 const apiPathInterface = `${apiPath}/interface`;
 const apiPathInvoke = `${apiPath}/invoke`;
@@ -52,6 +52,7 @@ export async function call(data): Promise<any> {
     // call agent api
     return requestToAgent({
         url: `/${apiAgentExec}/call`,
+        agentUrl: getAgentUrl() || null,
         method: 'POST',
         data,
     });
@@ -104,6 +105,7 @@ export async function parseSpecInLocalAgent(data, targetId): Promise<any> {
     return requestToAgent({
         url: `/${apiSpec}/parseSpec`,
         method: 'POST',
+        agentUrl: getAgentUrl() || null,
         params: {targetId: targetId},
         data: data,
     });

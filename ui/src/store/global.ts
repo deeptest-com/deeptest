@@ -5,7 +5,7 @@ import { TabNavItem } from '@/utils/routes';
 import settings from '@/config/settings';
 import router from '@/config/routes';
 import { getPermissionMenuList } from '@/services/project';
-import {getServerConfig} from "@/services/config";
+import {getConfigByKey, getServerConfig} from "@/services/config";
 
 export interface StateType {
   // 左侧展开收起
@@ -22,6 +22,7 @@ export interface StateType {
   permissionMenuMap: any;
   permissionButtonMap: any;
   serverConfig: any;
+  configInfo: any,
   spinning:boolean;
 }
 
@@ -35,11 +36,13 @@ export interface ModuleType extends StoreModuleType<StateType> {
     setHeadTabNavList: Mutation<StateType>;
     setPermissionMenuAndBtn: Mutation<StateType>;
     setServerConfig: Mutation<StateType>;
+    setConfigByKey: Mutation<StateType>;
     setSpinning: Mutation<StateType>;
   };
   actions: {
     getPermissionList: Action<StateType, StateType>;
     getServerConfig: Action<StateType, StateType>;
+    getConfigByKey: Action<StateType, StateType>;
   };
 }
 
@@ -59,6 +62,7 @@ const initState: StateType = {
   permissionMenuMap: null,
   permissionButtonMap: null,
   serverConfig: {},
+  configInfo: {},
   spinning:false,
 };
 
@@ -91,6 +95,9 @@ const StoreModel: ModuleType = {
     },
     setServerConfig(state, payload) {
       state.serverConfig = payload
+    },
+    setConfigByKey(state, payload) {
+      state.configInfo[payload.key] = payload.value
     },
     setSpinning(state, payload) {
       state.spinning = payload
@@ -125,6 +132,16 @@ const StoreModel: ModuleType = {
 
       if (result.code === 0) {
         commit('setServerConfig', result.data);
+      }
+    },
+    async getConfigByKey({ commit },payload) {
+      const result = await getConfigByKey(payload.key);
+      if (result.code === 0) {
+        commit('setConfigByKey',{
+          key:payload.key,
+          value:JSON.parse(result.data ||null)
+        });
+        return JSON.parse(result.data ||null);
       }
     }
   }

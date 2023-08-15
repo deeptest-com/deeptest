@@ -29,6 +29,7 @@ type EndpointCaseDetail struct {
 type EndpointCaseSaveReq struct {
 	ID         uint   `json:"id"`
 	Name       string `json:"name"`
+	Method     string `json:"method"`
 	Desc       string `json:"desc"`
 	EndpointId uint   `json:"endpointId"`
 	ServeId    uint   `json:"serveId"`

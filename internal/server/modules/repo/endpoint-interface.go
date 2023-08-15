@@ -99,10 +99,22 @@ func (r *EndpointInterfaceRepo) ListIdByEndpoints(endpointIds []uint) (ids []uin
 	return
 }
 
-func (r *EndpointInterfaceRepo) Get(interfaceId uint) (field model.EndpointInterface, err error) {
+func (r *EndpointInterfaceRepo) Get(interfaceId uint) (po model.EndpointInterface, err error) {
 	err = r.DB.
 		Where("id=? AND NOT deleted", interfaceId).
-		First(&field).Error
+		First(&po).Error
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetByMethod(endpointId uint, method consts.HttpMethod) (debugInterfaceId, endpointInterfaceId uint) {
+	var po model.EndpointInterface
+
+	r.DB.Where("endpoint_id=? AND method=? AND  NOT deleted", endpointId, method).
+		First(&po)
+
+	endpointInterfaceId = po.ID
+	debugInterfaceId = po.DebugInterfaceId
+
 	return
 }
 

@@ -10,18 +10,11 @@
       }"
     >
       <a-select
-        :value="serverId || null"
-        @change="$emit('change')"
+        :value="currServerId"
+        :options="servers"
+        @change="e => $emit('change', e)"
         placeholder="请选择环境"
-      >
-        <a-select-option
-          v-for="(option, key) in servers"
-          :key="key"
-          :value="option.id"
-        >
-          {{ option.description }}
-        </a-select-option>
-      </a-select>
+      />
     </div>
   </Teleport>
 </template>
@@ -49,6 +42,7 @@ const containerScrollTop = inject("containerScrollTop") as any;
 
 const store = useStore<{ Debug: Debug; Endpoint; Global }>();
 const servers = computed<any[]>(() => store.state.Debug.serves);
+const currServerId = computed<any[]>(() => store.state.Debug.currServe.environmentId || null);
 
 const selectEnvTopPosition = ref("0px");
 const selectEnvLeftPosition = ref("0px");

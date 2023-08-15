@@ -13,3 +13,8 @@ type ExtractorConditionQuickCreateReq struct {
 	Config domain.ExtractorBase `json:"conf"`
 	Info   domain.DebugInfo     `json:"info"`
 }
+
+type CookieConditionQuickCreateReq struct {
+	Config domain.CookieBase `json:"conf"`
+	Info   domain.DebugInfo  `json:"info"`
+}

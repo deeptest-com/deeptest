@@ -26,6 +26,7 @@ type DebugInvokeService struct {
 	PreConditionRepo   *repo.PreConditionRepo   `inject:""`
 	PostConditionRepo  *repo.PostConditionRepo  `inject:""`
 	ExtractorRepo      *repo.ExtractorRepo      `inject:""`
+	CookieRepo         *repo.CookieRepo         `inject:""`
 	CheckpointRepo     *repo.CheckpointRepo     `inject:""`
 	ScriptRepo         *repo.ScriptRepo         `inject:""`
 	ResponseDefineRepo *repo.ResponseDefineRepo `inject:""`
@@ -195,13 +196,15 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 	}
 
 	postConditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryConsole)
-
 	for _, condition := range postConditions {
 		typ := condition.EntityType
 		var log interface{}
 
 		if typ == consts.ConditionTypeExtractor {
 			log, _ = s.ExtractorRepo.GetLog(condition.ID, uint(invokeId))
+
+		} else if typ == consts.ConditionTypeCookie {
+			log, _ = s.CookieRepo.GetLog(condition.ID, uint(invokeId))
 
 		} else if typ == consts.ConditionTypeCheckpoint {
 			log, _ = s.CheckpointRepo.GetLog(condition.ID, uint(invokeId))

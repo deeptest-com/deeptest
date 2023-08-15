@@ -2,7 +2,9 @@
   <div class="invocation-main">
     <div class="toolbar">
       <div v-if="showMethodSelection" class="select-method">
-        <a-select class="select-method" v-model:value="debugData.method">
+        <a-select class="select-method"
+                  v-model:value="debugData.method"
+                  :disabled="usedBy === UsedBy.CaseDebug">
           <template v-for="method in Methods">
             <a-select-option v-if="hasDefinedMethod(method)"
                              :key="method"
@@ -23,12 +25,11 @@
 
       <div class="url"
            :class="[isPathValid  ? '' :  'dp-field-error' ]">
-        <a-tooltip placement="bottom" :visible="!isPathValid"  overlayClassName="dp-tip-small" :title="'请输入合法的路径'">
+        <a-tooltip placement="bottom" :visible="!isPathValid"  overlayClassName="dp-tip-small" :title="'请输入合法的路径,以http(s)开头'">
           <a-input placeholder="请输入路径"
                    v-model:value="debugData.url"
                    @change="pathUpdated"
                    :disabled="urlDisabled"
-                   @blur="blur"
                    :title="urlDisabled ? '请在接口定义中修改' : ''"/>
         </a-tooltip>
       </div>
@@ -42,7 +43,7 @@
       </div>
 
       <div class="save">
-        <a-button trigger="click"  class="dp-bg-light"
+        <a-button trigger="click" class="dp-bg-light"
                   @click="save"
                   :disabled="!isPathValid">
           <icon-svg class="icon dp-icon-with-text" type="save" />
@@ -88,7 +89,10 @@ import {Methods, ProcessorInterfaceSrc, UsedBy} from "@/utils/enum";
 import {prepareDataForRequest} from "@/views/component/debug/service";
 import {NotificationKeyCommon} from "@/utils/const"
 
-import {StateType as Debug} from "@/views/component/debug/store";
+import {StateType as GlobalStateType} from "@/store/global";
+import {StateType as DebugStateType} from "@/views/component/debug/store";
+import {StateType as EndpointStateType} from "@/views/endpoint/store";
+
 import {Endpoint} from "@/views/endpoint/data";
 import useVariableReplace from "@/hooks/variable-replace";
 import {getToken} from "@/utils/localToken";
@@ -96,11 +100,9 @@ import ContextMenu from "@/views/component/debug/others/variable-replace/Context
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import EnvSelector from "./config/EnvSelector.vue";
-import {cloneByJSON} from "@/utils/object";
-import {defaultPathParams} from "@/config/constant";
 import {handlePathLinkParams} from "@/utils/dom";
 
-const store = useStore<{ Debug: Debug, Endpoint,Global }>();
+const store = useStore<{ Debug: DebugStateType, Endpoint: EndpointStateType, Global: GlobalStateType }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const servers = computed<any[]>(() => store.state.Debug.serves);
@@ -197,7 +199,7 @@ watch(debugData, (newVal) => {
 }, {immediate: true, deep: true});
 
 const serverId = computed(() => {
-  return store.state.Debug.currServe.id || debugData?.value?.serverId || endpointDetail?.value?.serverId || servers.value[0]?.id || 0
+  return store.state.Debug.currServe.environmentId || 0
 });
 
 function changeServer(id) {

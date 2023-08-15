@@ -38,44 +38,15 @@ func (s *EndpointCaseService) Get(id int) (ret model.EndpointCase, err error) {
 	return
 }
 
-func (s *EndpointCaseService) Save(req serverDomain.EndpointCaseSaveReq) (casePo model.EndpointCase, err error) {
-	s.CopyValueFromRequest(&casePo, req)
-
-	endpoint, err := s.EndpointRepo.Get(req.EndpointId)
-
-	var server model.ServeServer
-	if endpoint.ServerId > 0 {
-		server, _ = s.ServeServerRepo.Get(endpoint.ServerId)
-	} else {
-		server, _ = s.ServeServerRepo.GetDefaultByServe(endpoint.ServeId)
+func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (casePo model.EndpointCase, err error) {
+	debugInterfaceId, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, consts.HttpMethod(req.Method))
+	if debugInterfaceId > 0 {
+		req.DebugData, err = s.DebugInterfaceService.GetDebugDataFromDebugInterface(debugInterfaceId)
+	} else if endpointInterfaceId > 0 {
+		req.DebugData, err = s.DebugInterfaceService.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
 	}
 
-	// create new DebugInterface
-	url := req.DebugData.Url
-	if url == "" {
-		url = endpoint.Path
-	}
-
-	debugInterface := model.DebugInterface{
-		InterfaceBase: model.InterfaceBase{
-			Name: req.Name,
-
-			InterfaceConfigBase: model.InterfaceConfigBase{
-				Method: consts.GET,
-				Url:    url,
-			},
-		},
-		ServeId:  endpoint.ServeId,
-		ServerId: server.ID,
-		BaseUrl:  server.Url,
-	}
-
-	err = s.DebugInterfaceRepo.Save(&debugInterface)
-
-	casePo.ProjectId = endpoint.ProjectId
-	casePo.ServeId = endpoint.ServeId
-	casePo.DebugInterfaceId = debugInterface.ID
-	err = s.EndpointCaseRepo.Save(&casePo)
+	casePo, err = s.SaveFromDebugInterface(req)
 
 	if casePo.DebugInterfaceId > 0 {
 		values := map[string]interface{}{

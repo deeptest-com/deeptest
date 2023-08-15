@@ -58,7 +58,7 @@ func (c *EndpointCaseCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
 
-// Save
+// Create
 // @Tags	设计器/接口用例
 // @summary	保存用例
 // @accept 	application/json
@@ -69,7 +69,7 @@ func (c *EndpointCaseCtrl) Get(ctx iris.Context) {
 // @Param 	EndpointCaseSaveReq		body	serverDomain.EndpointCaseSaveReq	true	"保存用例的请求参数"
 // @success	200	{object}	_domain.Response{data=[]model.EndpointCase}
 // @Router	/api/v1/endpoints/cases/{id}	[post]
-func (c *EndpointCaseCtrl) Save(ctx iris.Context) {
+func (c *EndpointCaseCtrl) Create(ctx iris.Context) {
 	req := serverDomain.EndpointCaseSaveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -80,7 +80,7 @@ func (c *EndpointCaseCtrl) Save(ctx iris.Context) {
 	req.CreateUserName = multi.GetUsername(ctx)
 	req.CreateUserId = multi.GetUserId(ctx)
 
-	po, err := c.EndpointCaseService.Save(req)
+	po, err := c.EndpointCaseService.Create(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

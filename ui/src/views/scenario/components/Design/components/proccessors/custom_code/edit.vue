@@ -1,6 +1,7 @@
 <template>
   <div class="processor_custom_code-edit dp-processors-container">
     <ProcessorHeader v-if="fullscreen"/>
+    <CustomCodeHeader v-if="fullscreen" mode="fullscreen" @update-screen="emits('cancel')" />
     <div class="content">
       <div class="codes">
         <MonacoEditor theme="vs" language="typescript" class="editor"
@@ -27,25 +28,22 @@
         </div>
       </div>
     </div>
-
-    <a-row class="buttons" v-if="fullscreen">
-      <a-col offset="2">
-        <a-button type="primary" @click.prevent="save">保存</a-button>
-      </a-col>
-    </a-row>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch, inject} from "vue";
+import {computed, ref, watch, inject, defineEmits} from "vue";
 import {useStore} from "vuex";
 import {message, notification} from "ant-design-vue";
 import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
+import CustomCodeHeader from './header.vue';
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef: any = computed<boolean>(() => store.state.Scenario.nodeData);
+
+const emits = defineEmits(['cancel']);
 
 const fullscreen = inject('fullscreen');
 

@@ -11,7 +11,7 @@
     >
       <a-select
         :value="serverId || null"
-        @change="$emit('change')"
+        @change="e => $emit('change', e)"
         placeholder="请选择环境"
       >
         <a-select-option

@@ -13,6 +13,8 @@ type ConfigCtrl struct {
 	ConfigService *service.ConfigService `inject:""`
 }
 
+const token = "a1bc**2d&&423qvdw"
+
 //Get
 // @Tags	配置
 // @summary	获取服务端配置
@@ -45,6 +47,11 @@ func (c *ConfigCtrl) GetValue(ctx iris.Context) {
 }
 
 func (c *ConfigCtrl) Save(ctx iris.Context) {
+	headerToken := ctx.Request().Header.Get("token")
+	if headerToken != token {
+		ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Msg: _domain.AuthActionErr.Msg})
+		return
+	}
 	req := model.SysConfig{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {

@@ -35,13 +35,13 @@ func (c *ConfigCtrl) GetValue(ctx iris.Context) {
 		return
 	}
 
-	config, err := c.ConfigService.Get(key)
+	value, err := c.ConfigService.Get(key)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: config.Value})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: value})
 }
 
 func (c *ConfigCtrl) Save(ctx iris.Context) {

@@ -846,5 +846,3 @@ func (r *EndpointInterfaceRepo) GetResponseCodes(endpointInterfaceId uint) (code
 
 	return
 }
-
-func (r *EndpointInterfaceRepo) get

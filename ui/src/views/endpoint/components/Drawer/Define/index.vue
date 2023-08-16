@@ -13,7 +13,9 @@
         </template>YAML
       </a-button>
     </div>
+
     <EndpointForm v-if="showMode === 'form'"/>
+
     <div class="endpoint-code" v-if="showMode === 'code'">
       <MonacoEditor
           class="editor"

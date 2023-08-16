@@ -5,7 +5,7 @@
                      :items="baseInfoList || []"
                      @handleBtnClick="genReport"/>
     <StatisticTable :data="statisticData" :value="statInfo"/>
-    <LogTreeView :treeData="scenarioList"/>
+    <LogTreeView :treeData="scenarioList" :isSingleScenario="true"/>
   </div>
 </template>
 <script setup lang="ts">

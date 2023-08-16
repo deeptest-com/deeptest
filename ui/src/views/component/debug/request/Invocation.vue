@@ -265,6 +265,9 @@ onUnmounted(() => {
 })
 
 function hasDefinedMethod(method: string) {
+  if (usedBy !== UsedBy.CaseDebug)
+    return true
+    
   return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })

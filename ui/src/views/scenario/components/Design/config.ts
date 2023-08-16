@@ -391,10 +391,22 @@ export const menuKeyMapToProcessorCategory = {
 
 
 /**
- * 展示目录竖线的场景编排类型
+ * 展示目录竖线的场景编排类型，即目录类型
  * */
 export const showLineScenarioType = [
-    // 接口
+    'processor_group_default',
+    'processor_loop_time',
+    'processor_loop_until',
+    'processor_loop_range',
+    'processor_loop_in',
+    'processor_logic_if',
+    'processor_data_default',
+]
+
+/**
+ * 用于在场景执行日志在是否展示箭头
+ * */
+export const showArrowScenarioType = [
     'processor_interface_default',
     'processor_group_default',
     'processor_loop_time',
@@ -402,9 +414,28 @@ export const showLineScenarioType = [
     'processor_loop_range',
     'processor_loop_in',
     'processor_logic_if',
-    // 数据处理
+    'processor_logic_else',
     'processor_data_default',
+    'processor_custom_code',
 ]
+
+/**
+ * 需要展示执行状态的场景编排类型
+ * */
+export const showScenarioExecStatus = {
+    'processor_logic_if': {
+        'success': 'TURE',
+        'fail': 'FALSE',
+    },
+    'processor_custom_code': {
+        'success': '执行成功',
+        'fail': '执行失败'
+    },
+    'processor_assertion_default': {
+        'success': '通过',
+        'fail': '不通过'
+    }
+}
 
 /**
  * 各节点类型对应的文案
@@ -453,11 +484,9 @@ export const scenarioTypeMapToText = {
  * 场景绑定接口的类型对应的文案
  * */
 export const scenarioTypeMapToBindText = {
-
     'define': '绑定接口',
     'case': '绑定接口用例',
     'diagnose': '绑定快捷调试',
     // 'custom': '自定义请求导入',
     // 'curl': 'cURL导入',
-
 }

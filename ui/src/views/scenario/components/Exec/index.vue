@@ -100,7 +100,7 @@ const OnWebSocketMsg = (data: any) => {
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
 
-  console.log('832222wsMsg', wsMsg);
+  console.log('wsMsg***', wsMsg);
 
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
@@ -122,7 +122,6 @@ const OnWebSocketMsg = (data: any) => {
   // 更新【场景中每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)
-
     updateExecLogs(log);
   }
 

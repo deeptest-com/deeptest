@@ -8,7 +8,7 @@
     </a-col>
 
     <a-col :span="22">
-      <!-- 请求方法定义 --> ={{selectedMethod}}=
+      <!-- 请求方法定义 -->
       <a-radio-group v-model:value="selectedMethod" button-style="outline">
         <a-radio-button
             v-for="method in requestMethodOpts"

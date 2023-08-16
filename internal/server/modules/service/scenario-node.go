@@ -446,7 +446,9 @@ func (s *ScenarioNodeService) deleteScenarioNodeAndChildren(nodeId uint) (err er
 func (s *ScenarioNodeService) disableScenarioNodeAndChildren(nodeId uint) (err error) {
 	node, err := s.ScenarioNodeRepo.Get(nodeId)
 	srcScenarioNextNode, nextNodeErr := s.ScenarioNodeRepo.GetNextNode(nodeId)
+
 	err = s.ScenarioNodeRepo.DisableWithChildren(nodeId)
+
 	if !node.Disabled && nextNodeErr == nil && srcScenarioNextNode.EntityType == consts.ProcessorLogicElse {
 		err = s.ScenarioNodeRepo.DeleteWithChildren(srcScenarioNextNode.ID)
 	}

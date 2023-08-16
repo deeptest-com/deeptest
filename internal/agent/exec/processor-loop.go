@@ -88,6 +88,10 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
 
 		for _, child := range processor.Children {
+			if child.Disable {
+				continue
+			}
+
 			(*child).Run(session)
 
 			if child.Result.WillBreak {
@@ -131,12 +135,21 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		}
 
 		for _, child := range processor.Children {
+			if child.Disable {
+				continue
+			}
+
 			(*child).Run(session)
 
 			if child.Result.WillBreak {
 				logUtils.Infof("break")
 				goto LABEL
 			}
+		}
+
+		if index >= consts.MaxLoopTimeForInterfaceTest {
+			logUtils.Infof("break for reach MaxLoopTimeForInterfaceTest")
+			goto LABEL
 		}
 	}
 LABEL:

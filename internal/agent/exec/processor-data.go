@@ -80,6 +80,10 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 		SetVariable(processor.ID, iterator.VariableName, item, consts.Public)
 
 		for _, child := range processor.Children {
+			if child.Disable {
+				continue
+			}
+
 			child.Run(session)
 		}
 	}

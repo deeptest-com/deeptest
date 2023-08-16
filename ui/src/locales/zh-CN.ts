@@ -171,8 +171,8 @@ export default {
     'block': '阻塞',
     'unknown': '位置',
 
-    'tips_expression': '可以引用形如${name}的变量。',
-    'tips_expression_bool': '可以引用形如${name}的变量，需返回一个布尔值。',
+    'tips_expression': '字符串请用英文单引号括起，可以引用形如${name}的变量。',
+    'tips_expression_bool': '字符串请用英文单引号括起，可以引用形如${name}的变量，需返回一个布尔值。',
 
     'extractor_err': '提取失败',
     'extractor_err_short': '失败',

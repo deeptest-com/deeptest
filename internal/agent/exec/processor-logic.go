@@ -43,7 +43,11 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 		if err != nil {
 			pass = false
 		} else {
-			pass = result.(bool)
+			var ok bool
+			pass, ok = result.(bool)
+			if !ok {
+				pass = false
+			}
 		}
 		detail["结果"] = pass
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
@@ -60,6 +64,10 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 
 	if pass {
 		for _, child := range processor.Children {
+			if child.Disable {
+				continue
+			}
+
 			child.Run(session)
 		}
 	}

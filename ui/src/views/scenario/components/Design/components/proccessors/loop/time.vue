@@ -13,6 +13,7 @@
 
           <a-form-item label="次数" v-bind="validateInfos.times">
             <a-input-number v-model:value="modelRef.times"
+                            :min="1"
                             style="width:200px"
                      @blur="validate('times', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
@@ -95,7 +96,7 @@ const wrapperCol = { span: 16 }
 
 <style lang="less" scoped>
 .processor_loop_time-main {
-  
+
   .icons {
     text-align: right;
     line-height: 32px;

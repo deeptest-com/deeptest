@@ -50,7 +50,7 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	} else if entity.ProcessorType == consts.ProcessorVariableClear {
-		ClearVariable(processor.ID, entity.VariableName)
+		ClearVariable(processor.ParentId, entity.VariableName)
 		processor.Result.Summary = fmt.Sprintf("\"%s\"成功。", entity.VariableName)
 	}
 

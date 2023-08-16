@@ -2,6 +2,7 @@ package agentUtils
 
 import (
 	"errors"
+	"fmt"
 	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"strconv"
@@ -16,8 +17,16 @@ func GenerateRangeItems(start, end, step interface{}, precision int, isRand bool
 		ret = valueUtils.GenerateFloatItems(start.(float64), end.(float64), step.(float64), isRand, precision, 1, "")
 
 	} else if typ == consts.String {
-		ret = valueUtils.GenerateByteItems(start.(byte), end.(byte), step.(int), isRand, 1, "")
+		startStr := fmt.Sprintf("%v", start)
+		endStr := fmt.Sprintf("%v", end)
 
+		if len(startStr) == 1 && len(endStr) == 1 { // is char
+			startChar := startStr[0]
+			endChar := endStr[0]
+			stepInt, _ := strconv.ParseInt(fmt.Sprintf("%v", step), 10, 32)
+
+			ret = valueUtils.GenerateByteItems(startChar, endChar, int(stepInt), isRand, 1, "")
+		}
 	}
 
 	return

@@ -799,6 +799,7 @@ const StoreModel: ModuleType = {
         async saveResponseDefine({commit, dispatch, state}, payload: any) {
             try {
                 await saveResponseDefine(payload);
+                state.debugData.responseDefine.entityData.disabled = payload.disabled
                 return true
             } catch (error) {
                 return false;

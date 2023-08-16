@@ -1,6 +1,8 @@
 package domain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type ExtractorBase struct {
 	Src  consts.ExtractorSrc  `json:"src"`
@@ -125,6 +127,7 @@ type ResponseDefineBase struct {
 	InvokeId            uint                 `json:"invokeId"`                     // for log only
 	MediaType           string               `json:"mediaType"`
 	Disabled            bool                 `json:"disabled"`
+	Component           string               `gorm:"-" json:"component"`
 }
 
 func (condition ResponseDefineBase) GetType() consts.ConditionType {

@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
@@ -342,6 +343,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			responseDefine.Schema = responseBody.SchemaItem.Content
 			responseDefine.Code = entity.Code
 			responseDefine.MediaType = responseBody.MediaType
+			responseDefine.Component = commonUtils.JsonEncode(r.ResponseDefineRepo.Components(endpointInterfaceId))
 
 			raw, _ := json.Marshal(responseDefine)
 			condition := domain.InterfaceExecCondition{
@@ -385,6 +387,7 @@ func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpoi
 
 	entityData, _ := r.ResponseDefineRepo.Get(po.EntityId)
 	entityData.Codes = r.EndpointInterfaceRepo.GetResponseCodes(endpointInterfaceId)
+	//entityData.Component = r.ResponseDefineRepo.Components(endpointInterfaceId)
 	condition.EntityData = entityData
 
 	return

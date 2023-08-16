@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	responseDefineHelpper "github.com/aaronchen2k/deeptest/internal/pkg/helper/responeDefine"
+	responseDefineHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/responeDefine"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"strings"
 
@@ -35,12 +35,15 @@ func ExecResponseDefine(responseDefine *domain.ResponseDefineBase, res domain.De
 		return
 	}
 
-	schema := new(responseDefineHelpper.SchemaRef)
+	schema := new(responseDefineHelper.SchemaRef)
 	commonUtils.JsonDecode(responseDefine.Schema, schema)
 	var obj interface{}
 	commonUtils.JsonDecode(res.Content, &obj)
-	newSchema2conv := responseDefineHelpper.NewSchema2conv()
-	ret := newSchema2conv.AssertDataForSchema(schema, obj)
+	schema2conv := responseDefineHelper.NewSchema2conv()
+	var component responseDefineHelper.Components
+	commonUtils.JsonDecode(responseDefine.Component, &component)
+	schema2conv.Components = component
+	ret := schema2conv.AssertDataForSchema(schema, obj)
 	if !ret {
 		responseDefine.ResultStatus = consts.Fail
 		responseDefine.ResultMsg = "返回数据结构与接口定义不一致"

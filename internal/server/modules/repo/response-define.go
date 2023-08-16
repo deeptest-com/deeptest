@@ -3,13 +3,18 @@ package repo
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	responseDefineHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/responeDefine"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
 
 type ResponseDefineRepo struct {
-	DB *gorm.DB `inject:""`
+	DB                    *gorm.DB               `inject:""`
+	ServeRepo             *ServeRepo             `inject:""`
+	EndpointRepo          *EndpointRepo          `inject:""`
+	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
 }
 
 func (r *ResponseDefineRepo) Get(id uint) (responseDefine model.DebugConditionResponseDefine, err error) {
@@ -75,4 +80,24 @@ func (r *ResponseDefineRepo) GetLog(conditionId, invokeId uint) (ret model.ExecL
 	ret.ConditionEntityType = consts.ConditionTypeResponseDefine
 
 	return
+}
+
+func (r *ResponseDefineRepo) Components(endpointInterfaceId uint) (components responseDefineHelper.Components) {
+	endpointInterface, _ := r.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	endpoint, _ := r.EndpointRepo.Get(endpointInterface.EndpointId)
+
+	components = responseDefineHelper.Components{}
+	result, err := r.ServeRepo.GetSchemasByServeId(endpoint.ServeId)
+	if err != nil {
+		return
+	}
+
+	for _, item := range result {
+		var schema responseDefineHelper.SchemaRef
+		_commUtils.JsonDecode(item.Content, &schema)
+		components[item.Ref] = schema
+	}
+
+	return
+
 }

@@ -1,7 +1,8 @@
-package responseDefineHelpper
+package responseDefineHelper
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
 	"math/rand"
 	"reflect"
@@ -9,8 +10,9 @@ import (
 )
 
 type SchemaRef struct {
-	Ref   string
-	Value *Schema
+	Ref    string  `json:"ref,omitempty" yaml:"ref,omitempty"`
+	RefExt string  `json:"$ref,omitempty" yaml:"$ref,omitempty"`
+	Value  *Schema `json:"value,omitempty" yaml:"value,omitempty"`
 }
 type SchemaRefs []*SchemaRef
 type Schemas map[string]*SchemaRef
@@ -29,8 +31,18 @@ type Schema struct {
 }
 
 func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
+
+	//return jsoninfo.MarshalRef(schemaRef.Ref, schemaRef.Value)
 	schema := Schema{}
-	schema = *schemaRef.Value
+	if schemaRef.Ref == "" {
+		schemaRef.Ref = schemaRef.RefExt
+	}
+	if schemaRef.Ref != "" {
+		schema.Ref = schemaRef.Ref
+	} else {
+		schema = *schemaRef.Value
+	}
+
 	res, err = json.Marshal(schema)
 	if err != nil {
 		return
@@ -41,7 +53,10 @@ func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
 
 func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
 	var schema Schema
+	//x := string(data)
+	//fmt.Println(x)
 	err := json.Unmarshal(data, &schema)
+	//fmt.Println(err)
 	if err != nil {
 		return err
 	}
@@ -51,6 +66,7 @@ func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
 	}
 	schemaRef.Ref = schema.Ref
 	schemaRef.Value = &schema
+
 	return nil
 }
 
@@ -143,16 +159,16 @@ func (s *schema2conv) CombineSchemas(schema *SchemaRef) {
 
 	if len(schema.Value.AllOf) >= 1 {
 		combineSchemas = schema.Value.AllOf
-		schema.Value.AllOf = nil
+		fmt.Println(combineSchemas)
 	} else {
 		if len(schema.Value.AnyOf) >= 1 {
 			rand.Seed(time.Now().UnixNano())
 			n := rand.Intn(len(schema.Value.AnyOf)-1) + 1
 			combineSchemas = s.anyMoreSchemas(schema.Value.AnyOf, n)
-			schema.Value.AnyOf = nil
+
 		} else if len(schema.Value.OneOf) >= 1 {
 			combineSchemas = s.anyMoreSchemas(schema.Value.OneOf, 1)
-			schema.Value.OneOf = nil
+
 		}
 	}
 
@@ -187,6 +203,10 @@ func (s *schema2conv) CombineSchemas(schema *SchemaRef) {
 
 	}
 
+	schema.Value.AllOf = nil
+	schema.Value.AnyOf = nil
+	schema.Value.OneOf = nil
+
 }
 
 func (s *schema2conv) anyMoreSchemas(schemas SchemaRefs, n int) (combineSchemas SchemaRefs) {
@@ -216,20 +236,22 @@ func (s *schema2conv) AssertDataForSchema(schema *SchemaRef, data interface{}) b
 }
 
 func (s *schema2conv) Equal(schema1, schema2 *SchemaRef) (ret bool) {
-	ref1 := schema1.Ref
+	//ref1 := schema1.Ref
 	if component, ok := s.Components[schema1.Ref]; ok {
-		s.sets[ref1]++
+		//s.sets[ref1]++
 		schema1 = &component
 	}
 
-	ref2 := schema2.Ref
-	if component, ok := s.Components[schema2.Ref]; ok {
-		s.sets[ref2]++
-		schema2 = &component
-	}
+	//ref2 := schema2.Ref
+	/*
+		if component, ok := s.Components[schema2.Ref]; ok {
+			//s.sets[ref2]++
+			schema2 = &component
+		}
+	*/
 
 	s.CombineSchemas(schema1)
-	s.CombineSchemas(schema2)
+	//	s.CombineSchemas(schema2)
 
 	if schema1.Value.Type != schema2.Value.Type {
 		return false
@@ -237,15 +259,19 @@ func (s *schema2conv) Equal(schema1, schema2 *SchemaRef) (ret bool) {
 
 	switch schema1.Value.Type {
 	case openapi3.TypeObject:
-		if s.sets[ref1] > 2 {
-			return true
-		}
+		/*
+			if s.sets[ref1] > 2 {
+				return true
+			}
+		*/
 		return s.objectEqual(schema1.Value, schema2.Value)
 
 	case openapi3.TypeArray:
-		if s.sets[ref1] > 2 {
-			return true
-		}
+		/*
+			if s.sets[ref1] > 2 {
+				return true
+			}
+		*/
 		return s.arrayEqual(schema1.Value, schema2.Value)
 	}
 

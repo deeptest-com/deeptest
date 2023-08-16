@@ -858,3 +858,19 @@ func (r *EndpointInterfaceRepo) GetResponseCodes(endpointInterfaceId uint) (code
 
 	return
 }
+
+func (r *EndpointInterfaceRepo) GetResponse(endpointInterfaceId uint, code string) (ret model.EndpointInterfaceResponseBody) {
+	responseBodies, err := r.GetResponseBodies([]uint{endpointInterfaceId})
+	if err != nil {
+		return
+	}
+
+	responseBody := responseBodies[endpointInterfaceId]
+	for _, item := range responseBody {
+		if code == item.Code {
+			return item
+		}
+	}
+
+	return
+}

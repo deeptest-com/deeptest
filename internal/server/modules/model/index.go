@@ -116,5 +116,6 @@ var (
 		&SwaggerSync{},
 
 		&DebugConditionResponseDefine{},
+		&ExecLogResponseDefine{},
 	}
 )

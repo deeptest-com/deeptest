@@ -19,21 +19,9 @@
         :open="!entityData.disabled"
         @change="change"
         />
-      <div class="title">断言结果</div>
-      <div v-for="(item, index) in resultData"
-           :key="index"
-           :class="getResultClass(item)" class="item">
-
-        <span v-if="item.resultStatus===ResultStatus.Pass">
-          <CheckCircleOutlined />
-        </span>
-
-        <span v-if="item.resultStatus===ResultStatus.Fail">
-          <CloseCircleOutlined />
-        </span>&nbsp;
-
-        <span>{{item.resultMsg}}</span>
-      </div>
+      <ResultMsg :responseData="responseDataForDefine"/> 
+      <div class="title" v-if="responseDataForAssert.length > 0">断言结果</div>
+      <ResultMsg :responseData="responseDataForAssert"/> 
     </template>
   </div>
 </template>
@@ -41,18 +29,19 @@
 <script setup lang="ts">
 import {computed, watch,ref} from "vue";
 import {useStore} from "vuex";
-import { CheckCircleOutlined, CloseCircleOutlined} from '@ant-design/icons-vue';
 
-import {ResultStatus} from "@/utils/enum";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {useI18n} from "vue-i18n";
 import ResponseDefine from "./ResponseDefine.vue";
+import ResultMsg from "./ResultMsg.vue";
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug }>();
 
 const responseData = computed<any>(() => store.state.Debug.responseData);
 const resultData = computed<any>(() => store.state.Debug.resultData);
 const entityData = computed<any>(()=>store.state.Debug.debugData.responseDefine?.entityData)
+const responseDataForDefine = computed(()=>resultData.value.filter((item:any)=>item.conditionEntityType=="responseDefine"))
+const responseDataForAssert = computed(()=>resultData.value.filter((item:any)=>item.conditionEntityType=="checkpoint"))
 
 
 watch(responseData, (newVal) => {
@@ -61,10 +50,7 @@ watch(responseData, (newVal) => {
     store.dispatch("Debug/getInvocationResult", responseData.value.invokeId)
 }, {immediate: true, deep: true})
 
-const getResultClass = (item) => {
-  return item.resultStatus===ResultStatus.Pass? 'pass':
-      item.resultStatus===ResultStatus.Fail ? 'fail' : ''
-}
+
 
 const change = async (formState:any)=>{ 
   console.log(formState)
@@ -93,18 +79,6 @@ const change = async (formState:any)=>{
     font-weight: bold;
   }
 
-  .item {
-    margin: 3px;
-    padding: 5px;
-    &.pass {
-      color: #14945a;
-      background-color: #F1FAF4;
-    }
-    &.fail {
-      color: #D8021A;
-      background-color: #FFECEE;
-    }
-  }
 }
 
 </style>

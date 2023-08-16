@@ -9,15 +9,14 @@ import (
 )
 
 type ExecConditionService struct {
-	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
-	PostConditionRepo *repo.PostConditionRepo `inject:""`
-
-	ExtractorRepo  *repo.ExtractorRepo  `inject:""`
-	CookieRepo     *repo.CookieRepo     `inject:""`
-	CheckpointRepo *repo.CheckpointRepo `inject:""`
-	ScriptRepo     *repo.ScriptRepo     `inject:""`
-
-	ShareVarService *ShareVarService `inject:""`
+	PreConditionRepo   *repo.PreConditionRepo   `inject:""`
+	PostConditionRepo  *repo.PostConditionRepo  `inject:""`
+	ExtractorRepo      *repo.ExtractorRepo      `inject:""`
+	CookieRepo         *repo.CookieRepo         `inject:""`
+	CheckpointRepo     *repo.CheckpointRepo     `inject:""`
+	ScriptRepo         *repo.ScriptRepo         `inject:""`
+	ResponseDefineRepo *repo.ResponseDefineRepo `inject:""`
+	ShareVarService    *ShareVarService         `inject:""`
 }
 
 func (s *ExecConditionService) SavePreConditionResult(invokeId,
@@ -118,6 +117,17 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 					consts.Public, usedBy)
 			}
+		} else if condition.Type == consts.ConditionTypeResponseDefine {
+			var responseDefineBase domain.ResponseDefineBase
+			json.Unmarshal(condition.Raw, &responseDefineBase)
+			if responseDefineBase.Disabled {
+				continue
+			}
+
+			responseDefineBase.InvokeId = invokeId
+
+			s.ResponseDefineRepo.UpdateResult(responseDefineBase)
+			s.ResponseDefineRepo.CreateLog(responseDefineBase)
 		}
 	}
 

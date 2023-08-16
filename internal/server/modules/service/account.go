@@ -2,7 +2,6 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -34,22 +33,15 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 	var Id uint
 	var userBase v1.UserBase
 
-	logUtils.Infof(fmt.Sprintf("==============LoginReq:%+v", req))
-	logUtils.Infof(fmt.Sprintf("==============config.CONFIG.Ldap:%+v", config.CONFIG.Ldap))
 	if config.CONFIG.Ldap && req.Username != "admin" {
 		userBase, err = s.LdapService.LdapUserInfo(req)
-		logUtils.Infof(fmt.Sprintf("==============Ldap userBase:%+v, err :%+v", userBase, err))
 
 		if err != nil {
 			return
 		}
 		Id, err = s.UserRepo.UpdateByLdapInfo(userBase)
-		logUtils.Infof(fmt.Sprintf("==============UpdateByLdapInfo Id:%+v, err :%+v", Id, err))
-
 	} else {
 		Id, err = s.UserLogin(req)
-		logUtils.Infof(fmt.Sprintf("==============UserLogin Id:%+v, err :%+v", Id, err))
-
 	}
 
 	if err != nil {

@@ -343,8 +343,8 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			responseDefine.Schema = responseBody.SchemaItem.Content
 			responseDefine.Code = entity.Code
 			responseDefine.MediaType = responseBody.MediaType
-			responseDefine.Component = commonUtils.JsonEncode(r.ResponseDefineRepo.Components(endpointInterfaceId))
-
+			components := r.ResponseDefineRepo.Components(endpointInterfaceId)
+			responseDefine.Component = commonUtils.JsonEncode(components)
 			raw, _ := json.Marshal(responseDefine)
 			condition := domain.InterfaceExecCondition{
 				Type: typ,

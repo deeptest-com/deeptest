@@ -3,7 +3,7 @@ package repo
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	responseDefineHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/responeDefine"
+	responseDefineHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/jinzhu/copier"
@@ -95,7 +95,7 @@ func (r *ResponseDefineRepo) Components(endpointInterfaceId uint) (components re
 	for _, item := range result {
 		var schema responseDefineHelper.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
-		components[item.Ref] = schema
+		components[item.Ref] = &schema
 	}
 
 	return

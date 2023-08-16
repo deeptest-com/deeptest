@@ -1,8 +1,7 @@
-package responseDefineHelper
+package schemaHelper
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/getkin/kin-openapi/openapi3"
 	"math/rand"
 	"reflect"
@@ -32,15 +31,17 @@ type Schema struct {
 
 func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
 
-	//return jsoninfo.MarshalRef(schemaRef.Ref, schemaRef.Value)
 	schema := Schema{}
 	if schemaRef.Ref == "" {
 		schemaRef.Ref = schemaRef.RefExt
+		schemaRef.RefExt = ""
 	}
 	if schemaRef.Ref != "" {
 		schema.Ref = schemaRef.Ref
 	} else {
-		schema = *schemaRef.Value
+		if schemaRef.Value != nil {
+			schema = *schemaRef.Value
+		}
 	}
 
 	res, err = json.Marshal(schema)
@@ -53,10 +54,9 @@ func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
 
 func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
 	var schema Schema
-	//x := string(data)
-	//fmt.Println(x)
+
 	err := json.Unmarshal(data, &schema)
-	//fmt.Println(err)
+
 	if err != nil {
 		return err
 	}
@@ -70,20 +70,20 @@ func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type Components map[string]SchemaRef
+type Components map[string]*SchemaRef
 
-type schema2conv struct {
+type Schema2conv struct {
 	Components Components
 	sets       map[string]int64
 }
 
-func NewSchema2conv() *schema2conv {
-	obj := new(schema2conv)
+func NewSchema2conv() *Schema2conv {
+	obj := new(Schema2conv)
 	obj.sets = map[string]int64{}
 	return obj
 }
 
-func (s *schema2conv) Example2Schema(object interface{}, schema *Schema) (err error) {
+func (s *Schema2conv) Example2Schema(object interface{}, schema *Schema) (err error) {
 	V := reflect.ValueOf(object)
 
 	switch V.Kind() {
@@ -118,11 +118,11 @@ func (s *schema2conv) Example2Schema(object interface{}, schema *Schema) (err er
 	return
 }
 
-func (s *schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
+func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 	ref := schema.Ref
 	if component, ok := s.Components[schema.Ref]; ok {
 		s.sets[ref]++
-		schema = component
+		schema = *component
 	}
 
 	s.CombineSchemas(&schema)
@@ -154,12 +154,12 @@ func (s *schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 	return
 }
 
-func (s *schema2conv) CombineSchemas(schema *SchemaRef) {
+func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 	var combineSchemas SchemaRefs
 
 	if len(schema.Value.AllOf) >= 1 {
 		combineSchemas = schema.Value.AllOf
-		fmt.Println(combineSchemas)
+		//	fmt.Println(combineSchemas)
 	} else {
 		if len(schema.Value.AnyOf) >= 1 {
 			rand.Seed(time.Now().UnixNano())
@@ -176,7 +176,7 @@ func (s *schema2conv) CombineSchemas(schema *SchemaRef) {
 
 		if item.Ref != "" {
 			if component, ok := s.Components[item.Ref]; ok {
-				item = &component
+				item = component
 			}
 		}
 		schema.Value.Type = item.Value.Type
@@ -209,7 +209,7 @@ func (s *schema2conv) CombineSchemas(schema *SchemaRef) {
 
 }
 
-func (s *schema2conv) anyMoreSchemas(schemas SchemaRefs, n int) (combineSchemas SchemaRefs) {
+func (s *Schema2conv) anyMoreSchemas(schemas SchemaRefs, n int) (combineSchemas SchemaRefs) {
 	if n > len(schemas) {
 		return
 	}
@@ -224,7 +224,7 @@ func (s *schema2conv) anyMoreSchemas(schemas SchemaRefs, n int) (combineSchemas 
 	return combineSchemas
 }
 
-func (s *schema2conv) AssertDataForSchema(schema *SchemaRef, data interface{}) bool {
+func (s *Schema2conv) AssertDataForSchema(schema *SchemaRef, data interface{}) bool {
 	dataSchema := new(Schema)
 	err := s.Example2Schema(data, dataSchema)
 	if err != nil {
@@ -235,23 +235,25 @@ func (s *schema2conv) AssertDataForSchema(schema *SchemaRef, data interface{}) b
 	return s.Equal(schema, schema1)
 }
 
-func (s *schema2conv) Equal(schema1, schema2 *SchemaRef) (ret bool) {
-	//ref1 := schema1.Ref
+func (s *Schema2conv) Equal(schema1, schema2 *SchemaRef) (ret bool) {
+
 	if component, ok := s.Components[schema1.Ref]; ok {
 		//s.sets[ref1]++
-		schema1 = &component
+		schema1 = component
 	}
 
-	//ref2 := schema2.Ref
-	/*
-		if component, ok := s.Components[schema2.Ref]; ok {
-			//s.sets[ref2]++
-			schema2 = &component
-		}
-	*/
-
 	s.CombineSchemas(schema1)
-	//	s.CombineSchemas(schema2)
+
+	//类型object 并且没有属性的，是空对象，匹配任何类型
+	if schema2.Value.Type == openapi3.TypeObject && len(schema2.Value.Properties) == 0 {
+		return true
+	}
+
+	//golang 会统一把数字类型反射成float64，默认TypeNumber，所以只要是TypeNumber，TypeInteger，就认为类型是相同的
+	if (schema1.Value.Type == openapi3.TypeNumber || schema1.Value.Type == openapi3.TypeInteger) &&
+		(schema2.Value.Type == openapi3.TypeNumber || schema2.Value.Type == openapi3.TypeInteger) {
+		return true
+	}
 
 	if schema1.Value.Type != schema2.Value.Type {
 		return false
@@ -259,26 +261,19 @@ func (s *schema2conv) Equal(schema1, schema2 *SchemaRef) (ret bool) {
 
 	switch schema1.Value.Type {
 	case openapi3.TypeObject:
-		/*
-			if s.sets[ref1] > 2 {
-				return true
-			}
-		*/
+
 		return s.objectEqual(schema1.Value, schema2.Value)
 
 	case openapi3.TypeArray:
-		/*
-			if s.sets[ref1] > 2 {
-				return true
-			}
-		*/
+
 		return s.arrayEqual(schema1.Value, schema2.Value)
 	}
 
-	return
+	return true
+
 }
 
-func (s *schema2conv) objectEqual(schema1 *Schema, schema2 *Schema) (ret bool) {
+func (s *Schema2conv) objectEqual(schema1 *Schema, schema2 *Schema) (ret bool) {
 	for key, property := range schema1.Properties {
 		if item, ok := schema2.Properties[key]; ok {
 			return s.Equal(property, item)
@@ -289,7 +284,7 @@ func (s *schema2conv) objectEqual(schema1 *Schema, schema2 *Schema) (ret bool) {
 	return true
 }
 
-func (s *schema2conv) arrayEqual(schema1 *Schema, schema2 *Schema) (ret bool) {
+func (s *Schema2conv) arrayEqual(schema1 *Schema, schema2 *Schema) (ret bool) {
 	return s.Equal(schema1.Items, schema2.Items)
 
 }

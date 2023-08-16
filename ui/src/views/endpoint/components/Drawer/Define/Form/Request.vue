@@ -8,7 +8,7 @@
     </a-col>
 
     <a-col :span="22">
-      <!-- 请求方法定义 -->
+      <!-- 请求方法定义 --> ={{selectedMethod}}=
       <a-radio-group v-model:value="selectedMethod" button-style="outline">
         <a-radio-button
             v-for="method in requestMethodOpts"
@@ -95,7 +95,7 @@ const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
 
 onMounted(() => {
-  if (endpointDetail.value?.interfaces?.length) {
+  if (!selectedMethod.value && endpointDetail.value?.interfaces?.length) {
     selectedMethod.value = endpointDetail.value.interfaces[0].method;
   }
 })

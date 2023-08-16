@@ -145,6 +145,9 @@ func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint mod
 
 	for key, item := range req.Interfaces {
 		req.Interfaces[key].Body = item.RequestBody.Examples
+		if item.RequestBody.MediaType == "" {
+			item.RequestBody.MediaType = "application/json"
+		}
 		req.Interfaces[key].BodyType = item.RequestBody.MediaType
 		req.Interfaces[key].Name = req.Title
 		/*

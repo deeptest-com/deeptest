@@ -332,6 +332,7 @@ const StoreModel: ModuleType = {
         async loadData({commit, state, dispatch}, data) {
             try {
                 const resp: ResponseData = await loadData(data);
+                // console.log('666666', resp.data.url)
                 if (resp.code != 0) return false;
 
                 await commit('setDebugInfo', {

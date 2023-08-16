@@ -192,7 +192,7 @@ watch(debugData, (newVal) => {
     currServerId.value = newVal.serverId
   }
 
-  if (usedBy !== UsedBy.DiagnoseDebug) {
+  if (usedBy === UsedBy.InterfaceDebug || usedBy === UsedBy.CaseDebug) {
     debugData.value.url = debugData?.value.url || endpointDetail.value?.path || ''
   }
 

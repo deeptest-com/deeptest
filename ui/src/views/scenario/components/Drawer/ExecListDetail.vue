@@ -38,7 +38,10 @@ const baseInfoList = computed(() => {
     {value: reportsDetail.value.name, label: '场景名称'},
     {value: reportsDetail.value.startTime ? momentUtc(reportsDetail.value.startTime) : '暂无', label: '执行时间'},
     {value: reportsDetail.value.execEnv || '暂无', label: '执行环境'},
+    {value: reportsDetail.value.createUserName || '暂无', label: '创建人'},
+    //  todo 确定字段
     {value: reportsDetail.value.createUserName || '暂无', label: '执行人'},
+    {value: reportsDetail.value.createUserName || '暂无', label: '优先级'},
   ]
 })
 

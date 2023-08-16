@@ -293,7 +293,6 @@ export {
     statInfo,
     execLogs,
     execResults,
-
     updateExecLogs,
     updateExecResult,
     clearLog,

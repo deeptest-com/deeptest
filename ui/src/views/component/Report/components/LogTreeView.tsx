@@ -10,6 +10,7 @@ export default defineComponent({
     name: 'LogTreeView',
     props: {
         treeData: Array,
+        isSingleScenario: Boolean,
     },
     emits: ['change'],
     setup(props, {emit}) {
@@ -47,7 +48,7 @@ export default defineComponent({
 
             function renderContent(log) {
                 if (log.processorCategory === 'processor_interface') {
-                    return <InterfaceContent endpointData={log} />
+                    return <InterfaceContent endpointData={log}/>
                 }
                 return <LogContent data={log}/>;
             }
@@ -80,8 +81,14 @@ export default defineComponent({
 
         // 渲染场景，一级目录, 即场景列表
         function renderScenarioList(list) {
+
             if (!list?.length) {
                 return null
+            }
+
+            // 如果是单场景，直接渲染场景
+            if (list.length === 1 && props.isSingleScenario) {
+                return renderScenario(list[0]?.logs?.[0]?.logs, list[0])
             }
 
             const renderHeader = (item) => {

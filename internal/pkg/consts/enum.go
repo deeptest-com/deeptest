@@ -286,6 +286,7 @@ const (
 	ConditionTypeExtractor      ConditionType = "extractor"
 	ConditionTypeCheckpoint     ConditionType = "checkpoint"
 	ConditionTypeScript         ConditionType = "script"
+	ConditionTypeCookie         ConditionType = "cookie"
 	ConditionTypeResponseDefine ConditionType = "responseDefine"
 )
 

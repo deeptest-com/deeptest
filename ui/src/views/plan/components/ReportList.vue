@@ -113,7 +113,7 @@ async function refreshList(params: any) {
 
 async function queryDetail(id) {
     await store.dispatch('Report/initReportDetail');
-    store.dispatch('Report/get', id);
+    await store.dispatch('Report/get', id);
     detailDrawerVisible.value = true;
 }
 

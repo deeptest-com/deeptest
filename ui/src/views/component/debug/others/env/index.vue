@@ -14,7 +14,7 @@
         <div class="body">
           <div class="envs">
             <div class="env">
-              <div class="left">
+              <div class="left title">
                 共享变量
               </div>
 
@@ -36,18 +36,12 @@
 
             <div v-for="(item, idx) in debugData.shareVars" :key="idx" class="env">
               <div class="left">
-                <div class="name">
-                  <a-tooltip overlayClassName="dp-tip-small">
-                    <template #title>{{item.name}}</template>
-                    {{item.name}}
-                  </a-tooltip>
+                <div class="name" :title="item.name">
+                  {{item.name}}
                 </div>
 
-                <div class="val">
-                  <a-tooltip class="val" overlayClassName="dp-tip-small">
-                    <template #title>{{item.localValue}}</template>
-                    {{item.localValue==='extractor_err'? t(item.localValue+'_short') : item.localValue}}
-                  </a-tooltip>
+                <div class="val" :title="item.localValue">
+                  {{item.localValue==='extractor_err'? t(item.localValue+'_short') : item.localValue}}
                 </div>
               </div>
 
@@ -65,7 +59,7 @@
         <div class="body">
           <div class="envs">
             <div class="env header">
-              <div class="left">
+              <div class="left title">
                 环境变量
               </div>
               <div class="right">
@@ -95,7 +89,6 @@
                 </div>
 
                 <div class="right"></div>
-
               </div>
             </div>
             <div v-if="!debugData.envVars || debugData.envVars.length===0" class="env">空</div>
@@ -107,7 +100,7 @@
         <div class="body">
           <div class="envs">
             <div class="env">
-              <div class="left">
+              <div class="left title">
                 全局变量
               </div>
               <div class="right">
@@ -149,7 +142,7 @@
         <div class="body">
           <div class="envs">
             <div class="env">
-              <div class="left">
+              <div class="left title">
                 全局参数
               </div>
               <div class="right">
@@ -310,7 +303,9 @@ const close = () => {
             .left {
               flex: 1;
               display: flex;
-              font-weight: bold;
+              &.title {
+                font-weight: bold;
+              }
 
               .name {
                 margin-left: 0;
@@ -318,7 +313,6 @@ const close = () => {
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;
-                font-weight: normal;
               }
 
               .val {

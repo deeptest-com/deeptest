@@ -36,6 +36,7 @@ type ScenarioExecResult struct {
 	HttpRespStatusContent string              `json:"httpStatusContent,omitempty"`
 
 	ExtractorsResult  []domain.ExtractorBase  `json:"extractorsResult,omitempty"`
+	CookiesResult     []domain.CookieBase     `json:"extractorsResult,omitempty"`
 	CheckpointsResult []domain.CheckpointBase `json:"checkpointsResult,omitempty"`
 	ScriptsResult     []domain.ScriptBase     `json:"scriptsResult,omitempty"`
 

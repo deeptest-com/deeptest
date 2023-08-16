@@ -1,6 +1,8 @@
 package domain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type ExtractorBase struct {
 	Src  consts.ExtractorSrc  `json:"src"`
@@ -60,7 +62,7 @@ func (condition CheckpointBase) GetType() consts.ConditionType {
 }
 
 type ScriptBase struct {
-	ConditionSrc consts.ConditionSrc `json:"conditionType"`
+	ConditionSrc consts.ConditionSrc `json:"conditionSrc"`
 
 	Content string `gorm:"type:longtext;" json:"content"`
 
@@ -82,6 +84,33 @@ func (condition ScriptBase) GetType() consts.ConditionType {
 	return consts.ConditionTypeScript
 }
 
+type CookieBase struct {
+	ConditionSrc consts.ConditionSrc `json:"conditionSrc"`
+
+	CookieName   string `json:"cookieName"`
+	CookieDomain string `json:"cookieDomain"`
+	VariableName string `json:"variableName"`
+	Default      string `json:"default"`
+	Comments     string `json:"comments"`
+
+	Result       string              `json:"result"`
+	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	ResultMsg    string              `json:"resultMsg"`
+
+	ConditionId         uint                 `json:"conditionId"`
+	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object
+	ConditionEntityType consts.ConditionType `gorm:"-" json:"conditionEntityType"` // for log only
+	InvokeId            uint                 `json:"invokeId"`                     // for log only
+
+	Disabled bool `json:"disabled"`
+
+	VariableSettings []ExecVariable `gorm:"-" json:"variableSettings"`
+}
+
+func (condition CookieBase) GetType() consts.ConditionType {
+	return consts.ConditionTypeCookie
+}
+
 type ResponseDefineBase struct {
 	ResponseCode string   `json:"responseCode"`
 	Schema       string   `gorm:"-" json:"schema"`
@@ -96,8 +125,9 @@ type ResponseDefineBase struct {
 	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object
 	ConditionEntityType consts.ConditionType `gorm:"-" json:"conditionEntityType"` // for log only
 	InvokeId            uint                 `json:"invokeId"`                     // for log only
-
-	Disabled bool `json:"disabled"`
+	MediaType           string               `json:"mediaType"`
+	Disabled            bool                 `json:"disabled"`
+	Component           string               `gorm:"-" json:"component"`
 }
 
 func (condition ResponseDefineBase) GetType() consts.ConditionType {

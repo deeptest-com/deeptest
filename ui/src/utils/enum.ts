@@ -170,6 +170,7 @@ export enum ConditionType {
     extractor = 'extractor',
     checkpoint = 'checkpoint',
     script = 'script',
+    cookie = 'cookie',
 }
 export enum PreConditionType {
     script = 'script',

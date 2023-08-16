@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	checkpointHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/checkpoint"
+	cookieHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/cookie"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -125,6 +126,25 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, sessi
 				continue
 			}
 
+			resp := entity.Response
+
+			err = ExecExtract(&extractorBase, resp)
+			extractorHelper.GenResultMsg(&extractorBase)
+
+			if extractorBase.ResultStatus == consts.Pass {
+				SetVariable(processor.ParentId, extractorBase.Variable, extractorBase.Result, consts.Public)
+			}
+
+			processor.Result.ExtractorsResult = append(processor.Result.ExtractorsResult, extractorBase)
+
+		} else if condition.Type == consts.ConditionTypeCookie {
+			var cookieBase domain.CookieBase
+			json.Unmarshal(condition.Raw, &cookieBase)
+
+			if cookieBase.Disabled {
+				continue
+			}
+
 			brother, ok := getPreviousBrother(*processor)
 			if !ok || brother.EntityType != consts.ProcessorInterfaceDefault {
 				processor.Result.Summary = fmt.Sprintf("先前节点不是接口，无法应用提取器。")
@@ -136,14 +156,14 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, sessi
 			resp := domain.DebugResponse{}
 			json.Unmarshal([]byte(brother.Result.RespContent), &resp)
 
-			err = ExecExtract(&extractorBase, resp)
-			extractorHelper.GenResultMsg(&extractorBase)
+			err = ExecCookie(&cookieBase, resp)
+			cookieHelper.GenResultMsg(&cookieBase)
 
-			if extractorBase.ResultStatus == consts.Pass {
-				SetVariable(processor.ID, extractorBase.Variable, extractorBase.Result, consts.Public)
+			if cookieBase.ResultStatus == consts.Pass {
+				SetVariable(processor.ParentId, cookieBase.VariableName, cookieBase.Result, consts.Public)
 			}
 
-			processor.Result.ExtractorsResult = append(processor.Result.ExtractorsResult, extractorBase)
+			processor.Result.CookiesResult = append(processor.Result.CookiesResult, cookieBase)
 
 		} else if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase

@@ -43,6 +43,9 @@
                 <icon-svg v-if="element.entityType === ConditionType.extractor"
                           type="variable"
                           class="icon variable" />
+                <icon-svg v-if="element.entityType === ConditionType.cookie"
+                          type="cookie"
+                          class="icon variable" />
                 <icon-svg v-if="element.entityType === ConditionType.checkpoint"
                           type="checkpoint"
                           class="icon"  />
@@ -95,6 +98,10 @@
               <Script v-if="element.entityType === ConditionType.script"
                       :condition="activePostCondition"
                       :finish="list"/>
+
+              <Cookie v-if="element.entityType === ConditionType.cookie"
+                      :condition="activePostCondition"
+                      :finish="list"/>
             </div>
           </div>
 
@@ -129,6 +136,7 @@ import IconSvg from "@/components/IconSvg";
 import Extractor from "./conditions-post/Extractor.vue";
 import Checkpoint from "./conditions-post/Checkpoint.vue";
 import Script from "./conditions-post/Script.vue";
+import Cookie from "./conditions-post/Cookie.vue";
 import FullScreenPopup from "./ConditionPopup.vue";
 
 const store = useStore<{  Debug: Debug }>();

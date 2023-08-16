@@ -19,6 +19,7 @@ const apiSnippets = 'snippets'
 const apiPreConditions = 'preConditions'
 const apiPostConditions = 'postConditions'
 const apiExtractor = 'extractors'
+const apiCookie = 'cookies'
 const apiCheckpoint = 'checkpoints'
 const apiScript = 'scripts'
 
@@ -310,6 +311,34 @@ export async function listExtractorVariable(data: any): Promise<any> {
         url: `/${apiExtractor}/listExtractorVariableForCheckpoint`,
         method: 'POST',
         data,
+    });
+}
+
+// cookie
+export async function getCookie(id: number): Promise<any> {
+    return request({
+        url: `/${apiCookie}/${id}`,
+        method: 'GET',
+    });
+}
+export async function saveCookie(data): Promise<any> {
+    return request({
+        url: `/${apiCookie}`,
+        method: data.id ? 'PUT' : 'POST',
+        data: data,
+    });
+}
+export async function quickCreateCookie(data): Promise<any> {
+    return request({
+        url: `/${apiCookie}/quickCreate`,
+        method: 'POST',
+        data: data,
+    });
+}
+export async function removeCookie(id: number): Promise<any> {
+    return request({
+        url: `/${apiCookie}/${id}`,
+        method: 'DELETE',
     });
 }
 

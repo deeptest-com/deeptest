@@ -35,6 +35,7 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 
 	if config.CONFIG.Ldap && req.Username != "admin" {
 		userBase, err = s.LdapService.LdapUserInfo(req)
+
 		if err != nil {
 			return
 		}

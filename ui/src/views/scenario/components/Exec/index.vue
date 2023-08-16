@@ -11,7 +11,7 @@
               :percent="progressValue"
               @exec-cancel="execCancel"/>
 
-    <LogTreeView :treeData="scenarioReports" :expandKeys="expandKeys"/>
+    <LogTreeView :treeData="scenarioReports" :expandKeys="expandKeys" :isSingleScenario="true"/>
   </div>
 </template>
 
@@ -99,6 +99,8 @@ const OnWebSocketMsg = (data: any) => {
   if (progressStatus.value === 'cancel') return;
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
+
+  console.log('832222wsMsg', wsMsg);
 
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {

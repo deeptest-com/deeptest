@@ -130,6 +130,24 @@ export interface Script  {
     projectId?: number;
 }
 
+export interface Cookie  {
+    id?: number;
+    usedBy: UsedBy;
+
+    cookieName: string;
+    cookieDomain: string;
+    variableName: string;
+    default: string;
+    comments: string;
+
+    output: string;
+    resultStatus: string;
+
+    debugInterfaceId?: number;
+    endpointInterfaceId?: number;
+    projectId?: number;
+}
+
 export interface DebugInfo {
     debugInterfaceId: number,
     endpointInterfaceId: number,

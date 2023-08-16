@@ -79,6 +79,7 @@ export default {
     'responseHeader': '响应头',
     'responseBody': '响应体',
     'extractor': '提取变量',
+    'cookie': 'Cookie',
     'checkpoint': '断言',
     'script': '定制代码',
     'judgement': '表达式',

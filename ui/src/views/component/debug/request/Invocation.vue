@@ -192,7 +192,7 @@ watch(debugData, (newVal) => {
     currServerId.value = newVal.serverId
   }
 
-  if (usedBy !== UsedBy.DiagnoseDebug) {
+  if (usedBy === UsedBy.InterfaceDebug || usedBy === UsedBy.CaseDebug) {
     debugData.value.url = debugData?.value.url || endpointDetail.value?.path || ''
   }
 
@@ -276,7 +276,7 @@ onUnmounted(() => {
 })
 
 function hasDefinedMethod(method: string) {
-  if (usedBy !== UsedBy.CaseDebug)
+  if (usedBy !== UsedBy.CaseDebug) // selection not show for interface_debug
     return true
 
   return endpointDetail?.value?.interfaces?.some((item) => {

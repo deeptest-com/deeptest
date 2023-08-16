@@ -181,6 +181,14 @@ const columns = [
     dataIndex: 'adminName',
   },
   {
+    title: '创建人',
+    dataIndex: 'createUserName',
+  },
+  {
+    title: '更新人',
+    dataIndex: 'updateUserName',
+  },
+  {
     title: '最近更新',
     dataIndex: 'updatedAt',
     slots: { customRender: 'updatedAt' },

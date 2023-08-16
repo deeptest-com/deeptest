@@ -276,9 +276,9 @@ onUnmounted(() => {
 })
 
 function hasDefinedMethod(method: string) {
-  if (usedBy !== UsedBy.CaseDebug) // selection not show for interface_debug
+  if (usedBy !== UsedBy.CaseDebug)
     return true
-
+    
   return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })

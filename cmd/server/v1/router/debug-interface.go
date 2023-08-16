@@ -15,7 +15,7 @@ type DebugInterfaceModule struct {
 // Party 脚本
 func (m *DebugInterfaceModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.PartyFunc("/interface", func(party iris.Party) {
 			party.Post("/load", m.DebugInterfaceCtrl.Load).Name = "获取调试接口请求"

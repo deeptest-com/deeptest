@@ -145,7 +145,8 @@ func (s *PlanService) Clone(id, userId uint) (ret model.Plan, err error) {
 
 	plan.ID = 0
 	plan.Name = plan.Name + "-COPY"
-	plan.UpdateUserId = userId
+	plan.CreateUserId = userId
+	plan.UpdateUserId = 0
 	now := time.Now()
 	plan.CreatedAt = &now
 	plan, bizErr := s.PlanRepo.Create(plan)

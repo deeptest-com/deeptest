@@ -85,6 +85,7 @@ func (c *DiagnoseInterfaceCtrl) Save(ctx iris.Context) {
 		return
 	}
 
+	req.CreatedBy = multi.GetUserId(ctx)
 	po, err := c.DiagnoseInterfaceService.Save(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -157,6 +158,7 @@ func (c *DiagnoseInterfaceCtrl) Update(ctx iris.Context) {
 		return
 	}
 
+	req.UpdatedBy = multi.GetUserId(ctx)
 	po, err := c.DiagnoseInterfaceService.Save(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

@@ -15,7 +15,7 @@ type DebugInvokeModule struct {
 // Party 脚本
 func (m *DebugInvokeModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.PartyFunc("/invoke", func(party iris.Party) {
 			party.Get("/", m.DebugInvokeCtrl.List).Name = "调试记录列表"

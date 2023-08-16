@@ -14,7 +14,7 @@ type PreConditionModule struct {
 // Party 前置条件
 func (m *PreConditionModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/getScript", m.PreConditionCtrl.GetScript).Name = "前置条件列表"
 		index.Post("/", m.PreConditionCtrl.Create).Name = "新建前置条件"

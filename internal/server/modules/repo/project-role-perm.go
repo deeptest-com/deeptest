@@ -95,7 +95,7 @@ func (r *ProjectRolePermRepo) GetProjectPermsForRole() (res map[consts.RoleType]
 	res = map[consts.RoleType][]uint{
 		consts.Admin:          permIds,
 		consts.User:           permIds,
-		consts.Tester:         testPermIds,
+		consts.Tester:         permIds,
 		consts.Developer:      permIds,
 		consts.ProductManager: permIds,
 	}

@@ -66,12 +66,12 @@ func (s *ScenarioService) PlanPaginate(req v1.ScenarioPlanReqPaginate, scenarioI
 	return
 }
 
-func (s *ScenarioService) UpdateStatus(id uint, status consts.TestStatus) (err error) {
-	err = s.ScenarioRepo.UpdateStatus(id, status)
+func (s *ScenarioService) UpdateStatus(id uint, status consts.TestStatus, updateUserId uint, updateUserName string) (err error) {
+	err = s.ScenarioRepo.UpdateStatus(id, status, updateUserId, updateUserName)
 	return
 }
 
-func (s *ScenarioService) UpdatePriority(id uint, priority string) (err error) {
-	err = s.ScenarioRepo.UpdatePriority(id, priority)
+func (s *ScenarioService) UpdatePriority(id uint, priority string, updateUserId uint, updateUserName string) (err error) {
+	err = s.ScenarioRepo.UpdatePriority(id, priority, updateUserId, updateUserName)
 	return
 }

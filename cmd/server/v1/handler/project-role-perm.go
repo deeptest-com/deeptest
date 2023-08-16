@@ -24,23 +24,17 @@ type ProjectRolePermCtrl struct {
 // @Produce application/json
 // @Param	Authorization	header	string	true	"Authentication header"
 // @Param 	currProjectId	query	int		true	"当前项目ID"
-// @Param 	user_id			query	int		true	"用户ID"
-// @Param 	project_id		query	int		true	"项目ID"
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=model.ProjectRole}}
 // @Router	/api/v1/projects/perms/userRole	[get]
 func (c *ProjectRolePermCtrl) GetProjectUserRole(ctx iris.Context) {
-	userId, err := ctx.URLParamInt("user_id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
-		return
-	}
-	projectId, err := ctx.URLParamInt("project_id")
+	userId := multi.GetUserId(ctx)
+	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.ProjectRolePermService.GetProjectUserRole(uint(userId), uint(projectId))
+	data, err := c.ProjectRolePermService.GetProjectUserRole(userId, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

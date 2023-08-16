@@ -14,7 +14,7 @@ type ScenarioNodeModule struct {
 // Party 场景
 func (m *ScenarioNodeModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 		index.Post("/addInterfacesFromDefine", m.ScenarioNodeCtrl.AddInterfacesFromDefine).Name = "添加定义接口"
 		index.Post("/addInterfacesFromDiagnose", m.ScenarioNodeCtrl.AddInterfacesFromDiagnose).Name = "添加调试接口"
 		index.Post("/addInterfacesFromCase", m.ScenarioNodeCtrl.AddInterfacesFromCase).Name = "添加接口用例"

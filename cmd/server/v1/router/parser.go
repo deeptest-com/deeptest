@@ -14,7 +14,7 @@ type ParserModule struct {
 // Party 脚本
 func (m *ParserModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Post("/parseHtml", m.ParserCtrl.ParseHtml).Name = "解析HTML"
 		index.Post("/parseXml", m.ParserCtrl.ParseXml).Name = "解析XML"

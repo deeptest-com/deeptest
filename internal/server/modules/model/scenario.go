@@ -17,6 +17,8 @@ type Scenario struct {
 	Status         consts.TestStatus `json:"status"`
 	CreateUserId   uint              `json:"createUserId"`
 	CreateUserName string            `json:"createUserName"`
+	UpdateUserId   uint              `json:"updateUserId"`
+	UpdateUserName string            `json:"updateUserName"`
 	Priority       string            `json:"priority"`
 	Type           consts.TestType   `json:"type"`
 	CurrEnvId      uint              `json:"currEnvId"`

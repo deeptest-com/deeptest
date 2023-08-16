@@ -14,7 +14,7 @@ type EndpointCaseModule struct {
 // Party 注册模块
 func (m *EndpointCaseModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
-		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		public.Get("/list", m.EndpointCaseCtrl.List).Name = "用例列表"
 		public.Get("/{id:uint}", m.EndpointCaseCtrl.Get).Name = "用例详情"

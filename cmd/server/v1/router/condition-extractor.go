@@ -14,7 +14,7 @@ type ExtractorModule struct {
 // Party 提取器
 func (m *ExtractorModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/{id:uint}", m.ExtractorCtrl.Get).Name = "提取器详情"
 		index.Post("/quickCreate", m.ExtractorCtrl.QuickCreate).Name = "新建提取器"

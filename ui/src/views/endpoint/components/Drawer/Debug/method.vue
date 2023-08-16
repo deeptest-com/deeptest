@@ -1,5 +1,5 @@
 <template>
-    <div class="debug-methods"> ={{selectedMethod}}=
+    <div class="debug-methods">
       <a-radio-group @change="changeMethod" v-model:value="selectedMethod" button-style="solid">
         <template v-for="method in requestMethodOpts" :key="method.value">
           <a-radio-button v-if="hasDefinedMethod(method.value)" class="has-defined"

@@ -34,6 +34,10 @@ func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err er
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	for _, child := range processor.Children {
+		if child.Disable {
+			continue
+		}
+
 		child.Run(session)
 	}
 

@@ -10,6 +10,7 @@ import (
 	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
+	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -450,9 +451,9 @@ func (s *EndpointService) getRequestBody(body string) (requestBody model.Endpoin
 func (s *EndpointService) getRequestBodyItem(body string) (requestBodyItem model.EndpointInterfaceRequestBodyItem) {
 	requestBodyItem = model.EndpointInterfaceRequestBodyItem{}
 	requestBodyItem.Type = "object"
-	schema2conv := openapi.NewSchema2conv()
+	schema2conv := schemaHelper.NewSchema2conv()
 	var obj interface{}
-	schema := openapi.Schema{}
+	schema := schemaHelper.Schema{}
 	_commUtils.JsonDecode(body, &obj)
 	schema2conv.Example2Schema(obj, &schema)
 	requestBodyItem.Content = _commUtils.JsonEncode(schema)
@@ -507,11 +508,11 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 }
 
 func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
-	schema2conv := openapi.NewSchema2conv()
+	schema2conv := schemaHelper.NewSchema2conv()
 	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
 	for key, intef := range endpoint.Interfaces {
 		for k, response := range intef.ResponseBodies {
-			schema := new(openapi.SchemaRef)
+			schema := new(schemaHelper.SchemaRef)
 			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
 			if endpoint.SourceType == 1 && len(schema.Value.AllOf) > 0 {
 				schema2conv.CombineSchemas(schema)
@@ -523,10 +524,10 @@ func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 }
 
 func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId uint) {
-	schema2conv := openapi.NewSchema2conv()
+	schema2conv := schemaHelper.NewSchema2conv()
 	schema2conv.Components = s.ServeService.Components(serveId)
 	for k, response := range interf.ResponseBodies {
-		schema := new(openapi.SchemaRef)
+		schema := new(schemaHelper.SchemaRef)
 		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
 		if len(schema.Value.AllOf) > 0 {
 			schema2conv.CombineSchemas(schema)

@@ -126,22 +126,13 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, sessi
 				continue
 			}
 
-			brother, ok := getPreviousBrother(*processor)
-			if !ok || brother.EntityType != consts.ProcessorInterfaceDefault {
-				processor.Result.Summary = fmt.Sprintf("先前节点不是接口，无法应用提取器。")
-				processor.AddResultToParent()
-				execUtils.SendExecMsg(*processor.Result, session.WsMsg)
-				return
-			}
-
-			resp := domain.DebugResponse{}
-			json.Unmarshal([]byte(brother.Result.RespContent), &resp)
+			resp := entity.Response
 
 			err = ExecExtract(&extractorBase, resp)
 			extractorHelper.GenResultMsg(&extractorBase)
 
 			if extractorBase.ResultStatus == consts.Pass {
-				SetVariable(processor.ID, extractorBase.Variable, extractorBase.Result, consts.Public)
+				SetVariable(processor.ParentId, extractorBase.Variable, extractorBase.Result, consts.Public)
 			}
 
 			processor.Result.ExtractorsResult = append(processor.Result.ExtractorsResult, extractorBase)

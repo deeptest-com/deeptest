@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
+	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -209,7 +210,7 @@ func (s *DebugInterfaceService) CopyDebugDataPropsFromPo(debugData *domain.Debug
 	debugData.EndpointInterfaceId = endpointInterface.ID
 
 	if debugInterfacePo == nil { // is null when converting from EndpointInterface
-		schema2conv := openapi.NewSchema2conv()
+		schema2conv := schemaHelper.NewSchema2conv()
 		schema2conv.Components = s.ServeService.Components(serve.ID)
 		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, endpoint, serve, schema2conv)
 		debugInterfacePo = interfaces2debug.Convert()

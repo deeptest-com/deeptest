@@ -26,7 +26,7 @@ func generateByteItemsByStep(start byte, end byte, step int, repeat int, repeatT
 			}
 
 			for round := 0; round < repeat; round++ {
-				arr = append(arr, val)
+				arr = append(arr, string(val))
 
 				total++
 				if total > consts.MaxNum {
@@ -47,7 +47,7 @@ func generateByteItemsByStep(start byte, end byte, step int, repeat int, repeatT
 					break
 				}
 
-				arr = append(arr, val)
+				arr = append(arr, string(val))
 
 				if total > consts.MaxNum {
 					break

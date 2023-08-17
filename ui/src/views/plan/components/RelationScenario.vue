@@ -44,18 +44,24 @@ const columns: any[] = reactive([
     {
         title: '用例名称',
         dataIndex: 'name',
+        width: 300,
+        slots: { customRender: 'name' }
     },
     {
         title: '状态',
+        width: 90,
         dataIndex: 'status',
         slots: { customRender: 'status' }
     },
     {
         title: '优先级',
+        width: 110,
         dataIndex: 'priority',
     },
     {
         title: '最近更新',
+        width: 180,
+        slots: { customRender: 'updatedAt' },
         dataIndex: 'updatedAt',
     }
 ]);

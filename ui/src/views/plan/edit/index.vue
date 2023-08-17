@@ -47,6 +47,7 @@
               :list="planScenarioList"
               :show-scenario-operation="true"
               :columns="columns"
+              :scroll="{ x: 1240 }"
               :loading="loading"
               :pagination="scenarioPagination"
               @refresh-list="getScenarioList" />
@@ -94,35 +95,42 @@ const columns: any[] = reactive([
     {
         title: '用例名称',
         dataIndex: 'name',
-        ellipsis: true
+        width: 300,
+        slots: { customRender: 'name' }
     },
     {
         title: '状态',
         dataIndex: 'status',
+        width: 80,
         slots: { customRender: 'status' }
     },
     {
         title: '优先级',
+        width: 90,
         dataIndex: 'priority',
     },
     {
         title: '所属分类',
+        width: 110,
         dataIndex: 'categoryName',
         ellipsis: true
     },
     {
         title: '创建人',
+        width: 110,
         dataIndex: 'createUserName',
     },
     {
         title: '最近更新',
         dataIndex: 'updatedAt',
-        width: 160,
+        width: 180,
         slots: { customRender: 'updateAt' }
     },
     {
         title: '操作',
         dataIndex: 'operation',
+        width: 80,
+        fixed: 'right',
         slots: { customRender: 'operation' },
     },
 ]);

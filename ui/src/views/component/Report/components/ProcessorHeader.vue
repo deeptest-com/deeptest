@@ -19,7 +19,7 @@
     <div class="summary">
       <!-- ::::迭代次数：processor_loop_time -->
       <template v-if="record.processorType === 'processor_loop_time'">
-        <span class="text">{{ 1 }}次</span>
+        <span class="text">{{ 3 }}次</span>
 <!--        <span class="text">{{ record.name }}</span>-->
       </template>
 
@@ -114,18 +114,13 @@
 
       <!-- ::::设置变量 -->
       <template v-if="record.processorType === 'processor_variable_set'">
-        <span class="text">{{ record.x }} x</span>
-        <span class="text">{{ record.name }}</span>
-        <a class="text" href="">文件地址</a>
-        <span class="text">重复{{ record.name }}次</span>
+        <span class="text">{{ `变量名：${record?.Detail?.['变量']}` }} x</span>
+        <span class="text">{{ `值为：${record?.Detail?.['值']}` }} x</span>
       </template>
 
       <!-- ::::删除变量 -->
       <template v-if="record.processorType === 'processor_variable_clear'">
-        <span class="text">{{ record.x }} x</span>
-        <span class="text">{{ record.name }}</span>
-        <a class="text" href="">文件地址</a>
-        <span class="text">重复{{ record.name }}次</span>
+        <span class="text">{{ `变量名：${record?.Detail?.['变量']}` }} x</span>
       </template>
 
       <!-- ::::输出 -->
@@ -136,9 +131,6 @@
       <!-- ::::断言 -->
       <template v-if="record.processorType === 'processor_assertion_default'">
         <span class="text">{{ record.x }} x</span>
-        <span class="text">{{ record.name }}</span>
-        <a class="text" href="">文件地址</a>
-        <span class="text">重复{{ record.name }}次</span>
       </template>
 
       <!-- ::::自定义代码 -->

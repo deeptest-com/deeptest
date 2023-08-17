@@ -18,12 +18,6 @@
           <span class="text-value">{{item.value}}</span>
         </a-descriptions-item>
       </a-descriptions>
-<!--      <TextItem v-for="item in data"-->
-<!--                :key="item.label"-->
-<!--                class="statistical-info-item"-->
-<!--                :label-class-name="item.class === 'fail' ? 'failed' : 'success'"-->
-<!--                :label="item.label"-->
-<!--                :value="item.value"/>-->
     </div>
   </div>
 </template>
@@ -116,13 +110,12 @@ watch(() => {
   margin-bottom: 24px;
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 16px;
   box-sizing: border-box;
-
   .statistical-main {
     width: 214px;
     height: 214px;
-    margin-right: 60px;
+    margin-right: 32px;
   }
 
   .statistical-loading {
@@ -202,13 +195,12 @@ watch(() => {
 .text-value{
   display: inline-block;
   margin-left: 16px;
-  width: 80px;
+  width: 96px;
 }
 .text-rate{
   display: inline-block;
-  width: 60px;
+  width: 96px;
   margin-left: 16px;
-
 }
 
 </style>

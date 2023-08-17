@@ -5,13 +5,14 @@ import (
 	"fmt"
 	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"regexp"
 	"strconv"
 	"strings"
 )
 
 func GenerateRangeItems(start, end, step interface{}, precision int, isRand bool, typ consts.DataType) (ret []interface{}, err error) {
 	if typ == consts.Int {
-		ret = valueUtils.GenerateIntItems(start.(int64), end.(int64), int(step.(int64)), isRand, 1, "")
+		ret = valueUtils.GenerateIntItems(start.(int64), end.(int64), step.(int64), isRand, 1, "")
 
 	} else if typ == consts.Float {
 		ret = valueUtils.GenerateFloatItems(start.(float64), end.(float64), step.(float64), isRand, precision, 1, "")
@@ -79,15 +80,15 @@ func GetRange(rangeStr, stepStr string) (start, end, step interface{}, precision
 	if stepStr == "" {
 		stepStr = "1"
 	}
-
-	arr := strings.Split(rangeStr, "-")
-	if len(arr) < 1 {
+	regx := regexp.MustCompile(`^(-?.+?)\-(-?.+?)$`)
+	arr := regx.FindAllStringSubmatch(rangeStr, -1)
+	if len(arr) == 0 {
 		err = errors.New("range string not right")
 		return
 	}
 
-	startStr := arr[0]
-	endStr := arr[1]
+	startStr := strings.TrimSpace(arr[0][1])
+	endStr := strings.TrimSpace(arr[0][2])
 
 	startInt, intErr1 := strconv.ParseInt(startStr, 10, 64)
 	endInt, intErr2 := strconv.ParseInt(endStr, 10, 64)

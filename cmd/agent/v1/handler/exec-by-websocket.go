@@ -15,11 +15,6 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-const (
-	result = "result"
-	outPut = "output"
-)
-
 var (
 	ch chan int
 )

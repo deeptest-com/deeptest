@@ -140,6 +140,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         resetDataAndInvocations: Action<StateType, StateType>;
         loadData: Action<StateType, StateType>;
         call: Action<StateType, StateType>;
+        refreshInterfaceResultFromScenarioExec: Action<StateType, StateType>;
         save: Action<StateType, StateType>;
         saveAsCase: Action<StateType, StateType>;
 
@@ -410,6 +411,11 @@ const StoreModel: ModuleType = {
             } else {
                 return false
             }
+        },
+
+        async refreshInterfaceResultFromScenarioExec({commit, dispatch, state}) {
+            await dispatch('getLastInvocationResp')
+            await commit('putInvokedMap')
         },
 
         // invocation

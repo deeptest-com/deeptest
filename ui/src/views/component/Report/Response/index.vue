@@ -56,7 +56,7 @@ const { t } = useI18n();
 const emits = defineEmits(["onClose"]);
 
 const activeKey = ref("body");
-const interfaceResDetail = reactive(<InterfaceDetail>{
+const interfaceResDetail = reactive<InterfaceDetail>({
   contentLang: "",
   headers: [],
   contentType: "",

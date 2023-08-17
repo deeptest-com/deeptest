@@ -50,7 +50,7 @@ const responseData = computed<any>(() => props.data || store.state.Debug.respons
 const consoleData = computed<any>(() => store.state.Debug.consoleData);
 
 watch(responseData, (newVal) => {
-  console.log('responseData', responseData.value.invokeId)
+  console.log('watch responseData', responseData.value.invokeId)
   if (responseData.value.invokeId)
     store.dispatch("Debug/getInvocationLog", responseData.value.invokeId)
 }, {deep: true, immediate: true})

@@ -32,6 +32,10 @@ func CombineUrls(base, uri string) (ret string) {
 		return uri
 	}
 
+	if uri == "" {
+		return base
+	}
+
 	last := base[len(base)-1:]
 	first := uri[:1]
 

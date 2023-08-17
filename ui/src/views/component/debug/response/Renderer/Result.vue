@@ -1,6 +1,6 @@
 <template>
   <div class="response-result">
-    <div class="row status">
+    <div v-if="showStatus" class="row status">
       <span class="col">
         状态：{{ responseData.statusContent }}
       </span>
@@ -19,21 +19,37 @@
         :open="!entityData.disabled"
         @change="change"
         />
-      <ResultMsg :responseData="responseDataForDefine"/>
+      <ResultMsg :customClass="!showBackground ? 'trans' : ''" :responseData="responseDataForDefine"/>
       <div class="title" v-if="responseDataForAssert.length > 0">断言结果</div>
-      <ResultMsg :responseData="responseDataForAssert"/>
+      <ResultMsg :customClass="!showBackground ? 'trans' : ''" :responseData="responseDataForAssert"/>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, watch,ref} from "vue";
+import {computed, watch,ref, defineProps} from "vue";
 import {useStore} from "vuex";
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import {useI18n} from "vue-i18n";
 import ResponseDefine from "./ResponseDefine.vue";
 import ResultMsg from "./ResultMsg.vue";
+
+const props = defineProps({
+  showStatus: {
+    type: Boolean,
+    default: true,
+  },
+  showBackground: {
+    type: Boolean,
+    default: true,
+  },
+  data: {
+    type: Object,
+    required: false,
+  }
+})
+
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug }>();
 
@@ -46,8 +62,8 @@ const responseDataForAssert = computed(()=>resultData.value.filter((item:any)=>i
 
 watch(responseData, (newVal) => {
   console.log('responseData', responseData.value.invokeId)
-  if (responseData.value.invokeId)
-    store.dispatch("Debug/getInvocationResult", responseData.value.invokeId)
+  if ((props.data && props.data.invokeId) || responseData.value.invokeId)
+    store.dispatch("Debug/getInvocationResult", (props.data && props.data.invokeId) || responseData.value.invokeId)
 }, {immediate: true, deep: true})
 
 

@@ -53,7 +53,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
 
-	detail := map[string]interface{}{"变量名": entity.VariableName, "上传文件": entity.Url, "分割符": entity.Separator, "重复次数": entity.RepeatTimes}
+	detail := map[string]interface{}{"variableName": entity.VariableName, "url": entity.Url, "separator": entity.Separator, "repeatTimes": entity.RepeatTimes}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()

@@ -13,8 +13,8 @@
         <template #duration="{ record }">
             <span v-html="formatWithSeconds(record.duration)"></span>
         </template>
-        <template #startTime="{ record }">
-            {{ momentUtc(record.startTime) }} ~  {{ momentUtc(record.endTime) }}
+        <template #startTime="{ record, column }">
+            <TooltipCell :text="`${record.startTime} ~ ${record.endTime}`" :width="column.width" />
         </template>
         <template #operation="{ record }">
           <a  href="javascript:void (0)" @click="queryDetail(record.id)">查看报告</a>
@@ -33,6 +33,7 @@ import { reactive, computed, defineProps, watch, defineEmits, ref } from 'vue';
 import { useStore } from 'vuex';
 
 import { TableFilter } from "@/views/component/Report/components";
+import TooltipCell from '@/components/Table/tooltipCell.vue';
 import ExecDetail from '@/views/report/Detail/index.vue';
 
 import { StateType as ReportStateType } from '@/views/report/store';
@@ -52,30 +53,36 @@ const columns = [
     },
     {
         title: '测试通过率',
+        width: 110,
         dataIndex: 'interfacePassRate',
     },
     {
         title: '场景通过率',
+        width: 110,
         dataIndex: 'interfacePassRate',
     },
     {
         title: '执行耗时',
+        width: 110,
         dataIndex: 'duration',
         slots: { customRender: 'duration' },
     },
     {
         title: '执行人',
+        width: 110,
         dataIndex: 'createUserName',
     },
     {
         title: '执行时间',
-        width: 340,
+        width: 180,
         dataIndex: 'startTime',
         slots: { customRender: 'startTime' },
     },
     {
         title: '查看报告',
         dataIndex: 'operation',
+        fixed: 'right',
+        width: 160,
         slots: { customRender: 'operation' },
     }
 ];

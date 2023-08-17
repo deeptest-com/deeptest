@@ -3,7 +3,7 @@
 
     <div class="endpoint-method">
       <IconSvg :type="DESIGN_TYPE_ICON_MAP[endpointData.processorType]" class="processor-icon-svg"/>
-      <span :class="['endpoint-method', ClassMap[endpointData.resultStatus]]">
+      <span class="endpoint-method" :style="{ color: getMethodColor(reqContent.method) }">
               {{ reqContent.method }}
       </span>
     </div>
@@ -44,15 +44,19 @@
       <span v-else><a-spin :indicator="indicator"/></span>
     </div>
 
-    <div class="endpoint-expand-btn" @click="handleQueryDetail">
+    <div class="endpoint-expand-btn" @click.stop="handleQueryDetail">
       详情
       <RightOutlined/>
     </div>
 
+    <ResponseDrawer
+      :data="currRespDetail"
+      :response-drawer-visible="logResponseDetailVisible"
+      @onClose="logResponseDetailVisible = false" />
   </div>
 </template>
 <script setup lang="ts">
-import {defineProps, h, defineEmits, computed, toRefs} from 'vue';
+import {defineProps, h, defineEmits, computed, ref, reactive} from 'vue';
 import {RightOutlined, LoadingOutlined, ExclamationCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
 import {responseCodes} from '@/config/constant';
 import IconSvg from "@/components/IconSvg";
@@ -63,6 +67,9 @@ import {
   DESIGN_TYPE_ICON_MAP,
   showScenarioExecStatus,
 } from "@/views/scenario/components/Design/config";
+import ResponseDrawer from '@/views/component/Report/Response/index.vue';
+import { getMethodColor } from '@/utils/interface';
+
 
 enum StatusMap {
   'pass' = '通过',
@@ -88,6 +95,8 @@ const emits = defineEmits(['queryDetail']);
 const reqContent = computed(() => props.endpointData.reqContent ? JSON.parse(props.endpointData.reqContent) : {});
 const resContent = computed(() => props.endpointData.respContent ? JSON.parse(props.endpointData.respContent) : {});
 const responseCodeColorMap = {};
+const logResponseDetailVisible = ref(false);
+const currRespDetail = reactive({ reqContent: {}, resContent: {} });
 
 responseCodes.forEach(e => {
   responseCodeColorMap[e.value] = e.color;
@@ -102,7 +111,12 @@ const indicator = h(LoadingOutlined, {
 });
 
 function handleQueryDetail() {
-  emits('queryDetail', {resContent: resContent.value, reqContent: reqContent.value});
+  console.log(22222);
+  Object.assign(currRespDetail, {
+    reqContent: reqContent.value,
+    resContent: resContent.value,
+  });
+  logResponseDetailVisible.value = true;
 }
 </script>
 <style scoped lang="less">

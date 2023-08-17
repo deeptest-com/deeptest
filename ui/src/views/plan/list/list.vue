@@ -44,6 +44,7 @@
 
       <div>
         <a-table row-key="id" :columns="columns" :data-source="list" :loading="loading"
+          :scroll="{ x: 1240 }"
           :pagination="{
             ...pagination,
             onChange: (page) => {
@@ -170,26 +171,32 @@ const columns = [
   {
     title: '状态',
     dataIndex: 'status',
+    width: 80,
     slots: { customRender: 'status' },
   },
   {
     title: '测试通过率',
+    width: 110,
     dataIndex: 'testPassRate',
   },
   {
     title: '负责人',
+    width: 110,
     dataIndex: 'adminName',
   },
   {
     title: '创建人',
+    width: 110,
     dataIndex: 'createUserName',
   },
   {
     title: '更新人',
+    width: 110,
     dataIndex: 'updateUserName',
   },
   {
     title: '最近更新',
+    width: 180,
     dataIndex: 'updatedAt',
     slots: { customRender: 'updatedAt' },
   },
@@ -197,6 +204,7 @@ const columns = [
     title: '操作',
     key: 'action',
     width: 80,
+    fixed: 'right',
     slots: { customRender: 'action' },
   },
 ];

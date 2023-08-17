@@ -52,7 +52,11 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 	processor.Result.Summary = scriptBase.ResultStatus.String()
 
 	processor.AddResultToParent()
-	detail := map[string]interface{}{"name": entity.Name, "result": scriptBase.ResultMsg}
+	result := false
+	if scriptBase.ResultStatus == consts.Pass {
+		result = true
+	}
+	detail := map[string]interface{}{"name": entity.Name, "content": entity.Content, "result": result, "output": scriptBase.Output}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 

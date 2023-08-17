@@ -33,7 +33,8 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 	}
 
 	if typ == consts.ConditionCategoryResult {
-		db.Where("entity_type = ? or entity_type = ?", consts.ConditionTypeCheckpoint, consts.ConditionTypeResponseDefine)
+		//db.Where("entity_type = ? or entity_type = ?", consts.ConditionTypeCheckpoint, consts.ConditionTypeResponseDefine)
+		db.Where("entity_type = ?", consts.ConditionTypeCheckpoint)
 	} else if typ == consts.ConditionCategoryConsole {
 		db.Where("entity_type != ?", consts.ConditionTypeCheckpoint)
 	} else if typ == consts.ConditionCategoryResponse {

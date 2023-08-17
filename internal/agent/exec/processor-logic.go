@@ -36,7 +36,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 
 	typ := entity.ProcessorType
 	pass := false
-	detail := map[string]interface{}{"表达式": entity.Expression}
+	detail := map[string]interface{}{"name": entity.Name, "expression": entity.Expression}
 	if typ == consts.ProcessorLogicIf {
 		var result interface{}
 		result, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, entity.ProcessorID)
@@ -49,8 +49,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 				pass = false
 			}
 		}
-		detail["结果"] = pass
-		processor.Result.Detail = commonUtils.JsonEncode(detail)
+
 	} else if typ == consts.ProcessorLogicElse {
 		brother, ok := getPreviousBrother(*processor)
 		if ok && brother.Result.ResultStatus != consts.Pass {
@@ -60,6 +59,8 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 
 	processor.Result.ResultStatus, processor.Result.Summary = getResultStatus(pass)
 	processor.AddResultToParent()
+	detail["result"] = pass
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	if pass {

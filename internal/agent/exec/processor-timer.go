@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
 	"time"
@@ -35,6 +36,8 @@ func (entity ProcessorTimer) Run(processor *Processor, session *Session) (err er
 
 	processor.Result.Summary = fmt.Sprintf("等待\"%d\"秒。", entity.SleepTime)
 	processor.AddResultToParent()
+	detail := map[string]interface{}{"name": entity.Name, "sleepTime": entity.SleepTime}
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	<-time.After(time.Duration(entity.SleepTime) * time.Second)

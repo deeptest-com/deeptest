@@ -89,6 +89,7 @@ const execCancel = () => {
 }
 
 onMounted(async () => {
+  progressStatus.value = 'in_progress';
   await execStart();
   bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
 })

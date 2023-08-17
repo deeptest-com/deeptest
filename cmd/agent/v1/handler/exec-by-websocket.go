@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
@@ -82,6 +83,7 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}
 
+		agentExec.ForceStopExec = true
 		service.CancelAndSendMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
 
 		return

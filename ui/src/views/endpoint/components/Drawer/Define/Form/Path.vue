@@ -180,7 +180,6 @@ function updatePath(e) {
     pathParams
   })
 }
-
 </script>
 <style lang="less" scoped>
 .content {

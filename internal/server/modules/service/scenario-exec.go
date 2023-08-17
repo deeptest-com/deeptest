@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -15,21 +16,26 @@ var (
 )
 
 type ScenarioExecService struct {
-	ScenarioRepo       *repo.ScenarioRepo       `inject:""`
-	ScenarioNodeRepo   *repo.ScenarioNodeRepo   `inject:""`
-	ScenarioReportRepo *repo.ScenarioReportRepo `inject:""`
-	TestLogRepo        *repo.LogRepo            `inject:""`
-	EnvironmentRepo    *repo.EnvironmentRepo    `inject:""`
+	ScenarioRepo          *repo.ScenarioRepo          `inject:""`
+	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
+	ScenarioNodeRepo      *repo.ScenarioNodeRepo      `inject:""`
+	ScenarioReportRepo    *repo.ScenarioReportRepo    `inject:""`
+	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
+	TestLogRepo           *repo.LogRepo               `inject:""`
+	EnvironmentRepo       *repo.EnvironmentRepo       `inject:""`
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 
+	DebugInvokeService    *DebugInvokeService    `inject:""`
 	SceneService          *SceneService          `inject:""`
 	EnvironmentService    *EnvironmentService    `inject:""`
 	DatapoolService       *DatapoolService       `inject:""`
 	ScenarioNodeService   *ScenarioNodeService   `inject:""`
 	ScenarioReportService *ScenarioReportService `inject:""`
+
+	ExecConditionService *ExecConditionService `inject:""`
 }
 
 func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Report, err error) {
@@ -81,6 +87,7 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 		ExecEnvId:    rootResult.EnvironmentId,
 	}
 
+	// generate report
 	s.countRequest(rootResult, &report)
 	s.summarizeInterface(&report)
 
@@ -89,6 +96,61 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 	logs, _ := s.ScenarioReportService.GetById(report.ID)
 	report.Logs = logs.Logs
 	report.Priority = scenario.Priority
+
+	// deal with interface and custom code processor's conditions
+	for _, result := range rootResult.Children {
+		err = s.dealwithResult(result)
+	}
+
+	// save as an interface invocation
+
+	return
+}
+
+func (s *ScenarioExecService) dealwithResult(result *execDomain.ScenarioExecResult) (err error) {
+	processor, err := s.ScenarioProcessorRepo.Get(result.ProcessorId)
+	debugInterface, err := s.DebugInterfaceRepo.Get(processor.EntityId)
+
+	if result.ProcessorType == consts.ProcessorInterfaceDefault {
+		request := domain.DebugData{}
+		json.Unmarshal([]byte(result.ReqContent), &request)
+		request.DebugInterfaceId = debugInterface.ID
+		request.EndpointInterfaceId = debugInterface.EndpointInterfaceId
+		request.CaseInterfaceId = debugInterface.CaseInterfaceId
+		request.DiagnoseInterfaceId = debugInterface.DiagnoseInterfaceId
+		request.ScenarioProcessorId = debugInterface.ScenarioProcessorId
+		request.UsedBy = consts.ScenarioDebug
+		request.ServeId = debugInterface.ServeId
+		request.ServerId = debugInterface.ServerId
+		request.ProjectId = debugInterface.ProjectId
+		request.BaseUrl = debugInterface.BaseUrl
+
+		response := domain.DebugResponse{}
+		json.Unmarshal([]byte(result.RespContent), &response)
+
+		req := domain.SubmitDebugResultRequest{
+			Request:        request,
+			Response:       response,
+			PreConditions:  result.PreConditions,
+			PostConditions: result.PostConditions,
+		}
+		err = s.DebugInvokeService.SubmitResult(req)
+
+		//s.ExecConditionService.SavePreConditionResult(0,
+		//	debugInterface.ID, debugInterface.CaseInterfaceId, debugInterface.EndpointInterfaceId,
+		//	debugInterface.ServeId, processor.ID, processor.ScenarioId, consts.ScenarioDebug,
+		//	result.PreConditions)
+		//
+		//s.ExecConditionService.SavePostConditionResult(0,
+		//	debugInterface.ID, debugInterface.CaseInterfaceId, debugInterface.EndpointInterfaceId,
+		//	debugInterface.ServeId, processor.ID, processor.ScenarioId, consts.ScenarioDebug,
+		//	result.PostConditions)
+
+	} else if len(result.Children) > 0 {
+		for _, result := range result.Children {
+			err = s.dealwithResult(result)
+		}
+	}
 
 	return
 }

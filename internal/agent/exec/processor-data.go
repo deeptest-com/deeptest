@@ -9,9 +9,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
-	"math/rand"
 	"time"
 )
 
@@ -131,11 +131,10 @@ func (entity *ProcessorData) GenerateLoopList() (ret agentDomain.ExecIterator, e
 }
 
 func randArr(arr []domain.VarKeyValuePair) (ret []domain.VarKeyValuePair) {
-	rand.Seed(time.Now().Unix())
+	indexArr := _intUtils.GenUniqueRandNum(0, len(arr), len(arr))
 
-	for range arr {
-		rand := rand.Intn(len(arr))
-		ret = append(ret, arr[rand])
+	for _, item := range indexArr {
+		ret = append(ret, arr[item])
 	}
 
 	return

@@ -88,7 +88,11 @@ export default defineComponent({
                 else if (srcLog.processorType === 'processor_loop_list') {
                     return <span class={'collapse-title'}>{`${variableName} = ${logIndex + 1}`}</span>
                     //  循环区间
-                } else if (srcLog.processorType === 'processor_loop_range') {
+                }
+                else if (srcLog.processorType === 'processor_loop_in') {
+                    return <span class={'collapse-title'}>{`${variableName} = ${logIndex + 1}`}</span>
+                }
+                else if (srcLog.processorType === 'processor_loop_range') {
                     return <span class={'collapse-title'}>{`${variableName} = ${logIndex + 1}`}</span>
                     // 数据迭代
                 } else if (srcLog.processorType === 'processor_loop_data') {

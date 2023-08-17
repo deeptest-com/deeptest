@@ -92,22 +92,26 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 	s.summarizeInterface(&report)
 
 	s.ScenarioReportRepo.Create(&report)
-	s.TestLogRepo.CreateLogs(rootResult, &report)
+
+	// deal with interface and custom code processor's conditions
+	processorToInvokeIdMap := map[uint]uint{}
+	for _, result := range rootResult.Children {
+		err = s.dealwithResult(result, &processorToInvokeIdMap)
+	}
+
+	// create logs
+	s.TestLogRepo.CreateLogs(rootResult, &report, processorToInvokeIdMap)
+
 	logs, _ := s.ScenarioReportService.GetById(report.ID)
 	report.Logs = logs.Logs
 	report.Priority = scenario.Priority
 
-	// deal with interface and custom code processor's conditions
-	for _, result := range rootResult.Children {
-		err = s.dealwithResult(result)
-	}
-
-	// save as an interface invocation
-
 	return
 }
 
-func (s *ScenarioExecService) dealwithResult(result *execDomain.ScenarioExecResult) (err error) {
+func (s *ScenarioExecService) dealwithResult(result *execDomain.ScenarioExecResult, processorToInvokeIdMap *map[uint]uint) (
+	err error) {
+
 	processor, err := s.ScenarioProcessorRepo.Get(result.ProcessorId)
 	debugInterface, err := s.DebugInterfaceRepo.Get(processor.EntityId)
 
@@ -134,21 +138,12 @@ func (s *ScenarioExecService) dealwithResult(result *execDomain.ScenarioExecResu
 			PreConditions:  result.PreConditions,
 			PostConditions: result.PostConditions,
 		}
-		err = s.DebugInvokeService.SubmitResult(req)
-
-		//s.ExecConditionService.SavePreConditionResult(0,
-		//	debugInterface.ID, debugInterface.CaseInterfaceId, debugInterface.EndpointInterfaceId,
-		//	debugInterface.ServeId, processor.ID, processor.ScenarioId, consts.ScenarioDebug,
-		//	result.PreConditions)
-		//
-		//s.ExecConditionService.SavePostConditionResult(0,
-		//	debugInterface.ID, debugInterface.CaseInterfaceId, debugInterface.EndpointInterfaceId,
-		//	debugInterface.ServeId, processor.ID, processor.ScenarioId, consts.ScenarioDebug,
-		//	result.PostConditions)
+		invoke, _ := s.DebugInvokeService.SubmitResult(req)
+		(*processorToInvokeIdMap)[result.ProcessorId] = invoke.ID
 
 	} else if len(result.Children) > 0 {
 		for _, result := range result.Children {
-			err = s.dealwithResult(result)
+			err = s.dealwithResult(result, processorToInvokeIdMap)
 		}
 	}
 

@@ -102,10 +102,12 @@ import settings from "@/config/settings";
 import EnvSelector from "./config/EnvSelector.vue";
 import {handlePathLinkParams} from "@/utils/dom";
 
-const store = useStore<{ Debug: DebugStateType, Endpoint: EndpointStateType, Global: GlobalStateType }>();
+const store = useStore<{ Debug: DebugStateType, Endpoint: EndpointStateType, Global: GlobalStateType, ServeGlobal }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const servers = computed<any[]>(() => store.state.Debug.serves);
+const currService = computed(() => store.state.ServeGlobal.currServe);
+const currServe = computed(() => store.state.Debug.currServe);
 
 const props = defineProps({
   onSave: {
@@ -141,10 +143,6 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} = useVariableReplace('endpointInterfaceUrl')
 
-const listServer = async (serveId) => {
-  await store.dispatch('Debug/listServes', { serveId })
-}
-
 const showBaseUrl = () => {
   const notShow = debugData.value.usedBy === UsedBy.DiagnoseDebug
       || (debugData.value.usedBy === UsedBy.ScenarioDebug &&
@@ -164,38 +162,10 @@ const isShowSync = computed(() => {
   return ret
 })
 
-const getEnvUrl = () => {
-  console.log('getEnvUrl', debugData?.value)
-
-  if (!debugData.value || !servers.value) return
-
-  servers.value?.forEach((item) => {
-    if (debugData.value.serverId === item.id && debugData.value.baseUrl) {
-      debugData.value.baseUrl = item.url
-      return
-    }
-  })
-}
-
-const currServeId = ref(0)
-const currServerId = ref(0)
 watch(debugData, (newVal) => {
-  console.log('watch debugData', debugData.value.serveId, debugData.value.currServerId)
-
-  if (newVal.serveId != currServeId.value) {
-    listServer(debugData.value.serveId)
-    currServeId.value = debugData.value.serveId
-  }
-
-  if (currServerId.value != newVal.serverId) {
-    getEnvUrl()
-    currServerId.value = newVal.serverId
-  }
-
   if (usedBy === UsedBy.InterfaceDebug || usedBy === UsedBy.CaseDebug) {
     debugData.value.url = debugData?.value.url || endpointDetail.value?.path || ''
   }
-
 }, {immediate: true, deep: true});
 
 const serverId = computed(() => {
@@ -321,6 +291,15 @@ function validatePath() {
 //   }
 //   showContextMenu.value = false
 // }
+
+watch(() => {
+  return currServe.value;
+}, val => {
+  debugData.value.baseUrl = val.url;
+  debugData.value.serveId = val.serveId;
+}, {
+  immediate: true,
+})
 </script>
 
 <style lang="less" scoped>

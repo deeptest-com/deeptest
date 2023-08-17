@@ -28,7 +28,7 @@
       </template>
       <!-- ::::循环列表 -->
       <template v-if="record.processorType === 'processor_loop_in'">
-        <p class="text">从 <code>{{ `${detail?.list}` }}</code>中 <code>{{ `${!detail?.isRand ? '顺序' : '随机'}` }}</code>读取变量 <code>{{ `${detail?.variableName}` }}</code></p>
+        <p class="text">从 <code>{{ `${detail?.list}` }}</code>中 <code>{{ `${!detail?.isRand ? '顺序' : '随机'}` }}</code>取值赋给变量 <code>{{ `${detail?.variableName}` }}</code></p>
       </template>
       <!-- ::::循环直到 -->
       <template v-if="record.processorType === 'processor_loop_until'">
@@ -36,7 +36,7 @@
       </template>
       <!-- ::::循环区间 -->
       <template v-if="record.processorType === 'processor_loop_range'">
-        <p class="text">在区间 <code>{{ `[${detail?.range}]` }}</code> 中 <code>{{ `${!detail?.isRand ? '顺序' : '随机'}` }}</code> 读取变量 <code>{{ `${detail?.variableName}` }}</code></p>
+        <p class="text">从区间 <code>{{ `[${detail?.range}]` }}</code> 中 <code>{{ `${!detail?.isRand ? '顺序' : '随机'}` }}</code> 取值赋给变量 <code>{{ `${detail?.variableName}` }}</code></p>
       </template>
       <!-- ::::跳出循环 -->
       <template v-if="record.processorType === 'processor_loop_break'">

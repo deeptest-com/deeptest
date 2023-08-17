@@ -16,6 +16,7 @@
             draggable
             blockNode
             showIcon
+            :selectedKeys="selectedKeys"
             :expandedKeys="expandedKeys"
             :auto-expand-parent="autoExpandParent"
             @drop="onDrop"
@@ -149,6 +150,8 @@ watch(() => {
   return currProject.value;
 }, async (newVal) => {
   if (newVal?.id) {
+    selectedKeys.value = [];
+    expandedKeys.value = [];
     await loadCategories();
   }
 }, {

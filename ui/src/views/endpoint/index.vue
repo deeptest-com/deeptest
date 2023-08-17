@@ -513,6 +513,7 @@ const filter = ref()
 watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
   const [newProjectId, newServeId] = newVal;
   if (newProjectId !== undefined) {
+    selectedCategoryId.value = "";
     await loadList(1, pagination.value.pageSize, {
       serveId: newServeId || 0,
     });

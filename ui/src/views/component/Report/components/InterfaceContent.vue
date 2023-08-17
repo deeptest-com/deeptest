@@ -1,15 +1,16 @@
 <template>
   <div class="endpoint-expand">
     <div class="endpoint-expand-content">
-      <span v-if="endpointData.resultStatus === 'fail'">
-        <exclamation-circle-outlined style="color: #f5222d" /> &nbsp;
+      <span v-if="endpointData.resultStatus === 'fail'" style="color: #f5222d">
+        <exclamation-circle-outlined /> &nbsp;
         {{ resContent.statusContent || "" }}</span
       >
-      <span v-if="endpointData.resultStatus === 'pass'">
-        <check-circle-outlined style="color: #04c495" /> &nbsp;
+      <span v-if="endpointData.resultStatus === 'pass'" style="color: #14945a">
+        <check-circle-outlined /> &nbsp;
         返回数据结构校验通过
       </span>
     </div>
+    <ResponseResult :show-status="false" :data="{ ...resContent }" :show-background="false" />
   </div>
 </template>
 <script setup lang="ts">
@@ -18,6 +19,7 @@ import {
   ExclamationCircleOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons-vue";
+import ResponseResult from '@/views/component/debug/response/Renderer/Result.vue';
 
 const props = defineProps({
   collapseKey: {
@@ -78,7 +80,7 @@ const resContent = computed(() =>
 
     &.endpoint-success {
       background: #e6fff4;
-      color: #04c495;
+      color: #14945a;
     }
 
     &.endpoint-error {
@@ -101,7 +103,7 @@ const resContent = computed(() =>
     margin-right: 36px;
 
     &.endpoint-success {
-      color: #04c495;
+      color: #14945a;
     }
 
     &.endpoint-error,

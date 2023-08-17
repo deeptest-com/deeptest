@@ -74,6 +74,25 @@ export default defineComponent({
                 return <LogContent data={log}/>;
             }
 
+            // 渲染场景的标题，主要针对迭代场景，需要标识当前迭代的序号
+            function renderCollapseTitle(log, logIndex, srcLog) {
+                // 迭代直到  + 迭代次数 展示文案为 第X轮
+                if (srcLog.processorType === 'processor_loop_time' || srcLog.processorType === 'processor_loop_until') {
+                    return <span class={'collapse-title'}>{`第 ${logIndex + 1} 轮`}</span>
+                }
+                // 迭代列表
+                else if (srcLog.processorType === 'processor_loop_list') {
+                    return <span class={'collapse-title'}>{`${srcLog?.var || 'X'} = ${23}`}</span>
+                    //  循环区间
+                } else if (srcLog.processorType === 'processor_loop_range') {
+                    return <span class={'collapse-title'}>{`${srcLog?.var || 'X'} = ${23}`}</span>
+                    // 数据迭代
+                } else if (srcLog.processorType === 'processor_loop_data') {
+                    return <span class={'collapse-title'}>{`${srcLog?.var || 'X'} = ${23}`}</span>
+                }
+                return null;
+            }
+
             const renderLogs = (log) => {
                 if (!log?.id) {
                     return;
@@ -82,10 +101,12 @@ export default defineComponent({
                                          showArrow={showArrowScenarioType.includes(log.processorType)}>
                     {renderContent(log)}
                     {
-                        log?.logs?.map((log) => {
-                            return <div class={log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item'}>
+                        log?.logs?.map((item, itemIndex, srcLog) => {
+                            return <div
+                                class={item.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item'}>
+                                {renderCollapseTitle(item, itemIndex, log)}
                                 <a-collapse>
-                                    {renderLogs(log)}
+                                    {renderLogs(item)}
                                 </a-collapse>
                             </div>
                         })

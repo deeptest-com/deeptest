@@ -8,6 +8,7 @@
           <a-form-item label="变量名称" v-bind="validateInfos.variableName">
             <a-input v-model:value="modelRef.variableName"
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
+            <div class="dp-input-tip">直接写变量名如userName，而不是${userName}。</div>
           </a-form-item>
 
           <a-form-item label="备注" v-bind="validateInfos.comments">

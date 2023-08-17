@@ -115,16 +115,16 @@ const props = defineProps(['record'])
 
 const emits = defineEmits(['more']);
 const visible = ref(false);
-const data = computed(() => {
+const data:any = computed(() => {
   return props.record;
 })
 
 const downloadUrl = computed(() => {
-  return `${window.location.origin}/${props?.record?.datail?.upload}`
+  return `${window.location.origin}/${detail?.value?.url}`
 })
 
 const detail = computed(() => {
-  return JSON.parse(props.record?.detail || props.record?.Detail || '{}');
+  return JSON.parse(props.record?.detail || '{}');
 })
 
 function clickMore() {

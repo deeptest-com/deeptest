@@ -5,6 +5,10 @@ import (
 )
 
 func GenerateByteItems(start byte, end byte, step int, rand bool, repeat int, repeatTag string) (ret []interface{}) {
+	if start > end && step > 0 || start < end && step < 0 {
+		step = step * -1
+	}
+
 	ret = generateByteItemsByStep(start, end, step, repeat, repeatTag)
 
 	if rand {

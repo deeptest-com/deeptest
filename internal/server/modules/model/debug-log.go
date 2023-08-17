@@ -16,6 +16,7 @@ type ExecLogProcessor struct {
 	EndTime        *time.Time            `json:"endTime"`
 
 	ParentId uint `json:"parentId"`
+	InvokeId uint `json:"invokeId"`
 	ReportId uint `json:"reportId"`
 	UseID    uint `json:"useId"`
 

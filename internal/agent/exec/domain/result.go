@@ -19,9 +19,8 @@ type ScenarioExecResult struct {
 	StartTime        *time.Time            `json:"startTime,omitempty"`
 	EndTime          *time.Time            `json:"endTime,omitempty"`
 
-	ParentId int `json:"parentId"`
-	//ReportId uint `json:"reportId"`
-	UseID uint `json:"useId,omitempty"`
+	ParentId int  `json:"parentId"`
+	UseID    uint `json:"useId,omitempty"`
 
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
 	ProcessorType     consts.ProcessorType     `json:"processorType"`

@@ -1,11 +1,10 @@
 <template>
   <div class="param-grid-main">
-    <div v-if="title"  class="head"
-         :class="[list.length===0?'hidden':'']">
+    <div v-if="title"  class="head">
       <ConBoxTitle :title="title" />
     </div>
 
-    <div class="items" :class="[list.length===0?'hidden':'']">
+    <div class="items">
       <a-table :dataSource="list || []" :columns="columns"
                :rowKey="(record, index) => {return index}"
                :tableLayout="'fixed'"

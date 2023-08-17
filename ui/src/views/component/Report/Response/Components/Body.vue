@@ -1,11 +1,13 @@
 <template>
     <div class="editor-wrapper">
         <MonacoEditor 
+            v-if="!isImage(data.contentType)"
             class="editor" 
             :value="data.content"
             :language="data.contentLang" 
             theme="vs" 
             :options="editorOptions" />
+        <img v-else class="image" :src="'data:' + data.contentType + ';base64,' + data.content" />    
     </div>
 </template>
 <script setup lang="ts">
@@ -18,12 +20,17 @@ const props = defineProps({
         type: Object,
         default: () => ({
             content: '',
-            contentLang: ''
+            contentLang: '',
+            contentType: '',
         })
     }
 });
 
 const editorOptions = ref(MonacoOptions);
+
+const isImage = (type) => {
+  return type && type.indexOf("image") > -1;
+};
 
 watch(() => {
     return props.data;
@@ -45,6 +52,11 @@ watch(() => {
 
     &>div {
         height: 100%;
+    }
+
+    .image {
+      max-width: 100%;
+      width: auto;
     }
 
 

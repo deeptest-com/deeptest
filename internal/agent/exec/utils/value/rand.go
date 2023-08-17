@@ -1,10 +1,12 @@
 package valueUtils
 
-func RandItems(items []interface{}) (ret []interface{}) {
-	length := len(items)
+import _intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
 
-	for i := 0; i < len(items); i++ {
-		ret = append(ret, items[RandNum(10000)%length])
+func RandItems(items []interface{}) (ret []interface{}) {
+	indexArr := _intUtils.GenUniqueRandNum(0, len(items), len(items))
+
+	for _, item := range indexArr {
+		ret = append(ret, items[item])
 	}
 
 	return

@@ -19,7 +19,7 @@
     <div class="summary">
       <!-- ::::数据迭代 -->
       <template v-if="record.processorType === 'processor_data_default'">
-        <p class="text">从<a  :href="downloadUrl">文件名</a>中{{ `${detail?.sleepTime}` }}读取变量<code>{{ `${detail?.sleepTime}` }}</code>， 且重复 <code>{{ `${detail?.sleepTime}` }}</code> 次
+        <p class="text">从 <a  :href="downloadUrl">{{`${detail?.url}`}}</a> 中取值赋给变量<code>{{ `${detail?.variableName}` }}</code>， 且重复 <code>{{ `${detail?.repeatTimes}` }}</code> 次
         </p>
       </template>
       <!-- ::::迭代次数：processor_loop_time -->
@@ -68,7 +68,7 @@
       </template>
       <!-- ::::清除变量 -->
       <template v-if="record.processorType === 'processor_variable_clear'">
-        <p class="text">清除变量<code>{{ `${detail?.sleepTime}` }}</code></p>
+        <p class="text">清除变量<code>{{ `${detail?.variableName}` }}</code></p>
       </template>
       <!-- ::::输出 -->
       <template v-if="record.processorType === 'processor_print_default'">
@@ -120,7 +120,7 @@ const data = computed(() => {
 })
 
 const downloadUrl = computed(() => {
-  return `${window.location.origin}/${props?.record?.datail?.path}`
+  return `${window.location.origin}/${props?.record?.datail?.upload}`
 })
 
 const detail = computed(() => {

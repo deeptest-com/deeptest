@@ -42,6 +42,7 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	if entity.ProcessorType == consts.ProcessorLoopBreak {
@@ -98,6 +99,8 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 			if child.Disable {
 				continue
 			}
+			//执行轮次
+			child.Round = uint(index + 1)
 
 			(*child).Run(session)
 
@@ -151,6 +154,8 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 			if child.Disable {
 				continue
 			}
+
+			child.Round = uint(index + 1)
 
 			(*child).Run(session)
 

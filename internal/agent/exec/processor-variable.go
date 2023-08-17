@@ -34,6 +34,7 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 	detail := map[string]interface{}{"name": entity.Name, "variableName": entity.VariableName}
 	if entity.ProcessorType == consts.ProcessorVariableSet {

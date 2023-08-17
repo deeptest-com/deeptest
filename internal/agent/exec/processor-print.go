@@ -33,6 +33,7 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	value := ReplaceVariableValue(entity.RightValue)

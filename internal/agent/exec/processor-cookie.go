@@ -40,6 +40,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	cookieName := entity.CookieName

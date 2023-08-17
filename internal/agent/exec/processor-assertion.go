@@ -32,6 +32,7 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	ret, err := EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID)

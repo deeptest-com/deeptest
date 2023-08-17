@@ -32,6 +32,7 @@ func (entity ProcessorTimer) Run(processor *Processor, session *Session) (err er
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	processor.Result.Summary = fmt.Sprintf("等待\"%d\"秒。", entity.SleepTime)

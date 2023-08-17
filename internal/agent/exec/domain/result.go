@@ -59,6 +59,8 @@ type ScenarioExecResult struct {
 	Cost int64 `json:"cost,omitempty"`
 
 	Detail string `json:"detail,omitempty"`
+
+	Round uint `json:"round,omitempty"`
 }
 
 type PlanExecResult struct {

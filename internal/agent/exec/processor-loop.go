@@ -44,7 +44,6 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 		ParentLogId:       processor.Parent.Result.LogId,
 	}
 
-	detail := map[string]interface{}{}
 	if entity.ProcessorType == consts.ProcessorLoopBreak {
 		processor.Result.WillBreak, processor.Result.Summary, processor.Result.Detail = entity.getBeak()
 
@@ -64,7 +63,7 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 	}
 
 	processor.AddResultToParent()
-	processor.Result.Detail = commonUtils.JsonEncode(detail)
+	processor.Result.Detail = commonUtils.JsonEncode(entity)
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()

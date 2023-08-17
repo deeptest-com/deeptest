@@ -63,7 +63,7 @@
                     loadList(1,size);
                   },
               }"
-                       :scroll="{ x: '1280px' || true }"
+                       :scroll="{ x: '1240px' || true }"
                        :columns="columns"
                        :data-source="list">
                 <template #colTitle="{text,record}">
@@ -109,6 +109,9 @@
                   <div class="customTagsColRender">
                     {{username(record.updateUser)}}
                   </div>
+                </template>
+                <template #updatedAt="{ record, column }">
+                  <TooltipCell :text="record.updatedAt" :width="column.width" />
                 </template>
                 <template #colPath="{text}">
                   <div class="customPathColRender">
@@ -200,6 +203,8 @@ import {message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
 import Tags from './components/Tags/index.vue';
+import TooltipCell from '@/components/Table/tooltipCell.vue';
+
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
@@ -225,14 +230,13 @@ const columns = [
     title: '接口名称',
     dataIndex: 'title',
     slots: {customRender: 'colTitle'},
-    ellipsis: true,
-    width: 150,
+    width: 300,
   },
   {
     title: '状态',
     dataIndex: 'status',
     slots: {customRender: 'colStatus'},
-    width: 150,
+    width: 120,
   },
   {
     title: '标签',
@@ -244,14 +248,14 @@ const columns = [
     title: '创建人',
     dataIndex: 'createUser',
     slots: {customRender: 'colCreateUser'},
-    width: 100,
+    width: 110,
     ellipsis: true
   },
   {
     title: '更新人',
     dataIndex: 'updateUser',
     slots: {customRender: 'colUpdateUser'},
-    width: 100,
+    width: 110,
     ellipsis: true
   },
   {
@@ -265,12 +269,12 @@ const columns = [
     title: '所属服务',
     dataIndex: 'serveName',
     ellipsis: true,
-    width: 100,
+    width: 110,
   },
   {
     title: '最近更新',
     dataIndex: 'updatedAt',
-    width: 200,
+    width: 180,
   },
   {
     title: '操作',
@@ -509,6 +513,7 @@ const filter = ref()
 watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
   const [newProjectId, newServeId] = newVal;
   if (newProjectId !== undefined) {
+    selectedCategoryId.value = "";
     await loadList(1, pagination.value.pageSize, {
       serveId: newServeId || 0,
     });

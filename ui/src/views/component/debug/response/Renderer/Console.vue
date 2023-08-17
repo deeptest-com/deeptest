@@ -1,5 +1,5 @@
 <template>
-  <div class="response-console-main">
+  <div class="response-console-main" v-if="consoleData.length">
     <div v-for="(item, index) in consoleData"
          :key="index"
          :class="getResultClass(item)" class="item">
@@ -26,21 +26,27 @@
       <span v-html="item.resultMsg"></span>
     </div>
   </div>
+  <Empty :desc="'暂无数据'" style="margin-top: 100px" v-else/>
 </template>
 
 <script setup lang="ts">
-import {computed, inject, watch} from "vue";
+import {computed, inject, watch, defineProps} from "vue";
 import {useStore} from "vuex";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {useI18n} from "vue-i18n";
 import {ConditionType, ResultStatus} from "@/utils/enum";
 import { CheckCircleOutlined, CloseCircleOutlined} from '@ant-design/icons-vue';
 import IconSvg from "@/components/IconSvg";
+import Empty from "@/components/others/empty.vue";
 
 const {t} = useI18n();
 
+const props = defineProps<{
+  data?: any;
+}>();
+
 const store = useStore<{  Debug: Debug }>();
-const responseData = computed<any>(() => store.state.Debug.responseData);
+const responseData = computed<any>(() => props.data || store.state.Debug.responseData);
 const consoleData = computed<any>(() => store.state.Debug.consoleData);
 
 watch(responseData, (newVal) => {

@@ -95,7 +95,7 @@ const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
 
 onMounted(() => {
-  if (!selectedMethod.value && endpointDetail.value?.interfaces?.length) {
+  if (endpointDetail.value?.interfaces?.length) {
     selectedMethod.value = endpointDetail.value.interfaces[0].method;
   }
 })

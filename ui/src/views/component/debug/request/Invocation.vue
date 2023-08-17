@@ -166,6 +166,8 @@ watch(debugData, (newVal) => {
   if (usedBy === UsedBy.InterfaceDebug || usedBy === UsedBy.CaseDebug) {
     debugData.value.url = debugData?.value.url || endpointDetail.value?.path || ''
   }
+  debugData.value.baseUrl = currServe.value.url;
+  debugData.value.serveId = currServe.value.serveId;
 }, {immediate: true, deep: true});
 
 const serverId = computed(() => {
@@ -295,10 +297,22 @@ function validatePath() {
 watch(() => {
   return currServe.value;
 }, val => {
+  console.log(val);
+  console.log(debugData.value);
   debugData.value.baseUrl = val.url;
   debugData.value.serveId = val.serveId;
 }, {
   immediate: true,
+})
+
+watch(() => {
+  return currService.value.id;
+}, async (val) => {
+  if (val) {
+    await store.dispatch('Debug/listServes', {serveId: val});
+  }
+}, {
+  immediate: true
 })
 </script>
 

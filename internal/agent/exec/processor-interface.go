@@ -110,7 +110,11 @@ func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, sessio
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 
-			processor.Result.ScriptsResult = append(processor.Result.ScriptsResult, scriptBase)
+			interfaceExecCondition := domain.InterfaceExecCondition{
+				Type: condition.Type,
+			}
+			interfaceExecCondition.Raw, _ = json.Marshal(scriptBase)
+			processor.Result.PreConditions = append(processor.Result.PreConditions, interfaceExecCondition)
 		}
 	}
 
@@ -135,7 +139,11 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, sessi
 				SetVariable(processor.ParentId, extractorBase.Variable, extractorBase.Result, consts.Public)
 			}
 
-			processor.Result.ExtractorsResult = append(processor.Result.ExtractorsResult, extractorBase)
+			interfaceExecCondition := domain.InterfaceExecCondition{
+				Type: condition.Type,
+			}
+			interfaceExecCondition.Raw, _ = json.Marshal(extractorBase)
+			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 
 		} else if condition.Type == consts.ConditionTypeCookie {
 			var cookieBase domain.CookieBase
@@ -163,7 +171,11 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, sessi
 				SetVariable(processor.ParentId, cookieBase.VariableName, cookieBase.Result, consts.Public)
 			}
 
-			processor.Result.CookiesResult = append(processor.Result.CookiesResult, cookieBase)
+			interfaceExecCondition := domain.InterfaceExecCondition{
+				Type: condition.Type,
+			}
+			interfaceExecCondition.Raw, _ = json.Marshal(cookieBase)
+			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 
 		} else if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase
@@ -176,7 +188,11 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, sessi
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 
-			processor.Result.ScriptsResult = append(processor.Result.ScriptsResult, scriptBase)
+			interfaceExecCondition := domain.InterfaceExecCondition{
+				Type: condition.Type,
+			}
+			interfaceExecCondition.Raw, _ = json.Marshal(scriptBase)
+			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 		}
 	}
 
@@ -188,22 +204,14 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, sessi
 				continue
 			}
 
-			brother, ok := getPreviousBrother(*processor)
-			if !ok || brother.EntityType != consts.ProcessorInterfaceDefault {
-				processor.Result.Summary = fmt.Sprintf("先前节点不是接口，无法应用提取器。")
-				processor.AddResultToParent()
-				execUtils.SendExecMsg(*processor.Result, session.WsMsg)
-				return
-			}
-
-			resp := domain.DebugResponse{}
-			json.Unmarshal([]byte(brother.Result.RespContent), &resp)
-
-			err = ExecCheckPoint(&checkpointBase, resp, processor.ID)
+			err = ExecCheckPoint(&checkpointBase, entity.Response, processor.ID)
 			checkpointHelper.GenResultMsg(&checkpointBase)
 
-			processor.Result.CheckpointsResult = append(processor.Result.CheckpointsResult, checkpointBase)
-
+			interfaceExecCondition := domain.InterfaceExecCondition{
+				Type: condition.Type,
+			}
+			interfaceExecCondition.Raw, _ = json.Marshal(checkpointBase)
+			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 		}
 	}
 

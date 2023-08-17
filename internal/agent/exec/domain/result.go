@@ -35,10 +35,8 @@ type ScenarioExecResult struct {
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode,omitempty"`
 	HttpRespStatusContent string              `json:"httpStatusContent,omitempty"`
 
-	ExtractorsResult  []domain.ExtractorBase  `json:"extractorsResult,omitempty"`
-	CookiesResult     []domain.CookieBase     `json:"extractorsResult,omitempty"`
-	CheckpointsResult []domain.CheckpointBase `json:"checkpointsResult,omitempty"`
-	ScriptsResult     []domain.ScriptBase     `json:"scriptsResult,omitempty"`
+	PreConditions  []domain.InterfaceExecCondition `json:"preConditions"`
+	PostConditions []domain.InterfaceExecCondition `json:"postConditions"`
 
 	// for processor
 	ProcessorId      uint   `json:"processorId,omitempty"`

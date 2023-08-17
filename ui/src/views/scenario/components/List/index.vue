@@ -273,7 +273,7 @@ const onEditFinish = () => {
   console.log('onEditFinish')
   isEditVisible.value = false
 
-  getList(pagination.value.current, nodeDataCategory.value.id)
+  getList(1, nodeDataCategory.value.id)
 }
 
 const remove = (id: number) => {

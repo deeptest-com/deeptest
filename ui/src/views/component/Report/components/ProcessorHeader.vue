@@ -19,83 +19,82 @@
     <div class="summary">
       <!-- ::::数据迭代 -->
       <template v-if="record.processorType === 'processor_data_default'">
-        <span class="text">
-          从<a class="text" :href="downloadUrl">文件名</a>中{{ `随机` }}读取变量<code>{{ `a` }}</code>， 且重复 <code>{{ 3 }}</code> 次
-        </span>
+        <p class="text">从<a  :href="downloadUrl">文件名</a>中{{ `随机` }}读取变量<code>{{ `a` }}</code>， 且重复 <code>{{ 3 }}</code> 次
+        </p>
       </template>
       <!-- ::::迭代次数：processor_loop_time -->
       <template v-if="record.processorType === 'processor_loop_time'">
-        <span class="text">迭代<code>{{ 3 }}</code>次</span>
+        <p class="text">迭代<code>{{ 3 }}</code>次</p>
       </template>
       <!-- ::::循环列表 -->
       <template v-if="record.processorType === 'processor_loop_in'">
-        <span class="text">在 <code>{{ `a,b,c,d` }}</code> 中 {{ `随机` }} 读取变量 <code>{{ `a` }}</code></span>
+        <p class="text">在 <code>{{ `a,b,c,d` }}</code> 中 {{ `随机` }} 读取变量 <code>{{ `a` }}</code></p>
       </template>
 
       <!-- ::::循环直到 -->
       <template v-if="record.processorType === 'processor_loop_until'">
-        <span class="text">循环直到 <code>{{ `a-b` }}</code> 为  <code>{{ `true` }}</code></span>
+        <p class="text">循环直到 <code>{{ `a-b` }}</code> 为  <code>{{ `true` }}</code></p>
       </template>
 
       <!-- ::::循环区间 -->
       <template v-if="record.processorType === 'processor_loop_range'">
-        <span class="text">在区间 <code>{{ `[a-b]` }}</code> 中 {{ `随机` }} 读取变量 <code>{{ `a` }}</code></span>
+        <p class="text">在区间 <code>{{ `[a-b]` }}</code> 中 {{ `随机` }} 读取变量 <code>{{ `a` }}</code></p>
       </template>
 
       <!-- ::::跳出循环 -->
       <template v-if="record.processorType === 'processor_loop_break'">
-        <span class="text">满足条件 <code>{{ `a-b>0` }}</code> 时， 跳出迭代</span>
+        <p class="text">满足条件 <code>{{ `a-b>0` }}</code> 时， 跳出迭代</p>
       </template>
 
       <!-- ::::条件分支-如果 -->
       <template v-if="record.processorType === 'processor_logic_if'">
-        <span class="text">如果 <code>{{ `a-b` }}</code> 为 <code>true</code></span>
+        <p class="text">如果 <code>{{ `a-b` }}</code> 为 <code>true</code></p>
       </template>
 
       <!-- ::::否则 -->
       <template v-if="record.processorType === 'processor_logic_else'">
-        <span class="text">否则</span>
+        <p class="text">否则</p>
       </template>
 
       <!-- ::::等待时间 -->
       <template v-if="record.processorType === 'processor_time_default'">
-        <span class="text">等待 <code>{{ `2` }}</code> 秒</span>
+        <p class="text">等待 <code>{{ `2` }}</code> 秒</p>
       </template>
 
 
       <!-- ::::设置Cookie -->
       <template v-if="record.processorType === 'processor_cookie_set'">
-        <span class="text">设置 <code>{{ `Cookie1` }}</code> 为 <code>{{ `122` }}</code></span>
+        <p class="text">设置 <code>{{ `Cookie1` }}</code> 为 <code>{{ `122` }}</code></p>
       </template>
 
       <!-- ::::清空Cookie -->
       <template v-if="record.processorType === 'processor_cookie_clear'">
-        <span class="text">清除 <code>{{ `Cookie1` }}</code></span>
+        <p class="text">清除 <code>{{ `Cookie1` }}</code></p>
       </template>
 
       <!-- ::::设置变量 -->
       <template v-if="record.processorType === 'processor_variable_set'">
-        <span class="text">设置变量 <code>{{ `x` }}</code>为<code>{{ `1` }}</code></span>
+        <p class="text">设置变量 <code>{{ `x` }}</code>为<code>{{ `1` }}</code></p>
       </template>
 
       <!-- ::::删除变量 -->
       <template v-if="record.processorType === 'processor_variable_clear'">
-        <span class="text">清除变量<code>{{ `x` }}</code></span>
+        <p class="text">清除变量<code>{{ `x` }}</code></p>
       </template>
 
       <!-- ::::输出 -->
       <template v-if="record.processorType === 'processor_print_default'">
-        <span class="text">输出：{{ record?.Detail?.['结果'] || '无输出数据' }} x</span>
+        <p class="text">输出：{{ record?.Detail?.['结果'] || '无输出数据' }} x</p>
       </template>
 
       <!-- ::::断言 -->
       <template v-if="record.processorType === 'processor_assertion_default'">
-        <span class="text">断言表达式：<code>{{ `a - x` }}</code> x</span>
+        <p class="text">断言表达式：<code>{{ `a - x` }}</code></p>
       </template>
 
       <!-- ::::自定义代码 -->
       <template v-if="record.processorType === 'processor_custom_code'">
-        <span class="text"><code>{{ `hello worold console.log` }}</code></span>
+        <p class="text"><code>{{ `hello worold console.log` }}</code></p>
       </template>
     </div>
 
@@ -177,6 +176,10 @@ function clickMore() {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    margin-right: 16px;
+    white-space: nowrap; /* 禁止换行 */
+    overflow: hidden; /* 超出部分隐藏 */
+    text-overflow: ellipsis; /* 显示省略号 */
   }
 
   .right {
@@ -186,6 +189,9 @@ function clickMore() {
   .text {
     display: inline-block;
     margin: 0 2px;
+    white-space: nowrap; /* 禁止换行 */
+    overflow: hidden; /* 超出部分隐藏 */
+    text-overflow: ellipsis; /* 显示省略号 */
   }
 
   .status {

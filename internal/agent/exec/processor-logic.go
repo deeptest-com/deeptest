@@ -65,6 +65,9 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 
 	if pass {
 		for _, child := range processor.Children {
+			if ForceStopExec {
+				break
+			}
 			if child.Disable {
 				continue
 			}

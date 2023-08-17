@@ -427,6 +427,10 @@ export const showScenarioExecStatus = {
         'success': 'TURE',
         'fail': 'FALSE',
     },
+    'processor_logic_else': {
+        'success': 'TURE',
+        'fail': 'FALSE',
+    },
     'processor_custom_code': {
         'success': '执行成功',
         'fail': '执行失败'

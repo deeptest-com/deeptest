@@ -33,6 +33,9 @@ func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err err
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	for _, child := range processor.Children {
+		if ForceStopExec {
+			break
+		}
 		if child.Disable {
 			continue
 		}

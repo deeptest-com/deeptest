@@ -74,6 +74,9 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 
 func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
 	for index, item := range iterator.Items {
+		if ForceStopExec {
+			break
+		}
 		if DemoTestSite != "" && index > 2 {
 			break
 		}
@@ -89,6 +92,9 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
 
 		for _, child := range processor.Children {
+			if ForceStopExec {
+				break
+			}
 			if child.Disable {
 				continue
 			}
@@ -111,6 +117,9 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 
 	index := 0
 	for {
+		if ForceStopExec {
+			break
+		}
 		if DemoTestSite != "" && index > 2 {
 			break
 		}
@@ -136,6 +145,9 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		}
 
 		for _, child := range processor.Children {
+			if ForceStopExec {
+				break
+			}
 			if child.Disable {
 				continue
 			}

@@ -431,6 +431,10 @@ export const showScenarioExecStatus = {
         'success': 'TURE',
         'fail': 'FALSE',
     },
+    'processor_loop_break': {
+        'success': '满足',
+        'fail': '不满足',
+    },
     'processor_custom_code': {
         'success': '执行成功',
         'fail': '执行失败'
@@ -438,7 +442,7 @@ export const showScenarioExecStatus = {
     'processor_assertion_default': {
         'success': '通过',
         'fail': '不通过'
-    }
+    },
 }
 
 /**

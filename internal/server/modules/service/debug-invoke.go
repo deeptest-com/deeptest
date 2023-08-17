@@ -34,7 +34,7 @@ type DebugInvokeService struct {
 	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
 }
 
-func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (err error) {
+func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (invoke model.DebugInvoke, err error) {
 	usedBy := req.Request.UsedBy
 	var endpointId, serveId, processorId, scenarioId, projectId uint
 
@@ -65,7 +65,7 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 		projectId = caseInterface.ProjectId
 	}
 
-	invoke, err := s.Create(req, serveId, processorId, scenarioId, projectId)
+	invoke, err = s.Create(req, serveId, processorId, scenarioId, projectId)
 
 	s.ExecConditionService.SavePreConditionResult(invoke.ID,
 		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,

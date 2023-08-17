@@ -40,7 +40,7 @@ func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err er
 
 	//processor.Result.Summary = strings.ReplaceAll(fmt.Sprintf("%s为\"%v\"。", entity.RightValue, value), "<nil>", "空")
 	processor.Result.Summary = fmt.Sprintf("%s", entity.RightValue)
-	detail := map[string]interface{}{"结果": value}
+	detail := map[string]interface{}{"name": entity.Name, "result": value}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()

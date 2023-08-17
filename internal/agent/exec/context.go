@@ -7,6 +7,8 @@ import (
 )
 
 var (
+	ForceStopExec = false
+
 	ServerUrl     = ""
 	ServerApiPath = "api/v1"
 	ServerToken   = ""

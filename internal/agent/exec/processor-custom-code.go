@@ -50,10 +50,10 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 	}
 
 	processor.Result.Summary = scriptBase.ResultStatus.String()
-	detail := map[string]interface{}{"结果": scriptBase.ResultMsg}
-	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()
+	detail := map[string]interface{}{"name": entity.Name, "result": scriptBase.ResultMsg}
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()

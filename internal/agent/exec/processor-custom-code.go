@@ -49,8 +49,6 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 		SetVariable(processor.ParentId, item.Name, item.Value, consts.Public)
 	}
 
-	processor.Result.ScriptsResult = append(processor.Result.ScriptsResult, scriptBase)
-
 	processor.Result.Summary = scriptBase.ResultStatus.String()
 	detail := map[string]interface{}{"结果": scriptBase.ResultMsg}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)

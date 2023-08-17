@@ -13,15 +13,15 @@
     </div>
 
     <template v-if="resultData?.length > 0">
-      <ResponseDefine v-if="entityData.codes.length > 0" 
-        :codes="entityData.codes" 
+      <ResponseDefine v-if="entityData && entityData.codes.length > 0"
+        :codes="entityData.codes"
         :code="entityData.code?entityData.code:'200'"
         :open="!entityData.disabled"
         @change="change"
         />
-      <ResultMsg :responseData="responseDataForDefine"/> 
+      <ResultMsg :responseData="responseDataForDefine"/>
       <div class="title" v-if="responseDataForAssert.length > 0">断言结果</div>
-      <ResultMsg :responseData="responseDataForAssert"/> 
+      <ResultMsg :responseData="responseDataForAssert"/>
     </template>
   </div>
 </template>
@@ -52,7 +52,7 @@ watch(responseData, (newVal) => {
 
 
 
-const change = async (formState:any)=>{ 
+const change = async (formState:any)=>{
   console.log(formState)
   await store.dispatch("Debug/saveResponseDefine",{id:entityData.value.id,disabled:!formState.open,code:formState.code} )
 }

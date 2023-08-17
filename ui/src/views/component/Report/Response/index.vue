@@ -1,102 +1,97 @@
 <template>
   <div v-if="responseDrawerVisible">
     <a-drawer
-        :visible="responseDrawerVisible"
-        :closable="true" :width="1000"
-        :bodyStyle="{ padding: '24px', height: '100%' }"
-        @close="onClose">
+      :visible="responseDrawerVisible"
+      :closable="true"
+      :width="1000"
+      :bodyStyle="{ padding: '24px', height: '100%' }"
+      @close="onClose"
+    >
       <template #title>
         <span>接口运行结果</span>
       </template>
 
       <div class="drawer-content">
-        <a-tabs v-model:activeKey="activeKey">
-          <a-tab-pane key="Request" tab="请求">
-            <RequestInfo :data="requestContent"/>
+        <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
+          <a-tab-pane key="body" :tab="title" class="uppercase">
+            <BodyInfo :data="interfaceResDetail.bodyInfo" />
           </a-tab-pane>
-
-          <a-tab-pane key="Body" tab="响应Body">
-            <BodyInfo :data="bodyInfo"/>
+          <a-tab-pane key="header" tab="响应头">
+            <ParamGrid :list="interfaceResDetail.headers" />
           </a-tab-pane>
-
-          <a-tab-pane key="Header" tab="响应Header" force-render>
-            <HeaderInfo :data="headers"/>
+          <a-tab-pane key="cookie" tab="Cookie">
+            <ParamGrid :list="interfaceResDetail.cookies" />
           </a-tab-pane>
-
-          <a-tab-pane key="Cookie" tab="响应Cookie">
-            <CookieInfo :data="cookies"/>
+          <a-tab-pane key="console" tab="控制台">
+            <ResponseConsole :data="interfaceResDetail" />
           </a-tab-pane>
-
-          <a-tab-pane key="extractor" tab="响应提取器">
-            <ExtractorInfo :data="extractors"/>
+          <a-tab-pane key="info" tab="实际请求">
+            <ResponseInfo :data="interfaceResDetail.requestData" />
           </a-tab-pane>
-
-          <a-tab-pane key="checkpoint" tab="响应验证点">
-            <CheckpointInfo :data="checkpoints"/>
-          </a-tab-pane>
-
-<!--      <a-tab-pane key="Console" tab="控制台">
-            <ConsoleInfo/>
-          </a-tab-pane> -->
         </a-tabs>
       </div>
     </a-drawer>
   </div>
-
 </template>
 <script setup lang="ts">
-import {defineProps, defineEmits, ref, watch, computed} from 'vue';
-import {BodyInfo, CookieInfo, RequestInfo, HeaderInfo, ExtractorInfo, CheckpointInfo} from './Components/index';
+import { defineProps, defineEmits, ref, watch, computed, reactive } from "vue";
+import { useI18n } from "vue-i18n";
+import { BodyInfo } from "./Components";
+import ParamGrid from "@/views/component/debug/comp/param-grid.vue";
+import ResponseConsole from "@/views/component/debug/response/Renderer/Console.vue";
+import ResponseInfo from "@/views/component/debug/response/Renderer/Info.vue";
+import { InterfaceDetail } from "./data";
 
 const props = defineProps({
   responseDrawerVisible: {
-    type: Boolean
+    type: Boolean,
   },
   data: {
-    type: Object
-  }
+    type: Object,
+  },
 });
 
-const emits = defineEmits(['onClose']);
+const { t } = useI18n();
 
-const activeKey = ref('Request');
-const bodyInfo = ref({});
+const emits = defineEmits(["onClose"]);
 
-const cookies = ref([]);
-const headers = ref([]);
-const requestContent = ref({});
+const activeKey = ref("body");
+const interfaceResDetail = reactive(<InterfaceDetail>{
+  contentLang: "",
+  headers: [],
+  contentType: "",
+  cookies: [],
+});
 
-const extractors = ref([]);
-const checkpoints = ref([]);
+const title = computed(() => t(interfaceResDetail.contentLang || "empty"));
 
 function onClose() {
-  emits('onClose');
+  emits("onClose");
 }
 
-watch(() => {
-  return props.responseDrawerVisible;
-}, (newVal) => {
-  if (!newVal) return
-
-  const {resContent = {}, reqContent = {}}: any = props.data;
-
-  bodyInfo.value = {
-    content: resContent.content || '',
-    contentLang: resContent.contentLang || ''
-  };
-
-  cookies.value = resContent.cookies || [];
-  headers.value = resContent.headers || [];
-  requestContent.value = reqContent;
-
-  extractors.value = props.data?.extractorsResult || [];
-  checkpoints.value = props.data?.checkpointsResult || [];
-
-  console.log('666', extractors.value)
-
-}, {
-  immediate: true,
-})
+watch(
+  () => {
+    return props.responseDrawerVisible;
+  },
+  (newVal) => {
+    if (!newVal) return;
+    const { resContent = {}, reqContent = {} }: any = props.data;
+    Object.assign(interfaceResDetail, {
+      ...resContent,
+      bodyInfo: {
+        content: resContent.content || "",
+        contentLang: resContent.contentLang || "",
+        contentType: resContent.contentType || "",
+      },
+      headers: resContent.headers || [],
+      cookies: resContent.cookies || [],
+      requestData: reqContent,
+    });
+  },
+  {
+    immediate: true,
+  }
+);
 </script>
 
 <style scoped lang="less">

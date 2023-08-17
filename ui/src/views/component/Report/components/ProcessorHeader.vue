@@ -17,19 +17,16 @@
     </div>
 
     <div class="summary">
-
       <!-- ::::数据迭代 -->
       <template v-if="record.processorType === 'processor_data_default'">
         <span class="text">
-          从文件 <a class="text" href="">文件地址</a>中 {{ `随机` }}读取，读取变量 <code>{{ `a` }}</code>， 且重复 <code>{{ 3 }}</code> 次
+          从<a class="text" :href="downloadUrl">文件名</a>中{{ `随机` }}读取变量<code>{{ `a` }}</code>， 且重复 <code>{{ 3 }}</code> 次
         </span>
       </template>
-
       <!-- ::::迭代次数：processor_loop_time -->
       <template v-if="record.processorType === 'processor_loop_time'">
         <span class="text">迭代<code>{{ 3 }}</code>次</span>
       </template>
-
       <!-- ::::循环列表 -->
       <template v-if="record.processorType === 'processor_loop_in'">
         <span class="text">在 <code>{{ `a,b,c,d` }}</code> 中 {{ `随机` }} 读取变量 <code>{{ `a` }}</code></span>
@@ -142,6 +139,10 @@ const emits = defineEmits(['more']);
 const visible = ref(false);
 const data = computed(() => {
   return props.record;
+})
+
+const downloadUrl = computed(() => {
+  return `${window.location.origin}/${props?.record?.datail?.path}`
 })
 
 function clickMore() {

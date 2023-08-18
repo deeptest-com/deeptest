@@ -91,8 +91,9 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 		execUtils.SendExecMsg(msg, session.WsMsg)
 
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
-
+		round := 0
 		for _, child := range processor.Children {
+
 			if ForceStopExec {
 				break
 			}
@@ -100,7 +101,10 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 				continue
 			}
 			//执行轮次
-			child.Round = uint(index + 1)
+			if round == 0 {
+				round = index + 1
+				child.Round = uint(round)
+			}
 
 			(*child).Run(session)
 
@@ -147,6 +151,8 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 			break
 		}
 
+		round := 0
+		
 		for _, child := range processor.Children {
 			if ForceStopExec {
 				break
@@ -155,7 +161,10 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 				continue
 			}
 
-			child.Round = uint(index + 1)
+			if round == 0 {
+				round = index + 1
+				child.Round = uint(round)
+			}
 
 			(*child).Run(session)
 

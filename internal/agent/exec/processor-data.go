@@ -79,6 +79,8 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 		*/
 
 		SetVariable(processor.ID, iterator.VariableName, item, consts.Public)
+		
+		round := 0
 
 		for _, child := range processor.Children {
 			if ForceStopExec {
@@ -86,6 +88,11 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 			}
 			if child.Disable {
 				continue
+			}
+
+			if round == 0 {
+				round = index + 1
+				child.Round = uint(round)
 			}
 
 			child.Round = uint(index + 1)

@@ -165,6 +165,7 @@ export enum ComparisonOperator {
 export enum ConditionCategory {
     result = 'result',
     console = 'console',
+    assert = 'assert'
 }
 export enum ConditionType {
     extractor = 'extractor',

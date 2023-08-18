@@ -508,7 +508,7 @@ const StoreModel: ModuleType = {
         async listAssertionCondition({commit, state}) {
             try {
                 const resp = await listPostConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId,
-                    ConditionCategory.result);
+                    ConditionCategory.assert);
 
                 const {data} = resp;
                 commit('setAssertionConditions', data);

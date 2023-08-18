@@ -14,7 +14,7 @@ type PlanReportModule struct {
 // Party
 func (m *PlanReportModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 		index.Get("/", m.ReportCtrl.List).Name = "结果列表"
 		index.Get("/{id:uint}", m.ReportCtrl.Get).Name = "结果详情"
 		index.Delete("/{id:uint}", m.ReportCtrl.Delete).Name = "删除计划报告"

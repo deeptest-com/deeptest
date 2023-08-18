@@ -33,7 +33,8 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 	}
 
 	if typ == consts.ConditionCategoryResult {
-		db.Where("entity_type = ? or entity_type = ?", consts.ConditionTypeCheckpoint, consts.ConditionTypeResponseDefine)
+		//db.Where("entity_type = ? or entity_type = ?", consts.ConditionTypeCheckpoint, consts.ConditionTypeResponseDefine)
+		db.Where("entity_type = ?", consts.ConditionTypeCheckpoint)
 	} else if typ == consts.ConditionCategoryConsole {
 		db.Where("entity_type != ?", consts.ConditionTypeCheckpoint)
 	} else if typ == consts.ConditionCategoryResponse {
@@ -343,8 +344,8 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			responseDefine.Schema = responseBody.SchemaItem.Content
 			responseDefine.Code = entity.Code
 			responseDefine.MediaType = responseBody.MediaType
-			responseDefine.Component = commonUtils.JsonEncode(r.ResponseDefineRepo.Components(endpointInterfaceId))
-
+			components := r.ResponseDefineRepo.Components(endpointInterfaceId)
+			responseDefine.Component = commonUtils.JsonEncode(components)
 			raw, _ := json.Marshal(responseDefine)
 			condition := domain.InterfaceExecCondition{
 				Type: typ,

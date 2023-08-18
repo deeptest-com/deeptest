@@ -32,21 +32,25 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	typ := entity.ProcessorType
 	pass := false
-	detail := map[string]interface{}{"表达式": entity.Expression}
+	detail := map[string]interface{}{"name": entity.Name, "expression": entity.Expression}
 	if typ == consts.ProcessorLogicIf {
 		var result interface{}
 		result, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, entity.ProcessorID)
 		if err != nil {
 			pass = false
 		} else {
-			pass = result.(bool)
+			var ok bool
+			pass, ok = result.(bool)
+			if !ok {
+				pass = false
+			}
 		}
-		detail["结果"] = pass
-		processor.Result.Detail = commonUtils.JsonEncode(detail)
+
 	} else if typ == consts.ProcessorLogicElse {
 		brother, ok := getPreviousBrother(*processor)
 		if ok && brother.Result.ResultStatus != consts.Pass {
@@ -56,10 +60,19 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 
 	processor.Result.ResultStatus, processor.Result.Summary = getResultStatus(pass)
 	processor.AddResultToParent()
+	detail["result"] = pass
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	if pass {
 		for _, child := range processor.Children {
+			if ForceStopExec {
+				break
+			}
+			if child.Disable {
+				continue
+			}
+
 			child.Run(session)
 		}
 	}

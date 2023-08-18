@@ -61,7 +61,7 @@ type schema2conv struct {
 	sets       map[string]int64
 }
 
-func NewSchema2conv() *schema2conv {
+func NewSchema2convBak() *schema2conv {
 	obj := new(schema2conv)
 	obj.sets = map[string]int64{}
 	return obj

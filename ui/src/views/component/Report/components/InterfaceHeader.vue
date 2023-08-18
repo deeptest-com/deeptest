@@ -1,50 +1,75 @@
 <template>
   <div class="endpoint-header">
-    <div :class="['endpoint-status', ClassMap[endpointData.resultStatus]]">
-      <span v-if="endpointData.resultStatus !== 'loading'">{{ StatusMap[endpointData.resultStatus] }}</span>
-      <span v-else><a-spin :indicator="indicator"/></span>
+
+    <div class="endpoint-method">
+      <IconSvg :type="DESIGN_TYPE_ICON_MAP[endpointData.processorType]" class="processor-icon-svg"/>
+      <span class="endpoint-method" :style="{ color: getMethodColor(reqContent.method) }">
+              {{ reqContent.method }}
+      </span>
     </div>
-    <div :class="['endpoint-method', ClassMap[endpointData.resultStatus]]">
-      {{ reqContent.method }}
-    </div>
-    <a-tooltip  :title="reqContent.url">
-      <div class="endpoint-url">
-        {{ reqContent.url }}
-      </div>
-    </a-tooltip>
 
-    <a-tooltip  :title="`${endpointData.name}`">
-      <div class="endpoint-name">
-        {{ endpointData.name || '' }}
-      </div>
-    </a-tooltip>
+    <div class="summary">
+      <a-tooltip :title="reqContent.url">
+        <a class="endpoint-url" href="javascript:void (0)">
+          {{ reqContent.url }}
+        </a>
+      </a-tooltip>
 
+      <a-tooltip :title="`${endpointData.name}`">
+        <span class="endpoint-name">
+          {{ endpointData.name || '' }}
+        </span>
+      </a-tooltip>
 
-    <div class="endpoint-response">
-      <div class="endpoint-code" v-if="endpointData.resultStatus !== 'loading'">
-        状态码: &nbsp; <span :style="{ color: `${responseCodeColorMap[resContent.statusCode]}` }">{{
+      <span class="endpoint-code" v-if="endpointData.resultStatus !== 'loading'">
+          状态码: &nbsp; <span :style="{ color: `${responseCodeColorMap[resContent.statusCode]}` }">{{
           resContent.statusCode
         }}</span>
-      </div>
+        </span>
 
-      <div :class="['endpoint-time', ClassMap[endpointData.resultStatus]]"
-           v-if="endpointData.resultStatus !== 'loading'">
-        耗时:
-        <a-tooltip  :title="`${resContent.time} ms`">&nbsp;<span
-            v-html="formatWithSeconds(resContent.time)"></span>
-        </a-tooltip>
-      </div>
+      <span :class="['endpoint-time', ClassMap[endpointData.resultStatus]]"
+            v-if="endpointData.resultStatus !== 'loading'">
+          耗时:
+          <a-tooltip :title="`${resContent.time} ms`">&nbsp;<span
+              v-html="formatWithSeconds(resContent.time)"></span>
+          </a-tooltip>
+        </span>
 
 
     </div>
 
+    <div class="status endpoint-status">
+      <span :class="[ ClassMap[endpointData.resultStatus]]"
+            v-if="endpointData.resultStatus !== 'loading'">{{ StatusMap[endpointData.resultStatus] }}</span>
+      <span v-else><a-spin :indicator="indicator"/></span>
+    </div>
+
+    <div class="endpoint-expand-btn" @click.stop="handleQueryDetail">
+      详情
+      <RightOutlined/>
+    </div>
+
+    <ResponseDrawer
+      :data="currRespDetail"
+      :response-drawer-visible="logResponseDetailVisible"
+      @onClose="logResponseDetailVisible = false" />
   </div>
 </template>
 <script setup lang="ts">
-import {defineProps, h, defineEmits, computed, toRefs} from 'vue';
+import {defineProps, h, defineEmits, computed, ref, reactive} from 'vue';
 import {RightOutlined, LoadingOutlined, ExclamationCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
 import {responseCodes} from '@/config/constant';
+import IconSvg from "@/components/IconSvg";
 import {formatWithSeconds} from '@/utils/datetime';
+import {
+  scenarioTypeMapToText,
+  showArrowScenarioType,
+  DESIGN_TYPE_ICON_MAP,
+  showScenarioExecStatus,
+} from "@/views/scenario/components/Design/config";
+import ResponseDrawer from '@/views/component/Report/Response/index.vue';
+import { getMethodColor } from '@/utils/interface';
+
 
 enum StatusMap {
   'pass' = '通过',
@@ -70,6 +95,8 @@ const emits = defineEmits(['queryDetail']);
 const reqContent = computed(() => props.endpointData.reqContent ? JSON.parse(props.endpointData.reqContent) : {});
 const resContent = computed(() => props.endpointData.respContent ? JSON.parse(props.endpointData.respContent) : {});
 const responseCodeColorMap = {};
+const logResponseDetailVisible = ref(false);
+const currRespDetail = reactive({ reqContent: {}, resContent: {} });
 
 responseCodes.forEach(e => {
   responseCodeColorMap[e.value] = e.color;
@@ -84,7 +111,12 @@ const indicator = h(LoadingOutlined, {
 });
 
 function handleQueryDetail() {
-  emits('queryDetail', {resContent: resContent.value, reqContent: reqContent.value});
+  console.log(22222);
+  Object.assign(currRespDetail, {
+    reqContent: reqContent.value,
+    resContent: resContent.value,
+  });
+  logResponseDetailVisible.value = true;
 }
 </script>
 <style scoped lang="less">
@@ -120,6 +152,7 @@ function handleQueryDetail() {
 .endpoint-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   overflow: hidden;
   white-space: nowrap;
   overflow: hidden;
@@ -127,27 +160,26 @@ function handleQueryDetail() {
   text-align: right;
 
   .endpoint-status {
-    width: 36px;
-    min-width: 36px;
+    width: 60px;
     height: 22px;
-    font-size: 12px;
+    font-size: 14px;
     border-radius: 2px;
-    text-align: center;
+    text-align: left;
     line-height: 22px;
     margin-right: 16px;
 
-    &.endpoint-success {
+    .endpoint-success {
       background: #E6FFF4;
       color: #04C495;
 
     }
 
-    &.endpoint-error {
+    .endpoint-error {
       background: #FFF2F0;;
       color: #F63838;
     }
 
-    &.endpoint-expires {
+    .endpoint-expires {
       background: #FFF2F0;;
       color: #F63838;
     }
@@ -156,25 +188,26 @@ function handleQueryDetail() {
   .endpoint-method {
     font-weight: bold;
     font-size: 14px;
-    min-width: 54px;
+    //min-width: 54px;
     line-height: 22px;
-    text-align: center;
-    margin-right: 16px;
+    text-align: left;
+    margin-right: 8px;
+    width: 100px;
 
-    &.endpoint-success {
+    .endpoint-success {
       color: #04C495;
     }
 
-    &.endpoint-error,
-    &.endpoint-expires {
+    .endpoint-error,
+    .endpoint-expires {
       color: #F63838;
     }
   }
 
   .endpoint-url {
-    width: calc(100% - 380px);
+    max-width: 280px;
     margin-right: 16px;
-    flex:1;
+    display: inline-block;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -184,12 +217,12 @@ function handleQueryDetail() {
   .endpoint-url,
   .endpoint-name {
     line-height: 22px;
+    margin-right: 16px;
   }
 
   .endpoint-name {
-    width: 120px;
     margin-right: 16px;
-    min-width: 120px;
+    max-width: 150px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -201,10 +234,11 @@ function handleQueryDetail() {
 
   .endpoint-time,
   .endpoint-code {
-    width: 80px;
+    max-width: 80px;
     text-align: center;
     font-size: 14px;
     line-height: 22px;
+    margin-right: 16px;
 
     //margin-right: 29px;
     color: rgba(0, 0, 0, 0.85);
@@ -215,7 +249,7 @@ function handleQueryDetail() {
   }
 
   .endpoint-time {
-    width: 120px;
+    max-width: 120px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -230,12 +264,28 @@ function handleQueryDetail() {
   }
 
   .endpoint-response {
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
+    //display: flex;
+    //align-items: center;
+    //justify-content: flex-end;
   }
 }
 
 .enpoint-expand {
+}
+
+.status {
+  width: 60px;
+}
+
+.processor-icon-svg {
+  display: inline-block;
+  margin-right: 4px;
+}
+
+.summary {
+  flex: 1;
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
 }
 </style>

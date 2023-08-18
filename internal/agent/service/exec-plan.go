@@ -8,6 +8,8 @@ import (
 )
 
 func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
+	agentExec.ForceStopExec = false
+
 	agentExec.ServerUrl = req.ServerUrl
 	agentExec.ServerToken = req.Token
 
@@ -33,6 +35,7 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 		EnvironmentId: req.EnvironmentId,
 		ID:            req.PlanId,
 	}
+
 	for _, scenario := range planExecObj.Scenarios {
 		session, _ := ExecScenario(&scenario, wsMsg)
 		scenarioReport, _ := SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,

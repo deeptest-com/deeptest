@@ -58,7 +58,13 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}
 
-	req.CreateUser = multi.GetUsername(ctx)
+	userName := multi.GetUsername(ctx)
+	if req.ID == 0 {
+		req.CreateUser = userName
+	} else {
+		req.UpdateUser = userName
+	}
+
 	endpoint := c.requestParser(req)
 
 	/*

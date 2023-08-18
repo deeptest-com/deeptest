@@ -34,14 +34,18 @@
             },
         }"
         row-key="id"
+        :scroll="scroll"
         :loading="loading"
         :columns="columns"
         :data-source="list">
+        <template #name="{ record, column }">
+            <ToolTipCell :text="record.name" :width="column.width" />
+        </template>
         <template #status="{ record }">
             <a-tag v-if="record.status" :color="planStatusColorMap.get(record.status)">{{ planStatusTextMap.get(record.status) }}</a-tag>
         </template>
-        <template #updateAt="{ record }">
-            <span>{{ momentUtc(record.updateAt) }}</span>
+        <template #updateAt="{ record, column }">
+            <ToolTipCell :text="momentUtc(record.updateAt)" :width="column.width" />
         </template>
         <template #operation="{ record }">
             <a-button type="primary" @click="handleRemove(record)">
@@ -60,6 +64,7 @@ import { ref, reactive, defineProps, defineEmits, PropType, computed } from 'vue
 import { useStore } from 'vuex';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import RelationScenario from './RelationScenario.vue';
+import ToolTipCell from '@/components/Table/tooltipCell.vue';
 
 import { StateType as PlanStateType } from '../store';
 import { message, Modal } from 'ant-design-vue';
@@ -88,6 +93,10 @@ const props = defineProps({
     planId: {
         type: Number,
         required: false
+    },
+    scroll: {
+        type: Object,
+        required: false,
     }
 })
 

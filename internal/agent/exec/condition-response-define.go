@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	responseDefineHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/responeDefine"
+	responseDefineHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"strings"
 

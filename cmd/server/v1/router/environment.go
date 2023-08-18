@@ -15,7 +15,7 @@ type EnvironmentModule struct {
 // Party 脚本
 func (m *EnvironmentModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 		index.Post("/save", m.EnvironmentCtrl.Save).Name = "保存环境"
 		index.Get("/list", m.EnvironmentCtrl.ListAll).Name = "环境列表"
 		index.Post("/order", m.EnvironmentCtrl.Order).Name = "修改顺序"

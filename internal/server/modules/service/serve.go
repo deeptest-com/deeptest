@@ -5,8 +5,8 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
+	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -197,10 +197,10 @@ func (s *ServeService) PaginateSecurity(req v1.ServeSecurityPaginate) (ret _doma
 	return s.ServeRepo.PaginateSecurity(req)
 }
 
-func (s *ServeService) Example2Schema(data string) (schema openapi.Schema) {
-	schema2conv := openapi.NewSchema2conv()
+func (s *ServeService) Example2Schema(data string) (schema schemaHelper.Schema) {
+	schema2conv := schemaHelper.NewSchema2conv()
 	var obj interface{}
-	schema = openapi.Schema{}
+	schema = schemaHelper.Schema{}
 	_commUtils.JsonDecode(data, &obj)
 	//_commUtils.JsonDecode("{\"id\":1,\"name\":\"user\"}", &obj)
 	//_commUtils.JsonDecode("[\"0，2，3\"]", &obj)
@@ -241,14 +241,14 @@ func (s *ServeService) DeleteSecurityId(id uint) (err error) {
 }
 
 func (s *ServeService) Schema2Example(serveId uint, data string) (obj interface{}) {
-	schema2conv := openapi.NewSchema2conv()
+	schema2conv := schemaHelper.NewSchema2conv()
 	schema2conv.Components = s.Components(serveId)
 	//schema1 := openapi3.Schema{}
 	//_commUtils.JsonDecode(data, &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema)
 	//_commUtils.JsonDecode("{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}", &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}}", &schema)
-	schema := openapi.SchemaRef{}
+	schema := schemaHelper.SchemaRef{}
 	//data = "{\"type\":\"object\",\"properties\":{\"name1\":{\"type\":\"object\",\"ref\":\"#/components/schemas/user1\",\"name\":\"user1\"},\"name2\":{\"type\":\"string\"},\"name3\":{\"type\":\"string\"}}}"
 	_commUtils.JsonDecode(data, &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema1)
@@ -259,17 +259,17 @@ func (s *ServeService) Schema2Example(serveId uint, data string) (obj interface{
 	return
 }
 
-func (s *ServeService) Components(serveId uint) (components openapi.Components) {
-	components = openapi.Components{}
+func (s *ServeService) Components(serveId uint) (components schemaHelper.Components) {
+	components = schemaHelper.Components{}
 	result, err := s.ServeRepo.GetSchemasByServeId(serveId)
 	if err != nil {
 		return
 	}
 
 	for _, item := range result {
-		var schema openapi.SchemaRef
+		var schema schemaHelper.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
-		components[item.Ref] = schema
+		components[item.Ref] = &schema
 	}
 
 	return

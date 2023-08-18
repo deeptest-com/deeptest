@@ -14,7 +14,7 @@ type ShareVarModule struct {
 // Party 提取器
 func (m *ShareVarModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Post("/list", m.ShareVarCtrl.List).Name = "列出变量列表"
 		index.Delete("/{id:uint}", m.ShareVarCtrl.Delete).Name = "删除共享变量"

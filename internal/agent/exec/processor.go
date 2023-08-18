@@ -45,6 +45,8 @@ type ProcessorBase struct {
 	Result                *agentDomain.ScenarioExecResult `json:"result"`
 	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc    `json:"processorInterfaceSrc"`
 
+	Round uint `json:"round"`
+
 	Session Session `json:"-"`
 }
 
@@ -52,7 +54,7 @@ func (p *Processor) Run(s *Session) (err error) {
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
 	CurrScenarioProcessorId = p.ID
 
-	if !p.Disable && p.Entity != nil {
+	if !p.Disable && p.Entity != nil && !ForceStopExec {
 		p.Entity.Run(p, s)
 	}
 

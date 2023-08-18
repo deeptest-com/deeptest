@@ -2,19 +2,28 @@ package test
 
 import (
 	"fmt"
-	responseDefineHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/responeDefine"
+	responseDefineHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"testing"
 )
 
 func TestOpenapi2endpoint(t *testing.T) {
-	json := `{"properties":{"chat_tool":{"allOf":[{"$ref":"#/components/schemas/enums.PlatType"}],"description":"第三方平台类型"},"data":{"description":"请求参数，json enums.ApproveParam","type":"string"},"server_type":{"allOf":[{"$ref":"#/components/schemas/enums.BusinessType"}],"description":"请求服务类型"},"sign":{"description":"参数签名","type":"string"}},"type":"object"}`
-	responseDefineHelper.NewSchema2conv()
-	var schema responseDefineHelper.Schema
+	json := `{"#/components/schemas/_domain.Response":{"type":"object","properties":{"code":{"type":"integer"},"data":{},"msg":{"type":"string"}}},"#/components/schemas/consts.FormDataType":{"type":"string"},"#/components/schemas/consts.HttpContentType":{"type":"string"},"#/components/schemas/consts.ResultStatus":{"type":"string"},"#/components/schemas/domain.BearerToken":{"type":"object","properties":{"token":{"type":"string"}}},"#/components/schemas/domain.InterfaceToEnvMap":{"type":"object"},"#/components/schemas/serverConsts.ProjectType":{"type":"string"},"#/components/schemas/serverDomain.DataReq":{"type":"object","properties":{"clearData":{"type":"boolean"},"sys":{"ref":"#/components/schemas/serverDomain.DataSys"}}},"#/components/schemas/serverDomain.DataSys":{"type":"object","properties":{"adminPassword":{"type":"string"}}},"#/components/schemas/serverDomain.ProjectReq":{"type":"object","properties":{"adminId":{"type":"integer"},"adminName":{"type":"string"},"createdAt":{"type":"string"},"desc":{"type":"string"},"id":{"type":"integer"},"includeExample":{"type":"boolean"},"logo":{"type":"string"},"name":{"type":"string"},"orgId":{"type":"integer"},"schemaId":{"type":"integer"},"shortName":{"type":"string"},"type":{"ref":"#/components/schemas/serverConsts.ProjectType"},"updatedAt":{"type":"string"}}}}`
+	//responseDefineHelper.NewSchema2conv()
+	fmt.Println(json, "+++")
+	var schema map[string]*responseDefineHelper.SchemaRef
 	_commUtils.JsonDecode(json, &schema)
+	/*
+		schemaRef := new(responseDefineHelper.SchemaRef)
+		schemaRef.Value = new(responseDefineHelper.Schema)
+		schemaRef.Value.Type = "string"
+		schema = map[string]*responseDefineHelper.SchemaRef{
+			"/components/schemas/_domain.Response": schemaRef,
+		}
+	*/
 	x := _commUtils.JsonEncode(schema)
 	fmt.Println(x, "+++")
-	var schema1 responseDefineHelper.Schema
+	var schema1 map[string]responseDefineHelper.SchemaRef
 	_commUtils.JsonDecode(x, &schema1)
 	y := _commUtils.JsonEncode(schema1)
 	fmt.Println(y, "---")

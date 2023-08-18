@@ -157,6 +157,11 @@ func (r *ScenarioNodeRepo) DeleteWithChildren(id uint) (err error) {
 func (r *ScenarioNodeRepo) DisableWithChildren(id uint) (err error) {
 	node, err := r.Get(id)
 
+	action := "disable"
+	if node.Disabled {
+		action = "enable"
+	}
+
 	ids := []uint{}
 	if !r.IsDir(node) {
 		ids = append(ids, id)
@@ -167,6 +172,20 @@ func (r *ScenarioNodeRepo) DisableWithChildren(id uint) (err error) {
 	err = r.DB.Model(&model.Processor{}).
 		Where("id IN (?)", ids).
 		Update("disabled", !node.Disabled).Error
+
+	if action == "enable" {
+		r.EnableAncestors(id)
+	}
+
+	return
+}
+
+func (r *ScenarioNodeRepo) EnableAncestors(nodeId uint) (err error) {
+	ids, err := r.GetAncestorIds(nodeId, model.Processor{}.TableName())
+
+	err = r.DB.Model(&model.Processor{}).
+		Where("id IN (?)", ids).
+		Update("disabled", false).Error
 
 	return
 }

@@ -92,6 +92,7 @@ watch(() => {return props.value}, (newVal) => {
   align-items: center;
   overflow: hidden;
   flex: 1;
+  height: 22px;
 
   &.custom-serve {
     color: #447DFD;

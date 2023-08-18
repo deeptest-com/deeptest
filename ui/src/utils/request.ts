@@ -2,15 +2,14 @@
  * 自定义 request 网络请求工具,基于axios
  * @author LiQingSong
  */
-import axios, { AxiosPromise, AxiosRequestConfig, AxiosResponse } from 'axios';
+import axios, {AxiosPromise, AxiosRequestConfig, AxiosResponse} from 'axios';
 import router from '@/config/routes';
 import i18n from "@/config/i18n";
 import bus from "@/utils/eventBus";
 import settings from '@/config/settings';
-import { getToken } from '@/utils/localToken';
-import { getCache } from '@/utils/localCache';
-import {ref} from "vue";
-import {getAgentUrl} from '@/utils/env';
+import {getToken} from '@/utils/localToken';
+import {getCache} from '@/utils/localCache';
+
 
 export interface ResponseData {
     code: number;
@@ -18,6 +17,7 @@ export interface ResponseData {
     msg?: string;
     token?: string;
 }
+
 export interface ResultErr {
     httpCode: number;
     resultCode: number;
@@ -31,26 +31,9 @@ export const getUrls = () => {
     const isElectron = !!window.require
     const nodeEnv = process.env.NODE_ENV
     console.log(`isElectron=${isElectron}, nodeEnv=${nodeEnv}, locationHref=${window.location.href}`)
-
     const serverUrl = process.env.VUE_APP_API_SERVER
-    // const agentUrl = process.env.VUE_APP_API_AGENT
-    const agentUrl = getAgentUrl()
-/*
-    if (nodeEnv === 'production' && !isElectron) { // load ui page from server
-        const location = unescape(window.location.href);
-
-        serverUrl = location.split('#')[0].split('index.html')[0];
-        if (!serverUrl.endsWith('/')) {
-            serverUrl += '/'
-        }
-        serverUrl = serverUrl + 'api/v1'
-
-        agentUrl = serverUrl.replace('8085', '8086')
-    }
-*/
+    const agentUrl = process.env.VUE_APP_API_AGENT
     console.log(`serverUrl=${serverUrl}, agentUrl=${agentUrl}`)
-
-
     return {serverUrl, agentUrl}
 }
 
@@ -60,6 +43,7 @@ const request = axios.create({
     withCredentials: true, // 跨域请求时发送cookie
     timeout: 0
 });
+
 const requestAgent = axios.create({
     baseURL: agentUrl
 });
@@ -89,10 +73,10 @@ const requestInterceptors = async (config: AxiosRequestConfig & { cType?: boolea
     }
 
     // 加随机数清除缓存
-    config.params = { ...config.params, ts: Date.now() };
+    config.params = {...config.params, ts: Date.now()};
     if (!config.params.currProjectId) {
         const projectId = await getCache(settings.currProjectId);
-        config.params = { ...config.params, currProjectId: projectId, lang: i18n.global.locale.value };
+        config.params = {...config.params, currProjectId: projectId, lang: i18n.global.locale.value};
     }
 
     console.log('=== request ===', config.url, config)
@@ -114,7 +98,7 @@ const responseInterceptors = async (axiosResponse: AxiosResponse) => {
     console.log('=== response ===', axiosResponse.config.url, axiosResponse)
 
     const res: ResponseData = axiosResponse.data;
-    const { code, token } = res;
+    const {code, token} = res;
 
     // 自定义状态码验证
     if (code !== 0) {
@@ -141,7 +125,7 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
     if (!axiosResponse) axiosResponse = {status: 500} as AxiosResponse
 
     if (axiosResponse.status === 200) {
-        const result ={
+        const result = {
             httpCode: axiosResponse.status,
             resultCode: axiosResponse.data.code,
             resultMsg: axiosResponse.data.msg
@@ -149,9 +133,9 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
 
         bus.emit(settings.eventNotify, result)
 
-        const { config, data } = axiosResponse;
-        const { url, baseURL } = config;
-        const { code, msg } = data
+        const {config, data} = axiosResponse;
+        const {url, baseURL} = config;
+        const {code, msg} = data
 
         const reqUrl = (url + '').split("?")[0].replace(baseURL + '', '');
         const noNeedLogin = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
@@ -187,10 +171,14 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
  *             { cType: true }  Mandatory Settings Content-Type:application/json;charset=UTF-8
  * ......
  */
-export default function(config: AxiosRequestConfig): AxiosPromise<any> {
+export default function (config: AxiosRequestConfig): AxiosPromise<any> {
     return request(config).then((response: AxiosResponse) => response.data).catch(error => errorHandler(error));
 }
 
-export function requestToAgent (config: AxiosRequestConfig): AxiosPromise<any> {
+export function requestToAgent(config: AxiosRequestConfig | any): AxiosPromise<any> {
+    // Agent 可代理，根据下发的agentUrl进行代理
+    if(process.env.VUE_APP_DEPLOY_ENV === 'ly' && config.agentUrl){
+        requestAgent.defaults.baseURL = config.agentUrl;
+    }
     return requestAgent(config).then((response: AxiosResponse) => response.data).catch(error => errorHandler(error));
 }

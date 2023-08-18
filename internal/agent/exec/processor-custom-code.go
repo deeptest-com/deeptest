@@ -35,6 +35,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	scriptBase := domain.ScriptBase{
@@ -49,13 +50,15 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 		SetVariable(processor.ParentId, item.Name, item.Value, consts.Public)
 	}
 
-	processor.Result.ScriptsResult = append(processor.Result.ScriptsResult, scriptBase)
-
 	processor.Result.Summary = scriptBase.ResultStatus.String()
-	detail := map[string]interface{}{"结果": scriptBase.ResultMsg}
-	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()
+	result := false
+	if scriptBase.ResultStatus == consts.Pass {
+		result = true
+	}
+	detail := map[string]interface{}{"name": entity.Name, "content": entity.Content, "result": result, "output": scriptBase.Output}
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()

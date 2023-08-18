@@ -7,9 +7,14 @@ import (
 	"strings"
 )
 
-func GenerateFloatItems(start float64, end float64, step interface{}, rand bool, precision, repeat int, repeatTag string) (
+func GenerateFloatItems(start float64, end float64, step float64, rand bool, precision, repeat int, repeatTag string) (
 	ret []interface{}) {
-	ret = generateFloatItemsByStep(start, end, step.(float64), precision, repeat, repeatTag)
+
+	if start > end && step > 0 || start < end && step < 0 {
+		step = step * -1
+	}
+
+	ret = generateFloatItemsByStep(start, end, step, precision, repeat, repeatTag)
 
 	if rand {
 		ret = RandItems(ret)

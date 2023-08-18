@@ -32,6 +32,7 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	ret, err := EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID)
@@ -43,7 +44,7 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 
 	//processor.Result.Summary = fmt.Sprintf("断言\"%s\"结果为\"%s\"。", entity.Expression, status)
 	processor.Result.Summary = fmt.Sprintf("结果为\"%s\"。", status)
-	detail := map[string]interface{}{"结果": status, "表达式": entity.Expression}
+	detail := map[string]interface{}{"name": entity.Name, "result": pass, "expression": entity.Expression}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)

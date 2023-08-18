@@ -9,6 +9,7 @@ import (
 type DiagnoseInterface struct {
 	BaseModel
 	CreatedBy uint                               `json:"createdBy"`
+	UpdatedBy uint                               `json:"updatedBy"`
 	Name      string                             `json:"name"`
 	Title     string                             `json:"title"`
 	Desc      string                             `json:"desc"`

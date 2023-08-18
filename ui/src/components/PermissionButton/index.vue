@@ -43,13 +43,17 @@ const props = defineProps<{
     danger?: Boolean
     size?: String
     loading?: Boolean
+    dataCreateUser?: String
+    action?: String
 }>();
 
 const emits = defineEmits(['handleAccess']);
 const disabled = ref<Boolean>(false);
 const disabledTooltip = '暂无权限，请联系管理员';
-const store = useStore<{ Global: GlobalStateType }>();
+const store = useStore<{ Global: GlobalStateType, User, ProjectGlobal }>();
 const permissionButtonMap = computed<any[]>(() => store.state.Global.permissionButtonMap);
+const currentUser = computed<any>(() => store.state.User.currentUser);
+const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 
 
 const handleClick = (e) => {
@@ -58,8 +62,24 @@ const handleClick = (e) => {
 }
 
 const hasPermission = () => {
+  // let hasPermissionButton = false
+  // let filterUserName = ["undefined", "", currentUser.value.username]
+  // if (currentUser.value.sysRoles.indexOf('admin') != -1) {
+  //   return true
+  // }
+  // if (currentUser.value.projectRoles[currProject.value.id] == 'admin') {
+  //   return true
+  // }
+  // if (permissionButtonMap.value[PermissionButtonType[`${props.code}`]] && props.action != 'delete') {
+  //   return true
+  // }
+  // if (permissionButtonMap.value[PermissionButtonType[`${props.code}`]] && props.action == 'delete' && filterUserName.indexOf(props.dataCreateUser) > -1)  {
+  //   return true
+  // }
+
     const hasPermissionButton = permissionButtonMap.value[PermissionButtonType[`${props.code}`]];
-    return hasPermissionButton;
+  return hasPermissionButton
+
 }
 
 // 判断权限方法

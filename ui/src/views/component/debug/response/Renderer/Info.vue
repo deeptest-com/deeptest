@@ -6,7 +6,7 @@
         <span :style="{color: getMethodColor(requestData.method)}">
           {{requestData.method}}
         </span>&nbsp;
-        <span>{{requestData.fullUrlToDisplay}}</span>
+        <span>{{requestData.fullUrlToDisplay || requestData.url}}</span>
       </div>
     </div>
 
@@ -29,23 +29,25 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject} from "vue";
+import {computed, inject, defineProps} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import ParamGrid from "../../comp/param-grid.vue";
 import ParamContent from "../../comp/param-content.vue";
-
-import ResponseMeta from "./Meta.vue";
-import {UsedBy} from "@/utils/enum";
-const usedBy = inject('usedBy') as UsedBy
-const {t} = useI18n();
-
 import {StateType as Debug} from "@/views/component/debug/store";
 import {getMethodColor} from "@/utils/dom";
+import ResponseMeta from "./Meta.vue";
+import {UsedBy} from "@/utils/enum";
+
+const usedBy = inject('usedBy') as UsedBy
+const {t} = useI18n();
+const props = defineProps<{
+  data?: any;
+}>();
 const store = useStore<{  Debug: Debug }>();
 
-const requestData = computed<any>(() => store.state.Debug.requestData);
+const requestData = computed<any>(() => props.data || store.state.Debug.requestData);
 
 </script>
 

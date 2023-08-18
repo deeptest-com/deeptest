@@ -117,5 +117,7 @@ var (
 
 		&DebugConditionResponseDefine{},
 		&ExecLogResponseDefine{},
+
+		&SysConfig{},
 	}
 )

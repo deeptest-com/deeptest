@@ -55,6 +55,7 @@
             getList(page, nodeDataCategory.id);
         },
       }"
+      :scroll="{ x: 1240 }"
       class="dp-table">
 
       <template #name="{ record ,text }">
@@ -75,8 +76,8 @@
         </div>
       </template>
 
-      <template #updatedAt="{ record }">
-        <span>{{ momentUtc(record.updatedAt) }}</span>
+      <template #updatedAt="{ record, column }">
+        <TooltipCell :text="momentUtc(record.updatedAt)" :width="column.width"/>
       </template>
 
       <template #status="{ record }">
@@ -96,6 +97,18 @@
               :value="record?.priority || null"
               :options="priorityOptions"
               @update="(val) => { handleChangePriority(val,record)}"/>
+        </div>
+      </template>
+
+      <template #colCreateUserName="{record}">
+        <div class="customTagsColRender">
+          {{username(record.createUserName)}}
+        </div>
+      </template>
+
+      <template #colUpdateUserName="{record}">
+        <div class="customTagsColRender">
+          {{username(record.updateUserName)}}
         </div>
       </template>
 
@@ -173,6 +186,7 @@ import {
 import {ExclamationCircleOutlined} from '@ant-design/icons-vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import Select from '@/components/Select/index.vue';
+import TooltipCell from '@/components/Table/tooltipCell.vue';
 
 type Key = ColumnProps['key'];
 
@@ -185,7 +199,7 @@ interface DataType {
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 const router = useRouter();
-const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType }>();
+const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(() => store.state.Scenario.nodeDataCategory);
 const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
@@ -195,6 +209,7 @@ let queryParams = reactive<QueryParams>({
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
 
+const userList = computed<any>(() => store.state.Project.userList);
 const currModelId = ref(0)
 
 watch(nodeDataCategory, () => {
@@ -213,6 +228,7 @@ watch(queryParams, () => {
 
 onMounted(async () => {
   getList(1, nodeDataCategory.value.id);
+  getUserList()
 })
 
 const loading = ref<boolean>(true);
@@ -232,6 +248,11 @@ const getList = debounce(async (current: number, categoryId: number): Promise<vo
   loading.value = false
 }, 300)
 
+
+const getUserList = () => {
+  store.dispatch('Project/getUserList')
+
+}
 const exec = (id: number) => {
   console.log('exec')
   router.push(`/scenario/exec/${id}`)
@@ -254,7 +275,7 @@ const onEditFinish = () => {
   console.log('onEditFinish')
   isEditVisible.value = false
 
-  getList(pagination.value.current, nodeDataCategory.value.id)
+  getList(1, nodeDataCategory.value.id)
 }
 
 const remove = (id: number) => {
@@ -378,14 +399,12 @@ const columns = [
   {
     title: '编号',
     dataIndex: 'serialNumber',
-    width: '100px',
   },
   {
     title: '测试场景名称',
     dataIndex: 'name',
     slots: {customRender: 'name'},
-    ellipsis: true,
-    width: '200px',
+    width: 300,
   },
   {
     title: '测试类型',
@@ -398,35 +417,49 @@ const columns = [
     title: '状态',
     dataIndex: 'status',
     slots: {customRender: 'status'},
-    width: '100px',
+    width: 110,
   },
   {
     title: '优先级',
     dataIndex: 'priority',
     ellipsis: true,
     slots: {customRender: 'priority'},
-    width: '100px',
+    width: 90,
   },
   {
     title: '创建人',
     dataIndex: 'createUserName',
+    slots: {customRender: 'colCreateUserName'},
     ellipsis: true,
-    width: '80px',
+    width: 110,
+  },
+  {
+    title: '更新人',
+    dataIndex: 'updateUserName',
+    slots: {customRender: 'colUpdateUserName'},
+    ellipsis: true,
+    width: 110,
   },
   {
     title: '最新更新',
     dataIndex: 'updatedAt',
     slots: {customRender: 'updatedAt'},
     ellipsis: true,
-    width: '150px',
+    width: 180,
   },
   {
     title: '操作',
     key: 'action',
-    width: '80px',
+    width: 80,
+    fixed: 'right',
     slots: {customRender: 'action'},
   },
 ];
+
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
+}
 
 onMounted(() => {
   console.log('onMounted')

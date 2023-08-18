@@ -3,8 +3,13 @@ import './LogTreeView.less';
 import ScenarioHeader from "./ScenarioHeader.vue";
 
 import InterfaceHeader from "./InterfaceHeader.vue";
+import ProcessorHeader from "./ProcessorHeader.vue";
 import InterfaceContent from "./InterfaceContent.vue";
 import LogContent from "./LogContent.vue";
+import {
+    showArrowScenarioType,
+    DESIGN_TYPE_ICON_MAP,
+} from "@/views/scenario/components/Design/config";
 
 export default defineComponent({
     name: 'LogTreeView',
@@ -18,6 +23,13 @@ export default defineComponent({
 
         function change(uid, keys) {
             activeKeyMap.value[uid] = keys;
+        }
+
+        /**
+         * 点击更多
+         * */
+        function handleMore() {
+            console.log('more')
         }
 
         watch(() => props.treeData, (newVal: any) => {
@@ -37,33 +49,53 @@ export default defineComponent({
             if (!logs) return null;
 
             function renderHeader(log) {
+                // 接口场景
                 if (log.processorCategory === 'processor_interface') {
                     return <InterfaceHeader endpointData={log}/>
                 }
-                return <a-tooltip title={`${log.name}：${log.summary}`}>
-                    <div class={'header-text'}><span class={'label'}>{log.name}</span>：<span
-                        class={'value'}>{log.summary}</span></div>
-                </a-tooltip>
+                // 迭代场景
+                return <ProcessorHeader record={log} onMore={handleMore}/>
+
+                // return <a-tooltip title={`${log.name}：${log.summary}`}>
+                //     <div class={'header-text'}><span class={'label'}>{log.name}</span>：<span
+                //         class={'value'}>{log.summary}</span></div>
+                // </a-tooltip>
             }
 
             function renderContent(log) {
+                // 场景中的叶子节点不再渲染
+                if (!showArrowScenarioType.includes(log.processorType)) {
+                    return null;
+                }
                 if (log.processorCategory === 'processor_interface') {
                     return <InterfaceContent endpointData={log}/>
                 }
-                return <LogContent data={log}/>;
+                return null;
+                // return <LogContent data={log}/>;
+            }
+
+            // 渲染场景的标题，主要针对迭代场景，需要标识当前迭代的序号
+            function renderCollapseTitle(log, logIndex, srcLog) {
+                if (!log?.round) {
+                    return null;
+                }
+                return (<span class={'collapse-title'}>{log?.round}</span>)
             }
 
             const renderLogs = (log) => {
                 if (!log?.id) {
                     return;
                 }
-                return <a-collapse-panel header={renderHeader(log)}>
+                return <a-collapse-panel header={renderHeader(log)}
+                                         showArrow={showArrowScenarioType.includes(log.processorType)}>
                     {renderContent(log)}
                     {
-                        log?.logs?.map((log) => {
-                            return <div class={'log-item'}>
+                        log?.logs?.map((item, itemIndex, srcLog) => {
+                            return <div
+                                class={item.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item'}>
+                                {renderCollapseTitle(item, itemIndex, log)}
                                 <a-collapse>
-                                    {renderLogs(log)}
+                                    {renderLogs(item)}
                                 </a-collapse>
                             </div>
                         })
@@ -71,7 +103,7 @@ export default defineComponent({
                 </a-collapse-panel>;
             };
             return logs.map((log) => {
-                return <div class={'log-item'}>
+                return <div class={log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item'}>
                     <a-collapse>
                         {renderLogs(log)}
                     </a-collapse>
@@ -112,7 +144,7 @@ export default defineComponent({
         }
 
         return () => (
-            <div class={'log-tree-view'}>
+            <div class={'log-tree-view dp-log-tree-view'}>
                 {renderScenarioList(props.treeData)}
             </div>
         )

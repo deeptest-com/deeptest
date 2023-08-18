@@ -9,9 +9,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
-	"math/rand"
 	"time"
 )
 
@@ -49,11 +49,12 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
 
-	detail := map[string]interface{}{"变量名": entity.VariableName, "上传文件": entity.Url, "分割符": entity.Separator, "重复次数": entity.RepeatTimes}
+	detail := map[string]interface{}{"variableName": entity.VariableName, "url": entity.Url, "separator": entity.Separator, "repeatTimes": entity.RepeatTimes}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()
@@ -70,7 +71,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
-	for _, item := range iterator.Data {
+	for index, item := range iterator.Data {
 		/*
 			if DemoTestSite != "" && index > 2 {
 				break
@@ -80,6 +81,14 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 		SetVariable(processor.ID, iterator.VariableName, item, consts.Public)
 
 		for _, child := range processor.Children {
+			if ForceStopExec {
+				break
+			}
+			if child.Disable {
+				continue
+			}
+
+			child.Round = uint(index + 1)
 			child.Run(session)
 		}
 	}
@@ -127,11 +136,10 @@ func (entity *ProcessorData) GenerateLoopList() (ret agentDomain.ExecIterator, e
 }
 
 func randArr(arr []domain.VarKeyValuePair) (ret []domain.VarKeyValuePair) {
-	rand.Seed(time.Now().Unix())
+	indexArr := _intUtils.GenUniqueRandNum(0, len(arr), len(arr))
 
-	for range arr {
-		rand := rand.Intn(len(arr))
-		ret = append(ret, arr[rand])
+	for _, item := range indexArr {
+		ret = append(ret, arr[item])
 	}
 
 	return

@@ -19,9 +19,8 @@ type ScenarioExecResult struct {
 	StartTime        *time.Time            `json:"startTime,omitempty"`
 	EndTime          *time.Time            `json:"endTime,omitempty"`
 
-	ParentId int `json:"parentId"`
-	//ReportId uint `json:"reportId"`
-	UseID uint `json:"useId,omitempty"`
+	ParentId int  `json:"parentId"`
+	UseID    uint `json:"useId,omitempty"`
 
 	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
 	ProcessorType     consts.ProcessorType     `json:"processorType"`
@@ -35,10 +34,8 @@ type ScenarioExecResult struct {
 	HttpRespStatusCode    consts.HttpRespCode `json:"httpStatusCode,omitempty"`
 	HttpRespStatusContent string              `json:"httpStatusContent,omitempty"`
 
-	ExtractorsResult  []domain.ExtractorBase  `json:"extractorsResult,omitempty"`
-	CookiesResult     []domain.CookieBase     `json:"extractorsResult,omitempty"`
-	CheckpointsResult []domain.CheckpointBase `json:"checkpointsResult,omitempty"`
-	ScriptsResult     []domain.ScriptBase     `json:"scriptsResult,omitempty"`
+	PreConditions  []domain.InterfaceExecCondition `json:"preConditions"`
+	PostConditions []domain.InterfaceExecCondition `json:"postConditions"`
 
 	// for processor
 	ProcessorId      uint   `json:"processorId,omitempty"`
@@ -62,6 +59,8 @@ type ScenarioExecResult struct {
 	Cost int64 `json:"cost,omitempty"`
 
 	Detail string `json:"detail,omitempty"`
+
+	Round uint `json:"round,omitempty"`
 }
 
 type PlanExecResult struct {

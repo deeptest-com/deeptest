@@ -40,6 +40,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	cookieName := entity.CookieName
@@ -50,12 +51,15 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 	rightValue := entity.RightValue
 	typ := entity.ProcessorType
 
+	detail := map[string]interface{}{"name": entity.Name, "cookieName": cookieName}
 	if typ == consts.ProcessorCookieSet {
 		variableValue := ReplaceVariableValue(rightValue)
 
 		SetCookie(processor.ParentId, cookieName, variableValue, domain, expireTime) // set in parent scope
 
 		processor.Result.Summary = fmt.Sprintf("%s为%v。", cookieName, variableValue)
+		detail["variableValue"] = variableValue
+		processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	} else if typ == consts.ProcessorCookieGet {
 		var variableValue interface{}
@@ -81,11 +85,14 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 
 		SetVariable(processor.ParentId, variableName, variableValue, consts.Public) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("将%s%s值\"%v\"赋予变量%s。", cookieName, words, variableValue, variableName)
-		detail := map[string]interface{}{"cookie名称": cookieName, "cookie值": words, "变量": variableName, "变量值": variableValue}
+		detail["cookieValue"] = words
+		detail["variableName"] = variableName
+		detail["variableValue"] = variableValue
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
 	} else if typ == consts.ProcessorCookieClear {
 		ClearCookie(processor.ParentId, cookieName) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("%s。", cookieName)
+		processor.Result.Detail = commonUtils.JsonEncode(detail)
 	}
 
 	processor.AddResultToParent()

@@ -34,8 +34,9 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
-	detail := map[string]interface{}{"变量": entity.VariableName}
+	detail := map[string]interface{}{"name": entity.Name, "variableName": entity.VariableName}
 	if entity.ProcessorType == consts.ProcessorVariableSet {
 		var variableValue interface{}
 		variableValue, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID)
@@ -46,15 +47,15 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 
 		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.Public) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("\"%s\"为\"%v\"。", entity.VariableName, variableValue)
-		detail["值"] = variableValue
-		processor.Result.Detail = commonUtils.JsonEncode(detail)
+		detail["variableValue"] = variableValue
 
 	} else if entity.ProcessorType == consts.ProcessorVariableClear {
-		ClearVariable(processor.ID, entity.VariableName)
+		ClearVariable(processor.ParentId, entity.VariableName)
 		processor.Result.Summary = fmt.Sprintf("\"%s\"成功。", entity.VariableName)
 	}
 
 	processor.AddResultToParent()
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()

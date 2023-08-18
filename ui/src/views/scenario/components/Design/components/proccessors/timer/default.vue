@@ -12,6 +12,7 @@
         <a-form-item label="休眠时间（秒）" name="sleepTime">
           <a-input-number :defaultValue="0"
                           v-model:value="formState.sleepTime"
+                          :max="100"
                           style="width: 200px"/>
         </a-form-item>
         <a-form-item label="备注" name="comments">

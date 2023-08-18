@@ -14,7 +14,7 @@ type CategoryModule struct {
 // Party 场景
 func (m *CategoryModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/load", m.CategoryCtrl.LoadTree).Name = "分类树状数据"
 		index.Get("/{id:int}", m.CategoryCtrl.Get).Name = "分类详情"

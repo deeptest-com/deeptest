@@ -27,6 +27,7 @@ import {LogTreeView, Progress, ReportBasicInfo, StatisticTable} from '@/views/co
 import {StateType as GlobalStateType} from "@/store/global";
 import {ExecStatus} from "@/store/exec";
 import {StateType as ScenarioStateType} from "../../store";
+import {StateType as DebugStateType} from "@/views/component/debug/store";
 import bus from "@/utils/eventBus";
 import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
@@ -44,12 +45,14 @@ import {
   updateExecLogs,
   updateExecResult
 } from '@/composables/useExecLogs';
+import {ProcessorInterface} from "@/utils/enum";
 
 const {t} = useI18n();
 
 const router = useRouter();
-const store = useStore<{ Scenario: ScenarioStateType, Global: GlobalStateType, Exec: ExecStatus, ProjectSetting, Environment }>();
+const store = useStore<{ Scenario: ScenarioStateType, Debug: DebugStateType, Global: GlobalStateType, Exec: ExecStatus, ProjectSetting, Environment }>();
 const collapsed = computed<boolean>(() => store.state.Global.collapsed);
+const nodeData = computed<any>(() => store.state.Scenario.nodeData);
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
 const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
 const envList = computed(() => store.state.ProjectSetting.envList);
@@ -86,6 +89,7 @@ const execCancel = () => {
 }
 
 onMounted(async () => {
+  progressStatus.value = 'in_progress';
   await execStart();
   bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
@@ -100,7 +104,7 @@ const OnWebSocketMsg = (data: any) => {
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
 
-  console.log('832222wsMsg', wsMsg);
+  console.log('wsMsg***', wsMsg);
 
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
@@ -122,7 +126,6 @@ const OnWebSocketMsg = (data: any) => {
   // 更新【场景中每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)
-
     updateExecLogs(log);
   }
 
@@ -130,6 +133,12 @@ const OnWebSocketMsg = (data: any) => {
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';
     show.value = true
+
+    // refresh processor interface data in scenario if needed
+    if (nodeData.value.processorType === ProcessorInterface.Interface) {
+      store.dispatch('Debug/refreshInterfaceResultFromScenarioExec')
+    }
+
   } else {
     console.log('wsMsg', wsMsg);
   }

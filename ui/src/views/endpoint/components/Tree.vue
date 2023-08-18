@@ -168,8 +168,6 @@ function handleFindSearch() {
 async function loadCategories() {
   await store.dispatch('Endpoint/loadCategory');
   expandAll();
-  await nextTick();
-  handleFindSearch();
 }
 
 watch(() => {
@@ -193,7 +191,7 @@ const onExpand = (keys: number[]) => {
 };
 
 // 展开所有
-function expandAll() {
+async function expandAll() {
   const keys: any = [];
   const data = treeDataCategory.value;
 
@@ -210,6 +208,9 @@ function expandAll() {
   }
   fn(data);
   expandedKeys.value = keys;
+
+  await nextTick();
+  handleFindSearch();
 }
 
 let selectedKeys = ref<number[]>([]);

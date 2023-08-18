@@ -158,6 +158,14 @@ watch(() => {
     :deep(.header-operation) {
       padding-right: 40px;
       cursor: pointer;
+
+      .anticon.anticon-share-alt {
+        color: rgb(153, 153, 153);
+
+        &:hover {
+          color: #1677ff;
+        }
+      }
     }
   }
 }

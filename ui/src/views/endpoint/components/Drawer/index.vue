@@ -8,8 +8,8 @@
                           @update="updateTitle"/>
       </div>
       <div class="header-operation">
-        <a-tooltip :title="'分享'">
-          <ShareAltOutlined @click.stop="handleShare" style="color: #1677ff" />
+        <a-tooltip :title="'分享链接'">
+          <ShareAltOutlined @click.stop="handleShare" />
         </a-tooltip>
       </div>
     </template>

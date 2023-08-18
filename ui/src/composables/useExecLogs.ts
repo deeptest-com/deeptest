@@ -101,9 +101,7 @@ const reportItemMap = ref({} as any)
 const scenarioReports = ref([] as any[])
 // 更新场景的执行日志，不包括场景的执行结果。
 function updateExecLogs(processor) {
-    console.log("更新场景的执行记录，不包括场景的执行结果", processor)
-
-    console.log('updateReportDetail', 'logId='+processor.logId, 'parentId='+processor.parentLogId)
+    console.log('updateExecLogs', 'logId='+processor.logId, 'parentLogId='+processor.parentLogId)
 
     if (processor.processorCategory === ProcessorCategory.ProcessorRoot) { // reset
         reportItemMap.value = {}

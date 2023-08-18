@@ -91,7 +91,6 @@ const StoreModel: ModuleType = {
             }
 
             state.reportItemMap[processor.logId] = processor
-
             if (processor.processorCategory === ProcessorCategory.ProcessorRoot) {
                 state.rootProcessorList = [processor]
                 return

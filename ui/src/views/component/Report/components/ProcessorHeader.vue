@@ -40,7 +40,7 @@
       </template>
       <!-- ::::跳出循环 -->
       <template v-if="record.processorType === 'processor_loop_break'">
-        <p class="text">满足条件 <code>{{ `${detail?.breakExpression}` }}</code> 时， 跳出迭代</p>
+        <p class="text">满足条件 <code>{{ `${detail?.expression}` }}</code> 时， 跳出迭代</p>
       </template>
       <!-- ::::条件分支-如果 -->
       <template v-if="record.processorType === 'processor_logic_if'">

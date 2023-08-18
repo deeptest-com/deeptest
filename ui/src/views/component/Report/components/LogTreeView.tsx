@@ -77,28 +77,10 @@ export default defineComponent({
 
             // 渲染场景的标题，主要针对迭代场景，需要标识当前迭代的序号
             function renderCollapseTitle(log, logIndex, srcLog) {
-                const detail = JSON.parse(srcLog.detail || {});
-                const variableName = detail?.variableName;
-
-                // 迭代直到  + 迭代次数 展示文案为 第X轮
-                if (srcLog.processorType === 'processor_loop_time' || srcLog.processorType === 'processor_loop_until') {
-                    return <span class={'collapse-title'}>{`第 ${logIndex + 1} 次`}</span>
+                if (!log?.round) {
+                    return null;
                 }
-                // 迭代列表
-                else if (srcLog.processorType === 'processor_loop_list') {
-                    return <span class={'collapse-title'}>{`${variableName} = ${logIndex + 1}`}</span>
-                    //  循环区间
-                }
-                else if (srcLog.processorType === 'processor_loop_in') {
-                    return <span class={'collapse-title'}>{`${variableName} = ${logIndex + 1}`}</span>
-                }
-                else if (srcLog.processorType === 'processor_loop_range') {
-                    return <span class={'collapse-title'}>{`${variableName} = ${logIndex + 1}`}</span>
-                    // 数据迭代
-                } else if (srcLog.processorType === 'processor_loop_data') {
-                    return <span class={'collapse-title'}>{`${variableName} = ${logIndex + 1}`}</span>
-                }
-                return null;
+                return (<span class={'collapse-title'}>{log?.round}</span>)
             }
 
             const renderLogs = (log) => {

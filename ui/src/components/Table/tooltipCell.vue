@@ -18,9 +18,8 @@ export default defineComponent({
   setup(props) {
     const showTooltip = ref(false);
     const textRef = ref();
-    const { proxy } = getCurrentInstance();
+    const { proxy } :any= getCurrentInstance();
     const setTooltip = () => {
-      console.log(1111);
       nextTick(() => {
         const outElWidth = proxy.$el && proxy.$el.offsetWidth;
         const textElWidth = textRef.value && textRef.value.offsetWidth;

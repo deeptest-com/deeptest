@@ -806,6 +806,7 @@ const StoreModel: ModuleType = {
             try {
                 await saveResponseDefine(payload);
                 state.debugData.responseDefine.entityData.disabled = payload.disabled
+                state.debugData.responseDefine.entityData.code = payload.code
                 return true
             } catch (error) {
                 return false;

@@ -91,6 +91,7 @@ const columns: any[] = reactive([
     {
         title: '编号',
         dataIndex: 'serialNumber',
+        width: 150,
     },
     {
         title: '用例名称',

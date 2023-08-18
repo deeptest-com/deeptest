@@ -5,8 +5,9 @@
     <div :class="['scenario-status', logInfo.resultStatus]">{{ statusMap.get(logInfo.resultStatus) }}
     </div>
     <div class="scenario-rate">
-      <a-progress class="scenario-rate-progress"
-                  :percent="progressValue"/>
+      <div class="scenario-rate-progress">
+        <a-progress :percent="progressValue" :format="percent => (percent === 0 ? '0.00' : percent.tofixed(2)) + '%'"/>
+      </div>
       <div class="scenario-rate-info" >通过率 {{ progressValueStr }}</div>
     </div>
   </div>
@@ -22,7 +23,7 @@ const logInfo = computed(() => {
   return props.record?.logs?.[0] || {};
 })
 const progressValue = computed(() => {
-  return getPercent(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0)
+  return Number(getPercent(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0))
 });
 const progressValueStr = computed(() => {
   return getPercentStr(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0)
@@ -87,8 +88,6 @@ watch(() => props.record, (val) => {
 }
 
 .scenario-rate {
-  // width: 292px;
-  width: 220px;
   margin-right: 24px;
   display: flex;
   align-items: center;
@@ -105,12 +104,11 @@ watch(() => props.record, (val) => {
   width: 54px;
 }
 .scenario-rate-progress{
-  width: 120px;
+  width: 170px;
 }
 
 .scenario-rate-info{
-  margin-left: 24px;
-  width: 80px;
+  margin-left: 40px;
   font-size: 12px;
   color: rgba(0, 0, 0, 0.45);
 }

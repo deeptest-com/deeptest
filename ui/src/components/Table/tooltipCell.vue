@@ -20,7 +20,6 @@ export default defineComponent({
     const textRef = ref();
     const { proxy } :any= getCurrentInstance();
     const setTooltip = () => {
-      console.log(1111);
       nextTick(() => {
         const outElWidth = proxy.$el && proxy.$el.offsetWidth;
         const textElWidth = textRef.value && textRef.value.offsetWidth;

@@ -214,7 +214,7 @@ func (r *SummaryDetailsRepo) FindAllEndpointIdsGroupByProjectId() (ids []model.P
 }
 
 func (r *SummaryDetailsRepo) FindExecLogProcessorInterfaceTotalGroupByProjectId(projectId int64) (counts int64, err error) {
-	err = r.DB.Model(&model.ExecLogProcessor{}).Raw("select count(DISTINCT biz_exec_log_processor.endpoint_interface_id)  from biz_scenario_report join biz_exec_log_processor on biz_scenario_report.id = biz_exec_log_processor.report_id where processor_category='processor_interface' AND endpoint_interface_id != 0 and NOT deleted and project_id = ?;", projectId).Find(&counts).Error
+	err = r.DB.Model(&model.ExecLogProcessor{}).Raw("select count(DISTINCT biz_exec_log_processor.endpoint_interface_id)  from biz_scenario_report join biz_exec_log_processor on biz_scenario_report.id = biz_exec_log_processor.report_id where processor_category='processor_interface' AND endpoint_interface_id != 0 and biz_scenario_report.deleted !=1  and biz_scenario_report.deleted !=1 and project_id = ?;", projectId).Find(&counts).Error
 	return
 }
 

@@ -18,7 +18,7 @@ export default defineComponent({
   setup(props) {
     const showTooltip = ref(false);
     const textRef = ref();
-    const { proxy } = getCurrentInstance();
+    const { proxy } :any= getCurrentInstance();
     const setTooltip = () => {
       console.log(1111);
       nextTick(() => {

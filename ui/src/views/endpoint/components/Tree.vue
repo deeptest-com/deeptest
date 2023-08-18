@@ -210,7 +210,9 @@ async function expandAll() {
   expandedKeys.value = keys;
 
   await nextTick();
-  handleFindSearch();
+  setTimeout(() => {
+    handleFindSearch();
+  }, 0);
 }
 
 let selectedKeys = ref<number[]>([]);

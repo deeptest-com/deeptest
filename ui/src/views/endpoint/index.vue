@@ -415,15 +415,13 @@ function share(record: any) {
     document.execCommand("copy");
     document.body.removeChild(ele);
     if (document.execCommand("copy")) {
-      message.success('分享成功');
-    } else {
-      message.error('分享失败');
+      message.success('复制成功，项目成员可通过此链接访问');
     }
   } else {
     navigator.clipboard.writeText(text).then(function () {
-      message.success('分享成功');
-    }).catch(function () {
-      message.error('分享失败');
+      message.success('复制成功，项目成员可通过此链接访问');
+    }).catch(function (err) {
+      console.log('分享失败', err);
     })
   }
 }
@@ -528,7 +526,10 @@ const loadList = debounce(async (page, size, opts?: any) => {
     "projectId": currProject.value.id,
     "page": page,
     "pageSize": size,
-    opts,
+    opts: {
+      ...(opts || {}),
+      categoryId: selectedCategoryId.value,
+    },
   });
   // await store.dispatch('Endpoint/loadCategory');
   fetching.value = false;

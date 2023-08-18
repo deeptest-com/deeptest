@@ -1,6 +1,6 @@
 <template>
   <a-modal
-      :title="'配置'"
+      :title="'配置'+t(model.entityType)"
       :visible="visible"
       :footer="null"
       @cancel="cancel"
@@ -12,6 +12,10 @@
         <Extractor v-if="model.entityType === ConditionType.extractor"
                    :condition="model"
                    :finish="onCancel"/>
+
+        <Cookie v-if="model.entityType === ConditionType.cookie"
+                :condition="model"
+                :finish="onCancel"/>
 
         <Checkpoint v-if="model.entityType === ConditionType.checkpoint"
                     :condition="model"
@@ -43,6 +47,7 @@ import {useI18n} from "vue-i18n";
 
 import {ConditionType} from "@/utils/enum";
 import Extractor from "./conditions-post/Extractor.vue";
+import Cookie from "./conditions-post/Cookie.vue";
 import Checkpoint from "./conditions-post/Checkpoint.vue";
 import PreScript from "./conditions-pre/Script.vue";
 import PostScript from "./conditions-post/Script.vue";

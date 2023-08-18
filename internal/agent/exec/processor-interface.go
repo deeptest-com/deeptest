@@ -48,6 +48,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		ScenarioId:          processor.ScenarioId,
 		LogId:               uuid.NewV4(),
 		ParentLogId:         processor.Parent.Result.LogId,
+		Round:               processor.Round,
 	}
 
 	//在循环过程中，processor 被执行多次，变量替换会受到影响，第一次跌替换之后，就不能根据实际情况替换了

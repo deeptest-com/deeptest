@@ -49,6 +49,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
@@ -70,7 +71,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
-	for _, item := range iterator.Data {
+	for index, item := range iterator.Data {
 		/*
 			if DemoTestSite != "" && index > 2 {
 				break
@@ -87,6 +88,7 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 				continue
 			}
 
+			child.Round = uint(index + 1)
 			child.Run(session)
 		}
 	}

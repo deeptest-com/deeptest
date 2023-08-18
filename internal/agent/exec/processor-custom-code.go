@@ -35,6 +35,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	scriptBase := domain.ScriptBase{

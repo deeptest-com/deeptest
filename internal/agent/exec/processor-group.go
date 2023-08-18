@@ -29,6 +29,7 @@ func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err er
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	processor.AddResultToParent()

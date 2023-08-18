@@ -405,7 +405,7 @@ function share(record: any) {
     endpointId: record.id,
     selectedCategoryId: selectedCategoryId.value,
   };
-  const text = `${window.location.origin}${window.location.hash}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
+  const text = `${window.location.origin}${window.location.hash.split('?')[0]}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
   if (!navigator.clipboard) {
     var ele = document.createElement("input");
     ele.value = text;
@@ -610,6 +610,9 @@ try {
   );
   if (shareInfo.endpointId) {
     editEndpoint({ id: shareInfo.endpointId }); // 默认打开该接口的抽屉详情
+  }
+  if (shareInfo.selectedCategoryId) {
+    selectNode(shareInfo.selectedCategoryId);
   }
 } catch (error) {
   console.log('error', error);

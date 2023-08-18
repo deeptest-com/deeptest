@@ -168,6 +168,7 @@
     <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
     <div v-if="drawerVisible">
       <Drawer
+          @share="id => share({ id })"
           :destroyOnClose="true"
           :visible="drawerVisible"
           @refreshList="refreshList"
@@ -204,6 +205,7 @@ import Tree from './components/Tree.vue'
 import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
 import Tags from './components/Tags/index.vue';
 import TooltipCell from '@/components/Table/tooltipCell.vue';
+import { getUrlKey } from '@/utils/url';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -288,17 +290,24 @@ const MenuList = [
   {
     key: '1',
     code: 'ENDPOINT-COPY',
-    text: '复制',
+    text: '克隆',
     action: (record: any) => copy(record)
   },
   {
     key: '2',
+    code: '',
+    text: '分享链接',
+    action: (record: any) => share(record)
+  },
+ 
+  {
+    key: '3',
     code: 'ENDPOINT-DELETEE',
     text: '删除',
     action: (record: any) => del(record)
   },
   {
-    key: '3',
+    key: '4',
     code: 'ENDPOINT-OUTDATED',
     text: '过期',
     action: (record: any) => disabled(record)
@@ -393,6 +402,31 @@ async function handleUpdateEndpoint(value: string, record: any) {
 async function editEndpoint(record) {
   await store.dispatch('Endpoint/getEndpointDetail', {id: record.id});
   drawerVisible.value = true;
+}
+
+function share(record: any) {
+  const searchParams = {
+    endpointId: record.id,
+    selectedCategoryId: selectedCategoryId.value,
+  };
+  const text = `${window.location.origin}${window.location.hash.split('?')[0]}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
+  if (!navigator.clipboard) {
+    var ele = document.createElement("input");
+    ele.value = text;
+    document.body.appendChild(ele);
+    ele.select();
+    document.execCommand("copy");
+    document.body.removeChild(ele);
+    if (document.execCommand("copy")) {
+      message.success('复制成功，项目成员可通过此链接访问');
+    }
+  } else {
+    navigator.clipboard.writeText(text).then(function () {
+      message.success('复制成功，项目成员可通过此链接访问');
+    }).catch(function (err) {
+      console.log('分享失败', err);
+    })
+  }
 }
 
 async function copy(record: any) {
@@ -495,7 +529,10 @@ const loadList = debounce(async (page, size, opts?: any) => {
     "projectId": currProject.value.id,
     "page": page,
     "pageSize": size,
-    ...opts,
+    opts: {
+      ...(opts || {}),
+      categoryId: selectedCategoryId.value,
+    },
   });
   // await store.dispatch('Endpoint/loadCategory');
   fetching.value = false;
@@ -549,7 +586,6 @@ onUnmounted(async () => {
   store.commit('Endpoint/clearFilterState');
 })
 
-
 function paneResizeStop(pane, resizer, size) {
   console.log(pane.className, resizer.className, size.split('px')[0])
   if (pane?.className?.includes('left')) {
@@ -570,6 +606,23 @@ const username = (user:string)=>{
   return result?.label || '-'
 }
 
+try {
+  const result = getUrlKey('shareInfo', window.location.href) || "";
+  const shareInfo = result ? JSON.parse(result  as string) : {};
+  console.log(
+  '%c 接口定义 分享详情share-info',
+  'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: green;',
+  shareInfo
+  );
+  if (shareInfo.endpointId) {
+    editEndpoint({ id: shareInfo.endpointId }); // 默认打开该接口的抽屉详情
+  }
+  if (shareInfo.selectedCategoryId) {
+    selectNode(shareInfo.selectedCategoryId);
+  }
+} catch (error) {
+  console.log('error', error);
+}
 </script>
 <style scoped lang="less">
 .tag-filter-form {
@@ -609,6 +662,8 @@ const username = (user:string)=>{
 
   .top-action-left {
     min-width: 220px;
+    display: flex;
+    align-items: center;
   }
 }
 

@@ -132,6 +132,7 @@ export default defineComponent({
 
         // 渲染场景，一级目录, 即场景列表
         function renderScenarioList(list) {
+            console.log('renderScenarioList +++', list)
 
             if (!list?.length) {
                 return null

@@ -12,7 +12,7 @@
               @exec-cancel="execCancel" />
 
     <LogTreeView class="scenario-exec-log-tree"
-        :treeData="rootProcessorList"
+        :treeData="scenarioReports"
                  :expandKeys="expandKeys"
                  :isSingleScenario="true" />
   </div>
@@ -36,6 +36,9 @@ import {useI18n} from "vue-i18n";
 import {getToken} from "@/utils/localToken";
 import {Scenario} from "@/views/scenario/data";
 import {message} from "ant-design-vue";
+import {ProcessorInterface} from "@/utils/enum";
+import {StateType as ReportStateType} from "@/views/report/store";
+
 import {
   clearLog,
   expandKeys,
@@ -48,8 +51,6 @@ import {
   updateExecLogs,
   updateExecResult
 } from '@/composables/useExecLogs';
-import {ProcessorInterface} from "@/utils/enum";
-import {StateType as ReportStateType} from "@/views/report/store";
 
 const {t} = useI18n();
 const router = useRouter();
@@ -58,7 +59,6 @@ const store = useStore<{ Report: ReportStateType, Scenario: ScenarioStateType, D
 const collapsed = computed<boolean>(() => store.state.Global.collapsed);
 const nodeData = computed<any>(() => store.state.Scenario.nodeData);
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
-const rootProcessorList = computed<any>(() => store.state.Report.rootProcessorList);
 
 const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
 const envList = computed(() => store.state.ProjectSetting.envList);
@@ -132,9 +132,7 @@ const OnWebSocketMsg = (data: any) => {
   // 更新【场景中每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)
-    // updateExecLogs(log);
-    // console.log('666 ', 'logId='+log.logId, 'parentId='+log.parentLogId)
-    store.commit('Report/updateReportDetail', log)
+    updateExecLogs(log);
   }
 
   // 执行完毕

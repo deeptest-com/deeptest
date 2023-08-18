@@ -5,6 +5,7 @@
  */
 import {computed, ref} from 'vue';
 import {getDivision, getPercentStr} from "@/utils/number";
+import {ProcessorCategory} from "@/utils/enum";
 
 // 打平的执行记录
 const execLogs: any = ref([]);
@@ -96,34 +97,37 @@ function genLogTreeView(execLogs, execRes) {
 //     }
 // }
 
-// 更新场景的执行记录，不包括场景的执行结果
-// todo 优化: 可以优化成算法，使用 hash
-function updateExecLogs(log) {
-    console.log("更新场景的执行记录，不包括场景的执行结果", log)
+const reportItemMap = ref({} as any)
+const scenarioReports = ref([] as any[])
+// 更新场景的执行日志，不包括场景的执行结果。
+function updateExecLogs(processor) {
+    console.log("更新场景的执行记录，不包括场景的执行结果", processor)
 
-    function hasSameId(log, item) {
-        return item?.logId === log?.logId && item?.scenarioId === log?.scenarioId;
+    console.log('updateReportDetail', 'logId='+processor.logId, 'parentId='+processor.parentLogId)
+
+    if (processor.processorCategory === ProcessorCategory.ProcessorRoot) { // reset
+        reportItemMap.value = {}
+        scenarioReports.value = []
     }
-    const isExist = execLogs.value.some((item: any) => {
-        return hasSameId(log, item);
-    });
-    // 1. 更新执行记录
-    if (isExist) {
-        for (let item of execLogs.value) {
-            if (hasSameId(log, item)) {
-                item = {...item, ...log};
-                break;
-            }
+
+    reportItemMap.value[processor.logId] = processor
+    if (processor.processorCategory === ProcessorCategory.ProcessorRoot) {
+        scenarioReports.value = [processor]
+        return
+    }
+
+    if (reportItemMap.value[processor.parentLogId]) {
+        if (!reportItemMap.value[processor.parentLogId].logs) {
+            reportItemMap.value[processor.parentLogId].logs = []
         }
-        // 2. 新增执行记录
-    } else {
-        execLogs.value.push(log);
+        reportItemMap.value[processor.parentLogId].logs.push(processor)
+    }
+
+    const elems = document.getElementsByClassName('scenario-exec-log-tree')
+    if (elems && elems.length > 0) {
+        elems[0].scrollTop = elems[0].scrollHeight + 1000
     }
 }
-
-const scenarioReports = computed(() => {
-    return [...genLogTreeView(execLogs.value, execResults.value)];
-})
 
 const expandKeys = computed(() => {
     return scenarioReports.value.map((item: any) => item.key);

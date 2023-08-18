@@ -118,6 +118,10 @@ function updateExecLogs(processor) {
         if (!reportItemMap.value[processor.parentLogId].logs) {
             reportItemMap.value[processor.parentLogId].logs = []
         }
+
+        if (reportItemMap.value[processor.parentLogId].logs.length >= 50) {
+            reportItemMap.value[processor.parentLogId].logs.shift()
+        }
         reportItemMap.value[processor.parentLogId].logs.push(processor)
     }
 

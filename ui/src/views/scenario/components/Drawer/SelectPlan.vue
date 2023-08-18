@@ -1,7 +1,7 @@
 <template>
   <a-modal
       class="associate-scenario-modal"
-      title="关联测试场景"
+      title="关联测试计划"
       :visible="visible"
       :closable="true"
       @cancel="handleCancel"

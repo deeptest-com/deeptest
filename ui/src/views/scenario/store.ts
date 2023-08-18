@@ -64,6 +64,7 @@ export interface StateType {
     scenariosReports: any[];
     linkedPlans: any[];
     notLinkedPlans: any[];
+    linkedPlansPagination: any;
 
     scenarioCount: number,
 }
@@ -106,6 +107,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setScenariosReports: Mutation<StateType>;
         setLinkedPlans: Mutation<StateType>;
         setNotLinkedPlans: Mutation<StateType>;
+        setLinkedPlansPagination: Mutation<StateType>;
 
         increaseScenarioCount: Mutation<StateType>;
     };
@@ -202,6 +204,12 @@ const initState: StateType = {
     scenariosReports: [],
     linkedPlans: [],
     notLinkedPlans: [],
+    linkedPlansPagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10,
+        showSizeChanger: false,
+    },
 
     scenarioCount: 0,
 };
@@ -303,6 +311,9 @@ const StoreModel: ModuleType = {
         },
         setNotLinkedPlans(state, payload) {
             state.notLinkedPlans = payload;
+        },
+        setLinkedPlansPagination(state, payload) {
+            state.linkedPlansPagination = payload;
         },
 
         increaseScenarioCount(state) {
@@ -694,6 +705,11 @@ const StoreModel: ModuleType = {
                 } else {
                     commit('setNotLinkedPlans', res?.data?.result || []);
                 }
+                commit('setLinkedPlansPagination', {
+                    ...state.linkedPlansPagination,
+                    current: res.data.page || 1,
+                    total: res.data.total || 0,
+                })
             }
             return false;
         },

@@ -36,7 +36,8 @@
             ...pagination,
             showSizeChanger: false,
             onChange: (page) => {
-                getList({ page });
+              pagination.current = page;
+              getPlans({ page });
             },
         }"
       row-key="id"
@@ -75,6 +76,7 @@ import {PlusOutlined} from '@ant-design/icons-vue';
 import SelectPlan from './SelectPlan.vue';
 import {Modal} from 'ant-design-vue';
 import {momentUtc} from "@/utils/datetime";
+import {Scenario} from "@/views/scenario/data";
 
 import {priorityOptions, scenarioStatusOptions, scenarioStatus} from "@/config/constant";
 
@@ -84,13 +86,13 @@ const props = defineProps({
     required: true
   }
 })
-import {Scenario} from "@/views/scenario/data";
 
 const emits = defineEmits(['select']);
 const store = useStore<{Report,Scenario, ProjectGlobal, ServeGlobal }>();
 const detailResult: any = computed<Scenario>(() => store.state.Scenario.detailResult);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const linkedPlans = computed(() => store.state.Scenario.linkedPlans);
+let pagination = computed(() => store.state.Scenario.linkedPlansPagination);
 const notLinkedPlans = computed(() => store.state.Scenario.notLinkedPlans);
 const members = computed(() => store.state.Report.members);
 const visible = ref(false);
@@ -168,14 +170,17 @@ const columnsForSelect = [
 ];
 const loading = ref(false);
 
-async function getPlans() {
+async function getPlans(opts = {}) {
   loading.value = true;
   await store.dispatch('Scenario/getPlans', {
     currProjectId: currProject.value.id,
     id: detailResult.value.id,
     data: {
       "ref": props.linked,
-      ...formState
+      ...formState,
+      ...pagination.value,
+      page: pagination.value.current,
+      ...opts,
     }
   });
   loading.value = false;
@@ -185,7 +190,7 @@ watch(() => {
   return detailResult.value.id
 }, async (newVal) => {
   if(newVal) {
-    await getPlans();
+    await getPlans({ page: 1 });
   }
 }, {
   immediate: true
@@ -209,14 +214,14 @@ watch(() => {
 // })
 
 const handleChange = () => {
-  getPlans();
+  getPlans({ page: 1 });
 };
 
 async function handleAdd(keys: any[]) {
   await store.dispatch('Scenario/addPlans', {
     currProjectId: currProject.value.id,
     id: detailResult.value.id,
-    data: keys
+    data: keys,
   });
   await getPlans();
 }
@@ -236,7 +241,13 @@ async function handleRemove(record?: any) {
         id: detailResult.value.id,
         data: keys
       });
-      await getPlans();
+      await getPlans(!record 
+        ? { page: 1 } 
+        : { 
+          page: linkedPlans.value.length === 1 && pagination.value.current > 1 
+          ? pagination.value.current - 1 
+          : pagination.value.current }
+        );
     }
   })
 }

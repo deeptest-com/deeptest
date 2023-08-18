@@ -92,6 +92,7 @@ func (r *LogRepo) CreateInterfaceLog(result agentDomain.ScenarioExecResult, pare
 		ParentId:            parentId,
 		InvokeId:            invokeId,
 		ReportId:            reportId,
+		Round:               result.Round,
 	}
 
 	err = r.Save(&po)
@@ -113,6 +114,7 @@ func (r *LogRepo) CreateCommonLog(result agentDomain.ScenarioExecResult, parentI
 		ParentId:            parentId,
 		ReportId:            reportId,
 		Detail:              result.Detail,
+		Round:               result.Round,
 	}
 
 	err = r.Save(&po)

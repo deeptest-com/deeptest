@@ -60,7 +60,7 @@ type ScenarioExecResult struct {
 
 	Detail string `json:"detail,omitempty"`
 
-	Round uint `json:"round,omitempty"`
+	Round string `json:"round,omitempty"`
 }
 
 type PlanExecResult struct {

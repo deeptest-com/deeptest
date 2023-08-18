@@ -45,7 +45,7 @@ type ProcessorBase struct {
 	Result                *agentDomain.ScenarioExecResult `json:"result"`
 	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc    `json:"processorInterfaceSrc"`
 
-	Round uint `json:"round"`
+	Round string `json:"round"`
 
 	Session Session `json:"-"`
 }

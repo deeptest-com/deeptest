@@ -71,32 +71,36 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
-	for index, item := range iterator.Data {
-		/*
-			if DemoTestSite != "" && index > 2 {
-				break
-			}
-		*/
+	for i := 0; i < entity.RepeatTimes; i++ {
+		if entity.IsRand {
+			iterator.Data = randArr(iterator.Data)
+		}
+		for _, item := range iterator.Data {
+			/*
+				if DemoTestSite != "" && index > 2 {
+					break
+				}
+			*/
 
-		SetVariable(processor.ID, iterator.VariableName, item, consts.Public)
-		
-		round := 0
+			SetVariable(processor.ID, iterator.VariableName, item, consts.Public)
 
-		for _, child := range processor.Children {
-			if ForceStopExec {
-				break
-			}
-			if child.Disable {
-				continue
-			}
+			round := ""
 
-			if round == 0 {
-				round = index + 1
-				child.Round = uint(round)
-			}
+			for _, child := range processor.Children {
+				if ForceStopExec {
+					break
+				}
+				if child.Disable {
+					continue
+				}
 
-			child.Round = uint(index + 1)
-			child.Run(session)
+				if round == "" {
+					round = fmt.Sprintf("第 %v 轮，%v = %v", i+1, iterator.VariableName, commonUtils.JsonEncode(item))
+					child.Round = round
+				}
+
+				child.Run(session)
+			}
 		}
 	}
 
@@ -134,10 +138,11 @@ func (entity *ProcessorData) GenerateLoopList() (ret agentDomain.ExecIterator, e
 	} else if format == consts.FormatExcel {
 		ret.Data, err = ReadDataFromExcel(pth)
 	}
-
-	if entity.IsRand {
-		ret.Data = randArr(ret.Data)
-	}
+	/*
+		if entity.IsRand {
+			ret.Data = randArr(ret.Data)
+		}
+	*/
 
 	return
 }

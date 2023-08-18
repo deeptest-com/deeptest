@@ -46,6 +46,8 @@ type ExecLogProcessor struct {
 	Output  string `json:"output,omitempty"`
 
 	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
+
+	Round string `gorm:"type:text" json:"round,omitempty"`
 }
 
 func (ExecLogProcessor) TableName() string {

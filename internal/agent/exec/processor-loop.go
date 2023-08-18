@@ -81,17 +81,18 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 		if DemoTestSite != "" && index > 2 {
 			break
 		}
-
-		msg := agentDomain.ScenarioExecResult{
-			ParentId:          int(processor.ID),
-			Summary:           fmt.Sprintf("%d. %s为%v", index+1, iterator.VariableName, item),
-			Name:              "循环变量",
-			ProcessorCategory: consts.ProcessorPrint,
-		}
-		execUtils.SendExecMsg(msg, session.WsMsg)
+		/*
+			msg := agentDomain.ScenarioExecResult{
+				ParentId:          int(processor.ID),
+				Summary:           fmt.Sprintf("%d. %s为%v", index+1, iterator.VariableName, item),
+				Name:              "循环变量",
+				ProcessorCategory: consts.ProcessorPrint,
+			}
+			execUtils.SendExecMsg(msg, session.WsMsg)
+		*/
 
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
-		round := 0
+		round := ""
 		for _, child := range processor.Children {
 
 			if ForceStopExec {
@@ -101,9 +102,14 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 				continue
 			}
 			//执行轮次
-			if round == 0 {
-				round = index + 1
-				child.Round = uint(round)
+			if round == "" {
+				if entity.ProcessorType == consts.ProcessorLoopTime {
+					round = fmt.Sprintf("第 %v 轮", index+1)
+				} else {
+					round = fmt.Sprintf("第 %v 轮，%v = %v", index+1, iterator.VariableName, item)
+				}
+
+				child.Round = round
 			}
 
 			(*child).Run(session)
@@ -132,11 +138,13 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		}
 		index += 1
 
-		msg := agentDomain.ScenarioExecResult{
-			ParentId: int(processor.ID),
-			Summary:  fmt.Sprintf("%d. ", index),
-		}
-		execUtils.SendExecMsg(msg, session.WsMsg)
+		/*
+			msg := agentDomain.ScenarioExecResult{
+				ParentId: int(processor.ID),
+				Summary:  fmt.Sprintf("%d. ", index),
+			}
+			execUtils.SendExecMsg(msg, session.WsMsg)
+		*/
 
 		result, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID)
 		pass, ok := result.(bool)
@@ -151,8 +159,8 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 			break
 		}
 
-		round := 0
-		
+		round := ""
+
 		for _, child := range processor.Children {
 			if ForceStopExec {
 				break
@@ -161,9 +169,9 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 				continue
 			}
 
-			if round == 0 {
-				round = index + 1
-				child.Round = uint(round)
+			if round == "" {
+				round = fmt.Sprintf("第 %v 轮", index+1)
+				child.Round = round
 			}
 
 			(*child).Run(session)
@@ -190,14 +198,17 @@ func (entity *ProcessorLoop) getBeak() (ret bool, msg string, detailStr string) 
 
 	result, err := EvaluateGovaluateExpressionByProcessorScope(breakIfExpress, entity.ProcessorID)
 	ret, ok := result.(bool)
+	pass := false
 	if err == nil && ok && ret {
 		breakMap.Store(breakFrom, true)
 		msg = "真"
+		pass = true
 	} else {
 		msg = "假"
 	}
 
-	detail := map[string]interface{}{"表达式": breakIfExpress + " 为 " + msg}
+	//detail := map[string]interface{}{"表达式": breakIfExpress + " 为 " + msg}
+	detail := map[string]interface{}{"expression": breakIfExpress, "result": pass}
 	detailStr = commonUtils.JsonEncode(detail)
 
 	return

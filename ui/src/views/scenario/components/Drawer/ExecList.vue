@@ -13,7 +13,7 @@
       <span>{{ momentUtc(record.createdAt) }}</span>
     </template>
     <template #duration="{ record }">
-      <span>{{ `${record.duration}秒` }}</span>
+      <span>{{ `${record.duration}毫秒` }}</span>
     </template>
     <template #execPassRate="{ record }">
       <!-- todo 统一数字转化 utils     -->

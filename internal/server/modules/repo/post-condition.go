@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
@@ -120,6 +121,13 @@ func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId
 			srcEntity.ConditionId = srcCondition.ID
 
 			r.ScriptRepo.Save(&srcEntity)
+			entityId = srcEntity.ID
+		} else if srcCondition.EntityType == consts.ConditionTypeResponseDefine {
+			srcEntity, _ := r.ResponseDefineRepo.Get(srcCondition.EntityId)
+			srcEntity.ID = 0
+			srcEntity.ConditionId = srcCondition.ID
+
+			r.ResponseDefineRepo.Save(&srcEntity)
 			entityId = srcEntity.ID
 		}
 
@@ -337,7 +345,11 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 		} else if typ == consts.ConditionTypeResponseDefine {
 			responseDefine := domain.ResponseDefineBase{}
 
-			entity, _ := r.ResponseDefineRepo.Get(po.EntityId)
+			entity, err := r.ResponseDefineRepo.Get(po.EntityId)
+			if err != nil {
+				logUtils.Infof("响应码校验拿不到数据 %v", po.EntityId)
+				continue
+			}
 			copier.CopyWithOption(&responseDefine, entity, copier.Option{DeepCopy: true})
 			responseDefine.ConditionId = po.ID
 			responseDefine.ConditionEntityId = po.EntityId
@@ -397,7 +409,7 @@ func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpoi
 
 func (r *PostConditionRepo) GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (po model.DebugPostCondition, err error) {
 	err = r.DB.
-		Where("debug_interface_id=? and endpoint_interface_id=? and used_by=? and entity_type=?", debugInterfaceId, endpointInterfaceId, by, consts.ConditionTypeResponseDefine).
+		Where("debug_interface_id=? and endpoint_interface_id=? and entity_type=?", debugInterfaceId, endpointInterfaceId, consts.ConditionTypeResponseDefine).
 		Where("NOT deleted").
 		First(&po).Error
 	return

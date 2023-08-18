@@ -14,7 +14,7 @@
           <a-form-item label="列表" v-bind="validateInfos.list">
             <a-input v-model:value="modelRef.list"
                      @blur="validate('list', { trigger: 'blur' }).catch(() => {})"/>
-            <div class="dp-input-tip">列表以逗号分隔</div>
+            <div class="dp-input-tip">列表以英文逗号分隔</div>
           </a-form-item>
 
           <a-form-item label="是否随机">

@@ -200,7 +200,6 @@ function onCloseExecDrawer() {
 
 function exec() {
   selectEnvVisible.value = true;
-  // debugger;
   execEnvId.value = detailResult?.value?.currEnvId;
 }
 
@@ -208,7 +207,7 @@ watch(() => {
   return props.drawerTabKey;
 }, (val) => {
   activeKey.value = val;
-});
+}, {immediate: true});
 
 watch(() => {
   return props.execVisible;

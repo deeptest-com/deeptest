@@ -105,6 +105,8 @@ const searchValue = ref('');
 const expandedKeys = ref<number[]>([]);
 const autoExpandParent = ref<boolean>(false);
 const treeItemRef = ref({});
+let selectedKeys = ref<number[]>([]);
+const emit = defineEmits(['select']);
 const treeData: any = computed(() => {
   const data = treeDataCategory.value;
   if(!data?.[0]?.id){
@@ -214,8 +216,7 @@ function expandAll() {
   expandedKeys.value = keys;
 }
 
-let selectedKeys = ref<number[]>([]);
-const emit = defineEmits(['select']);
+
 
 function selectTreeItem(keys, e) {
   selectedKeys.value = keys;

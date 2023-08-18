@@ -9,9 +9,12 @@
 
     <Progress :exec-status="progressStatus"
               :percent="progressValue"
-              @exec-cancel="execCancel"/>
+              @exec-cancel="execCancel" />
 
-    <LogTreeView :treeData="scenarioReports" :expandKeys="expandKeys" :isSingleScenario="true"/>
+    <LogTreeView class="scenario-exec-log-tree"
+        :treeData="rootProcessorList"
+                 :expandKeys="expandKeys"
+                 :isSingleScenario="true" />
   </div>
 </template>
 
@@ -46,14 +49,17 @@ import {
   updateExecResult
 } from '@/composables/useExecLogs';
 import {ProcessorInterface} from "@/utils/enum";
+import {StateType as ReportStateType} from "@/views/report/store";
 
 const {t} = useI18n();
-
 const router = useRouter();
-const store = useStore<{ Scenario: ScenarioStateType, Debug: DebugStateType, Global: GlobalStateType, Exec: ExecStatus, ProjectSetting, Environment }>();
+
+const store = useStore<{ Report: ReportStateType, Scenario: ScenarioStateType, Debug: DebugStateType, Global: GlobalStateType, Exec: ExecStatus, ProjectSetting, Environment }>();
 const collapsed = computed<boolean>(() => store.state.Global.collapsed);
 const nodeData = computed<any>(() => store.state.Scenario.nodeData);
 const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
+const rootProcessorList = computed<any>(() => store.state.Report.rootProcessorList);
+
 const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
 const envList = computed(() => store.state.ProjectSetting.envList);
 const scenarioId = computed(() => {
@@ -126,7 +132,9 @@ const OnWebSocketMsg = (data: any) => {
   // 更新【场景中每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)
-    updateExecLogs(log);
+    // updateExecLogs(log);
+    // console.log('666 ', 'logId='+log.logId, 'parentId='+log.parentLogId)
+    store.commit('Report/updateReportDetail', log)
   }
 
   // 执行完毕

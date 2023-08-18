@@ -9,6 +9,7 @@
         <div class="drawer-content">
             <ReportBasicInfo  :items="detailResult.basicInfoList" :scene="scene" :show-operation="true" />
             <StatisticTable  :data="statisticData" :value="statInfo"/>
+
             <LogTreeView :treeData="detailResult.scenarioReports"/>
         </div>
     </a-drawer>

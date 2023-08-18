@@ -1,5 +1,5 @@
 <template>
-  <div class="scenario-exec-info-main">
+  <div class="scenario-exec-info-main" id="scenario-exec-info-main">
     <div class="scenario">
       <div class="header">
         <div class="title">

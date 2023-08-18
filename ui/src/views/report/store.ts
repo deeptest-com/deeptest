@@ -5,6 +5,7 @@ import { Report, QueryResult, QueryParams } from './data';
 import { query, get, remove, members } from './service';
 import { momentUtc } from '@/utils/datetime';
 import { formatData } from '@/utils/formatData';
+import {ProcessorCategory} from "@/utils/enum";
 
 export interface StateType {
     ReportId: number;
@@ -13,6 +14,9 @@ export interface StateType {
     detailResult: Report;
     queryParams: any;
     members: any;
+
+    rootProcessorList: any[],
+    reportItemMap: any,
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -23,6 +27,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setList: Mutation<StateType>;
         setDetail: Mutation<StateType>;
         setQueryParams: Mutation<StateType>;
+        updateReportDetail: Mutation<StateType>;
     };
     actions: {
         list: Action<StateType, StateType>;
@@ -47,7 +52,10 @@ const initState: StateType = {
     },
     detailResult: {} as Report,
     queryParams: {},
-    members: []
+    members: [],
+
+    reportItemMap: {},
+    rootProcessorList: [],
 };
 
 const StoreModel: ModuleType = {
@@ -72,6 +80,35 @@ const StoreModel: ModuleType = {
         },
         setMembers(state, payload) {
             state.members = payload;
+        },
+
+        updateReportDetail(state, processor) {
+            console.log('updateReportDetail', 'logId='+processor.logId, 'parentId='+processor.parentLogId)
+
+            if (processor.processorCategory === ProcessorCategory.ProcessorRoot) { // reset
+                state.reportItemMap = {}
+                state.rootProcessorList = []
+            }
+
+            state.reportItemMap[processor.logId] = processor
+
+            if (processor.processorCategory === ProcessorCategory.ProcessorRoot) {
+                state.rootProcessorList = [processor]
+                return
+            }
+
+            if (state.reportItemMap[processor.parentLogId]) {
+                if (!state.reportItemMap[processor.parentLogId].logs) {
+                    state.reportItemMap[processor.parentLogId].logs = []
+                }
+                state.reportItemMap[processor.parentLogId].logs.push(processor)
+            }
+
+            const elems = document.getElementsByClassName('scenario-exec-log-tree')
+            if (elems && elems.length > 0) {
+                elems[0].scrollTop = elems[0].scrollHeight + 1000
+            }
+
         }
     },
     actions: {
@@ -199,7 +236,7 @@ const StoreModel: ModuleType = {
 
         async initReportDetail({ commit }) {
             commit('setDetail', { basicInfoList: [], statisticData: {}, scenarioReports: [] });
-        }
+        },
     }
 };
 

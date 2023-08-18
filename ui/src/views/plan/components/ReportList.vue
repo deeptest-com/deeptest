@@ -14,7 +14,7 @@
             <span v-html="formatWithSeconds(record.duration)"></span>
         </template>
         <template #startTime="{ record, column }">
-            <TooltipCell :text="`${record.startTime} ~ ${record.endTime}`" :width="column.width" />
+            <TooltipCell :text="`${momentUtc(record.startTime)} ~ ${momentUtc(record.endTime)}`" :width="column.width" />
         </template>
         <template #operation="{ record }">
           <a  href="javascript:void (0)" @click="queryDetail(record.id)">查看报告</a>
@@ -50,6 +50,7 @@ const columns = [
         title: '编号',
         dataIndex: 'serialNumber',
         slots: { customRender: 'serialNumber' },
+        width: 150,
     },
     {
         title: '测试通过率',

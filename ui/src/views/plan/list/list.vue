@@ -160,6 +160,7 @@ const columns = [
   {
     title: '编号',
     dataIndex: 'serialNumber',
+    width: 150,
   },
   {
     title: '测试计划',

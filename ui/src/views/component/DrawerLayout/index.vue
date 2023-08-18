@@ -14,7 +14,7 @@
         <slot name="header"/>
       </div>
     </template>
-
+  
     <a-spin tip="Loading..." :spinning="spinning" style="z-index: 2000;">
     <div class="dp-drawer-content" ref="contentRef">
       <!-- 基本信息区域 -->
@@ -144,12 +144,20 @@ watch(() => {
     }
   }
   .dp-drawer-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     :deep(.header-text) {
       display: flex;
       max-width: 80%;
     }
     :deep(.header-text .serialNumber) {
       margin-right: 6px;
+    }
+
+    :deep(.header-operation) {
+      padding-right: 40px;
+      cursor: pointer;
     }
   }
 }

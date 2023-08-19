@@ -14,7 +14,7 @@
         <Progress :exec-status="progressStatus"
                   :percent="progressValue"
                   @exec-cancel="execCancel"/>
-        <LogTreeView :treeData="scenarioReports" :expandKeys="expandKeys"/>
+        <LogTreeView :treeData="scenarioReports"/>
       </div>
     </a-drawer>
   </div>
@@ -42,7 +42,7 @@ import {StateType as ProjectSettingStateType} from "@/views/project-settings/sto
 import {StateType as UserStateType} from "@/store/user";
 import {getDivision, getPercent, getPercentStr} from '@/utils/number';
 import {
-  scenarioReports, expandKeys,
+  scenarioReports,
   clearLog,
   execLogs, execResults, updateExecLogs, updateExecResult,statInfo
   , statisticData, initData, progressStatus, progressValue, updatePlanRes,

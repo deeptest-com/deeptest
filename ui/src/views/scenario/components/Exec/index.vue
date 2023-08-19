@@ -13,7 +13,6 @@
 
     <LogTreeView class="scenario-exec-log-tree"
         :treeData="scenarioReports"
-                 :expandKeys="expandKeys"
                  :isSingleScenario="true" />
   </div>
 </template>
@@ -41,7 +40,6 @@ import {StateType as ReportStateType} from "@/views/report/store";
 
 import {
   clearLog,
-  expandKeys,
   initData,
   progressStatus,
   progressValue,

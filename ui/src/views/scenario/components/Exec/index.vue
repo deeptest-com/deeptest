@@ -39,7 +39,7 @@ import {ProcessorInterface} from "@/utils/enum";
 import {StateType as ReportStateType} from "@/views/report/store";
 
 import {
-  clearLog,
+  resetData,
   initData,
   progressStatus,
   progressValue,
@@ -76,7 +76,7 @@ const baseInfoList = computed(() => {
 });
 
 const execStart = async () => {
-  clearLog();
+  resetData();
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
@@ -115,18 +115,15 @@ const OnWebSocketMsg = (data: any) => {
     initData(log);
     progressStatus.value = 'in_progress';
   }
-
   // 执行中
   else if (wsMsg.category == 'in_progress') {
     progressStatus.value = 'in_progress';
   }
-
   //  更新【场景】的执行结果
   else if (wsMsg.category == 'result' && log.scenarioId) {
     updateExecResult(log);
     reportId.value = log.id
   }
-
   // 更新【场景中每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)

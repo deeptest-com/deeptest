@@ -1,16 +1,11 @@
 import {defineComponent, ref, watch,} from 'vue';
 import './LogTreeView.less';
 import ScenarioHeader from "./ScenarioHeader.vue";
-
 import InterfaceHeader from "./InterfaceHeader.vue";
 import ProcessorHeader from "./ProcessorHeader.vue";
 import InterfaceContent from "./InterfaceContent.vue";
 import LogContent from "./LogContent.vue";
-import {
-    scenarioTypeMapToText,
-    showArrowScenarioType,
-    DESIGN_TYPE_ICON_MAP,
-} from "@/views/scenario/components/Design/config";
+import {showArrowScenarioType,} from "@/views/scenario/components/Design/config";
 
 export default defineComponent({
     name: 'LogTreeView',

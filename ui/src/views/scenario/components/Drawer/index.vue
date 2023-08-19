@@ -130,10 +130,6 @@ const props = defineProps({
     required: true,
     type: String
   },
-  execVisible: {
-    required: true,
-    type: Boolean,
-  }
 });
 
 const emit = defineEmits(['ok', 'close', 'refreshList', 'closeExecDrawer']);
@@ -206,11 +202,14 @@ watch(() => {
   activeKey.value = val;
 }, {immediate: true});
 
-watch(() => {
-  return props.execVisible;
-}, (val) => {
-  execDrawerVisible.value = val;
-});
+// watch(() => {
+//   return props.execVisible;
+// }, (val) => {
+//   debugger;
+//   execDrawerVisible.value = val;
+// },{
+//   immediate:true
+// });
 
 // 更新标题
 async function updateTitle(title) {

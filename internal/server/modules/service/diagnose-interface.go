@@ -51,43 +51,59 @@ func (s *DiagnoseInterfaceService) Get(id int) (ret model.DiagnoseInterface, err
 func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveReq) (diagnoseInterface model.DiagnoseInterface, err error) {
 	s.CopyValueFromRequest(&diagnoseInterface, req)
 
-	if diagnoseInterface.ID != 0 {
-		oldDiagnoseInterface, err := s.DiagnoseInterfaceRepo.Get(diagnoseInterface.ID)
-		if err != nil {
-			return diagnoseInterface, err
-		}
-		diagnoseInterface.CreatedBy = oldDiagnoseInterface.CreatedBy
-	}
+	//if diagnoseInterface.ID != 0 {
+	//	oldDiagnoseInterface, err := s.DiagnoseInterfaceRepo.Get(diagnoseInterface.ID)
+	//	if err != nil {
+	//		return diagnoseInterface, err
+	//	}
+	//	diagnoseInterface.CreatedBy = oldDiagnoseInterface.CreatedBy
+	//}
 
 	if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
-		server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
+		if req.ID == 0 {
+			debugInterface := model.DebugInterface{
+				InterfaceBase: model.InterfaceBase{
+					Name: req.Title,
+					InterfaceConfigBase: model.InterfaceConfigBase{
+						Method: consts.GET,
+					},
+				},
+				ServeId: diagnoseInterface.ServeId,
+				BaseUrl: "",
+			}
+			err = s.DebugInterfaceRepo.Save(&debugInterface)
+			diagnoseInterface.DebugInterfaceId = debugInterface.ID
+			diagnoseInterface.Method = debugInterface.Method
+
+			err = s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
+
+			if diagnoseInterface.DebugInterfaceId > 0 {
+				values := map[string]interface{}{
+					"diagnose_interface_id": diagnoseInterface.ID,
+				}
+				err = s.DebugInterfaceRepo.UpdateDebugInfo(diagnoseInterface.DebugInterfaceId, values)
+			}
+		} else {
+			diagnoseInterface, _ = s.DiagnoseInterfaceRepo.Get(req.ID)
+			diagnoseInterface.Title = req.Title
+
+			err = s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
+		}
 
 		// create new DebugInterface
-		debugInterface := model.DebugInterface{
-			InterfaceBase: model.InterfaceBase{
-				Name: req.Title,
-				InterfaceConfigBase: model.InterfaceConfigBase{
-					Url:    server.Url,
-					Method: consts.GET,
-				},
-			},
-			ServeId:  diagnoseInterface.ServeId,
-			ServerId: server.ID,
-			BaseUrl:  "",
-		}
+		//debugInterface := model.DebugInterface{
+		//	InterfaceBase: model.InterfaceBase{
+		//		Name: req.Title,
+		//		InterfaceConfigBase: model.InterfaceConfigBase{
+		//			//Url:    server.Url,
+		//			Method: consts.GET,
+		//		},
+		//	},
+		//	ServeId: diagnoseInterface.ServeId,
+		//	//ServerId: server.ID,
+		//	BaseUrl: "",
+		//}
 
-		err = s.DebugInterfaceRepo.Save(&debugInterface)
-		diagnoseInterface.DebugInterfaceId = debugInterface.ID
-		diagnoseInterface.Method = debugInterface.Method
-	}
-
-	err = s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
-
-	if diagnoseInterface.DebugInterfaceId > 0 {
-		values := map[string]interface{}{
-			"diagnose_interface_id": diagnoseInterface.ID,
-		}
-		err = s.DebugInterfaceRepo.UpdateDebugInfo(diagnoseInterface.DebugInterfaceId, values)
 	}
 
 	return

@@ -11,109 +11,67 @@ import {ProcessorCategory} from "@/utils/enum";
 const execLogs: any = ref([]);
 // 场景的执行结果列表
 const execResults: any = ref([]);
+// 场景的执行结果map
+const reportItemMap = ref({} as any)
+// 组装后的场景的执行报告树
+const scenarioReports = ref([] as any[]);
 
 // 更新场景的执行结果
-// todo 优化: 可以优化成算法，使用 hash
 function updateExecResult(res) {
-    if (execResults.value.some((item: any) => item.scenarioId === res.scenarioId)) { // 1. 更新执行结果
+    // 1. 更新执行结果
+    if (execResults.value.some((item: any) => item.scenarioId === res.scenarioId)) {
         for (let item of execResults.value) {
             if (item.scenarioId === res.scenarioId) {
                 item = {...item, ...res};
                 break;
             }
         }
-    } else { // 2. 新增执行结果
+        // 2. 新增执行结果
+    } else {
         execResults.value.push(res);
     }
 }
 
-/**
- * @description 生成执行记录树
- * @param execLogs 场景的执行日志 数组
- * @param execRes  场景的执行结果
- * */
-function genLogTreeView(execLogs, execRes) {
-    // 用于存储根节点，即场景节点,即 processorCategory为 processor_root的节点
-    const scenarioReports: any = [];
-    execLogs.forEach((item: any) => {
-        if (item.processorCategory === "processor_root") {
-            const res = execRes.find((log) => log.scenarioId === item.scenarioId) || {};
-            item.logs = [{
-                ...item,
-                ...res,
-                logs: [],
-            }];
-            scenarioReports.push(item);
-        }
-    });
-    scenarioReports.forEach((scenario) => {
-        function fn(array, rootId) {
-            const res: any = [];
 
-            // 用于存储 树节点的 map
-            const map = {};
 
-            array.forEach((item) => {
-                map[item.logId] = {...item}
-            });
-
-            array.forEach((item) => {
-                if (item.processorType === 'processor_interface_default') {
-                    console.log('interface: ', item.extractorsResult, item.checkpointsResult)
-                }
-
-                const {logId, parentLogId} = item;
-                const mapItem = map[logId];
-                if (!mapItem) return;
-                if (!parentLogId) return;
-                if (parentLogId === rootId) {
-                    res.push(mapItem);
-                } else if(map[parentLogId]){
-                    if (map[parentLogId]?.logs) {
-                        const hasSameId = map[parentLogId].logs.some((log) => log.logId === logId);
-                        !hasSameId && map[parentLogId].logs.push(mapItem);
-                    } else {
-                        map[parentLogId].logs = [mapItem];
-                    }
-                }
-            })
-
-            return res;
-        }
-        scenario.logs[0].logs = fn(execLogs, scenario.logId);
-    });
-
-    console.log("场景里每条编排的执行记录", scenarioReports)
-    return scenarioReports;
-}
-
-// // 处理动态执行的展开收起标识
-// function handleActiveKey(log) {
-//     log.activeKey = [log.logId];
-//     if (log.logs) {
-//         log.logs.forEach((item) => {
-//             handleActiveKey(item);
-//         })
-//     }
-// }
-
-const reportItemMap = ref({} as any)
-const scenarioReports = ref([] as any[])
 // 更新场景的执行日志，不包括场景的执行结果。
 function updateExecLogs(processor) {
-    console.log('updateExecLogs', 'logId='+processor.logId, 'parentLogId='+processor.parentLogId)
+    console.log('updateExecLogs', 'logId=' + processor.logId, 'parentLogId=' + processor.parentLogId);
 
+    /**
+     * 更新执行日志至打平的执行记录，用于动态 更 新执行进度
+     * */
+    function hasSameId(log, item) {
+        return item?.logId === log?.logId && item?.scenarioId === log?.scenarioId;
+    }
+    const isExist = execLogs.value.some((item: any) => {
+        return hasSameId(processor, item);
+    });
+    // 1. 更新执行记录
+    if (isExist) {
+        for (let item of execLogs.value) {
+            if (hasSameId(processor, item)) {
+                item = {...item, ...processor};
+                break;
+            }
+        }
+        // 2. 新增执行记录
+    } else {
+        execLogs.value.push(processor);
+    }
+
+    /**
+     * 组装执行记录树，动态执行树最多展示50条记录
+     * */
     if (processor.processorCategory === ProcessorCategory.ProcessorRoot) { // reset
         reportItemMap.value = {}
         scenarioReports.value = []
     }
-
     reportItemMap.value[processor.logId] = processor
     if (processor.processorCategory === ProcessorCategory.ProcessorRoot) {
         scenarioReports.value = [processor]
         return
     }
-
     if (reportItemMap.value[processor.parentLogId]) {
         if (!reportItemMap.value[processor.parentLogId].logs) {
             reportItemMap.value[processor.parentLogId].logs = []
@@ -131,9 +89,6 @@ function updateExecLogs(processor) {
     }
 }
 
-const expandKeys = computed(() => {
-    return scenarioReports.value.map((item: any) => item.key);
-})
 
 // 统计聚合数据
 const statInfo = ref({
@@ -298,7 +253,6 @@ export {
     scenarioReports,
     statisticData,
     progressStatus, progressValue,
-    expandKeys,
     statInfo,
     execLogs,
     execResults,

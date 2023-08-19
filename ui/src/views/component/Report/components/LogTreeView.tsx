@@ -84,7 +84,7 @@ export default defineComponent({
                     {
                         log?.logs?.map((item, itemIndex, srcLog) => {
                             return <div
-                                class={item.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item'}>
+                                class={[item.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item',itemIndex===0 ? 'log-item-first' : '']}>
                                 {renderCollapseTitle(item, itemIndex, log)}
                                 <a-collapse>
                                     {renderLogs(item)}
@@ -94,9 +94,9 @@ export default defineComponent({
                     }
                 </a-collapse-panel>;
             };
-            return logs.map((log) => {
+            return logs.map((log,logIndex) => {
                 return <div key={log.id}
-                            class={log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item'}>
+                            class={[log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item',logIndex===0 ? 'log-item-first' : '']}>
                     <a-collapse>
                         {renderLogs(log)}
                     </a-collapse>

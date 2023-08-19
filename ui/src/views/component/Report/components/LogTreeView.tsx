@@ -124,14 +124,13 @@ export default defineComponent({
             }
 
             return list.map((item, index) => {
-                const uid = item.id;
-                return <div class={'scenario-item'} key={uid}>
+                return <div class={'scenario-item'} key={item.id}>
                     <a-collapse
-                        activeKey={activeKeyMap.value[uid]}
+                        activeKey={activeKeyMap.value[item.id]}
                         onChange={(key) => {
-                            change(uid, key)
+                            change(item.id, key)
                         }}>
-                        <a-collapse-panel key={uid} header={renderHeader(item)}>
+                        <a-collapse-panel key={item.id} header={renderHeader(item)}>
                             {renderScenario(item?.logs, item)}
                         </a-collapse-panel>
                     </a-collapse>

@@ -4,8 +4,8 @@
     <template #header>
       <div class="header-text">
         <!-- ::::todo 没有序列号，后端字段 -->
-<!--        <span class="serialNumber">[{{ planDetail?.serialNumber }}]</span>-->
-        <EditAndShowField :value="(currPlan && currPlan.name) || '暂无'" placeholder="输入计划名称" @update="handleUpdateName" />
+        <!--        <span class="serialNumber">[{{ planDetail?.serialNumber }}]</span>-->
+        <EditAndShowField :value="(currPlan && currPlan.name) || '暂无'" placeholder="输入计划名称" @update="handleUpdateName"/>
       </div>
     </template>
     <!-- 基本信息 -->
@@ -16,7 +16,10 @@
         <a-descriptions-item label="最近更新">{{ momentUtc(planDetail.updatedAt) }}</a-descriptions-item>
         <a-descriptions-item label="最新执行通过率">{{ planDetail.testPassRate }}</a-descriptions-item>
         <a-descriptions-item label="执行次数">{{ planDetail.execTimes }}</a-descriptions-item>
-        <a-descriptions-item label="最近执行">{{ planDetail.execTime ? momentUtc(planDetail.execTime) : '' }}</a-descriptions-item>
+        <a-descriptions-item label="最近执行">{{
+            planDetail.execTime ? momentUtc(planDetail.execTime) : ''
+          }}
+        </a-descriptions-item>
         <a-descriptions-item label="执行环境">{{ planDetail.execEnv }}</a-descriptions-item>
         <a-descriptions-item label="状态">
           <EditAndShowSelect
@@ -50,31 +53,31 @@
               :scroll="{ x: 1240 }"
               :loading="loading"
               :pagination="scenarioPagination"
-              @refresh-list="getScenarioList" />
+              @refresh-list="getScenarioList"/>
         </div>
-        <div style="padding-top: 20px"  v-if="activeKey === 'test-report'">
-          <ReportList :show-report-list="activeKey === 'test-report'" />
+        <div style="padding-top: 20px" v-if="activeKey === 'test-report'">
+          <ReportList :show-report-list="activeKey === 'test-report'"/>
         </div>
       </div>
     </template>
   </DrawerLayout>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, watch, reactive, computed } from 'vue';
-import { useStore } from 'vuex';
+import {defineProps, defineEmits, ref, watch, reactive, computed, createVNode} from 'vue';
+import {useStore} from 'vuex';
 
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
 
-import { ScenarioList, ReportList } from '../components';
-import{ momentUtc } from '@/utils/datetime';
-import { StateType as PlanStateType } from '../store';
-import { planStatusOptions, planStatusTextMap } from '@/config/constant';
+import {ScenarioList, ReportList} from '../components';
+import {momentUtc} from '@/utils/datetime';
+import {StateType as PlanStateType} from '../store';
+import {planStatusOptions, planStatusTextMap} from '@/config/constant';
 
 const props = defineProps<{
-    editDrawerVisible: Boolean
-    tabActiveKey?: String
+  editDrawerVisible: Boolean
+  tabActiveKey?: String
 }>();
 
 const store = useStore<{ Plan: PlanStateType }>();
@@ -88,52 +91,52 @@ const activeKey = ref<string>('test-scenario');
 const loading = ref(false);
 
 const columns: any[] = reactive([
-    {
-        title: '编号',
-        dataIndex: 'serialNumber',
-        width: 150,
-    },
-    {
-        title: '用例名称',
-        dataIndex: 'name',
-        width: 300,
-        slots: { customRender: 'name' }
-    },
-    {
-        title: '状态',
-        dataIndex: 'status',
-        width: 80,
-        slots: { customRender: 'status' }
-    },
-    {
-        title: '优先级',
-        width: 90,
-        dataIndex: 'priority',
-    },
-    {
-        title: '所属分类',
-        width: 110,
-        dataIndex: 'categoryName',
-        ellipsis: true
-    },
-    {
-        title: '创建人',
-        width: 110,
-        dataIndex: 'createUserName',
-    },
-    {
-        title: '最近更新',
-        dataIndex: 'updatedAt',
-        width: 180,
-        slots: { customRender: 'updateAt' }
-    },
-    {
-        title: '操作',
-        dataIndex: 'operation',
-        width: 80,
-        fixed: 'right',
-        slots: { customRender: 'operation' },
-    },
+  {
+    title: '编号',
+    dataIndex: 'serialNumber',
+    width: 150,
+  },
+  {
+    title: '用例名称',
+    dataIndex: 'name',
+    width: 300,
+    slots: {customRender: 'name'}
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    width: 80,
+    slots: {customRender: 'status'}
+  },
+  {
+    title: '优先级',
+    width: 90,
+    dataIndex: 'priority',
+  },
+  {
+    title: '所属分类',
+    width: 110,
+    dataIndex: 'categoryName',
+    ellipsis: true
+  },
+  {
+    title: '创建人',
+    width: 110,
+    dataIndex: 'createUserName',
+  },
+  {
+    title: '最近更新',
+    dataIndex: 'updatedAt',
+    width: 180,
+    slots: {customRender: 'updateAt'}
+  },
+  {
+    title: '操作',
+    dataIndex: 'operation',
+    width: 80,
+    fixed: 'right',
+    slots: {customRender: 'operation'},
+  },
 ]);
 
 const stickyKey = ref(0);
@@ -148,50 +151,50 @@ const tabsList = [
     "label": "测试场景"
   },
 ]
+
 async function changeTab(value) {
   activeKey.value = value;
-  stickyKey.value ++;
+  stickyKey.value++;
   emits('update:tabKey', value);
 }
 
 function onCancel() {
-    emits('onCancel');
+  emits('onCancel');
 }
 
 function handleEnvSelect() {
-    emits('onSelectEnv',planDetail.value);
+  emits('onSelectEnv', planDetail.value);
 }
 
 function handleChangeStatus(value) {
-    console.log('changeStatus --', value);
-    emits('onUpdate', { status: value });
+  console.log('changeStatus --', value);
+  emits('onUpdate', {status: value});
 }
 
 function handleUpdateName(value) {
-    emits('onUpdate', { name: value });
+  emits('onUpdate', {name: value});
 }
-
 
 
 // 移除-关联-筛选时重新获取已关联的场景列表
 async function getScenarioList(params: any) {
-    loading.value = true;
-    await store.dispatch('Plan/getRelationScenarios', { ...params, planId: currPlan.value.id });
-    loading.value = false;
+  loading.value = true;
+  await store.dispatch('Plan/getRelationScenarios', {...params, planId: currPlan.value.id});
+  loading.value = false;
 }
 
 watch([currPlan, () => props.editDrawerVisible], async (val: any) => {
-    const [plan, visible] = val;
-    if (plan && plan.id && visible) {
-        await store.dispatch('Plan/getPlan', currPlan.value.id);
-        getScenarioList({ planId: val.id });
-    }
+  const [plan, visible] = val;
+  if (plan && plan.id && visible) {
+    await store.dispatch('Plan/getPlan', currPlan.value.id);
+    getScenarioList({planId: val.id});
+  }
 });
 
 watch(() => props.tabActiveKey, (val: any) => {
-    console.log('props- tabActiveKey', val);
-    activeKey.value = val || 'test-scenario';
-}, { deep: true });
+  console.log('props- tabActiveKey', val);
+  activeKey.value = val || 'test-scenario';
+}, {deep: true});
 </script>
 <style scoped lang="less">
 

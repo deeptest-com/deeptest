@@ -40,9 +40,9 @@
                 <MoreOutlined />
                 <template #overlay>
                     <a-menu>
-                        <a-menu-item key="1">
-                            <a class="operation-a" href="javascript:void (0)" @click="handleExport(record.id)">导出</a>
-                        </a-menu-item>
+<!--                        <a-menu-item key="1">-->
+<!--                            <a class="operation-a" href="javascript:void (0)" @click="handleExport(record.id)">导出</a>-->
+<!--                        </a-menu-item>-->
                         <a-menu-item key="2">
                             <a class="operation-a" href="javascript:void (0)" @click="handleQueryDetail(record)">查看报告</a>
                         </a-menu-item>

@@ -119,6 +119,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setCaseTree: Mutation<StateType>;
         setCaseTreeMap:Mutation<StateType>;
+
+        setInterfaces:Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -168,6 +170,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getEndpointTagList: Action<StateType, StateType>;
         updateEndpointTag: Action<StateType, StateType>;
         getCaseTree: Action<StateType, StateType>;
+
+        removeUnSavedMethods: Action<StateType, StateType>;
     }
 }
 
@@ -335,6 +339,9 @@ const StoreModel: ModuleType = {
         },
         setCaseTreeMap(state,payload){
             state.caseTreeMap = payload
+        },
+        setInterfaces(state, payload){
+            state.endpointDetail.interfaces = payload
         }
     },
     actions: {
@@ -493,8 +500,8 @@ const StoreModel: ModuleType = {
             page = page || state.listResult.pagination.current;
             pageSize = pageSize || state.listResult.pagination.pageSize;
             const otherParams = {
-                ...state.filterState, 
-                serveId: rootState.ServeGlobal.currServe.id, 
+                ...state.filterState,
+                serveId: rootState.ServeGlobal.currServe.id,
                 ...opts
             };
 
@@ -872,7 +879,7 @@ const StoreModel: ModuleType = {
         },
         async updateEndpointTag({ dispatch }, payload: any) {
             const jsn = await updateTag(payload)
-           
+
             if (jsn.code === 0) {
                 await dispatch("getEndpointTagList")
                 return true;
@@ -883,27 +890,47 @@ const StoreModel: ModuleType = {
         async getCaseTree({ commit }, payload: QueryCaseTreeParams){
             try {
                 const response: ResponseData = await loadCaseTree(payload);
-             
+
                 if (response.code != 0) return;
-              
-                const data = {id: 0,count:1, children: response.data} 
-            
+
+                const data = {id: 0,count:1, children: response.data}
+
                 const newData = reBuildTree(data,0)
-        
+
                 commit('setCaseTree', newData.children);
-                const data1 = {id: 0, children: newData.children} 
+                const data1 = {id: 0, children: newData.children}
                 const mp = genNodeMap(data1)
                 commit('setCaseTreeMap', mp);
 
                 return true;
             } catch (error) {
-                
+
                 return false;
             }
 
+        },
+
+        async removeUnSavedMethods({state, commit }, payload: QueryCaseTreeParams) {
+            console.log('removeUnSavedMethods')
+            let currSelectedMethodRemoved = false
+            const interfaces = state.endpointDetail.interfaces.filter((item) => {
+                if (!item.id) {
+                    delete state.interfaceMethodToObjMap[item.method]
+
+                    if (state.selectedMethodDetail.method === item.method) {
+                        currSelectedMethodRemoved = true
+                    }
+                }
+                return !!item.id
+            })
+            await commit('setInterfaces', interfaces)
+
+            if (currSelectedMethodRemoved) {
+                state.selectedMethodDetail = state.interfaceMethodToObjMap['GET']
+            }
+
+            return true
         }
-
-
     },
 };
 

@@ -389,9 +389,11 @@ func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpoi
 		return
 	}
 
+	codes := r.EndpointInterfaceRepo.GetResponseCodes(endpointInterfaceId)
+
 	po, err := r.GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId, by)
 	if err == gorm.ErrRecordNotFound {
-		po, err = r.saveDefault(debugInterfaceId, endpointInterfaceId, by)
+		po, err = r.saveDefault(debugInterfaceId, endpointInterfaceId, codes, by)
 		if err != nil {
 			return
 		}
@@ -400,7 +402,7 @@ func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpoi
 	copier.CopyWithOption(&condition, po, copier.Option{DeepCopy: true})
 
 	entityData, _ := r.ResponseDefineRepo.Get(po.EntityId)
-	entityData.Codes = r.EndpointInterfaceRepo.GetResponseCodes(endpointInterfaceId)
+	entityData.Codes = codes
 	//entityData.Component = r.ResponseDefineRepo.Components(endpointInterfaceId)
 	condition.EntityData = entityData
 
@@ -415,10 +417,14 @@ func (r *PostConditionRepo) GetByDebugInterfaceId(debugInterfaceId, endpointInte
 	return
 }
 
-func (r *PostConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (po model.DebugPostCondition, err error) {
+func (r *PostConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId uint, codes []string, by consts.UsedBy) (po model.DebugPostCondition, err error) {
 
 	responseDefine := model.DebugConditionResponseDefine{}
 	responseDefine.Code = "200"
+	if len(codes) > 0 {
+		responseDefine.Code = codes[0]
+	}
+
 	err = r.ResponseDefineRepo.Save(&responseDefine)
 	if err != nil {
 		return

@@ -4,13 +4,10 @@
                      :showBtn="show"
                      :btnText="'生成报告'"
                      @handleBtnClick="genReport"/>
-
     <StatisticTable :data="statisticData" :value="statInfo"/>
-
     <Progress :exec-status="progressStatus"
               :percent="progressValue"
               @exec-cancel="execCancel" />
-
     <LogTreeView class="scenario-exec-log-tree"
         :treeData="scenarioReports"
                  :isSingleScenario="true" />
@@ -49,6 +46,7 @@ import {
   updateExecLogs,
   updateExecResult
 } from '@/composables/useExecLogs';
+import {watch} from "vue/dist/vue";
 
 const {t} = useI18n();
 const router = useRouter();
@@ -134,7 +132,6 @@ const OnWebSocketMsg = (data: any) => {
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';
     show.value = true
-
     // refresh processor interface data in scenario if needed
     if (nodeData.value.processorType === ProcessorInterface.Interface) {
       store.dispatch('Debug/refreshInterfaceResultFromScenarioExec')
@@ -155,6 +152,7 @@ async function genReport() {
     message.error('生成报告失败');
   }
 }
+
 </script>
 
 <style lang="less" scoped>

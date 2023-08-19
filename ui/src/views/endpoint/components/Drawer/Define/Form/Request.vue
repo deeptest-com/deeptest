@@ -100,6 +100,10 @@ onMounted(() => {
   }
 })
 
+onUnmounted(async () => {
+  await store.dispatch('Endpoint/removeUnSavedMethods')
+})
+
 // 是否折叠,默认展开
 const collapse = ref(true);
 

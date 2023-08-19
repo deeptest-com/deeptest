@@ -11,8 +11,9 @@ import {ProcessorCategory} from "@/utils/enum";
 const execLogs: any = ref([]);
 // 场景的执行结果列表
 const execResults: any = ref([]);
-// 场景的执行结果map
-const reportItemMap = ref({} as any)
+
+
+const reportsMap:any = ref({} as any)
 // 组装后的场景的执行报告树
 const scenarioReports = ref([] as any[]);
 
@@ -31,6 +32,7 @@ function updateExecResult(res) {
         execResults.value.push(res);
     }
 }
+
 
 
 
@@ -64,29 +66,33 @@ function updateExecLogs(processor) {
      * 组装执行记录树，动态执行树最多展示50条记录
      * */
     if (processor.processorCategory === ProcessorCategory.ProcessorRoot) { // reset
-        reportItemMap.value = {}
-        scenarioReports.value = []
+        reportsMap.value = {}
+        // scenarioReports.value = []
     }
-    reportItemMap.value[processor.logId] = processor
+    // 正在执行的场景对应的 Map
+    // const reportItemMap = reportsMap.value[processor.logId];
+    reportsMap.value[processor.logId] = processor;
     if (processor.processorCategory === ProcessorCategory.ProcessorRoot) {
-        scenarioReports.value = [processor]
+        scenarioReports.value.push(processor);
         return
     }
-    if (reportItemMap.value[processor.parentLogId]) {
-        if (!reportItemMap.value[processor.parentLogId].logs) {
-            reportItemMap.value[processor.parentLogId].logs = []
+    if (reportsMap.value[processor.parentLogId]) {
+        if (!reportsMap.value[processor.parentLogId].logs) {
+            reportsMap.value[processor.parentLogId].logs = []
         }
-
-        if (reportItemMap.value[processor.parentLogId].logs.length >= 50) {
-            reportItemMap.value[processor.parentLogId].logs.shift()
+        if (reportsMap.value[processor.parentLogId].logs.length >= 50) {
+            reportsMap.value[processor.parentLogId].logs.shift()
         }
-        reportItemMap.value[processor.parentLogId].logs.push(processor)
+        reportsMap.value[processor.parentLogId].logs.push(processor);
     }
 
     const elems = document.getElementsByClassName('scenario-exec-log-tree')
     if (elems && elems.length > 0) {
         elems[0].scrollTop = elems[0].scrollHeight + 1000
     }
+
+
+    console.log('scenarioReports832222', scenarioReports.value);
 }
 
 
@@ -222,9 +228,16 @@ function updateStatFromLog(res: any) {
     }
 }
 
-// 更新统计聚合数据
+// init data
 function initData(res: any) {
     updateStatFromLog(res);
+}
+
+function resetData() {
+    execLogs.value = [];
+    execResults.value = [];
+    scenarioReports.value = [];
+    reportsMap.value = {};
 }
 
 // 【计划】的执行最终结果 用于更新最终的执行结果
@@ -241,10 +254,7 @@ const progressValue = computed(() => {
     return Math.round(((finishProcessorNum || execLogs.value.length) / totalProcessorNum) * 100);
 });
 
-function clearLog() {
-    execLogs.value = [];
-    execResults.value = [];
-}
+
 
 export {
     scenarioReports,
@@ -255,7 +265,7 @@ export {
     execResults,
     updateExecLogs,
     updateExecResult,
-    clearLog,
+    resetData,
     initData,
     updatePlanRes,
 };

@@ -43,7 +43,7 @@ import {StateType as UserStateType} from "@/store/user";
 import {getDivision, getPercent, getPercentStr} from '@/utils/number';
 import {
   scenarioReports,
-  clearLog,
+  resetData,
   execLogs, execResults, updateExecLogs, updateExecResult,statInfo
   , statisticData, initData, progressStatus, progressValue, updatePlanRes,
 } from '@/composables/useExecLogs';
@@ -100,7 +100,7 @@ const basicInfoList = computed(() => {
 })
 
 const execStart = async () => {
-  clearLog();
+  resetData();
   const token = await getToken();
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
@@ -124,6 +124,9 @@ const OnWebSocketMsg = (data: any) => {
   if (progressStatus.value === 'cancel') return;
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
+
+  console.log('wsMsg***', wsMsg);
+
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
     initData(log);
@@ -152,7 +155,7 @@ const OnWebSocketMsg = (data: any) => {
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';
   } else {
-    console.log('其他情况：严格来说，不能执行到这儿');
+    console.log('其他情况：严格来说，不能执行到这儿:',wsMsg);
   }
 };
 

@@ -86,8 +86,9 @@ func DownloadUploadedFile(uri string) (ret string, err error) {
 	url := _httpUtils.AddSepIfNeeded(serverBaseUrl) + uri
 
 	_, name := path.Split(uri)
-	dist := filepath.Join(consts.TmpDir, "download", name)
 
+	dist := filepath.Join(consts.TmpDir, "download", name)
+	
 	_fileUtils.Download(url, dist)
 
 	ret = dist

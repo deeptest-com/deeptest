@@ -1,18 +1,18 @@
 <template>
-    <a-modal 
+    <a-modal
         class="associate-scenario-modal"
-        title="关联测试场景" 
-        :visible="associateModalVisible" 
+        title="关联测试场景1"
+        :visible="associateModalVisible"
         :closable="true"
-        @cancel="handleCancel" 
+        @cancel="handleCancel"
         @ok="onOk"
         width="1000px">
-        <ScenarioList 
+        <ScenarioList
             :loading="loading"
-            :list="scenarioList"
+            :list="scenarioLists"
             :pagination="pagination"
-            :columns="columns" 
-            :show-scenario-operation="false" 
+            :columns="columns"
+            :show-scenario-operation="false"
             @refresh-list="getScenarioList"
             @select-row-keys="handleSelectRowKeys" />
     </a-modal>
@@ -29,7 +29,7 @@ const props = defineProps<{
 }>();
 const store = useStore<{ Plan: PlanStateType }>();
 const emits = defineEmits(['onCancel', 'onOk']);
-const scenarioList = computed<any[]>(() => store.state.Plan.scenarios.list);
+const scenarioLists = computed<any[]>(() => store.state.Plan.scenarios.list);
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
 let pagination = computed<any>(() => store.state.Plan.scenarios.pagination);
 let queryParams = reactive<any>({

@@ -18,7 +18,6 @@ export default defineComponent({
         const activeKeyMap = ref({});
 
         function change(uid, keys) {
-            debugger;
             activeKeyMap.value[uid] = keys;
         }
 
@@ -35,13 +34,6 @@ export default defineComponent({
                     activeKeyMap.value[item.id] = [item.id];
                 })
             }
-            // 单场景
-            if (props.isSingleScenario && newVal?.length === 1) {
-                newVal?.[0]?.logs?.forEach((item) => {
-                    activeKeyMap.value[item.id] = [item.id];
-                })
-            }
-            console.log('***activeKeyMap', activeKeyMap.value, newVal);
         }, {immediate: true, deep: true})
 
         /**
@@ -105,11 +97,7 @@ export default defineComponent({
             return logs.map((log) => {
                 return <div key={log.id}
                             class={log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item'}>
-                    <a-collapse
-                        onChange={(key) => {
-                            change(log.id, key)
-                        }}
-                        activeKey={activeKeyMap.value[log.id]}>
+                    <a-collapse>
                         {renderLogs(log)}
                     </a-collapse>
                 </div>

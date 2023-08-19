@@ -151,11 +151,24 @@
       :destroyOnClose="true"
       :visible="drawerVisible"
       :drawerTabKey="drawerTabKey"
-      :execVisible="execVisible"
       @refreshList="refreshList"
-      @closeExecDrawer="execVisible = false"
       @close="drawerVisible = false;"/>
   </div>
+
+  <!-- 动态场景执行抽屉 -->
+  <a-drawer
+      :placement="'right'"
+      :width="1200"
+      :closable="true"
+      :visible="execVisible"
+      :title="'执行场景'"
+      class="drawer"
+      wrapClassName="drawer-exec"
+      :bodyStyle="{padding:'16px',marginBottom:'56px'}"
+      @close="execVisible = false">
+    <ExecInfo v-if="execVisible"/>
+  </a-drawer>
+
 </template>
 
 <script setup lang="ts">
@@ -175,6 +188,7 @@ import ScenarioCreate from "../Create/index.vue";
 import DrawerDetail from "../Drawer/index.vue";
 import EnvSelector from "@/views/component/EnvSelector/index.vue";
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
+import ExecInfo from "../Exec/index.vue";
 import {
   scenarioStatusColorMap,
   scenarioStatus,
@@ -318,8 +332,8 @@ async function editScenario(record: any, tab: string) {
   drawerVisible.value = true;
   drawerTabKey.value = tab;
 
-  store.dispatch('Scenario/getNode', null) // clear right page
-  store.dispatch('Scenario/getScenario', record.id);
+  await store.dispatch('Scenario/getNode', null) // clear right page
+  await store.dispatch('Scenario/getScenario', record.id);
 }
 
 const execEnvId = ref<number | null>(null);
@@ -331,7 +345,6 @@ async function cancelSelectExecEnv(record: any) {
 
 async function selectExecEnv() {
   selectEnvVisible.value = false;
-  drawerVisible.value = false;
   execVisible.value = true;
   await store.dispatch('Scenario/getScenario', selectedExecScenario?.value?.id);
   // 执行完后，会修改列表的字段，所以需要重新拉取列表
@@ -342,6 +355,7 @@ async function execScenario(record: any) {
   selectEnvVisible.value = true;
   selectedExecScenario.value = record;
   execEnvId.value = record.currEnvId;
+  await store.dispatch('Scenario/getScenario', record.id);
 }
 
 async function handleChangeStatus(value: any, record: any,) {

@@ -5,7 +5,7 @@
             class="editor"
             :value="contentStr"
             :language="'json'"
-            :height="600"
+            :height="800"
             theme="vs"
             :options="{...MonacoOptions}"
             @change="() => {

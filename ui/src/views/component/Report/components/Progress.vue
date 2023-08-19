@@ -2,7 +2,7 @@
   <div class="progress-container">
     <a-progress :status="execStatusMap.get(execStatus)"
                 :strokeColor="execStatusColorMap.get(execStatus)"
-                :percent="percent || 10"
+                :percent="percentVal"
                 :showInfo="false"/>
     <div>
       <a-button v-if="execStatus === WsMsgCategory.InProgress"
@@ -20,12 +20,10 @@
 </template>
 <script setup lang="ts">
 import {WsMsgCategory} from '@/utils/enum';
-import {defineProps, defineEmits} from 'vue';
+import {defineProps, defineEmits, computed} from 'vue';
 
-defineProps<{
-  percent: number
-  execStatus: string
-}>();
+
+const props = defineProps(['percent', 'execStatus']);
 
 const emits = defineEmits(['execCancel']);
 const execStatusMap = new Map([['in_progress', 'active'], ['end', 'success'], ['failed', 'exception'], ['cancel', 'exception']]);
@@ -34,6 +32,11 @@ const execStatusColorMap = new Map([['in_progress', '#1890ff'], ['end', '#04C495
 const handleExecCancel = () => {
   emits('execCancel');
 };
+
+const percentVal = computed(() => {
+  if (props.execStatus === "end") return 100;
+  return props.percent || 10;
+});
 </script>
 
 <style scoped lang="less">

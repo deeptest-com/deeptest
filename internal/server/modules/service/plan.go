@@ -13,9 +13,10 @@ import (
 )
 
 type PlanService struct {
-	PlanRepo       *repo.PlanRepo       `inject:""`
-	PlanReportRepo *repo.PlanReportRepo `inject:""`
-	UserRepo       *repo.UserRepo       `inject:""`
+	PlanRepo        *repo.PlanRepo        `inject:""`
+	PlanReportRepo  *repo.PlanReportRepo  `inject:""`
+	UserRepo        *repo.UserRepo        `inject:""`
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 }
 
 func (s *PlanService) Paginate(req v1.PlanReqPaginate, projectId int) (ret _domain.PageData, err error) {
@@ -80,8 +81,11 @@ func (s *PlanService) GetById(id uint, detail bool) (ret v1.PlanAndReportDetail,
 			ret.ExecutorName = executorName
 		}
 		ret.ExecTime = lastPlanReport.CreatedAt
-		//TODO
-		//ret.ExecEnv = lastPlanReport.ExecEnv
+
+		environment, _ := s.EnvironmentRepo.Get(lastPlanReport.ExecEnvId)
+		if environment.ID != 0 {
+			ret.ExecEnv = environment.Name
+		}
 	}
 
 	//if detail {

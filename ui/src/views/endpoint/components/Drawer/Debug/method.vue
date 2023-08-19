@@ -26,12 +26,17 @@ const interfaceDetail = computed<any>(() => store.state.Endpoint.selectedMethodD
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 
-const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
+const selectedMethod = ref('GET');
 
 const changeMethod = async () => {
   console.log('changeMethod', selectedMethod.value)
+
+  if (interfaceDetail.value?.method) {
+    selectedMethod.value = interfaceDetail.value?.method
+  }
+
   const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
-  console.log('interfaceMethodToObjMap',interfaceMethodToObjMap.value)
+
   // sync with / to define page
   if (endpointInterface?.id) {
     await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);
@@ -46,9 +51,11 @@ const changeMethod = async () => {
   }
 }
 
-onMounted(async () => {
+const initMethod = async () => {
+  await store.dispatch('Endpoint/removeUnSavedMethods')
   await changeMethod()
-})
+}
+initMethod()
 
 function hasDefinedMethod(method: string) {
   return endpointDetail?.value?.interfaces?.some((item) => {

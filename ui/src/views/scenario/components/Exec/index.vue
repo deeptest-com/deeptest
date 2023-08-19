@@ -110,7 +110,7 @@ const OnWebSocketMsg = (data: any) => {
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
 
-  console.log('wsMsg***', wsMsg);
+  console.log('scenario wsMsg***', wsMsg);
 
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {

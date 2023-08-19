@@ -289,6 +289,9 @@ const progressValue = computed(() => {
 function clearLog() {
     execLogs.value = [];
     execResults.value = [];
+
+    reportItemMap.value = {}
+    scenarioReports.value = []
 }
 
 export {

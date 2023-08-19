@@ -1,9 +1,11 @@
 package execUtils
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
@@ -31,6 +33,20 @@ func SendResultMsg(report agentDomain.Report, wsMsg *websocket.Message) (err err
 
 func SendResult(data interface{}, wsMsg *websocket.Message) (err error) {
 	websocketHelper.SendExecResult(data, wsMsg)
+
+	return
+}
+
+func SendPanicMsg(msg string, wsMsg *websocket.Message) (err error) {
+	SetRunning(false)
+	websocketHelper.SendExecStatus(consts.ProgressPanic, wsMsg)
+
+	resp := _domain.WsResp{Category: consts.ProgressPanic, Data: msg}
+	bytes, _ := json.Marshal(resp)
+
+	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
+	_logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, consts.ProgressPanic))
+	websocketHelper.PubMsg(mqData)
 
 	return
 }

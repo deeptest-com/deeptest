@@ -119,35 +119,42 @@ const execCancel = () => {
 
 
 const OnWebSocketMsg = (data: any) => {
-
   if (!data.msg) return;
   if (progressStatus.value === 'cancel') return;
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
+
+  console.log('plan wsMsg***', wsMsg.data?.id);
+
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
     initData(log);
     progressStatus.value = 'in_progress';
   }
+
   // 执行中
   else if (wsMsg.category == 'in_progress') {
     progressStatus.value = 'in_progress';
   }
+
   // 更新【计划】的执行结果
   else if (wsMsg.category == 'result' && log.planId) {
     updatePlanRes(log);
     console.log('计划的结果', log)
   }
+
   //  更新【场景】的执行结果
   else if (wsMsg.category == 'result' && log.scenarioId) {
     updateExecResult(log);
     console.log('场景的结果', log)
   }
+
   // 更新【场景里每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)
     updateExecLogs(log);
   }
+
   // 执行完毕
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';

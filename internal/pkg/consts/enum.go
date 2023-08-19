@@ -30,6 +30,7 @@ const (
 	ProgressResult     WsMsgCategory = "result"
 	Processor          WsMsgCategory = "processor"
 	Initialize         WsMsgCategory = "initialize"
+	ProgressPanic      WsMsgCategory = "panic"
 )
 
 func (e WsMsgCategory) String() string {

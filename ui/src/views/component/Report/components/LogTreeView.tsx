@@ -1,16 +1,11 @@
 import {defineComponent, ref, watch,} from 'vue';
 import './LogTreeView.less';
 import ScenarioHeader from "./ScenarioHeader.vue";
-
 import InterfaceHeader from "./InterfaceHeader.vue";
 import ProcessorHeader from "./ProcessorHeader.vue";
 import InterfaceContent from "./InterfaceContent.vue";
 import LogContent from "./LogContent.vue";
-import {
-    scenarioTypeMapToText,
-    showArrowScenarioType,
-    DESIGN_TYPE_ICON_MAP,
-} from "@/views/scenario/components/Design/config";
+import {showArrowScenarioType,} from "@/views/scenario/components/Design/config";
 
 export default defineComponent({
     name: 'LogTreeView',
@@ -23,6 +18,7 @@ export default defineComponent({
         const activeKeyMap = ref({});
 
         function change(uid, keys) {
+            debugger;
             activeKeyMap.value[uid] = keys;
         }
 
@@ -39,7 +35,14 @@ export default defineComponent({
                     activeKeyMap.value[item.id] = [item.id];
                 })
             }
-        }, {immediate: true})
+            // 单场景
+            if (props.isSingleScenario && newVal?.length === 1) {
+                newVal?.[0]?.logs?.forEach((item) => {
+                    activeKeyMap.value[item.id] = [item.id];
+                })
+            }
+            console.log('***activeKeyMap', activeKeyMap.value, newVal);
+        }, {immediate: true, deep: true})
 
         /**
          * @desc 渲染场景执行树
@@ -54,7 +57,7 @@ export default defineComponent({
                 if (log.processorCategory === 'processor_interface') {
                     return <InterfaceHeader endpointData={log}/>
                 }
-                // 迭代场景
+                // 其他场景
                 return <ProcessorHeader record={log} onMore={handleMore}/>
             }
 
@@ -81,8 +84,10 @@ export default defineComponent({
                 if (!log?.id) {
                     return;
                 }
-                return <a-collapse-panel header={renderHeader(log)}
-                                         showArrow={showArrowScenarioType.includes(log.processorType)}>
+                return <a-collapse-panel
+                    key={log.id}
+                    header={renderHeader(log)}
+                    showArrow={showArrowScenarioType.includes(log.processorType)}>
                     {renderContent(log)}
                     {
                         log?.logs?.map((item, itemIndex, srcLog) => {
@@ -98,8 +103,13 @@ export default defineComponent({
                 </a-collapse-panel>;
             };
             return logs.map((log) => {
-                return <div class={log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item'}>
-                    <a-collapse>
+                return <div key={log.id}
+                            class={log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item'}>
+                    <a-collapse
+                        onChange={(key) => {
+                            change(log.id, key)
+                        }}
+                        activeKey={activeKeyMap.value[log.id]}>
                         {renderLogs(log)}
                     </a-collapse>
                 </div>
@@ -109,11 +119,9 @@ export default defineComponent({
         // 渲染场景，一级目录, 即场景列表
         function renderScenarioList(list) {
             console.log('renderScenarioList +++', list)
-
             if (!list?.length) {
                 return null
             }
-
             // 如果是单场景，直接渲染场景
             if (list.length === 1 && props.isSingleScenario) {
                 return renderScenario(list[0]?.logs, list[0])

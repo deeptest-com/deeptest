@@ -118,7 +118,7 @@ const statisticData = computed(() => {
  * 适配场景执行报告日志数据
  * */
 const scenarioList = computed(() => {
-  return [reportsDetail.value];
+  return reportsDetail.value.logs;
 })
 
 

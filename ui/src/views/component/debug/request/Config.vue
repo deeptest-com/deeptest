@@ -39,7 +39,7 @@
 <script setup lang="ts">
 import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
-import {UsedBy} from "@/utils/enum";
+import {Methods, UsedBy} from "@/utils/enum";
 import {StateType as Debug} from "@/views/component/debug/store";
 
 import QueryParameters from "./config/QueryParameters.vue";
@@ -62,8 +62,12 @@ const debugData = computed<any>(() => store.state.Debug.debugData)
 const activeKey = ref('query-param');
 
 watch(() => debugData.value.debugInterfaceId, (newVal) => {
-  console.log('watch debugData')
-  activeKey.value = 'query-param'
+  console.log('watch debugData', debugData.value.method)
+  if (debugData.value.method === 'POST' ||  debugData.value.method === 'PUT') {
+    activeKey.value = 'body'
+  } else {
+    activeKey.value = 'query-param'
+  }
 }, {immediate: true, deep: true});
 
 </script>

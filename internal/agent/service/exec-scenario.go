@@ -10,6 +10,7 @@ import (
 )
 
 func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err error) {
+	panic(1111)
 	logUtils.Infof("scenario exec req", zap.Int("ScenarioId", req.ScenarioId), zap.Int("environmentId", req.EnvironmentId))
 
 	agentExec.ForceStopExec = false

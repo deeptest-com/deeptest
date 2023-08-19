@@ -69,7 +69,7 @@ import {
   defineEmits,
   watch,
   computed,
-    onMounted,
+  onMounted, onUnmounted,
 } from 'vue';
 import {useStore} from "vuex";
 import {
@@ -92,10 +92,10 @@ const interfaceDetail = computed<any>(() => store.state.Endpoint.selectedMethodD
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 
-const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
+const selectedMethod = ref(interfaceDetail.value?.method)
 
 onMounted(() => {
-  if (endpointDetail.value?.interfaces?.length) {
+  if (!selectedMethod.value && endpointDetail.value?.interfaces?.length) {
     selectedMethod.value = endpointDetail.value.interfaces[0].method;
   }
 })

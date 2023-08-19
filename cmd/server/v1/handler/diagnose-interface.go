@@ -165,13 +165,13 @@ func (c *DiagnoseInterfaceCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.DiagnoseInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
+	//data, err := c.DiagnoseInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
+	//if err != nil {
+	//	ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	//	return
+	//}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po})
 }
 
 // Delete

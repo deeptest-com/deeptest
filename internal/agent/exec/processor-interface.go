@@ -2,7 +2,6 @@ package agentExec
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -154,16 +153,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, sessi
 				continue
 			}
 
-			brother, ok := getPreviousBrother(*processor)
-			if !ok || brother.EntityType != consts.ProcessorInterfaceDefault {
-				processor.Result.Summary = fmt.Sprintf("先前节点不是接口，无法应用提取器。")
-				processor.AddResultToParent()
-				execUtils.SendExecMsg(*processor.Result, session.WsMsg)
-				return
-			}
-
-			resp := domain.DebugResponse{}
-			json.Unmarshal([]byte(brother.Result.RespContent), &resp)
+			resp := entity.Response
 
 			err = ExecCookie(&cookieBase, resp)
 			cookieHelper.GenResultMsg(&cookieBase)

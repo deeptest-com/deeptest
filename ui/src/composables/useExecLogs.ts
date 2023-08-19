@@ -255,7 +255,6 @@ const progressValue = computed(() => {
 });
 
 
-
 export {
     scenarioReports,
     statisticData,

@@ -69,8 +69,7 @@ function updateExecLogs(processor) {
         reportsMap.value = {}
         // scenarioReports.value = []
     }
-    // 正在执行的场景对应的 Map
-    // const reportItemMap = reportsMap.value[processor.logId];
+
     reportsMap.value[processor.logId] = processor;
     if (processor.processorCategory === ProcessorCategory.ProcessorRoot) {
         scenarioReports.value.push(processor);

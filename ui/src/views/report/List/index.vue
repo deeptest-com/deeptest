@@ -10,8 +10,9 @@
                 handleGetList({ page });
             },
             onShowSizeChange: (page, size) => {
+                pagination.page = page
                 pagination.pageSize = size
-                handleGetList({ page });
+                handleGetList(pagination);
             },
         }"
         :scroll="{ x: 1240 }"

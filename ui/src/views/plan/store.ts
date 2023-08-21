@@ -29,6 +29,7 @@ import {
 
 import { getNodeMap } from "@/services/tree";
 import { queryMembers } from '@/services/project';
+import {momentUtc} from "@/utils/datetime";
 
 export interface StateType {
     planId: number;
@@ -449,8 +450,16 @@ const StoreModel: ModuleType = {
         async getScenarioList({ commit }, payload: any) {
             const jsn = await listScenario(payload);
             if (jsn.code === 0) {
+                // 格式化时间
+                const result = jsn?.data?.result?.map((item) => {
+                    return {
+                        ...item,
+                        createdAt: momentUtc(item.createdAt),
+                        updatedAt: momentUtc(item.updatedAt),
+                    }
+                })
                 commit('setScenarios', {
-                    list: jsn.data.result || [],
+                    list: result || [],
                     pagination: {
                         current: jsn.data.page,
                         pageSize: jsn.data.pageSize,
@@ -462,9 +471,16 @@ const StoreModel: ModuleType = {
         // 获取与计划关联的场景列表
         async getRelationScenarios({ commit }, payload: any) {
             const jsn = await getPlanScenarioList(payload);
+            const result = jsn?.data?.result?.map((item) => {
+                return {
+                    ...item,
+                    createdAt: momentUtc(item.createdAt),
+                    updatedAt: momentUtc(item.updatedAt),
+                }
+            })
             if (jsn.code === 0) {
                 commit('setRelationScenarios', {
-                    scenarioList: jsn.data.result || [],
+                    scenarioList: result || [],
                     pagination: {
                         current: jsn.data.page,
                         pageSize: jsn.data.pageSize,

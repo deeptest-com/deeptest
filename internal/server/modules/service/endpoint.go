@@ -16,7 +16,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"net/http"
 	"net/url"
@@ -110,13 +109,10 @@ func (s *EndpointService) Develop(id uint) (err error) {
 }
 
 func (s *EndpointService) Copy(id uint, version string) (res uint, err error) {
-	logUtils.Infof(fmt.Sprintf("Copy endpoint id:%+v, version:%+v", id, version))
 
 	endpoint, _ := s.EndpointRepo.GetAll(id, version)
-	logUtils.Infof(fmt.Sprintf("endpoint 11111:%+v", endpoint))
 	s.removeIds(&endpoint)
 	endpoint.Title += "_copy"
-	logUtils.Infof(fmt.Sprintf("endpoint:%+v", endpoint))
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err
 }
@@ -132,6 +128,7 @@ func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
 		endpoint.Interfaces[key].ID = 0
 		endpoint.Interfaces[key].RequestBody.ID = 0
 		endpoint.Interfaces[key].RequestBody.SchemaItem.ID = 0
+		endpoint.Interfaces[key].DebugInterfaceId = 0
 		for key1, _ := range endpoint.Interfaces[key].Headers {
 			endpoint.Interfaces[key].Headers[key1].ID = 0
 		}

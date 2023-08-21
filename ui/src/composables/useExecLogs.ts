@@ -220,6 +220,14 @@ function updateStatFromLog(res: any) {
         finishProcessorNum = 0,
         duration = 0,
         cost = 0,
+        checkpointFail = 0,
+        checkpointPass = 0,
+        interfaceCount = 0,
+        interfaceDurationAverage = 0,
+        interfaceDurationTotal = 0,
+        interfaceFail = 0,
+        interfacePass = 1,
+        interfaceSkip = 0
     }: any = res;
     console.log('updateStatFromLog', res);
     const notTestNum = totalAssertionNum - passAssertionNum - failAssertionNum;
@@ -244,8 +252,14 @@ function updateStatFromLog(res: any) {
     }
 }
 
+
+
 // init data
 function initData(res: any) {
+    updateStatFromLog(res);
+}
+
+function updateStat(res: any) {
     updateStatFromLog(res);
 }
 

@@ -18,7 +18,7 @@
         :scroll="{ x: 1240 }"
         class="dp-table">
         <template #serialNumber="{ record }">
-            <span style="cursor: pointer">{{ record.serialNumber }}</span>
+            <span>{{ record.serialNumber }}</span>
         </template>
         <template #interfacePassRate="{ record }">
             <span>{{ record.interfacePassRate }}</span>
@@ -27,7 +27,7 @@
             <span>{{ record.createUserName }}</span>
         </template>
         <template #execPlan="{ record, column }">
-            <ToolTipCell :width="column.width"  @click="handleQueryDetail(record)" :text="record.name" />
+            <ToolTipCell style="color: #447DFD;cursor: pointer;" :width="column.width"  @click="handleQueryDetail(record)" :text="record.name" />
         </template>
         <template #duration="{ record }">
             <span v-html="formatWithSeconds(record.duration)"></span>

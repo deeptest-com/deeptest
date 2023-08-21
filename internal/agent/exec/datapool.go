@@ -66,11 +66,12 @@ func getDatapoolRow(dpName, seq string, datapools domain.Datapools) (ret int) {
 
 	} else {
 		seqInt, _ := strconv.Atoi(seq)
+		ret = seqInt % total
+
 		seqInt -= 1
 		if seqInt < 0 {
 			seqInt = 0
 		}
-		ret = seqInt % total
 	}
 
 	return

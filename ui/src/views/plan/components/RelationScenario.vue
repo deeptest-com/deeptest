@@ -13,6 +13,7 @@
             :pagination="pagination"
             :columns="columns"
             :show-scenario-operation="false"
+            :selectedKeys="selectedScenarioIds"
             @refresh-list="getScenarioList"
             @select-row-keys="handleSelectRowKeys" />
     </a-modal>
@@ -37,7 +38,7 @@ let queryParams = reactive<any>({
   planId: currPlan.value.id,
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
-let selectedScenarioIds: number[] = [];
+const selectedScenarioIds = ref<number[]>([]);
 const loading = ref<boolean>(false);
 
 const columns: any[] = reactive([
@@ -67,16 +68,18 @@ const columns: any[] = reactive([
 ]);
 
 function handleSelectRowKeys(value: any[]) {
-    selectedScenarioIds = value;
+    selectedScenarioIds.value = value;
 }
 
 function handleCancel() {
+    selectedScenarioIds.value = [];
     emits('onCancel');
 }
 
 async function onOk() {
     console.log('selectScenarioIds: --', selectedScenarioIds);
-    await store.dispatch('Plan/addScenario', { planId: currPlan.value.id, params: { scenarioIds: selectedScenarioIds } });
+    await store.dispatch('Plan/addScenario', { planId: currPlan.value.id, params: { scenarioIds: selectedScenarioIds.value } });
+    selectedScenarioIds.value = [];
     emits('onOk');
 }
 

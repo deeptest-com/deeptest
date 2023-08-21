@@ -407,7 +407,7 @@ export const showLineScenarioType = [
  * 用于在场景执行日志在是否展示箭头
  * */
 export const showArrowScenarioType = [
-    // 'processor_interface_default',
+    'processor_interface_default',
     'processor_group_default',
     'processor_loop_time',
     'processor_loop_until',

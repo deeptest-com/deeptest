@@ -22,8 +22,6 @@ import {
 import {PaginationConfig, Scenario} from "@/views/scenario/data";
 import {momentUtc} from "@/utils/datetime"
 import {message} from "ant-design-vue";
-import {ReportDetailType} from '@/utils/enum';
-import {formatData} from '@/utils/formatData';
 import {getDivision, getPercentStr} from "@/utils/number";
 
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal, }>();
@@ -46,72 +44,62 @@ const baseInfoList = computed(() => {
 })
 
 const statInfo = computed(() => {
-  const data = reportsDetail.value;
-  if (data === null) return {};
+  const data = reportsDetail.value?.stat || {};
   return {
-    passAssertionNum: data.passAssertionNum,
-    failAssertionNum: data.failAssertionNum,
-    notTestNum: data.notTestNum,
+    interfacePass: data.interfacePass || 0,
+    interfaceFail: data.interfaceFail || 0,
+    interfaceSkip: data.interfaceSkip || 0,
   }
 })
 const statisticData = computed(() => {
-  const data = reportsDetail.value;
+  const data = reportsDetail.value?.stat || {};
   const {
-    totalAssertionNum = 0,
-    totalInterfaceNum = 0,
-    totalProcessorNum = 0,
-    totalRequestNum = 0,
-    failAssertionNum = 0,
-    failInterfaceNum = 0,
-    failRequestNum = 0,
-    finishProcessorNum = 0,
-    passInterfaceNum = 0,
-    passRequestNum = 0,
-    passAssertionNum = 0,
-    duration = 0,
+    checkpointFail= 0,
+    checkpointPass= 0,
+    interfaceCount= 0,
+    interfaceDurationAverage= 0,
+    interfaceDurationTotal= 0,
+    interfaceFail= 0,
+    interfacePass= 0,
+    interfaceSkip= 0,
   } = data;
-  // 计算平均接口耗时
-  let interfaceDuration = 0;
-  const passRate = getPercentStr(passAssertionNum, totalAssertionNum);
-  const notPassRate = getPercentStr(failAssertionNum, totalAssertionNum);
-  const notTestNum = totalAssertionNum - passAssertionNum - failAssertionNum;
-  const notTestNumRate = getPercentStr(notTestNum, totalAssertionNum);
-  // // 平均接口耗时
-  const avgInterfaceDuration = getDivision(duration, totalRequestNum);
+
+  const passRate = getPercentStr(interfacePass, interfaceCount);
+  const notPassRate = getPercentStr(interfaceFail, interfaceCount);
+  const notTestNumRate = getPercentStr(interfaceSkip, interfaceCount);
   return [
     {
-      label: '通过',
-      class: 'success',
+      label: '通过接口',
+      value: `${interfacePass} 个`,
       rate: passRate,
-      value: `${passAssertionNum} 个`,
+      class: 'success',
     },
     {
       label: '接口总耗时',
-      value: `${duration} 毫秒`
+      value: `${interfaceDurationTotal} 毫秒`
     },
     {
-      label: '失败',
+      label: '失败接口',
       rate: notPassRate,
-      value: `${failAssertionNum} 个`,
+      value: `${interfaceFail} 个`,
       class: 'fail',
     },
     {
       label: '平均接口耗时',
-      value: `${avgInterfaceDuration} 毫秒`,
+      value: `${interfaceDurationAverage} 毫秒`,
     },
     {
-      label: '未测',
-      value: ` ${notTestNum}个`,
+      label: '未测j接口',
+      value: `${interfaceSkip}个`,
       rate: notTestNumRate,
       class: 'notest',
     },
     {
       label: '检查点 (成功/失败)',
-      value: `${totalAssertionNum} (${passAssertionNum}/${failAssertionNum})`,
+      value: `${checkpointPass + checkpointFail} (${checkpointPass}/${checkpointFail})`,
     },
-
-
   ]
+
 })
 
 /**

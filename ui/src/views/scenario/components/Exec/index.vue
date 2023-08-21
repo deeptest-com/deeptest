@@ -44,9 +44,9 @@ import {
   statInfo,
   statisticData,
   updateExecLogs,
-  updateExecResult
+  updateExecResult,
+  updateStatFromLog
 } from '@/composables/useExecLogs';
-import {watch} from "vue/dist/vue";
 
 const {t} = useI18n();
 const router = useRouter();
@@ -128,7 +128,10 @@ const OnWebSocketMsg = (data: any) => {
     console.log('场景里每条编排的执行记录', log)
     updateExecLogs(log);
   }
-
+  // 更新统计值
+  else if (wsMsg.category === "stat") {
+    updateStatFromLog(log);
+  }
   // 执行完毕
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';

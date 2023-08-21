@@ -124,8 +124,8 @@ const OnWebSocketMsg = (data: any) => {
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
 
-  console.log('plan wsMsg***', wsMsg.data?.id);
-  console.log('plan wsMsg2***', wsMsg.data);
+  console.log('plan wsMsg***', wsMsg.data);
+  console.log('plan wsMsg2***', wsMsg);
 
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {

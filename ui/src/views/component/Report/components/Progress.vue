@@ -20,7 +20,7 @@
 </template>
 <script setup lang="ts">
 import {WsMsgCategory} from '@/utils/enum';
-import {defineProps, defineEmits, computed} from 'vue';
+import {defineProps, defineEmits, computed, onUnmounted, ref, watch, onMounted} from 'vue';
 
 
 const props = defineProps(['percent', 'execStatus']);
@@ -33,9 +33,34 @@ const handleExecCancel = () => {
   emits('execCancel');
 };
 
-const percentVal = computed(() => {
-  if (props.execStatus === "end") return 100;
-  return props.percent || 10;
+/*
+* TODO 处理进度条效果，未来需要实时计算进度条的值
+* */
+let timeId: any = ref(null);
+const percentVal: any = ref(10);
+onMounted(() => {
+  if (props.execStatus === "end") {
+    percentVal.value = 100;
+  }
+  timeId.value = window?.setInterval(() => {
+    if (percentVal.value >= 80) {
+      timeId.value && window.clearInterval(timeId.value);
+      return;
+    }
+    percentVal.value += 1;
+  }, 1000);
+});
+
+watch(() => {
+  return props.execStatus
+}, (newVal) => {
+  if (newVal === "end") {
+    percentVal.value = 100;
+    timeId.value && window.clearInterval(timeId.value);
+  }
+})
+onUnmounted(() => {
+  clearInterval(timeId.value);
 });
 </script>
 

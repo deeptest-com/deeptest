@@ -68,9 +68,9 @@ const option = ref({
         show: false
       },
       data: [
-        {value: 0, name: '通过'},
-        {value: 0, name: '失败'},
-        {value: 0, name: '未测'},
+        {value: 0, name: '通过接口'},
+        {value: 0, name: '失败接口'},
+        {value: 0, name: '未测接口'},
       ]
     }
   ]
@@ -91,9 +91,9 @@ watch(() => {
   if(newVal) {
     setTimeout(() => {
       loading.value = false;
-      option.value.series[0].data[0].value = newVal.passAssertionNum;
-      option.value.series[0].data[1].value = newVal.failAssertionNum;
-      option.value.series[0].data[2].value = newVal.notTestNum;
+      option.value.series[0].data[0].value = newVal.interfacePass;
+      option.value.series[0].data[1].value = newVal.interfaceFail;
+      option.value.series[0].data[2].value = newVal.interfaceSkip;
       setChart();
     }, 500);
   }

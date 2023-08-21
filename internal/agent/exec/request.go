@@ -87,7 +87,7 @@ func GetContentProps(resp *domain.DebugResponse) {
 		}
 	}
 
-	//ret.NodeContent = mockHelper.FormatXml(ret.NodeContent)
+	//ret.NodeContentReplaceVariables = mockHelper.FormatXml(ret.NodeContent)
 
 	return
 }

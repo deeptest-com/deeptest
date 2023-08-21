@@ -58,6 +58,13 @@
           另存为用例
         </a-button>
       </div>
+      <div v-if="usedBy === UsedBy.InterfaceDebug"
+           :disabled="!isPathValid"
+           class="save-as-case">
+        <a-button trigger="click" @click="generateCases" class="dp-bg-light">
+          生成用例
+        </a-button>
+      </div>
 
       <div v-if="isShowSync"
            :disabled="!isPathValid"
@@ -115,6 +122,10 @@ const props = defineProps({
     required: true
   },
   onSaveAsCase: {
+    type: Function,
+    required: false
+  },
+  onGenerateCases: {
     type: Function,
     required: false
   },
@@ -209,9 +220,15 @@ const save = (e) => {
   bus.emit(settings.eventConditionSave, {});
 }
 const saveAsCase = () => {
-  // console.log('saveAsCase', debugData.value.url)
+  console.log('saveAsCase')
   if (validateInfo() && props.onSaveAsCase) {
     props.onSaveAsCase()
+  }
+}
+const generateCases = () => {
+  console.log('generateCases')
+  if (props.onGenerateCases) {
+    props.onGenerateCases()
   }
 }
 
@@ -250,7 +267,7 @@ onUnmounted(() => {
 function hasDefinedMethod(method: string) {
   if (usedBy !== UsedBy.CaseDebug)
     return true
-    
+
   return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })

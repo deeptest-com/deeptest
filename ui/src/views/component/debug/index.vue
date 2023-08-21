@@ -5,6 +5,7 @@
         <Invocation :showMethodSelection = "showMethodSelection"
                     :onSave="saveDebugData"
                     :onSaveAsCase="saveAsCase"
+                    :onGenerateCases="generateCases"
                     :onSync="syncDebugData"
                     :baseUrlDisabled="baseUrlDisabled"
                     :urlDisabled="urlDisabled" />
@@ -100,6 +101,10 @@ const props = defineProps({
     type: Function,
     required: false
   },
+  onGenerateCases: {
+    type: Function,
+    required: false
+  },
   onSyncDebugData: {
     type: Function,
     required: false
@@ -130,9 +135,14 @@ const saveAsCase = async () => {
   if (props.onSaveAsCase) {
     props.onSaveAsCase()
   }
-};
+}
+const generateCases = async () => {
+  if (props.onGenerateCases) {
+    props.onGenerateCases()
+  }
+}
 
-const syncDebugData = async () => {
+  const syncDebugData = async () => {
   if (props.onSyncDebugData)
     props.onSyncDebugData()
 };

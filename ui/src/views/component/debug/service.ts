@@ -49,6 +49,13 @@ export async function saveAsCase(data: Interface): Promise<any> {
         data,
     });
 }
+export async function generateCases(data: Interface): Promise<any> {
+    return request({
+        url: `/${apiPathInterface}/generateCases`,
+        method: 'post',
+        data,
+    });
+}
 
 // agent debug invoke
 export async function call(data): Promise<any> {

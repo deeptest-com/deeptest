@@ -65,8 +65,6 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
-	//result = *processor.ScenarioExecResult
-
 	return
 }
 

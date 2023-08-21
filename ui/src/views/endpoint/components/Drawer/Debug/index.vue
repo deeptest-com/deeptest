@@ -7,7 +7,9 @@
       <div id="debug-bottom">
         <DebugComp :onSaveDebugData="saveDebugInterface"
                    :onSaveAsCase="saveAsCase"
-                   :showMethodSelection="false"/>
+                   :onGenerateCases="onGenerateCases"
+                   :onGe="saveAsCase"
+                   :showMethodSelection="false" />
       </div>
     </div>
     <div v-else style="margin-top: 48px;">
@@ -28,7 +30,15 @@
         :visible="saveAsVisible"
         :model="saveAsModel"
         :onFinish="saveAsFinish"
-        :onCancel="saveAsCancel"/>
+        :onCancel="saveAsCancel" />
+
+    <GenerateCasePopup
+        v-if="generateCasesVisible"
+        :visible="generateCasesVisible"
+        :model="generateCasesModel"
+        :onFinish="generateCasesFinish"
+        :onCancel="generateCasesCancel" />
+
   </div>
 </template>
 
@@ -46,6 +56,7 @@ import {StateType as Endpoint} from "@/views/endpoint/store";
 import DebugMethod from './method.vue';
 import DebugComp from '@/views/component/debug/index.vue';
 import SaveAsCasePopup from "../Cases/edit.vue";
+import GenerateCasePopup from "../Cases/generate.vue";
 
 const store = useStore<{ Debug: Debug, Endpoint: Endpoint }>();
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
@@ -113,6 +124,41 @@ const saveAsFinish = async (model) => {
 const saveAsCancel = () => {
   console.log('saveAsVisible')
   saveAsVisible.value = false
+}
+
+const generateCasesVisible = ref(false)
+const generateCasesModel = ref({} as any)
+const onGenerateCases = () => {
+  console.log('onGenerateCases')
+  generateCasesVisible.value = true
+  generateCasesModel.value = {}
+}
+const generateCasesFinish = async (model) => {
+  console.log('generateCasesFinish', model, debugData.value.url)
+
+  const data = Object.assign({...model}, debugInfo.value)
+
+  store.commit("Global/setSpinning",true)
+  const res = await store.dispatch('Debug/generateCases', data)
+  store.commit("Global/setSpinning",false)
+
+  if (res === true) {
+    generateCasesVisible.value = false
+
+    notification.success({
+      key: NotificationKeyCommon,
+      message: `自动生成用例成功`,
+    });
+  } else {
+    notification.success({
+      key: NotificationKeyCommon,
+      message: `自动生成用例保存失败`,
+    });
+  }
+}
+const generateCasesCancel = () => {
+  console.log('generateCasesCancel')
+  generateCasesVisible.value = false
 }
 
 </script>

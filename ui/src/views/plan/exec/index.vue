@@ -158,6 +158,9 @@ const OnWebSocketMsg = (data: any) => {
   // 执行完毕
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';
+    // 测试计划执行完以后 重新获取下 计划的详情以及测试报告列表
+    bus.emit(settings.eventGetPlansReports);
+    bus.emit(settings.eventGetPlanDetail);
   } else {
     console.log('其他情况：严格来说，不能执行到这儿:',wsMsg);
   }

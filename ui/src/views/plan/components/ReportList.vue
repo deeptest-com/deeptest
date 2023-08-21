@@ -17,7 +17,7 @@
             <TooltipCell :text="`${momentUtc(record.startTime)} ~ ${momentUtc(record.endTime)}`" :width="column.width" />
         </template>
         <template #operation="{ record }">
-          <a  href="javascript:void (0)" @click="queryDetail(record.id)">查看报告</a>
+          <a  href="javascript:void (0)" @click="queryDetail(record.id)">查看</a>
         </template>
     </a-table>
     <ExecDetail
@@ -29,7 +29,7 @@
         @on-close="detailDrawerVisible = false" />
 </template>
 <script lang="ts" setup>
-import { reactive, computed, defineProps, watch, defineEmits, ref, inject } from 'vue';
+import { reactive, computed, defineProps, watch, defineEmits, ref, inject, onMounted } from 'vue';
 import { useStore } from 'vuex';
 
 import { TableFilter } from "@/views/component/Report/components";
@@ -40,6 +40,8 @@ import { StateType as ReportStateType } from '@/views/report/store';
 import { StateType as PlanStateType } from '../store';
 import { momentUtc, formatWithSeconds } from '@/utils/datetime';
 import { ReportDetailType } from '@/utils/enum';
+import settings from "@/config/settings";
+import bus from "@/utils/eventBus";
 
 const editPlanDrawerVisible = inject('editPlanDrawerVisible') as any;
 
@@ -97,6 +99,12 @@ const detailDrawerVisible = ref(false);
 let formState = reactive({});
 const loading = ref(false);
 let pagination = computed(() => store.state.Report.listResult.pagination);
+
+onMounted(() => {
+  bus.on(settings.eventGetPlansReports, async () => {
+    refreshList({});
+  })
+});
 
 function handleFilter(params) {
     formState = params;

@@ -29,7 +29,7 @@ import {
     removePostConditions,
     movePostConditions,
     disablePostConditions,
-    saveAsCase,
+    saveAsCase, generateCases,
     getInvocationResult,
     getInvocationLog,
     getPreConditionScript,
@@ -143,6 +143,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         refreshInterfaceResultFromScenarioExec: Action<StateType, StateType>;
         save: Action<StateType, StateType>;
         saveAsCase: Action<StateType, StateType>;
+        generateCases: Action<StateType, StateType>;
 
         listInvocation: Action<StateType, StateType>;
         getLastInvocationResp: Action<StateType, StateType>;
@@ -371,6 +372,14 @@ const StoreModel: ModuleType = {
             const resp = await  saveAsCase(payload)
             if (resp.code === 0) {
                 // commit('setDebugData', resp.data);
+                return true;
+            } else {
+                return false
+            }
+        },
+        async generateCases({commit}, payload: any) {
+            const resp = await  generateCases(payload)
+            if (resp.code === 0) {
                 return true;
             } else {
                 return false

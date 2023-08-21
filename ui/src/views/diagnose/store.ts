@@ -39,6 +39,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         changeTreeDataMapItemProp: Mutation<StateType>;
 
         setInterfaceTabs: Mutation<StateType>;
+        updateTabName: Mutation<StateType>;
     };
     actions: {
         loadTree: Action<StateType, StateType>;
@@ -110,6 +111,14 @@ const StoreModel: ModuleType = {
         setInterfaceTabs(state, payload) {
             state.interfaceTabs = payload;
         },
+        updateTabName(state, payload) {
+            state.interfaceTabs.forEach(function(item) {
+                console.log(item)
+                if (item.id === payload.id) {
+                    item.title = payload.title
+                }
+            });
+        },
     },
     actions: {
         async loadTree({ commit, state, dispatch }, params: any) {
@@ -147,11 +156,12 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async saveInterface({ state, dispatch, commit }, payload: any) {
+        async saveInterface({ commit, state, dispatch }, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
                 dispatch('loadTree', state.queryParams);
-                return jsn.data;
+                commit('updateTabName', {id: payload.id, title: payload.title})
+                return true;
             } else {
                 return false
             }

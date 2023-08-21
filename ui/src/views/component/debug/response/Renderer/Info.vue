@@ -37,10 +37,7 @@ import ParamGrid from "../../comp/param-grid.vue";
 import ParamContent from "../../comp/param-content.vue";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {getMethodColor} from "@/utils/dom";
-import ResponseMeta from "./Meta.vue";
-import {UsedBy} from "@/utils/enum";
 
-const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const props = defineProps<{
   data?: any;

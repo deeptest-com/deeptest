@@ -58,13 +58,23 @@
           另存为用例
         </a-button>
       </div>
+      <div v-if="usedBy === UsedBy.InterfaceDebug"
+           :disabled="!isPathValid"
+           class="save-as-case">
+        <a-button trigger="click" @click="generateCases" class="dp-bg-light">
+          生成用例
+        </a-button>
+      </div>
 
       <div v-if="isShowSync"
            :disabled="!isPathValid"
            class="sync">
         <a-button trigger="click" @click="sync" class="dp-bg-light">
-          <UndoOutlined/>
           同步
+          <a-tooltip>
+            <template #title><span>从源接口定义/接口用例/快捷调试中同步数据到当前场景步骤，包括请求参数、前后置处理器和断言</span></template>
+          <QuestionCircleOutlined />
+        </a-tooltip>
         </a-button>
       </div>
     </div>
@@ -81,7 +91,7 @@
 <script setup lang="ts">
 import {computed, defineProps, inject, onMounted, onUnmounted, PropType, ref, watch, Teleport} from "vue";
 import {notification} from 'ant-design-vue';
-import {UndoOutlined} from '@ant-design/icons-vue';
+import {QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import IconSvg from "@/components/IconSvg";
@@ -115,6 +125,10 @@ const props = defineProps({
     required: true
   },
   onSaveAsCase: {
+    type: Function,
+    required: false
+  },
+  onGenerateCases: {
     type: Function,
     required: false
   },
@@ -209,9 +223,15 @@ const save = (e) => {
   bus.emit(settings.eventConditionSave, {});
 }
 const saveAsCase = () => {
-  // console.log('saveAsCase', debugData.value.url)
+  console.log('saveAsCase')
   if (validateInfo() && props.onSaveAsCase) {
     props.onSaveAsCase()
+  }
+}
+const generateCases = () => {
+  console.log('generateCases')
+  if (props.onGenerateCases) {
+    props.onGenerateCases()
   }
 }
 
@@ -250,7 +270,7 @@ onUnmounted(() => {
 function hasDefinedMethod(method: string) {
   if (usedBy !== UsedBy.CaseDebug)
     return true
-    
+
   return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })

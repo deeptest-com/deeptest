@@ -9,11 +9,11 @@
       </span>
       <span class="col">
         耗时: 
-        <span style="color: rgb(4, 196, 149)">{{ responseData.time }}ms</span>
+        <span style="color: rgb(4, 196, 149)">{{ responseData.time }} ms</span>
       </span>
       <span class="col">
         大小: 
-        <span style="color: rgb(4, 196, 149)">{{ responseData.contentLength }}B</span>
+        <span style="color: rgb(4, 196, 149)">{{ responseData.contentLength }} B</span>
       </span>
     </div>
 

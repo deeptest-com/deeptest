@@ -91,8 +91,7 @@ const isImage = (type) => {
 
   .left {
     height: 100%;
-    width: calc(100% - 360px);
-    min-width: 400px;
+    min-width: 740px;
     .ant-tabs-line {
       height: 100%;
     }

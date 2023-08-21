@@ -14,7 +14,7 @@
         <Progress :exec-status="progressStatus"
                   :percent="progressValue"
                   @exec-cancel="execCancel"/>
-        <LogTreeView :treeData="scenarioReports"/>
+        <LogTreeView :treeData="reports"/>
       </div>
     </a-drawer>
   </div>
@@ -43,6 +43,7 @@ import {StateType as UserStateType} from "@/store/user";
 import {getDivision, getPercent, getPercentStr} from '@/utils/number';
 import {
   scenarioReports,
+  reports,
   resetData,
   execLogs, execResults, updateExecLogs, updateExecResult,statInfo
   , statisticData, initData, progressStatus, progressValue, updatePlanRes,
@@ -71,7 +72,6 @@ const store = useStore<{
 
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
-// TODO： 这里的envList是从ProjectSetting中获取的，需要修改下，会污染其他作用域下的数据
 const envList = computed(() => store.state.ProjectSetting.envList);
 const currentUser = computed(() => store.state.User.currentUser);
 const currUser = computed(() => store.state.User.currentUser);
@@ -137,19 +137,16 @@ const OnWebSocketMsg = (data: any) => {
   else if (wsMsg.category == 'in_progress') {
     progressStatus.value = 'in_progress';
   }
-
   // 更新【计划】的执行结果
   else if (wsMsg.category == 'result' && log.planId) {
     updatePlanRes(log);
     console.log('计划的结果', log)
   }
-
   //  更新【场景】的执行结果
   else if (wsMsg.category == 'result' && log.scenarioId) {
     updateExecResult(log);
     console.log('场景的结果', log)
   }
-
   // 更新【场景里每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)
@@ -159,6 +156,9 @@ const OnWebSocketMsg = (data: any) => {
   // 执行完毕
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';
+    // 测试计划执行完以后 重新获取下 计划的详情以及测试报告列表
+    bus.emit(settings.eventGetPlansReports);
+    bus.emit(settings.eventGetPlanDetail);
   } else {
     console.log('其他情况：严格来说，不能执行到这儿:',wsMsg);
   }

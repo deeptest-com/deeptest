@@ -13,7 +13,7 @@ const execLogs: any = ref([]);
 const execResults: any = ref([]);
 
 
-const reportsMap:any = ref({} as any)
+const reportsMap: any = ref({} as any)
 // 组装后的场景的执行报告树
 const scenarioReports = ref([] as any[]);
 
@@ -33,7 +33,22 @@ function updateExecResult(res) {
     }
 }
 
-
+/**
+ * 最终的计划的执行结果，需要从打平的执行结果中计算得出
+ * */
+const reports = computed(() => {
+    const res = execResults.value;
+    console.log('reports111', res, scenarioReports.value);
+    return scenarioReports.value.map((item: any) => {
+        const report = res.find((r: any) => r.scenarioId === item.scenarioId);
+        return {
+            ...item, ...{
+                resultStatus: report?.resultStatus,
+                totalProcessorNum: report?.totalProcessorNum
+            }
+        };
+    });
+})
 
 
 // 更新场景的执行日志，不包括场景的执行结果。
@@ -46,6 +61,7 @@ function updateExecLogs(processor) {
     function hasSameId(log, item) {
         return item?.logId === log?.logId && item?.scenarioId === log?.scenarioId;
     }
+
     const isExist = execLogs.value.some((item: any) => {
         return hasSameId(processor, item);
     });
@@ -143,7 +159,7 @@ const statisticData = computed(() => {
             interfaceNum++;
         }
     });
-    console.log(execLogs.value,'***',interfaceNum);
+    console.log(execLogs.value, '***', interfaceNum);
     const passRate = getPercentStr(passAssertionNum, totalAssertionNum);
     const notPassRate = getPercentStr(failAssertionNum, totalAssertionNum);
     const notTestNumRate = getPercentStr(notTestNum, totalAssertionNum);
@@ -204,6 +220,14 @@ function updateStatFromLog(res: any) {
         finishProcessorNum = 0,
         duration = 0,
         cost = 0,
+        checkpointFail = 0,
+        checkpointPass = 0,
+        interfaceCount = 0,
+        interfaceDurationAverage = 0,
+        interfaceDurationTotal = 0,
+        interfaceFail = 0,
+        interfacePass = 1,
+        interfaceSkip = 0
     }: any = res;
     console.log('updateStatFromLog', res);
     const notTestNum = totalAssertionNum - passAssertionNum - failAssertionNum;
@@ -228,8 +252,14 @@ function updateStatFromLog(res: any) {
     }
 }
 
+
+
 // init data
 function initData(res: any) {
+    updateStatFromLog(res);
+}
+
+function updateStat(res: any) {
     updateStatFromLog(res);
 }
 
@@ -258,7 +288,8 @@ const progressValue = computed(() => {
 export {
     scenarioReports,
     statisticData,
-    progressStatus, progressValue,
+    progressStatus,
+    progressValue,
     statInfo,
     execLogs,
     execResults,
@@ -267,4 +298,5 @@ export {
     resetData,
     initData,
     updatePlanRes,
+    reports
 };

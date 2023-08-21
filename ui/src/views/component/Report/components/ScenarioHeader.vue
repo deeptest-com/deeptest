@@ -2,13 +2,13 @@
   <div class="scenario-basicinfo">
     <div class="scenario-name">{{ record.name }}</div>
     <div class="scenario-priority">{{ record.priority || 'P1' }}</div>
-    <div :class="['scenario-status', logInfo.resultStatus]">{{ statusMap.get(logInfo.resultStatus) }}
+    <div :class="['scenario-status', logInfo.resultStatus]">{{ statusMap.get(resultStatus) }}
     </div>
     <div class="scenario-rate">
       <div class="scenario-rate-progress">
-        <a-progress :percent="progressValue" :show-info="false"/>
+        <a-progress :percent="progressInfo.progressValue" :exception="progressInfo.status" :show-info="false"/>
       </div>
-      <div class="scenario-rate-info" >通过率 {{ progressValueStr }}</div>
+      <div class="scenario-rate-info">通过率 {{ progressValueStr }}</div>
     </div>
   </div>
 </template>
@@ -17,18 +17,52 @@ import {defineProps, ref, computed, watch} from 'vue';
 import {getPercent, getPercentStr, num2Percent} from '@/utils/number';
 
 const props = defineProps(['record', 'showScenarioInfo', 'expandActive']);
-const statusMap = new Map([['pass', '通过'], ['fail', '失败']]);
+const statusMap = new Map([['pass', '通过'], ['fail', '失败'], ['in-progress', '进行中']]);
 
 const logInfo = computed(() => {
   return props.record?.logs?.[0] || {};
 })
 
+const resultStatus = computed(() => {
+  return props.record?.resultStatus || 'in-progress'
+})
+
 const progressValue = computed(() => {
-  return Number(getPercent(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0))
+  return Number(getPercent(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0));
 });
 const progressValueStr = computed(() => {
-  return getPercentStr(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0)
+  if(resultStatus.value === 'pass') {
+    return '100.00%'
+  }
+  return getPercentStr(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0);
 })
+
+const progressInfo = computed(() => {
+  if (resultStatus.value === 'fail') {
+    return {
+      status: 'exception',
+      progressValue: 100
+    }
+  }
+  if (resultStatus.value === 'pass') {
+    return {
+      status: 'success',
+      progressValue: 100
+    }
+  }
+  return {
+    status: 'active',
+    progressValue: 20
+  }
+})
+
+watch(() => props.record, (val) => {
+  if (val) {
+    console.log(1111, val)
+  }
+}, {
+  immediate: true
+});
 
 </script>
 
@@ -60,6 +94,12 @@ const progressValueStr = computed(() => {
     border-radius: 50%;
     background-color: #04C495;
     margin-right: 10px;
+  }
+
+  &.in-progress {
+    &:before {
+      background-color: #FFC107;
+    }
   }
 
   &.pass {
@@ -96,11 +136,12 @@ const progressValueStr = computed(() => {
 .scenario-action {
   width: 54px;
 }
-.scenario-rate-progress{
+
+.scenario-rate-progress {
   width: 170px;
 }
 
-.scenario-rate-info{
+.scenario-rate-info {
   margin-left: 40px;
   font-size: 12px;
   color: rgba(0, 0, 0, 0.45);

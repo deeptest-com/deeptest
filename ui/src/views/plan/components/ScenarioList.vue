@@ -60,7 +60,7 @@
     />
 </template>
 <script lang="ts" setup>
-import { ref, reactive, defineProps, defineEmits, PropType, computed } from 'vue';
+import { ref, reactive, defineProps, defineEmits, PropType, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import RelationScenario from './RelationScenario.vue';
@@ -97,6 +97,11 @@ const props = defineProps({
     scroll: {
         type: Object,
         required: false,
+    },
+    selectedKeys: {
+        type: Array as PropType<any[]>,
+        default: () => [],
+        required: false,
     }
 })
 
@@ -105,7 +110,7 @@ const store = useStore<{ Plan: PlanStateType }>();
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const members = computed(() => store.state.Plan.members);
 const associateModalVisible = ref(false);
-const selectedRowKeys = ref<any[]>([]); // Check here to configure the default column
+const selectedRowKeys = ref<any[]>(props.selectedKeys || []); // Check here to configure the default column
 let selectedRowIds = reactive<any[]>([]);
 
 const onSelectChange = (changableRowKeys: string[], rows: any) => {
@@ -162,6 +167,7 @@ const handleRemove = async (record?: any) => {
             const params = { scenarioIds };
             console.log('解除关联场景: --', params);
             await store.dispatch('Plan/removeScenario', { planId: currPlan.value.id, params });
+            selectedRowKeys.value = []; //清空已选的item
             emits('refreshList', formState);
         }
     })
@@ -171,6 +177,12 @@ const handleFinish = async () => {
     associateModalVisible.value = false;
     emits('refreshList', formState);
 }
+
+watch(() => {
+    return props.selectedKeys;
+}, val => {
+    selectedRowKeys.value = val;
+})
 </script>
 <style scoped lang="less">
 .table-filter {

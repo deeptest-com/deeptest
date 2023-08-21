@@ -2,13 +2,18 @@
   <div class="response-result">
     <div v-if="showStatus" class="row status">
       <span class="col">
-        状态：{{ responseData.statusContent }}
+        状态: 
+        <a-tooltip :title="responseData.statusContent">
+          <span :style="{ cursor: 'pointer', color: getStatusCodeColor(responseData.statusCode) }">{{ responseData.statusCode }}</span>
+        </a-tooltip>
       </span>
       <span class="col">
-        耗时: {{ responseData.time }}毫秒
+        耗时: 
+        <span style="color: rgb(4, 196, 149)">{{ responseData.time }} ms</span>
       </span>
       <span class="col">
-        大小：{{ responseData.contentLength }}字节
+        大小: 
+        <span style="color: rgb(4, 196, 149)">{{ responseData.contentLength }} B</span>
       </span>
     </div>
 
@@ -34,6 +39,7 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {useI18n} from "vue-i18n";
 import ResponseDefine from "./ResponseDefine.vue";
 import ResultMsg from "./ResultMsg.vue";
+import {responseCodes} from '@/config/constant';
 
 const props = defineProps({
   showStatus: {
@@ -66,7 +72,9 @@ watch(responseData, (newVal) => {
     store.dispatch("Debug/getInvocationResult", (props.data && props.data.invokeId) || responseData.value.invokeId)
 }, {immediate: true, deep: true})
 
-
+const getStatusCodeColor = (value) => {
+  return responseCodes.find(e => e.value === String(value))?.color;
+};
 
 const change = async (formState:any)=>{
   console.log(formState)
@@ -85,8 +93,11 @@ const change = async (formState:any)=>{
 
   .status {
     padding: 12px 0 8px 0;
-    .col {
-      margin-right: 20px;
+    display: flex;
+    justify-content: flex-end;
+
+    .col:not(:first-child) {
+      margin-left: 12px;
     }
   }
 

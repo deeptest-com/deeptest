@@ -63,7 +63,7 @@
   </DrawerLayout>
 </template>
 <script setup lang="ts">
-import {defineProps, defineEmits, ref, watch, reactive, computed, createVNode} from 'vue';
+import {defineProps, defineEmits, ref, watch, reactive, computed, createVNode, onMounted} from 'vue';
 import {useStore} from 'vuex';
 
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
@@ -74,6 +74,8 @@ import {ScenarioList, ReportList} from '../components';
 import {momentUtc} from '@/utils/datetime';
 import {StateType as PlanStateType} from '../store';
 import {planStatusOptions, planStatusTextMap} from '@/config/constant';
+import settings from "@/config/settings";
+import bus from "@/utils/eventBus";
 
 const props = defineProps<{
   editDrawerVisible: Boolean
@@ -152,9 +154,18 @@ const tabsList = [
   },
 ]
 
+onMounted(() => {
+  bus.on(settings.eventGetPlanDetail, async () => {
+    await store.dispatch('Plan/getPlan', currPlan.value.id);
+  })
+});
+
 async function changeTab(value) {
   activeKey.value = value;
   stickyKey.value++;
+  if (value === 'test-scenario') {
+    getScenarioList({});
+  }
   emits('update:tabKey', value);
 }
 

@@ -161,7 +161,7 @@ const StoreModel: ModuleType = {
             if (jsn.code === 0) {
                 dispatch('loadTree', state.queryParams);
                 commit('updateTabName', {id: payload.id, title: payload.title})
-                return true;
+                return jsn.data;
             } else {
                 return false
             }

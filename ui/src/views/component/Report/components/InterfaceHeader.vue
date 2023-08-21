@@ -1,6 +1,5 @@
 <template>
   <div class="endpoint-header">
-
     <div class="endpoint-method">
       <IconSvg :type="DESIGN_TYPE_ICON_MAP[endpointData.processorType]" class="processor-icon-svg"/>
       <span class="endpoint-method" :style="{ color: getMethodColor(reqContent.method) }">
@@ -111,7 +110,6 @@ const indicator = h(LoadingOutlined, {
 });
 
 function handleQueryDetail() {
-  console.log(22222);
   Object.assign(currRespDetail, {
     reqContent: reqContent.value,
     resContent: resContent.value,

@@ -5,13 +5,13 @@
     </div>
 
     <div class="items">
-      <a-table :dataSource="list || []" :columns="columns"
+      <a-table v-if="list?.length > 0" :dataSource="list || []" :columns="columns"
                :rowKey="(record, index) => {return index}"
                :tableLayout="'fixed'"
                class="dp-small-table"
                :rowClassName="(record, index) => {return record.name==='' ? 'hidden' : ''}"
                :pagination="false"/>
-
+      <div v-else>空</div>
     </div>
   </div>
 </template>
@@ -49,7 +49,7 @@ const columns = [
 
 <style lang="less" scoped>
 .param-grid-main {
-  margin-bottom: 30px;
+  margin-bottom: 16px;
   .head {
   }
   .items {

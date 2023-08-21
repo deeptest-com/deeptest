@@ -36,10 +36,11 @@
 <script setup lang="ts">
 import { defineProps, defineEmits, ref, watch, computed, reactive } from "vue";
 import { useI18n } from "vue-i18n";
-import { BodyInfo } from "./Components";
 import ParamGrid from "@/views/component/debug/comp/param-grid.vue";
-import ResponseConsole from "@/views/component/debug/response/Renderer/Console.vue";
+import BodyInfo from "./Components/Body.vue";
+
 import ResponseInfo from "@/views/component/debug/response/Renderer/Info.vue";
+import ResponseConsole from "@/views/component/debug/response/Renderer/Console.vue";
 import { InterfaceDetail } from "./data";
 
 const props = defineProps({

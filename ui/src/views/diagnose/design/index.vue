@@ -2,8 +2,8 @@
   <a-spin :spinning="spinning">
   <div class="diagnose-interface-design-main">
       <div id="diagnose-interface-debug-panel">
-        <a-tabs 
-          class="dp-tabs-full-height" 
+        <a-tabs
+          class="dp-tabs-full-height"
           type="editable-card"
           :hideAdd="true"
           :closable="true"
@@ -11,10 +11,10 @@
           :activeKey="activeTabKey"
           @edit="onTabEdit"
           @change="changeTab">
-          <a-tab-pane 
+          <a-tab-pane
             v-for="tab in interfaceTabs"
             :title="tab.title"
-            :key="''+tab.id" 
+            :key="''+tab.id"
             class="dp-relative">
             <template #tab>
               <span :title="tab.title">{{ getTitle(tab.title) }}</span>
@@ -62,7 +62,6 @@ const store = useStore<{ Debug: Debug, DiagnoseInterface: DiagnoseInterfaceState
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const debugDataChanged = computed<any>(() => store.state.Debug.debugDataChanged);
 
 const interfaceId = computed<any>(() => store.state.DiagnoseInterface.interfaceId);
 const interfaceData = computed<any>(() => store.state.DiagnoseInterface.interfaceData);

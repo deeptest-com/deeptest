@@ -147,11 +147,11 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async saveInterface({ state, dispatch }, payload: any) {
+        async saveInterface({ state, dispatch, commit }, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
                 dispatch('loadTree', state.queryParams);
-                return true;
+                return jsn.data;
             } else {
                 return false
             }

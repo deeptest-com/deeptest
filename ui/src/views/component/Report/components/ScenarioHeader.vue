@@ -2,7 +2,7 @@
   <div class="scenario-basicinfo">
     <div class="scenario-name">{{ record.name }}</div>
     <div class="scenario-priority">{{ record.priority || 'P1' }}</div>
-    <div :class="['scenario-status', logInfo.resultStatus]">{{ statusMap.get(logInfo.resultStatus) }}
+    <div :class="['scenario-status', logInfo.resultStatus]">{{ statusMap.get(record.resultStatus) }}
     </div>
     <div class="scenario-rate">
       <div class="scenario-rate-progress">
@@ -29,6 +29,14 @@ const progressValue = computed(() => {
 const progressValueStr = computed(() => {
   return getPercentStr(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0)
 })
+
+watch(() => props.record, (val) => {
+  if (val) {
+    console.log(1111,val)
+  }
+},{
+  immediate: true
+});
 
 </script>
 
@@ -62,6 +70,11 @@ const progressValueStr = computed(() => {
     margin-right: 10px;
   }
 
+  &.in-progress {
+    &:before {
+      background-color: #FFC107;
+    }
+  }
   &.pass {
     &:before {
       background-color: #04C495;

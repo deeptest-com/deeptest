@@ -79,6 +79,12 @@ export interface SettingsType {
      * iconfont.cn 项目在线生成的 js 地址
      */
     iconfontUrl: string[];
+
+    /**
+     * 测试计划-执行列表
+     */
+    eventGetPlansReports: string;
+    eventGetPlanDetail: string;
 }
 
 const settings: SettingsType = {
@@ -126,6 +132,10 @@ const settings: SettingsType = {
         '/user/login', // 用户登录
     ],
     iconfontUrl: [],
+
+    // 测试计划相关的
+    eventGetPlanDetail: 'eventGetPlanDetail',
+    eventGetPlansReports: 'eventGetPlansReports', 
 };
 
 export default settings;

@@ -61,15 +61,19 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 
 	if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
 		if req.ID == 0 {
+			server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
 			debugInterface := model.DebugInterface{
 				InterfaceBase: model.InterfaceBase{
 					Name: req.Title,
 					InterfaceConfigBase: model.InterfaceConfigBase{
+						Url:    server.Url,
 						Method: consts.GET,
 					},
+					ProjectId: req.ProjectId,
 				},
-				ServeId: diagnoseInterface.ServeId,
-				BaseUrl: "",
+				ServeId:  diagnoseInterface.ServeId,
+				ServerId: server.ID,
+				BaseUrl:  "",
 			}
 			err = s.DebugInterfaceRepo.Save(&debugInterface)
 			diagnoseInterface.DebugInterfaceId = debugInterface.ID
@@ -104,6 +108,8 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 		//	BaseUrl: "",
 		//}
 
+	} else {
+		err = s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
 	}
 
 	return

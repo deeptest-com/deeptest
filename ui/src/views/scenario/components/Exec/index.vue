@@ -2,7 +2,7 @@
   <div class="scenario-exec-info-main">
     <ReportBasicInfo :items="baseInfoList || []"
                      :showBtn="show"
-                     :btnText="'生成报告'"
+                     :btnText="'另存为报告'"
                      @handleBtnClick="genReport"/>
     <StatisticTable :data="statisticData" :value="statInfo"/>
     <Progress :exec-status="progressStatus"
@@ -110,7 +110,8 @@ const OnWebSocketMsg = (data: any) => {
 
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
-    initData(log);
+    // 重置数据, 重新初始化
+    initData({});
     progressStatus.value = 'in_progress';
   }
   // 执行中

@@ -29,6 +29,7 @@ export default defineComponent({
         }
 
         watch(() => props.treeData, (newVal: any) => {
+            console.log('treeData change ***', newVal);
             if (newVal?.length) {
                 newVal.forEach((item) => {
                     activeKeyMap.value[item.id] = [item.id];

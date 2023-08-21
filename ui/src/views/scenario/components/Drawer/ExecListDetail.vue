@@ -1,7 +1,7 @@
 <template>
   <div class="drawer-content">
     <ReportBasicInfo :showBtn="true"
-                     :btnText="'生成报告'"
+                     :btnText="'另存为报告'"
                      :items="baseInfoList || []"
                      @handleBtnClick="genReport"/>
     <StatisticTable :data="statisticData" :value="statInfo"/>

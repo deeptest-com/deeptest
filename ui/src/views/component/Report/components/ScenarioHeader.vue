@@ -1,12 +1,12 @@
 <template>
   <div class="scenario-basicinfo">
-    <div class="scenario-name">{{ logInfo.name }}</div>
+    <div class="scenario-name">{{ record.name }}</div>
     <div class="scenario-priority">{{ record.priority || 'P1' }}</div>
     <div :class="['scenario-status', logInfo.resultStatus]">{{ statusMap.get(logInfo.resultStatus) }}
     </div>
     <div class="scenario-rate">
       <div class="scenario-rate-progress">
-        <a-progress :percent="progressValue" :format="percent => (percent === 0 ? '0.00' : percent.tofixed(2)) + '%'"/>
+        <a-progress :percent="progressValue" :show-info="false"/>
       </div>
       <div class="scenario-rate-info" >通过率 {{ progressValueStr }}</div>
     </div>
@@ -22,20 +22,13 @@ const statusMap = new Map([['pass', '通过'], ['fail', '失败']]);
 const logInfo = computed(() => {
   return props.record?.logs?.[0] || {};
 })
+
 const progressValue = computed(() => {
   return Number(getPercent(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0))
 });
 const progressValueStr = computed(() => {
   return getPercentStr(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0)
 })
-
-watch(() => props.record, (val) => {
-  if (val) {
-    console.log(1111,val)
-  }
-},{
-  immediate: true
-});
 
 </script>
 

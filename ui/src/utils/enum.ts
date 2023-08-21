@@ -230,8 +230,8 @@ export enum ProjectType {
 }
 
 export enum DataFileExt {
-    XLS = '.xls',
-    XLSX = '.xlsx',
+//    XLS = '.xls',
+//    XLSX = '.xlsx',
     CSV = '.csv',
-    TXT = '.txt'
+//    TXT = '.txt'
 }

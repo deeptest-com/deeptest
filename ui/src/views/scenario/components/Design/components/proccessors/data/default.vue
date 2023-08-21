@@ -29,7 +29,7 @@
             </div>
             <div class="upload-path">
               <span class="dp-input-tip" :class="[isWrongFileFormat ? 'dp-red' : '']">
-                仅支持excel、csv、 text三种格式文件
+                仅支持csv格式文件
               </span>
             </div>
           </div>

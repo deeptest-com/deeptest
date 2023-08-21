@@ -72,7 +72,6 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	requestEndTime := time.Now()
 
 	processor.Result.Cost = requestEndTime.UnixMilli() - requestStartTime.UnixMilli()
-
 	reqContent, _ := json.Marshal(baseRequest)
 	processor.Result.ReqContent = string(reqContent)
 	respContent, _ := json.Marshal(entity.Response)
@@ -96,8 +95,8 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
-	execEndTime := time.Now()
-	processor.Result.EndTime = &execEndTime
+	endTime := time.Now()
+	processor.Result.EndTime = &endTime
 
 	data := execUtils.CountStat(processor.Result)
 	execUtils.SendStatMsg(data, session.WsMsg)

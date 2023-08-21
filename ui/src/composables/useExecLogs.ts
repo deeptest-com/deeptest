@@ -90,7 +90,6 @@ function updateExecLogs(processor) {
         elems[0].scrollTop = elems[0].scrollHeight + 1000
     }
 
-
     console.log('scenarioReports832222', scenarioReports.value);
 }
 
@@ -137,12 +136,14 @@ const statisticData = computed(() => {
     // 计算平均接口耗时
     let interfaceDuration = 0;
     let interfaceNum = 0;
+
     execLogs.value.forEach((item: any) => {
         if (item.processorCategory === "processor_interface") {
             interfaceDuration += (item.cost || 0);
             interfaceNum++;
         }
     });
+    console.log(execLogs.value,'***',interfaceNum);
     const passRate = getPercentStr(passAssertionNum, totalAssertionNum);
     const notPassRate = getPercentStr(failAssertionNum, totalAssertionNum);
     const notTestNumRate = getPercentStr(notTestNum, totalAssertionNum);

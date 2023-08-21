@@ -1,7 +1,7 @@
 package agentDomain
 
 type InterfaceStat struct {
-	InterfaceDurationTotal   int64 `json:"interfaceDurationTotal"` // sec
+	InterfaceDurationTotal   int64 `json:"interfaceDurationTotal"` // milliseconds
 	InterfaceDurationAverage int64 `json:"interfaceDurationAverage"`
 	InterfaceCount           int64 `json:"interfaceCount"`
 

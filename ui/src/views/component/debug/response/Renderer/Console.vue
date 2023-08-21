@@ -1,5 +1,5 @@
 <template>
-  <div class="response-console-main" v-if="consoleData.length">
+  <div class="response-console-main" v-if="consoleData && consoleData.length">
     <div v-for="(item, index) in consoleData"
          :key="index"
          :class="getResultClass(item)" class="item">

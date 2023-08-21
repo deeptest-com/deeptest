@@ -252,10 +252,12 @@ async function handleModalOk(model) {
     serveId: currServe.value.id,
   })
 
-  const res = await store.dispatch('DiagnoseInterface/saveInterface', model)
-  if (res) {
+  const interfaceData = await store.dispatch('DiagnoseInterface/saveInterface', model)
+  if (interfaceData) {
     currentNode.value = null
     expandOneKey(treeDataMap.value, model.parentId, expandedKeys.value)
+    selectNode([interfaceData.id], null)
+    store.dispatch('DiagnoseInterface/openInterfaceTab', interfaceData);
   }
 }
 

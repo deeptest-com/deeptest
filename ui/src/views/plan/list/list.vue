@@ -135,7 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, watch} from "vue";
+import {computed, onMounted, provide, reactive, ref, watch} from "vue";
 import { useStore } from "vuex";
 import { message } from 'ant-design-vue';
 import { MoreOutlined } from "@ant-design/icons-vue";
@@ -398,6 +398,8 @@ watch(
 onMounted(async () => {
   await store.dispatch('Project/getUserList');
 })
+
+provide('editPlanDrawerVisible', computed(() => editDrawerVisible.value));
 </script>
 
 <style lang="less" scoped>

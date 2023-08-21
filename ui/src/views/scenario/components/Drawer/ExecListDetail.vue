@@ -37,9 +37,9 @@ const baseInfoList = computed(() => {
     {value: reportsDetail.value.startTime ? momentUtc(reportsDetail.value.startTime) : '暂无', label: '执行时间'},
     {value: reportsDetail.value.execEnv || '暂无', label: '执行环境'},
     {value: reportsDetail.value.createUserName || '暂无', label: '创建人'},
-    //  todo 确定字段
+    //  TODO，确定字段
     {value: reportsDetail.value.createUserName || '暂无', label: '执行人'},
-    {value: reportsDetail.value.createUserName || '暂无', label: '优先级'},
+    {value: reportsDetail.value.priority || '暂无', label: '优先级'},
   ]
 })
 
@@ -89,7 +89,7 @@ const statisticData = computed(() => {
       value: `${interfaceDurationAverage} 毫秒`,
     },
     {
-      label: '未测j接口',
+      label: '未测接口',
       value: `${interfaceSkip}个`,
       rate: notTestNumRate,
       class: 'notest',

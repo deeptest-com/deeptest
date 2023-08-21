@@ -47,19 +47,27 @@ import {
   updateExecResult,
   updateStatFromLog
 } from '@/composables/useExecLogs';
+import {momentUtc} from "@/utils/datetime";
+import {CurrentUser} from "@/store/user";
 
 const {t} = useI18n();
 const router = useRouter();
 
-const store = useStore<{ Report: ReportStateType, Scenario: ScenarioStateType, Debug: DebugStateType, Global: GlobalStateType, Exec: ExecStatus, ProjectSetting, Environment }>();
+const store = useStore<{ Report: ReportStateType, Scenario: ScenarioStateType, Debug: DebugStateType, Global: GlobalStateType, Exec: ExecStatus, ProjectSetting, Environment,User }>();
 const collapsed = computed<boolean>(() => store.state.Global.collapsed);
 const nodeData = computed<any>(() => store.state.Scenario.nodeData);
-const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
-
+const detailResult = computed<any>(() => store.state.Scenario.detailResult);
+const currentUser:any = computed<CurrentUser>(()=> store.state.User.currentUser);
 const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
 const envList = computed(() => store.state.ProjectSetting.envList);
 const scenarioId = computed(() => {
   return detailResult.value.id
+});
+
+
+const envName = computed(() => {
+  const curEnv = envList.value.find((item: any) => item.id === currEnvId.value)
+  return curEnv?.name || '暂无'
 });
 
 const reportId = ref('');
@@ -69,7 +77,12 @@ const baseInfoList = computed(() => {
   const curEnv = envList.value.find((item: any) => item.id === currEnvId.value)
   return [
     {value: detailResult?.value?.name || '暂无', label: '场景名称'},
+    {value: momentUtc(new Date()) , label: '执行时间'},
     {value: curEnv?.name || '暂无', label: '执行环境'},
+    {value: detailResult.value.createUserName || '暂无', label: '创建人'},
+    //  TODO，确定字段
+    {value: currentUser?.value?.username || '暂无', label: '执行人'},
+    {value: detailResult.value.priority || '未设置', label: '优先级'},
   ]
 });
 

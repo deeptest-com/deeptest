@@ -156,7 +156,7 @@ const statisticData = computed(() => {
             value: `${interfaceDurationAverage} 毫秒`,
         },
         {
-            label: '未测j接口',
+            label: '未测接口',
             value: `${interfaceSkip}个`,
             rate: notTestNumRate,
             class: 'notest',

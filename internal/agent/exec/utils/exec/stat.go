@@ -15,20 +15,12 @@ func InitStat() {
 	stat = agentDomain.InterfaceStat{}
 }
 
-func CountStat(result agentDomain.ScenarioExecResult) agentDomain.InterfaceStat {
+func CountStat(result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat {
 	stat.InterfaceCount += 1
-
-	if result.ResultStatus == consts.Pass {
-		stat.InterfacePass += 1
-	} else if result.ResultStatus == consts.Fail {
-		stat.InterfaceFail += 1
-	} else if result.ResultStatus == consts.Skip {
-		stat.InterfaceSkip += 1
-	}
-
-	dur := result.EndTime.Unix() - result.StartTime.Unix()
-	stat.InterfaceDurationTotal += dur
+	stat.InterfaceDurationTotal += result.Cost
 	stat.InterfaceDurationAverage = stat.InterfaceDurationTotal / stat.InterfaceCount
+
+	result.ResultStatus = consts.Pass
 
 	for _, item := range result.PostConditions {
 		if item.Type != consts.ConditionTypeCheckpoint {
@@ -45,7 +37,16 @@ func CountStat(result agentDomain.ScenarioExecResult) agentDomain.InterfaceStat 
 			stat.CheckpointPass += 1
 		} else if checkpointBase.ResultStatus == consts.Fail {
 			stat.CheckpointFail += 1
+			result.ResultStatus = consts.Fail
 		}
+	}
+
+	if result.ResultStatus == consts.Pass {
+		stat.InterfacePass += 1
+	} else if result.ResultStatus == consts.Fail {
+		stat.InterfaceFail += 1
+	} else if result.ResultStatus == consts.Skip {
+		stat.InterfaceSkip += 1
 	}
 
 	return stat

@@ -33,13 +33,13 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	logUtils.Infof("interface entity")
 	CurrDebugInterfaceId = processor.EntityId
 
-	startTime := time.Now()
+	execStartTime := time.Now()
 	processor.Result = &agentDomain.ScenarioExecResult{
 		ID:                  int(entity.ProcessorID),
 		Name:                entity.Name,
 		ProcessorCategory:   entity.ProcessorCategory,
 		ProcessorType:       entity.ProcessorType,
-		StartTime:           &startTime,
+		StartTime:           &execStartTime,
 		ParentId:            int(entity.ParentID),
 		EndpointInterfaceId: processor.EndpointInterfaceId,
 		DebugInterfaceId:    processor.EntityId,
@@ -67,10 +67,12 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	GenRequestUrlWithBaseUrlAndPathParam(&baseRequest, processor.EntityId, entity.BaseUrl)
 
 	// send request
-	//startTime := time.UnixNano()
+	requestStartTime := time.Now()
 	entity.Response, err = Invoke(&baseRequest)
+	requestEndTime := time.Now()
 
-	processor.Result.Cost = time.Now().UnixMilli() - startTime.UnixMilli()
+	processor.Result.Cost = requestEndTime.UnixMilli() - requestStartTime.UnixMilli()
+
 	reqContent, _ := json.Marshal(baseRequest)
 	processor.Result.ReqContent = string(reqContent)
 	respContent, _ := json.Marshal(entity.Response)
@@ -94,10 +96,10 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
-	endTime := time.Now()
-	processor.Result.EndTime = &endTime
+	execEndTime := time.Now()
+	processor.Result.EndTime = &execEndTime
 
-	data := execUtils.CountStat(*processor.Result)
+	data := execUtils.CountStat(processor.Result)
 	execUtils.SendStatMsg(data, session.WsMsg)
 
 	return

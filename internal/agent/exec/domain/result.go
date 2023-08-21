@@ -56,7 +56,7 @@ type ScenarioExecResult struct {
 	LogId       uuid.UUID `json:"logId,omitempty"`
 	ParentLogId uuid.UUID `json:"parentLogId,omitempty"`
 
-	Cost int64 `json:"cost,omitempty"`
+	Cost int64 `json:"cost,omitempty"` // milliseconds
 
 	Detail string `json:"detail,omitempty"`
 

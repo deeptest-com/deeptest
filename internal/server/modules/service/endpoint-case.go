@@ -9,6 +9,7 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	uuid "github.com/satori/go.uuid"
+	"log"
 )
 
 type EndpointCaseService struct {
@@ -145,6 +146,41 @@ func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCa
 	if err != nil {
 		return
 	}
+
+	return
+}
+
+func (s *EndpointCaseService) GenerateFromSpec(req serverDomain.EndpointCaseGenerateReq) (err error) {
+	endpointInterfaceId := req.EndpointInterfaceId
+	if endpointInterfaceId == 0 {
+		return
+	}
+
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
+	endpointId := endpointInterface.EndpointId
+
+	pathParams, _ := s.EndpointRepo.GetEndpointParams(endpointId)
+
+	params, _ := s.EndpointInterfaceRepo.ListParams(uint(endpointInterfaceId))
+	headers, _ := s.EndpointInterfaceRepo.ListHeaders(uint(endpointInterfaceId))
+	cookies, _ := s.EndpointInterfaceRepo.ListCookies(uint(endpointInterfaceId))
+	requestBody, _ := s.EndpointInterfaceRepo.ListRequestBody(uint(endpointInterfaceId))
+	responseBodies, _ := s.EndpointInterfaceRepo.ListResponseBodies(uint(endpointInterfaceId))
+	//responseCodes = strings.Split(interf.ResponseCodes.(string), ",")
+
+	log.Println(pathParams)
+	log.Println(params)
+	log.Println(headers)
+	log.Println(cookies)
+	log.Println(requestBody)
+	log.Println(responseBodies)
+
+	//responseBody := r.EndpointInterfaceRepo.GetResponse(endpointInterfaceId, entity.Code)
+	//responseDefine.Schema = responseBody.SchemaItem.Content
+	//responseDefine.Code = entity.Code
+	//responseDefine.MediaType = responseBody.MediaType
+	//components := r.ResponseDefineRepo.Components(endpointInterfaceId)
+	//responseDefine.Component = commonUtils.JsonEncode(components)
 
 	return
 }

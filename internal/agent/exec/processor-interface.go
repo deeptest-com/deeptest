@@ -97,6 +97,9 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
+	data := execUtils.CountStat(*processor.Result)
+	execUtils.SendStatMsg(data, session.WsMsg)
+
 	return
 }
 

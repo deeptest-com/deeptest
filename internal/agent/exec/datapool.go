@@ -33,6 +33,11 @@ func getDatapoolValue(placeholder string) (ret string) {
 
 	rowIndex := getDatapoolRow(dpName, dpSeq, ExecScene.Datapools)
 
+	if rowIndex > len(ExecScene.Datapools[dpName])-1 {
+		ret = "OUT_OF_RANGE"
+		return
+	}
+
 	val := ExecScene.Datapools[dpName][rowIndex][dpCol]
 	if val == nil {
 		val = "NOT_FOUND"

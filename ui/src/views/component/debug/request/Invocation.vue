@@ -63,8 +63,11 @@
            :disabled="!isPathValid"
            class="sync">
         <a-button trigger="click" @click="sync" class="dp-bg-light">
-          <UndoOutlined/>
           同步
+          <a-tooltip>
+            <template #title><span>从源接口定义/接口用例/快捷调试中同步数据到当前场景步骤，包括请求参数、前后置处理器和断言</span></template>
+          <QuestionCircleOutlined />
+        </a-tooltip>
         </a-button>
       </div>
     </div>
@@ -81,7 +84,7 @@
 <script setup lang="ts">
 import {computed, defineProps, inject, onMounted, onUnmounted, PropType, ref, watch, Teleport} from "vue";
 import {notification} from 'ant-design-vue';
-import {UndoOutlined} from '@ant-design/icons-vue';
+import {QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import IconSvg from "@/components/IconSvg";

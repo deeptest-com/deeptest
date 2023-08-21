@@ -70,7 +70,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	//startTime := time.UnixNano()
 	entity.Response, err = Invoke(&baseRequest)
 
-	processor.Result.Cost = time.Now().UnixMilli() - startTime.UnixMilli()
+	processor.Result.Cost = entity.Response.Time
 	reqContent, _ := json.Marshal(baseRequest)
 	processor.Result.ReqContent = string(reqContent)
 	respContent, _ := json.Marshal(entity.Response)

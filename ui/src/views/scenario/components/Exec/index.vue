@@ -2,7 +2,7 @@
   <div class="scenario-exec-info-main">
     <ReportBasicInfo :items="baseInfoList || []"
                      :showBtn="show"
-                     :btnText="'生成报告'"
+                     :btnText="'另存为报告'"
                      @handleBtnClick="genReport"/>
     <StatisticTable :data="statisticData" :value="statInfo"/>
     <Progress :exec-status="progressStatus"

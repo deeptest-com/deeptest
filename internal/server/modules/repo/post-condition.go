@@ -126,6 +126,7 @@ func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId
 			srcEntity, _ := r.ResponseDefineRepo.Get(srcCondition.EntityId)
 			srcEntity.ID = 0
 			srcEntity.ConditionId = srcCondition.ID
+			srcEntity.Disabled = false
 
 			r.ResponseDefineRepo.Save(&srcEntity)
 			entityId = srcEntity.ID

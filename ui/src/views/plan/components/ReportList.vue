@@ -29,7 +29,7 @@
         @on-close="detailDrawerVisible = false" />
 </template>
 <script lang="ts" setup>
-import { reactive, computed, defineProps, watch, defineEmits, ref } from 'vue';
+import { reactive, computed, defineProps, watch, defineEmits, ref, inject } from 'vue';
 import { useStore } from 'vuex';
 
 import { TableFilter } from "@/views/component/Report/components";
@@ -40,6 +40,8 @@ import { StateType as ReportStateType } from '@/views/report/store';
 import { StateType as PlanStateType } from '../store';
 import { momentUtc, formatWithSeconds } from '@/utils/datetime';
 import { ReportDetailType } from '@/utils/enum';
+
+const editPlanDrawerVisible = inject('editPlanDrawerVisible') as any;
 
 const props = defineProps<{
     showReportList: Boolean
@@ -125,10 +127,13 @@ async function queryDetail(id) {
     detailDrawerVisible.value = true;
 }
 
-watch(() => props.showReportList, val => {
-    if (val) {
-        refreshList({});
-    }
+watch(() => {
+    return [editPlanDrawerVisible.value, props.showReportList];
+}, val => {
+   const [editVisible, show] = val;
+   if (editVisible && show) {
+    refreshList({});
+   }
 }, {
     immediate: true
 })

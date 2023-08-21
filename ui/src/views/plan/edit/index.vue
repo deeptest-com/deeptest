@@ -155,6 +155,9 @@ const tabsList = [
 async function changeTab(value) {
   activeKey.value = value;
   stickyKey.value++;
+  if (value === 'test-scenario') {
+    getScenarioList({});
+  }
   emits('update:tabKey', value);
 }
 

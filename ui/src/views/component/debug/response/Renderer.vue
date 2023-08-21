@@ -4,7 +4,7 @@
                     responseData.invokeId">
       <div class="left">
         <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
-          <a-tab-pane key="body" :tab="title" class="uppercase">
+          <a-tab-pane key="body" tab="响应体" class="uppercase">
             <ResponseLensJson v-if="responseData.contentLang === 'json'" />
             <ResponseLensHtml v-else-if="responseData.contentLang === 'html'" />
             <ResponseLensXml v-else-if="responseData.contentLang === 'xml'" />

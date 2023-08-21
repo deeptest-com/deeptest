@@ -3,7 +3,7 @@
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
-          <span>响应体</span>
+          <a-button size="small" >HTML</a-button>
         </a-col>
 
         <a-col flex="100px" class="dp-right">

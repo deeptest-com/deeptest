@@ -191,8 +191,9 @@ function onCloseExecDrawer() {
   emit('closeExecDrawer');
 }
 
-function exec() {
+async function exec() {
   selectEnvVisible.value = true;
+  await store.dispatch('Scenario/getScenario', detailResult?.value?.id);
   execEnvId.value = detailResult?.value?.currEnvId;
 }
 

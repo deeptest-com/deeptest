@@ -50,6 +50,7 @@ import {
   defineProps,
   defineEmits,
   watch,
+  onMounted,
   computed,
 } from 'vue';
 import {useStore} from "vuex";
@@ -104,6 +105,12 @@ async function getServeServers() {
       serveId: currServe.value.id,
     })
 }
+
+onMounted(async () => {
+  await store.dispatch('Debug/listServes', {
+    serveId: currServe.value.id,
+  })
+})
 
 /**
  * 添加路径参数

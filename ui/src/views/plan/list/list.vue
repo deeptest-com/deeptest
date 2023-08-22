@@ -333,9 +333,9 @@ const edit = async (record: any) => {
 };
 
 const getCurrentPalnInfo = async (record: any) => {
-  const { id, adminId, categoryId, testStage, desc, status, name } = record;
+  const { id, adminId, categoryId, testStage, desc, status, name, createUserName } = record;
   try {
-    await store.dispatch('Plan/setCurrentPlan', { id, adminId, categoryId, testStage, desc, status, name });
+    await store.dispatch('Plan/setCurrentPlan', { id, adminId, categoryId, testStage, desc, status, name, createUserName });
   } catch(err) {
     message.error('获取计划信息出错');
   }

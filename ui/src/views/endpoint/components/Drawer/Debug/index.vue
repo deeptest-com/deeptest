@@ -166,11 +166,13 @@ const generateCasesCancel = () => {
 <style lang="less" scoped>
 .endpoint-debug-index-wrapper {
   height: 100%;
+  padding-bottom: 16px;
 
   #endpoint-debug-index {
-    //height: 100%;
+    height: 100%;
+    //height: calc(100vh - 96px);
+
     width: 100%;
-    height: calc(100vh - 96px);
     flex-direction: column;
     display: flex;
     overflow: hidden;

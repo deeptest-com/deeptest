@@ -42,7 +42,7 @@
               <div class="upload-container">
                 <a-upload :beforeUpload="upload"
                           :showUploadList="false"
-                          accept="application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                          accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
                   <a-button>
                     <UploadOutlined/>
                   </a-button>
@@ -135,7 +135,6 @@ watch(formState, () => {
   if (formState.value.data && formState.value.data.length > 0) {
     data.value = JSON.parse(formState.value.data)
   }
-  console.log('data.value', formState.value)
 
 }, {deep: true, immediate: true})
 
@@ -147,7 +146,8 @@ if (isElectron.value && !ipcRenderer) {
   ipcRenderer.on(settings.electronMsgReplay, (event, result) => {
     console.log('from electron: ', result)
     if (result.code === 0) {
-      data.value = result.data.data
+      // data.value = result.data.data
+      formState.value.data = JSON.stringify(result.data.data)
       formState.value.path = result.data.path
     }
   })
@@ -176,7 +176,7 @@ const upload = (file, fileList) => {
 
   uploadRequest(file, {isDatapool: true}).then((res) => {
     formState.value.path = res.path
-    data.value = res.data
+    formState.value.data = JSON.stringify(res.data)
   })
 
   return false

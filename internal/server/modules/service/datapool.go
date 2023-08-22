@@ -109,7 +109,7 @@ func (s *DatapoolService) ListForExec(projectId uint) (ret domain.Datapools, err
 		var arr [][]interface{}
 		json.Unmarshal([]byte(datapool.Data), &arr)
 		if len(arr) == 0 {
-			return
+			continue
 		}
 		var headers []string
 		for _, col := range arr[0] {

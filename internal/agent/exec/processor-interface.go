@@ -131,7 +131,7 @@ func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, sessio
 	return
 }
 func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detail map[string]interface{}) (err error) {
-	detail["checkpoint"] = []map[string]interface{}{}
+
 	for _, condition := range entity.PostConditions {
 		if condition.Type == consts.ConditionTypeExtractor {
 			var extractorBase domain.ExtractorBase
@@ -212,6 +212,10 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			}
 
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
+
+			if _, ok := detail["checkpoint"]; !ok {
+				detail["checkpoint"] = []map[string]interface{}{}
+			}
 			detail["checkpoint"] = append(detail["checkpoint"].([]map[string]interface{}), map[string]interface{}{
 				"resultStatus": checkpointBase.ResultStatus, "resultMsg": checkpointBase.ResultMsg,
 			})

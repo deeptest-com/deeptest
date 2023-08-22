@@ -64,6 +64,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
+	executedProcessorIds := map[uint]bool{}
 	if pass {
 		for _, child := range processor.Children {
 			if ForceStopExec {
@@ -73,12 +74,17 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 				continue
 			}
 
+			executedProcessorIds[child.ID] = true
+
 			child.Run(session)
 		}
 	}
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
+
+	stat := CountSkip(executedProcessorIds, processor.Children)
+	execUtils.SendStatMsg(stat, session.WsMsg)
 
 	return
 }

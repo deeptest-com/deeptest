@@ -31,8 +31,8 @@ func ReplaceVariableValueInBody(value string) (ret string) {
 }
 
 func ReplaceVariableValue(value string) (ret string) {
-	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value)
 	ret = value
+	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value)
 
 	for _, placeholder := range variablePlaceholders {
 		oldVal := fmt.Sprintf("${%s}", placeholder)

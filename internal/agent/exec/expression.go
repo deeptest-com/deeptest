@@ -1,6 +1,7 @@
 package agentExec
 
 import (
+	"fmt"
 	"github.com/Knetic/govaluate"
 	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -111,6 +112,32 @@ func generateGovaluateParamsWithVariables(expression string) (
 
 		govaluateParams[varNameWithoutPlus] = valObj
 	}
+
+	return
+}
+
+func ReplaceDatapoolVariInGovaluateExpress(expression string) (ret string) {
+	ret = expression
+	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(expression)
+
+	for _, placeholder := range variablePlaceholders {
+		if strings.Index(placeholder, "_dp") != 0 && strings.Index(placeholder, "_dp") != 1 {
+			continue
+		}
+
+		oldVal := fmt.Sprintf("${%s}", placeholder)
+
+		placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
+		newVal := getPlaceholderVariableValue(placeholderWithoutPlus)
+		if strings.Index(placeholder, "+") != 0 {
+			newVal = "'" + newVal + "'"
+		}
+
+		ret = strings.ReplaceAll(ret, oldVal, newVal)
+	}
+
+	// add space to replace a==-1 to a== -1
+	ret = strings.ReplaceAll(ret, "==-", "== -")
 
 	return
 }

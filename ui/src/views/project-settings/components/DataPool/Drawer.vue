@@ -103,7 +103,7 @@ const onClose = () => {
   emits('onClose');
 }
 
-const dataArr = [['A', 'B', 'C'], [1, 2, 3]]
+const dataArr = [['A', 'B'], ['foo', 'bar']]
 const data = ref<any[][]>(dataArr)
 
 const rulesRef = reactive({

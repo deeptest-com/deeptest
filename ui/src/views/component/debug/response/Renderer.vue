@@ -92,6 +92,7 @@ const isImage = (type) => {
   .left {
     height: 100%;
     width: 66.666666%;
+    min-width: 490px;
     .ant-tabs-line {
       height: 100%;
     }
@@ -102,6 +103,7 @@ const isImage = (type) => {
   .right {
     height: 100%;
     width: 33.333333%;
+    min-width: 240px;
     flex-shrink: 0;
   }
 

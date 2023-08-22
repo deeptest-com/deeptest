@@ -515,10 +515,7 @@ async function selectNode(id) {
   selectedRowKeys. value = [];
   selectedRow.value = {};
   // 选中节点时，重置分页为第一页
-  await loadList(1, pagination.value.pageSize, {
-    categoryId: id,
-    serveId: currServe.value.id,
-  });
+  await loadList(1, pagination.value.pageSize);
 }
 
 
@@ -529,10 +526,8 @@ const loadList = debounce(async (page, size, opts?: any) => {
     "projectId": currProject.value.id,
     "page": page,
     "pageSize": size,
-    opts: {
-      ...(opts || {}),
-      categoryId: selectedCategoryId.value,
-    },
+    ...opts,
+    categoryId: selectedCategoryId.value || null,
   });
   // await store.dispatch('Endpoint/loadCategory');
   fetching.value = false;

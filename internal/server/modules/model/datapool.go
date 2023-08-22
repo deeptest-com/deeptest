@@ -7,7 +7,7 @@ type Datapool struct {
 	Desc string `json:"desc"`
 
 	Path string `json:"path"`
-	Data string `json:"data"`
+	Data string `gorm:"type:longtext" json:"data"`
 
 	CreateUser string `json:"createUser"`
 	ProjectId  uint   `json:"projectId"`

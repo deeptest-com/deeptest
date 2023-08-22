@@ -48,7 +48,7 @@ const scenarioReports = computed(() => {
   })
 })
 const statInfo = computed(() => {
-  const data = detailResult.value?.stat || {};
+  const data = JSON.parse(detailResult.value?.stat || '{}');
   return {
     interfacePass: data.interfacePass || 0,
     interfaceFail: data.interfaceFail || 0,
@@ -56,7 +56,7 @@ const statInfo = computed(() => {
   }
 })
 const statisticData = computed(() => {
-  const data = detailResult.value?.stat || {};
+  const data = JSON.parse(detailResult.value?.stat || '{}');
   const {
     checkpointFail= 0,
     checkpointPass= 0,

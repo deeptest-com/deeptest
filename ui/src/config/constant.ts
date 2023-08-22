@@ -1156,7 +1156,7 @@ export const defaultCookieParams = {
 export const defaultCodeResponse = {
     "code": "",
     "endpointId": "",
-    "mediaType": "",
+    "mediaType": "application/json",
     "description": "",
     "schemaRefId": null,
     "examples": "",
@@ -1182,7 +1182,7 @@ export const defaultEndpointDetail = {
     "requestBody": {
         "id": null,
         "endpointId": null,
-        "mediaType": "",
+        "mediaType": "application/json",
         "description": "",
         "schemaRefId": null,
         "examples": "",

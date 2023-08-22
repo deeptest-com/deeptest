@@ -38,7 +38,8 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits(["change"]);
-const containerScrollTop = inject("containerScrollTop") as any;
+
+const containerScrollTop = inject("containerScrollTop", null) as any;
 
 const store = useStore<{ Debug: Debug; Endpoint; Global }>();
 const servers = computed<any[]>(() => store.state.Debug.serves);

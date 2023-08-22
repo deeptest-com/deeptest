@@ -404,6 +404,10 @@ async function editEndpoint(record) {
   drawerVisible.value = true;
 }
 
+/**
+ * 分享相关
+ * @param record 
+ */
 function share(record: any) {
   const searchParams = {
     endpointId: record.id,
@@ -428,6 +432,36 @@ function share(record: any) {
     })
   }
 }
+
+function checkShareInfo() {
+  try {
+    const result = getUrlKey('shareInfo', window.location.href) || "";
+    const shareInfo = result ? JSON.parse(result  as string) : {};
+    console.log(
+    '%c 接口定义 分享详情share-info',
+    'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: green;',
+    shareInfo
+    );
+    if (shareInfo.endpointId) {
+      editEndpoint({ id: shareInfo.endpointId }); // 默认打开该接口的抽屉详情
+    }
+    if (shareInfo.selectedCategoryId) {
+      console.log(12340);
+      selectNode(shareInfo.selectedCategoryId);
+    }
+  } catch (error) {
+    console.log('error', error);
+  }
+}
+
+onMounted(() => {
+  checkShareInfo();
+});
+
+/**
+ * 其他操作
+ * @param record 
+ */
 
 async function copy(record: any) {
   await store.dispatch('Endpoint/copy', record);
@@ -542,13 +576,14 @@ async function handleTableFilter(state) {
 const filter = ref()
 
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据
-watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
+watch(() => [currProject.value.id, currServe.value.id], async (newVal, oldVal) => {
   const [newProjectId, newServeId] = newVal;
-  if (newProjectId !== undefined) {
+  const [oldProjectId] = oldVal || [];
+  if (newProjectId !== undefined && oldProjectId !== undefined && newProjectId !== oldProjectId) {
     selectedCategoryId.value = "";
-    await loadList(1, pagination.value.pageSize, {
-      serveId: newServeId || 0,
-    });
+  }
+  if (newProjectId !== undefined) {
+    await loadList(1, pagination.value.pageSize);
     await store.dispatch('Endpoint/getEndpointTagList');
     if (newServeId) {
       await store.dispatch('Debug/listServes', {serveId: newServeId});
@@ -601,23 +636,7 @@ const username = (user:string)=>{
   return result?.label || '-'
 }
 
-try {
-  const result = getUrlKey('shareInfo', window.location.href) || "";
-  const shareInfo = result ? JSON.parse(result  as string) : {};
-  console.log(
-  '%c 接口定义 分享详情share-info',
-  'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: green;',
-  shareInfo
-  );
-  if (shareInfo.endpointId) {
-    editEndpoint({ id: shareInfo.endpointId }); // 默认打开该接口的抽屉详情
-  }
-  if (shareInfo.selectedCategoryId) {
-    selectNode(shareInfo.selectedCategoryId);
-  }
-} catch (error) {
-  console.log('error', error);
-}
+
 </script>
 <style scoped lang="less">
 .tag-filter-form {

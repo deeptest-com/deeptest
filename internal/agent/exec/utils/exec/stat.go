@@ -8,17 +8,17 @@ import (
 )
 
 var (
-	stat = agentDomain.InterfaceStat{}
+	Stat = agentDomain.InterfaceStat{}
 )
 
-func InitStat() {
-	stat = agentDomain.InterfaceStat{}
+func ResetStat() {
+	Stat = agentDomain.InterfaceStat{}
 }
 
 func CountStat(result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat {
-	stat.InterfaceCount += 1
-	stat.InterfaceDurationTotal += result.Cost
-	stat.InterfaceDurationAverage = stat.InterfaceDurationTotal / stat.InterfaceCount
+	Stat.InterfaceCount += 1
+	Stat.InterfaceDurationTotal += result.Cost
+	Stat.InterfaceDurationAverage = Stat.InterfaceDurationTotal / Stat.InterfaceCount
 
 	result.ResultStatus = consts.Pass
 
@@ -34,20 +34,20 @@ func CountStat(result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat
 		}
 
 		if checkpointBase.ResultStatus == consts.Pass {
-			stat.CheckpointPass += 1
+			Stat.CheckpointPass += 1
 		} else if checkpointBase.ResultStatus == consts.Fail {
-			stat.CheckpointFail += 1
+			Stat.CheckpointFail += 1
 			result.ResultStatus = consts.Fail
 		}
 	}
 
 	if result.ResultStatus == consts.Pass {
-		stat.InterfacePass += 1
+		Stat.InterfacePass += 1
 	} else if result.ResultStatus == consts.Fail {
-		stat.InterfaceFail += 1
+		Stat.InterfaceFail += 1
 	} else if result.ResultStatus == consts.Skip {
-		stat.InterfaceSkip += 1
+		Stat.InterfaceSkip += 1
 	}
 
-	return stat
+	return Stat
 }

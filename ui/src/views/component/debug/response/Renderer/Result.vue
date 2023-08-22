@@ -13,7 +13,7 @@
     </div>
 
     <template v-if="resultData?.length > 0">
-      <ResponseDefine v-if="entityData && entityData.codes.length > 0"
+      <ResponseDefine v-if="entityData && entityData.codes?.length > 0"
         :codes="entityData.codes"
         :code="entityData.code?entityData.code:'200'"
         :open="!entityData.disabled"

@@ -10,9 +10,9 @@ import (
 )
 
 func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err error) {
+	logUtils.Infof("run scenario", zap.Int("ScenarioId", req.ScenarioId), zap.Int("environmentId", req.EnvironmentId))
 
-	logUtils.Infof("scenario exec req", zap.Int("ScenarioId", req.ScenarioId), zap.Int("environmentId", req.EnvironmentId))
-
+	execUtils.ResetStat()
 	agentExec.ForceStopExec = false
 
 	agentExec.ServerUrl = req.ServerUrl
@@ -32,6 +32,7 @@ func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err 
 	}
 
 	session, err := ExecScenario(scenarioExecObj, wsMsg)
+	session.RootProcessor.Result.Stat = execUtils.Stat
 	session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 	session.RootProcessor.Result.ScenarioId = uint(req.ScenarioId)
 

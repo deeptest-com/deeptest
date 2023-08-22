@@ -49,6 +49,8 @@ type ScenarioReport struct {
 	ExecEnv   string `gorm:"-" json:"execEnv"`
 	ExecEnvId int    `json:"execEnvId"`
 	Priority  string `gorm:"-" json:"priority"`
+
+	StatRaw string `json:"stat"`
 }
 
 func (ScenarioReport) TableName() string {

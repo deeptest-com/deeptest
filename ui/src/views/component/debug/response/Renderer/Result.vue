@@ -94,10 +94,16 @@ const change = async (formState:any)=>{
   .status {
     padding: 12px 0 8px 0;
     display: flex;
-    justify-content: flex-end;
+    justify-content: flex-start;
+    flex-wrap: wrap;
 
-    .col:not(:first-child) {
-      margin-left: 12px;
+    .col {
+      display: flex;
+      align-items: center;
+    }
+
+    .col:not(:last-child) {
+      margin-right: 12px;
     }
   }
 

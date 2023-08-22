@@ -3,7 +3,7 @@
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
-          <a-radio-group v-model:value="language" style="margin-bottom: 16px" size="small">
+          <a-radio-group v-model:value="language" size="small">
             <a-radio-button :value="responseData.contentLang">Pretty</a-radio-button>
             <a-radio-button value="raw">Raw</a-radio-button>
           </a-radio-group>

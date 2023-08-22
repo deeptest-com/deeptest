@@ -55,7 +55,7 @@ export default defineComponent({
             }
 
             function renderContent(log) {
-                if (log.processorCategory === 'processor_interface' && log.detail !== '{}') {
+                if (log.processorCategory === 'processor_interface' && log.detail !== undefined && log.detail !== '{}') {
                     return <InterfaceContent endpointData={log}/>
                 }
                 // 场景中的叶子节点不再渲染
@@ -80,7 +80,7 @@ export default defineComponent({
                 return <a-collapse-panel
                     key={log.id}
                     header={renderHeader(log)}
-                    showArrow={showArrowScenarioType.includes(log.processorType) || (log.processorCategory === 'processor_interface' && log.detail !== '{}')}>
+                    showArrow={showArrowScenarioType.includes(log.processorType) || (log.processorCategory === 'processor_interface' && log.detail !== undefined && log.detail !== '{}')}>
                     {renderContent(log)}
                     {
                         log?.logs?.map((item, itemIndex, srcLog) => {

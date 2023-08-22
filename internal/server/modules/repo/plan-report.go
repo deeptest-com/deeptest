@@ -20,6 +20,8 @@ type PlanReportRepo struct {
 	UserRepo           *UserRepo           `inject:""`
 	ScenarioReportRepo *ScenarioReportRepo `inject:""`
 	ProjectRepo        *ProjectRepo        `inject:""`
+	ScenarioRepo       *ScenarioRepo       `inject:""`
+	PlanRepo           *PlanRepo           `inject:""`
 }
 
 func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (data _domain.PageData, err error) {
@@ -73,7 +75,7 @@ func (r *PlanReportRepo) Paginate(req v1.PlanReportReqPaginate, projectId int) (
 
 func (r *PlanReportRepo) Get(id uint) (report model.PlanReportDetail, err error) {
 	err = r.DB.Model(model.PlanReport{}).
-		Select("biz_plan_report.*, e.name exec_env, u.name create_user_name").
+		Select("biz_plan_report.*, e.name exec_env, u.name exec_user_name").
 		Joins("LEFT JOIN biz_environment e ON biz_plan_report.exec_env_id=e.id").
 		Joins("LEFT JOIN sys_user u ON biz_plan_report.create_user_id=u.id").
 		Where("biz_plan_report.id = ?", id).First(&report).Error
@@ -84,9 +86,29 @@ func (r *PlanReportRepo) Get(id uint) (report model.PlanReportDetail, err error)
 
 	scenarioReports, err := r.ScenarioReportRepo.GetReportsByPlanReportId(report.ID)
 	report.ScenarioReports = scenarioReports
+
+	createUserName, _ := r.GetCreateUserName(report)
+	report.CreateUserName = createUserName
 	//root, err := r.getLogTree(report)
 	//report.Logs = root.Logs
 
+	return
+}
+
+func (r *PlanReportRepo) GetCreateUserName(report model.PlanReportDetail) (name string, err error) {
+	if report.PlanId == 0 {
+		err = r.DB.Model(model.ScenarioReport{}).
+			Select("s.create_user_name").
+			Joins("LEFT JOIN biz_scenario s ON biz_scenario_report.scenario_id=s.id").
+			Where("biz_scenario_report.plan_report_id=?", report.ID).
+			Find(&name).Error
+	} else {
+		err = r.DB.Model(model.Plan{}).
+			Select("u.name").
+			Joins("LEFT JOIN sys_user u ON biz_plan.create_user_id=u.id").
+			Where("biz_plan.id=?", report.PlanId).
+			Find(&name).Error
+	}
 	return
 }
 

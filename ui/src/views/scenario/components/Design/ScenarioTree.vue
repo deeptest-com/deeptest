@@ -65,8 +65,15 @@
                       dataRef.method || "GET"
                     }}</a-tag>
                 </span>
-                <span class="title-text" :title="dataRef.name">
-                {{ dataRef.name }}
+                <!-- 节点名称 -->
+                <span class="title-text" :title="dataRef.name"
+                      v-if="dataRef.name && needHandleShowName.includes(dataRef.entityType)">
+                  {{ dataRef.name }}
+                </span>
+                <span class="title-text" :title="dataRef.name" v-else>
+                  {{
+                    dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`
+                  }}
                 </span>
               </div>
               <div class="icon" v-if="dataRef.id > 0"
@@ -128,7 +135,13 @@ import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 import {filterTree, filterByKeyword} from "@/utils/tree";
 import {ProcessorInterface, ProcessorInterfaceSrc} from "@/utils/enum";
-import {DESIGN_TYPE_ICON_MAP, menuKeyMapToProcessorCategory} from "./config";
+import {
+  DESIGN_TYPE_ICON_MAP,
+  menuKeyMapToProcessorCategory,
+  scenarioTypeMapToBindText,
+  scenarioTypeMapToText,
+  needHandleShowName
+} from "./config";
 import {getMethodColor} from "@/utils/dom";
 import {DropEvent, TreeDragEvent} from "ant-design-vue/es/tree/Tree";
 import {PlusOutlined, CaretDownOutlined, MoreOutlined, FolderOpenOutlined, FolderOutlined} from '@ant-design/icons-vue';
@@ -368,8 +381,6 @@ function selectMenu(menuInfo, treeNode) {
   }
   // 如果是 逻辑 else，则需要添加到父节点，即 if 节点下
   if (key === 'processor_logic_else') {
-    // targetModelId = treeDataMap.value[targetModelId].parentId;
-    // if (!targetModelId) return;
     // 如果已经存在 else 节点，则不允许添加
     // 另外目标节点已经有 else节点了，也不能再添加
     const repeat = checkIfHasElse(treeNode);
@@ -523,7 +534,7 @@ const addNode = (mode, processorCategory, processorType,
         {
           mode, processorCategory, processorType,
           targetProcessorCategory, targetProcessorType, targetProcessorId,
-          name: t(processorType)
+          name: ''
         }).then((newNode) => {
       console.log('addProcessor successfully', newNode)
       selectNode([newNode.id], null)
@@ -638,7 +649,7 @@ async function onDrop(info: DropEvent) {
   if (isInterface(treeDataMap.value[dropKey].processorCategory) && dropPosition === 0) dropPosition = 1
   console.log(dragKey, dropKey, dropPosition);
 
-  if(elseNodeRef.value) {
+  if (elseNodeRef.value) {
     elseNodeRef.value.hidden = false;
   }
 
@@ -722,8 +733,8 @@ watch(() => {
 })
 
 
+const elseNodeRef: any = ref(null);
 
-const elseNodeRef:any = ref(null);
 /**
  * 开始拖拽，阻止某些节点不让多动
  * */
@@ -731,15 +742,16 @@ function onDragstart({event, node}) {
   const nodeInfo = node.dataRef;
   // else节点 只能由 if 节点拖动带过去
   if (nodeInfo?.entityType === 'processor_logic_if' && checkIfHasElse(nodeInfo)) {
-    event.target.parentNode.nextSibling.hidden  = false
+    event.target.parentNode.nextSibling.hidden = false
     elseNodeRef.value = event?.target?.parentNode?.nextSibling;
-    if(elseNodeRef.value) {
+    if (elseNodeRef.value) {
       elseNodeRef.value.hidden = true;
     }
   }
 }
+
 function onDragEnd() {
-  if(elseNodeRef.value) {
+  if (elseNodeRef.value) {
     elseNodeRef.value.hidden = false;
   }
 }

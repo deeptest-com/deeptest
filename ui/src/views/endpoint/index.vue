@@ -168,6 +168,7 @@
     <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
     <div v-if="drawerVisible">
       <Drawer
+          @share="id => share({ id })"
           :destroyOnClose="true"
           :visible="drawerVisible"
           @refreshList="refreshList"
@@ -204,6 +205,7 @@ import Tree from './components/Tree.vue'
 import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
 import Tags from './components/Tags/index.vue';
 import TooltipCell from '@/components/Table/tooltipCell.vue';
+import { getUrlKey } from '@/utils/url';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -288,17 +290,24 @@ const MenuList = [
   {
     key: '1',
     code: 'ENDPOINT-COPY',
-    text: '复制',
+    text: '克隆',
     action: (record: any) => copy(record)
   },
   {
     key: '2',
+    code: '',
+    text: '分享链接',
+    action: (record: any) => share(record)
+  },
+ 
+  {
+    key: '3',
     code: 'ENDPOINT-DELETEE',
     text: '删除',
     action: (record: any) => del(record)
   },
   {
-    key: '3',
+    key: '4',
     code: 'ENDPOINT-OUTDATED',
     text: '过期',
     action: (record: any) => disabled(record)
@@ -395,6 +404,65 @@ async function editEndpoint(record) {
   drawerVisible.value = true;
 }
 
+/**
+ * 分享相关
+ * @param record 
+ */
+function share(record: any) {
+  const searchParams = {
+    endpointId: record.id,
+    selectedCategoryId: selectedCategoryId.value,
+  };
+  const text = `${window.location.origin}${window.location.hash.split('?')[0]}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
+  if (!navigator.clipboard) {
+    var ele = document.createElement("input");
+    ele.value = text;
+    document.body.appendChild(ele);
+    ele.select();
+    document.execCommand("copy");
+    document.body.removeChild(ele);
+    if (document.execCommand("copy")) {
+      message.success('复制成功，项目成员可通过此链接访问');
+    }
+  } else {
+    navigator.clipboard.writeText(text).then(function () {
+      message.success('复制成功，项目成员可通过此链接访问');
+    }).catch(function (err) {
+      console.log('分享失败', err);
+    })
+  }
+}
+
+function checkShareInfo() {
+  try {
+    const result = getUrlKey('shareInfo', window.location.href) || "";
+    const shareInfo = result ? JSON.parse(result  as string) : {};
+    console.log(
+    '%c 接口定义 分享详情share-info',
+    'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: green;',
+    shareInfo
+    );
+    if (shareInfo.endpointId) {
+      editEndpoint({ id: shareInfo.endpointId }); // 默认打开该接口的抽屉详情
+    }
+    if (shareInfo.selectedCategoryId) {
+      console.log(12340);
+      selectNode(shareInfo.selectedCategoryId);
+    }
+  } catch (error) {
+    console.log('error', error);
+  }
+}
+
+onMounted(() => {
+  checkShareInfo();
+});
+
+/**
+ * 其他操作
+ * @param record 
+ */
+
 async function copy(record: any) {
   await store.dispatch('Endpoint/copy', record);
 }
@@ -481,10 +549,7 @@ async function selectNode(id) {
   selectedRowKeys. value = [];
   selectedRow.value = {};
   // 选中节点时，重置分页为第一页
-  await loadList(1, pagination.value.pageSize, {
-    categoryId: id,
-    serveId: currServe.value.id,
-  });
+  await loadList(1, pagination.value.pageSize);
 }
 
 
@@ -496,6 +561,7 @@ const loadList = debounce(async (page, size, opts?: any) => {
     "page": page,
     "pageSize": size,
     ...opts,
+    categoryId: selectedCategoryId.value || null,
   });
   // await store.dispatch('Endpoint/loadCategory');
   fetching.value = false;
@@ -510,13 +576,14 @@ async function handleTableFilter(state) {
 const filter = ref()
 
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据
-watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
+watch(() => [currProject.value.id, currServe.value.id], async (newVal, oldVal) => {
   const [newProjectId, newServeId] = newVal;
-  if (newProjectId !== undefined) {
+  const [oldProjectId] = oldVal || [];
+  if (newProjectId !== undefined && oldProjectId !== undefined && newProjectId !== oldProjectId) {
     selectedCategoryId.value = "";
-    await loadList(1, pagination.value.pageSize, {
-      serveId: newServeId || 0,
-    });
+  }
+  if (newProjectId !== undefined) {
+    await loadList(1, pagination.value.pageSize);
     await store.dispatch('Endpoint/getEndpointTagList');
     if (newServeId) {
       await store.dispatch('Debug/listServes', {serveId: newServeId});
@@ -549,7 +616,6 @@ onUnmounted(async () => {
   store.commit('Endpoint/clearFilterState');
 })
 
-
 function paneResizeStop(pane, resizer, size) {
   console.log(pane.className, resizer.className, size.split('px')[0])
   if (pane?.className?.includes('left')) {
@@ -569,6 +635,7 @@ const username = (user:string)=>{
   let result = userList.value.find(arrItem => arrItem.value == user);
   return result?.label || '-'
 }
+
 
 </script>
 <style scoped lang="less">
@@ -609,6 +676,8 @@ const username = (user:string)=>{
 
   .top-action-left {
     min-width: 220px;
+    display: flex;
+    align-items: center;
   }
 }
 

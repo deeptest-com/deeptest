@@ -1,25 +1,45 @@
 <template>
   <div class="endpoint-expand">
-    <div class="endpoint-expand-content">
-      <span v-if="endpointData.resultStatus === 'fail'" style="color: #f5222d">
-        <exclamation-circle-outlined /> &nbsp;
-        {{ resContent.statusContent || "" }}</span
+    <template v-if="invokeResult.responseDefine.length">
+      <div
+        class="endpoint-expand-content"
+        v-for="(item, index) in invokeResult.responseDefine"
+        :key="index"
       >
-      <span v-if="endpointData.resultStatus === 'pass'" style="color: #14945a">
-        <check-circle-outlined /> &nbsp;
-        返回数据结构校验通过
-      </span>
-    </div>
-    <ResponseResult :show-status="false" :data="{ ...resContent }" :show-background="false" />
+        <span v-if="item.resultStatus === 'fail'" style="color: #f5222d">
+          <exclamation-circle-outlined /> &nbsp;
+          {{ item.resultMsg || "" }}</span
+        >
+        <span v-if="item.resultStatus === 'pass'" style="color: #14945a">
+          <check-circle-outlined /> &nbsp; 返回数据结构校验通过
+        </span>
+      </div>
+    </template>
+    <template v-if="invokeResult.checkPoints.length">
+      <div class="endpoint-expand-content">断言结果</div>
+      <div
+        class="endpoint-expand-content"
+        v-for="(item, index) in invokeResult.checkPoints"
+        :key="index"
+      >
+        <span :style="{color: resultMap[item.resultStatus] }">
+          <template v-if="item.resultStatus === 'fail'">
+            <exclamation-circle-outlined /> &nbsp;
+          </template>
+          <template v-else> <check-circle-outlined /> &nbsp; </template>
+          {{ item.resultMsg || "" }}
+        </span>
+      </div>
+    </template>
   </div>
 </template>
 <script setup lang="ts">
-import { defineProps, computed } from "vue";
+import { defineProps, computed, watch } from "vue";
 import {
   ExclamationCircleOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons-vue";
-import ResponseResult from '@/views/component/debug/response/Renderer/Result.vue';
+import useInvokeResult from "@/composables/useInvoke";
 
 const props = defineProps({
   collapseKey: {
@@ -31,11 +51,20 @@ const props = defineProps({
   },
 });
 
-const resContent = computed(() =>
-  props.endpointData.respContent
+const resContent = computed(() => {
+  return props.endpointData.respContent
     ? JSON.parse(props.endpointData.respContent)
-    : {}
-);
+    : {};
+});
+
+const resultMap = {
+  fail: '#f5222d',
+  pass: '#14945a'
+}
+
+const { invokeResult } = useInvokeResult(resContent);
+
+
 </script>
 
 <style scoped lang="less">

@@ -1,25 +1,25 @@
 <template>
   <div class="endpoint-expand">
-    <template v-if="invokeResult.responseDefine.length">
+    <!-- 请求体检查信息 -->
+    <template v-if="invokeDetail.responseDefine">
       <div
         class="endpoint-expand-content"
-        v-for="(item, index) in invokeResult.responseDefine"
-        :key="index"
       >
-        <span v-if="item.resultStatus === 'fail'" style="color: #f5222d">
+      <span :style="{color: resultMap[invokeDetail.responseDefine.resultStatus] }">
+        <template v-if="invokeDetail.responseDefine.resultStatus === 'fail'">
           <exclamation-circle-outlined /> &nbsp;
-          {{ item.resultMsg || "" }}</span
-        >
-        <span v-if="item.resultStatus === 'pass'" style="color: #14945a">
-          <check-circle-outlined /> &nbsp; 返回数据结构校验通过
-        </span>
+        </template>
+        <template v-else> <check-circle-outlined /> &nbsp; </template>
+        {{ invokeDetail.responseDefine.resultMsg || '' }}
+      </span>
       </div>
     </template>
-    <template v-if="invokeResult.checkPoints.length">
+    <!-- 请求断言检查信息 -->
+    <template v-if="invokeDetail.checkpoint && invokeDetail.checkpoint.length">
       <div class="endpoint-expand-content">断言结果</div>
       <div
         class="endpoint-expand-content"
-        v-for="(item, index) in invokeResult.checkPoints"
+        v-for="(item, index) in invokeDetail.checkpoint"
         :key="index"
       >
         <span :style="{color: resultMap[item.resultStatus] }">
@@ -31,6 +31,10 @@
         </span>
       </div>
     </template>
+    <!-- 请求未通过其他异常信息 -->
+    <template v-if="invokeDetail.result">
+      <div class="endpoint-expand-content">{{ invokeDetail.result || '' }}</div>
+    </template>
   </div>
 </template>
 <script setup lang="ts">
@@ -39,7 +43,6 @@ import {
   ExclamationCircleOutlined,
   CheckCircleOutlined,
 } from "@ant-design/icons-vue";
-import useInvokeResult from "@/composables/useInvoke";
 
 const props = defineProps({
   collapseKey: {
@@ -51,19 +54,16 @@ const props = defineProps({
   },
 });
 
-const resContent = computed(() => {
+const invokeDetail = computed(() => {
   return props.endpointData.respContent
-    ? JSON.parse(props.endpointData.respContent)
-    : {};
+    ? JSON.parse(props.endpointData.detail)
+    : { };
 });
 
 const resultMap = {
   fail: '#f5222d',
   pass: '#14945a'
 }
-
-const { invokeResult } = useInvokeResult(resContent);
-
 
 </script>
 

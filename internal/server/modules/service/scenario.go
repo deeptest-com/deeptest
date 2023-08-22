@@ -11,6 +11,7 @@ import (
 type ScenarioService struct {
 	ScenarioRepo     *repo2.ScenarioRepo     `inject:""`
 	ScenarioNodeRepo *repo2.ScenarioNodeRepo `inject:""`
+	UserRepo         *repo2.UserRepo         `inject:""`
 }
 
 func (s *ScenarioService) ListByProject(serveId int) (pos []model.Scenario, err error) {
@@ -28,8 +29,15 @@ func (s *ScenarioService) Paginate(req v1.ScenarioReqPaginate, projectId int) (r
 	return
 }
 
-func (s *ScenarioService) GetById(id uint) (model.Scenario, error) {
-	return s.ScenarioRepo.Get(id)
+func (s *ScenarioService) GetById(id uint) (scenario model.Scenario, err error) {
+	scenario, err = s.ScenarioRepo.Get(id)
+	if err != nil {
+		return
+	}
+
+	user, _ := s.UserRepo.GetByUserId(scenario.CreateUserId)
+	scenario.CreatorName = user.Name
+	return
 }
 
 func (s *ScenarioService) Create(req model.Scenario) (po model.Scenario, err error) {

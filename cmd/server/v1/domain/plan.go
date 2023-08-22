@@ -34,6 +34,7 @@ type PlanAndReportDetail struct {
 	CreatedAt      *time.Time        `json:"createdAt,omitempty"`
 	UpdatedAt      *time.Time        `json:"updatedAt,omitempty"`
 	UpdateUserName string            `json:"updateUserName"` //最近更新人姓名
+	CreateUserName string            `json:"createUserName"` //创建人姓名
 	Status         consts.TestStatus `json:"status"`         //状态
 	TestPassRate   string            `json:"testPassRate"`   //执行通过率
 	ExecTimes      int64             `json:"execTimes"`      //执行次数

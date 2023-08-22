@@ -180,7 +180,7 @@ function updateStatFromLog(res: any) {
 
 
 // init data
-function initData(res: any) {
+function initData() {
     statInfo.value = {
         checkpointFail: 0,
         checkpointPass: 0,
@@ -191,6 +191,8 @@ function initData(res: any) {
         interfacePass: 0,
         interfaceSkip: 0,
     }
+    progressStatus.value = 'in_progress';
+    progressValue.value = 10;
 }
 
 
@@ -199,6 +201,7 @@ function resetData() {
     execResults.value = [];
     scenarioReports.value = [];
     reportsMap.value = {};
+    initData();
 }
 
 // 【计划】的执行最终结果 用于更新最终的执行结果
@@ -208,9 +211,7 @@ function updatePlanRes(res) {
 
 const progressStatus = ref('in_progress');
 // todo 进度处理，目前先写死
-const progressValue = computed(() => {
-    return 10;
-});
+const progressValue = ref(10);
 
 export {
     scenarioReports,

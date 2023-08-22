@@ -10,6 +10,7 @@ import (
 	cookieHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/cookie"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	uuid "github.com/satori/go.uuid"
@@ -50,6 +51,8 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		Round:               processor.Round,
 	}
 
+	detail := map[string]interface{}{}
+
 	//在循环过程中，processor 被执行多次，变量替换会受到影响，第一次跌替换之后，就不能根据实际情况替换了
 	var baseRequest domain.BaseRequest
 	copier.CopyWithOption(&baseRequest, &entity.BaseRequest, copier.Option{IgnoreEmpty: true, DeepCopy: true})
@@ -76,17 +79,20 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	processor.Result.ReqContent = string(reqContent)
 	respContent, _ := json.Marshal(entity.Response)
 	processor.Result.RespContent = string(respContent)
-
+	processor.Result.ResultStatus = consts.Pass
 	if err != nil {
 		processor.Result.ResultStatus = consts.Fail
 		processor.Result.Summary = err.Error()
 		processor.AddResultToParent()
+		detail["result"] = entity.Response.Content
+		processor.Result.Detail = commonUtils.JsonEncode(detail)
 		execUtils.SendErrorMsg(*processor.Result, session.WsMsg)
 		return
 	}
 
 	// exec post-condition
-	entity.ExecPostConditions(processor, session)
+	entity.ExecPostConditions(processor, detail)
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	for _, c := range entity.Response.Cookies {
 		SetCookie(processor.ParentId, c.Name, c.Value, c.Domain, c.ExpireTime)
@@ -124,7 +130,8 @@ func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, sessio
 
 	return
 }
-func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, session *Session) (err error) {
+func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detail map[string]interface{}) (err error) {
+
 	for _, condition := range entity.PostConditions {
 		if condition.Type == consts.ConditionTypeExtractor {
 			var extractorBase domain.ExtractorBase
@@ -188,25 +195,49 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, sessi
 			}
 			interfaceExecCondition.Raw, _ = json.Marshal(scriptBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
-		}
-	}
+		} else if condition.Type == consts.ConditionTypeCheckpoint {
 
-	for _, condition := range entity.PostConditions {
-		if condition.Type == consts.ConditionTypeCheckpoint {
 			var checkpointBase domain.CheckpointBase
 			json.Unmarshal(condition.Raw, &checkpointBase)
 			if checkpointBase.Disabled {
 				continue
 			}
 
-			err = ExecCheckPoint(&checkpointBase, entity.Response, processor.ID)
+			resp := entity.Response
+			err = ExecCheckPoint(&checkpointBase, resp, 0)
 			checkpointHelper.GenResultMsg(&checkpointBase)
 
 			interfaceExecCondition := domain.InterfaceExecCondition{
 				Type: condition.Type,
 			}
-			interfaceExecCondition.Raw, _ = json.Marshal(checkpointBase)
+
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
+
+			if _, ok := detail["checkpoint"]; !ok {
+				detail["checkpoint"] = []map[string]interface{}{}
+			}
+			detail["checkpoint"] = append(detail["checkpoint"].([]map[string]interface{}), map[string]interface{}{
+				"resultStatus": checkpointBase.ResultStatus, "resultMsg": checkpointBase.ResultMsg,
+			})
+		} else if condition.Type == consts.ConditionTypeResponseDefine {
+			var responseDefineBase domain.ResponseDefineBase
+			json.Unmarshal(condition.Raw, &responseDefineBase)
+			if responseDefineBase.Disabled {
+				continue
+			}
+
+			resp := entity.Response
+
+			err = ExecResponseDefine(&responseDefineBase, resp)
+
+			interfaceExecCondition := domain.InterfaceExecCondition{
+				Type: condition.Type,
+			}
+
+			interfaceExecCondition.Raw, _ = json.Marshal(responseDefineBase)
+			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
+
+			detail["responseDefine"] = map[string]interface{}{"resultStatus": responseDefineBase.ResultStatus, "resultMsg": responseDefineBase.ResultMsg}
 		}
 	}
 

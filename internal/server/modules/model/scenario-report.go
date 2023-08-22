@@ -43,6 +43,7 @@ type ScenarioReport struct {
 
 	CreateUserId   uint                `json:"createUserId"`
 	CreateUserName string              `gorm:"-" json:"createUserName"`
+	ExecUserName   string              `gorm:"-" json:"execUserName"`
 	SerialNumber   string              `json:"serialNumber"`
 	Logs           []*ExecLogProcessor `gorm:"-" json:"logs"`
 

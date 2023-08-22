@@ -7,6 +7,7 @@
     <StatisticTable :data="statisticData" :value="statInfo"/>
     <Progress :exec-status="progressStatus"
               :percent="progressValue"
+              :key="progressKey"
               @exec-cancel="execCancel" />
     <LogTreeView class="scenario-exec-log-tree"
         :treeData="scenarioReports"
@@ -80,14 +81,16 @@ const baseInfoList = computed(() => {
     {value: momentUtc(new Date()) , label: '执行时间'},
     {value: curEnv?.name || '暂无', label: '执行环境'},
     {value: detailResult.value.createUserName || '暂无', label: '创建人'},
-    //  TODO，确定字段
     {value: currentUser?.value?.username || '暂无', label: '执行人'},
     {value: detailResult.value.priority || '未设置', label: '优先级'},
   ]
 });
 
+// 每次重新渲染
+const progressKey = ref(0);
 const execStart = async () => {
   resetData();
+  progressKey.value += 1;
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
@@ -124,7 +127,7 @@ const OnWebSocketMsg = (data: any) => {
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
     // 重置数据, 重新初始化
-    initData({});
+    // initData();
     progressStatus.value = 'in_progress';
   }
   // 执行中

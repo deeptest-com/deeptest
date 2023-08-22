@@ -72,7 +72,7 @@ func (r *ScenarioReportRepo) CombineUserName(data []*model.ScenarioReport) {
 
 	for _, v := range data {
 		if name, ok := userIdNameMap[v.CreateUserId]; ok {
-			v.CreateUserName = name
+			v.ExecUserName = name
 		}
 	}
 }

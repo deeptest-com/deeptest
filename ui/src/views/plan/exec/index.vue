@@ -92,10 +92,9 @@ const basicInfoList = computed(() => {
       label: '执行环境',
       value: curEnv ? curEnv.name : '--'
     },
-    //   todo 创建人有问题
     {
       label: '创建人',
-      value: currUser.value.username || '暂无'
+      value: currPlan.value.createUserName || '暂无'
     },
     {
       label: '执行人',
@@ -134,7 +133,7 @@ const OnWebSocketMsg = (data: any) => {
 
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
-    initData({});
+    // initData();
     progressStatus.value = 'in_progress';
   }
 

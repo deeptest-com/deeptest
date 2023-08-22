@@ -8,7 +8,7 @@ import (
 )
 
 func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
-	execUtils.ResetStat()
+	agentExec.ResetStat()
 	agentExec.ForceStopExec = false
 
 	agentExec.ServerUrl = req.ServerUrl
@@ -49,7 +49,7 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	}
 
 	// submit result
-	result.Stat = execUtils.Stat
+	result.Stat = agentExec.Stat
 	report, _ := SubmitPlanResult(result, req.PlanId, req.ServerUrl, req.Token)
 	execUtils.SendResultMsg(report, wsMsg)
 	//sendPlanSubmitResult(req.PlanId, wsMsg)

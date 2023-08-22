@@ -75,6 +75,8 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
+	executedProcessorIds := map[uint]bool{}
+
 	for index, item := range iterator.Items {
 		if ForceStopExec {
 			break
@@ -93,15 +95,18 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 		*/
 
 		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
+
 		round := ""
 		for _, child := range processor.Children {
-
 			if ForceStopExec {
 				break
 			}
 			if child.Disable {
 				continue
 			}
+
+			executedProcessorIds[child.ID] = true
+
 			//执行轮次
 			if round == "" {
 				if entity.ProcessorType == consts.ProcessorLoopTime {
@@ -121,7 +126,10 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 			}
 		}
 	}
+
 LABEL:
+	stat := CountSkip(executedProcessorIds, processor.Children)
+	execUtils.SendStatMsg(stat, session.WsMsg)
 
 	return
 }
@@ -129,6 +137,7 @@ LABEL:
 func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
 	expression := iterator.UntilExpression
 
+	executedProcessorIds := map[uint]bool{}
 	index := 0
 	for {
 		if ForceStopExec {
@@ -161,7 +170,6 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		}
 
 		round := ""
-
 		for _, child := range processor.Children {
 			if ForceStopExec {
 				break
@@ -169,6 +177,8 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 			if child.Disable {
 				continue
 			}
+
+			executedProcessorIds[child.ID] = true
 
 			if round == "" {
 				round = fmt.Sprintf("第 %v 轮", index+1)
@@ -188,7 +198,10 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 			goto LABEL
 		}
 	}
+
 LABEL:
+	stat := CountSkip(executedProcessorIds, processor.Children)
+	execUtils.SendStatMsg(stat, session.WsMsg)
 
 	return
 }

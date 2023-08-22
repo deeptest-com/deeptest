@@ -35,7 +35,8 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 		Round:             processor.Round,
 	}
 
-	ret, err := EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID)
+	expr := ReplaceDatapoolVariInGovaluateExpress(entity.Expression)
+	ret, err := EvaluateGovaluateExpressionByProcessorScope(expr, processor.ID)
 
 	pass, _ := ret.(bool)
 

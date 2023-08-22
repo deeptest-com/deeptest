@@ -119,7 +119,7 @@ async function list(name = '') {
   })
 }
 
-const dataArr = [['A', 'B', 'C'], [1, 2, 3]]
+const dataArr = [['A', 'B'], ['foo', 'bar']]
 const data = ref<any[][]>(dataArr)
 async function handleAdd(formData: any) {
   const { name, username, description } = formData;

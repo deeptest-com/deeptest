@@ -7,6 +7,7 @@
     <StatisticTable :data="statisticData" :value="statInfo"/>
     <Progress :exec-status="progressStatus"
               :percent="progressValue"
+              :key="progressKey"
               @exec-cancel="execCancel" />
     <LogTreeView class="scenario-exec-log-tree"
         :treeData="scenarioReports"
@@ -86,8 +87,11 @@ const baseInfoList = computed(() => {
   ]
 });
 
+// 每次重新渲染
+const progressKey = ref(0);
 const execStart = async () => {
   resetData();
+  progressKey.value += 1;
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
     token: await getToken(),
@@ -124,7 +128,7 @@ const OnWebSocketMsg = (data: any) => {
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
     // 重置数据, 重新初始化
-    initData({});
+    // initData();
     progressStatus.value = 'in_progress';
   }
   // 执行中

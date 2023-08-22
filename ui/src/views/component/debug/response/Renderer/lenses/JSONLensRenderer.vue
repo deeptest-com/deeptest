@@ -7,7 +7,7 @@
             <a-radio-button :value="responseData.contentLang">Pretty</a-radio-button>
             <a-radio-button value="raw">Raw</a-radio-button>
           </a-radio-group>
-          <a-button size="small" >JSON</a-button>
+        <span style="margin-left:5px;">JSON</span>
         </a-col>
         <a-col flex="100px" class="dp-right">
 <!--          <a-tooltip overlayClassName="dp-tip-small">

@@ -63,6 +63,7 @@ onUnmounted(() => {
 
   .container {
     margin-top: 0px !important;
+    margin-bottom: 0px !important;
   }
 
   #debug-form-top {

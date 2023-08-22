@@ -105,13 +105,17 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 
 		if act == consts.ExecScenario {
 			ch = make(chan int, 1)
+
 			service.RunScenario(&req.ScenarioExecReq, &wsMsg)
+
 		} else if act == consts.ExecPlan {
 			ch = make(chan int, 1)
+
 			service.RunPlan(&req.PlanExecReq, &wsMsg)
 
 		} else if act == consts.ExecMessage {
 			ch = make(chan int, 1)
+
 			service.RunMessage(&req.MessageReq, &wsMsg)
 		}
 	}()

@@ -51,6 +51,8 @@ type ScenarioExecResult struct {
 
 	Children []*ScenarioExecResult `json:"logs,omitempty"`
 
+	Stat InterfaceStat `json:"stat"`
+
 	EnvironmentId int `json:"environmentId,omitempty"`
 
 	LogId       uuid.UUID `json:"logId,omitempty"`
@@ -71,6 +73,7 @@ type PlanExecResult struct {
 	EnvironmentId int    `json:"environmentId"`
 
 	Scenarios []*ScenarioExecResult `json:"scenarios"`
+	Stat      InterfaceStat         `json:"stat"`
 }
 
 type MessageExecResult struct {

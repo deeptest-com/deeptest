@@ -1,7 +1,6 @@
 package agentExec
 
 import (
-	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
 	"strings"
@@ -35,7 +34,6 @@ func InitDebugExecContext() (variables []domain.ExecVariable) {
 
 func InitScenarioExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable) {
 	ComputerScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
-	execUtils.InitStat()
 
 	ExecScene = execObj.ExecScene
 	DatapoolCursor = map[string]int{}

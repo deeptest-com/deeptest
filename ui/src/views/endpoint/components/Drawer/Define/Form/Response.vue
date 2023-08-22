@@ -171,7 +171,6 @@ const selectedCodes: any = computed(() => {
 
 onMounted(() => {
   if (selectedMethodDetail?.value?.responseBodies?.length) {
-    debugger
     selectedCode.value = selectedMethodDetail?.value?.responseBodies[0].code;
   }
 })

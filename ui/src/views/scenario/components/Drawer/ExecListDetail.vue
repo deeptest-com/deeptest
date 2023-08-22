@@ -44,7 +44,7 @@ const baseInfoList = computed(() => {
 })
 
 const statInfo = computed(() => {
-  const data = reportsDetail.value?.stat || {};
+  const data = JSON.parse(reportsDetail.value?.stat || '{}');
   return {
     interfacePass: data.interfacePass || 0,
     interfaceFail: data.interfaceFail || 0,
@@ -52,7 +52,7 @@ const statInfo = computed(() => {
   }
 })
 const statisticData = computed(() => {
-  const data = reportsDetail.value?.stat || {};
+  const data = JSON.parse(reportsDetail.value?.stat || '{}');
   const {
     checkpointFail= 0,
     checkpointPass= 0,

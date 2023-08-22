@@ -1,6 +1,6 @@
 <template>
-  <div class="tree-container">
-    <div class="tree-con">
+  <div class="dp-enpoint-tree-main">
+    <div class="dp-tree-container">
       <div class="tag-filter-form">
         <a-input-search
             class="search-input"
@@ -10,7 +10,7 @@
           <PlusOutlined style="font-size: 16px;"/>
         </div>
       </div>
-      <div style="margin: 0 8px 16px 8px;">
+      <div class="tree-content" style="margin: 0 8px 16px 8px;">
         <a-tree
             class="deeptest-tree"
             draggable
@@ -27,7 +27,7 @@
             <CaretDownOutlined/>
           </template>
           <template #title="nodeProps">
-            <div class="tree-title" :draggable="nodeProps.id === -1">
+            <div class="tree-title" :ref="(el) => treeItemRef[nodeProps.id] = el" :draggable="nodeProps.id === -1">
                 <span class="tree-title-text" v-if="nodeProps.title.indexOf(searchValue) > -1">
                   {{ nodeProps.title.substr(0, nodeProps.title.indexOf(searchValue)) }}
                   <span style="color: #f50">{{ searchValue }}</span>
@@ -70,7 +70,7 @@
 <script setup lang="ts">
 import {
   computed, ref, onMounted,
-  watch, defineEmits, defineProps, createVNode
+  watch, defineEmits, defineProps, createVNode, nextTick
 } from 'vue';
 import {
   PlusOutlined,
@@ -88,6 +88,7 @@ import {setSelectedKey} from "@/utils/cache";
 import {filterTree} from "@/utils/tree";
 import {getCache} from "@/utils/localCache";
 import settings from "@/config/settings";
+import { getUrlKey } from '@/utils/url';
 
 const store = useStore<{ Endpoint: EndpointStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -105,6 +106,7 @@ const expandedKeys = ref<number[]>([]);
 const autoExpandParent = ref<boolean>(false);
 let selectedKeys = ref<number[]>([]);
 const emit = defineEmits(['select']);
+const treeItemRef = ref({});
 const treeData: any = computed(() => {
   const data = treeDataCategory.value;
   if(!data?.[0]?.id){
@@ -143,6 +145,28 @@ const treeData: any = computed(() => {
   return ret
 });
 
+function handleFindSearch() {
+  const result = getUrlKey('shareInfo', window.location.href) || "";
+  const shareInfo = result ? JSON.parse(result  as string) : {};
+  console.log(
+  '%c 接口定义 分享详情share-info',
+  'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: green;',
+  shareInfo
+  );
+  if (shareInfo.selectedCategoryId) {
+    selectedKeys.value.push(shareInfo.selectedCategoryId);
+    setSelectedKey('category-endpoint', currProject.value.id, selectedKeys.value[0]);
+
+    if(treeItemRef.value?.[shareInfo.selectedCategoryId]){
+      treeItemRef.value[shareInfo.selectedCategoryId].scrollIntoView({
+        behavior: 'auto',
+        block: 'center',
+        inline: 'center',
+      });
+    }
+  }
+}
+
 async function loadCategories() {
   await store.dispatch('Endpoint/loadCategory');
   expandAll();
@@ -171,7 +195,7 @@ const onExpand = (keys: number[]) => {
 };
 
 // 展开所有
-function expandAll() {
+async function expandAll() {
   const keys: any = [];
   const data = treeDataCategory.value;
 
@@ -188,6 +212,11 @@ function expandAll() {
   }
   fn(data);
   expandedKeys.value = keys;
+
+  await nextTick();
+  setTimeout(() => {
+    handleFindSearch();
+  }, 0);
 }
 
 

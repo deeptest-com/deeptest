@@ -60,7 +60,7 @@ func ToSliceString(data []interface{}) (res []string) {
 }
 
 func GetVariablesInExpressionPlaceholder(expression string) (ret []string) {
-	re := regexp.MustCompile("(?siU)\\${\\+??(.*)}")
+	re := regexp.MustCompile("(?siU)\\${(\\+??.*)}")
 	matchResultArr := re.FindAllStringSubmatch(expression, -1)
 
 	for _, childArr := range matchResultArr {

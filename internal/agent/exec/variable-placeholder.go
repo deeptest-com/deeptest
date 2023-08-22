@@ -8,13 +8,37 @@ import (
 	"strings"
 )
 
+func ReplaceVariableValueInBody(value string) (ret string) {
+	// add a plus to set field vale as a number
+	// {"id": "${+dev_env_var1}"} => {"id": 2}
+
+	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value)
+	ret = value
+
+	for _, placeholder := range variablePlaceholders {
+		oldVal := fmt.Sprintf("${%s}", placeholder)
+		if strings.Index(placeholder, "+") == 0 { // replace it with a number, if has prefix +
+			oldVal = "\"" + oldVal + "\""
+		}
+
+		placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
+		newVal := getPlaceholderVariableValue(placeholderWithoutPlus)
+
+		ret = strings.ReplaceAll(ret, oldVal, newVal)
+	}
+
+	return
+}
+
 func ReplaceVariableValue(value string) (ret string) {
 	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value)
 	ret = value
 
 	for _, placeholder := range variablePlaceholders {
 		oldVal := fmt.Sprintf("${%s}", placeholder)
-		newVal := getPlaceholderVariableValue(placeholder)
+
+		placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
+		newVal := getPlaceholderVariableValue(placeholderWithoutPlus)
 
 		ret = strings.ReplaceAll(ret, oldVal, newVal)
 	}

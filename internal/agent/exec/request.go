@@ -204,7 +204,7 @@ func replaceFormBodies(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	}
 }
 func replaceBody(req *domain.BaseRequest) {
-	req.Body = ReplaceVariableValue(req.Body)
+	req.Body = ReplaceVariableValueInBody(req.Body)
 }
 func replaceAuthor(req *domain.BaseRequest) {
 	if req.AuthorizationType == consts.BasicAuth {

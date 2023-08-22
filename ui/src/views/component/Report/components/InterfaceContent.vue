@@ -15,11 +15,11 @@
       </div>
     </template>
     <!-- 请求断言检查信息 -->
-    <template v-if="invokeDetail.checkPoints && invokeDetail.checkPoints.length">
+    <template v-if="invokeDetail.checkpoint && invokeDetail.checkpoint.length">
       <div class="endpoint-expand-content">断言结果</div>
       <div
         class="endpoint-expand-content"
-        v-for="(item, index) in invokeDetail.checkPoints"
+        v-for="(item, index) in invokeDetail.checkpoint"
         :key="index"
       >
         <span :style="{color: resultMap[item.resultStatus] }">

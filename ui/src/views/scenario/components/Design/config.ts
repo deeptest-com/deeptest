@@ -381,7 +381,7 @@ export const scenarioTypeMapToText = {
     'custom': '自定义请求',
     'curl': 'cURL导入',
     'processor_group_default': '分组',
-    'processor_time_default': '定时器',
+    'processor_time_default': '等待时间',
     'processor_print_default': '输出',
     'processor_assertion_default': '断言',
     'processor_data_default': '数据迭代',

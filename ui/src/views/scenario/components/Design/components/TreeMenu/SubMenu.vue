@@ -13,7 +13,7 @@
     </template>
     <template v-for="menu in menu.children">
       <SubMenu :key="menu.key" :menu="menu" v-if="menu?.children?.length"/>
-      <MenuItem v-else :key="menu.key" :menu="menu"/>
+      <MenuItem v-else :key="menu.key" :menu="menu" :disabled="menu?.disabled"/>
     </template>
   </a-sub-menu>
 </template>

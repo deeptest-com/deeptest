@@ -2,10 +2,10 @@
   <div class="editor show-on-hover"
        v-if="isEditing"
        v-on-click-outside="cancelEdit">
-    <a-input
-             class="input"
+    <a-input  class="input"
              :placeholder="placeholder || '请输入内容'"
              :size="'small'"
+              ref="inputRef"
              @keydown.enter="updateField"
              v-model:value="fieldValue" />
 
@@ -24,7 +24,7 @@
     </span> &nbsp;&nbsp;
 
     <span class="edit-icon">
-      <EditOutlined @click.stop="isEditing = true"/>
+      <EditOutlined @click.stop="edit"/>
     </span>
   </div>
 
@@ -34,6 +34,7 @@
 import {
   defineProps,
   defineEmits,
+  nextTick,
   ref, watch,
 } from 'vue';
 import { message } from 'ant-design-vue';
@@ -58,7 +59,12 @@ const props = defineProps({
   customClass: {
     required: false,
     type: String,
-  }
+  },
+  autoFocus: {
+    required: false,
+    type: Boolean,
+    default: false,
+  },
 })
 const emit = defineEmits(['update', 'edit']);
 
@@ -71,6 +77,12 @@ function updateField() {
   isEditing.value = false;
 }
 
+function edit() {
+  isEditing.value = true;
+  nextTick(() => {
+    inputRef?.value?.focus();
+  })
+}
 function cancelEdit() {
   fieldValue.value = props.value;
   isEditing.value = false;
@@ -79,9 +91,21 @@ function cancelEdit() {
 function handleClick() {
   emit('edit');
 }
+const inputRef:any = ref(null);
 
 watch(() => {return props.value}, (newVal) => {
   fieldValue.value = newVal
+}, {immediate: true})
+
+watch(() => {return props.autoFocus}, (newVal) => {
+  if (newVal) {
+    isEditing.value = true;
+
+    nextTick(() => {
+      inputRef?.value?.focus();
+    })
+
+  }
 }, {immediate: true})
 
 </script>

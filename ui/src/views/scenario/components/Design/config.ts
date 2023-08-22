@@ -40,7 +40,7 @@ export const DESIGN_MENU_CONFIG = [
         key: 'addInterface',
         title: ' 添加请求',
         icon: 'arrange-interface',
-        hideInNodeTypes: ['processor_interface_default', ...onlyShowDisableAndDeleteTypes],
+        hideInNodeTypes: [ ...onlyShowDisableAndDeleteTypes],
         children: [
             {
                 key: 'add-child-interface-define',
@@ -70,184 +70,6 @@ export const DESIGN_MENU_CONFIG = [
         ]
     },
     {
-        key: 'addProcessor',
-        title: '添加处理器',
-        icon: 'arrange-control',
-        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
-        children: [
-            {
-                key: 'processor_loop',
-                title: '迭代',
-                icon: 'arrange-loop',
-                hideInNodeTypes: ['processor_interface_default'],
-                children: [
-                    {
-                        title: '循环次数',
-                        key: 'processor_loop_time',
-                        icon: 'arrange-count',
-                    },
-                    {
-                        title: '循环列表',
-                        key: 'processor_loop_in',
-                        icon: 'arrange-loop-list',
-                    },
-                    {
-                        title: '循环直到',
-                        key: 'processor_loop_until',
-                        icon: 'arrange-untils'
-                    },
-                    {
-                        title: '循环区间',
-                        key: 'processor_loop_range',
-                        icon: 'arrange-range',
-                    },
-                    {
-                        title: '跳出循环',
-                        key: 'processor_loop_break',
-                        icon: 'arrange-return',
-                        showInNodeTypes: [...loopIteratorTypes],
-                    },
-                ]
-            },
-            // 条件
-            {
-                key: 'processor_logic_if',
-                title: '条件分支',
-                icon: 'arrange-if',
-                hideInNodeTypes: ['processor_interface_default'],
-                // children: [
-                //     {
-                //         title: '如果',
-                //         key: 'processor_logic_if',
-                //         icon: 'arrange-logic-if',
-                //         hideInNodeTypes: null,
-                //     },
-                //     {
-                //         title: '否则',
-                //         key: 'processor_logic_else',
-                //         icon: 'arrange-logic-if',
-                //         hideInNodeTypes: ['processor_interface_default'],
-                //         showInNodeTypes: ['processor_logic_if'],
-                //     }
-                // ]
-            },
-            // 等待时间
-            {
-                key: 'processor_time_default',
-                title: '等待时间',
-                icon: 'arrange-wait',
-                hideInNodeTypes: ['processor_interface_default'],
-            },
-            //    数据迭代
-            {
-                key: 'processor_data_default',
-                title: '数据迭代',
-                icon: 'arrange-data-loop',
-                hideInNodeTypes: ['processor_interface_default'],
-            },
-            {
-                key: 'processor_cookie',
-                title: 'Cookie',
-                icon: 'arrange-cookie',
-                hideInNodeTypes: null,
-                children: [
-                    // {
-                    //     title: '获取Cookie',
-                    //     key: 'processor_cookie_get',
-                    //     icon: 'arrange-add',
-                    //     // showInNodeTypes: ['processor_interface_default'],
-                    // },
-                    {
-                        title: '设置Cookie',
-                        key: 'processor_cookie_set',
-                        icon: 'setting-dark',
-                        // showInNodeTypes: ['processor_interface_default'],
-                    },
-                    {
-                        title: '清空Cookie',
-                        key: 'processor_cookie_clear',
-                        icon: 'arrange-clear',
-                        // showInNodeTypes: ['processor_interface_default'],
-                    },
-                ]
-            },
-            // {
-            //     key: 'processor_extractor',
-            //     title: '提取器',
-            //     icon: 'arrange-extractor',
-            //     showInNodeTypes: ['processor_interface_default'],
-            //     children: [
-            //         {
-            //             title: '边界提取器',
-            //             key: 'processor_extractor_boundary',
-            //             icon: 'arrange-extractor-boundary',
-            //         },
-            //         {
-            //             title: 'JSON提取器',
-            //             key: 'processor_extractor_jsonquery',
-            //             icon: 'arrange-extractor-json',
-            //         },
-            //         {
-            //             title: 'HTML提取器',
-            //             key: 'processor_extractor_htmlquery',
-            //             icon: 'arrange-extractor-html',
-            //         },
-            //         {
-            //             title: 'XML提取器',
-            //             key: 'processor_extractor_xmlquery',
-            //             icon: 'arrange-extractor-xml',
-            //         },
-            //         // {
-            //         //     title: '正则提取器',
-            //         //     key: 'processor_extractor_regex',
-            //         //     icon: 'arrange-extractor-regex',
-            //         // },
-            //         // arrange-extractor-xml.svg
-            //     ]
-            // },
-            //   变量
-            {
-                key: 'processor_variable',
-                title: '变量',
-                icon: 'arrange-var',
-                hideInNodeTypes: null,
-                children: [
-                    {
-                        title: '设置变量',
-                        key: 'processor_variable_set',
-                        icon: 'arrange-add',
-                    },
-                    {
-                        title: '删除变量',
-                        key: 'processor_variable_clear',
-                        icon: 'arrange-delete',
-                    }
-                ]
-            },
-            //  输出
-            {
-                key: 'processor_print_default',
-                title: '输出',
-                icon: 'arrange-output',
-                hideInNodeTypes: null,
-            },
-            //   断言
-            {
-                key: 'processor_assertion_default',
-                title: '断言',
-                icon: 'arrange-assert',
-                hideInNodeTypes: null,
-            },
-            // 定制代码
-            {
-                key: 'processor_custom_code',
-                title: '自定义代码',
-                icon: 'arrange-code',
-                hideInNodeTypes: null,
-            },
-        ]
-    },
-    {
         key: 'processor_group_default',
         title: '添加分组',
         icon: 'arrange-group',
@@ -257,15 +79,142 @@ export const DESIGN_MENU_CONFIG = [
     {
         key: 'divider',
         title: '分割线',
-        hideInNodeTypes: ['processor_root_default', ...onlyShowDisableAndDeleteTypes],
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
     },
-    // //   修改名字
-    // {
-    //     key: 'edit',
-    //     title: '编辑',
-    //     icon: 'edit',
-    //     hideInNodeTypes: ['processor_root_default'],
-    // },
+    {
+        key: 'processor_loop',
+        title: '迭代',
+        icon: 'arrange-loop',
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
+        children: [
+            {
+                title: '循环次数',
+                key: 'processor_loop_time',
+                icon: 'arrange-count',
+            },
+            {
+                title: '循环列表',
+                key: 'processor_loop_in',
+                icon: 'arrange-loop-list',
+            },
+            {
+                title: '循环直到',
+                key: 'processor_loop_until',
+                icon: 'arrange-untils'
+            },
+            {
+                title: '循环区间',
+                key: 'processor_loop_range',
+                icon: 'arrange-range',
+            },
+            {
+                title: '跳出循环',
+                key: 'processor_loop_break',
+                icon: 'arrange-return',
+                enableInNodeTypes: [...loopIteratorTypes],
+            },
+        ]
+    },
+    // 条件
+    {
+        key: 'processor_logic_if',
+        title: '条件分支',
+        icon: 'arrange-if',
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
+        // children: [
+        //     {
+        //         title: '如果',
+        //         key: 'processor_logic_if',
+        //         icon: 'arrange-logic-if',
+        //         hideInNodeTypes: null,
+        //     },
+        //     {
+        //         title: '否则',
+        //         key: 'processor_logic_else',
+        //         icon: 'arrange-logic-if',
+        //         hideInNodeTypes: ['processor_interface_default'],
+        //         showInNodeTypes: ['processor_logic_if'],
+        //     }
+        // ]
+    },
+    // 等待时间
+    {
+        key: 'processor_time_default',
+        title: '等待时间',
+        icon: 'arrange-wait',
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
+    },
+    //    数据迭代
+    {
+        key: 'processor_data_default',
+        title: '数据迭代',
+        icon: 'arrange-data-loop',
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
+    },
+    {
+        key: 'processor_cookie',
+        title: 'Cookie',
+        icon: 'arrange-cookie',
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
+        children: [
+            {
+                title: '设置Cookie',
+                key: 'processor_cookie_set',
+                icon: 'setting-dark',
+            },
+            {
+                title: '清空Cookie',
+                key: 'processor_cookie_clear',
+                icon: 'arrange-clear',
+            },
+        ]
+    },
+    //   变量
+    {
+        key: 'processor_variable',
+        title: '变量',
+        icon: 'arrange-var',
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
+        children: [
+            {
+                title: '设置变量',
+                key: 'processor_variable_set',
+                icon: 'arrange-add',
+            },
+            {
+                title: '删除变量',
+                key: 'processor_variable_clear',
+                icon: 'arrange-delete',
+            }
+        ]
+    },
+    //  输出
+    {
+        key: 'processor_print_default',
+        title: '输出',
+        icon: 'arrange-output',
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
+    },
+    //   断言
+    {
+        key: 'processor_assertion_default',
+        title: '断言',
+        icon: 'arrange-assert',
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
+    },
+    // 定制代码
+    {
+        key: 'processor_custom_code',
+        title: '自定义代码',
+        icon: 'arrange-code',
+        hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
+    },
+    //  分割线
+    {
+        key: 'divider',
+        title: '分割线',
+        hideInNodeTypes: ['processor_root_default',...onlyShowDisableAndDeleteTypes],
+    },
     //    禁用
     {
         key: 'disable',
@@ -304,38 +253,28 @@ export const DESIGN_TYPE_ICON_MAP = {
     'diagnose': 'arrange-debug',
     'custom': 'arrange-http',
     'curl': 'arrange-url',
-
     'processor_group_default': 'arrange-group',
-
     "processor_variable_set": "arrange-var",
     "processor_variable_clear": "arrange-var",
-
     "processor_cookie_get": "arrange-cookie",
     'processor_cookie_set': 'arrange-cookie',
     'processor_cookie_clear': 'arrange-cookie',
-
     'processor_extractor_boundary': 'arrange-extractor',
     'processor_extractor_jsonquery': 'arrange-extractor',
     'processor_extractor_htmlquery': 'arrange-extractor',
     'processor_extractor_xmlquery': 'arrange-extractor',
     'processor_extractor_regx': 'arrange-extractor',
-
-
     "processor_loop_break": "arrange-return",
     "processor_loop_range": "arrange-range",
     "processor_loop_in": "arrange-loop-list",
     'processor_loop_time': 'arrange-count',
     'processor_loop_until': 'arrange-untils',
-
     'processor_logic_if': 'arrange-logic-if',
     'processor_logic_else': 'arrange-logic-if',
-
     'processor_time_default': 'arrange-wait',
-
     'processor_print_default': 'arrange-output',
     'processor_assertion_default': 'arrange-assert',
     'processor_custom_code': 'arrange-code',
-
     'processor_data_default': 'arrange-data-loop',
 }
 
@@ -345,48 +284,34 @@ export const DESIGN_TYPE_ICON_MAP = {
  * */
 export const menuKeyMapToProcessorCategory = {
     'processor_group_default': 'processor_group',
-
-
     'processor_cookie_get': 'processor_cookie',
     'processor_cookie_set': 'processor_cookie',
     'processor_cookie_clear': 'processor_cookie',
-
     "add-child-interface-define": "processor_interface",
     "add-child-interface-case": "processor_interface",
     "add-child-interface-diagnose": "processor_interface",
     "add-child-interface-custom": "processor_interface",
     "add-child-interface-curl": "processor_interface",
-
     "processor_loop_time": "processor_loop",
     "processor_loop_until": "processor_loop",
     "processor_loop_range": "processor_loop",
     "processor_loop_break": "processor_loop",
     "processor_loop_in": "processor_loop",
-
-
     'processor_logic_if': 'processor_logic',
     'processor_logic_else': 'processor_logic',
     'processor_time_default': 'processor_timer',
-
     'processor_extractor_boundary': 'processor_extractor',
     'processor_extractor_jsonquery': 'processor_extractor',
     'processor_extractor_htmlquery': 'processor_extractor',
     'processor_extractor_xmlquery': 'processor_extractor',
     'processor_extractor_regx': 'processor_extractor',
-
     'processor_variable_set': 'processor_variable',
     'processor_variable_clear': 'processor_variable',
-
     'processor_print_default': 'processor_print',
     'processor_assertion_default': 'processor_assertion',
-
-    // todo 定制代码对应的 类型确定
     'processor_custom_code': 'processor_custom_code',
-
-
     // 数据处理
     'processor_data_default': 'processor_data',
-
 }
 
 
@@ -450,13 +375,11 @@ export const showScenarioExecStatus = {
  * */
 export const scenarioTypeMapToText = {
     'processor_interface_default': '接口定义',
-
     'define': '接口定义导入',
     'case': '接口用例导入',
     'diagnose': '接口调试导入',
     'custom': '自定义请求',
     'curl': 'cURL导入',
-
     'processor_group_default': '分组',
     'processor_time_default': '定时器',
     'processor_print_default': '输出',
@@ -477,7 +400,6 @@ export const scenarioTypeMapToText = {
     'processor_loop_in': '迭代列表',
     'processor_logic_if': 'if',
     'processor_logic_else': 'else',
-
     'processor_extractor_boundary': '边界提取',
     'processor_extractor_jsonquery': 'JSON 提取',
     'processor_extractor_htmlquery': 'HTML 提取',
@@ -498,3 +420,12 @@ export const scenarioTypeMapToBindText = {
     // 'custom': '自定义请求导入',
     // 'curl': 'cURL导入',
 }
+/**
+ * 需要特殊处理的节点的名称
+ * */
+export const needHandleShowName = [
+    // if
+    'processor_logic_if',
+    'processor_logic_else',
+    'processor_interface_default',
+]

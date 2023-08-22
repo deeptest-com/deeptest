@@ -5,6 +5,8 @@
       <span class="title"><IconSvg :type="icon" class="prefix-icon-svg"/> {{ scenarioType }}</span>
       <div class="name">
         <EditAndShow placeholder="修改名称"
+                     :autoFocus="true"
+                     :key="nodeData?.id"
                      :value="nodeData?.name || ''"
                      @update="updateTitle"/>
       </div>
@@ -17,7 +19,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, watch} from "vue";
+import {computed, watch,onMounted,ref} from "vue";
 import {useStore} from "vuex";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Scenario} from "@/views/scenario/store";
@@ -74,6 +76,8 @@ async function updateTitle(title) {
     }
   })
 }
+
+
 
 
 </script>

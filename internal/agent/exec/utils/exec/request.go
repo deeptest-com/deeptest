@@ -6,10 +6,9 @@ import (
 
 func IsUseBaseUrl(usedBy consts.UsedBy, src consts.ProcessorInterfaceSrc) (ret bool) {
 	ret = usedBy == consts.DiagnoseDebug ||
-		(usedBy == consts.ScenarioDebug &&
-			src == consts.InterfaceSrcDiagnose ||
+		(usedBy == consts.ScenarioDebug && (src == consts.InterfaceSrcDiagnose ||
 			src == consts.InterfaceSrcCustom ||
-			src == consts.InterfaceSrcCurl)
+			src == consts.InterfaceSrcCurl))
 
 	return
 }

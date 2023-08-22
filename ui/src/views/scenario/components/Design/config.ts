@@ -407,7 +407,7 @@ export const showLineScenarioType = [
  * 用于在场景执行日志在是否展示箭头
  * */
 export const showArrowScenarioType = [
-    // 'processor_interface_default',
+    'processor_interface_default',
     'processor_group_default',
     'processor_loop_time',
     'processor_loop_until',
@@ -483,7 +483,7 @@ export const scenarioTypeMapToText = {
     'processor_extractor_htmlquery': 'HTML 提取',
     'processor_extractor_xmlquery': 'XML 提取',
     'processor_variable_set': '设置变量',
-    'processor_variable_clear': '清除变量',
+    'processor_variable_clear': '删除变量',
     'processor_custom_code': '自定义代码',
 }
 

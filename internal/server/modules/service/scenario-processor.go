@@ -131,8 +131,9 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		interfaceEntity := agentExec.ProcessorInterface{}
 		copier.CopyWithOption(&interfaceEntity, debugData, copier.Option{DeepCopy: true})
 
-		server, _ := s.ServeServerRepo.Get(debugData.ServerId)
-		interfaceEntity.BaseUrl = server.Url
+		//server, _ := s.ServeServerRepo.Get(debugData.ServerId)
+		//interfaceEntity.BaseUrl = server.Url
+		interfaceEntity.BaseUrl = ""
 
 		interfaceEntity.ProcessorID = processor.ID
 		interfaceEntity.ParentID = processor.ParentId

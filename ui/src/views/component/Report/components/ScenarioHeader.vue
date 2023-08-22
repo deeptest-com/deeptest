@@ -27,14 +27,12 @@ const resultStatus = computed(() => {
   return props.record?.resultStatus || 'in-progress'
 })
 
-const progressValue = computed(() => {
-  return Number(getPercent(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0));
-});
+
 const progressValueStr = computed(() => {
   if(resultStatus.value === 'pass') {
     return '100.00%'
   }
-  return getPercentStr(logInfo.value?.passAssertionNum || 0, logInfo?.value.totalAssertionNum || 0);
+  return '20.00%'
 })
 
 const progressInfo = computed(() => {

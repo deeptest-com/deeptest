@@ -45,8 +45,8 @@ import {
   scenarioReports,
   reports,
   resetData,
-  execLogs, execResults, updateExecLogs, updateExecResult,statInfo
-  , statisticData, initData, progressStatus, progressValue, updatePlanRes,
+  execLogs, execResults, updateExecLogs, updateExecResult, statInfo
+  , statisticData, initData, progressStatus, progressValue, updatePlanRes, updateStatFromLog,
 } from '@/composables/useExecLogs';
 
 const props = defineProps<{
@@ -92,9 +92,14 @@ const basicInfoList = computed(() => {
       label: '执行环境',
       value: curEnv ? curEnv.name : '--'
     },
+    //   todo 创建人有问题
     {
       label: '创建人',
-      value: currUser.value.username || '--'
+      value: currUser.value.username || '暂无'
+    },
+    {
+      label: '执行人',
+      value: currUser.value.username || '暂无'
     },
   ]
 })
@@ -124,8 +129,8 @@ const OnWebSocketMsg = (data: any) => {
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
 
-  console.log('plan wsMsg***', wsMsg.data?.id);
-  console.log('plan wsMsg2***', wsMsg.data);
+  console.log('plan wsMsg***', wsMsg.data);
+  console.log('plan wsMsg2***', wsMsg);
 
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
@@ -151,8 +156,9 @@ const OnWebSocketMsg = (data: any) => {
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)
     updateExecLogs(log);
+  } else if (wsMsg.category === "stat") {
+    updateStatFromLog(log);
   }
-
   // 执行完毕
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';
@@ -160,7 +166,7 @@ const OnWebSocketMsg = (data: any) => {
     bus.emit(settings.eventGetPlansReports);
     bus.emit(settings.eventGetPlanDetail);
   } else {
-    console.log('其他情况：严格来说，不能执行到这儿:',wsMsg);
+    console.log('其他情况：严格来说，不能执行到这儿:', wsMsg);
   }
 };
 

@@ -123,6 +123,7 @@ import {
   defineEmits,
   watch,
   computed,
+  onMounted
 } from 'vue';
 import {useStore} from "vuex";
 import {
@@ -166,6 +167,13 @@ const selectedCodes: any = computed(() => {
     return cloneDeep(defaultResponseCodes);
   }
   return codes;
+})
+
+onMounted(() => {
+  if (selectedMethodDetail?.value?.responseBodies?.length) {
+    debugger
+    selectedCode.value = selectedMethodDetail?.value?.responseBodies[0].code;
+  }
 })
 
 watch(() => {

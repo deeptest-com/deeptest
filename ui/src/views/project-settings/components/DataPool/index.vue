@@ -86,7 +86,7 @@ let formConfig = ref([
   {
     type: 'input',
     modelName: 'name',
-    placeholder: '服务名称',
+    placeholder: '数据池名称',
     valueType: 'string'
   },
   {
@@ -119,6 +119,8 @@ async function list(name = '') {
   })
 }
 
+const dataArr = [['A', 'B', 'C'], [1, 2, 3]]
+const data = ref<any[][]>(dataArr)
 async function handleAdd(formData: any) {
   const { name, username, description } = formData;
   const result = userListOptions.value.filter((e: any) => e.value === username);
@@ -127,6 +129,7 @@ async function handleAdd(formData: any) {
     formState: {
       userId: result && result[0] && result[0].id,
       name,
+      data: JSON.stringify(data.value),
       description
     },
     action: 'create'

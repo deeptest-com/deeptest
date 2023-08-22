@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -69,6 +70,9 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 	report.CreateUserId = userId
 	report.ProgressStatus = consts.End
 	report.ResultStatus = consts.Pass
+
+	stat, _ := json.Marshal(result.Stat)
+	report.StatRaw = string(stat)
 
 	scenarioReportIds := make([]uint, 0)
 	for _, scenarioResult := range result.Scenarios {

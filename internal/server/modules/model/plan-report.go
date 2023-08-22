@@ -49,6 +49,8 @@ type PlanReport struct {
 	SerialNumber string `json:"serialNumber"`
 	ExecEnvId    uint   `json:"execEnvId"` //执行环境Id
 
+	StatRaw string `json:"stat"`
+
 	//Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }
 

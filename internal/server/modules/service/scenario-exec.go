@@ -87,6 +87,9 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 		ExecEnvId:    rootResult.EnvironmentId,
 	}
 
+	stat, _ := json.Marshal(rootResult.Stat)
+	report.StatRaw = string(stat)
+
 	// generate report
 	s.countRequest(rootResult, &report)
 	s.summarizeInterface(&report)

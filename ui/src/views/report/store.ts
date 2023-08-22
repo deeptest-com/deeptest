@@ -145,10 +145,9 @@ const StoreModel: ModuleType = {
                             label: '创建人',
                             value: data.createUserName || '--'
                         },
-                        // TODO 执行人有问题，待确定
                         {
                             label: '执行人',
-                            value: data.createUserName || '--'
+                            value: data.execUserName || '--'
                         },
                     ],
                     statisticData: {

@@ -7,6 +7,11 @@
         <EditAndShowField :custom-class="'show-on-hover'" placeholder="修改标题" :value="endpointDetail?.title || ''"
                           @update="updateTitle"/>
       </div>
+      <div class="header-operation">
+        <a-tooltip :title="'分享链接'">
+          <ShareAltOutlined @click.stop="handleShare" />
+        </a-tooltip>
+      </div>
     </template>
     <template #basicInfo>
       <!-- 基本信息 -->
@@ -58,6 +63,7 @@
 
 <script lang="ts" setup>
 import {computed, defineEmits, defineProps, ref,} from 'vue';
+import { ShareAltOutlined } from '@ant-design/icons-vue';
 import IconSvg from "@/components/IconSvg";
 import EndpointBasicInfo from './EndpointBasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
@@ -80,7 +86,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['ok', 'close', 'refreshList']);
+const emit = defineEmits(['ok', 'close', 'refreshList', 'share']);
 
 const showList = ref(true)
 const docsData = ref(null);
@@ -190,6 +196,10 @@ async function save() {
   store.commit("Global/setSpinning",false)
   message.success('保存成功');
   emit('refreshList');
+}
+
+function handleShare() {
+  emit('share', endpointDetail.value.id);
 }
 
 

@@ -1,6 +1,6 @@
 <template>
   <div class="response-result">
-    <div v-if="showStatus" class="row status">
+    <div class="row status">
       <span class="col">
         状态: 
         <a-tooltip :title="responseData.statusContent">
@@ -24,15 +24,15 @@
         :open="!entityData.disabled"
         @change="change"
         />
-      <ResultMsg :customClass="!showBackground ? 'trans' : ''" :responseData="responseDataForDefine"/>
+      <ResultMsg :responseData="responseDataForDefine"/>
       <div class="title" v-if="responseDataForAssert.length > 0">断言结果</div>
-      <ResultMsg :customClass="!showBackground ? 'trans' : ''" :responseData="responseDataForAssert"/>
+      <ResultMsg :responseData="responseDataForAssert"/>
     </template>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, watch,ref, defineProps} from "vue";
+import {computed, watch,ref} from "vue";
 import {useStore} from "vuex";
 
 import {StateType as Debug} from "@/views/component/debug/store";
@@ -40,21 +40,6 @@ import {useI18n} from "vue-i18n";
 import ResponseDefine from "./ResponseDefine.vue";
 import ResultMsg from "./ResultMsg.vue";
 import {responseCodes} from '@/config/constant';
-
-const props = defineProps({
-  showStatus: {
-    type: Boolean,
-    default: true,
-  },
-  showBackground: {
-    type: Boolean,
-    default: true,
-  },
-  data: {
-    type: Object,
-    required: false,
-  }
-})
 
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug }>();
@@ -68,8 +53,9 @@ const responseDataForAssert = computed(()=>resultData.value.filter((item:any)=>i
 
 watch(responseData, (newVal) => {
   console.log('responseData', responseData.value.invokeId)
-  if ((props.data && props.data.invokeId) || responseData.value.invokeId)
-    store.dispatch("Debug/getInvocationResult", (props.data && props.data.invokeId) || responseData.value.invokeId)
+  if (responseData.value.invokeId) {
+    store.dispatch("Debug/getInvocationResult", responseData.value.invokeId)
+  }
 }, {immediate: true, deep: true})
 
 const getStatusCodeColor = (value) => {

@@ -1,4 +1,4 @@
-package execUtils
+package agentExec
 
 import (
 	"encoding/json"
@@ -45,8 +45,34 @@ func CountStat(result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat
 		Stat.InterfacePass += 1
 	} else if result.ResultStatus == consts.Fail {
 		Stat.InterfaceFail += 1
-	} else if result.ResultStatus == consts.Skip {
-		Stat.InterfaceSkip += 1
+	}
+
+	return Stat
+}
+
+func CountSkip(executedProcessorIds map[uint]bool, skippedChildren []*Processor) agentDomain.InterfaceStat {
+	countedProcessorIds := map[uint]bool{}
+	countSkipInterface(executedProcessorIds, skippedChildren, &countedProcessorIds)
+
+	return Stat
+}
+
+func countSkipInterface(executedProcessorIds map[uint]bool, skippedChildren []*Processor, countedProcessorIds *map[uint]bool) agentDomain.InterfaceStat {
+	for _, child := range skippedChildren {
+		if child.Disable {
+			continue
+		}
+
+		_, executed := executedProcessorIds[child.ID]
+		_, counted := (*countedProcessorIds)[child.ID]
+		if child.EntityType == consts.ProcessorInterfaceDefault && !executed && !counted {
+			Stat.InterfaceSkip += 1
+			(*countedProcessorIds)[child.ID] = true
+		}
+
+		if len(child.Children) > 0 {
+			countSkipInterface(map[uint]bool{}, child.Children, countedProcessorIds)
+		}
 	}
 
 	return Stat

@@ -69,6 +69,8 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
+	executedProcessorIds := map[uint]bool{}
+
 	for i := 0; i < entity.RepeatTimes; i++ {
 		if entity.IsRand {
 			iterator.Data = randArr(iterator.Data)
@@ -92,6 +94,8 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 					continue
 				}
 
+				executedProcessorIds[child.ID] = true
+
 				if round == "" {
 					round = fmt.Sprintf("第 %v 轮，%v = %v", i+1, iterator.VariableName, commonUtils.JsonEncode(item))
 					child.Round = round
@@ -101,6 +105,9 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 			}
 		}
 	}
+
+	stat := CountSkip(executedProcessorIds, processor.Children)
+	execUtils.SendStatMsg(stat, session.WsMsg)
 
 	return
 }

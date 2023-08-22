@@ -59,9 +59,9 @@ watch(() => {
     timeId.value && window.clearInterval(timeId.value);
   }
 })
-onUnmounted(() => {
-  clearInterval(timeId.value);
-});
+
+
+
 </script>
 
 <style scoped lang="less">

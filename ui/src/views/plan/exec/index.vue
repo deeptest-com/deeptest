@@ -134,7 +134,7 @@ const OnWebSocketMsg = (data: any) => {
 
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
-    initData({});
+    // initData();
     progressStatus.value = 'in_progress';
   }
 

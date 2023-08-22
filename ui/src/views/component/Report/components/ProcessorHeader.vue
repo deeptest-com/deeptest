@@ -66,9 +66,9 @@
       <template v-if="record.processorType === 'processor_variable_set'">
         <p class="text">设置变量 <code>{{ `${detail?.variableName}` }}</code>为<code>{{ `${detail?.variableValue}` }}</code></p>
       </template>
-      <!-- ::::清除变量 -->
+      <!-- ::::删除变量 -->
       <template v-if="record.processorType === 'processor_variable_clear'">
-        <p class="text">清除变量<code>{{ `${detail?.variableName}` }}</code></p>
+        <p class="text">删除变量<code>{{ `${detail?.variableName}` }}</code></p>
       </template>
       <!-- ::::输出 -->
       <template v-if="record.processorType === 'processor_print_default'">

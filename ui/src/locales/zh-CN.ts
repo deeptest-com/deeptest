@@ -130,7 +130,7 @@ export default {
 
     'processor_variable_get': '获取变量',
     'processor_variable_set': '设置变量',
-    'processor_variable_clear': '清除变量',
+    'processor_variable_clear': '删除变量',
 
     'processor_assertion_default': '断言',
     // 'processor_assertion_equal': '等于',

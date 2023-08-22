@@ -38,8 +38,8 @@ const baseInfoList = computed(() => {
     {value: reportsDetail.value.execEnv || '暂无', label: '执行环境'},
     {value: reportsDetail.value.createUserName || '暂无', label: '创建人'},
     //  TODO，确定字段
-    {value: reportsDetail.value.createUserName || '暂无', label: '执行人'},
-    {value: reportsDetail.value.priority || '暂无', label: '优先级'},
+    {value: reportsDetail.value.execUserName || '暂无', label: '执行人'},
+    {value: reportsDetail.value.priority || '未设置', label: '优先级'},
   ]
 })
 

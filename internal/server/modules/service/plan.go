@@ -37,6 +37,7 @@ func (s *PlanService) GetById(id uint, detail bool) (ret v1.PlanAndReportDetail,
 	}
 	userIds = append(userIds, plan.AdminId)
 	userIds = append(userIds, plan.UpdateUserId)
+	userIds = append(userIds, plan.CreateUserId)
 
 	lastPlanReport, err := s.PlanReportRepo.GetLastByPlanId(id)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -68,6 +69,9 @@ func (s *PlanService) GetById(id uint, detail bool) (ret v1.PlanAndReportDetail,
 	}
 	if updateUserName, ok := userIdNameMap[plan.UpdateUserId]; ok {
 		ret.UpdateUserName = updateUserName
+	}
+	if createUserName, ok := userIdNameMap[plan.CreateUserId]; ok {
+		ret.CreateUserName = createUserName
 	}
 	ret.Id = plan.ID
 	ret.CreatedAt = plan.CreatedAt

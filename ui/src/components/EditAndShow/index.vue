@@ -20,7 +20,7 @@
 
   <div :class="['editor','show-on-hover', customClass]" v-else>
     <span class="title" :title="fieldValue" @click.stop="handleClick">
-      {{ fieldValue || '暂无' }}
+      {{ fieldValue || emptyValue }}
     </span> &nbsp;&nbsp;
 
     <span class="edit-icon">
@@ -69,6 +69,11 @@ const props = defineProps({
     required: false,
     type: Boolean,
     default: false,
+  },
+  emptyValue: {
+    required: true,
+    type: String,
+    default: '暂无',
   },
 })
 const emit = defineEmits(['update', 'edit']);

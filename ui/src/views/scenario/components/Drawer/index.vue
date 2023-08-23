@@ -61,7 +61,6 @@
         :title="'执行场景'"
         class="drawer"
         wrapClassName="drawer-exec"
-        :bodyStyle="{padding:'16px',marginBottom:'56px'}"
         @close="onCloseExecDrawer">
       <ExecInfo v-if="execDrawerVisible"/>
     </a-drawer>
@@ -81,7 +80,6 @@
         :visible="execListDetailVisible"
         class="drawer"
         wrapClassName="drawer-exec-history-detail"
-        :bodyStyle="{padding:'16px',marginBottom:'56px'}"
         @close="execListDetailVisible = false">
       <template #title>
         <div class="drawer-header">
@@ -275,34 +273,6 @@ const isShowSync = computed(() => {
 })
 
 </script>
-
-<style lang="less">
-.drawer-exec {
-  .ant-drawer-wrapper-body {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-
-    .ant-drawer-header {
-      height: 55px;
-    }
-
-    .ant-drawer-body {
-      flex: 1;
-      height: 0;
-
-      .scenario-exec-info-main {
-        height: 100%;
-
-        .scenario-exec-log-tree {
-          height: calc(100% - 300px);
-          overflow-y: auto;
-        }
-      }
-    }
-  }
-}
-</style>
 
 <style lang="less" scoped>
 .scenario-interface-design {

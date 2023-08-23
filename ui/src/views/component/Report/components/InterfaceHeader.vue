@@ -2,7 +2,7 @@
   <div class="endpoint-header">
     <div class="endpoint-method">
       <IconSvg :type="DESIGN_TYPE_ICON_MAP[endpointData.processorType]" class="processor-icon-svg"/>
-      <span class="endpoint-method" :style="{ color: getMethodColor(reqContent.method) }">
+      <span :style="{ color: getMethodColor(reqContent.method) }">
               {{ reqContent.method }}
       </span>
     </div>
@@ -186,25 +186,14 @@ function handleQueryDetail() {
   .endpoint-method {
     font-weight: bold;
     font-size: 14px;
-    //min-width: 54px;
     line-height: 22px;
     text-align: left;
-    margin-right: 8px;
-    width: 100px;
-
-    .endpoint-success {
-      color: #04C495;
-    }
-
-    .endpoint-error,
-    .endpoint-expires {
-      color: #F63838;
-    }
+    margin-right: 20px;
   }
 
   .endpoint-url {
     max-width: 280px;
-    margin-right: 16px;
+    margin-right: 20px;
     display: inline-block;
     white-space: nowrap;
     overflow: hidden;

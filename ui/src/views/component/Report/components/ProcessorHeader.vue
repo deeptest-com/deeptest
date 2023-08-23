@@ -27,7 +27,7 @@
       </template>
       <!-- ::::迭代次数：processor_loop_time -->
       <template v-if="record.processorType === 'processor_loop_time'">
-        <p class="text">迭代<code>{{ `${detail?.times}` }}</code>次</p>
+        <p class="text"><code>{{ `${detail?.times}` }}</code>次</p>
       </template>
       <!-- ::::循环列表 -->
       <template v-if="record.processorType === 'processor_loop_in'">
@@ -47,11 +47,11 @@
       </template>
       <!-- ::::条件分支-如果 -->
       <template v-if="record.processorType === 'processor_logic_if'">
-        <p class="text">如果 <code>{{ `${detail?.expression}` }}</code> 为 <code>true</code></p>
+        <p class="text"><code>{{ `${detail?.expression}` }}</code> 为 <code>true</code></p>
       </template>
       <!-- ::::否则 -->
       <template v-if="record.processorType === 'processor_logic_else'">
-        <p class="text">否则</p>
+        <p class="text"></p>
       </template>
       <!-- ::::等待时间 -->
       <template v-if="record.processorType === 'processor_time_default'">
@@ -75,7 +75,7 @@
       </template>
       <!-- ::::输出 -->
       <template v-if="record.processorType === 'processor_print_default'">
-        <p class="text">输出：{{ `${detail?.result}` }} </p>
+        <p class="text">{{ `${detail?.result}` }} </p>
       </template>
       <!-- ::::断言 -->
       <template v-if="record.processorType === 'processor_assertion_default'">
@@ -148,8 +148,8 @@ function clickMore() {
   }
 
   .left {
-    margin-right: 8px;
-    width: 100px;
+    margin-right: 20px;
+    max-width: 100px;
     white-space: nowrap; /* 禁止换行 */
     overflow: hidden; /* 超出部分隐藏 */
     text-overflow: ellipsis; /* 显示省略号 */

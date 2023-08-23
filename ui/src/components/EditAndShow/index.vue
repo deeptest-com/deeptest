@@ -96,9 +96,6 @@ function edit() {
 function cancelEdit() {
   fieldValue.value = props.value;
   isEditing.value = false;
-  if (props.canEmpty) {
-    emit('update', fieldValue.value);
-  }
 }
 
 function handleClick() {

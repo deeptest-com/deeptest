@@ -81,8 +81,8 @@
                       {{ card?.coverage?card.coverage+"%":0+'%' }}
                     </div>
                     <span class="card-content-text">环比</span>
-                      <arrow-up-outlined  class="card-content-up"   v-if="card?.scenarioHb > 0"/>
-                      <arrow-down-outlined class="card-content-down" v-if="card?.scenarioHb < 0"  />
+                      <arrow-up-outlined  class="card-content-up"   v-if="card?.coverageHb > 0"/>
+                      <arrow-down-outlined class="card-content-down" v-if="card?.coverageHb < 0"  />
                   </template>
                 </a-statistic>
 

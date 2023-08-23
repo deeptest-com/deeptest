@@ -27,7 +27,7 @@
             <CaretDownOutlined/>
           </template>
           <template #title="nodeProps">
-            <div class="tree-title" :ref="(el) => treeItemRef[nodeProps.id] = el" :draggable="nodeProps.id === -1">
+            <div class="tree-title" :draggable="nodeProps.id === -1">
                 <span class="tree-title-text" v-if="nodeProps.title.indexOf(searchValue) > -1">
                   {{ nodeProps.title.substr(0, nodeProps.title.indexOf(searchValue)) }}
                   <span style="color: #f50">{{ searchValue }}</span>
@@ -72,6 +72,7 @@ import {
   computed, ref, onMounted,
   watch, defineEmits, defineProps, createVNode, nextTick
 } from 'vue';
+import { useRouter } from 'vue-router';
 import {
   PlusOutlined,
   CaretDownOutlined,
@@ -90,6 +91,7 @@ import {getCache} from "@/utils/localCache";
 import settings from "@/config/settings";
 import { getUrlKey } from '@/utils/url';
 
+const router = useRouter();
 const store = useStore<{ Endpoint: EndpointStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
@@ -140,7 +142,6 @@ const treeData: any = computed(() => {
   }
 
   const ret = data?.[0]?.children || null;
-  console.log('category treeData', ret)
 
   return ret
 });
@@ -156,14 +157,15 @@ function handleFindSearch() {
   if (shareInfo.selectedCategoryId) {
     selectedKeys.value.push(shareInfo.selectedCategoryId);
     setSelectedKey('category-endpoint', currProject.value.id, selectedKeys.value[0]);
-
-    if(treeItemRef.value?.[shareInfo.selectedCategoryId]){
-      treeItemRef.value[shareInfo.selectedCategoryId].scrollIntoView({
-        behavior: 'auto',
-        block: 'center',
-        inline: 'center',
-      });
-    }
+    setTimeout(() => {
+      if (document.getElementsByClassName('ant-tree-treenode-selected').length > 0) {
+        document.getElementsByClassName('ant-tree-treenode-selected')[0].scrollIntoView({
+          behavior: 'auto',
+          block: 'center',
+          inline: 'center',
+        });
+      }
+    }, 1000);
   }
 }
 
@@ -214,9 +216,7 @@ async function expandAll() {
   expandedKeys.value = keys;
 
   await nextTick();
-  setTimeout(() => {
-    handleFindSearch();
-  }, 0);
+  handleFindSearch();
 }
 
 
@@ -350,11 +350,6 @@ async function onDrop(info: DropEvent) {
     message.error('移动失败');
   }
 }
-
-onMounted(async () => {
-  await loadCategories();
-  expandAll();
-})
 
 </script>
 

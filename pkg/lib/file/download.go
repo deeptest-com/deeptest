@@ -1,6 +1,7 @@
 package _fileUtils
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -33,7 +34,12 @@ func Download(url string, dst string) (err error) {
 }
 
 func HTTPDownload(uri string) ([]byte, error) {
-	res, err := http.Get(uri)
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+	res, err := client.Get(uri)
+	//res, err := http.Get(uri)
 	if err != nil {
 		fmt.Printf(err.Error())
 	}

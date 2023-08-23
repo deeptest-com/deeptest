@@ -156,6 +156,7 @@ func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 
 	} else if processorCategory == consts.ProcessorData {
 		var entity model.ProcessorData
+		entity.Separator = ","
 		err = ctx.ReadJSON(&entity)
 		err = c.ScenarioProcessorService.SaveData(&entity)
 		po = entity

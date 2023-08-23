@@ -2,8 +2,11 @@ package agentExec
 
 import (
 	"encoding/json"
+	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 )
@@ -53,12 +56,32 @@ type ProcessorBase struct {
 func (p *Processor) Run(s *Session) (err error) {
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
 	CurrScenarioProcessorId = p.ID
+	defer func() {
+		if errX := recover(); errX != nil {
+			p.Error(s, errX)
+		}
+	}()
 
 	if !p.Disable && p.Entity != nil && !ForceStopExec {
 		p.Entity.Run(p, s)
 	}
 
 	return
+}
+
+func (p *Processor) Error(s *Session, err interface{}) {
+
+	var detail map[string]interface{}
+	commonUtils.JsonDecode(p.Result.Detail, &detail)
+	if detail == nil {
+		detail = map[string]interface{}{}
+	}
+
+	detail["exception"] = fmt.Sprintf("错误：%v", err)
+	p.Result.Detail = commonUtils.JsonEncode(detail)
+	execUtils.SendExecMsg(p.Result, s.WsMsg)
+
+	execUtils.SendExceptionMsg(s.WsMsg)
 }
 
 func (p *Processor) AddResultToParent() (err error) {

@@ -16,7 +16,7 @@
     </template>
     <!-- 请求断言检查信息 -->
     <template v-if="invokeDetail.checkpoint && invokeDetail.checkpoint.length">
-      <div class="endpoint-expand-content">断言结果</div>
+      <div class="endpoint-expand-content" style="font-weight: bold;">断言结果</div>
       <div
         class="endpoint-expand-content"
         v-for="(item, index) in invokeDetail.checkpoint"

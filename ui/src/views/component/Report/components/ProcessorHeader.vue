@@ -3,19 +3,20 @@
     <div class="left" :class="{'hide-arrow' : !showArrowScenarioType.includes(record.processorType)}">
       <!-- ::::通用的场景图标 和 场景名称 -->
       <IconSvg :type="DESIGN_TYPE_ICON_MAP[record.processorType]" class="processor-icon-svg"/>
-      <a-typography-text strong v-if="!record.processorType.includes('processor_logic_')">
-        {{ scenarioTypeMapToText[record.processorType] }}
-        {{ record.name ? ` - ${record.name}`: '' }}
+      <a-typography-text 
+        :style="{maxWidth: '120px'}"
+        :ellipsis="{tooltip: name }"
+        :content="name"
+        strong 
+        v-if="!record.processorType.includes('processor_logic_')">
       </a-typography-text>
       <a-typography-text
-          strong
-          v-else
-          style=" display: inline-block; text-align: left;margin-right: 4px;"
-          :type="record.processorType === 'processor_logic_if' ? 'success' : 'danger'">
-        {{
-          record.processorType === 'processor_logic_if' ? 'if' : 'else'
-        }}
-        {{ record.name ? ` - ${record.name}`: '' }}
+        strong
+        :style="{maxWidth: '120px'}"
+        :ellipsis="{ tooltip: name }"
+        :content="name"
+        v-else
+        :type="record.processorType === 'processor_logic_if' ? 'success' : 'danger'">
       </a-typography-text>
     </div>
 
@@ -131,6 +132,17 @@ const data:any = computed(() => {
   return props.record;
 })
 
+const name = computed(() => {
+  const recordData = props.record || {};
+  if (!Object.keys(recordData).length) {
+    return '---';
+  } else if (!recordData?.processorType.includes('processor_logic_')) {
+    return `${scenarioTypeMapToText[recordData.processorType]}${recordData.name ? ` - ${recordData.name}`: ''}`
+  } else {
+    return `${recordData.processorType === 'processor_logic_if' ? 'IF' : 'ELSE'}${recordData.name ? ` - ${recordData.name}`: ''}`
+  }   
+})
+
 const downloadUrl = computed(() => {
   return `${window.location.origin}/${detail?.value?.url}`
 })
@@ -158,10 +170,6 @@ function clickMore() {
 
   .left {
     margin-right: 20px;
-    max-width: 100px;
-    white-space: nowrap; /* 禁止换行 */
-    overflow: hidden; /* 超出部分隐藏 */
-    text-overflow: ellipsis; /* 显示省略号 */
     &.hide-arrow {
       margin-left: 28px;
     }

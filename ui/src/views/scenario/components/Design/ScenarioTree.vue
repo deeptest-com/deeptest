@@ -66,14 +66,18 @@
                     }}</a-tag>
                 </span>
                 <!-- 节点名称 -->
-                <span class="title-text" :title="dataRef.name"
+                <span class="title-text"
                       v-if="dataRef.name && needHandleShowName.includes(dataRef.entityType)">
-                  {{ dataRef.name }}
+                  <a-typography-text
+                    :ellipsis="{ tooltip: dataRef.name }"
+                    :content="dataRef.name"
+                  />
                 </span>
-                <span class="title-text" :title="dataRef.name" v-else-if= "!needHandleShowName.includes(dataRef.entityType)">
-                  {{
-                    dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`
-                  }}
+                <span class="title-text" v-else-if= "!needHandleShowName.includes(dataRef.entityType)">
+                  <a-typography-text
+                    :ellipsis="{ tooltip: `${dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`}` }"
+                    :content="`${dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`}`"
+                  />
                 </span>
               </div>
               <div class="icon" v-if="dataRef.id > 0"
@@ -860,15 +864,19 @@ onUnmounted(() => {
   height: 24px;
 
   .title {
-    flex: 1;
-    width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    //display: inline-block;
+    width: calc(100% - 16px);
     display: flex;
     align-items: center;
     justify-content: flex-start;
+
+    .title-text {
+      flex: 1;
+      width: calc(100% - 60px);
+
+      :deep(.ant-typography) {
+        max-width: 100%;
+      }
+    }
   }
 
   .icon {

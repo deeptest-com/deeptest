@@ -117,6 +117,10 @@ const execStart = async () => {
 
 const execCancel = () => {
   progressStatus.value = 'cancel';
+  stopExec();
+};
+
+const stopExec = () => {
   const msg = {act: 'stop', execReq: {planId: currPlan.value && currPlan.value.id}};
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
 };
@@ -125,6 +129,7 @@ const execCancel = () => {
 const OnWebSocketMsg = (data: any) => {
   if (!data.msg) return;
   if (progressStatus.value === 'cancel') return;
+  if (progressStatus.value === 'exception') return;
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
 
@@ -157,6 +162,10 @@ const OnWebSocketMsg = (data: any) => {
     updateExecLogs(log);
   } else if (wsMsg.category === "stat") {
     updateStatFromLog(log);
+  }
+  else if (wsMsg.category === "exception") {
+    progressStatus.value = 'exception';
+    stopExec();
   }
   // 执行完毕
   else if (wsMsg.category == 'end') {
@@ -196,7 +205,7 @@ watch(() => {
     bus.off(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
   }
 }, {
-  immediate: true,
+  immediate: false,
 });
 
 onMounted(() => {

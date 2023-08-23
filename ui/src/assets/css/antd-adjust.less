@@ -23,6 +23,14 @@
     background-color: @itemSelectedBackground;
 }
 
+.ant-pagination-total-text {
+    display: inline-block;
+    height: 32px;
+    margin-right: 20px;
+    line-height: 30px;
+    vertical-align: middle;
+}
+
 .ant-empty.dp-empty-no-margin {
     margin: 0px !important;
     padding: 32px 0 !important;
@@ -128,7 +136,7 @@
     padding: 12px;
 }
 
-.drawer-exec, 
+.drawer-exec,
 .drawer-exec-history-detail,
 .report-drawer-exec-history,
 .plan-drawer-exec {
@@ -136,21 +144,21 @@
         height: 100%;
         display: flex;
         flex-direction: column;
-  
+
         .ant-drawer-header {
             height: 55px;
         }
-    
+
         .ant-drawer-body {
             flex: 1;
             height: 0;
             padding: 16px 16px 32px;
-    
+
             .scenario-exec-info-main, .report-exec-info-main, .plan-exec-info-main {
                 height: 100%;
                 display: flex;
                 flex-direction: column;
-    
+
                 .log-tree-view {
                     flex: 1;
                     overflow-y: scroll;

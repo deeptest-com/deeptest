@@ -31,6 +31,7 @@ const (
 	Processor          WsMsgCategory = "processor"
 	Initialize         WsMsgCategory = "initialize"
 	Statistic          WsMsgCategory = "stat"
+	Exception          WsMsgCategory = "exception"
 )
 
 func (e WsMsgCategory) String() string {

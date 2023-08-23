@@ -102,7 +102,7 @@ const basicInfoList = computed(() => {
     },
     {
       label: '执行人',
-      value: currUser.value.username || '暂无'
+      value: currUser.value.name || '暂无'
     },
   ]
 })

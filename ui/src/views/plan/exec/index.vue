@@ -1,14 +1,18 @@
 <template>
   <div v-if="drawerVisible">
-    <a-drawer class="report-drawer" :closable="true" :width="1000" :bodyStyle="{ padding: '24px' }"
-              :visible="drawerVisible"
-              @close="onClose">
+    <a-drawer 
+      class="report-drawer" 
+      :closable="true" 
+      :width="1000" 
+      :visible="drawerVisible"
+      wrapClassName="plan-drawer-exec" 
+      @close="onClose">
       <template #title>
         <div class="drawer-header">
           <div>{{ '测试计划执行详情' }}</div>
         </div>
       </template>
-      <div class="drawer-content">
+      <div class="plan-exec-info-main">
         <ReportBasicInfo :items="basicInfoList || []" :showBtn="false"/>
         <StatisticTable :data="statisticData" :value="statInfo"/>
         <Progress :exec-status="progressStatus"
@@ -98,7 +102,7 @@ const basicInfoList = computed(() => {
     },
     {
       label: '执行人',
-      value: currUser.value.username || '暂无'
+      value: currUser.value.name || '暂无'
     },
   ]
 })

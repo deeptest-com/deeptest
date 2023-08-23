@@ -31,6 +31,10 @@
           <span>{{ momentUtc(record.updatedAt) }}</span>
         </template>
 
+        <template #createUserName="{ record }">
+          <span>{{ username(record.createUserName) }}</span>
+        </template>
+
         <template #action="{ record }">
           <a-button type="link" @click="() => copy(record)">
             <CopyOutlined title="复制" />
@@ -76,10 +80,10 @@ provide('usedBy', UsedBy.InterfaceDebug)
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 const {t} = useI18n();
 
-const store = useStore<{ Endpoint }>();
+const store = useStore<{ Endpoint,Project }>();
 const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
 const caseList = computed<any[]>(() => store.state.Endpoint.caseList);
-
+const userList = computed<any>(() => store.state.Project.userList);
 const props = defineProps({
   onDesign: {
     type: Function,
@@ -158,6 +162,11 @@ const updateName = async (value: string, record: any) => {
   list(endpoint.value.id)
 }
 
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
+}
+
 const columns = [
   {
     title: '编号',
@@ -172,6 +181,7 @@ const columns = [
   {
     title: '创建人',
     dataIndex: 'createUserName',
+    slots: {customRender: 'createUserName'},
     ellipsis: true,
     width: '100px',
   },

@@ -81,7 +81,7 @@ const baseInfoList = computed(() => {
     {value: momentUtc(new Date()) , label: '执行时间'},
     {value: curEnv?.name || '暂无', label: '执行环境'},
     {value: detailResult.value.creatorName || '暂无', label: '创建人'},
-    {value: currentUser?.value?.username || '暂无', label: '执行人'},
+    {value: currentUser?.value?.name || '暂无', label: '执行人'},
     {value: detailResult.value.priority || '未设置', label: '优先级'},
   ]
 });
@@ -114,11 +114,14 @@ onMounted(async () => {
   progressStatus.value = 'in_progress';
   await execStart();
   bus.on(settings.eventWebSocketMsg, OnWebSocketMsg);
+  bus.on(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
+
 })
 
 onUnmounted(() => {
   execCancel();
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
+  bus.off(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
 })
 
 const OnWebSocketMsg = (data: any) => {
@@ -168,6 +171,15 @@ const OnWebSocketMsg = (data: any) => {
   } else {
     console.log('wsMsg', wsMsg);
   }
+}
+
+// websocket 连接状态 查询
+const onWebSocketConnStatusMsg = (data: any) => {
+  if (!data.msg) {
+    return;
+  }
+  const {conn}: any = JSON.parse(data.msg);
+  progressStatus.value = conn === 'success' ? 'in_progress' : 'exception';
 }
 
 async function genReport() {

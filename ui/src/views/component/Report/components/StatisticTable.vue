@@ -104,7 +104,7 @@ watch(() => {
 </script>
 <style scoped lang="less">
 .report-statistical-table {
-  height: 240px;
+  height: 200px;
   background: #FFFFFF;
   border: 1px solid #E5E5E5;
   margin-bottom: 24px;
@@ -113,8 +113,8 @@ watch(() => {
   padding: 0 16px;
   box-sizing: border-box;
   .statistical-main {
-    width: 214px;
-    height: 214px;
+    width: 200px;
+    height: 200px;
     margin-right: 32px;
   }
 

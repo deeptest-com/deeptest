@@ -44,21 +44,24 @@
                 </div>
               </div>
             </a-form-item>
-            <a-form-item label="管理员" v-bind="validateInfos.adminId">
-              <a-select
-                  v-model:value="formStateRef.adminId"
-                  show-search
-                  placeholder="请选择管理员"
-                  @blur="validate('adminId', { trigger: 'blur' }).catch(() => {})"
-              >
-                <a-select-option
-                    v-for="(option, key) in userListOptions"
-                    :key="key"
-                    :value="option.id"
-                >{{ option.label }}
-                </a-select-option
-                >
+            <a-form-item label="管理员" v-bind="validateInfos.adminName">
+              <a-select v-model:value="formStateRef.adminName" show-search :options="userListOptions" optionFilterProp="label"
+                        @blur="validate('adminName', { trigger: 'blur' }).catch(() => {})">
               </a-select>
+<!--              <a-select-->
+<!--                  v-model:value="formStateRef.adminId"-->
+<!--                  show-search-->
+<!--                  placeholder="请选择管理员"-->
+<!--                  @blur="validate('adminId', { trigger: 'blur' }).catch(() => {})"-->
+<!--              >-->
+<!--                <a-select-option-->
+<!--                    v-for="(option, key) in userListOptions"-->
+<!--                    :key="key"-->
+<!--                    :value="option.id"-->
+<!--                >{{ option.label }}-->
+<!--                </a-select-option-->
+<!--                >-->
+<!--              </a-select>-->
             </a-form-item>
             <a-form-item label="示例数据">
               <a-switch v-model:checked="formStateRef.includeExample"/>
@@ -108,6 +111,7 @@ const projectInfo = {
   logo: getProjectLogo("default_logo1"),
   shortName: "",
   adminId: null,
+  adminName: "",
   includeExample: true,
 };
 
@@ -133,7 +137,7 @@ const rulesRef = reactive({
   shortName: [
     {required: true, validator: validateShortName, trigger: "blur"},
   ],
-  adminId: [{required: true, message: "请选择管理员"}],
+  adminName: [{required: true, message: "请选择管理员"}],
   desc: [{max: 180, message: "项目简介应小于180位", trigger: "blur"}],
 });
 
@@ -146,6 +150,11 @@ const submitForm = async () => {
   console.log("submitForm", formStateRef);
   validate()
       .then(() => {
+        store.state.Project.userList?.forEach((item)=>{
+          if (item.username == formStateRef.adminName){
+            formStateRef.adminId = item.id
+          }
+        })
         store.dispatch("Project/saveProject", {...formStateRef}).then((res) => {
           if (res === true) {
             message.success("保存成功");

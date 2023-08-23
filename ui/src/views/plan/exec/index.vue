@@ -1,11 +1,11 @@
 <template>
   <div v-if="drawerVisible">
-    <a-drawer 
-      class="report-drawer" 
-      :closable="true" 
-      :width="1000" 
+    <a-drawer
+      class="report-drawer"
+      :closable="true"
+      :width="1000"
       :visible="drawerVisible"
-      wrapClassName="plan-drawer-exec" 
+      wrapClassName="plan-drawer-exec"
       @close="onClose">
       <template #title>
         <div class="drawer-header">
@@ -188,7 +188,7 @@ const onWebSocketConnStatusMsg = (data: any) => {
     return;
   }
   const {conn}: any = JSON.parse(data.msg);
-  progressStatus.value = conn === 'success' ? 'in_progress' : 'failed';
+  progressStatus.value = conn === 'success' ? 'in_progress' : 'exception';
 }
 
 function onClose() {

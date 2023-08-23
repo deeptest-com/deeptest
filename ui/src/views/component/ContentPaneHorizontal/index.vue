@@ -5,11 +5,11 @@
   <div class="container" :style="containerStyle">
     <div class="content">
       <multipane class="vertical-panes" layout="horizontal">
-        <div class="pane top" :style="{ minHeight: '36px', height: topPercent }">
+        <div class="pane top" :style="{ minHeight: '36px', height: '60%'}">
           <slot name="top"/>
         </div>
         <multipane-resizer/>
-        <div class="pane bottom" :style="{ minHeight: '36px', height: bottomPercent }">
+        <div class="pane bottom" :style="{ minHeight: '36px', flexGrow:1}">
           <slot name="bottom"/>
         </div>
       </multipane>
@@ -18,7 +18,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from 'vue'
+import { defineProps,ref } from 'vue'
 import {Multipane, MultipaneResizer} from '@/components/Resize/index';
 
 const props = defineProps({
@@ -39,12 +39,14 @@ const props = defineProps({
   },
 })
 
+
 </script>
 
 <style lang="less" scoped>
 .container {
   margin: 16px;
   background: #ffffff;
+  //height: 100%;
   height: calc(100vh - 96px);
   overflow: hidden;
   :deep(.ant-pagination) {

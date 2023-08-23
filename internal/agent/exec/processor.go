@@ -58,7 +58,7 @@ func (p *Processor) Run(s *Session) (err error) {
 	CurrScenarioProcessorId = p.ID
 	defer func() {
 		if errX := recover(); errX != nil {
-
+			p.Error(s, errX)
 		}
 	}()
 
@@ -69,7 +69,7 @@ func (p *Processor) Run(s *Session) (err error) {
 	return
 }
 
-func (p *Processor) Error(s *Session, err error) {
+func (p *Processor) Error(s *Session, err interface{}) {
 
 	var detail map[string]interface{}
 	commonUtils.JsonDecode(p.Result.Detail, &detail)

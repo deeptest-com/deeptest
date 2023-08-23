@@ -20,6 +20,8 @@ type ExtractorBase struct {
 	Variable string                `gorm:"default:''" json:"variable"`
 	Scope    consts.ExtractorScope `json:"scope" gorm:"default:public"`
 
+	Default string `gorm:"default:''" json:"default"` // for cookie
+
 	Result       string              `json:"result"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg"`
@@ -82,33 +84,6 @@ type ScriptBase struct {
 
 func (condition ScriptBase) GetType() consts.ConditionType {
 	return consts.ConditionTypeScript
-}
-
-type CookieBase struct {
-	ConditionSrc consts.ConditionSrc `json:"conditionSrc"`
-
-	CookieName   string `json:"cookieName"`
-	CookieDomain string `json:"cookieDomain"`
-	VariableName string `json:"variableName"`
-	Default      string `json:"default"`
-	Comments     string `json:"comments"`
-
-	Result       string              `json:"result"`
-	ResultStatus consts.ResultStatus `json:"resultStatus"`
-	ResultMsg    string              `json:"resultMsg"`
-
-	ConditionId         uint                 `json:"conditionId"`
-	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object
-	ConditionEntityType consts.ConditionType `gorm:"-" json:"conditionEntityType"` // for log only
-	InvokeId            uint                 `json:"invokeId"`                     // for log only
-
-	Disabled bool `json:"disabled"`
-
-	VariableSettings []ExecVariable `gorm:"-" json:"variableSettings"`
-}
-
-func (condition CookieBase) GetType() consts.ConditionType {
-	return consts.ConditionTypeCookie
 }
 
 type ResponseDefineBase struct {

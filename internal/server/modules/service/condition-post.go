@@ -10,7 +10,6 @@ import (
 type PostConditionService struct {
 	PostConditionRepo *repo.PostConditionRepo `inject:""`
 	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
-	CookieRepo        *repo.CookieRepo        `inject:""`
 	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
 	ScriptRepo        *repo.ScriptRepo        `inject:""`
 }
@@ -34,10 +33,6 @@ func (s *PostConditionService) Create(condition *model.DebugPostCondition) (err 
 
 	if condition.EntityType == consts.ConditionTypeExtractor {
 		po := s.ExtractorRepo.CreateDefault(condition.ID)
-		entityId = po.ID
-
-	} else if condition.EntityType == consts.ConditionTypeCookie {
-		po := s.CookieRepo.CreateDefault(condition.ID)
 		entityId = po.ID
 
 	} else if condition.EntityType == consts.ConditionTypeCheckpoint {

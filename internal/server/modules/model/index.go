@@ -37,7 +37,6 @@ var (
 		&DebugConditionExtractor{},
 		&DebugConditionCheckpoint{},
 		&DebugConditionScript{},
-		&DebugConditionCookie{},
 
 		&DiagnoseInterface{},
 
@@ -70,7 +69,6 @@ var (
 		&PlanReport{},
 		&ExecLogProcessor{},
 		&ExecLogExtractor{},
-		&ExecLogCookie{},
 		&ExecLogCheckpoint{},
 		&ExecLogScript{},
 

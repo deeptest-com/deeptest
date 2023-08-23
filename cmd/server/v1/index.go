@@ -41,7 +41,6 @@ type IndexModule struct {
 	PreConditionModule  *router.PreConditionModule  `inject:""`
 	PostConditionModule *router.PostConditionModule `inject:""`
 	ExtractorModule     *router.ExtractorModule     `inject:""`
-	CookieModule        *router.CookieModule        `inject:""`
 	CheckpointModule    *router.CheckpointModule    `inject:""`
 	ScriptModule        *router.ScriptModule        `inject:""`
 
@@ -114,7 +113,6 @@ func (m *IndexModule) Party() module.WebModule {
 		m.PreConditionModule.Party(),
 		m.PostConditionModule.Party(),
 		m.ExtractorModule.Party(),
-		m.CookieModule.Party(),
 		m.CheckpointModule.Party(),
 		m.ScriptModule.Party(),
 

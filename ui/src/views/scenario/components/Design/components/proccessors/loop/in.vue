@@ -5,7 +5,6 @@
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-
           <a-form-item label="变量名称" v-bind="validateInfos.variableName">
             <a-input v-model:value="modelRef.variableName"
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
@@ -19,6 +18,11 @@
 
           <a-form-item label="是否随机">
             <a-switch v-model:checked="modelRef.isRand" />
+          </a-form-item>
+
+          <a-form-item label="跳出条件" name="breakIfExpression">
+            <a-input  v-model:value="modelRef.breakIfExpression"/>
+            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}'})}}</div>
           </a-form-item>
 
           <a-form-item label="备注" v-bind="validateInfos.comments">

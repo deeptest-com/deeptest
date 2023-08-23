@@ -169,15 +169,21 @@ function handleFindSearch() {
   }
 }
 
+onMounted(async () => {
+  await loadCategories();
+});
+
 async function loadCategories() {
   await store.dispatch('Endpoint/loadCategory');
   expandAll();
+  await nextTick();
+  handleFindSearch();
 }
 
 watch(() => {
   return currProject.value;
-}, async (newVal) => {
-  if (newVal?.id) {
+}, async (newVal, oldVal) => {
+  if (newVal?.id && oldVal?.id) { // 初始化 旧值为undefined 不需要重复调用loadCategories
     selectedKeys.value = [];
     expandedKeys.value = [];
     await loadCategories();
@@ -214,9 +220,6 @@ async function expandAll() {
   }
   fn(data);
   expandedKeys.value = keys;
-
-  await nextTick();
-  handleFindSearch();
 }
 
 

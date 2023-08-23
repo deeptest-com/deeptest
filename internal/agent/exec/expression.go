@@ -72,45 +72,54 @@ func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint
 	return
 }
 
+// a.1
 func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain.VarKeyValuePair, err error) {
 	ret = make(map[string]interface{}, 8)
 
 	variables := commUtils.GetVariablesInExpressionPlaceholder(expression)
 
-	for _, variableName := range variables {
+	for _, varName := range variables {
+		varNameWithoutPlus := strings.TrimLeft(varName, "+")
+
 		var vari domain.ExecVariable
-		vari, err = GetVariable(scopeId, variableName)
+		vari, err = GetVariable(scopeId, varNameWithoutPlus)
+		variValueStr := valueUtils.InterfaceToStr(vari.Value)
+
 		if err == nil {
-			ret[variableName] = vari.Value
+			var val interface{}
+			if strings.Index(varName, "+") == 0 { // is a number like ${+id}
+				val = _stringUtils.ParseInt(variValueStr)
+			} else {
+				val = variValueStr
+			}
+
+			ret[varNameWithoutPlus] = val
 		}
 	}
 
 	return
 }
 
-func generateGovaluateParamsWithVariables(expression string) (
-	govaluateParams map[string]interface{}, err error) {
+// a.2
+func generateGovaluateParamsWithVariables(expression string) (ret map[string]interface{}, err error) {
+	ret = make(map[string]interface{}, 0)
 
-	govaluateParams = make(map[string]interface{}, 0)
+	variables := commUtils.GetVariablesInExpressionPlaceholder(expression)
 
-	varsInExpression := commUtils.GetVariablesInExpressionPlaceholder(expression)
-
-	// ExecScene.EnvToVariables, ExecScene.Datapools
-
-	for _, varName := range varsInExpression {
+	for _, varName := range variables {
 		varNameWithoutPlus := strings.TrimLeft(varName, "+")
 
-		var valObj interface{}
-		variable, _ := GetVariable(CurrScenarioProcessorId, varNameWithoutPlus)
-		valStr := valueUtils.InterfaceToStr(variable.Value)
+		vari, _ := GetVariable(CurrScenarioProcessorId, varNameWithoutPlus)
+		variValueStr := valueUtils.InterfaceToStr(vari.Value)
 
-		if varNameWithoutPlus != varName { // is a number like ${+id}
-			valObj = _stringUtils.StrToInt(valStr)
+		var val interface{}
+		if strings.Index(varName, "+") == 0 { // is a number like ${+id}
+			val = _stringUtils.ParseInt(variValueStr)
 		} else {
-			valObj = valStr
+			val = variValueStr
 		}
 
-		govaluateParams[varNameWithoutPlus] = valObj
+		ret[varNameWithoutPlus] = val
 	}
 
 	return

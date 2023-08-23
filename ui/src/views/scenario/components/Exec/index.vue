@@ -113,6 +113,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  execCancel();
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 

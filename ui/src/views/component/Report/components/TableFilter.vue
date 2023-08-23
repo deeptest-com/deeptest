@@ -1,6 +1,6 @@
 <template>
     <div class="report-table-filter">
-        <div class="bulk-operation" v-if="showOperation">
+        <!-- <div class="bulk-operation" v-if="showOperation">
             <a-tooltip placement="bottomLeft" color="#fff">
                 <template #title>
                     <div class="actions">
@@ -8,9 +8,9 @@
                         <span class="action-item">删除</span>
                     </div>
                 </template>
-            <!--    <a-button type="primary">批量操作</a-button> -->
+               <a-button type="primary">批量操作</a-button>
             </a-tooltip>
-        </div>
+        </div> -->
         <a-form :model="formState" class="report-form">
             <div class="report-executor-selector">
                 <a-form-item name="executor" label="执行人">

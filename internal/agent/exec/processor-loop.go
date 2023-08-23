@@ -9,6 +9,7 @@ import (
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
+	"strings"
 	"time"
 )
 
@@ -48,16 +49,6 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 	processor.Result.Detail = commonUtils.JsonEncode(entity)
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
-	if entity.ProcessorType == consts.ProcessorLoopBreak {
-		processor.Result.WillBreak, processor.Result.Summary, processor.Result.Detail = entity.getBeak()
-
-		processor.AddResultToParent()
-		if processor.Result.WillBreak {
-			execUtils.SendExecMsg(*processor.Result, session.WsMsg)
-		}
-
-		return
-	}
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
 
 	if entity.ProcessorType == consts.ProcessorLoopUntil {
@@ -119,15 +110,17 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 			}
 
 			(*child).Run(session)
+		}
 
-			if child.Result.WillBreak {
-				logUtils.Infof("break")
-				goto LABEL
-			}
+		// check break
+		result := agentDomain.ScenarioExecResult{}
+		result.WillBreak, result.Summary, result.Detail = entity.getBeak()
+		if result.WillBreak {
+			execUtils.SendExecMsg(result, session.WsMsg)
+			break
 		}
 	}
 
-LABEL:
 	stat := CountSkip(executedProcessorIds, processor.Children)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 
@@ -148,23 +141,14 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		}
 		index += 1
 
-		/*
-			msg := agentDomain.ScenarioExecResult{
-				ParentId: int(processor.ID),
-				Summary:  fmt.Sprintf("%d. ", index),
-			}
-			execUtils.SendExecMsg(msg, session.WsMsg)
-		*/
-
 		result, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {
-			childBreakProcessor := processor.AppendNewChildProcessor(consts.ProcessorLoop, consts.ProcessorLoopBreak)
-			childBreakProcessor.Result.WillBreak = true
-			childBreakProcessor.Result.Summary = fmt.Sprintf("条件%s满足，跳出循环。", expression)
-
-			childBreakProcessor.AddResultToParent()
-			execUtils.SendExecMsg(*childBreakProcessor.Result, session.WsMsg)
+			result := agentDomain.ScenarioExecResult{
+				WillBreak: true,
+				Summary:   fmt.Sprintf("条件%s满足，跳出循环。", expression),
+			}
+			execUtils.SendExecMsg(result, session.WsMsg)
 
 			break
 		}
@@ -207,21 +191,24 @@ LABEL:
 }
 
 func (entity *ProcessorLoop) getBeak() (ret bool, msg string, detailStr string) {
-	breakFrom := entity.ParentID
-	breakIfExpress := entity.BreakIfExpression
+	breakIfExpress := strings.TrimSpace(entity.BreakIfExpression)
 
-	result, err := EvaluateGovaluateExpressionByProcessorScope(breakIfExpress, entity.ProcessorID)
+	if breakIfExpress == "" {
+		return
+	}
+
+	expr := ReplaceDatapoolVariInGovaluateExpress(breakIfExpress)
+	result, _ := EvaluateGovaluateExpressionByProcessorScope(expr, entity.ProcessorID)
+
 	ret, ok := result.(bool)
 	pass := false
-	if err == nil && ok && ret {
-		breakMap.Store(breakFrom, true)
+	if ok && ret {
 		msg = "真"
 		pass = true
 	} else {
 		msg = "假"
 	}
 
-	//detail := map[string]interface{}{"表达式": breakIfExpress + " 为 " + msg}
 	detail := map[string]interface{}{"expression": breakIfExpress, "result": pass}
 	detailStr = commonUtils.JsonEncode(detail)
 

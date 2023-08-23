@@ -18,6 +18,11 @@
                      @blur="validate('times', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
+          <a-form-item label="跳出条件" name="breakIfExpression">
+            <a-input  v-model:value="modelRef.breakIfExpression"/>
+            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}'})}}</div>
+          </a-form-item>
+
           <a-form-item label="备注" v-bind="validateInfos.comments">
             <a-textarea v-model:value="modelRef.comments" :rows="3"/>
           </a-form-item>

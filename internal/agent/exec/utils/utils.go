@@ -2,7 +2,6 @@ package agentUtils
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 )
 
 var (
@@ -26,21 +25,3 @@ var (
 		consts.ProcessorCookie.ToString(),
 	}
 )
-
-func IsExecutableContainerProcessor(entityType consts.ProcessorType) bool {
-	return _stringUtils.FindInArr(entityType.ToString(), executableContainerProcessors) &&
-		entityType != consts.ProcessorLoopBreak
-}
-
-func IsNoExecutableContainerProcessor(entityType consts.ProcessorType) bool {
-	return _stringUtils.FindInArr(entityType.ToString(), noExecutableContainerProcessors)
-}
-
-func IsActionProcessor(entityType consts.ProcessorType) bool {
-	return _stringUtils.FindInArr(entityType.ToString(), actionProcessors) ||
-		entityType == consts.ProcessorLoopBreak
-}
-
-func IsInterfaceProcessor(category consts.ProcessorCategory) bool {
-	return category == consts.ProcessorInterface
-}

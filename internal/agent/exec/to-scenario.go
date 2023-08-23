@@ -2,11 +2,6 @@ package agentExec
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"sync"
-)
-
-var (
-	breakMap sync.Map
 )
 
 type ScenarioExecReq struct {

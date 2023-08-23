@@ -35,6 +35,9 @@
               {{ text }}
             </div>
           </template>
+          <template #hb="{ text }">
+            <span>{{ text > 0 ? `+${text}` : text }}</span>
+          </template>
         </a-table>
       </div>
     </a-card>
@@ -85,6 +88,7 @@ const columns = [
   {
     title: "较上周",
     dataIndex: "hb",
+    slots: { customRender: "hb" },
   },
 
   {

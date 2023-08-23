@@ -603,8 +603,13 @@ async function refreshList(resetPage?: string) {
 
 watch(
     () => [createApiModalVisible.value, showImportModal.value, drawerVisible.value],
-    async (newValue) => {
-      if (!newValue[0] || !newValue[1] || !newValue[2]) {
+    async (newValue, oldVal) => {
+      /**
+       * 分享场景打开页面： 自动打开抽屉展示指定接口详情，会触发这里的监听，
+       * 这里改成： 必须是触发了关闭弹窗 才触发，避免此场景 多次调用 loadCategory接口
+       */
+      const oldValue = oldVal || [];
+      if ((!newValue[0] && oldValue[0]) || (!newValue[1] && oldValue[1]) || (!newValue[2] && oldValue[2])) {
         await store.dispatch('Endpoint/loadCategory');
       }
     },

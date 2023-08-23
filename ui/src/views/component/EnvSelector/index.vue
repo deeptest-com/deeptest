@@ -22,7 +22,7 @@
 <script setup lang="ts">
 import {defineProps, defineEmits, ref, reactive, computed, watch} from 'vue';
 import {useStore} from 'vuex';
-import {Form} from 'ant-design-vue';
+import {Form, message} from 'ant-design-vue';
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from "@/views/project-settings/store";
 import {Scenario} from "@/views/scenario/data";
@@ -55,6 +55,10 @@ async function changeEnv(value) {
 }
 
 async function save() {
+  if (!currEnvId.value) {
+    message.error('请先选择执行环境');
+    return;
+  }
   emits('onOk');
 }
 

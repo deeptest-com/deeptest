@@ -56,7 +56,7 @@
                           strong
                           style=" display: inline-block; text-align: left;margin-right: 4px;"
                           :type="dataRef.entityType === 'processor_logic_if' ? 'success' : 'danger'">{{
-                          dataRef.entityType === 'processor_logic_if' ? 'if' : 'else'
+                          dataRef.entityType === 'processor_logic_if' ? 'IF' : 'ELSE'
                         }}</a-typography-text>
                 </span>
                 <!-- 请求：请求方法 -->
@@ -70,7 +70,7 @@
                       v-if="dataRef.name && needHandleShowName.includes(dataRef.entityType)">
                   {{ dataRef.name }}
                 </span>
-                <span class="title-text" :title="dataRef.name" v-else>
+                <span class="title-text" :title="dataRef.name" v-else-if= "!needHandleShowName.includes(dataRef.entityType)">
                   {{
                     dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`
                   }}

@@ -66,6 +66,7 @@ export interface StateType {
     notLinkedPlans: any[];
     linkedPlansPagination: any;
 
+    // nodeCount: number,
     scenarioCount: number,
 }
 
@@ -109,6 +110,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setNotLinkedPlans: Mutation<StateType>;
         setLinkedPlansPagination: Mutation<StateType>;
 
+        // increaseNodeCount: Mutation<StateType>;
         increaseScenarioCount: Mutation<StateType>;
     };
     actions: {
@@ -211,6 +213,7 @@ const initState: StateType = {
         showSizeChanger: false,
     },
 
+    // nodeCount: 0,
     scenarioCount: 0,
 };
 
@@ -316,6 +319,9 @@ const StoreModel: ModuleType = {
             state.linkedPlansPagination = payload;
         },
 
+        // increaseNodeCount(state) {
+        //     state.nodeCount += 1;
+        // },
         increaseScenarioCount(state) {
             state.scenarioCount += 1;
         },

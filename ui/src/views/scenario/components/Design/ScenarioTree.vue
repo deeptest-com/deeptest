@@ -709,11 +709,11 @@ async function onDrop(info: DropEvent) {
   }
   // 以下是叶子节点，不能移动到叶子节点下
   else if (onlyShowDisableAndDeleteTypes.includes(dropNodeInfo?.entityType) && dropPosition === 0) {
-    message.warning('不能移动该改场景下');
+    message.warning("不能移动至该场景步骤下");
     event.preventDefault();
     return;
   } else {
-    console.log('else 其他拖动场景');
+    console.log('else 其他拖动场景步骤下');
   }
 
 

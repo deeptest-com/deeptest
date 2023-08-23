@@ -1,13 +1,17 @@
 <template>
-  <a-drawer class="report-drawer" :closable="true" :width="1000" :bodyStyle="{ padding: '24px' }"
-            :visible="drawerVisible"
-            @close="onClose">
+  <a-drawer 
+    class="report-drawer" 
+    wrapClassName="report-drawer-exec-history" 
+    :closable="true" 
+    :width="1000" 
+    :visible="drawerVisible"
+    @close="onClose">
     <template #title>
       <div class="drawer-header">
         <div>{{ detailResult.name || '测试报告详情' }}</div>
       </div>
     </template>
-    <div class="drawer-content">
+    <div class="report-exec-info-main">
       <ReportBasicInfo :items="detailResult.basicInfoList" :scene="scene" :show-operation="true"/>
       <StatisticTable :data="statisticData" :value="statInfo"/>
       <LogTreeView :treeData="scenarioReports"/>

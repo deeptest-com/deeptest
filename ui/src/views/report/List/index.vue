@@ -14,6 +14,9 @@
                 pagination.pageSize = size
                 handleGetList(pagination);
             },
+            showTotal: (total) => {
+                return `共 ${total} 条数据`;
+            },
         }"
         :scroll="{ x: 1240 }"
         class="dp-table">

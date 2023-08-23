@@ -36,7 +36,7 @@ function handleBtnClick() {
   align-items: center;
   flex-wrap: wrap;
   position: relative;
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 
   .text-wrapper {
     width: 40%;

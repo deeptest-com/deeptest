@@ -62,6 +62,9 @@
                   onShowSizeChange: (_page, size) => {
                     loadList(1,size);
                   },
+                  showTotal: (total) => {
+                    return `共 ${total} 条数据`;
+                  },
               }"
                        :scroll="{ x: '1240px' || true }"
                        :columns="columns"
@@ -299,7 +302,7 @@ const MenuList = [
     text: '分享链接',
     action: (record: any) => share(record)
   },
- 
+
   {
     key: '3',
     code: 'ENDPOINT-DELETEE',
@@ -406,7 +409,7 @@ async function editEndpoint(record) {
 
 /**
  * 分享相关
- * @param record 
+ * @param record
  */
 function share(record: any) {
   const searchParams = {
@@ -460,7 +463,7 @@ onMounted(() => {
 
 /**
  * 其他操作
- * @param record 
+ * @param record
  */
 
 async function copy(record: any) {

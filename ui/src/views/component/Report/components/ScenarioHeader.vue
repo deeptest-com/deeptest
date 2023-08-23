@@ -33,7 +33,6 @@ const progressInfo = ref({
 })
 
 watch(() => props.record?.resultStatus, (newVal) => {
-  console.log(8322222, newVal)
   if (newVal) {
     if (newVal === 'fail') {
       progressInfo.value = {

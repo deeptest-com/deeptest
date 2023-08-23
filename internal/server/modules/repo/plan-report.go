@@ -98,8 +98,9 @@ func (r *PlanReportRepo) Get(id uint) (report model.PlanReportDetail, err error)
 func (r *PlanReportRepo) GetCreateUserName(report model.PlanReportDetail) (name string, err error) {
 	if report.PlanId == 0 {
 		err = r.DB.Model(model.ScenarioReport{}).
-			Select("s.create_user_name").
+			Select("u.name").
 			Joins("LEFT JOIN biz_scenario s ON biz_scenario_report.scenario_id=s.id").
+			Joins("LEFT JOIN sys_user u ON s.create_user_id=u.id").
 			Where("biz_scenario_report.plan_report_id=?", report.ID).
 			Find(&name).Error
 	} else {

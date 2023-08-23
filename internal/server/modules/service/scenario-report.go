@@ -12,6 +12,8 @@ type ScenarioReportService struct {
 	ScenarioReportRepo *repo2.ScenarioReportRepo `inject:""`
 	LogRepo            *repo2.LogRepo            `inject:""`
 	PlanReportRepo     *repo2.PlanReportRepo     `inject:""`
+	UserRepo           *repo2.UserRepo           `inject:""`
+	ScenarioService    *ScenarioService          `inject:""`
 }
 
 func (s *ScenarioReportService) Paginate(req v1.ReportReqPaginate) (ret _domain.PageData, err error) {
@@ -21,6 +23,16 @@ func (s *ScenarioReportService) Paginate(req v1.ReportReqPaginate) (ret _domain.
 
 func (s *ScenarioReportService) GetById(id uint) (report model.ScenarioReport, err error) {
 	report, err = s.ScenarioReportRepo.Get(id)
+
+	scenario, err := s.ScenarioService.GetById(report.ScenarioId)
+	if err != nil {
+		return
+	}
+	report.CreateUserName = scenario.CreatorName
+
+	createUser, _ := s.UserRepo.GetByUserId(report.CreateUserId)
+	report.ExecUserName = createUser.Name
+	report.Priority = scenario.Priority
 	return
 }
 

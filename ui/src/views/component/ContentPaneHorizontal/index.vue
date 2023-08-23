@@ -2,14 +2,14 @@
   适用于 上下 两个面板的布局
 -->
 <template>
-  <div class="container" :style="containerStyle || {}">
+  <div class="container" :style="containerStyle">
     <div class="content">
       <multipane class="vertical-panes" layout="horizontal">
-        <div class="pane top" :style="{ minHeight: '150px', height: '60%', maxHeight: '700px' }">
+        <div class="pane top" :style="{ minHeight: '36px', flex: topFlex }">
           <slot name="top"/>
         </div>
         <multipane-resizer/>
-        <div class="pane bottom" :style="{ minHeight: '100px', height: '40%',  flexGrow: 1  }">
+        <div class="pane bottom" :style="{ minHeight: '36px', flex: bottomFlex }">
           <slot name="bottom"/>
         </div>
       </multipane>
@@ -20,7 +20,25 @@
 <script setup lang="ts">
 import { defineProps } from 'vue'
 import {Multipane, MultipaneResizer} from '@/components/Resize/index';
-const props = defineProps(['containerStyle'])
+
+const props = defineProps({
+  containerStyle: {
+    type: Object,
+    required: false,
+    default: {} as Object,
+  },
+  topFlex: {
+    type: Number,
+    required: false,
+    default: 3,
+  },
+  bottomFlex: {
+    type: Number,
+    required: false,
+    default: 2,
+  },
+})
+
 </script>
 
 <style lang="less" scoped>
@@ -38,12 +56,13 @@ const props = defineProps(['containerStyle'])
     position: relative;
     height: 100%;
     .top {
+      height: 0;
       overflow-y: scroll;
       position: relative;
     }
 
     .bottom {
-      flex: 1;
+      height: 0;
       overflow-y: scroll;
     }
   }

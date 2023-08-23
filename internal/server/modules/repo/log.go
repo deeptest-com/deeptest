@@ -93,6 +93,8 @@ func (r *LogRepo) CreateInterfaceLog(result agentDomain.ScenarioExecResult, pare
 		InvokeId:            invokeId,
 		ReportId:            reportId,
 		Round:               result.Round,
+		Detail:              result.Detail,
+		Summary:             result.Summary,
 	}
 
 	err = r.Save(&po)

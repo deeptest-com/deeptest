@@ -3,7 +3,7 @@
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
-          <a-button size="small" >IMAGE</a-button>
+          <span style="margin-left:5px;">IMAGE</span>
         </a-col>
 
         <a-col flex="100px" class="dp-right">

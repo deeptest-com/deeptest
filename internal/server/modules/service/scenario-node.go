@@ -281,7 +281,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 		*/
 
 		for _, child := range diagnoseInterfaceNode.Children {
-			s.createDirOrInterfaceFromDiagnose(child, parentProcessor, 0)
+			ret, _ = s.createDirOrInterfaceFromDiagnose(child, parentProcessor, 0)
 		}
 
 	} else if !diagnoseInterfaceNode.IsDir { // interface
@@ -350,7 +350,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		s.ScenarioNodeRepo.Create(&processor)*/
 
 		for _, child := range caseNode.Children {
-			s.createDirOrInterfaceFromCase(child, parentProcessor, 0)
+			processor, _ = s.createDirOrInterfaceFromCase(child, parentProcessor, 0)
 		}
 	} else if !caseNode.IsDir { // interface
 		debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(caseNode.DebugInterfaceId)

@@ -1,16 +1,13 @@
 <template>
   <div class="content">
 <a-form ref="" :model="formState" :label-col="{ style: { width: '300px' } }" :wrapper-col="{ span: 14 }" :rules="rules">
-  <a-form-item class="desc">
-    开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中
-    </a-form-item>
     <a-form-item label="是否开启自动同步">
-      <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2" />
+      <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2" /> <span style="margin-left: 10px;">开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中</span>
     </a-form-item>
     <a-form-item class="execTime" v-if="formState.switch==1"> 上次更新时间：{{formState.execTime || '-'}}</a-form-item>
     <a-form-item name="syncType" v-if="formState.switch==1">
       <template v-slot:label>
-        数据同步
+        数据合并策略
         <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip">
           <template v-slot:title>
             <span class="title">完全覆盖</span><br>
@@ -24,7 +21,7 @@
       <a-select v-model:value="formState.syncType" :options="syncTypes" />
       完全覆盖会导致通过平台上的接口定义更新被覆盖，请谨慎使用
     </a-form-item>
-    <a-form-item label="所属分类" name="categoryId" v-if="formState.switch==1">
+    <a-form-item label="同步至分类目录" name="categoryId" v-if="formState.switch==1">
         <a-tree-select
             @change="selectedCategory"
             :value="formState.categoryId"
@@ -40,12 +37,32 @@
             所有接口都将同步到该分类目录下
       </a-form-item>
 
-    <a-form-item v-bind="validateInfos.url" label="项目的swagger文档 URL地址"  v-if="formState.switch==1">
+    <a-form-item v-bind="validateInfos.url" label="swagger URL地址"  v-if="formState.switch==1">
       <a-input  v-model:value="formState.url" type="textarea" placeholder="请输入swagger url地址"/>
     </a-form-item>
-    <a-form-item v-bind="validateInfos.cron" label="类cron风格表达式(默认每天更新一次)" v-if="formState.switch==1">
+    <a-form-item v-bind="validateInfos.cron" v-if="formState.switch==1">
+      <template v-slot:label>
+        cron表达式
+        <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip" style="min-width: 800px">
+          <template v-slot:title>
+            <span>cron表达式是一种用于指定任务在某个时间点或周期性执行的字符串表达式。表达式包含6个参数，每个参数代表不同的时间单位和取值范围</span><br>
+            <pre style="background-color: black; margin-bottom: 0px;">
+  *    *    *    *    *    *
+  ┬    ┬    ┬    ┬    ┬    ┬
+  │    │    │    │    │    │
+  │    │    │    │    │    └ day of week (0 - 7) (0 or 7 is Sun)
+  │    │    │    │    └───── month (1 - 12)
+  │    │    │    └────────── day of month (1 - 31)
+  │    │    └─────────────── hour (0 - 23)
+  │    └──────────────────── minute (0 - 59)
+  └───────────────────────── second (0 - 59, OPTIONAL)
+            </pre>   
+
+         </template>
+        <QuestionCircleOutlined class="icon" style=" font-size: 14px;transform: scale(0.9)" />
+        </a-tooltip>
+      </template>
       <a-input  v-model:value="formState.cron" type="textarea" placeholder="请输入Linux定时任务表达式"/>
-      <a href="https://wiki.nancalcloud.com/pages/viewpage.action?pageId=5969821" target="_blank">点此查看</a>cron表达式格式说明
     </a-form-item>
     <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
       <a-button type="primary" @click="onSubmit" :disabled="disbaled">保存</a-button>
@@ -146,7 +163,7 @@ watch(() => {
 
 </script>
 
-<style scoped lang="less">
+<style lang="less" scoped>
 .content {
   margin: 20px;
  }
@@ -156,5 +173,16 @@ watch(() => {
   .execTime {
     padding-left: 300px;
     margin-top: -25px;
+ }
+.memo-tooltip {
+  min-width:800px;
 }
+
+</style>
+
+<style lang="less">
+.memo-tooltip {
+  min-width:712px;
+}
+
 </style>

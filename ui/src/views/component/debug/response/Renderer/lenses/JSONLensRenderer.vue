@@ -3,11 +3,11 @@
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
-          <a-radio-group v-model:value="language" style="margin-bottom: 16px" size="small">
+          <a-radio-group v-model:value="language" size="small">
             <a-radio-button :value="responseData.contentLang">Pretty</a-radio-button>
             <a-radio-button value="raw">Raw</a-radio-button>
           </a-radio-group>
-          <a-button size="small" >JSON</a-button>
+        <span style="margin-left:5px;">JSON</span>
         </a-col>
         <a-col flex="100px" class="dp-right">
 <!--          <a-tooltip overlayClassName="dp-tip-small">

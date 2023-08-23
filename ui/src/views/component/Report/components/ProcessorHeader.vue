@@ -5,14 +5,17 @@
       <IconSvg :type="DESIGN_TYPE_ICON_MAP[record.processorType]" class="processor-icon-svg"/>
       <a-typography-text strong v-if="!record.processorType.includes('processor_logic_')">
         {{ scenarioTypeMapToText[record.processorType] }}
+<!--        {{ record.name ? ` - ${record.name}`: '' }}-->
       </a-typography-text>
       <a-typography-text
           strong
           v-else
           style=" display: inline-block; text-align: left;margin-right: 4px;"
-          :type="record.processorType === 'processor_logic_if' ? 'success' : 'danger'">{{
+          :type="record.processorType === 'processor_logic_if' ? 'success' : 'danger'">
+        {{
           record.processorType === 'processor_logic_if' ? 'if' : 'else'
         }}
+<!--        {{ record.name ? ` - ${record.name}`: '' }}-->
       </a-typography-text>
     </div>
 
@@ -147,7 +150,9 @@ function clickMore() {
   .left {
     margin-right: 8px;
     width: 100px;
-
+    white-space: nowrap; /* 禁止换行 */
+    overflow: hidden; /* 超出部分隐藏 */
+    text-overflow: ellipsis; /* 显示省略号 */
     &.hide-arrow {
       margin-left: 28px;
     }

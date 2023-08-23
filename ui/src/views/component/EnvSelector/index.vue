@@ -59,28 +59,21 @@ async function save() {
 }
 
 watch(() => {
-  return props.envSelectDrawerVisible
-}, (val) => {
-  if (val) {
-    store.dispatch('ProjectSetting/getEnvsList', {
+  return [props.envSelectDrawerVisible, props.execEnvId];
+}, async (val) => {
+  const [visible, envId] = val;
+  if (visible) {
+    await store.dispatch('ProjectSetting/getEnvsList', {
       projectId: currProject.value.id
     });
-  }
-})
 
-watch(() => {
-  return [props.execEnvId, selectEnvId.value]
-}, ([val1, val2]) => {
-  if (val1) {
-    currEnvId.value = val1;
-  } else if (!val1 && val2) {
-    currEnvId.value = val2;
-  } else {
-    currEnvId.value = null;
+    if (envId) {
+      currEnvId.value = envId;
+      store.dispatch('ProjectSetting/saveEnvId',envId); 
+    }
   }
 }, {
   immediate: true
-});
-
+})
 
 </script>

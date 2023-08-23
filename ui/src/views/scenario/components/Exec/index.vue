@@ -80,7 +80,7 @@ const baseInfoList = computed(() => {
     {value: detailResult?.value?.name || '暂无', label: '场景名称'},
     {value: momentUtc(new Date()) , label: '执行时间'},
     {value: curEnv?.name || '暂无', label: '执行环境'},
-    {value: detailResult.value.createUserName || '暂无', label: '创建人'},
+    {value: detailResult.value.creatorName || '暂无', label: '创建人'},
     {value: currentUser?.value?.username || '暂无', label: '执行人'},
     {value: detailResult.value.priority || '未设置', label: '优先级'},
   ]

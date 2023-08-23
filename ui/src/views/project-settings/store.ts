@@ -243,7 +243,6 @@ const StoreModel: ModuleType = {
             })
             if (res.code === 0) {
                 commit('setEnvsList', res.data);
-                commit('setSelectEnvId', res.data[0].id);
                 return true;
             } else {
                 return false;

@@ -87,8 +87,13 @@
       </template>
     </div>
 
-    <div class="status" v-if="showScenarioExecStatus.hasOwnProperty(record.processorType)">
-      <span v-if="detail?.result" class="success">{{ showScenarioExecStatus[record.processorType]?.success }}</span>
+    <div class="status" v-if="showScenarioExecStatus.hasOwnProperty(record.processorType) || detail?.exception">
+      <span v-if="detail?.exception" class="fail">
+         <a-tooltip :title="detail?.exception">
+            {{ '执行异常' }}
+        </a-tooltip>
+      </span>
+      <span v-else-if="detail?.result" class="success">{{ showScenarioExecStatus[record.processorType]?.success }}</span>
       <span v-else class="fail">{{ showScenarioExecStatus[record.processorType]?.fail }}</span>
     </div>
 

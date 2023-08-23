@@ -20,7 +20,7 @@
 <script setup lang="ts">
 import { defineProps,ref } from 'vue'
 import {Multipane, MultipaneResizer} from '@/components/Resize/index';
-
+//TODO 备注：使用 topPercent 和 bottomPercent 有问题，拖动后会再次重置高度，后面再解决，另外需要加 FlexGrow,自动填充高度，否则也会有问题
 const props = defineProps({
   containerStyle: {
     type: Object,

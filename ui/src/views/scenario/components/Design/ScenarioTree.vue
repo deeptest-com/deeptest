@@ -56,7 +56,7 @@
                           strong
                           style=" display: inline-block; text-align: left;margin-right: 4px;"
                           :type="dataRef.entityType === 'processor_logic_if' ? 'success' : 'danger'">{{
-                          dataRef.entityType === 'processor_logic_if' ? 'if' : 'else'
+                          dataRef.entityType === 'processor_logic_if' ? 'IF' : 'ELSE'
                         }}</a-typography-text>
                 </span>
                 <!-- 请求：请求方法 -->
@@ -70,7 +70,7 @@
                       v-if="dataRef.name && needHandleShowName.includes(dataRef.entityType)">
                   {{ dataRef.name }}
                 </span>
-                <span class="title-text" :title="dataRef.name" v-else>
+                <span class="title-text" :title="dataRef.name" v-else-if= "!needHandleShowName.includes(dataRef.entityType)">
                   {{
                     dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`
                   }}
@@ -591,7 +591,8 @@ const interfaceSelectionCancel = () => {
 const removeNode = () => {
   console.log('removeNode')
   const node = treeDataMap.value[targetModelId]
-  const title = `确定删除名为${node.name}的节点吗？`
+  const name = node.name? scenarioTypeMapToText[node.entityType]+"-"+node.name : scenarioTypeMapToText[node.entityType];
+  const title = `确定删除名为【${name}】的节点吗？`
   let context = node.entityCategory === "processor_interface" ? '' : '该节点的所有子节点都将被删除！'
 
   // 如果是 if 节点，则需要判断是否有 else 节点，如果有，则需要提示
@@ -613,9 +614,10 @@ const disableNodeOrNot = () => {
   const node = treeDataMap.value[targetModelId]
   const action = node.disable ? '启用' : '禁用';
   const content = node.disable ? '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？' : '禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？';
+  const name = node.name? scenarioTypeMapToText[node.entityType]+"-"+node.name : scenarioTypeMapToText[node.entityType];
   Modal.confirm({
     okType: 'danger',
-    title: `确定${action}名为【${node.name}】的场景步骤吗？`,
+    title: `确定${action}名为【${name}】的场景步骤吗？`,
     content: content,
     okText: () => '确定',
     cancelText: () => '取消',
@@ -707,11 +709,11 @@ async function onDrop(info: DropEvent) {
   }
   // 以下是叶子节点，不能移动到叶子节点下
   else if (onlyShowDisableAndDeleteTypes.includes(dropNodeInfo?.entityType) && dropPosition === 0) {
-    message.warning('不能移动该改场景下');
+    message.warning("不能移动至该场景步骤下");
     event.preventDefault();
     return;
   } else {
-    console.log('else 其他拖动场景');
+    console.log('else 其他拖动场景步骤下');
   }
 
 

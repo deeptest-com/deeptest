@@ -31,6 +31,7 @@ const (
 	Processor          WsMsgCategory = "processor"
 	Initialize         WsMsgCategory = "initialize"
 	Statistic          WsMsgCategory = "stat"
+	Exception          WsMsgCategory = "exception"
 )
 
 func (e WsMsgCategory) String() string {
@@ -287,7 +288,6 @@ const (
 	ConditionTypeExtractor      ConditionType = "extractor"
 	ConditionTypeCheckpoint     ConditionType = "checkpoint"
 	ConditionTypeScript         ConditionType = "script"
-	ConditionTypeCookie         ConditionType = "cookie"
 	ConditionTypeResponseDefine ConditionType = "responseDefine"
 )
 
@@ -306,6 +306,7 @@ type ExtractorSrc string
 const (
 	Header ExtractorSrc = "header"
 	Body   ExtractorSrc = "body"
+	Cookie ExtractorSrc = "cookie"
 )
 
 type ExtractorType string
@@ -436,10 +437,8 @@ const (
 	ProcessorLoopIn    ProcessorType = "processor_loop_in"
 	ProcessorLoopRange ProcessorType = "processor_loop_range"
 	ProcessorLoopUntil ProcessorType = "processor_loop_until"
-	ProcessorLoopBreak ProcessorType = "processor_loop_break"
 
-	ProcessorVariableSet ProcessorType = "processor_variable_set"
-	//ProcessorVariableGet   ProcessorType = "processor_variable_get"
+	ProcessorVariableSet   ProcessorType = "processor_variable_set"
 	ProcessorVariableClear ProcessorType = "processor_variable_clear"
 
 	ProcessorAssertionDefault ProcessorType = "processor_assertion_default"
@@ -453,7 +452,6 @@ const (
 	ProcessorExtractorHtmlQuery ProcessorType = "processor_extractor_htmlquery"
 	ProcessorExtractorXmlQuery  ProcessorType = "processor_extractor_xmlquery"
 
-	ProcessorCookieGet   ProcessorType = "processor_cookie_get"
 	ProcessorCookieSet   ProcessorType = "processor_cookie_set"
 	ProcessorCookieClear ProcessorType = "processor_cookie_clear"
 

@@ -17,7 +17,6 @@ type PostConditionRepo struct {
 	DB *gorm.DB `inject:""`
 
 	ExtractorRepo         *ExtractorRepo         `inject:""`
-	CookieRepo            *CookieRepo            `inject:""`
 	CheckpointRepo        *CheckpointRepo        `inject:""`
 	ScriptRepo            *ScriptRepo            `inject:""`
 	ResponseDefineRepo    *ResponseDefineRepo    `inject:""`
@@ -36,7 +35,7 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 	if typ == consts.ConditionCategoryAssert {
 		db.Where("entity_type = ?", consts.ConditionTypeCheckpoint)
 	} else if typ == consts.ConditionCategoryConsole {
-		db.Where("entity_type =? or entity_type =? or entity_type=?", consts.ConditionTypeExtractor, consts.ConditionTypeCookie, consts.ConditionTypeScript)
+		db.Where("entity_type =? or entity_type=?", consts.ConditionTypeExtractor, consts.ConditionTypeScript)
 	} else if typ == consts.ConditionCategoryResponse {
 		db.Where("entity_type = ?", consts.ConditionTypeResponseDefine)
 	} else if typ == consts.ConditionCategoryResult {
@@ -99,14 +98,6 @@ func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId
 			r.ExtractorRepo.Save(&srcEntity)
 			entityId = srcEntity.ID
 
-		} else if srcCondition.EntityType == consts.ConditionTypeCookie {
-			srcEntity, _ := r.CookieRepo.Get(srcCondition.EntityId)
-			srcEntity.ID = 0
-			srcEntity.ConditionId = srcCondition.ID
-
-			r.CookieRepo.Save(&srcEntity)
-			entityId = srcEntity.ID
-
 		} else if srcCondition.EntityType == consts.ConditionTypeCheckpoint {
 			srcEntity, _ := r.CheckpointRepo.Get(srcCondition.EntityId)
 			srcEntity.ID = 0
@@ -166,19 +157,6 @@ func (r *PostConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uin
 			r.ExtractorRepo.Save(&entity)
 			entityId = entity.ID
 
-		} else if item.Type == consts.ConditionTypeCookie {
-			cookie := domain.CookieBase{}
-			json.Unmarshal(item.Raw, &cookie)
-
-			entity := model.DebugConditionCookie{}
-
-			copier.CopyWithOption(&entity, cookie, copier.Option{DeepCopy: true})
-			entity.ID = 0
-			entity.ConditionId = condition.ID
-
-			r.CookieRepo.Save(&entity)
-			entityId = entity.ID
-
 		} else if item.Type == consts.ConditionTypeCheckpoint {
 			checkpoint := domain.CheckpointBase{}
 			json.Unmarshal(item.Raw, &checkpoint)
@@ -222,8 +200,6 @@ func (r *PostConditionRepo) Delete(id uint) (err error) {
 
 	if po.EntityType == consts.ConditionTypeExtractor {
 		r.ExtractorRepo.DeleteByCondition(id)
-	} else if po.EntityType == consts.ConditionTypeCookie {
-		r.CookieRepo.DeleteByCondition(id)
 	} else if po.EntityType == consts.ConditionTypeCheckpoint {
 		r.CheckpointRepo.DeleteByCondition(id)
 	} else if po.EntityType == consts.ConditionTypeScript {
@@ -283,24 +259,6 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			extractor.ConditionEntityId = po.EntityId
 
 			raw, _ := json.Marshal(extractor)
-			condition := domain.InterfaceExecCondition{
-				Type: typ,
-				Raw:  raw,
-				Desc: po.Desc,
-			}
-
-			ret = append(ret, condition)
-
-		} else if typ == consts.ConditionTypeCookie {
-			cookie := domain.CookieBase{}
-
-			entity, _ := r.CookieRepo.Get(po.EntityId)
-			copier.CopyWithOption(&cookie, entity, copier.Option{DeepCopy: true})
-			cookie.ConditionEntityType = typ
-			cookie.ConditionId = po.ID
-			cookie.ConditionEntityId = po.EntityId
-
-			raw, _ := json.Marshal(cookie)
 			condition := domain.InterfaceExecCondition{
 				Type: typ,
 				Raw:  raw,

@@ -26,9 +26,11 @@ import {defineProps, defineEmits, computed, onUnmounted, ref, watch, onMounted} 
 const props = defineProps(['percent', 'execStatus']);
 
 const emits = defineEmits(['execCancel']);
-const execStatusMap = new Map([['in_progress', 'active'], ['end', 'success'], ['failed', 'exception'], ['cancel', 'exception']]);
-const execStatusTextMap = new Map([['in_progress', '停止执行'], ['end', '执行完成'], ['failed', '执行失败'], ['cancel', '已停止']]);
-const execStatusColorMap = new Map([['in_progress', '#1890ff'], ['end', '#04C495'], ['failed', '#F63838'], ['cancel', '#F63838']]);
+const execStatusMap = new Map([['in_progress', 'active'], ['end', 'success'], ['failed', 'exception'], ['cancel', 'exception'],['exception', 'exception']]);
+const execStatusTextMap = new Map([['in_progress', '停止执行'], ['end', '执行完成'], ['failed', '执行失败'], ['cancel', '已停止'],['exception', '执行异常']]);
+const execStatusColorMap = new Map([['in_progress', '#1890ff'], ['end', '#04C495'], ['failed', '#F63838'], ['cancel', '#F63838'],['exception', '#F63838']]);
+
+
 const handleExecCancel = () => {
   emits('execCancel');
 };
@@ -54,6 +56,10 @@ onMounted(() => {
 watch(() => {
   return props.execStatus
 }, (newVal) => {
+  if(newVal === "cancel" || newVal === "failed" || newVal === "exception") {
+    timeId.value && window.clearInterval(timeId.value);
+    return;
+  }
   if (newVal === "end") {
     percentVal.value = 100;
     timeId.value && window.clearInterval(timeId.value);

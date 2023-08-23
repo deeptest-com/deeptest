@@ -83,7 +83,7 @@ export const DESIGN_MENU_CONFIG = [
     },
     {
         key: 'processor_loop',
-        title: '迭代',
+        title: '循环',
         icon: 'arrange-loop',
         hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
         children: [

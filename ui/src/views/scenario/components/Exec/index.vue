@@ -102,8 +102,12 @@ const execStart = async () => {
 
 const execCancel = () => {
   progressStatus.value = 'cancel';
-  const msg = {act: 'stop', execReq: {scenarioId: scenarioId.value}}
-  WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
+  stopExec();
+}
+
+const stopExec = () => {
+  const msg = {act: 'stop', execReq: {scenarioId: scenarioId.value}};
+  WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg));
 }
 
 onMounted(async () => {
@@ -113,17 +117,18 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  execCancel();
   bus.off(settings.eventWebSocketMsg, OnWebSocketMsg);
 })
 
 const OnWebSocketMsg = (data: any) => {
   if (!data.msg) return;
   if (progressStatus.value === 'cancel') return;
+  if (progressStatus.value === 'exception') return;
+
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
-
   console.log('scenario wsMsg***', wsMsg);
-
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
     // 重置数据, 重新初始化
@@ -141,12 +146,16 @@ const OnWebSocketMsg = (data: any) => {
   }
   // 更新【场景中每条编排】的执行记录
   else if (wsMsg.category === "processor" && log.scenarioId) {
-    console.log('场景里每条编排的执行记录', log)
+    console.log('场景里每条编排的执行记录', log);
     updateExecLogs(log);
   }
   // 更新统计值
   else if (wsMsg.category === "stat") {
     updateStatFromLog(log);
+  }
+  else if (wsMsg.category === "exception") {
+    progressStatus.value = 'exception';
+    stopExec();
   }
   // 执行完毕
   else if (wsMsg.category == 'end') {
@@ -156,7 +165,6 @@ const OnWebSocketMsg = (data: any) => {
     if (nodeData.value.processorType === ProcessorInterface.Interface) {
       store.dispatch('Debug/refreshInterfaceResultFromScenarioExec')
     }
-
   } else {
     console.log('wsMsg', wsMsg);
   }

@@ -51,7 +51,7 @@ watch(nodeData, (val: any) => {
 
 const rulesRef = reactive({
   name: [
-    {required: true, message: '计时器名称必填', trigger: 'blur'},
+    {required: false, message: '计时器名称必填', trigger: 'blur'},
   ],
   sleepTime: [
     {type: 'number', message: '休眠时间必须为数字'},

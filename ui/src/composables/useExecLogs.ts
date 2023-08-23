@@ -85,7 +85,12 @@ function updateExecLogs(processor) {
 
     reportsMap.value[processor.logId] = processor;
     if (processor.processorCategory === ProcessorCategory.ProcessorRoot) {
-        scenarioReports.value.push(processor);
+        const index = scenarioReports.value.findIndex((item: any) => item.logId === processor.logId);
+        if (index >= 0) {
+            scenarioReports.value.splice(index, 1, processor);
+        } else {
+            scenarioReports.value.push(processor);
+        }
         return
     }
     if (reportsMap.value[processor.parentLogId]) {
@@ -95,7 +100,12 @@ function updateExecLogs(processor) {
         if (reportsMap.value[processor.parentLogId].logs.length >= 50) {
             reportsMap.value[processor.parentLogId].logs.shift()
         }
-        reportsMap.value[processor.parentLogId].logs.push(processor);
+        const index = reportsMap.value[processor.parentLogId].logs.findIndex((item: any) => item.logId === processor.logId);
+        if (index >= 0) {
+            reportsMap.value[processor.parentLogId].logs.splice(index, 1, processor);
+        } else {
+            reportsMap.value[processor.parentLogId].logs.push(processor);
+        }
     }
 
     const elems = document.getElementsByClassName('scenario-exec-log-tree')

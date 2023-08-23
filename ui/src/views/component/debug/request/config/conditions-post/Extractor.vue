@@ -72,6 +72,18 @@
         </a-input-group>
       </a-form-item>
 
+      <template v-if="model.src === 'cookie'">
+        <a-form-item label="Cookie名称" v-bind="validateInfos.key" required>
+          <a-input v-model:value="model.key"
+                   @blur="validate('key', { trigger: 'blur' }).catch(() => {})" />
+        </a-form-item>
+
+        <a-form-item label="默认值">
+          <a-input v-model:value="model.default" />
+          <div class="dp-input-tip">Cookie不存时的默认值</div>
+        </a-form-item>
+      </template>
+
       <a-form-item label="变量作用域">
         <a-radio-group v-model:value="model.scope">
           <a-radio value="public">公有</a-radio>
@@ -121,7 +133,7 @@ const rules = computed(() => { return {
     {required: true, message: '请选择来源', trigger: 'change'},
   ],
   type: model.value.src === ExtractorSrc.header ? [] : typeRequired,
-  key: model.value.src === ExtractorSrc.header ? keyRequired : [],
+  key: model.value.src === ExtractorSrc.header || model.value.src === ExtractorSrc.cookie ? keyRequired : [],
 
   expression: model.value.src === ExtractorSrc.header || model.value.type === ExtractorType.boundary ? [] : expressionRequired,
   boundaryStart: model.value.src !== ExtractorSrc.header && model.value.type === ExtractorType.boundary ? boundaryStartRequired : [],
@@ -131,7 +143,6 @@ const rules = computed(() => { return {
     {required: true, message: '请输入变量名', trigger: 'blur'},
   ],
 }})
-
 
 watch(model, (newVal) => {
   if (!isInit.value) return

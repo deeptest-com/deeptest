@@ -7,7 +7,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	checkpointHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/checkpoint"
-	cookieHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/cookie"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -154,29 +153,6 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 				Type: condition.Type,
 			}
 			interfaceExecCondition.Raw, _ = json.Marshal(extractorBase)
-			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
-
-		} else if condition.Type == consts.ConditionTypeCookie {
-			var cookieBase domain.CookieBase
-			json.Unmarshal(condition.Raw, &cookieBase)
-
-			if cookieBase.Disabled {
-				continue
-			}
-
-			resp := entity.Response
-
-			err = ExecCookie(&cookieBase, resp)
-			cookieHelper.GenResultMsg(&cookieBase)
-
-			if cookieBase.ResultStatus == consts.Pass {
-				SetVariable(processor.ParentId, cookieBase.VariableName, cookieBase.Result, consts.Public)
-			}
-
-			interfaceExecCondition := domain.InterfaceExecCondition{
-				Type: condition.Type,
-			}
-			interfaceExecCondition.Raw, _ = json.Marshal(cookieBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 
 		} else if condition.Type == consts.ConditionTypeScript {

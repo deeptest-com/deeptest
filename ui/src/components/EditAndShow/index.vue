@@ -65,11 +65,16 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  canEmpty: {
+    required: false,
+    type: Boolean,
+    default: false,
+  },
 })
 const emit = defineEmits(['update', 'edit']);
 
 function updateField() {
-  if (!fieldValue.value) {
+  if (!props.canEmpty && !fieldValue.value) {
     message.warning('请请输入内容');
     return;
   }
@@ -86,6 +91,9 @@ function edit() {
 function cancelEdit() {
   fieldValue.value = props.value;
   isEditing.value = false;
+  if (props.canEmpty) {
+    emit('update', fieldValue.value);
+  }
 }
 
 function handleClick() {

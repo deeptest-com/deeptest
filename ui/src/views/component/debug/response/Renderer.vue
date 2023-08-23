@@ -72,6 +72,11 @@ const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const responseData = computed<any>(() => store.state.Debug.responseData);
 const invokedMap = computed<any>(() => store.state.Debug.invokedMap);
 
+watch(debugInfo, () => {
+  console.log('watch debugInfo', debugInfo.value)
+  activeKey.value = 'body'
+}, {deep: true})
+
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 

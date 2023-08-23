@@ -5,9 +5,10 @@
       <span class="title"><IconSvg :type="icon" class="prefix-icon-svg"/> {{ scenarioType }}</span>
       <div class="name">
         <EditAndShow placeholder="修改名称"
-                     :autoFocus="true"
+                     :autoFocus="nodeData?.id == 0"
                      :key="nodeData?.id"
                      :value="nodeData?.name || ''"
+                     :canEmpty="true"
                      @update="updateTitle"/>
       </div>
     </div>

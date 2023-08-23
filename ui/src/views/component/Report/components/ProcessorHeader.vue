@@ -5,7 +5,7 @@
       <IconSvg :type="DESIGN_TYPE_ICON_MAP[record.processorType]" class="processor-icon-svg"/>
       <a-typography-text strong v-if="!record.processorType.includes('processor_logic_')">
         {{ scenarioTypeMapToText[record.processorType] }}
-<!--        {{ record.name ? ` - ${record.name}`: '' }}-->
+        {{ record.name ? ` - ${record.name}`: '' }}
       </a-typography-text>
       <a-typography-text
           strong
@@ -15,7 +15,7 @@
         {{
           record.processorType === 'processor_logic_if' ? 'if' : 'else'
         }}
-<!--        {{ record.name ? ` - ${record.name}`: '' }}-->
+        {{ record.name ? ` - ${record.name}`: '' }}
       </a-typography-text>
     </div>
 
@@ -86,10 +86,19 @@
         <p class="text"><code>{{ `${detail?.content}` }}</code></p>
       </template>
     </div>
-    <div class="status" v-if="showScenarioExecStatus.hasOwnProperty(record.processorType)">
-      <span v-if="detail?.result" class="success">{{ showScenarioExecStatus[record.processorType]?.success }}</span>
+
+    <div class="status" v-if="showScenarioExecStatus.hasOwnProperty(record.processorType) || detail?.exception">
+      <span v-if="detail?.exception" class="fail">
+         <a-tooltip :title="detail?.exception">
+            {{ '执行异常' }}
+        </a-tooltip>
+      </span>
+      <span v-else-if="detail?.result" class="success">{{ showScenarioExecStatus[record.processorType]?.success }}</span>
       <span v-else class="fail">{{ showScenarioExecStatus[record.processorType]?.fail }}</span>
     </div>
+
+
+
     <div class="right" @click.stop="clickMore">
       详情
       <RightOutlined/>

@@ -1,5 +1,5 @@
 <template>
-  <div class="drawer-content">
+  <div class="scenario-exec-info-main">
     <ReportBasicInfo :showBtn="true"
                      :btnText="'另存为报告'"
                      :items="baseInfoList || []"

@@ -71,7 +71,7 @@ const props = defineProps({
     default: false,
   },
   emptyValue: {
-    required: true,
+    required: false,
     type: String,
     default: '暂无',
   },

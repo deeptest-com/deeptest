@@ -5,10 +5,6 @@
         <a-col flex="1">
           <a-select size="small" :style="{width:'116px'}" :bordered="true"
                     v-model:value="conditionType">
-            <!--        <a-select-option key="" value="">
-                          控制器类型
-                        </a-select-option>-->
-
             <template v-for="item in conditionTypes" :key="item.value">
               <a-select-option v-if="item.value !== ConditionType.checkpoint" :value="item.value">
                 {{ t(item.label) }}
@@ -42,9 +38,6 @@
 
                 <icon-svg v-if="element.entityType === ConditionType.extractor"
                           type="variable"
-                          class="icon variable" />
-                <icon-svg v-if="element.entityType === ConditionType.cookie"
-                          type="cookie"
                           class="icon variable" />
                 <icon-svg v-if="element.entityType === ConditionType.checkpoint"
                           type="checkpoint"
@@ -96,10 +89,6 @@
                           :finish="list"/>
 
               <Script v-if="element.entityType === ConditionType.script"
-                      :condition="activePostCondition"
-                      :finish="list"/>
-
-              <Cookie v-if="element.entityType === ConditionType.cookie"
                       :condition="activePostCondition"
                       :finish="list"/>
             </div>

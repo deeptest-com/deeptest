@@ -73,16 +73,6 @@ func (DebugConditionScript) TableName() string {
 	return "biz_debug_condition_script"
 }
 
-type DebugConditionCookie struct {
-	BaseModel
-
-	domain.CookieBase
-}
-
-func (DebugConditionCookie) TableName() string {
-	return "biz_debug_condition_cookie"
-}
-
 type DebugConditionResponseDefine struct {
 	BaseModel
 	domain.ResponseDefineBase

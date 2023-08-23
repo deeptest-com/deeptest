@@ -287,7 +287,6 @@ const (
 	ConditionTypeExtractor      ConditionType = "extractor"
 	ConditionTypeCheckpoint     ConditionType = "checkpoint"
 	ConditionTypeScript         ConditionType = "script"
-	ConditionTypeCookie         ConditionType = "cookie"
 	ConditionTypeResponseDefine ConditionType = "responseDefine"
 )
 
@@ -306,6 +305,7 @@ type ExtractorSrc string
 const (
 	Header ExtractorSrc = "header"
 	Body   ExtractorSrc = "body"
+	Cookie ExtractorSrc = "cookie"
 )
 
 type ExtractorType string

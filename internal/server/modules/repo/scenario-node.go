@@ -253,7 +253,7 @@ func (r *ScenarioNodeRepo) IsDir(po model.Processor) (ret bool) {
 	ret = po.EntityCategory == consts.ProcessorRoot ||
 		//po.EntityCategory == consts.ProcessorThread ||
 		po.EntityCategory == consts.ProcessorGroup ||
-		(po.EntityCategory == consts.ProcessorLoop && po.EntityType != consts.ProcessorLoopBreak) ||
+		po.EntityCategory == consts.ProcessorLoop ||
 		po.EntityCategory == consts.ProcessorLogic ||
 		po.EntityCategory == consts.ProcessorData
 

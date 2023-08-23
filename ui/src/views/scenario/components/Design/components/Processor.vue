@@ -15,7 +15,6 @@
     <ProcessorLoopUntil v-else-if="selectedNode.processorType === 'processor_loop_until'" />
     <ProcessorLoopIn    v-else-if="selectedNode.processorType === 'processor_loop_in'" />
     <ProcessorLoopRange v-else-if="selectedNode.processorType === 'processor_loop_range'" />
-    <ProcessorLoopBreak v-else-if="selectedNode.processorType === 'processor_loop_break'" />
 
     <ProcessorVariableSet   v-else-if="selectedNode.processorType === 'processor_variable_set'" />
     <ProcessorVariableClear v-else-if="selectedNode.processorType === 'processor_variable_clear'" />
@@ -65,7 +64,6 @@ import ProcessorLoopTime from "./proccessors/loop/time.vue"
 import ProcessorLoopUntil from "./proccessors/loop/until.vue"
 import ProcessorLoopIn  from "./proccessors/loop/in.vue"
 import ProcessorLoopRange from "./proccessors/loop/range.vue"
-import ProcessorLoopBreak from "./proccessors/loop/break.vue"
 
 import ProcessorVariableSet  from "./proccessors/variable/set.vue"
 import ProcessorVariableClear from "./proccessors/variable/clear.vue"

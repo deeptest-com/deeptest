@@ -32,6 +32,7 @@ func (s *ScenarioReportService) GetById(id uint) (report model.ScenarioReport, e
 
 	createUser, _ := s.UserRepo.GetByUserId(report.CreateUserId)
 	report.ExecUserName = createUser.Name
+	report.Priority = scenario.Priority
 	return
 }
 

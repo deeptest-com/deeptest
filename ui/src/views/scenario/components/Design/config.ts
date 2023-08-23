@@ -83,7 +83,7 @@ export const DESIGN_MENU_CONFIG = [
     },
     {
         key: 'processor_loop',
-        title: '迭代',
+        title: '循环',
         icon: 'arrange-loop',
         hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
         children: [
@@ -429,3 +429,14 @@ export const needHandleShowName = [
     'processor_logic_else',
     'processor_interface_default',
 ]
+
+/**
+ * 场景绑定接口的类型对应的文案
+ * */
+export const syncSourceMapToText = {
+    'define': '接口定义',
+    'case': '接口用例',
+    'diagnose': '快捷调试',
+    'custom': '自定义请求',
+    'curl': 'cURL导入',
+}

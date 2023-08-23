@@ -141,6 +141,9 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
         const noNeedLogin = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
         if (code === 401 && !noNeedLogin) {
             router.replace('/user/login');
+        } else if (code === 403 && !router.currentRoute.value.fullPath.includes('home')) {
+            // 无权限访问时 返回到首页
+            router.replace('/home');
         }
 
     } else {

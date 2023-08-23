@@ -72,7 +72,7 @@
         <a-button trigger="click" @click="sync" class="dp-bg-light">
           同步
           <a-tooltip>
-            <template #title><span>从源接口定义/接口用例/快捷调试中同步数据到当前场景步骤，包括请求参数、前后置处理器和断言</span></template>
+            <template #title><span>从源{{syncSourceMapToText[debugData.processorInterfaceSrc]}}中同步数据到当前场景步骤，包括请求参数、前后置处理器和断言</span></template>
           <QuestionCircleOutlined />
         </a-tooltip>
         </a-button>
@@ -111,6 +111,7 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import EnvSelector from "./config/EnvSelector.vue";
 import {handlePathLinkParams} from "@/utils/dom";
+import {syncSourceMapToText} from "@/views/scenario/components/Design/config"
 
 const store = useStore<{ Debug: DebugStateType, Endpoint: EndpointStateType, Global: GlobalStateType, ServeGlobal }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -167,6 +168,7 @@ const showBaseUrl = () => {
 
   return !notShow
 }
+
 
 const isShowSync = computed(() => {
   const ret = usedBy === UsedBy.ScenarioDebug && (

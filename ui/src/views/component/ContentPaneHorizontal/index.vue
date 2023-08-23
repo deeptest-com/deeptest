@@ -5,11 +5,11 @@
   <div class="container" :style="containerStyle">
     <div class="content">
       <multipane class="vertical-panes" layout="horizontal">
-        <div class="pane top" :style="{ minHeight: '36px', flex: topFlex }">
+        <div class="pane top" :style="{ minHeight: '36px', height: topPercent }">
           <slot name="top"/>
         </div>
         <multipane-resizer/>
-        <div class="pane bottom" :style="{ minHeight: '36px', flex: bottomFlex }">
+        <div class="pane bottom" :style="{ minHeight: '36px', height: bottomPercent }">
           <slot name="bottom"/>
         </div>
       </multipane>
@@ -27,15 +27,15 @@ const props = defineProps({
     required: false,
     default: {} as Object,
   },
-  topFlex: {
-    type: Number,
+  topPercent: {
+    type: String,
     required: false,
-    default: 3,
+    default: '60%',
   },
-  bottomFlex: {
-    type: Number,
+  bottomPercent: {
+    type: String,
     required: false,
-    default: 2,
+    default: '40%',
   },
 })
 

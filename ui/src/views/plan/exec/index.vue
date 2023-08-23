@@ -116,7 +116,7 @@ const execStart = async () => {
 };
 
 const execCancel = () => {
-  progressStatus.value = 'exception';
+  progressStatus.value = 'cancel';
   const msg = {act: 'stop', execReq: {planId: currPlan.value && currPlan.value.id}};
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
 };

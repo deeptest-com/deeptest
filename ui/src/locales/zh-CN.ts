@@ -175,8 +175,8 @@ export default {
     'unknown': '位置',
 
     'tips_print': '输出内容可引用形如${name}的变量。',
-    'tips_expression': '字符串请用英文单引号括起，如\'foo\'。表达式可引用形如${name}的变量，使用加号如${number}可获取数字值。',
-    'tips_expression_bool': '该表达式需返回一个布尔值。字符串请用英文单引号括起，如\'foo\'。\n可引用形如${name}的变量，使用加号如${number}可获取数字值。',
+    'tips_expression': '字符串请用英文单引号括起，如\'foo\'。表达式可引用形如${name}的变量，使用加号${number}可获取数字值。',
+    'tips_expression_bool': '该表达式需返回一个布尔值。字符串请用英文单引号括起，如\'foo\'。\n可引用形如${name}的变量，使用加号${number}可获取数字值。',
 
     'extractor_err': '提取失败',
     'extractor_err_short': '失败',

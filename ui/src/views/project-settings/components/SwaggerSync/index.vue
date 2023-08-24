@@ -1,7 +1,7 @@
 <template>
   <div class="content">
-<a-form ref="" :model="formState" :label-col="{ style: { width: '300px' } }" :wrapper-col="{ span: 14 }" :rules="rules">
-    <a-form-item label="是否开启自动同步">
+<a-form ref="" :model="formState" :label-col="{ style: { width: '130px', textAlign:'left' } }" :wrapper-col="{ span: 14 }" :rules="rules">
+    <a-form-item label="是否开启自动同步" style="position: relative;left:10px">
       <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2" /> <span style="margin-left: 10px;">开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中</span>
     </a-form-item>
     <a-form-item class="execTime" v-if="formState.switch==1"> 上次更新时间：{{formState.execTime || '-'}}</a-form-item>

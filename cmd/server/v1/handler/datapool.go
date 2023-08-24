@@ -27,12 +27,18 @@ type DatapoolCtrl struct {
 func (c *DatapoolCtrl) Index(ctx iris.Context) {
 	var req serverDomain.DatapoolReqPaginate
 
-	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.DatapoolService.Paginate(req)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
-	} else {
+	err := ctx.ReadJSON(&req)
+	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
 	}
+
+	if req.ProjectId == 0 {
+		req.ProjectId, _ = ctx.URLParamInt64("currProjectId")
+	}
+
+	res, _ := c.DatapoolService.Paginate(req)
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 }
 
 // Get

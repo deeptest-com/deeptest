@@ -18,6 +18,7 @@ type ScenarioProcessorService struct {
 
 	DebugInterfaceRepo *repo.DebugInterfaceRepo `inject:""`
 	ServeServerRepo    *repo.ServeServerRepo    `inject:""`
+	DatapoolRepo       *repo.DatapoolRepo       `inject:""`
 
 	ExtractorService         *ExtractorService         `inject:""`
 	CheckpointService        *CheckpointService        `inject:""`
@@ -194,8 +195,13 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 
 	case consts.ProcessorData:
 		entityPo, _ := s.ScenarioProcessorRepo.GetData(processor)
-		ret = agentExec.ProcessorData{}
-		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+		processorData := agentExec.ProcessorData{}
+		copier.CopyWithOption(&processorData, entityPo, copier.Option{DeepCopy: true})
+
+		datapool, _ := s.DatapoolRepo.Get(entityPo.DatapoolId)
+		processorData.DatapoolName = datapool.Name
+
+		ret = processorData
 
 	case consts.ProcessorCustomCode:
 		entityPo, _ := s.ScenarioProcessorRepo.GetCustomCode(processor)

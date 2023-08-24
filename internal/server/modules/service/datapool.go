@@ -116,7 +116,7 @@ func (s *DatapoolService) ListForExec(projectId uint) (ret domain.Datapools, err
 			headers = append(headers, fmt.Sprintf("%v", col))
 		}
 
-		var items []map[string]interface{}
+		var items []domain.VarKeyValuePair
 
 		for rowIndex, row := range arr {
 			if rowIndex == 0 {

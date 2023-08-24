@@ -165,7 +165,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 			executedProcessorIds[child.ID] = true
 
 			if round == "" {
-				round = fmt.Sprintf("第 %v 轮", index+1)
+				round = fmt.Sprintf("第 %v 轮", index)
 				child.Round = round
 			}
 

@@ -13,7 +13,7 @@
 
       <div class="drawer-content">
         <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
-          <a-tab-pane key="body" :tab="title" class="uppercase">
+          <a-tab-pane key="body" tab="响应体" class="uppercase">
             <BodyInfo :data="interfaceResDetail.bodyInfo" />
           </a-tab-pane>
           <a-tab-pane key="header" tab="响应头">

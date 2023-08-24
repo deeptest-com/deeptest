@@ -4,7 +4,7 @@
  * props: { text, width }
  * 超出 指定width的将会展示tooltip
  */
-import { defineComponent, getCurrentInstance, nextTick, onMounted, ref } from "vue";
+import { defineComponent, getCurrentInstance, nextTick, onMounted, ref, watch } from "vue";
 
 export default defineComponent({
   props: {
@@ -13,6 +13,7 @@ export default defineComponent({
     },
     width: {
       default: 0,
+      required: false,
     },
     maxWidth: {
       default: 0,
@@ -49,6 +50,10 @@ export default defineComponent({
       setTooltip();
     })
 
+    watch(() => props.text, () => {
+      setTooltip();
+    })
+
     return {
       textRef,
       showTooltip,
@@ -57,7 +62,7 @@ export default defineComponent({
   },
   render() {
     return (
-      <div style={{ width: this.width ? `${this.width}px` : 'max-content', maxWidth: `${this.maxWidth || this.width}px` ,cursor: this.showTooltip ? 'pointer' : 'unset' }}>
+      <div style={{ width: this.width ? `${this.width}px` : 'max-content', maxWidth: (this.maxWidth || this.width) ?`${this.maxWidth || this.width}px` : '100%' ,cursor: this.showTooltip ? 'pointer' : 'unset' }}>
         <a-tooltip placement="top" arrowPointAtCenter={true} title={this.showTooltip ? this.tip || this.text : null}>
           <div class={['out', this.customClass]}>
             <span ref="textRef" class="text">
@@ -84,6 +89,10 @@ export default defineComponent({
 
   &.processor_logic_else {
     color: #f5222d;
+  }
+
+  &.disabled {
+    color: rgba(0, 0, 0, 0.25) !important;
   }
 }
 </style>

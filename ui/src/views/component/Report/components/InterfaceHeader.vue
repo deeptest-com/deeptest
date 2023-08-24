@@ -45,7 +45,6 @@
 
     <div class="endpoint-expand-btn" @click.stop="handleQueryDetail">
       详情
-      <RightOutlined/>
     </div>
 
     <ResponseDrawer
@@ -130,22 +129,9 @@ function handleQueryDetail() {
   }
 }
 
-.endpoint-expand {
-
-  .endpoint-expand-content {
-    background-color: #fff;
-    padding: 16px;
+.endpoint-expand-btn {
+    color: #447DFD;
   }
-
-  .endpoint-expand-btn {
-    margin-top: 15px;
-    text-align: center;
-    cursor: pointer;
-    line-height: 22px;
-    font-size: 14px;
-  }
-
-}
 
 .endpoint-header {
   display: flex;

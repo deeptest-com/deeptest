@@ -33,15 +33,15 @@ var (
 
 // called by checkpoint
 func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret interface{}, err error) {
-	expr := commUtils.RemoveLeftVariableSymbol(expression)
-
-	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
+	// 1
+	paramValMap, err := generateGovaluateParamsWithVariables(expression)
 	if err != nil {
 		return
 	}
 
-	// 1
-	paramValMap, err := generateGovaluateParamsWithVariables(expression)
+	expr := commUtils.RemoveLeftVariableSymbol(expression)
+
+	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
 	if err != nil {
 		return
 	}
@@ -53,21 +53,44 @@ func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret inter
 
 // called by agent processor interface
 func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint) (ret interface{}, err error) {
+	// 1
+	params, err := generateGovaluateParamsByScope(expression, scopeId)
+	if err != nil {
+		return
+	}
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
-	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
+	convertParams, convertExpr := convertGovaluateParamAndExpressionForProcessor(params, expr)
+
+	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(convertExpr, GovaluateFunctions)
 	if err != nil {
-		ret = expression
+		ret = expression + " with error " + err.Error()
 		return
 	}
 
-	// 1
-	parameters, err := generateGovaluateParamsByScope(expression, scopeId)
-	if err != nil {
-		return
-	}
+	ret, err = valueExpression.Evaluate(convertParams)
 
-	ret, err = valueExpression.Evaluate(parameters)
+	return
+}
+
+func convertGovaluateParamAndExpressionForProcessor(params domain.VarKeyValuePair, expr string) (
+	convertParams domain.VarKeyValuePair, convertExpr string) {
+
+	convertParams = map[string]interface{}{}
+	convertExpr = expr
+
+	for key, val := range params {
+		newKey := key
+
+		arr := strings.Split(key, ".")
+		if len(arr) > 1 { // like item.prop1
+			newKey = strings.Join(arr, "_")
+
+			convertExpr = strings.ReplaceAll(convertExpr, key, newKey)
+		}
+
+		convertParams[newKey] = val
+	}
 
 	return
 }

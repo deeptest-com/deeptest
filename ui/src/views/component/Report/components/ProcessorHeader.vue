@@ -22,7 +22,7 @@
       </template>
       <!-- ::::循环直到 -->
       <template v-if="record.processorType === 'processor_loop_until'">
-        <p class="text">迭代直到 <code>{{ `${detail?.untilExpression}` }}</code> 为  <code>{{ `true` }}</code>时</p>
+        <p class="text"><code>{{ `${detail?.untilExpression}` }}</code> </p>
       </template>
       <!-- ::::循环区间 -->
       <template v-if="record.processorType === 'processor_loop_range'">
@@ -46,19 +46,19 @@
       </template>
       <!-- ::::设置Cookie -->
       <template v-if="record.processorType === 'processor_cookie_set'">
-        <p class="text">设置 <code>{{ `${detail?.cookieName}` }}</code> 为 <code>{{ `${detail?.variableValue}` }}</code></p>
+        <p class="text"><code>{{ `${detail?.cookieName}` }}</code> 为 <code>{{ `${detail?.variableValue}` }}</code></p>
       </template>
       <!-- ::::清空Cookie -->
       <template v-if="record.processorType === 'processor_cookie_clear'">
-        <p class="text">清除 <code>{{ `${detail?.cookieName}` }}</code></p>
+        <p class="text"><code>{{ `${detail?.cookieName}` }}</code></p>
       </template>
       <!-- ::::设置变量 -->
       <template v-if="record.processorType === 'processor_variable_set'">
-        <p class="text">设置变量 <code>{{ `${detail?.variableName}` }}</code>为<code>{{ `${detail?.variableValue}` }}</code></p>
+        <p class="text"><code>{{ `${detail?.variableName}` }}</code>为<code>{{ `${detail?.variableValue}` }}</code></p>
       </template>
       <!-- ::::删除变量 -->
       <template v-if="record.processorType === 'processor_variable_clear'">
-        <p class="text">删除变量<code>{{ `${detail?.variableName}` }}</code></p>
+        <p class="text"><code>{{ `${detail?.variableName}` }}</code></p>
       </template>
       <!-- ::::输出 -->
       <template v-if="record.processorType === 'processor_print_default'">

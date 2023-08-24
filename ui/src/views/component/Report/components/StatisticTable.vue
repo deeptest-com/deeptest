@@ -104,7 +104,7 @@ watch(() => {
 </script>
 <style scoped lang="less">
 .report-statistical-table {
-  height: 200px;
+  height: 160px;
   background: #FFFFFF;
   border: 1px solid #E5E5E5;
   margin-bottom: 24px;
@@ -113,8 +113,8 @@ watch(() => {
   padding: 0 16px;
   box-sizing: border-box;
   .statistical-main {
-    width: 200px;
-    height: 200px;
+    width: 160px;
+    height: 160px;
     margin-right: 32px;
   }
 
@@ -140,6 +140,10 @@ watch(() => {
     display: flex;
     flex-wrap: wrap;
     flex: 1;
+
+    :deep(.ant-descriptions-row:last-child .ant-descriptions-item) {
+      padding-bottom: 0;
+    }
 
     .statistical-info-item {
       width: 50%;

@@ -85,6 +85,7 @@ export default defineComponent({
                     {
                         log?.logs?.map((item, itemIndex, srcLog) => {
                             return <div
+                                key={item.logId || itemIndex}
                                 class={[item.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item',itemIndex===0 ? 'log-item-first' : '']}>
                                 {renderCollapseTitle(item, itemIndex, log)}
                                 <a-collapse>

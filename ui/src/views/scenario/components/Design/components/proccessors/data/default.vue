@@ -52,7 +52,7 @@
                     @blur="validate('datapoolId', { trigger: 'change' }).catch(() => {})">
             <a-select-option :key="0" value="">请选择</a-select-option>
             <a-select-option v-for="(item, idx) in datapools" :key="idx" :value="''+item.id">
-              {{item.id}} - {{item.name}}
+              {{item.name}}
             </a-select-option>
           </a-select>
         </a-form-item>

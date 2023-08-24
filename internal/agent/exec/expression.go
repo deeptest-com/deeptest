@@ -38,15 +38,16 @@ func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret inter
 	if err != nil {
 		return
 	}
-
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
-	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
+	convertParams, convertExpr := convertGovaluateParamAndExpressionForProcessor(paramValMap, expr)
+
+	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(convertExpr, GovaluateFunctions)
 	if err != nil {
 		return
 	}
 
-	ret, err = govaluateExpression.Evaluate(paramValMap)
+	ret, err = govaluateExpression.Evaluate(convertParams)
 
 	return
 }

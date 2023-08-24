@@ -7,7 +7,10 @@
         :data-source="list"
         :pagination="{
             ...pagination,
-            onChange: handlePageChanged
+            onChange: handlePageChanged,
+            showTotal: (total) => {
+              return `共 ${total} 条数据`;
+            },
         }"
     >
         <template #duration="{ record }">

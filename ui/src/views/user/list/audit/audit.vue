@@ -14,6 +14,9 @@
           pagination.pageSize = size;
           getAudits(page);
         },
+        showTotal: (total) => {
+          return `共 ${total} 条数据`;
+        },
       }"
     >
       <template #status="{ text }">

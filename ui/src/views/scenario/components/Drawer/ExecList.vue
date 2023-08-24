@@ -7,7 +7,10 @@
       :data-source="scenariosReports"
       :pagination="{
             ...pagination,
-            onChange: handlePageChanged
+            onChange: handlePageChanged,
+            showTotal: (total) => {
+               return `共 ${total} 条数据`;
+            },
         }">
     <template #createdAt="{ record }">
       <span>{{ momentUtc(record.createdAt) }}</span>

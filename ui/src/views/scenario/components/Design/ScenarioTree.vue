@@ -52,12 +52,7 @@
                 <!-- 逻辑：if/else -->
                 <span class="prefix-logic"
                       v-if="['processor_logic_if','processor_logic_else'].includes(dataRef?.entityType)">
-                      <a-typography-text
-                          strong
-                          style=" display: inline-block; text-align: left;margin-right: 4px;"
-                          :type="dataRef.entityType === 'processor_logic_if' ? 'success' : 'danger'">{{
-                          dataRef.entityType === 'processor_logic_if' ? 'IF' : 'ELSE'
-                        }}</a-typography-text>
+                      <TooltipCell :text="`${dataRef.entityType === 'processor_logic_if' ? 'IF &nbsp;' : 'ELSE &nbsp;'}`" :custom-class="`${dataRef.disable ? 'disabled' : ''} ${dataRef.entityType}`" />
                 </span>
                 <!-- 请求：请求方法 -->
                 <span class="prefix-req-method" v-if="dataRef.entityType === 'processor_interface_default'">
@@ -68,16 +63,12 @@
                 <!-- 节点名称 -->
                 <span class="title-text"
                       v-if="dataRef.name && needHandleShowName.includes(dataRef.entityType)">
-                  <a-typography-text
-                    :ellipsis="{ tooltip: dataRef.name }"
-                    :content="dataRef.name"
-                  />
+                      <TooltipCell :text="dataRef.name" :custom-class="`${dataRef.disable ? 'disabled' : ''}`" />
                 </span>
                 <span class="title-text" v-else-if= "!needHandleShowName.includes(dataRef.entityType)">
-                  <a-typography-text
-                    :ellipsis="{ tooltip: `${dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`}` }"
-                    :content="`${dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`}`"
-                  />
+                  <TooltipCell 
+                    :text="`${dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`}`" 
+                    :custom-class="`${dataRef.disable ? 'disabled' : ''}`" />
                 </span>
               </div>
               <div class="icon" v-if="dataRef.id > 0"
@@ -163,7 +154,7 @@ import cloneDeep from "lodash/cloneDeep";
 import InterfaceImportFromCurl from "@/views/component/InterfaceImportFromCurl/index.tsx";
 import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue";
 import {showLineScenarioType, onlyShowDisableAndDeleteTypes, loopIteratorTypes} from "./config";
-import EditAndShow from "@/components/EditAndShow/index.vue";
+import TooltipCell from "@/components/Table/tooltipCell.vue";
 
 const props = defineProps<{}>()
 const {t} = useI18n();

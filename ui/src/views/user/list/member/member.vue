@@ -27,6 +27,9 @@
             pagination.pageSize = size;
             getList(page);
           },
+          showTotal: (total) => {
+            return `共 ${total} 条数据`;
+          },
         }"
       >
         <template #role_ids="{ record }">

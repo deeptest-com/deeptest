@@ -102,7 +102,6 @@
 
     <div class="right" @click.stop="clickMore">
       详情
-      <RightOutlined/>
     </div>
     <LogContentDrawer
         :data="data"
@@ -189,6 +188,7 @@ function clickMore() {
 
   .right {
     font-weight: normal;
+    color: #447DFD;
   }
 
   .text {

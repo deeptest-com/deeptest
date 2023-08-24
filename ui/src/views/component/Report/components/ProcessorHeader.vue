@@ -3,21 +3,7 @@
     <div class="left">
       <!-- ::::通用的场景图标 和 场景名称 -->
       <IconSvg :type="DESIGN_TYPE_ICON_MAP[record.processorType]" class="processor-icon-svg"/>
-      <a-typography-text 
-        :style="{maxWidth: '120px'}"
-        :ellipsis="{tooltip: name }"
-        :content="name"
-        strong 
-        v-if="!record.processorType.includes('processor_logic_')">
-      </a-typography-text>
-      <a-typography-text
-        strong
-        :style="{maxWidth: '120px'}"
-        :ellipsis="{ tooltip: name }"
-        :content="name"
-        v-else
-        :type="record.processorType === 'processor_logic_if' ? 'success' : 'danger'">
-      </a-typography-text>
+      <TooltipCell :text="name" :maxWidth="120" :customClass="record.processorType" />
     </div>
 
     <div class="summary">
@@ -122,6 +108,7 @@ import {
   DESIGN_TYPE_ICON_MAP,
   showScenarioExecStatus,
 } from "@/views/scenario/components/Design/config";
+import TooltipCell from '@/components/Table/tooltipCell.vue';
 
 const props = defineProps(['record'])
 
@@ -168,6 +155,8 @@ function clickMore() {
   }
 
   .left {
+    display: flex;
+    align-items: center;
     margin-right: 20px;
     &.hide-arrow {
       margin-left: 28px;

@@ -47,7 +47,16 @@ const store = useStore<{  Debug: Debug }>();
 const responseData = computed<any>(() => store.state.Debug.responseData);
 const resultData = computed<any>(() => store.state.Debug.resultData);
 const entityData = computed<any>(()=>store.state.Debug.debugData.responseDefine?.entityData)
-const responseDataForDefine = computed(()=>resultData.value.filter((item:any)=>item.conditionEntityType=="responseDefine"))
+const responseDataForDefine = computed(
+  ()=>{
+    //结果有多个只取一个
+    let ret = resultData.value.filter((item:any)=>item.conditionEntityType=="responseDefine")
+    if (ret.length > 0) {
+      ret = [ret[0]]
+    }
+    return ret
+    }
+    )
 const responseDataForAssert = computed(()=>resultData.value.filter((item:any)=>item.conditionEntityType=="checkpoint"))
 
 

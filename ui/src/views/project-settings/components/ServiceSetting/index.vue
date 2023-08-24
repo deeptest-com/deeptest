@@ -22,7 +22,7 @@
           </template>
           <template #createUser="{ text }">
             <div>
-              {{ text || '---' }}
+              {{ username(text) || '---' }}
             </div>
           </template>
           <template #customServers="{ record }">
@@ -82,6 +82,7 @@ import {
   ref,
   watch,
   createVNode,
+  onMounted
 } from 'vue';
 import { useStore } from "vuex";
 import { useRouter } from 'vue-router';
@@ -95,7 +96,7 @@ import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
 import { serviceColumns } from '../../config';
 
-const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
+const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const dataSource = computed<any>(() => store.state.ProjectSetting.serviceOptions);
 const userListOptions = computed<any>(() => store.state.ProjectSetting.userListOptions);
@@ -104,6 +105,7 @@ const route = useRouter();
 const drawerVisible = ref(false);
 const editKey = ref(0);
 const currentTabKey = ref('');
+const userList = computed<any>(() => store.state.Project.userList);
 
 let formConfig = ref([
   {
@@ -242,7 +244,9 @@ async function getList(name = '') {
   })
 }
 
-
+onMounted(async () => {
+  await store.dispatch('Project/getUserList');
+})
 
 // 实时监听项目切换，如果项目切换了则重新请求数据
 watch(() => {
@@ -284,6 +288,11 @@ async function isHasProps() {
     await edit(record)
     currentTabKey.value = sectab;
   }
+}
+
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
 }
 
 </script>

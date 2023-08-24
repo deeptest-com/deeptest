@@ -23,6 +23,12 @@
             <a-tag :color="record.statusTag">{{ text }}</a-tag>
           </template>
 
+          <template #createUser="{record}">
+            <div class="customTagsColRender">
+              {{username(record.createUser)}}
+            </div>
+          </template>
+
           <template #operation="{ record }">
             <a-dropdown>
               <MoreOutlined/>
@@ -55,7 +61,7 @@
 </template>
 <script setup lang="ts">
 
-import {computed, createVNode, ref, watch,} from 'vue';
+import {computed, createVNode, ref, watch,onMounted} from 'vue';
 import {useStore} from "vuex";
 import {useRouter} from 'vue-router';
 import {Modal} from 'ant-design-vue';
@@ -68,7 +74,7 @@ import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';
 import {datapoolColumns} from '../../config';
 
-const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
+const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const userListOptions = computed<any>(() => store.state.ProjectSetting.userListOptions);
 const dataSource = computed<any>(() => store.state.ProjectSetting.datapoolList);
@@ -76,7 +82,7 @@ const route = useRouter();
 
 const drawerVisible = ref(false);
 const editId = ref(0);
-
+const userList = computed<any>(() => store.state.Project.userList);
 let formConfig = ref([
   {
     type: 'tooltip',
@@ -108,6 +114,10 @@ watch((currProject), async (newVal) => {
   await list()
 }, {
   immediate: true
+})
+
+onMounted(async () => {
+  await store.dispatch('Project/getUserList');
 })
 
 async function list(name = '') {
@@ -157,6 +167,11 @@ const onEdit = (record) => {
 
   editId.value = record.id;
   drawerVisible.value = true;
+}
+
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
 }
 
 async function onDelete(record: any) {

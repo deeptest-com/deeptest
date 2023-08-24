@@ -34,13 +34,13 @@ var (
 // called by checkpoint
 func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret interface{}, err error) {
 	// 1
-	paramValMap, err := generateGovaluateParamsWithVariables(expression)
+	params, err := generateGovaluateParamsWithVariables(expression)
 	if err != nil {
 		return
 	}
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
-	convertParams, convertExpr := convertGovaluateParamAndExpressionForProcessor(paramValMap, expr)
+	convertParams, convertExpr := convertGovaluateParamAndExpressionForProcessor(params, expr)
 
 	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(convertExpr, GovaluateFunctions)
 	if err != nil {
@@ -98,7 +98,7 @@ func convertGovaluateParamAndExpressionForProcessor(params domain.VarKeyValuePai
 
 // a.1
 func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain.VarKeyValuePair, err error) {
-	ret = make(map[string]interface{}, 8)
+	ret = domain.VarKeyValuePair{}
 
 	variables := commUtils.GetVariablesInExpressionPlaceholder(expression)
 
@@ -125,8 +125,8 @@ func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain
 }
 
 // a.2
-func generateGovaluateParamsWithVariables(expression string) (ret map[string]interface{}, err error) {
-	ret = make(map[string]interface{}, 0)
+func generateGovaluateParamsWithVariables(expression string) (ret domain.VarKeyValuePair, err error) {
+	ret = domain.VarKeyValuePair{}
 
 	variables := commUtils.GetVariablesInExpressionPlaceholder(expression)
 

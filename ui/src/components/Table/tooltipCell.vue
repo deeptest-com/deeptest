@@ -14,9 +14,18 @@ export default defineComponent({
     width: {
       default: 0,
     },
+    maxWidth: {
+      default: 0,
+      required: false,
+    },
     tip: {
       default: "",
       required: false,
+    },
+    customClass: {
+      default: "",
+      required: false,
+      type: String,
     }
   },
   setup(props) {
@@ -48,9 +57,9 @@ export default defineComponent({
   },
   render() {
     return (
-      <div style={{ width: `${this.width}px`, cursor: this.showTooltip ? 'pointer' : 'unset' }}>
+      <div style={{ width: this.width ? `${this.width}px` : 'max-content', maxWidth: `${this.maxWidth || this.width}px` ,cursor: this.showTooltip ? 'pointer' : 'unset' }}>
         <a-tooltip placement="top" arrowPointAtCenter={true} title={this.showTooltip ? this.tip || this.text : null}>
-          <div class="out">
+          <div class={['out', this.customClass]}>
             <span ref="textRef" class="text">
               {this.text}
             </span>
@@ -68,5 +77,13 @@ export default defineComponent({
   white-space: nowrap;
   text-overflow: ellipsis;
   line-height: 18px;
+
+  &.processor_logic_if {
+    color: #52c41a;
+  }
+
+  &.processor_logic_else {
+    color: #f5222d;
+  }
 }
 </style>

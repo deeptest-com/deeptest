@@ -24,6 +24,9 @@
             onShowSizeChange: (page, size) => {
               loadList(page,size);
             },
+            showTotal: (total) => {
+              return `共 ${total} 条数据`;
+            },
         }"
         :columns="columns"
         :data-source="interfaces"

@@ -28,6 +28,9 @@
               pagination.pageSize = size;
               getList(page);
             },
+            showTotal: (total) => {
+               return `共 ${total} 条数据`;
+            },
           }"
         >
           <template #name="{ text, record }">
@@ -114,7 +117,7 @@ const getList = async (current: number): Promise<void> => {
     pageSize: pagination.value.pageSize,
     page: current,
   });
- 
+
   loading.value = false;
 };
 

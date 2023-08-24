@@ -39,6 +39,9 @@
               pagination.current = page;
               getPlans({ page });
             },
+            showTotal: (total) => {
+               return `共 ${total} 条数据`;
+            },
         }"
       row-key="id"
       :loading="loading"
@@ -241,11 +244,11 @@ async function handleRemove(record?: any) {
         id: detailResult.value.id,
         data: keys
       });
-      await getPlans(!record 
-        ? { page: 1 } 
-        : { 
-          page: linkedPlans.value.length === 1 && pagination.value.current > 1 
-          ? pagination.value.current - 1 
+      await getPlans(!record
+        ? { page: 1 }
+        : {
+          page: linkedPlans.value.length === 1 && pagination.value.current > 1
+          ? pagination.value.current - 1
           : pagination.value.current }
         );
     }

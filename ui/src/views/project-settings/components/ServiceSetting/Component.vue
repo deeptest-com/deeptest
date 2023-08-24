@@ -25,6 +25,9 @@
                     onShowSizeChange:  (pageNum, pageSize) => {
                      changePage(pageNum,pageSize);
                     },
+                    showTotal: (total) => {
+                       return `共 ${total} 条数据`;
+                    },
                    }"
                  :data-source="dataSource"
                  :columns="schemaColumns" :rowKey="(_record, index) => index">

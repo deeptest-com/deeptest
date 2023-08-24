@@ -32,6 +32,9 @@
             onChange: (page) => {
                 getList({ page });
             },
+            showTotal: (total) => {
+               return `共 ${total} 条数据`;
+            },
         }"
         row-key="id"
         :scroll="scroll"

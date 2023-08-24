@@ -65,6 +65,7 @@ func EvaluateVariablePropExpressionValue(variable domain.ExecVariable, propExpre
 
 	if variable.Name == variableName {
 		ret = variable
+		ret.Name = propExpression // set name from item to item.a
 
 		if len(arr) > 1 {
 			variableProp := arr[1]

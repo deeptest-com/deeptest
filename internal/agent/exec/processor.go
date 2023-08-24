@@ -57,11 +57,13 @@ type ProcessorBase struct {
 func (p *Processor) Run(s *Session) (err error) {
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
 	CurrScenarioProcessorId = p.ID
-	defer func() {
-		if errX := recover(); errX != nil {
-			p.Error(s, errX)
-		}
-	}()
+	/*
+		defer func() {
+			if errX := recover(); errX != nil {
+				p.Error(s, errX)
+			}
+		}()
+	*/
 
 	if !p.Disable && p.Entity != nil && !ForceStopExec {
 		p.Entity.Run(p, s)
@@ -83,9 +85,11 @@ func (p *Processor) Error(s *Session, err interface{}) {
 
 	detail["exception"] = fmt.Sprintf("错误：%v", err)
 	p.Result.Detail = commonUtils.JsonEncode(detail)
+
+	p.AddResultToParent()
 	execUtils.SendExecMsg(p.Result, s.WsMsg)
 
-	execUtils.SendExceptionMsg(s.WsMsg)
+	//execUtils.SendExceptionMsg(s.WsMsg)
 }
 
 func (p *Processor) AddResultToParent() (err error) {

@@ -450,7 +450,7 @@ func (s *ScenarioNodeService) disableScenarioNodeAndChildren(nodeId uint) (err e
 	err = s.ScenarioNodeRepo.DisableWithChildren(nodeId)
 
 	//如果要禁用if，则else也要禁用
-	if !node.Disabled && nextNodeErr == nil && srcScenarioNextNode.EntityType == consts.ProcessorLogicElse {
+	if !node.Disabled && nextNodeErr == nil && !srcScenarioNextNode.Disabled && srcScenarioNextNode.EntityType == consts.ProcessorLogicElse {
 		err = s.ScenarioNodeRepo.DisableWithChildren(srcScenarioNextNode.ID)
 	}
 

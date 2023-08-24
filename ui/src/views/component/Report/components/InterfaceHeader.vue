@@ -1,40 +1,48 @@
 <template>
   <div class="endpoint-header">
     <div class="endpoint-method">
-      <IconSvg :type="DESIGN_TYPE_ICON_MAP[endpointData.processorType]" class="processor-icon-svg"/>
+      <!-- <IconSvg :type="DESIGN_TYPE_ICON_MAP[endpointData.processorType]" class="processor-icon-svg"/> -->
       <span :style="{ color: getMethodColor(reqContent.method) }">
               {{ reqContent.method }}
       </span>
     </div>
 
     <div class="summary">
-      <a-tooltip :title="reqContent.url">
-        <a class="endpoint-url" href="javascript:void (0)">
-          {{ reqContent.url }}
-        </a>
-      </a-tooltip>
+      <div class="left">
+        <a-tooltip :title="reqContent.url">
+          <a class="endpoint-url" href="javascript:void (0)">
+            {{ reqContent.url }}
+          </a>
+        </a-tooltip>
 
-      <a-tooltip :title="`${endpointData.name}`">
-        <span class="endpoint-name">
-          {{ endpointData.name || '' }}
-        </span>
-      </a-tooltip>
+        <a-tooltip :title="`${endpointData.name}`">
+          <span class="endpoint-name">
+            {{ endpointData.name || '' }}
+          </span>
+        </a-tooltip>
+      </div>
+      <div class="right">
+        <span class="endpoint-code" v-if="endpointData.resultStatus !== 'loading'">
+            状态码: &nbsp; <span :style="{ color: `${responseCodeColorMap[resContent.statusCode]}` }">{{
+            resContent.statusCode
+          }}</span>
+          </span>
 
-      <span class="endpoint-code" v-if="endpointData.resultStatus !== 'loading'">
-          状态码: &nbsp; <span :style="{ color: `${responseCodeColorMap[resContent.statusCode]}` }">{{
-          resContent.statusCode
-        }}</span>
-        </span>
-
-      <span :class="['endpoint-time', ClassMap[endpointData.resultStatus]]"
-            v-if="endpointData.resultStatus !== 'loading'">
+        <span 
+          class="endpoint-time"
+          v-if="endpointData.resultStatus !== 'loading'">
           耗时:
-          <a-tooltip :title="`${resContent.time} ms`">&nbsp;<span
-              v-html="formatWithSeconds(resContent.time)"></span>
+          <a-tooltip :title="`${resContent.time} ms`">&nbsp;
+            <span v-html="formatWithSeconds(resContent.time)"></span>
           </a-tooltip>
         </span>
 
-
+        <span 
+          class="endpoint-time"
+          v-if="endpointData.resultStatus !== 'loading'">
+          大小: &nbsp;<span style="color: rgb(4, 196, 149)">{{ resContent.contentLength }} B</span>
+        </span>
+      </div>
     </div>
 
     <div class="status endpoint-status">
@@ -260,5 +268,11 @@ function handleQueryDetail() {
   margin-right: 16px;
   display: flex;
   align-items: center;
+  justify-content: space-between;
+
+  .left,.right {
+    display: flex;
+    align-items: center;
+  }
 }
 </style>

@@ -71,10 +71,8 @@ watch(() => {
       projectId: currProject.value.id
     });
 
-    if (envId) {
-      currEnvId.value = envId;
-      store.dispatch('ProjectSetting/saveEnvId',envId); 
-    }
+    currEnvId.value = envId || envList.value[0]?.value;
+    store.dispatch('ProjectSetting/saveEnvId',envId);
   }
 }, {
   immediate: true

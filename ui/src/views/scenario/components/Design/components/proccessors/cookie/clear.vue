@@ -41,7 +41,7 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  name: [
+  cookieName: [
     {required: true, message: '请输入名称', trigger: 'blur'},
   ],
 });

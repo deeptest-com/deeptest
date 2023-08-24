@@ -30,6 +30,11 @@ type ProcessorInterface struct {
 }
 
 func (entity ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("interface entity")
 	CurrDebugInterfaceId = processor.EntityId
 

@@ -170,9 +170,13 @@ type ProcessorData struct {
 	BaseModel
 	agentExec.ProcessorEntityBase
 
-	Type      consts.DataSource `json:"type,omitempty" yaml:"type,omitempty"`
-	Url       string            `json:"url,omitempty" yaml:"url,omitempty"`
-	Separator string            `json:"separator,omitempty" yaml:"separator,omitempty"`
+	Src  consts.DataItSrc  `json:"src" yaml:"src"`
+	Type consts.DataItType `json:"type,omitempty" yaml:"type,omitempty"`
+
+	Url        string `json:"url,omitempty" yaml:"url,omitempty"`
+	DatapoolId uint   `json:"datapoolId,omitempty" yaml:"datapoolId,omitempty"`
+
+	Separator string `json:"separator,omitempty" yaml:"separator,omitempty"`
 
 	RepeatTimes int  `json:"repeatTimes,omitempty" yaml:"repeatTimes,omitempty"`
 	IsRand      bool `json:"isRand,omitempty" yaml:"isRand,omitempty"`

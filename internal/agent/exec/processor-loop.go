@@ -29,6 +29,11 @@ type ProcessorLoop struct {
 }
 
 func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("loop entity")
 
 	startTime := time.Now()
@@ -179,7 +184,8 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 
 		if index >= consts.MaxLoopTimeForInterfaceTest {
 			logUtils.Infof("break for reach MaxLoopTimeForInterfaceTest")
-			goto LABEL
+			panic(fmt.Sprintf("循环执行次数达到上限%d次", consts.MaxLoopTimeForInterfaceTest))
+			//goto LABEL
 		}
 	}
 

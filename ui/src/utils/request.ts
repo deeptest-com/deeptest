@@ -175,7 +175,9 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
  * ......
  */
 export default function (config: AxiosRequestConfig): AxiosPromise<any> {
-    return request(config).then((response: AxiosResponse) => response.data).catch(error => errorHandler(error));
+    return request(config).
+    then((response: AxiosResponse) => response.data).
+    catch(error => errorHandler(error));
 }
 
 export function requestToAgent(config: AxiosRequestConfig | any): AxiosPromise<any> {
@@ -183,5 +185,7 @@ export function requestToAgent(config: AxiosRequestConfig | any): AxiosPromise<a
     if(process.env.VUE_APP_DEPLOY_ENV === 'ly' && config.agentUrl){
         requestAgent.defaults.baseURL = config.agentUrl;
     }
-    return requestAgent(config).then((response: AxiosResponse) => response.data).catch(error => errorHandler(error));
+    return requestAgent(config).
+        then((response: AxiosResponse) => response.data).
+        catch(error => errorHandler(error));
 }

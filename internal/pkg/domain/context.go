@@ -17,8 +17,8 @@ type GlobalParam struct {
 	DefaultValue string           `gorm:"type:text" json:"defaultValue"`
 }
 
-type InterfaceToEnvMap map[uint]uint               // interfaceId -> envId
-type EnvToVariables map[uint][]GlobalVar           // envId -> vars
-type Datapools map[string][]map[string]interface{} // datapoolName -> array of map<colName, colValue>
+type InterfaceToEnvMap map[uint]uint        // interfaceId -> envId
+type EnvToVariables map[uint][]GlobalVar    // envId -> vars
+type Datapools map[string][]VarKeyValuePair // datapoolName -> array of map<colName, colValue>
 
 type VarKeyValuePair map[string]interface{}

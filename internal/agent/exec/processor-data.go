@@ -19,9 +19,12 @@ type ProcessorData struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntityBase
 
-	Type      consts.DataSource `json:"type,omitempty" yaml:"type,omitempty"`
-	Url       string            `json:"url,omitempty" yaml:"url,omitempty"`
-	Separator string            `json:"separator,omitempty" yaml:"separator,omitempty"`
+	Src          consts.DataItSrc  `json:"src" yaml:"src"`
+	Type         consts.DataItType `json:"type,omitempty" yaml:"type,omitempty"`
+	Url          string            `json:"url,omitempty" yaml:"url,omitempty"`
+	DatapoolId   uint              `json:"datapoolId,omitempty" yaml:"datapoolId,omitempty"`
+	DatapoolName string            `json:"datapoolName,omitempty" yaml:"datapoolName,omitempty"`
+	Separator    string            `json:"separator,omitempty" yaml:"separator,omitempty"`
 
 	RepeatTimes int `json:"repeatTimes,omitempty" yaml:"repeatTimes,omitempty"`
 	//StartIndex     int    `json:"startIndex,omitempty" yaml:"startIndex,omitempty"`
@@ -69,6 +72,11 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	executedProcessorIds := map[uint]bool{}
 
 	for i := 0; i < entity.RepeatTimes; i++ {
@@ -127,27 +135,37 @@ func (entity *ProcessorData) getIterator() (iterator agentDomain.ExecIterator, m
 }
 
 func (entity *ProcessorData) GenerateLoopList() (ret agentDomain.ExecIterator, err error) {
-	pth, _ := DownloadUploadedFile(entity.Url)
-	if err != nil {
-		logUtils.Infof("Download file %s failed", pth)
-	}
-
-	if entity.ProcessorType != consts.ProcessorDataDefault {
-		err = errors.New("wrong data processor")
-		return
-	}
-
-	format := commUtils.GetDataFileFormat(pth)
-	if format == consts.FormatText || format == consts.FormatCsv {
-		ret.Data, err = ReadDataFromText(pth, entity.Separator)
-	} else if format == consts.FormatExcel {
-		ret.Data, err = ReadDataFromExcel(pth)
-	}
-	/*
-		if entity.IsRand {
-			ret.Data = randArr(ret.Data)
+	if entity.Src == consts.SrcDatapool {
+		for name, dp := range ExecScene.Datapools {
+			if name == entity.DatapoolName {
+				ret.Data = dp
+				break
+			}
 		}
-	*/
+
+	} else {
+		pth, _ := DownloadUploadedFile(entity.Url)
+		if err != nil {
+			logUtils.Infof("Download file %s failed", pth)
+		}
+
+		if entity.ProcessorType != consts.ProcessorDataDefault {
+			err = errors.New("wrong data processor")
+			return
+		}
+
+		format := commUtils.GetDataFileFormat(pth)
+		if format == consts.FormatText || format == consts.FormatCsv {
+			ret.Data, err = ReadDataFromText(pth, entity.Separator)
+		} else if format == consts.FormatExcel {
+			ret.Data, err = ReadDataFromExcel(pth)
+		}
+		/*
+			if entity.IsRand {
+				ret.Data = randArr(ret.Data)
+			}
+		*/
+	}
 
 	return
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -27,12 +28,18 @@ type DatapoolCtrl struct {
 func (c *DatapoolCtrl) Index(ctx iris.Context) {
 	var req serverDomain.DatapoolReqPaginate
 
-	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.DatapoolService.Paginate(req)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
-	} else {
+	err := ctx.ReadJSON(&req)
+	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
 	}
+
+	if req.ProjectId == 0 {
+		req.ProjectId, _ = ctx.URLParamInt64("currProjectId")
+	}
+
+	res, _ := c.DatapoolService.Paginate(req)
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 }
 
 // Get
@@ -85,8 +92,15 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-
 	req.ProjectId = uint(projectId)
+
+	// check name exist
+	po, err := c.DatapoolService.GetByName(req.Name)
+	if po.ID > 0 {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,
+			MsgKey: fmt.Sprintf("%v", _domain.ErrNameExist.Code)})
+		return
+	}
 
 	err = c.DatapoolService.Save(&req, userId)
 	if err != nil {
@@ -94,7 +108,7 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
 // Delete

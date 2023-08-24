@@ -15,6 +15,11 @@ type ProcessorGroup struct {
 }
 
 func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("group entity")
 
 	startTime := time.Now()
@@ -38,9 +43,7 @@ func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err er
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	for _, child := range processor.Children {
-		if ForceStopExec {
-			break
-		}
+
 		if ForceStopExec {
 			break
 		}

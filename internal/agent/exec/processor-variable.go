@@ -20,6 +20,11 @@ type ProcessorVariable struct {
 }
 
 func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("variable entity")
 
 	startTime := time.Now()

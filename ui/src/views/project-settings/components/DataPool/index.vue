@@ -64,7 +64,7 @@
 import {computed, createVNode, ref, watch,onMounted} from 'vue';
 import {useStore} from "vuex";
 import {useRouter} from 'vue-router';
-import {Modal} from 'ant-design-vue';
+import {message, Modal} from 'ant-design-vue';
 import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EmptyCom from '@/components/TableEmpty/index.vue';
@@ -73,6 +73,8 @@ import Drawer from './Drawer.vue';
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';
 import {datapoolColumns} from '../../config';
+import {useI18n} from "vue-i18n";
+const { t } = useI18n();
 
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -105,7 +107,7 @@ const rules = {
   name: [
     {
       required: true,
-      message: '服务名称不能为空'
+      message: '数据池名称不能为空'
     }
   ]
 };
@@ -134,7 +136,8 @@ const data = ref<any[][]>(dataArr)
 async function handleAdd(formData: any) {
   const { name, username, description } = formData;
   const result = userListOptions.value.filter((e: any) => e.value === username);
-  await store.dispatch('ProjectSetting/saveDatapool', {
+
+  const msgKey = await store.dispatch('ProjectSetting/saveDatapool', {
     projectId: currProject.value.id,
     formState: {
       userId: result && result[0] && result[0].id,
@@ -144,6 +147,12 @@ async function handleAdd(formData: any) {
     },
     action: 'create'
   })
+
+  if (msgKey !== '') {
+    message.error(`新建数据池失败, ` + t(`biz_${msgKey}`) + '。')
+  } else {
+    message.success(`新建数据池成功`);
+  }
 }
 function onClose() {
   drawerVisible.value = false;

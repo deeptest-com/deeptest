@@ -25,6 +25,11 @@ type ProcessorCookie struct {
 }
 
 func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("cookie entity")
 
 	startTime := time.Now()

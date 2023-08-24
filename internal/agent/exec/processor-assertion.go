@@ -18,6 +18,11 @@ type ProcessorAssertion struct {
 }
 
 func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("assertion entity")
 
 	startTime := time.Now()

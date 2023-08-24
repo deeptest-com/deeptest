@@ -6,6 +6,14 @@
         <a-alert message="说明：数据迭代处理器将循环读取文件中的行内容，并将读取的内容赋值给指定的变量" type="info" show-icon/>
       </div>
 
+      <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" label="数据来源">
+        <a-radio-group v-model:value="formState.src">
+          <a-radio v-for="(item, idx) in srcOptions" :key="idx" :value="item.value">
+            {{ t(item.label) }}
+          </a-radio>
+        </a-radio-group>
+      </a-form-item>
+
       <a-form :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }"
           @submit.prevent>
         <a-form-item label="变量名称" name="variableName" v-bind="validateInfos.variableName" required>
@@ -17,7 +25,8 @@
           </div>
         </a-form-item>
 
-        <a-form-item label="上传文件" name="url" v-bind="validateInfos.url" required>
+        <a-form-item v-if="formState.src === DataSrc.fileUpload"
+                     label="上传文件" name="url" v-bind="validateInfos.url" required>
           <div class="upload-file">
             <div class="upload-container">
               <a-upload
@@ -35,6 +44,17 @@
           </div>
 
           <div>{{formState.url}}</div>
+        </a-form-item>
+
+        <a-form-item v-if="formState.src === DataSrc.datapool"
+                     label="数据池" v-bind="validateInfos.datapoolId" required>
+          <a-select v-model:value="formState.datapoolId"
+                    @blur="validate('datapoolId', { trigger: 'change' }).catch(() => {})">
+            <a-select-option :key="0" value="">请选择</a-select-option>
+            <a-select-option v-for="(item, idx) in datapools" :key="idx" :value="''+item.id">
+              {{item.name}}
+            </a-select-option>
+          </a-select>
         </a-form-item>
 
         <a-form-item label="分隔符" name="separator"
@@ -85,62 +105,56 @@ import {StateType as ScenarioStateType} from "../../../../../store";
 import {UploadOutlined} from "@ant-design/icons-vue";
 import {uploadRequest} from "@/utils/upload";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
-import {getEnumArr} from "@/utils/comm";
-import {DataFileExt} from "@/utils/enum";
+import {getEnumArr, getEnumSelectItems} from "@/utils/comm";
+import {DataFileExt, DataSrc, ExtractorSrc} from "@/utils/enum";
 import {isInArray} from "@/utils/array";
+import {listDatapool} from "@/views/project-settings/service";
 const useForm = Form.useForm;
 
 const router = useRouter();
 const {t} = useI18n();
 
-const formRef = ref();
-const rulesRef:any = reactive({
-  variableName: [
-    {required: true, message: '请输入变量名称', trigger: 'blur'},
-  ],
-  url: [
-    {required: true, message: '请上传文件', trigger: 'blur'},
-  ],
-} as any)
+const srcOptions = getEnumSelectItems(DataSrc)
+
+const datapools = ref([] as any[])
+const loadDatapools = async () => {
+  console.log('loadDatapools')
+  const resp = await listDatapool({})
+  if (resp.code === 0) {
+    datapools.value = resp.data.result
+  }
+}
+loadDatapools()
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
 
 const extArr = getEnumArr(DataFileExt)
 const extStr = extArr.join(',')
-console.log(extStr)
 
 const formState = ref({
+  src: DataSrc.fileUpload,
   variableName: '',
   url: '',
+  datapoolId: '',
   format: '',
   separator: '',
   repeatTimes: 1,
   isRand: false,
   comments: '',
 });
+const rulesRef:any = computed(() => { return {
+  variableName: [
+    {required: true, message: '请输入变量名称', trigger: 'blur'},
+  ],
+  url: formState.value.src === DataSrc.fileUpload ? [{required: true, message: '请上传文件', trigger: 'blur'}] : [],
+  datapoolId: formState.value.src === DataSrc.datapool ? [{required: true, message: '请选择数据池', trigger: 'change'}] : [],
+  separator: formState.value.format === 'txt' ? [{required: true, message: '请输入分隔符', trigger: 'blur'}] : [],
+}})
 
 const {resetFields, validate, validateInfos} = useForm(formState, rulesRef);
 
 const isWrongFileFormat = ref(false)
-
-
-// const customUpload = async (e) => {
-//   const res = await uploadRequest(e.file)
-//   if (res.path) {
-//     message.success('上传成功');
-//     formState.value.url = res.path;
-//     e.onSuccess(res, e);
-//     fileList.value = [{
-//       uid: '-1',
-//       name: e.file.name,
-//       status: 'done',
-//       url: res.path,
-//     }];
-//   } else {
-//     message.error('上传失败');
-//   }
-// };
 
 const upload = async (e) => {
   const file = e.file;
@@ -170,35 +184,27 @@ watch(nodeData, (val: any) => {
   if (!val) return;
 
   formState.value.variableName = val.variableName;
+  formState.value.src = val.src || DataSrc.fileUpload;
   formState.value.url = val.url;
+  formState.value.datapoolId = val.datapoolId ? ''+val.datapoolId : '';
   formState.value.separator = val.separator;
   formState.value.repeatTimes = val.repeatTimes || 1;
   formState.value.isRand = val.isRand;
   formState.value.comments = val.comments;
 }, {deep: true, immediate: true});
 
-watch(formState, (val: any) => {
-  if(!rulesRef.value) {
-    return
-  }
-  if(val.format === 'txt') {
-    rulesRef.value.separator = [
-      {required: true, message: '请输入分隔符', trigger: 'blur'},
-    ]
-  } else {
-    if(rulesRef.value) {
-      rulesRef.value.separator = []
-    }
-  }
-}, {deep: true});
-
 const submit = debounce(async () => {
+  console.log('rulesRef', rulesRef.value, formState.value.datapoolId)
+
   validate().then(async () => {
         // 下面代码改成 await 的方式
-        const res = await store.dispatch('Scenario/saveProcessor', {
-          ...nodeData.value,
-          ...formState.value,
-        });
+    const data = {
+      ...nodeData.value,
+      ...formState.value,
+    }
+    data.datapoolId = +data.datapoolId
+
+        const res = await store.dispatch('Scenario/saveProcessor', data);
         if (res === true) {
           notification.success({
             message: `保存成功`,

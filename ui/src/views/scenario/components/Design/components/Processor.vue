@@ -31,10 +31,6 @@
     <ProcessorCookieClear v-else-if="selectedNode.processorType === 'processor_cookie_clear'" />
 
     <ProcessorDataDefault    v-else-if="selectedNode.processorType === 'processor_data_default'" />
-    <ProcessorDataText    v-else-if="selectedNode.processorType === 'processor_data_text'" />
-    <ProcessorDataExcel   v-else-if="selectedNode.processorType === 'processor_data_excel'" />
-    <ProcessorDataZenData v-else-if="selectedNode.processorType === 'processor_data_zendata'" />
-
     <ProcessorCustomCode v-else-if="selectedNode.processorType === 'processor_custom_code'" />
 
     <span v-else>
@@ -80,9 +76,6 @@ import ProcessorCookieSet  from "./proccessors/cookie/set.vue"
 import ProcessorCookieClear from "./proccessors/cookie/clear.vue"
 
 import ProcessorDataDefault   from "./proccessors/data/default.vue"
-import ProcessorDataText   from "./proccessors/data/text.vue"
-import ProcessorDataExcel  from "./proccessors/data/excel.vue"
-import ProcessorDataZenData from "./proccessors/data/zendata.vue"
 import ProcessorCustomCode from "./proccessors/custom_code/default.vue"
 
 const router = useRouter();

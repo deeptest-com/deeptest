@@ -288,3 +288,15 @@ func (r *ScenarioNodeRepo) GetNextNode(id uint) (processor model.Processor, err 
 	return
 
 }
+
+func (r *ScenarioNodeRepo) GetPreNode(id uint) (processor model.Processor, err error) {
+	node, err := r.Get(id)
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Where("parent_id = ? and ordr < ?", node.ParentId, node.Ordr).Order("ordr DESC").First(&processor).Error
+
+	return
+
+}

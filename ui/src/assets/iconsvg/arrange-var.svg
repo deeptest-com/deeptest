@@ -1,1 +1,7 @@
-<?xml version="1.0" standalone="no"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg t="1691209540637" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6795" xmlns:xlink="http://www.w3.org/1999/xlink" width="200" height="200"><path d="M883 103h-119.4c-11.6 0-22.4 6-28.8 15.8L525 448.6l-209.8-330c-6.2-9.8-17.2-15.8-28.8-15.8H167c-9.4 0-17 7.6-17 17v34c0 9.4 7.6 17 17 17h100.6L484.6 512 267.6 853H167c-9.4 0-17 7.6-17 17v34c0 9.4 7.6 17 17 17h119.4c11.6 0 22.6-6 28.8-15.8l209.8-329.8 209.8 329.8c6.2 9.8 17 15.8 28.8 15.8h119.4c9.4 0 17-7.6 17-17v-34c0-9.4-7.6-17-17-17h-100.6L565.4 512 782.4 171h100.6c9.4 0 17-7.6 17-17V120c0-9.4-7.6-17-17-17z" p-id="6796"></path></svg>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="24" height="24" rx="2" fill="#F8FCFF"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M6.11328 17.8779L16.314 4.88721L17.887 6.12238L7.68629 19.1131L6.11328 17.8779Z" fill="#447DFD"/>
+<path fill-rule="evenodd" clip-rule="evenodd" d="M16.3135 19.1133L6.11279 6.12256L7.6858 4.88739L17.8865 17.8781L16.3135 19.1133Z" fill="#447DFD"/>
+<path d="M4.50879 2.73438H20.8862V6.11426H4.50879V2.73438Z" fill="#F8FCFF"/>
+<path d="M4.50879 17.8879H20.8862V21.2678H4.50879V17.8879Z" fill="#F8FCFF"/>
+</svg>

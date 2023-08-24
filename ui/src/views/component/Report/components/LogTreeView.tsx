@@ -16,9 +16,15 @@ export default defineComponent({
     emits: ['change'],
     setup(props, {emit}) {
         const activeKeyMap = ref({});
+        // 加载数据时，迭代器每 10 页，分一页
+        const pageInfo = ref({});
 
         function change(uid, keys) {
             activeKeyMap.value[uid] = keys;
+        }
+
+        function changePageInfo(pid) {
+            pageInfo.value[pid] = (pageInfo.value[pid] || 10) + 10;
         }
 
         /**
@@ -29,7 +35,6 @@ export default defineComponent({
         }
 
         watch(() => props.treeData, (newVal: any) => {
-            console.log('treeData change ***', newVal);
             if (newVal?.length) {
                 newVal.forEach((item) => {
                     activeKeyMap.value[item.id] = [item.id];
@@ -73,6 +78,15 @@ export default defineComponent({
                 return (<span class={'collapse-title'}>{log?.round}</span>)
             }
 
+            // 渲染分页
+            function renderPage(pid) {
+                return (<div class={'more-btn'}>
+                    <a-button onClick={() => {
+                        changePageInfo(pid);
+                    }} type="link">加载更多</a-button>
+                </div>)
+            }
+
             const renderLogs = (log) => {
                 if (!log?.id) {
                     return;
@@ -84,20 +98,27 @@ export default defineComponent({
                     {renderContent(log)}
                     {
                         log?.logs?.map((item, itemIndex, srcLog) => {
+                            const pid = item.parentLogId || item.parentId;
+                            const pageSize = pageInfo.value[pid] || 10;
+                            const isHideLog = itemIndex > pageSize;
+                            if (isHideLog) {
+                                return null
+                            }
                             return <div
-                                class={[item.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item',itemIndex===0 ? 'log-item-first' : '']}>
+                                class={[item.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item', itemIndex === 0 ? 'log-item-first' : '']}>
                                 {renderCollapseTitle(item, itemIndex, log)}
                                 <a-collapse>
                                     {renderLogs(item)}
                                 </a-collapse>
+                                {pageSize === itemIndex + 1 ? renderPage(pid) : null}
                             </div>
                         })
                     }
                 </a-collapse-panel>;
             };
-            return logs.map((log,logIndex) => {
+            return logs.map((log, logIndex) => {
                 return <div key={log.id}
-                            class={[log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item',logIndex===0 ? 'log-item-first' : '']}>
+                            class={[log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item', logIndex === 0 ? 'log-item-first' : '']}>
                     <a-collapse>
                         {renderLogs(log)}
                     </a-collapse>

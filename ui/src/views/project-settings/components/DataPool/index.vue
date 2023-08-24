@@ -99,7 +99,7 @@ const rules = {
   name: [
     {
       required: true,
-      message: '服务名称不能为空'
+      message: '数据池名称不能为空'
     }
   ]
 };

@@ -146,7 +146,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         //自动同步相关
         saveSwaggerSync: Action<StateType, StateType>,
         getSwaggerSync: Action<StateType, StateType>,
-        
+
     }
 }
 
@@ -640,14 +640,15 @@ const StoreModel: ModuleType = {
 
             const res = await saveDatapool({ ...formState, projectId });
 
-            if (res.code === 0) {
-                message.success(`${tips[action]}成功`);
-                await dispatch('listDatapool', {
-                    projectId
-                })
-            } else {
-                message.error(`${tips[action]}失败`);
+            if (res.msg !== '') {
+                message.error(`${tips[action]}失败, ${res.msg}。`)
+                return
             }
+
+            message.success(`${tips[action]}成功`);
+            await dispatch('listDatapool', {
+                projectId
+            })
         },
         async deleteDatapool({ dispatch }, params: DatapoolReqParams) {
             const { id, projectId } = params;

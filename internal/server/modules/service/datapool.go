@@ -33,6 +33,9 @@ func (s *DatapoolService) Paginate(req v1.DatapoolReqPaginate) (ret _domain.Page
 func (s *DatapoolService) Get(id uint) (model.Datapool, error) {
 	return s.DatapoolRepo.Get(id)
 }
+func (s *DatapoolService) GetByName(name string) (model.Datapool, error) {
+	return s.DatapoolRepo.GetByName(name)
+}
 
 func (s *DatapoolService) Save(req *model.Datapool, userId uint) (err error) {
 	return s.DatapoolRepo.Save(req, userId)

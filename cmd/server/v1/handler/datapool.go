@@ -91,8 +91,14 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-
 	req.ProjectId = uint(projectId)
+
+	// check name exist
+	po, err := c.DatapoolService.GetByName(req.Name)
+	if po.ID > 0 {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: "已存在同名数据池记录"})
+		return
+	}
 
 	err = c.DatapoolService.Save(&req, userId)
 	if err != nil {
@@ -100,7 +106,7 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
 // Delete

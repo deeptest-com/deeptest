@@ -110,7 +110,7 @@ export default defineComponent({
                                 <a-collapse>
                                     {renderLogs(item)}
                                 </a-collapse>
-                                {pageSize === itemIndex + 1 ? renderPage(pid) : null}
+                                {pageSize === itemIndex  ? renderPage(pid) : null}
                             </div>
                         })
                     }

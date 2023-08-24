@@ -100,7 +100,7 @@ export default defineComponent({
                         log?.logs?.map((item, itemIndex, srcLog) => {
                             const pid = item.parentLogId || item.parentId;
                             const pageSize = pageInfo.value[pid] || 10;
-                            const isHideLog = itemIndex > pageSize;
+                            const isHideLog = itemIndex > pageSize -1 ;
                             if (isHideLog) {
                                 return null
                             }
@@ -110,7 +110,7 @@ export default defineComponent({
                                 <a-collapse>
                                     {renderLogs(item)}
                                 </a-collapse>
-                                {pageSize === itemIndex  ? renderPage(pid) : null}
+                                {pageSize -1 === itemIndex  ? renderPage(pid) : null}
                             </div>
                         })
                     }

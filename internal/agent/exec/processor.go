@@ -83,6 +83,8 @@ func (p *Processor) Error(s *Session, err interface{}) {
 
 	detail["exception"] = fmt.Sprintf("错误：%v", err)
 	p.Result.Detail = commonUtils.JsonEncode(detail)
+
+	p.AddResultToParent()
 	execUtils.SendExecMsg(p.Result, s.WsMsg)
 
 	execUtils.SendExceptionMsg(s.WsMsg)

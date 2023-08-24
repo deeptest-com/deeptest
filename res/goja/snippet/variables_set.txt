@@ -1,1 +1,1 @@
-dp.variables.set("variable_name", "variable_value");
+dt.variables.set("variable_name", "variable_value");

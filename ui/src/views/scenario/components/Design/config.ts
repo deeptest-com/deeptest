@@ -107,12 +107,12 @@ export const DESIGN_MENU_CONFIG = [
                 key: 'processor_loop_range',
                 icon: 'arrange-range',
             },
-            {
-                title: '跳出循环',
-                key: 'processor_loop_break',
-                icon: 'arrange-return',
-                enableInNodeTypes: [...loopIteratorTypes],
-            },
+            // {
+            //     title: '跳出循环',
+            //     key: 'processor_loop_break',
+            //     icon: 'arrange-return',
+            //     enableInNodeTypes: [...loopIteratorTypes],
+            // },
         ]
     },
     // 条件

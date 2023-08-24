@@ -39,40 +39,40 @@ export const DESIGN_MENU_CONFIG = [
     {
         key: 'addInterface',
         title: ' 添加请求',
-        icon: 'arrange-interface',
+        // icon: 'arrange-interface',
         hideInNodeTypes: [ ...onlyShowDisableAndDeleteTypes],
         children: [
             {
                 key: 'add-child-interface-define',
                 title: '导入接口定义',
-                icon: 'interface',
+                // icon: 'interface',
             },
             {
                 key: 'add-child-interface-case',
                 title: '导入接口用例',
-                icon: 'arrange-case',
+                // icon: 'arrange-case',
             },
             {
                 key: 'add-child-interface-diagnose',
                 title: '导入快捷调试',
-                icon: 'arrange-debug',
+                // icon: 'arrange-debug',
             },
             {
                 key: 'add-child-interface-custom',
                 title: '自定义请求',
-                icon: 'arrange-http',
+                // icon: 'arrange-http',
             },
             {
                 key: 'add-child-interface-curl',
                 title: 'cURL导入',
-                icon: 'arrange-url',
+                // icon: 'arrange-url',
             }
         ]
     },
     {
         key: 'processor_group_default',
         title: '添加分组',
-        icon: 'arrange-group',
+        // icon: 'arrange-group',
         hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
     },
     //  分割线
@@ -160,12 +160,12 @@ export const DESIGN_MENU_CONFIG = [
             {
                 title: '设置Cookie',
                 key: 'processor_cookie_set',
-                icon: 'setting-dark',
+                icon: 'arrange-cookie',
             },
             {
                 title: '清空Cookie',
                 key: 'processor_cookie_clear',
-                icon: 'arrange-clear',
+                icon: 'arrange-delete',
             },
         ]
     },
@@ -219,21 +219,21 @@ export const DESIGN_MENU_CONFIG = [
     {
         key: 'disable',
         title: '禁用',
-        icon: 'arrange-disabled',
+        // icon: 'arrange-disabled',
         hideInNodeTypes: ['processor_root_default'],
     },
     //    禁用
     {
         key: 'enable',
         title: '启用',
-        icon: 'arrange-enable',
+        // icon: 'arrange-enable',
         hideInNodeTypes: ['processor_root_default'],
     },
     // 删除
     {
         key: 'remove',
         title: '删除',
-        icon: 'arrange-delete',
+        // icon: 'arrange-delete',
         hideInNodeTypes: ['processor_root_default'],
     },
 ]
@@ -269,8 +269,8 @@ export const DESIGN_TYPE_ICON_MAP = {
     "processor_loop_in": "arrange-loop-list",
     'processor_loop_time': 'arrange-count',
     'processor_loop_until': 'arrange-untils',
-    'processor_logic_if': 'arrange-logic-if',
-    'processor_logic_else': 'arrange-logic-if',
+    'processor_logic_if': 'arrange-if',
+    'processor_logic_else': 'arrange-if',
     'processor_time_default': 'arrange-wait',
     'processor_print_default': 'arrange-output',
     'processor_assertion_default': 'arrange-assert',

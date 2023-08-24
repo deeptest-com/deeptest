@@ -1,13 +1,13 @@
 <template>
   <a-sub-menu v-if="menu?.children?.length" :key="menu.key" :expandIcon="null" :icon="null">
-    <template #icon>
+    <template v-if="menu.icon" #icon>
       <IconSvg :type="menu.icon" class="icon"/>
     </template>
     <template #expandIcon>
       <CaretRightOutlined class="expand-icon icon"/>
     </template>
     <template #title>
-      <span class="sub-menu-text menu-text">
+      <span :class="['sub-menu-text', 'menu-text', !menu.icon && 'menu-text-no-margin']">
          {{ menu.title }}
       </span>
     </template>
@@ -31,6 +31,11 @@ const props = defineProps(['menu']);
   display: inline-block;
   margin-left: 8px;
   width: 72px;
+
+  &.menu-text-no-margin {
+    margin-left: 0;
+    margin-right: 22px;
+  }
 }
 .expand-icon {
   position: relative;

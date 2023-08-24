@@ -125,6 +125,7 @@ const columns: any[] = reactive([
     title: '创建人',
     width: 110,
     dataIndex: 'createUserName',
+    slots: {customRender: 'createUserName'}
   },
   {
     title: '最近更新',

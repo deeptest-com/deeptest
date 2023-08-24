@@ -50,6 +50,11 @@
         <template #updateAt="{ record, column }">
             <ToolTipCell :text="momentUtc(record.updateAt)" :width="column.width" />
         </template>
+        <template #createUserName="{record}">
+          <div class="customTagsColRender">
+            {{username(record.createUserName)}}
+          </div>
+        </template>
         <template #operation="{ record }">
             <a-button type="primary" @click="handleRemove(record)">
                 移除
@@ -109,12 +114,13 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['selectRowKeys', 'refreshList']);
-const store = useStore<{ Plan: PlanStateType }>();
+const store = useStore<{ Plan: PlanStateType,Project }>();
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const members = computed(() => store.state.Plan.members);
 const associateModalVisible = ref(false);
 const selectedRowKeys = ref<any[]>(props.selectedKeys || []); // Check here to configure the default column
 let selectedRowIds = reactive<any[]>([]);
+const userList = computed<any>(() => store.state.Project.userList);
 
 const onSelectChange = (changableRowKeys: string[], rows: any) => {
     selectedRowKeys.value = changableRowKeys;
@@ -179,6 +185,11 @@ const handleRemove = async (record?: any) => {
 const handleFinish = async () => {
     associateModalVisible.value = false;
     emits('refreshList', formState);
+}
+
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
 }
 
 watch(() => {

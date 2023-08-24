@@ -10,6 +10,7 @@
                      :value="nodeData?.name || ''"
                      :canEmpty="false"
                      :emptyValue="'未命名'"
+                     customClass="defaultValue"
                      @update="updateTitle"/>
       </div>
     </div>
@@ -107,6 +108,9 @@ async function updateTitle(title) {
   .name {
     width: 200px;
     display: inline-block;
+    .defaultValue {
+      color: #c1baba;
+    }
   }
 
   .right {

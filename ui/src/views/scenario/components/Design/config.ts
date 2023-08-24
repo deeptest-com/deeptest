@@ -341,7 +341,7 @@ export const showArrowScenarioType = [
     'processor_logic_if',
     'processor_logic_else',
     'processor_data_default',
-    'processor_custom_code',
+    // 'processor_custom_code',
 ]
 
 /**

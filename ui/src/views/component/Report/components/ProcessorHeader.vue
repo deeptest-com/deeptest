@@ -1,6 +1,6 @@
 <template>
   <div class="processor-header">
-    <div class="left" :class="{'hide-arrow' : !showArrowScenarioType.includes(record.processorType)}">
+    <div class="left">
       <!-- ::::通用的场景图标 和 场景名称 -->
       <IconSvg :type="DESIGN_TYPE_ICON_MAP[record.processorType]" class="processor-icon-svg"/>
       <a-typography-text 
@@ -102,7 +102,6 @@
 
     <div class="right" @click.stop="clickMore">
       详情
-      <RightOutlined/>
     </div>
     <LogContentDrawer
         :data="data"
@@ -189,6 +188,7 @@ function clickMore() {
 
   .right {
     font-weight: normal;
+    color: #447DFD;
   }
 
   .text {

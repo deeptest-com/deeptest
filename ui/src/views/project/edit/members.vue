@@ -29,6 +29,9 @@
               pagination.pageSize = size;
               getMembers(page);
             },
+            showTotal: (total) => {
+               return `共 ${total} 条数据`;
+            },
           }"
         >
           <template #username="{ text }">

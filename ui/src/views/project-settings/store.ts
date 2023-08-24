@@ -635,20 +635,16 @@ const StoreModel: ModuleType = {
             }
         },
         async saveDatapool({ dispatch }, params: StoreDatapoolParams) {
-            const { formState, projectId, action = 'create' } = params;
-            const tips = { 'create': '新建数据池', 'update': '修改数据池' };
-
+            const { formState, projectId } = params;
             const res = await saveDatapool({ ...formState, projectId });
 
-            if (res.msg !== '') {
-                message.error(`${tips[action]}失败, ${res.msg}。`)
-                return
+            if (!res.msgKey) {
+                dispatch('listDatapool', {
+                    projectId
+                })
             }
 
-            message.success(`${tips[action]}成功`);
-            await dispatch('listDatapool', {
-                projectId
-            })
+            return res.msgKey
         },
         async deleteDatapool({ dispatch }, params: DatapoolReqParams) {
             const { id, projectId } = params;

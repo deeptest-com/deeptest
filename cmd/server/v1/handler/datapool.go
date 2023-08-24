@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -96,7 +97,8 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 	// check name exist
 	po, err := c.DatapoolService.GetByName(req.Name)
 	if po.ID > 0 {
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: "已存在同名数据池记录"})
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,
+			MsgKey: fmt.Sprintf("%v", _domain.ErrNameExist.Code)})
 		return
 	}
 

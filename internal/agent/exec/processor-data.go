@@ -69,6 +69,11 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 }
 
 func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	executedProcessorIds := map[uint]bool{}
 
 	for i := 0; i < entity.RepeatTimes; i++ {

@@ -29,6 +29,11 @@ type ProcessorLoop struct {
 }
 
 func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("loop entity")
 
 	startTime := time.Now()

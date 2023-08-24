@@ -19,6 +19,11 @@ type ProcessorPrint struct {
 }
 
 func (entity ProcessorPrint) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("print entity")
 
 	startTime := time.Now()

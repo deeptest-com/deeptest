@@ -18,6 +18,11 @@ type ProcessorLogic struct {
 }
 
 func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("logic entity")
 
 	startTime := time.Now()

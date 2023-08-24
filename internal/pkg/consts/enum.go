@@ -490,15 +490,26 @@ func (e ErrorAction) ToString() string {
 	return string(e)
 }
 
-type DataSource string
+type DataItSrc string
 
 const (
-	Text  DataSource = "text"
-	Excel DataSource = "excel"
-	//ZenData DataSource = "zendata"
+	SrcFileUpload DataItSrc = "fileUpload"
+	SrcDatapool   DataItSrc = "datapool"
 )
 
-func (e DataSource) ToString() string {
+func (e DataItSrc) ToString() string {
+	return string(e)
+}
+
+type DataItType string
+
+const (
+	Text  DataItType = "text"
+	Excel DataItType = "excel"
+	//ZenData DataItType = "zendata"
+)
+
+func (e DataItType) ToString() string {
 	return string(e)
 }
 

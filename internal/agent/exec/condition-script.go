@@ -94,11 +94,11 @@ func InitJsRuntime() {
 	MyRequire = registry.Enable(MyVm.JsRuntime)
 	pth := filepath.Join(consts.TmpDir, "deeptest.js")
 	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
-	dp, err := MyRequire.Require(pth)
+	dt, err := MyRequire.Require(pth)
 	if err != nil {
 		logUtils.Info(err.Error())
 		return
 	}
 
-	MyVm.JsRuntime.Set("dp", dp)
+	MyVm.JsRuntime.Set("dt", dt)
 }

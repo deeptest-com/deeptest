@@ -162,6 +162,11 @@ export enum ComparisonOperator {
     notContain = 'notContain',
 }
 
+export enum DataSrc {
+    fileUpload = 'fileUpload',
+    datapool = 'datapool',
+}
+
 export enum ConditionCategory {
     result = 'result',
     console = 'console',

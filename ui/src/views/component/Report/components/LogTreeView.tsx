@@ -29,10 +29,10 @@ export default defineComponent({
         }
 
         watch(() => props.treeData, (newVal: any) => {
-            console.log('treeData change ***', newVal);
+            // console.log('treeData change ***', newVal);
             if (newVal?.length) {
                 newVal.forEach((item) => {
-                    activeKeyMap.value[item.id] = [item.id];
+                    activeKeyMap.value[item.logId] = [item.logId];
                 })
             }
         }, {immediate: true, deep: true})
@@ -97,7 +97,7 @@ export default defineComponent({
                 </a-collapse-panel>;
             };
             return logs.map((log,logIndex) => {
-                return <div key={log.id}
+                return <div key={log.logId || logIndex}
                             class={[log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item',logIndex===0 ? 'log-item-first' : '']}>
                     <a-collapse>
                         {renderLogs(log)}
@@ -122,9 +122,9 @@ export default defineComponent({
             }
 
             return list.map((item, index) => {
-                return <div class={'scenario-item'} key={item.id}>
+                return <div class={'scenario-item'} key={item.logId}>
                     <a-collapse
-                        activeKey={activeKeyMap.value[item.id]}
+                        activeKey={activeKeyMap.value[item.logId]}
                         onChange={(key) => {
                             change(item.id, key)
                         }}>

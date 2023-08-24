@@ -29,10 +29,10 @@ export default defineComponent({
         }
 
         watch(() => props.treeData, (newVal: any) => {
-            // console.log('treeData change ***', newVal);
+            console.log('treeData change ***', newVal);
             if (newVal?.length) {
                 newVal.forEach((item) => {
-                    activeKeyMap.value[item.logId] = [item.logId];
+                    activeKeyMap.value[item.id] = [item.id];
                 })
             }
         }, {immediate: true, deep: true})
@@ -85,7 +85,6 @@ export default defineComponent({
                     {
                         log?.logs?.map((item, itemIndex, srcLog) => {
                             return <div
-                                key={item.logId || itemIndex}
                                 class={[item.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item',itemIndex===0 ? 'log-item-first' : '']}>
                                 {renderCollapseTitle(item, itemIndex, log)}
                                 <a-collapse>
@@ -97,7 +96,7 @@ export default defineComponent({
                 </a-collapse-panel>;
             };
             return logs.map((log,logIndex) => {
-                return <div key={log.logId || logIndex}
+                return <div key={log.id}
                             class={[log.processorType === 'processor_logic_else' ? 'log-item-else' : 'log-item',logIndex===0 ? 'log-item-first' : '']}>
                     <a-collapse>
                         {renderLogs(log)}
@@ -122,9 +121,9 @@ export default defineComponent({
             }
 
             return list.map((item, index) => {
-                return <div class={'scenario-item'} key={item.logId}>
+                return <div class={'scenario-item'} key={item.id}>
                     <a-collapse
-                        activeKey={activeKeyMap.value[item.logId]}
+                        activeKey={activeKeyMap.value[item.id]}
                         onChange={(key) => {
                             change(item.id, key)
                         }}>

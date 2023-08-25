@@ -116,9 +116,18 @@
                 <template #updatedAt="{ record, column }">
                   <TooltipCell :text="record.updatedAt" :width="column.width" />
                 </template>
-                <template #colPath="{text}">
+                <template #colPath="{text, record}">
                   <div class="customPathColRender">
-                    <a-tag>{{ text }}</a-tag>
+                    <a-tag :color="getMethodColor(method)" v-for="(method, index) in (record.methods)" :key="index">{{ method }}</a-tag>
+                    <span class="path-col" v-if="text">
+                      <a-tooltip placement="topLeft">
+                        <template #title>
+                          <span>{{ text }}</span>
+                        </template>
+                        <a-tag>{{ text }}</a-tag>
+                      </a-tooltip>
+                    </span>
+                    <span class="path-col" v-else> --- </span>
                   </div>
                 </template>
                 <template #action="{record}">
@@ -209,6 +218,7 @@ import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
 import Tags from './components/Tags/index.vue';
 import TooltipCell from '@/components/Table/tooltipCell.vue';
 import { getUrlKey } from '@/utils/url';
+import { getMethodColor } from '@/utils/interface';
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -235,19 +245,32 @@ const columns = [
     title: '接口名称',
     dataIndex: 'title',
     slots: {customRender: 'colTitle'},
-    width: 300,
+    width: 250,
   },
   {
-    title: '状态',
-    dataIndex: 'status',
-    slots: {customRender: 'colStatus'},
-    width: 120,
+    title: '接口路径',
+    dataIndex: 'path',
+    width: 300,
+    slots: {customRender: 'colPath'},
+    ellipsis: true
   },
   {
     title: '标签',
     dataIndex: 'tags',
     slots: {customRender: 'colTags'},
     width: 200,
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    slots: {customRender: 'colStatus'},
+    width: 80,
+  },
+  {
+    title: '所属服务',
+    dataIndex: 'serveName',
+    ellipsis: true,
+    width: 110,
   },
   {
     title: '创建人',
@@ -264,22 +287,10 @@ const columns = [
     ellipsis: true
   },
   {
-    title: '接口路径',
-    dataIndex: 'path',
-    width: 300,
-    slots: {customRender: 'colPath'},
-    ellipsis: true
-  },
-  {
-    title: '所属服务',
-    dataIndex: 'serveName',
-    ellipsis: true,
-    width: 110,
-  },
-  {
     title: '最近更新',
     dataIndex: 'updatedAt',
     width: 180,
+    slots: { customRender: 'updatedAt' },
   },
   {
     title: '操作',
@@ -740,5 +751,23 @@ const username = (user:string)=>{
   text-overflow: ellipsis;
   white-space: nowrap;
   color: #447DFD;
+}
+
+.customPathColRender {
+  display: flex;
+
+  .path-col {
+    display: flex;
+    flex: 1;
+    width: 0;
+
+    :deep(.ant-tag) {
+      width: max-content;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+  }
 }
 </style>

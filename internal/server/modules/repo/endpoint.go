@@ -460,6 +460,6 @@ func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, p
 
 func (r *EndpointRepo) ListByProjectIdAndServeId(projectId, serveId uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Where("project_id = ? and serve_id = ? and not deleted and not disabled", projectId, serveId).Find(&endpoints).Error
-	r.GetByEndpoints(endpoints, needDetail)
+	//r.GetByEndpoints(endpoints, needDetail)
 	return
 }

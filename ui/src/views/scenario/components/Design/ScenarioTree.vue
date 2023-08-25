@@ -31,7 +31,7 @@
             :tree-data="treeDataNeedRender"
             :replace-fields="replaceFields">
           <template #switcherIcon>
-            <CaretDownOutlined class="scenario-tree-switch" />
+            <CaretDownOutlined/>
           </template>
           <template #title="{dataRef}">
             <div class="tree-title"
@@ -830,6 +830,15 @@ onUnmounted(() => {
     vertical-align: middle;
     line-height: 16px;
   }
+
+  :deep(.ant-tree li span[draggable], .ant-tree li span[draggable='true']) {
+    border: 0;
+    line-height: 24px;
+  }
+
+  :deep(.out) {
+    padding-bottom: 2px;
+  }
 }
 
 .tree-filter {
@@ -842,7 +851,12 @@ onUnmounted(() => {
 }
 
 .prefix-icon {
-  margin-right: 6px;
+  margin-right: 4px;
+}
+
+.prefix-req-method {
+  display: flex;
+  align-items: center;
 }
 
 .method-tag {

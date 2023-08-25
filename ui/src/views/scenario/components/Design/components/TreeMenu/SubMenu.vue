@@ -31,7 +31,7 @@ const props = defineProps(['menu']);
 <style lang="less" scoped>
 .menu-text {
   display: inline-block;
-  margin-left: 4px;
+  margin-left: 3px;
   width: 72px;
 
   &.menu-text-no-margin {

@@ -95,8 +95,8 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 	req.ProjectId = uint(projectId)
 
 	// check name exist
-	po, err := c.DatapoolService.GetByName(req.Name)
-	if po.ID > 0 {
+	po, err := c.DatapoolService.GetByName(req.Name, req.ProjectId)
+	if po.ID > 0 && po.ID != req.ID {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,
 			MsgKey: fmt.Sprintf("%v", _domain.ErrNameExist.Code)})
 		return

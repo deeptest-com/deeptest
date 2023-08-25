@@ -5,7 +5,7 @@
       <div class="top-header-tip">
         <a-alert message="说明：数据迭代处理器将循环读取文件中的行内容，并将读取的内容赋值给指定的变量" type="info" show-icon/>
       </div>
-
+      <!---
       <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" label="数据来源">
         <a-radio-group v-model:value="formState.src">
           <a-radio v-for="(item, idx) in srcOptions" :key="idx" :value="item.value">
@@ -13,6 +13,7 @@
           </a-radio>
         </a-radio-group>
       </a-form-item>
+      --->
 
       <a-form :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }"
           @submit.prevent>

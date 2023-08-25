@@ -81,7 +81,7 @@ export default defineComponent({
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-  line-height: 18px;
+  height: 100%;
 
   &.processor_logic_if {
     color: #52c41a;

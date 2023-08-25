@@ -204,6 +204,7 @@ import {ExclamationCircleOutlined} from '@ant-design/icons-vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import Select from '@/components/Select/index.vue';
 import TooltipCell from '@/components/Table/tooltipCell.vue';
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 type Key = ColumnProps['key'];
 
@@ -308,13 +309,9 @@ const remove = (id: number) => {
         console.log('res', res)
         if (res === true) {
           getList(1, nodeDataCategory.value.id)
-          notification.success({
-            message: `删除成功`,
-          });
+          notifySuccess(`删除成功`);
         } else {
-          notification.error({
-            message: `删除失败`,
-          });
+          notifyError(`删除失败`);
         }
       })
     }

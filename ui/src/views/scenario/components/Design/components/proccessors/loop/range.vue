@@ -52,6 +52,7 @@ import {StateType as ScenarioStateType} from "../../../../../store";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import {NotificationKeyCommon} from "@/utils/const";
 import debounce from "lodash.debounce";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const useForm = Form.useForm;
 
@@ -80,13 +81,9 @@ const submitForm = debounce(async () => {
         modelRef.value.step = modelRef.value.step + ''
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              message: `保存成功`,
-            });
+            notifySuccess(`保存成功`);
           } else {
-            notification.error({
-              message: `保存失败`,
-            });
+            notifyError(`保存失败`);
           }
         })
       })

@@ -63,13 +63,14 @@
 import {computed, ref, defineEmits, defineProps, createVNode} from "vue";
 import { useStore } from "vuex";
 import { ColumnProps } from 'ant-design-vue/es/table/interface';
-import {message, Modal} from "ant-design-vue";
+import {message, Modal, notification} from "ant-design-vue";
 import {ExclamationCircleOutlined, MoreOutlined} from "@ant-design/icons-vue";
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType } from "../store";
 import { PaginationConfig } from "../data";
 import { momentUtc, formatWithSeconds } from "@/utils/datetime";
 import ToolTipCell from '@/components/Table/tooltipCell.vue';
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 
 defineProps({
@@ -157,9 +158,9 @@ const handleDelete = async (id: number) => {
     onOk: async () => {
       const res = store.dispatch('Report/remove', id);
       if (res) {
-        message.success('删除成功');
+        notifySuccess('删除成功');
       } else {
-        message.error('删除失败');
+        notifyError('删除失败');
       }
     },
   });

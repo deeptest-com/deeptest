@@ -96,8 +96,10 @@
 
                 />
                    <a-statistic
+                   :precision="2"
+                   suffix="%"
                   title="测试通过率（%）"
-                  :value="card?.passRate?card.passRate+'%':0+'%'"
+                  :value="card?.passRate?card.passRate:0"
 
                 />
 

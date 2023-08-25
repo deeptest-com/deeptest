@@ -112,6 +112,7 @@ import settings from "@/config/settings";
 import EnvSelector from "./config/EnvSelector.vue";
 import {handlePathLinkParams} from "@/utils/dom";
 import {syncSourceMapToText} from "@/views/scenario/components/Design/config"
+import {notifyWarn} from "@/utils/notify";
 
 const store = useStore<{ Debug: DebugStateType, Endpoint: EndpointStateType, Global: GlobalStateType, ServeGlobal }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -253,12 +254,7 @@ const validateInfo = () => {
   // }
 
   if (msg) {
-    notification.warn({
-      key: NotificationKeyCommon,
-      message: msg,
-      placement: 'topRight'
-    });
-
+    notifyWarn(msg);
     return false
   }
 

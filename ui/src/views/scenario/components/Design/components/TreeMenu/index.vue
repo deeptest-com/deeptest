@@ -91,7 +91,7 @@ const menus = computed(() => {
 
   :deep(.svg-icon) {
     font-size: 18px !important;
-    vertical-align: -0.26em;
+    vertical-align: -0.24em;
   }
 }
 </style>

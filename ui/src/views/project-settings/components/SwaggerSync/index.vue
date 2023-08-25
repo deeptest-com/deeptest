@@ -56,7 +56,7 @@
   │    │    └─────────────── hour (0 - 23)
   │    └──────────────────── minute (0 - 59)
   └───────────────────────── second (0 - 59, OPTIONAL)
-            </pre>   
+            </pre>
 
          </template>
         <QuestionCircleOutlined class="icon" style=" font-size: 14px;transform: scale(0.9)" />
@@ -76,11 +76,12 @@ import {computed,watch,onMounted,ref } from 'vue';
 import type { UnwrapRef } from 'vue';
 import {SwaggerSync} from './data';
 import {useStore} from "vuex";
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
 import { QuestionCircleOutlined } from '@ant-design/icons-vue';
 import {Form} from 'ant-design-vue';
 import {pattern} from "@/utils/const";
 import debounce from "lodash.debounce";
+import {notifySuccess} from "@/utils/notify";
 const useForm = Form.useForm;
 const store = useStore<{ Endpoint,ProjectGlobal,ProjectSetting }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -107,7 +108,7 @@ const onSubmit = () => {
     validate().then(()=>{
       saveSwaggerSync(formState.value)
 
-      message.success('保存成功');
+      notifySuccess('保存成功');
     }).catch(()=>{
       console.log('error:', formState.value);
     })

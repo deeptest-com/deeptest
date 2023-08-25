@@ -41,6 +41,7 @@ import {MonacoOptions, NotificationKeyCommon} from "@/utils/const";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
@@ -84,15 +85,9 @@ const save = async () => {
 
   const result = await store.dispatch('Debug/saveScript', scriptData.value)
   if (result) {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存成功`,
-    })
+    notifySuccess(`保存成功`)
   } else {
-    notification.error({
-      key: NotificationKeyCommon,
-      message: `保存失败`,
-    });
+    notifyError(`保存失败`);
   }
 }
 

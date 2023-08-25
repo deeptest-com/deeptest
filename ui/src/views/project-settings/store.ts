@@ -30,7 +30,7 @@ import {
     sortEnv, listDatapool, saveDatapool, deleteDatapool, disableDatapool, getDatapool,
     saveSwaggerSync,getSwaggerSync
 } from './service';
-import { message } from 'ant-design-vue';
+import {message, notification} from 'ant-design-vue';
 import {
     BasicSchemaParams,
     SecurityListReqParams,
@@ -52,6 +52,7 @@ import {
 } from './data';
 import {disabledStatus, disabledStatusTagColor, serveStatus, serveStatusTagColor} from '@/config/constant';
 import { momentUtc } from '@/utils/datetime';
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 export interface StateType {
     envList: any;
@@ -289,7 +290,7 @@ const StoreModel: ModuleType = {
                 vars,
             });
             if (res.code === 0) {
-                message.success('保存环境成功');
+                notifySuccess('保存环境成功');
                 dispatch('getEnvsList', { projectId });
                 return res.data;
             } else {
@@ -301,7 +302,7 @@ const StoreModel: ModuleType = {
                 id: activeEnvId,
             });
             if (res.code === 0) {
-                message.success('删除环境成功');
+                notifySuccess('删除环境成功');
                 dispatch('getEnvsList', { projectId });
                 return true;
             }
@@ -312,7 +313,7 @@ const StoreModel: ModuleType = {
             });
             if (res.code === 0) {
                 console.log(res);
-                message.success('复制环境成功');
+                notifySuccess('复制环境成功');
                 return res.data;
             } else {
                 return false;
@@ -345,7 +346,7 @@ const StoreModel: ModuleType = {
         async saveEnvironmentsParam({ state }, { projectId }: VarsReqParams) {
             const res = await saveEnvironmentsParam({ ...state.globalParamsData, projectId });
             if (res.code === 0) {
-                message.success('保存全局参数成功');
+                notifySuccess('保存全局参数成功');
                 return true;
             } else {
                 return false;
@@ -354,7 +355,7 @@ const StoreModel: ModuleType = {
         async saveGlobalVars({ state }) {
             const res = await saveGlobalVars(state.globalVarsData);
             if (res.code === 0) {
-                message.success('保存全局变量成功');
+                notifySuccess('保存全局变量成功');
                 return true;
             } else {
                 return false;
@@ -419,48 +420,48 @@ const StoreModel: ModuleType = {
             const tips = { 'create': '新建服务', 'update': '修改服务' };
             const res = await saveServe({ ...formState, projectId });
             if (res.code === 0) {
-                message.success(`${tips[action]}成功`);
+                notifySuccess(`${tips[action]}成功`);
                 await dispatch('getServersList', {
                     projectId
                 })
             } else {
-                message.error(`${tips[action]}失败`);
+                notifyError(`${tips[action]}失败`);
             }
         },
         async deleteStoreServe({ dispatch }, params: ServeReqParams) {
             const { id, projectId } = params;
             const res = await deleteServe(id);
             if (res.code === 0) {
-                message.success('删除成功');
+                notifySuccess('删除成功');
                 await dispatch('getServersList', {
                     projectId
                 })
             } else {
-                message.error('删除失败');
+                notifyError('删除失败');
             }
         },
         async copyStoreServe({ dispatch }, params: ServeReqParams) {
             const { id, projectId } = params;
             const res = await copyServe(id);
             if (res.code === 0) {
-                message.success('复制服务成功');
+                notifySuccess('复制服务成功');
                 await dispatch('getServersList', {
                     projectId
                 })
             } else {
-                message.error('复制服务失败');
+                notifyError('复制服务失败');
             }
         },
         async disabledStoreServe({ dispatch }, params: ServeReqParams) {
             const { id, projectId } = params;
             const res = await disableServe(id);
             if (res.code === 0) {
-                message.success('禁用服务成功');
+                notifySuccess('禁用服务成功');
                 await dispatch('getServersList', {
                     projectId
                 })
             } else {
-                message.error('禁用服务失败');
+                notifyError('禁用服务失败');
             }
         },
 
@@ -471,7 +472,7 @@ const StoreModel: ModuleType = {
                 commit('setSchemaList', res.data.result);
                 return res;
             } else {
-                message.error('获取schema列表失败');
+                notifyError('获取schema列表失败');
             }
         },
 
@@ -479,20 +480,20 @@ const StoreModel: ModuleType = {
             const { id, serveId, name } = data;
             const res = await deleteSchema(id);
             if (res.code === 0) {
-                message.success('删除成功');
+                notifySuccess('删除成功');
                 await dispatch('getSchemaList', { serveId, name });
             } else {
-                message.error('删除失败');
+                notifyError('删除失败');
             }
         },
         async copySchema({ dispatch }, params: BasicSchemaParams) {
             const { id, serveId, name } = params;
             const res = await copySchema(id);
             if (res.code === 0) {
-                message.success('复制成功');
+                notifySuccess('复制成功');
                 await dispatch('getSchemaList', { serveId, name });
             } else {
-                message.error('复制失败');
+                notifyError('复制失败');
             }
         },
         async saveSchema({ dispatch }, data: SaveSchemaReqParams) {
@@ -500,10 +501,10 @@ const StoreModel: ModuleType = {
             const tips = { create: '新建', update: '修改' };
             const res = await saveSchema(schemaInfo);
             if (res.code === 0) {
-                message.success(`${tips[action]}组件成功`);
+                notifySuccess(`${tips[action]}组件成功`);
                 return true;
             } else {
-                message.error(`${tips[action]}组件失败`);
+                notifyError(`${tips[action]}组件失败`);
                 return false;
             }
         },
@@ -536,10 +537,10 @@ const StoreModel: ModuleType = {
             const { id, serveId } = data;
             const res = await deleteSecurity(id);
             if (res.code === 0) {
-                message.success('删除成功');
+                notifySuccess('删除成功');
                 await dispatch('getSecurityList', { serveId });
             } else {
-                message.error('删除失败');
+                notifyError('删除失败');
             }
         },
         setServiceDetail({ commit }, payload: ServeDetail) {
@@ -631,7 +632,7 @@ const StoreModel: ModuleType = {
             if (res.code === 0) {
                 commit('setDatapoolDetail', res.data);
             } else {
-                message.error(`获取数据池失败`);
+                notifyError(`获取数据池失败`);
             }
         },
         async saveDatapool({ dispatch }, params: StoreDatapoolParams) {
@@ -650,12 +651,12 @@ const StoreModel: ModuleType = {
             const { id, projectId } = params;
             const res = await deleteDatapool(id);
             if (res.code === 0) {
-                message.success('删除数据池成功');
+                notifySuccess('删除数据池成功');
                 await dispatch('listDatapool', {
                     projectId
                 })
             } else {
-                message.error('删除数据池失败');
+                notifyError('删除数据池失败');
             }
         },
         async disableDatapool({ dispatch }, params: ServeReqParams) {
@@ -666,7 +667,7 @@ const StoreModel: ModuleType = {
                     projectId
                 })
             } else {
-                message.error('禁用数据池失败');
+                notifyError('禁用数据池失败');
             }
         },
 
@@ -675,7 +676,7 @@ const StoreModel: ModuleType = {
             if (res.code === 0) {
                  commit('setSwaggerSync', res.data)
             } else {
-                message.error('保存同步信息失败');
+                notifyError('保存同步信息失败');
             }
         },
 
@@ -684,7 +685,7 @@ const StoreModel: ModuleType = {
             if (res.code === 0) {
                  commit('setSwaggerSync', res.data)
             } else {
-                message.error('获取同步信息失败');
+                notifyError('获取同步信息失败');
             }
         }
     }

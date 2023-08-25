@@ -31,7 +31,7 @@
             :tree-data="treeDataNeedRender"
             :replace-fields="replaceFields">
           <template #switcherIcon>
-            <CaretDownOutlined class="scenario-tree-switch" />
+            <CaretDownOutlined/>
           </template>
           <template #title="{dataRef}">
             <div class="tree-title"
@@ -66,8 +66,8 @@
                       <TooltipCell :text="dataRef.name" :custom-class="`${dataRef.disable ? 'disabled' : ''}`" />
                 </span>
                 <span class="title-text" v-else-if= "!needHandleShowName.includes(dataRef.entityType)">
-                  <TooltipCell 
-                    :text="`${dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`}`" 
+                  <TooltipCell
+                    :text="`${dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`}`"
                     :custom-class="`${dataRef.disable ? 'disabled' : ''}`" />
                 </span>
               </div>
@@ -155,6 +155,7 @@ import InterfaceImportFromCurl from "@/views/component/InterfaceImportFromCurl/i
 import InterfaceSelectionFromDefineCase from "@/views/component/InterfaceSelectionFromDefineCase/index.vue";
 import {showLineScenarioType, onlyShowDisableAndDeleteTypes, loopIteratorTypes} from "./config";
 import TooltipCell from "@/components/Table/tooltipCell.vue";
+import {notifyWarn} from "@/utils/notify";
 
 const props = defineProps<{}>()
 const {t} = useI18n();
@@ -455,7 +456,7 @@ const addElse = (treeNode) => {
   // 另外目标节点已经有 else节点了，也不能再添加
   const repeat = checkIfHasElse(treeNode);
   if (repeat) {
-    message.warning('已经存在 else 节点，不允许再添加');
+    notifyWarn('已经存在 else 节点，不允许再添加');
     return;
   }
 
@@ -657,35 +658,35 @@ async function onDrop(info: DropEvent) {
   // 1  表示移动到目标节点的后面
   // else 节点不能移动到非 if节点后
   if (dragNodeInfo?.entityType === 'processor_logic_else' && dropNodeInfo?.entityType !== 'processor_logic_if') {
-    message.warning('else 节点只能拖动到 If节点后');
+    notifyWarn('else 节点只能拖动到 If节点后');
     event.preventDefault();
     return;
   } else if (dragNodeInfo?.entityType === 'processor_logic_else' && dropNodeInfo?.entityType === 'processor_logic_if') {
     // 另外目标节点已经有 else节点了，也不能再添加
     const repeat = checkIfHasElse(dropNodeInfo);
     if (repeat) {
-      message.warning('已经存在 else 节点，不允许再添加');
+      notifyWarn('已经存在 else 节点，不允许再添加');
       return;
     }
     dropPosition = 1;
   }
   // 非 else 节点不能移动到 if节点后
   else if (dragNodeInfo?.entityType !== 'processor_logic_else' && dropNodeInfo?.entityType === 'processor_logic_if' && dropPosition === 1) {
-    message.warning('非 else 节点不能拖动到 If节点后');
+    notifyWarn('非 else 节点不能拖动到 If节点后');
     event.preventDefault();
     return;
   }
   //  if 节点不能移动到 自己匹配的 else 节点下
   else if (dragNodeInfo?.entityType === 'processor_logic_if' && dropNodeInfo?.entityType === 'processor_logic_else' && dropPosition === 0) {
     if (checkIfElseIsMatch(dragNodeInfo, dropNodeInfo)) {
-      message.warning('if 节点不能移动到 自己匹配的 else 节点下');
+      notifyWarn('if 节点不能移动到 自己匹配的 else 节点下');
       event.preventDefault();
       return;
     }
   }
   // 任何节点都不能移动到 else节点前
   else if (dropNodeInfo?.entityType === 'processor_logic_else' && dropPosition === -1) {
-    message.warning('任何节点都不能拖动到 Else 节点前');
+    notifyWarn('任何节点都不能拖动到 Else 节点前');
     event.preventDefault();
     return;
   }
@@ -693,18 +694,18 @@ async function onDrop(info: DropEvent) {
   else if (dragNodeInfo?.entityType === 'processor_loop_break') {
     if (!loopIteratorTypes.includes(dropNodeInfo?.entityType)) {
       event.preventDefault();
-      message.warning('跳出循环只能移动到循环迭代器里');
+      notifyWarn('跳出循环只能移动到循环迭代器里');
       return;
     }
     if (dropPosition !== 0) {
       event.preventDefault();
-      message.warning('跳出循环只能移动到循环迭代器里');
+      notifyWarn('跳出循环只能移动到循环迭代器里');
       return;
     }
   }
   // 以下是叶子节点，不能移动到叶子节点下
   else if (onlyShowDisableAndDeleteTypes.includes(dropNodeInfo?.entityType) && dropPosition === 0) {
-    message.warning("不能移动至该场景步骤下");
+    notifyWarn("不能移动至该场景步骤下");
     event.preventDefault();
     return;
   } else {
@@ -830,6 +831,15 @@ onUnmounted(() => {
     vertical-align: middle;
     line-height: 16px;
   }
+
+  :deep(.ant-tree li span[draggable], .ant-tree li span[draggable='true']) {
+    border: 0;
+    line-height: 24px;
+  }
+
+  :deep(.out) {
+    padding-bottom: 2px;
+  }
 }
 
 .tree-filter {
@@ -842,7 +852,12 @@ onUnmounted(() => {
 }
 
 .prefix-icon {
-  margin-right: 6px;
+  margin-right: 4px;
+}
+
+.prefix-req-method {
+  display: flex;
+  align-items: center;
 }
 
 .method-tag {

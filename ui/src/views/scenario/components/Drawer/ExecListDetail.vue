@@ -23,6 +23,7 @@ import {PaginationConfig, Scenario} from "@/views/scenario/data";
 import {momentUtc} from "@/utils/datetime"
 import {message} from "ant-design-vue";
 import {getDivision, getPercentStr} from "@/utils/number";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal, }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -115,9 +116,9 @@ async function genReport() {
     id: reportsDetail.value.id,
   });
   if (res) {
-    message.success('生成报告成功');
+    notifySuccess('生成报告成功');
   } else {
-    message.error('生成报告失败');
+    notifyError('生成报告失败');
   }
 }
 

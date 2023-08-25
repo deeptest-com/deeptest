@@ -57,6 +57,7 @@ import DebugMethod from './method.vue';
 import DebugComp from '@/views/component/debug/index.vue';
 import SaveAsCasePopup from "../Cases/edit.vue";
 import GenerateCasePopup from "../Cases/generate.vue";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Debug: Debug, Endpoint: Endpoint }>();
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
@@ -79,15 +80,9 @@ const saveDebugInterface = async (data) => {
   store.commit("Global/setSpinning",false)
 
   if (res === true) {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存成功`,
-    });
+    notifySuccess(`保存成功`);
   } else {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存失败`,
-    });
+    notifyError(`保存失败`);
   }
 };
 
@@ -110,15 +105,9 @@ const saveAsFinish = async (model) => {
   if (res === true) {
     saveAsVisible.value = false
 
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `另存为用例成功`,
-    });
+    notifySuccess(`另存为用例成功`);
   } else {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `另存为用例保存失败`,
-    });
+    notifySuccess(`另存为用例保存失败`);
   }
 }
 const saveAsCancel = () => {
@@ -145,15 +134,9 @@ const generateCasesFinish = async (model) => {
   if (res === true) {
     generateCasesVisible.value = false
 
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `自动生成用例成功`,
-    });
+    notifySuccess(`自动生成用例成功`);
   } else {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `自动生成用例保存失败`,
-    });
+    notifyError(`自动生成用例保存失败`);
   }
 }
 const generateCasesCancel = () => {

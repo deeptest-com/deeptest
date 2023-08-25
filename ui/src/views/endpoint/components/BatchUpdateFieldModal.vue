@@ -136,7 +136,7 @@ const rules = {
   //       console.log('======================',value)
   //       if (value === '') {
   //         console.log(11111)
-  //         message.warning('请选择修改为的内容');
+  //         notifyWarn('请选择修改为的内容');
   //         return false
   //       } else {
   //         return Promise.resolve();

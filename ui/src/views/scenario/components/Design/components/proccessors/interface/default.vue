@@ -25,6 +25,7 @@ import {confirmToDo} from "@/utils/confirm";
 import {scenarioTypeMapToText} from "@/views/scenario/components/Design/config";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 provide('usedBy', UsedBy.ScenarioDebug)
 
@@ -76,15 +77,9 @@ const saveScenarioInterface = async (data) => {
     }
 
 
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存成功`,
-    });
+    notifySuccess(`保存成功`);
   } else {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存失败`,
-    });
+    notifyError(`保存失败`);
   }
 };
 

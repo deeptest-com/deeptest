@@ -26,6 +26,7 @@ import {StateType as ScenarioStateType} from "../../../../../store";
 import {Form, message} from "ant-design-vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import debounce from "lodash.debounce";
+import {notifyError, notifySuccess} from "@/utils/notify";
 const useForm = Form.useForm;
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -58,9 +59,9 @@ const submit = debounce(async () => {
           comments: formState.value.comments,
         });
         if (res === true) {
-          message.success('保存成功');
+          notifySuccess('保存成功');
         } else {
-          message.error('保存失败');
+          notifyError('保存失败');
         }
       })
       .catch(error => {

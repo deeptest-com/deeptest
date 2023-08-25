@@ -109,6 +109,7 @@ import {getEnumArr, getEnumSelectItems} from "@/utils/comm";
 import {DataFileExt, DataSrc, ExtractorSrc} from "@/utils/enum";
 import {isInArray} from "@/utils/array";
 import {listDatapool} from "@/views/project-settings/service";
+import {notifyError, notifySuccess} from "@/utils/notify";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -206,13 +207,9 @@ const submit = debounce(async () => {
 
         const res = await store.dispatch('Scenario/saveProcessor', data);
         if (res === true) {
-          notification.success({
-            message: `保存成功`,
-          });
+          notifySuccess(`保存成功`);
         } else {
-          notification.error({
-            message: `保存失败`,
-          });
+          notifyError(`保存失败`);
         }
       })
       .catch(error => {

@@ -42,7 +42,7 @@ import {
     watch
 } from 'vue';
 import { useStore } from 'vuex';
-import { message } from 'ant-design-vue';
+import {message, notification} from 'ant-design-vue';
 import ServiceVersion from './Version.vue';
 import ServiceComponent from './Component.vue';
 import ServiceSecurity from './Security.vue';
@@ -51,6 +51,7 @@ import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
 import { ServeDetail } from '../../data';
+import {notifyError} from "@/utils/notify";
 
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -72,7 +73,7 @@ function onClose() {
 async function changeServiceInfo(updateFieldInfo: any) {
     const serviceInfo = { ...formState.value, ...updateFieldInfo };
     if (!serviceInfo.name) {
-        message.error('服务名称不能为空');
+      notifyError('服务名称不能为空');
     }
     await store.dispatch('ProjectSetting/saveStoreServe', {
         "projectId": currProject.value.id,

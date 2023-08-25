@@ -102,6 +102,7 @@ import { SelectTypes } from "ant-design-vue/lib/select";
 import {QueryParams} from "@/types/data";
 import {inviteUser} from "@/views/user/info/service";
 import { message } from 'ant-design-vue';
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const router = useRouter();
 const store = useStore<{ Project: StateType; User: UserStateType,ProjectGlobal }>();
@@ -224,15 +225,9 @@ const remove = (userId: number) => {
         if (json.code === 0) {
           getMembers(queryParams.page);
 
-          notification.success({
-            key: NotificationKeyCommon,
-            message: `移除成功`,
-          });
+          notifySuccess(`移除成功`);
         } else {
-          notification.error({
-            key: NotificationKeyCommon,
-            message: `移除失败`,
-          });
+          notifyError(`移除失败`);
         }
       });
     },
@@ -269,15 +264,9 @@ const ok= async (modelRef:any,callback:any)=>{
   inviteVisible.value = false;
    await inviteUser(modelRef, currProject.value.id).then((json) => {
       if (json.code === 0) {
-        notification.success({
-          key: NotificationKeyCommon,
-          message: `保存成功`,
-        });
+        notifySuccess(`保存成功`);
       } else {
-        notification.success({
-          key: NotificationKeyCommon,
-          message: `保存失败`,
-        });
+        notifySuccess(`保存失败`);
       }
       // close()
     })
@@ -291,7 +280,7 @@ const handleChangeRole = async (val: any, record: any) => {
     projectRoleId: val,
     userId: record.id,
   });
-  message.success('操作成功',1);
+  notifySuccess('操作成功');
 };
 
 

@@ -90,7 +90,7 @@
 <script setup lang="ts">
 import {computed, createVNode, reactive, ref, watch} from 'vue';
 import {useStore} from 'vuex';
-import {message, Modal} from 'ant-design-vue';
+import {message, Modal, notification} from 'ant-design-vue';
 import {ExclamationCircleOutlined, PlusOutlined} from '@ant-design/icons-vue';
 const { t } = useI18n();
 import EmptyCom from '@/components/TableEmpty/index.vue';
@@ -99,6 +99,7 @@ import {globalParamscolumns, tabPaneList} from '../../config';
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from "@/views/project-settings/store";
 import {useI18n} from "vue-i18n";
+import {notifyError} from "@/utils/notify";
 
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
 const globalParamsData = computed<any>(() => store.state.ProjectSetting.globalParamsData);
@@ -151,7 +152,7 @@ async function handleSaveGlobalParams() {
       errorText += `${name[0]},`;
     })
     errorText = errorText.substring(0, errorText.length - 1);
-    message.error(`${errorText}参数名不可为空`);
+    notifyError(`${errorText}参数名不可为空`);
   }
 }
 

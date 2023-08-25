@@ -30,6 +30,7 @@ import EditAndShow from "@/components/EditAndShow/index.vue";
 import IconSvg from "@/components/IconSvg";
 import {DESIGN_TYPE_ICON_MAP, scenarioTypeMapToText,scenarioTypeMapToBindText} from "../../config";
 import {message, notification} from "ant-design-vue";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
@@ -69,13 +70,9 @@ async function updateTitle(title) {
     name: title,
   }).then((res) => {
     if (res === true) {
-      notification.success({
-        message: '修改场景名称成功',
-      });
+      notifySuccess('修改场景名称成功');
     } else {
-      notification.success({
-        message: '修改场景名称失败',
-      });
+      notifyError('修改场景名称失败');
     }
   })
 }

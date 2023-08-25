@@ -116,13 +116,14 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { useStore } from "vuex";
-import { message } from 'ant-design-vue';
+import {message, notification} from 'ant-design-vue';
 import { PlusOutlined } from '@ant-design/icons-vue';
 import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import PermissionButton from "@/components/PermissionButton/index.vue";
 import { globalVarsColumns, serveServersColumns } from '../../config';
 import { useGlobalEnv } from '../../hooks/useGlobalEnv';
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
+import {notifyError} from "@/utils/notify";
 
 const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
 const serviceOptions = computed<any>(() => store.state.ProjectSetting.serviceOptions);
@@ -182,7 +183,7 @@ function handleAddServiceOk() {
         })
         addServiceModalVisible.value = false;
     } else {
-        message.error('不可添加重复的服务,请重新选择~');
+      notifyError('不可添加重复的服务,请重新选择~');
     }
 
 }

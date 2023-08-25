@@ -39,6 +39,7 @@ import CustomForm from '../common/CustomForm.vue';
 import EmptyCom from '@/components/TableEmpty/index.vue';
 import { StateType as ProjectSettingStateType } from '../../store';
 import { versionColumns } from '../../config';
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const props = defineProps({
   serveId: {
@@ -108,7 +109,7 @@ const formConfig = [
 
 async function handleAdd(formState: any) {
   if (!/^(\d+\.){2}\d+/.test(formState.name)) {
-    message.error('请输入正确格式的版本号');
+    notifyError('请输入正确格式的版本号');
     return;
   }
   const result = await store.dispatch('ProjectSetting/saveVersion', {
@@ -118,14 +119,14 @@ async function handleAdd(formState: any) {
     "description": formState.description
   });
   if (result) {
-    message.success('添加版本号成功');
+    notifySuccess('添加版本号成功');
     // 清空表单中的数据
     formState.name = '';
     formState.createUser = null;
     formState.description = '';
     await getList();
   } else {
-    message.error('保存失败');
+    notifyError('保存失败');
   }
 }
 

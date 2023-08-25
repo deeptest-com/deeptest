@@ -84,13 +84,14 @@
 
 <script lang="ts" setup>
 import {computed, defineEmits, defineProps, reactive, ref, watch} from "vue";
-import {Form, message} from "ant-design-vue";
+import {Form, message, notification} from "ant-design-vue";
 import {StateType as UserStateType} from "@/store/user";
 import {StateType as ProjectStateType} from "@/views/project/store";
 import {SelectTypes} from "ant-design-vue/es/select";
 import {useStore} from "vuex";
 import {RuleObject} from "ant-design-vue/es/form/interface";
 import {getProjectLogo, projectLogoList} from "./index";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const useForm = Form.useForm;
 const props = defineProps<{
@@ -157,10 +158,10 @@ const submitForm = async () => {
         })
         store.dispatch("Project/saveProject", {...formStateRef}).then((res) => {
           if (res === true) {
-            message.success("保存成功");
+            notifySuccess("保存成功");
             emits("handleSuccess");
           } else {
-            message.error("保存失败");
+            notifyError("保存失败");
           }
         });
       })

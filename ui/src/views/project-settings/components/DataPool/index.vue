@@ -156,10 +156,7 @@ async function handleAdd(formData: any) {
   if (msgKey !== '') {
     notifyError(`新建数据池失败, ` + t(`biz_${msgKey}`) + '。');
   } else {
-    notifySuccess({
-      key: NotificationKeyCommon,
-      message: `新建数据池成功。`,
-    });
+    notifySuccess(`新建数据池成功。`);
   }
 }
 

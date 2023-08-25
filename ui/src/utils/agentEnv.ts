@@ -12,7 +12,7 @@ export const isElectronEnv = win?.versions?.electron;
  *
  * */
 export function getAgentUrl() {
-    return window.localStorage.getItem('dp-cache-agent-url') || process.env.VUE_APP_API_AGENT;
+    return window.localStorage.getItem('dp-cache-agent-url') || process.env.VUE_APP_API_AGENT || '';
 }
 
 /**

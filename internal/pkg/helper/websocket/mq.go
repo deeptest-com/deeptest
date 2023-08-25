@@ -38,7 +38,7 @@ func SubMsg() {
 			Broadcast(msg.Namespace, msg.Room, msg.Event, msg.Content)
 		}
 
-		time.Sleep(time.Millisecond * 50)
+		time.Sleep(time.Millisecond * 100)
 	}
 }
 

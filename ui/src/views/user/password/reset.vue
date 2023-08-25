@@ -39,6 +39,7 @@ import { useI18n } from "vue-i18n";
 import {message, Form, notification} from 'ant-design-vue';
 import {NotificationKeyCommon} from "@/utils/const";
 import {resetPassword} from "@/views/user/password/service";
+import {notifyError, notifySuccess} from "@/utils/notify";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -85,17 +86,11 @@ const handleSubmit = async (e: MouseEvent) => {
   validate().then(() => {
     resetPassword(modelRef.value).then((json) => {
       if (json.code === 0) {
-        notification.success({
-          key: NotificationKeyCommon,
-          message: `修改密码成功，请登录。`,
-        });
+        notifySuccess(`修改密码成功，请登录。`);
 
         router.replace('/user/login')
       } else {
-        notification.error({
-          key: NotificationKeyCommon,
-          message: `重置密码失败。`,
-        });
+        notifyError(`重置密码失败。`);
       }
     })
   })

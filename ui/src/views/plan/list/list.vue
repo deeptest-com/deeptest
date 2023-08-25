@@ -140,7 +140,7 @@
 <script setup lang="ts">
 import {computed, onMounted, provide, reactive, ref, watch} from "vue";
 import { useStore } from "vuex";
-import { message } from 'ant-design-vue';
+import {message, notification} from 'ant-design-vue';
 import { MoreOutlined } from "@ant-design/icons-vue";
 import { Modal } from "ant-design-vue";
 import debounce from "lodash.debounce";
@@ -214,6 +214,7 @@ const columns = [
 ];
 
 import { ReportDetailType } from "@/utils/enum";
+import {notifyError} from "@/utils/notify";
 
 const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -317,7 +318,7 @@ const handleUpdate = async (params: any) => {
     if (result) {
       store.dispatch('Plan/getPlan', currPlan.value.id);
     } else {
-      message.error('更新计划失败');
+      notifyError('更新计划失败');
     }
   } catch(err) {
     console.log(err);
@@ -340,7 +341,7 @@ const getCurrentPalnInfo = async (record: any) => {
   try {
     await store.dispatch('Plan/setCurrentPlan', { id, adminId, categoryId, testStage, desc, status, name, createUserName });
   } catch(err) {
-    message.error('获取计划信息出错');
+    notifyError('获取计划信息出错');
   }
 };
 

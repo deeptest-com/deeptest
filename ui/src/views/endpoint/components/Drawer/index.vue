@@ -74,7 +74,8 @@ import Docs from '@/components/Docs/index.vue';
 import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
+import {notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal,Global }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -194,7 +195,7 @@ async function save() {
       }
   );
   store.commit("Global/setSpinning",false)
-  message.success('保存成功');
+  notifySuccess('保存成功');
   emit('refreshList');
 }
 

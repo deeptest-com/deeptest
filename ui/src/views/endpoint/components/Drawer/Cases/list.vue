@@ -75,6 +75,7 @@ import {confirmToDelete} from "@/utils/confirm";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CaseEdit from "./edit.vue";
 import {NotificationKeyCommon} from "@/utils/const";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 provide('usedBy', UsedBy.InterfaceDebug)
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
@@ -136,16 +137,10 @@ const copy  = (record) => {
   console.log('copy', record)
   store.dispatch('Endpoint/copyCase', record.id).then((po) => {
     if (po.id > 0) {
-      notification.success({
-        key: NotificationKeyCommon,
-        message: `复制成功`,
-      });
+      notifySuccess(`复制成功`);
       design(po)
     } else {
-      notification.error({
-        key: NotificationKeyCommon,
-        message: `复制失败`,
-      });
+      notifyError(`复制失败`);
     }
   })
 }

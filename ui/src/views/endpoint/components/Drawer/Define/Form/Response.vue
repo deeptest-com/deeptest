@@ -138,7 +138,8 @@ import ResponseBody from './ResponseBody.vue'
 import {Endpoint} from "@/views/endpoint/data";
 import {cloneByJSON} from "@/utils/object";
 import cloneDeep from "lodash/cloneDeep";
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
+import {notifyWarn} from "@/utils/notify";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
 const selectedMethodDetail: any = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
@@ -203,7 +204,7 @@ function confirmDeleteCode() {
     return;
   }
   if (selectedCode.value === '200') {
-    message.warning('200状态码不可删除');
+    notifyWarn('200状态码不可删除');
     return;
   }
   const index = selectedCodes.value.findIndex((item) => {

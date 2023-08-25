@@ -61,6 +61,7 @@ import { Modal, notification } from "ant-design-vue";
 import { NotificationKeyCommon } from "@/utils/const";
 import debounce from "lodash.debounce";
 import { getAuditList, doAudit } from "@/views/project/service";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 
 const store = useStore();
@@ -173,15 +174,9 @@ const handleAudit = async (type: number) => {
   await doAudit({ id: auditId.value, status: type }).then((json) => {
     if (json.code === 0) {
       getAudits(1);
-      notification.success({
-        key: NotificationKeyCommon,
-        message: `审批成功`,
-      });
+      notifySuccess(`审批成功`);
     } else {
-      notification.error({
-        key: NotificationKeyCommon,
-        message: `审批失败`,
-      });
+      notifyError(`审批失败`);
     }
   });
 

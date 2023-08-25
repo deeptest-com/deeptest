@@ -37,13 +37,14 @@ import {
   nextTick,
   ref, watch,
 } from 'vue';
-import { message } from 'ant-design-vue';
+import {message, notification} from 'ant-design-vue';
 import {
   EditOutlined,
   CheckOutlined,
   CloseOutlined
 } from '@ant-design/icons-vue';
 import { vOnClickOutside } from '@vueuse/components';
+import {notifyWarn} from "@/utils/notify";
 const isEditing = ref(false);
 const fieldValue = ref('');
 const editor = ref(null);
@@ -80,7 +81,7 @@ const emit = defineEmits(['update', 'edit']);
 
 function updateField() {
   if (!props.canEmpty && !fieldValue.value) {
-    message.warning('请请输入内容');
+    notifyWarn('请请输入内容');
     return;
   }
   emit('update', fieldValue.value);

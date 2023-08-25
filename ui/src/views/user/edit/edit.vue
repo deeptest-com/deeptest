@@ -55,6 +55,7 @@ import {useStore} from "vuex";
 import {StateType} from "../store";
 import {User} from "@/views/user/data";
 import {Form, message} from "ant-design-vue";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const useForm = Form.useForm;
 
@@ -98,10 +99,10 @@ export default defineComponent({
         }
         store.dispatch('UserInternal/saveUser', modelRef.value).then((res) => {
           if (res === true) {
-            message.success("保存成功")
+            notifySuccess("保存成功")
             props.getList(1)
           } else {
-            message.error("保存失败")
+            notifyError("保存失败")
           }
           props.closeModal()
         })

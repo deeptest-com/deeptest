@@ -21,9 +21,10 @@ import {
 import {
     treeLevelWidth
 } from './config';
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
 import {useStore} from "vuex";
 import {StateType as ServeStateType} from "@/store/serve";
+import {notifyWarn} from "@/utils/notify";
 
 export default defineComponent({
     name: 'SchemeEditor',
@@ -106,7 +107,7 @@ export default defineComponent({
             const keys = Object.keys(parent.properties);
             // const reg = /^\w+$/;
             // if(!reg.test(newKey)){
-            //     message.warning(`属性名非法，请重新输入`);
+            //     notifyWarn(`属性名非法，请重新输入`);
             //     event.target.innerText = oldKey;
             //     event.preventDefault();
             //     return;
@@ -116,12 +117,12 @@ export default defineComponent({
                 return;
                 //  已经存在了 key
             } else if (keys.includes(newKey)) {
-                message.warning(`已存在名为${newKey}的属性`);
+                notifyWarn(`已存在名为${newKey}的属性`);
                 keys[keyIndex] = oldKey;
             } else if (newKey) {
                 keys[keyIndex] = newKey;
             } else if (!newKey) {
-                message.warning(`属性名不能为空`);
+                notifyWarn(`属性名不能为空`);
                 keys[keyIndex] = oldKey;
             }
             const newObj: any = {};
@@ -177,7 +178,7 @@ export default defineComponent({
                     }
                 // 其他场景
                 }  else {
-                    message.warning(`未知异常，请重试`);
+                    notifyWarn(`未知异常，请重试`);
                 }
             }
             data.value = addExtraViewInfo(data.value);

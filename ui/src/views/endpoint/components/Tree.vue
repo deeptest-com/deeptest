@@ -79,7 +79,7 @@ import {
   MoreOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons-vue';
-import {message, Modal} from 'ant-design-vue';
+import {message, Modal, notification} from 'ant-design-vue';
 import CreateCategoryModal from '@/components/CreateCategoryModal/index.vue';
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
@@ -90,6 +90,7 @@ import {filterTree} from "@/utils/tree";
 import {getCache} from "@/utils/localCache";
 import settings from "@/config/settings";
 import { getUrlKey } from '@/utils/url';
+import {notifyError, notifySuccess, notifyWarn} from "@/utils/notify";
 
 const router = useRouter();
 const store = useStore<{ Endpoint: EndpointStateType, ProjectGlobal: ProjectStateType }>();
@@ -253,9 +254,9 @@ async function deleteCategorie(node) {
         projectId: await getCache(settings.currProjectId)
       });
       if (res) {
-        message.success('删除成功');
+        notifySuccess('删除成功');
       } else {
-        message.success('删除失败');
+        notifyError('删除失败');
       }
     },
     onCancel() {
@@ -293,9 +294,9 @@ async function handleTagModalOk(obj) {
     });
     if (res?.code === 0) {
       createTagModalVisible.value = false;
-      message.success('修改分类成功');
+      notifySuccess('修改分类成功');
     } else {
-      message.error('修改分类失败，请重试~');
+      notifyError('修改分类失败，请重试~');
     }
   }
   // 新建
@@ -311,9 +312,9 @@ async function handleTagModalOk(obj) {
     });
     if (res?.code === 0) {
       createTagModalVisible.value = false;
-      message.success('新建分类成功');
+      notifySuccess('新建分类成功');
     } else {
-      message.error('修改分类失败，请重试~');
+      notifyError('修改分类失败，请重试~');
     }
   }
 }
@@ -330,11 +331,11 @@ async function onDrop(info: DropEvent) {
   const dropPosition = info.dropPosition - Number(pos[pos.length - 1]);
   // 未分类不让移动
   if (dragKey === -1) {
-    message.warning('未分类不能移动');
+    notifyWarn('未分类不能移动');
     return;
   }
   if (dropKey === -1) {
-    message.warning('其他分类不能移动到未分类下');
+    notifyWarn('其他分类不能移动到未分类下');
     return;
   }
   const res = await store.dispatch('Endpoint/moveCategoryNode', {
@@ -348,9 +349,9 @@ async function onDrop(info: DropEvent) {
     if (dropPosition === 0) {
       expandedKeys.value = [...new Set([...expandedKeys.value, dropKey])];
     }
-    message.success('移动成功');
+    notifySuccess('移动成功');
   } else {
-    message.error('移动失败');
+    notifyError('移动失败');
   }
 }
 

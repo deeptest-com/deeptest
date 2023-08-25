@@ -55,6 +55,7 @@ import useI18nAntdFormVaildateInfos from '@/composables/useI18nAntdFormVaildateI
 import { LoginParamsType } from './data.d';
 import { StateType as UserLoginStateType } from './store';
 import { NotificationKeyCommon } from "@/utils/const";
+import {notifySuccess, notifyWarn} from "@/utils/notify";
 
 interface UserLoginSetupData {
     t: (key: string | number) => string;
@@ -108,10 +109,7 @@ export default defineComponent({
                 const fieldsValue = await validate<LoginParamsType>();
                 const res: boolean = await store.dispatch('UserLogin/login', fieldsValue);
                 if (res === true) {
-                    notification.success({
-                        key: NotificationKeyCommon,
-                        message: t('page.user.login.form.login-success')
-                    });
+                  notifySuccess(t('page.user.login.form.login-success'));
 
                     const { redirect, ...query } = currentRoute.value.query;
                     router.replace({
@@ -122,10 +120,7 @@ export default defineComponent({
                     });
                 }
             } catch (error) {
-                notification.warn({
-                    key: NotificationKeyCommon,
-                    message: t('page.user.login.form.login-fail'),
-                });
+              notifyWarn(t('page.user.login.form.login-fail'));
             }
             submitLoading.value = false;
         };

@@ -10,6 +10,7 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {notification} from "ant-design-vue";
 import {NotificationKeyCommon} from "@/utils/const";
+import {notifyError} from "@/utils/notify";
 
 export default defineComponent({
   name: 'Notification',
@@ -24,13 +25,8 @@ export default defineComponent({
       const desc = result.resultMsg ? result.resultMsg : ''
 
       if (result.resultCode !== 401) {
-        notification.error({
-          key: NotificationKeyCommon,
-          message: msg,
-          description: desc ? desc : '',
-        });
+        notifyError(msg);
       }
-
     }
 
     onMounted(() => {

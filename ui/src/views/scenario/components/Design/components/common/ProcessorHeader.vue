@@ -2,13 +2,13 @@
 <template>
   <div class="header-con">
     <div class="left">
-      <span class="title"><IconSvg :type="icon" class="prefix-icon-svg"/>{{ scenarioType }}</span>
+      <span class="title"><IconSvg :type="icon" class="prefix-icon-svg"/> {{ scenarioType }}</span>
       <div class="name">
         <EditAndShow placeholder="修改名称"
                      :autoFocus="false"
                      :key="nodeData?.id"
                      :value="nodeData?.name || ''"
-                     :canEmpty="true"
+                     :canEmpty="false"
                      :emptyValue="'未命名'"
                      :customClass="nodeData?.name? '':'defaultValue'"
                      @update="updateTitle"/>
@@ -29,7 +29,7 @@ import {StateType as Scenario} from "@/views/scenario/store";
 import EditAndShow from "@/components/EditAndShow/index.vue";
 import IconSvg from "@/components/IconSvg";
 import {DESIGN_TYPE_ICON_MAP, scenarioTypeMapToText,scenarioTypeMapToBindText} from "../../config";
-import {message, notification} from "ant-design-vue";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
@@ -69,13 +69,9 @@ async function updateTitle(title) {
     name: title,
   }).then((res) => {
     if (res === true) {
-      notification.success({
-        message: '修改场景步骤名称成功',
-      });
+      notifySuccess('修改场景步骤名称成功');
     } else {
-      notification.success({
-        message: '修改场景步骤名称失败',
-      });
+      notifyError('修改场景步骤名称失败');
     }
   })
 }
@@ -128,8 +124,6 @@ async function updateTitle(title) {
 
   .prefix-icon-svg {
     margin-right: 3px;
-    font-size: 20px;
-    vertical-align: -0.25em;
   }
 }
 

@@ -37,6 +37,7 @@ import {notification} from "ant-design-vue";
 import IconSvg from "@/components/IconSvg";
 import {NotificationKeyCommon} from "@/utils/const";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
+import {notifySuccess} from "@/utils/notify";
 
 provide('usedBy', UsedBy.CaseDebug)
 const usedBy = UsedBy.CaseDebug
@@ -78,15 +79,9 @@ const saveCaseInterface = async (e) => {
 
   const res = await store.dispatch('Endpoint/saveCaseDebugData', data)
   if (res === true) {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存成功`,
-    });
+    notifySuccess(`保存成功`);
   } else {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存失败`,
-    });
+    notifySuccess(`保存失败`);
   }
 }
 

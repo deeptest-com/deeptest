@@ -61,6 +61,7 @@ import { StateType } from "../../store";
 import { StateType as UserStateType } from "@/store/user";
 import { StateType as ProjectStateType } from "@/store/project";
 import { MoreOutlined } from "@ant-design/icons-vue";
+import {notifyError, notifySuccess} from "@/utils/notify";
 const router = useRouter();
 const store = useStore<{
   ProjectGlobal: ProjectStateType;
@@ -166,15 +167,9 @@ const remove = (id: number) => {
       store.dispatch("workbench/removeProject", id).then((res) => {
         console.log("res", res);
         if (res === true) {
-          notification.success({
-            key: NotificationKeyCommon,
-            message: `删除成功`,
-          });
+          notifySuccess(`删除成功`);
         } else {
-          notification.error({
-            key: NotificationKeyCommon,
-            message: `删除失败`,
-          });
+          notifyError(`删除失败`);
         }
       });
     },

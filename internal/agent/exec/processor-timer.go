@@ -18,6 +18,11 @@ type ProcessorTimer struct {
 }
 
 func (entity ProcessorTimer) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("timer entity")
 
 	startTime := time.Now()

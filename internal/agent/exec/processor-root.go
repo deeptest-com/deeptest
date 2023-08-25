@@ -14,6 +14,7 @@ type ProcessorRoot struct {
 }
 
 func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err error) {
+
 	logUtils.Infof("root entity")
 
 	startTime := time.Now()

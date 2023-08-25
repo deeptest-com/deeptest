@@ -860,6 +860,12 @@ onUnmounted(() => {
     align-items: center;
     justify-content: flex-start;
 
+    &.dp-disabled {
+      .prefix-icon {
+        opacity: 0.3;
+      }
+    }
+
     .title-text {
       flex: 1;
       width: calc(100% - 60px);

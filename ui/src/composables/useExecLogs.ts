@@ -97,9 +97,9 @@ function updateExecLogs(processor) {
         if (!reportsMap.value[processor.parentLogId].logs) {
             reportsMap.value[processor.parentLogId].logs = []
         }
-        if (reportsMap.value[processor.parentLogId].logs.length >= 50) {
-            reportsMap.value[processor.parentLogId].logs.shift()
-        }
+        // if (reportsMap.value[processor.parentLogId].logs.length >= 50) {
+        //     reportsMap.value[processor.parentLogId].logs.shift()
+        // }
         const index = reportsMap.value[processor.parentLogId].logs.findIndex((item: any) => item.logId === processor.logId);
         if (index >= 0) {
             reportsMap.value[processor.parentLogId].logs.splice(index, 1, processor);
@@ -108,12 +108,12 @@ function updateExecLogs(processor) {
         }
     }
 
-    const elems = document.getElementsByClassName('scenario-exec-log-tree')
-    if (elems && elems.length > 0) {
-        elems[0].scrollTop = elems[0].scrollHeight + 1000
-    }
+    // const elems = document.getElementsByClassName('scenario-exec-log-tree')
+    // if (elems && elems.length > 0) {
+    //     elems[0].scrollTop = elems[0].scrollHeight + 1000
+    // }
 
-    console.log('scenarioReports832222', scenarioReports.value);
+    // console.log('scenarioReports832222', scenarioReports.value);
 }
 
 

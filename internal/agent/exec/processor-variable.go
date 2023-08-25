@@ -47,7 +47,8 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 		variableValue, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID)
 
 		if err != nil {
-			variableValue = err.Error()
+			panic(err)
+			//variableValue = err.Error()
 		}
 
 		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.Public) // set in parent scope

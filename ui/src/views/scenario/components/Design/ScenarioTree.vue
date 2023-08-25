@@ -31,7 +31,7 @@
             :tree-data="treeDataNeedRender"
             :replace-fields="replaceFields">
           <template #switcherIcon>
-            <CaretDownOutlined/>
+            <CaretDownOutlined class="scenario-tree-switch" />
           </template>
           <template #title="{dataRef}">
             <div class="tree-title"
@@ -47,7 +47,7 @@
                 <span class="prefix-icon"
                       v-if="!['processor_interface_default'].includes(dataRef?.entityType)">
                   <IconSvg v-if="DESIGN_TYPE_ICON_MAP[dataRef.entityType]"
-                           :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg"/>
+                           :type="DESIGN_TYPE_ICON_MAP[dataRef.entityType]" class="prefix-icon-svg dp-icon-large"/>
                 </span>
                 <!-- 逻辑：if/else -->
                 <span class="prefix-logic"
@@ -823,8 +823,12 @@ onUnmounted(() => {
     }
   }
 
-  :deep(.ant-tree-treenode-switcher-close .tree-title.dp-tree-else  .prefix-icon) {
+  :deep(span.ant-tree-switcher) {
     //visibility: hidden;
+    width: 16px;
+    height: 16px;
+    vertical-align: middle;
+    line-height: 16px;
   }
 }
 

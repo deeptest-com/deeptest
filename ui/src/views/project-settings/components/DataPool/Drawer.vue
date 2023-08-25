@@ -87,6 +87,7 @@ import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';
 import {DatapoolDetail} from '../../data';
 import {uploadRequest} from "@/utils/upload";
+import {notifyWarn} from "@/utils/notify";
 
 const useForm = Form.useForm;
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
@@ -187,10 +188,7 @@ const onSubmit = async () => {
 
   validate().then(async () => {
     if (data.value.length < 2) {
-      notification.warn({
-        key: NotificationKeyCommon,
-        message: `表格至少包含标题和数据两行。`,
-      });
+      notifyWarn(`表格至少包含标题和数据两行。`);
       return
     }
 

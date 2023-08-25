@@ -106,7 +106,7 @@ import {
   CaretDownOutlined,
   MoreOutlined
 } from '@ant-design/icons-vue';
-import {message, Modal} from 'ant-design-vue';
+import {message, Modal, notification} from 'ant-design-vue';
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
 import {getSelectedKey, setExpandedKeys, setSelectedKey} from "@/utils/cache";
@@ -122,6 +122,7 @@ import {confirmToDelete} from "@/utils/confirm";
 import debounce from "lodash.debounce";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
 import CurlImportModal from "./curl.vue";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ DiagnoseInterface: DiagnoseInterfaceStateType, ProjectGlobal: ProjectStateType, ServeGlobal: ServeStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -338,9 +339,9 @@ async function onDrop(info: DropEvent) {
     if (dropPosition === 0) {
       expandedKeys.value = [...new Set([...expandedKeys.value, dropKey])];
     }
-    message.success('移动成功');
+    notifySuccess('移动成功');
   } else {
-    message.error('移动失败');
+    notifyError('移动失败');
   }
 }
 

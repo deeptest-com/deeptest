@@ -55,6 +55,7 @@ import openModal from "@/components/OpenModal/modal";
 import {StateType as Debug} from "@/views/component/debug/store";
 import ConfirmSave from "@/components/ConfirmSave/index.vue";
 import {confirmToSave} from "@/utils/confirm";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 provide('usedBy', UsedBy.DiagnoseDebug)
 
@@ -120,16 +121,10 @@ const saveDiagnoseInterface = async (e) => {
     const res = await store.dispatch('DiagnoseInterface/saveDiagnoseDebugData', data).finally(()=> store.commit("Global/setSpinning",false))
 
   if (res === true) {
-      notification.success({
-        key: NotificationKeyCommon,
-        message: `保存成功`,
-      });
-    } else {
-      notification.success({
-        key: NotificationKeyCommon,
-        message: `保存失败`,
-      });
-    }
+    notifySuccess(`保存成功`);
+  } else {
+    notifyError(`保存失败`);
+  }
   store.commit("Global/setSpinning",false)
 }
 

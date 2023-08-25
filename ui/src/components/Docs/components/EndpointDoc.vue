@@ -124,7 +124,8 @@ import Securitys from "./Securitys.vue"
 import SchemaViewer from "@/components/SchemaViewer/index.vue";
 import {CopyOutlined} from '@ant-design/icons-vue';
 import {useClipboard, useFullscreen} from '@vueuse/core'
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
+import {notifySuccess} from "@/utils/notify";
 const props = defineProps(['info']);
 const {text, copy, copied, isSupported} = useClipboard({});
 const info: any = computed(() => {
@@ -193,7 +194,7 @@ function handlePathStr(str) {
 
 function copyURL(url) {
     copy(url)
-    message.success('已复制到剪切板 ');
+  notifySuccess('已复制到剪切板 ');
 }
 
 </script>

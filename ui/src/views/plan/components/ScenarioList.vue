@@ -75,9 +75,10 @@ import RelationScenario from './RelationScenario.vue';
 import ToolTipCell from '@/components/Table/tooltipCell.vue';
 
 import { StateType as PlanStateType } from '../store';
-import { message, Modal } from 'ant-design-vue';
+import {message, Modal, notification} from 'ant-design-vue';
 import { planStatusColorMap, planStatusTextMap } from '@/config/constant';
 import { momentUtc } from '@/utils/datetime';
+import {notifyWarn} from "@/utils/notify";
 
 const props = defineProps({
     showScenarioOperation: {
@@ -161,7 +162,7 @@ const handleChange = (value: string) => {
 
 const handleRemove = async (record?: any) => {
     if (!record && selectedRowIds.length === 0) {
-        message.warning('请先选择要删除的关联场景');
+      notifyWarn('请先选择要删除的关联场景');
         return;
     }
     Modal.confirm({

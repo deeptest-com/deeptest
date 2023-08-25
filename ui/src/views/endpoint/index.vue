@@ -219,6 +219,7 @@ import Tags from './components/Tags/index.vue';
 import TooltipCell from '@/components/Table/tooltipCell.vue';
 import { getUrlKey } from '@/utils/url';
 import { getMethodColor } from '@/utils/interface';
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -436,11 +437,11 @@ function share(record: any) {
     document.execCommand("copy");
     document.body.removeChild(ele);
     if (document.execCommand("copy")) {
-      message.success('复制成功，项目成员可通过此链接访问');
+      notifySuccess('复制成功，项目成员可通过此链接访问');
     }
   } else {
     navigator.clipboard.writeText(text).then(function () {
-      message.success('复制成功，项目成员可通过此链接访问');
+      notifySuccess('复制成功，项目成员可通过此链接访问');
     }).catch(function (err) {
       console.log('分享失败', err);
     })
@@ -499,9 +500,9 @@ async function del(record: any) {
       // // 重新拉取目录树
       // await store.dispatch('Endpoint/loadCategory');
       if (res) {
-        message.success('删除成功');
+        notifySuccess('删除成功');
       } else {
-        message.error('删除失败');
+        notifyError('删除失败');
       }
     },
   });

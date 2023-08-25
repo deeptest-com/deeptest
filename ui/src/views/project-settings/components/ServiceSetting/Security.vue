@@ -111,10 +111,11 @@ import { securityColumns } from '../../config';
 import { useStore } from 'vuex';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from '../../store';
-import {message, Modal} from 'ant-design-vue';
+import {message, Modal, notification} from 'ant-design-vue';
 import { SelectTypes } from 'ant-design-vue/es/select';
 import EmptyCom from '@/components/TableEmpty/index.vue';
 import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 
 const props = defineProps({
@@ -219,11 +220,11 @@ const edit = (record: any) => {
 // 保存security
 async function handleSave(type: number) {
   if (!formState.name) {
-    message.error('security名称不能为空');
+    notifyError('security名称不能为空');
     return;
   }
   if (!formState.type) {
-    message.error('security类型不能为空');
+    notifyError('security类型不能为空');
     return;
   }
   if (type == 0) {
@@ -236,14 +237,14 @@ async function handleSave(type: number) {
 
   });
   if (res.code === 0) {
-    message.success('保存security成功');
+    notifySuccess('保存security成功');
     // 清空表单中的数据
     formState.name = '';
     formState.type = '';
     securityVisible.value = false
     await getList();
   } else {
-    message.error('保存失败：' + res.msg);
+    notifyError('保存失败：' + res.msg);
   }
 }
 

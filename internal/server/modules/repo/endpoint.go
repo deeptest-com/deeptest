@@ -102,11 +102,36 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		results[key].Tags, err = r.EndpointTagRepo.GetTagNamesByEndpointId(result.ID, result.ProjectId)
 	}
 
+	r.CombineMethodsForEndpoints(results)
+
 	ret.Populate(results, count, req.Page, req.PageSize)
 
 	return
 }
+func (r *EndpointRepo) CombineMethodsForEndpoints(endpoints []*model.Endpoint) {
+	endpointIds := make([]uint, 0)
+	for _, v := range endpoints {
+		endpointIds = append(endpointIds, v.ID)
+	}
+	if len(endpointIds) == 0 {
+		return
+	}
 
+	interfaces, err := r.EndpointInterfaceRepo.BatchGetByEndpointIds(endpointIds)
+	if err != nil {
+		return
+	}
+
+	endpointMethodsMap := make(map[uint][]consts.HttpMethod)
+	for _, v := range interfaces {
+		endpointMethodsMap[v.EndpointId] = append(endpointMethodsMap[v.EndpointId], v.Method)
+	}
+
+	for k, v := range endpoints {
+		endpoints[k].Methods = endpointMethodsMap[v.ID]
+	}
+	return
+}
 func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
 

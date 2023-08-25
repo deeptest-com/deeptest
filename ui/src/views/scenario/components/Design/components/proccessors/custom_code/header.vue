@@ -52,6 +52,7 @@ import {
 } from "@ant-design/icons-vue";
 import IconSvg from "@/components/IconSvg";
 import { StateType as ScenarioStateType } from "@/views/scenario/store";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 defineProps<{
   mode: string; // 小屏还是大屏
@@ -76,13 +77,9 @@ const save = async () => {
   });
 
   if (res === true) {
-    notification.success({
-      message: "保存成功",
-    });
+    notifySuccess("保存成功");
   } else {
-    notification.error({
-      message: "保存失败",
-    });
+    notifyError("保存失败");
   }
 };
 </script>

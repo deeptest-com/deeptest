@@ -24,6 +24,7 @@ type Endpoint struct {
 	Curl         string              `gorm:"-" json:"curl"`
 	SourceType   consts.SourceType   `json:"sourceType"`
 	Maintainer   string              `gorm:"-" json:"maintainer"`
+	Methods      []consts.HttpMethod `gorm:"-" json:"methods"`
 }
 
 func (Endpoint) TableName() string {

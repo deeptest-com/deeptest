@@ -874,3 +874,10 @@ func (r *EndpointInterfaceRepo) GetResponse(endpointInterfaceId uint, code strin
 
 	return
 }
+
+func (r *EndpointInterfaceRepo) BatchGetByEndpointIds(endpointIds []uint) (fields []model.EndpointInterface, err error) {
+	err = r.DB.Model(model.EndpointInterface{}).
+		Where("endpoint_id IN (?) AND NOT deleted", endpointIds).
+		Find(&fields).Error
+	return
+}

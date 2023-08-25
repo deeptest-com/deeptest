@@ -69,13 +69,14 @@
 <script setup lang="ts">
 import { computed, createVNode, reactive, ref, watch } from "vue";
 import { useStore } from "vuex";
-import { message, Modal } from "ant-design-vue";
+import {message, Modal, notification} from "ant-design-vue";
 import { ExclamationCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
 import EmptyCom from "@/components/TableEmpty/index.vue";
 import PermissionButton from "@/components/PermissionButton/index.vue";
 import { globalVarsColumns } from '../../config';
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType as ProjectSettingStateType } from "./../../store";
+import {notifyError} from "@/utils/notify";
 
 // store 相关
 const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
@@ -116,7 +117,7 @@ async function handleSaveGlobalVars() {
         await formRef.value.validateFields();
         await store.dispatch('ProjectSetting/saveGlobalVars');
     } catch (err) {
-        message.error('全局变量名/远程值/本地值不可为空');
+      notifyError('全局变量名/远程值/本地值不可为空');
     }
 }
 

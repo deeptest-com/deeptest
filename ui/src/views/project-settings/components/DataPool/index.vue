@@ -2,8 +2,9 @@
   <div class="datapool-main">
     <!-- header -->
     <div class="header">
-      <CustomForm :form-config="formConfig" :rules="rules" :show-search="true" :search-placeholder="'输入数据池名称搜索'"
-                  @handle-ok="handleAdd" @handle-search="handleSearch" />
+      <CustomForm :form-config="formConfig" :rules="rules" :show-search="true"
+                  :search-placeholder="'输入数据池名称搜索'"
+                  @handle-ok="handleAdd" @handle-search="handleSearch"/>
     </div>
 
     <!-- content -->
@@ -25,7 +26,7 @@
 
           <template #createUser="{record}">
             <div class="customTagsColRender">
-              {{username(record.createUser)}}
+              {{ username(record.createUser) }}
             </div>
           </template>
 
@@ -61,10 +62,10 @@
 </template>
 <script setup lang="ts">
 
-import {computed, createVNode, ref, watch,onMounted} from 'vue';
+import {computed, createVNode, onMounted, ref, watch} from 'vue';
 import {useStore} from "vuex";
 import {useRouter} from 'vue-router';
-import {message, Modal} from 'ant-design-vue';
+import {Modal, notification} from 'ant-design-vue';
 import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EmptyCom from '@/components/TableEmpty/index.vue';
@@ -74,9 +75,12 @@ import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';
 import {datapoolColumns} from '../../config';
 import {useI18n} from "vue-i18n";
-const { t } = useI18n();
+import {NotificationKeyCommon} from "@/utils/const";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
-const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType,Project }>();
+const {t} = useI18n();
+
+const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType, Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const userListOptions = computed<any>(() => store.state.ProjectSetting.userListOptions);
 const dataSource = computed<any>(() => store.state.ProjectSetting.datapoolList);
@@ -133,8 +137,9 @@ async function list(name = '') {
 
 const dataArr = [['A', 'B'], ['foo', 'bar']]
 const data = ref<any[][]>(dataArr)
+
 async function handleAdd(formData: any) {
-  const { name, username, description } = formData;
+  const {name, username, description} = formData;
   const result = userListOptions.value.filter((e: any) => e.value === username);
 
   const msgKey = await store.dispatch('ProjectSetting/saveDatapool', {
@@ -149,11 +154,12 @@ async function handleAdd(formData: any) {
   })
 
   if (msgKey !== '') {
-    message.error(`新建数据池失败, ` + t(`biz_${msgKey}`) + '。')
+    notifyError(`新建数据池失败, ` + t(`biz_${msgKey}`) + '。');
   } else {
-    message.success(`新建数据池成功`);
+    notifySuccess(`新建数据池成功。`);
   }
 }
+
 function onClose() {
   drawerVisible.value = false;
 }
@@ -178,7 +184,7 @@ const onEdit = (record) => {
   drawerVisible.value = true;
 }
 
-const username = (user:string)=>{
+const username = (user: string) => {
   let result = userList.value.find(arrItem => arrItem.value == user);
   return result?.label || '-'
 }

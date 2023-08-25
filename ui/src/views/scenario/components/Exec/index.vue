@@ -50,6 +50,7 @@ import {
 } from '@/composables/useExecLogs';
 import {momentUtc} from "@/utils/datetime";
 import {CurrentUser} from "@/store/user";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const {t} = useI18n();
 const router = useRouter();
@@ -187,9 +188,9 @@ async function genReport() {
     id: reportId.value,
   });
   if (res) {
-    message.success('生成报告成功');
+    notifySuccess('生成报告成功');
   } else {
-    message.error('生成报告失败');
+    notifyError('生成报告失败');
   }
 }
 

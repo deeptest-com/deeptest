@@ -40,6 +40,7 @@ import {StateType as ScenarioStateType} from "../../../../../store";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import CustomCodeHeader from './header.vue';
+import {notifyError, notifySuccess} from "@/utils/notify";
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef: any = computed<boolean>(() => store.state.Scenario.nodeData);
 
@@ -65,15 +66,9 @@ const save = async () => {
   })
 
   if (res === true) {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存成功`,
-    });
+    notifySuccess(`保存成功`);
   } else {
-    notification.error({
-      key: NotificationKeyCommon,
-      message: `保存失败`,
-    });
+    notifyError(`保存失败`);
   }
 }
 

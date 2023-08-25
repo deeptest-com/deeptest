@@ -111,7 +111,7 @@ import {
   defineEmits,
   computed, watch, createVNode, onMounted,
 } from 'vue';
-import {Empty, message} from 'ant-design-vue';
+import {Empty, message, notification} from 'ant-design-vue';
 import {
   DownOutlined,
   RightOutlined,
@@ -143,6 +143,7 @@ const {isFullscreen, enter, exit, toggle} = useFullscreen();
 
 import {useStore} from "vuex";
 import {useRouter} from "vue-router";
+import {notifySuccess} from "@/utils/notify";
 
 const router = useRouter();
 const path: any = router.currentRoute.value.path;
@@ -255,7 +256,7 @@ async function shareDocs() {
   //   title: `确定分享版本号为 ${currentVersion.value} 的文档吗？`,
   //   icon: createVNode(ExclamationCircleOutlined),
   //   onOk() {
-  //     message.success('分享成功, 分享链接已复制到剪切板 ');
+  //     notifySuccess('分享成功, 分享链接已复制到剪切板 ');
   //   },
   //   onCancel() {
   //     console.log('Cancel');
@@ -266,7 +267,7 @@ async function shareDocs() {
 
 function copyUrl() {
   copy(source.value);
-  message.success('分享链接已复制到剪切板 ');
+  notifySuccess('分享链接已复制到剪切板 ');
 }
 
 function keywordsChange(newVal) {

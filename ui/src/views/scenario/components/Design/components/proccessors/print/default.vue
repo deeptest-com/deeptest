@@ -34,6 +34,7 @@ import {StateType as ScenarioStateType} from "@/views/scenario/store";
 import {getCompareOpts} from "@/utils/compare";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import debounce from "lodash.debounce";
+import {notifyError, notifySuccess} from "@/utils/notify";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -57,13 +58,9 @@ const submitForm = debounce(async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              message: `保存成功`,
-            });
+            notifySuccess(`保存成功`);
           } else {
-            notification.error({
-              message: `保存失败`,
-            });
+            notifyError(`保存失败`);
           }
         })
       })

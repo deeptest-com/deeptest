@@ -27,6 +27,7 @@
             showTotal: (total) => {
               return `共 ${total} 条数据`;
             },
+            showLessItems: true,
         }"
         :columns="columns"
         :data-source="interfaces"

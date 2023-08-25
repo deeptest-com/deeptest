@@ -10,7 +10,7 @@
                      :value="nodeData?.name || ''"
                      :canEmpty="false"
                      :emptyValue="'未命名'"
-                     customClass="defaultValue"
+                     :customClass="nodeData?.name? '':'defaultValue'"
                      @update="updateTitle"/>
       </div>
     </div>

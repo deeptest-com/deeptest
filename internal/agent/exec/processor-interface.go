@@ -41,7 +41,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	execStartTime := time.Now()
 	processor.Result = &agentDomain.ScenarioExecResult{
 		ID:                  int(entity.ProcessorID),
-		Name:                entity.Name,
+		Name:                processor.Name,
 		ProcessorCategory:   entity.ProcessorCategory,
 		ProcessorType:       entity.ProcessorType,
 		StartTime:           &execStartTime,

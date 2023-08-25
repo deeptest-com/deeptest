@@ -2,7 +2,7 @@
 <template>
   <div class="header-con">
     <div class="left">
-      <span class="title"><IconSvg :type="icon" class="prefix-icon-svg"/> {{ scenarioType }}</span>
+      <span class="title"><IconSvg :type="icon" class="prefix-icon-svg"/>{{ scenarioType }}</span>
       <div class="name">
         <EditAndShow placeholder="修改名称"
                      :autoFocus="false"
@@ -128,6 +128,8 @@ async function updateTitle(title) {
 
   .prefix-icon-svg {
     margin-right: 3px;
+    font-size: 20px;
+    vertical-align: -0.25em;
   }
 }
 

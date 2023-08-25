@@ -70,11 +70,11 @@ async function updateTitle(title) {
   }).then((res) => {
     if (res === true) {
       notification.success({
-        message: '修改场景名称成功',
+        message: '修改场景步骤名称成功',
       });
     } else {
       notification.success({
-        message: '修改场景名称失败',
+        message: '修改场景步骤名称失败',
       });
     }
   })

@@ -1,7 +1,7 @@
 <template>
   <a-menu-item :key="menu.key">
-    <template #icon>
-      <IconSvg v-if="menu.icon" :type="menu.icon" class="icon"/>
+    <template v-if="menu.icon" #icon>
+      <IconSvg :type="menu.icon" class="icon dp-icon-large"/>
     </template>
     <span :class="['menu-text', !menu.icon && 'menu-text-no-margin' ]">
       {{ menu.title }}
@@ -14,13 +14,11 @@ import IconSvg from "@/components/IconSvg";
 
 const props = defineProps(['menu']);
 
-console.log(props.menu);
-
 </script>
 
 <style lang="less" scoped>
 .menu-text {
-  margin-left: 8px;
+  margin-left: 4px;
 
   &.menu-text-no-margin {
     margin: 0;

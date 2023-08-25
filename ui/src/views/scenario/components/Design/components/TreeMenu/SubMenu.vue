@@ -11,9 +11,11 @@
          {{ menu.title }}
       </span>
     </template>
-    <template v-for="menu in menu.children">
-      <SubMenu :key="menu.key" :menu="menu" v-if="menu?.children?.length"/>
-      <MenuItem v-else :key="menu.key" :menu="menu" :disabled="menu?.disabled"/>
+    <template v-for="menu in menu.children" :key="menu.key">
+      <div class="scenario-tree-menu" >
+        <SubMenu  :menu="menu" v-if="menu?.children?.length"/>
+        <MenuItem v-else  :menu="menu" :disabled="menu?.disabled"/>
+      </div>
     </template>
   </a-sub-menu>
 </template>
@@ -29,7 +31,7 @@ const props = defineProps(['menu']);
 <style lang="less" scoped>
 .menu-text {
   display: inline-block;
-  margin-left: 8px;
+  margin-left: 4px;
   width: 72px;
 
   &.menu-text-no-margin {
@@ -41,5 +43,15 @@ const props = defineProps(['menu']);
   position: relative;
   left: 16px;
   font-size: 12px;
+}
+
+.scenario-tree-menu {
+
+  :deep(.ant-dropdown-menu-item) {
+    .svg-icon {
+      font-size: 18px !important;
+      vertical-align: -0.26em;
+    }
+  }
 }
 </style>

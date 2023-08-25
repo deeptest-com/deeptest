@@ -1,7 +1,7 @@
 <template>
   <a-menu-item :key="menu.key">
-    <template #icon>
-      <IconSvg v-if="menu.icon" :type="menu.icon" class="icon"/>
+    <template v-if="menu.icon" #icon>
+      <IconSvg :type="menu.icon" class="icon dp-icon-large"/>
     </template>
     <span :class="['menu-text', !menu.icon && 'menu-text-no-margin' ]">
       {{ menu.title }}
@@ -13,8 +13,6 @@ import {defineProps, createVNode} from "vue";
 import IconSvg from "@/components/IconSvg";
 
 const props = defineProps(['menu']);
-
-console.log(props.menu);
 
 </script>
 

@@ -2,7 +2,7 @@
   <a-dropdown>
     <slot name="button"/>
     <template #overlay>
-      <a-menu @click="selectMenu">
+      <a-menu @click="selectMenu" class="scenario-tree-menu">
         <template v-for="menu in menus">
           <SubMenu :key="menu.key" :menu="menu" v-if="menu?.children?.length" :disabled="menu.disabled"/>
           <a-menu-divider v-else-if="menu?.key === 'divider'" :key="menu.key"/>
@@ -84,4 +84,14 @@ const menus = computed(() => {
 });
 
 </script>
+
+<style lang="less" scoped>
+
+.scenario-tree-menu {
+  :deep(.svg-icon) {
+    font-size: 16px !important;
+    vertical-align: -0.2em;
+  }
+}
+</style>
 

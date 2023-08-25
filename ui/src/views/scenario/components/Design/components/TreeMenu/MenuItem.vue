@@ -18,7 +18,7 @@ const props = defineProps(['menu']);
 
 <style lang="less" scoped>
 .menu-text {
-  margin-left: 8px;
+  margin-left: 4px;
 
   &.menu-text-no-margin {
     margin: 0;

@@ -88,9 +88,10 @@ const menus = computed(() => {
 <style lang="less" scoped>
 
 .scenario-tree-menu {
+
   :deep(.svg-icon) {
-    font-size: 16px !important;
-    vertical-align: -0.2em;
+    font-size: 18px !important;
+    vertical-align: -0.26em;
   }
 }
 </style>

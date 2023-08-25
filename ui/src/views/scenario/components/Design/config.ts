@@ -173,7 +173,7 @@ export const DESIGN_MENU_CONFIG = [
     {
         key: 'processor_variable',
         title: '变量',
-        icon: 'arrange-var',
+        icon: 'arrange-add',
         hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
         children: [
             {
@@ -254,8 +254,8 @@ export const DESIGN_TYPE_ICON_MAP = {
     'custom': 'arrange-http',
     'curl': 'arrange-url',
     'processor_group_default': 'arrange-group',
-    "processor_variable_set": "arrange-var",
-    "processor_variable_clear": "arrange-var",
+    "processor_variable_set": "arrange-add",
+    "processor_variable_clear": "arrange-add",
     "processor_cookie_get": "arrange-cookie",
     'processor_cookie_set': 'arrange-cookie',
     'processor_cookie_clear': 'arrange-cookie',

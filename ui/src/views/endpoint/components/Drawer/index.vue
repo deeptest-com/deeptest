@@ -62,7 +62,7 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, defineEmits, defineProps, ref,} from 'vue';
+import {computed, defineEmits, defineProps, provide, ref,} from 'vue';
 import { ShareAltOutlined } from '@ant-design/icons-vue';
 import IconSvg from "@/components/IconSvg";
 import EndpointBasicInfo from './EndpointBasicInfo.vue';
@@ -203,7 +203,7 @@ function handleShare() {
   emit('share', endpointDetail.value.id);
 }
 
-
+provide('notScrollIntoView', true);
 </script>
 
 <style lang="less" scoped>

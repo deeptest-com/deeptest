@@ -34,13 +34,13 @@
 </template>
 
 <script lang="ts" setup>
-import {defineEmits, defineProps, ref, watch,} from 'vue';
+import {defineEmits, defineProps, ref, watch, inject} from 'vue';
 
 import {RightOutlined} from '@ant-design/icons-vue';
 import {getMethodColor} from '@/utils/interface';
 
 const openKeysMap = ref<any>({});
-
+const notScrollIntoView = inject('notScrollIntoView') || false;
 
 
 const props = defineProps({
@@ -83,11 +83,15 @@ function select(item) {
 
 const menuItemRefs = ref({})
 
+/**
+ * 由于这里的快捷滚动。导致在以下场景中出现问题：
+ * 1. 接口定义 tab 切换时吸顶， 来回切换，受到这里影响，可能就不吸顶了
+ */
 watch(() => {
   return props.selectedKeys
 },(newVal) => {
   //  选中的接口文档，滚动相应的位置
-  if(menuItemRefs.value?.[`${newVal[0]}`]){
+  if(menuItemRefs.value?.[`${newVal[0]}`] && !notScrollIntoView){
     menuItemRefs.value[`${newVal[0]}`].scrollIntoView({
       behavior: 'auto',
       block: 'center',

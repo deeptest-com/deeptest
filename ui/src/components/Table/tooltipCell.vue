@@ -1,8 +1,10 @@
-<!-- 表格中 自定义cell展示 -->
+<!-- 自定义文本超出显示省略号，悬浮显示tooltip -->
 <script lang="tsx">
 /**
  * props: { text, width }
  * 超出 指定width的将会展示tooltip
+ * 
+ * 传入 slot时 需要 传入tip保证可以显示tooltip
  */
 import { defineComponent, getCurrentInstance, nextTick, onMounted, ref, watch } from "vue";
 
@@ -10,6 +12,7 @@ export default defineComponent({
   props: {
     text: {
       default: "",
+      required: false,
     },
     width: {
       default: 0,
@@ -29,7 +32,7 @@ export default defineComponent({
       type: String,
     }
   },
-  setup(props) {
+  setup(props, { slots }) {
     const showTooltip = ref(false);
     const textRef = ref();
     const { proxy } :any= getCurrentInstance();
@@ -58,6 +61,7 @@ export default defineComponent({
       textRef,
       showTooltip,
       setTooltip,
+      // slots,
     };
   },
   render() {
@@ -67,6 +71,8 @@ export default defineComponent({
           <div class={['out', this.customClass]}>
             <span ref="textRef" class="text">
               {this.text}
+              {/* 支持 插入自定义标签 */}
+              {this.$slots.default && this.$slots.default()}
             </span>
           </div>
         </a-tooltip>

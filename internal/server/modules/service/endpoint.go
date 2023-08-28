@@ -7,7 +7,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
+	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"

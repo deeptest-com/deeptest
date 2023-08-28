@@ -37,8 +37,12 @@
                           type="script"
                           class="icon"  />
 
-                <b>断言</b>&nbsp;
-                <span v-html="element.desc || t(element.entityType)" />
+                <div class="entity-type">断言</div>
+                <div class="assert-expression">
+                  <TooltipCell :tip="element.desc || t(element.entityType)">
+                    <span class="expression-content" v-html="element.desc || t(element.entityType)"></span>
+                  </TooltipCell>
+                </div>
               </div>
               <div class="buttons">
                 <icon-svg class="icon dp-link-primary dp-icon-large" type="save"
@@ -102,6 +106,7 @@ import IconSvg from "@/components/IconSvg";
 
 import Checkpoint from "./conditions-post/Checkpoint.vue";
 import FullScreenPopup from "./ConditionPopup.vue";
+import TooltipCell from "@/components/Table/tooltipCell.vue";
 
 const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -251,8 +256,27 @@ const closeFullScreen = (item) => {
           border-radius: 5px;
 
           display: flex;
+          align-items: center;
           .title {
-            flex: 1;
+            width: calc(100% - 160px);
+            // flex: 1;
+            display: flex;
+            align-items: center;
+
+            .entity-type {
+              margin-right: 3px;
+            }
+
+            .assert-expression {
+              // flex: 1;
+              width: calc(100% - 80px);
+              overflow: hidden;
+              text-overflow: ellipsis;
+
+              span {
+                white-space: nowrap;
+              }
+            }
 
             .icon {
               margin-right: 3px;

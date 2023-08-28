@@ -36,7 +36,7 @@ type MockService struct {
 }
 
 func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockResponse, err error) {
-	// init mock generator
+	// init mock generator if needed
 	if !s.IsInit {
 		s.initMockGenerator()
 	}
@@ -133,7 +133,7 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 
 	// fix spec issues
 	doc3.Servers = nil                                                 // if not empty, will be used by s.router.FindRout() method
-	doc3.Paths["/json"].Post = nil                                     // just ignore for testing
+	doc3.Paths["/json"].Post = nil                                     // ignore post method for testing
 	doc3.Info.Version = "1.0.0"                                        // cannot be empty
 	desc := "描述"                                                       // cannot be empty
 	doc3.Paths["/json"].Get.Responses["200"].Value.Description = &desc // cannot be empty

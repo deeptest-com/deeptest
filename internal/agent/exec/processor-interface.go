@@ -135,7 +135,6 @@ func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, sessio
 	return
 }
 func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detail map[string]interface{}) (err error) {
-
 	for _, condition := range entity.PostConditions {
 		if condition.Type == consts.ConditionTypeExtractor {
 			var extractorBase domain.ExtractorBase
@@ -176,6 +175,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			}
 			interfaceExecCondition.Raw, _ = json.Marshal(scriptBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
+
 		} else if condition.Type == consts.ConditionTypeCheckpoint {
 
 			var checkpointBase domain.CheckpointBase
@@ -191,7 +191,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			interfaceExecCondition := domain.InterfaceExecCondition{
 				Type: condition.Type,
 			}
-
+			interfaceExecCondition.Raw, _ = json.Marshal(checkpointBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 
 			if _, ok := detail["checkpoint"]; !ok {
@@ -214,7 +214,6 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			interfaceExecCondition := domain.InterfaceExecCondition{
 				Type: condition.Type,
 			}
-
 			interfaceExecCondition.Raw, _ = json.Marshal(responseDefineBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 

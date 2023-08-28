@@ -21,10 +21,11 @@ import (
 )
 
 type MockService struct {
-	IsInit    bool
+	IsInit            bool
+	endpointRouterMap map[uint]routers.Router // maintain router for each endpoint in a map
+
 	generator mockGenerator.ResponseGenerator
 	responder mockResponder.Responder
-	router    routers.Router
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
@@ -37,6 +38,8 @@ type MockService struct {
 func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockResponse, err error) {
 	// init mock generator
 	if !s.IsInit {
+		s.endpointRouterMap = map[uint]routers.Router{}
+
 		options := mockData.Options{
 			//UseExamples:     config.UseExamples,
 			//NullProbability: config.NullProbability,
@@ -54,7 +57,7 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockR
 	}
 
 	// load endpoint interface
-	endpointInterface, err := s.GetEndpointInterface(req, req.EndpointInterfaceId)
+	endpointInterface, err := s.GetEndpointInterface(req)
 	if err != nil {
 		return
 	}
@@ -82,7 +85,7 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockR
 	//specification, err := specificationLoader.LoadFromURI(config.SpecificationURL)
 
 	// init mock router
-	s.router, err = legacy.NewRouter(doc3)
+	s.endpointRouterMap[endpointInterface.EndpointId], err = legacy.NewRouter(doc3)
 	if err != nil {
 		return
 	}
@@ -94,7 +97,9 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockR
 			Path: "/" + req.EndpointPath,
 		},
 	}
-	route, pathParameters, err := s.router.FindRoute(&httpRequest)
+
+	endpointRouter := s.endpointRouterMap[endpointInterface.EndpointId]
+	route, pathParameters, err := endpointRouter.FindRoute(&httpRequest)
 	if err != nil {
 		return
 	}
@@ -125,16 +130,16 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockR
 	return
 }
 
-func (s *MockService) GetEndpointInterface(req *MockRequest, endpointInterfaceId uint) (ret model.EndpointInterface, err error) {
-	if endpointInterfaceId <= 0 {
+func (s *MockService) GetEndpointInterface(req *MockRequest) (ret model.EndpointInterface, err error) {
+	if req.EndpointInterfaceId <= 0 {
 		project, _ := s.ProjectRepo.GetByCode(req.ProjectCode)
 		serve, _ := s.ServeRepo.GetByCode(project.ID, req.ServeCode)
 		endpoint, _ := s.EndpointRepo.GetByPath(serve.ID, req.EndpointPath)
 
-		_, endpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(endpoint.ID, req.EndpointMethod)
+		_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(endpoint.ID, req.EndpointMethod)
 	}
 
-	ret, err = s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	ret, err = s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
 
 	return
 }

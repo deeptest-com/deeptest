@@ -65,6 +65,11 @@
                       v-if="dataRef.name && needHandleShowName.includes(dataRef.entityType)">
                       <TooltipCell :text="dataRef.name" :custom-class="`${dataRef.disable ? 'disabled' : ''}`" />
                 </span>
+                <!-- 分组 显示 分组实际名称或者分组 -->
+                <span class="title-text"
+                      v-else-if="dataRef.entityType === 'processor_group_default'">
+                      <TooltipCell :text="dataRef.name || '分组'" :custom-class="`${dataRef.disable ? 'disabled' : ''}`" />
+                </span>
                 <span class="title-text" v-else-if= "!needHandleShowName.includes(dataRef.entityType)">
                   <TooltipCell
                     :text="`${dataRef.name ? `${scenarioTypeMapToText[dataRef.entityType]} - ${dataRef.name}` : `${scenarioTypeMapToText[dataRef.entityType]}`}`"

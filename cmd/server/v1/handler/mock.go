@@ -20,6 +20,20 @@ func (c *MockCtrl) OAuth2Callback(ctx iris.Context) {
 
 }
 
+func (c *MockCtrl) Mock(ctx iris.Context) {
+	endpointInterfaceId, _ := ctx.URLParamInt("endpointInterfaceId")
+	project := ctx.Params().Get("project")
+	serve := ctx.Params().Get("serve")
+	path := ctx.Params().Get("path")
+	method := ctx.Params().Get("method")
+	logUtils.Infof("%s/%s/%s/%s", project, serve, path, method)
+
+	req := service.MockRequest{
+		EndpointInterfaceId: uint(endpointInterfaceId),
+	}
+	c.MockService.ByRequest(&req, ctx)
+}
+
 func (c *MockCtrl) Get(ctx iris.Context) {
 	respType := ctx.URLParam("respType")
 

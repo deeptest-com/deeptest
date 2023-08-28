@@ -438,3 +438,16 @@ func (r *EndpointRepo) ListByProjectIdAndServeId(projectId, serveId uint, needDe
 	r.GetByEndpoints(endpoints, needDetail)
 	return
 }
+
+func (r *EndpointRepo) GetByPath(serveId uint, pth string) (ret model.Endpoint, err error) {
+	db := r.DB.Model(&ret).
+		Where("path = ? AND NOT deleted", pth)
+
+	if serveId > 0 {
+		db.Where("serve_id = ?", serveId)
+	}
+
+	err = db.First(&ret).Error
+
+	return
+}

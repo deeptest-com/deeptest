@@ -96,6 +96,15 @@ func (r *ProjectRepo) GetByName(projectName string, id uint) (project model.Proj
 	return
 }
 
+func (r *ProjectRepo) GetByCode(shortName string) (ret model.Project, err error) {
+	db := r.DB.Model(&ret).
+		Where("short_name = ? AND NOT deleted", shortName)
+
+	err = db.First(&ret).Error
+
+	return
+}
+
 func (r *ProjectRepo) GetBySpec(spec string) (project model.Project, err error) {
 	err = r.DB.Model(&model.Project{}).
 		Where("spec = ?", spec).

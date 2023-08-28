@@ -21,9 +21,10 @@ import (
 )
 
 type MockService struct {
-	responseGenerator mockGenerator.ResponseGenerator
-	router            routers.Router
-	responder         mockResponder.Responder
+	IsInit    bool
+	generator mockGenerator.ResponseGenerator
+	responder mockResponder.Responder
+	router    routers.Router
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
@@ -34,30 +35,29 @@ type MockService struct {
 }
 
 func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockResponse, err error) {
+	// init mock generator
+	if !s.IsInit {
+		options := mockData.Options{
+			//UseExamples:     config.UseExamples,
+			//NullProbability: config.NullProbability,
+			//DefaultMinInt:   config.DefaultMinInt,
+			//DefaultMaxInt:   config.DefaultMaxInt,
+			//DefaultMinFloat: config.DefaultMinFloat,
+			//DefaultMaxFloat: config.DefaultMaxFloat,
+			//SuppressErrors:  config.SuppressErrors,
+		}
+		dataGenerator := mockData.New(options)
+		s.generator = mockGenerator.New(dataGenerator)
+		s.responder = mockResponder.New()
+
+		s.IsInit = true
+	}
+
+	// load endpoint interface
 	endpointInterface, err := s.GetEndpointInterface(req, req.EndpointInterfaceId)
 	if err != nil {
 		return
 	}
-
-	resp, err = s.ByEndpointInterface(req, endpointInterface, ctx)
-
-	return
-}
-
-func (s *MockService) ByEndpointInterface(request *MockRequest, endpointInterface model.EndpointInterface, ctx iris.Context) (resp *MockResponse, err error) {
-	generatorOptions := mockData.Options{
-		//UseExamples:     factory.configuration.UseExamples,
-		//NullProbability: factory.configuration.NullProbability,
-		//DefaultMinInt:   factory.configuration.DefaultMinInt,
-		//DefaultMaxInt:   factory.configuration.DefaultMaxInt,
-		//DefaultMinFloat: factory.configuration.DefaultMinFloat,
-		//DefaultMaxFloat: factory.configuration.DefaultMaxFloat,
-		//SuppressErrors:  factory.configuration.SuppressErrors,
-	}
-
-	dataGeneratorInstance := mockData.New(generatorOptions)
-	s.responseGenerator = mockGenerator.New(dataGeneratorInstance)
-	s.responder = mockResponder.New()
 
 	// generate openapi spec
 	endpoint, err := s.EndpointRepo.GetAll(endpointInterface.EndpointId, "v0.1.0")
@@ -70,38 +70,36 @@ func (s *MockService) ByEndpointInterface(request *MockRequest, endpointInterfac
 
 	log.Println(string(respContent))
 
-	// TODO: check
-	doc3.Servers = nil
-	doc3.Paths["/get"].Post = nil
-	doc3.Info.Version = "1.0.0"
-	desc := "描述"
-	doc3.Paths["/get"].Get.Responses["200"].Value.Description = &desc
+	// fix spec issues
+	doc3.Servers = nil                                                 // if not empty, will be used by s.router.FindRout() method
+	doc3.Paths["/json"].Post = nil                                     // just ignore for testing
+	doc3.Info.Version = "1.0.0"                                        // cannot be empty
+	desc := "描述"                                                       // cannot be empty
+	doc3.Paths["/json"].Get.Responses["200"].Value.Description = &desc // cannot be empty
 
-	// load openapi spec
+	// load openapi spec from url or file
 	//specificationLoader := mockLoader.New()
-	//specification, err := specificationLoader.LoadFromURI(factory.configuration.SpecificationURL)
+	//specification, err := specificationLoader.LoadFromURI(config.SpecificationURL)
 
 	// init mock router
 	s.router, err = legacy.NewRouter(doc3)
 	if err != nil {
-		//http.NotFound(writer, request)
 		return
 	}
 
-	// generate mock response
-	u := url.URL{
-		Path: "/get",
-	}
+	// find matched route
 	httpRequest := http.Request{
-		Method: http.MethodGet,
-		URL:    &u,
+		Method: req.EndpointMethod.String(),
+		URL: &url.URL{
+			Path: "/" + req.EndpointPath,
+		},
 	}
 	route, pathParameters, err := s.router.FindRoute(&httpRequest)
 	if err != nil {
-		//http.NotFound(writer, request)
 		return
 	}
 
+	// validate request
 	routingValidation := &openapi3filter.RequestValidationInput{
 		Request:    &httpRequest,
 		PathParams: pathParameters,
@@ -110,22 +108,19 @@ func (s *MockService) ByEndpointInterface(request *MockRequest, endpointInterfac
 			ExcludeRequestBody: true,
 		},
 	}
-
 	err = openapi3filter.ValidateRequest(ctx, routingValidation)
 	var requestError *openapi3filter.RequestError
 	if errors.As(err, &requestError) {
-		//http.NotFound(writer, request)
 		return
 	}
 
-	response, err := s.responseGenerator.GenerateResponse(&httpRequest, route)
+	// generate response
+	response, err := s.generator.GenerateResponse(&httpRequest, route)
 	if err != nil {
-		//handler.responder.WriteError(ctx, writer, err)
 		return
 	}
 
 	log.Println(response)
-	//handler.responder.WriteResponse(ctx, writer, response)
 
 	return
 }

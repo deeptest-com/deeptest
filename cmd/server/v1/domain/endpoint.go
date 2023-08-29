@@ -1,6 +1,7 @@
 package serverDomain
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -86,6 +87,7 @@ type ImportEndpointDataReq struct {
 	FilePath      string               `json:"filePath" validate:"required"`
 	ProjectId     uint                 `json:"projectId"`
 	UserId        uint                 `json:"userId"`
+	SourceType    consts.SourceType    `json:"sourceType"`
 }
 
 type BatchUpdateReq struct {

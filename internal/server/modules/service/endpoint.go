@@ -234,19 +234,26 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 	for _, endpoint := range endpoints {
 		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId = req.ProjectId, req.ServeId, req.CategoryId
 		endpoint.Status = 1
-		endpoint.SourceType = consts.Swagger
+		endpoint.SourceType = req.SourceType
 		if endpoint.CreateUser == "" {
 			endpoint.CreateUser = user.Username
 		}
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
+
+		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
+
+		//非Notfound
+		if err != nil && err != gorm.ErrRecordNotFound {
+			continue
+		}
+
 		if req.DataSyncType == convert.FullCover {
-			res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
 			if err == nil {
 				endpoint.ID = res.ID
 			}
 
-			//非Notfound
-			if err != nil && err != gorm.ErrRecordNotFound {
+		} else if req.DataSyncType == convert.CopyAdd {
+			if err == nil {
 				continue
 			}
 		}

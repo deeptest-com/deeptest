@@ -110,11 +110,10 @@ func (r *ProjectRepo) Save(po *model.Project) (err error) {
 	return
 }
 
-func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_domain.BizErr) {
-	bizErr = new(_domain.BizErr)
+func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _domain.BizErr) {
 	po, err := r.GetByName(req.Name, 0)
 	if po.Name != "" {
-		bizErr.Code = _domain.ErrNameExist.Code
+		bizErr = _domain.ErrNameExist
 		return
 	}
 
@@ -123,7 +122,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 	err = r.DB.Model(&model.Project{}).Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("add project error", zap.String("error:", err.Error()))
-		bizErr.Code = _domain.SystemErr.Code
+		bizErr = _domain.SystemErr
 
 		return
 	}
@@ -131,7 +130,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr *_
 		err = r.AddProjectMember(project.ID, req.AdminId, "admin")
 		if err != nil {
 			logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
-			bizErr.Code = _domain.SystemErr.Code
+			bizErr = _domain.SystemErr
 			return 0, bizErr
 		}
 	}

@@ -20,7 +20,7 @@ type EndpointCaseRepo struct {
 func (r *EndpointCaseRepo) List(endpointId uint) (pos []model.EndpointCase, err error) {
 	err = r.DB.
 		Where("endpoint_id=?", endpointId).
-		Where("NOT deleted").
+		Where("NOT deleted").Order("created_at desc").
 		Find(&pos).Error
 
 	return

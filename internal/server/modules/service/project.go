@@ -29,7 +29,7 @@ func (s *ProjectService) Get(id uint) (model.Project, error) {
 	return s.ProjectRepo.Get(id)
 }
 
-func (s *ProjectService) Create(req v1.ProjectReq, userId uint) (id uint, err *_domain.BizErr) {
+func (s *ProjectService) Create(req v1.ProjectReq, userId uint) (id uint, err _domain.BizErr) {
 	id, err = s.ProjectRepo.Create(req, userId)
 	return
 }

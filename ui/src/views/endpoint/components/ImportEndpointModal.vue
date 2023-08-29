@@ -33,15 +33,15 @@
             placeholder="请选择所属分类"
             allow-clear/>
       </a-form-item>
-      <!---
-      <a-form-item label="数据同步方式" name="dataSyncType">
+      
+      <a-form-item label="数据合并策略" name="dataSyncType">
         <a-select
             style="width: 100%"
             v-model:value="formState.dataSyncType"
             :options="dataSyncTypeOpts"
             placeholder="请选择"/>
       </a-form-item>
-      -->
+      
       <a-form-item label="开启url导入" name="openUrlImport">
         <a-radio-group :disabled="disabled"
             :options="openUrlImportOpts"

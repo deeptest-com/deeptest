@@ -87,10 +87,10 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	if err != nil {
 		processor.Result.ResultStatus = consts.Fail
 		processor.Result.Summary = err.Error()
-		processor.AddResultToParent()
 		detail["result"] = entity.Response.Content
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
 		execUtils.SendErrorMsg(*processor.Result, session.WsMsg)
+		processor.AddResultToParent()
 		return
 	}
 
@@ -102,7 +102,6 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		SetCookie(processor.ParentId, c.Name, c.Value, c.Domain, c.ExpireTime)
 	}
 
-	processor.AddResultToParent()
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	endTime := time.Now()
@@ -110,6 +109,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 
 	stat := CountStat(processor.Result)
 	execUtils.SendStatMsg(stat, session.WsMsg)
+	processor.AddResultToParent()
 
 	return
 }
@@ -135,6 +135,7 @@ func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, sessio
 	return
 }
 func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detail map[string]interface{}) (err error) {
+
 	for _, condition := range entity.PostConditions {
 		if condition.Type == consts.ConditionTypeExtractor {
 			var extractorBase domain.ExtractorBase
@@ -175,7 +176,6 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			}
 			interfaceExecCondition.Raw, _ = json.Marshal(scriptBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
-
 		} else if condition.Type == consts.ConditionTypeCheckpoint {
 
 			var checkpointBase domain.CheckpointBase
@@ -191,7 +191,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			interfaceExecCondition := domain.InterfaceExecCondition{
 				Type: condition.Type,
 			}
-			interfaceExecCondition.Raw, _ = json.Marshal(checkpointBase)
+
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 
 			if _, ok := detail["checkpoint"]; !ok {
@@ -214,6 +214,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			interfaceExecCondition := domain.InterfaceExecCondition{
 				Type: condition.Type,
 			}
+
 			interfaceExecCondition.Raw, _ = json.Marshal(responseDefineBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 

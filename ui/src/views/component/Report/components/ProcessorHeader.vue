@@ -14,19 +14,19 @@
       </template>
       <!-- ::::迭代次数：processor_loop_time -->
       <template v-if="record.processorType === 'processor_loop_time'">
-        <p class="text"><code>{{ `${detail?.times}` }}</code>次  <span style="margin-left: 24px">跳出条件：<code>{{ `${detail?.breakIfExpression}` }}</code></span></p>
+        <p class="text"><code>{{ `${detail?.times}` }}</code>次  <span style="margin-left: 24px" v-if="detail && detail.breakIfExpression">跳出条件：<code>{{ `${detail?.breakIfExpression}` }}</code></span></p>
       </template>
       <!-- ::::循环列表 -->
       <template v-if="record.processorType === 'processor_loop_in'">
-        <p class="text">从 <code>{{ `${detail?.list}` }}</code>中 <code>{{ `${!detail?.isRand ? '顺序' : '随机'}` }}</code>取值赋给变量 <code>{{ `${detail?.variableName}` }}</code>  <span style="margin-left: 24px">跳出条件： <code>{{ `${detail?.breakIfExpression}` }}</code></span></p>
+        <p class="text">从 <code>{{ `${detail?.list}` }}</code>中 <code>{{ `${!detail?.isRand ? '顺序' : '随机'}` }}</code>取值赋给变量 <code>{{ `${detail?.variableName}` }}</code>  <span style="margin-left: 24px" v-if="detail && detail.breakIfExpression">跳出条件： <code>{{ `${detail?.breakIfExpression}` }}</code></span></p>
       </template>
       <!-- ::::循环直到 -->
       <template v-if="record.processorType === 'processor_loop_until'">
-        <p class="text"><code>{{ `${detail?.untilExpression}` }}</code>  <span style="margin-left: 24px">跳出条件：<code>{{ `${detail?.breakIfExpression}` }}</code></span></p>
+        <p class="text"><code>{{ `${detail?.untilExpression}` }}</code>  <span style="margin-left: 24px" v-if="detail && detail.breakIfExpression">跳出条件：<code>{{ `${detail?.breakIfExpression}` }}</code></span></p>
       </template>
       <!-- ::::循环区间 -->
       <template v-if="record.processorType === 'processor_loop_range'">
-        <p class="text">从区间 <code>{{ `[${detail?.range}]` }}</code> 中 <code>{{ `${!detail?.isRand ? '顺序' : '随机'}` }}</code> 取值赋给变量 <code>{{ `${detail?.variableName}` }}</code> <span style="margin-left: 24px">跳出条件： <code>{{ `${detail?.breakIfExpression}` }}</code></span></p>
+        <p class="text">从区间 <code>{{ `[${detail?.range}]` }}</code> 中 <code>{{ `${!detail?.isRand ? '顺序' : '随机'}` }}</code> 取值赋给变量 <code>{{ `${detail?.variableName}` }}</code> <span style="margin-left: 24px" v-if="detail && detail.breakIfExpression">跳出条件： <code>{{ `${detail?.breakIfExpression}` }}</code></span></p>
       </template>
       <!-- ::::条件分支-如果 -->
       <template v-if="record.processorType === 'processor_logic_if'">

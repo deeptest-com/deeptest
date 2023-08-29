@@ -147,7 +147,7 @@ export const DESIGN_MENU_CONFIG = [
     //    数据迭代
     {
         key: 'processor_data_default',
-        title: '数据循环',
+        title: '数据迭代',
         icon: 'arrange-data-loop',
         hideInNodeTypes: [...onlyShowDisableAndDeleteTypes],
     },
@@ -384,7 +384,7 @@ export const scenarioTypeMapToText = {
     'processor_time_default': '等待时间',
     'processor_print_default': '输出',
     'processor_assertion_default': '断言',
-    'processor_data_default': '数据循环',
+    'processor_data_default': '数据迭代',
     'add-child-interface-define': '接口',
     'add-child-interface-case': '接口',
     'add-child-interface-diagnose': '接口',

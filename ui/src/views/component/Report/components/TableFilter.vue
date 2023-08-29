@@ -13,21 +13,19 @@
         </div> -->
         <a-form :model="formState" class="report-form">
             <div class="report-executor-selector">
-                <a-form-item name="executor" label="执行人">
+                <a-form-item name="executor">
                   <Select
                       :placeholder="'请选择执行人'"
                       :options="executorOptions"
                       :value="selectValue"
                       @change="handleSelectChange"
                   />
-<!--                  <a-select allowClear placeholder="请选择执行人" v-model:value="selectValue" :options="executorOptions"-->
-<!--                        style="width: 140px" @change="handleSelectChange" />-->
                 </a-form-item>
             </div>
             <div class="report-excutime">
-                <a-form-item name="executime" label="执行时间">
+                <a-form-item name="executime">
                     <a-range-picker :show-time="{ format: 'HH:mm' }" format="YYYY-MM-DD HH:mm"
-                        :placeholder="['开始时间', '结束时间']" @ok="onRangeOk" @change="onRangeChange" />
+                        :placeholder="['执行开始时间', '执行结束时间']" @ok="onRangeOk" @change="onRangeChange" />
                 </a-form-item>
             </div>
             <div class="report-name">

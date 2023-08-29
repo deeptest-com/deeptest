@@ -85,6 +85,11 @@ export interface SettingsType {
      */
     eventGetPlansReports: string;
     eventGetPlanDetail: string;
+
+    /**
+     * pane resize 
+     */
+    paneResizeTop: string;
 }
 
 const settings: SettingsType = {
@@ -136,6 +141,9 @@ const settings: SettingsType = {
     // 测试计划相关的
     eventGetPlanDetail: 'eventGetPlanDetail',
     eventGetPlansReports: 'eventGetPlansReports', 
+
+    // pane Resizer
+    paneResizeTop: 'paneResizeTop',
 };
 
 export default settings;

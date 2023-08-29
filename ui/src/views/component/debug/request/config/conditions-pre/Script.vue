@@ -94,10 +94,22 @@ const save = async () => {
 onMounted(() => {
   console.log('onMounted')
   bus.on(settings.eventConditionSave, save);
+  bus.on(settings.paneResizeTop, () => {
+      bus.emit(settings.eventEditorAction, {
+        act: 'heightChanged',
+        container: 'codes'
+      })
+    })
 })
 onBeforeUnmount( () => {
   console.log('onBeforeUnmount')
   bus.off(settings.eventConditionSave, save);
+  bus.off(settings.paneResizeTop, () => {
+      bus.emit(settings.eventEditorAction, {
+        act: 'heightChanged',
+        container: 'codes'
+      })
+    })
 })
 
 const labelCol = { span: 0 }

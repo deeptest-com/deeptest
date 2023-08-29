@@ -8,7 +8,7 @@
                      :autoFocus="false"
                      :key="nodeData?.id"
                      :value="nodeData?.name || ''"
-                     :canEmpty="false"
+                     :canEmpty="true"
                      :emptyValue="'未命名'"
                      :customClass="nodeData?.name? '':'defaultValue'"
                      @update="updateTitle"/>

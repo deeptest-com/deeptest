@@ -34,7 +34,19 @@
             allow-clear/>
       </a-form-item>
       
-      <a-form-item label="数据合并策略" name="dataSyncType">
+      <a-form-item name="dataSyncType">
+        <template v-slot:label>
+        数据合并策略
+        <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip" visible="true">
+          <template v-slot:title>
+            <span class="title">完全覆盖</span><br>
+            通过swagger导入/同步的接口定义，同步更新时使用接口方法和路径进行匹配。<br>
+            匹配到的相同接口同步时不保留平台中的旧数据，完全使用swagger文档中的新数据进行覆盖。<br>
+            通过平台创建的接口定义不会被覆盖。<br>
+         </template>
+        <QuestionCircleOutlined class="icon" style=" font-size: 14px;transform: scale(0.9)" />
+        </a-tooltip>
+      </template>
         <a-select
             style="width: 100%"
             v-model:value="formState.dataSyncType"
@@ -81,7 +93,7 @@ import {
 } from 'vue';
 import {useStore} from "vuex";
 import {NewEndpointFormState} from "@/views/Endpoint/data";
-import {InboxOutlined, UploadOutlined} from '@ant-design/icons-vue';
+import {InboxOutlined, UploadOutlined,QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {message, notification} from 'ant-design-vue';
 import {notifyWarn} from "@/utils/notify";
 
@@ -274,4 +286,13 @@ const disabled = computed(()=>{
   display: flex;
   justify-content: flex-end;
 }
+
 </style>
+
+
+<style lang="less">
+.memo-tooltip {
+  min-width:500px;
+}
+</style>
+

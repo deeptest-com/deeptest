@@ -175,10 +175,6 @@ watch(() => {
     padding-left: 300px;
     margin-top: -25px;
  }
-.memo-tooltip {
-  min-width:800px;
-}
-
 </style>
 
 <style lang="less">

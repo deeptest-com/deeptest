@@ -8,7 +8,6 @@
         <DebugComp :onSaveDebugData="saveDebugInterface"
                    :onSaveAsCase="saveAsCase"
                    :onGenerateCases="onGenerateCases"
-                   :onGe="saveAsCase"
                    :showMethodSelection="false" />
       </div>
     </div>
@@ -97,6 +96,7 @@ const saveAsFinish = async (model) => {
   console.log('saveAsFinish', model, debugData.value.url)
 
   const data = Object.assign({...model, debugData: debugData.value}, debugInfo.value)
+  data.endpointId = endpointDetail.value.id
 
   store.commit("Global/setSpinning",true)
   const res = await store.dispatch('Debug/saveAsCase', data)

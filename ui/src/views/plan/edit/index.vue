@@ -146,12 +146,12 @@ const stickyKey = ref(0);
 
 const tabsList = [
   {
-    "key": "test-report",
-    "label": "测试报告"
-  },
-  {
     "key": "test-scenario",
     "label": "测试场景"
+  },
+  {
+    "key": "test-report",
+    "label": "测试报告"
   },
 ]
 

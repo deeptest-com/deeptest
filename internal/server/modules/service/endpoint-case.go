@@ -3,6 +3,7 @@ package service
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -114,19 +115,23 @@ func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po mod
 }
 
 func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCaseSaveReq) (po model.EndpointCase, err error) {
-	debugData := req.DebugData
+	if req.Method != req.DebugData.Method {
+		debugInterfaceId, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
+		info := domain.DebugInfo{DebugInterfaceId: debugInterfaceId, EndpointInterfaceId: endpointInterfaceId}
+
+		req.DebugData, err = s.DebugInterfaceService.Load(info)
+	}
 
 	// save debug data
 	req.DebugData.UsedBy = consts.CaseDebug
-	srcDebugInterfaceId := debugData.DebugInterfaceId
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
+	srcDebugInterfaceId := req.DebugData.DebugInterfaceId
+	debugInterface, err := s.DebugInterfaceService.SaveAs(req.DebugData, srcDebugInterfaceId)
 
 	// save case
 	s.CopyValueFromRequest(&po, req)
 
 	if po.EndpointId == 0 {
-		endpointInterface, _ := s.EndpointInterfaceRepo.Get(uint(req.EndpointInterfaceId))
-		po.EndpointId = endpointInterface.EndpointId
+		po.EndpointId = req.EndpointId
 	}
 	endpoint, err := s.EndpointRepo.Get(po.EndpointId)
 	po.ProjectId = endpoint.ProjectId

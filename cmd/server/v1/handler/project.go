@@ -98,7 +98,7 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 
 	id, bizErr := c.ProjectService.Create(req, userId)
 	if bizErr.Code != 0 {
-		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
+		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil, Msg: bizErr.Error()})
 		return
 	}
 

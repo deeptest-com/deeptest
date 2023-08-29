@@ -241,14 +241,13 @@ func mergeParams(req *domain.BaseRequest, paramIn consts.ParamIn) {
 
 	for _, p := range ExecScene.GlobalParams {
 
-		if _, ok := mQueryParams[p.Name]; ok || paramIn != p.In {
-			continue
+		if _, ok := mQueryParams[p.Name]; !ok && paramIn == p.In {
+			req.QueryParams = append(req.QueryParams, domain.Param{
+				Name:  p.Name,
+				Value: p.DefaultValue,
+			})
 		}
 
-		req.QueryParams = append(req.QueryParams, domain.Param{
-			Name:  p.Name,
-			Value: p.DefaultValue,
-		})
 	}
 
 }

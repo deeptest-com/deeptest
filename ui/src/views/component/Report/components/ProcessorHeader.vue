@@ -119,7 +119,12 @@ const name = computed(() => {
   if (!Object.keys(recordData).length) {
     return '---';
   } else if (!recordData?.processorType.includes('processor_logic_')) {
-    return `${scenarioTypeMapToText[recordData.processorType]}${recordData.name ? ` - ${recordData.name}`: ''}`
+    if (recordData?.processorType === 'processor_group_default') {
+      // 分组 显示名称变化： 默认名称/真实名称
+      return recordData.name || scenarioTypeMapToText[recordData.processorType];
+    } else {
+      return `${scenarioTypeMapToText[recordData.processorType]}${recordData.name ? ` - ${recordData.name}`: ''}`
+    }
   } else {
     return `${recordData.processorType === 'processor_logic_if' ? 'IF' : 'ELSE'}${recordData.name ? ` - ${recordData.name}`: ''}`
   }

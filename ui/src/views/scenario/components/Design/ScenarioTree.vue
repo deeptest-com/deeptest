@@ -591,8 +591,11 @@ const interfaceSelectionCancel = () => {
 
 const removeNode = () => {
   console.log('removeNode')
-  const node = treeDataMap.value[targetModelId]
-  const name = node.name? scenarioTypeMapToText[node.entityType]+"-"+node.name : scenarioTypeMapToText[node.entityType];
+  const node = treeDataMap.value[targetModelId];
+  const name = node.entityType === "processor_group_default" ? 
+    (node.name || scenarioTypeMapToText[node.entityType])  : 
+    node.name ? scenarioTypeMapToText[node.entityType] + "-" + node.name : 
+    scenarioTypeMapToText[node.entityType];
   const title = `确定删除名为【${name}】的节点吗？`
   let context = node.entityCategory === "processor_interface" ? '' : '该节点的所有子节点都将被删除！'
 
@@ -615,7 +618,10 @@ const disableNodeOrNot = () => {
   const node = treeDataMap.value[targetModelId]
   const action = node.disable ? '启用' : '禁用';
   const content = node.disable ? '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？' : '禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？';
-  const name = node.name? scenarioTypeMapToText[node.entityType]+"-"+node.name : scenarioTypeMapToText[node.entityType];
+  const name = node.entityType === "processor_group_default" ? 
+    (node.name || scenarioTypeMapToText[node.entityType])  : 
+    node.name ? scenarioTypeMapToText[node.entityType] + "-" + node.name : 
+    scenarioTypeMapToText[node.entityType];
   Modal.confirm({
     okType: 'danger',
     title: `确定${action}名为【${name}】的场景步骤吗？`,

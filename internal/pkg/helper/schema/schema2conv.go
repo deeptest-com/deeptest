@@ -274,6 +274,9 @@ func (s *Schema2conv) Equal(schema1, schema2 *SchemaRef) (ret bool) {
 }
 
 func (s *Schema2conv) objectEqual(schema1 *Schema, schema2 *Schema) (ret bool) {
+	if len(schema1.Properties) != len(schema2.Properties) {
+		return false
+	}
 	for key, property := range schema1.Properties {
 		if item, ok := schema2.Properties[key]; ok {
 			if !s.Equal(property, item) {

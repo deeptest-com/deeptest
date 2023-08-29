@@ -39,6 +39,21 @@ func CountStat(result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat
 			Stat.CheckpointFail += 1
 			result.ResultStatus = consts.Fail
 		}
+
+		if item.Type != consts.ConditionTypeResponseDefine {
+			var responseDefineBase domain.ResponseDefineBase
+			json.Unmarshal(item.Raw, &responseDefineBase)
+			if responseDefineBase.Disabled {
+				continue
+			}
+
+			if responseDefineBase.ResultStatus == consts.Pass {
+				Stat.CheckpointPass += 1
+			} else if responseDefineBase.ResultStatus == consts.Fail {
+				Stat.CheckpointFail += 1
+				result.ResultStatus = consts.Fail
+			}
+		}
 	}
 
 	if result.ResultStatus == consts.Pass {

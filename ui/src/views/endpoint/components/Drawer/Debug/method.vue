@@ -31,10 +31,6 @@ const selectedMethod = ref('GET');
 const changeMethod = async () => {
   console.log('changeMethod', selectedMethod.value)
 
-  if (interfaceDetail.value?.method) {
-    selectedMethod.value = interfaceDetail.value?.method
-  }
-
   const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
 
   // sync with / to define page
@@ -53,6 +49,9 @@ const changeMethod = async () => {
 
 const initMethod = async () => {
   await store.dispatch('Endpoint/removeUnSavedMethods')
+  if (interfaceDetail.value?.method) {
+    selectedMethod.value = interfaceDetail.value?.method
+  }
   await changeMethod()
 }
 initMethod()

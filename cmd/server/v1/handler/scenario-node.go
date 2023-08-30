@@ -161,7 +161,7 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 	req.ProjectId = uint(projectId)
 	req.CreateBy = multi.GetUserId(ctx)
 
-	nodePo, bizErr := c.ScenarioNodeService.AddProcessor(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddProcessor(req, "add")
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,

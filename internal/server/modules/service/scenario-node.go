@@ -84,10 +84,17 @@ func (s *ScenarioNodeService) ToTos(pos []*model.Processor, withDetail bool) (to
 	return
 }
 
-func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioReq) (ret model.Processor, err *_domain.BizErr) {
+func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioReq, source string) (ret model.Processor, err *_domain.BizErr) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(uint(req.TargetProcessorId))
 	if targetProcessor.ID == 0 {
 		return
+	}
+
+	var disable bool
+	if source == "copy" {
+		disable = req.Disable
+	} else {
+		disable = targetProcessor.Disabled
 	}
 
 	ret = model.Processor{
@@ -99,7 +106,7 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		ScenarioId: targetProcessor.ScenarioId,
 		ProjectId:  req.ProjectId,
 		CreatedBy:  req.CreateBy,
-		BaseModel:  model.BaseModel{Disabled: targetProcessor.Disabled},
+		BaseModel:  model.BaseModel{Disabled: disable},
 	}
 
 	if req.Mode == "child" {
@@ -560,7 +567,7 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 
 func (s *ScenarioNodeService) CopyProcessor(req *agentExec.Processor, CreateBy uint, mod string) (err *_domain.BizErr) {
 	currentNodeReq := s.toProcessorReq(req, CreateBy, mod)
-	currentProcessor, err := s.AddProcessor(currentNodeReq)
+	currentProcessor, err := s.AddProcessor(currentNodeReq, "copy")
 	if err != nil {
 		return
 	}
@@ -582,6 +589,7 @@ func (s *ScenarioNodeService) toProcessorReq(req *agentExec.Processor, createBy 
 	ret.ProjectId = req.ProjectId
 	ret.CreateBy = createBy
 	ret.Mode = mod
+	ret.Disable = req.Disable
 
 	return
 }

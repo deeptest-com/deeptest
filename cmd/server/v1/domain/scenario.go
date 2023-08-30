@@ -46,6 +46,7 @@ type ScenarioAddScenarioReq struct {
 	TargetProcessorId       int                      `json:"targetProcessorId"`
 	ProjectId               uint                     `json:"projectId"`
 	CreateBy                uint                     `json:"createBy"`
+	Disable                 bool                     `json:"disable"`
 }
 
 type ScenarioNodeReq struct {

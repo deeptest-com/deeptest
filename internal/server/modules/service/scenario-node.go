@@ -557,3 +557,31 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 	return
 
 }
+
+func (s *ScenarioNodeService) CopyProcessor(req *agentExec.Processor, CreateBy uint, mod string) (err *_domain.BizErr) {
+	currentNodeReq := s.toProcessorReq(req, CreateBy, mod)
+	currentProcessor, err := s.AddProcessor(currentNodeReq)
+	if err != nil {
+		return
+	}
+
+	for _, child := range req.Children {
+		child.ParentId = currentProcessor.ID
+		_ = s.CopyProcessor(child, CreateBy, "child")
+	}
+
+	return
+}
+
+func (s *ScenarioNodeService) toProcessorReq(req *agentExec.Processor, createBy uint, mod string) (ret serverDomain.ScenarioAddScenarioReq) {
+	ret.TargetProcessorId = int(req.ParentId)
+	ret.Name = req.Name
+	ret.ProcessorCategory = req.EntityCategory
+	ret.ProcessorType = req.EntityType
+	ret.ProcessorInterfaceSrc = req.ProcessorInterfaceSrc
+	ret.ProjectId = req.ProjectId
+	ret.CreateBy = createBy
+	ret.Mode = mod
+
+	return
+}

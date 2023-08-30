@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -309,4 +310,33 @@ func (c *ScenarioNodeCtrl) ImportCurl(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: newNode})
+}
+
+func (c *ScenarioNodeCtrl) CopyProcessor(ctx iris.Context) {
+	req := agentExec.Processor{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	createBy := multi.GetUserId(ctx)
+	bizErr := c.ScenarioNodeService.CopyProcessor(&req, createBy, "siblings")
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.SystemErr.Code,
+			Msg:  bizErr.Error(),
+		})
+		return
+	}
+
+	scenario, err := c.ScenarioService.GetById(req.ScenarioId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	data, _ := c.ScenarioNodeService.GetTree(scenario, false)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }

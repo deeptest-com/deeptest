@@ -49,7 +49,7 @@ export const requestMethodOpts = [
 /**
  * 默认的响应码
  * */
-export const defaultResponseCodes = ["200", "300", "400", "500"]
+export const defaultResponseCodes = ["200", "301", "302", "401","402","500"]
 /**
  * 所有 http 响应状态码及描述
  * */

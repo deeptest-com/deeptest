@@ -90,13 +90,6 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		return
 	}
 
-	var disable bool
-	if source == "copy" {
-		disable = req.Disable
-	} else {
-		disable = targetProcessor.Disabled
-	}
-
 	ret = model.Processor{
 		Name:                  strings.TrimSpace(req.Name),
 		EntityCategory:        req.ProcessorCategory,
@@ -106,7 +99,13 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		ScenarioId: targetProcessor.ScenarioId,
 		ProjectId:  req.ProjectId,
 		CreatedBy:  req.CreateBy,
-		BaseModel:  model.BaseModel{Disabled: disable},
+		BaseModel:  model.BaseModel{Disabled: targetProcessor.Disabled},
+	}
+
+	if source == "copy" {
+		ret.Disabled = req.Disable
+		ret.Comments = req.Comments
+		ret.Method = req.Method
 	}
 
 	if req.Mode == "child" {
@@ -590,6 +589,8 @@ func (s *ScenarioNodeService) toProcessorReq(req *agentExec.Processor, createBy 
 	ret.CreateBy = createBy
 	ret.Mode = mod
 	ret.Disable = req.Disable
+	ret.Comments = req.Comments
+	ret.Method = req.Method
 
 	return
 }

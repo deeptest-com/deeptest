@@ -47,6 +47,8 @@ type ScenarioAddScenarioReq struct {
 	ProjectId               uint                     `json:"projectId"`
 	CreateBy                uint                     `json:"createBy"`
 	Disable                 bool                     `json:"disable"`
+	Comments                string                   `json:"comments"`
+	Method                  consts.HttpMethod        `json:"method"`
 }
 
 type ScenarioNodeReq struct {

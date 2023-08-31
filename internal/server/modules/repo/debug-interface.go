@@ -668,17 +668,3 @@ func (r *DebugInterfaceRepo) GetSourceNameById(id uint) (name string, err error)
 
 	return
 }
-
-func (r *DebugInterfaceRepo) CopyById(srcId uint) (id uint, err error) {
-	debugInterface, err := r.GetDetail(srcId)
-	if err != nil {
-		return
-	}
-
-	debugInterface.ID = 0
-	if err = r.Save(&debugInterface); err != nil {
-		return
-	}
-
-	return debugInterface.ID, nil
-}

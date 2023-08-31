@@ -66,219 +66,88 @@ func (r *ScenarioProcessorRepo) GetEntity(processorId uint) (ret interface{}, er
 }
 
 func (r *ScenarioProcessorRepo) CopyEntity(srcProcessorId, distProcessorId uint) (err error) {
-	//srcProcessor, err := r.Get(srcProcessorId)
-	//if err != nil {
-	//	return err
-	//}
-
 	distProcessor, err := r.Get(distProcessorId)
 	if err != nil {
 		return err
 	}
+	distParentId := distProcessor.ParentId
 
-	if distProcessor.EntityCategory == consts.ProcessorInterface {
-		//entityId, err := r.DebugInterfaceRepo.CopyById(srcEntityId)
-		//if err != nil {
-		//	return err
-		//}
-	} else {
-		entity, err := r.GetEntity(srcProcessorId)
-		if err != nil {
-			return err
-		}
+	entity, err := r.GetEntity(srcProcessorId)
+	if err != nil {
+		return err
+	}
 
-		//var entityBase interface{}
-		//entityBase = agentExec.ProcessorEntityBase{
-		//	ProcessorID: distProcessorId,
-		//	ParentID:    distProcessor.ParentId,
-		//}
-		//baseModel := model.BaseModel{ID: 0}
-		//err = copier.CopyWithOption(&entity, &entityBase, copier.Option{DeepCopy: true})
-		//err = copier.CopyWithOption(&entity, &baseModel, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-		err = r.DB.Save(&entity).Error
-		if err != nil {
-			return err
-		}
+	var entityId uint
+	switch entity.(type) {
+	case model.ProcessorGroup:
+		group := entity.(model.ProcessorGroup)
+		group.ProcessorID = distProcessorId
+		group.ParentID = distParentId
+		err = r.SaveGroup(&group)
+		entityId = group.ID
+	case model.ProcessorLogic:
+		logic := entity.(model.ProcessorLogic)
+		logic.ProcessorID = distProcessorId
+		logic.ParentID = distParentId
+		err = r.SaveLogic(&logic)
+		entityId = logic.ID
+	case model.ProcessorLoop:
+		loop := entity.(model.ProcessorLoop)
+		loop.ProcessorID = distProcessorId
+		loop.ParentID = distParentId
+		err = r.SaveLoop(&loop)
+		entityId = loop.ID
+	case model.ProcessorTimer:
+		timer := entity.(model.ProcessorTimer)
+		timer.ProcessorID = distProcessorId
+		timer.ParentID = distParentId
+		err = r.SaveTimer(&timer)
+		entityId = timer.ID
+	case model.ProcessorPrint:
+		printData := entity.(model.ProcessorPrint)
+		printData.ProcessorID = distProcessorId
+		printData.ParentID = distParentId
+		err = r.SavePrint(&printData)
+		entityId = printData.ID
+	case model.ProcessorVariable:
+		variable := entity.(model.ProcessorVariable)
+		variable.ProcessorID = distProcessorId
+		variable.ParentID = distParentId
+		err = r.SaveVariable(&variable)
+		entityId = variable.ID
+	case model.ProcessorAssertion:
+		assertion := entity.(model.ProcessorAssertion)
+		assertion.ProcessorID = distProcessorId
+		assertion.ParentID = distParentId
+		err = r.SaveAssertion(&assertion)
+		entityId = assertion.ID
+	case model.ProcessorData:
+		data := entity.(model.ProcessorData)
+		data.ProcessorID = distProcessorId
+		data.ParentID = distParentId
+		err = r.SaveData(&data)
+		entityId = data.ID
+	case model.ProcessorCookie:
+		cookie := entity.(model.ProcessorCookie)
+		cookie.ProcessorID = distProcessorId
+		cookie.ParentID = distParentId
+		err = r.SaveCookie(&cookie)
+		entityId = cookie.ID
+	case model.ProcessorCustomCode:
+		customCode := entity.(model.ProcessorCustomCode)
+		customCode.ProcessorID = distProcessorId
+		customCode.ParentID = distParentId
+		err = r.SaveCustomCode(&customCode)
+		entityId = customCode.ID
+	default:
+	}
 
-		//_ = copier.CopyWithOption(&baseModel, &entity, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-
-		//err = r.UpdateInterfaceId(distProcessorId, baseModel.ID)
-		//if err != nil {
-		//	return err
-		//}
+	err = r.UpdateInterfaceId(distProcessorId, entityId)
+	if err != nil {
+		return err
 	}
 
 	return
-
-	//processor, err := r.Get(processorId)
-	//if err != nil {
-	//	return
-	//}
-	//
-	//srcEntityId := processor.EntityId
-	//var entityId uint
-	//if entityCategory == consts.ProcessorInterface {
-	//	entityId, err = r.DebugInterfaceRepo.CopyById(srcEntityId)
-	//	if err != nil {
-	//		return err
-	//	}
-	//} else {
-	//	switch entityCategory {
-	//	case consts.ProcessorGroup:
-	//		group, err := r.GetGroupById(srcEntityId)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		group.ID = 0
-	//		group.ProcessorID = processor.ID
-	//		group.ProcessorCategory = processor.EntityCategory
-	//		group.ProcessorType = processor.EntityType
-	//		group.ParentID = processor.ParentId
-	//
-	//		err = r.SaveGroup(&group)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		entityId = group.ID
-	//	case consts.ProcessorLogic:
-	//		logic, err := r.GetLogicById(srcEntityId)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		logic.ID = 0
-	//		logic.ProcessorID = processor.ID
-	//		logic.ProcessorCategory = processor.EntityCategory
-	//		logic.ProcessorType = processor.EntityType
-	//		logic.ParentID = processor.ParentId
-	//
-	//		err = r.SaveLogic(&logic)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		entityId = logic.ID
-	//	case consts.ProcessorLoop:
-	//		loop, err := r.GetLoopById(srcEntityId)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		loop.ID = 0
-	//		loop.ProcessorID = processor.ID
-	//		loop.ProcessorCategory = processor.EntityCategory
-	//		loop.ProcessorType = processor.EntityType
-	//		loop.ParentID = processor.ParentId
-	//
-	//		err = r.SaveLoop(&loop)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		entityId = loop.ID
-	//	case consts.ProcessorVariable:
-	//		variable, err := r.GetVariableById(srcEntityId)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		variable.ID = 0
-	//		variable.ProcessorID = processor.ID
-	//		variable.ProcessorCategory = processor.EntityCategory
-	//		variable.ProcessorType = processor.EntityType
-	//		variable.ParentID = processor.ParentId
-	//
-	//		err = r.SaveVariable(&variable)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		entityId = variable.ID
-	//	case consts.ProcessorTimer:
-	//		timer, err := r.GetTimerById(srcEntityId)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		timer.ID = 0
-	//		timer.ProcessorID = processor.ID
-	//		timer.ProcessorCategory = processor.EntityCategory
-	//		timer.ProcessorType = processor.EntityType
-	//		timer.ParentID = processor.ParentId
-	//
-	//		err = r.SaveTimer(&timer)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		entityId = timer.ID
-	//	case consts.ProcessorPrint:
-	//		srcPrint, err := r.GetPrintById(srcEntityId)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		srcPrint.ID = 0
-	//		srcPrint.ProcessorID = processor.ID
-	//		srcPrint.ProcessorCategory = processor.EntityCategory
-	//		srcPrint.ProcessorType = processor.EntityType
-	//		srcPrint.ParentID = processor.ParentId
-	//
-	//		err = r.SavePrint(&srcPrint)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		entityId = srcPrint.ID
-	//	case consts.ProcessorCookie:
-	//		cookie, err := r.GetCookieById(srcEntityId)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		cookie.ID = 0
-	//		cookie.ProcessorID = processor.ID
-	//		cookie.ProcessorCategory = processor.EntityCategory
-	//		cookie.ProcessorType = processor.EntityType
-	//		cookie.ParentID = processor.ParentId
-	//
-	//		err = r.SaveCookie(&cookie)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		entityId = cookie.ID
-	//	case consts.ProcessorAssertion:
-	//		srcAssertion, err := r.GetAssertionById(srcId)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		cookie.ID = 0
-	//		cookie.ProcessorID = processor.ID
-	//		cookie.ProcessorCategory = processor.EntityCategory
-	//		cookie.ProcessorType = processor.EntityType
-	//		cookie.ParentID = processor.ParentId
-	//
-	//		err = r.SaveCookie(&cookie)
-	//		if err != nil {
-	//			return err
-	//		}
-	//
-	//		entityId = cookie.ID
-	//	case consts.ProcessorData:
-	//		srcAssertion, err := r.GetDataById(srcId)
-	//	case consts.ProcessorCustomCode:
-	//		ret, _ = r.GetCustomCode(processor)
-	//
-	//	default:
-	//	}
-	//}
-
-	//copier.CopyWithOption(&version, &req, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-
 }
 
 func (r *ScenarioProcessorRepo) UpdateName(id uint, name string) (err error) {

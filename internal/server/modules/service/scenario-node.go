@@ -131,7 +131,11 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 	}
 
 	if source == "copy" {
-		s.ScenarioProcessorRepo.CopyEntity(req.SrcProcessorId, ret.ID)
+		if ret.EntityType == consts.ProcessorInterfaceDefault {
+			s.CopyInterfaceEntity(req.SrcProcessorId, ret.ID)
+		} else {
+			s.ScenarioProcessorRepo.CopyEntity(req.SrcProcessorId, ret.ID)
+		}
 	} else {
 		if ret.EntityType == consts.ProcessorInterfaceDefault { // create debug interface
 			debugInterfaceId, _ := s.DebugInterfaceService.CreateDefault(ret.ProcessorInterfaceSrc, req.ProjectId)
@@ -152,6 +156,30 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 	return
 }
 
+func (s *ScenarioNodeService) CopyInterfaceEntity(srcProcessorId, distProcessorId uint) (err error) {
+	srcProcessor, err := s.ScenarioNodeRepo.Get(srcProcessorId)
+	if err != nil {
+		return
+	}
+
+	debugData, err := s.DebugInterfaceService.GetDebugDataFromDebugInterface(srcProcessor.EntityId)
+	if err != nil {
+		return
+	}
+
+	debugData.ScenarioProcessorId = distProcessorId
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, debugData.DebugInterfaceId)
+	if err != nil {
+		return
+	}
+
+	err = s.ScenarioProcessorRepo.UpdateInterfaceId(distProcessorId, debugInterface.ID)
+	if err != nil {
+		return err
+	}
+
+	return
+}
 func (s *ScenarioNodeService) AddInterfacesFromDiagnose(req serverDomain.ScenarioAddInterfacesFromTreeReq) (ret model.Processor, err error) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 

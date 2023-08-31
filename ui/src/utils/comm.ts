@@ -1,4 +1,5 @@
 import {ProcessorCategory} from "@/utils/enum";
+import {watch} from "vue";
 
 export const getArrSelectItems = (arr) => {
     const ret : any[] = []
@@ -34,4 +35,13 @@ export const getResponseKey = (debugInfo) => {
     const key = `${debugInfo.debugInterfaceId}-${debugInfo.endpointInterfaceId}`
     console.log('getResponseKey', key)
     return key
+}
+
+export  function autoSave (data:any,fun:Function){
+    watch(data, (val: any) => {
+    if (!val) return;
+    setTimeout( fun,1000)
+  },{
+    immediate: true
+  });
 }

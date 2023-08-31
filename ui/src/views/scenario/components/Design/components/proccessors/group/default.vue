@@ -3,6 +3,7 @@
     <ProcessorHeader/>
     <a-card :bordered="false">
       <a-form
+          @validate="submit"
           :model="formState"
           :label-col="{ span: 4 }"
           :wrapper-col="{ span: 16 }">
@@ -10,32 +11,39 @@
         <a-form-item label="备注" name="comments">
           <a-textarea v-model:value="formState.comments" :rows="3"/>
         </a-form-item>
-
+        <!--
         <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
           <a-button type="primary" @click.prevent="submit">保存</a-button>
         </a-form-item>
+      -->
       </a-form>
     </a-card>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref, watch} from "vue";
+import {computed, reactive, ref, watch,onUnmounted,onMounted} from "vue";
 import {useStore} from "vuex";
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {Form, message} from "ant-design-vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import debounce from "lodash.debounce";
 import {notifyError, notifySuccess} from "@/utils/notify";
+import {autoSave} from "@/utils/comm";
 const useForm = Form.useForm;
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
+//const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
+//const nodeData: any = ref( store.state.Scenario.nodeData);
+const formState = ref(store.state.Scenario.nodeData)
+/*
 const formState: any = ref({
   name: '',
   comments: '',
 });
+*/
 
+/*
 watch(nodeData, (val: any) => {
   if (!val) return;
   formState.value.name = val.name || '分组';
@@ -43,6 +51,7 @@ watch(nodeData, (val: any) => {
 },{
   immediate: true
 });
+*/
 
 const rulesRef = reactive({
 
@@ -53,15 +62,11 @@ const submit = debounce(async () => {
   validate()
       .then(async () => {
         // 下面代码改成 await 的方式
-        const res = await store.dispatch('Scenario/saveProcessor', {
-          ...nodeData.value,
-          name: formState.value.name,
-          comments: formState.value.comments,
-        });
+        const res = await store.dispatch('Scenario/saveProcessor', formState.value);
         if (res === true) {
-          notifySuccess('保存成功');
+          //notifySuccess('保存成功');
         } else {
-          notifyError('保存失败');
+         // notifyError('保存失败');
         }
       })
       .catch(error => {
@@ -72,5 +77,17 @@ const submit = debounce(async () => {
 const reset = () => {
   resetFields();
 };
+
+
+onMounted(() => {
+ // submit()
+
+})
+
+autoSave(formState.value,submit)
+
+
+
+
 
 </script>

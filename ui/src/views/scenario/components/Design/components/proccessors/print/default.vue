@@ -3,7 +3,7 @@
     <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
-        <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
+        <a-form :label-col="labelCol" :wrapper-col="wrapperCol" @validate="submitForm">
           <a-form-item label="输出" v-bind="validateInfos.rightValue">
             <a-input v-model:value="modelRef.rightValue"
                      @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})" />
@@ -35,6 +35,7 @@ import {getCompareOpts} from "@/utils/compare";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import debounce from "lodash.debounce";
 import {notifyError, notifySuccess} from "@/utils/notify";
+import {autoSave} from "@/utils/comm";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -50,7 +51,8 @@ const rulesRef = reactive({
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<any>(() => store.state.Scenario.nodeData);
+//const modelRef = computed<any>(() => store.state.Scenario.nodeData);
+const modelRef = ref(store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const submitForm = debounce(async () => {
@@ -58,9 +60,9 @@ const submitForm = debounce(async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notifySuccess(`保存成功`);
+           // notifySuccess(`保存成功`);
           } else {
-            notifyError(`保存失败`);
+           // notifyError(`保存失败`);
           }
         })
       })
@@ -76,7 +78,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   console.log('onUnmounted')
+  //submitForm()
 })
+
+autoSave(modelRef.value,submitForm)
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }

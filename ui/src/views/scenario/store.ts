@@ -547,7 +547,7 @@ const StoreModel: ModuleType = {
         async saveProcessor({commit, dispatch, state}, payload: any) {
             const jsn = await saveProcessor(payload)
             if (jsn.code === 0) {
-                commit('setNode', jsn.data);
+                //commit('setNode', jsn.data);
                 commit('setTreeDataMapItemProp', {
                     id: jsn.data.processorID,
                     prop: 'name',

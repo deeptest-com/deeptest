@@ -157,7 +157,7 @@ func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	//if usedBy == consts.ScenarioDebug {
 	for _, p := range ExecScene.GlobalParams {
 		if p.In == consts.ParamInHeader {
-			req.QueryParams = append(req.QueryParams, domain.Param{
+			req.Headers = append(req.Headers, domain.Header{
 				Name:  p.Name,
 				Value: p.DefaultValue,
 			})

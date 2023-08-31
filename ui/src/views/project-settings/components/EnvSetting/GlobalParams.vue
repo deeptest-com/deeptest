@@ -29,7 +29,7 @@
                        :data-source="globalParamsData?.[tabItem.name] || []" :rowKey="(_record, index) => index">
                 <template #customName="{ text, index }">
                   <a-form-item :name="[tabItem.name, index, 'name']"
-                               :rules="[{ required: true, message: '参数名不可为空' }]">
+                               :rules="[{ required: true, validator: nameValidator }]">
                     <a-input :value="text" @change="(e) => {
                                             handleGlobalParamsChange(tabItem.name, 'name', index, e);
                                         }" placeholder="请输入参数名"/>
@@ -146,14 +146,18 @@ async function handleSaveGlobalParams() {
   } catch (err: any) {
     console.log('saveGlobalParams validateFailed--', err);
     const {errorFields} = err;
-    let errorText = '';
-    errorFields.forEach((e: any) => {
-      const {name} = e;
-      errorText += `${name[0]},`;
-    })
-    errorText = errorText.substring(0, errorText.length - 1);
+    const errorText = [...new Set((errorFields || []).map(e => e.name[0] || ""))].join(','); 
     notifyError(`${errorText}参数名不可为空`);
   }
+}
+
+const nameValidator = (...args) => {
+  const field = args[0].field.split('.');
+  const value = globalParamsData.value[field[0]][Number(field[1])][field[2]];
+  if (value === '') {
+    return Promise.reject('参数名不能为空');
+  }
+  return Promise.resolve();
 }
 
 watch(() => {

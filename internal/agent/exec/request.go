@@ -115,15 +115,19 @@ func replaceUrl(req *domain.BaseRequest, usedBy consts.UsedBy) {
 }
 func replaceQueryParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	//if usedBy == consts.ScenarioDebug {
-	for _, p := range ExecScene.GlobalParams {
-		if p.In == consts.ParamInQuery {
+	/*
+		for _, p := range ExecScene.GlobalParams {
+
 			req.QueryParams = append(req.QueryParams, domain.Param{
 				Name:  p.Name,
 				Value: p.DefaultValue,
 			})
 		}
-	}
-	//}
+
+		//}
+	*/
+	//局部参数覆盖全局参数
+	mergeParams(req, consts.ParamInQuery)
 
 	for idx, param := range req.QueryParams {
 		req.QueryParams[idx].Value = ReplaceVariableValue(param.Value)
@@ -227,4 +231,23 @@ func replaceAuthor(req *domain.BaseRequest) {
 		req.ApiKey.Value = ReplaceVariableValue(req.ApiKey.Value)
 		req.ApiKey.TransferMode = ReplaceVariableValue(req.ApiKey.TransferMode)
 	}
+}
+
+func mergeParams(req *domain.BaseRequest, paramIn consts.ParamIn) {
+	mQueryParams := map[string]domain.Param{}
+	for _, param := range req.QueryParams {
+		mQueryParams[param.Name] = param
+	}
+
+	for _, p := range ExecScene.GlobalParams {
+
+		if _, ok := mQueryParams[p.Name]; !ok && paramIn == p.In {
+			req.QueryParams = append(req.QueryParams, domain.Param{
+				Name:  p.Name,
+				Value: p.DefaultValue,
+			})
+		}
+
+	}
+
 }

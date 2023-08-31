@@ -14,8 +14,8 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: install dependencies
-      run: go get all
+#    - name: install dependencies
+#      run: go get all
 
     - name: make server
       run: make compile_server_linux

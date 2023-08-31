@@ -77,74 +77,68 @@ func (r *ScenarioProcessorRepo) CopyEntity(srcProcessorId, distProcessorId uint)
 		return err
 	}
 
-	var entityId uint
 	switch entity.(type) {
 	case model.ProcessorGroup:
 		group := entity.(model.ProcessorGroup)
+		group.ID = 0
 		group.ProcessorID = distProcessorId
 		group.ParentID = distParentId
 		err = r.SaveGroup(&group)
-		entityId = group.ID
 	case model.ProcessorLogic:
 		logic := entity.(model.ProcessorLogic)
+		logic.ID = 0
 		logic.ProcessorID = distProcessorId
 		logic.ParentID = distParentId
 		err = r.SaveLogic(&logic)
-		entityId = logic.ID
 	case model.ProcessorLoop:
 		loop := entity.(model.ProcessorLoop)
+		loop.ID = 0
 		loop.ProcessorID = distProcessorId
 		loop.ParentID = distParentId
 		err = r.SaveLoop(&loop)
-		entityId = loop.ID
 	case model.ProcessorTimer:
 		timer := entity.(model.ProcessorTimer)
+		timer.ID = 0
 		timer.ProcessorID = distProcessorId
 		timer.ParentID = distParentId
 		err = r.SaveTimer(&timer)
-		entityId = timer.ID
 	case model.ProcessorPrint:
 		printData := entity.(model.ProcessorPrint)
+		printData.ID = 0
 		printData.ProcessorID = distProcessorId
 		printData.ParentID = distParentId
 		err = r.SavePrint(&printData)
-		entityId = printData.ID
 	case model.ProcessorVariable:
 		variable := entity.(model.ProcessorVariable)
+		variable.ID = 0
 		variable.ProcessorID = distProcessorId
 		variable.ParentID = distParentId
 		err = r.SaveVariable(&variable)
-		entityId = variable.ID
 	case model.ProcessorAssertion:
 		assertion := entity.(model.ProcessorAssertion)
+		assertion.ID = 0
 		assertion.ProcessorID = distProcessorId
 		assertion.ParentID = distParentId
 		err = r.SaveAssertion(&assertion)
-		entityId = assertion.ID
 	case model.ProcessorData:
 		data := entity.(model.ProcessorData)
+		data.ID = 0
 		data.ProcessorID = distProcessorId
 		data.ParentID = distParentId
 		err = r.SaveData(&data)
-		entityId = data.ID
 	case model.ProcessorCookie:
 		cookie := entity.(model.ProcessorCookie)
+		cookie.ID = 0
 		cookie.ProcessorID = distProcessorId
 		cookie.ParentID = distParentId
 		err = r.SaveCookie(&cookie)
-		entityId = cookie.ID
 	case model.ProcessorCustomCode:
 		customCode := entity.(model.ProcessorCustomCode)
+		customCode.ID = 0
 		customCode.ProcessorID = distProcessorId
 		customCode.ParentID = distParentId
 		err = r.SaveCustomCode(&customCode)
-		entityId = customCode.ID
 	default:
-	}
-
-	err = r.UpdateInterfaceId(distProcessorId, entityId)
-	if err != nil {
-		return err
 	}
 
 	return

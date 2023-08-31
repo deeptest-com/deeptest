@@ -622,9 +622,11 @@ const removeNode = () => {
 const copyNode = () => {
   console.log('copyNode')
   const node = treeDataMap.value[targetModelId];
-  console.log('--------------复制的节点树:',node)
-  store.dispatch('Scenario/copyProcessor', node);
-  selectNode([], null)
+  store.dispatch('Scenario/copyProcessor', node).then((newModeId) => {
+    selectNode([newModeId], null)
+    expandOneKey(treeDataMap.value, newModeId, expandedKeys.value) // expend parent node
+    setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value);
+  })
 }
 
 const disableNodeOrNot = () => {

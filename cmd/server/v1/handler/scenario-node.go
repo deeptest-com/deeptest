@@ -320,8 +320,9 @@ func (c *ScenarioNodeCtrl) CopyProcessor(ctx iris.Context) {
 		return
 	}
 
+	var rootId uint
 	createBy := multi.GetUserId(ctx)
-	bizErr := c.ScenarioNodeService.CopyProcessor(&req, createBy, "siblings")
+	bizErr := c.ScenarioNodeService.CopyProcessor(&req, createBy, "siblings", &rootId)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -330,13 +331,5 @@ func (c *ScenarioNodeCtrl) CopyProcessor(ctx iris.Context) {
 		return
 	}
 
-	scenario, err := c.ScenarioService.GetById(req.ScenarioId)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	data, _ := c.ScenarioNodeService.GetTree(scenario, false)
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: rootId})
 }

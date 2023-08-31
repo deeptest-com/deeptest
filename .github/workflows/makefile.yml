@@ -14,5 +14,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install dependencies
+    - name: install dependencies
+      run: go get all
+
+    - name: make server
       run: make compile_server_linux
+
+    - name: ssh deploy
+      uses: easingthemes/ssh-deploy@v4.1.8

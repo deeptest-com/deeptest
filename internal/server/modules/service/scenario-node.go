@@ -67,6 +67,7 @@ func (s *ScenarioNodeService) ToTos(pos []*model.Processor, withDetail bool) (to
 		}
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
 		to.Disable = po.Disabled
+		to.Comments = po.Comments
 
 		if withDetail {
 			entity, _ := s.ScenarioProcessorService.GetEntityTo(&to)
@@ -100,12 +101,8 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		ProjectId:  req.ProjectId,
 		CreatedBy:  req.CreateBy,
 		BaseModel:  model.BaseModel{Disabled: targetProcessor.Disabled},
-	}
-
-	if source == "copy" {
-		ret.Disabled = req.Disable
-		ret.Comments = req.Comments
-		ret.Method = req.Method
+		Comments:   req.Comments,
+		Method:     req.Method,
 	}
 
 	if req.Mode == "child" {
@@ -133,20 +130,23 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		s.ScenarioNodeRepo.Save(&targetProcessor)
 	}
 
-	if ret.EntityType == consts.ProcessorInterfaceDefault { // create debug interface
-		debugInterfaceId, _ := s.DebugInterfaceService.CreateDefault(ret.ProcessorInterfaceSrc, req.ProjectId)
+	if source == "copy" {
+		s.ScenarioProcessorRepo.CopyEntity(req.SrcProcessorId, ret.ID)
+	} else {
+		if ret.EntityType == consts.ProcessorInterfaceDefault { // create debug interface
+			debugInterfaceId, _ := s.DebugInterfaceService.CreateDefault(ret.ProcessorInterfaceSrc, req.ProjectId)
+			s.ScenarioProcessorRepo.UpdateInterfaceId(ret.ID, debugInterfaceId)
+		} else if ret.EntityType == consts.ProcessorLogicElse { // create default entity
+			entity := model.ProcessorLogic{
+				ProcessorEntityBase: agentExec.ProcessorEntityBase{
+					ProcessorID:       ret.ID,
+					ProcessorCategory: ret.EntityCategory,
+					ProcessorType:     ret.EntityType,
+				},
+			}
+			_ = s.ScenarioProcessorRepo.SaveLogic(&entity)
 
-		s.ScenarioProcessorRepo.UpdateInterfaceId(ret.ID, debugInterfaceId)
-
-	} else if ret.EntityType == consts.ProcessorLogicElse { // create default entity
-		entity := model.ProcessorLogic{
-			ProcessorEntityBase: agentExec.ProcessorEntityBase{
-				ProcessorID:       ret.ID,
-				ProcessorCategory: ret.EntityCategory,
-				ProcessorType:     ret.EntityType,
-			},
 		}
-		s.ScenarioProcessorRepo.SaveLogic(&entity)
 	}
 
 	return
@@ -573,14 +573,20 @@ func (s *ScenarioNodeService) CopyProcessor(req *agentExec.Processor, CreateBy u
 
 	for _, child := range req.Children {
 		child.ParentId = currentProcessor.ID
-		_ = s.CopyProcessor(child, CreateBy, "child")
+		if err = s.CopyProcessor(child, CreateBy, "child"); err != nil {
+			return
+		}
 	}
 
 	return
 }
 
 func (s *ScenarioNodeService) toProcessorReq(req *agentExec.Processor, createBy uint, mod string) (ret serverDomain.ScenarioAddScenarioReq) {
-	ret.TargetProcessorId = int(req.ParentId)
+	if mod == "siblings" {
+		ret.TargetProcessorId = int(req.ID)
+	} else if mod == "child" {
+		ret.TargetProcessorId = int(req.ParentId)
+	}
 	ret.Name = req.Name
 	ret.ProcessorCategory = req.EntityCategory
 	ret.ProcessorType = req.EntityType
@@ -588,9 +594,9 @@ func (s *ScenarioNodeService) toProcessorReq(req *agentExec.Processor, createBy 
 	ret.ProjectId = req.ProjectId
 	ret.CreateBy = createBy
 	ret.Mode = mod
-	ret.Disable = req.Disable
 	ret.Comments = req.Comments
 	ret.Method = req.Method
+	ret.SrcProcessorId = req.ID
 
 	return
 }

@@ -418,3 +418,11 @@ export async function addInterfacesFromCase(params:any): Promise<any> {
         data:params,
     });
 }
+
+export async function copyProcessor(params:any): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/copyProcessor`,
+        method: 'post',
+        data:params,
+    });
+}

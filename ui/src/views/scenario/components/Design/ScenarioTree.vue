@@ -380,6 +380,10 @@ function selectMenu(menuInfo, treeNode) {
     disableNodeOrNot()
     return
   }
+  if (key === 'copy') {
+    copyNode()
+    return
+  }
   // 如果是 逻辑 else，则需要添加到父节点，即 if 节点下
   if (key === 'processor_logic_else') {
     // 如果已经存在 else 节点，则不允许添加
@@ -592,9 +596,9 @@ const interfaceSelectionCancel = () => {
 const removeNode = () => {
   console.log('removeNode')
   const node = treeDataMap.value[targetModelId];
-  const name = node.entityType === "processor_group_default" ? 
-    (node.name || scenarioTypeMapToText[node.entityType])  : 
-    node.name ? scenarioTypeMapToText[node.entityType] + "-" + node.name : 
+  const name = node.entityType === "processor_group_default" ?
+    (node.name || scenarioTypeMapToText[node.entityType])  :
+    node.name ? scenarioTypeMapToText[node.entityType] + "-" + node.name :
     scenarioTypeMapToText[node.entityType];
   const title = `确定删除名为【${name}】的节点吗？`
   let context = node.entityCategory === "processor_interface" ? '' : '该节点的所有子节点都将被删除！'
@@ -614,13 +618,22 @@ const removeNode = () => {
   })
 }
 
+//复制节点
+const copyNode = () => {
+  console.log('copyNode')
+  const node = treeDataMap.value[targetModelId];
+  console.log('--------------复制的节点树:',node)
+  store.dispatch('Scenario/copyProcessor', node);
+  selectNode([], null)
+}
+
 const disableNodeOrNot = () => {
   const node = treeDataMap.value[targetModelId]
   const action = node.disable ? '启用' : '禁用';
   const content = node.disable ? '将同时启用该步骤下的所有子步骤，是否确定启用该步骤？' : '禁用后该步骤及所有子步骤在场景测试运行时不会被执行，是否确定禁用？';
-  const name = node.entityType === "processor_group_default" ? 
-    (node.name || scenarioTypeMapToText[node.entityType])  : 
-    node.name ? scenarioTypeMapToText[node.entityType] + "-" + node.name : 
+  const name = node.entityType === "processor_group_default" ?
+    (node.name || scenarioTypeMapToText[node.entityType])  :
+    node.name ? scenarioTypeMapToText[node.entityType] + "-" + node.name :
     scenarioTypeMapToText[node.entityType];
   Modal.confirm({
     okType: 'danger',

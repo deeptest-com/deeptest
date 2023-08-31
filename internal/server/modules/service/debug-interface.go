@@ -376,3 +376,9 @@ func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterfac
 
 	return
 }
+
+func (s *DebugInterfaceService) Copy(srcInterfaceId uint) (id uint, err error) {
+	id, err = s.DebugInterfaceRepo.CopyById(srcInterfaceId)
+
+	return
+}

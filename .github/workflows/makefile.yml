@@ -22,3 +22,18 @@ jobs:
 
     - name: ssh deploy
       uses: easingthemes/ssh-deploy@v4.1.8
+      with:
+            SSH_PRIVATE_KEY: ${{ secrets.DT_PRIVATEKEY }}
+            ARGS: "-rlgoDzvc -i"
+            SOURCE: "bin/linux/"
+            REMOTE_HOST: ${{ secrets.DT_SERVER }}
+            REMOTE_USER: ${{ secrets.DT_USERNAME }}
+            TARGET: "/home/lighthouse/rd/project/deeptest/bin"
+            EXCLUDE: ""
+            SCRIPT_BEFORE: |
+              whoami
+              ls -al /home/lighthouse/rd/project/deeptest/bin/linux
+            SCRIPT_AFTER: |
+              whoami
+              ls -al /home/lighthouse/rd/project/deeptest/bin/linux
+              echo $RSYNC_STDOUT

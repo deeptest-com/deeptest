@@ -41,6 +41,7 @@ var (
 		&DiagnoseInterface{},
 
 		&Snippet{},
+		&MockJsExpression{},
 
 		&MockInvocation{},
 		&Auth2Token{},

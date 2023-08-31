@@ -31,7 +31,7 @@ func (c *ResponseDefineCtrl) Update(ctx iris.Context) {
 
 	/*
 
-		err = c.PostConditionService.Create(&condition)
+		err = c.PostConditionService.CreateExpression(&condition)
 		if err != nil {
 			ctx.JSON(_domain.Response{
 				Code: _domain.SystemErr.Code,

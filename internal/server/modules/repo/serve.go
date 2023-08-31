@@ -271,7 +271,7 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 		}
 	}
 	/*
-		err = r.DB.Create(servers).Error
+		err = r.DB.CreateExpression(servers).Error
 		if err != nil {
 			return err
 		}

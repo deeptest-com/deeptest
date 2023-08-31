@@ -22,16 +22,17 @@ var (
 )
 
 type DataService struct {
-	DataRepo              *repo.DataRepo                `inject:""`
-	UserRepo              *repo.UserRepo                `inject:""`
-	UserSource            *source.UserSource            `inject:""`
-	RoleSource            *source.RoleSource            `inject:""`
-	PermSource            *source.PermSource            `inject:""`
-	ProjectRoleSource     *source.ProjectRoleSource     `inject:""`
-	ProjectPermSource     *source.ProjectPermSource     `inject:""`
-	ProjectRolePermSource *source.ProjectRolePermSource `inject:""`
-	ProjectMenuSource     *source.ProjectMenuSource     `inject:""`
-	ProjectRoleMenuSource *source.ProjectRoleMenuSource `inject:""`
+	DataRepo               *repo.DataRepo                 `inject:""`
+	UserRepo               *repo.UserRepo                 `inject:""`
+	UserSource             *source.UserSource             `inject:""`
+	RoleSource             *source.RoleSource             `inject:""`
+	PermSource             *source.PermSource             `inject:""`
+	ProjectRoleSource      *source.ProjectRoleSource      `inject:""`
+	ProjectPermSource      *source.ProjectPermSource      `inject:""`
+	ProjectRolePermSource  *source.ProjectRolePermSource  `inject:""`
+	ProjectMenuSource      *source.ProjectMenuSource      `inject:""`
+	ProjectRoleMenuSource  *source.ProjectRoleMenuSource  `inject:""`
+	MockJsExpressionSource *source.MockJsExpressionSource `inject:""`
 }
 
 // writeConfig 写入配置文件
@@ -107,6 +108,7 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 			s.ProjectRolePermSource,
 			s.ProjectMenuSource,
 			s.ProjectRoleMenuSource,
+			s.MockJsExpressionSource,
 		)
 		if err != nil {
 			logUtils.Errorf("填充数据错误", zap.String("错误:", err.Error()))

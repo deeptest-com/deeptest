@@ -292,7 +292,20 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 
 	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
 	endpoint.PathParams, _ = r.GetEndpointParams(id)
-	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.GetByEndpointId(id, version)
+	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
+
+	return
+}
+
+func (r *EndpointRepo) GetWithInterface(id uint, version string) (endpoint model.Endpoint, err error) {
+	endpoint, err = r.Get(id)
+	if err != nil {
+		return
+	}
+
+	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
+	endpoint.PathParams, _ = r.GetEndpointParams(id)
+	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
 
 	return
 }
@@ -350,7 +363,7 @@ func (r *EndpointRepo) FindVersion(res *model.EndpointVersion) (err error) {
 
 func (r *EndpointRepo) GetFirstMethod(id uint) (res model.EndpointInterface, err error) {
 	var interfs []model.EndpointInterface
-	interfs, err = r.EndpointInterfaceRepo.GetByEndpointId(id, "v0.1.0")
+	interfs, err = r.EndpointInterfaceRepo.ListByEndpointId(id, "v0.1.0")
 	if len(interfs) > 0 {
 		res = interfs[0]
 	}

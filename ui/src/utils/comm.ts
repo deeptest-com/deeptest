@@ -37,11 +37,3 @@ export const getResponseKey = (debugInfo) => {
     return key
 }
 
-export  function autoSave (data:any,fun:Function){
-    watch(data, (val: any) => {
-    if (!val) return;
-    setTimeout( fun,1000)
-  },{
-    immediate: true
-  });
-}

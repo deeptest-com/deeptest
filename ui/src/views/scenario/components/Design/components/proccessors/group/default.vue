@@ -29,7 +29,7 @@ import {Form, message} from "ant-design-vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import debounce from "lodash.debounce";
 import {notifyError, notifySuccess} from "@/utils/notify";
-import {autoSave} from "@/utils/comm";
+import {useScenarioAutoSave} from "@/composables/useScenarioAutoSave";
 const useForm = Form.useForm;
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -84,9 +84,7 @@ onMounted(() => {
 
 })
 
-autoSave(formState.value,submit)
-
-
+useScenarioAutoSave(formState.value,submit)
 
 
 

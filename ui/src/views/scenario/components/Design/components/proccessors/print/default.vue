@@ -35,7 +35,7 @@ import {getCompareOpts} from "@/utils/compare";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import debounce from "lodash.debounce";
 import {notifyError, notifySuccess} from "@/utils/notify";
-import {autoSave} from "@/utils/comm";
+import {isFirst,useScenarioAutoSave} from "@/composables/useScenarioAutoSave";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -53,8 +53,16 @@ const rulesRef = reactive({
 const store = useStore<{ Scenario: ScenarioStateType; }>();
 //const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const modelRef = ref(store.state.Scenario.nodeData);
-const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
+// setTimeout(() => {
+//   debugger;
+//   modelRef.value = store.state.Scenario.nodeData
+// }, 5000)
+const {resetFields, validate, validateInfos,validateField} = useForm(modelRef, rulesRef);
+
+// function submitForm() {
+//     debugger
+// }
 const submitForm = debounce(async () => {
   validate()
       .then(() => {
@@ -81,7 +89,7 @@ onUnmounted(() => {
   //submitForm()
 })
 
-autoSave(modelRef.value,submitForm)
+useScenarioAutoSave(modelRef.value,submitForm)
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }

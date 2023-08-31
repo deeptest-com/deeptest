@@ -5,7 +5,7 @@
     <ProcessorInterfaceDefault v-if="selectedNode.processorType === 'processor_interface_default'" />
     <ProcessorGroupDefault v-else-if="selectedNode.processorType === 'processor_group_default'" />
     <ProcessorTimerDefault  v-else-if="selectedNode.processorType === 'processor_time_default'" />
-    <ProcessorPrintDefault  v-else-if="selectedNode.processorType === 'processor_print_default'" />
+    <ProcessorPrintDefault  v-else-if="selectedNode.processorType === 'processor_print_default'" :key="selectedNode.id"/>
 
     <ProcessorLogicIf   v-else-if="selectedNode.processorType === 'processor_logic_if'" />
     <ProcessorLogicElse v-else-if="selectedNode.processorType === 'processor_logic_else'" />

@@ -36,7 +36,7 @@ export default defineComponent({
 
         const { validate, validateInfos} = useForm(modelRef, rulesRef);
         
-          const onfinish = debounce( async () => () => {
+        const onfinish = debounce( async () => {
             validate().then(() => {
                 emit('onFinish',modelRef.content)
             }).catch((error) => {

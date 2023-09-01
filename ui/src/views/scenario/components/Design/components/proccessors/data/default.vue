@@ -50,9 +50,9 @@
         <a-form-item v-if="formState.src === DataSrc.datapool"
                      label="数据池" v-bind="validateInfos.datapoolId" required>
           <a-select v-model:value="formState.datapoolId"
-                    @blur="validate('datapoolId', { trigger: 'change' }).catch(() => {})">
-            <a-select-option :key="0" value="">请选择</a-select-option>
-            <a-select-option v-for="(item, idx) in datapools" :key="idx" :value="''+item.id">
+                    @blur="validate('datapoolId', { trigger: 'blur' }).catch(() => {})">
+            <!--<a-select-option :key="0" value="">请选择</a-select-option>-->
+            <a-select-option v-for="(item, idx) in datapools" :key="idx" :value="item.id">
               {{item.name}}
             </a-select-option>
           </a-select>

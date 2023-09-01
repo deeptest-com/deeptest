@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: VM-4-15-ubuntu
 
     steps:
     - uses: actions/checkout@v3

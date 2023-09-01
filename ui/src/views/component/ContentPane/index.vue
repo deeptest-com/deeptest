@@ -37,13 +37,15 @@ const foldIconLeft = ref('288px');
 const toggle = async () => {
   isFold.value = !isFold.value;
   await nextTick();
-  const width = paneLeft.value ? paneLeft.value.getBoundingClientRect().width : 0;
-  foldIconLeft.value = !isFold.value ? '-12px' : `${width - 12}px`;
+  setTimeout(() => {
+    const width = paneLeft.value ? paneLeft.value.getBoundingClientRect().width : 0;
+    foldIconLeft.value = !isFold.value ? '-12px' : `${width - 12}px`;
+  }, 200)
 };
 
 const handlePaneResize = (...args) => {
   const width = Number(args[2].split('px')[0]);
-  foldIconLeft.value = `${(width < 150 ? 150 : width > 300 ? 300 : width) - 12}px`;
+  foldIconLeft.value = `${(width < 150 ? 150 : width > 600 ? 600 : width) - 12}px`;
 };
 
 </script>
@@ -65,15 +67,21 @@ const handlePaneResize = (...args) => {
 
     .expand-icon {
       position: fixed;
-      font-size: 20px;
+      font-size: 18px;
+      color: #1890ff;
     }
     .left {
       overflow-y: scroll;
       position: relative;
 
+      &:not(.left-drag) {
+        transition: all .2s ease-in-out;
+      }
+
       &.unfold {
         width: 0 !important;
         min-width: 0 !important;
+        transition: all .5s ease-in-out;
       }
 
     }

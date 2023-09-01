@@ -114,6 +114,7 @@ async function ok() {
         );
         if (res) {
           notifySuccess('发布成功');
+          window.location.href = `/#/docs/index?documentId=${res.data}`
         }
         reset();
         emit('ok');

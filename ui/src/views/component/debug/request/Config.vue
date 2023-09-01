@@ -63,6 +63,10 @@ const activeKey = ref('query-param');
 
 watch(() => debugData.value.debugInterfaceId, (newVal) => {
   console.log('watch debugData', debugData.value.method)
+  if (debugData.value.action && debugData.value.action === 'save') {
+    // 触发保存操作 不需要重置tab
+    return;
+  }
   if (debugData.value.method === 'POST' ||  debugData.value.method === 'PUT') {
     activeKey.value = 'body'
   } else {

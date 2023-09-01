@@ -132,8 +132,7 @@ const { showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick } = us
 
 <style lang="less" scoped>
 .parameters-main {
-  height: 100%;
-  max-height: 180px;
+  max-height: 100%;
   overflow-y: scroll;
 }
 

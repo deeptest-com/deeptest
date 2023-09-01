@@ -1,10 +1,12 @@
 <template>
   <div class="content">
-<a-form ref="" :model="formState" :label-col="{ style: { width: '130px', textAlign:'left' } }" :wrapper-col="{ span: 14 }" :rules="rules">
+<a-form ref="" :model="formState" :label-col="{ style: { width: '140px', textAlign:'left' } }" :wrapper-col="{ span: 14 }" :rules="rules">
     <a-form-item label="是否开启自动同步" style="position: relative;left:10px">
-      <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2" /> <span style="margin-left: 10px;">开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中</span>
+      <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2" /> 
+      <div class="execTime" v-if="formState.switch==1 && formState.execTime"> 上次更新时间：{{formState.execTime || '-'}}</div>
+      <span style="padding-top:-25px;">开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中</span>
     </a-form-item>
-    <a-form-item class="execTime" v-if="formState.switch==1"> 上次更新时间：{{formState.execTime || '-'}}</a-form-item>
+    
     <a-form-item name="syncType" v-if="formState.switch==1">
       <template v-slot:label>
         数据合并策略
@@ -19,7 +21,7 @@
         </a-tooltip>
       </template>
       <a-select v-model:value="formState.syncType" :options="syncTypes" />
-      完全覆盖会导致通过平台上的接口定义更新被覆盖，请谨慎使用
+      <span>完全覆盖会导致通过平台上的接口定义更新被覆盖，请谨慎使用</span>
     </a-form-item>
     <a-form-item label="同步至分类目录" name="categoryId" v-if="formState.switch==1">
         <a-tree-select
@@ -34,7 +36,7 @@
             :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
             placeholder="请选择所属分类"
             allow-clear/>
-            所有接口都将同步到该分类目录下
+           <span>所有接口都将同步到该分类目录下</span>
       </a-form-item>
 
     <a-form-item v-bind="validateInfos.url" label="swagger URL地址"  v-if="formState.switch==1">
@@ -45,7 +47,7 @@
         cron表达式
         <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip" style="min-width: 800px">
           <template v-slot:title>
-            <span>cron表达式是一种用于指定任务在某个时间点或周期性执行的字符串表达式。表达式包含6个参数，每个参数代表不同的时间单位和取值范围</span><br>
+            <span class="title">cron表达式是一种用于指定任务在某个时间点或周期性执行的字符串表达式。表达式包含6个参数，每个参数代表不同的时间单位和取值范围</span><br>
             <pre style="background-color: black; margin-bottom: 0px;">
   *    *    *    *    *    *
   ┬    ┬    ┬    ┬    ┬    ┬
@@ -166,14 +168,22 @@ watch(() => {
 
 <style lang="less" scoped>
 .content {
-  margin: 20px;
+  margin-top: 40px;
+  margin-left: 100px;
  }
  .title {
     font-size: 16px;
+    color: #FFFFFF;
   }
   .execTime {
-    padding-left: 300px;
-    margin-top: -25px;
+    position: relative;
+    padding-left: 50px;
+    margin-top: -21px;
+    margin-bottom: 0px;
+ }
+
+ span {
+  color:#a5a3a1;
  }
 </style>
 

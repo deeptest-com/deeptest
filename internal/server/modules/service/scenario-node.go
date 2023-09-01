@@ -7,7 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
+	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -277,7 +277,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 				ProjectId:      parentProcessor.ProjectId,
 			}
 			processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-			s.ScenarioNodeRepo.Create(&processor)
+			s.ScenarioNodeRepo.CreateExpression(&processor)
 		*/
 
 		for _, child := range diagnoseInterfaceNode.Children {
@@ -347,7 +347,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 			ProjectId:      parentProcessor.ProjectId,
 		}
 		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-		s.ScenarioNodeRepo.Create(&processor)*/
+		s.ScenarioNodeRepo.CreateExpression(&processor)*/
 
 		for _, child := range caseNode.Children {
 			processor, _ = s.createDirOrInterfaceFromCase(child, parentProcessor, 0)

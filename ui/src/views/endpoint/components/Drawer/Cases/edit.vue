@@ -4,8 +4,7 @@
            @ok="finish"
            @cancel="cancel"
            :title="(!model.id ? '新建' : '修改') + '用例'">
-    <a-form :label-col="{ span: 6 }"
-            :wrapper-col="{ span: 14 }">
+    <a-form :label-col="{ span: 6 }" :wrapper-col="{ span: 14 }">
 
       <a-form-item label="名称" v-bind="validateInfos.name">
         <a-input v-model:value="modelRef.name"

@@ -152,7 +152,7 @@ func (r *PlanRepo) FindByName(scenarioName string, id uint) (scenario model.Plan
 }
 
 func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.BizErr) {
-	//po, err := r.FindByName(scenario.Name, 0)
+	//po, err := r.FindExpressionByName(scenario.Name, 0)
 	//if po.Name != "" {
 	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
 	//	return
@@ -453,5 +453,5 @@ func (r *PlanRepo) DeleteByCategoryIds(categoryIds []uint) (err error) {
 }
 
 func (r *PlanRepo) UpdateCurrEnvId(id, currEnvId uint) error {
-	return r.DB.Model(&model.Plan{}).Where("id = ?", id).Update("curr_env_id", currEnvId).Error
+	return r.DB.Model(&model.Plan{}).Where("id = ?", id).UpdateColumn("curr_env_id", currEnvId).Error
 }

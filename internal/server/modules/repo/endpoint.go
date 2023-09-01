@@ -292,7 +292,20 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 
 	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
 	endpoint.PathParams, _ = r.GetEndpointParams(id)
-	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.GetByEndpointId(id, version)
+	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
+
+	return
+}
+
+func (r *EndpointRepo) GetWithInterface(id uint, version string) (endpoint model.Endpoint, err error) {
+	endpoint, err = r.Get(id)
+	if err != nil {
+		return
+	}
+
+	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
+	endpoint.PathParams, _ = r.GetEndpointParams(id)
+	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
 
 	return
 }
@@ -350,7 +363,7 @@ func (r *EndpointRepo) FindVersion(res *model.EndpointVersion) (err error) {
 
 func (r *EndpointRepo) GetFirstMethod(id uint) (res model.EndpointInterface, err error) {
 	var interfs []model.EndpointInterface
-	interfs, err = r.EndpointInterfaceRepo.GetByEndpointId(id, "v0.1.0")
+	interfs, err = r.EndpointInterfaceRepo.ListByEndpointId(id, "v0.1.0")
 	if len(interfs) > 0 {
 		res = interfs[0]
 	}
@@ -461,5 +474,18 @@ func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, p
 func (r *EndpointRepo) ListByProjectIdAndServeId(projectId, serveId uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Where("project_id = ? and serve_id = ? and not deleted and not disabled", projectId, serveId).Find(&endpoints).Error
 	//r.GetByEndpoints(endpoints, needDetail)
+	return
+}
+
+func (r *EndpointRepo) GetByPath(serveId uint, pth string) (ret model.Endpoint, err error) {
+	db := r.DB.Model(&ret).
+		Where("path = ? AND NOT deleted", pth)
+
+	if serveId > 0 {
+		db.Where("serve_id = ?", serveId)
+	}
+
+	err = db.First(&ret).Error
+
 	return
 }

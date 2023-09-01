@@ -103,6 +103,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	}
 
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
@@ -191,7 +192,6 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 				Type: condition.Type,
 			}
 
-			interfaceExecCondition.Raw, _ = json.Marshal(checkpointBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 
 			if _, ok := detail["checkpoint"]; !ok {
@@ -200,11 +200,6 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			detail["checkpoint"] = append(detail["checkpoint"].([]map[string]interface{}), map[string]interface{}{
 				"resultStatus": checkpointBase.ResultStatus, "resultMsg": checkpointBase.ResultMsg,
 			})
-
-			if checkpointBase.ResultStatus == consts.Fail {
-				processor.Result.ResultStatus = checkpointBase.ResultStatus
-			}
-
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			var responseDefineBase domain.ResponseDefineBase
 			json.Unmarshal(condition.Raw, &responseDefineBase)
@@ -224,10 +219,6 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 
 			detail["responseDefine"] = map[string]interface{}{"resultStatus": responseDefineBase.ResultStatus, "resultMsg": responseDefineBase.ResultMsg}
-
-			if responseDefineBase.ResultStatus == consts.Fail {
-				processor.Result.ResultStatus = responseDefineBase.ResultStatus
-			}
 		}
 	}
 

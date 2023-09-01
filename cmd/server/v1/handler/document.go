@@ -82,13 +82,13 @@ func (c *DocumentCtrl) Publish(ctx iris.Context) {
 		return
 	}
 
-	err := c.DocumentService.Publish(req, uint(projectId))
+	documentId, err := c.DocumentService.Publish(req, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: documentId, Msg: _domain.NoErr.Msg})
 	return
 }
 

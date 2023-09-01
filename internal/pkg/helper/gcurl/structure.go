@@ -215,7 +215,7 @@ type pQueueExecute struct {
 	nodes parseQueue
 }
 
-// newPQueueExecute Create A pQueueExecute
+// newPQueueExecute CreateExpression A pQueueExecute
 func newPQueueExecute() *pQueueExecute {
 	pe := &pQueueExecute{}
 	pe.nodes = make(parseQueue, 0)
@@ -223,17 +223,17 @@ func newPQueueExecute() *pQueueExecute {
 	return pe
 }
 
-// Push Create A pQueueExecute
+// Push CreateExpression A pQueueExecute
 func (pqe *pQueueExecute) Push(exec *parseFunction) {
 	heap.Push(&pqe.nodes, exec)
 }
 
-// Pop Create A pQueueExecute
+// Pop CreateExpression A pQueueExecute
 func (pqe *pQueueExecute) Pop() *parseFunction {
 	return heap.Pop(&pqe.nodes).(*parseFunction)
 }
 
-// Len Create A pQueueExecute
+// Len CreateExpression A pQueueExecute
 func (pqe *pQueueExecute) Len() int {
 	return pqe.nodes.Len()
 }

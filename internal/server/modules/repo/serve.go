@@ -157,6 +157,19 @@ func (r *ServeRepo) Get(id uint) (res model.Serve, err error) {
 	return
 }
 
+func (r *ServeRepo) GetByCode(projectId uint, shortName string) (ret model.Serve, err error) {
+	db := r.DB.Model(&ret).
+		Where("short_name = ? AND NOT deleted", shortName)
+
+	if projectId > 0 {
+		db.Where("project_id = ?", projectId)
+	}
+
+	err = db.First(&ret).Error
+
+	return
+}
+
 func (r *ServeRepo) GetSchema(id uint) (res model.ComponentSchema, err error) {
 	err = r.DB.Where("NOT deleted AND not disabled").First(&res, id).Error
 	return
@@ -258,7 +271,7 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 		}
 	}
 	/*
-		err = r.DB.Create(servers).Error
+		err = r.DB.CreateExpression(servers).Error
 		if err != nil {
 			return err
 		}

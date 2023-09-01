@@ -54,12 +54,11 @@
             class="editor"
             v-model:value="debugData.body"
             :language="codeLang"
-            :height="200"
             theme="vs"
             :options="editorOptions"
             @change="editorChange"
             :onReplace="replaceRequest"
-        />
+            :timestamp="timestamp" />
       </div>
     </div>
 
@@ -67,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, onMounted, onUnmounted, ref} from "vue";
+import {computed, inject, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined } from '@ant-design/icons-vue';
@@ -95,6 +94,11 @@ const editorOptions = ref(Object.assign({usedWith: 'request'}, MonacoOptions))
 
 const bodyTypes = ref(getRequestBodyTypes())
 
+const timestamp = ref('')
+watch(debugData, (newVal) => {
+  timestamp.value = Date.now() + ''
+}, {immediate: true, deep: true})
+
 const getCodeLang = () => {
   console.log('debugData.value.bodyType', debugData.value.bodyType)
   return getCodeLangByType(debugData.value.bodyType)
@@ -108,6 +112,24 @@ const replaceRequest = (data) => {
   console.log('replaceRequest', data)
   bus.emit(settings.eventVariableSelectionStatus, {src: 'body', index: 0, data: data});
 }
+
+/**
+ * 通过pane resizer 拖动元素高度发生变化时，重新绘制 monacoEditor的高度
+ */
+watch(() => {
+  return debugData.value;
+}, val => {
+  if (val.bodyType !== 'multipart/form-data' && val.bodyType !== 'application/x-www-form-urlencoded') {
+    bus.on(settings.paneResizeTop, () => {
+      bus.emit(settings.eventEditorAction, {
+        act: 'heightChanged',
+        container: 'request-body-main'
+      })
+    })
+  }
+}, {
+  immediate: true,
+})
 
 </script>
 
@@ -142,7 +164,6 @@ const replaceRequest = (data) => {
 <style lang="less" scoped>
 .request-body-main {
   height: 100%;
-  max-height: 180px;
   overflow-y: scroll;
   .head {
     padding: 2px 3px;

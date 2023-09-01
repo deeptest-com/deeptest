@@ -13,8 +13,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import {defineProps, ref, computed, watch} from 'vue';
-import {getPercent, getPercentStr, num2Percent} from '@/utils/number';
+import {defineProps, computed, watch} from 'vue';
 
 const props = defineProps(['record', 'showScenarioInfo', 'expandActive']);
 const statusMap = new Map([['pass', '通过'], ['fail', '失败'],['exception','失败'], ['in-progress', '进行中']]);
@@ -27,29 +26,19 @@ const status = computed(() => {
   return props.record?.resultStatus || 'in-progress'
 })
 
-const progressInfo = ref({
-  status: 'active',
-  progressValue: 20
-})
-
-watch(() => props.record?.resultStatus, (newVal) => {
-  if (newVal) {
-    if (newVal === 'fail') {
-      progressInfo.value = {
-        status: 'exception',
-        progressValue: 50
-      }
-    }
-    if (newVal === 'pass') {
-      progressInfo.value = {
-        status: 'success',
-        progressValue: 100
-      }
-    }
-  }
+watch(() => props.record, val => {
+  console.log('实时获取到 进度', val);
 }, {
-  immediate: false
+  immediate: true,
 });
+
+const progressInfo = computed(() => {
+  const { resultStatus = ''} = props.record || {};
+  return {
+    status: resultStatus === 'fail' ? 'exception' : resultStatus === 'pass' ? 'success' : 'active',
+    progressValue: resultStatus === 'fail' ? 50 : resultStatus === 'pass' ? 100 : 20,
+  }
+})
 
 </script>
 

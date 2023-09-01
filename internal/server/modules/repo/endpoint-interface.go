@@ -479,9 +479,8 @@ func (r *EndpointInterfaceRepo) UpdateInterface(interf *model.EndpointInterface)
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetByEndpointId(endpointId uint, version string) (interfaces []model.EndpointInterface, err error) {
-
-	interfaces, err = r.GetEndpointId(endpointId, version)
+func (r *EndpointInterfaceRepo) ListByEndpointId(endpointId uint, version string) (interfaces []model.EndpointInterface, err error) {
+	interfaces, err = r.QueryByEndpointId(endpointId, version)
 	for key, interf := range interfaces {
 		interfaces[key].Params, _ = r.ListParams(interf.ID)
 		interfaces[key].Headers, _ = r.ListHeaders(interf.ID)
@@ -494,11 +493,11 @@ func (r *EndpointInterfaceRepo) GetByEndpointId(endpointId uint, version string)
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetEndpointId(endpointId uint, version string) (field []model.EndpointInterface, err error) {
+func (r *EndpointInterfaceRepo) QueryByEndpointId(endpointId uint, version string) (pos []model.EndpointInterface, err error) {
 	err = r.DB.
 		Where("endpoint_id=? and version=?", endpointId, version).
 		Where("NOT deleted").
-		Find(&field).Error
+		Find(&pos).Error
 	return
 }
 

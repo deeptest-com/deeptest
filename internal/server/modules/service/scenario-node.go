@@ -594,18 +594,18 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 }
 
 func (s *ScenarioNodeService) CopyProcessor(req *agentExec.Processor, CreateBy uint, mod string, rootId *uint) (err *_domain.BizErr) {
-	currentNodeReq := s.toProcessorReq(req, CreateBy, mod)
-	srcNextNodeTree, srcNextErr := s.GetNextNodeTree(req.ScenarioId, req.ID)
-	if srcNextErr != nil && srcNextErr != gorm.ErrRecordNotFound {
-		return
-	}
-
 	if req.EntityType == consts.ProcessorLogicElse {
 		return
 	}
 
-	if mod == "siblings" && srcNextNodeTree != nil && srcNextNodeTree.EntityType == consts.ProcessorLogicElse {
-		currentNodeReq.TargetProcessorId = int(srcNextNodeTree.ID)
+	srcNextNode, srcNextNodeErr := s.ScenarioNodeRepo.GetNextNode(req.ID)
+	if srcNextNodeErr != nil && srcNextNodeErr != gorm.ErrRecordNotFound {
+		return
+	}
+
+	currentNodeReq := s.toProcessorReq(req, CreateBy, mod)
+	if mod == "siblings" && srcNextNode.EntityType == consts.ProcessorLogicElse {
+		currentNodeReq.TargetProcessorId = int(srcNextNode.ID)
 	}
 
 	currentProcessor, err := s.AddProcessor(currentNodeReq, "copy")
@@ -613,7 +613,12 @@ func (s *ScenarioNodeService) CopyProcessor(req *agentExec.Processor, CreateBy u
 		return err
 	}
 
-	if srcNextNodeTree != nil && srcNextNodeTree.EntityType == consts.ProcessorLogicElse {
+	if srcNextNode.EntityType == consts.ProcessorLogicElse {
+		srcNextNodeTree, srcNextErr := s.GetNodeTree(req.ScenarioId, srcNextNode)
+		if srcNextErr != nil && srcNextErr != gorm.ErrRecordNotFound {
+			return
+		}
+
 		nextNodeReq := s.toProcessorReq(srcNextNodeTree, CreateBy, "siblings")
 		nextNodeReq.TargetProcessorId = int(currentProcessor.ID)
 		nextNodeReq.SrcProcessorId = srcNextNodeTree.ID
@@ -665,7 +670,7 @@ func (s *ScenarioNodeService) toProcessorReq(req *agentExec.Processor, createBy 
 	return
 }
 
-func (s *ScenarioNodeService) GetNextNodeTree(scenarioId, nodeId uint) (root *agentExec.Processor, err error) {
+func (s *ScenarioNodeService) GetNodeTree(scenarioId uint, node model.Processor) (root *agentExec.Processor, err error) {
 	pos, err := s.ScenarioNodeRepo.ListByScenario(scenarioId)
 	if err != nil {
 		return
@@ -673,16 +678,8 @@ func (s *ScenarioNodeService) GetNextNodeTree(scenarioId, nodeId uint) (root *ag
 
 	tos := s.ToTos(pos, false)
 
-	nextProcessor, err := s.ScenarioNodeRepo.GetNextNode(nodeId)
-	if err != nil && err != gorm.ErrRecordNotFound {
-		return
-	}
-	if err == gorm.ErrRecordNotFound {
-		return nil, nil
-	}
-
 	root = &agentExec.Processor{}
-	copier.CopyWithOption(root, &nextProcessor, copier.Option{DeepCopy: true})
+	copier.CopyWithOption(root, &node, copier.Option{DeepCopy: true})
 
 	root.Slots = iris.Map{"icon": "icon"}
 

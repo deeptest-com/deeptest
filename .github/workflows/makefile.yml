@@ -20,12 +20,15 @@ jobs:
     - name: make server
       run: make compile_server_linux
 
+    - name: make agent
+      run: make compile_agent_linux
+      
     - name: ssh deploy
       uses: easingthemes/ssh-deploy@v4.1.8
       with:
             SSH_PRIVATE_KEY: ${{ secrets.DT_PRIVATEKEY }}
             ARGS: "-rlgoDzvc -i --delete"
-            SOURCE: "bin/linux/deeptest-server"
+            SOURCE: "bin/linux/"
             REMOTE_HOST: ${{ secrets.DT_SERVER }}
             REMOTE_USER: ${{ secrets.DT_USERNAME }}
             TARGET: "/home/lighthouse/rd/project/deeptest/bin/linux"

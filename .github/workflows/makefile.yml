@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: dp-ubuntu
+    runs-on: Linux
 
     steps:
     - uses: actions/checkout@v3

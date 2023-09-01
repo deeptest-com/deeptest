@@ -174,7 +174,7 @@ func (s *ScenarioExecService) GenerateReport(scenarioId int, userId uint, rootRe
 	s.countRequest(rootResult, &report)
 	s.summarizeInterface(&report)
 
-	//s.ScenarioReportRepo.Create(&report)
+	//s.ScenarioReportRepo.CreateExpression(&report)
 	//s.TestLogRepo.CreateLogs(rootResult, &report)
 
 	return

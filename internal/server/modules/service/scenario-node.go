@@ -277,7 +277,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 				ProjectId:      parentProcessor.ProjectId,
 			}
 			processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-			s.ScenarioNodeRepo.Create(&processor)
+			s.ScenarioNodeRepo.CreateExpression(&processor)
 		*/
 
 		for _, child := range diagnoseInterfaceNode.Children {
@@ -347,7 +347,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 			ProjectId:      parentProcessor.ProjectId,
 		}
 		processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-		s.ScenarioNodeRepo.Create(&processor)*/
+		s.ScenarioNodeRepo.CreateExpression(&processor)*/
 
 		for _, child := range caseNode.Children {
 			processor, _ = s.createDirOrInterfaceFromCase(child, parentProcessor, 0)

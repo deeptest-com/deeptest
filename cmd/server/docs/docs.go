@@ -4288,7 +4288,7 @@ const docTemplate = `{
                 "tags": [
                     "环境管理"
                 ],
-                "summary": "环境列表(List)",
+                "summary": "环境列表(ListExpressions)",
                 "parameters": [
                     {
                         "type": "string",
@@ -8150,7 +8150,7 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "Create project Request Object",
+                        "description": "CreateExpression project Request Object",
                         "name": "ProjectReq",
                         "in": "body",
                         "required": true,

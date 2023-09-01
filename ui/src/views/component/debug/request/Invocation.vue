@@ -58,7 +58,7 @@
           另存为用例
         </a-button>
       </div>
-      <div v-if="false && usedBy === UsedBy.InterfaceDebug"
+      <div v-if="usedBy === UsedBy.InterfaceDebug"
            :disabled="!isPathValid"
            class="save-as-case">
         <a-button trigger="click" @click="generateCases" class="dp-bg-light">

@@ -4,9 +4,11 @@ import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/cases"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"log"
@@ -162,30 +164,42 @@ func (s *EndpointCaseService) GenerateFromSpec(req serverDomain.EndpointCaseGene
 	}
 
 	endpointInterface, _ := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
-	endpointId := endpointInterface.EndpointId
+	endpoint, err := s.EndpointRepo.GetWithInterface(endpointInterface.EndpointId, "v0.1.0")
 
-	pathParams, _ := s.EndpointRepo.GetEndpointParams(endpointId)
+	// get spec
+	spec := s.EndpointService.Yaml(endpoint)
+	doc3 := spec.(*openapi3.T)
+	apiPathItem, _ := cases.GetApiPathItem(doc3)
 
-	params, _ := s.EndpointInterfaceRepo.ListParams(uint(endpointInterfaceId))
-	headers, _ := s.EndpointInterfaceRepo.ListHeaders(uint(endpointInterfaceId))
-	cookies, _ := s.EndpointInterfaceRepo.ListCookies(uint(endpointInterfaceId))
-	requestBody, _ := s.EndpointInterfaceRepo.ListRequestBody(uint(endpointInterfaceId))
-	responseBodies, _ := s.EndpointInterfaceRepo.ListResponseBodies(uint(endpointInterfaceId))
-	//responseCodes = strings.Split(interf.ResponseCodes.(string), ",")
+	for _, interf := range endpoint.Interfaces {
+		basicDebugData, err1 := s.getBaseRequest(interf)
+		if err1 != nil {
+			continue
+		}
+		log.Println(basicDebugData)
 
-	log.Println(pathParams)
-	log.Println(params)
-	log.Println(headers)
-	log.Println(cookies)
-	log.Println(requestBody)
-	log.Println(responseBodies)
+		apiOperation, err1 := cases.GetApiOperation(interf.Method, apiPathItem)
+		if err1 != nil {
+			continue
+		}
+		log.Println(apiOperation)
 
-	//responseBody := r.EndpointInterfaceRepo.GetResponse(endpointInterfaceId, entity.Code)
-	//responseDefine.Schema = responseBody.SchemaItem.Content
-	//responseDefine.Code = entity.Code
-	//responseDefine.MediaType = responseBody.MediaType
-	//components := r.ResponseDefineRepo.Components(endpointInterfaceId)
-	//responseDefine.Component = commonUtils.JsonEncode(components)
+		alternativeCases, err1 := cases.GenerateAlternativeCase(basicDebugData, apiOperation)
+		if err1 != nil {
+			continue
+		}
+		log.Println(alternativeCases)
+	}
+
+	return
+}
+
+func (s *EndpointCaseService) getBaseRequest(endpointInterface model.EndpointInterface) (debugData domain.DebugData, err error) {
+	info := domain.DebugInfo{
+		DebugInterfaceId:    endpointInterface.DebugInterfaceId,
+		EndpointInterfaceId: endpointInterface.ID,
+	}
+	debugData, err = s.DebugInterfaceService.Load(info)
 
 	return
 }
@@ -207,112 +221,6 @@ func (s *EndpointCaseService) CopyValueFromRequest(po *model.EndpointCase, req s
 	})
 }
 
-//func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDomain.EndpointCaseTree, err error) {
-//	root, err := s.GetTree(projectId, serveId)
-//
-//	s.mountCount(root, projectId, serveId)
-//	if root != nil && len(root.Children) > 0 && root.Children[0] != nil {
-//		ret = root.Children[0].Children
-//	}
-//
-//	return
-//}
-
-//func (s *EndpointCaseService) GetTree(projectId, serveId uint) (root *serverDomain.EndpointCaseTree, err error) {
-//	categories, err := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, projectId, 0)
-//	if err != nil || len(categories) == 0 {
-//		return
-//	}
-//	categoryTos := s.CategoryToTos(categories)
-//
-//	categoryTos = append(categoryTos, &serverDomain.EndpointCaseTree{Key: -1, IsDir: true, Id: uuid.NewV4(), Name: "未分类", ParentId: int64(categories[0].ID), Slots: iris.Map{"icon": "icon"}})
-//
-//	endpoints, err := s.EndpointRepo.ListByProjectIdAndServeId(projectId, serveId, false)
-//	if err != nil {
-//		return
-//	}
-//	endpointTos := s.EndpointToTos(endpoints)
-//
-//	cases, err := s.EndpointCaseRepo.ListByProjectIdAndServeId(projectId, serveId)
-//	casesTos := s.EndpointCaseToTos(cases)
-//	if err != nil {
-//		return
-//	}
-//
-//	for _, endpoint := range endpointTos {
-//		s.makeTree(casesTos, endpoint, serverConsts.EndpointCaseTreeTypeCase)
-//	}
-//	for _, category := range categoryTos {
-//		s.makeTree(endpointTos, category, serverConsts.EndpointCaseTreeTypeEndpoint)
-//	}
-//	root = &serverDomain.EndpointCaseTree{}
-//	s.makeTree(categoryTos, root, serverConsts.EndpointCaseTreeTypeDir)
-//
-//	return
-//}
-
-//func (s *EndpointCaseService) CategoryToTos(pos []*model.Category) (tos []*serverDomain.EndpointCaseTree) {
-//	for _, po := range pos {
-//		to := s.CategoryToTo(po)
-//
-//		tos = append(tos, to)
-//	}
-//
-//	return
-//}
-
-//func (s *EndpointCaseService) CategoryToTo(po *model.Category) (to *serverDomain.EndpointCaseTree) {
-//	to = &serverDomain.EndpointCaseTree{
-//		//Id:        uuid.NewV4(),
-//		Key:   int64(po.ID),
-//		Name:  po.Name,
-//		Desc:  po.Desc,
-//		Type:  serverConsts.EndpointCaseTreeTypeDir,
-//		IsDir: true,
-//		//ParentId:  int64(po.ParentId),
-//		ProjectId: po.ProjectId,
-//		ServeId:   po.ServeId,
-//	}
-//
-//	return
-//}
-
-//func (s *EndpointCaseService) EndpointToTos(pos []*model.Endpoint) (tos []*serverDomain.EndpointCaseTree) {
-//	for _, po := range pos {
-//		to := s.EndpointToTo(po)
-//
-//		tos = append(tos, to)
-//	}
-//
-//	return
-//}
-
-//func (s *EndpointCaseService) EndpointToTo(po *model.Endpoint) (to *serverDomain.EndpointCaseTree) {
-//	to = &serverDomain.EndpointCaseTree{
-//		//Id:         uuid.NewV4(),
-//		Key:        int64(po.ID),
-//		Name:       po.Title,
-//		Desc:       po.Description,
-//		Type:       serverConsts.EndpointCaseTreeTypeEndpoint,
-//		IsDir:      true,
-//		CategoryId: po.CategoryId,
-//		ProjectId:  po.ProjectId,
-//		ServeId:    po.ServeId,
-//	}
-//
-//	return
-//}
-
-//func (s *EndpointCaseService) EndpointCaseToTos(pos []*serverDomain.InterfaceCase) (tos []*serverDomain.EndpointCaseTree) {
-//	for _, po := range pos {
-//		to := s.EndpointCaseToTo(po)
-//
-//		tos = append(tos, to)
-//	}
-//
-//	return
-//}
-
 func (s *EndpointCaseService) EndpointCaseToTo(po *serverDomain.InterfaceCase) (to *serverDomain.EndpointCaseTree) {
 	to = &serverDomain.EndpointCaseTree{
 		//Id:               uuid.NewV4(),
@@ -332,86 +240,6 @@ func (s *EndpointCaseService) EndpointCaseToTo(po *serverDomain.InterfaceCase) (
 
 	return
 }
-
-//func (s *EndpointCaseService) makeTree(findIn []*serverDomain.EndpointCaseTree, parent *serverDomain.EndpointCaseTree, typ serverConsts.EndpointCaseTreeType) { //参数为父节点，添加父节点的子节点指针切片
-//	children, _ := s.hasChild(findIn, parent, typ) // 判断节点是否有子节点并返回
-//
-//	if children != nil {
-//		parent.Children = append(parent.Children, children[0:]...) // 添加子节点
-//
-//		for _, child := range children { // 查询子节点的子节点，并添加到子节点
-//			_, has := s.hasChild(findIn, child, typ)
-//			if has {
-//				s.makeTree(findIn, child, typ) // 递归添加节点
-//			}
-//		}
-//	}
-//}
-
-//func (s *EndpointCaseService) hasChild(categories []*serverDomain.EndpointCaseTree, parent *serverDomain.EndpointCaseTree, typ serverConsts.EndpointCaseTreeType) (
-//	ret []*serverDomain.EndpointCaseTree, yes bool) {
-//
-//	for _, item := range categories {
-//		if s.isChild(item, parent, typ) {
-//			item.Slots = iris.Map{"icon": "icon"}
-//			//item.Parent = parent // loop json
-//
-//			ret = append(ret, item)
-//		}
-//	}
-//
-//	if ret != nil {
-//		yes = true
-//	}
-//
-//	return
-//}
-
-//func (s *EndpointCaseService) isChild(child, parent *serverDomain.EndpointCaseTree, typ serverConsts.EndpointCaseTreeType) (res bool) {
-//	if child == nil || parent == nil {
-//		return
-//	}
-//	switch typ {
-//	case serverConsts.EndpointCaseTreeTypeDir:
-//		//res = child.ParentId == parent.Key
-//	case serverConsts.EndpointCaseTreeTypeEndpoint:
-//		res = child.CategoryId == parent.Key
-//	case serverConsts.EndpointCaseTreeTypeCase:
-//		res = child.EndpointId == uint(parent.Key)
-//	}
-//
-//	return
-//}
-
-//func (s *EndpointCaseService) mountCount(root *serverDomain.EndpointCaseTree, projectId, serveId uint) {
-//	endpointCount, err := s.EndpointCaseRepo.GetEndpointCount(projectId, serveId)
-//	if err != nil || len(endpointCount) == 0 {
-//		return
-//	}
-//
-//	result := s.convertMap(endpointCount)
-//	s.mountCountOnNode(root, result)
-//}
-//func (s *EndpointCaseService) convertMap(data []serverDomain.EndpointCount) (result map[int64]int64) {
-//	result = make(map[int64]int64)
-//	for _, item := range data {
-//		result[item.EndpointId] = item.Count
-//	}
-//	return
-//}
-
-//func (s *EndpointCaseService) mountCountOnNode(root *serverDomain.EndpointCaseTree, data map[int64]int64) int64 {
-//	switch root.Type {
-//	case serverConsts.EndpointCaseTreeTypeDir:
-//		root.Count = 0
-//	case serverConsts.EndpointCaseTreeTypeEndpoint:
-//		root.Count = data[root.Key]
-//	}
-//	for _, children := range root.Children {
-//		root.Count += s.mountCountOnNode(children, data)
-//	}
-//	return root.Count
-//}
 
 func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDomain.EndpointCaseTree, err error) {
 	list, err := s.EndpointCaseRepo.GetCategoryEndpointCase(projectId, serveId)

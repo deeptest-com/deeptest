@@ -152,7 +152,7 @@ func (r *PlanRepo) FindByName(scenarioName string, id uint) (scenario model.Plan
 }
 
 func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.BizErr) {
-	//po, err := r.FindByName(scenario.Name, 0)
+	//po, err := r.FindExpressionByName(scenario.Name, 0)
 	//if po.Name != "" {
 	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
 	//	return

@@ -28,11 +28,12 @@
           <a-form-item label="备注" v-bind="validateInfos.comments">
             <a-textarea v-model:value="modelRef.comments" :rows="3"/>
           </a-form-item>
-
+           <!--
           <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
+          -->
         </a-form>
       </div>
     </a-card>
@@ -50,6 +51,7 @@ import {StateType as ScenarioStateType} from "../../../../../store";
 import {NotificationKeyCommon} from "@/utils/const";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import {notifyError, notifySuccess} from "@/utils/notify";
+import {isFirst,useScenarioAutoSave} from "@/composables/useScenarioAutoSave";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -68,7 +70,8 @@ const rulesRef = reactive({
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<any>(() => store.state.Scenario.nodeData);
+//const modelRef = computed<any>(() => store.state.Scenario.nodeData);
+const modelRef = ref(store.state.Scenario.nodeData)
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
 const submitForm = debounce(async () => {
@@ -76,9 +79,9 @@ const submitForm = debounce(async () => {
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notifySuccess(`保存成功`);
+            //notifySuccess(`保存成功`);
           } else {
-            notifyError(`保存失败`);
+            //notifyError(`保存失败`);
           }
         })
       })
@@ -96,6 +99,8 @@ onUnmounted(() => {
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }
+
+useScenarioAutoSave(modelRef.value,submitForm)
 
 </script>
 

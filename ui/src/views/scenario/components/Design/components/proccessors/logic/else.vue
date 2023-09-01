@@ -10,10 +10,11 @@
         <a-form-item label="备注" name="comments">
           <a-textarea v-model:value="formState.comments" :rows="3"/>
         </a-form-item>
-
+        <!--
         <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
           <a-button type="primary" @click.prevent="submit">保存</a-button>
         </a-form-item>
+        -->
       </a-form>
     </a-card>
   </div>
@@ -27,10 +28,13 @@ import {Form, message, notification} from "ant-design-vue";
 import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import debounce from "lodash.debounce";
 import {notifyError, notifySuccess} from "@/utils/notify";
+import {isFirst,useScenarioAutoSave} from "@/composables/useScenarioAutoSave";
 const useForm = Form.useForm;
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
+//const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
+const formState = ref(store.state.Scenario.nodeData)
+/*
 const formState: any = ref({
   comments: '',
 });
@@ -43,6 +47,7 @@ watch(() => {
 },{
   immediate: true,
 });
+*/
 
 const rulesRef = reactive({
   name: [
@@ -55,10 +60,7 @@ const submit = debounce(async () => {
   validate()
       .then(async () => {
         // 下面代码改成 await 的方式
-        const res = await store.dispatch('Scenario/saveProcessor', {
-          ...nodeData.value,
-          comments: formState.value.comments,
-        });
+        const res = await store.dispatch('Scenario/saveProcessor', formState.value);
         if (res === true) {
           notifySuccess(`保存成功`);
         } else {
@@ -69,6 +71,8 @@ const submit = debounce(async () => {
         console.log('error', error);
       });
 }, 300);
+
+useScenarioAutoSave(formState.value,submit)
 
 </script>
 

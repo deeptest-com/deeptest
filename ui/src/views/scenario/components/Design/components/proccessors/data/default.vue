@@ -5,7 +5,7 @@
       <div class="top-header-tip">
         <a-alert message="说明：数据迭代处理器将循环读取文件中的行内容，并将读取的内容赋值给指定的变量" type="info" show-icon/>
       </div>
-      <!---
+      
       <a-form-item :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" label="数据来源">
         <a-radio-group v-model:value="formState.src">
           <a-radio v-for="(item, idx) in srcOptions" :key="idx" :value="item.value">
@@ -13,7 +13,7 @@
           </a-radio>
         </a-radio-group>
       </a-form-item>
-      --->
+  
 
       <a-form :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }"
           @submit.prevent>
@@ -84,10 +84,11 @@
         <a-form-item label="备注" name="comments">
           <a-textarea v-model:value="formState.comments" :rows="3"/>
         </a-form-item>
-
+        <!--
         <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
           <a-button type="primary" @click.prevent="submit">保存</a-button>
         </a-form-item>
+      -->
 
       </a-form>
 
@@ -111,6 +112,7 @@ import {DataFileExt, DataSrc, ExtractorSrc} from "@/utils/enum";
 import {isInArray} from "@/utils/array";
 import {listDatapool} from "@/views/project-settings/service";
 import {notifyError, notifySuccess} from "@/utils/notify";
+import {isFirst,useScenarioAutoSave} from "@/composables/useScenarioAutoSave";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -129,11 +131,12 @@ const loadDatapools = async () => {
 loadDatapools()
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
+//const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
+const formState = ref(store.state.Scenario.nodeData)
 
 const extArr = getEnumArr(DataFileExt)
 const extStr = extArr.join(',')
-
+/*
 const formState = ref({
   src: DataSrc.fileUpload,
   variableName: '',
@@ -145,6 +148,7 @@ const formState = ref({
   isRand: false,
   comments: '',
 });
+*/
 const rulesRef:any = computed(() => { return {
   variableName: [
     {required: true, message: '请输入变量名称', trigger: 'blur'},
@@ -180,7 +184,7 @@ const upload = async (e) => {
 
   return false
 }
-
+/*
 watch(nodeData, (val: any) => {
   console.log('watch nodeData')
   if (!val) return;
@@ -194,23 +198,21 @@ watch(nodeData, (val: any) => {
   formState.value.isRand = val.isRand;
   formState.value.comments = val.comments;
 }, {deep: true, immediate: true});
+*/
 
 const submit = debounce(async () => {
   console.log('rulesRef', rulesRef.value, formState.value.datapoolId)
 
   validate().then(async () => {
         // 下面代码改成 await 的方式
-    const data = {
-      ...nodeData.value,
-      ...formState.value,
-    }
+    const data = formState.value
     data.datapoolId = +data.datapoolId
 
         const res = await store.dispatch('Scenario/saveProcessor', data);
         if (res === true) {
-          notifySuccess(`保存成功`);
+          //notifySuccess(`保存成功`);
         } else {
-          notifyError(`保存失败`);
+          //notifyError(`保存失败`);
         }
       })
       .catch(error => {
@@ -218,6 +220,7 @@ const submit = debounce(async () => {
       });
 }, 300);
 
+useScenarioAutoSave(formState.value,submit)
 
 </script>
 

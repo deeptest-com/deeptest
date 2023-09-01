@@ -6,7 +6,7 @@ const isFirst  = ref(true);
  * */
 function useScenarioAutoSave(data: any, fun: Function) {
     watch(data, (val: any,oldValue) => {
-        console.log('83222', val,oldValue);
+       // console.log('83222', val,oldValue);
         if(!oldValue){
             return;
         }
@@ -15,7 +15,8 @@ function useScenarioAutoSave(data: any, fun: Function) {
             isFirst.value = false;
             return;
         }
-        setTimeout(fun, 1000)
+        fun()
+        //setTimeout(fun, 1000)
         // debugger;
 
     }, {

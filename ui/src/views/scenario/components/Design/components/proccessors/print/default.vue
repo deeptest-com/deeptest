@@ -3,7 +3,7 @@
     <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
-        <a-form :label-col="labelCol" :wrapper-col="wrapperCol" @validate="submitForm">
+        <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
           <a-form-item label="输出" v-bind="validateInfos.rightValue">
             <a-input v-model:value="modelRef.rightValue"
                      @blur="validate('rightValue', { trigger: 'blur' }).catch(() => {})" />
@@ -13,11 +13,12 @@
           <a-form-item label="备注" v-bind="validateInfos.comments">
             <a-textarea v-model:value="modelRef.comments" :rows="3"/>
           </a-form-item>
-
+          <!--
           <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
+          -->
         </a-form>
       </div>
     </a-card>

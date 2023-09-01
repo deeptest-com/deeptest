@@ -34,7 +34,7 @@ jobs:
         
     - name: start service
       run:  | 
-        ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs kill -9
+        ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs --no-run-if-empty kill -9
         nohup /home/lighthouse/rd/server/deeptest-server > server.log 2>&1 &
         nohup /home/lighthouse/rd/server/deeptest-agent > agent.log 2>&1 &
 

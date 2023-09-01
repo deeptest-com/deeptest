@@ -6,6 +6,7 @@ module.exports = {
     rules: require('./webpack.rules'),
   },
   plugins: [
+    // 复制图标文件信息
     new CopyPlugin({
       patterns: [{ from: "./icon", to: "icon" }]
     })

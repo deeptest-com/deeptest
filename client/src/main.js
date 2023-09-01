@@ -1,4 +1,4 @@
-import {app, dialog} from 'electron';
+import {app,BrowserWindow} from 'electron';
 import {DeepTestApp} from "./app/app";
 import {logInfo, logErr, logger} from "./app/utils/log";
 import {getCurrVersion} from "./app/utils/comm";
@@ -16,3 +16,7 @@ const deeptestApp = new DeepTestApp();
 app.on('ready', () => {
   deeptestApp.ready()
 });
+
+
+
+

@@ -15,7 +15,6 @@ jobs:
         working-directory: /home/lighthouse/rd/project/deeptest
 
     steps:
-    
 #    - uses: actions/checkout@v3
 #    - name: install dependencies
 #      run: go get all

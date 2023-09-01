@@ -54,10 +54,12 @@ func (s *MockJsExpressionSource) GetSources() (ret []model.MockJsExpression, err
 		},
 		{
 			Expression: "time('HH:mm:ss')",
+			Format:     "time",
 			Name:       "时间",
 		},
 		{
 			Expression: "datetime('yyyy-MM-dd HH:mm:ss')",
+			Format:     "data-time",
 			Name:       "日期时间",
 		},
 		{
@@ -67,6 +69,7 @@ func (s *MockJsExpressionSource) GetSources() (ret []model.MockJsExpression, err
 		{
 			Expression: "guid()",
 			Name:       "唯一标识符",
+			Format:     "uuid",
 		},
 		{
 			Expression: "increment(1)",
@@ -77,8 +80,45 @@ func (s *MockJsExpressionSource) GetSources() (ret []model.MockJsExpression, err
 			Name:       "URL地址",
 		},
 		{
+			Expression: "uri()",
+			Name:       "URI地址",
+			Format:     "uri",
+		},
+		{
+			Expression: "ruri()",
+			Name:       "相对URI",
+			Format:     "uri-reference",
+		},
+		{
+			Expression: "uriTempl()",
+			Name:       "URI模板",
+			Format:     "uri-template",
+		},
+
+		{
+			Expression: "",
+			Name:       "国际化资源标识符",
+			Format:     "iri",
+		},
+		{
+			Expression: "",
+			Name:       "相对国际化资源标识符",
+			Format:     "iri-reference",
+		},
+
+		{
 			Expression: "protocol()",
 			Name:       "URL协议",
+		},
+		{
+			Expression: "host()",
+			Name:       "主机名",
+			Format:     "hostname",
+		},
+		{
+			Expression: "idnHost()",
+			Name:       "国际化主机名",
+			Format:     "idn-hostname",
 		},
 		{
 			Expression: "domain()",
@@ -91,10 +131,23 @@ func (s *MockJsExpressionSource) GetSources() (ret []model.MockJsExpression, err
 		{
 			Expression: "email()",
 			Name:       "邮件地址",
+			Format:     "email",
 		},
+		{
+			Expression: "idnEmail",
+			Name:       "国际化域名邮件地址",
+			Format:     "idn-email",
+		},
+
 		{
 			Expression: "ip()",
 			Name:       "IP地址",
+			Format:     "ipv4",
+		},
+		{
+			Expression: "ipv6()",
+			Name:       "IPV6地址",
+			Format:     "ipv6",
 		},
 		{
 			Expression: "region()",
@@ -144,6 +197,27 @@ func (s *MockJsExpressionSource) GetSources() (ret []model.MockJsExpression, err
 			Expression: "cname()",
 			Name:       "中文姓名",
 		},
+		{
+			Expression: "password()",
+			Name:       "密码",
+			Format:     "password",
+		},
+		{
+			Expression: "byte()",
+			Name:       "字节",
+			Format:     "byte",
+		},
+		{
+			Expression: "",
+			Name:       "JSON指针",
+			Format:     "json-pointer",
+		},
+		{
+			Expression: "",
+			Name:       "正则表达式",
+			Format:     "regex",
+		},
+
 		{
 			Expression: "color()",
 			Name:       "十六进制颜色",

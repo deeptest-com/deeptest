@@ -288,6 +288,10 @@ const StoreModel: ModuleType = {
             if (needReload && openTab.id) {
                 dispatch('openInterfaceTab', openTab);
             }
+
+            if (needReload && !openTab.id) {
+                commit('setInterfaceId', 0);
+            }
         },
         async removeInterfaceTabs({commit, dispatch, state}, id: number) {
             const removeInterfaceIds = [] as number[]

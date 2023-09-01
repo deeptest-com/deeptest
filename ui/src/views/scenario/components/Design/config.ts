@@ -220,7 +220,7 @@ export const DESIGN_MENU_CONFIG = [
         key: 'copy',
         title: '克隆',
         // icon: 'arrange-disabled',
-        hideInNodeTypes: ['processor_root_default'],
+        hideInNodeTypes: ['processor_root_default', 'processor_logic_else'],
     },
     //    禁用
     {

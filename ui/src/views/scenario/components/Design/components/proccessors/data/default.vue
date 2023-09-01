@@ -201,7 +201,6 @@ watch(nodeData, (val: any) => {
 
 const submit = debounce(async () => {
  // console.log('rulesRef', rulesRef.value, formState.value.datapoolId,typeof formState.value.datapoolId)
-
   validate().then(async () => {
         // 下面代码改成 await 的方式
 

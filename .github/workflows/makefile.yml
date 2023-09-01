@@ -28,7 +28,7 @@ jobs:
       with:
             SSH_PRIVATE_KEY: ${{ secrets.DT_PRIVATEKEY }}
             ARGS: "-rlgoDzvc -i --delete"
-            SOURCE: "bin/linux/"
+            SOURCE: "bin/linux/deeptest-server client/bin/linux/agent"
             REMOTE_HOST: ${{ secrets.DT_SERVER }}
             REMOTE_USER: ${{ secrets.DT_USERNAME }}
             TARGET: "/home/lighthouse/rd/project/deeptest/bin/linux"

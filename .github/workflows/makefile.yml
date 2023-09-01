@@ -23,7 +23,7 @@ jobs:
       run: make compile_agent_linux
 
     - name: make ui
-      run: make compile_ui
+      run: make compile_ui_demo
 
     - name: copy files
       run:  | 

@@ -12,13 +12,7 @@ jobs:
     defaults:
       run:
         working-directory: /home/lighthouse/rd/project/deeptest
-
     steps:
-    
-#    - uses: actions/checkout@v3
-#    - name: install dependencies
-#      run: go get all
-
     - name: checkout
       run: git pull 
       
@@ -31,6 +25,12 @@ jobs:
     - name: make ui
       run: make compile_ui_demo
 
+  deploy:
+    runs-on: dp-ubt
+    defaults:
+      run:
+        working-directory: /home/lighthouse/rd/project/deeptest
+    steps:
     - name: copy files
       run:  | 
         cp -f bin/linux/deeptest-server /home/lighthouse/rd/server/deeptest
@@ -43,7 +43,10 @@ jobs:
         ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs kill -9
         nohup /home/lighthouse/rd/server/deeptest-server > server.log 2>&1 &
         nohup /home/lighthouse/rd/server/deeptest-agent > agent.log 2>&1 &
-        
+
+    # - uses: actions/checkout@v3
+    # - name: install dependencies
+    #   run: go get all
     # - name: ssh deploy
     #   uses: easingthemes/ssh-deploy@v4.1.8
     #   with:

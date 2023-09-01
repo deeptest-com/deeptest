@@ -103,7 +103,7 @@
 <script setup lang="ts">
 import {
   computed, ref, onMounted,
-  watch, defineEmits, defineProps
+  watch, defineEmits, defineProps, unref
 } from 'vue';
 import {
   PlusOutlined,
@@ -134,6 +134,7 @@ const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 
 const treeData = computed<any>(() => store.state.DiagnoseInterface.treeData);
 const treeDataMap = computed<any>(() => store.state.DiagnoseInterface.treeDataMap);
+const interfaceId = computed<any>(() => store.state.DiagnoseInterface.interfaceId);
 
 const props = defineProps({
   serveId: {
@@ -355,6 +356,14 @@ async function onDrop(info: DropEvent) {
 
 onMounted(async () => {
   console.log('onMounted')
+})
+
+watch(() => {
+  return unref(interfaceId);
+}, val => {
+  console.log('当前tab id变化', val);
+  selectedKeys.value = val ? [val] : [];
+  
 })
 
 </script>

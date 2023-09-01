@@ -3,7 +3,6 @@ package serverServe
 import (
 	stdContext "context"
 	"fmt"
-	"github.com/aaronchen2k/deeptest"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
@@ -21,7 +20,6 @@ import (
 	"github.com/facebookgo/inject"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/sirupsen/logrus"
-	"net/http"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -151,12 +149,10 @@ func (webServer *WebServer) AddModule(module ...module.WebModule) {
 
 // AddWebUi 添加前端页面访问
 func (webServer *WebServer) AddWebUi() {
-	uiFs, err := deeptest.GetUiFileSys()
-	if err != nil {
-		return
-	}
+	dir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), "ui", "dist"))
+	logUtils.Infof("*** ui dir: %s", dir)
 
-	webServer.app.HandleDir("/", http.FS(uiFs), iris.DirOptions{
+	webServer.app.HandleDir("/", dir, iris.DirOptions{
 		IndexName: "index.html",
 		ShowList:  false,
 		SPA:       true,
@@ -165,18 +161,21 @@ func (webServer *WebServer) AddWebUi() {
 
 // AddUpload 添加上传文件访问
 func (webServer *WebServer) AddUpload() {
-	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), consts.DirUpload))
-	webServer.app.HandleDir("/upload", fsOrDir)
+	dir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), consts.DirUpload))
+	logUtils.Infof("*** upload dir: %s", dir)
+
+	webServer.app.HandleDir("/upload", dir)
 }
 
 // AddTest 添加测试文件访问
 func (webServer *WebServer) AddTest() {
-	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test")))
-	webServer.app.HandleDir("/test", fsOrDir)
+	dir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test")))
+	logUtils.Infof("*** test dir: %s", dir)
+
+	webServer.app.HandleDir("/test", dir)
 }
 
 func (webServer *WebServer) AddSwagger() {
-
 	swaggerConfig := swagger.Config{
 		URL:          fmt.Sprintf("swagger/doc.json"),
 		DeepLinking:  true,

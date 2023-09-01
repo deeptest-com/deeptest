@@ -34,10 +34,16 @@ jobs:
     - name: copy files
       run:  | 
         cp -f bin/linux/deeptest-server /home/lighthouse/rd/server/deeptest
-        cp -f client/bin/linux/agent /home/lighthouse/rd/server/deeptest
+        cp -f client/bin/linux/agent /home/lighthouse/rd/server/deeptest/deeptest-agent
         mkdir -p /home/lighthouse/rd/server/deeptest/ui
         cp -fr client/ui /home/lighthouse/rd/server/deeptest/ui/dist
-      
+        
+    - name: start service
+      run:  | 
+        ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs kill -9
+        nohup /home/lighthouse/rd/server/deeptest-server > server.log 2>&1 &
+        nohup /home/lighthouse/rd/server/deeptest-agent > agent.log 2>&1 &
+        
     # - name: ssh deploy
     #   uses: easingthemes/ssh-deploy@v4.1.8
     #   with:

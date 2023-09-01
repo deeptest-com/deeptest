@@ -46,6 +46,9 @@ type ScenarioAddScenarioReq struct {
 	TargetProcessorId       int                      `json:"targetProcessorId"`
 	ProjectId               uint                     `json:"projectId"`
 	CreateBy                uint                     `json:"createBy"`
+	Comments                string                   `json:"comments"`
+	Method                  consts.HttpMethod        `json:"method"`
+	SrcProcessorId          uint                     `json:"srcProcessorId"`
 }
 
 type ScenarioNodeReq struct {

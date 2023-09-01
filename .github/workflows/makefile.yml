@@ -34,9 +34,10 @@ jobs:
 
     - name: copy files
       run:  | 
-        cp bin/linux/deeptest-server /home/lighthouse/rd/server/deeptest
-        cp client/bin/linux/agent /home/lighthouse/rd/server/deeptest
-        cp -r client/ui /home/lighthouse/rd/server/deeptest
+        cp -f bin/linux/deeptest-server /home/lighthouse/rd/server/deeptest
+        cp -f client/bin/linux/agent /home/lighthouse/rd/server/deeptest
+        mkdir -p /home/lighthouse/rd/server/deeptest/ui
+        cp -fr client/ui /home/lighthouse/rd/server/deeptest/ui/dist
       
     # - name: ssh deploy
     #   uses: easingthemes/ssh-deploy@v4.1.8

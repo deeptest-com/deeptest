@@ -69,7 +69,11 @@
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeData?.[0]?.children?.length" class="nodata-tip">请点击上方按钮添加目录 ~</div>
+        <div v-if="!treeData?.[0]?.children?.length" class="loading-container">
+          <div v-if="!loading" class="nodata-tip">请点击上方按钮添加目录 ~</div>
+          <Spin style="margin-top: 20px;" v-else />
+        </div>
+        
       </div>
     </div>
 
@@ -106,7 +110,7 @@ import {
   CaretDownOutlined,
   MoreOutlined
 } from '@ant-design/icons-vue';
-import {message, Modal, notification} from 'ant-design-vue';
+import {message, Modal, notification, Spin} from 'ant-design-vue';
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
 import {getSelectedKey, setExpandedKeys, setSelectedKey} from "@/utils/cache";
@@ -142,6 +146,7 @@ const keywords = ref('');
 const replaceFields = {key: 'id'};
 const expandedKeys = ref<number[]>([]);
 const autoExpandParent = ref<boolean>(false);
+const loading = ref(false);
 
 async function loadTreeData() {
   if (currProject?.value?.id > 0 && currServe?.value?.id > 0) {
@@ -156,16 +161,19 @@ async function getServeServers() {
   })
 }
 
-watch((currProject), async (newVal) => {
-  console.log('watch currProject', currProject?.value.id, currServe?.value.id)
-  await loadTreeData();
-  await getServeServers()
-}, {immediate: true})
-watch((currServe), async (newVal) => {
-  console.log('watch currProject', currProject?.value.id, currServe?.value.id)
-  await loadTreeData();
-  await getServeServers()
-  selectStoredKeyCall()
+watch(() => currServe.value, async (newVal, oldVal) => {
+  const { id: newServeId, projectId: newProjectId } = newVal;
+  const { id: oldServeId, projectId: oldProjectId } = oldVal || {};
+  if ((newServeId !== oldServeId) || (newProjectId !== oldProjectId)) {
+    // serverId 发生变化
+    loading.value = true;
+    await loadTreeData();
+    await getServeServers()
+    selectStoredKeyCall()
+    setTimeout(() => {
+      loading.value = false
+    }, 300);
+  }
 }, {immediate: true})
 
 watch(keywords, (newVal) => {
@@ -355,5 +363,11 @@ onMounted(async () => {
 .diagnose-tree-main {
   height: 100%;
   background: #ffffff;
+
+  .loading-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 </style>

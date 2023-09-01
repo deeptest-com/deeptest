@@ -123,6 +123,7 @@ const StoreModel: ModuleType = {
     actions: {
         async loadTree({ commit, state, dispatch }, params: any) {
             try {
+                commit('setTreeData', []);
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
 

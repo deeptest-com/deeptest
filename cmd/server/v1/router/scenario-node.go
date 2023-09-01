@@ -19,6 +19,7 @@ func (m *ScenarioNodeModule) Party() module.WebModule {
 		index.Post("/addInterfacesFromDiagnose", m.ScenarioNodeCtrl.AddInterfacesFromDiagnose).Name = "添加调试接口"
 		index.Post("/addInterfacesFromCase", m.ScenarioNodeCtrl.AddInterfacesFromCase).Name = "添加接口用例"
 		index.Post("/addProcessor", m.ScenarioNodeCtrl.AddProcessor).Name = "新建处理器"
+		index.Post("/copyProcessor", m.ScenarioNodeCtrl.CopyProcessor).Name = "复制处理器"
 
 		index.Put("/{id:uint}/updateName", m.ScenarioNodeCtrl.UpdateName).Name = "更新节点名称"
 		index.Delete("/{id:uint}", m.ScenarioNodeCtrl.Delete).Name = "删除节点"

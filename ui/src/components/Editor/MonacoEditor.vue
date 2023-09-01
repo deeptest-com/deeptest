@@ -60,9 +60,14 @@ export default defineComponent({
 
     this.initMonaco()
 
-    const resizeIt = debounce(() => {
+    /**
+     * 这里做下兼容：
+     * monacoEditor使用在各自场景中，当它处于 可拖拽改变高度元素的场景时，它需要根据父级元素的高度动态绘制
+     * 避免展示不全
+     */
+    const resizeIt = debounce((data) => {
       console.log('resizeIt')
-      const container = document.getElementsByClassName('response-renderer')[0]
+      const container = document.getElementsByClassName(data.container || 'response-renderer')[0]
       const size = {width: container.clientWidth, height: container.clientHeight-30}
 
       this.editor.layout(size)
@@ -71,7 +76,7 @@ export default defineComponent({
     bus.on(settings.eventEditorAction, (data) => {
       console.log('eventEditorAction', data)
       if (data.act === settings.eventTypeContainerHeightChanged) {
-        resizeIt()
+        resizeIt(data)
       } else if (data.act === settings.eventTypeFormat) {
         this.formatDocUpdate(this.editor)
       }

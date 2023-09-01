@@ -20,6 +20,7 @@
   
   <script setup lang="ts">
   import {defineProps, ref} from "vue";
+  import debounce from "lodash.debounce";
   
   import Tree from "./tree.vue"
   
@@ -40,10 +41,7 @@
     selectInterfaces.value = data
   }
   
-  const onSubmit = (e) => {
-    console.log('onSubmit')
-    props.onFinish(selectInterfaces.value)
-  }
+  const onSubmit = debounce( async () => props.onFinish(selectInterfaces.value) ,300)
   
   const onCancel = () => {
     console.log('onCancel')

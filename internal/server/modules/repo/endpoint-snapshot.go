@@ -21,8 +21,8 @@ func NewEndpointSnapshotRepo() *EndpointSnapshotRepo {
 	return &EndpointSnapshotRepo{}
 }
 
-func (r *EndpointSnapshotRepo) BatchCreateSnapshot(req v1.DocumentVersionReq, projectId uint) (err error) {
-	documentId, err := r.EndpointDocumentRepo.GetIdByVersionAndProject(req, projectId)
+func (r *EndpointSnapshotRepo) BatchCreateSnapshot(req v1.DocumentVersionReq, projectId uint) (documentId uint, err error) {
+	documentId, err = r.EndpointDocumentRepo.GetIdByVersionAndProject(req, projectId)
 	if err != nil {
 		return
 	}

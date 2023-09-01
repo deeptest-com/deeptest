@@ -2,7 +2,6 @@ package deeptest
 
 import (
 	"embed"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	"io/fs"
 	"os"
@@ -11,12 +10,12 @@ import (
 var uiFileSys embed.FS
 
 func GetUiFileSys() (ret fs.FS, err error) {
-	if commonUtils.IsRelease() {
-		ret, err = fs.Sub(uiFileSys, "ui/dist")
-	} else {
-		fileUtils.MkDirIfNeeded("ui/dist")
-		ret = os.DirFS("ui/dist")
-	}
+	//if commonUtils.IsRelease() {
+	//	ret, err = fs.Sub(uiFileSys, "ui/dist")
+	//} else {
+	fileUtils.MkDirIfNeeded("ui/dist")
+	ret = os.DirFS("ui/dist")
+	//}
 
 	return
 }

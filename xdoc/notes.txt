@@ -28,6 +28,9 @@ ps -ef | grep 'go run\|yarn serve' | grep -v grep | awk '{print $2}' | xargs kil
 nohup go run cmd/server/main.go > server.log 2>&1 &
 nohup go run cmd/agent/main.go  > agent.log 2>&1 &
 
+nohup go run ./deeptest-server  > server.log 2>&1 &
+nohup go run ./agent  > agent.log 2>&1 &
+
 # 部署
 make compile_server_linux
 scp -r bin/linux/deeptest aaron@110.42.146.127:/home/aaron/dev/server

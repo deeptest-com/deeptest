@@ -145,9 +145,7 @@ watch(() => {
   return props.visible
 }, async (newVal) => {
   if (newVal) {
-    const res = await store.dispatch('Docs/getVersionList', {
-      needLatest: true,
-    });
+    const res = await store.dispatch('Docs/getVersionList');
     versionOptions.value = res.map((item: any) => {
       return {
         ...item,

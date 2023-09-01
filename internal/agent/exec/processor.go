@@ -57,6 +57,7 @@ type ProcessorBase struct {
 func (p *Processor) Run(s *Session) (err error) {
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
 	CurrScenarioProcessorId = p.ID
+	CurrScenarioProcessor = p
 	/*
 		defer func() {
 			if errX := recover(); errX != nil {

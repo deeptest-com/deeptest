@@ -74,11 +74,11 @@ func InitJsRuntime() {
 	})
 
 	MyVm.JsRuntime.Set("getVariable", func(name string) interface{} {
-		vari, _ := GetVariable(CurrScenarioProcessorId, name)
+		vari, _ := GetVariable(CurrScenarioProcessor.ParentId, name)
 		return vari.Value
 	})
 	MyVm.JsRuntime.Set("setVariable", func(name, val string) {
-		ret, err := SetVariable(CurrScenarioProcessorId, name, val, consts.Public)
+		ret, err := SetVariable(CurrScenarioProcessor.ParentId, name, val, consts.Public)
 
 		if err == nil {
 			VariableSettings = append(VariableSettings, ret)
@@ -87,7 +87,7 @@ func InitJsRuntime() {
 		return
 	})
 	MyVm.JsRuntime.Set("clearVariable", func(name string) {
-		ClearVariable(CurrScenarioProcessorId, name)
+		ClearVariable(CurrScenarioProcessor.ParentId, name)
 	})
 
 	// load global script

@@ -29,6 +29,7 @@ jobs:
       run:  | 
         cp -f bin/linux/deeptest-server /home/lighthouse/rd/server/deeptest
         cp -f client/bin/linux/agent /home/lighthouse/rd/server/deeptest/deeptest-agent
+        rm -rf /home/lighthouse/rd/server/deeptest/ui
         mkdir -p /home/lighthouse/rd/server/deeptest/ui
         cp -fr client/ui /home/lighthouse/rd/server/deeptest/ui/dist
         

@@ -1,5 +1,5 @@
 <template>
-  <ContentPane :showExpand="Object.keys(selectedNode || {}).length" :containerStyle="{padding:0,margin:0}">
+  <ContentPane :showExpand="true" :containerStyle="{padding:0,margin:0}">
     <template #left>
       <ScenarioTree/>
     </template>

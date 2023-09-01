@@ -1,4 +1,4 @@
-name: make
+name: make server and agent
 
 on:
   push:

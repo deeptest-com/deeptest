@@ -708,3 +708,15 @@ type SourceType uint
 const (
 	Swagger SourceType = 1
 )
+
+type DataSyncType string
+
+const (
+	FullCover DataSyncType = "full_cover" //完全覆盖
+	AutoAdd   DataSyncType = "auto_merge" //智能合并
+	Add       DataSyncType = "add"        //新增
+)
+
+func (e DataSyncType) String() string {
+	return string(e)
+}

@@ -9,7 +9,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -247,12 +246,12 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 			continue
 		}
 
-		if req.DataSyncType == convert.FullCover {
+		if req.DataSyncType == consts.FullCover {
 			if err == nil {
 				endpoint.ID = res.ID
 			}
 
-		} else if req.DataSyncType == convert.CopyAdd {
+		} else if req.DataSyncType == consts.AutoAdd {
 			if err == nil {
 				continue
 			}
@@ -274,7 +273,7 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 	for _, component := range components {
 		component.ServeId = int64(req.ServeId)
 		component.SourceType = consts.Swagger
-		if req.DataSyncType == convert.FullCover {
+		if req.DataSyncType == consts.FullCover {
 			_, err := s.ServeRepo.GetComponentByItem(consts.Swagger, uint(component.ServeId), component.Ref)
 			if err == nil {
 				continue
@@ -296,7 +295,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 
 		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory, SourceType: consts.Swagger}
 		//全覆盖更新目录
-		if req.DataSyncType == convert.FullCover {
+		if req.DataSyncType == consts.FullCover {
 			res, err := s.CategoryRepo.GetByItem(consts.Swagger, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
 			if err == nil {
 				category.ID = res.ID

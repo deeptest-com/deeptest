@@ -1,6 +1,7 @@
 import {defineComponent,ref, reactive} from 'vue';
 import {Form} from 'ant-design-vue';
 import  './index.less';
+import debounce from "lodash.debounce";
 
 
 export default defineComponent({
@@ -34,14 +35,14 @@ export default defineComponent({
           });
 
         const { validate, validateInfos} = useForm(modelRef, rulesRef);
-
-        const onfinish = () => {
+        
+          const onfinish = debounce( async () => () => {
             validate().then(() => {
                 emit('onFinish',modelRef.content)
             }).catch((error) => {
               console.log('error', error)
             })
-          }
+          } ,300)  
           
         const onCancel = () => {
             //debugger

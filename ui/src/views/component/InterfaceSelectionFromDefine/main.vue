@@ -31,6 +31,7 @@ import {defineProps, ref} from "vue";
 
 import Tree from "./tree.vue"
 import List from "./list.vue"
+import debounce from "lodash.debounce";
 
 const props = defineProps({
   onFinish: {
@@ -61,10 +62,7 @@ const onSelectInterfaces = async (ids) => {
   interfaceIds.value = ids
 }
 
-const onSubmit = () => {
-  console.log('onSubmit')
-  props.onFinish(interfaceIds.value)
-}
+const onSubmit = debounce( async () => props.onFinish(interfaceIds.value ),300)
 
 const onCancel = () => {
   console.log('onCancel')

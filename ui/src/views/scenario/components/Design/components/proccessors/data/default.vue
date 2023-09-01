@@ -48,11 +48,10 @@
         </a-form-item>
 
         <a-form-item v-if="formState.src === DataSrc.datapool"
-                     label="数据池" v-bind="validateInfos.datapoolId" required>
-          <a-select v-model:value="formState.datapoolId"
-                    @blur="validate('datapoolId', { trigger: 'blur' }).catch(() => {})">
+                     label="数据池" v-bind="validateInfos.datapoolId" name="datapoolId">
+          <a-select v-model:value="formState.datapoolId">
             <!--<a-select-option :key="0" value="">请选择</a-select-option>-->
-            <a-select-option v-for="(item, idx) in datapools" :key="idx" :value="item.id">
+            <a-select-option v-for="(item, idx) in datapools" :key="idx" :value="item.id+0">
               {{item.name}}
             </a-select-option>
           </a-select>
@@ -154,7 +153,7 @@ const rulesRef:any = computed(() => { return {
     {required: true, message: '请输入变量名称', trigger: 'blur'},
   ],
   url: formState.value.src === DataSrc.fileUpload ? [{required: true, message: '请上传文件', trigger: 'blur'}] : [],
-  datapoolId: formState.value.src === DataSrc.datapool ? [{required: true, message: '请选择数据池', trigger: 'change'}] : [],
+  datapoolId: formState.value.src === DataSrc.datapool ? [{ type: 'number',required: true, message: '请选择数据池', trigger: 'blur'}] : [],
   separator: formState.value.format === 'txt' ? [{required: true, message: '请输入分隔符', trigger: 'blur'}] : [],
 }})
 
@@ -201,14 +200,12 @@ watch(nodeData, (val: any) => {
 */
 
 const submit = debounce(async () => {
-  console.log('rulesRef', rulesRef.value, formState.value.datapoolId)
+ // console.log('rulesRef', rulesRef.value, formState.value.datapoolId,typeof formState.value.datapoolId)
 
   validate().then(async () => {
         // 下面代码改成 await 的方式
-    const data = formState.value
-    data.datapoolId = +data.datapoolId
 
-        const res = await store.dispatch('Scenario/saveProcessor', data);
+        const res = await store.dispatch('Scenario/saveProcessor', formState.value);
         if (res === true) {
           //notifySuccess(`保存成功`);
         } else {

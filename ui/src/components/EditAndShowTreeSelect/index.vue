@@ -6,9 +6,11 @@
           :treeData="treeData"
           style="width: 200px"
           :size="'small'"
+          :show-search="showSearch"
           @select="updateField"
           :treeDefaultExpandAll="true"
           @treeExpand="treeExpand"
+          tree-node-filter-prop="name"
           :replaceFields="{ title: 'name',value:'id'}"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
           placeholder="请选择"
@@ -47,7 +49,12 @@ const props = defineProps({
   customClass: {
     required: false,
     type: String,
-  }
+  },
+  showSearch: {
+    required: false,
+    type: Boolean,
+    default: false,
+  },
 })
 const emit = defineEmits(['update', 'edit']);
 

@@ -192,6 +192,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 				Type: condition.Type,
 			}
 
+			interfaceExecCondition.Raw, _ = json.Marshal(checkpointBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
 
 			if _, ok := detail["checkpoint"]; !ok {

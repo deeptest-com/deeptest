@@ -2,11 +2,9 @@
     <div class="debug-methods">
       <a-radio-group @change="changeMethod" v-model:value="selectedMethod" button-style="solid">
         <template v-for="method in requestMethodOpts" :key="method.value">
-          <a-radio-button
-              v-if="hasDefinedMethod(method.value)"
-              :value="method.value"
-              :style="{ color: method.color }"
-              class="has-defined">
+          <a-radio-button v-if="hasDefinedMethod(method.value)" class="has-defined"
+                          :value="method.value"
+                          :style="{ color: method.color }">
             {{ method.label }}
           </a-radio-button>
         </template>
@@ -28,12 +26,13 @@ const interfaceDetail = computed<any>(() => store.state.Endpoint.selectedMethodD
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 
-const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
+const selectedMethod = ref('GET');
 
 const changeMethod = async () => {
   console.log('changeMethod', selectedMethod.value)
+
   const endpointInterface = interfaceMethodToObjMap.value[selectedMethod.value]
-  console.log('interfaceMethodToObjMap',interfaceMethodToObjMap.value)
+
   // sync with / to define page
   if (endpointInterface?.id) {
     await store.commit('Endpoint/setSelectedMethodDetail', endpointInterface);
@@ -48,9 +47,14 @@ const changeMethod = async () => {
   }
 }
 
-onMounted(async () => {
+const initMethod = async () => {
+  await store.dispatch('Endpoint/removeUnSavedMethods')
+  if (interfaceDetail.value?.method) {
+    selectedMethod.value = interfaceDetail.value?.method
+  }
   await changeMethod()
-})
+}
+initMethod()
 
 function hasDefinedMethod(method: string) {
   return endpointDetail?.value?.interfaces?.some((item) => {

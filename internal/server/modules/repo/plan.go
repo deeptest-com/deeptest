@@ -85,6 +85,7 @@ func (r *PlanRepo) CombineUserName(data []*model.Plan) {
 	for _, v := range data {
 		userIds = append(userIds, v.AdminId)
 		userIds = append(userIds, v.UpdateUserId)
+		userIds = append(userIds, v.CreateUserId)
 	}
 	userIds = commonUtils.ArrayRemoveUintDuplication(userIds)
 
@@ -101,6 +102,9 @@ func (r *PlanRepo) CombineUserName(data []*model.Plan) {
 		}
 		if updateUserName, ok := userIdNameMap[v.UpdateUserId]; ok {
 			v.UpdateUserName = updateUserName
+		}
+		if createUserName, ok := userIdNameMap[v.CreateUserId]; ok {
+			v.CreateUserName = createUserName
 		}
 	}
 }
@@ -148,7 +152,7 @@ func (r *PlanRepo) FindByName(scenarioName string, id uint) (scenario model.Plan
 }
 
 func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.BizErr) {
-	//po, err := r.FindByName(scenario.Name, 0)
+	//po, err := r.FindExpressionByName(scenario.Name, 0)
 	//if po.Name != "" {
 	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
 	//	return
@@ -446,4 +450,8 @@ func (r *PlanRepo) DeleteByCategoryIds(categoryIds []uint) (err error) {
 		Update("deleted", 1).Error
 
 	return
+}
+
+func (r *PlanRepo) UpdateCurrEnvId(id, currEnvId uint) error {
+	return r.DB.Model(&model.Plan{}).Where("id = ?", id).UpdateColumn("curr_env_id", currEnvId).Error
 }

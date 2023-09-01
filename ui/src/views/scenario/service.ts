@@ -102,6 +102,14 @@ export async function removeNode(id: number): Promise<any> {
         method: 'delete',
     });
 }
+
+export async function disableNodeOrNot(id: number): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/${id}/disableOrNot`,
+        method: 'post',
+    });
+}
+
 export async function moveNode(data: any): Promise<any> {
     return request({
         url: `/${apiPathNodes}/move`,
@@ -116,9 +124,9 @@ export async function addInterfacesFromDefine(data): Promise<any> {
         data: data,
     });
 }
-export async function addInterfacesFromTest(data): Promise<any> {
+export async function addInterfacesFromDiagnose(data): Promise<any> {
     return request({
-        url: `/${apiPathNodes}/addInterfacesFromTest`,
+        url: `/${apiPathNodes}/addInterfacesFromDiagnose`,
         method: 'POST',
         data: data,
     });
@@ -253,7 +261,6 @@ export function getRequestBodyTypes() {
 
 export function getProcessorCategories() {
     const ret = getEnumSelectItems(ProcessorCategory)
-    console.log('====', ret)
     return ret
 }
 
@@ -393,4 +400,21 @@ export const showSubMenuItem = (entityType, category, type) => {
     }
 
     return true
+}
+
+
+export async function importCurl(params:any): Promise<any> {
+    return request({
+        url: `/scenarios/nodes/importCurl`,
+        method: 'post',
+        data:params,
+    });
+}
+
+export async function addInterfacesFromCase(params:any): Promise<any> {
+    return request({
+        url: `/${apiPathNodes}/addInterfacesFromCase`,
+        method: 'post',
+        data:params,
+    });
 }

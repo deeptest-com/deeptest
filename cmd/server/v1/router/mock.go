@@ -13,6 +13,11 @@ type MockModule struct {
 // Party 脚本
 func (m *MockModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
+		index.Get("/{project:string}/{serve:string}/{path:string}", m.MockCtrl.Mock).Name = "测试"
+		index.Post("/{project:string}/{serve:string}/{path:string}", m.MockCtrl.Mock).Name = "测试"
+		index.Put("/{project:string}/{serve:string}/{path:string}", m.MockCtrl.Mock).Name = "测试"
+		index.Delete("/{project:string}/{serve:string}/{path:string}", m.MockCtrl.Mock).Name = "测试"
+
 		index.Get("/", m.MockCtrl.Get).Name = "模拟接口测试"
 		index.Post("/", m.MockCtrl.Posts).Name = "模拟接口测试"
 		index.Put("/", m.MockCtrl.Posts).Name = "模拟接口测试"

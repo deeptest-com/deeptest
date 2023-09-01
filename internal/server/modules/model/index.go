@@ -41,6 +41,7 @@ var (
 		&DiagnoseInterface{},
 
 		&Snippet{},
+		&MockJsExpression{},
 
 		&MockInvocation{},
 		&Auth2Token{},
@@ -63,6 +64,7 @@ var (
 		&ProcessorData{},
 		&ProcessorCookie{},
 		&ProcessorExtractor{},
+		&ProcessorCustomCode{},
 
 		&ScenarioReport{},
 		&PlanReport{},
@@ -111,5 +113,10 @@ var (
 		&ProjectMemberAudit{},
 
 		&SwaggerSync{},
+
+		&DebugConditionResponseDefine{},
+		&ExecLogResponseDefine{},
+
+		&SysConfig{},
 	}
 )

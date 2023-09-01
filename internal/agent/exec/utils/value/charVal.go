@@ -5,6 +5,10 @@ import (
 )
 
 func GenerateByteItems(start byte, end byte, step int, rand bool, repeat int, repeatTag string) (ret []interface{}) {
+	if start > end && step > 0 || start < end && step < 0 {
+		step = step * -1
+	}
+
 	ret = generateByteItemsByStep(start, end, step, repeat, repeatTag)
 
 	if rand {
@@ -26,7 +30,7 @@ func generateByteItemsByStep(start byte, end byte, step int, repeat int, repeatT
 			}
 
 			for round := 0; round < repeat; round++ {
-				arr = append(arr, val)
+				arr = append(arr, string(val))
 
 				total++
 				if total > consts.MaxNum {
@@ -47,7 +51,7 @@ func generateByteItemsByStep(start byte, end byte, step int, repeat int, repeatT
 					break
 				}
 
-				arr = append(arr, val)
+				arr = append(arr, string(val))
 
 				if total > consts.MaxNum {
 					break

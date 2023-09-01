@@ -19,6 +19,7 @@ type ExecCookie struct {
 	Id    uint        `json:"id"`
 	Name  string      `json:"name"`
 	Value interface{} `json:"value"`
+	Path  string      `json:"path"`
 
 	Domain     string     `json:"domain"`
 	ExpireTime *time.Time `json:"expireTime"`

@@ -1,35 +1,40 @@
 <template>
-    <a-drawer class="report-drawer" :closable="true" :width="1000" :bodyStyle="{ padding: '24px' }" :visible="drawerVisible"
-        @close="onClose">
-        <template #title>
-            <div class="drawer-header">
-                <div>{{ detailResult.name || '测试报告详情' }}</div>
-            </div>
-        </template>
-        <div class="drawer-content">
-            <ReportBasicInfo  :items="detailResult.basicInfoList" :scene="scene" :show-operation="true" />
-            <StatisticTable  :data="statisticData" :value="statInfo"/>
-            <LogTreeView :treeData="detailResult.scenarioReports"/>
-        </div>
-    </a-drawer>
+  <a-drawer 
+    class="report-drawer" 
+    wrapClassName="report-drawer-exec-history" 
+    :closable="true" 
+    :width="1000" 
+    :visible="drawerVisible"
+    @close="onClose">
+    <template #title>
+      <div class="drawer-header">
+        <div>{{ detailResult.name || '测试报告详情' }}</div>
+      </div>
+    </template>
+    <div class="report-exec-info-main">
+      <ReportBasicInfo :items="detailResult.basicInfoList" :scene="scene" :show-operation="true"/>
+      <StatisticTable :data="statisticData" :value="statInfo"/>
+      <LogTreeView :treeData="scenarioReports"/>
+    </div>
+  </a-drawer>
 </template>
 <script setup lang="ts">
-import { defineProps, defineEmits, ref, computed } from 'vue';
-import { useStore } from 'vuex';
+import {defineProps, defineEmits, ref, computed} from 'vue';
+import {useStore} from 'vuex';
 
-import { ReportBasicInfo, StatisticTable,LogTreeView } from '@/views/component/Report/components';
+import {ReportBasicInfo, StatisticTable, LogTreeView} from '@/views/component/Report/components';
 
-import { StateType as ReportStateType } from "../store";
-import { StateType as PlanStateType } from '@/views/plan/store';
+import {StateType as ReportStateType} from "../store";
+import {StateType as PlanStateType} from '@/views/plan/store';
 import {getDivision, getPercentStr} from "@/utils/number";
 
 const props = defineProps<{
-    drawerVisible: boolean
-    title: string
-    scenarioExpandActive: boolean
-    showScenarioInfo: boolean
-    scene: string // 查看详情的场景 【执行测试计划 exec_plan， 执行测试场景 exec_scenario， 查看报告详情 query_detail】
-    reportId?: number
+  drawerVisible: boolean
+  title: string
+  scenarioExpandActive: boolean
+  showScenarioInfo: boolean
+  scene: string // 查看详情的场景 【执行测试计划 exec_plan， 执行测试场景 exec_scenario， 查看报告详情 query_detail】
+  reportId?: number
 }>();
 
 const emits = defineEmits(['onClose', 'execCancel']);
@@ -39,86 +44,84 @@ const store = useStore<{ Report: ReportStateType, Plan: PlanStateType }>();
 const detailResult = computed<any>(() => store.state.Report.detailResult);
 const expandActive = ref(props.scenarioExpandActive || false);
 
+const scenarioReports = computed(() => {
+  return detailResult.value.scenarioReports?.map((item) => {
+    if (item?.logs?.length > 0) {
+      return item.logs[0]
+    }
+  })
+})
 const statInfo = computed(() => {
-  const data = detailResult.value || {};
-  if (data === null) return {};
+  const data = JSON.parse(detailResult.value?.stat || '{}');
   return {
-    passAssertionNum: data.passAssertionNum,
-    failAssertionNum: data.failAssertionNum,
-    notTestNum: data.notTestNum,
+    interfacePass: data.interfacePass || 0,
+    interfaceFail: data.interfaceFail || 0,
+    interfaceSkip: data.interfaceSkip || 0,
   }
 })
 const statisticData = computed(() => {
-  const data = detailResult.value || {};
+  const data = JSON.parse(detailResult.value?.stat || '{}');
   const {
-    totalAssertionNum = 0,
-    totalInterfaceNum = 0,
-    totalProcessorNum = 0,
-    totalRequestNum = 0,
-    failAssertionNum = 0,
-    failInterfaceNum = 0,
-    failRequestNum = 0,
-    finishProcessorNum = 0,
-    passInterfaceNum = 0,
-    passRequestNum = 0,
-    passAssertionNum = 0,
-    duration = 0,
+    checkpointFail= 0,
+    checkpointPass= 0,
+    interfaceCount= 0,
+    interfaceDurationAverage= 0,
+    interfaceDurationTotal= 0,
+    interfaceFail= 0,
+    interfacePass= 0,
+    interfaceSkip= 0,
   } = data;
-  // 计算平均接口耗时
-  let interfaceDuration = 0;
-  const notTestNum = totalInterfaceNum - passInterfaceNum - failInterfaceNum;
-  const passRate = getPercentStr(passAssertionNum, totalAssertionNum);
-  const notPassRate = getPercentStr(failAssertionNum, totalAssertionNum);
-  const notTestNumRate = getPercentStr(notTestNum, totalAssertionNum);
-  // // 平均接口耗时
-  const avgInterfaceDuration = getDivision(duration, totalRequestNum);
+  const passRate = getPercentStr(interfacePass, interfaceCount);
+  const notPassRate = getPercentStr(interfaceFail, interfaceCount);
+  const notTestNumRate = getPercentStr(interfaceSkip, interfaceCount);
   return [
     {
-      label: '通过',
-      class: 'success',
+      label: '通过接口',
+      value: `${interfacePass} 个`,
       rate: passRate,
-      value: `${passAssertionNum} 个`,
+      class: 'success',
     },
     {
       label: '接口总耗时',
-      value: `${duration} 毫秒`
+      value: `${interfaceDurationTotal} 毫秒`
     },
     {
-      label: '失败',
+      label: '失败接口',
       rate: notPassRate,
-      value: `${failAssertionNum} 个`,
+      value: `${interfaceFail} 个`,
       class: 'fail',
     },
     {
       label: '平均接口耗时',
-      value: `${avgInterfaceDuration} 毫秒`,
+      value: `${interfaceDurationAverage} 毫秒`,
     },
     {
-      label: '未测',
-      value: ` ${notTestNum}个`,
+      label: '未测接口',
+      value: `${interfaceSkip}个`,
       rate: notTestNumRate,
       class: 'notest',
     },
     {
       label: '检查点 (成功/失败)',
-      value: `${totalAssertionNum} (${passAssertionNum}/${failAssertionNum})`,
+      value: `${checkpointPass + checkpointFail} (${checkpointPass}/${checkpointFail})`,
     },
   ]
+
 })
 
 function onClose() {
-    emits('onClose');
+  emits('onClose');
 }
 
 function execCancel() {
-    emits('execCancel');
+  emits('execCancel');
 }
 
 </script>
 <style scoped lang="less">
 .report-drawer {
-    :deep(.ant-drawer-header) {
-        box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
-    }
+  :deep(.ant-drawer-header) {
+    box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
+  }
 }
 </style>

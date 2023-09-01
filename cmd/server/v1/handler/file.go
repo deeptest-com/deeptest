@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/service"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -43,6 +44,8 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 		return
 	}
 
+	format := commUtils.GetDataFileFormat(pth)
+
 	var data interface{}
 	if isDatapool {
 		absPath := filepath.Join(dir.GetCurrentAbPath(), pth)
@@ -55,5 +58,5 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,
-		Data: iris.Map{"path": pth, "data": data}, Msg: _domain.NoErr.Msg})
+		Data: iris.Map{"path": pth, "format": format, "data": data}, Msg: _domain.NoErr.Msg})
 }

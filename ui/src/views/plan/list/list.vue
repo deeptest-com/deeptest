@@ -44,6 +44,7 @@
 
       <div>
         <a-table row-key="id" :columns="columns" :data-source="list" :loading="loading"
+          :scroll="{ x: 1240 }"
           :pagination="{
             ...pagination,
             onChange: (page) => {
@@ -53,6 +54,9 @@
             onShowSizeChange: (page, size) => {
               pagination.pageSize = size
               getList(page);
+            },
+            showTotal: (total) => {
+               return `共 ${total} 条数据`;
             },
           }" class="dp-table">
 
@@ -127,13 +131,16 @@
     :scene="ReportDetailType.ExecPlan"
     @on-close="execReportVisible = false"
   />
-  <EnvSelector @on-cancel="envSelectVisible = false" :env-select-drawer-visible="envSelectVisible" @on-ok="onExec" />
+  <EnvSelector @on-cancel="envSelectVisible = false;execEnvId= null"
+               :execEnvId="execEnvId"
+               :env-select-drawer-visible="envSelectVisible"
+               @on-ok="onExec" />
 </template>
 
 <script setup lang="ts">
-import {computed, onMounted, reactive, ref, watch} from "vue";
+import {computed, onMounted, provide, reactive, ref, watch} from "vue";
 import { useStore } from "vuex";
-import { message } from 'ant-design-vue';
+import {message, notification} from 'ant-design-vue';
 import { MoreOutlined } from "@ant-design/icons-vue";
 import { Modal } from "ant-design-vue";
 import debounce from "lodash.debounce";
@@ -156,6 +163,7 @@ const columns = [
   {
     title: '编号',
     dataIndex: 'serialNumber',
+    width: 150,
   },
   {
     title: '测试计划',
@@ -167,18 +175,32 @@ const columns = [
   {
     title: '状态',
     dataIndex: 'status',
+    width: 80,
     slots: { customRender: 'status' },
   },
   {
     title: '测试通过率',
+    width: 110,
     dataIndex: 'testPassRate',
   },
   {
     title: '负责人',
+    width: 110,
     dataIndex: 'adminName',
   },
   {
+    title: '创建人',
+    width: 110,
+    dataIndex: 'createUserName',
+  },
+  {
+    title: '更新人',
+    width: 110,
+    dataIndex: 'updateUserName',
+  },
+  {
     title: '最近更新',
+    width: 180,
     dataIndex: 'updatedAt',
     slots: { customRender: 'updatedAt' },
   },
@@ -186,11 +208,13 @@ const columns = [
     title: '操作',
     key: 'action',
     width: 80,
+    fixed: 'right',
     slots: { customRender: 'action' },
   },
 ];
 
 import { ReportDetailType } from "@/utils/enum";
+import {notifyError} from "@/utils/notify";
 
 const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -236,27 +260,32 @@ const getList = debounce(async (current: number): Promise<void> => {
 }, 300);
 
 const onExec = async () => {
-  editDrawerVisible.value = false;
+  // editDrawerVisible.value = false;
   envSelectVisible.value = false;
   await store.dispatch('Plan/initExecResult');
+  // 执行完后，重新拉取列表数据，保证 列表中 curEnvId 为最新的
+  await getList(pagination.value.current);
   execReportVisible.value = true;
 }
 
+const execEnvId = ref(null);
 const exec = async (record: any) => {
   await getCurrentPalnInfo(record);
+  execEnvId.value = record.currEnvId;
   envSelectVisible.value = true;
 };
 
-const handleEnvSelect = () => {
-  editDrawerVisible.value = false;
+const handleEnvSelect = (planDetail) => {
+  // editDrawerVisible.value = false;
   envSelectVisible.value = true;
+  execEnvId.value = planDetail.currEnvId;
+
 }
 
 const report = async (record: any) => {
   await getCurrentPalnInfo(record);
   editTabActiveKey.value = 'test-report';
   editDrawerVisible.value = true;
-
 };
 
 const clone = async (id: number) => {
@@ -289,7 +318,7 @@ const handleUpdate = async (params: any) => {
     if (result) {
       store.dispatch('Plan/getPlan', currPlan.value.id);
     } else {
-      message.error('更新计划失败');
+      notifyError('更新计划失败');
     }
   } catch(err) {
     console.log(err);
@@ -308,11 +337,11 @@ const edit = async (record: any) => {
 };
 
 const getCurrentPalnInfo = async (record: any) => {
-  const { id, adminId, categoryId, testStage, desc, status, name } = record;
+  const { id, adminId, categoryId, testStage, desc, status, name, createUserName } = record;
   try {
-    await store.dispatch('Plan/setCurrentPlan', { id, adminId, categoryId, testStage, desc, status, name });
+    await store.dispatch('Plan/setCurrentPlan', { id, adminId, categoryId, testStage, desc, status, name, createUserName });
   } catch(err) {
-    message.error('获取计划信息出错');
+    notifyError('获取计划信息出错');
   }
 };
 
@@ -373,6 +402,8 @@ watch(
 onMounted(async () => {
   await store.dispatch('Project/getUserList');
 })
+
+provide('editPlanDrawerVisible', computed(() => editDrawerVisible.value));
 </script>
 
 <style lang="less" scoped>

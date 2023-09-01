@@ -1,5 +1,7 @@
+<!-- ::::迭代次数 -->
 <template>
-  <div class="processor_loop_time-main">
+  <div class="processor_loop_time-main dp-processors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -11,16 +13,23 @@
 
           <a-form-item label="次数" v-bind="validateInfos.times">
             <a-input-number v-model:value="modelRef.times"
+                            :min="1"
+                            style="width:200px"
                      @blur="validate('times', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
-          <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
+          <a-form-item label="跳出条件" name="breakIfExpression">
+            <a-input  v-model:value="modelRef.breakIfExpression"/>
+            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}', number: '{+number}'})}}</div>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-textarea v-model:value="modelRef.comments" :rows="3"/>
+          </a-form-item>
+
+          <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
+<!--            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>-->
           </a-form-item>
         </a-form>
       </div>
@@ -34,9 +43,11 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
-import {NotificationKeyCommon} from "@/utils/const";
+import debounce from "lodash.debounce";
+import {notifyError, notifySuccess} from "@/utils/notify";
+
 
 const useForm = Form.useForm;
 
@@ -59,27 +70,20 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            notifySuccess(`保存成功`);
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            notifyError(`保存失败`);
           }
         })
       })
-};
+}, 300);
 
 onMounted(() => {
-  console.log('onMounted')
   if (!modelRef.value.times) modelRef.value.times = 3
 })
 
@@ -94,9 +98,11 @@ const wrapperCol = { span: 16 }
 
 <style lang="less" scoped>
 .processor_loop_time-main {
+
   .icons {
     text-align: right;
     line-height: 32px;
   }
 }
+
 </style>

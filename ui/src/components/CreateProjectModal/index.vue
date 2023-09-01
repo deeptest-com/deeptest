@@ -50,10 +50,12 @@
                   show-search
                   placeholder="请选择管理员"
                   @blur="validate('adminId', { trigger: 'blur' }).catch(() => {})"
+                  optionFilterProp="label"
+                  :filter-option="filterOption"
               >
                 <a-select-option
-                    v-for="(option, key) in userListOptions"
-                    :key="key"
+                    v-for="option in userListOptions"
+                    :key="option.id+'-'+option.name"
                     :value="option.id"
                 >{{ option.label }}
                 </a-select-option
@@ -81,13 +83,14 @@
 
 <script lang="ts" setup>
 import {computed, defineEmits, defineProps, reactive, ref, watch} from "vue";
-import {Form, message} from "ant-design-vue";
+import {Form, message, notification} from "ant-design-vue";
 import {StateType as UserStateType} from "@/store/user";
 import {StateType as ProjectStateType} from "@/views/project/store";
 import {SelectTypes} from "ant-design-vue/es/select";
 import {useStore} from "vuex";
 import {RuleObject} from "ant-design-vue/es/form/interface";
 import {getProjectLogo, projectLogoList} from "./index";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const useForm = Form.useForm;
 const props = defineProps<{
@@ -112,6 +115,14 @@ const projectInfo = {
 };
 
 const formStateRef = reactive(props.formState || projectInfo);
+
+const filterOption = (input: string, option: any) => {
+  let optionArr = option.key.split('-')
+  let key = optionArr[1]
+  if (key.indexOf(input) >= 0) {
+    return true
+  }
+};
 
 let validateShortName = async (rule: RuleObject, value: string) => {
   const reg = /^[A-Za-z][A-Za-z0-9_\\-]{0,9}$/;
@@ -148,10 +159,10 @@ const submitForm = async () => {
       .then(() => {
         store.dispatch("Project/saveProject", {...formStateRef}).then((res) => {
           if (res === true) {
-            message.success("保存成功");
+            notifySuccess("保存成功");
             emits("handleSuccess");
           } else {
-            message.error("保存失败");
+            notifyError("保存失败");
           }
         });
       })

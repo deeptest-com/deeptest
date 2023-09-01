@@ -1,6 +1,6 @@
 <template>
   <a-descriptions :size="'small'" :title="null" :column="4">
-    <a-descriptions-item label="创建人">{{ detailResult?.createUserName }}</a-descriptions-item>
+    <a-descriptions-item label="创建人">{{ username(detailResult?.createUserName) }}</a-descriptions-item>
     <a-descriptions-item label="状态">
       <EditAndShowSelect :label="scenarioStatus.get(detailResult?.status) || '未设置'"
                          :value="detailResult?.status || null"
@@ -65,12 +65,11 @@ import {Scenario} from "@/views/Scenario/data";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowTreeSelect from '@/components/EditAndShowTreeSelect/index.vue';
-import ConBoxTitle from '@/components/ConBoxTitle/index.vue';
 import {momentUtc} from '@/utils/datetime';
 
 const props = defineProps({})
 
-const store = useStore<{ Scenario }>();
+const store = useStore<{ Scenario,Project }>();
 const detailResult: any = computed<Scenario>(() => store.state.Scenario.detailResult);
 const treeDataCategory = computed<any>(() => store.state.Scenario.treeDataCategory);
 const treeData: any = computed(() => {
@@ -79,6 +78,7 @@ const treeData: any = computed(() => {
     value:-1,
   }];
 });
+const userList = computed<any>(() => store.state.Project.userList);
 const categoryLabel = computed(() => {
   if (!detailResult.value?.categoryId) {
     return '未分类'
@@ -112,7 +112,10 @@ function handleChange(type, val) {
   emit('change', type, val);
 }
 
-
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
+}
 
 </script>
 

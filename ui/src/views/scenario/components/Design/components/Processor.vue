@@ -1,5 +1,5 @@
 <template>
-  <div class="scenario-processor-edit-main">
+  <div class="scenario-processor-edit-main dp-processors-container">
     <!--    <ProcessorThreadDefault v-if="selectedNode.processorType === 'processor_thread_default'" />-->
 
     <ProcessorInterfaceDefault v-if="selectedNode.processorType === 'processor_interface_default'" />
@@ -15,7 +15,6 @@
     <ProcessorLoopUntil v-else-if="selectedNode.processorType === 'processor_loop_until'" />
     <ProcessorLoopIn    v-else-if="selectedNode.processorType === 'processor_loop_in'" />
     <ProcessorLoopRange v-else-if="selectedNode.processorType === 'processor_loop_range'" />
-    <ProcessorLoopBreak v-else-if="selectedNode.processorType === 'processor_loop_break'" />
 
     <ProcessorVariableSet   v-else-if="selectedNode.processorType === 'processor_variable_set'" />
     <ProcessorVariableClear v-else-if="selectedNode.processorType === 'processor_variable_clear'" />
@@ -31,11 +30,12 @@
     <ProcessorCookieSet   v-else-if="selectedNode.processorType === 'processor_cookie_set'" />
     <ProcessorCookieClear v-else-if="selectedNode.processorType === 'processor_cookie_clear'" />
 
-    <ProcessorDataText    v-else-if="selectedNode.processorType === 'processor_data_text'" />
-    <ProcessorDataExcel   v-else-if="selectedNode.processorType === 'processor_data_excel'" />
-    <ProcessorDataZenData v-else-if="selectedNode.processorType === 'processor_data_zendata'" />
+    <ProcessorDataDefault    v-else-if="selectedNode.processorType === 'processor_data_default'" />
+    <ProcessorCustomCode v-else-if="selectedNode.processorType === 'processor_custom_code'" />
 
-    <span v-else></span>
+    <span v-else>
+      <a-empty style="margin-top: 100px;" :description="'请先在左侧目录上选择编排场景'"/>
+    </span>
 
   </div>
 </template>
@@ -60,7 +60,6 @@ import ProcessorLoopTime from "./proccessors/loop/time.vue"
 import ProcessorLoopUntil from "./proccessors/loop/until.vue"
 import ProcessorLoopIn  from "./proccessors/loop/in.vue"
 import ProcessorLoopRange from "./proccessors/loop/range.vue"
-import ProcessorLoopBreak from "./proccessors/loop/break.vue"
 
 import ProcessorVariableSet  from "./proccessors/variable/set.vue"
 import ProcessorVariableClear from "./proccessors/variable/clear.vue"
@@ -76,9 +75,8 @@ import ProcessorCookieGet  from "./proccessors/cookie/get.vue"
 import ProcessorCookieSet  from "./proccessors/cookie/set.vue"
 import ProcessorCookieClear from "./proccessors/cookie/clear.vue"
 
-import ProcessorDataText   from "./proccessors/data/text.vue"
-import ProcessorDataExcel  from "./proccessors/data/excel.vue"
-import ProcessorDataZenData from "./proccessors/data/zendata.vue"
+import ProcessorDataDefault   from "./proccessors/data/default.vue"
+import ProcessorCustomCode from "./proccessors/custom_code/default.vue"
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; }>();
@@ -86,10 +84,21 @@ const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 
 </script>
 
+<style lang="less">
+
+</style>
+
 <style lang="less" scoped>
 .scenario-processor-edit-main {
   height: 100%;
-  padding: 10px 0 0 16px;
-}
 
+  :deep(.ant-form) {
+    .ant-row.ant-form-item.processor-btn {
+      .ant-form-item-control-input > .ant-form-item-control-input-content {
+        display: flex;
+        justify-content: flex-end;
+      }
+    }
+  }
+}
 </style>

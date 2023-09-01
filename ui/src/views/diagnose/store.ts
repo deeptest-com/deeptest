@@ -39,6 +39,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         changeTreeDataMapItemProp: Mutation<StateType>;
 
         setInterfaceTabs: Mutation<StateType>;
+        updateTabName: Mutation<StateType>;
     };
     actions: {
         loadTree: Action<StateType, StateType>;
@@ -110,6 +111,14 @@ const StoreModel: ModuleType = {
         setInterfaceTabs(state, payload) {
             state.interfaceTabs = payload;
         },
+        updateTabName(state, payload) {
+            state.interfaceTabs.forEach(function(item) {
+                console.log(item)
+                if (item.id === payload.id) {
+                    item.title = payload.title
+                }
+            });
+        },
     },
     actions: {
         async loadTree({ commit, state, dispatch }, params: any) {
@@ -147,11 +156,12 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async saveInterface({ state, dispatch }, payload: any) {
+        async saveInterface({ commit, state, dispatch }, payload: any) {
             const jsn = await save(payload)
             if (jsn.code === 0) {
                 dispatch('loadTree', state.queryParams);
-                return true;
+                commit('updateTabName', {id: payload.id, title: payload.title})
+                return jsn.data;
             } else {
                 return false
             }
@@ -220,11 +230,12 @@ const StoreModel: ModuleType = {
                 serveId: payload.id
             });
             if (res.code === 0) {
-                res.data.forEach((item: any) => {
-                    item.label = item.description;
-                    item.value = item.id;
+                const servers = (res.data.servers || []).map((item: any) => {
+                    item.label = item.environmentName;
+                    item.value = item.environmentId;
+                    return item;
                 })
-                commit('setServeServers', res.data || null);
+                commit('setServeServers', servers);
             } else {
                 return false
             }

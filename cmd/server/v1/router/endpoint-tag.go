@@ -14,7 +14,7 @@ type EndpointTagModule struct {
 // Party 注册模块
 func (m *EndpointTagModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
-		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 		public.Get("/", m.EndpointTagCtrl.ListTags).Name = "获取标签列表"
 	}
 	return module.NewModule("/endpoint/tags", handler)

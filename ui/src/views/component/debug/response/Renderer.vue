@@ -1,11 +1,10 @@
 <template>
   <div class="response-renderer">
-<!--    {{invokedMap}} - {{debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId}}-->
     <template v-if="invokedMap[debugInfo.debugInterfaceId+'-'+debugInfo.endpointInterfaceId] &&
                     responseData.invokeId">
       <div class="left">
         <a-tabs v-model:activeKey="activeKey" class="dp-tabs-full-height">
-          <a-tab-pane key="body" :tab="title" class="uppercase">
+          <a-tab-pane key="body" tab="响应体" class="uppercase">
             <ResponseLensJson v-if="responseData.contentLang === 'json'" />
             <ResponseLensHtml v-else-if="responseData.contentLang === 'html'" />
             <ResponseLensXml v-else-if="responseData.contentLang === 'xml'" />
@@ -73,6 +72,11 @@ const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const responseData = computed<any>(() => store.state.Debug.responseData);
 const invokedMap = computed<any>(() => store.state.Debug.invokedMap);
 
+watch(debugInfo, () => {
+  console.log('watch debugInfo', debugInfo.value)
+  activeKey.value = 'body'
+}, {deep: true})
+
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
@@ -92,7 +96,8 @@ const isImage = (type) => {
 
   .left {
     height: 100%;
-    flex: 1;
+    width: 66.666666%;
+    min-width: 490px;
     .ant-tabs-line {
       height: 100%;
     }
@@ -102,7 +107,9 @@ const isImage = (type) => {
   }
   .right {
     height: 100%;
-    width: 360px;
+    width: 33.333333%;
+    min-width: 240px;
+    flex-shrink: 0;
   }
 
 

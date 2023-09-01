@@ -114,7 +114,7 @@ func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.
 }
 
 func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, err error) {
-	//po, err := r.FindByName(scenario.Name, 0)
+	//po, err := r.FindExpressionByName(scenario.Name, 0)
 	//if po.Name != "" {
 	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
 	//	return
@@ -303,12 +303,22 @@ func (r *ScenarioRepo) PlanList(req v1.ScenarioPlanReqPaginate, scenarioId int) 
 	return
 }
 
-func (r *ScenarioRepo) UpdateStatus(id uint, status consts.TestStatus) error {
-	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Update("status", status).Error
+func (r *ScenarioRepo) UpdateStatus(id uint, status consts.TestStatus, updateUserId uint, updateUserName string) error {
+	fields := map[string]interface{}{
+		"status":           status,
+		"update_user_id":   updateUserId,
+		"update_user_name": updateUserName,
+	}
+	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Updates(fields).Error
 }
 
-func (r *ScenarioRepo) UpdatePriority(id uint, priority string) error {
-	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Update("priority", priority).Error
+func (r *ScenarioRepo) UpdatePriority(id uint, priority string, updateUserId uint, updateUserName string) error {
+	fields := map[string]interface{}{
+		"priority":         priority,
+		"update_user_id":   updateUserId,
+		"update_user_name": updateUserName,
+	}
+	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Updates(fields).Error
 }
 
 func (r *ScenarioRepo) GetByIds(ids []uint) (scenarios []model.Scenario, err error) {
@@ -337,4 +347,8 @@ func (r *ScenarioRepo) DeleteByCategoryIds(categoryIds []uint) (err error) {
 		Update("deleted", 1).Error
 
 	return
+}
+
+func (r *ScenarioRepo) UpdateCurrEnvId(id, currEnvId uint) error {
+	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Update("curr_env_id", currEnvId).Error
 }

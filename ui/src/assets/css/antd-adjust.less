@@ -14,8 +14,21 @@
     color: rgba(0, 0, 0, 0.5);
     cursor: default;
 }
+.ant-select-disabled .ant-select-selection-item {
+    color: rgba(0, 0, 0, 0.45);
+    cursor: default;
+}
+
 .ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected {
     background-color: @itemSelectedBackground;
+}
+
+.ant-pagination-total-text {
+    display: inline-block;
+    height: 32px;
+    margin-right: 20px;
+    line-height: 30px;
+    vertical-align: middle;
 }
 
 .ant-empty.dp-empty-no-margin {
@@ -49,6 +62,12 @@
         padding: 0 16px;
     }
 }
+
+.ant-drawer-close {
+    height: 48px;
+    line-height: 48px;
+}
+
 .ant-card.dp-card-full-height {
     .ant-card-head {
         height: 52px;
@@ -63,6 +82,10 @@
     .ant-tabs-bar.ant-tabs-top-bar {
         height: 48px;
         margin-bottom: 0px;
+
+        .ant-tabs-tab {
+            margin-right: 5px;
+        }
     }
     .ant-tabs-content {
         height: calc(100% - 48px);
@@ -107,4 +130,40 @@
 /* 横向滑块悬浮 */
 ::-webkit-scrollbar-thumb:horizontal:hover {
     background-color: rgb(230, 233, 236);
+}
+
+.ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+    padding: 12px;
+}
+
+.drawer-exec,
+.drawer-exec-history-detail,
+.report-drawer-exec-history,
+.plan-drawer-exec {
+    .ant-drawer-wrapper-body {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+
+        .ant-drawer-header {
+            height: 55px;
+        }
+
+        .ant-drawer-body {
+            flex: 1;
+            height: 0;
+            padding: 16px 16px 32px;
+
+            .scenario-exec-info-main, .report-exec-info-main, .plan-exec-info-main {
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+
+                .log-tree-view {
+                    flex: 1;
+                    overflow-y: scroll;
+                }
+            }
+        }
+    }
 }

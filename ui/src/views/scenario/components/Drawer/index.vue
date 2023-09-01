@@ -1,15 +1,17 @@
 <template>
   <div>
-    <DrawerLayout :visible="visible" @close="onCloseDrawer" :stickyKey="stickyKey">
+    <DrawerLayout :visible="visible" @close="onCloseDrawer" :stickyKey="stickyKey"
+                  class="scenario-interface-design">
       <!-- 头部信息  -->
       <template #header>
         <div class="header-text">
           <span class="serialNumber">[{{ detailResult.serialNumber }}]</span>
           <EditAndShowField placeholder="修改标题"
-                            :value="detailResult?.title || ''"
+                            :value="detailResult?.name || ''"
                             @update="updateTitle"/>
         </div>
       </template>
+
       <!-- 基本信息 -->
       <template #basicInfo>
         <BasicInfo @change="changeBasicInfo"/>
@@ -23,16 +25,21 @@
             <span>{{ tab.label }}</span>
           </div>
         </div>
+
         <div class="tab-header-btns">
-          <div v-if="activeKey==='1'" class="exec-scenario-btn">
-            <a-button @click="exec" type="primary"><span>执行</span></a-button>
+          <div v-if="activeKey==='1'"
+               :style="{right: isShowSync ? '200px' : '110px'}"
+               class="exec-scenario-btn">
+            <a-button @click="exec" type="primary">
+              <span>执行场景</span>
+            </a-button>
           </div>
         </div>
       </template>
 
       <template #tabContent>
         <div class="tab-pane">
-          <div v-if="activeKey==='1'" >
+          <div v-if="activeKey==='1'">
             <Design :id="detailResult?.id"/>
           </div>
           <div v-if="activeKey==='2'" style="padding: 16px">
@@ -44,6 +51,7 @@
         </div>
       </template>
     </DrawerLayout>
+
     <!-- 动态场景执行抽屉 -->
     <a-drawer
         :placement="'right'"
@@ -53,14 +61,16 @@
         :title="'执行场景'"
         class="drawer"
         wrapClassName="drawer-exec"
-        :bodyStyle="{padding:'16px',marginBottom:'56px'}"
         @close="onCloseExecDrawer">
       <ExecInfo v-if="execDrawerVisible"/>
     </a-drawer>
+
     <EnvSelector
         :env-select-drawer-visible="selectEnvVisible"
+        :execEnvId="execEnvId"
         @on-cancel="cancelSelectExecEnv"
         @on-ok="selectExecEnv"/>
+
     <!-- ::::静态数据：查看执行历史的详情 -->
     <a-drawer
         :placement="'right'"
@@ -70,7 +80,6 @@
         :visible="execListDetailVisible"
         class="drawer"
         wrapClassName="drawer-exec-history-detail"
-        :bodyStyle="{padding:'16px',marginBottom:'56px'}"
         @close="execListDetailVisible = false">
       <template #title>
         <div class="drawer-header">
@@ -83,28 +92,32 @@
 </template>
 
 <script lang="ts" setup>
-import {
-  ref,
-  defineProps,
-  defineEmits,
-  computed, reactive, watch,
-} from 'vue';
+import {computed, defineEmits, defineProps, ref, watch,} from 'vue';
 import BasicInfo from './BasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 
 import {useStore} from "vuex";
-import {PaginationConfig, Scenario} from "@/views/Scenario/data";
-import {message} from "ant-design-vue";
+import {Scenario} from "@/views/Scenario/data";
+import {StateType as Debug} from "@/views/component/debug/store";
+import {StateType as ScenarioStateType} from "../../store";
 import Design from "../Design/index.vue"
 import PlanList from "./PlanList.vue";
 import ExecList from "./ExecList.vue";
-import ExecInfo  from "../Exec/index.vue";
+import ExecInfo from "../Exec/index.vue";
 import EnvSelector from "@/views/component/EnvSelector/index.vue";
 import ExecListDetail from "./ExecListDetail.vue";
 import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
-const store = useStore<{ Scenario, ProjectGlobal, ServeGlobal,Report }>();
-const detailResult = computed<Scenario>(() => store.state.Scenario.detailResult);
-const pagination = computed<PaginationConfig>(() => store.state.Scenario.listResult.pagination);
+import {ProcessorInterfaceSrc} from "@/utils/enum";
+
+const store = useStore<{ Debug: Debug, Scenario: ScenarioStateType, ProjectGlobal, ServeGlobal, Report }>();
+const detailResult: any = computed<Scenario>(() => store.state.Scenario.detailResult);
+const debugData = computed<any>(() => store.state.Debug.debugData);
+
+console.log(
+    '%c Scenario-detailResult',
+    'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: green;',
+    detailResult
+)
 
 const props = defineProps({
   visible: {
@@ -115,10 +128,6 @@ const props = defineProps({
     required: true,
     type: String
   },
-  execVisible: {
-    required: true,
-    type: Boolean,
-  }
 });
 
 const emit = defineEmits(['ok', 'close', 'refreshList', 'closeExecDrawer']);
@@ -138,9 +147,10 @@ const tabsList = [
     "label": "关联测试计划"
   },
 ]
+
 async function changeTab(value) {
   activeKey.value = value;
-  stickyKey.value ++;
+  stickyKey.value++;
 }
 
 
@@ -149,11 +159,14 @@ const selectEnvVisible = ref(false);
 
 // 执行历史详情
 const execListDetailVisible = ref(false);
+const execEnvId = ref(null);
+
 async function cancelSelectExecEnv(record: any) {
   selectEnvVisible.value = false;
+  execEnvId.value = null;
 }
 
-async function showDetail(record:any) {
+async function showDetail(record: any) {
   execListDetailVisible.value = true;
   await store.dispatch('Scenario/getScenariosReportsDetail', {id: record.id});
 }
@@ -176,21 +189,26 @@ function onCloseExecDrawer() {
   emit('closeExecDrawer');
 }
 
-function exec() {
+async function exec() {
   selectEnvVisible.value = true;
+  await store.dispatch('Scenario/getScenario', detailResult?.value?.id);
+  execEnvId.value = detailResult?.value?.currEnvId;
 }
 
 watch(() => {
   return props.drawerTabKey;
 }, (val) => {
   activeKey.value = val;
-});
+}, {immediate: true});
 
-watch(() => {
-  return props.execVisible;
-}, (val) => {
-  execDrawerVisible.value = val;
-});
+// watch(() => {
+//   return props.execVisible;
+// }, (val) => {
+//   debugger;
+//   execDrawerVisible.value = val;
+// },{
+//   immediate:true
+// });
 
 // 更新标题
 async function updateTitle(title) {
@@ -201,31 +219,31 @@ async function updateTitle(title) {
 }
 
 async function changeBasicInfo(type, value) {
-  if(type==='status') {
+  if (type === 'status') {
     await store.dispatch('Scenario/updateStatus',
         {id: detailResult.value.id, status: value}
     );
     emit('refreshList');
   }
-  if(type==='priority') {
+  if (type === 'priority') {
     await store.dispatch('Scenario/updatePriority',
         {id: detailResult.value.id, priority: value}
     );
     emit('refreshList');
   }
-  if(type==='desc') {
+  if (type === 'desc') {
     await store.dispatch('Scenario/saveScenario',
         {id: detailResult.value.id, desc: value}
     );
     emit('refreshList');
   }
-  if(type==='categoryId') {
+  if (type === 'categoryId') {
     await store.dispatch('Scenario/updateCategoryId',
         {id: detailResult.value.id, categoryId: value}
     );
     emit('refreshList');
   }
-  if(type==='type') {
+  if (type === 'type') {
     await store.dispatch('Scenario/saveScenario',
         {id: detailResult.value.id, type: value}
     );
@@ -237,9 +255,37 @@ async function cancel() {
   emit('close');
 }
 
+watch(() => {
+  return props.visible
+}, async (newVal) => {
+  // 关闭时，需要清空数据
+  if (!newVal) {
+    await store.dispatch('Scenario/getScenario', 0);
+  }
+})
+
+
+const isShowSync = computed(() => {
+  const ret = debugData.value.processorInterfaceSrc !== ProcessorInterfaceSrc.Custom &&
+      debugData.value.processorInterfaceSrc !== ProcessorInterfaceSrc.Curl
+
+  return ret
+})
 
 </script>
+
 <style lang="less" scoped>
+.scenario-interface-design {
+
+  .tab-header-items {
+    width: unset !important;
+  }
+
+  .tab-header-btns {
+    width: unset !important;
+  }
+}
+
 .drawer {
   margin-bottom: 60px;
 
@@ -250,12 +296,6 @@ async function cancel() {
       height: 100%;
       width: 100%;
       position: relative;
-
-      .exec-scenario-btn {
-        position: absolute;
-        right: 218px;
-        top: -35px;
-      }
     }
   }
 
@@ -303,10 +343,11 @@ async function cancel() {
 }
 
 
-
 .drawer-exec-history-detail {
   :deep(.ant-drawer-header) {
     box-shadow: 0px 1px 0px rgba(0, 0, 0, 0.06);
   }
 }
+
+
 </style>

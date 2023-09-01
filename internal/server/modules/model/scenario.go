@@ -16,9 +16,13 @@ type Scenario struct {
 	SerialNumber   string            `json:"serialNumber"`
 	Status         consts.TestStatus `json:"status"`
 	CreateUserId   uint              `json:"createUserId"`
-	CreateUserName string            `json:"createUserName"`
+	CreatorName    string            `gorm:"-" json:"creatorName"`
+	CreateUserName string            `json:"createUserName"` //用户登录名
+	UpdateUserId   uint              `json:"updateUserId"`
+	UpdateUserName string            `json:"updateUserName"`
 	Priority       string            `json:"priority"`
 	Type           consts.TestType   `json:"type"`
+	CurrEnvId      uint              `json:"currEnvId"`
 }
 
 func (Scenario) TableName() string {

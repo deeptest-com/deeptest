@@ -2,29 +2,31 @@ package agentExec
 
 import (
 	"fmt"
+	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	"strings"
 )
 
-func GenRequestUrl(req *domain.BaseRequest, debugInterfaceId uint, baseUrl string) {
+func GenRequestUrlWithBaseUrlAndPathParam(req *domain.BaseRequest, debugInterfaceId uint, baseUrl string) {
+	// get base url by key consts.KEY_BASE_URL in Environment Variables from server
 	envId := ExecScene.DebugInterfaceToEnvMap[debugInterfaceId]
 	vars := ExecScene.EnvToVariables[envId]
-
 	if baseUrl == "" {
-		baseUrl = getValueFromList(consts.KEY_BASE_URL, vars)
+		vari, _ := getVariableFromList(consts.KEY_BASE_URL, vars)
+		baseUrl = fmt.Sprintf("%v", vari.Value)
 	}
 
 	req.Url = ReplacePathParams(req.Url, req.PathParams)
 
-	if req.ProcessorInterfaceSrc != consts.DiagnoseDebug {
+	notUseBaseUrl := execUtils.IsUseBaseUrl(consts.ScenarioDebug, req.ProcessorInterfaceSrc)
+	if !notUseBaseUrl {
 		req.Url = _httpUtils.CombineUrls(baseUrl, req.Url)
 	}
 }
 
 func ReplacePathParams(uri string, pathParams []domain.Param) string {
-
 	for _, param := range pathParams {
 		if param.ParamIn != consts.ParamInPath {
 			continue

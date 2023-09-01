@@ -2,10 +2,11 @@
   <div class="editor show-on-hover"
        v-if="isEditing"
        v-on-click-outside="cancelEdit">
-    <a-input
-             class="input"
+    <a-input  class="input"
              :placeholder="placeholder || '请输入内容'"
              :size="'small'"
+              ref="inputRef"
+             @keydown.enter="updateField"
              v-model:value="fieldValue" />
 
     <a-space :size="8">
@@ -19,11 +20,11 @@
 
   <div :class="['editor','show-on-hover', customClass]" v-else>
     <span class="title" :title="fieldValue" @click.stop="handleClick">
-      {{ fieldValue || '暂无' }}
+      {{ fieldValue || emptyValue }}
     </span> &nbsp;&nbsp;
 
     <span class="edit-icon">
-      <EditOutlined @click.stop="isEditing = true"/>
+      <EditOutlined @click.stop="edit"/>
     </span>
   </div>
 
@@ -33,15 +34,17 @@
 import {
   defineProps,
   defineEmits,
+  nextTick,
   ref, watch,
 } from 'vue';
-import { message } from 'ant-design-vue';
+import {message, notification} from 'ant-design-vue';
 import {
   EditOutlined,
   CheckOutlined,
   CloseOutlined
 } from '@ant-design/icons-vue';
 import { vOnClickOutside } from '@vueuse/components';
+import {notifyWarn} from "@/utils/notify";
 const isEditing = ref(false);
 const fieldValue = ref('');
 const editor = ref(null);
@@ -57,19 +60,40 @@ const props = defineProps({
   customClass: {
     required: false,
     type: String,
-  }
+  },
+  autoFocus: {
+    required: false,
+    type: Boolean,
+    default: false,
+  },
+  canEmpty: {
+    required: false,
+    type: Boolean,
+    default: false,
+  },
+  emptyValue: {
+    required: false,
+    type: String,
+    default: '暂无',
+  },
 })
 const emit = defineEmits(['update', 'edit']);
 
 function updateField() {
-  if (!fieldValue.value) {
-    message.warning('请请输入内容');
+  if (!props.canEmpty && !fieldValue.value) {
+    notifyWarn('请请输入内容');
     return;
   }
   emit('update', fieldValue.value);
   isEditing.value = false;
 }
 
+function edit() {
+  isEditing.value = true;
+  nextTick(() => {
+    inputRef?.value?.focus();
+  })
+}
 function cancelEdit() {
   fieldValue.value = props.value;
   isEditing.value = false;
@@ -78,9 +102,21 @@ function cancelEdit() {
 function handleClick() {
   emit('edit');
 }
+const inputRef:any = ref(null);
 
 watch(() => {return props.value}, (newVal) => {
   fieldValue.value = newVal
+}, {immediate: true})
+
+watch(() => {return props.autoFocus}, (newVal) => {
+  if (newVal) {
+    isEditing.value = true;
+
+    nextTick(() => {
+      inputRef?.value?.focus();
+    })
+
+  }
 }, {immediate: true})
 
 </script>
@@ -90,7 +126,8 @@ watch(() => {return props.value}, (newVal) => {
   display: flex;
   align-items: center;
   overflow: hidden;
-  flex: 1;
+  //flex: 1;
+  height: 24px;
 
   &.custom-serve {
     color: #447DFD;

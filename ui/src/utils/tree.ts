@@ -14,16 +14,18 @@ export function getSelectedTreeNode(checkedKeys, treeDataMapValue): any[] {
     const selectedNodes = [] as any[]
 
     Object.keys(treeDataMapValue).forEach((id, index) => {
-        if (!childrenMap[id] && isInArray(+id, checkedKeys)) { // in array and except other's child
+        console.log(!childrenMap[id],isInArray(id, checkedKeys))
+        if (!childrenMap[id] && isInArray(id, checkedKeys)) { // in array and except other's child
             const node = treeDataMapValue[id]
             if (!node.isDir || node.children) {
                 selectedNodes.push(node)
             }
         }
     })
-
+    
     return selectedNodes
 }
+
 const getChildren = (node, mp) => {
     mp[node.id] = true
 
@@ -43,8 +45,9 @@ export function filterTree(treeDataValue, keywords): number[] {
     for (let i = 0; i < flattenTreeList.length; i++) {
         const node = flattenTreeList[i];
 
-        const text = node.title?node.title:node.name
-        if (text.includes(keywords)) {
+        const text = node.title ? node.title : node.name;
+        // 兼容大小写问题
+        if (text.toLowerCase().includes(keywords.toLowerCase().trim())) {
             parentKeys.push(node.parentId);
             parentKeys = parentKeys.concat(findParentIds(node.parentId, flattenTreeList));
         }
@@ -78,3 +81,59 @@ function findParentIds(nodeId, tree) {
     }
     return parentIds;
 }
+
+
+/**
+ * @desc 根据关键词过滤树节点
+ * @param {Array} children 树节点
+ * @param {String} keyword 关键词
+ * @param {String} field 搜索字段
+ * @return {Array} 过滤后的树节点
+ *
+ * */
+export function filterByKeyword(children, keyword, field = 'title') {
+    if (!keyword.trim()) return children;
+
+    function filterChildren(node) {
+        if (node?.children?.length) {
+            node.children = node.children.filter((child) => {
+                return filterChildren(child);
+            })
+        }
+        return hasChildrenByKeyword(node, keyword, field);
+    }
+
+    return children.filter((menu) => {
+        return filterChildren(menu);
+    })
+}
+
+/**
+ * @desc 该节点下是否包含关键词
+ * @param {Object} node 节点
+ * @param {String} keyword 关键词
+ * @param {String} field 搜索字段
+ * @return {Boolean} 是否包含关键词
+ * */
+function hasChildrenByKeyword(node, keyword, field = 'title') {
+    let result = false;
+
+    // 定义递归函数，用于遍历树节点
+    function traverse(node) {
+        if (node?.[field]?.toLowerCase()?.includes(keyword.toLowerCase().trim())) {
+            result = true;
+            return;
+        }
+        // 递归处理子节点
+        if (node?.children?.length > 0) {
+            for (const child of node.children) {
+                traverse(child);
+            }
+        }
+    }
+
+    // 调用递归函数，开始遍历
+    traverse(node);
+    return result;
+}
+

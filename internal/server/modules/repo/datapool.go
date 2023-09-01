@@ -70,9 +70,10 @@ func (r *DatapoolRepo) Get(id uint) (project model.Datapool, err error) {
 	return
 }
 
-func (r *DatapoolRepo) GetByName(name string) (po model.Datapool, err error) {
+func (r *DatapoolRepo) GetByName(name string, projectId uint) (po model.Datapool, err error) {
 	err = r.DB.Model(&model.Datapool{}).
 		Where("name = ?", name).
+		Where("project_id = ?", projectId).
 		First(&po).Error
 
 	return

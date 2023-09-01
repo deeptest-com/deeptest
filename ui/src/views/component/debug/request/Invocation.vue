@@ -3,7 +3,8 @@
     <div class="toolbar">
       <div v-if="showMethodSelection" class="select-method">
         <a-select class="select-method"
-                  v-model:value="debugData.method">
+                  v-model:value="debugData.method"
+                  :disabled="usedBy === UsedBy.CaseDebug">
           <template v-for="method in Methods">
             <a-select-option v-if="hasDefinedMethod(method)"
                              :key="method"
@@ -13,55 +14,69 @@
           </template>
         </a-select>
       </div>
-
-      <div v-if="debugData.usedBy !== UsedBy.DiagnoseDebug && debugData.processorInterfaceSrc !== UsedBy.DiagnoseDebug" class="base-url">
+      <div id="env-selector">
+        <EnvSelector :show="showBaseUrl()" :server-id="serverId" @change="changeServer" :disabled="usedBy === UsedBy.ScenarioDebug" />
+      </div>
+      <div v-if="showBaseUrl()" class="base-url">
         <a-input placeholder="请输入地址"
                  v-model:value="debugData.baseUrl"
                  :disabled="baseUrlDisabled" />
       </div>
 
-      <div class="url">
-        <a-input placeholder="请输入路径"
-                 v-model:value="debugData.url"
-                 :disabled="urlDisabled"
-                 :title="urlDisabled ? '请在接口定义中修改' : ''" />
+      <div class="url"
+           :class="[isPathValid  ? '' :  'dp-field-error' ]">
+        <a-tooltip placement="bottom" :visible="!isPathValid"  overlayClassName="dp-tip-small" :title="'请输入合法的路径,以http(s)开头'">
+          <a-input placeholder="请输入路径"
+                   v-model:value="debugData.url"
+                   @change="pathUpdated"
+                   :disabled="urlDisabled"
+                   :title="urlDisabled ? '请在接口定义中修改' : ''"/>
+        </a-tooltip>
       </div>
 
       <div class="send">
-        <a-button type="primary" trigger="click" @click="send">
+        <a-button type="primary" trigger="click"
+                  @click="send"
+                  :disabled="!isPathValid">
           <span>发送</span>
         </a-button>
       </div>
 
       <div class="save">
-        <a-button trigger="click" @click="save" class="dp-bg-light">
+        <a-button trigger="click" class="dp-bg-light"
+                  @click="save"
+                  :disabled="!isPathValid">
           <icon-svg class="icon dp-icon-with-text" type="save" />
           保存
         </a-button>
       </div>
 
-      <div v-if="usedBy === UsedBy.InterfaceDebug" class="save-as-case">
+      <div v-if="usedBy === UsedBy.InterfaceDebug"
+           :disabled="!isPathValid"
+           class="save-as-case">
         <a-button trigger="click" @click="saveAsCase" class="dp-bg-light">
           另存为用例
         </a-button>
       </div>
-
-      <div v-if="usedBy === UsedBy.ScenarioDebug" class="sync">
-        <a-button trigger="click" @click="sync" class="dp-bg-light">
-          <UndoOutlined/>
-          同步
+      <div v-if="usedBy === UsedBy.InterfaceDebug"
+           :disabled="!isPathValid"
+           class="save-as-case">
+        <a-button trigger="click" @click="generateCases" class="dp-bg-light">
+          生成用例
         </a-button>
       </div>
-    </div>
 
-    <!-- 选择环境 -->
-    <div class="select-env" :style="{top: topVal}">
-      <a-select :value="serverId || null" @change="changeServer"
-                placeholder="请选择环境" class="select-env">
-        <a-select-option v-for="(option, key) in servers" :key="key" :value="option.id">
-          {{ option.description }}
-        </a-select-option>
-      </a-select>
+      <div v-if="isShowSync"
+           :disabled="!isPathValid"
+           class="sync">
+        <a-button trigger="click" @click="sync" class="dp-bg-light">
+          同步
+          <a-tooltip>
+            <template #title><span>从源{{syncSourceMapToText[debugData.processorInterfaceSrc]}}中同步数据到当前场景步骤，包括请求参数、前后置处理器和断言</span></template>
+          <QuestionCircleOutlined />
+        </a-tooltip>
+        </a-button>
+      </div>
     </div>
 
     <ContextMenu
@@ -74,39 +89,48 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, onMounted, onUnmounted, PropType, ref, watch} from "vue";
+import {computed, defineProps, inject, onMounted, onUnmounted, PropType, ref, watch, Teleport} from "vue";
 import {notification} from 'ant-design-vue';
-import {UndoOutlined} from '@ant-design/icons-vue';
+import {QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import IconSvg from "@/components/IconSvg";
-import {Methods, UsedBy} from "@/utils/enum";
+import {Methods, ProcessorInterfaceSrc, UsedBy} from "@/utils/enum";
 import {prepareDataForRequest} from "@/views/component/debug/service";
 import {NotificationKeyCommon} from "@/utils/const"
 
-import {StateType as Debug} from "@/views/component/debug/store";
+import {StateType as GlobalStateType} from "@/store/global";
+import {StateType as DebugStateType} from "@/views/component/debug/store";
+import {StateType as EndpointStateType} from "@/views/endpoint/store";
+
 import {Endpoint} from "@/views/endpoint/data";
 import useVariableReplace from "@/hooks/variable-replace";
 import {getToken} from "@/utils/localToken";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
-import {serverList} from "@/views/project-settings/service";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import EnvSelector from "./config/EnvSelector.vue";
+import {handlePathLinkParams} from "@/utils/dom";
+import {syncSourceMapToText} from "@/views/scenario/components/Design/config"
+import {notifyWarn} from "@/utils/notify";
 
-const store = useStore<{ Debug: Debug, Endpoint,Global }>();
+const store = useStore<{ Debug: DebugStateType, Endpoint: EndpointStateType, Global: GlobalStateType, ServeGlobal }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const servers = computed<any[]>(() => store.state.Debug.serves);
+const currService = computed(() => store.state.ServeGlobal.currServe);
+const currServe = computed(() => store.state.Debug.currServe);
 
 const props = defineProps({
-  topVal: {
-    type: String,
-    required: true
-  },
   onSave: {
     type: Function as PropType<(data) => void>,
     required: true
   },
   onSaveAsCase: {
+    type: Function,
+    required: false
+  },
+  onGenerateCases: {
     type: Function,
     required: false
   },
@@ -135,62 +159,40 @@ const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const {showContextMenu, contextMenuStyle, onContextMenuShow, onMenuClick} = useVariableReplace('endpointInterfaceUrl')
 
-const servers = ref([] as any[])
-const listServer = async (serveId) => {
-  servers.value = []
-  if (!serveId) {
-    return
-  }
+const showBaseUrl = () => {
+  const notShow = debugData.value.usedBy === UsedBy.DiagnoseDebug
+      || (debugData.value.usedBy === UsedBy.ScenarioDebug &&
+                (debugData.value.processorInterfaceSrc === ProcessorInterfaceSrc.Diagnose ||
+                  debugData.value.processorInterfaceSrc === ProcessorInterfaceSrc.Custom  ||
+                  debugData.value.processorInterfaceSrc === ProcessorInterfaceSrc.Curl
+                  ))
 
-  const res = await serverList({
-    serveId: serveId
-  });
-  if (res.code === 0) {
-    servers.value = res.data
-  }
-  console.log('servers', servers)
+  return !notShow
 }
 
-const getEnvUrl = () => {
-  console.log('getEnvUrl', debugData?.value)
 
-  if (!debugData.value || !servers.value) return
+const isShowSync = computed(() => {
+  const ret = usedBy === UsedBy.ScenarioDebug && (
+      debugData.value.processorInterfaceSrc !== ProcessorInterfaceSrc.Custom  &&
+      debugData.value.processorInterfaceSrc !== ProcessorInterfaceSrc.Curl)
 
-  servers.value?.forEach((item) => {
-    if (debugData.value.serverId === item.id && debugData.value.baseUrl) {
-      debugData.value.baseUrl = item.url
-      return
-    }
-  })
-}
+  return ret
+})
 
-const currServeId = ref(0)
-const currServerId = ref(0)
 watch(debugData, (newVal) => {
-  console.log('watch debugData', debugData.value.serveId, debugData.value.currServerId)
-
-  if (newVal.serveId != currServeId.value) {
-    listServer(debugData.value.serveId)
-    currServeId.value = debugData.value.serveId
-  }
-
-  if (currServerId.value != newVal.serverId) {
-    getEnvUrl()
-    currServerId.value = newVal.serverId
-  }
-
-  if (usedBy !== UsedBy.DiagnoseDebug) {
+  if (usedBy === UsedBy.InterfaceDebug || usedBy === UsedBy.CaseDebug) {
     debugData.value.url = debugData?.value.url || endpointDetail.value?.path || ''
   }
-
+  debugData.value.baseUrl = currServe.value.url;
+  debugData.value.serveId = currServe.value.serveId;
 }, {immediate: true, deep: true});
 
 const serverId = computed(() => {
-  return debugData?.value?.serverId || endpointDetail?.value?.serverId || servers.value[0]?.id || 0
+  return store.state.Debug.currServe.environmentId || 0
 });
 
 function changeServer(id) {
-  store.dispatch('Debug/changeServer', id)
+  store.dispatch('Debug/changeServer', { serverId: id, requestEnvVars: false })
 }
 
 const send = async (e) => {
@@ -199,6 +201,7 @@ const send = async (e) => {
 
   if (validateInfo()) {
     store.commit("Global/setSpinning",true)
+
     const callData = {
       serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
       token: await getToken(),
@@ -207,6 +210,7 @@ const send = async (e) => {
     await store.dispatch('Debug/call', callData).finally(()=>{
       store.commit("Global/setSpinning",false)
     })
+
     store.commit("Global/setSpinning",false)
   }
 }
@@ -222,9 +226,15 @@ const save = (e) => {
   bus.emit(settings.eventConditionSave, {});
 }
 const saveAsCase = () => {
-  // console.log('saveAsCase', debugData.value.url)
+  console.log('saveAsCase')
   if (validateInfo() && props.onSaveAsCase) {
     props.onSaveAsCase()
+  }
+}
+const generateCases = () => {
+  console.log('generateCases')
+  if (props.onGenerateCases) {
+    props.onGenerateCases()
   }
 }
 
@@ -244,30 +254,44 @@ const validateInfo = () => {
   // }
 
   if (msg) {
-    notification.warn({
-      key: NotificationKeyCommon,
-      message: msg,
-      placement: 'topRight'
-    });
-
+    notifyWarn(msg);
     return false
   }
 
   return true
 };
 
-
-onMounted(() => {
-  console.log('onMounted')
-})
 onUnmounted(() => {
   console.log('onUnmounted')
 })
 
 function hasDefinedMethod(method: string) {
+  if (usedBy !== UsedBy.CaseDebug)
+    return true
+
   return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })
+}
+
+function pathUpdated(e) {
+  const path = e.target.value.trim();
+
+  if (!validatePath()) {
+    return
+  }
+
+  const ret = handlePathLinkParams(path, debugData.value?.pathParams)
+  store.commit('Debug/setPathParams', ret)
+}
+
+
+const isPathValid = computed(() => {return validatePath()})
+function validatePath() {
+  const regx = /^https?:\/\/.+$/g;
+  const isMatch = showBaseUrl() || regx.test(debugData.value?.url)
+
+  return isMatch
 }
 
 // const showContextMenu = ref(false)
@@ -288,18 +312,27 @@ function hasDefinedMethod(method: string) {
 //   showContextMenu.value = false
 // }
 
-</script>
+watch(() => {
+  return currServe.value;
+}, val => {
+  console.log(val);
+  console.log(debugData.value);
+  debugData.value.baseUrl = val.url;
+  debugData.value.serveId = val.serveId;
+}, {
+  immediate: true,
+})
 
-<style lang="less">
-.invocation-main {
-  .select-env {
-    position: absolute;
-    right: 0px;
-    width: 120px;
-    height: 36px;
+watch(() => {
+  return currService.value.id;
+}, async (val) => {
+  if (val) {
+    await store.dispatch('Debug/listServes', {serveId: val});
   }
-}
-</style>
+}, {
+  immediate: true
+})
+</script>
 
 <style lang="less" scoped>
 .invocation-main {
@@ -318,6 +351,17 @@ function hasDefinedMethod(method: string) {
 
     .url {
       flex: 1;
+      &.dp-field-error {
+        border: 1px solid red !important;
+      }
+
+      input {
+        &:focus {
+          border: 1px solid #d9d9d9 !important;
+          outline: none  !important;
+          box-shadow: none  !important;
+        }
+      }
     }
 
     .send {

@@ -1,1 +1,1 @@
-dp.variables.clear("variable_name");
+dt.variables.clear("variable_name");

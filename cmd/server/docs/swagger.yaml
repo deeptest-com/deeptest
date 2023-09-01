@@ -360,6 +360,8 @@ definitions:
         type: array
       comments:
         type: string
+      disable:
+        type: boolean
       endpointInterfaceId:
         type: integer
       entity: {}
@@ -377,12 +379,16 @@ definitions:
         type: integer
       isDir:
         type: boolean
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       name:
         type: string
       ordr:
         type: integer
       parentId:
         type: integer
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       projectId:
         type: integer
       result:
@@ -418,12 +424,16 @@ definitions:
         type: integer
       isDir:
         type: boolean
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       name:
         type: string
       ordr:
         type: integer
       parentId:
         type: integer
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       projectId:
         type: integer
       result:
@@ -817,9 +827,9 @@ definitions:
     - processor_print
     - processor_variable
     - processor_assertion
-    - processor_extractor
     - processor_cookie
     - processor_data
+    - processor_custom_code
     type: string
     x-enum-varnames:
     - ProcessorRoot
@@ -831,9 +841,23 @@ definitions:
     - ProcessorPrint
     - ProcessorVariable
     - ProcessorAssertion
-    - ProcessorExtractor
     - ProcessorCookie
     - ProcessorData
+    - ProcessorCustomCode
+  consts.ProcessorInterfaceSrc:
+    enum:
+    - define
+    - case
+    - diagnose
+    - curl
+    - custom
+    type: string
+    x-enum-varnames:
+    - InterfaceSrcDefine
+    - InterfaceSrcCase
+    - InterfaceSrcDiagnose
+    - InterfaceSrcCurl
+    - InterfaceSrcCustom
   consts.ProcessorType:
     enum:
     - processor_root_default
@@ -860,6 +884,7 @@ definitions:
     - processor_cookie_clear
     - processor_data_text
     - processor_data_excel
+    - processor_custom_code_default
     type: string
     x-enum-varnames:
     - ProcessorRootDefault
@@ -886,6 +911,7 @@ definitions:
     - ProcessorCookieClear
     - ProcessorDataText
     - ProcessorDataExcel
+    - ProcessorCustomCodeDefault
   consts.ProgressStatus:
     enum:
     - start
@@ -999,15 +1025,15 @@ definitions:
   consts.UsedBy:
     enum:
     - interface_debug
-    - scenario_debug
-    - diagnose_debug
     - case_debug
+    - diagnose_debug
+    - scenario_debug
     type: string
     x-enum-varnames:
     - InterfaceDebug
-    - ScenarioDebug
-    - DiagnoseDebug
     - CaseDebug
+    - DiagnoseDebug
+    - ScenarioDebug
   convert.DataSyncType:
     enum:
     - full_cover
@@ -1161,6 +1187,8 @@ definitions:
         items:
           $ref: '#/definitions/domain.GlobalVar'
         type: array
+      fullUrlToDisplay:
+        type: string
       globalParams:
         items:
           $ref: '#/definitions/domain.GlobalParam'
@@ -1184,7 +1212,7 @@ definitions:
           $ref: '#/definitions/domain.Param'
         type: array
       processorInterfaceSrc:
-        $ref: '#/definitions/consts.UsedBy'
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       projectId:
         type: integer
       queryParams:
@@ -1462,6 +1490,20 @@ definitions:
           $ref: '#/definitions/domain.GlobalVar'
         type: array
     type: object
+  domain.ExecVariable:
+    properties:
+      expression:
+        type: string
+      id:
+        type: integer
+      interfaceId:
+        type: integer
+      isShare:
+        $ref: '#/definitions/consts.ExtractorScope'
+      name:
+        type: string
+      value: {}
+    type: object
   domain.ExtractorBase:
     properties:
       boundaryEnd:
@@ -1570,12 +1612,14 @@ definitions:
     type: object
   domain.InterfaceExecCondition:
     properties:
-      debugData:
-        $ref: '#/definitions/consts.ConditionType'
+      desc:
+        type: string
       raw:
         items:
           type: integer
         type: array
+      type:
+        $ref: '#/definitions/consts.ConditionType'
     type: object
   domain.InterfaceToEnvMap:
     additionalProperties:
@@ -1747,6 +1791,10 @@ definitions:
         type: string
       resultStatus:
         $ref: '#/definitions/consts.ResultStatus'
+      variableSettings:
+        items:
+          $ref: '#/definitions/domain.ExecVariable'
+        type: array
     type: object
   domain.SubmitDebugResultRequest:
     properties:
@@ -2104,7 +2152,7 @@ definitions:
       preRequestScript:
         type: string
       processorInterfaceSrc:
-        $ref: '#/definitions/consts.UsedBy'
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       projectId:
         type: integer
       queryParams:
@@ -2347,6 +2395,10 @@ definitions:
         type: integer
       name:
         type: string
+      postConditionsContent:
+        type: string
+      preConditionsContent:
+        type: string
       projectId:
         type: integer
       reqContent:
@@ -2388,6 +2440,8 @@ definitions:
         type: integer
       isLeaf:
         type: boolean
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       name:
         type: string
       ordr:
@@ -3206,6 +3260,8 @@ definitions:
         type: integer
       createdAt:
         type: string
+      currEnvId:
+        type: integer
       desc:
         type: string
       disabled:
@@ -3422,12 +3478,16 @@ definitions:
         $ref: '#/definitions/consts.ProcessorType'
       id:
         type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       name:
         type: string
       ordr:
         type: integer
       parentId:
         type: integer
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       projectId:
         type: integer
       scenarioId:
@@ -3459,6 +3519,8 @@ definitions:
         $ref: '#/definitions/consts.ProcessorCategory'
       processorID:
         type: integer
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       processorType:
         $ref: '#/definitions/consts.ProcessorType'
       repeatTimes:
@@ -3653,6 +3715,8 @@ definitions:
         type: string
       createdAt:
         type: string
+      currEnvId:
+        type: integer
       desc:
         type: string
       disabled:
@@ -3692,6 +3756,8 @@ definitions:
         type: string
       createdAt:
         type: string
+      currEnvId:
+        type: integer
       desc:
         type: string
       disabled:
@@ -4036,6 +4102,8 @@ definitions:
         type: integer
       currServeId:
         type: integer
+      currServerId:
+        type: integer
       disabled:
         type: boolean
       id:
@@ -4051,8 +4119,22 @@ definitions:
     properties:
       $ref:
         type: string
+      allOf:
+        items:
+          $ref: '#/definitions/openapi.SchemaRef'
+        type: array
+      anyOf:
+        items:
+          $ref: '#/definitions/openapi.SchemaRef'
+        type: array
+      description:
+        type: string
       items:
         $ref: '#/definitions/openapi.SchemaRef'
+      oneOf:
+        items:
+          $ref: '#/definitions/openapi.SchemaRef'
+        type: array
       properties:
         $ref: '#/definitions/openapi.Schemas'
       ref:
@@ -4109,6 +4191,16 @@ definitions:
     - Before
     - Inner
     - After
+  serverConsts.EndpointCaseTreeType:
+    enum:
+    - dir
+    - endpoint
+    - case
+    type: string
+    x-enum-varnames:
+    - EndpointCaseTreeTypeDir
+    - EndpointCaseTreeTypeEndpoint
+    - EndpointCaseTreeTypeCase
   serverConsts.NodeCreateMode:
     enum:
     - brother
@@ -4289,6 +4381,8 @@ definitions:
         items:
           $ref: '#/definitions/serverDomain.DiagnoseInterface'
         type: array
+      count:
+        type: integer
       debugInterfaceId:
         type: integer
       desc:
@@ -4297,6 +4391,8 @@ definitions:
         type: integer
       isDir:
         type: boolean
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       ordr:
         type: integer
       parentId:
@@ -4506,6 +4602,49 @@ definitions:
         type: integer
       usedBy:
         type: string
+    type: object
+  serverDomain.EndpointCaseTree:
+    properties:
+      caseInterfaceId:
+        type: integer
+      categoryId:
+        type: integer
+      children:
+        items:
+          $ref: '#/definitions/serverDomain.EndpointCaseTree'
+        type: array
+      count:
+        type: integer
+      debugInterfaceId:
+        type: integer
+      desc:
+        type: string
+      endpointId:
+        type: integer
+      id:
+        type: string
+      isDir:
+        type: boolean
+      key:
+        type: integer
+      method:
+        type: string
+      name:
+        type: string
+      ordr:
+        type: integer
+      parentId:
+        type: integer
+      projectId:
+        type: integer
+      serveId:
+        type: integer
+      slots:
+        $ref: '#/definitions/iris.Map'
+      type:
+        $ref: '#/definitions/serverConsts.EndpointCaseTreeType'
+      useId:
+        type: integer
     type: object
   serverDomain.EndpointInterfaceReqPaginate:
     properties:
@@ -5054,6 +5193,8 @@ definitions:
         type: string
       createdAt:
         type: string
+      currEnvId:
+        type: integer
       execEnv:
         description: 执行环境
         type: string
@@ -5341,6 +5482,17 @@ definitions:
     required:
     - name
     type: object
+  serverDomain.ScenarioAddCasesFromTreeReq:
+    properties:
+      createBy:
+        type: integer
+      selectedNodes:
+        items:
+          $ref: '#/definitions/serverDomain.EndpointCaseTree'
+        type: array
+      targetId:
+        type: integer
+    type: object
   serverDomain.ScenarioAddInterfacesFromTreeReq:
     properties:
       createBy:
@@ -5373,6 +5525,8 @@ definitions:
         type: string
       processorCategory:
         $ref: '#/definitions/consts.ProcessorCategory'
+      processorInterfaceSrc:
+        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       processorType:
         $ref: '#/definitions/consts.ProcessorType'
       projectId:
@@ -5383,6 +5537,15 @@ definitions:
         type: integer
       targetProcessorType:
         $ref: '#/definitions/consts.ProcessorType'
+    type: object
+  serverDomain.ScenarioCurlImportReq:
+    properties:
+      content:
+        type: string
+      createBy:
+        type: integer
+      targetId:
+        type: integer
     type: object
   serverDomain.ScenarioNodeMoveReq:
     properties:
@@ -8313,6 +8476,43 @@ paths:
                   type: array
               type: object
       summary: 用例列表
+      tags:
+      - 设计器/接口用例
+  /api/v1/endpoints/cases/loadTree:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 服务ID
+        in: query
+        name: serveId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/serverDomain.EndpointCaseTree'
+                  type: array
+              type: object
+      summary: 分类接口用例树
       tags:
       - 设计器/接口用例
   /api/v1/endpoints/cases/saveDebugData:
@@ -12409,6 +12609,36 @@ paths:
       summary: 删除节点
       tags:
       - 场景模块/编排节点
+  /api/v1/scenarios/nodes/{id}/disableOrNot:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 节点ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 禁用节点
+      tags:
+      - 场景模块/编排节点
   /api/v1/scenarios/nodes/{id}/updateName:
     put:
       consumes:
@@ -12443,6 +12673,42 @@ paths:
           schema:
             $ref: '#/definitions/_domain.Response'
       summary: 更新节点名称
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/addInterfacesFromCase:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 添加调接口用例的请求参数
+        in: body
+        name: ScenarioAddCasesFromTreeReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioAddCasesFromTreeReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 添加接口用例
       tags:
       - 场景模块/编排节点
   /api/v1/scenarios/nodes/addInterfacesFromDefine:
@@ -12551,6 +12817,37 @@ paths:
                   $ref: '#/definitions/model.Processor'
               type: object
       summary: 新建处理器
+      tags:
+      - 场景模块/编排节点
+  /api/v1/scenarios/nodes/importCurl:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 导入cURL命令的请求体
+        in: body
+        name: DiagnoseCurlImportReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ScenarioCurlImportReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Processor'
+              type: object
+      summary: 导入cURL命令
       tags:
       - 场景模块/编排节点
   /api/v1/scenarios/nodes/move:
@@ -13529,7 +13826,7 @@ paths:
       summary: 保存授权
       tags:
       - 服务管理/授权
-  /api/v1/serves/server/list:
+  /api/v1/serves/server/changeServer:
     post:
       consumes:
       - application/json
@@ -13560,11 +13857,52 @@ paths:
             - $ref: '#/definitions/_domain.Response'
             - properties:
                 data:
-                  items:
-                    $ref: '#/definitions/model.ServeServer'
-                  type: array
+                  $ref: '#/definitions/model.ServeServer'
               type: object
-      summary: 服务列表(不分页)
+      summary: 切换环境
+      tags:
+      - 服务管理
+  /api/v1/serves/server/list:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 环境列表的请求参数
+        in: body
+        name: ServeServer
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.ServeServer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  properties:
+                    ' currServer':
+                      $ref: '#/definitions/model.ServeServer'
+                    servers:
+                      items:
+                        $ref: '#/definitions/model.ServeServer'
+                      type: array
+                  type: object
+              type: object
+      summary: 环境列表(不分页)
       tags:
       - 服务管理
   /api/v1/serves/swaggerSyncDetail:

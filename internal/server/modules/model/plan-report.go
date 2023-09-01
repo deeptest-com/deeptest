@@ -49,6 +49,8 @@ type PlanReport struct {
 	SerialNumber string `json:"serialNumber"`
 	ExecEnvId    uint   `json:"execEnvId"` //执行环境Id
 
+	StatRaw string `json:"stat"`
+
 	//Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
 }
 
@@ -59,6 +61,7 @@ func (PlanReport) TableName() string {
 type PlanReportDetail struct {
 	PlanReport
 	CreateUserName  string                 `json:"createUserName"`
+	ExecUserName    string                 `json:"execUserName"`
 	ExecEnv         string                 `json:"execEnv"` //执行环境
 	ScenarioReports []ScenarioReportDetail `json:"scenarioReports"`
 }

@@ -3,6 +3,7 @@ package service
 import (
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
@@ -17,6 +18,10 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.CurrScenarioProcessorId = 0 // not in a scenario
 
 	agentExec.ExecScene = req.ExecScene
+
+	//
+	agentExec.InitDebugExecContext()
+	agentExec.InitJsRuntime()
 
 	// exec interface
 	agentExec.ExecPreConditions(&req)
@@ -38,10 +43,14 @@ func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err erro
 	// gen url
 	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
 
-	req.BaseRequest.FullUrlToDisplay = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
-	if req.ProcessorInterfaceSrc != consts.DiagnoseDebug {
-		req.BaseRequest.Url = req.BaseRequest.FullUrlToDisplay
+	notUseBaseUrl := execUtils.IsUseBaseUrl(req.UsedBy, req.ProcessorInterfaceSrc)
+
+	if notUseBaseUrl {
+		req.BaseRequest.Url = reqUri
+	} else {
+		req.BaseRequest.Url = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
 	}
+	req.BaseRequest.FullUrlToDisplay = req.BaseRequest.Url
 	logUtils.Info("requested url: " + req.BaseRequest.Url)
 
 	// send request

@@ -105,7 +105,7 @@ export default defineComponent({
             if(isCompositeType(parent?.type)){
                 return null;
             }
-            const properties = parent?.type === 'array' ? parent?.items || {} : parent?.properties[keyName] || {};
+            const properties = parent?.type === 'array' ? parent?.items || {} : parent?.properties?.[keyName] || {};
             const list: any = [];
             Object.entries(properties).forEach(([k, v]) => {
                 if (typeof v !== 'boolean' && !['type', 'properties', 'extraViewInfo', 'ref', '$ref', 'content', 'name', 'required', 'types'].includes(k)) {

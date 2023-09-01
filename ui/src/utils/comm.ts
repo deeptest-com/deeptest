@@ -20,6 +20,16 @@ export const getEnumSelectItems = (enumDef) => {
     return arr
 }
 
+export const getEnumArr = (enumDef) => {
+    const arr : any[] = []
+
+    for (const item in enumDef) {
+        arr.push(enumDef[item])
+    }
+
+    return arr
+}
+
 export const getResponseKey = (debugInfo) => {
     const key = `${debugInfo.debugInterfaceId}-${debugInfo.endpointInterfaceId}`
     console.log('getResponseKey', key)

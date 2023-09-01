@@ -14,7 +14,7 @@ type PlanExecModule struct {
 // Party
 func (m *PlanExecModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/loadExecPlan", m.PlanExecCtrl.LoadExecData).Name = "加载执行计划"
 		index.Get("/loadExecResult", m.PlanExecCtrl.LoadExecResult).Name = "加载执行结果"

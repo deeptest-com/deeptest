@@ -7,15 +7,15 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
+	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
+	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"net/http"
 	"net/url"
@@ -109,13 +109,10 @@ func (s *EndpointService) Develop(id uint) (err error) {
 }
 
 func (s *EndpointService) Copy(id uint, version string) (res uint, err error) {
-	logUtils.Infof(fmt.Sprintf("Copy endpoint id:%+v, version:%+v", id, version))
 
 	endpoint, _ := s.EndpointRepo.GetAll(id, version)
-	logUtils.Infof(fmt.Sprintf("endpoint 11111:%+v", endpoint))
 	s.removeIds(&endpoint)
 	endpoint.Title += "_copy"
-	logUtils.Infof(fmt.Sprintf("endpoint:%+v", endpoint))
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err
 }
@@ -131,6 +128,7 @@ func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
 		endpoint.Interfaces[key].ID = 0
 		endpoint.Interfaces[key].RequestBody.ID = 0
 		endpoint.Interfaces[key].RequestBody.SchemaItem.ID = 0
+		endpoint.Interfaces[key].DebugInterfaceId = 0
 		for key1, _ := range endpoint.Interfaces[key].Headers {
 			endpoint.Interfaces[key].Headers[key1].ID = 0
 		}
@@ -450,9 +448,9 @@ func (s *EndpointService) getRequestBody(body string) (requestBody model.Endpoin
 func (s *EndpointService) getRequestBodyItem(body string) (requestBodyItem model.EndpointInterfaceRequestBodyItem) {
 	requestBodyItem = model.EndpointInterfaceRequestBodyItem{}
 	requestBodyItem.Type = "object"
-	schema2conv := openapi.NewSchema2conv()
+	schema2conv := schemaHelper.NewSchema2conv()
 	var obj interface{}
-	schema := openapi.Schema{}
+	schema := schemaHelper.Schema{}
 	_commUtils.JsonDecode(body, &obj)
 	schema2conv.Example2Schema(obj, &schema)
 	requestBodyItem.Content = _commUtils.JsonEncode(schema)
@@ -507,11 +505,11 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 }
 
 func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
-	schema2conv := openapi.NewSchema2conv()
+	schema2conv := schemaHelper.NewSchema2conv()
 	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
 	for key, intef := range endpoint.Interfaces {
 		for k, response := range intef.ResponseBodies {
-			schema := new(openapi.SchemaRef)
+			schema := new(schemaHelper.SchemaRef)
 			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
 			if endpoint.SourceType == 1 && len(schema.Value.AllOf) > 0 {
 				schema2conv.CombineSchemas(schema)
@@ -523,10 +521,10 @@ func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 }
 
 func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId uint) {
-	schema2conv := openapi.NewSchema2conv()
+	schema2conv := schemaHelper.NewSchema2conv()
 	schema2conv.Components = s.ServeService.Components(serveId)
 	for k, response := range interf.ResponseBodies {
-		schema := new(openapi.SchemaRef)
+		schema := new(schemaHelper.SchemaRef)
 		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
 		if len(schema.Value.AllOf) > 0 {
 			schema2conv.CombineSchemas(schema)

@@ -14,7 +14,7 @@
         <div class="body">
           <div class="envs">
             <div class="env">
-              <div class="left">
+              <div class="left title">
                 共享变量
               </div>
 
@@ -25,29 +25,23 @@
                     <ClearOutlined @click="clearShareVar" class="dp-icon-btn dp-trans-80"/>
                   </a-tooltip>
                 </span>
-                <span class="dp-link">
+                <!-- <span class="dp-link">
                   <a-tooltip overlayClassName="dp-tip-small">
                     <template #title>帮助</template>
                     <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
                   </a-tooltip>
-                </span>
+                </span> -->
               </div>
             </div>
 
             <div v-for="(item, idx) in debugData.shareVars" :key="idx" class="env">
               <div class="left">
-                <div class="name">
-                  <a-tooltip overlayClassName="dp-tip-small">
-                    <template #title>{{item.name}}</template>
-                    {{item.name}}
-                  </a-tooltip>
+                <div class="name" :title="item.name">
+                  {{item.name}}
                 </div>
 
-                <div class="val">
-                  <a-tooltip class="val" overlayClassName="dp-tip-small">
-                    <template #title>{{item.localValue}}</template>
-                    {{item.localValue==='extractor_err'? t(item.localValue+'_short') : item.localValue}}
-                  </a-tooltip>
+                <div class="val" :title="item.localValue">
+                  {{item.localValue==='extractor_err'? t(item.localValue+'_short') : item.localValue}}
                 </div>
               </div>
 
@@ -65,16 +59,16 @@
         <div class="body">
           <div class="envs">
             <div class="env header">
-              <div class="left">
+              <div class="left title">
                 环境变量
               </div>
               <div class="right">
-                <span class="dp-link">
+                <!-- <span class="dp-link">
                   <a-tooltip overlayClassName="dp-tip-small">
                     <template #title>帮助</template>
                     <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
                   </a-tooltip>
-                </span>
+                </span> -->
               </div>
             </div>
 
@@ -95,7 +89,6 @@
                 </div>
 
                 <div class="right"></div>
-
               </div>
             </div>
             <div v-if="!debugData.envVars || debugData.envVars.length===0" class="env">空</div>
@@ -107,16 +100,16 @@
         <div class="body">
           <div class="envs">
             <div class="env">
-              <div class="left">
+              <div class="left title">
                 全局变量
               </div>
               <div class="right">
-                <span class="dp-link">
+                <!-- <span class="dp-link">
                   <a-tooltip overlayClassName="dp-tip-small">
                     <template #title>帮助</template>
                     <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
                   </a-tooltip>
-                </span>
+                </span> -->
               </div>
             </div>
 
@@ -149,16 +142,16 @@
         <div class="body">
           <div class="envs">
             <div class="env">
-              <div class="left">
+              <div class="left title">
                 全局参数
               </div>
               <div class="right">
-                <span class="dp-link">
+                <!-- <span class="dp-link">
                   <a-tooltip overlayClassName="dp-tip-small">
                     <template #title>帮助</template>
                     <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
                   </a-tooltip>
-                </span>
+                </span> -->
               </div>
             </div>
 
@@ -259,6 +252,7 @@ const close = () => {
     line-height: 32px;
     display: flex;
     .title {
+      font-size: 16px;
       flex: 1;
       font-weight: bolder;
     }
@@ -309,6 +303,9 @@ const close = () => {
             .left {
               flex: 1;
               display: flex;
+              &.title {
+                font-weight: bold;
+              }
 
               .name {
                 margin-left: 0;

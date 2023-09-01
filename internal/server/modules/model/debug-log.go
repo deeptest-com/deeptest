@@ -16,6 +16,7 @@ type ExecLogProcessor struct {
 	EndTime        *time.Time            `json:"endTime"`
 
 	ParentId uint `json:"parentId"`
+	InvokeId uint `json:"invokeId"`
 	ReportId uint `json:"reportId"`
 	UseID    uint `json:"useId"`
 
@@ -41,10 +42,12 @@ type ExecLogProcessor struct {
 	//ProcessorResult  string               `json:"processorResult,omitempty"`
 
 	Summary string `json:"summary,omitempty"`
-	Detail  string `gorm:"type:text" json:"Detail,omitempty"`
+	Detail  string `gorm:"type:text" json:"detail,omitempty"`
 	Output  string `json:"output,omitempty"`
 
 	Logs []*ExecLogProcessor `gorm:"-" json:"logs"`
+
+	Round string `gorm:"type:text" json:"round,omitempty"`
 }
 
 func (ExecLogProcessor) TableName() string {
@@ -76,4 +79,13 @@ type ExecLogScript struct {
 
 func (ExecLogScript) TableName() string {
 	return "biz_exec_log_script"
+}
+
+type ExecLogResponseDefine struct {
+	DebugConditionResponseDefine
+	InvokeId uint `json:"invokeId"`
+}
+
+func (ExecLogResponseDefine) TableName() string {
+	return "biz_exec_log_response_define"
 }

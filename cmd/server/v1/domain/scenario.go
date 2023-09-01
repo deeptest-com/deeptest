@@ -28,12 +28,18 @@ type ScenarioAddInterfacesFromTreeReq struct {
 	TargetId      uint                `json:"targetId"`
 	CreateBy      uint                `json:"createBy"`
 }
+type ScenarioAddCasesFromTreeReq struct {
+	SelectedNodes []EndpointCaseTree `json:"selectedNodes"`
+	TargetId      uint               `json:"targetId"`
+	CreateBy      uint               `json:"createBy"`
+}
 
 type ScenarioAddScenarioReq struct {
-	Name              string                   `json:"name"`
-	Mode              string                   `json:"mode"`
-	ProcessorCategory consts.ProcessorCategory `json:"processorCategory"`
-	ProcessorType     consts.ProcessorType     `json:"processorType"`
+	Name                  string                       `json:"name"`
+	Mode                  string                       `json:"mode"`
+	ProcessorCategory     consts.ProcessorCategory     `json:"processorCategory"`
+	ProcessorType         consts.ProcessorType         `json:"processorType"`
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 
 	TargetProcessorCategory consts.ProcessorCategory `json:"targetProcessorCategory"`
 	TargetProcessorType     consts.ProcessorType     `json:"targetProcessorType"`
@@ -124,4 +130,10 @@ type ScenarioPlanReqPaginate struct {
 	AdminId    uint              `json:"adminId"`
 	Ref        bool              `json:"ref"`
 	Keywords   string            `json:"keywords"`
+}
+
+type ScenarioCurlImportReq struct {
+	Content  string `json:"content"`
+	TargetId uint   `json:"targetId"`
+	CreateBy uint   `json:"createBy"`
 }

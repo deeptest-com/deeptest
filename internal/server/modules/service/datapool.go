@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -31,6 +32,9 @@ func (s *DatapoolService) Paginate(req v1.DatapoolReqPaginate) (ret _domain.Page
 
 func (s *DatapoolService) Get(id uint) (model.Datapool, error) {
 	return s.DatapoolRepo.Get(id)
+}
+func (s *DatapoolService) GetByName(name string, projectId uint) (model.Datapool, error) {
+	return s.DatapoolRepo.GetByName(name, projectId)
 }
 
 func (s *DatapoolService) Save(req *model.Datapool, userId uint) (err error) {
@@ -105,17 +109,17 @@ func (s *DatapoolService) ListForExec(projectId uint) (ret domain.Datapools, err
 	}
 
 	for _, datapool := range datapools {
-		var arr [][]string
+		var arr [][]interface{}
 		json.Unmarshal([]byte(datapool.Data), &arr)
 		if len(arr) == 0 {
-			return
+			continue
 		}
 		var headers []string
 		for _, col := range arr[0] {
-			headers = append(headers, col)
+			headers = append(headers, fmt.Sprintf("%v", col))
 		}
 
-		var items []map[string]interface{}
+		var items []domain.VarKeyValuePair
 
 		for rowIndex, row := range arr {
 			if rowIndex == 0 {

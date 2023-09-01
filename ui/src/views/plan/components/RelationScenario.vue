@@ -1,18 +1,19 @@
 <template>
-    <a-modal 
+    <a-modal
         class="associate-scenario-modal"
-        title="关联测试场景" 
-        :visible="associateModalVisible" 
+        title="关联测试场景"
+        :visible="associateModalVisible"
         :closable="true"
-        @cancel="handleCancel" 
+        @cancel="handleCancel"
         @ok="onOk"
         width="1000px">
-        <ScenarioList 
+        <ScenarioList
             :loading="loading"
-            :list="scenarioList"
+            :list="scenarioLists"
             :pagination="pagination"
-            :columns="columns" 
-            :show-scenario-operation="false" 
+            :columns="columns"
+            :show-scenario-operation="false"
+            :selectedKeys="selectedScenarioIds"
             @refresh-list="getScenarioList"
             @select-row-keys="handleSelectRowKeys" />
     </a-modal>
@@ -29,7 +30,7 @@ const props = defineProps<{
 }>();
 const store = useStore<{ Plan: PlanStateType }>();
 const emits = defineEmits(['onCancel', 'onOk']);
-const scenarioList = computed<any[]>(() => store.state.Plan.scenarios.list);
+const scenarioLists = computed<any[]>(() => store.state.Plan.scenarios.list);
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
 let pagination = computed<any>(() => store.state.Plan.scenarios.pagination);
 let queryParams = reactive<any>({
@@ -37,40 +38,48 @@ let queryParams = reactive<any>({
   planId: currPlan.value.id,
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
-let selectedScenarioIds: number[] = [];
+const selectedScenarioIds = ref<number[]>([]);
 const loading = ref<boolean>(false);
 
 const columns: any[] = reactive([
     {
         title: '用例名称',
         dataIndex: 'name',
+        width: 300,
+        slots: { customRender: 'name' }
     },
     {
         title: '状态',
+        width: 90,
         dataIndex: 'status',
         slots: { customRender: 'status' }
     },
     {
         title: '优先级',
+        width: 110,
         dataIndex: 'priority',
     },
     {
         title: '最近更新',
+        width: 180,
+        slots: { customRender: 'updatedAt' },
         dataIndex: 'updatedAt',
     }
 ]);
 
 function handleSelectRowKeys(value: any[]) {
-    selectedScenarioIds = value;
+    selectedScenarioIds.value = value;
 }
 
 function handleCancel() {
+    selectedScenarioIds.value = [];
     emits('onCancel');
 }
 
 async function onOk() {
     console.log('selectScenarioIds: --', selectedScenarioIds);
-    await store.dispatch('Plan/addScenario', { planId: currPlan.value.id, params: { scenarioIds: selectedScenarioIds } });
+    await store.dispatch('Plan/addScenario', { planId: currPlan.value.id, params: { scenarioIds: selectedScenarioIds.value } });
+    selectedScenarioIds.value = [];
     emits('onOk');
 }
 

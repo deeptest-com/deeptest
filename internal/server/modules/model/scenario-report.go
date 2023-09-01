@@ -43,12 +43,15 @@ type ScenarioReport struct {
 
 	CreateUserId   uint                `json:"createUserId"`
 	CreateUserName string              `gorm:"-" json:"createUserName"`
+	ExecUserName   string              `gorm:"-" json:"execUserName"`
 	SerialNumber   string              `json:"serialNumber"`
 	Logs           []*ExecLogProcessor `gorm:"-" json:"logs"`
 
 	ExecEnv   string `gorm:"-" json:"execEnv"`
 	ExecEnvId int    `json:"execEnvId"`
 	Priority  string `gorm:"-" json:"priority"`
+
+	StatRaw string `json:"stat"`
 }
 
 func (ScenarioReport) TableName() string {

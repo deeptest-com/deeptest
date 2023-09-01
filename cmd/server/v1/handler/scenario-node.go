@@ -73,7 +73,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
 }
 
-// AddInterfacesFromTest 添加接口
+// AddInterfacesFromDiagnose 添加接口
 // @Tags	场景模块/编排节点
 // @summary	添加调试接口
 // @accept 	application/json
@@ -83,7 +83,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 // @Param 	ScenarioAddInterfacesFromTreeReq	body	serverDomain.ScenarioAddInterfacesFromTreeReq	true	"添加调试接口的请求参数"
 // @success	200	{object}	_domain.Response{data=model.Processor}
 // @Router	/api/v1/scenarios/nodes/addInterfacesFromTest	[post]
-func (c *ScenarioNodeCtrl) AddInterfacesFromTest(ctx iris.Context) {
+func (c *ScenarioNodeCtrl) AddInterfacesFromDiagnose(ctx iris.Context) {
 	req := serverDomain.ScenarioAddInterfacesFromTreeReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -92,7 +92,37 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromTest(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromTest(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromDiagnose(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.SystemErr.Code,
+		})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: nodePo})
+}
+
+// AddInterfacesFromCase 添加接口用例
+// @Tags	场景模块/编排节点
+// @summary	添加接口用例
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization						header	string										true	"Authentication header"
+// @Param 	currProjectId						query	int											true	"当前项目ID"
+// @Param 	ScenarioAddCasesFromTreeReq			body	serverDomain.ScenarioAddCasesFromTreeReq	true	"添加调接口用例的请求参数"
+// @success	200	{object}	_domain.Response{data=model.Processor}
+// @Router	/api/v1/scenarios/nodes/addInterfacesFromCase	[post]
+func (c *ScenarioNodeCtrl) AddInterfacesFromCase(ctx iris.Context) {
+	req := serverDomain.ScenarioAddCasesFromTreeReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	req.CreateBy = multi.GetUserId(ctx)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromCase(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -129,6 +159,7 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 
 	req.ProjectId = uint(projectId)
 	req.CreateBy = multi.GetUserId(ctx)
+
 	nodePo, bizErr := c.ScenarioNodeService.AddProcessor(req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
@@ -195,6 +226,32 @@ func (c *ScenarioNodeCtrl) Delete(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+// DisableOrNot 禁用
+// @Tags	场景模块/编排节点
+// @summary	禁用节点
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string							true	"Authentication header"
+// @Param 	currProjectId	query	int								true	"当前项目ID"
+// @Param 	id				path	int								true	"节点ID"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/scenarios/nodes/{id}/disableOrNot	[post]
+func (c *ScenarioNodeCtrl) DisableOrNot(ctx iris.Context) {
+	id, err := ctx.Params().GetInt("id")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	err = c.ScenarioNodeService.DisableOrNot(uint(id))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
 // Move 移动
 // @Tags	场景模块/编排节点
 // @summary	移动节点
@@ -222,4 +279,34 @@ func (c *ScenarioNodeCtrl) Move(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// ImportCurl 导入cURL命令
+// @Tags	场景模块/编排节点
+// @summary	导入cURL命令
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization				header	string								true	"Authentication header"
+// @Param 	DiagnoseCurlImportReq		body	serverDomain.ScenarioCurlImportReq	true	"导入cURL命令的请求体"
+// @success	200	{object}	_domain.Response{data=model.Processor}
+// @Router	/api/v1/scenarios/nodes/importCurl	[post]
+func (c *ScenarioNodeCtrl) ImportCurl(ctx iris.Context) {
+	req := serverDomain.ScenarioCurlImportReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	req.CreateBy = multi.GetUserId(ctx)
+	newNode, bizErr := c.ScenarioNodeService.ImportCurl(req)
+	if bizErr != nil {
+		ctx.JSON(_domain.Response{
+			Code: _domain.SystemErr.Code,
+			Msg:  bizErr.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: newNode})
 }

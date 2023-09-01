@@ -1,20 +1,24 @@
 <template>
   <div v-if="drawerVisible">
-    <a-drawer class="report-drawer" :closable="true" :width="1000" :bodyStyle="{ padding: '24px' }"
-              :visible="drawerVisible"
-              @close="onClose">
+    <a-drawer
+      class="report-drawer"
+      :closable="true"
+      :width="1000"
+      :visible="drawerVisible"
+      wrapClassName="plan-drawer-exec"
+      @close="onClose">
       <template #title>
         <div class="drawer-header">
           <div>{{ '测试计划执行详情' }}</div>
         </div>
       </template>
-      <div class="drawer-content">
+      <div class="plan-exec-info-main">
         <ReportBasicInfo :items="basicInfoList || []" :showBtn="false"/>
         <StatisticTable :data="statisticData" :value="statInfo"/>
         <Progress :exec-status="progressStatus"
                   :percent="progressValue"
                   @exec-cancel="execCancel"/>
-        <LogTreeView :treeData="scenarioReports" :expandKeys="expandKeys"/>
+        <LogTreeView :treeData="reports"/>
       </div>
     </a-drawer>
   </div>
@@ -42,10 +46,11 @@ import {StateType as ProjectSettingStateType} from "@/views/project-settings/sto
 import {StateType as UserStateType} from "@/store/user";
 import {getDivision, getPercent, getPercentStr} from '@/utils/number';
 import {
-  scenarioReports, expandKeys,
-  clearLog,
-  execLogs, execResults, updateExecLogs, updateExecResult,statInfo
-  , statisticData, initData, progressStatus, progressValue, updatePlanRes,
+  scenarioReports,
+  reports,
+  resetData,
+  execLogs, execResults, updateExecLogs, updateExecResult, statInfo
+  , statisticData, initData, progressStatus, progressValue, updatePlanRes, updateStatFromLog,
 } from '@/composables/useExecLogs';
 
 const props = defineProps<{
@@ -71,7 +76,6 @@ const store = useStore<{
 
 const currPlan = computed<any>(() => store.state.Plan.currPlan);
 const currEnvId = computed(() => store.state.ProjectSetting.selectEnvId);
-// TODO： 这里的envList是从ProjectSetting中获取的，需要修改下，会污染其他作用域下的数据
 const envList = computed(() => store.state.ProjectSetting.envList);
 const currentUser = computed(() => store.state.User.currentUser);
 const currUser = computed(() => store.state.User.currentUser);
@@ -94,13 +98,17 @@ const basicInfoList = computed(() => {
     },
     {
       label: '创建人',
-      value: currUser.value.username || '--'
+      value: currPlan.value.createUserName || '暂无'
+    },
+    {
+      label: '执行人',
+      value: currUser.value.name || '暂无'
     },
   ]
 })
 
 const execStart = async () => {
-  clearLog();
+  resetData();
   const token = await getToken();
   const data = {
     serverUrl: process.env.VUE_APP_API_SERVER, // used by agent to submit result to server
@@ -112,23 +120,32 @@ const execStart = async () => {
 };
 
 const execCancel = () => {
-  progressStatus.value = 'exception';
+  progressStatus.value = 'cancel';
+  stopExec();
+};
+
+const stopExec = () => {
   const msg = {act: 'stop', execReq: {planId: currPlan.value && currPlan.value.id}};
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify(msg))
 };
 
 
 const OnWebSocketMsg = (data: any) => {
-
   if (!data.msg) return;
   if (progressStatus.value === 'cancel') return;
+  if (progressStatus.value === 'exception') return;
   const wsMsg = JSON.parse(data.msg);
   const log = wsMsg.data ? JSON.parse(JSON.stringify(wsMsg.data)) : {};
+
+  console.log('plan wsMsg***', wsMsg.data);
+  console.log('plan wsMsg2***', wsMsg);
+
   // 开始执行，初始化数据
   if (wsMsg.category == 'initialize') {
-    initData(log);
+    // initData();
     progressStatus.value = 'in_progress';
   }
+
   // 执行中
   else if (wsMsg.category == 'in_progress') {
     progressStatus.value = 'in_progress';
@@ -147,12 +164,21 @@ const OnWebSocketMsg = (data: any) => {
   else if (wsMsg.category === "processor" && log.scenarioId) {
     console.log('场景里每条编排的执行记录', log)
     updateExecLogs(log);
+  } else if (wsMsg.category === "stat") {
+    updateStatFromLog(log);
+  }
+  else if (wsMsg.category === "exception") {
+    progressStatus.value = 'exception';
+    stopExec();
   }
   // 执行完毕
   else if (wsMsg.category == 'end') {
     progressStatus.value = 'end';
+    // 测试计划执行完以后 重新获取下 计划的详情以及测试报告列表
+    bus.emit(settings.eventGetPlansReports);
+    bus.emit(settings.eventGetPlanDetail);
   } else {
-    console.log('其他情况：严格来说，不能执行到这儿');
+    console.log('其他情况：严格来说，不能执行到这儿:', wsMsg);
   }
 };
 
@@ -162,7 +188,7 @@ const onWebSocketConnStatusMsg = (data: any) => {
     return;
   }
   const {conn}: any = JSON.parse(data.msg);
-  progressStatus.value = conn === 'success' ? 'in_progress' : 'failed';
+  progressStatus.value = conn === 'success' ? 'in_progress' : 'exception';
 }
 
 function onClose() {
@@ -183,7 +209,7 @@ watch(() => {
     bus.off(settings.eventWebSocketConnStatus, onWebSocketConnStatusMsg);
   }
 }, {
-  immediate: true,
+  immediate: false,
 });
 
 onMounted(() => {

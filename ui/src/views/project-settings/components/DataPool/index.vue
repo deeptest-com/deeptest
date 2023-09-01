@@ -2,8 +2,9 @@
   <div class="datapool-main">
     <!-- header -->
     <div class="header">
-      <CustomForm :form-config="formConfig" :rules="rules" :show-search="true" :search-placeholder="'输入数据池名称搜索'"
-                  @handle-ok="handleAdd" @handle-search="handleSearch" />
+      <CustomForm :form-config="formConfig" :rules="rules" :show-search="true"
+                  :search-placeholder="'输入数据池名称搜索'"
+                  @handle-ok="handleAdd" @handle-search="handleSearch"/>
     </div>
 
     <!-- content -->
@@ -21,6 +22,12 @@
 
           <template #customStatus="{ text, record }">
             <a-tag :color="record.statusTag">{{ text }}</a-tag>
+          </template>
+
+          <template #createUser="{record}">
+            <div class="customTagsColRender">
+              {{ username(record.createUser) }}
+            </div>
           </template>
 
           <template #operation="{ record }">
@@ -55,20 +62,25 @@
 </template>
 <script setup lang="ts">
 
-import {computed, createVNode, ref, watch,} from 'vue';
+import {computed, createVNode, onMounted, ref, watch} from 'vue';
 import {useStore} from "vuex";
 import {useRouter} from 'vue-router';
-import {Modal} from 'ant-design-vue';
+import {Modal, notification} from 'ant-design-vue';
 import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-import EmptyCom from '@/components/Empty/index.vue';
+import EmptyCom from '@/components/TableEmpty/index.vue';
 import CustomForm from '../common/CustomForm.vue';
 import Drawer from './Drawer.vue';
 import {StateType as ProjectStateType} from "@/store/project";
 import {StateType as ProjectSettingStateType} from '../../store';
 import {datapoolColumns} from '../../config';
+import {useI18n} from "vue-i18n";
+import {NotificationKeyCommon} from "@/utils/const";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
-const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType }>();
+const {t} = useI18n();
+
+const store = useStore<{ ProjectGlobal: ProjectStateType, ProjectSetting: ProjectSettingStateType, Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const userListOptions = computed<any>(() => store.state.ProjectSetting.userListOptions);
 const dataSource = computed<any>(() => store.state.ProjectSetting.datapoolList);
@@ -76,7 +88,7 @@ const route = useRouter();
 
 const drawerVisible = ref(false);
 const editId = ref(0);
-
+const userList = computed<any>(() => store.state.Project.userList);
 let formConfig = ref([
   {
     type: 'tooltip',
@@ -86,7 +98,7 @@ let formConfig = ref([
   {
     type: 'input',
     modelName: 'name',
-    placeholder: '服务名称',
+    placeholder: '数据池名称',
     valueType: 'string'
   },
   {
@@ -99,7 +111,7 @@ const rules = {
   name: [
     {
       required: true,
-      message: '服务名称不能为空'
+      message: '数据池名称不能为空'
     }
   ]
 };
@@ -108,6 +120,10 @@ watch((currProject), async (newVal) => {
   await list()
 }, {
   immediate: true
+})
+
+onMounted(async () => {
+  await store.dispatch('Project/getUserList');
 })
 
 async function list(name = '') {
@@ -119,19 +135,31 @@ async function list(name = '') {
   })
 }
 
+const dataArr = [['A', 'B'], ['foo', 'bar']]
+const data = ref<any[][]>(dataArr)
+
 async function handleAdd(formData: any) {
-  const { name, username, description } = formData;
+  const {name, username, description} = formData;
   const result = userListOptions.value.filter((e: any) => e.value === username);
-  await store.dispatch('ProjectSetting/saveDatapool', {
+
+  const msgKey = await store.dispatch('ProjectSetting/saveDatapool', {
     projectId: currProject.value.id,
     formState: {
       userId: result && result[0] && result[0].id,
       name,
+      data: JSON.stringify(data.value),
       description
     },
     action: 'create'
   })
+
+  if (msgKey !== '') {
+    notifyError(`新建数据池失败, ` + t(`biz_${msgKey}`) + '。');
+  } else {
+    notifySuccess(`新建数据池成功。`);
+  }
 }
+
 function onClose() {
   drawerVisible.value = false;
 }
@@ -154,6 +182,11 @@ const onEdit = (record) => {
 
   editId.value = record.id;
   drawerVisible.value = true;
+}
+
+const username = (user: string) => {
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
 }
 
 async function onDelete(record: any) {

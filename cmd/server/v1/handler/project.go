@@ -83,7 +83,7 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 // @Produce	application/json
 // @Param 	Authorization	header	string					true	"Authentication header"
 // @Param 	currProjectId	query	int						true	"当前项目ID"
-// @Param 	ProjectReq 		body 	serverDomain.ProjectReq true 	"Create project Request Object"
+// @Param 	ProjectReq 		body 	serverDomain.ProjectReq true 	"CreateExpression project Request Object"
 // @success	200	{object}	_domain.Response{data=object{id=int}}
 // @Router	/api/v1/projects	[post]
 func (c *ProjectCtrl) Create(ctx iris.Context) {
@@ -98,7 +98,7 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 
 	id, bizErr := c.ProjectService.Create(req, userId)
 	if bizErr.Code != 0 {
-		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
+		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil, Msg: bizErr.Error()})
 		return
 	}
 

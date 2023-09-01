@@ -18,12 +18,12 @@
         </a-col>
 
         <a-col flex="100px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
+<!--          <a-tooltip overlayClassName="dp-tip-small">-->
+<!--            <template #title>帮助</template>-->
+<!--            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>-->
+<!--          </a-tooltip>-->
 
-          <a-tooltip overlayClassName="dp-tip-small">
+<!--      <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全部清除</template>
             <DeleteOutlined class="dp-icon-btn dp-trans-80"/>
           </a-tooltip>
@@ -36,7 +36,7 @@
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>导入</template>
             <ImportOutlined class="dp-icon-btn dp-trans-80" />
-          </a-tooltip>
+          </a-tooltip>-->
         </a-col>
       </a-row>
     </div>
@@ -59,7 +59,7 @@
             :options="editorOptions"
             @change="editorChange"
             :onReplace="replaceRequest"
-        />
+            :timestamp="timestamp" />
       </div>
     </div>
 
@@ -67,7 +67,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, onMounted, onUnmounted, ref} from "vue";
+import {computed, inject, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined } from '@ant-design/icons-vue';
@@ -94,6 +94,11 @@ const codeLang = computed(() => {
 const editorOptions = ref(Object.assign({usedWith: 'request'}, MonacoOptions))
 
 const bodyTypes = ref(getRequestBodyTypes())
+
+const timestamp = ref('')
+watch(debugData, (newVal) => {
+  timestamp.value = Date.now() + ''
+}, {immediate: true, deep: true})
 
 const getCodeLang = () => {
   console.log('debugData.value.bodyType', debugData.value.bodyType)

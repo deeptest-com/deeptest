@@ -4,6 +4,7 @@ import {NSConn} from "neffos.js";
 import bus from "@/utils/eventBus";
 import {getToken} from "@/utils/localToken";
 import settings from "@/config/settings";
+import {getAgentUrl} from "@/utils/agentEnv";
 
 export type WsEvent = {
   room: string;
@@ -96,7 +97,8 @@ export function getWebSocketApi (): string {
   // const loc = window.location
   // console.log(`${isProd}, ${loc.toString()}`)
 
-  const apiHost = process.env.VUE_APP_API_AGENT ? process.env.VUE_APP_API_AGENT : ''
+  // const apiHost = process.env.VUE_APP_API_AGENT ? process.env.VUE_APP_API_AGENT : ''
+  const apiHost = getAgentUrl();
   const url = apiHost.replace('http', 'ws') + '/ws'
   console.log(`websocket url = ${url}`)
 

@@ -1,6 +1,6 @@
 <template>
   <a-descriptions :size="'small'" :title="null" :column="4">
-    <a-descriptions-item label="创建人">{{ endpointDetail?.createUser }}</a-descriptions-item>
+    <a-descriptions-item label="创建人">{{ endpointDetail?username(endpointDetail.createUser):'' }}</a-descriptions-item>
     <a-descriptions-item label="状态">
       <EditAndShowSelect
           :label="endpointStatus.get(endpointDetail?.status || 0 )"
@@ -50,7 +50,7 @@ import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowTreeSelect from '@/components/EditAndShowTreeSelect/index.vue';
 import Tags from '../Tags/index.vue';
 
-const store = useStore<{ Endpoint }>();
+const store = useStore<{ Endpoint, Project }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const tagList: any = computed(()=>store.state.Endpoint.tagList);
 //  const tagList = ref(["aabdd","sddsd"])
@@ -87,6 +87,7 @@ const categoryLabel = computed(() => {
   return label;
 });
 
+const userList = computed<any>(() => store.state.Project.userList);
 const emit = defineEmits(['changeStatus', 'changeDescription', 'changeCategory']);
 
 function handleChangeStatus(val) {
@@ -101,14 +102,18 @@ function updateDescription(val: string) {
   emit('changeDescription', val);
 }
 
-const updateTags = async (tags :[],id:number,projectId:number)=>{  
+const updateTags = async (tags :[],id:number,projectId:number)=>{
    await store.dispatch('Endpoint/updateEndpointTag', {
       id:id,tagNames:tags
     });
 
   await store.dispatch('Endpoint/loadList', {projectId: projectId});
-    
+
 }
 
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
+}
 </script>
 

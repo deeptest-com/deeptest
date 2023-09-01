@@ -47,6 +47,9 @@ const (
 	HttpRequestTimeout = 60 * time.Second
 	DeepestKey         = "com_deeptest_prop_for_selection"
 	KEY_BASE_URL       = "_base_url_"
+
+	MaxLoopTimeForInterfaceTest   = 1000
+	MaxLoopTimeForPerformanceTest = 1000000
 )
 
 var (

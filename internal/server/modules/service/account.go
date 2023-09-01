@@ -35,6 +35,7 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 
 	if config.CONFIG.Ldap && req.Username != "admin" {
 		userBase, err = s.LdapService.LdapUserInfo(req)
+
 		if err != nil {
 			return
 		}
@@ -52,7 +53,7 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 		Username:      req.Username,
 		AuthorityId:   "",
 		AuthorityType: multi.AdminAuthority,
-		LoginType:     multi.LoginTypeWeb,
+		LoginType:     multi.LoginTypeApp,
 		AuthType:      multi.AuthPwd,
 		CreationDate:  time.Now().Local().Unix(),
 		ExpiresIn:     multi.RedisSessionTimeoutWeb.Milliseconds(),

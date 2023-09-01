@@ -5,10 +5,6 @@
         <a-col flex="1">
           <a-select size="small" :style="{width:'116px'}" :bordered="true"
                     v-model:value="conditionType">
-            <!--        <a-select-option key="" value="">
-                          控制器类型
-                        </a-select-option>-->
-
             <template v-for="item in conditionTypes" :key="item.value">
               <a-select-option v-if="item.value !== ConditionType.checkpoint" :value="item.value">
                 {{ t(item.label) }}
@@ -129,6 +125,7 @@ import IconSvg from "@/components/IconSvg";
 import Extractor from "./conditions-post/Extractor.vue";
 import Checkpoint from "./conditions-post/Checkpoint.vue";
 import Script from "./conditions-post/Script.vue";
+import Cookie from "./conditions-post/Cookie.vue";
 import FullScreenPopup from "./ConditionPopup.vue";
 
 const store = useStore<{  Debug: Debug }>();

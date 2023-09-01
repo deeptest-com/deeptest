@@ -32,7 +32,7 @@ func (c *DebugInvokeCtrl) SubmitResult(ctx iris.Context) {
 		return
 	}
 
-	err = c.DebugInvokeService.SubmitResult(req)
+	_, err = c.DebugInvokeService.SubmitResult(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -167,6 +167,7 @@ func (c *DebugInvokeCtrl) GetAsInterface(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
+
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{
 		"debugData": debugData,
 		"req":       resultReq,

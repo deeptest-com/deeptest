@@ -303,3 +303,12 @@ func DifferenceUint(slice1, slice2 []uint) []uint {
 	}
 	return nn
 }
+
+func InArray(target string, array []string) bool {
+	for _, item := range array {
+		if item == target {
+			return true
+		}
+	}
+	return false
+}

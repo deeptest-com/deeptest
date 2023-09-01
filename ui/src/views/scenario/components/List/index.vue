@@ -39,23 +39,27 @@
         </a-form>
       </div>
     </div>
+
     <a-table
-        v-if="list.length > 0"
-        row-key="id"
-        :columns="columns"
-        :data-source="list"
-        :loading="loading"
-        :pagination="{
-                ...pagination,
-                onChange: (page) => {
-                    getList(page, nodeDataCategory.id);
-                },
-                onShowSizeChange: (page, size) => {
-                    pagination.pageSize = size
-                    getList(page, nodeDataCategory.id);
-                },
-            }"
-        class="dp-table">
+      row-key="id"
+      :columns="columns"
+      :data-source="list"
+      :loading="loading"
+      :pagination="{
+        ...pagination,
+        onChange: (page) => {
+            getList(page, nodeDataCategory.id);
+        },
+        onShowSizeChange: (page, size) => {
+            pagination.pageSize = size
+            getList(page, nodeDataCategory.id);
+        },
+        showTotal: (total) => {
+            return `共 ${total} 条数据`;
+        },
+      }"
+      :scroll="{ x: 1240 }"
+      class="dp-table">
 
       <template #name="{ record ,text }">
         <EditAndShowField :custom-class="'custom-endpoint show-on-hover'"
@@ -75,8 +79,8 @@
         </div>
       </template>
 
-      <template #updatedAt="{ record }">
-        <span>{{ momentUtc(record.updatedAt) }}</span>
+      <template #updatedAt="{ record, column }">
+        <TooltipCell :text="momentUtc(record.updatedAt)" :width="column.width"/>
       </template>
 
       <template #status="{ record }">
@@ -96,6 +100,18 @@
               :value="record?.priority || null"
               :options="priorityOptions"
               @update="(val) => { handleChangePriority(val,record)}"/>
+        </div>
+      </template>
+
+      <template #colCreateUserName="{record}">
+        <div class="customTagsColRender">
+          {{username(record.createUserName)}}
+        </div>
+      </template>
+
+      <template #colUpdateUserName="{record}">
+        <div class="customTagsColRender">
+          {{username(record.updateUserName)}}
         </div>
       </template>
 
@@ -121,8 +137,8 @@
         </a-dropdown>
       </template>
     </a-table>
-    <a-empty v-if="list.length === 0" :image="simpleImage"/>
   </div>
+
   <ScenarioCreate :visible="isEditVisible"
                   @cancel="isEditVisible = false"
                   :onFinish="onEditFinish">
@@ -130,24 +146,38 @@
 
   <EnvSelector
       :env-select-drawer-visible="selectEnvVisible"
+      :execEnvId="execEnvId"
       @on-cancel="cancelSelectExecEnv"
       @on-ok="selectExecEnv"/>
+  <div v-if="drawerVisible">
+    <DrawerDetail
+      :destroyOnClose="true"
+      :visible="drawerVisible"
+      :drawerTabKey="drawerTabKey"
+      @refreshList="refreshList"
+      @close="drawerVisible = false;"/>
+  </div>
 
+  <!-- 动态场景执行抽屉 -->
+  <a-drawer
+      :placement="'right'"
+      :width="1200"
+      :closable="true"
+      :visible="execVisible"
+      :title="'执行场景'"
+      class="drawer"
+      wrapClassName="drawer-exec"
+      :bodyStyle="{padding:'16px',marginBottom:'56px'}"
+      @close="execVisible = false">
+    <ExecInfo v-if="execVisible"/>
+  </a-drawer>
 
-  <DrawerDetail :destroyOnClose="true"
-                :visible="drawerVisible"
-                :drawerTabKey="drawerTabKey"
-                :execVisible="execVisible"
-                @refreshList="refreshList"
-                @closeExecDrawer="execVisible = false"
-                @close="drawerVisible = false;"/>
 </template>
 
 <script setup lang="ts">
 import {computed, onMounted, reactive, ref, watch, createVNode} from "vue";
 import {Empty} from 'ant-design-vue';
 import {MoreOutlined} from "@ant-design/icons-vue";
-import {SelectTypes} from 'ant-design-vue/es/select';
 import {PaginationConfig, QueryParams, Scenario} from '../../data.d';
 import {useStore} from "vuex";
 import {momentUtc} from "@/utils/datetime";
@@ -161,6 +191,7 @@ import ScenarioCreate from "../Create/index.vue";
 import DrawerDetail from "../Drawer/index.vue";
 import EnvSelector from "@/views/component/EnvSelector/index.vue";
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
+import ExecInfo from "../Exec/index.vue";
 import {
   scenarioStatusColorMap,
   scenarioStatus,
@@ -172,6 +203,8 @@ import {
 import {ExclamationCircleOutlined} from '@ant-design/icons-vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import Select from '@/components/Select/index.vue';
+import TooltipCell from '@/components/Table/tooltipCell.vue';
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 type Key = ColumnProps['key'];
 
@@ -184,7 +217,7 @@ interface DataType {
 
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 const router = useRouter();
-const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType }>();
+const store = useStore<{ Scenario: StateType, ProjectGlobal: ProjectStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const nodeDataCategory = computed<any>(() => store.state.Scenario.nodeDataCategory);
 const list = computed<Scenario[]>(() => store.state.Scenario.listResult.list);
@@ -194,6 +227,7 @@ let queryParams = reactive<QueryParams>({
   page: pagination.value.current, pageSize: pagination.value.pageSize
 });
 
+const userList = computed<any>(() => store.state.Project.userList);
 const currModelId = ref(0)
 
 watch(nodeDataCategory, () => {
@@ -212,9 +246,8 @@ watch(queryParams, () => {
 
 onMounted(async () => {
   getList(1, nodeDataCategory.value.id);
+  getUserList()
 })
-
-
 
 const loading = ref<boolean>(true);
 
@@ -233,6 +266,11 @@ const getList = debounce(async (current: number, categoryId: number): Promise<vo
   loading.value = false
 }, 300)
 
+
+const getUserList = () => {
+  store.dispatch('Project/getUserList')
+
+}
 const exec = (id: number) => {
   console.log('exec')
   router.push(`/scenario/exec/${id}`)
@@ -240,7 +278,7 @@ const exec = (id: number) => {
 
 
 const design = (id: number) => {
-  console.log('edit')
+  console.log('design')
   router.push(`/scenario/design/${id}`)
 }
 
@@ -255,7 +293,7 @@ const onEditFinish = () => {
   console.log('onEditFinish')
   isEditVisible.value = false
 
-  getList(pagination.value.current, nodeDataCategory.value.id)
+  getList(1, nodeDataCategory.value.id)
 }
 
 const remove = (id: number) => {
@@ -271,13 +309,9 @@ const remove = (id: number) => {
         console.log('res', res)
         if (res === true) {
           getList(1, nodeDataCategory.value.id)
-          notification.success({
-            message: `删除成功`,
-          });
+          notifySuccess(`删除成功`);
         } else {
-          notification.error({
-            message: `删除失败`,
-          });
+          notifyError(`删除失败`);
         }
       })
     }
@@ -297,24 +331,31 @@ const drawerTabKey: any = ref<string>('1');
 async function editScenario(record: any, tab: string) {
   drawerVisible.value = true;
   drawerTabKey.value = tab;
+
+  await store.dispatch('Scenario/getNode', null) // clear right page
   await store.dispatch('Scenario/getScenario', record.id);
 }
 
+const execEnvId = ref<number | null>(null);
 async function cancelSelectExecEnv(record: any) {
   selectEnvVisible.value = false;
   selectedExecScenario.value = null;
+  execEnvId.value = null;
 }
 
 async function selectExecEnv() {
   selectEnvVisible.value = false;
-  drawerVisible.value = false;
   execVisible.value = true;
   await store.dispatch('Scenario/getScenario', selectedExecScenario?.value?.id);
+  // 执行完后，会修改列表的字段，所以需要重新拉取列表
+  await refreshList();
 }
 
 async function execScenario(record: any) {
   selectEnvVisible.value = true;
   selectedExecScenario.value = record;
+  execEnvId.value = record.currEnvId;
+  await store.dispatch('Scenario/getScenario', record.id);
 }
 
 async function handleChangeStatus(value: any, record: any,) {
@@ -372,14 +413,13 @@ const columns = [
   {
     title: '编号',
     dataIndex: 'serialNumber',
-    width: '100px',
+    width: 150,
   },
   {
     title: '测试场景名称',
     dataIndex: 'name',
     slots: {customRender: 'name'},
-    ellipsis: true,
-    width: '200px',
+    width: 300,
   },
   {
     title: '测试类型',
@@ -392,35 +432,49 @@ const columns = [
     title: '状态',
     dataIndex: 'status',
     slots: {customRender: 'status'},
-    width: '100px',
+    width: 110,
   },
   {
     title: '优先级',
     dataIndex: 'priority',
     ellipsis: true,
     slots: {customRender: 'priority'},
-    width: '100px',
+    width: 90,
   },
   {
     title: '创建人',
     dataIndex: 'createUserName',
+    slots: {customRender: 'colCreateUserName'},
     ellipsis: true,
-    width: '80px',
+    width: 110,
+  },
+  {
+    title: '更新人',
+    dataIndex: 'updateUserName',
+    slots: {customRender: 'colUpdateUserName'},
+    ellipsis: true,
+    width: 110,
   },
   {
     title: '最新更新',
     dataIndex: 'updatedAt',
     slots: {customRender: 'updatedAt'},
     ellipsis: true,
-    width: '150px',
+    width: 180,
   },
   {
     title: '操作',
     key: 'action',
-    width: '80px',
+    width: 80,
+    fixed: 'right',
     slots: {customRender: 'action'},
   },
 ];
+
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
+}
 
 onMounted(() => {
   console.log('onMounted')

@@ -78,6 +78,7 @@ import {useRouter} from "vue-router";
 import {removeMember} from "@/views/project/service";
 import {NotificationKeyCommon} from "@/utils/const";
 import {CurrentUser, StateType as UserStateType} from "@/store/user";
+import {notifyError, notifySuccess} from "@/utils/notify";
 // 获取当前登录用户信息
 const router = useRouter();
 const store = useStore<{ Home: StateType, User: UserStateType }>();
@@ -176,16 +177,10 @@ async function handleDelete(id) {
       store.dispatch("Project/removeProject", id).then((res) => {
         console.log("res", res);
         if (res === true) {
-          notification.success({
-            // key: NotificationKeyCommon,
-            message: `删除成功`,
-          });
+          notifySuccess(`删除成功`);
           getList(1);
         } else {
-          notification.error({
-            // key: NotificationKeyCommon,
-            message: `删除失败`,
-          });
+          notifyError(`删除失败`);
         }
       });
     },
@@ -203,16 +198,10 @@ const handleExit = (item) => {
     onOk: async () => {
       removeMember(currentUser.value.id, item.projectId).then((json) => {
         if (json.code === 0) {
-          notification.success({
-            key: NotificationKeyCommon,
-            message: `退出成功`,
-          });
+          notifySuccess(`退出成功`);
           getList(1);
         } else {
-          notification.error({
-            key: NotificationKeyCommon,
-            message: `退出失败`,
-          });
+          notifyError(`退出失败`);
         }
       });
     },

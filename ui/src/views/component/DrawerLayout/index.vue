@@ -14,7 +14,7 @@
         <slot name="header"/>
       </div>
     </template>
-
+  
     <a-spin tip="Loading..." :spinning="spinning" style="z-index: 2000;">
     <div class="dp-drawer-content" ref="contentRef">
       <!-- 基本信息区域 -->
@@ -39,7 +39,11 @@ import {
   ref,
   defineProps,
   defineEmits,
-  computed, watch,
+  computed, 
+  watch, 
+  onUnmounted, 
+  onMounted,
+  provide,
 } from 'vue';
 
 import {useStore} from "vuex";
@@ -57,6 +61,12 @@ const contentRef: any = ref(null)
 
 const spinning = computed( ()=>store.state.Global.spinning )
 
+const containerScrollTop = ref(0);
+
+const onScroll = (event) => {
+  containerScrollTop.value = (event.target && event.target.scrollTop) || 0;
+};
+
 
 watch(() => {
   return props.stickyKey;
@@ -66,7 +76,21 @@ watch(() => {
   }
 })
 
+watch(() => {
+  return contentRef.value;
+}, val => {
+  if (val) {
+    val.addEventListener('scroll', onScroll);
+  }
+})
 
+onUnmounted(() => {
+  if (contentRef.value) {
+    contentRef.value.removeEventListener('scroll', onScroll);
+  }
+});
+
+provide('containerScrollTop', computed(() => containerScrollTop.value));
 </script>
 
 <style lang="less" scoped>
@@ -86,13 +110,14 @@ watch(() => {
 
   .dp-drawer-content-tabs-header {
     position: sticky;
+    z-index: 9999;
     top: 0;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     height: 48px;
     border-bottom: 1px solid #f0f0f0;
     margin: 0 16px;
-    z-index: 9999;
     background-color: #ffffff;
 
     :deep(.tab-header-items) {
@@ -144,12 +169,28 @@ watch(() => {
     }
   }
   .dp-drawer-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     :deep(.header-text) {
       display: flex;
       max-width: 80%;
     }
     :deep(.header-text .serialNumber) {
       margin-right: 6px;
+    }
+
+    :deep(.header-operation) {
+      padding-right: 40px;
+      cursor: pointer;
+
+      .anticon.anticon-share-alt {
+        color: rgb(153, 153, 153);
+
+        &:hover {
+          color: #1677ff;
+        }
+      }
     }
   }
 }

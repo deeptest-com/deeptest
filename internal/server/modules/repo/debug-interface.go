@@ -9,8 +9,12 @@ import (
 )
 
 type DebugInterfaceRepo struct {
-	*BaseRepo `inject:""`
-	DB        *gorm.DB `inject:""`
+	*BaseRepo             `inject:""`
+	DB                    *gorm.DB `inject:""`
+	*ServeRepo            `inject:""`
+	*ServeServerRepo      `inject:""`
+	EndpointCaseRepo      *EndpointCaseRepo      `inject:""`
+	DiagnoseInterfaceRepo *DiagnoseInterfaceRepo `inject:""`
 }
 
 func (r *DebugInterfaceRepo) Tested(id uint) (res bool, err error) {
@@ -71,6 +75,14 @@ func (r *DebugInterfaceRepo) ListByProject(projectId int) (pos []*model.DebugInt
 func (r *DebugInterfaceRepo) Get(id uint) (po model.DebugInterface, err error) {
 	err = r.DB.
 		Where("id=?", id).
+		Where("NOT deleted").
+		First(&po).Error
+	return
+}
+
+func (r *DebugInterfaceRepo) GetByCaseInterfaceId(caseInterfaceId uint) (po model.DebugInterface, err error) {
+	err = r.DB.
+		Where("case_interface_id=?", caseInterfaceId).
 		Where("NOT deleted").
 		First(&po).Error
 	return
@@ -265,6 +277,15 @@ func (r *DebugInterfaceRepo) RemoveCookie(id uint) (err error) {
 	err = r.DB.
 		Where("interface_id = ?", id).
 		Delete(&model.DebugInterfaceCookie{}, "").Error
+
+	return
+}
+
+func (r *DebugInterfaceRepo) UpdateProcessorId(id, processorId uint) (err error) {
+	values := map[string]interface{}{
+		"scenario_processor_id": processorId,
+	}
+	err = r.UpdateDebugInfo(id, values)
 
 	return
 }
@@ -586,6 +607,63 @@ func (r *DebugInterfaceRepo) DeleteByProcessorIds(ids []uint) (err error) {
 			Where("scenario_processor_id IN (?)", ids).
 			Update("deleted", true).
 			Error
+	}
+
+	return
+}
+
+func (r *DebugInterfaceRepo) CreateDefault(src consts.ProcessorInterfaceSrc, projectId uint) (id uint, err error) {
+	po := model.DebugInterface{
+		ProcessorInterfaceSrc: src,
+
+		InterfaceBase: model.InterfaceBase{
+			InterfaceConfigBase: model.InterfaceConfigBase{
+				Method: consts.GET,
+			},
+			ProjectId: projectId,
+		},
+	}
+
+	serves, _ := r.ServeRepo.ListByProject(projectId)
+	if len(serves) > 0 {
+		po.ServeId = serves[0].ID
+
+		server, _ := r.ServeServerRepo.GetDefaultByServe(po.ServeId)
+		po.ServerId = server.ID
+	}
+
+	err = r.Save(&po)
+
+	id = po.ID
+
+	return
+}
+
+func (r *DebugInterfaceRepo) GetSourceNameById(id uint) (name string, err error) {
+	debugInterface, err := r.Get(id)
+	if err != nil {
+		return
+	}
+
+	switch debugInterface.ProcessorInterfaceSrc {
+	case consts.InterfaceSrcDefine:
+		endpointInterface, err := r.EndpointInterfaceRepo.Get(debugInterface.EndpointInterfaceId)
+		if err != nil {
+			return "", err
+		}
+		name = endpointInterface.Name
+	case consts.InterfaceSrcCase:
+		endpointCase, err := r.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
+		if err != nil {
+			return "", err
+		}
+		name = endpointCase.Name
+	case consts.InterfaceSrcDiagnose:
+		diagnoseInterface, err := r.DiagnoseInterfaceRepo.Get(debugInterface.DiagnoseInterfaceId)
+		if err != nil {
+			return "", err
+		}
+		name = diagnoseInterface.Title
 	}
 
 	return

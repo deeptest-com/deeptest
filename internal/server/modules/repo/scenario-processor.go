@@ -1,6 +1,7 @@
 package repo
 
 import (
+	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/jinzhu/copier"
@@ -10,9 +11,10 @@ import (
 type ScenarioProcessorRepo struct {
 	DB *gorm.DB `inject:""`
 
-	ScenarioNodeRepo *ScenarioNodeRepo `inject:""`
-	ExtractorRepo    *ExtractorRepo    `inject:""`
-	CheckpointRepo   *CheckpointRepo   `inject:""`
+	ScenarioNodeRepo   *ScenarioNodeRepo   `inject:""`
+	ExtractorRepo      *ExtractorRepo      `inject:""`
+	CheckpointRepo     *CheckpointRepo     `inject:""`
+	DebugInterfaceRepo *DebugInterfaceRepo `inject:""`
 }
 
 func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err error) {
@@ -51,11 +53,11 @@ func (r *ScenarioProcessorRepo) GetEntity(processorId uint) (ret interface{}, er
 	case consts.ProcessorAssertion:
 		ret, _ = r.GetAssertion(processor)
 
-	case consts.ProcessorExtractor:
-		ret, _ = r.GetExtractor(processor)
-
 	case consts.ProcessorData:
 		ret, _ = r.GetData(processor)
+
+	case consts.ProcessorCustomCode:
+		ret, _ = r.GetCustomCode(processor)
 
 	default:
 	}
@@ -71,10 +73,10 @@ func (r *ScenarioProcessorRepo) UpdateName(id uint, name string) (err error) {
 	return
 }
 
-func (r *ScenarioProcessorRepo) SaveProcessorInfo(id uint, name, comments string) (err error) {
+func (r *ScenarioProcessorRepo) SaveBasicInfo(req domain.ScenarioProcessorInfo) (err error) {
 	err = r.DB.Model(&model.Processor{}).
-		Where("id = ?", id).
-		Updates(map[string]interface{}{"name": name, "comments": comments}).Error
+		Where("id = ?", req.Id).
+		Updates(map[string]interface{}{"name": req.Name, "comments": req.Comments}).Error
 
 	return
 }
@@ -98,6 +100,10 @@ func (r *ScenarioProcessorRepo) GetInterface(processor model.Processor) (ret mod
 	// there is no ProcessorInterface obj, just return a common obj
 	ret = r.genProcessorComm(processor)
 	ret.EntityId = processor.EntityId
+	ret.ProcessorInterfaceSrc = processor.ProcessorInterfaceSrc
+	ret.Method = processor.Method
+	srcName, _ := r.DebugInterfaceRepo.GetSourceNameById(processor.EntityId)
+	ret.SrcName = srcName
 
 	return
 }
@@ -214,12 +220,16 @@ func (r *ScenarioProcessorRepo) GetAssertion(processor model.Processor) (ret mod
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetExtractor(processor model.Processor) (ret model.ProcessorExtractor, err error) {
+func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.ProcessorData, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
 		comm := r.genProcessorComm(processor)
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
+
+		if ret.RepeatTimes == 0 {
+			ret.RepeatTimes = 1
+		}
 	} else {
 		ret.Name = processor.Name
 		ret.ParentID = processor.ParentId
@@ -228,7 +238,7 @@ func (r *ScenarioProcessorRepo) GetExtractor(processor model.Processor) (ret mod
 	return
 }
 
-func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.ProcessorData, err error) {
+func (r *ScenarioProcessorRepo) GetCustomCode(processor model.Processor) (ret model.ProcessorCustomCode, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {
@@ -245,7 +255,8 @@ func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.Pr
 func (r *ScenarioProcessorRepo) SaveGroup(po *model.ProcessorGroup) (err error) {
 	err = r.DB.Save(po).Error
 
-	r.UpdateEntityId(po.ProcessorID, po.ID)
+	_ = r.UpdateEntityId(po.ProcessorID, po.ID)
+	_ = r.UpdateName(po.ProcessorID, po.Name)
 
 	return
 }
@@ -306,7 +317,7 @@ func (r *ScenarioProcessorRepo) SaveAssertion(po *model.ProcessorAssertion) (err
 	return
 }
 
-func (r *ScenarioProcessorRepo) SaveExtractor(po *model.ProcessorExtractor) (err error) {
+func (r *ScenarioProcessorRepo) SaveData(po *model.ProcessorData) (err error) {
 	err = r.DB.Save(po).Error
 
 	r.UpdateEntityId(po.ProcessorID, po.ID)
@@ -314,9 +325,8 @@ func (r *ScenarioProcessorRepo) SaveExtractor(po *model.ProcessorExtractor) (err
 	return
 }
 
-func (r *ScenarioProcessorRepo) SaveData(po *model.ProcessorData) (err error) {
+func (r *ScenarioProcessorRepo) SaveCustomCode(po *model.ProcessorCustomCode) (err error) {
 	err = r.DB.Save(po).Error
-
 	r.UpdateEntityId(po.ProcessorID, po.ID)
 
 	return
@@ -331,7 +341,7 @@ func (r *ScenarioProcessorRepo) UpdateEntityId(id, entityId uint) (err error) {
 }
 
 func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret model.ProcessorComm) {
-	ret.Id = 0
+	ret.Id = processor.ID
 	ret.Name = processor.Name
 	ret.Comments = processor.Comments
 
@@ -364,3 +374,43 @@ func (r *ScenarioProcessorRepo) Delete(id uint) (err error) {
 
 	return
 }
+
+func (r *ScenarioProcessorRepo) UpdateInterfaceId(id, debugInterfacceId uint) (err error) {
+	err = r.DB.Model(&model.Processor{}).
+		Where("id=?", id).
+		Update("entity_id", debugInterfacceId).
+		Error
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) UpdateMethod(id uint, method consts.HttpMethod) (err error) {
+	err = r.DB.Model(&model.Processor{}).
+		Where("id=?", id).
+		Update("method", method).
+		Error
+
+	return
+}
+
+//func (r *ScenarioProcessorRepo) SwitchEntityInterface(id, debugInterFaceId uint) (err error) {
+//	processor, _ := r.Get(id)
+//	oldDebugInterFaceId := processor.EntityId
+//
+//	r.DB.Transaction(func(tx *gorm.DB) error {
+//		err = r.DebugInterfaceRepo.UpdateProcessorId(debugInterFaceId, id)
+//		if err != nil {
+//			return err
+//		}
+//
+//		err = r.UpdateEntityId(id, debugInterFaceId)
+//		if err != nil {
+//			return err
+//		}
+//
+//		err = r.DebugInterfaceRepo.Delete(oldDebugInterFaceId)
+//		return err
+//	})
+//
+//	return
+//}

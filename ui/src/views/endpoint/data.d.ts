@@ -98,3 +98,8 @@ interface NewEndpointFormState {
     description: string | undefined;
     curl:string;
 }
+
+export interface QueryCaseTreeParams {
+    currentProjectId:number
+    serveId:number
+  }

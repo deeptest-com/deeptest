@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
-	valueGen "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -26,6 +25,11 @@ type ProcessorCookie struct {
 }
 
 func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err error) {
+	defer func() {
+		if errX := recover(); errX != nil {
+			processor.Error(session, errX)
+		}
+	}()
 	logUtils.Infof("cookie entity")
 
 	startTime := time.Now()
@@ -40,52 +44,29 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 		ProcessorId:       processor.ID,
 		LogId:             uuid.NewV4(),
 		ParentLogId:       processor.Parent.Result.LogId,
+		Round:             processor.Round,
 	}
 
 	cookieName := entity.CookieName
-	variableName := entity.VariableName
-	defaultValue := entity.Default
 	domain := entity.Domain
 	expireTime := entity.ExpireTime
 	rightValue := entity.RightValue
 	typ := entity.ProcessorType
 
+	detail := map[string]interface{}{"name": entity.Name, "cookieName": cookieName}
 	if typ == consts.ProcessorCookieSet {
 		variableValue := ReplaceVariableValue(rightValue)
 
 		SetCookie(processor.ParentId, cookieName, variableValue, domain, expireTime) // set in parent scope
 
 		processor.Result.Summary = fmt.Sprintf("%s为%v。", cookieName, variableValue)
-
-	} else if typ == consts.ProcessorCookieGet {
-		var variableValue interface{}
-		cookie := GetCookie(processor.ParentId, cookieName, domain)
-		variableValue = cookie.Value
-
-		words := ""
-		if variableValue == nil && defaultValue != "" {
-			variableValue, _ = valueGen.ParseValue(defaultValue)
-			words = "默认"
-		}
-
-		if err != nil {
-			processor.Result.Summary = fmt.Sprintf("获取Cookie %s的值错误 %s。", cookieName, err.Error())
-			processor.AddResultToParent()
-			execUtils.SendExecMsg(*processor.Result, session.WsMsg)
-			return
-		}
-
-		if variableValue == nil {
-			variableValue = "空"
-		}
-
-		SetVariable(processor.ParentId, variableName, variableValue, consts.Public) // set in parent scope
-		processor.Result.Summary = fmt.Sprintf("将%s%s值\"%v\"赋予变量%s。", cookieName, words, variableValue, variableName)
-		detail := map[string]interface{}{"cookie名称": cookieName, "cookie值": words, "变量": variableName, "变量值": variableValue}
+		detail["variableValue"] = variableValue
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
+
 	} else if typ == consts.ProcessorCookieClear {
 		ClearCookie(processor.ParentId, cookieName) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("%s。", cookieName)
+		processor.Result.Detail = commonUtils.JsonEncode(detail)
 	}
 
 	processor.AddResultToParent()

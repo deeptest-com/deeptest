@@ -1,19 +1,19 @@
 <template>
-  <div class="processor_cookie_clear-main">
+  <div class="processor_cookie_clear-main dp-processors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-
           <a-form-item label="Cookie名称" v-bind="validateInfos.cookieName">
             <a-input v-model:value="modelRef.cookieName"
                      @blur="validate('cookieName', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
           <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
+            <a-textarea v-model:value="modelRef.comments" :rows="3"/>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
+          <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
@@ -28,11 +28,11 @@ import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form, message, notification} from 'ant-design-vue';
+import debounce from "lodash.debounce";
+import {Form, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
-import {NotificationKeyCommon} from "@/utils/const";
-
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
+import {notifyError, notifySuccess} from "@/utils/notify";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -42,7 +42,7 @@ const {t} = useI18n();
 const formRef = ref();
 
 const rulesRef = reactive({
-  name: [
+  cookieName: [
     {required: true, message: '请输入名称', trigger: 'blur'},
   ],
 });
@@ -51,24 +51,18 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            notifySuccess(`保存成功`);
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            notifyError(`保存失败`);
           }
         })
       })
-};
+}, 300);
 
 onMounted(() => {
   console.log('onMounted')

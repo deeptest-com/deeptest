@@ -85,19 +85,20 @@ func (c *DiagnoseInterfaceCtrl) Save(ctx iris.Context) {
 		return
 	}
 
+	req.CreatedBy = multi.GetUserId(ctx)
 	po, err := c.DiagnoseInterfaceService.Save(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.DiagnoseInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
+	//data, err := c.DiagnoseInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
+	//if err != nil {
+	//	ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	//	return
+	//}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po})
 }
 
 // SaveDebugData
@@ -118,7 +119,7 @@ func (c *DiagnoseInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.DiagnoseInterfaceService.SaveDebugData(req)
+	_, err = c.DebugInterfaceService.CreateOrUpdate(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -157,19 +158,20 @@ func (c *DiagnoseInterfaceCtrl) Update(ctx iris.Context) {
 		return
 	}
 
+	req.UpdatedBy = multi.GetUserId(ctx)
 	po, err := c.DiagnoseInterfaceService.Save(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.DiagnoseInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
+	//data, err := c.DiagnoseInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
+	//if err != nil {
+	//	ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	//	return
+	//}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po})
 }
 
 // Delete

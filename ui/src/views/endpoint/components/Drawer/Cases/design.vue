@@ -14,10 +14,8 @@
                           @update="updateName" />
       </div>
 
-      <DebugComp
-          :topVal="'-3px'"
-          :onSaveDebugData="saveCaseInterface"
-          :urlDisabled="true"/>
+      <DebugComp :onSaveDebugData="saveCaseInterface"
+                 :urlDisabled="true"/>
     </div>
 
   </div>
@@ -39,6 +37,7 @@ import {notification} from "ant-design-vue";
 import IconSvg from "@/components/IconSvg";
 import {NotificationKeyCommon} from "@/utils/const";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 provide('usedBy', UsedBy.CaseDebug)
 const usedBy = UsedBy.CaseDebug
@@ -80,15 +79,9 @@ const saveCaseInterface = async (e) => {
 
   const res = await store.dispatch('Endpoint/saveCaseDebugData', data)
   if (res === true) {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存成功`,
-    });
+    notifySuccess(`保存成功`);
   } else {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存失败`,
-    });
+    notifyError(`保存失败`);
   }
 }
 
@@ -151,12 +144,12 @@ const back = () => {
   padding: 0px 0px 16px 16px;
   position: relative;
   height: calc(100vh - 96px);
-  overflow: hidden;
+
   #endpoint-debug-cases-design-panel {
     height: calc(100vh - 96px);
     display: flex;
     flex-direction: column;
-    overflow: hidden;
+
     .name {
       display: flex;
       padding: 6px 0 6px 0;

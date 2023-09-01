@@ -24,7 +24,15 @@ info:
 
 paths:
   /users/{userid}:
-    get:
+    post:
+      requestBody:
+        description: ''
+        content:
+          'application/json':
+            schema:
+              properties:
+                id: { type: string }
+                email: { format: email }
       responses:
         "200":
           $ref: "#/components/responses/200_resp"

@@ -16,7 +16,8 @@ import {useStore} from "vuex";
 
 import {StateType as GlobalStateType} from "@/store/global";
 import {StateType as ScenarioStateType} from "../../store";
-import ScenarioTree from "./Tree.vue"
+// import ScenarioTree from "./Tree.vue"
+import ScenarioTree from "./ScenarioTree.vue"
 import Designer from "./Designer.vue"
 import ContentPane from '@/views/component/ContentPane/index.vue';
 

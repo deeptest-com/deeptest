@@ -2,7 +2,8 @@
 * todo 改文件的很多公共方法需要提出去
 * */
 
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
+import {notifyWarn} from "@/utils/notify";
 
 /**
  * 是否是对象类型
@@ -359,7 +360,7 @@ export const handleRefInfo = (tree: any, result: any) => {
     // 兼容，返回的值为空字符串的情况，则直接不展开
     if (!result?.content) {
         tree.extraViewInfo.isExpand = false;
-        message.warning(`引用的字段的详情数据为空`);
+        notifyWarn(`引用的字段的详情数据为空`);
         return;
     }
 

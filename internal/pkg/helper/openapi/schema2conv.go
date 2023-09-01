@@ -17,14 +17,15 @@ type Schemas map[string]*SchemaRef
 
 type Schema struct {
 	openapi3.ExtensionProps
-	Type       string     `json:"type,omitempty" yaml:"type,omitempty"`
-	Items      *SchemaRef `json:"items,omitempty" yaml:"items,omitempty"`
-	Properties Schemas    `json:"properties,omitempty" yaml:"properties,omitempty"`
-	AllOf      SchemaRefs `json:"allOf,omitempty" yaml:"allOf,omitempty"`
-	OneOf      SchemaRefs `json:"oneOf,omitempty" yaml:"allOf,omitempty"`
-	AnyOf      SchemaRefs `json:"anyOf,omitempty" yaml:"allOf,omitempty"`
-	Ref        string     `json:"ref,omitempty" yaml:"ref,omitempty"`
-	RefExt     string     `json:"$ref,omitempty" yaml:"ref,omitempty"`
+	Type        string     `json:"type,omitempty" yaml:"type,omitempty"`
+	Items       *SchemaRef `json:"items,omitempty" yaml:"items,omitempty"`
+	Properties  Schemas    `json:"properties,omitempty" yaml:"properties,omitempty"`
+	AllOf       SchemaRefs `json:"allOf,omitempty" yaml:"allOf,omitempty"`
+	OneOf       SchemaRefs `json:"oneOf,omitempty" yaml:"allOf,omitempty"`
+	AnyOf       SchemaRefs `json:"anyOf,omitempty" yaml:"allOf,omitempty"`
+	Ref         string     `json:"ref,omitempty" yaml:"ref,omitempty"`
+	RefExt      string     `json:"$ref,omitempty" yaml:"ref,omitempty"`
+	Description string     `json:"description,omitempty" yaml:"description,omitempty"`
 }
 
 func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
@@ -34,6 +35,7 @@ func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
 	if err != nil {
 		return
 	}
+
 	return
 }
 
@@ -59,7 +61,7 @@ type schema2conv struct {
 	sets       map[string]int64
 }
 
-func NewSchema2conv() *schema2conv {
+func NewSchema2convBak() *schema2conv {
 	obj := new(schema2conv)
 	obj.sets = map[string]int64{}
 	return obj
@@ -200,4 +202,68 @@ func (s *schema2conv) anyMoreSchemas(schemas SchemaRefs, n int) (combineSchemas 
 	}
 
 	return combineSchemas
+}
+
+func (s *schema2conv) AssertDataForSchema(schema *SchemaRef, data interface{}) bool {
+	dataSchema := new(Schema)
+	err := s.Example2Schema(data, dataSchema)
+	if err != nil {
+		return false
+	}
+	schema1 := new(SchemaRef)
+	schema1.Value = dataSchema
+	return s.Equal(schema, schema1)
+}
+
+func (s *schema2conv) Equal(schema1, schema2 *SchemaRef) (ret bool) {
+	ref1 := schema1.Ref
+	if component, ok := s.Components[schema1.Ref]; ok {
+		s.sets[ref1]++
+		schema1 = &component
+	}
+
+	ref2 := schema2.Ref
+	if component, ok := s.Components[schema2.Ref]; ok {
+		s.sets[ref2]++
+		schema2 = &component
+	}
+
+	s.CombineSchemas(schema1)
+	s.CombineSchemas(schema2)
+
+	if schema1.Value.Type != schema2.Value.Type {
+		return false
+	}
+
+	switch schema1.Value.Type {
+	case openapi3.TypeObject:
+		if s.sets[ref1] > 2 {
+			return true
+		}
+		return s.objectEqual(schema1.Value, schema2.Value)
+
+	case openapi3.TypeArray:
+		if s.sets[ref1] > 2 {
+			return true
+		}
+		return s.arrayEqual(schema1.Value, schema2.Value)
+	}
+
+	return
+}
+
+func (s *schema2conv) objectEqual(schema1 *Schema, schema2 *Schema) (ret bool) {
+	for key, property := range schema1.Properties {
+		if item, ok := schema2.Properties[key]; ok {
+			return s.Equal(property, item)
+		} else {
+			return false
+		}
+	}
+	return true
+}
+
+func (s *schema2conv) arrayEqual(schema1 *Schema, schema2 *Schema) (ret bool) {
+	return s.Equal(schema1.Items, schema2.Items)
+
 }

@@ -13,13 +13,21 @@
                    :condition="model"
                    :finish="onCancel"/>
 
+        <Cookie v-if="model.entityType === ConditionType.cookie"
+                :condition="model"
+                :finish="onCancel"/>
+
         <Checkpoint v-if="model.entityType === ConditionType.checkpoint"
                     :condition="model"
                     :finish="onCancel" />
 
-        <Script v-if="model.entityType === ConditionType.script"
+        <PreScript v-if="model.conditionEntityType === ConditionType.script"
                 :condition="model"
                 :finish="onCancel" />
+
+        <PostScript v-if="model.entityType === ConditionType.script"
+                    :condition="model"
+                    :finish="onCancel" />
       </div>
 
       <div class="buttons">
@@ -36,14 +44,17 @@
 <script setup lang="ts">
 import {computed, defineProps, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
-const {t} = useI18n();
 
 import {ConditionType} from "@/utils/enum";
 import Extractor from "./conditions-post/Extractor.vue";
+import Cookie from "./conditions-post/Cookie.vue";
 import Checkpoint from "./conditions-post/Checkpoint.vue";
-import Script from "./conditions-post/Script.vue";
+import PreScript from "./conditions-pre/Script.vue";
+import PostScript from "./conditions-post/Script.vue";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+
+const {t} = useI18n();
 
 const props = defineProps({
   visible: {

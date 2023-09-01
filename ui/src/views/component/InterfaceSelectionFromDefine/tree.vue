@@ -132,14 +132,8 @@ const expandNode = (keys: string[], e: any) => {
 }
 
 const selectNode = (keys, e) => {
-  console.log('selectNode', keys)
-  if (keys.length === 0 && e) {
-    selectedKeys.value = [e.node.dataRef.id] // cancel un-select
-    return
-  } else {
-    selectedKeys.value = keys
-  }
-  props.changeCategory(selectedKeys.value[0])
+  selectedKeys.value = keys
+  props.changeCategory(selectedKeys.value[0] || null)
 }
 
 const expandAll = () => {
@@ -159,6 +153,9 @@ onUnmounted(() => {
 
 <style lang="less" scoped>
 .interface-tree-main {
+  border-right: 1px solid #f0f0f0;
+  height: 100%;
+  padding: 20px 0;
   .toolbar {
     display: flex;
     .tips {
@@ -174,8 +171,7 @@ onUnmounted(() => {
 
   .tree-panel {
     width: 260px;
-    border-right: 1px solid #f0f0f0;
-    height: calc(100vh - 140px);
+    height: calc(100% - 30px);
     overflow-y:scroll;
   }
 

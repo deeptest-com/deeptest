@@ -1,6 +1,7 @@
 package service
 
 import (
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -17,6 +18,8 @@ type ScenarioInterfaceService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
+	EndpointCaseRepo      *repo.EndpointCaseRepo      `inject:""`
+	DebugInvokeRepo       *repo.DebugInvokeRepo       `inject:""`
 
 	ScenarioNodeService   *ScenarioNodeService   `inject:""`
 	DebugSceneService     *DebugSceneService     `inject:""`
@@ -24,6 +27,7 @@ type ScenarioInterfaceService struct {
 	SceneService          *SceneService          `inject:""`
 	EnvironmentService    *EnvironmentService    `inject:""`
 	DatapoolService       *DatapoolService       `inject:""`
+	EndpointCaseService   *EndpointCaseService   `inject:""`
 }
 
 func (s *ScenarioInterfaceService) GetDebugDataFromScenarioInterface(scenarioInterfaceId uint) (req domain.DebugData, err error) {
@@ -89,7 +93,7 @@ func (s *ScenarioInterfaceService) SetProps(
 //}
 
 func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug model.DebugInterface, err error) {
-	s.CopyValueFromRequest(&debug, req)
+	s.DebugInterfaceService.CopyValueFromRequest(&debug, req)
 
 	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
 	//debug.EndpointId = endpointInterface.EndpointId
@@ -100,16 +104,15 @@ func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug mo
 
 	err = s.ScenarioInterfaceRepo.SaveDebugData(&debug)
 
-	return
-}
-
-func (s *ScenarioInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
-	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
+	//更新执行器method
+	s.ScenarioProcessorRepo.UpdateMethod(debug.ScenarioProcessorId, debug.Method)
 
 	return
 }
 
-func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, createBy uint) (newProcessor model.Processor, err error) {
+func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, createBy uint) (
+	newProcessor model.Processor, err error) {
+
 	scenarioProcessor, _ := s.ScenarioProcessorRepo.Get(uint(scenarioProcessorId))
 	parentProcessor, _ := s.ScenarioProcessorRepo.Get(scenarioProcessor.ParentId)
 	debugInterface, _ := s.DebugInterfaceRepo.Get(scenarioProcessor.EntityId)
@@ -117,12 +120,23 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 	if debugInterface.DiagnoseInterfaceId > 0 {
 		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(debugInterface.DiagnoseInterfaceId)
 		diagnoseInterfaceTo := s.DiagnoseInterfaceRepo.ToTo(&diagnoseInterface)
-		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromDiagnose(diagnoseInterfaceTo, parentProcessor)
+		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromDiagnose(diagnoseInterfaceTo, parentProcessor, scenarioProcessor.Ordr)
+
+	} else if debugInterface.CaseInterfaceId > 0 {
+		endpointCase, _ := s.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
+		interfaceCase := serverDomain.InterfaceCase{}
+		copier.CopyWithOption(&interfaceCase, &endpointCase, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+
+		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&interfaceCase)
+		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor, scenarioProcessor.Ordr)
 
 	} else if debugInterface.EndpointInterfaceId > 0 {
 		serveId := uint(0)
-		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name)
+		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name, scenarioProcessor.Ordr)
+
 	}
+
+	s.DebugInvokeRepo.ChangeProcessorOwner(scenarioProcessor.ID, newProcessor.ID, newProcessor.EntityId, newProcessor.EndpointInterfaceId)
 
 	// must put below, since creation will use its DebugInterface
 	s.DebugInterfaceRepo.Delete(scenarioProcessor.EntityId)

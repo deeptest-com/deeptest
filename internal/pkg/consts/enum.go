@@ -30,6 +30,8 @@ const (
 	ProgressResult     WsMsgCategory = "result"
 	Processor          WsMsgCategory = "processor"
 	Initialize         WsMsgCategory = "initialize"
+	Statistic          WsMsgCategory = "stat"
+	Exception          WsMsgCategory = "exception"
 )
 
 func (e WsMsgCategory) String() string {
@@ -258,9 +260,19 @@ type UsedBy string
 
 const (
 	InterfaceDebug UsedBy = "interface_debug"
-	ScenarioDebug  UsedBy = "scenario_debug"
-	DiagnoseDebug  UsedBy = "diagnose_debug"
 	CaseDebug      UsedBy = "case_debug"
+	DiagnoseDebug  UsedBy = "diagnose_debug"
+	ScenarioDebug  UsedBy = "scenario_debug"
+)
+
+type ProcessorInterfaceSrc string
+
+const (
+	InterfaceSrcDefine   ProcessorInterfaceSrc = "define"
+	InterfaceSrcCase     ProcessorInterfaceSrc = "case"
+	InterfaceSrcDiagnose ProcessorInterfaceSrc = "diagnose"
+	InterfaceSrcCurl     ProcessorInterfaceSrc = "curl"
+	InterfaceSrcCustom   ProcessorInterfaceSrc = "custom"
 )
 
 type ConditionSrc string
@@ -273,17 +285,20 @@ const (
 type ConditionType string
 
 const (
-	ConditionTypeExtractor  ConditionType = "extractor"
-	ConditionTypeCheckpoint ConditionType = "checkpoint"
-	ConditionTypeScript     ConditionType = "script"
+	ConditionTypeExtractor      ConditionType = "extractor"
+	ConditionTypeCheckpoint     ConditionType = "checkpoint"
+	ConditionTypeScript         ConditionType = "script"
+	ConditionTypeResponseDefine ConditionType = "responseDefine"
 )
 
 type ConditionCategory string
 
 const (
-	ConditionCategoryResult  ConditionCategory = "result"
-	ConditionCategoryConsole ConditionCategory = "console"
-	ConditionCategoryAll     ConditionCategory = "all"
+	ConditionCategoryResult   ConditionCategory = "result"
+	ConditionCategoryConsole  ConditionCategory = "console"
+	ConditionCategoryAssert   ConditionCategory = "assert"
+	ConditionCategoryAll      ConditionCategory = "all"
+	ConditionCategoryResponse ConditionCategory = "response"
 )
 
 type ExtractorSrc string
@@ -291,6 +306,7 @@ type ExtractorSrc string
 const (
 	Header ExtractorSrc = "header"
 	Body   ExtractorSrc = "body"
+	Cookie ExtractorSrc = "cookie"
 )
 
 type ExtractorType string
@@ -393,10 +409,10 @@ const (
 	ProcessorPrint     ProcessorCategory = "processor_print"
 	ProcessorVariable  ProcessorCategory = "processor_variable"
 	ProcessorAssertion ProcessorCategory = "processor_assertion"
-	ProcessorExtractor ProcessorCategory = "processor_extractor"
 
-	ProcessorCookie ProcessorCategory = "processor_cookie"
-	ProcessorData   ProcessorCategory = "processor_data"
+	ProcessorCookie     ProcessorCategory = "processor_cookie"
+	ProcessorData       ProcessorCategory = "processor_data"
+	ProcessorCustomCode ProcessorCategory = "processor_custom_code"
 )
 
 func (e ProcessorCategory) ToString() string {
@@ -421,10 +437,8 @@ const (
 	ProcessorLoopIn    ProcessorType = "processor_loop_in"
 	ProcessorLoopRange ProcessorType = "processor_loop_range"
 	ProcessorLoopUntil ProcessorType = "processor_loop_until"
-	ProcessorLoopBreak ProcessorType = "processor_loop_break"
 
-	ProcessorVariableSet ProcessorType = "processor_variable_set"
-	//ProcessorVariableGet   ProcessorType = "processor_variable_get"
+	ProcessorVariableSet   ProcessorType = "processor_variable_set"
 	ProcessorVariableClear ProcessorType = "processor_variable_clear"
 
 	ProcessorAssertionDefault ProcessorType = "processor_assertion_default"
@@ -438,13 +452,11 @@ const (
 	ProcessorExtractorHtmlQuery ProcessorType = "processor_extractor_htmlquery"
 	ProcessorExtractorXmlQuery  ProcessorType = "processor_extractor_xmlquery"
 
-	ProcessorCookieGet   ProcessorType = "processor_cookie_get"
 	ProcessorCookieSet   ProcessorType = "processor_cookie_set"
 	ProcessorCookieClear ProcessorType = "processor_cookie_clear"
 
-	ProcessorDataText  ProcessorType = "processor_data_text"
-	ProcessorDataExcel ProcessorType = "processor_data_excel"
-	//ProcessorDataZenData ProcessorType = "processor_data_zendata"
+	ProcessorDataDefault       ProcessorType = "processor_data_default"
+	ProcessorCustomCodeDefault ProcessorType = "processor_custom_code_default"
 )
 
 func (e ProcessorType) ToString() string {
@@ -478,15 +490,39 @@ func (e ErrorAction) ToString() string {
 	return string(e)
 }
 
-type DataSource string
+type DataItSrc string
 
 const (
-	Text  DataSource = "text"
-	Excel DataSource = "excel"
-	//ZenData DataSource = "zendata"
+	SrcFileUpload DataItSrc = "fileUpload"
+	SrcDatapool   DataItSrc = "datapool"
 )
 
-func (e DataSource) ToString() string {
+func (e DataItSrc) ToString() string {
+	return string(e)
+}
+
+type DataItType string
+
+const (
+	Text  DataItType = "text"
+	Excel DataItType = "excel"
+	//ZenData DataItType = "zendata"
+)
+
+func (e DataItType) ToString() string {
+	return string(e)
+}
+
+type DataFileFormat string
+
+const (
+	FormatText    DataFileFormat = "text"
+	FormatExcel   DataFileFormat = "excel"
+	FormatCsv     DataFileFormat = "csv"
+	FormatUnknown DataFileFormat = "unknown"
+)
+
+func (e DataFileFormat) ToString() string {
 	return string(e)
 }
 

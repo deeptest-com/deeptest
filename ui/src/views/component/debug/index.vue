@@ -2,13 +2,14 @@
   <div class="debug-index-wrapper">
     <div id="debug-index" class="dp-splits-v">
       <div id="debug-content">
-        <Invocation :topVal="topVal"
-                    :showMethodSelection = "showMethodSelection"
+        <Invocation :showMethodSelection = "showMethodSelection"
                     :onSave="saveDebugData"
                     :onSaveAsCase="saveAsCase"
+                    :onGenerateCases="generateCases"
                     :onSync="syncDebugData"
                     :baseUrlDisabled="baseUrlDisabled"
-                    :urlDisabled="urlDisabled"/>
+                    :urlDisabled="urlDisabled" />
+<!--        <Name v-if="usedBy === UsedBy.ScenarioDebug" />-->
         <DebugConfig />
       </div>
 
@@ -45,20 +46,22 @@
         </a-tabs>
       </div>
 
-      <div v-if="rightTabKey==='env'"
-           :style="posStyleEnv"
-           class="right-float-tab dp-bg-white">
-        <div class="dp-bg-light">
-          <RequestEnv :onClose="closeRightTab" />
+      <Teleport to="body">
+        <div v-if="rightTabKey==='env'"
+             :style="posStyleEnv"
+             class="right-float-tab dp-bg-white">
+          <div class="dp-bg-light">
+            <RequestEnv :onClose="closeRightTab" />
+          </div>
         </div>
-      </div>
-      <div v-if="rightTabKey==='history'"
-           :style="posStyleHis"
-           class="right-float-tab dp-bg-white">
-        <div class="dp-bg-light">
-          <RequestHistory :onClose="closeRightTab" />
+        <div v-if="rightTabKey==='history'"
+             :style="posStyleHis"
+             class="right-float-tab dp-bg-white">
+          <div class="dp-bg-light">
+            <RequestHistory :onClose="closeRightTab" />
+          </div>
         </div>
-      </div>
+      </Teleport>
     </div>
   </div>
 
@@ -66,7 +69,6 @@
 
 <script setup lang="ts">
 import {computed, defineProps, inject, onBeforeUnmount, onMounted, onUnmounted, ref, watch} from "vue";
-import { onBeforeRouteLeave } from 'vue-router';
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 
@@ -74,6 +76,7 @@ import {EnvironmentOutlined, HistoryOutlined} from '@ant-design/icons-vue';
 import Invocation from '@/views/component/debug/request/Invocation.vue'
 import RequestEnv from '@/views/component/debug/others/env/index.vue';
 import RequestHistory from '@/views/component/debug/others/history/index.vue';
+import Name from '@/views/component/debug/others/name.vue';
 import DebugConfig  from './config.vue';
 
 import {StateType as ProjectGlobal} from "@/store/project";
@@ -81,7 +84,7 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "../../endpoint/store";
 
 import {StateType as GlobalStateType} from "@/store/global";
-import {getRightTabPanelPosition, resizeWidth} from "@/utils/dom";
+import {getRightTabPanelPosition} from "@/utils/dom";
 import {UsedBy} from "@/utils/enum";
 const usedBy = inject('usedBy') as UsedBy
 
@@ -98,13 +101,13 @@ const props = defineProps({
     type: Function,
     required: false
   },
-  onSyncDebugData: {
+  onGenerateCases: {
     type: Function,
     required: false
   },
-  topVal: {
-    type: String,
-    required: true
+  onSyncDebugData: {
+    type: Function,
+    required: false
   },
   baseUrlDisabled: {
     type: Boolean,
@@ -132,9 +135,14 @@ const saveAsCase = async () => {
   if (props.onSaveAsCase) {
     props.onSaveAsCase()
   }
-};
+}
+const generateCases = async () => {
+  if (props.onGenerateCases) {
+    props.onGenerateCases()
+  }
+}
 
-const syncDebugData = async () => {
+  const syncDebugData = async () => {
   if (props.onSyncDebugData)
     props.onSyncDebugData()
 };
@@ -208,21 +216,21 @@ onUnmounted(() => {
 .debug-index-wrapper {
   flex:1;
   height: 100%;
-  overflow-y: auto;
   display: flex;
   flex-direction: column;
 
   #debug-index {
-    //border: 1px solid red;
     display: flex;
-    //min-height: 460px;
     flex:1;
-    //height: 100%;
     width: 100%;
 
     #debug-content {
       flex: 1;
       width: 0;
+
+      .interface-name {
+        padding-top: 16px;
+      }
     }
 
     #debug-right {

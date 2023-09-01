@@ -1,7 +1,8 @@
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
-import {requestMethodOpts} from "@/config/constant";
+import {defaultPathParams, requestMethodOpts} from "@/config/constant";
+import {cloneByJSON} from "@/utils/object";
 
 export function resizeWidth(mainId: string, leftId: string, splitterId: string, rightId: string,
                             leftMin: number, rightMin: number): boolean {
@@ -55,7 +56,7 @@ export function resizeHeight(mainId: string, topId: string, splitterId: string, 
     const splitter = document.getElementById(splitterId) as any;
     const bottom = document.getElementById(bottomId) as any;
 
-    console.log(main, top, splitter, bottom)
+    // console.log(main, top, splitter, bottom)
 
     if (!splitter) return false
 
@@ -78,7 +79,7 @@ export function resizeHeight(mainId: string, topId: string, splitterId: string, 
             bottom.style.height = availableHeight - topNewHeight + 'px';
             bottom.style.flex = undefined
 
-            console.log('height: ', availableHeight, top.style.height, bottom.style.height)
+            // console.log('height: ', availableHeight, top.style.height, bottom.style.height)
 
             resizeHandler()
         };
@@ -183,7 +184,7 @@ export function getContextMenuStyle (x, y, height) {
 }
 
 export function getContextMenuStyle2(e) {
-    console.log('getContextMenuStyle2', e.clientY)
+    // console.log('getContextMenuStyle2', e.clientY)
 
     const style = {
         left: e.clientX + 'px',
@@ -194,18 +195,19 @@ export function getContextMenuStyle2(e) {
 }
 
 export function getRightTabPanelPosition(tabId) {
-    console.log('getRightTabPanelPosition', tabId)
+    // console.log('getRightTabPanelPosition', tabId)
 
     let ret = {}
 
     const elem = document.getElementById(tabId)
+    const isDiagnose = location.href.includes('diagnose/index'); // 快捷调试
 
     if (elem) {
         const pos = elem.getBoundingClientRect()
         const top = getRightTabTop()
         ret = {
             top: getRightTabTop() + 'px',
-            left: (pos.left - 360 - 10) + 'px',
+            left: (pos.left + pos.width + 10 * 2 + (!isDiagnose ? 16 : 0) - 360) + 'px',
             height: (document.body.clientHeight - top) + 'px',
         }
     }
@@ -227,8 +229,74 @@ function getRightTabTop() {
     return 100
 }
 
-export const getMethodColor = (method) => {
+export const getMethodColor = (method, disabled) => {
+    if (disabled) {
+        return 'default'
+    }
+
     return requestMethodOpts.find((item: any) => {
         return item.value === method;
     })?.color
+}
+
+export function handlePathLinkParams(path, oldPathParams) {
+    // 支持字母下划线及中划线
+    const pathParams = oldPathParams || [];
+
+    const params: any = [];
+
+    const reg = /\{([\w-]+)\}/g
+    let param: any | Array<any> = reg.exec(path);
+
+    while (param !== null) {
+        params.push(param[1]);
+        param = reg.exec(path)
+    }
+
+    if (params.length < pathParams.length) {
+        pathParams.splice(params.length - 1);
+    }
+
+    params.forEach((item, index) => {
+        if (pathParams[index]) {
+            pathParams[index].name = item;
+        } else {
+            pathParams.push({
+                ...cloneByJSON(defaultPathParams),
+                name: item,
+            })
+        }
+    })
+
+    return pathParams
+}
+
+export function handleParamsLinkPath(path, oldPathParams) {
+    const pathParams = oldPathParams || [];
+
+    const params = pathParams.map(item => item.name);
+
+    // 正则支持字母下划线及中划线组成的路径参数
+    const paths = path.split(/(\{[\w-]*\})/g);
+
+    let idx = 0;
+    paths.forEach((item, index) => {
+        if (item && item.startsWith('{') && item.endsWith('}')) {
+            paths[index] = params[idx] ? `{${params[idx]}}` : '';
+            idx++;
+        }
+    })
+
+    if (params.length > idx) {
+        params.slice(idx).forEach((item) => {
+            paths.push(item ? `/{${item}}` : '')
+        })
+    }
+
+    const newPath = paths.filter((item) => {
+        return !!item
+    }).join('').replace('//', '/');
+
+
+    return newPath
 }

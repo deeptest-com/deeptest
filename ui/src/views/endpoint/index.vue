@@ -14,6 +14,7 @@
                   code="ENDPOINT-ADD"
                   type="primary"
                   :loading="loading"
+                  action="create"
                   @handle-access="handleCreateEndPoint"/>
               <a-dropdown :trigger="['hover']" :placement="'bottomLeft'">
                 <a class="ant-dropdown-link" @click.prevent>
@@ -58,11 +59,14 @@
                   onChange: (page) => {
                     loadList(page,pagination.pageSize);
                   },
-                  onShowSizeChange: (page, size) => {
-                    loadList(page,size);
+                  onShowSizeChange: (_page, size) => {
+                    loadList(1,size);
+                  },
+                  showTotal: (total) => {
+                    return `共 ${total} 条数据`;
                   },
               }"
-                       :scroll="{ x: '1280px' || true }"
+                       :scroll="{ x: '1240px' || true }"
                        :columns="columns"
                        :data-source="list">
                 <template #colTitle="{text,record}">
@@ -104,10 +108,26 @@
                     {{username(record.createUser)}}
                   </div>
                 </template>
-
-                <template #colPath="{text}">
+                <template #colUpdateUser="{record}">
+                  <div class="customTagsColRender">
+                    {{username(record.updateUser)}}
+                  </div>
+                </template>
+                <template #updatedAt="{ record, column }">
+                  <TooltipCell :text="record.updatedAt" :width="column.width" />
+                </template>
+                <template #colPath="{text, record}">
                   <div class="customPathColRender">
-                    <a-tag>{{ text }}</a-tag>
+                    <a-tag :color="getMethodColor(method)" v-for="(method, index) in (record.methods)" :key="index">{{ method }}</a-tag>
+                    <span class="path-col" v-if="text">
+                      <a-tooltip placement="topLeft">
+                        <template #title>
+                          <span>{{ text }}</span>
+                        </template>
+                        <a-tag>{{ text }}</a-tag>
+                      </a-tooltip>
+                    </span>
+                    <span class="path-col" v-else> --- </span>
                   </div>
                 </template>
                 <template #action="{record}">
@@ -122,6 +142,8 @@
                               size="small"
                               type="link"
                               :code="menuItem.code"
+                              :dataCreateUser="record.createUser"
+                              :action="menuItem.text ==='删除' ? 'delete' : ''"
                               @handle-access="menuItem.action(record)"/>
                         </a-menu-item>
                       </a-menu>
@@ -158,6 +180,7 @@
     <!-- 编辑接口时，展开抽屉：外层再包一层 div, 保证每次打开弹框都重新渲染   -->
     <div v-if="drawerVisible">
       <Drawer
+          @share="id => share({ id })"
           :destroyOnClose="true"
           :visible="drawerVisible"
           @refreshList="refreshList"
@@ -183,7 +206,7 @@ import ImportEndpointModal from './components/ImportEndpointModal.vue';
 import TableFilter from './components/TableFilter.vue';
 import Drawer from './components/Drawer/index.vue'
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
-import EmptyCom from '@/components/Empty/index.vue';
+import EmptyCom from '@/components/TableEmpty/index.vue';
 import PermissionButton from "@/components/PermissionButton/index.vue";
 import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
@@ -193,6 +216,11 @@ import {message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
 import Tags from './components/Tags/index.vue';
+import TooltipCell from '@/components/Table/tooltipCell.vue';
+import { getUrlKey } from '@/utils/url';
+import { getMethodColor } from '@/utils/interface';
+import {notifyError, notifySuccess} from "@/utils/notify";
+
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
@@ -218,27 +246,7 @@ const columns = [
     title: '接口名称',
     dataIndex: 'title',
     slots: {customRender: 'colTitle'},
-    ellipsis: true,
-    width: 150,
-  },
-  {
-    title: '状态',
-    dataIndex: 'status',
-    slots: {customRender: 'colStatus'},
-    width: 150,
-  },
-  {
-    title: '标签',
-    dataIndex: 'tags',
-    slots: {customRender: 'colTags'},
-    width: 200,
-  },
-  {
-    title: '创建人',
-    dataIndex: 'createUser',
-    slots: {customRender: 'colCreateUser'},
-    width: 100,
-    ellipsis: true
+    width: 250,
   },
   {
     title: '接口路径',
@@ -248,15 +256,42 @@ const columns = [
     ellipsis: true
   },
   {
+    title: '标签',
+    dataIndex: 'tags',
+    slots: {customRender: 'colTags'},
+    width: 200,
+  },
+  {
+    title: '状态',
+    dataIndex: 'status',
+    slots: {customRender: 'colStatus'},
+    width: 80,
+  },
+  {
     title: '所属服务',
     dataIndex: 'serveName',
     ellipsis: true,
-    width: 100,
+    width: 110,
+  },
+  {
+    title: '创建人',
+    dataIndex: 'createUser',
+    slots: {customRender: 'colCreateUser'},
+    width: 110,
+    ellipsis: true
+  },
+  {
+    title: '更新人',
+    dataIndex: 'updateUser',
+    slots: {customRender: 'colUpdateUser'},
+    width: 110,
+    ellipsis: true
   },
   {
     title: '最近更新',
     dataIndex: 'updatedAt',
-    width: 200,
+    width: 180,
+    slots: { customRender: 'updatedAt' },
   },
   {
     title: '操作',
@@ -270,17 +305,24 @@ const MenuList = [
   {
     key: '1',
     code: 'ENDPOINT-COPY',
-    text: '复制',
+    text: '克隆',
     action: (record: any) => copy(record)
   },
   {
     key: '2',
+    code: '',
+    text: '分享链接',
+    action: (record: any) => share(record)
+  },
+
+  {
+    key: '3',
     code: 'ENDPOINT-DELETEE',
     text: '删除',
     action: (record: any) => del(record)
   },
   {
-    key: '3',
+    key: '4',
     code: 'ENDPOINT-OUTDATED',
     text: '过期',
     action: (record: any) => disabled(record)
@@ -377,6 +419,65 @@ async function editEndpoint(record) {
   drawerVisible.value = true;
 }
 
+/**
+ * 分享相关
+ * @param record
+ */
+function share(record: any) {
+  const searchParams = {
+    endpointId: record.id,
+    selectedCategoryId: selectedCategoryId.value,
+  };
+  const text = `${window.location.origin}${window.location.hash.split('?')[0]}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
+  if (!navigator.clipboard) {
+    var ele = document.createElement("input");
+    ele.value = text;
+    document.body.appendChild(ele);
+    ele.select();
+    document.execCommand("copy");
+    document.body.removeChild(ele);
+    if (document.execCommand("copy")) {
+      notifySuccess('复制成功，项目成员可通过此链接访问');
+    }
+  } else {
+    navigator.clipboard.writeText(text).then(function () {
+      notifySuccess('复制成功，项目成员可通过此链接访问');
+    }).catch(function (err) {
+      console.log('分享失败', err);
+    })
+  }
+}
+
+function checkShareInfo() {
+  try {
+    const result = getUrlKey('shareInfo', window.location.href) || "";
+    const shareInfo = result ? JSON.parse(result  as string) : {};
+    console.log(
+    '%c 接口定义 分享详情share-info',
+    'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: green;',
+    shareInfo
+    );
+    if (shareInfo.endpointId) {
+      editEndpoint({ id: shareInfo.endpointId }); // 默认打开该接口的抽屉详情
+    }
+    if (shareInfo.selectedCategoryId) {
+      console.log(12340);
+      selectNode(shareInfo.selectedCategoryId);
+    }
+  } catch (error) {
+    console.log('error', error);
+  }
+}
+
+onMounted(() => {
+  checkShareInfo();
+});
+
+/**
+ * 其他操作
+ * @param record
+ */
+
 async function copy(record: any) {
   await store.dispatch('Endpoint/copy', record);
 }
@@ -399,9 +500,9 @@ async function del(record: any) {
       // // 重新拉取目录树
       // await store.dispatch('Endpoint/loadCategory');
       if (res) {
-        message.success('删除成功');
+        notifySuccess('删除成功');
       } else {
-        message.error('删除失败');
+        notifyError('删除失败');
       }
     },
   });
@@ -416,7 +517,7 @@ async function handleCreateApi(data) {
     "categoryId": data.categoryId || null,
     "curl": data.curl || null,
   });
-  await refreshList();
+  await refreshList('reset');
   createApiModalVisible.value = false;
 }
 
@@ -445,7 +546,7 @@ async function handleImport(data, callback) {
 
   // 导入成功，重新拉取列表 ，并且关闭弹窗
   if (res) {
-    await refreshList();
+    await refreshList('reset');
     if (callback) {
       callback();
     }
@@ -463,10 +564,7 @@ async function selectNode(id) {
   selectedRowKeys. value = [];
   selectedRow.value = {};
   // 选中节点时，重置分页为第一页
-  await loadList(1, pagination.value.pageSize, {
-    categoryId: id,
-    serveId: currServe.value.id,
-  });
+  await loadList(1, pagination.value.pageSize);
 }
 
 
@@ -477,7 +575,8 @@ const loadList = debounce(async (page, size, opts?: any) => {
     "projectId": currProject.value.id,
     "page": page,
     "pageSize": size,
-    opts,
+    ...opts,
+    categoryId: selectedCategoryId.value || null,
   });
   // await store.dispatch('Endpoint/loadCategory');
   fetching.value = false;
@@ -486,21 +585,23 @@ const loadList = debounce(async (page, size, opts?: any) => {
 
 async function handleTableFilter(state) {
   filterState.value = state;
-  await loadList(pagination.value.current, pagination.value.pageSize, state);
+  await loadList(1, pagination.value.pageSize, state);
 }
 
 const filter = ref()
 
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据
-watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
+watch(() => [currProject.value.id, currServe.value.id], async (newVal, oldVal) => {
   const [newProjectId, newServeId] = newVal;
+  const [oldProjectId] = oldVal || [];
+  if (newProjectId !== undefined && oldProjectId !== undefined && newProjectId !== oldProjectId) {
+    selectedCategoryId.value = "";
+  }
   if (newProjectId !== undefined) {
-    await loadList(pagination.value.current, pagination.value.pageSize, {
-      serveId: newServeId || 0,
-    });
+    await loadList(1, pagination.value.pageSize);
     await store.dispatch('Endpoint/getEndpointTagList');
     if (newServeId) {
-      await store.dispatch('Endpoint/getServerList', {id: newServeId});
+      await store.dispatch('Debug/listServes', {serveId: newServeId});
       // 获取授权列表
       await store.dispatch('Endpoint/getSecurityList', {id: newServeId});
     }
@@ -511,14 +612,19 @@ watch(() => [currProject.value.id, currServe.value.id], async (newVal) => {
   immediate: true
 })
 
-async function refreshList() {
-  await loadList(pagination.value.current, pagination.value.pageSize);
+async function refreshList(resetPage?: string) {
+  await loadList(resetPage ? 1 : pagination.value.current, pagination.value.pageSize);
 }
 
 watch(
     () => [createApiModalVisible.value, showImportModal.value, drawerVisible.value],
-    async (newValue) => {
-      if (!newValue[0] || !newValue[1] || !newValue[2]) {
+    async (newValue, oldVal) => {
+      /**
+       * 分享场景打开页面： 自动打开抽屉展示指定接口详情，会触发这里的监听，
+       * 这里改成： 必须是触发了关闭弹窗 才触发，避免此场景 多次调用 loadCategory接口
+       */
+      const oldValue = oldVal || [];
+      if ((!newValue[0] && oldValue[0]) || (!newValue[1] && oldValue[1]) || (!newValue[2] && oldValue[2])) {
         await store.dispatch('Endpoint/loadCategory');
       }
     },
@@ -529,7 +635,6 @@ watch(
 onUnmounted(async () => {
   store.commit('Endpoint/clearFilterState');
 })
-
 
 function paneResizeStop(pane, resizer, size) {
   console.log(pane.className, resizer.className, size.split('px')[0])
@@ -551,8 +656,10 @@ const username = (user:string)=>{
   return result?.label || '-'
 }
 
+
 </script>
 <style scoped lang="less">
+
 .tag-filter-form {
   display: flex;
   justify-content: center;
@@ -590,6 +697,8 @@ const username = (user:string)=>{
 
   .top-action-left {
     min-width: 220px;
+    display: flex;
+    align-items: center;
   }
 }
 
@@ -645,4 +754,21 @@ const username = (user:string)=>{
   color: #447DFD;
 }
 
+.customPathColRender {
+  display: flex;
+
+  .path-col {
+    display: flex;
+    flex: 1;
+    width: 0;
+
+    :deep(.ant-tag) {
+      width: max-content;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+  }
+}
 </style>

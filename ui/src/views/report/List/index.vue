@@ -10,13 +10,18 @@
                 handleGetList({ page });
             },
             onShowSizeChange: (page, size) => {
+                pagination.page = page
                 pagination.pageSize = size
-                handleGetList({ page });
+                handleGetList(pagination);
+            },
+            showTotal: (total) => {
+                return `共 ${total} 条数据`;
             },
         }"
+        :scroll="{ x: 1240 }"
         class="dp-table">
         <template #serialNumber="{ record }">
-            <span style="cursor: pointer">{{ record.serialNumber }}</span>
+            <span>{{ record.serialNumber }}</span>
         </template>
         <template #interfacePassRate="{ record }">
             <span>{{ record.interfacePassRate }}</span>
@@ -24,14 +29,14 @@
         <template #createUserName="{ record }">
             <span>{{ record.createUserName }}</span>
         </template>
-        <template #execPlan="{ record }">
-            <span class="report-planname" @click="handleQueryDetail(record)">{{ record.name }}</span>
+        <template #execPlan="{ record, column }">
+            <ToolTipCell style="color: #447DFD;cursor: pointer;" :width="column.width"  @click="handleQueryDetail(record)" :text="record.name" />
         </template>
         <template #duration="{ record }">
             <span v-html="formatWithSeconds(record.duration)"></span>
         </template>
-        <template #executionTime="{ record }">
-            <span>{{ momentUtc(record.startTime) }}</span>
+        <template #executionTime="{ record, column }">
+            <ToolTipCell :width="column.width" :text="momentUtc(record.startTime)" />
         </template>
 
         <template #action="{ record }">
@@ -39,9 +44,9 @@
                 <MoreOutlined />
                 <template #overlay>
                     <a-menu>
-                        <a-menu-item key="1">
-                            <a class="operation-a" href="javascript:void (0)" @click="handleExport(record.id)">导出</a>
-                        </a-menu-item>
+<!--                        <a-menu-item key="1">-->
+<!--                            <a class="operation-a" href="javascript:void (0)" @click="handleExport(record.id)">导出</a>-->
+<!--                        </a-menu-item>-->
                         <a-menu-item key="2">
                             <a class="operation-a" href="javascript:void (0)" @click="handleQueryDetail(record)">查看报告</a>
                         </a-menu-item>
@@ -58,12 +63,15 @@
 import {computed, ref, defineEmits, defineProps, createVNode} from "vue";
 import { useStore } from "vuex";
 import { ColumnProps } from 'ant-design-vue/es/table/interface';
+import {message, Modal, notification} from "ant-design-vue";
 import {ExclamationCircleOutlined, MoreOutlined} from "@ant-design/icons-vue";
 import { StateType as ProjectStateType } from "@/store/project";
 import { StateType } from "../store";
 import { PaginationConfig } from "../data";
 import { momentUtc, formatWithSeconds } from "@/utils/datetime";
-import {message, Modal} from "ant-design-vue";
+import ToolTipCell from '@/components/Table/tooltipCell.vue';
+import {notifyError, notifySuccess} from "@/utils/notify";
+
 
 defineProps({
     loading: {
@@ -94,35 +102,39 @@ const columns = [
         slots: { customRender: 'serialNumber' },
         width: 120
     },
-
     {
         title: '测试计划',
         dataIndex: 'execPlan',
+        width: 300,
         slots: { customRender: 'execPlan' },
     },
     {
         title: '测试通过率',
         dataIndex: 'interfacePassRate',
+        width: 110,
     },
     {
         title: '执行人',
         dataIndex: 'createUserName',
+        width: 110,
     },
     {
         title: '执行耗时',
+        width: 120,
         dataIndex: 'duration',
         slots: { customRender: 'duration' },
     },
     {
         title: '执行时间',
         dataIndex: 'executionTime',
-        width: 200,
+        width: 180,
         slots: { customRender: 'executionTime' },
     },
     {
         title: '操作',
         key: 'action',
         width: 80,
+        fixed: 'right',
         slots: { customRender: 'action' },
     },
 ];
@@ -146,9 +158,9 @@ const handleDelete = async (id: number) => {
     onOk: async () => {
       const res = store.dispatch('Report/remove', id);
       if (res) {
-        message.success('删除成功');
+        notifySuccess('删除成功');
       } else {
-        message.error('删除失败');
+        notifyError('删除失败');
       }
     },
   });

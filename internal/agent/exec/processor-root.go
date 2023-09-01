@@ -14,6 +14,7 @@ type ProcessorRoot struct {
 }
 
 func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err error) {
+
 	logUtils.Infof("root entity")
 
 	startTime := time.Now()
@@ -33,6 +34,13 @@ func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err err
 	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
 
 	for _, child := range processor.Children {
+		if ForceStopExec {
+			break
+		}
+		if child.Disable {
+			continue
+		}
+
 		child.Run(session)
 	}
 

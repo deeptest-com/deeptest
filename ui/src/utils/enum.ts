@@ -13,6 +13,15 @@ export enum UsedBy {
     CaseDebug = "case_debug",
 }
 
+export enum ProcessorInterfaceSrc {
+    Define = "define",
+    Case = "case",
+    Diagnose = "diagnose",
+    Curl = "curl",
+    Custom = "custom",
+}
+
+
 export enum VarScope {
     ScopePublic = "public",
     ScopePrivate = "private",
@@ -46,6 +55,8 @@ export enum ProcessorCategory {
     ProcessorTimer = "processor_timer",
     ProcessorPrint = "processor_print",
     ProcessorAssertion = "processor_assertion",
+    ProcessorCustomCode = "processor_custom_code",
+
 }
 export enum ProcessorInterface {
     Interface = "processor_interface_default",
@@ -112,6 +123,10 @@ export enum ProcessorData {
     // ZenData = "processor_data_zendata",
 }
 
+export enum ProcessorCustomCode {
+    CustomCodeDefault = "processor_custom_code_default",
+}
+
 export enum RequestBodyType {
     'application/json'= 'application/json',
     'application/xml' = 'application/xml',
@@ -147,9 +162,15 @@ export enum ComparisonOperator {
     notContain = 'notContain',
 }
 
+export enum DataSrc {
+    fileUpload = 'fileUpload',
+    datapool = 'datapool',
+}
+
 export enum ConditionCategory {
     result = 'result',
     console = 'console',
+    assert = 'assert'
 }
 export enum ConditionType {
     extractor = 'extractor',
@@ -163,6 +184,7 @@ export enum PreConditionType {
 export enum ExtractorSrc {
     header = 'header',
     body = 'body',
+    cookie = 'cookie',
 }
 export enum ExtractorType {
     boundary = 'boundary',
@@ -210,4 +232,11 @@ export enum ReportDetailType {
 export enum ProjectType {
     Full = 'full',
     Debug = 'debug'
+}
+
+export enum DataFileExt {
+//    XLS = '.xls',
+//    XLSX = '.xlsx',
+    CSV = '.csv',
+//    TXT = '.txt'
 }

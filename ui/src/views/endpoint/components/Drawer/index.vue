@@ -7,6 +7,11 @@
         <EditAndShowField :custom-class="'show-on-hover'" placeholder="修改标题" :value="endpointDetail?.title || ''"
                           @update="updateTitle"/>
       </div>
+      <div class="header-operation">
+        <a-tooltip :title="'分享链接'">
+          <ShareAltOutlined @click.stop="handleShare" />
+        </a-tooltip>
+      </div>
     </template>
     <template #basicInfo>
       <!-- 基本信息 -->
@@ -57,7 +62,8 @@
 </template>
 
 <script lang="ts" setup>
-import {computed, defineEmits, defineProps, ref,} from 'vue';
+import {computed, defineEmits, defineProps, provide, ref,} from 'vue';
+import { ShareAltOutlined } from '@ant-design/icons-vue';
 import IconSvg from "@/components/IconSvg";
 import EndpointBasicInfo from './EndpointBasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
@@ -68,7 +74,8 @@ import Docs from '@/components/Docs/index.vue';
 import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
+import {notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal,Global }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -80,7 +87,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['ok', 'close', 'refreshList']);
+const emit = defineEmits(['ok', 'close', 'refreshList', 'share']);
 
 const showList = ref(true)
 const docsData = ref(null);
@@ -188,11 +195,15 @@ async function save() {
       }
   );
   store.commit("Global/setSpinning",false)
-  message.success('保存成功');
+  notifySuccess('保存成功');
   emit('refreshList');
 }
 
+function handleShare() {
+  emit('share', endpointDetail.value.id);
+}
 
+provide('notScrollIntoView', true);
 </script>
 
 <style lang="less" scoped>

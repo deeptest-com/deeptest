@@ -61,8 +61,13 @@ func (s *SummaryService) CollectionDetails() (err error) {
 }
 
 func DecimalHB(newValue float64, oldValue float64) float64 {
-	value := newValue / oldValue
-	value = value - 1
+	var value float64
+	if newValue != 0 {
+		value = newValue / oldValue
+		value = value - 1
+	} else {
+		value = 1 - oldValue
+	}
 	return value * 100
 }
 

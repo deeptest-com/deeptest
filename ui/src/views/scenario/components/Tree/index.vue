@@ -84,6 +84,7 @@ import {StateType as ProjectStateType} from "@/store/project";
 import {setSelectedKey} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
 import {filterTree} from "@/utils/tree";
+import {notifyError, notifySuccess, notifyWarn} from "@/utils/notify";
 
 const store = useStore<{ Scenario: ScenarioStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -221,9 +222,9 @@ async function deleteCategory(node) {
         type:'scenario'
       });
       if (res) {
-        message.success('删除成功');
+        notifySuccess('删除成功');
       } else {
-        message.success('删除失败');
+        notifyError('删除失败');
       }
     },
     onCancel() {
@@ -262,9 +263,9 @@ async function handleTagModalOk(obj) {
     });
     if (res) {
       createTagModalVisible.value = false;
-      message.success('修改分类成功');
+      notifySuccess('修改分类成功');
     } else {
-      message.error('修改分类失败，请重试~');
+      notifyError('修改分类失败，请重试~');
     }
   } else if (tagModalMode.value === 'new') { // 新建
     const res = await store.dispatch('Scenario/createCategoryNode', {
@@ -277,9 +278,9 @@ async function handleTagModalOk(obj) {
     });
     if (res?.name) {
       createTagModalVisible.value = false;
-      message.success('新建分类成功');
+      notifySuccess('新建分类成功');
     } else {
-      message.error('修改分类失败，请重试~');
+      notifyError('修改分类失败，请重试~');
     }
   }
 }
@@ -295,11 +296,11 @@ async function onDrop(info: DropEvent) {
   const dropPosition = info.dropPosition - Number(pos[pos.length - 1]);
   // 未分类不让移动
   if (dragKey === -1) {
-    message.warning('未分类不能移动');
+    notifyWarn('未分类不能移动');
     return;
   }
   if (dropKey === -1) {
-    message.warning('其他分类不能移动到未分类下');
+    notifyWarn('其他分类不能移动到未分类下');
     return;
   }
   const res = await store.dispatch('Scenario/moveCategoryNode', {
@@ -314,9 +315,9 @@ async function onDrop(info: DropEvent) {
     if (dropPosition === 0) {
       expandedKeys.value = [...new Set([...expandedKeys.value, dropKey])];
     }
-    message.success('移动成功');
+    notifySuccess('移动成功');
   } else {
-    message.error('移动失败');
+    notifyError('移动失败');
   }
 }
 

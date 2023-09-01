@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/cmd/agent/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/service"
@@ -42,7 +43,6 @@ func Init() *AgentServer {
 	_i118Utils.Init(consts.Language, "")
 
 	app := iris.New()
-
 	app.Validator = validator.New() //参数验证
 	app.Logger().SetLevel(config.CONFIG.System.Level)
 	idleConnClosed := make(chan struct{})
@@ -67,8 +67,8 @@ func Init() *AgentServer {
 		&commService.PrefixedLogger{Prefix: ""},
 	)
 	m.HandleWebsocket(websocketCtrl)
-	websocketServer := websocket.New(
-		gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
+
+	websocketServer := websocket.New(gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
 	websocketAPI.Get("/", websocket.Handler(websocketServer))
 
 	return &AgentServer{
@@ -76,7 +76,7 @@ func Init() *AgentServer {
 		addr:              config.CONFIG.System.AgentAddress,
 		timeFormat:        config.CONFIG.System.TimeFormat,
 		idleConnClosed:    idleConnClosed,
-		globalMiddlewares: []context.Handler{},
+		globalMiddlewares: []context.Handler{middleware.Error()},
 	}
 }
 

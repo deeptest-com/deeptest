@@ -25,7 +25,7 @@ type DebugResponse struct {
 }
 
 type BaseRequest struct {
-	ProcessorInterfaceSrc consts.UsedBy `json:"processorInterfaceSrc"`
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 
 	Method      consts.HttpMethod `gorm:"default:GET" json:"method"`
 	Url         string            `json:"url"`

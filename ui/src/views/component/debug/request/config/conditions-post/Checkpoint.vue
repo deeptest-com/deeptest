@@ -44,7 +44,7 @@
         <a-textarea v-model:value="model.expression" :auto-size="{ minRows: 2, maxRows: 5 }"
                  @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
 
-        <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}'})}}</div>
+        <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}', number: '{+number}'})}}</div>
       </a-form-item>
 
       <a-form-item v-if="model.type !== 'judgement'" label="数值" v-bind="validateInfos.value">
@@ -76,6 +76,7 @@ import {getEnumSelectItems} from "@/utils/comm";
 import {NotificationKeyCommon} from "@/utils/const";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
@@ -142,18 +143,12 @@ const save = () => {
 
     store.dispatch('Debug/saveCheckpoint', model.value).then((result) => {
       if (result) {
-        notification.success({
-          key: NotificationKeyCommon,
-          message: `保存成功`,
-        });
+        notifySuccess(`保存成功`);
         if (props.finish) {
           props.finish()
         }
       } else {
-        notification.error({
-          key: NotificationKeyCommon,
-          message: `保存失败`,
-        });
+        notifyError(`保存失败`);
       }
     })
   })

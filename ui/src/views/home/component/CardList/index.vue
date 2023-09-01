@@ -10,7 +10,11 @@
                 total: total,
                 onChange: (page) => {
                   handlePageChange(page);
-                }}">
+                },
+                showTotal: (total) => {
+                  return `共 ${total} 条数据`;
+                },
+            }">
         <template #header></template>
         <template #renderItem="{ item }">
           <ListItem>

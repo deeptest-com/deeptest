@@ -26,7 +26,7 @@ export function getPercent(numb, total) {
     numb = numb || 0;
     total = total || 0;
     if (total == 0) return 0;
-    return Number((numb / total) * 100).toFixed(4);
+    return Number((numb / total) * 100).toFixed(2);
 }
 
 /**

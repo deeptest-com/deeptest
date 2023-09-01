@@ -1,11 +1,11 @@
 package service
 
 import (
-	"fmt"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
+	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -56,6 +56,8 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars, debugData.GlobalVars, debugData.GlobalParams =
 		s.DebugSceneService.LoadScene(&debugData)
 
+	debugData.ResponseDefine = s.PostConditionRepo.CreateDefaultResponseDefine(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, loadReq.UsedBy)
+
 	return
 }
 
@@ -83,36 +85,55 @@ func (s *DebugInterfaceService) GetDetail(id uint) (ret model.DebugInterface, er
 	return
 }
 
-func (s *DebugInterfaceService) Save(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
-	s.CopyValueFromRequest(&debugInterface, req)
-
-	if req.DebugInterfaceId > 0 { // to update if already loading from a debugInterface
-		debugInterface.ID = req.DebugInterfaceId
+func (s *DebugInterfaceService) CreateOrUpdate(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
+	if req.DebugInterfaceId > 0 {
+		debugInterface, err = s.Update(req, req.DebugInterfaceId)
 	} else {
-		debugInterface.ServeId = req.ServeId
-	}
-
-	err = s.DebugInterfaceRepo.Save(&debugInterface)
-
-	// first time to save a debug interface that convert from endpoint interface, clone conditions
-	// it's different from cloning data between two debug interfaces when do importing
-	if req.DebugInterfaceId <= 0 {
-		s.PreConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
-		s.PostConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
-
-		s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
+		debugInterface, err = s.Create(req)
 	}
 
 	return
 }
 
-func (s *DebugInterfaceService) SaveAs(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
+func (s *DebugInterfaceService) Create(req domain.DebugData) (debugInterface model.DebugInterface, err error) {
 	s.CopyValueFromRequest(&debugInterface, req)
+	debugInterface.ServeId = req.ServeId
+	debugInterface.ID = 0
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
-	s.PreConditionRepo.CloneAll(req.DebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
-	s.PostConditionRepo.CloneAll(req.DebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
+	// first time to save a debug interface that convert from endpoint interface, clone conditions
+	// it's different from cloning data between two debug interfaces when do importing
+	s.PreConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
+	s.PostConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID)
+
+	s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
+
+	return
+}
+
+func (s *DebugInterfaceService) Update(req domain.DebugData, debugInterfaceId uint) (debugInterface model.DebugInterface, err error) {
+	s.CopyValueFromRequest(&debugInterface, req)
+	debugInterface.ID = debugInterfaceId
+
+	err = s.DebugInterfaceRepo.Save(&debugInterface)
+
+	// 更新method
+	s.DiagnoseInterfaceRepo.UpdateMethod(debugInterface.DiagnoseInterfaceId, debugInterface.Method)
+
+	return
+}
+
+func (s *DebugInterfaceService) SaveAs(req domain.DebugData, srcDebugInterfaceId uint) (debugInterface model.DebugInterface, err error) {
+	s.CopyValueFromRequest(&debugInterface, req)
+	debugInterface.ServeId = req.ServeId
+	req.DebugInterfaceId = 0
+	debugInterface.ID = 0
+
+	err = s.DebugInterfaceRepo.Save(&debugInterface)
+
+	s.PreConditionRepo.CloneAll(srcDebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
+	s.PostConditionRepo.CloneAll(srcDebugInterfaceId, req.EndpointInterfaceId, debugInterface.ID)
 
 	return
 }
@@ -137,6 +158,16 @@ func (s *DebugInterfaceService) GetDebugDataFromEndpointInterface(endpointInterf
 	} else {
 		ret, err = s.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
 	}
+
+	return
+}
+func (s *DebugInterfaceService) GetDebugDataFromCaseInterface(caseInterfaceId uint) (debugData domain.DebugData, err error) {
+	debugInterface, err := s.DebugInterfaceRepo.GetByCaseInterfaceId(caseInterfaceId)
+	if err != nil {
+		return
+	}
+
+	debugData, err = s.GetDebugDataFromDebugInterface(debugInterface.ID)
 
 	return
 }
@@ -178,12 +209,13 @@ func (s *DebugInterfaceService) CopyDebugDataPropsFromPo(debugData *domain.Debug
 	debugData.EndpointInterfaceId = endpointInterface.ID
 
 	if debugInterfacePo == nil { // is null when converting from EndpointInterface
-		schema2conv := openapi.NewSchema2conv()
+		schema2conv := schemaHelper.NewSchema2conv()
 		schema2conv.Components = s.ServeService.Components(serve.ID)
 		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, endpoint, serve, schema2conv)
 		debugInterfacePo = interfaces2debug.Convert()
 
-		debugInterfacePo.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterfacePo.Method)
+		//debugInterfacePo.Name = fmt.Sprintf("%s - %s", endpoint.Title, debugInterfacePo.Method)
+		debugInterfacePo.Name = endpoint.Title
 	}
 
 	copier.CopyWithOption(&debugData, debugInterfacePo, copier.Option{DeepCopy: true})
@@ -223,12 +255,6 @@ func (s *DebugInterfaceService) GetScenarioIdForDebugInterface(processorId uint)
 
 	processor, _ := s.ScenarioProcessorRepo.Get(processorId)
 	scenarioId = processor.ScenarioId
-
-	return
-}
-
-func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
-	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return
 }
@@ -335,6 +361,18 @@ func (s *DebugInterfaceService) GetDebugInterfaceByEndpointCase(endpointCaseId u
 	ret.BodyFormUrlencoded = append(ret.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
 		Name: "", Value: "",
 	})
+
+	return
+}
+
+func (s *DebugInterfaceService) CreateDefault(src consts.ProcessorInterfaceSrc, projectId uint) (id uint, err error) {
+	id, err = s.DebugInterfaceRepo.CreateDefault(src, projectId)
+
+	return
+}
+
+func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
+	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return
 }

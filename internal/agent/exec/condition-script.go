@@ -15,6 +15,8 @@ import (
 var (
 	MyVm      JsVm
 	MyRequire *require.RequireModule
+
+	VariableSettings []domain.ExecVariable
 )
 
 type JsVm struct {
@@ -22,6 +24,7 @@ type JsVm struct {
 }
 
 func ExecScript(scriptObj *domain.ScriptBase) (err error) {
+	VariableSettings = []domain.ExecVariable{}
 	if MyVm.JsRuntime == nil {
 		InitJsRuntime()
 	}
@@ -52,33 +55,50 @@ func InitJsRuntime() {
 	MyVm.JsRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
 		rowIndex := getDatapoolRow(dpName, seq, ExecScene.Datapools)
 
+		if ExecScene.Datapools[dpName] == nil {
+			ret = "DATAPOOL_NOT_FOUND: " + dpName
+			return
+		}
+
+		if rowIndex > len(ExecScene.Datapools[dpName])-1 {
+			ret = "DATAPOOL_INDEX_OUT_OF_RANGE"
+			return
+		}
+
 		ret = ExecScene.Datapools[dpName][rowIndex][field]
 		if ret == nil {
-			ret = "NOT_FOUND"
+			ret = "DATAPOOL_VARIABLE_NOT_FOUND: " + field
 		}
 
 		return
 	})
 
 	MyVm.JsRuntime.Set("getVariable", func(name string) interface{} {
-		return getVariableValue(name)
+		vari, _ := GetVariable(CurrScenarioProcessor.ParentId, name)
+		return vari.Value
 	})
 	MyVm.JsRuntime.Set("setVariable", func(name, val string) {
-		SetVariable(CurrScenarioProcessorId, name, val, consts.Public)
+		ret, err := SetVariable(CurrScenarioProcessor.ParentId, name, val, consts.Public)
+
+		if err == nil {
+			VariableSettings = append(VariableSettings, ret)
+		}
+
+		return
 	})
 	MyVm.JsRuntime.Set("clearVariable", func(name string) {
-		ClearVariable(CurrScenarioProcessorId, name)
+		ClearVariable(CurrScenarioProcessor.ParentId, name)
 	})
 
 	// load global script
 	MyRequire = registry.Enable(MyVm.JsRuntime)
 	pth := filepath.Join(consts.TmpDir, "deeptest.js")
 	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
-	dp, err := MyRequire.Require(pth)
+	dt, err := MyRequire.Require(pth)
 	if err != nil {
 		logUtils.Info(err.Error())
 		return
 	}
 
-	MyVm.JsRuntime.Set("dp", dp)
+	MyVm.JsRuntime.Set("dt", dt)
 }

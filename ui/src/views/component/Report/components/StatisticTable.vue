@@ -18,12 +18,6 @@
           <span class="text-value">{{item.value}}</span>
         </a-descriptions-item>
       </a-descriptions>
-<!--      <TextItem v-for="item in data"-->
-<!--                :key="item.label"-->
-<!--                class="statistical-info-item"-->
-<!--                :label-class-name="item.class === 'fail' ? 'failed' : 'success'"-->
-<!--                :label="item.label"-->
-<!--                :value="item.value"/>-->
     </div>
   </div>
 </template>
@@ -74,9 +68,9 @@ const option = ref({
         show: false
       },
       data: [
-        {value: 0, name: '通过'},
-        {value: 0, name: '失败'},
-        {value: 0, name: '未测'},
+        {value: 0, name: '通过接口'},
+        {value: 0, name: '失败接口'},
+        {value: 0, name: '未测接口'},
       ]
     }
   ]
@@ -97,9 +91,9 @@ watch(() => {
   if(newVal) {
     setTimeout(() => {
       loading.value = false;
-      option.value.series[0].data[0].value = newVal.passAssertionNum;
-      option.value.series[0].data[1].value = newVal.failAssertionNum;
-      option.value.series[0].data[2].value = newVal.notTestNum;
+      option.value.series[0].data[0].value = newVal.interfacePass;
+      option.value.series[0].data[1].value = newVal.interfaceFail;
+      option.value.series[0].data[2].value = newVal.interfaceSkip;
       setChart();
     }, 500);
   }
@@ -110,19 +104,18 @@ watch(() => {
 </script>
 <style scoped lang="less">
 .report-statistical-table {
-  height: 240px;
+  height: 160px;
   background: #FFFFFF;
   border: 1px solid #E5E5E5;
   margin-bottom: 24px;
   display: flex;
   align-items: center;
-  padding: 0 24px;
+  padding: 0 16px;
   box-sizing: border-box;
-
   .statistical-main {
-    width: 214px;
-    height: 214px;
-    margin-right: 60px;
+    width: 160px;
+    height: 160px;
+    margin-right: 32px;
   }
 
   .statistical-loading {
@@ -147,6 +140,10 @@ watch(() => {
     display: flex;
     flex-wrap: wrap;
     flex: 1;
+
+    :deep(.ant-descriptions-row:last-child .ant-descriptions-item) {
+      padding-bottom: 0;
+    }
 
     .statistical-info-item {
       width: 50%;
@@ -202,13 +199,12 @@ watch(() => {
 .text-value{
   display: inline-block;
   margin-left: 16px;
-  width: 80px;
+  width: 96px;
 }
 .text-rate{
   display: inline-block;
-  width: 60px;
+  width: 96px;
   margin-left: 16px;
-
 }
 
 </style>

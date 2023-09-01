@@ -29,12 +29,14 @@ import {
     removePostConditions,
     movePostConditions,
     disablePostConditions,
-    saveAsCase,
+    saveAsCase, generateCases,
     getInvocationResult,
     getInvocationLog,
     getPreConditionScript,
+    saveResponseDefine, removeCookie, quickCreateCookie, saveCookie, getCookie,
 } from './service';
-import {Checkpoint, DebugInfo, Extractor, Interface, Response, Script} from "./data";
+import { serverList, changeServe } from '@/views/project-settings/service';
+import {Checkpoint, Cookie, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
 import {listEnvVarByServer} from "@/services/environment";
@@ -61,6 +63,10 @@ export interface StateType {
     extractorData: any;
     checkpointData: any;
     scriptData: any;
+    cookieData: any;
+
+    serves: any[];
+    currServe: any;
 }
 const initState: StateType = {
     debugInfo: {} as DebugInfo,
@@ -83,6 +89,10 @@ const initState: StateType = {
     extractorData: {} as Extractor,
     checkpointData: {} as Checkpoint,
     scriptData: {} as Script,
+    cookieData: {} as Cookie,
+
+    serves: [],
+    currServe: [],
 };
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -111,7 +121,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setCheckpoint: Mutation<StateType>;
         setScript: Mutation<StateType>;
         setScriptContent: Mutation<StateType>;
+        setCookie: Mutation<StateType>;
 
+        setPathParams: Mutation<StateType>;
         setShareVars: Mutation<StateType>;
         setEnvVars: Mutation<StateType>;
         setGlobalVars: Mutation<StateType>;
@@ -119,14 +131,19 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setUrl: Mutation<StateType>;
         setBaseUrl: Mutation<StateType>;
         setBody: Mutation<StateType>;
+
+        setServes: Mutation<StateType>; // 获取环境列表
+        setCurrServe: Mutation<StateType>; // 设置当前所选环境
     };
     actions: {
         loadDataAndInvocations: Action<StateType, StateType>;
         resetDataAndInvocations: Action<StateType, StateType>;
         loadData: Action<StateType, StateType>;
         call: Action<StateType, StateType>;
+        refreshInterfaceResultFromScenarioExec: Action<StateType, StateType>;
         save: Action<StateType, StateType>;
         saveAsCase: Action<StateType, StateType>;
+        generateCases: Action<StateType, StateType>;
 
         listInvocation: Action<StateType, StateType>;
         getLastInvocationResp: Action<StateType, StateType>;
@@ -149,6 +166,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
         quickCreateExtractor: Action<StateType, StateType>;
         removeExtractor: Action<StateType, StateType>;
 
+        getCookie: Action<StateType, StateType>;
+        saveCookie: Action<StateType, StateType>;
+        quickCreateCookie: Action<StateType, StateType>;
+        removeCookie: Action<StateType, StateType>;
+
         getCheckpoint: Action<StateType, StateType>;
         saveCheckpoint: Action<StateType, StateType>;
         removeCheckpoint: Action<StateType, StateType>;
@@ -167,6 +189,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateBody: Action<StateType, StateType>;
 
         changeServer: Action<StateType, StateType>;
+
+        saveResponseDefine:Action<StateType, StateType>
+
+        listServes: Action<StateType, StateType>;
     };
 }
 
@@ -242,11 +268,18 @@ const StoreModel: ModuleType = {
         setScript(state, payload) {
             state.scriptData = payload;
         },
+        setCookie(state, payload) {
+            state.cookieData = payload;
+        },
         setScriptContent(state, content) {
             console.log('setScriptContent', content)
             state.scriptData.content = content;
         },
 
+        setPathParams(state, payload) {
+            console.log('set debugData pathParams')
+            state.debugData.pathParams = payload;
+        },
         setShareVars(state, payload) {
             console.log('set debugData shareVars')
             state.debugData.shareVars = payload;
@@ -272,6 +305,13 @@ const StoreModel: ModuleType = {
             console.log('set debugData body')
             state.debugData.body = payload;
         },
+        setServes(state, payload) {
+            console.log('292---- ', payload);
+            state.serves = payload || [];
+        },
+        setCurrServe(state, payload) {
+            state.currServe = payload;
+        }
     },
     actions: {
         // debug
@@ -294,6 +334,7 @@ const StoreModel: ModuleType = {
         async loadData({commit, state, dispatch}, data) {
             try {
                 const resp: ResponseData = await loadData(data);
+                // console.log('666666', resp.data.url)
                 if (resp.code != 0) return false;
 
                 await commit('setDebugInfo', {
@@ -336,6 +377,14 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
+        async generateCases({commit}, payload: any) {
+            const resp = await  generateCases(payload)
+            if (resp.code === 0) {
+                return true;
+            } else {
+                return false
+            }
+        },
         async resetDataAndInvocations({commit, dispatch, state}) {
             commit('setDebugInfo', {});
             commit('setDebugData', {});
@@ -371,6 +420,11 @@ const StoreModel: ModuleType = {
             } else {
                 return false
             }
+        },
+
+        async refreshInterfaceResultFromScenarioExec({commit, dispatch, state}) {
+            await dispatch('getLastInvocationResp')
+            await commit('putInvokedMap')
         },
 
         // invocation
@@ -463,7 +517,7 @@ const StoreModel: ModuleType = {
         async listAssertionCondition({commit, state}) {
             try {
                 const resp = await listPostConditions(state.debugInfo.debugInterfaceId, state.debugData.endpointInterfaceId,
-                    ConditionCategory.result);
+                    ConditionCategory.assert);
 
                 const {data} = resp;
                 commit('setAssertionConditions', data);
@@ -571,6 +625,47 @@ const StoreModel: ModuleType = {
         async removeExtractor({commit, dispatch, state}, payload) {
             try {
                 await removeExtractor(payload.id);
+
+                dispatch('listPostCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        // cookie
+        async getCookie({commit}, id: number) {
+            try {
+                const response = await getCookie(id);
+                const {data} = response;
+
+                commit('setCookie', data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async saveCookie({commit, dispatch, state}, payload: any) {
+            try {
+                await saveCookie(payload);
+                dispatch('listPostCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async quickCreateCookie({commit, dispatch, state}, payload: any) {
+            try {
+                await quickCreateCookie(payload);
+                dispatch('listPostCondition');
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async removeCookie({commit, dispatch, state}, payload) {
+            try {
+                await removeCookie(payload.id);
 
                 dispatch('listPostCondition');
                 return true;
@@ -700,17 +795,44 @@ const StoreModel: ModuleType = {
             return true;
         },
 
-        async changeServer({commit, dispatch, state}, serverId: number) {
-            console.log('changeServer in DebugStore', serverId)
-
-            const json = await listEnvVarByServer(serverId)
-            if (json.code === 0) {
-                commit('setServerId', serverId);
-                commit('setEnvVars', json.data);
+        async changeServer({commit, dispatch, state}, payload: {serverId: number, requestEnvVars: boolean}) {
+            const { serverId, requestEnvVars = true } = payload;
+            const res = await changeServe({ serverId });
+            if (res.code === 0) {
+                commit('setCurrServe', res.data);
             }
-
+            if (requestEnvVars) {
+                const json = await listEnvVarByServer(serverId)
+                if (json.code === 0) {
+                    commit('setServerId', serverId);
+                    commit('setEnvVars', json.data);
+                }
+            }
             return true;
         },
+
+        async saveResponseDefine({commit, dispatch, state}, payload: any) {
+            try {
+                await saveResponseDefine(payload);
+                state.debugData.responseDefine.entityData.disabled = payload.disabled
+                state.debugData.responseDefine.entityData.code = payload.code
+                return true
+            } catch (error) {
+                return false;
+            }
+        },
+        async listServes({ commit }, payload: { serveId: number }) {
+            const res = await serverList(payload);
+            if (res.code === 0) {
+                const servers = (res.data.servers || []).map((item: any) => {
+                    item.label = item.environmentName;
+                    item.value = item.environmentId;
+                    return item;
+                })
+                commit('setServes', servers);
+                commit('setCurrServe', res.data.currServer);
+            }
+        }
     }
 };
 

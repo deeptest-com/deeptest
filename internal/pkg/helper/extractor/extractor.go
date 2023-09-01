@@ -13,11 +13,6 @@ import (
 func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err error) {
 	result := ""
 
-	if extractor.Disabled {
-		result = ""
-		return
-	}
-
 	if extractor.Src == consts.Header {
 		for _, h := range resp.Headers {
 			if h.Name == extractor.Key {
@@ -25,6 +20,14 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 				break
 			}
 		}
+	} else if extractor.Src == consts.Cookie {
+		for _, cookie := range resp.Cookies {
+			if cookie.Name == extractor.Key {
+				result = fmt.Sprintf("%v", cookie.Value)
+				break
+			}
+		}
+
 	} else {
 		if httpHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
 			result = queryUtils.JsonQuery(resp.Content, extractor.Expression)
@@ -59,6 +62,8 @@ func GenDesc(varName string, src consts.ExtractorSrc, key string, typ consts.Ext
 	srcDesc := ""
 	if src == consts.Header {
 		srcDesc = "响应头"
+	} else if src == consts.Cookie {
+		srcDesc = "Cookie"
 	} else if src == consts.Body {
 		srcDesc = "响应体"
 	}

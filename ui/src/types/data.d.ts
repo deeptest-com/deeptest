@@ -32,3 +32,5 @@ export interface PaginationConfig {
   showQuickJumper: boolean;
 }
 
+
+

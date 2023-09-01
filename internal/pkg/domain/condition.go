@@ -1,6 +1,8 @@
 package domain
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type ExtractorBase struct {
 	Src  consts.ExtractorSrc  `json:"src"`
@@ -17,6 +19,8 @@ type ExtractorBase struct {
 
 	Variable string                `gorm:"default:''" json:"variable"`
 	Scope    consts.ExtractorScope `json:"scope" gorm:"default:public"`
+
+	Default string `gorm:"default:''" json:"default"` // for cookie
 
 	Result       string              `json:"result"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
@@ -60,7 +64,7 @@ func (condition CheckpointBase) GetType() consts.ConditionType {
 }
 
 type ScriptBase struct {
-	ConditionSrc consts.ConditionSrc `json:"conditionType"`
+	ConditionSrc consts.ConditionSrc `json:"conditionSrc"`
 
 	Content string `gorm:"type:longtext;" json:"content"`
 
@@ -74,8 +78,33 @@ type ScriptBase struct {
 	InvokeId            uint                 `json:"invokeId"`                     // for log only
 
 	Disabled bool `json:"disabled"`
+
+	VariableSettings []ExecVariable `gorm:"-" json:"variableSettings"`
 }
 
 func (condition ScriptBase) GetType() consts.ConditionType {
 	return consts.ConditionTypeScript
+}
+
+type ResponseDefineBase struct {
+	ResponseCode string   `json:"responseCode"`
+	Schema       string   `gorm:"-" json:"schema"`
+	Codes        []string `gorm:"-" json:"codes"`
+	Code         string   `json:"code"`
+
+	Output       string              `gorm:"type:longtext;" json:"output"`
+	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	ResultMsg    string              `json:"resultMsg"`
+
+	ConditionId         uint                 `json:"conditionId"`
+	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object
+	ConditionEntityType consts.ConditionType `gorm:"-" json:"conditionEntityType"` // for log only
+	InvokeId            uint                 `json:"invokeId"`                     // for log only
+	MediaType           string               `json:"mediaType"`
+	Disabled            bool                 `json:"disabled"`
+	Component           string               `gorm:"-" json:"component"`
+}
+
+func (condition ResponseDefineBase) GetType() consts.ConditionType {
+	return consts.ConditionTypeResponseDefine
 }

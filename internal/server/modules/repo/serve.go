@@ -25,7 +25,7 @@ func (r *ServeRepo) ListVersion(serveId uint) (res []model.ServeVersion, err err
 	return
 }
 
-func (r *ServeRepo) ListByProject(projectId int) (pos []model.Serve, err error) {
+func (r *ServeRepo) ListByProject(projectId uint) (pos []model.Serve, err error) {
 	err = r.DB.
 		Where("project_id=?", projectId).
 		Where("NOT deleted").
@@ -157,6 +157,19 @@ func (r *ServeRepo) Get(id uint) (res model.Serve, err error) {
 	return
 }
 
+func (r *ServeRepo) GetByCode(projectId uint, shortName string) (ret model.Serve, err error) {
+	db := r.DB.Model(&ret).
+		Where("short_name = ? AND NOT deleted", shortName)
+
+	if projectId > 0 {
+		db.Where("project_id = ?", projectId)
+	}
+
+	err = db.First(&ret).Error
+
+	return
+}
+
 func (r *ServeRepo) GetSchema(id uint) (res model.ComponentSchema, err error) {
 	err = r.DB.Where("NOT deleted AND not disabled").First(&res, id).Error
 	return
@@ -258,7 +271,7 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 		}
 	}
 	/*
-		err = r.DB.Create(servers).Error
+		err = r.DB.CreateExpression(servers).Error
 		if err != nil {
 			return err
 		}
@@ -394,6 +407,45 @@ func (r *ServeRepo) SetCurrServeByUser(serveId, userId uint) (err error) {
 	err = r.DB.Model(&model.SysUserProfile{}).
 		Where("user_id = ?", userId).
 		Update("curr_serve_id", serveId).Error
+
+	return
+}
+
+func (r *ServeRepo) GetCurrServerByUser(userId uint) (currServer model.ServeServer, err error) {
+	var user model.SysUser
+	err = r.DB.Preload("Profile").
+		Where("id = ?", userId).
+		First(&user).
+		Error
+	if err != nil {
+		return
+	}
+
+	// may be null
+	err = r.DB.Model(&model.ServeServer{}).
+		Where("environment_id = ?", user.Profile.CurrServerId).
+		First(&currServer).Error
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return
+	}
+	if currServer.ID == 0 || err == gorm.ErrRecordNotFound {
+		return currServer, nil
+	}
+
+	environment, err := r.EnvironmentRepo.Get(user.Profile.CurrServerId)
+	if err != nil {
+		return
+	}
+	currServer.EnvironmentName = environment.Name
+	currServer.Sort = environment.Sort
+
+	return
+}
+
+func (r *ServeRepo) SetCurrServerByUser(serverId, userId uint) (err error) {
+	err = r.DB.Model(&model.SysUserProfile{}).
+		Where("user_id = ?", userId).
+		Update("curr_server_id", serverId).Error
 
 	return
 }

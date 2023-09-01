@@ -7,13 +7,16 @@
       :data-source="scenariosReports"
       :pagination="{
             ...pagination,
-            onChange: handlePageChanged
+            onChange: handlePageChanged,
+            showTotal: (total) => {
+               return `共 ${total} 条数据`;
+            },
         }">
     <template #createdAt="{ record }">
       <span>{{ momentUtc(record.createdAt) }}</span>
     </template>
     <template #duration="{ record }">
-      <span>{{ `${record.duration}秒` }}</span>
+      <span>{{ `${record.duration}毫秒` }}</span>
     </template>
     <template #execPassRate="{ record }">
       <!-- todo 统一数字转化 utils     -->
@@ -23,7 +26,7 @@
       <span v-if="!record.totalRequestNum">{{ `---` }}</span>
     </template>
     <template #action="{ record }">
-      <a  href="javascript:void (0)" @click="showDetail(record)">查看报告</a>
+      <a  href="javascript:void (0)" @click="showDetail(record)">查看</a>
     </template>
   </a-table>
 

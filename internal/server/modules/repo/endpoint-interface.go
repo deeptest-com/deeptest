@@ -99,10 +99,22 @@ func (r *EndpointInterfaceRepo) ListIdByEndpoints(endpointIds []uint) (ids []uin
 	return
 }
 
-func (r *EndpointInterfaceRepo) Get(interfaceId uint) (field model.EndpointInterface, err error) {
+func (r *EndpointInterfaceRepo) Get(interfaceId uint) (po model.EndpointInterface, err error) {
 	err = r.DB.
 		Where("id=? AND NOT deleted", interfaceId).
-		First(&field).Error
+		First(&po).Error
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetByMethod(endpointId uint, method consts.HttpMethod) (debugInterfaceId, endpointInterfaceId uint) {
+	var po model.EndpointInterface
+
+	r.DB.Where("endpoint_id=? AND method=? AND  NOT deleted", endpointId, method).
+		First(&po)
+
+	endpointInterfaceId = po.ID
+	debugInterfaceId = po.DebugInterfaceId
+
 	return
 }
 
@@ -396,8 +408,11 @@ func (r *EndpointInterfaceRepo) UpdateResponseBodies(interfaceId uint, responseB
 	if err != nil {
 		return
 	}
-
+	codes := map[string]bool{}
 	for _, responseBody := range responseBodies {
+		if _, ok := codes[responseBody.Code]; ok {
+			continue
+		}
 		responseBody.InterfaceId = interfaceId
 
 		err = r.BaseRepo.Save(responseBody.ID, &responseBody)
@@ -430,7 +445,7 @@ func (r *EndpointInterfaceRepo) UpdateResponseBodies(interfaceId uint, responseB
 				return
 			}
 		}
-
+		codes[responseBody.Code] = true
 	}
 	return
 }
@@ -464,9 +479,8 @@ func (r *EndpointInterfaceRepo) UpdateInterface(interf *model.EndpointInterface)
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetByEndpointId(endpointId uint, version string) (interfaces []model.EndpointInterface, err error) {
-
-	interfaces, err = r.GetEndpointId(endpointId, version)
+func (r *EndpointInterfaceRepo) ListByEndpointId(endpointId uint, version string) (interfaces []model.EndpointInterface, err error) {
+	interfaces, err = r.QueryByEndpointId(endpointId, version)
 	for key, interf := range interfaces {
 		interfaces[key].Params, _ = r.ListParams(interf.ID)
 		interfaces[key].Headers, _ = r.ListHeaders(interf.ID)
@@ -479,11 +493,11 @@ func (r *EndpointInterfaceRepo) GetByEndpointId(endpointId uint, version string)
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetEndpointId(endpointId uint, version string) (field []model.EndpointInterface, err error) {
+func (r *EndpointInterfaceRepo) QueryByEndpointId(endpointId uint, version string) (pos []model.EndpointInterface, err error) {
 	err = r.DB.
 		Where("endpoint_id=? and version=?", endpointId, version).
 		Where("NOT deleted").
-		Find(&field).Error
+		Find(&pos).Error
 	return
 }
 
@@ -826,5 +840,43 @@ func (r *EndpointInterfaceRepo) RemoveAll(id uint) (err error) {
 
 func (r *EndpointInterfaceRepo) GetByItem(sourceType consts.SourceType, endpointId uint, method consts.HttpMethod) (res model.EndpointInterface, err error) {
 	err = r.DB.First(&res, "not deleted AND source_type = ? AND endpoint_id=? and method=?", sourceType, endpointId, method).Error
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetResponseCodes(endpointInterfaceId uint) (codes []string) {
+
+	responseBodies, err := r.GetResponseBodies([]uint{endpointInterfaceId})
+	if err != nil {
+		return
+	}
+	responseBody := responseBodies[endpointInterfaceId]
+
+	for _, item := range responseBody {
+		codes = append(codes, item.Code)
+	}
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetResponse(endpointInterfaceId uint, code string) (ret model.EndpointInterfaceResponseBody) {
+	responseBodies, err := r.GetResponseBodies([]uint{endpointInterfaceId})
+	if err != nil {
+		return
+	}
+
+	responseBody := responseBodies[endpointInterfaceId]
+	for _, item := range responseBody {
+		if code == item.Code {
+			return item
+		}
+	}
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) BatchGetByEndpointIds(endpointIds []uint) (fields []model.EndpointInterface, err error) {
+	err = r.DB.Model(model.EndpointInterface{}).
+		Where("endpoint_id IN (?) AND NOT deleted", endpointIds).
+		Find(&fields).Error
 	return
 }

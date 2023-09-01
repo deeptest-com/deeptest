@@ -3,6 +3,7 @@ package openapi
 import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/jinzhu/copier"
@@ -13,10 +14,10 @@ type interfaces2debug struct {
 	Inter    model.EndpointInterface
 	Endpoint model.Endpoint
 	Serve    model.Serve
-	conv     *schema2conv
+	conv     *schemaHelper.Schema2conv
 }
 
-func NewInterfaces2debug(inter model.EndpointInterface, endpoint model.Endpoint, serve model.Serve, conv *schema2conv) *interfaces2debug {
+func NewInterfaces2debug(inter model.EndpointInterface, endpoint model.Endpoint, serve model.Serve, conv *schemaHelper.Schema2conv) *interfaces2debug {
 	return &interfaces2debug{Inter: inter, Endpoint: endpoint, Serve: serve, conv: conv}
 }
 
@@ -62,7 +63,7 @@ func (i *interfaces2debug) Body() (body string) {
 		return
 	}
 
-	schema := SchemaRef{}
+	schema := schemaHelper.SchemaRef{}
 	if i.Inter.RequestBody.SchemaItem.Content != "" {
 		_commUtils.JsonDecode(i.Inter.RequestBody.SchemaItem.Content, &schema)
 		res, _ := json.Marshal(i.conv.Schema2Example(schema))

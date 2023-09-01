@@ -52,9 +52,10 @@ import {
   computed, watch,
 } from 'vue';
 import {useStore} from "vuex";
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
 import {NewEndpointFormState} from "@/views/Endpoint/data";
 import {InboxOutlined, UploadOutlined} from '@ant-design/icons-vue';
+import {notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Endpoint }>();
 
@@ -112,7 +113,7 @@ async function ok() {
             }
         );
         if (res) {
-          message.success('发布成功');
+          notifySuccess('发布成功');
         }
         reset();
         emit('ok');

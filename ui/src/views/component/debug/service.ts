@@ -4,7 +4,7 @@ import {DebugInfo, Interface, OAuth20} from "./data";
 import {isInArray} from "@/utils/array";
 import {ConditionCategory, UsedBy} from "@/utils/enum";
 import {getToken} from "@/utils/localToken";
-
+import {getAgentUrl} from '@/utils/agentEnv';
 const apiPath = 'debugs';
 const apiPathInterface = `${apiPath}/interface`;
 const apiPathInvoke = `${apiPath}/invoke`;
@@ -19,10 +19,13 @@ const apiSnippets = 'snippets'
 const apiPreConditions = 'preConditions'
 const apiPostConditions = 'postConditions'
 const apiExtractor = 'extractors'
+const apiCookie = 'cookies'
 const apiCheckpoint = 'checkpoints'
 const apiScript = 'scripts'
 
 const apiParser = 'parser'
+
+const apiResponseDefine = 'responseDefine'
 
 // debug interface
 export async function loadData(data): Promise<any> {
@@ -46,12 +49,20 @@ export async function saveAsCase(data: Interface): Promise<any> {
         data,
     });
 }
+export async function generateCases(data: Interface): Promise<any> {
+    return request({
+        url: `/${apiPathInterface}/generateCases`,
+        method: 'post',
+        data,
+    });
+}
 
 // agent debug invoke
 export async function call(data): Promise<any> {
     // call agent api
     return requestToAgent({
         url: `/${apiAgentExec}/call`,
+        agentUrl: getAgentUrl() || null,
         method: 'POST',
         data,
     });
@@ -104,6 +115,7 @@ export async function parseSpecInLocalAgent(data, targetId): Promise<any> {
     return requestToAgent({
         url: `/${apiSpec}/parseSpec`,
         method: 'POST',
+        agentUrl: getAgentUrl() || null,
         params: {targetId: targetId},
         data: data,
     });
@@ -311,6 +323,34 @@ export async function listExtractorVariable(data: any): Promise<any> {
     });
 }
 
+// cookie
+export async function getCookie(id: number): Promise<any> {
+    return request({
+        url: `/${apiCookie}/${id}`,
+        method: 'GET',
+    });
+}
+export async function saveCookie(data): Promise<any> {
+    return request({
+        url: `/${apiCookie}`,
+        method: data.id ? 'PUT' : 'POST',
+        data: data,
+    });
+}
+export async function quickCreateCookie(data): Promise<any> {
+    return request({
+        url: `/${apiCookie}/quickCreate`,
+        method: 'POST',
+        data: data,
+    });
+}
+export async function removeCookie(id: number): Promise<any> {
+    return request({
+        url: `/${apiCookie}/${id}`,
+        method: 'DELETE',
+    });
+}
+
 // checkpoint
 export async function getCheckpoint(id: number): Promise<any> {
     return request({
@@ -396,6 +436,14 @@ export async function getSnippet(name): Promise<any> {
         url: `/${apiSnippets}`,
         method: 'GET',
         params
+    });
+}
+
+export async function saveResponseDefine(data): Promise<any> {
+    return request({
+        url: `/${apiResponseDefine}`,
+        method:'PUT',
+        data: data,
     });
 }
 

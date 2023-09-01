@@ -5,6 +5,7 @@ import { Report, QueryResult, QueryParams } from './data';
 import { query, get, remove, members } from './service';
 import { momentUtc } from '@/utils/datetime';
 import { formatData } from '@/utils/formatData';
+import {ProcessorCategory} from "@/utils/enum";
 
 export interface StateType {
     ReportId: number;
@@ -47,7 +48,7 @@ const initState: StateType = {
     },
     detailResult: {} as Report,
     queryParams: {},
-    members: []
+    members: [],
 };
 
 const StoreModel: ModuleType = {
@@ -72,7 +73,7 @@ const StoreModel: ModuleType = {
         },
         setMembers(state, payload) {
             state.members = payload;
-        }
+        },
     },
     actions: {
         async list({ commit }, params: any) {
@@ -144,6 +145,10 @@ const StoreModel: ModuleType = {
                             label: '创建人',
                             value: data.createUserName || '--'
                         },
+                        {
+                            label: '执行人',
+                            value: data.execUserName || '--'
+                        },
                     ],
                     statisticData: {
                         "duration": data.duration, //执行耗时（单位：s)
@@ -199,7 +204,7 @@ const StoreModel: ModuleType = {
 
         async initReportDetail({ commit }) {
             commit('setDetail', { basicInfoList: [], statisticData: {}, scenarioReports: [] });
-        }
+        },
     }
 };
 

@@ -5,6 +5,7 @@ import {
     Endpoint,
     QueryResult,
     QueryParams,
+    QueryCaseTreeParams,
     filterFormState
 } from './data.d';
 import {
@@ -31,7 +32,7 @@ import {
     expireEndpoint,
     getEndpointDetail,
     getEndpointList,
-    saveEndpoint, copyEndpointCase,
+    saveEndpoint, copyEndpointCase,loadCaseTree,reBuildTree
 } from './service';
 
 import {
@@ -54,6 +55,7 @@ import {
     serverList,
     getSchemaList, getSchemaDetail
 } from "@/views/project-settings/service";
+import { changeServe } from '../project-settings/service';
 
 
 export interface StateType {
@@ -69,6 +71,7 @@ export interface StateType {
     endpointDetail: any,
     endpointDetailYamlCode: any,
     serveServers: any[]; // serve list
+    currServer: any; // current server 当前选中的环境
     securityOpts: any[];
     interfaceMethodToObjMap: any;
     refsOptions: any;
@@ -78,6 +81,8 @@ export interface StateType {
     caseList: any[];
     caseDetail: any;
     tagList: any;
+    caseTree:any;
+    caseTreeMap:any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -97,6 +102,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         clearFilterState: Mutation<StateType>;
         setEndpointDetail: Mutation<StateType>;
         setServerList: Mutation<StateType>;
+        setCurrServer: Mutation<StateType>;
         setSecurityOpts: Mutation<StateType>;
         setYamlCode: Mutation<StateType>;
         setStatus: Mutation<StateType>;
@@ -110,6 +116,11 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setEndpointCaseList: Mutation<StateType>;
         setEndpointCaseDetail: Mutation<StateType>;
         setEndpointTagList: Mutation<StateType>;
+
+        setCaseTree: Mutation<StateType>;
+        setCaseTreeMap:Mutation<StateType>;
+
+        setInterfaces:Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -134,6 +145,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getEndpointDetail: Action<StateType, StateType>;
         updateEndpointDetail: Action<StateType, StateType>;
         getServerList: Action<StateType, StateType>;
+        changeServer: Action<StateType, StateType>;
         getSecurityList: Action<StateType, StateType>;
         getYamlCode: Action<StateType, StateType>;
         updateStatus: Action<StateType, StateType>;
@@ -157,6 +169,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getEndpointList: Action<StateType, StateType>;
         getEndpointTagList: Action<StateType, StateType>;
         updateEndpointTag: Action<StateType, StateType>;
+        getCaseTree: Action<StateType, StateType>;
+
+        removeUnSavedMethods: Action<StateType, StateType>;
     }
 }
 
@@ -188,6 +203,7 @@ const initState: StateType = {
     endpointDetail: null,
     endpointDetailYamlCode: null,
     serveServers: [],
+    currServer: {},
     securityOpts: [],
     interfaceMethodToObjMap: {},
     refsOptions: {},
@@ -196,6 +212,8 @@ const initState: StateType = {
     caseList: [],
     caseDetail: {},
     tagList:[],
+    caseTree:[],
+    caseTreeMap:[],
 };
 
 const StoreModel: ModuleType = {
@@ -255,6 +273,9 @@ const StoreModel: ModuleType = {
         setServerList(state, payload) {
             state.serveServers = payload;
         },
+        setCurrServer(state, payload) {
+            state.currServer = payload;
+        },
         setSecurityOpts(state, payload) {
             state.securityOpts = payload;
         },
@@ -312,6 +333,15 @@ const StoreModel: ModuleType = {
         },
         setEndpointTagList(state, payload) {
             state.tagList = payload;
+        },
+        setCaseTree(state,payload){
+            state.caseTree = payload
+        },
+        setCaseTreeMap(state,payload){
+            state.caseTreeMap = payload
+        },
+        setInterfaces(state, payload){
+            state.endpointDetail.interfaces = payload
         }
     },
     actions: {
@@ -466,11 +496,14 @@ const StoreModel: ModuleType = {
                 return false
             }
         },
-        async loadList({commit, dispatch, state}, {projectId, page, pageSize, opts}: any) {
-
+        async loadList({commit, state, rootState}: any, {projectId, page, pageSize, ...opts}: any) {
             page = page || state.listResult.pagination.current;
             pageSize = pageSize || state.listResult.pagination.pageSize;
-            const otherParams = {...state.filterState, ...opts};
+            const otherParams = {
+                ...state.filterState,
+                serveId: rootState.ServeGlobal.currServe.id,
+                ...opts
+            };
 
             const res = await getEndpointList({
                 "projectId": projectId,
@@ -576,19 +609,27 @@ const StoreModel: ModuleType = {
             }
         },
 
-        // 获取项目的服务
+        // 获取项目的服务环境列表
         async getServerList({commit}, payload: any) {
             const res = await serverList({
                 serveId: payload.id
             });
             if (res.code === 0) {
-                res.data.forEach((item: any) => {
-                    item.label = item.description;
-                    item.value = item.id;
+                const servers = (res.data.servers || []).map((item: any) => {
+                    item.label = item.environmentName;
+                    item.value = item.environmentId;
+                    return item;
                 })
-                commit('setServerList', res.data || null);
+                commit('setServerList', servers);
+                commit('setCurrServer', res.data.currServer);
             } else {
                 return false
+            }
+        },
+        async changeServer({ commit, state }, serverId: number) {
+            const res = await changeServe({ serverId });
+            if (res.code === 0) {
+                commit('setCurrServer', res.data);
             }
         },
         async getSecurityList({commit}, payload: any) {
@@ -838,17 +879,58 @@ const StoreModel: ModuleType = {
         },
         async updateEndpointTag({ dispatch }, payload: any) {
             const jsn = await updateTag(payload)
-            //console.log(payload,"+++++")
+
             if (jsn.code === 0) {
                 await dispatch("getEndpointTagList")
-                //await dispatch('loadList', {projectId: payload.projectId});
                 return true;
             } else {
                 return false
             }
         },
+        async getCaseTree({ commit }, payload: QueryCaseTreeParams){
+            try {
+                const response: ResponseData = await loadCaseTree(payload);
 
+                if (response.code != 0) return;
 
+                const data = {id: 0,count:1, children: response.data}
+
+                const newData = reBuildTree(data,0)
+
+                commit('setCaseTree', newData.children);
+                const data1 = {id: 0, children: newData.children}
+                const mp = genNodeMap(data1)
+                commit('setCaseTreeMap', mp);
+
+                return true;
+            } catch (error) {
+
+                return false;
+            }
+
+        },
+
+        async removeUnSavedMethods({state, commit }, payload: QueryCaseTreeParams) {
+            console.log('removeUnSavedMethods')
+            let currSelectedMethodRemoved = false
+            const interfaces = state.endpointDetail.interfaces.filter((item) => {
+                if (!item.id) {
+                    delete state.interfaceMethodToObjMap[item.method]
+
+                    if (state.selectedMethodDetail.method === item.method) {
+                        currSelectedMethodRemoved = true
+                    }
+                }
+                return !!item.id
+            })
+            await commit('setInterfaces', interfaces)
+
+            if (currSelectedMethodRemoved) {
+                state.selectedMethodDetail = state.interfaceMethodToObjMap['GET']
+            }
+
+            return true
+        }
     },
 };
 

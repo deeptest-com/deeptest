@@ -73,6 +73,41 @@ func (r *PreConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId,
 	return
 }
 
+func (r *PreConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uint, preConditions []domain.InterfaceExecCondition) (err error) {
+	r.removeAll(debugInterfaceId, endpointInterfaceId)
+
+	for _, item := range preConditions {
+		// clone condition po
+		condition := model.DebugPreCondition{
+			EntityType:          consts.ConditionTypeScript,
+			DebugInterfaceId:    debugInterfaceId,
+			EndpointInterfaceId: endpointInterfaceId,
+			Desc:                item.Desc,
+		}
+		r.Save(&condition)
+
+		// clone condition entity
+		var entityId uint
+		if item.Type == consts.ConditionTypeScript {
+			script := domain.ScriptBase{}
+			json.Unmarshal(item.Raw, &script)
+
+			entity := model.DebugConditionScript{}
+
+			copier.CopyWithOption(&entity, script, copier.Option{DeepCopy: true})
+			entity.ID = 0
+			entity.ConditionId = condition.ID
+
+			r.ScriptRepo.Save(&entity)
+			entityId = entity.ID
+		}
+
+		err = r.UpdateEntityId(condition.ID, entityId)
+	}
+
+	return
+}
+
 func (r *PreConditionRepo) Delete(id uint) (err error) {
 	po, _ := r.Get(id)
 
@@ -133,6 +168,7 @@ func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (r
 
 			entity, _ := r.ScriptRepo.Get(po.EntityId)
 			copier.CopyWithOption(&script, entity, copier.Option{DeepCopy: true})
+			script.ConditionEntityType = typ
 			script.ConditionId = po.ID
 			script.ConditionEntityId = po.EntityId
 
@@ -145,6 +181,16 @@ func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (r
 			ret = append(ret, condition)
 		}
 
+	}
+
+	return
+}
+
+func (r *PreConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint) (err error) {
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId)
+
+	for _, po := range pos {
+		r.Delete(po.ID)
 	}
 
 	return

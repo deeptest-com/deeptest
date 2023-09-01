@@ -3,11 +3,14 @@
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
-          <span>响应体</span>
+          <a-radio-group v-model:value="language" size="small">
+            <a-radio-button :value="responseData.contentLang">Pretty</a-radio-button>
+            <a-radio-button value="raw">Raw</a-radio-button>
+          </a-radio-group>
+        <span style="margin-left:5px;">JSON</span>
         </a-col>
-
         <a-col flex="100px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small">
+<!--          <a-tooltip overlayClassName="dp-tip-small">
             <template #title>格式化</template>
             <ClearOutlined @click="format" class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
@@ -20,19 +23,20 @@
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>下载</template>
             <DownloadOutlined class="dp-icon-btn dp-trans-80" />
-          </a-tooltip>
+          </a-tooltip>-->
         </a-col>
       </a-row>
     </div>
 
     <div class="body">
-      <MonacoEditor
+      <MonacoEditor 
           class="editor"
           :value="responseData.content"
           :timestamp="timestamp"
-          :language="responseData.contentLang"
+          :language="language"
           theme="vs"
           :options="editorOptions"
+          :key='language'
           :onExtractor="responseExtractor" />
     </div>
 
@@ -71,6 +75,8 @@ const store = useStore<{  Debug: Debug }>();
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const responseData = computed<any>(() => store.state.Debug.responseData);
+const language = ref(responseData.value.contentLang)
+const content = ref(responseData.value.content)
 
 const timestamp = ref('')
 watch(responseData, (newVal) => {
@@ -83,6 +89,7 @@ const responseExtractorVisible = ref(false)
 const expr = ref('')
 const exprType = ref('')
 const result = ref('')
+
 
 const responseDataContent = computed(() => {
     return responseData.value.content;
@@ -149,6 +156,14 @@ const format = (item) => {
   bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
 }
 
+watch (()=>{return language.value} ,(val)=>{
+  if (val == 'raw') {
+    content.value = responseData.value.content.replace(/\r\n/g,'').replace(/\n/g,'').replace(/\s+/g,'')
+  }
+  console.log(content.value)
+
+}, {immediate: true}) 
+
 </script>
 
 <style lang="less">
@@ -176,6 +191,9 @@ const format = (item) => {
   .head {
     padding: 2px 3px;
     border-bottom: 1px solid #d9d9d9;
+    .ant-btn:focus {
+    background: #fff;
+  }
   }
   .body {
     height: calc(100% - 27px);

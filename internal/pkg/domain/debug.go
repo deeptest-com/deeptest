@@ -48,9 +48,13 @@ type DebugData struct {
 	EnvVars      []GlobalVar   `json:"envVars"`
 	GlobalVars   []GlobalVar   `json:"globalVars"`
 	GlobalParams []GlobalParam `json:"globalParams"`
+
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
+	ResponseDefine        Condition                    `json:"responseDefine"`
 }
 
 type Condition struct {
+	ID   uint   `json:"id"`
 	Name string `json:"name"`
 	Desc string `json:"desc"`
 
@@ -63,6 +67,7 @@ type Condition struct {
 }
 
 type InterfaceExecCondition struct {
-	Type consts.ConditionType `json:"debugData"`
+	Type consts.ConditionType `json:"type"`
+	Desc string               `json:"desc"`
 	Raw  json.RawMessage      `json:"raw"`
 }

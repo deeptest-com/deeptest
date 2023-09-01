@@ -67,6 +67,9 @@ export default {
     'text': 'TEXT',
     'plaintext': 'TEXT',
 
+    'fileUpload': '上传文件',
+    'datapool': '数据池',
+
     'header':  '响应头',
     'body':  '响应体',
 
@@ -79,6 +82,7 @@ export default {
     'responseHeader': '响应头',
     'responseBody': '响应体',
     'extractor': '提取变量',
+    'cookie': 'Cookie',
     'checkpoint': '断言',
     'script': '定制代码',
     'judgement': '表达式',
@@ -129,7 +133,7 @@ export default {
 
     'processor_variable_get': '获取变量',
     'processor_variable_set': '设置变量',
-    'processor_variable_clear': '清除变量',
+    'processor_variable_clear': '删除变量',
 
     'processor_assertion_default': '断言',
     // 'processor_assertion_equal': '等于',
@@ -154,6 +158,15 @@ export default {
     'processor_data_text':  '文本数据',
     'processor_data_excel':  'Excel数据',
     'processor_data_zendata':  'ZenData数据',
+    'processor_data_default':  '数据迭代',
+
+    'processor_custom_code':  '自定义代码',
+
+    'processor_interface_src_define': "接口",
+    'processor_interface_src_case': "接口用例",
+    'processor_interface_src_diagnose': "快捷调试",
+    // 'processor_interface_src_curl': "CUrl",
+    // 'processor_interface_src_custom': "自定义",
 
     'pass': '通过',
     'fail': '失败',
@@ -161,8 +174,9 @@ export default {
     'block': '阻塞',
     'unknown': '位置',
 
-    'tips_expression': '可以引用形如${name}的变量。',
-    'tips_expression_bool': '可以引用形如${name}的变量，需返回一个布尔值。',
+    'tips_print': '输出内容可引用形如${name}的变量。',
+    'tips_expression': '字符串请用英文单引号括起，如\'foo\'。表达式可引用形如${name}的变量，使用加号${number}可获取数字值。',
+    'tips_expression_bool': '该表达式需返回一个布尔值。字符串请用英文单引号括起，如\'foo\'。\n可引用形如${name}的变量，使用加号${number}可获取数字值。',
 
     'extractor_err': '提取失败',
     'extractor_err_short': '失败',

@@ -13,7 +13,7 @@ type ScenarioInterfaceModule struct {
 
 func (m *ScenarioInterfaceModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 		index.Post("/saveDebugData", m.ScenarioInterfaceCtrl.SaveDebugData).Name = "保存场景调试接口"
 		index.Post("/resetDebugData", m.ScenarioInterfaceCtrl.ResetDebugData).Name = "重置场景调试接口"
 	}

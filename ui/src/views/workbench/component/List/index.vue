@@ -28,12 +28,18 @@
               pagination.pageSize = size;
               getList(page);
             },
+            showTotal: (total) => {
+               return `共 ${total} 条数据`;
+            },
           }"
         >
           <template #name="{ text, record }">
             <div class="project-name" @click="goProject(record.id)">
               {{ text }}
             </div>
+          </template>
+          <template #hb="{ text }">
+            <span>{{ text > 0 ? `+${text}` : text }}</span>
           </template>
         </a-table>
       </div>
@@ -55,6 +61,7 @@ import { StateType } from "../../store";
 import { StateType as UserStateType } from "@/store/user";
 import { StateType as ProjectStateType } from "@/store/project";
 import { MoreOutlined } from "@ant-design/icons-vue";
+import {notifyError, notifySuccess} from "@/utils/notify";
 const router = useRouter();
 const store = useStore<{
   ProjectGlobal: ProjectStateType;
@@ -85,6 +92,7 @@ const columns = [
   {
     title: "较上周",
     dataIndex: "hb",
+    slots: { customRender: "hb" },
   },
 
   {
@@ -110,7 +118,7 @@ const getList = async (current: number): Promise<void> => {
     pageSize: pagination.value.pageSize,
     page: current,
   });
- 
+
   loading.value = false;
 };
 
@@ -159,15 +167,9 @@ const remove = (id: number) => {
       store.dispatch("workbench/removeProject", id).then((res) => {
         console.log("res", res);
         if (res === true) {
-          notification.success({
-            key: NotificationKeyCommon,
-            message: `删除成功`,
-          });
+          notifySuccess(`删除成功`);
         } else {
-          notification.error({
-            key: NotificationKeyCommon,
-            message: `删除失败`,
-          });
+          notifyError(`删除失败`);
         }
       });
     },

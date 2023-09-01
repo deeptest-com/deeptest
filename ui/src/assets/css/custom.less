@@ -55,7 +55,11 @@
 }
 
 .dp-color-fail {
-  color: #dc2626;
+  border-color: #dc2626;
+}
+
+.dp-field-error {
+  border-color: #ff4d4f;
 }
 
 .dp-center {
@@ -74,7 +78,10 @@
   color: @success-color;
 }
 .dp-disabled {
-  color: @disabled-color;
+  color: @disabled-color !important;
+  .ant-tag-default {
+    color: @disabled-color !important;
+  }
 }
 
 .dp-btn-gap {
@@ -93,7 +100,7 @@
   background-color: white;
 }
 .dp-bg-light {
-  background-color: #fafafa;
+  // background-color: #fafafa;
 
   button {
     background-color: #fafafa;
@@ -145,7 +152,7 @@
   }
 }
 .dp-icon-large {
-  font-size: 15px;
+  font-size: 16px;
 }
 .dp-icon-with-text {
   display: inline-block;
@@ -159,6 +166,7 @@
 .dp-input-tip {
   padding-top: 8px;
   font-size: 13px;
+  white-space: pre-line;
 }
 
 .dp-tip-small {
@@ -253,7 +261,8 @@
     }
     .nodata-tip {
       margin-top: 8px;
-      text-align: center;
+      margin-left: 18px;
+      text-align: left;
     }
   }
 }
@@ -327,7 +336,10 @@
     flex: 1;
   }
   .upload-container {
-    width: 46px;
+    width: 120px;
+  }
+  .upload-path {
+    flex: 1;
   }
 }
 
@@ -432,4 +444,23 @@ input:-webkit-autofill { -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !impor
 .term {
   font-weight: bold;
   //font-style:italic;
+}
+
+.dp-processors-container{
+  .debug-index-wrapper{
+    padding: 16px;
+  }
+ .ant-card{
+    margin-bottom: 16px;
+ }
+}
+
+// 执行日志树，叶子结点不展示
+.dp-log-tree-view{
+  .ant-collapse-no-arrow .ant-collapse-content{
+    display: none;
+  }
+  .ant-collapse-header{
+    //padding: 12px!important;
+  }
 }

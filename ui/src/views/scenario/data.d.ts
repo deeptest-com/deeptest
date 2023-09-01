@@ -2,6 +2,7 @@ export interface Scenario {
   id: number;
   name: string;
   desc: string;
+  serialNumber?: string;
 }
 
 export interface QueryResult {

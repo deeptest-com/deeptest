@@ -123,6 +123,7 @@ import {
   defineEmits,
   watch,
   computed,
+  onMounted
 } from 'vue';
 import {useStore} from "vuex";
 import {
@@ -137,7 +138,8 @@ import ResponseBody from './ResponseBody.vue'
 import {Endpoint} from "@/views/endpoint/data";
 import {cloneByJSON} from "@/utils/object";
 import cloneDeep from "lodash/cloneDeep";
-import {message} from "ant-design-vue";
+import {message, notification} from "ant-design-vue";
+import {notifyWarn} from "@/utils/notify";
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User }>();
 const selectedMethodDetail: any = computed<any>(() => store.state.Endpoint.selectedMethodDetail);
@@ -168,6 +170,12 @@ const selectedCodes: any = computed(() => {
   return codes;
 })
 
+onMounted(() => {
+  if (selectedMethodDetail?.value?.responseBodies?.length) {
+    selectedCode.value = selectedMethodDetail?.value?.responseBodies[0].code;
+  }
+})
+
 watch(() => {
   return selectedCode.value
 }, (newVal, oldVal) => {
@@ -196,7 +204,7 @@ function confirmDeleteCode() {
     return;
   }
   if (selectedCode.value === '200') {
-    message.warning('200状态码不可删除');
+    notifyWarn('200状态码不可删除');
     return;
   }
   const index = selectedCodes.value.findIndex((item) => {

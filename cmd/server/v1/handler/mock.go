@@ -20,6 +20,27 @@ func (c *MockCtrl) OAuth2Callback(ctx iris.Context) {
 
 }
 
+func (c *MockCtrl) Mock(ctx iris.Context) {
+	// http://127.0.0.1:8085/api/v1/mock/project1/serve1/json?endpointInterfaceId=44
+
+	method := ctx.Method()
+	endpointInterfaceId, _ := ctx.URLParamInt("endpointInterfaceId")
+	projectCode := ctx.Params().Get("projectCode")
+	serveCode := ctx.Params().Get("serveCode")
+	path := ctx.Params().Get("path")
+
+	logUtils.Infof("%s/%s/%s/%s", method, projectCode, serveCode, path)
+
+	req := service.MockRequest{
+		ProjectCode:         projectCode,
+		ServeCode:           serveCode,
+		EndpointMethod:      consts.HttpMethod(method),
+		EndpointPath:        path,
+		EndpointInterfaceId: uint(endpointInterfaceId),
+	}
+	c.MockService.ByRequest(&req, ctx)
+}
+
 func (c *MockCtrl) Get(ctx iris.Context) {
 	respType := ctx.URLParam("respType")
 
@@ -34,10 +55,11 @@ func (c *MockCtrl) Get(ctx iris.Context) {
 	value := ctx.GetHeader("k1")
 	logUtils.Infof("API KEY - %s: %s", "k1", value)
 
-	co := ctx.GetCookie("token")
+	co := ctx.GetCookie("cookie_from_client")
 	log.Print(co)
 
-	ctx.SetCookieKV("cookie1", "value_from_server")
+	ctx.SetCookieKV("cookie_from_client", "token_"+co)
+	ctx.SetCookieKV("cookie_from_server", "value_from_server")
 
 	if respType == "html" {
 		ctx.HTML(mockHelper.GetHtmlData())

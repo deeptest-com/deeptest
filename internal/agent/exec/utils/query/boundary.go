@@ -6,7 +6,8 @@ import (
 	"strings"
 )
 
-func BoundaryQuery(content string, boundaryStart, boundaryEnd string, boundaryIndex int, boundaryIncluded bool) (result string) {
+func BoundaryQuery(content string, boundaryStart, boundaryEnd string, boundaryIndex int, boundaryIncluded bool) (
+	result string) {
 	regex := regexp.MustCompile(fmt.Sprintf("(?Ui)%s(.*)%s", boundaryStart, boundaryEnd))
 
 	arrOfArr := regex.FindAllStringSubmatch(content, -1)

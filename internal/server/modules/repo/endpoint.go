@@ -102,11 +102,36 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 		results[key].Tags, err = r.EndpointTagRepo.GetTagNamesByEndpointId(result.ID, result.ProjectId)
 	}
 
+	r.CombineMethodsForEndpoints(results)
+
 	ret.Populate(results, count, req.Page, req.PageSize)
 
 	return
 }
+func (r *EndpointRepo) CombineMethodsForEndpoints(endpoints []*model.Endpoint) {
+	endpointIds := make([]uint, 0)
+	for _, v := range endpoints {
+		endpointIds = append(endpointIds, v.ID)
+	}
+	if len(endpointIds) == 0 {
+		return
+	}
 
+	interfaces, err := r.EndpointInterfaceRepo.BatchGetByEndpointIds(endpointIds)
+	if err != nil {
+		return
+	}
+
+	endpointMethodsMap := make(map[uint][]consts.HttpMethod)
+	for _, v := range interfaces {
+		endpointMethodsMap[v.EndpointId] = append(endpointMethodsMap[v.EndpointId], v.Method)
+	}
+
+	for k, v := range endpoints {
+		endpoints[k].Methods = endpointMethodsMap[v.ID]
+	}
+	return
+}
 func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 	r.DB.Transaction(func(tx *gorm.DB) error {
 
@@ -267,7 +292,20 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 
 	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
 	endpoint.PathParams, _ = r.GetEndpointParams(id)
-	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.GetByEndpointId(id, version)
+	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
+
+	return
+}
+
+func (r *EndpointRepo) GetWithInterface(id uint, version string) (endpoint model.Endpoint, err error) {
+	endpoint, err = r.Get(id)
+	if err != nil {
+		return
+	}
+
+	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
+	endpoint.PathParams, _ = r.GetEndpointParams(id)
+	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
 
 	return
 }
@@ -325,7 +363,7 @@ func (r *EndpointRepo) FindVersion(res *model.EndpointVersion) (err error) {
 
 func (r *EndpointRepo) GetFirstMethod(id uint) (res model.EndpointInterface, err error) {
 	var interfs []model.EndpointInterface
-	interfs, err = r.EndpointInterfaceRepo.GetByEndpointId(id, "v0.1.0")
+	interfs, err = r.EndpointInterfaceRepo.ListByEndpointId(id, "v0.1.0")
 	if len(interfs) > 0 {
 		res = interfs[0]
 	}
@@ -431,4 +469,23 @@ func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, p
 
 	return
 
+}
+
+func (r *EndpointRepo) ListByProjectIdAndServeId(projectId, serveId uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
+	err = r.DB.Where("project_id = ? and serve_id = ? and not deleted and not disabled", projectId, serveId).Find(&endpoints).Error
+	//r.GetByEndpoints(endpoints, needDetail)
+	return
+}
+
+func (r *EndpointRepo) GetByPath(serveId uint, pth string) (ret model.Endpoint, err error) {
+	db := r.DB.Model(&ret).
+		Where("path = ? AND NOT deleted", pth)
+
+	if serveId > 0 {
+		db.Where("serve_id = ?", serveId)
+	}
+
+	err = db.First(&ret).Error
+
+	return
 }

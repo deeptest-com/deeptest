@@ -10,7 +10,10 @@ import (
 )
 
 func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err error) {
-	logUtils.Infof("scenario exec req", zap.Int("ScenarioId", req.ScenarioId), zap.Int("environmentId", req.EnvironmentId))
+	logUtils.Infof("run scenario", zap.Int("ScenarioId", req.ScenarioId), zap.Int("environmentId", req.EnvironmentId))
+
+	agentExec.ResetStat()
+	agentExec.ForceStopExec = false
 
 	agentExec.ServerUrl = req.ServerUrl
 	agentExec.ServerToken = req.Token
@@ -29,6 +32,7 @@ func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err 
 	}
 
 	session, err := ExecScenario(scenarioExecObj, wsMsg)
+	session.RootProcessor.Result.Stat = agentExec.Stat
 	session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 	session.RootProcessor.Result.ScenarioId = uint(req.ScenarioId)
 
@@ -47,13 +51,12 @@ func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err 
 
 func ExecScenario(execObj *agentExec.ScenarioExecObj, wsMsg *websocket.Message) (
 	session *agentExec.Session, err error) {
-
 	// variables etc.
 	agentExec.ExecScene = execObj.ExecScene
 
 	RestoreEntityFromRawAndSetParent(execObj.RootProcessor)
 
-	agentExec.InitExecContext(execObj)
+	agentExec.InitScenarioExecContext(execObj)
 	agentExec.InitJsRuntime()
 
 	// start msg

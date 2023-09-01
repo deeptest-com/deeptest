@@ -1,7 +1,9 @@
 package agentExec
 
 import (
+	"fmt"
 	"github.com/Knetic/govaluate"
+	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
@@ -29,86 +31,146 @@ var (
 	}
 )
 
-// called by server checkpoint service
+// called by checkpoint
 func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret interface{}, err error) {
+	// 1
+	params, err := generateGovaluateParamsWithVariables(expression)
+	if err != nil {
+		return
+	}
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
-	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
+	convertParams, convertExpr := convertGovaluateParamAndExpressionForProcessor(params, expr)
+
+	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(convertExpr, GovaluateFunctions)
 	if err != nil {
 		return
 	}
 
-	// 1
-	paramValMap, err := generateGovaluateParamsWithVariables(expression)
-	if err != nil {
-		return
-	}
-
-	ret, err = govaluateExpression.Evaluate(paramValMap)
+	ret, err = govaluateExpression.Evaluate(convertParams)
 
 	return
 }
 
 // called by agent processor interface
 func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint) (ret interface{}, err error) {
+	// 1
+	params, err := generateGovaluateParamsByScope(expression, scopeId)
+	if err != nil {
+		return
+	}
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
-	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(expr, GovaluateFunctions)
+	convertParams, convertExpr := convertGovaluateParamAndExpressionForProcessor(params, expr)
+
+	valueExpression, err := govaluate.NewEvaluableExpressionWithFunctions(convertExpr, GovaluateFunctions)
 	if err != nil {
-		ret = expression
+		ret = expression + " with error " + err.Error()
 		return
 	}
 
-	// 1
-	parameters, err := generateGovaluateParamsByScope(expression, scopeId)
-	if err != nil {
-		return
-	}
-
-	ret, err = valueExpression.Evaluate(parameters)
+	ret, err = valueExpression.Evaluate(convertParams)
 
 	return
 }
 
+func convertGovaluateParamAndExpressionForProcessor(params domain.VarKeyValuePair, expr string) (
+	convertParams domain.VarKeyValuePair, convertExpr string) {
+
+	convertParams = map[string]interface{}{}
+	convertExpr = expr
+
+	for key, val := range params {
+		newKey := key
+
+		arr := strings.Split(key, ".")
+		if len(arr) > 1 { // like item.prop1
+			newKey = strings.Join(arr, "_")
+
+			convertExpr = strings.ReplaceAll(convertExpr, key, newKey)
+		}
+
+		convertParams[newKey] = val
+	}
+
+	return
+}
+
+// a.1
 func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain.VarKeyValuePair, err error) {
-	ret = make(map[string]interface{}, 8)
+	ret = domain.VarKeyValuePair{}
 
 	variables := commUtils.GetVariablesInExpressionPlaceholder(expression)
 
-	for _, variableName := range variables {
+	for _, varName := range variables {
+		varNameWithoutPlus := strings.TrimLeft(varName, "+")
+
 		var vari domain.ExecVariable
-		vari, err = GetVariableInScope(scopeId, variableName)
+		vari, err = GetVariable(scopeId, varNameWithoutPlus)
+		variValueStr := valueUtils.InterfaceToStr(vari.Value)
+
 		if err == nil {
-			ret[variableName] = vari.Value
+			var val interface{}
+			if strings.Index(varName, "+") == 0 { // is a number like ${+id}
+				val = _stringUtils.ParseInt(variValueStr)
+			} else {
+				val = variValueStr
+			}
+
+			ret[varNameWithoutPlus] = val
 		}
 	}
 
 	return
 }
 
-func generateGovaluateParamsWithVariables(expression string) (
-	govaluateParams map[string]interface{}, err error) {
+// a.2
+func generateGovaluateParamsWithVariables(expression string) (ret domain.VarKeyValuePair, err error) {
+	ret = domain.VarKeyValuePair{}
 
-	govaluateParams = make(map[string]interface{}, 0)
+	variables := commUtils.GetVariablesInExpressionPlaceholder(expression)
 
-	varsInExpression := commUtils.GetVariablesInExpressionPlaceholder(expression)
-
-	// ExecScene.EnvToVariables, ExecScene.Datapools
-
-	for _, varName := range varsInExpression {
+	for _, varName := range variables {
 		varNameWithoutPlus := strings.TrimLeft(varName, "+")
 
-		var valObj interface{}
-		valStr := getVariableValue(varNameWithoutPlus)
+		vari, _ := GetVariable(CurrScenarioProcessorId, varNameWithoutPlus)
+		variValueStr := valueUtils.InterfaceToStr(vari.Value)
 
-		if varNameWithoutPlus != varName { // is a number like ${+id}
-			valObj = _stringUtils.StrToInt(valStr)
+		var val interface{}
+		if strings.Index(varName, "+") == 0 { // is a number like ${+id}
+			val = _stringUtils.ParseInt(variValueStr)
 		} else {
-			valObj = valStr
+			val = variValueStr
 		}
 
-		govaluateParams[varNameWithoutPlus] = valObj
+		ret[varNameWithoutPlus] = val
 	}
+
+	return
+}
+
+func ReplaceDatapoolVariInGovaluateExpress(expression string) (ret string) {
+	ret = expression
+	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(expression)
+
+	for _, placeholder := range variablePlaceholders {
+		if strings.Index(placeholder, "_dp") != 0 && strings.Index(placeholder, "_dp") != 1 {
+			continue
+		}
+
+		oldVal := fmt.Sprintf("${%s}", placeholder)
+
+		placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
+		newVal := getPlaceholderVariableValue(placeholderWithoutPlus)
+		if strings.Index(placeholder, "+") != 0 {
+			newVal = "'" + newVal + "'"
+		}
+
+		ret = strings.ReplaceAll(ret, oldVal, newVal)
+	}
+
+	// add space to replace a==-1 to a== -1
+	ret = strings.ReplaceAll(ret, "==-", "== -")
 
 	return
 }

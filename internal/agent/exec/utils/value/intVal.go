@@ -4,8 +4,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
-func GenerateIntItems(start int64, end int64, step interface{}, rand bool, repeat int, repeatTag string) (ret []interface{}) {
-	ret = generateIntItemsByStep(start, end, step.(int), repeat, repeatTag)
+func GenerateIntItems(start int64, end int64, step int64, rand bool, repeat int, repeatTag string) (ret []interface{}) {
+	if start > end && step > 0 || start < end && step < 0 {
+		step = step * -1
+	}
+
+	ret = generateIntItemsByStep(start, end, step, repeat, repeatTag)
 
 	if rand {
 		ret = RandItems(ret)
@@ -14,13 +18,14 @@ func GenerateIntItems(start int64, end int64, step interface{}, rand bool, repea
 	return
 }
 
-func generateIntItemsByStep(start int64, end int64, step int, repeat int, repeatTag string) []interface{} {
+func generateIntItemsByStep(start int64, end int64, step int64, repeat int, repeatTag string) []interface{} {
+
 	arr := make([]interface{}, 0)
 
 	total := 0
 	if repeatTag == "" {
 		for i := 0; true; {
-			val := start + int64(i*step)
+			val := start + int64(i)*step
 			if (val > end && step > 0) || (val < end && step < 0) {
 				break
 			}
@@ -42,7 +47,7 @@ func generateIntItemsByStep(start int64, end int64, step int, repeat int, repeat
 	} else if repeatTag == "!" {
 		for round := 0; round < repeat; round++ {
 			for i := 0; true; {
-				val := start + int64(i*step)
+				val := start + int64(i)*step
 				if (val > end && step > 0) || (val < end && step < 0) {
 					break
 				}

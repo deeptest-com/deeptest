@@ -15,7 +15,7 @@
     <a-col :span="21">
       <a-select
           placeholder="请选择响应格式"
-          :value="selectedCodeDetail.mediaType || null"
+          :value="selectedCodeDetail.mediaType || 'application/json'"
           @change="handleResBodyMediaTypeChange"
           style="width: 400px"
           :options="mediaTypesOpts.filter(item => !item.disabled)"

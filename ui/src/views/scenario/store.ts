@@ -12,14 +12,15 @@ import {
     createNode,
     updateNode,
     removeNode,
+    disableNodeOrNot,
     moveNode,
-    addInterfacesFromDefine, addInterfacesFromTest, addProcessor,
-    saveProcessorName, saveProcessor, loadExecResult,
+    addInterfacesFromDefine, addInterfacesFromDiagnose, addProcessor,
+    saveProcessor, loadExecResult,
     getScenariosReports,
     getScenariosReportsDetail,
     addPlans,
     getPlans,
-    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData, saveProcessorInfo,
+    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData, saveProcessorInfo,importCurl,addInterfacesFromCase
 } from './service';
 
 import {
@@ -33,6 +34,7 @@ import {
 } from "@/services/category";
 
 import {getNodeMap} from "@/services/tree";
+import {getSnippet} from "@/views/component/debug/service";
 
 export interface StateType {
     scenarioId: number;
@@ -62,6 +64,10 @@ export interface StateType {
     scenariosReports: any[];
     linkedPlans: any[];
     notLinkedPlans: any[];
+    linkedPlansPagination: any;
+
+    // nodeCount: number,
+    scenarioCount: number,
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -82,6 +88,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setTreeDataMapItem: Mutation<StateType>;
         setTreeDataMapItemProp: Mutation<StateType>;
         setNode: Mutation<StateType>;
+        setCodeContent: Mutation<StateType>;
 
         // tree of scenario categories
         setTreeDataCategory: Mutation<StateType>;
@@ -101,6 +108,10 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setScenariosReports: Mutation<StateType>;
         setLinkedPlans: Mutation<StateType>;
         setNotLinkedPlans: Mutation<StateType>;
+        setLinkedPlansPagination: Mutation<StateType>;
+
+        // increaseNodeCount: Mutation<StateType>;
+        increaseScenarioCount: Mutation<StateType>;
     };
     actions: {
         setScenarioProcessorIdForDebug: Action<StateType, StateType>;
@@ -115,18 +126,20 @@ export interface ModuleType extends StoreModuleType<StateType> {
         updateCategoryId: Action<StateType, StateType>;
 
         addInterfacesFromDefine: Action<StateType, StateType>;
-        addInterfacesFromTest: Action<StateType, StateType>;
+        addInterfacesFromDiagnose: Action<StateType, StateType>;
         addProcessor: Action<StateType, StateType>;
 
         createNode: Action<StateType, StateType>;
         updateNode: Action<StateType, StateType>;
         removeNode: Action<StateType, StateType>;
+        disableNodeOrNot: Action<StateType, StateType>;
         moveNode: Action<StateType, StateType>;
         saveTreeMapItem: Action<StateType, StateType>;
         saveTreeMapItemProp: Action<StateType, StateType>;
 
         saveProcessorInfo: Action<StateType, StateType>;
         saveProcessor: Action<StateType, StateType>;
+        addSnippet: Action<StateType, StateType>;
 
         loadExecResult: Action<StateType, StateType>;
         updateExecResult: Action<StateType, StateType>;
@@ -151,6 +164,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         saveDebugData: Action<StateType, StateType>;
         syncDebugData: Action<StateType, StateType>;
+
+        importCurl: Action<StateType, StateType>;
+        addInterfacesFromCase: Action<StateType, StateType>;
     }
 }
 
@@ -190,6 +206,15 @@ const initState: StateType = {
     scenariosReports: [],
     linkedPlans: [],
     notLinkedPlans: [],
+    linkedPlansPagination: {
+        current: 1,
+        total: 0,
+        pageSize: 10,
+        showSizeChanger: false,
+    },
+
+    // nodeCount: 0,
+    scenarioCount: 0,
 };
 
 const StoreModel: ModuleType = {
@@ -233,7 +258,12 @@ const StoreModel: ModuleType = {
             state.treeDataMap[payload.id][payload.prop] = payload.value
         },
         setNode(state, data) {
+            console.log('=== setNode', data)
             state.nodeData = data;
+        },
+        setCodeContent(state, content) {
+            console.log('setCodeContent', content)
+            state.nodeData.content = content;
         },
 
         setTreeDataCategory(state, data) {
@@ -285,6 +315,16 @@ const StoreModel: ModuleType = {
         setNotLinkedPlans(state, payload) {
             state.notLinkedPlans = payload;
         },
+        setLinkedPlansPagination(state, payload) {
+            state.linkedPlansPagination = payload;
+        },
+
+        // increaseNodeCount(state) {
+        //     state.nodeCount += 1;
+        // },
+        increaseScenarioCount(state) {
+            state.scenarioCount += 1;
+        },
     },
     actions: {
         async setScenarioProcessorIdForDebug({commit, dispatch, state}, id) {
@@ -320,6 +360,8 @@ const StoreModel: ModuleType = {
             }
         },
         async getScenario({commit}, id: number) {
+            commit('increaseScenarioCount')
+
             if (id === 0) {
                 commit('setDetail', {
                     ...initState.detailResult,
@@ -380,9 +422,9 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
-        async addInterfacesFromTest({commit, dispatch, state}, payload: any) {
+        async addInterfacesFromDiagnose({commit, dispatch, state}, payload: any) {
             try {
-                const resp = await addInterfacesFromTest(payload);
+                const resp = await addInterfacesFromDiagnose(payload);
 
                 await dispatch('loadScenario', state.scenarioId);
                 return resp.data;
@@ -427,6 +469,7 @@ const StoreModel: ModuleType = {
                 const response = await getNode(payload.id);
                 const {data} = response;
 
+
                 commit('setNode', data);
                 return true;
             } catch (error) {
@@ -461,6 +504,15 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+        async disableNodeOrNot({commit, dispatch, state}, payload: number) {
+            try {
+                await disableNodeOrNot(payload);
+                await dispatch('loadScenario', state.scenarioId);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
         async moveNode({commit, dispatch, state}, payload: any) {
             try {
                 await moveNode(payload);
@@ -483,6 +535,10 @@ const StoreModel: ModuleType = {
                     id: payload.id,
                     prop: 'name',
                     value: payload.name});
+                commit('setTreeDataMapItemProp', {
+                    id: payload.id,
+                    prop: 'comments',
+                    value: payload.comments});
                 return true;
             } else {
                 return false
@@ -491,7 +547,7 @@ const StoreModel: ModuleType = {
         async saveProcessor({commit, dispatch, state}, payload: any) {
             const jsn = await saveProcessor(payload)
             if (jsn.code === 0) {
-                // commit('setNode', jsn.data);
+                commit('setNode', jsn.data);
                 commit('setTreeDataMapItemProp', {
                     id: jsn.data.processorID,
                     prop: 'name',
@@ -501,6 +557,16 @@ const StoreModel: ModuleType = {
             } else {
                 return false
             }
+        },
+        async addSnippet({commit, dispatch, state}, name: string) {
+            const json = await getSnippet(name)
+            if (json.code === 0) {
+                let script = (state.nodeData.content ? state.nodeData.content: '') + '\n' +  json.data.script
+                script = script.trim()
+                commit('setCodeContent', script);
+            }
+
+            return true;
         },
 
         // category tree
@@ -645,6 +711,11 @@ const StoreModel: ModuleType = {
                 } else {
                     commit('setNotLinkedPlans', res?.data?.result || []);
                 }
+                commit('setLinkedPlansPagination', {
+                    ...state.linkedPlansPagination,
+                    current: res.data.page || 1,
+                    total: res.data.total || 0,
+                })
             }
             return false;
         },
@@ -698,7 +769,27 @@ const StoreModel: ModuleType = {
             commit('setScenarioProcessorIdForDebug', resp.data.id)
             return resp.code === 0;
         },
+        async importCurl({state,dispatch}, payload) {
+            const res = await importCurl(payload);
+            await dispatch('loadScenario', state.scenarioId);
+            if (res.code === 0) {
+                return res.data;
+            }
+            return false;
+        },
+        async addInterfacesFromCase({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await addInterfacesFromCase(payload);
+
+                await dispatch('loadScenario', state.scenarioId);
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
     }
 };
 
 export default StoreModel;
+
+

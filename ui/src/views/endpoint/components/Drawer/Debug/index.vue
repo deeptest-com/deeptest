@@ -5,10 +5,10 @@
         <DebugMethod/>
       </div>
       <div id="debug-bottom">
-        <DebugComp :topVal="'10px'"
-                   :onSaveDebugData="saveDebugInterface"
+        <DebugComp :onSaveDebugData="saveDebugInterface"
                    :onSaveAsCase="saveAsCase"
-                   :showMethodSelection="false"/>
+                   :onGenerateCases="onGenerateCases"
+                   :showMethodSelection="false" />
       </div>
     </div>
     <div v-else style="margin-top: 48px;">
@@ -29,7 +29,15 @@
         :visible="saveAsVisible"
         :model="saveAsModel"
         :onFinish="saveAsFinish"
-        :onCancel="saveAsCancel"/>
+        :onCancel="saveAsCancel" />
+
+    <GenerateCasePopup
+        v-if="generateCasesVisible"
+        :visible="generateCasesVisible"
+        :model="generateCasesModel"
+        :onFinish="generateCasesFinish"
+        :onCancel="generateCasesCancel" />
+
   </div>
 </template>
 
@@ -47,6 +55,8 @@ import {StateType as Endpoint} from "@/views/endpoint/store";
 import DebugMethod from './method.vue';
 import DebugComp from '@/views/component/debug/index.vue';
 import SaveAsCasePopup from "../Cases/edit.vue";
+import GenerateCasePopup from "../Cases/generate.vue";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Debug: Debug, Endpoint: Endpoint }>();
 const endpointDetail = computed<any>(() => store.state.Endpoint.endpointDetail);
@@ -69,15 +79,9 @@ const saveDebugInterface = async (data) => {
   store.commit("Global/setSpinning",false)
 
   if (res === true) {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存成功`,
-    });
+    notifySuccess(`保存成功`);
   } else {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `保存失败`,
-    });
+    notifyError(`保存失败`);
   }
 };
 
@@ -92,6 +96,7 @@ const saveAsFinish = async (model) => {
   console.log('saveAsFinish', model, debugData.value.url)
 
   const data = Object.assign({...model, debugData: debugData.value}, debugInfo.value)
+  data.endpointId = endpointDetail.value.id
 
   store.commit("Global/setSpinning",true)
   const res = await store.dispatch('Debug/saveAsCase', data)
@@ -100,15 +105,9 @@ const saveAsFinish = async (model) => {
   if (res === true) {
     saveAsVisible.value = false
 
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `另存为用例成功`,
-    });
+    notifySuccess(`另存为用例成功`);
   } else {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `另存为用例保存失败`,
-    });
+    notifySuccess(`另存为用例保存失败`);
   }
 }
 const saveAsCancel = () => {
@@ -116,17 +115,50 @@ const saveAsCancel = () => {
   saveAsVisible.value = false
 }
 
+const generateCasesVisible = ref(false)
+const generateCasesModel = ref({} as any)
+const onGenerateCases = () => {
+  console.log('onGenerateCases')
+  generateCasesVisible.value = true
+  generateCasesModel.value = {}
+}
+const generateCasesFinish = async (model) => {
+  console.log('generateCasesFinish', model, debugData.value.url)
+
+  const data = Object.assign({...model}, debugInfo.value)
+
+  store.commit("Global/setSpinning",true)
+  const res = await store.dispatch('Debug/generateCases', data)
+  store.commit("Global/setSpinning",false)
+
+  if (res === true) {
+    generateCasesVisible.value = false
+
+    notifySuccess(`自动生成用例成功`);
+  } else {
+    notifyError(`自动生成用例保存失败`);
+  }
+}
+const generateCasesCancel = () => {
+  console.log('generateCasesCancel')
+  generateCasesVisible.value = false
+}
+
 </script>
 
 <style lang="less" scoped>
 .endpoint-debug-index-wrapper {
   height: 100%;
+  padding-bottom: 16px;
 
   #endpoint-debug-index {
     height: 100%;
+    //height: calc(100vh - 96px);
+
     width: 100%;
-    min-height: calc(100vh - 96px);
     flex-direction: column;
+    display: flex;
+    overflow: hidden;
 
     #debug-top {
       display: flex;

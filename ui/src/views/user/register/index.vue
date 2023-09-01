@@ -19,7 +19,7 @@
             <a-form-item label="" v-bind="validateInfos.password">
                 <div class="login-input-item">
                   <a-input-password v-model:value="modelRef.password" :placeholder="t('page.user.register.form-item-password')" @keyup.enter="handleSubmit" />
-                </div>  
+                </div>
             </a-form-item>
 
             <a-form-item label="" v-bind="validateInfos.confirm">
@@ -37,7 +37,7 @@
                     <a-button type="primary" class="submit" @click="handleSubmit" :loading="submitLoading">
                         {{t('page.user.register.form.btn-submit')}}
                     </a-button>
-                </div>  
+                </div>
             </a-form-item>
 
             <a-alert v-if="errorMsg !== '' && typeof errorMsg !== 'undefined' &&  !submitLoading" :message="errorMsg" type="error" :show-icon="true" />
@@ -59,6 +59,7 @@ import useI18nAntdFormVaildateInfos from '@/composables/useI18nAntdFormVaildateI
 import { RegisterParamsType } from "./data.d";
 import { StateType as RegisterStateType } from "./store";
 import {pattern} from "@/utils/const";
+import {notifySuccess, notifyWarn} from "@/utils/notify";
 
 interface UserRegisterSetupData {
     t: (key: string | number) => string;
@@ -137,15 +138,11 @@ export default defineComponent({
                 const fieldsValue = await validate<RegisterParamsType>();
                 const res: boolean = await store.dispatch('UserRegister/register',fieldsValue);
                 if (res === true) {
-                  notification.success({
-                    message: t('page.user.register.form.register-success'),
-                  });
+                  notifySuccess(t('page.user.register.form.register-success'));
                   router.replace('/user/login');
                 }
             } catch (error) {
-              notification.warn({
-                message: t('page.user.register.form.register-fail'),
-              });
+              notifyWarn(t('page.user.register.form.register-fail'));
             }
             submitLoading.value = false;
         };

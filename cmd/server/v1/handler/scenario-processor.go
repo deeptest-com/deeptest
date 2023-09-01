@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -79,7 +80,7 @@ func (c *ScenarioProcessorCtrl) SaveBasicInfo(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScenarioProcessorService.SaveProcessorInfo(req)
+	err = c.ScenarioProcessorService.SaveBasicInfo(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -153,24 +154,32 @@ func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 		err = c.ScenarioProcessorService.SaveAssertion(&entity)
 		po = entity
 
-	} else if processorCategory == consts.ProcessorExtractor {
-		var entity model.ProcessorExtractor
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveExtractor(&entity)
-		po = entity
-
 	} else if processorCategory == consts.ProcessorData {
 		var entity model.ProcessorData
+		entity.Separator = ","
 		err = ctx.ReadJSON(&entity)
 		err = c.ScenarioProcessorService.SaveData(&entity)
 		po = entity
 
+	} else if processorCategory == consts.ProcessorCustomCode {
+		var entity model.ProcessorCustomCode
+		err = ctx.ReadJSON(&entity)
+		err = c.ScenarioProcessorService.SaveCustomCode(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorInterface {
+		var entity model.ProcessorComm
+		err = ctx.ReadJSON(&entity)
+		err = c.ScenarioProcessorService.SaveInterface(&entity)
+		po = entity
+
+	} else {
+		err = errors.New("wrong processorCategory: " + processorCategory.ToString())
 	}
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: po, Msg: _domain.NoErr.Msg})
 }

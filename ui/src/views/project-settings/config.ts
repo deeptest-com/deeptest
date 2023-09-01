@@ -243,6 +243,7 @@ const datapoolColumns = [
         title: '创建人',
         dataIndex: 'createUser',
         width: '200px',
+        slots: { customRender: 'createUser'},
     },
     {
         title: '创建时间',

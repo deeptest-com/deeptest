@@ -119,7 +119,20 @@ export async function serverList(data: any): Promise<any> {
     return request({
         url: `/serves/server/list`,
         method: 'post',
-        data:data,
+        data,
+    });
+}
+
+/**
+ * 切换服务环境
+ * @param data 
+ * @returns 
+ */
+export async function changeServe(data: any): Promise<any> {
+    return request({
+        url: '/serves/server/changeServer',
+        method: 'post',
+        data,
     });
 }
 

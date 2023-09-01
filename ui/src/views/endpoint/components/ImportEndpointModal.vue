@@ -82,7 +82,8 @@ import {
 import {useStore} from "vuex";
 import {NewEndpointFormState} from "@/views/Endpoint/data";
 import {InboxOutlined, UploadOutlined} from '@ant-design/icons-vue';
-import { message } from 'ant-design-vue';
+import {message, notification} from 'ant-design-vue';
+import {notifyWarn} from "@/utils/notify";
 
 const store = useStore<{ Endpoint }>();
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
@@ -149,19 +150,19 @@ function ok() {
   if (uploading.value) {
     return;
   }
-  spinning.value = true 
+  spinning.value = true
   formRef.value
       .validate()
       .then( () => {
          emit('ok', formState.value, () => {
           reset();
-          message.warning('异步导入中，稍后请刷新列表查看导入结果');
+           notifyWarn('异步导入中，稍后请刷新列表查看导入结果');
           spinning.value = false
         });
       })
       .catch((error: ValidateErrorEntity) => {
         console.log('error', error);
-      }); 
+      });
 }
 
 function cancal() {

@@ -1,5 +1,7 @@
 <template>
-  <div class="processor_extractor_htmlquery-main">
+  <div class="processor_extractor_htmlquery-main dp-processors-container">
+    <ProcessorHeader/>
+
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -15,10 +17,10 @@
           </a-form-item>
 
           <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
+            <a-textarea v-model:value="modelRef.comments" :rows="3"/>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
+          <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
             <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
@@ -29,13 +31,15 @@
 </template>
 
 <script setup lang="ts">
-import {computed, reactive, ref} from "vue";
+import {computed, reactive, ref,onMounted} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
 import {NotificationKeyCommon} from "@/utils/const";
+import debounce from "lodash.debounce";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const useForm = Form.useForm;
 
@@ -58,34 +62,28 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            notifySuccess(`保存成功`);
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            notifyError(`保存失败`);
           }
         })
       })
-};
+}, 300);
 
-if (!modelRef.value.variable) modelRef.value.variable = ''
-if (!modelRef.value.expression) modelRef.value.expression = ''
+onMounted(() => {
+  if (!modelRef.value.variable) modelRef.value.variable = ''
+  if (!modelRef.value.expression) modelRef.value.expression = ''
+})
+
+
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 16 }
 
 </script>
 
-<style lang="less" scoped>
-.processor_extractor_htmlquery-main {
-}
-</style>

@@ -42,7 +42,7 @@ func (s *YapiService) ImportYapiProject(req v1.InterfaceYapiReq) (err error) {
 	//		yapiInterf := s.YapiInterfaceInfoToInterf(ret)
 	//		yapiInterf.ProjectId = uint(projectId)
 	//		yapiInterf.ParentId, yapiInterf.Ordr = s.InterfaceRepo.UpdateOrder(dropPos, menuId)
-	//		err = s.ImportService.Create(&yapiInterf)
+	//		err = s.ImportService.CreateExpression(&yapiInterf)
 	//		if err != nil {
 	//			logUtils.Infof("update yapiInterf to db error, %s", err.Error())
 	//			return

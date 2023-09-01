@@ -3,11 +3,11 @@
     <div class="head">
       <a-row type="flex">
         <a-col flex="1">
-          <span>响应体</span>
+          <span style="margin-left:5px;">RAW</span>
         </a-col>
 
         <a-col flex="100px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small">
+<!--          <a-tooltip overlayClassName="dp-tip-small">
             <template #title>格式化</template>
             <ClearOutlined class="dp-icon-btn dp-trans-80" />
           </a-tooltip>
@@ -20,7 +20,7 @@
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>下载</template>
             <DownloadOutlined class="dp-icon-btn dp-trans-80" />
-          </a-tooltip>
+          </a-tooltip>-->
         </a-col>
       </a-row>
     </div>

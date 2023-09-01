@@ -7,6 +7,8 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 )
@@ -14,9 +16,11 @@ import (
 type PostConditionRepo struct {
 	DB *gorm.DB `inject:""`
 
-	ExtractorRepo  *ExtractorRepo  `inject:""`
-	CheckpointRepo *CheckpointRepo `inject:""`
-	ScriptRepo     *ScriptRepo     `inject:""`
+	ExtractorRepo         *ExtractorRepo         `inject:""`
+	CheckpointRepo        *CheckpointRepo        `inject:""`
+	ScriptRepo            *ScriptRepo            `inject:""`
+	ResponseDefineRepo    *ResponseDefineRepo    `inject:""`
+	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
 }
 
 func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory) (pos []model.DebugPostCondition, err error) {
@@ -28,19 +32,22 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
 	}
 
-	if typ == consts.ConditionCategoryResult {
+	if typ == consts.ConditionCategoryAssert {
 		db.Where("entity_type = ?", consts.ConditionTypeCheckpoint)
 	} else if typ == consts.ConditionCategoryConsole {
-		db.Where("entity_type != ?", consts.ConditionTypeCheckpoint)
+		db.Where("entity_type =? or entity_type=?", consts.ConditionTypeExtractor, consts.ConditionTypeScript)
+	} else if typ == consts.ConditionCategoryResponse {
+		db.Where("entity_type = ?", consts.ConditionTypeResponseDefine)
+	} else if typ == consts.ConditionCategoryResult {
+		db.Where("entity_type = ? or entity_type = ?", consts.ConditionTypeResponseDefine, consts.ConditionTypeCheckpoint)
 	}
 
-	err = db.
-		Find(&pos).Error
+	err = db.Find(&pos).Error
 
 	return
 }
 
-func (r *PostConditionRepo) ListExtrator(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugPostCondition, err error) {
+func (r *PostConditionRepo) ListExtractor(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugPostCondition, err error) {
 	db := r.DB.
 		Where("NOT deleted").
 		Order("ordr ASC")
@@ -106,9 +113,78 @@ func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId
 
 			r.ScriptRepo.Save(&srcEntity)
 			entityId = srcEntity.ID
+		} else if srcCondition.EntityType == consts.ConditionTypeResponseDefine {
+			srcEntity, _ := r.ResponseDefineRepo.Get(srcCondition.EntityId)
+			srcEntity.ID = 0
+			srcEntity.ConditionId = srcCondition.ID
+			srcEntity.Disabled = false
+
+			r.ResponseDefineRepo.Save(&srcEntity)
+			entityId = srcEntity.ID
 		}
 
 		err = r.UpdateEntityId(srcCondition.ID, entityId)
+	}
+
+	return
+}
+
+func (r *PostConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uint, postConditions []domain.InterfaceExecCondition) (err error) {
+	r.removeAll(debugInterfaceId, endpointInterfaceId)
+
+	for _, item := range postConditions {
+		// clone condition po
+		condition := model.DebugPostCondition{
+			EntityType:          item.Type,
+			DebugInterfaceId:    debugInterfaceId,
+			EndpointInterfaceId: endpointInterfaceId,
+			Desc:                item.Desc,
+		}
+		r.Save(&condition)
+
+		// clone condition entity
+		var entityId uint
+		if item.Type == consts.ConditionTypeExtractor {
+			extractor := domain.ExtractorBase{}
+			json.Unmarshal(item.Raw, &extractor)
+
+			entity := model.DebugConditionExtractor{}
+
+			copier.CopyWithOption(&entity, extractor, copier.Option{DeepCopy: true})
+			entity.ID = 0
+			entity.ConditionId = condition.ID
+
+			r.ExtractorRepo.Save(&entity)
+			entityId = entity.ID
+
+		} else if item.Type == consts.ConditionTypeCheckpoint {
+			checkpoint := domain.CheckpointBase{}
+			json.Unmarshal(item.Raw, &checkpoint)
+
+			entity := model.DebugConditionCheckpoint{}
+
+			copier.CopyWithOption(&entity, checkpoint, copier.Option{DeepCopy: true})
+			entity.ID = 0
+			entity.ConditionId = condition.ID
+
+			r.CheckpointRepo.Save(&entity)
+			entityId = entity.ID
+
+		} else if item.Type == consts.ConditionTypeScript {
+			script := domain.ScriptBase{}
+			json.Unmarshal(item.Raw, &script)
+
+			entity := model.DebugConditionScript{}
+
+			copier.CopyWithOption(&entity, script, copier.Option{DeepCopy: true})
+			entity.ID = 0
+			entity.ConditionId = condition.ID
+
+			r.ScriptRepo.Save(&entity)
+			entityId = entity.ID
+		}
+
+		err = r.UpdateEntityId(condition.ID, entityId)
 	}
 
 	return
@@ -123,7 +199,7 @@ func (r *PostConditionRepo) Delete(id uint) (err error) {
 		Error
 
 	if po.EntityType == consts.ConditionTypeExtractor {
-		r.ScriptRepo.DeleteByCondition(id)
+		r.ExtractorRepo.DeleteByCondition(id)
 	} else if po.EntityType == consts.ConditionTypeCheckpoint {
 		r.CheckpointRepo.DeleteByCondition(id)
 	} else if po.EntityType == consts.ConditionTypeScript {
@@ -178,6 +254,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 
 			entity, _ := r.ExtractorRepo.Get(po.EntityId)
 			copier.CopyWithOption(&extractor, entity, copier.Option{DeepCopy: true})
+			extractor.ConditionEntityType = typ
 			extractor.ConditionId = po.ID
 			extractor.ConditionEntityId = po.EntityId
 
@@ -185,6 +262,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			condition := domain.InterfaceExecCondition{
 				Type: typ,
 				Raw:  raw,
+				Desc: po.Desc,
 			}
 
 			ret = append(ret, condition)
@@ -194,6 +272,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 
 			entity, _ := r.CheckpointRepo.Get(po.EntityId)
 			copier.CopyWithOption(&checkpoint, entity, copier.Option{DeepCopy: true})
+			checkpoint.ConditionEntityType = typ
 			checkpoint.ConditionId = po.ID
 			checkpoint.ConditionEntityId = po.EntityId
 
@@ -201,6 +280,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			condition := domain.InterfaceExecCondition{
 				Type: typ,
 				Raw:  raw,
+				Desc: po.Desc,
 			}
 
 			ret = append(ret, condition)
@@ -220,9 +300,101 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			}
 
 			ret = append(ret, condition)
+
+		} else if typ == consts.ConditionTypeResponseDefine {
+			responseDefine := domain.ResponseDefineBase{}
+
+			entity, err := r.ResponseDefineRepo.Get(po.EntityId)
+			if err != nil {
+				logUtils.Infof("响应码校验拿不到数据 %v", po.EntityId)
+				continue
+			}
+			copier.CopyWithOption(&responseDefine, entity, copier.Option{DeepCopy: true})
+			responseDefine.ConditionId = po.ID
+			responseDefine.ConditionEntityId = po.EntityId
+			responseBody := r.EndpointInterfaceRepo.GetResponse(endpointInterfaceId, entity.Code)
+			responseDefine.Schema = responseBody.SchemaItem.Content
+			responseDefine.Code = entity.Code
+			responseDefine.MediaType = responseBody.MediaType
+			components := r.ResponseDefineRepo.Components(endpointInterfaceId)
+			responseDefine.Component = commonUtils.JsonEncode(components)
+			raw, _ := json.Marshal(responseDefine)
+			condition := domain.InterfaceExecCondition{
+				Type: typ,
+				Raw:  raw,
+			}
+
+			ret = append(ret, condition)
 		}
 
 	}
+
+	return
+}
+
+func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint) (err error) {
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "")
+
+	for _, po := range pos {
+		r.Delete(po.ID)
+	}
+
+	return
+}
+
+func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (condition domain.Condition) {
+
+	if endpointInterfaceId == 0 {
+		return
+	}
+
+	codes := r.EndpointInterfaceRepo.GetResponseCodes(endpointInterfaceId)
+
+	po, err := r.GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId, by)
+	if err == gorm.ErrRecordNotFound {
+		po, err = r.saveDefault(debugInterfaceId, endpointInterfaceId, codes, by)
+		if err != nil {
+			return
+		}
+	}
+
+	copier.CopyWithOption(&condition, po, copier.Option{DeepCopy: true})
+
+	entityData, _ := r.ResponseDefineRepo.Get(po.EntityId)
+	entityData.Codes = codes
+	//entityData.Component = r.ResponseDefineRepo.Components(endpointInterfaceId)
+	condition.EntityData = entityData
+
+	return
+}
+
+func (r *PostConditionRepo) GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (po model.DebugPostCondition, err error) {
+	err = r.DB.
+		Where("debug_interface_id=? and endpoint_interface_id=? and entity_type=?", debugInterfaceId, endpointInterfaceId, consts.ConditionTypeResponseDefine).
+		Where("NOT deleted").
+		First(&po).Error
+	return
+}
+
+func (r *PostConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId uint, codes []string, by consts.UsedBy) (po model.DebugPostCondition, err error) {
+
+	responseDefine := model.DebugConditionResponseDefine{}
+	responseDefine.Code = "200"
+	if len(codes) > 0 {
+		responseDefine.Code = codes[0]
+	}
+
+	err = r.ResponseDefineRepo.Save(&responseDefine)
+	if err != nil {
+		return
+	}
+
+	po.EntityType = consts.ConditionTypeResponseDefine
+	po.EndpointInterfaceId = endpointInterfaceId
+	po.DebugInterfaceId = debugInterfaceId
+	po.UsedBy = by
+	po.EntityId = responseDefine.ID
+	err = r.Save(&po)
 
 	return
 }

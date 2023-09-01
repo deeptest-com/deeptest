@@ -1,5 +1,7 @@
+<!-- ::::迭代直到 -->
 <template>
-  <div class="processor_loop_until-main">
+  <div class="processor_loop_until-main dp-processors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -7,16 +9,16 @@
           <a-form-item label="判断表达式" v-bind="validateInfos.untilExpression">
             <a-input v-model:value="modelRef.untilExpression"
                      @blur="validate('untilExpression', { trigger: 'blur' }).catch(() => {})"/>
-            <div class="dp-input-tip">{{t('tips_expression_bool')}}</div>
+            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}', number: '{+number}'})}}</div>
           </a-form-item>
 
           <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
+            <a-textarea v-model:value="modelRef.comments" :rows="3"/>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
+          <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
+<!--            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>-->
           </a-form-item>
         </a-form>
       </div>
@@ -29,9 +31,11 @@ import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form, message, notification} from 'ant-design-vue';
+import {Form, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
+import debounce from "lodash.debounce";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const useForm = Form.useForm;
 
@@ -51,25 +55,20 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              message: `保存成功`,
-            });
+            notifySuccess(`保存成功`);
           } else {
-            notification.error({
-              message: `保存失败`,
-            });
+            notifyError(`保存失败`);
           }
         })
       })
-};
+}, 300);
 
 onMounted(() => {
-  console.log('onMounted')
   if (!modelRef.value.untilExpression) modelRef.value.untilExpression = ''
 })
 

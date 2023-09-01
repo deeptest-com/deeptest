@@ -90,7 +90,7 @@ func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	po, err := c.DebugInterfaceService.Save(req)
+	po, err := c.DebugInterfaceService.CreateOrUpdate(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -124,6 +124,23 @@ func (c *DebugInterfaceCtrl) SaveAsCase(ctx iris.Context) {
 	req.CreateUserId = multi.GetUserId(ctx)
 
 	c.EndpointCaseService.SaveFromDebugInterface(req)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}
+
+// GenerateCases
+func (c *DebugInterfaceCtrl) GenerateCases(ctx iris.Context) {
+	req := serverDomain.EndpointCaseGenerateReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	req.CreateUserName = multi.GetUsername(ctx)
+	req.CreateUserId = multi.GetUserId(ctx)
+
+	err = c.EndpointCaseService.GenerateFromSpec(req)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }

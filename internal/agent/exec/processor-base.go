@@ -21,7 +21,7 @@ type IProcessorEntity interface {
 
 func getPreviousBrother(processor Processor) (brother Processor, ok bool) {
 	for index, item := range processor.Parent.Children {
-		if item.ID == processor.ID {
+		if item.ID == processor.ID && index > 0 {
 			brother = *processor.Parent.Children[index-1]
 
 			ok = true

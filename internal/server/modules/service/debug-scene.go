@@ -47,7 +47,10 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData) (
 
 	envId := serveServer.EnvironmentId
 	environment, _ := s.EnvironmentRepo.Get(envId)
-	debugData.ProjectId = environment.ProjectId
+
+	if debugData.ProjectId == 0 {
+		debugData.ProjectId = environment.ProjectId
+	}
 
 	shareVars, _ = s.ShareVarService.ListForDebug(debugServeId, debugData.ScenarioProcessorId, debugData.UsedBy)
 	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)

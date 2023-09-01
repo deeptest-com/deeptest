@@ -1,18 +1,17 @@
 <template>
   <div class="param-grid-main">
-    <div v-if="title"  class="head"
-         :class="[list.length===0?'hidden':'']">
+    <div v-if="title"  class="head">
       <ConBoxTitle :title="title" />
     </div>
 
-    <div class="items" :class="[list.length===0?'hidden':'']">
-      <a-table :dataSource="list || []" :columns="columns"
+    <div class="items">
+      <a-table v-if="list?.length > 0" :dataSource="list || []" :columns="columns"
                :rowKey="(record, index) => {return index}"
                :tableLayout="'fixed'"
                class="dp-small-table"
                :rowClassName="(record, index) => {return record.name==='' ? 'hidden' : ''}"
                :pagination="false"/>
-
+      <div v-else>空</div>
     </div>
   </div>
 </template>
@@ -50,7 +49,7 @@ const columns = [
 
 <style lang="less" scoped>
 .param-grid-main {
-  margin-bottom: 10px;
+  margin-bottom: 16px;
   .head {
   }
   .items {

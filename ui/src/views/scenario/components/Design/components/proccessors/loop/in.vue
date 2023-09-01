@@ -1,9 +1,10 @@
+<!-- 迭代列表 -->
 <template>
-  <div class="processor_loop_in-main">
+  <div class="processor_loop_in-main dp-processors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-
           <a-form-item label="变量名称" v-bind="validateInfos.variableName">
             <a-input v-model:value="modelRef.variableName"
                      @blur="validate('variableName', { trigger: 'blur' }).catch(() => {})"/>
@@ -12,20 +13,24 @@
           <a-form-item label="列表" v-bind="validateInfos.list">
             <a-input v-model:value="modelRef.list"
                      @blur="validate('list', { trigger: 'blur' }).catch(() => {})"/>
-            <div class="dp-input-tip">列表以逗号分隔</div>
+            <div class="dp-input-tip">列表以英文逗号分隔</div>
           </a-form-item>
 
           <a-form-item label="是否随机">
             <a-switch v-model:checked="modelRef.isRand" />
           </a-form-item>
 
-          <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
+          <a-form-item label="跳出条件" name="breakIfExpression">
+            <a-input  v-model:value="modelRef.breakIfExpression"/>
+            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}', number: '{+number}'})}}</div>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-textarea v-model:value="modelRef.comments" :rows="3"/>
+          </a-form-item>
+
+          <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -38,11 +43,11 @@ import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
-import {Form, message, notification} from 'ant-design-vue';
+import {Form, notification} from 'ant-design-vue';
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
-import {NotificationKeyCommon} from "@/utils/const";
-
+import debounce from "lodash.debounce";
+import {notifyError, notifySuccess} from "@/utils/notify";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -64,27 +69,20 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            notifySuccess(`保存成功`);
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            notifyError(`保存失败`);
           }
         })
       })
-};
+}, 300);
 
 onMounted(() => {
-  console.log('onMounted')
   if (!modelRef.value.repeatTimes) modelRef.value.repeatTimes = 1
 })
 

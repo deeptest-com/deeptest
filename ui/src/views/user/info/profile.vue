@@ -78,6 +78,7 @@ import {useStore} from "vuex";
 import {StateType as UserStateType} from "@/store/user";
 import {NotificationKeyCommon, pattern} from "@/utils/const";
 import ChangePassword from './changePassword.vue'
+import {notifySuccess} from "@/utils/notify";
 
 const useForm = Form.useForm;
 
@@ -163,10 +164,7 @@ const updatePassword = async (data) => {
 }
 const afterUpdate = async (result) => {
   if (result === true) {
-    notification.success({
-      key: NotificationKeyCommon,
-      message: `更新成功`,
-    });
+    notifySuccess(`更新成功`);
     changing.value = ''
     showChangePassword.value = false
   }

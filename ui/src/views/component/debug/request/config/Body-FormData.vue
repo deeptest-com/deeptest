@@ -71,6 +71,7 @@ const {t} = useI18n();
 
 import {BodyFormDataItem} from "@/views/component/debug/data";
 import {StateType as Debug} from "@/views/component/debug/store";
+import {notifyWarn} from "@/utils/notify";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -129,10 +130,7 @@ const selectFile = (index) => {
     const data = {act: 'chooseFile'} as any
     ipcRenderer.send(settings.electronMsg, data)
   } else {
-    notification.warn({
-      key: NotificationKeyCommon,
-      message: `请使用客户端上传文件`,
-    });
+    notifyWarn(`请使用客户端上传文件`);
   }
 }
 

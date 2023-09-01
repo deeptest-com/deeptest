@@ -59,6 +59,12 @@ func SendExecMsg(log interface{}, wsMsg *websocket.Message) (err error) {
 	return
 }
 
+func SendStatMsg(data agentDomain.InterfaceStat, wsMsg *websocket.Message) (err error) {
+	websocketHelper.SendStatInfo(data, wsMsg)
+
+	return
+}
+
 func SendErrorMsg(log agentDomain.ScenarioExecResult, wsMsg *websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("exec_fail")
 	websocketHelper.SendExecMsg(msg, log, wsMsg)
@@ -68,4 +74,11 @@ func SendErrorMsg(log agentDomain.ScenarioExecResult, wsMsg *websocket.Message) 
 
 func SendInitializeMsg(data interface{}, wsMsg *websocket.Message) {
 	websocketHelper.SendInitializeMsg(data, wsMsg)
+}
+
+func SendExceptionMsg(wsMsg *websocket.Message) (err error) {
+	SetRunning(false)
+	websocketHelper.SendExecStatus(consts.Exception, wsMsg)
+
+	return
 }

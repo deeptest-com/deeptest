@@ -87,7 +87,7 @@ func (s *CategoryService) Move(srcId, targetId uint, pos serverConsts.DropPos, t
 }
 
 func (s *CategoryService) deleteNodeAndChildren(typ serverConsts.CategoryDiscriminator, projectId, nodeId uint) (err error) {
-	//err = s.CategoryRepo.Delete(nodeId)
+	//err = s.CategoryRepo.DeleteWithChildren(nodeId)
 	//if err == nil {
 	//	children, _ := s.CategoryRepo.GetChildren(nodeId)
 	//	for _, child := range children {

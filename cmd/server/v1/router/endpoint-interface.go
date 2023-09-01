@@ -14,7 +14,7 @@ type EndpointInterfaceModule struct {
 // Party 注册模块
 func (m *EndpointInterfaceModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
-		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		public.Post("/listForSelection", m.EndpointInterfaceCtrl.ListForSelection).Name = "接口列表"
 		public.Post("/importEndpointData", m.EndpointInterfaceCtrl.ImportEndpointData).Name = "导入接口数据"

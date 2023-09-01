@@ -31,6 +31,10 @@
           <span>{{ momentUtc(record.updatedAt) }}</span>
         </template>
 
+        <template #createUserName="{ record }">
+          <span>{{ username(record.createUserName) }}</span>
+        </template>
+
         <template #action="{ record }">
           <a-button type="link" @click="() => copy(record)">
             <CopyOutlined title="复制" />
@@ -71,15 +75,16 @@ import {confirmToDelete} from "@/utils/confirm";
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CaseEdit from "./edit.vue";
 import {NotificationKeyCommon} from "@/utils/const";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 provide('usedBy', UsedBy.InterfaceDebug)
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 const {t} = useI18n();
 
-const store = useStore<{ Endpoint }>();
+const store = useStore<{ Endpoint,Project }>();
 const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
 const caseList = computed<any[]>(() => store.state.Endpoint.caseList);
-
+const userList = computed<any>(() => store.state.Project.userList);
 const props = defineProps({
   onDesign: {
     type: Function,
@@ -132,16 +137,10 @@ const copy  = (record) => {
   console.log('copy', record)
   store.dispatch('Endpoint/copyCase', record.id).then((po) => {
     if (po.id > 0) {
-      notification.success({
-        key: NotificationKeyCommon,
-        message: `复制成功`,
-      });
+      notifySuccess(`复制成功`);
       design(po)
     } else {
-      notification.error({
-        key: NotificationKeyCommon,
-        message: `复制失败`,
-      });
+      notifyError(`复制失败`);
     }
   })
 }
@@ -158,6 +157,11 @@ const updateName = async (value: string, record: any) => {
   list(endpoint.value.id)
 }
 
+const username = (user:string)=>{
+  let result = userList.value.find(arrItem => arrItem.value == user);
+  return result?.label || '-'
+}
+
 const columns = [
   {
     title: '编号',
@@ -172,6 +176,7 @@ const columns = [
   {
     title: '创建人',
     dataIndex: 'createUserName',
+    slots: {customRender: 'createUserName'},
     ellipsis: true,
     width: '100px',
   },

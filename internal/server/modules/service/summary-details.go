@@ -34,7 +34,7 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 	copier.CopyWithOption(&res, summaryCardTotal, copier.Option{DeepCopy: true})
 
 	if oldSummaryCardTotal.Coverage != 0 {
-		res.CoverageHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(res.Coverage, oldSummaryCardTotal.Coverage)), 64)
+		res.CoverageHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Coverage-oldSummaryCardTotal.Coverage), 64)
 	}
 
 	if oldSummaryCardTotal.InterfaceTotal != 0 {
@@ -239,6 +239,16 @@ func (s *SummaryDetailsService) FindAllEndpointIdsGroupByProjectId(projectIds []
 	return
 }
 
+func (s *SummaryDetailsService) FindExecLogProcessorInterfaceTotalGroupByProjectId(projectId int64) (count int64, err error) {
+	count, err = s.HandlerSummaryDetailsRepo().FindExecLogProcessorInterfaceTotalGroupByProjectId(projectId)
+	return
+}
+
+func (s *SummaryDetailsService) FindAllExecLogProcessorInterfaceTotal() (count int64, err error) {
+	count, err = s.HandlerSummaryDetailsRepo().FindAllExecLogProcessorInterfaceTotal()
+	return
+}
+
 func (s *SummaryDetailsService) FindAllExecLogProcessorInterfaceTotalGroupByProjectId() (counts map[int64]int64, err error) {
 	result, err := s.HandlerSummaryDetailsRepo().FindAllExecLogProcessorInterfaceTotalGroupByProjectId()
 
@@ -267,15 +277,44 @@ func (s *SummaryDetailsService) FindProjectIds() (ids []int64, err error) {
 }
 
 func (s *SummaryDetailsService) SummaryCard() (summaryCardTotal model.SummaryCardTotal, err error) {
-	return s.HandlerSummaryDetailsRepo().SummaryCard()
+	summaryCardTotal.ScenarioTotal, err = s.CountAllScenarioTotal()
+	summaryCardTotal.ExecTotal, err = s.CountAllExecTotal()
+	summaryCardTotal.InterfaceTotal, err = s.CountAllEndpointTotal()
+	summaryCardTotal.PassRate, err = s.FindAllPassRate()
+
+	endPointCountOfProcessor, err := s.FindAllExecLogProcessorInterfaceTotal()
+	var coverage float64
+	if summaryCardTotal.InterfaceTotal != 0 {
+		coverage = float64(endPointCountOfProcessor) / float64(summaryCardTotal.InterfaceTotal) * 100
+	} else {
+		coverage = 0
+	}
+	summaryCardTotal.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
+
+	return
 }
 
 func (s *SummaryDetailsService) SummaryCardByDate(startTime string, endTime string) (summaryCardTotal model.SummaryCardTotal, err error) {
+
 	return s.HandlerSummaryDetailsRepo().SummaryCardByDate(startTime, endTime)
 }
 
 func (s *SummaryDetailsService) SummaryCardByProjectId(projectId int64) (summaryCardTotal model.SummaryCardTotal, err error) {
-	return s.HandlerSummaryDetailsRepo().SummaryCardByProjectId(projectId)
+	summaryCardTotal.ScenarioTotal, err = s.CountScenarioTotalProjectId(projectId)
+	summaryCardTotal.ExecTotal, err = s.CountExecTotalProjectId(projectId)
+	summaryCardTotal.InterfaceTotal, err = s.CountEndpointTotalProjectId(projectId)
+	endPointCountOfProcessor, err := s.FindExecLogProcessorInterfaceTotalGroupByProjectId(projectId)
+
+	summaryCardTotal.PassRate, err = s.FindPassRateByProjectId(projectId)
+	var coverage float64
+	if summaryCardTotal.InterfaceTotal != 0 {
+		coverage = float64(endPointCountOfProcessor) / float64(summaryCardTotal.InterfaceTotal) * 100
+	} else {
+		coverage = 0
+	}
+	summaryCardTotal.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
+
+	return
 }
 
 func (s *SummaryDetailsService) SummaryCardByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryCardTotal model.SummaryCardTotal, err error) {
@@ -308,6 +347,10 @@ func (s *SummaryDetailsService) CountScenarioTotalProjectId(projectId int64) (co
 	return s.HandlerSummaryDetailsRepo().CountScenarioTotalProjectId(projectId)
 }
 
+func (s *SummaryDetailsService) CountAllScenarioTotal() (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountAllScenarioTotal()
+}
+
 func (s *SummaryDetailsService) CountAllScenarioTotalProjectId() (scenarioTotal map[int64]int64, err error) {
 	scenariosTotal, err := s.HandlerSummaryDetailsRepo().CountAllScenarioTotalProjectId()
 
@@ -323,6 +366,10 @@ func (s *SummaryDetailsService) CountEndpointTotalProjectId(projectId int64) (co
 	return s.HandlerSummaryDetailsRepo().CountEndpointInterfaceTotalProjectId(projectId)
 }
 
+func (s *SummaryDetailsService) CountAllEndpointTotal() (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountAllEndpointTotal()
+}
+
 func (s *SummaryDetailsService) CountAllEndpointTotalProjectId() (counts map[int64]int64, err error) {
 	endpointsTotal, err := s.HandlerSummaryDetailsRepo().CountAllEndpointInterfaceTotalProjectId()
 	counts = make(map[int64]int64, len(endpointsTotal))
@@ -335,6 +382,9 @@ func (s *SummaryDetailsService) CountAllEndpointTotalProjectId() (counts map[int
 
 func (s *SummaryDetailsService) CountExecTotalProjectId(projectId int64) (count int64, err error) {
 	return s.HandlerSummaryDetailsRepo().CountExecTotalProjectId(projectId)
+}
+func (s *SummaryDetailsService) CountAllExecTotal() (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountAllExecTotal()
 }
 
 func (s *SummaryDetailsService) CountAllExecTotalProjectId() (counts map[int64]int64, err error) {
@@ -349,6 +399,10 @@ func (s *SummaryDetailsService) CountAllExecTotalProjectId() (counts map[int64]i
 
 func (s *SummaryDetailsService) FindPassRateByProjectId(projectId int64) (passRate float64, err error) {
 	return s.HandlerSummaryDetailsRepo().FindPassRateByProjectId(projectId)
+}
+
+func (s *SummaryDetailsService) FindAllPassRate() (passRate float64, err error) {
+	return s.HandlerSummaryDetailsRepo().FindAllPassRate()
 }
 
 func (s *SummaryDetailsService) FindAllPassRateByProjectId() (passRate map[int64]float64, err error) {

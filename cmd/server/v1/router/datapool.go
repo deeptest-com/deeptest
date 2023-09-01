@@ -14,7 +14,7 @@ type DatapoolModule struct {
 // Party 项目
 func (m *DatapoolModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Post("/index", m.DatapoolCtrl.Index).Name = "数据池列表"
 		index.Get("/{id:uint}", m.DatapoolCtrl.Get).Name = "数据池详情"

@@ -1,22 +1,21 @@
 <template>
-  <div class="processor_assertion_default-main">
+  <div class="processor_assertion_default-main dp-processors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-
           <a-form-item label="判断表达式" v-bind="validateInfos.expression">
             <a-input v-model:value="modelRef.expression"
                      @blur="validate('expression', { trigger: 'blur' }).catch(() => {})" />
-            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}'})}}</div>
+            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}', number: '{+number}'})}}</div>
           </a-form-item>
 
           <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
+            <a-textarea v-model:value="modelRef.comments" :rows="3"/>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 4 }">
+          <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
           </a-form-item>
         </a-form>
       </div>
@@ -26,14 +25,14 @@
 
 <script setup lang="ts">
 import {computed, onMounted, onUnmounted, reactive, ref} from "vue";
-import {Form, message, notification} from "ant-design-vue";
+import {Form, notification} from "ant-design-vue";
 import {useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
+import debounce from "lodash.debounce";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
-import {getCompareOpts} from "@/utils/compare";
-import {NotificationKeyCommon} from "@/utils/const";
-
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
+import {notifyError, notifySuccess} from "@/utils/notify";
 const useForm = Form.useForm;
 
 const router = useRouter();
@@ -52,26 +51,19 @@ const store = useStore<{ Scenario: ScenarioStateType; }>();
 const modelRef = computed<any>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            notifySuccess(`保存成功`);
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            notifyError(`保存失败`);
           }
         })
       })
-};
+}, 300);
 
-const optOptions = getCompareOpts()
 
 onMounted(() => {
   console.log('onMounted')
@@ -89,11 +81,3 @@ const wrapperCol = { span: 16 }
 
 </script>
 
-<style lang="less" scoped>
-.processor_assertion_default-main {
-  .icons {
-    text-align: right;
-    line-height: 32px;
-  }
-}
-</style>

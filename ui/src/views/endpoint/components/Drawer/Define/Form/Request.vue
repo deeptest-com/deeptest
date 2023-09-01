@@ -69,7 +69,7 @@ import {
   defineEmits,
   watch,
   computed,
-    onMounted,
+  onMounted, onUnmounted,
 } from 'vue';
 import {useStore} from "vuex";
 import {
@@ -92,12 +92,10 @@ const interfaceDetail = computed<any>(() => store.state.Endpoint.selectedMethodD
 const interfaceMethodToObjMap = computed<any>(() => store.state.Endpoint.interfaceMethodToObjMap);
 const currentUser: any = computed<Endpoint>(() => store.state.User.currentUser);
 
-const selectedMethod = ref(interfaceDetail.value?.method ? interfaceDetail.value?.method : 'GET');
+const selectedMethod = ref('')
 
-onMounted(() => {
-  if (endpointDetail.value?.interfaces?.length) {
-    selectedMethod.value = endpointDetail.value.interfaces[0].method;
-  }
+onUnmounted(async () => {
+  await store.dispatch('Endpoint/removeUnSavedMethods')
 })
 
 // 是否折叠,默认展开
@@ -119,7 +117,14 @@ watch(() => {
   return selectedMethod.value
 }, (newVal, oldVal) => {
   console.log('selectedMethod', selectedMethod.value)
-
+  if (!newVal) {
+    if (endpointDetail.value?.interfaces?.length) {
+      selectedMethod.value = endpointDetail.value?.interfaces[0].method;
+    } else {
+      selectedMethod.value = 'GET';
+    }
+    return;
+  }
   selectedMethodDetail.value = interfaceMethodToObjMap.value[newVal];
   if (selectedMethodDetail.value) {
     store.commit('Endpoint/setSelectedMethodDetail', selectedMethodDetail.value);

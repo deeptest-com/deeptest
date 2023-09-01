@@ -72,13 +72,12 @@ func (r *ScenarioReportRepo) CombineUserName(data []*model.ScenarioReport) {
 
 	for _, v := range data {
 		if name, ok := userIdNameMap[v.CreateUserId]; ok {
-			v.CreateUserName = name
+			v.ExecUserName = name
 		}
 	}
 }
 
 func (r *ScenarioReportRepo) Get(id uint) (report model.ScenarioReport, err error) {
-
 	err = r.DB.Where("id = ?", id).First(&report).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())

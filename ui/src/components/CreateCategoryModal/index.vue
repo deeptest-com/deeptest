@@ -23,20 +23,7 @@
 <script lang="ts" setup>
 import { ref, defineProps, defineEmits, watch} from 'vue';
 
-const props = defineProps({
-  visible: {
-    required: true,
-    type: Boolean,
-  },
-  nodeInfo: {
-    required: true,
-  },
-  mode: {
-    required: true,
-    type: String,
-  }
-})
-
+const props = defineProps(['visible', 'nodeInfo', 'mode']);
 const emit = defineEmits(['ok', 'cancel']);
 
 const tagFormRef = ref();

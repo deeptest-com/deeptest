@@ -11,6 +11,7 @@ type Endpoint struct {
 	Path         string              `json:"path"`
 	Version      string              `json:"version"`
 	CreateUser   string              `json:"createUser"`
+	UpdateUser   string              `json:"updateUser"`
 	Status       int64               `json:"status"`
 	CategoryId   int64               `json:"categoryId"`
 	PathParams   []EndpointPathParam `gorm:"-" json:"pathParams"`
@@ -23,6 +24,7 @@ type Endpoint struct {
 	Curl         string              `gorm:"-" json:"curl"`
 	SourceType   consts.SourceType   `json:"sourceType"`
 	Maintainer   string              `gorm:"-" json:"maintainer"`
+	Methods      []consts.HttpMethod `gorm:"-" json:"methods"`
 }
 
 func (Endpoint) TableName() string {

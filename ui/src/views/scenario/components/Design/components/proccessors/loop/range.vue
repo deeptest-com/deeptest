@@ -1,5 +1,7 @@
+<!-- ::::迭代区间 -->
 <template>
-  <div class="processor_loop_range-main">
+  <div class="processor_loop_range-main dp-processors-container">
+    <ProcessorHeader/>
     <a-card :bordered="false">
       <div>
         <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
@@ -21,13 +23,18 @@
             <a-switch v-model:checked="modelRef.isRand" />
           </a-form-item>
 
-          <a-form-item label="备注" v-bind="validateInfos.comments">
-            <a-input v-model:value="modelRef.comments"/>
+          <a-form-item label="跳出条件" name="breakIfExpression">
+            <a-input  v-model:value="modelRef.breakIfExpression"/>
+            <div class="dp-input-tip">{{t('tips_expression_bool', {name: '{name}', number: '{+number}'})}}</div>
           </a-form-item>
 
-          <a-form-item :wrapper-col="{ span: 16, offset: 2 }">
+          <a-form-item label="备注" v-bind="validateInfos.comments">
+            <a-textarea v-model:value="modelRef.comments" :rows="3"/>
+          </a-form-item>
+
+          <a-form-item class="processor-btn" :wrapper-col="{ span: 16, offset: 4 }">
             <a-button type="primary" @click.prevent="submitForm">保存</a-button>
-            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>
+<!--            <a-button style="margin-left: 10px" @click="resetFields">重置</a-button>-->
           </a-form-item>
         </a-form>
       </div>
@@ -42,8 +49,10 @@ import {useStore} from "vuex";
 import {useI18n} from "vue-i18n";
 import {Form, message, notification} from 'ant-design-vue';
 import {StateType as ScenarioStateType} from "../../../../../store";
-import {EditOutlined, CheckOutlined, CloseOutlined} from "@ant-design/icons-vue";
+import ProcessorHeader from '../../common/ProcessorHeader.vue';
 import {NotificationKeyCommon} from "@/utils/const";
+import debounce from "lodash.debounce";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const useForm = Form.useForm;
 
@@ -63,31 +72,24 @@ const rulesRef = reactive({
 });
 
 const store = useStore<{ Scenario: ScenarioStateType; }>();
-const modelRef = computed<boolean>(() => store.state.Scenario.nodeData);
+const modelRef:any = computed<boolean>(() => store.state.Scenario.nodeData);
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
 
-const submitForm = async () => {
+const submitForm = debounce(async () => {
   validate()
       .then(() => {
         modelRef.value.step = modelRef.value.step + ''
         store.dispatch('Scenario/saveProcessor', modelRef.value).then((res) => {
           if (res === true) {
-            notification.success({
-              key: NotificationKeyCommon,
-              message: `保存成功`,
-            });
+            notifySuccess(`保存成功`);
           } else {
-            notification.error({
-              key: NotificationKeyCommon,
-              message: `保存失败`,
-            });
+            notifyError(`保存失败`);
           }
         })
       })
-};
+}, 300);
 
 onMounted(() => {
-  console.log('onMounted')
   if (!modelRef.value.step) modelRef.value.step = 1
 })
 

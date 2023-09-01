@@ -1,6 +1,6 @@
 <template>
-  <div class="tree-container">
-    <div class="tree-con">
+  <div class="dp-enpoint-tree-main">
+    <div class="dp-tree-container">
       <div class="tag-filter-form">
         <a-input-search
             class="search-input"
@@ -10,12 +10,13 @@
           <PlusOutlined style="font-size: 16px;"/>
         </div>
       </div>
-      <div style="margin: 0 8px 16px 8px;">
+      <div class="tree-content" style="margin: 0 8px 16px 8px;">
         <a-tree
             class="deeptest-tree"
             draggable
             blockNode
             showIcon
+            :selectedKeys="selectedKeys"
             :expandedKeys="expandedKeys"
             :auto-expand-parent="autoExpandParent"
             @drop="onDrop"
@@ -69,15 +70,16 @@
 <script setup lang="ts">
 import {
   computed, ref, onMounted,
-  watch, defineEmits, defineProps, createVNode
+  watch, defineEmits, defineProps, createVNode, nextTick
 } from 'vue';
+import { useRouter } from 'vue-router';
 import {
   PlusOutlined,
   CaretDownOutlined,
   MoreOutlined,
   ExclamationCircleOutlined
 } from '@ant-design/icons-vue';
-import {message, Modal} from 'ant-design-vue';
+import {message, Modal, notification} from 'ant-design-vue';
 import CreateCategoryModal from '@/components/CreateCategoryModal/index.vue';
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
@@ -87,7 +89,10 @@ import {setSelectedKey} from "@/utils/cache";
 import {filterTree} from "@/utils/tree";
 import {getCache} from "@/utils/localCache";
 import settings from "@/config/settings";
+import { getUrlKey } from '@/utils/url';
+import {notifyError, notifySuccess, notifyWarn} from "@/utils/notify";
 
+const router = useRouter();
 const store = useStore<{ Endpoint: EndpointStateType, ProjectGlobal: ProjectStateType }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
@@ -102,6 +107,9 @@ const props = defineProps({
 const searchValue = ref('');
 const expandedKeys = ref<number[]>([]);
 const autoExpandParent = ref<boolean>(false);
+let selectedKeys = ref<number[]>([]);
+const emit = defineEmits(['select']);
+const treeItemRef = ref({});
 const treeData: any = computed(() => {
   const data = treeDataCategory.value;
   if(!data?.[0]?.id){
@@ -135,20 +143,50 @@ const treeData: any = computed(() => {
   }
 
   const ret = data?.[0]?.children || null;
-  console.log('category treeData', ret)
 
   return ret
+});
+
+function handleFindSearch() {
+  const result = getUrlKey('shareInfo', window.location.href) || "";
+  const shareInfo = result ? JSON.parse(result  as string) : {};
+  console.log(
+  '%c 接口定义 分享详情share-info',
+  'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: green;',
+  shareInfo
+  );
+  if (shareInfo.selectedCategoryId) {
+    selectedKeys.value.push(shareInfo.selectedCategoryId);
+    setSelectedKey('category-endpoint', currProject.value.id, selectedKeys.value[0]);
+    setTimeout(() => {
+      if (document.getElementsByClassName('ant-tree-treenode-selected').length > 0) {
+        document.getElementsByClassName('ant-tree-treenode-selected')[0].scrollIntoView({
+          behavior: 'auto',
+          block: 'center',
+          inline: 'center',
+        });
+      }
+    }, 1000);
+  }
+}
+
+onMounted(async () => {
+  await loadCategories();
 });
 
 async function loadCategories() {
   await store.dispatch('Endpoint/loadCategory');
   expandAll();
+  await nextTick();
+  handleFindSearch();
 }
 
 watch(() => {
   return currProject.value;
-}, async (newVal) => {
-  if (newVal?.id) {
+}, async (newVal, oldVal) => {
+  if (newVal?.id && oldVal?.id) { // 初始化 旧值为undefined 不需要重复调用loadCategories
+    selectedKeys.value = [];
+    expandedKeys.value = [];
     await loadCategories();
   }
 }, {
@@ -166,7 +204,7 @@ const onExpand = (keys: number[]) => {
 };
 
 // 展开所有
-function expandAll() {
+async function expandAll() {
   const keys: any = [];
   const data = treeDataCategory.value;
 
@@ -185,8 +223,7 @@ function expandAll() {
   expandedKeys.value = keys;
 }
 
-let selectedKeys = ref<number[]>([]);
-const emit = defineEmits(['select']);
+
 
 function selectTreeItem(keys, e) {
   selectedKeys.value = keys;
@@ -217,9 +254,9 @@ async function deleteCategorie(node) {
         projectId: await getCache(settings.currProjectId)
       });
       if (res) {
-        message.success('删除成功');
+        notifySuccess('删除成功');
       } else {
-        message.success('删除失败');
+        notifyError('删除失败');
       }
     },
     onCancel() {
@@ -257,9 +294,9 @@ async function handleTagModalOk(obj) {
     });
     if (res?.code === 0) {
       createTagModalVisible.value = false;
-      message.success('修改分类成功');
+      notifySuccess('修改分类成功');
     } else {
-      message.error('修改分类失败，请重试~');
+      notifyError('修改分类失败，请重试~');
     }
   }
   // 新建
@@ -275,9 +312,9 @@ async function handleTagModalOk(obj) {
     });
     if (res?.code === 0) {
       createTagModalVisible.value = false;
-      message.success('新建分类成功');
+      notifySuccess('新建分类成功');
     } else {
-      message.error('修改分类失败，请重试~');
+      notifyError('修改分类失败，请重试~');
     }
   }
 }
@@ -294,11 +331,11 @@ async function onDrop(info: DropEvent) {
   const dropPosition = info.dropPosition - Number(pos[pos.length - 1]);
   // 未分类不让移动
   if (dragKey === -1) {
-    message.warning('未分类不能移动');
+    notifyWarn('未分类不能移动');
     return;
   }
   if (dropKey === -1) {
-    message.warning('其他分类不能移动到未分类下');
+    notifyWarn('其他分类不能移动到未分类下');
     return;
   }
   const res = await store.dispatch('Endpoint/moveCategoryNode', {
@@ -312,16 +349,11 @@ async function onDrop(info: DropEvent) {
     if (dropPosition === 0) {
       expandedKeys.value = [...new Set([...expandedKeys.value, dropKey])];
     }
-    message.success('移动成功');
+    notifySuccess('移动成功');
   } else {
-    message.error('移动失败');
+    notifyError('移动失败');
   }
 }
-
-onMounted(async () => {
-  await loadCategories();
-  expandAll();
-})
 
 </script>
 

@@ -2,18 +2,25 @@
   <a-spin :spinning="spinning">
   <div class="diagnose-interface-design-main">
       <div id="diagnose-interface-debug-panel">
-        <a-tabs class="dp-tabs-full-height" type="editable-card"
-                :hideAdd="true"
-                v-if="interfaceTabs?.length"
-                :activeKey="activeTabKey"
-                @edit="onTabEdit"
-                @change="changeTab">
-          <a-tab-pane v-for="tab in interfaceTabs"
-                      :key="''+tab.id" :tab="getTitle(tab.title)"
-                      class="dp-relative">
+        <a-tabs
+          class="dp-tabs-full-height"
+          type="editable-card"
+          :hideAdd="true"
+          :closable="true"
+          v-if="interfaceTabs?.length"
+          :activeKey="activeTabKey"
+          @edit="onTabEdit"
+          @change="changeTab">
+          <a-tab-pane
+            v-for="tab in interfaceTabs"
+            :title="tab.title"
+            :key="''+tab.id"
+            class="dp-relative">
+            <template #tab>
+              <span :title="tab.title">{{ getTitle(tab.title) }}</span>
+            </template>
             <template v-if="debugData?.method" >
-              <DebugComp :topVal="'-40px'"
-                         :onSaveDebugData="saveDiagnoseInterface"
+              <DebugComp :onSaveDebugData="saveDiagnoseInterface"
                          :baseUrlDisabled="false" />
             </template>
           </a-tab-pane>
@@ -48,6 +55,7 @@ import openModal from "@/components/OpenModal/modal";
 import {StateType as Debug} from "@/views/component/debug/store";
 import ConfirmSave from "@/components/ConfirmSave/index.vue";
 import {confirmToSave} from "@/utils/confirm";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 provide('usedBy', UsedBy.DiagnoseDebug)
 
@@ -55,7 +63,6 @@ const store = useStore<{ Debug: Debug, DiagnoseInterface: DiagnoseInterfaceState
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
 const debugData = computed<any>(() => store.state.Debug.debugData);
-const debugDataChanged = computed<any>(() => store.state.Debug.debugDataChanged);
 
 const interfaceId = computed<any>(() => store.state.DiagnoseInterface.interfaceId);
 const interfaceData = computed<any>(() => store.state.DiagnoseInterface.interfaceData);
@@ -114,16 +121,10 @@ const saveDiagnoseInterface = async (e) => {
     const res = await store.dispatch('DiagnoseInterface/saveDiagnoseDebugData', data).finally(()=> store.commit("Global/setSpinning",false))
 
   if (res === true) {
-      notification.success({
-        key: NotificationKeyCommon,
-        message: `保存成功`,
-      });
-    } else {
-      notification.success({
-        key: NotificationKeyCommon,
-        message: `保存失败`,
-      });
-    }
+    notifySuccess(`保存成功`);
+  } else {
+    notifyError(`保存失败`);
+  }
   store.commit("Global/setSpinning",false)
 }
 

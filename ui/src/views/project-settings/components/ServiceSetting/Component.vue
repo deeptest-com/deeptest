@@ -25,6 +25,9 @@
                     onShowSizeChange:  (pageNum, pageSize) => {
                      changePage(pageNum,pageSize);
                     },
+                    showTotal: (total) => {
+                       return `共 ${total} 条数据`;
+                    },
                    }"
                  :data-source="dataSource"
                  :columns="schemaColumns" :rowKey="(_record, index) => index">
@@ -120,7 +123,7 @@ import SchemaEditor from '@/components/SchemaEditor/index.vue';
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import CustomForm from '../common/CustomForm.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-import EmptyCom from '@/components/Empty/index.vue';
+import EmptyCom from '@/components/TableEmpty/index.vue';
 import {MonacoOptions} from '@/utils/const';
 import {schemaColumns} from '../../config';
 import {StateType as ProjectSettingStateType} from '../../store';

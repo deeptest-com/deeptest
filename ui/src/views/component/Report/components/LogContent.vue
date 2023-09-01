@@ -2,7 +2,9 @@
   <div class="log-content" v-if="detailList.length">
     <div class="log-content-content">
       <a-descriptions bordered :size="'small'"  >
-        <a-descriptions-item  v-for="detail in detailList" :key="detail.label" :label="detail.label">{{detail.value}}</a-descriptions-item>
+        <a-descriptions-item  v-for="detail in detailList" :key="detail.label" :label="detail.label">
+          {{detail.value}}
+        </a-descriptions-item>
       </a-descriptions>
     </div>
 
@@ -21,22 +23,6 @@
 import {defineProps, h, defineEmits, computed, toRefs, ref} from 'vue';
 import LogContentDrawer from './LogContentDrawer/index.vue';
 import {RightOutlined, LoadingOutlined, ExclamationCircleOutlined, CheckCircleOutlined} from '@ant-design/icons-vue';
-import {responseCodes} from '@/config/constant';
-import {formatWithSeconds} from '@/utils/datetime';
-
-enum StatusMap {
-  'pass' = '通过',
-  'expires' = '过期',
-  'fail' = '失败'
-}
-
-enum ClassMap {
-  'pass' = 'endpoint-success',
-  'expires' = 'endpoint-expires',
-  'fail' = 'endpoint-error',
-  'loading' = 'endpoint-loading'
-}
-
 const props = defineProps({
   data: {
     type: Object,
@@ -58,8 +44,6 @@ const detailList = computed(() => {
   return list;
 })
 
-
-const logDetail:any = ref(null);
 const visible = ref(false);
 
 function showLogDetail() {

@@ -16,7 +16,7 @@
              @mouseout="mouseLeave"
              class="history dp-link">
           <div class="left">
-            <span @click="getRequestAsInterface(item.id)" title="点击加载历史请求数据">{{item.name}}</span>
+            <span @click="getInvocationAsInterface(item)" title="点击加载历史请求数据">{{item.name}}</span>
           </div>
           <div class="right">
             <span @click="removeHistory(item.id)" class="link"><DeleteOutlined /></span>
@@ -39,6 +39,7 @@ const {t} = useI18n();
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import {getRightTabPanelPosition} from "@/utils/dom";
+import {confirmToDelete, confirmToDo} from "@/utils/confirm";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -55,8 +56,11 @@ const props = defineProps({
 store.dispatch('Debug/listInvocation')
 store.dispatch('Debug/getLastInvocationResp')
 
-const getRequestAsInterface = (id) => {
-  store.dispatch('Debug/getInvocationAsInterface', id)
+const getInvocationAsInterface = (item) => {
+  console.log('getInvocationAsInterface')
+  confirmToDo(`确定回滚到历史状态"${item.name}"？`, '', () => {
+    store.dispatch('Debug/getInvocationAsInterface', item.id)
+  })
 }
 
 const removeHistory = (id) => {

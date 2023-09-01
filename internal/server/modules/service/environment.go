@@ -164,6 +164,14 @@ func (s *EnvironmentService) Clone(id uint) (environment *model.Environment, err
 	}
 	environment.ID = 0
 	environment.Name = environment.Name + "_copy"
+
+	for key, _ := range environment.ServeServers {
+		environment.ServeServers[key].ID = 0
+	}
+	for key, _ := range environment.Vars {
+		environment.Vars[key].ID = 0
+	}
+
 	err = s.EnvironmentRepo.SaveEnvironment(environment)
 	return
 }

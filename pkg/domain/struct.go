@@ -28,8 +28,11 @@ func (r *PaginateReq) ConvertParams() {
 }
 
 type Response struct {
-	Code int64       `json:"code"`
-	Msg  string      `json:"msg"`
+	Code int64 `json:"code"`
+
+	Msg    string `json:"msg"`
+	MsgKey string `json:"msgKey"` // show i118 msg on client side
+
 	Data interface{} `json:"data"`
 }
 type PageData struct {

@@ -27,6 +27,9 @@
             pagination.pageSize = size;
             getList(page);
           },
+          showTotal: (total) => {
+            return `共 ${total} 条数据`;
+          },
         }"
       >
         <template #role_ids="{ record }">
@@ -95,6 +98,7 @@ import { useRouter } from "vue-router";
 import EditPage from "../../edit/edit.vue";
 import { defineProps } from 'vue'
 import {SelectTypes} from "ant-design-vue/lib/select";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const props = defineProps(['isAdmin'])
 
@@ -225,15 +229,9 @@ const remove = (id: number) => {
       store.dispatch("UserInternal/removeUser", id).then((res) => {
         console.log("res", res);
         if (res === true) {
-          notification.success({
-            key: NotificationKeyCommon,
-            message: `删除成功`,
-          });
+          notifySuccess(`删除成功`);
         } else {
-          notification.error({
-            key: NotificationKeyCommon,
-            message: `删除失败`,
-          });
+          notifyError(`删除失败`);
         }
       });
     },

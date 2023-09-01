@@ -13,9 +13,10 @@ import (
 )
 
 type PlanService struct {
-	PlanRepo       *repo.PlanRepo       `inject:""`
-	PlanReportRepo *repo.PlanReportRepo `inject:""`
-	UserRepo       *repo.UserRepo       `inject:""`
+	PlanRepo        *repo.PlanRepo        `inject:""`
+	PlanReportRepo  *repo.PlanReportRepo  `inject:""`
+	UserRepo        *repo.UserRepo        `inject:""`
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 }
 
 func (s *PlanService) Paginate(req v1.PlanReqPaginate, projectId int) (ret _domain.PageData, err error) {
@@ -36,6 +37,7 @@ func (s *PlanService) GetById(id uint, detail bool) (ret v1.PlanAndReportDetail,
 	}
 	userIds = append(userIds, plan.AdminId)
 	userIds = append(userIds, plan.UpdateUserId)
+	userIds = append(userIds, plan.CreateUserId)
 
 	lastPlanReport, err := s.PlanReportRepo.GetLastByPlanId(id)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -68,10 +70,14 @@ func (s *PlanService) GetById(id uint, detail bool) (ret v1.PlanAndReportDetail,
 	if updateUserName, ok := userIdNameMap[plan.UpdateUserId]; ok {
 		ret.UpdateUserName = updateUserName
 	}
+	if createUserName, ok := userIdNameMap[plan.CreateUserId]; ok {
+		ret.CreateUserName = createUserName
+	}
 	ret.Id = plan.ID
 	ret.CreatedAt = plan.CreatedAt
 	ret.UpdatedAt = plan.UpdatedAt
 	ret.Status = plan.Status
+	ret.CurrEnvId = plan.CurrEnvId
 	ret.TestPassRate = testPassRate
 	ret.ExecTimes = planExecTimes
 	if lastPlanReport.ID != 0 {
@@ -79,8 +85,11 @@ func (s *PlanService) GetById(id uint, detail bool) (ret v1.PlanAndReportDetail,
 			ret.ExecutorName = executorName
 		}
 		ret.ExecTime = lastPlanReport.CreatedAt
-		//TODO
-		//ret.ExecEnv = lastPlanReport.ExecEnv
+
+		environment, _ := s.EnvironmentRepo.Get(lastPlanReport.ExecEnvId)
+		if environment.ID != 0 {
+			ret.ExecEnv = environment.Name
+		}
 	}
 
 	//if detail {
@@ -144,7 +153,8 @@ func (s *PlanService) Clone(id, userId uint) (ret model.Plan, err error) {
 
 	plan.ID = 0
 	plan.Name = plan.Name + "-COPY"
-	plan.UpdateUserId = userId
+	plan.CreateUserId = userId
+	plan.UpdateUserId = 0
 	now := time.Now()
 	plan.CreatedAt = &now
 	plan, bizErr := s.PlanRepo.Create(plan)

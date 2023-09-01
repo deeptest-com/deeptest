@@ -8,6 +8,9 @@ import (
 )
 
 func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
+	agentExec.ResetStat()
+	agentExec.ForceStopExec = false
+
 	agentExec.ServerUrl = req.ServerUrl
 	agentExec.ServerToken = req.Token
 
@@ -29,10 +32,11 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	execUtils.SendInitializeMsg(normalData, wsMsg)
 
 	// execution
-	var results = agentDomain.PlanExecResult{
+	var result = agentDomain.PlanExecResult{
 		EnvironmentId: req.EnvironmentId,
 		ID:            req.PlanId,
 	}
+
 	for _, scenario := range planExecObj.Scenarios {
 		session, _ := ExecScenario(&scenario, wsMsg)
 		scenarioReport, _ := SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,
@@ -40,12 +44,13 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 		session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 
 		session.RootProcessor.Result.ScenarioReportId = uint(scenarioReport.ID)
-		results.Scenarios = append(results.Scenarios, session.RootProcessor.Result)
+		result.Scenarios = append(result.Scenarios, session.RootProcessor.Result)
 		execUtils.SendResultMsg(scenarioReport, session.WsMsg)
 	}
 
 	// submit result
-	report, _ := SubmitPlanResult(results, req.PlanId, req.ServerUrl, req.Token)
+	result.Stat = agentExec.Stat
+	report, _ := SubmitPlanResult(result, req.PlanId, req.ServerUrl, req.Token)
 	execUtils.SendResultMsg(report, wsMsg)
 	//sendPlanSubmitResult(req.PlanId, wsMsg)
 

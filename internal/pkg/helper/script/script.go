@@ -87,6 +87,13 @@ func GetScript(name ScriptType) string {
 	return ""
 }
 
+func GetModule(name string) (ret string) {
+	bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "module", name))
+	ret = string(bytes)
+
+	return
+}
+
 func GenResultMsg(po *domain.ScriptBase) {
 	name := "脚本"
 	if po.ConditionSrc == consts.ConditionSrcPre {

@@ -1,5 +1,5 @@
 <template>
-  <ContentPane :containerStyle="{padding:0,margin:0}">
+  <ContentPane :showExpand="Object.keys(selectedNode || {}).length" :containerStyle="{padding:0,margin:0}">
     <template #left>
       <ScenarioTree/>
     </template>
@@ -23,9 +23,17 @@ import ContentPane from '@/views/component/ContentPane/index.vue';
 
 const router = useRouter();
 const store = useStore<{ Scenario: ScenarioStateType; Global: GlobalStateType; }>();
+const selectedNode = computed<any>(()=> store.state.Scenario.nodeData);
 
 onMounted(() => {
   store.dispatch('Scenario/getNode', null)
 })
 
+watch(() => {
+  return selectedNode.value;
+}, val => {
+  console.log(val);
+}, {
+  immediate: true
+})
 </script>

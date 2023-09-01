@@ -9,7 +9,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: dp-ubuntu
 
     steps:
     - uses: actions/checkout@v3
@@ -22,6 +22,9 @@ jobs:
 
     - name: make agent
       run: make compile_agent_linux
+
+    - name: make agent
+      run: make compile_ui
       
     - name: ssh deploy
       uses: easingthemes/ssh-deploy@v4.1.8

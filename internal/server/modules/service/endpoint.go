@@ -273,16 +273,22 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 	for _, component := range components {
 		component.ServeId = int64(req.ServeId)
 		component.SourceType = consts.Swagger
+
+		res, err := s.ServeRepo.GetComponentByItem(consts.Swagger, uint(component.ServeId), component.Ref)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			continue
+		}
+
 		if req.DataSyncType == consts.FullCover {
-			_, err := s.ServeRepo.GetComponentByItem(consts.Swagger, uint(component.ServeId), component.Ref)
+			if err == nil {
+				component.ID = res.ID
+			}
+		} else if req.DataSyncType == consts.AutoAdd {
 			if err == nil {
 				continue
 			}
-			//非Notfound
-			if err != nil && err != gorm.ErrRecordNotFound {
-				continue
-			}
 		}
+
 		newComponents = append(newComponents, component)
 	}
 

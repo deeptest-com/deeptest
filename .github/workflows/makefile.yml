@@ -7,7 +7,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: dp-ubt
     defaults:
       run:
@@ -25,12 +25,6 @@ jobs:
     - name: make ui
       run: make compile_ui_demo
 
-  deploy:
-    runs-on: dp-ubt
-    defaults:
-      run:
-        working-directory: /home/lighthouse/rd/project/deeptest
-    steps:
     - name: copy files
       run:  | 
         cp -f bin/linux/deeptest-server /home/lighthouse/rd/server/deeptest

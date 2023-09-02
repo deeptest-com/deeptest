@@ -1,4 +1,4 @@
-name: make server and agent
+name: demo site deploy
 
 on:
   workflow_dispatch

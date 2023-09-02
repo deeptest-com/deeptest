@@ -15,6 +15,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
+	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
@@ -149,10 +150,11 @@ func (webServer *WebServer) AddModule(module ...module.WebModule) {
 
 // AddWebUi 添加前端页面访问
 func (webServer *WebServer) AddWebUi() {
-	dir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), "ui", "dist"))
-	logUtils.Infof("*** ui dir: %s", dir)
+	pth := filepath.Join(dir.GetCurrentAbPath(), "ui", "dist")
+	fileUtils.MkDirIfNeeded(pth)
+	logUtils.Infof("*** ui dir: %s", pth)
 
-	webServer.app.HandleDir("/", dir, iris.DirOptions{
+	webServer.app.HandleDir("/", iris.Dir(pth), iris.DirOptions{
 		IndexName: "index.html",
 		ShowList:  false,
 		SPA:       true,
@@ -161,18 +163,20 @@ func (webServer *WebServer) AddWebUi() {
 
 // AddUpload 添加上传文件访问
 func (webServer *WebServer) AddUpload() {
-	dir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), consts.DirUpload))
-	logUtils.Infof("*** upload dir: %s", dir)
+	pth := filepath.Join(dir.GetCurrentAbPath(), consts.DirUpload)
+	fileUtils.MkDirIfNeeded(pth)
+	logUtils.Infof("*** upload dir: %s", pth)
 
-	webServer.app.HandleDir("/upload", dir)
+	webServer.app.HandleDir("/upload", iris.Dir(pth))
 }
 
 // AddTest 添加测试文件访问
 func (webServer *WebServer) AddTest() {
-	dir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test")))
-	logUtils.Infof("*** test dir: %s", dir)
+	pth := filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test"))
+	fileUtils.MkDirIfNeeded(pth)
+	logUtils.Infof("*** test dir: %s", pth)
 
-	webServer.app.HandleDir("/test", dir)
+	webServer.app.HandleDir("/test", iris.Dir(pth))
 }
 
 func (webServer *WebServer) AddSwagger() {

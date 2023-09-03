@@ -39,7 +39,7 @@ jobs:
         ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs --no-run-if-empty kill -9
         cd /home/lighthouse/rd/server/deeptest
         RUNNER_TRACKING_ID="" && nohup ./deeptest-server > server.log 2>&1 &
-        RUNNER_TRACKING_ID="" DemoTestSite=http://111.231.16.35:9000/get && nohup ./deeptest-agent > agent.log 2>&1 &
+        RUNNER_TRACKING_ID="" DemoTestSite=http://111.231.16.35:9000 && nohup ./deeptest-agent > agent.log 2>&1 &
 
     # - uses: actions/checkout@v3
     # - name: install dependencies

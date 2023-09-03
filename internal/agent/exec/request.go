@@ -16,6 +16,7 @@ func Invoke(req *domain.BaseRequest) (resp domain.DebugResponse, err error) {
 
 	if DemoTestSite != "" {
 		req.Url = _httpUtils.AddSepIfNeeded(DemoTestSite) + strings.ToLower(req.Method.String())
+
 		notes := fmt.Sprintf("We change request url to %s on demo site.", req.Url)
 		req.QueryParams = append(req.QueryParams, domain.Param{
 			Name:  "notes",
@@ -96,7 +97,7 @@ func GetContentProps(resp *domain.DebugResponse) {
 		}
 	}
 
-	//ret.NodeContentReplaceVariables = mockHelper.FormatXml(ret.NodeContent)
+	//resp.Content = mockHelper.FormatXml(resp.Content)
 
 	return
 }

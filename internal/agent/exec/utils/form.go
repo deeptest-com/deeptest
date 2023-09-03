@@ -64,17 +64,17 @@ func (w *TFormDataWriter) writeCustomText(formKey, formValue, formType, formFile
 
 	h := make(textproto.MIMEHeader)
 
-	// text doesn't have NodeContent-Type by default
+	// text doesn't have Content-Type by default
 	if formType != "" {
-		h.Set("NodeContent-Type", formType)
+		h.Set("Content-Type", formType)
 	}
 
-	// text doesn't have filename in NodeContent-Disposition by default
+	// text doesn't have filename in Content-Disposition by default
 	if formFileName == "" {
-		h.Set("NodeContent-Disposition",
+		h.Set("Content-Disposition",
 			fmt.Sprintf(`form-data; name="%s"`, escapeQuotes(formKey)))
 	} else {
-		h.Set("NodeContent-Disposition",
+		h.Set("Content-Disposition",
 			fmt.Sprintf(`form-data; name="%s"; filename="%s"`,
 				escapeQuotes(formKey), escapeQuotes(formFileName)))
 	}
@@ -110,8 +110,8 @@ func (w *TFormDataWriter) writeCustomFile(formKey, formValue, formType, formFile
 		formFileName = filepath.Base(formValue)
 	}
 	h := make(textproto.MIMEHeader)
-	h.Set("NodeContent-Type", formType)
-	h.Set("NodeContent-Disposition",
+	h.Set("Content-Type", formType)
+	h.Set("Content-Disposition",
 		fmt.Sprintf(`form-data; name="%s"; filename="%s"`,
 			escapeQuotes(formKey), escapeQuotes(formFileName)))
 

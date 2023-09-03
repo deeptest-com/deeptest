@@ -1,9 +1,11 @@
 package agentExec
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"strings"
 )
@@ -13,6 +15,14 @@ func Invoke(req *domain.BaseRequest) (resp domain.DebugResponse, err error) {
 
 	if DemoTestSite != "" {
 		req.Url = DemoTestSite
+		req.Method = consts.GET
+
+		notes := fmt.Sprintf("we change request to %s %s on demo site.", req.Method, req.Url)
+		req.QueryParams = append(req.QueryParams, domain.Param{
+			Name:  "notes",
+			Value: notes,
+		})
+		_logUtils.Infof(notes)
 	}
 
 	if req.Method == consts.GET {

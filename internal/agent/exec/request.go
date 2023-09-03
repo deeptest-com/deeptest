@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"path"
 	"strings"
 )
 
@@ -14,10 +15,8 @@ func Invoke(req *domain.BaseRequest) (resp domain.DebugResponse, err error) {
 	GetRequestProps(req)
 
 	if DemoTestSite != "" {
-		req.Url = DemoTestSite
-		req.Method = consts.GET
-
-		notes := fmt.Sprintf("we change request to %s %s on demo site.", req.Method, req.Url)
+		req.Url = path.Join(DemoTestSite, strings.ToLower(req.Method.String()))
+		notes := fmt.Sprintf("We change request to %s on demo site.", req.Url)
 		req.QueryParams = append(req.QueryParams, domain.Param{
 			Name:  "notes",
 			Value: notes,

@@ -18,11 +18,12 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"sync"
 )
 
 type MockService struct {
 	IsInit            bool
-	endpointRouterMap map[uint]routers.Router // maintain router for each endpoint in a map
+	endpointRouterMap sync.Map // maintain router for each endpoint in a map
 
 	generator mockGenerator.ResponseGenerator
 	responder mockResponder.Responder
@@ -91,8 +92,6 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockR
 }
 
 func (s *MockService) initMockGenerator() (err error) {
-	s.endpointRouterMap = map[uint]routers.Router{}
-
 	options := mockData.Options{
 		//UseExamples:     config.UseExamples,
 		//NullProbability: config.NullProbability,
@@ -112,7 +111,8 @@ func (s *MockService) initMockGenerator() (err error) {
 }
 
 func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
-	if s.endpointRouterMap[endpointId] != nil {
+	endpointRouter, ok := s.getRouterFromMap(endpointId)
+	if ok && endpointRouter != nil {
 		return
 	}
 
@@ -148,7 +148,7 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 		return
 	}
 
-	s.endpointRouterMap[endpointId] = ret
+	s.endpointRouterMap.Store(endpointId, ret)
 
 	return
 }
@@ -169,12 +169,22 @@ func (s *MockService) GetEndpointInterface(req *MockRequest) (ret model.Endpoint
 
 func (s *MockService) findRequestRoute(httpRequest http.Request, endpointId uint) (requestRoute *routers.Route, pathParameters map[string]string, err error) {
 	// find matched requestRoute
-	endpointRouter, ok := s.endpointRouterMap[endpointId]
+	endpointRouter, ok := s.getRouterFromMap(endpointId)
 	if !ok {
 		return
 	}
 
 	requestRoute, pathParameters, err = endpointRouter.FindRoute(&httpRequest)
+
+	return
+}
+
+func (s *MockService) getRouterFromMap(key uint) (ret routers.Router, ok bool) {
+	obj, ok := s.endpointRouterMap.Load(key)
+
+	if ok {
+		ret = obj.(routers.Router)
+	}
 
 	return
 }

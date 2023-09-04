@@ -257,5 +257,6 @@ func (webServer *WebServer) InjectModule() {
 		logrus.Fatalf("populate the incomplete Objects: %v", err)
 	}
 
-	webServer.AddModule(indexModule.ApiParty(), indexModule.MockParty())
+	webServer.AddModule(indexModule.ApiParty())
+	webServer.AddModule(indexModule.MockParty())
 }

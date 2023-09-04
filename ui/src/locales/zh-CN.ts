@@ -33,6 +33,7 @@ export default {
     'projectSetting.enviroment': '环境管理',
     'projectSetting.datapool': '数据池',
     'projectSetting.service': '服务管理',
+    'projectSetting.mock': 'Mock设置',
     'projectSetting.swaggerSync': '自动同步',
     'envsetting.var': '全局变量',
     'envsetting.params': '全局参数',

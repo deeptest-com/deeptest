@@ -84,6 +84,13 @@
     "parent":"project-setting"
   },
   {
+    "code":"project-setting-mock",
+    "title":"Mock设置",
+    "path":"/project-setting/mock",
+    "type":"menu",
+    "parent":"project-setting"
+  },
+  {
     "code":"endpoint-add-interface",
     "title":"新建接口",
     "path":"",

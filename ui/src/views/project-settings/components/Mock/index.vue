@@ -17,14 +17,14 @@
       </a-form-item>
 
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-        <a-button type="primary" @click="onSubmit" :disabled="disbaled">保存</a-button>
+        <a-button type="primary" @click="onSubmit" :disabled="disabled">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue';
+import {computed, ref, watch} from 'vue';
 import {useStore} from "vuex";
 import {Form} from 'ant-design-vue';
 import {notifyError, notifySuccess} from "@/utils/notify";
@@ -42,6 +42,11 @@ const rules = {
 };
 
 const {validate, validateInfos} = useForm(modelRef, rules);
+
+const disabled = ref()
+watch(() => modelRef.value, (val) => {
+  disabled.value = false
+}, {immediate: false, deep: true});
 
 const onSubmit = () => {
   validate().then(async () => {

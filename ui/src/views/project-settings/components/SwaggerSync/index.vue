@@ -43,10 +43,10 @@
         <span>所有接口都将同步到该分类目录下</span>
       </a-form-item>
 
-      <a-form-item v-bind="validateInfos.url" label="Swagger URL地址" v-if="formState.switch==1">
+      <a-form-item v-bind="validateInfos.url" label="Swagger URL地址" v-if="formState.switch===1">
         <a-input v-model:value="formState.url" type="textarea" placeholder="请输入Swagger url地址"/>
       </a-form-item>
-      <a-form-item v-bind="validateInfos.cron" v-if="formState.switch==1">
+      <a-form-item v-bind="validateInfos.cron" v-if="formState.switch===1">
         <template v-slot:label>
           Cron表达式
           <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip" style="min-width: 800px">
@@ -72,7 +72,7 @@
         <a-input v-model:value="formState.cron" type="textarea" placeholder="请输入Linux定时任务表达式"/>
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-        <a-button type="primary" @click="onSubmit">保存</a-button>
+        <a-button type="primary" @click="onSubmit" :disabled="!changed">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -135,12 +135,20 @@ function selectedCategory(value) {
 async function loadCategories() {
   await store.dispatch('Endpoint/loadCategory');
 }
+
+const dataLoaded = ref(false)
 onMounted(async () => {
   await loadCategories();
   await store.dispatch('ProjectSetting/getSwaggerSync');
   formState.value.projectId = currProject.value.id
-
+  dataLoaded.value = true
 })
+
+const changed = ref(false)
+watch(() => formState.value, (val) => {
+  if (!dataLoaded.value) return
+  changed.value = true
+}, {immediate: false, deep: true});
 
 watch(() => {
   return currProject.value;

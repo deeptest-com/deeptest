@@ -27,6 +27,7 @@
           :label="categoryLabel"
           :value="endpointDetail?.categoryId"
           :treeData="treeData"
+          :show-search="true"
           @update="handleChangeCategory"/>
     </a-descriptions-item>
     <a-descriptions-item label="创建时间">{{ endpointDetail?.createdAt }}</a-descriptions-item>

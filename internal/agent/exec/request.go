@@ -1,9 +1,12 @@
 package agentExec
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
+	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"strings"
 )
@@ -12,7 +15,14 @@ func Invoke(req *domain.BaseRequest) (resp domain.DebugResponse, err error) {
 	GetRequestProps(req)
 
 	if DemoTestSite != "" {
-		req.Url = DemoTestSite
+		req.Url = _httpUtils.AddSepIfNeeded(DemoTestSite) + strings.ToLower(req.Method.String())
+
+		notes := fmt.Sprintf("We change request url to %s on demo site.", req.Url)
+		req.QueryParams = append(req.QueryParams, domain.Param{
+			Name:  "notes",
+			Value: notes,
+		})
+		_logUtils.Infof(notes)
 	}
 
 	if req.Method == consts.GET {
@@ -87,7 +97,7 @@ func GetContentProps(resp *domain.DebugResponse) {
 		}
 	}
 
-	//ret.NodeContentReplaceVariables = mockHelper.FormatXml(ret.NodeContent)
+	//resp.Content = mockHelper.FormatXml(resp.Content)
 
 	return
 }
@@ -157,7 +167,7 @@ func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	//if usedBy == consts.ScenarioDebug {
 	for _, p := range ExecScene.GlobalParams {
 		if p.In == consts.ParamInHeader {
-			req.QueryParams = append(req.QueryParams, domain.Param{
+			req.Headers = append(req.Headers, domain.Header{
 				Name:  p.Name,
 				Value: p.DefaultValue,
 			})

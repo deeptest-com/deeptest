@@ -173,8 +173,8 @@ func (s *DocumentService) GetDocumentVersionList(projectId uint, needLatest bool
 	return
 }
 
-func (s *DocumentService) Publish(req domain.DocumentVersionReq, projectId uint) (err error) {
-	err = s.EndpointSnapshotRepo.BatchCreateSnapshot(req, projectId)
+func (s *DocumentService) Publish(req domain.DocumentVersionReq, projectId uint) (documentId uint, err error) {
+	documentId, err = s.EndpointSnapshotRepo.BatchCreateSnapshot(req, projectId)
 	return
 }
 

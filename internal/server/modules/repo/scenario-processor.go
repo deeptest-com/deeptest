@@ -65,6 +65,85 @@ func (r *ScenarioProcessorRepo) GetEntity(processorId uint) (ret interface{}, er
 	return
 }
 
+func (r *ScenarioProcessorRepo) CopyEntity(srcProcessorId, distProcessorId uint) (err error) {
+	distProcessor, err := r.Get(distProcessorId)
+	if err != nil {
+		return err
+	}
+	distParentId := distProcessor.ParentId
+
+	entity, err := r.GetEntity(srcProcessorId)
+	if err != nil {
+		return err
+	}
+
+	switch entity.(type) {
+	case model.ProcessorGroup:
+		group := entity.(model.ProcessorGroup)
+		group.ID = 0
+		group.ProcessorID = distProcessorId
+		group.ParentID = distParentId
+		err = r.SaveGroup(&group)
+	case model.ProcessorLogic:
+		logic := entity.(model.ProcessorLogic)
+		logic.ID = 0
+		logic.ProcessorID = distProcessorId
+		logic.ParentID = distParentId
+		err = r.SaveLogic(&logic)
+	case model.ProcessorLoop:
+		loop := entity.(model.ProcessorLoop)
+		loop.ID = 0
+		loop.ProcessorID = distProcessorId
+		loop.ParentID = distParentId
+		err = r.SaveLoop(&loop)
+	case model.ProcessorTimer:
+		timer := entity.(model.ProcessorTimer)
+		timer.ID = 0
+		timer.ProcessorID = distProcessorId
+		timer.ParentID = distParentId
+		err = r.SaveTimer(&timer)
+	case model.ProcessorPrint:
+		printData := entity.(model.ProcessorPrint)
+		printData.ID = 0
+		printData.ProcessorID = distProcessorId
+		printData.ParentID = distParentId
+		err = r.SavePrint(&printData)
+	case model.ProcessorVariable:
+		variable := entity.(model.ProcessorVariable)
+		variable.ID = 0
+		variable.ProcessorID = distProcessorId
+		variable.ParentID = distParentId
+		err = r.SaveVariable(&variable)
+	case model.ProcessorAssertion:
+		assertion := entity.(model.ProcessorAssertion)
+		assertion.ID = 0
+		assertion.ProcessorID = distProcessorId
+		assertion.ParentID = distParentId
+		err = r.SaveAssertion(&assertion)
+	case model.ProcessorData:
+		data := entity.(model.ProcessorData)
+		data.ID = 0
+		data.ProcessorID = distProcessorId
+		data.ParentID = distParentId
+		err = r.SaveData(&data)
+	case model.ProcessorCookie:
+		cookie := entity.(model.ProcessorCookie)
+		cookie.ID = 0
+		cookie.ProcessorID = distProcessorId
+		cookie.ParentID = distParentId
+		err = r.SaveCookie(&cookie)
+	case model.ProcessorCustomCode:
+		customCode := entity.(model.ProcessorCustomCode)
+		customCode.ID = 0
+		customCode.ProcessorID = distProcessorId
+		customCode.ParentID = distParentId
+		err = r.SaveCustomCode(&customCode)
+	default:
+	}
+
+	return
+}
+
 func (r *ScenarioProcessorRepo) UpdateName(id uint, name string) (err error) {
 	err = r.DB.Model(&model.Processor{}).
 		Where("id = ?", id).
@@ -122,6 +201,11 @@ func (r *ScenarioProcessorRepo) GetGroup(processor model.Processor) (ret model.P
 	return
 }
 
+func (r *ScenarioProcessorRepo) GetGroupById(id uint) (ret model.ProcessorGroup, err error) {
+	err = r.DB.Where("id = ?", id).First(&ret).Error
+	return
+}
+
 func (r *ScenarioProcessorRepo) GetLogic(processor model.Processor) (ret model.ProcessorLogic, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
@@ -132,6 +216,12 @@ func (r *ScenarioProcessorRepo) GetLogic(processor model.Processor) (ret model.P
 		ret.Name = processor.Name
 		ret.ParentID = processor.ParentId
 	}
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetLogicById(id uint) (ret model.ProcessorLogic, err error) {
+	err = r.DB.Where("id = ?", id).First(&ret).Error
 
 	return
 }
@@ -150,6 +240,11 @@ func (r *ScenarioProcessorRepo) GetLoop(processor model.Processor) (ret model.Pr
 	return
 }
 
+func (r *ScenarioProcessorRepo) GetLoopById(id uint) (ret model.ProcessorLoop, err error) {
+	err = r.DB.Where("id = ?", id).First(&ret).Error
+	return
+}
+
 func (r *ScenarioProcessorRepo) GetVariable(processor model.Processor) (ret model.ProcessorVariable, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
@@ -161,6 +256,11 @@ func (r *ScenarioProcessorRepo) GetVariable(processor model.Processor) (ret mode
 		ret.ParentID = processor.ParentId
 	}
 
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetVariableById(id uint) (ret model.ProcessorVariable, err error) {
+	err = r.DB.Where("id = ?", id).First(&ret).Error
 	return
 }
 
@@ -178,6 +278,11 @@ func (r *ScenarioProcessorRepo) GetTimer(processor model.Processor) (ret model.P
 	return
 }
 
+func (r *ScenarioProcessorRepo) GetTimerById(id uint) (ret model.ProcessorTimer, err error) {
+	err = r.DB.Where("id = ?", id).First(&ret).Error
+	return
+}
+
 func (r *ScenarioProcessorRepo) GetPrint(processor model.Processor) (ret model.ProcessorPrint, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
@@ -189,6 +294,11 @@ func (r *ScenarioProcessorRepo) GetPrint(processor model.Processor) (ret model.P
 		ret.ParentID = processor.ParentId
 	}
 
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetPrintById(id uint) (ret model.ProcessorPrint, err error) {
+	err = r.DB.Where("id = ?", id).First(&ret).Error
 	return
 }
 
@@ -206,6 +316,11 @@ func (r *ScenarioProcessorRepo) GetCookie(processor model.Processor) (ret model.
 	return
 }
 
+func (r *ScenarioProcessorRepo) GetCookieById(id uint) (ret model.ProcessorCookie, err error) {
+	err = r.DB.Where("id = ?", id).First(&ret).Error
+	return
+}
+
 func (r *ScenarioProcessorRepo) GetAssertion(processor model.Processor) (ret model.ProcessorAssertion, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
@@ -217,6 +332,11 @@ func (r *ScenarioProcessorRepo) GetAssertion(processor model.Processor) (ret mod
 		ret.ParentID = processor.ParentId
 	}
 
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetAssertionById(id uint) (ret model.ProcessorAssertion, err error) {
+	err = r.DB.Where("id = ?", id).First(&ret).Error
 	return
 }
 
@@ -238,6 +358,11 @@ func (r *ScenarioProcessorRepo) GetData(processor model.Processor) (ret model.Pr
 	return
 }
 
+func (r *ScenarioProcessorRepo) GetDataById(id uint) (ret model.ProcessorData, err error) {
+	err = r.DB.Where("id = ?", id).First(&ret).Error
+	return
+}
+
 func (r *ScenarioProcessorRepo) GetCustomCode(processor model.Processor) (ret model.ProcessorCustomCode, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
@@ -249,6 +374,11 @@ func (r *ScenarioProcessorRepo) GetCustomCode(processor model.Processor) (ret mo
 		ret.ParentID = processor.ParentId
 	}
 
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetCustomCodeById(id uint) (ret model.ProcessorCustomCode, err error) {
+	err = r.DB.Where("id = ?", id).First(&ret).Error
 	return
 }
 
@@ -341,7 +471,7 @@ func (r *ScenarioProcessorRepo) UpdateEntityId(id, entityId uint) (err error) {
 }
 
 func (r *ScenarioProcessorRepo) genProcessorComm(processor model.Processor) (ret model.ProcessorComm) {
-	ret.Id = processor.ID
+	//ret.Id = processor.ID
 	ret.Name = processor.Name
 	ret.Comments = processor.Comments
 
@@ -391,6 +521,21 @@ func (r *ScenarioProcessorRepo) UpdateMethod(id uint, method consts.HttpMethod) 
 		Error
 
 	return
+}
+
+func (r *ScenarioProcessorRepo) CopyLogic(srcId uint) (id uint, err error) {
+	logic, err := r.GetLogicById(srcId)
+	if err != nil {
+		return
+	}
+
+	logic.ID = 0
+	if err = r.SaveLogic(&logic); err != nil {
+		return
+	}
+
+	return logic.ID, nil
+
 }
 
 //func (r *ScenarioProcessorRepo) SwitchEntityInterface(id, debugInterFaceId uint) (err error) {

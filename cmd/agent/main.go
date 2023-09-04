@@ -13,6 +13,7 @@ import (
 	"github.com/facebookgo/inject"
 	"github.com/fatih/color"
 	"github.com/sirupsen/logrus"
+	"os"
 )
 
 var (
@@ -30,9 +31,9 @@ var (
 
 func main() {
 	flagSet = flag.NewFlagSet("deeptest", flag.ContinueOnError)
-
 	flagSet.IntVar(&consts.Port, "p", 0, "")
 	flagSet.BoolVar(&_consts.Verbose, "verbose", false, "")
+	flagSet.Parse(os.Args[1:])
 
 	websocketHelper.InitMq()
 

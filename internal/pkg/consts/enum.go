@@ -690,12 +690,6 @@ func (e TestType) String() string {
 	return string(e)
 }
 
-type SyncType uint
-
-const (
-	FullCopy SyncType = 1
-)
-
 type SwitchStatus uint
 
 const (
@@ -706,15 +700,16 @@ const (
 type SourceType uint
 
 const (
-	Swagger SourceType = 1
+	SwaggerSync   SourceType = 1
+	SwaggerImport SourceType = 2
 )
 
-type DataSyncType string
+type DataSyncType int
 
 const (
-	FullCover DataSyncType = "full_cover" //完全覆盖
-	AutoAdd   DataSyncType = "auto_merge" //智能合并
-	Add       DataSyncType = "add"        //新增
+	FullCover DataSyncType = 1 //完全覆盖
+	AutoAdd   DataSyncType = 2 //智能合并
+	Add       DataSyncType = 3 //新增
 )
 
 func (e DataSyncType) String() string {

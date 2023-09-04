@@ -121,13 +121,19 @@ const driverTypeOpts = [
 
 const dataSyncTypeOpts = [
   {
-    label: '完全覆盖',
-    value: 'full_cover',
+    label: '新增',
+    value: 3,
   },
   {
     label: '智能合并',
-    value: 'copy_add',
+    value: 2,
+  },
+  /*  
+  {
+    label: '完全覆盖',
+    value: 'full_cover',
   }
+  */
 ]
 
 const openUrlImportOpts = [

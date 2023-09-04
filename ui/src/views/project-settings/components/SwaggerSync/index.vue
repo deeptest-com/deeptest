@@ -119,13 +119,14 @@ const onSubmit = () => {
 
 async function saveSwaggerSync(data:SwaggerSync) {
   console.log(data)
+  data.sourceType = 1
   await store.dispatch('ProjectSetting/saveSwaggerSync', data);
 }
 
 const syncTypes = [
       { label: '完全覆盖', value: 1 },
+      { label: '智能合并', value: 2 }
     ];
-
 
 function selectedCategory(value) {
   formState.value.categoryId = value;

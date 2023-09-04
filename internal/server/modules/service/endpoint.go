@@ -272,9 +272,9 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 	var newComponents []*model.ComponentSchema
 	for _, component := range components {
 		component.ServeId = int64(req.ServeId)
-		component.SourceType = consts.Swagger
+		component.SourceType = req.SourceType
 
-		res, err := s.ServeRepo.GetComponentByItem(consts.Swagger, uint(component.ServeId), component.Ref)
+		res, err := s.ServeRepo.GetComponentByItem(component.SourceType, uint(component.ServeId), component.Ref)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			continue
 		}
@@ -299,10 +299,10 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
 	for name, dirs := range data.Dirs {
 
-		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory, SourceType: consts.Swagger}
+		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory, SourceType: req.SourceType}
 		//全覆盖更新目录
 		if req.DataSyncType == consts.FullCover {
-			res, err := s.CategoryRepo.GetByItem(consts.Swagger, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
+			res, err := s.CategoryRepo.GetByItem(req.SourceType, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
 			if err == nil {
 				category.ID = res.ID
 				goto here

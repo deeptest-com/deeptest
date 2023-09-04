@@ -1,6 +1,7 @@
 module.exports = {
     packagerConfig: {
-        "name": "deeptest",
+        // "name": "deeptest",
+        "name": "LeyanAPI",
         asar: true,
         "icon": "./icon/favicon",
         extraResource: [
@@ -46,14 +47,16 @@ module.exports = {
                 mainConfig: './webpack.main.config.js',
                 renderer: {
                     config: './webpack.renderer.config.js',
-                    // 其实以下配置可以不用写，因为默认都是自己远程加载的，或者本地启动 Express 服务加载的
+                    // 其实以下配置没有用，因为默认都是自己远程加载的，或者本地启动 Express 服务加载的
+                    // 但不配置，打包时会一直 pendding，所以这里配置一下
+                    // TODO liguwe 找时间研究一下
                     entryPoints: [
                         {
-                            html: './src/index.html',
-                            js: './src/renderer.js',
+                            html: './src/entry/index.html',
+                            js: './src/entry/renderer.js',
                             name: 'main_window',
                             preload: {
-                                js: './src/preload.js',
+                                js: './src/entry/preload.js',
                             },
                         },
                     ],

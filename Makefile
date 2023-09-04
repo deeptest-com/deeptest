@@ -1,5 +1,9 @@
-VERSION=1.1.1
-PROJECT=deeptest
+#VERSION=1.1.1
+#PROJECT=deeptest
+
+# ly 配置，  开源版可以删除
+VERSION=0.0.1
+PROJECT=LeyanAPI
 
 ifeq ($(OS),Windows_NT)
     PLATFORM="windows"
@@ -16,6 +20,9 @@ ifeq ($(PLATFORM),"mac")
 else
     QINIU_DIR=~/work/qiniu/
 endif
+
+# ly打包路径 , 开源版可以删除
+QINIU_DIR=~/nk2/ly/
 
 QINIU_DIST_DIR=${QINIU_DIR}${PROJECT}/${VERSION}/
 

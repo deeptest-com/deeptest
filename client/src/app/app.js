@@ -41,10 +41,10 @@ export class DeepTestApp {
         this._windows = new Map();
 
         startAgent().then((agentUrl)=> {
-            if (agentUrl) logInfo(`>> deeptest server started successfully on : ${agentUrl}`);
+            if (agentUrl) logInfo(`>> deeptest-agent service started successfully on : ${agentUrl}`);
             this.bindElectronEvents();
         }).catch((err) => {
-            logErr('>> agent started failed, err: ' + err);
+            logErr('>> deeptest-agent service started failed, err: ' + err);
             process.exit(1);
         })
     }

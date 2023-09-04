@@ -32,7 +32,8 @@ import {
     expireEndpoint,
     getEndpointDetail,
     getEndpointList,
-    saveEndpoint, copyEndpointCase,loadCaseTree,reBuildTree
+    saveEndpoint, copyEndpointCase,loadCaseTree,reBuildTree,
+    getMockExpressions,
 } from './service';
 
 import {
@@ -83,6 +84,7 @@ export interface StateType {
     tagList: any;
     caseTree:any;
     caseTreeMap:any;
+    mockExpressions:any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -121,6 +123,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setCaseTreeMap:Mutation<StateType>;
 
         setInterfaces:Mutation<StateType>;
+        setMockExpressions:Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -172,6 +175,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getCaseTree: Action<StateType, StateType>;
 
         removeUnSavedMethods: Action<StateType, StateType>;
+        getMockExpressions: Action<StateType, StateType>;
     }
 }
 
@@ -214,6 +218,7 @@ const initState: StateType = {
     tagList:[],
     caseTree:[],
     caseTreeMap:[],
+    mockExpressions:[]
 };
 
 const StoreModel: ModuleType = {
@@ -342,6 +347,9 @@ const StoreModel: ModuleType = {
         },
         setInterfaces(state, payload){
             state.endpointDetail.interfaces = payload
+        },
+        setMockExpressions(state, payload){
+            state.mockExpressions = payload
         }
     },
     actions: {
@@ -931,7 +939,26 @@ const StoreModel: ModuleType = {
             }
 
             return true
-        }
+        },
+
+        async getMockExpressions({ commit }, payload){
+            try {
+                const response:any = await getMockExpressions(payload);
+                if (response.code != 0) return;
+                const options = response?.data?.map((item:any)=>{
+                    return {
+                        label:item.expression,
+                        value:item.id,
+                        ...item
+                    }
+                })
+                commit('setMockExpressions', options || []);
+                return true;
+            } catch (error) {
+                return false;
+            }
+
+        },
     },
 };
 

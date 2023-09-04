@@ -21,7 +21,7 @@ func (c *MockCtrl) OAuth2Callback(ctx iris.Context) {
 }
 
 func (c *MockCtrl) Mock(ctx iris.Context) {
-	// http://127.0.0.1:8085/api/v1/mock/project1/serve1/json?endpointInterfaceId=44
+	// http://127.0.0.1:8085/mock/project_id/serve_id/json?id=44
 
 	method := ctx.Method()
 	endpointInterfaceId, _ := ctx.URLParamInt("endpointInterfaceId")

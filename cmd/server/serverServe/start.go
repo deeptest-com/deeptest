@@ -74,8 +74,8 @@ func inits() {
 	consts.RunFrom = consts.FromServer
 	consts.WorkDir = commUtils.GetWorkDir()
 
-	config.Init("server")
-	zapLog.Init("server")
+	config.Init()
+	zapLog.Init()
 	_i118Utils.Init(consts.Language, "")
 
 	err := cache.Init()
@@ -257,5 +257,6 @@ func (webServer *WebServer) InjectModule() {
 		logrus.Fatalf("populate the incomplete Objects: %v", err)
 	}
 
-	webServer.AddModule(indexModule.Party())
+	webServer.AddModule(indexModule.ApiParty())
+	webServer.AddModule(indexModule.MockParty())
 }

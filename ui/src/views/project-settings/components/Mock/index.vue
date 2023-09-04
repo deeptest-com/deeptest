@@ -10,12 +10,12 @@
                        v-model:value="modelRef.priority"
                        @blur="validate('priority', { trigger: 'change' }).catch(() => {})">
           <a-radio value="smart">智能Mock优先</a-radio>
-          <a-radio value="sample">响应示例优先</a-radio>
+          <a-radio value="example">响应示例优先</a-radio>
         </a-radio-group>
 
         <div class="dp-input-tip">
           Mock优先级：高级Mock >
-          <template v-if="modelRef.priority === 'sample'"> 响应示例 > </template>
+          <template v-if="modelRef.priority === 'example'"> 响应示例 > </template>
           智能Mock
         </div>
       </a-form-item>

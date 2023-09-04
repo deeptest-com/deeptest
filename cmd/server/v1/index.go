@@ -79,8 +79,8 @@ func NewIndexModule() *IndexModule {
 	return &IndexModule{}
 }
 
-// Party v1 模块
-func (m *IndexModule) Party() module.WebModule {
+// Party API 模块
+func (m *IndexModule) ApiParty() module.WebModule {
 	handler := func(v1 iris.Party) {
 		if !config.CONFIG.Limit.Disable {
 			limitV1 := rate.Limit(
@@ -97,8 +97,6 @@ func (m *IndexModule) Party() module.WebModule {
 		m.RoleModule.Party(),
 		m.PermModule.Party(),
 		m.UserModule.Party(),
-
-		m.MockModule.Party(),
 
 		m.ProjectModule.Party(),
 		m.ProjectPerModule.Party(),
@@ -149,8 +147,26 @@ func (m *IndexModule) Party() module.WebModule {
 
 		m.ProjectSettingsModule.Party(),
 		m.ConfigModule.Party(),
-		m.TestsModule.Party(),
 		m.ResponseDefineModule.Party(),
 	}
-	return module.NewModule(consts.ApiPath, handler, modules...)
+
+	return module.NewModule(consts.ApiPathServer, handler, modules...)
+}
+
+// Party Mock 模块
+func (m *IndexModule) MockParty() module.WebModule {
+	handler := func(v1 iris.Party) {
+		if !config.CONFIG.Limit.Disable {
+			limitV1 := rate.Limit(
+				config.CONFIG.Limit.Limit,
+				config.CONFIG.Limit.Burst,
+				rate.PurgeEvery(time.Minute, 5*time.Minute))
+			v1.Use(limitV1)
+		}
+	}
+	modules := []module.WebModule{
+		m.MockModule.Party(),
+		m.TestsModule.Party(),
+	}
+	return module.NewModule(consts.ApiPathMock, handler, modules...)
 }

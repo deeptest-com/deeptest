@@ -13,7 +13,7 @@ type TestsModule struct {
 // Party 脚本
 func (m *TestsModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Get("/test", m.TestsCtrl.Test).Name = "测试用"
+		index.Get("/", m.TestsCtrl.Test).Name = "测试用"
 	}
 	return module.NewModule("/tests", handler)
 }

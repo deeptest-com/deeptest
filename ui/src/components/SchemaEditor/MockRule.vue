@@ -22,9 +22,11 @@ const mockExpressions = computed(() => {
 });
 
 
-const props = defineProps(['tree']);
+const props = defineProps(['tree','readonly']);
 
 const value = ref('');
+
+
 
 watch(() => {
       return props.tree?.mockType;
@@ -55,6 +57,7 @@ const handleChange = (val: string) => {
     <a-select
         v-model:value="value"
         show-search
+        :disabled="props.readonly"
         :size="'small'"
         placeholder="请选择mock规则"
         style="width: 200px"

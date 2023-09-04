@@ -91,6 +91,13 @@
     "parent":"project-setting"
   },
   {
+    "code":"project-setting-swaggerSync",
+    "title":"自动同步",
+    "path":"/project-setting/swaggerSync",
+    "type":"menu",
+    "parent":"project-setting"
+  },
+  {
     "code":"endpoint-add-interface",
     "title":"新建接口",
     "path":"",

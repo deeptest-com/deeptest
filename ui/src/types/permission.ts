@@ -29,5 +29,6 @@ export enum RouteMenuType {
     "PROJECT-SETTING-DATA-POOL" = "project-setting-data-pool",
     "PROJECT-SETTING-SERVICE-SETTING" = "project-setting-service-setting",
     "PROJECT-SETTING-MEMBERS" = "project-setting-members",
+    "PROJECT-SETTING-SWAGGERSYNC" = "project-setting-swaggerSync",
     "PROJECT-SETTING-MOCK" = "project-setting-mock"
 }

@@ -35,7 +35,7 @@ watch(() => {
     }
 );
 
-const emit = defineEmits(['updateMockType']);
+const emit = defineEmits(['update']);
 
 const keywords = ref('');
 // 搜索
@@ -45,7 +45,7 @@ const handleSearch = (val: string) => {
 
 const handleChange = (val: string) => {
   value.value = val;
-  emit('updateMockType', val);
+  emit('update', val);
 };
 
 </script>

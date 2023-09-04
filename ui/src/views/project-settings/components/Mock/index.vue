@@ -8,7 +8,7 @@
       <a-form-item label="Mock优先方式">
         <a-radio-group name="radioGroup"
                        v-model:value="modelRef.priority"
-                       @blur="validate('name', { trigger: 'change' }).catch(() => {})">
+                       @blur="validate('priority', { trigger: 'change' }).catch(() => {})">
           <a-radio value="smart">智能Mock优先</a-radio>
           <a-radio value="sample">响应示例优先</a-radio>
         </a-radio-group>
@@ -17,7 +17,7 @@
       </a-form-item>
 
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-        <a-button type="primary" @click="onSubmit" :disabled="!dataChanged">保存</a-button>
+        <a-button type="primary" @click="onSubmit" :disabled="!dataChanged && modelRef.id > 0">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -32,9 +32,8 @@ import {notifyError, notifySuccess} from "@/utils/notify";
 const useForm = Form.useForm;
 const store = useStore<{ Endpoint, ProjectGlobal, ProjectSetting }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
+const modelRef = computed<any>(() => store.state.ProjectSetting.mockSettings);
 
-const modelRef = ref({priority: 'smart'} as any)
 const rules = ref({
   priority: [
     {required: true, message: '请选择优先设置', trigger: 'blur'},
@@ -45,7 +44,7 @@ const {validate, validateInfos} = useForm(modelRef, rules);
 
 const dataLoaded = ref(false)
 onMounted(async () => {
-  await store.dispatch('ProjectSetting/getSwaggerSync');
+  await store.dispatch('ProjectSetting/getMock');
   dataLoaded.value = true
 })
 
@@ -57,12 +56,8 @@ watch(modelRef, (val) => {
 
 const onSubmit = () => {
   validate().then(async () => {
-    const res = await store.dispatch('ProjectSetting/saveSwaggerSync', modelRef.value);
-    if (res.code === 0) {
-      notifySuccess('保存成功');
-    } else {
-      notifyError('保存失败')
-    }
+    const res = await store.dispatch('ProjectSetting/saveMock', modelRef.value)
+    if (res) dataChanged.value = false
   })
 }
 

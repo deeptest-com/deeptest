@@ -125,8 +125,8 @@ export async function serverList(data: any): Promise<any> {
 
 /**
  * 切换服务环境
- * @param data 
- * @returns 
+ * @param data
+ * @returns
  */
 export async function changeServe(data: any): Promise<any> {
     return request({
@@ -414,17 +414,29 @@ export async function disableDatapool(id: Number | String | undefined): Promise<
 
 export async function saveSwaggerSync(data: SwaggerSync): Promise<any> {
     return request({
-        url: `/serves/saveSwaggerSync`,
+        url: `/projectSettings/saveSwaggerSync`,
         method: 'post',
         data: data
     });
 }
-
 export async function getSwaggerSync(): Promise<any> {
     return request({
-        url: `/serves/swaggerSyncDetail`,
+        url: `/projectSettings/swaggerSyncDetail`,
         method: 'get',
     });
 }
 
+export async function saveMock(data): Promise<any> {
+    return request({
+        url: `/projectSettings/saveMock`,
+        method: 'post',
+        data: data
+    });
+}
+export async function getMock(): Promise<any> {
+    return request({
+        url: `/projectSettings/getMock`,
+        method: 'get',
+    });
+}
 

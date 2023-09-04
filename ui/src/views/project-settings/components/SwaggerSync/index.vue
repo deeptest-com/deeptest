@@ -109,19 +109,15 @@ const rules = ref({
 const {validate, validateInfos} = useForm(formState, rules);
 
 const onSubmit = () => {
-  validate().then(() => {
-    saveSwaggerSync(formState.value)
+  validate().then(async () => {
+    const result = await store.dispatch('ProjectSetting/saveSwaggerSync', formState.value)
+    if (result) dataChanged.value = false
 
     notifySuccess('保存成功');
   }).catch(() => {
     console.log('error:', formState.value);
   })
 
-};
-
-async function saveSwaggerSync(data: SwaggerSync) {
-  console.log(data)
-  await store.dispatch('ProjectSetting/saveSwaggerSync', data);
 }
 
 const syncTypes = [

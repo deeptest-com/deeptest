@@ -113,6 +113,7 @@ var (
 		&ProjectMemberAudit{},
 
 		&SwaggerSync{},
+		&ProjectMockSetting{},
 
 		&DebugConditionResponseDefine{},
 		&ExecLogResponseDefine{},

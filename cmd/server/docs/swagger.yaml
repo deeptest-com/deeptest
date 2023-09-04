@@ -16,6 +16,9 @@ definitions:
       data: {}
       msg:
         type: string
+      msgKey:
+        description: show i118 msg on client side
+        type: string
     type: object
   agentDomain.ExecIterator:
     properties:
@@ -153,6 +156,26 @@ definitions:
       useId:
         type: integer
     type: object
+  agentDomain.InterfaceStat:
+    properties:
+      checkpointFail:
+        type: integer
+      checkpointPass:
+        type: integer
+      interfaceCount:
+        type: integer
+      interfaceDurationAverage:
+        type: integer
+      interfaceDurationTotal:
+        description: milliseconds
+        type: integer
+      interfaceFail:
+        type: integer
+      interfacePass:
+        type: integer
+      interfaceSkip:
+        type: integer
+    type: object
   agentDomain.PlanExecResult:
     properties:
       desc:
@@ -167,6 +190,8 @@ definitions:
         items:
           $ref: '#/definitions/agentDomain.ScenarioExecResult'
         type: array
+      stat:
+        $ref: '#/definitions/agentDomain.InterfaceStat'
     type: object
   agentDomain.Report:
     properties:
@@ -244,11 +269,8 @@ definitions:
       break:
         description: for loop break processor
         type: boolean
-      checkpointsResult:
-        items:
-          $ref: '#/definitions/domain.CheckpointBase'
-        type: array
       cost:
+        description: milliseconds
         type: integer
       debugInterfaceId:
         type: integer
@@ -263,10 +285,6 @@ definitions:
         type: integer
       environmentId:
         type: integer
-      extractorsResult:
-        items:
-          $ref: '#/definitions/domain.ExtractorBase'
-        type: array
       httpStatusCode:
         $ref: '#/definitions/consts.HttpRespCode'
       httpStatusContent:
@@ -289,6 +307,14 @@ definitions:
         type: integer
       parentLogId:
         type: string
+      postConditions:
+        items:
+          $ref: '#/definitions/domain.InterfaceExecCondition'
+        type: array
+      preConditions:
+        items:
+          $ref: '#/definitions/domain.InterfaceExecCondition'
+        type: array
       processorCategory:
         $ref: '#/definitions/consts.ProcessorCategory'
       processorContent:
@@ -308,20 +334,19 @@ definitions:
         type: string
       resultStatus:
         $ref: '#/definitions/consts.ResultStatus'
+      round:
+        type: string
       scenarioId:
         type: integer
       scenarioReportId:
         type: integer
-      scriptsResult:
-        items:
-          $ref: '#/definitions/domain.ScriptBase'
-        type: array
       startTime:
         type: string
+      stat:
+        $ref: '#/definitions/agentDomain.InterfaceStat'
       summary:
         type: string
       useId:
-        description: ReportId uint `json:"reportId"`
         type: integer
     type: object
   agentExec.InterfaceExecObj:
@@ -393,6 +418,8 @@ definitions:
         type: integer
       result:
         $ref: '#/definitions/agentDomain.ScenarioExecResult'
+      round:
+        type: string
       scenarioId:
         type: integer
       slots:
@@ -438,6 +465,8 @@ definitions:
         type: integer
       result:
         $ref: '#/definitions/agentDomain.ScenarioExecResult'
+      round:
+        type: string
       scenarioId:
         type: integer
       slots:
@@ -543,25 +572,27 @@ definitions:
     - LessThanOrEqual
     - Contain
     - NotContain
-  consts.ConditionSrc:
-    enum:
-    - pre
-    - post
-    type: string
-    x-enum-varnames:
-    - ConditionSrcPre
-    - ConditionSrcPost
   consts.ConditionType:
     enum:
     - extractor
     - checkpoint
     - script
+    - responseDefine
     type: string
     x-enum-varnames:
     - ConditionTypeExtractor
     - ConditionTypeCheckpoint
     - ConditionTypeScript
-  consts.DataSource:
+    - ConditionTypeResponseDefine
+  consts.DataItSrc:
+    enum:
+    - fileUpload
+    - datapool
+    type: string
+    x-enum-varnames:
+    - SrcFileUpload
+    - SrcDatapool
+  consts.DataItType:
     enum:
     - text
     - excel
@@ -594,10 +625,12 @@ definitions:
     enum:
     - header
     - body
+    - cookie
     type: string
     x-enum-varnames:
     - Header
     - Body
+    - Cookie
   consts.ExtractorType:
     enum:
     - boundary
@@ -871,7 +904,6 @@ definitions:
     - processor_loop_in
     - processor_loop_range
     - processor_loop_until
-    - processor_loop_break
     - processor_variable_set
     - processor_variable_clear
     - processor_assertion_default
@@ -879,11 +911,9 @@ definitions:
     - processor_extractor_jsonquery
     - processor_extractor_htmlquery
     - processor_extractor_xmlquery
-    - processor_cookie_get
     - processor_cookie_set
     - processor_cookie_clear
-    - processor_data_text
-    - processor_data_excel
+    - processor_data_default
     - processor_custom_code_default
     type: string
     x-enum-varnames:
@@ -898,7 +928,6 @@ definitions:
     - ProcessorLoopIn
     - ProcessorLoopRange
     - ProcessorLoopUntil
-    - ProcessorLoopBreak
     - ProcessorVariableSet
     - ProcessorVariableClear
     - ProcessorAssertionDefault
@@ -906,11 +935,9 @@ definitions:
     - ProcessorExtractorJsonQuery
     - ProcessorExtractorHtmlQuery
     - ProcessorExtractorXmlQuery
-    - ProcessorCookieGet
     - ProcessorCookieSet
     - ProcessorCookieClear
-    - ProcessorDataText
-    - ProcessorDataExcel
+    - ProcessorDataDefault
     - ProcessorCustomCodeDefault
   consts.ProgressStatus:
     enum:
@@ -1104,44 +1131,28 @@ definitions:
       value:
         type: string
     type: object
-  domain.CheckpointBase:
+  domain.Condition:
     properties:
-      actualResult:
+      desc:
         type: string
-      conditionEntityId:
-        description: refer to entity po id in domain object
-        type: integer
-      conditionEntityType:
-        allOf:
-        - $ref: '#/definitions/consts.ConditionType'
-        description: for log only
-      conditionId:
-        type: integer
       disabled:
         type: boolean
-      expression:
-        type: string
-      extractorVariable:
-        type: string
-      invokeId:
-        description: for log only
+      entityData: {}
+      entityId:
         type: integer
-      operator:
-        $ref: '#/definitions/consts.ComparisonOperator'
-      resultMsg:
+      entityType:
         type: string
-      resultStatus:
-        $ref: '#/definitions/consts.ResultStatus'
-      type:
-        $ref: '#/definitions/consts.CheckpointType'
-      value:
+      id:
+        type: integer
+      name:
         type: string
+      ordr:
+        type: integer
     type: object
   domain.Datapools:
     additionalProperties:
       items:
-        additionalProperties: true
-        type: object
+        $ref: '#/definitions/domain.VarKeyValuePair'
       type: array
     type: object
   domain.DebugData:
@@ -1219,6 +1230,8 @@ definitions:
         items:
           $ref: '#/definitions/domain.Param'
         type: array
+      responseDefine:
+        $ref: '#/definitions/domain.Condition'
       scenarioProcessorId:
         type: integer
       serveId:
@@ -1300,6 +1313,8 @@ definitions:
       id:
         type: integer
       name:
+        type: string
+      path:
         type: string
       value: {}
     type: object
@@ -1490,20 +1505,6 @@ definitions:
           $ref: '#/definitions/domain.GlobalVar'
         type: array
     type: object
-  domain.ExecVariable:
-    properties:
-      expression:
-        type: string
-      id:
-        type: integer
-      interfaceId:
-        type: integer
-      isShare:
-        $ref: '#/definitions/consts.ExtractorScope'
-      name:
-        type: string
-      value: {}
-    type: object
   domain.ExtractorBase:
     properties:
       boundaryEnd:
@@ -1523,6 +1524,9 @@ definitions:
         description: for log only
       conditionId:
         type: integer
+      default:
+        description: for cookie
+        type: string
       disabled:
         type: boolean
       expression:
@@ -1764,37 +1768,6 @@ definitions:
         type: string
       type:
         type: string
-    type: object
-  domain.ScriptBase:
-    properties:
-      conditionEntityId:
-        description: refer to po id in domain object
-        type: integer
-      conditionEntityType:
-        allOf:
-        - $ref: '#/definitions/consts.ConditionType'
-        description: for log only
-      conditionId:
-        type: integer
-      conditionType:
-        $ref: '#/definitions/consts.ConditionSrc'
-      content:
-        type: string
-      disabled:
-        type: boolean
-      invokeId:
-        description: for log only
-        type: integer
-      output:
-        type: string
-      resultMsg:
-        type: string
-      resultStatus:
-        $ref: '#/definitions/consts.ResultStatus'
-      variableSettings:
-        items:
-          $ref: '#/definitions/domain.ExecVariable'
-        type: array
     type: object
   domain.SubmitDebugResultRequest:
     properties:
@@ -2043,6 +2016,9 @@ definitions:
       conditionId:
         type: integer
       createdAt:
+        type: string
+      default:
+        description: for cookie
         type: string
       disabled:
         type: boolean
@@ -2460,6 +2436,8 @@ definitions:
         $ref: '#/definitions/serverConsts.DiagnoseInterfaceType'
       updatedAt:
         type: string
+      updatedBy:
+        type: integer
       useId:
         type: integer
     type: object
@@ -2485,6 +2463,10 @@ definitions:
         type: array
       maintainer:
         type: string
+      methods:
+        items:
+          $ref: '#/definitions/consts.HttpMethod'
+        type: array
       path:
         type: string
       pathParams:
@@ -2510,6 +2492,8 @@ definitions:
           type: string
         type: array
       title:
+        type: string
+      updateUser:
         type: string
       updatedAt:
         type: string
@@ -3124,6 +3108,9 @@ definitions:
         type: integer
       createdAt:
         type: string
+      default:
+        description: for cookie
+        type: string
       disabled:
         type: boolean
       expression:
@@ -3155,13 +3142,13 @@ definitions:
     type: object
   model.ExecLogProcessor:
     properties:
-      Detail:
-        type: string
       createdAt:
         type: string
       debugInterfaceId:
         type: integer
       desc:
+        type: string
+      detail:
         type: string
       disabled:
         type: boolean
@@ -3184,6 +3171,8 @@ definitions:
         items:
           $ref: '#/definitions/model.ExecLogExtractor'
         type: array
+      invokeId:
+        type: integer
       logs:
         items:
           $ref: '#/definitions/model.ExecLogProcessor'
@@ -3212,6 +3201,8 @@ definitions:
         type: string
       resultStatus:
         $ref: '#/definitions/consts.ResultStatus'
+      round:
+        type: string
       scenarioId:
         type: integer
       scenarioProcessorId:
@@ -3258,6 +3249,11 @@ definitions:
         type: string
       categoryId:
         type: integer
+      createUserId:
+        type: integer
+      createUserName:
+        description: 创建人姓名
+        type: string
       createdAt:
         type: string
       currEnvId:
@@ -3358,6 +3354,8 @@ definitions:
         type: string
       startTime:
         type: string
+      stat:
+        type: string
       totalAssertionNum:
         type: integer
       totalInterfaceNum:
@@ -3394,6 +3392,8 @@ definitions:
       execEnvId:
         description: 执行环境Id
         type: integer
+      execUserName:
+        type: string
       failAssertionNum:
         type: integer
       failInterfaceNum:
@@ -3439,6 +3439,8 @@ definitions:
       serialNumber:
         type: string
       startTime:
+        type: string
+      stat:
         type: string
       totalAssertionNum:
         type: integer
@@ -3503,6 +3505,8 @@ definitions:
         type: string
       createdAt:
         type: string
+      datapoolId:
+        type: integer
       default:
         type: string
       disabled:
@@ -3519,16 +3523,16 @@ definitions:
         $ref: '#/definitions/consts.ProcessorCategory'
       processorID:
         type: integer
-      processorInterfaceSrc:
-        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       processorType:
         $ref: '#/definitions/consts.ProcessorType'
       repeatTimes:
         type: integer
       separator:
         type: string
+      src:
+        $ref: '#/definitions/consts.DataItSrc'
       type:
-        $ref: '#/definitions/consts.DataSource'
+        $ref: '#/definitions/consts.DataItType'
       updatedAt:
         type: string
       url:
@@ -3712,8 +3716,11 @@ definitions:
       createUserId:
         type: integer
       createUserName:
+        description: 用户登录名
         type: string
       createdAt:
+        type: string
+      creatorName:
         type: string
       currEnvId:
         type: integer
@@ -3739,6 +3746,10 @@ definitions:
         $ref: '#/definitions/consts.TestStatus'
       type:
         $ref: '#/definitions/consts.TestType'
+      updateUserId:
+        type: integer
+      updateUserName:
+        type: string
       updatedAt:
         type: string
       version:
@@ -3753,8 +3764,11 @@ definitions:
       createUserId:
         type: integer
       createUserName:
+        description: 用户登录名
         type: string
       createdAt:
+        type: string
+      creatorName:
         type: string
       currEnvId:
         type: integer
@@ -3780,6 +3794,10 @@ definitions:
         $ref: '#/definitions/consts.TestStatus'
       type:
         $ref: '#/definitions/consts.TestType'
+      updateUserId:
+        type: integer
+      updateUserName:
+        type: string
       updatedAt:
         type: string
       version:
@@ -3806,6 +3824,8 @@ definitions:
         type: string
       execEnvId:
         type: integer
+      execUserName:
+        type: string
       failAssertionNum:
         type: integer
       failInterfaceNum:
@@ -3851,6 +3871,8 @@ definitions:
       serialNumber:
         type: string
       startTime:
+        type: string
+      stat:
         type: string
       totalAssertionNum:
         type: integer
@@ -3884,6 +3906,8 @@ definitions:
         type: string
       execEnvId:
         type: integer
+      execUserName:
+        type: string
       failAssertionNum:
         type: integer
       failInterfaceNum:
@@ -3929,6 +3953,8 @@ definitions:
       serialNumber:
         type: string
       startTime:
+        type: string
+      stat:
         type: string
       totalAssertionNum:
         type: integer
@@ -4432,6 +4458,8 @@ definitions:
     type: object
   serverDomain.DiagnoseInterfaceSaveReq:
     properties:
+      createdBy:
+        type: integer
       id:
         type: integer
       mode:
@@ -4446,6 +4474,8 @@ definitions:
         type: string
       type:
         $ref: '#/definitions/serverConsts.DiagnoseInterfaceType'
+      updatedBy:
+        type: integer
     type: object
   serverDomain.DocumentRep:
     properties:
@@ -4594,6 +4624,8 @@ definitions:
         type: integer
       id:
         type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       name:
         type: string
       projectId:
@@ -4634,7 +4666,7 @@ definitions:
       ordr:
         type: integer
       parentId:
-        type: integer
+        type: string
       projectId:
         type: integer
       serveId:
@@ -4696,6 +4728,8 @@ definitions:
       status:
         type: integer
       title:
+        type: string
+      updateUser:
         type: string
       version:
         type: string
@@ -4985,6 +5019,20 @@ definitions:
       user_id:
         type: integer
     type: object
+  serverDomain.MockJsExpression:
+    properties:
+      desc:
+        type: string
+      expression:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      ordr:
+        type: integer
+      result: {}
+    type: object
   serverDomain.OpenApiCookie:
     properties:
       Description:
@@ -5190,6 +5238,9 @@ definitions:
     properties:
       adminName:
         description: 负责人姓名
+        type: string
+      createUserName:
+        description: 创建人姓名
         type: string
       createdAt:
         type: string
@@ -9743,6 +9794,25 @@ paths:
       summary: 未读消息数
       tags:
       - 消息管理
+  /api/v1/mockjs/expressions:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/serverDomain.MockJsExpression'
+                  type: array
+              type: object
+      summary: mockJs规则列表
+      tags:
+      - mock
   /api/v1/notRelationScenarioList:
     get:
       consumes:
@@ -11003,7 +11073,7 @@ paths:
         name: currProjectId
         required: true
         type: integer
-      - description: Create project Request Object
+      - description: CreateExpression project Request Object
         in: body
         name: ProjectReq
         required: true
@@ -11618,16 +11688,6 @@ paths:
       - description: 当前项目ID
         in: query
         name: currProjectId
-        required: true
-        type: integer
-      - description: 用户ID
-        in: query
-        name: user_id
-        required: true
-        type: integer
-      - description: 项目ID
-        in: query
-        name: project_id
         required: true
         type: integer
       produces:

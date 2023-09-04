@@ -4288,7 +4288,7 @@ const docTemplate = `{
                 "tags": [
                     "环境管理"
                 ],
-                "summary": "环境列表(ListExpressions)",
+                "summary": "环境列表(List)",
                 "parameters": [
                     {
                         "type": "string",
@@ -6047,6 +6047,40 @@ const docTemplate = `{
                                                 "count": {
                                                     "type": "integer"
                                                 }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockjs/expressions": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mock"
+                ],
+                "summary": "mockJs规则列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/serverDomain.MockJsExpression"
                                             }
                                         }
                                     }
@@ -9009,20 +9043,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "当前项目ID",
                         "name": "currProjectId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "用户ID",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "项目ID",
-                        "name": "project_id",
                         "in": "query",
                         "required": true
                     }
@@ -14467,6 +14487,10 @@ const docTemplate = `{
                 "data": {},
                 "msg": {
                     "type": "string"
+                },
+                "msgKey": {
+                    "description": "show i118 msg on client side",
+                    "type": "string"
                 }
             }
         },
@@ -14678,6 +14702,36 @@ const docTemplate = `{
                 }
             }
         },
+        "agentDomain.InterfaceStat": {
+            "type": "object",
+            "properties": {
+                "checkpointFail": {
+                    "type": "integer"
+                },
+                "checkpointPass": {
+                    "type": "integer"
+                },
+                "interfaceCount": {
+                    "type": "integer"
+                },
+                "interfaceDurationAverage": {
+                    "type": "integer"
+                },
+                "interfaceDurationTotal": {
+                    "description": "milliseconds",
+                    "type": "integer"
+                },
+                "interfaceFail": {
+                    "type": "integer"
+                },
+                "interfacePass": {
+                    "type": "integer"
+                },
+                "interfaceSkip": {
+                    "type": "integer"
+                }
+            }
+        },
         "agentDomain.PlanExecResult": {
             "type": "object",
             "properties": {
@@ -14698,6 +14752,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/agentDomain.ScenarioExecResult"
                     }
+                },
+                "stat": {
+                    "$ref": "#/definitions/agentDomain.InterfaceStat"
                 }
             }
         },
@@ -14814,13 +14871,8 @@ const docTemplate = `{
                     "description": "for loop break processor",
                     "type": "boolean"
                 },
-                "checkpointsResult": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.CheckpointBase"
-                    }
-                },
                 "cost": {
+                    "description": "milliseconds",
                     "type": "integer"
                 },
                 "debugInterfaceId": {
@@ -14841,12 +14893,6 @@ const docTemplate = `{
                 },
                 "environmentId": {
                     "type": "integer"
-                },
-                "extractorsResult": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.ExtractorBase"
-                    }
                 },
                 "httpStatusCode": {
                     "$ref": "#/definitions/consts.HttpRespCode"
@@ -14883,6 +14929,18 @@ const docTemplate = `{
                 "parentLogId": {
                     "type": "string"
                 },
+                "postConditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.InterfaceExecCondition"
+                    }
+                },
+                "preConditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.InterfaceExecCondition"
+                    }
+                },
                 "processorCategory": {
                     "$ref": "#/definitions/consts.ProcessorCategory"
                 },
@@ -14911,26 +14969,25 @@ const docTemplate = `{
                 "resultStatus": {
                     "$ref": "#/definitions/consts.ResultStatus"
                 },
+                "round": {
+                    "type": "string"
+                },
                 "scenarioId": {
                     "type": "integer"
                 },
                 "scenarioReportId": {
                     "type": "integer"
                 },
-                "scriptsResult": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.ScriptBase"
-                    }
-                },
                 "startTime": {
                     "type": "string"
+                },
+                "stat": {
+                    "$ref": "#/definitions/agentDomain.InterfaceStat"
                 },
                 "summary": {
                     "type": "string"
                 },
                 "useId": {
-                    "description": "ReportId uint ` + "`" + `json:\"reportId\"` + "`" + `",
                     "type": "integer"
                 }
             }
@@ -15039,6 +15096,9 @@ const docTemplate = `{
                 "result": {
                     "$ref": "#/definitions/agentDomain.ScenarioExecResult"
                 },
+                "round": {
+                    "type": "string"
+                },
                 "scenarioId": {
                     "type": "integer"
                 },
@@ -15106,6 +15166,9 @@ const docTemplate = `{
                 },
                 "result": {
                     "$ref": "#/definitions/agentDomain.ScenarioExecResult"
+                },
+                "round": {
+                    "type": "string"
                 },
                 "scenarioId": {
                     "type": "integer"
@@ -15249,31 +15312,33 @@ const docTemplate = `{
                 "NotContain"
             ]
         },
-        "consts.ConditionSrc": {
-            "type": "string",
-            "enum": [
-                "pre",
-                "post"
-            ],
-            "x-enum-varnames": [
-                "ConditionSrcPre",
-                "ConditionSrcPost"
-            ]
-        },
         "consts.ConditionType": {
             "type": "string",
             "enum": [
                 "extractor",
                 "checkpoint",
-                "script"
+                "script",
+                "responseDefine"
             ],
             "x-enum-varnames": [
                 "ConditionTypeExtractor",
                 "ConditionTypeCheckpoint",
-                "ConditionTypeScript"
+                "ConditionTypeScript",
+                "ConditionTypeResponseDefine"
             ]
         },
-        "consts.DataSource": {
+        "consts.DataItSrc": {
+            "type": "string",
+            "enum": [
+                "fileUpload",
+                "datapool"
+            ],
+            "x-enum-varnames": [
+                "SrcFileUpload",
+                "SrcDatapool"
+            ]
+        },
+        "consts.DataItType": {
             "type": "string",
             "enum": [
                 "text",
@@ -15316,11 +15381,13 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "header",
-                "body"
+                "body",
+                "cookie"
             ],
             "x-enum-varnames": [
                 "Header",
-                "Body"
+                "Body",
+                "Cookie"
             ]
         },
         "consts.ExtractorType": {
@@ -15636,7 +15703,6 @@ const docTemplate = `{
                 "processor_loop_in",
                 "processor_loop_range",
                 "processor_loop_until",
-                "processor_loop_break",
                 "processor_variable_set",
                 "processor_variable_clear",
                 "processor_assertion_default",
@@ -15644,11 +15710,9 @@ const docTemplate = `{
                 "processor_extractor_jsonquery",
                 "processor_extractor_htmlquery",
                 "processor_extractor_xmlquery",
-                "processor_cookie_get",
                 "processor_cookie_set",
                 "processor_cookie_clear",
-                "processor_data_text",
-                "processor_data_excel",
+                "processor_data_default",
                 "processor_custom_code_default"
             ],
             "x-enum-varnames": [
@@ -15663,7 +15727,6 @@ const docTemplate = `{
                 "ProcessorLoopIn",
                 "ProcessorLoopRange",
                 "ProcessorLoopUntil",
-                "ProcessorLoopBreak",
                 "ProcessorVariableSet",
                 "ProcessorVariableClear",
                 "ProcessorAssertionDefault",
@@ -15671,11 +15734,9 @@ const docTemplate = `{
                 "ProcessorExtractorJsonQuery",
                 "ProcessorExtractorHtmlQuery",
                 "ProcessorExtractorXmlQuery",
-                "ProcessorCookieGet",
                 "ProcessorCookieSet",
                 "ProcessorCookieClear",
-                "ProcessorDataText",
-                "ProcessorDataExcel",
+                "ProcessorDataDefault",
                 "ProcessorCustomCodeDefault"
             ]
         },
@@ -15936,54 +15997,30 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.CheckpointBase": {
+        "domain.Condition": {
             "type": "object",
             "properties": {
-                "actualResult": {
+                "desc": {
                     "type": "string"
-                },
-                "conditionEntityId": {
-                    "description": "refer to entity po id in domain object",
-                    "type": "integer"
-                },
-                "conditionEntityType": {
-                    "description": "for log only",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/consts.ConditionType"
-                        }
-                    ]
-                },
-                "conditionId": {
-                    "type": "integer"
                 },
                 "disabled": {
                     "type": "boolean"
                 },
-                "expression": {
-                    "type": "string"
-                },
-                "extractorVariable": {
-                    "type": "string"
-                },
-                "invokeId": {
-                    "description": "for log only",
+                "entityData": {},
+                "entityId": {
                     "type": "integer"
                 },
-                "operator": {
-                    "$ref": "#/definitions/consts.ComparisonOperator"
-                },
-                "resultMsg": {
+                "entityType": {
                     "type": "string"
                 },
-                "resultStatus": {
-                    "$ref": "#/definitions/consts.ResultStatus"
+                "id": {
+                    "type": "integer"
                 },
-                "type": {
-                    "$ref": "#/definitions/consts.CheckpointType"
-                },
-                "value": {
+                "name": {
                     "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
                 }
             }
         },
@@ -15992,8 +16029,7 @@ const docTemplate = `{
             "additionalProperties": {
                 "type": "array",
                 "items": {
-                    "type": "object",
-                    "additionalProperties": true
+                    "$ref": "#/definitions/domain.VarKeyValuePair"
                 }
             }
         },
@@ -16108,6 +16144,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/domain.Param"
                     }
+                },
+                "responseDefine": {
+                    "$ref": "#/definitions/domain.Condition"
                 },
                 "scenarioProcessorId": {
                     "type": "integer"
@@ -16229,6 +16268,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "path": {
                     "type": "string"
                 },
                 "value": {}
@@ -16517,27 +16559,6 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.ExecVariable": {
-            "type": "object",
-            "properties": {
-                "expression": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "interfaceId": {
-                    "type": "integer"
-                },
-                "isShare": {
-                    "$ref": "#/definitions/consts.ExtractorScope"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "value": {}
-            }
-        },
         "domain.ExtractorBase": {
             "type": "object",
             "properties": {
@@ -16567,6 +16588,10 @@ const docTemplate = `{
                 },
                 "conditionId": {
                     "type": "integer"
+                },
+                "default": {
+                    "description": "for cookie",
+                    "type": "string"
                 },
                 "disabled": {
                     "type": "boolean"
@@ -16932,54 +16957,6 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
-                }
-            }
-        },
-        "domain.ScriptBase": {
-            "type": "object",
-            "properties": {
-                "conditionEntityId": {
-                    "description": "refer to po id in domain object",
-                    "type": "integer"
-                },
-                "conditionEntityType": {
-                    "description": "for log only",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/consts.ConditionType"
-                        }
-                    ]
-                },
-                "conditionId": {
-                    "type": "integer"
-                },
-                "conditionType": {
-                    "$ref": "#/definitions/consts.ConditionSrc"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "invokeId": {
-                    "description": "for log only",
-                    "type": "integer"
-                },
-                "output": {
-                    "type": "string"
-                },
-                "resultMsg": {
-                    "type": "string"
-                },
-                "resultStatus": {
-                    "$ref": "#/definitions/consts.ResultStatus"
-                },
-                "variableSettings": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.ExecVariable"
-                    }
                 }
             }
         },
@@ -17359,6 +17336,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "description": "for cookie",
                     "type": "string"
                 },
                 "disabled": {
@@ -17989,6 +17970,9 @@ const docTemplate = `{
                 "updatedAt": {
                     "type": "string"
                 },
+                "updatedBy": {
+                    "type": "integer"
+                },
                 "useId": {
                     "type": "integer"
                 }
@@ -18027,6 +18011,12 @@ const docTemplate = `{
                 "maintainer": {
                     "type": "string"
                 },
+                "methods": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/consts.HttpMethod"
+                    }
+                },
                 "path": {
                     "type": "string"
                 },
@@ -18064,6 +18054,9 @@ const docTemplate = `{
                     }
                 },
                 "title": {
+                    "type": "string"
+                },
+                "updateUser": {
                     "type": "string"
                 },
                 "updatedAt": {
@@ -18997,6 +18990,10 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "default": {
+                    "description": "for cookie",
+                    "type": "string"
+                },
                 "disabled": {
                     "type": "boolean"
                 },
@@ -19044,9 +19041,6 @@ const docTemplate = `{
         "model.ExecLogProcessor": {
             "type": "object",
             "properties": {
-                "Detail": {
-                    "type": "string"
-                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -19054,6 +19048,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "desc": {
+                    "type": "string"
+                },
+                "detail": {
                     "type": "string"
                 },
                 "disabled": {
@@ -19086,6 +19083,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.ExecLogExtractor"
                     }
+                },
+                "invokeId": {
+                    "type": "integer"
                 },
                 "logs": {
                     "type": "array",
@@ -19132,6 +19132,9 @@ const docTemplate = `{
                 },
                 "resultStatus": {
                     "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "round": {
+                    "type": "string"
                 },
                 "scenarioId": {
                     "type": "integer"
@@ -19200,6 +19203,13 @@ const docTemplate = `{
                 },
                 "categoryId": {
                     "type": "integer"
+                },
+                "createUserId": {
+                    "type": "integer"
+                },
+                "createUserName": {
+                    "description": "创建人姓名",
+                    "type": "string"
                 },
                 "createdAt": {
                     "type": "string"
@@ -19350,6 +19360,9 @@ const docTemplate = `{
                 "startTime": {
                     "type": "string"
                 },
+                "stat": {
+                    "type": "string"
+                },
                 "totalAssertionNum": {
                     "type": "integer"
                 },
@@ -19402,6 +19415,9 @@ const docTemplate = `{
                 "execEnvId": {
                     "description": "执行环境Id",
                     "type": "integer"
+                },
+                "execUserName": {
+                    "type": "string"
                 },
                 "failAssertionNum": {
                     "type": "integer"
@@ -19470,6 +19486,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "stat": {
                     "type": "string"
                 },
                 "totalAssertionNum": {
@@ -19567,6 +19586,9 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "datapoolId": {
+                    "type": "integer"
+                },
                 "default": {
                     "type": "string"
                 },
@@ -19591,9 +19613,6 @@ const docTemplate = `{
                 "processorID": {
                     "type": "integer"
                 },
-                "processorInterfaceSrc": {
-                    "$ref": "#/definitions/consts.ProcessorInterfaceSrc"
-                },
                 "processorType": {
                     "$ref": "#/definitions/consts.ProcessorType"
                 },
@@ -19603,8 +19622,11 @@ const docTemplate = `{
                 "separator": {
                     "type": "string"
                 },
+                "src": {
+                    "$ref": "#/definitions/consts.DataItSrc"
+                },
                 "type": {
-                    "$ref": "#/definitions/consts.DataSource"
+                    "$ref": "#/definitions/consts.DataItType"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -19882,9 +19904,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "createUserName": {
+                    "description": "用户登录名",
                     "type": "string"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "creatorName": {
                     "type": "string"
                 },
                 "currEnvId": {
@@ -19922,6 +19948,12 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/consts.TestType"
+                },
+                "updateUserId": {
+                    "type": "integer"
+                },
+                "updateUserName": {
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -19944,9 +19976,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "createUserName": {
+                    "description": "用户登录名",
                     "type": "string"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "creatorName": {
                     "type": "string"
                 },
                 "currEnvId": {
@@ -19984,6 +20020,12 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/consts.TestType"
+                },
+                "updateUserId": {
+                    "type": "integer"
+                },
+                "updateUserName": {
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -20023,6 +20065,9 @@ const docTemplate = `{
                 },
                 "execEnvId": {
                     "type": "integer"
+                },
+                "execUserName": {
+                    "type": "string"
                 },
                 "failAssertionNum": {
                     "type": "integer"
@@ -20091,6 +20136,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "stat": {
                     "type": "string"
                 },
                 "totalAssertionNum": {
@@ -20141,6 +20189,9 @@ const docTemplate = `{
                 "execEnvId": {
                     "type": "integer"
                 },
+                "execUserName": {
+                    "type": "string"
+                },
                 "failAssertionNum": {
                     "type": "integer"
                 },
@@ -20208,6 +20259,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "stat": {
                     "type": "string"
                 },
                 "totalAssertionNum": {
@@ -20962,6 +21016,9 @@ const docTemplate = `{
         "serverDomain.DiagnoseInterfaceSaveReq": {
             "type": "object",
             "properties": {
+                "createdBy": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -20982,6 +21039,9 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/serverConsts.DiagnoseInterfaceType"
+                },
+                "updatedBy": {
+                    "type": "integer"
                 }
             }
         },
@@ -21207,6 +21267,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -21267,7 +21330,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "parentId": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "projectId": {
                     "type": "integer"
@@ -21366,6 +21429,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "updateUser": {
                     "type": "string"
                 },
                 "version": {
@@ -21803,6 +21869,27 @@ const docTemplate = `{
                 }
             }
         },
+        "serverDomain.MockJsExpression": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "result": {}
+            }
+        },
         "serverDomain.OpenApiCookie": {
             "type": "object",
             "properties": {
@@ -22110,6 +22197,10 @@ const docTemplate = `{
             "properties": {
                 "adminName": {
                     "description": "负责人姓名",
+                    "type": "string"
+                },
+                "createUserName": {
+                    "description": "创建人姓名",
                     "type": "string"
                 },
                 "createdAt": {

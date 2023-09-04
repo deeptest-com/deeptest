@@ -6047,6 +6047,40 @@
                 }
             }
         },
+        "/api/v1/mockjs/expressions": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mock"
+                ],
+                "summary": "mockJs规则列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/serverDomain.MockJsExpression"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/notRelationScenarioList": {
             "get": {
                 "consumes": [
@@ -8140,7 +8174,7 @@
                         "required": true
                     },
                     {
-                        "description": "Create project Request Object",
+                        "description": "CreateExpression project Request Object",
                         "name": "ProjectReq",
                         "in": "body",
                         "required": true,
@@ -8999,20 +9033,6 @@
                         "type": "integer",
                         "description": "当前项目ID",
                         "name": "currProjectId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "用户ID",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "项目ID",
-                        "name": "project_id",
                         "in": "query",
                         "required": true
                     }
@@ -14457,6 +14477,10 @@
                 "data": {},
                 "msg": {
                     "type": "string"
+                },
+                "msgKey": {
+                    "description": "show i118 msg on client side",
+                    "type": "string"
                 }
             }
         },
@@ -14668,6 +14692,36 @@
                 }
             }
         },
+        "agentDomain.InterfaceStat": {
+            "type": "object",
+            "properties": {
+                "checkpointFail": {
+                    "type": "integer"
+                },
+                "checkpointPass": {
+                    "type": "integer"
+                },
+                "interfaceCount": {
+                    "type": "integer"
+                },
+                "interfaceDurationAverage": {
+                    "type": "integer"
+                },
+                "interfaceDurationTotal": {
+                    "description": "milliseconds",
+                    "type": "integer"
+                },
+                "interfaceFail": {
+                    "type": "integer"
+                },
+                "interfacePass": {
+                    "type": "integer"
+                },
+                "interfaceSkip": {
+                    "type": "integer"
+                }
+            }
+        },
         "agentDomain.PlanExecResult": {
             "type": "object",
             "properties": {
@@ -14688,6 +14742,9 @@
                     "items": {
                         "$ref": "#/definitions/agentDomain.ScenarioExecResult"
                     }
+                },
+                "stat": {
+                    "$ref": "#/definitions/agentDomain.InterfaceStat"
                 }
             }
         },
@@ -14804,13 +14861,8 @@
                     "description": "for loop break processor",
                     "type": "boolean"
                 },
-                "checkpointsResult": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.CheckpointBase"
-                    }
-                },
                 "cost": {
+                    "description": "milliseconds",
                     "type": "integer"
                 },
                 "debugInterfaceId": {
@@ -14831,12 +14883,6 @@
                 },
                 "environmentId": {
                     "type": "integer"
-                },
-                "extractorsResult": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.ExtractorBase"
-                    }
                 },
                 "httpStatusCode": {
                     "$ref": "#/definitions/consts.HttpRespCode"
@@ -14873,6 +14919,18 @@
                 "parentLogId": {
                     "type": "string"
                 },
+                "postConditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.InterfaceExecCondition"
+                    }
+                },
+                "preConditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.InterfaceExecCondition"
+                    }
+                },
                 "processorCategory": {
                     "$ref": "#/definitions/consts.ProcessorCategory"
                 },
@@ -14901,26 +14959,25 @@
                 "resultStatus": {
                     "$ref": "#/definitions/consts.ResultStatus"
                 },
+                "round": {
+                    "type": "string"
+                },
                 "scenarioId": {
                     "type": "integer"
                 },
                 "scenarioReportId": {
                     "type": "integer"
                 },
-                "scriptsResult": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.ScriptBase"
-                    }
-                },
                 "startTime": {
                     "type": "string"
+                },
+                "stat": {
+                    "$ref": "#/definitions/agentDomain.InterfaceStat"
                 },
                 "summary": {
                     "type": "string"
                 },
                 "useId": {
-                    "description": "ReportId uint `json:\"reportId\"`",
                     "type": "integer"
                 }
             }
@@ -15029,6 +15086,9 @@
                 "result": {
                     "$ref": "#/definitions/agentDomain.ScenarioExecResult"
                 },
+                "round": {
+                    "type": "string"
+                },
                 "scenarioId": {
                     "type": "integer"
                 },
@@ -15096,6 +15156,9 @@
                 },
                 "result": {
                     "$ref": "#/definitions/agentDomain.ScenarioExecResult"
+                },
+                "round": {
+                    "type": "string"
                 },
                 "scenarioId": {
                     "type": "integer"
@@ -15239,31 +15302,33 @@
                 "NotContain"
             ]
         },
-        "consts.ConditionSrc": {
-            "type": "string",
-            "enum": [
-                "pre",
-                "post"
-            ],
-            "x-enum-varnames": [
-                "ConditionSrcPre",
-                "ConditionSrcPost"
-            ]
-        },
         "consts.ConditionType": {
             "type": "string",
             "enum": [
                 "extractor",
                 "checkpoint",
-                "script"
+                "script",
+                "responseDefine"
             ],
             "x-enum-varnames": [
                 "ConditionTypeExtractor",
                 "ConditionTypeCheckpoint",
-                "ConditionTypeScript"
+                "ConditionTypeScript",
+                "ConditionTypeResponseDefine"
             ]
         },
-        "consts.DataSource": {
+        "consts.DataItSrc": {
+            "type": "string",
+            "enum": [
+                "fileUpload",
+                "datapool"
+            ],
+            "x-enum-varnames": [
+                "SrcFileUpload",
+                "SrcDatapool"
+            ]
+        },
+        "consts.DataItType": {
             "type": "string",
             "enum": [
                 "text",
@@ -15306,11 +15371,13 @@
             "type": "string",
             "enum": [
                 "header",
-                "body"
+                "body",
+                "cookie"
             ],
             "x-enum-varnames": [
                 "Header",
-                "Body"
+                "Body",
+                "Cookie"
             ]
         },
         "consts.ExtractorType": {
@@ -15626,7 +15693,6 @@
                 "processor_loop_in",
                 "processor_loop_range",
                 "processor_loop_until",
-                "processor_loop_break",
                 "processor_variable_set",
                 "processor_variable_clear",
                 "processor_assertion_default",
@@ -15634,11 +15700,9 @@
                 "processor_extractor_jsonquery",
                 "processor_extractor_htmlquery",
                 "processor_extractor_xmlquery",
-                "processor_cookie_get",
                 "processor_cookie_set",
                 "processor_cookie_clear",
-                "processor_data_text",
-                "processor_data_excel",
+                "processor_data_default",
                 "processor_custom_code_default"
             ],
             "x-enum-varnames": [
@@ -15653,7 +15717,6 @@
                 "ProcessorLoopIn",
                 "ProcessorLoopRange",
                 "ProcessorLoopUntil",
-                "ProcessorLoopBreak",
                 "ProcessorVariableSet",
                 "ProcessorVariableClear",
                 "ProcessorAssertionDefault",
@@ -15661,11 +15724,9 @@
                 "ProcessorExtractorJsonQuery",
                 "ProcessorExtractorHtmlQuery",
                 "ProcessorExtractorXmlQuery",
-                "ProcessorCookieGet",
                 "ProcessorCookieSet",
                 "ProcessorCookieClear",
-                "ProcessorDataText",
-                "ProcessorDataExcel",
+                "ProcessorDataDefault",
                 "ProcessorCustomCodeDefault"
             ]
         },
@@ -15926,54 +15987,30 @@
                 }
             }
         },
-        "domain.CheckpointBase": {
+        "domain.Condition": {
             "type": "object",
             "properties": {
-                "actualResult": {
+                "desc": {
                     "type": "string"
-                },
-                "conditionEntityId": {
-                    "description": "refer to entity po id in domain object",
-                    "type": "integer"
-                },
-                "conditionEntityType": {
-                    "description": "for log only",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/consts.ConditionType"
-                        }
-                    ]
-                },
-                "conditionId": {
-                    "type": "integer"
                 },
                 "disabled": {
                     "type": "boolean"
                 },
-                "expression": {
-                    "type": "string"
-                },
-                "extractorVariable": {
-                    "type": "string"
-                },
-                "invokeId": {
-                    "description": "for log only",
+                "entityData": {},
+                "entityId": {
                     "type": "integer"
                 },
-                "operator": {
-                    "$ref": "#/definitions/consts.ComparisonOperator"
-                },
-                "resultMsg": {
+                "entityType": {
                     "type": "string"
                 },
-                "resultStatus": {
-                    "$ref": "#/definitions/consts.ResultStatus"
+                "id": {
+                    "type": "integer"
                 },
-                "type": {
-                    "$ref": "#/definitions/consts.CheckpointType"
-                },
-                "value": {
+                "name": {
                     "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
                 }
             }
         },
@@ -15982,8 +16019,7 @@
             "additionalProperties": {
                 "type": "array",
                 "items": {
-                    "type": "object",
-                    "additionalProperties": true
+                    "$ref": "#/definitions/domain.VarKeyValuePair"
                 }
             }
         },
@@ -16098,6 +16134,9 @@
                     "items": {
                         "$ref": "#/definitions/domain.Param"
                     }
+                },
+                "responseDefine": {
+                    "$ref": "#/definitions/domain.Condition"
                 },
                 "scenarioProcessorId": {
                     "type": "integer"
@@ -16219,6 +16258,9 @@
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "path": {
                     "type": "string"
                 },
                 "value": {}
@@ -16507,27 +16549,6 @@
                 }
             }
         },
-        "domain.ExecVariable": {
-            "type": "object",
-            "properties": {
-                "expression": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "interfaceId": {
-                    "type": "integer"
-                },
-                "isShare": {
-                    "$ref": "#/definitions/consts.ExtractorScope"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "value": {}
-            }
-        },
         "domain.ExtractorBase": {
             "type": "object",
             "properties": {
@@ -16557,6 +16578,10 @@
                 },
                 "conditionId": {
                     "type": "integer"
+                },
+                "default": {
+                    "description": "for cookie",
+                    "type": "string"
                 },
                 "disabled": {
                     "type": "boolean"
@@ -16922,54 +16947,6 @@
                 },
                 "type": {
                     "type": "string"
-                }
-            }
-        },
-        "domain.ScriptBase": {
-            "type": "object",
-            "properties": {
-                "conditionEntityId": {
-                    "description": "refer to po id in domain object",
-                    "type": "integer"
-                },
-                "conditionEntityType": {
-                    "description": "for log only",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/consts.ConditionType"
-                        }
-                    ]
-                },
-                "conditionId": {
-                    "type": "integer"
-                },
-                "conditionType": {
-                    "$ref": "#/definitions/consts.ConditionSrc"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "invokeId": {
-                    "description": "for log only",
-                    "type": "integer"
-                },
-                "output": {
-                    "type": "string"
-                },
-                "resultMsg": {
-                    "type": "string"
-                },
-                "resultStatus": {
-                    "$ref": "#/definitions/consts.ResultStatus"
-                },
-                "variableSettings": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.ExecVariable"
-                    }
                 }
             }
         },
@@ -17349,6 +17326,10 @@
                     "type": "integer"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "description": "for cookie",
                     "type": "string"
                 },
                 "disabled": {
@@ -17979,6 +17960,9 @@
                 "updatedAt": {
                     "type": "string"
                 },
+                "updatedBy": {
+                    "type": "integer"
+                },
                 "useId": {
                     "type": "integer"
                 }
@@ -18017,6 +18001,12 @@
                 "maintainer": {
                     "type": "string"
                 },
+                "methods": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/consts.HttpMethod"
+                    }
+                },
                 "path": {
                     "type": "string"
                 },
@@ -18054,6 +18044,9 @@
                     }
                 },
                 "title": {
+                    "type": "string"
+                },
+                "updateUser": {
                     "type": "string"
                 },
                 "updatedAt": {
@@ -18987,6 +18980,10 @@
                 "createdAt": {
                     "type": "string"
                 },
+                "default": {
+                    "description": "for cookie",
+                    "type": "string"
+                },
                 "disabled": {
                     "type": "boolean"
                 },
@@ -19034,9 +19031,6 @@
         "model.ExecLogProcessor": {
             "type": "object",
             "properties": {
-                "Detail": {
-                    "type": "string"
-                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -19044,6 +19038,9 @@
                     "type": "integer"
                 },
                 "desc": {
+                    "type": "string"
+                },
+                "detail": {
                     "type": "string"
                 },
                 "disabled": {
@@ -19076,6 +19073,9 @@
                     "items": {
                         "$ref": "#/definitions/model.ExecLogExtractor"
                     }
+                },
+                "invokeId": {
+                    "type": "integer"
                 },
                 "logs": {
                     "type": "array",
@@ -19122,6 +19122,9 @@
                 },
                 "resultStatus": {
                     "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "round": {
+                    "type": "string"
                 },
                 "scenarioId": {
                     "type": "integer"
@@ -19190,6 +19193,13 @@
                 },
                 "categoryId": {
                     "type": "integer"
+                },
+                "createUserId": {
+                    "type": "integer"
+                },
+                "createUserName": {
+                    "description": "创建人姓名",
+                    "type": "string"
                 },
                 "createdAt": {
                     "type": "string"
@@ -19340,6 +19350,9 @@
                 "startTime": {
                     "type": "string"
                 },
+                "stat": {
+                    "type": "string"
+                },
                 "totalAssertionNum": {
                     "type": "integer"
                 },
@@ -19392,6 +19405,9 @@
                 "execEnvId": {
                     "description": "执行环境Id",
                     "type": "integer"
+                },
+                "execUserName": {
+                    "type": "string"
                 },
                 "failAssertionNum": {
                     "type": "integer"
@@ -19460,6 +19476,9 @@
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "stat": {
                     "type": "string"
                 },
                 "totalAssertionNum": {
@@ -19557,6 +19576,9 @@
                 "createdAt": {
                     "type": "string"
                 },
+                "datapoolId": {
+                    "type": "integer"
+                },
                 "default": {
                     "type": "string"
                 },
@@ -19581,9 +19603,6 @@
                 "processorID": {
                     "type": "integer"
                 },
-                "processorInterfaceSrc": {
-                    "$ref": "#/definitions/consts.ProcessorInterfaceSrc"
-                },
                 "processorType": {
                     "$ref": "#/definitions/consts.ProcessorType"
                 },
@@ -19593,8 +19612,11 @@
                 "separator": {
                     "type": "string"
                 },
+                "src": {
+                    "$ref": "#/definitions/consts.DataItSrc"
+                },
                 "type": {
-                    "$ref": "#/definitions/consts.DataSource"
+                    "$ref": "#/definitions/consts.DataItType"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -19872,9 +19894,13 @@
                     "type": "integer"
                 },
                 "createUserName": {
+                    "description": "用户登录名",
                     "type": "string"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "creatorName": {
                     "type": "string"
                 },
                 "currEnvId": {
@@ -19912,6 +19938,12 @@
                 },
                 "type": {
                     "$ref": "#/definitions/consts.TestType"
+                },
+                "updateUserId": {
+                    "type": "integer"
+                },
+                "updateUserName": {
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -19934,9 +19966,13 @@
                     "type": "integer"
                 },
                 "createUserName": {
+                    "description": "用户登录名",
                     "type": "string"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "creatorName": {
                     "type": "string"
                 },
                 "currEnvId": {
@@ -19974,6 +20010,12 @@
                 },
                 "type": {
                     "$ref": "#/definitions/consts.TestType"
+                },
+                "updateUserId": {
+                    "type": "integer"
+                },
+                "updateUserName": {
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -20013,6 +20055,9 @@
                 },
                 "execEnvId": {
                     "type": "integer"
+                },
+                "execUserName": {
+                    "type": "string"
                 },
                 "failAssertionNum": {
                     "type": "integer"
@@ -20081,6 +20126,9 @@
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "stat": {
                     "type": "string"
                 },
                 "totalAssertionNum": {
@@ -20131,6 +20179,9 @@
                 "execEnvId": {
                     "type": "integer"
                 },
+                "execUserName": {
+                    "type": "string"
+                },
                 "failAssertionNum": {
                     "type": "integer"
                 },
@@ -20198,6 +20249,9 @@
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "stat": {
                     "type": "string"
                 },
                 "totalAssertionNum": {
@@ -20952,6 +21006,9 @@
         "serverDomain.DiagnoseInterfaceSaveReq": {
             "type": "object",
             "properties": {
+                "createdBy": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -20972,6 +21029,9 @@
                 },
                 "type": {
                     "$ref": "#/definitions/serverConsts.DiagnoseInterfaceType"
+                },
+                "updatedBy": {
+                    "type": "integer"
                 }
             }
         },
@@ -21197,6 +21257,9 @@
                 "id": {
                     "type": "integer"
                 },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -21257,7 +21320,7 @@
                     "type": "integer"
                 },
                 "parentId": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "projectId": {
                     "type": "integer"
@@ -21356,6 +21419,9 @@
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "updateUser": {
                     "type": "string"
                 },
                 "version": {
@@ -21793,6 +21859,27 @@
                 }
             }
         },
+        "serverDomain.MockJsExpression": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "result": {}
+            }
+        },
         "serverDomain.OpenApiCookie": {
             "type": "object",
             "properties": {
@@ -22100,6 +22187,10 @@
             "properties": {
                 "adminName": {
                     "description": "负责人姓名",
+                    "type": "string"
+                },
+                "createUserName": {
+                    "description": "创建人姓名",
                     "type": "string"
                 },
                 "createdAt": {

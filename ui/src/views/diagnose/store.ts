@@ -123,6 +123,7 @@ const StoreModel: ModuleType = {
     actions: {
         async loadTree({ commit, state, dispatch }, params: any) {
             try {
+                commit('setTreeData', []);
                 const response: ResponseData = await query(params);
                 if (response.code != 0) return;
 
@@ -286,6 +287,10 @@ const StoreModel: ModuleType = {
 
             if (needReload && openTab.id) {
                 dispatch('openInterfaceTab', openTab);
+            }
+
+            if (needReload && !openTab.id) {
+                commit('setInterfaceId', 0);
             }
         },
         async removeInterfaceTabs({commit, dispatch, state}, id: number) {

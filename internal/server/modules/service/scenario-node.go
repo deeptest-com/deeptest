@@ -14,6 +14,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
+	"gorm.io/gorm"
 	"log"
 	"strings"
 )
@@ -67,6 +68,7 @@ func (s *ScenarioNodeService) ToTos(pos []*model.Processor, withDetail bool) (to
 		}
 		copier.CopyWithOption(&to, po, copier.Option{DeepCopy: true})
 		to.Disable = po.Disabled
+		to.Comments = po.Comments
 
 		if withDetail {
 			entity, _ := s.ScenarioProcessorService.GetEntityTo(&to)
@@ -84,7 +86,7 @@ func (s *ScenarioNodeService) ToTos(pos []*model.Processor, withDetail bool) (to
 	return
 }
 
-func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioReq) (ret model.Processor, err *_domain.BizErr) {
+func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioReq, source string) (ret model.Processor, err *_domain.BizErr) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(uint(req.TargetProcessorId))
 	if targetProcessor.ID == 0 {
 		return
@@ -100,6 +102,8 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		ProjectId:  req.ProjectId,
 		CreatedBy:  req.CreateBy,
 		BaseModel:  model.BaseModel{Disabled: targetProcessor.Disabled},
+		Comments:   req.Comments,
+		Method:     req.Method,
 	}
 
 	if req.Mode == "child" {
@@ -127,25 +131,56 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		s.ScenarioNodeRepo.Save(&targetProcessor)
 	}
 
-	if ret.EntityType == consts.ProcessorInterfaceDefault { // create debug interface
-		debugInterfaceId, _ := s.DebugInterfaceService.CreateDefault(ret.ProcessorInterfaceSrc, req.ProjectId)
-
-		s.ScenarioProcessorRepo.UpdateInterfaceId(ret.ID, debugInterfaceId)
-
-	} else if ret.EntityType == consts.ProcessorLogicElse { // create default entity
-		entity := model.ProcessorLogic{
-			ProcessorEntityBase: agentExec.ProcessorEntityBase{
-				ProcessorID:       ret.ID,
-				ProcessorCategory: ret.EntityCategory,
-				ProcessorType:     ret.EntityType,
-			},
+	if source == "copy" {
+		if ret.EntityType == consts.ProcessorInterfaceDefault {
+			s.CopyInterfaceEntity(req.SrcProcessorId, ret.ID)
+		} else {
+			s.ScenarioProcessorRepo.CopyEntity(req.SrcProcessorId, ret.ID)
 		}
-		s.ScenarioProcessorRepo.SaveLogic(&entity)
+	} else {
+		if ret.EntityType == consts.ProcessorInterfaceDefault { // create debug interface
+			debugInterfaceId, _ := s.DebugInterfaceService.CreateDefault(ret.ProcessorInterfaceSrc, req.ProjectId)
+			s.ScenarioProcessorRepo.UpdateInterfaceId(ret.ID, debugInterfaceId)
+		} else if ret.EntityType == consts.ProcessorLogicElse { // create default entity
+			entity := model.ProcessorLogic{
+				ProcessorEntityBase: agentExec.ProcessorEntityBase{
+					ProcessorID:       ret.ID,
+					ProcessorCategory: ret.EntityCategory,
+					ProcessorType:     ret.EntityType,
+				},
+			}
+			_ = s.ScenarioProcessorRepo.SaveLogic(&entity)
+
+		}
 	}
 
 	return
 }
 
+func (s *ScenarioNodeService) CopyInterfaceEntity(srcProcessorId, distProcessorId uint) (err error) {
+	srcProcessor, err := s.ScenarioNodeRepo.Get(srcProcessorId)
+	if err != nil {
+		return
+	}
+
+	debugData, err := s.DebugInterfaceService.GetDebugDataFromDebugInterface(srcProcessor.EntityId)
+	if err != nil {
+		return
+	}
+
+	debugData.ScenarioProcessorId = distProcessorId
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, debugData.DebugInterfaceId)
+	if err != nil {
+		return
+	}
+
+	err = s.ScenarioProcessorRepo.UpdateInterfaceId(distProcessorId, debugInterface.ID)
+	if err != nil {
+		return err
+	}
+
+	return
+}
 func (s *ScenarioNodeService) AddInterfacesFromDiagnose(req serverDomain.ScenarioAddInterfacesFromTreeReq) (ret model.Processor, err error) {
 	targetProcessor, _ := s.ScenarioProcessorRepo.Get(req.TargetId)
 
@@ -556,4 +591,99 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 
 	return
 
+}
+
+func (s *ScenarioNodeService) CopyProcessor(req *agentExec.Processor, CreateBy uint, mod string, rootId *uint) (err *_domain.BizErr) {
+	if req.EntityType == consts.ProcessorLogicElse {
+		return
+	}
+
+	srcNextNode, srcNextNodeErr := s.ScenarioNodeRepo.GetNextNode(req.ID)
+	if srcNextNodeErr != nil && srcNextNodeErr != gorm.ErrRecordNotFound {
+		return
+	}
+
+	currentNodeReq := s.toProcessorReq(req, CreateBy, mod)
+	if mod == "siblings" && srcNextNode.EntityType == consts.ProcessorLogicElse {
+		currentNodeReq.TargetProcessorId = int(srcNextNode.ID)
+	}
+
+	currentProcessor, err := s.AddProcessor(currentNodeReq, "copy")
+	if err != nil {
+		return err
+	}
+
+	if srcNextNode.EntityType == consts.ProcessorLogicElse {
+		srcNextNodeTree, srcNextErr := s.GetNodeTree(req.ScenarioId, srcNextNode)
+		if srcNextErr != nil && srcNextErr != gorm.ErrRecordNotFound {
+			return
+		}
+
+		nextNodeReq := s.toProcessorReq(srcNextNodeTree, CreateBy, "siblings")
+		nextNodeReq.TargetProcessorId = int(currentProcessor.ID)
+		nextNodeReq.SrcProcessorId = srcNextNodeTree.ID
+
+		nextProcessor, err := s.AddProcessor(nextNodeReq, "copy")
+		if err != nil {
+			return err
+		}
+
+		for _, child := range srcNextNodeTree.Children {
+			child.ParentId = nextProcessor.ID
+			if err = s.CopyProcessor(child, CreateBy, "child", rootId); err != nil {
+				return err
+			}
+		}
+	}
+
+	if *rootId == 0 && mod == "siblings" {
+		*rootId = currentProcessor.ID
+	}
+
+	for _, child := range req.Children {
+		child.ParentId = currentProcessor.ID
+		if err = s.CopyProcessor(child, CreateBy, "child", rootId); err != nil {
+			return err
+		}
+	}
+
+	return
+}
+
+func (s *ScenarioNodeService) toProcessorReq(req *agentExec.Processor, createBy uint, mod string) (ret serverDomain.ScenarioAddScenarioReq) {
+	if mod == "siblings" {
+		ret.TargetProcessorId = int(req.ID)
+	} else if mod == "child" {
+		ret.TargetProcessorId = int(req.ParentId)
+	}
+	ret.Name = req.Name
+	ret.ProcessorCategory = req.EntityCategory
+	ret.ProcessorType = req.EntityType
+	ret.ProcessorInterfaceSrc = req.ProcessorInterfaceSrc
+	ret.ProjectId = req.ProjectId
+	ret.CreateBy = createBy
+	ret.Mode = mod
+	ret.Comments = req.Comments
+	ret.Method = req.Method
+	ret.SrcProcessorId = req.ID
+
+	return
+}
+
+func (s *ScenarioNodeService) GetNodeTree(scenarioId uint, node model.Processor) (root *agentExec.Processor, err error) {
+	pos, err := s.ScenarioNodeRepo.ListByScenario(scenarioId)
+	if err != nil {
+		return
+	}
+
+	tos := s.ToTos(pos, false)
+
+	root = &agentExec.Processor{}
+	copier.CopyWithOption(root, &node, copier.Option{DeepCopy: true})
+
+	root.Slots = iris.Map{"icon": "icon"}
+
+	s.ScenarioNodeRepo.MakeTree(tos[1:], root)
+
+	return
 }

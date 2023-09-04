@@ -4,13 +4,17 @@
 <template>
   <div class="container" :style="containerStyle || {}">
     <div class="content">
-      <multipane class="vertical-panes" layout="vertical">
-        <div class="pane left" :style="{ minWidth: '150px', width: '300px', maxWidth: '600px' }">
+      <multipane class="vertical-panes" layout="vertical" @paneResize="handlePaneResize">
+        <div ref="paneLeft" :class="['pane', 'left', !isFold && 'unfold']" :style="{ minWidth: '150px', width: '300px', maxWidth: '600px' }">
           <slot name="left"></slot>
         </div>
-        <multipane-resizer/>
+        <multipane-resizer v-if="isFold"/>
         <div class="pane right" :style="{ flexGrow: 1  }">
           <slot name="right"></slot>
+        </div>
+        <div v-if="showExpand" class="expand-icon" @click="toggle" :style="{ marginLeft: foldIconLeft }">
+          <menu-fold-outlined v-if="isFold" />
+          <menu-unfold-outlined v-else />
         </div>
       </multipane>
     </div>
@@ -19,10 +23,31 @@
 
 <script setup lang="ts">
 import {useI18n} from "vue-i18n";
-import { defineProps } from 'vue'
+import { defineProps, nextTick, ref } from 'vue'
+import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons-vue";
+
 import {Multipane, MultipaneResizer} from '@/components/Resize/index';
+
 const {t} = useI18n();
-const props = defineProps(['containerStyle'])
+const props = defineProps(['containerStyle', 'showExpand'])
+const isFold = ref(true);
+const paneLeft = ref();
+const foldIconLeft = ref('288px');
+
+const toggle = async () => {
+  isFold.value = !isFold.value;
+  await nextTick();
+  setTimeout(() => {
+    const width = paneLeft.value ? paneLeft.value.getBoundingClientRect().width : 0;
+    foldIconLeft.value = !isFold.value ? '-12px' : `${width - 12}px`;
+  }, 200)
+};
+
+const handlePaneResize = (...args) => {
+  const width = Number(args[2].split('px')[0]);
+  foldIconLeft.value = `${(width < 150 ? 150 : width > 600 ? 600 : width) - 12}px`;
+};
+
 </script>
 
 <style lang="less" scoped>
@@ -39,9 +64,26 @@ const props = defineProps(['containerStyle'])
     width: 100%;
     position: relative;
     height: 100%;
+
+    .expand-icon {
+      position: fixed;
+      font-size: 18px;
+      color: #1890ff;
+    }
     .left {
       overflow-y: scroll;
       position: relative;
+
+      &:not(.left-drag) {
+        transition: all .2s ease-in-out;
+      }
+
+      &.unfold {
+        width: 0 !important;
+        min-width: 0 !important;
+        transition: all .5s ease-in-out;
+      }
+
     }
 
     .right {

@@ -8,7 +8,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"strings"
 )
 
 func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
@@ -59,37 +58,6 @@ func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err erro
 	req.BaseRequest.Url = reqUri // rollback for saved to db
 
 	ret.Id = req.DebugInterfaceId
-
-	return
-}
-
-func GetInterfaceContentProps(ret *domain.DebugResponse) {
-	ret.ContentLang = consts.LangTEXT
-
-	if ret.ContentLang == "" {
-		return
-	}
-
-	arr := strings.Split(string(ret.ContentType), ";")
-	arr1 := strings.Split(arr[0], "/")
-	if len(arr1) == 1 {
-		return
-	}
-
-	typeName := arr1[1]
-	if typeName == "text" || typeName == "plain" {
-		typeName = consts.LangTEXT.String()
-	}
-	ret.ContentLang = consts.HttpRespLangType(typeName)
-
-	if len(arr) > 1 {
-		arr2 := strings.Split(arr[1], "=")
-		if len(arr2) > 1 {
-			ret.ContentCharset = consts.HttpRespCharset(arr2[1])
-		}
-	}
-
-	//ret.NodeContent = mockHelper.FormatXml(ret.NodeContent)
 
 	return
 }

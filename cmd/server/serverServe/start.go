@@ -3,7 +3,6 @@ package serverServe
 import (
 	stdContext "context"
 	"fmt"
-	"github.com/aaronchen2k/deeptest"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
@@ -16,12 +15,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
+	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/sirupsen/logrus"
-	"net/http"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -151,12 +150,11 @@ func (webServer *WebServer) AddModule(module ...module.WebModule) {
 
 // AddWebUi 添加前端页面访问
 func (webServer *WebServer) AddWebUi() {
-	uiFs, err := deeptest.GetUiFileSys()
-	if err != nil {
-		return
-	}
+	pth := filepath.Join(dir.GetCurrentAbPath(), "ui", "dist")
+	fileUtils.MkDirIfNeeded(pth)
+	logUtils.Infof("*** ui dir: %s", pth)
 
-	webServer.app.HandleDir("/", http.FS(uiFs), iris.DirOptions{
+	webServer.app.HandleDir("/", iris.Dir(pth), iris.DirOptions{
 		IndexName: "index.html",
 		ShowList:  false,
 		SPA:       true,
@@ -165,18 +163,23 @@ func (webServer *WebServer) AddWebUi() {
 
 // AddUpload 添加上传文件访问
 func (webServer *WebServer) AddUpload() {
-	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), consts.DirUpload))
-	webServer.app.HandleDir("/upload", fsOrDir)
+	pth := filepath.Join(dir.GetCurrentAbPath(), consts.DirUpload)
+	fileUtils.MkDirIfNeeded(pth)
+	logUtils.Infof("*** upload dir: %s", pth)
+
+	webServer.app.HandleDir("/upload", iris.Dir(pth))
 }
 
 // AddTest 添加测试文件访问
 func (webServer *WebServer) AddTest() {
-	fsOrDir := iris.Dir(filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test")))
-	webServer.app.HandleDir("/test", fsOrDir)
+	pth := filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test"))
+	fileUtils.MkDirIfNeeded(pth)
+	logUtils.Infof("*** test dir: %s", pth)
+
+	webServer.app.HandleDir("/test", iris.Dir(pth))
 }
 
 func (webServer *WebServer) AddSwagger() {
-
 	swaggerConfig := swagger.Config{
 		URL:          fmt.Sprintf("swagger/doc.json"),
 		DeepLinking:  true,

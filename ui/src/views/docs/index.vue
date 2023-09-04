@@ -74,6 +74,7 @@ watch(() => {
     loading.value = true;
     data.value = await store.dispatch('Docs/getDocs', {
       projectId: currProject.value.id,
+      documentId:parseInt(query.documentId)
     });
     loading.value = false;
   }

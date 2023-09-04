@@ -349,6 +349,9 @@ func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpoi
 	}
 
 	codes := r.EndpointInterfaceRepo.GetResponseCodes(endpointInterfaceId)
+	if len(codes) == 0 {
+		return
+	}
 
 	po, err := r.GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId, by)
 	if err == gorm.ErrRecordNotFound {

@@ -5,7 +5,7 @@ captcha:
 ldap: true
 limit:
   disable: false
-  limit: 0
+  limit: false
   burst: 5
 max-size: 1024
 maxsize: 1024

@@ -68,8 +68,9 @@ type IndexModule struct {
 	DocumentModule       *router.DocumentModule       `inject:""`
 	HealthzModule        *router.HealthzModule        `inject:""`
 
-	ConfigModule *router.ConfigModule `inject:""`
-	TestsModule  *router.TestsModule  `inject:""`
+	ProjectSettingsModule *router.ProjectSettingsModule `inject:""`
+	ConfigModule          *router.ConfigModule          `inject:""`
+	TestsModule           *router.TestsModule           `inject:""`
 
 	ResponseDefineModule *router.ResponseDefineModule `inject:""`
 }
@@ -146,6 +147,7 @@ func (m *IndexModule) Party() module.WebModule {
 		m.DocumentModule.Party(),
 		m.HealthzModule.Party(),
 
+		m.ProjectSettingsModule.Party(),
 		m.ConfigModule.Party(),
 		m.TestsModule.Party(),
 		m.ResponseDefineModule.Party(),

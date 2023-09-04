@@ -361,7 +361,7 @@ const StoreModel: ModuleType = {
         async save({commit}, payload: any) {
             const resp = await  save(payload)
             if (resp.code === 0) {
-                commit('setDebugData', resp.data);
+                commit('setDebugData', { ...resp.data, action: 'save' });
 
                 return true;
             } else {

@@ -708,3 +708,10 @@ type SourceType uint
 const (
 	Swagger SourceType = 1
 )
+
+type MockPriority string
+
+const (
+	MockPrioritySmart  MockPriority = "smart"
+	MockPrioritySample MockPriority = "sample"
+)

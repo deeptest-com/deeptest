@@ -3,19 +3,15 @@ package service
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jinzhu/copier"
 	encoder "github.com/zwgblue/yaml-encoder"
-	"strconv"
 )
 
 type ServeService struct {
@@ -308,65 +304,4 @@ func (s *ServeService) ChangeServe(serveId, userId uint) (serve model.Serve, err
 	serve, err = s.ServeRepo.ChangeServe(serveId, userId)
 
 	return
-}
-
-func (s *ServeService) SaveSwaggerSync(req v1.SwaggerSyncReq) (data model.SwaggerSync, err error) {
-	var swaggerSync model.SwaggerSync
-	copier.CopyWithOption(&swaggerSync, req, copier.Option{DeepCopy: true})
-	serve, _ := s.ServeRepo.GetDefault(req.ProjectId)
-	swaggerSync.ServeId = int(serve.ID)
-	err = s.ServeRepo.SaveSwaggerSync(&swaggerSync)
-	data = swaggerSync
-	s.AddSwaggerCron(data)
-	return
-}
-
-func (s *ServeService) SwaggerSyncDetail(projectId uint) (data model.SwaggerSync, err error) {
-	return s.ServeRepo.GetSwaggerSync(projectId)
-}
-
-func (s *ServeService) SwaggerSyncList() (data []model.SwaggerSync, err error) {
-	return s.ServeRepo.GetSwaggerSyncList()
-}
-
-func (s *ServeService) GetSwaggerSyncById(id uint) (data model.SwaggerSync, err error) {
-	data, err = s.ServeRepo.GetSwaggerSyncById(id)
-	return
-}
-
-func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
-	name := "swaggerSync" + "_" + strconv.Itoa(int(item.ID))
-	s.Cron.RemoveTask(name)
-
-	if item.Switch == consts.SwitchOFF {
-		return
-	}
-
-	taskId := item.ID
-	s.Cron.AddCommonTask(name, item.Cron, func() {
-		task, err := s.GetSwaggerSyncById(taskId)
-		logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(item))
-		if err != nil {
-			logUtils.Errorf("swagger定时导入任务失败,任务ID：%v,错误原因：%v", name, err.Error())
-			return
-		}
-		if task.Switch == consts.SwitchOFF {
-			logUtils.Infof("swagger定时导入关闭,任务ID:%v", name)
-			return
-		}
-		req := v1.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: convert.FullCover}
-		err = s.EndpointInterfaceService.ImportEndpointData(req)
-		if err != nil {
-			logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
-		}
-
-		//更新实现执行时间
-		s.UpdateSwaggerSyncExecTimeById(taskId)
-		logUtils.Info("swagger定时任务结束：" + _commUtils.JsonEncode(item))
-	})
-
-}
-
-func (s *ServeService) UpdateSwaggerSyncExecTimeById(id uint) (err error) {
-	return s.ServeRepo.UpdateSwaggerSyncExecTimeById(id)
 }

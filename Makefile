@@ -53,6 +53,10 @@ gen_version_file:
 
 compile_ui:
 	@cd ui && yarn build --mode deeptest-local --dest ../client/ui && cd ..
+compile_ui_demo:
+	@cd ui && yarn build --mode deeptest-demo --dest ../client/ui && cd ..
+compile_ui_client:
+	@cd ui && yarn build --mode deeptest-client --dest ../client/ui && cd ..
 
 # launcher
 compile_launcher_win64:
@@ -110,9 +114,9 @@ compile_agent_win64:
 	@rm -rf ./${CLIENT_BIN_DIR}/*
 	@CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ${CLIENT_BIN_DIR}win32/agent.exe ${AGENT_MAIN_FILE}
+		-o ${CLIENT_BIN_DIR}win32/deeptest-agent.exe ${AGENT_MAIN_FILE}
 	@rm -rf "${CLIENT_OUT_DIR_UPGRADE}win64" && mkdir -p "${CLIENT_OUT_DIR_UPGRADE}win64" && \
-		cp ${CLIENT_BIN_DIR}win32/agent.exe "${CLIENT_OUT_DIR_UPGRADE}win64"
+		cp ${CLIENT_BIN_DIR}win32/deeptest-agent.exe "${CLIENT_OUT_DIR_UPGRADE}win64"
 package_gui_win64_client:
 	@cd client && npm run package-win64 && cd ..
 	@rm -rf ${CLIENT_OUT_DIR_EXECUTABLE}win64 && mkdir -p ${CLIENT_OUT_DIR_EXECUTABLE}win64 && \
@@ -124,9 +128,9 @@ compile_agent_win32:
 	@rm -rf ./${CLIENT_BIN_DIR}/*
 	@CGO_ENABLED=1 CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ${CLIENT_BIN_DIR}win32/agent.exe ${AGENT_MAIN_FILE}
+		-o ${CLIENT_BIN_DIR}win32/deeptest-agent.exe ${AGENT_MAIN_FILE}
 	@rm -rf "${CLIENT_OUT_DIR_UPGRADE}win32" && mkdir -p "${CLIENT_OUT_DIR_UPGRADE}win32" && \
-		cp ${CLIENT_BIN_DIR}win32/agent.exe "${CLIENT_OUT_DIR_UPGRADE}win32"
+		cp ${CLIENT_BIN_DIR}win32/deeptest-agent.exe "${CLIENT_OUT_DIR_UPGRADE}win32"
 package_gui_win32_client:
 	@cd client && npm run package-win32 && cd ..
 	@rm -rf ${CLIENT_OUT_DIR_EXECUTABLE}win32 && mkdir -p ${CLIENT_OUT_DIR_EXECUTABLE}win32 && \
@@ -139,14 +143,14 @@ compile_agent_linux:
 ifeq ($(PLATFORM),"mac")
 	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-gcc CXX=/usr/local/gcc-4.8.1-for-linux64/bin/x86_64-pc-linux-g++ \
 		${BUILD_CMD_UNIX} \
-		-o ${CLIENT_BIN_DIR}linux/agent ${AGENT_MAIN_FILE}
+		-o ${CLIENT_BIN_DIR}linux/deeptest-agent ${AGENT_MAIN_FILE}
 else
 	CGO_ENABLED=1 GOOS=linux GOARCH=amd64 CC=gcc CXX=g++ \
 		${BUILD_CMD_UNIX} \
-		-o ${CLIENT_BIN_DIR}linux/agent ${AGENT_MAIN_FILE}
+		-o ${CLIENT_BIN_DIR}linux/deeptest-agent ${AGENT_MAIN_FILE}
 endif
 	@rm -rf "${CLIENT_OUT_DIR_UPGRADE}win32" && mkdir -p "${CLIENT_OUT_DIR_UPGRADE}linux" && \
-		cp ${CLIENT_BIN_DIR}linux/agent "${CLIENT_OUT_DIR_UPGRADE}linux"
+		cp ${CLIENT_BIN_DIR}linux/deeptest-agent "${CLIENT_OUT_DIR_UPGRADE}linux"
 package_gui_linux_client:
 	@cd client && npm run package-linux && cd ..
 	@rm -rf ${CLIENT_OUT_DIR_EXECUTABLE}linux && mkdir -p ${CLIENT_OUT_DIR_EXECUTABLE}linux && \
@@ -159,9 +163,9 @@ compile_agent_mac:
 	@echo
 	@CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 \
 		${BUILD_CMD_UNIX} \
-		-o ${CLIENT_BIN_DIR}darwin/agent ${AGENT_MAIN_FILE}
+		-o ${CLIENT_BIN_DIR}darwin/deeptest-agent ${AGENT_MAIN_FILE}
 	@rm -rf "${CLIENT_OUT_DIR_UPGRADE}darwin" && mkdir -p "${CLIENT_OUT_DIR_UPGRADE}darwin" && \
-		cp ${CLIENT_BIN_DIR}darwin/agent "${CLIENT_OUT_DIR_UPGRADE}darwin"
+		cp ${CLIENT_BIN_DIR}darwin/deeptest-agent "${CLIENT_OUT_DIR_UPGRADE}darwin"
 package_gui_mac_client:
 	@cd client && npm run package-mac && cd ..
 	@rm -rf ${CLIENT_OUT_DIR_EXECUTABLE}darwin && mkdir -p ${CLIENT_OUT_DIR_EXECUTABLE}darwin && \

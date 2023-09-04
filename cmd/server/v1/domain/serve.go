@@ -158,3 +158,9 @@ type SwaggerSyncReq struct {
 	Cron       string              `json:"cron"`
 	ProjectId  uint                `json:"projectId"`
 }
+
+type MockReq struct {
+	ID        uint                `json:"id"`
+	Priority  consts.MockPriority `json:"priority"`
+	ProjectId uint                `json:"projectId"`
+}

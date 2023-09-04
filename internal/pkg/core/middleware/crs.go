@@ -21,7 +21,7 @@ func CrsAuth(app string) context.Handler {
 			consts.TRACE.String(),
 		},
 		AllowedHeaders:   []string{"*"},
-		ExposedHeaders:   []string{"Accept", "NodeContent-Type", "NodeContent-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
+		ExposedHeaders:   []string{"Accept", "Content-Type", "Content-Length", "Accept-Encoding", "X-CSRF-Token", "Authorization"},
 		AllowCredentials: true,
 	})
 }

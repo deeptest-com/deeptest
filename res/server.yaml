@@ -4,7 +4,7 @@ captcha:
   img-height: 80
 limit:
   disable: true
-  limit: 0
+  limit: false
   burst: 5
 max-size: 1024
 maxsize: 1024
@@ -26,7 +26,6 @@ redis:
 system:
   level: debug
   serverAddress: 0.0.0.0:8085
-  agentAddress: 0.0.0.0:8086
   static-path: /static
   web-path: ui/dist
   db-type: mysql

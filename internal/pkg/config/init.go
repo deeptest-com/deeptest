@@ -8,13 +8,12 @@ import (
 	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
-	"github.com/go-redis/redis/v8"
-	"path"
-	"path/filepath"
-
 	"github.com/fsnotify/fsnotify"
+	"github.com/go-redis/redis/v8"
 	"github.com/snowlyg/helper/dir"
 	"github.com/spf13/viper"
+	"path"
+	"path/filepath"
 )
 
 var (
@@ -38,13 +37,17 @@ func Init(app string) {
 
 		_fileUtils.MkDirIfNeeded(consts.TmpDir)
 
-		configRes := path.Join("res", consts.ConfigFileName)
+		configRes := path.Join("res", app+".yaml")
 		yamlDefault, _ := deeptest.ReadResData(configRes)
 		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
 			panic(fmt.Errorf("读取默认配置文件错误: %w ", err))
 		}
 		if err := VIPER.Unmarshal(&CONFIG); err != nil {
 			panic(fmt.Errorf("解析配置文件错误: %w ", err))
+		}
+
+		if consts.Port > 0 {
+			CONFIG.System.AgentAddress = fmt.Sprintf("0.0.0.0:%d", consts.Port)
 		}
 
 		myZap.ZapInst = CONFIG.Zap

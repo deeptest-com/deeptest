@@ -20,7 +20,8 @@ import {
     getScenariosReportsDetail,
     addPlans,
     getPlans,
-    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData, saveProcessorInfo,importCurl,addInterfacesFromCase
+    removePlans, updatePriority, updateStatus, genReport, saveDebugData, syncDebugData, saveProcessorInfo,importCurl,addInterfacesFromCase,
+    copyProcessor
 } from './service';
 
 import {
@@ -167,6 +168,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         importCurl: Action<StateType, StateType>;
         addInterfacesFromCase: Action<StateType, StateType>;
+        copyProcessor: Action<StateType, StateType>;
     }
 }
 
@@ -571,6 +573,7 @@ const StoreModel: ModuleType = {
 
         // category tree
         async loadCategory({commit}) {
+            commit('setTreeDataCategory', {});
             const response = await loadCategory("scenario");
             if (response.code != 0) return;
 
@@ -780,6 +783,16 @@ const StoreModel: ModuleType = {
         async addInterfacesFromCase({commit, dispatch, state}, payload: any) {
             try {
                 const resp = await addInterfacesFromCase(payload);
+
+                await dispatch('loadScenario', state.scenarioId);
+                return resp.data;
+            } catch (error) {
+                return false;
+            }
+        },
+        async copyProcessor({commit, dispatch, state}, payload: any) {
+            try {
+                const resp = await copyProcessor(payload);
 
                 await dispatch('loadScenario', state.scenarioId);
                 return resp.data;

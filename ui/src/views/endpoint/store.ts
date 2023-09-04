@@ -409,6 +409,7 @@ const StoreModel: ModuleType = {
 
         // category tree
         async loadCategory({commit}) {
+            commit('setTreeDataCategory', {});
             const response = await loadCategory('endpoint');
             if (response.code != 0) return;
             const {data} = response;

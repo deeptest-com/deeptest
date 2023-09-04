@@ -1,13 +1,17 @@
 package agentExec
 
-import "os"
+import (
+	"log"
+	"os"
+)
 
 var (
 	DemoTestSite = GetDemoSite()
 )
 
 func GetDemoSite() (ret string) {
-	ret = os.Getenv("DEMO_TEST_SITE")
+	ret = os.Getenv("DemoTestSite")
+	log.Printf("DemoTestSite: %s\n", ret)
 
 	return
 }

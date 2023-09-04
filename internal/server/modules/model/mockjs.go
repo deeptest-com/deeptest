@@ -5,6 +5,7 @@ type MockJsExpression struct {
 
 	Name       string `json:"name"`
 	Expression string `json:"expression"`
+	Format     string `json:"format"`
 	Desc       string `json:"desc"`
 	Ordr       int    `json:"ordr"`
 

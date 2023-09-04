@@ -17,14 +17,14 @@
       </a-form-item>
 
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-        <a-button type="primary" @click="onSubmit" :disabled="disabled">保存</a-button>
+        <a-button type="primary" @click="onSubmit" :disabled="!dataChanged">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, ref, watch} from 'vue';
+import {computed, onMounted, ref, watch} from 'vue';
 import {useStore} from "vuex";
 import {Form} from 'ant-design-vue';
 import {notifyError, notifySuccess} from "@/utils/notify";
@@ -35,17 +35,24 @@ const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
 const treeDataCategory = computed<any>(() => store.state.Endpoint.treeDataCategory);
 
 const modelRef = ref({priority: 'smart'} as any)
-const rules = {
+const rules = ref({
   priority: [
     {required: true, message: '请选择优先设置', trigger: 'blur'},
   ],
-};
+})
 
 const {validate, validateInfos} = useForm(modelRef, rules);
 
-const disabled = ref()
-watch(() => modelRef.value, (val) => {
-  disabled.value = false
+const dataLoaded = ref(false)
+onMounted(async () => {
+  await store.dispatch('ProjectSetting/getSwaggerSync');
+  dataLoaded.value = true
+})
+
+const dataChanged = ref(false)
+watch(modelRef, (val) => {
+  if (!dataLoaded.value) return
+  dataChanged.value = true
 }, {immediate: false, deep: true});
 
 const onSubmit = () => {

@@ -72,7 +72,7 @@
         <a-input v-model:value="formState.cron" type="textarea" placeholder="请输入Linux定时任务表达式"/>
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-        <a-button type="primary" @click="onSubmit" :disabled="!changed">保存</a-button>
+        <a-button type="primary" @click="onSubmit" :disabled="!dataChanged">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -99,12 +99,12 @@ const treeData: any = computed(() => {
 
 const formState = computed<SwaggerSync>(() => store.state.ProjectSetting.swaggerSyncDetail)
 
-const rules = {
+const rules = ref({
   syncType: [{required: true}],
   categoryId: [{required: true}],
   url: [{required: true, message: '请输入Swagger url', trigger: 'blur'}],
   cron: [{required: true, pattern: pattern.cron, message: '请正确的Linux定时任务表达', trigger: 'blur'}]
-};
+})
 
 const {validate, validateInfos} = useForm(formState, rules);
 
@@ -144,10 +144,10 @@ onMounted(async () => {
   dataLoaded.value = true
 })
 
-const changed = ref(false)
+const dataChanged = ref(false)
 watch(() => formState.value, (val) => {
   if (!dataLoaded.value) return
-  changed.value = true
+  dataChanged.value = true
 }, {immediate: false, deep: true});
 
 watch(() => {

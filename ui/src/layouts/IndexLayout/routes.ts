@@ -248,7 +248,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         component: () => import('@/views/project-settings/components/SwaggerSync/index.vue'),
         hidden: false,
         meta: {
-          code: 'PROJECT-SETTING-MEMBERS'
+          code: 'PROJECT-SETTING-SWAGGER-SYNC'
         }
       },
     ],

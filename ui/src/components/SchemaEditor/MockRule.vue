@@ -22,10 +22,9 @@ const mockExpressions = computed(() => {
 });
 
 
-const props = defineProps(['tree','readonly']);
+const props = defineProps(['tree', 'readonly']);
 
 const value = ref('');
-
 
 
 watch(() => {
@@ -64,15 +63,19 @@ const handleChange = (val: string) => {
         :default-active-first-option="false"
         :show-arrow="false"
         :filter-option="false"
+        :dropdownStyle="{minWidth: '300px'}"
         :not-found-content="null"
         :options="mockExpressions"
         @search="handleSearch"
         @change="handleChange"
     >
-      <template #option="{ value, label }">
-        <span class="select-item" :key="value">
-            <span class="left">
-              @{{ label }}
+      <template #option="{ value, label, name }">
+        <span class="select-item" :key="value" >
+            <span class="left" :title="label">
+              {{ label }}
+            </span>
+             <span class="right" :title="name">
+              {{ name }}
             </span>
         </span>
       </template>
@@ -90,13 +93,28 @@ const handleChange = (val: string) => {
     border: 1px solid transparent;
   }
 
-  .select-item {
-    display: flex;
-    width: 360px;
-    justify-content: space-between;
-    align-items: center;
+}
+
+.select-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  .left {
+    max-width: 200px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .right {
+    max-width: 80px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
   }
 }
+
 </style>
 
 

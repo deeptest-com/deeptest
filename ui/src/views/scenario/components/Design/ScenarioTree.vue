@@ -458,6 +458,17 @@ function checkIfElseIsMatch(ifNode, elseNode) {
   return match;
 }
 
+/**
+ * 根据当前节点Id获取下一个兄弟节点的树
+ * */
+function getNextNode(nodeId) {
+  const parentId = nodeId?.parentId;
+  const children = treeDataMap?.value?.[parentId]?.children;
+  const nodeIndex = children?.findIndex(item => item.id === nodeId.id);
+  const nextNodeId = children?.[nodeIndex + 1];
+  return treeDataMap?.value?.[nextNodeId]
+}
+
 
 const addElse = (treeNode) => {
   targetModelId = treeNode?.id;
@@ -623,6 +634,10 @@ const copyNode = () => {
   console.log('copyNode')
   const node = treeDataMap.value[targetModelId];
   store.dispatch('Scenario/copyProcessor', node).then((newModeId) => {
+    if (checkIfHasElse(targetModelId)) {
+      const elseNode = getNextNode(targetModelId)
+      store.dispatch('Scenario/copyProcessor', elseNode)
+    }
     selectNode([newModeId], null)
     expandOneKey(treeDataMap.value, newModeId, expandedKeys.value) // expend parent node
     setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value);

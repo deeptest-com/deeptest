@@ -14,7 +14,6 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
-	"gorm.io/gorm"
 	"log"
 	"strings"
 )
@@ -594,46 +593,11 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 }
 
 func (s *ScenarioNodeService) CopyProcessor(req *agentExec.Processor, CreateBy uint, mod string, rootId *uint) (err *_domain.BizErr) {
-	if req.EntityType == consts.ProcessorLogicElse {
-		return
-	}
-
-	srcNextNode, srcNextNodeErr := s.ScenarioNodeRepo.GetNextNode(req.ID)
-	if srcNextNodeErr != nil && srcNextNodeErr != gorm.ErrRecordNotFound {
-		return
-	}
-
 	currentNodeReq := s.toProcessorReq(req, CreateBy, mod)
-	if mod == "siblings" && srcNextNode.EntityType == consts.ProcessorLogicElse {
-		currentNodeReq.TargetProcessorId = int(srcNextNode.ID)
-	}
 
 	currentProcessor, err := s.AddProcessor(currentNodeReq, "copy")
 	if err != nil {
 		return err
-	}
-
-	if srcNextNode.EntityType == consts.ProcessorLogicElse {
-		srcNextNodeTree, srcNextErr := s.GetNodeTree(req.ScenarioId, srcNextNode)
-		if srcNextErr != nil && srcNextErr != gorm.ErrRecordNotFound {
-			return
-		}
-
-		nextNodeReq := s.toProcessorReq(srcNextNodeTree, CreateBy, "siblings")
-		nextNodeReq.TargetProcessorId = int(currentProcessor.ID)
-		nextNodeReq.SrcProcessorId = srcNextNodeTree.ID
-
-		nextProcessor, err := s.AddProcessor(nextNodeReq, "copy")
-		if err != nil {
-			return err
-		}
-
-		for _, child := range srcNextNodeTree.Children {
-			child.ParentId = nextProcessor.ID
-			if err = s.CopyProcessor(child, CreateBy, "child", rootId); err != nil {
-				return err
-			}
-		}
 	}
 
 	if *rootId == 0 && mod == "siblings" {

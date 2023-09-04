@@ -413,9 +413,11 @@ async function handleUpdateEndpoint(value: string, record: any) {
       {...record, title: value}
   );
 }
-
+// 打开抽屉
 async function editEndpoint(record) {
   await store.dispatch('Endpoint/getEndpointDetail', {id: record.id});
+  // 打开抽屉详情时，拉取mock表达式列表
+  await store.dispatch('Endpoint/getMockExpressions');
   drawerVisible.value = true;
 }
 

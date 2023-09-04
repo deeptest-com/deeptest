@@ -29,9 +29,13 @@ func ExecResponseDefine(responseDefine *domain.ResponseDefineBase, res domain.De
 	}
 
 	mediaTypes := strings.Split(string(res.ContentType), ";")
-	if !commonUtils.InArray(responseDefine.MediaType, mediaTypes) {
+	if responseDefine.MediaType != "" && !commonUtils.InArray(responseDefine.MediaType, mediaTypes) {
 		responseDefine.ResultStatus = consts.Fail
 		responseDefine.ResultMsg = fmt.Sprintf("响应体应该为%v，实际为%v", responseDefine.MediaType, res.ContentType)
+		return
+	}
+
+	if responseDefine.Schema == "" {
 		return
 	}
 

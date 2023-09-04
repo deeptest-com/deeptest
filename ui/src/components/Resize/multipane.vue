@@ -101,7 +101,7 @@ export default {
               layout == LAYOUT_VERTICAL
                   ? resize(initialPaneWidth, pageX - initialPageX)
                   : resize(initialPaneHeight, pageY - initialPageY);
-
+          topOrLeftPane.classList.add('left-drag');
           self.$emit('paneResize', topOrLeftPane, resizer, size);
         };
 

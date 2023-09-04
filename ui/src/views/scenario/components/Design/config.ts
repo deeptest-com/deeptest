@@ -215,6 +215,13 @@ export const DESIGN_MENU_CONFIG = [
         title: '分割线',
         hideInNodeTypes: ['processor_root_default',...onlyShowDisableAndDeleteTypes],
     },
+    //    复制
+    {
+        key: 'copy',
+        title: '克隆',
+        // icon: 'arrange-disabled',
+        hideInNodeTypes: ['processor_root_default', 'processor_logic_else'],
+    },
     //    禁用
     {
         key: 'disable',

@@ -4,8 +4,8 @@
 <template>
   <div class="container" :style="containerStyle">
     <div class="content">
-      <multipane class="vertical-panes" layout="horizontal">
-        <div class="pane top" :style="{ minHeight: '36px', height: '60%'}">
+      <multipane class="vertical-panes" layout="horizontal" @paneResizeStop="handlePaneResizeTop">
+        <div class="pane top" :style="{ minHeight: '46px', height: '60%'}">
           <slot name="top"/>
         </div>
         <multipane-resizer/>
@@ -20,6 +20,8 @@
 <script setup lang="ts">
 import { defineProps,ref } from 'vue'
 import {Multipane, MultipaneResizer} from '@/components/Resize/index';
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
 //TODO 备注：使用 topPercent 和 bottomPercent 有问题，拖动后会再次重置高度，后面再解决，另外需要加 FlexGrow,自动填充高度，否则也会有问题
 const props = defineProps({
   containerStyle: {
@@ -39,7 +41,9 @@ const props = defineProps({
   },
 })
 
-
+const handlePaneResizeTop = () => {
+  bus.emit(settings.paneResizeTop);
+}
 </script>
 
 <style lang="less" scoped>

@@ -9,6 +9,7 @@ export function genNodeMap(treeNode: any, ids?: number[]): any {
 export function getNodeMap(treeNode: any, mp: any, ids?: number[]): void {
     if (!treeNode) return
 
+    treeNode.entity = null
     mp[treeNode.id] = treeNode
     if (ids && treeNode.entityCategory !== 'processor_group') {
         ids.push(treeNode.id)

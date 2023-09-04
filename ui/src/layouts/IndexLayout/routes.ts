@@ -235,7 +235,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         icon: 'mock',
         title: 'projectSetting.mock',
         path: 'mock',
-        component: () => import('@/views/project-settings/components/mock/index.vue'),
+        component: () => import('@/views/project-settings/components/Mock/index.vue'),
         hidden: false,
         meta: {
           code: 'PROJECT-SETTING-MOCK'

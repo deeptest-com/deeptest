@@ -29,5 +29,5 @@ func (m *MockModule) Party() module.WebModule {
 		index.Connect("/", m.MockCtrl.Connect).Name = "模拟接口测试"
 		index.Trace("/", m.MockCtrl.Trace).Name = "模拟接口测试"
 	}
-	return module.NewModule("/mock", handler)
+	return module.NewModule("/", handler)
 }

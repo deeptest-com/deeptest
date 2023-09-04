@@ -23,21 +23,21 @@ var (
 	PermRoutes []map[string]string
 )
 
-func Init(app string) {
+func Init() {
 	consts.IsRelease = _commUtils.IsRelease()
 
 	v := viper.New()
 	VIPER = v
 	VIPER.SetConfigType("yaml")
 
-	if app == "agent" {
+	if consts.RunFrom == consts.FromServer {
 		home, _ := _fileUtils.GetUserHome()
 		consts.HomeDir = filepath.Join(home, consts.App)
 		consts.TmpDir = filepath.Join(consts.HomeDir, consts.FolderTmp)
 
 		_fileUtils.MkDirIfNeeded(consts.TmpDir)
 
-		configRes := path.Join("res", app+".yaml")
+		configRes := path.Join("res", consts.RunFrom.String()+".yaml")
 		yamlDefault, _ := deeptest.ReadResData(configRes)
 		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
 			panic(fmt.Errorf("读取默认配置文件错误: %w ", err))

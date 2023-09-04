@@ -712,6 +712,6 @@ const (
 type MockPriority string
 
 const (
-	MockPrioritySmart  MockPriority = "smart"
-	MockPrioritySample MockPriority = "sample"
+	MockPrioritySmart   MockPriority = "smart"
+	MockPriorityExample MockPriority = "example"
 )

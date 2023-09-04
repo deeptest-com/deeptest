@@ -80,7 +80,7 @@ func run(scenarioId, planId, envId int, server, token string) {
 func init() {
 	cleanup()
 	commandConfig.InitConfig()
-	zapLog.Init("command")
+	zapLog.Init()
 }
 
 func cleanup() {

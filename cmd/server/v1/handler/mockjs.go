@@ -12,6 +12,12 @@ type MockJsCtrl struct {
 	BaseCtrl
 }
 
+// ListExpressions
+// @Tags	mock
+// @summary	mockJs规则列表
+// @Produce application/json
+// @success	200	{object}	_domain.Response{data=[]serverDomain.MockJsExpression}
+// @Router	/api/v1/mockjs/expressions	[get]
 func (c *MockJsCtrl) ListExpressions(ctx iris.Context) {
 	data, err := c.MockJsService.ListExpressions()
 	if err != nil {

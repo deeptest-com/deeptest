@@ -13,7 +13,11 @@
           <a-radio value="sample">响应示例优先</a-radio>
         </a-radio-group>
 
-        <div class="dp-input-tip">Mock优先级：高级Mock > 智能Mock</div>
+        <div class="dp-input-tip">
+          Mock优先级：高级Mock >
+          <template v-if="modelRef.priority === 'sample'"> 响应示例 > </template>
+          智能Mock
+        </div>
       </a-form-item>
 
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">

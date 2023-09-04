@@ -16,6 +16,11 @@
             通过swagger导入/同步的接口定义，同步更新时使用接口方法和路径进行匹配。<br>
             匹配到的相同接口同步时不保留平台中的旧数据，完全使用swagger文档中的新数据进行覆盖。<br>
             通过平台创建的接口定义不会被覆盖。<br>
+            <span class="title">智能合并</span><br>
+            已存在的文件夹不再重复创建。<br>
+            相同接口如果在平台上做了修改，则不导入。<br>
+            相同接口在平台上没有做过修改，则不覆盖。<br>
+            新增接口导入<br>
          </template>
         <QuestionCircleOutlined class="icon" style=" font-size: 14px;transform: scale(0.9)" />
         </a-tooltip>

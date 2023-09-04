@@ -301,17 +301,24 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 
 		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory, SourceType: req.SourceType}
 		//全覆盖更新目录
+		res, err := s.CategoryRepo.GetByItem(req.SourceType, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			continue
+		}
 		if req.DataSyncType == consts.FullCover {
-			res, err := s.CategoryRepo.GetByItem(req.SourceType, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
 			if err == nil {
 				category.ID = res.ID
 				goto here
+			}
+		} else if req.DataSyncType == consts.AutoAdd {
+			if err == nil {
+				continue
 			}
 		}
 
 		err = s.CategoryRepo.Save(&category)
 		if err != nil {
-			return
+			return err
 		}
 
 	here:

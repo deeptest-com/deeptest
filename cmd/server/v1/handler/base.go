@@ -11,7 +11,7 @@ import (
 type BaseCtrl struct {
 }
 
-func (c *MockCtrl) WriteResp(resp mockGenerator.Response, ctx iris.Context) {
+func (c *MockCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.Context) {
 	data := resp.Data
 	ctx.StatusCode(resp.StatusCode)
 	ctx.ContentType(resp.ContentType)

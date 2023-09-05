@@ -20,7 +20,7 @@ func (g *MockjsGenerator) GenerateDataBySchema(ctx context.Context, schema *open
 
 	ret, err := mockjsHelper.EvaluateExpression(req)
 
-	value = ret.Result
+	value = mockjsHelper.ConvertData(ret.Result, schema.Type)
 
 	return
 }

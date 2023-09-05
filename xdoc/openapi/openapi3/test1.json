@@ -38,7 +38,8 @@
               {
                 "description": "Unique id of the pet",
                 "format": "int64",
-                "type": "integer"
+                "type": "integer",
+                "x-mock-type":"@increment(1)"
               }
             },
             "required":
@@ -53,6 +54,11 @@
         "properties":
         {
           "name":
+          {
+            "type": "string",
+            "x-mock-type":"@first()_@last()"
+          },
+          "phone":
           {
             "type": "string",
             "x-mock-type":"@mobiphone()"

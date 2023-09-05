@@ -427,7 +427,7 @@ export default defineComponent({
             const {tree, isRefChildNode, isRoot} = options;
             // if(isRefChildNode) return null;
             // console.log('renderMockRule', tree);
-            return <MockRule readonly={!!isRefChildNode}  onUpdate={updateMockType.bind(this,tree)}/>
+            return <MockRule tree={tree} readonly={!!isRefChildNode}  onUpdate={updateMockType.bind(this,tree)}/>
         }
 
         const renderHorizontalLine = (depth: number) => {

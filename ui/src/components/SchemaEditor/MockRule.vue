@@ -28,9 +28,9 @@ const value = ref('');
 
 
 watch(() => {
-      return props.tree?.mockType;
-    }, () => {
-      value.value = props.tree?.mockType;
+      return props.tree?.['x-mock-type'];
+    }, (newVal) => {
+      value.value = newVal || null;
     }, {
       immediate: true
     }

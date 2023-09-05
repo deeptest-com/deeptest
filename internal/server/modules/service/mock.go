@@ -9,11 +9,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
-	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/getkin/kin-openapi/routers"
-	"github.com/getkin/kin-openapi/routers/legacy"
+	"github.com/getkin/kin-openapi/routers/gorillamux"
 	"github.com/kataras/iris/v12"
-	"github.com/pkg/errors"
 	encoder "github.com/zwgblue/yaml-encoder"
 	"log"
 	"net/http"
@@ -60,25 +58,25 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockR
 	}
 
 	// find request route
-	requestRoute, pathParameters, err := s.findRequestRoute(apiRequest, endpointInterface.EndpointId)
+	requestRoute, _, err := s.findRequestRoute(apiRequest, endpointInterface.EndpointId)
 	if err != nil {
 		return
 	}
 
-	// validate request
-	routingValidation := &openapi3filter.RequestValidationInput{
-		Request:    &apiRequest,
-		PathParams: pathParameters,
-		Route:      requestRoute,
-		Options: &openapi3filter.Options{
-			ExcludeRequestBody: true,
-		},
-	}
-	err = openapi3filter.ValidateRequest(ctx, routingValidation)
-	var requestError *openapi3filter.RequestError
-	if errors.As(err, &requestError) {
-		return
-	}
+	// ignore validate request
+	//routingValidation := &openapi3filter.RequestValidationInput{
+	//	Request:    &apiRequest,
+	//	PathParams: pathParameters,
+	//	Route:      requestRoute,
+	//	Options: &openapi3filter.Options{
+	//		ExcludeRequestBody: true,
+	//	},
+	//}
+	//err = openapi3filter.ValidateRequest(ctx, routingValidation)
+	//var requestError *openapi3filter.RequestError
+	//if errors.As(err, &requestError) {
+	//	return
+	//}
 
 	// generate response
 	response, err := s.generator.GenerateResponse(&apiRequest, requestRoute)
@@ -143,7 +141,7 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 	//specification, err := specificationLoader.LoadFromURI(config.SpecificationURL)
 
 	// init mock router
-	ret, err := legacy.NewRouter(doc3)
+	ret, err := gorillamux.NewRouter(doc3)
 	if err != nil {
 		return
 	}
@@ -155,9 +153,8 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 
 func (s *MockService) GetEndpointInterface(req *MockRequest) (ret model.EndpointInterface, err error) {
 	if req.EndpointInterfaceId <= 0 {
-		project, _ := s.ProjectRepo.GetByCode(req.ProjectCode)
-		serve, _ := s.ServeRepo.GetByCode(project.ID, req.ServeCode)
-		endpoint, _ := s.EndpointRepo.GetByPath(serve.ID, req.EndpointPath)
+		serve, _ := s.ServeRepo.Get(uint(req.ServeId))
+		endpoint, _ := s.EndpointRepo.GetByPath(serve.ID, "/"+req.EndpointPath)
 
 		_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(endpoint.ID, req.EndpointMethod)
 	}
@@ -190,8 +187,8 @@ func (s *MockService) getRouterFromMap(key uint) (ret routers.Router, ok bool) {
 }
 
 type MockRequest struct {
-	ProjectCode string `json:"projectCode"`
-	ServeCode   string `json:"serveCode"`
+	ProjectId int `json:"projectCode"`
+	ServeId   int `json:"serveCode"`
 
 	EndpointPath   string            `json:"endpointPath"`
 	EndpointMethod consts.HttpMethod `json:"endpointMethod"`

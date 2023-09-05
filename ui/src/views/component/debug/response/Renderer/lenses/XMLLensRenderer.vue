@@ -27,12 +27,13 @@
 
     <div class="body">
       <MonacoEditor
-          class="editor"
-          :value="content"
-          :language="responseData.contentLang"
-          theme="vs"
-          :options="editorOptions"
-          :onExtractor="responseExtractor"
+        customId="xml-lens-main"
+        class="editor"
+        :value="content"
+        :language="responseData.contentLang"
+        theme="vs"
+        :options="editorOptions"
+        :onExtractor="responseExtractor"
       />
     </div>
 
@@ -50,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref, watch} from "vue";
+import {computed, inject, onMounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -61,11 +62,12 @@ import {parseXml, testExpr} from "@/views/component/debug/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
 import {StateType as Debug} from "@/views/component/debug/store";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+
 const usedBy = inject('usedBy') as UsedBy
 
 const {t} = useI18n();
-import bus from "@/utils/eventBus";
-import settings from "@/config/settings";
 const store = useStore<{  Debug: Debug }>();
 
 const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
@@ -149,6 +151,16 @@ const format = (item) => {
   console.log('format', item)
   bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
 }
+
+onMounted(() => {
+  bus.on(settings.paneResizeTop, () => {
+    bus.emit(settings.eventEditorAction, {
+      act: settings.eventTypeContainerHeightChanged,
+      container: 'response-xml-main',
+      id: 'xml-lens-main',
+    })
+  })
+});
 
 </script>
 

@@ -8,7 +8,6 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"log"
@@ -168,7 +167,7 @@ func (s *EndpointCaseService) GenerateFromSpec(req serverDomain.EndpointCaseGene
 
 	// get spec
 	spec := s.EndpointService.Yaml(endpoint)
-	doc3 := spec.(*openapi3.T)
+	doc3 := spec
 	apiPathItem, _ := cases.GetApiPathItem(doc3)
 
 	for _, interf := range endpoint.Interfaces {

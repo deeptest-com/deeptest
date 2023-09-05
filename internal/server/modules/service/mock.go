@@ -125,8 +125,14 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 
 	doc3 := s.EndpointService.Yaml(endpoint)
 
-	/*
+	/* chenqi test
+	pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/test1.json"
+	ctx := context.Background()
+	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
+	doc3, err = loader.LoadFromFile(pth)
+	*/
 
+	/*
 		pth := "C:/Users/Lenovo/go/src/deeptest/xdoc/openapi/openapi3/test1.json"
 
 		ctx := context.Background()
@@ -155,13 +161,10 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 
 		// init mock router
 	*/
-	ctx := context.Background()
-	//pth := "C:/Users/Lenovo/go/src/deeptest/xdoc/openapi/openapi3/login.json"
-	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
+	loader := &openapi3.Loader{Context: context.Background(), IsExternalRefsAllowed: true}
 	x := commonUtils.JsonEncode(doc3)
-	//logUtils.Infof(x)
+
 	doc3, err = loader.LoadFromData([]byte(x))
-	//doc3, err := loader.LoadFromFile(pth)
 	doc3.Servers = nil
 	ret, err := gorillamux.NewRouter(doc3)
 

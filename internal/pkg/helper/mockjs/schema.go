@@ -2,8 +2,10 @@ package mockjsHelper
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/getkin/kin-openapi/openapi3"
+	"strconv"
 )
 
 func IsMockJsSchema(schema *openapi3.Schema) bool {
@@ -34,4 +36,25 @@ func GetMockJsSchemaExpression(schema *openapi3.Schema) string {
 	}
 
 	return ""
+}
+
+func ConvertData(data interface{}, schemaType string) (ret interface{}) {
+	str := fmt.Sprintf("%v", data)
+
+	switch schemaType {
+
+	case openapi3.TypeBoolean:
+		ret, _ = strconv.ParseBool(str)
+
+	case openapi3.TypeInteger:
+		ret, _ = strconv.ParseInt(str, 10, 64)
+
+	case openapi3.TypeNumber:
+		ret, _ = strconv.ParseFloat(str, 64)
+
+	default:
+		ret = fmt.Sprintf("%v", data)
+	}
+
+	return
 }

@@ -19,6 +19,7 @@ type Schemas map[string]*SchemaRef
 type Schema struct {
 	openapi3.ExtensionProps
 	Type        string     `json:"type,omitempty" yaml:"type,omitempty"`
+	XMockType   string     `json:"x-mock-type,omitempty" yaml:"x-mock-type,omitempty"`
 	Items       *SchemaRef `json:"items,omitempty" yaml:"items,omitempty"`
 	Properties  Schemas    `json:"properties,omitempty" yaml:"properties,omitempty"`
 	AllOf       SchemaRefs `json:"allOf,omitempty" yaml:"allOf,omitempty"`

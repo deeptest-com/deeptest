@@ -96,7 +96,7 @@ export default defineComponent({
         }
 
         const updateMockType = (tree: any, mockType: string) => {
-            tree.mockType = mockType;
+            tree['x-mock-type'] = mockType;
             data.value = addExtraViewInfo(data.value);
         };
 

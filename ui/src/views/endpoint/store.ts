@@ -947,8 +947,8 @@ const StoreModel: ModuleType = {
                 if (response.code != 0) return;
                 const options = response?.data?.map((item:any)=>{
                     return {
-                        label:item.expression,
-                        value:item.id,
+                        label:`@${item.expression}`,
+                        value:`@${item.expression}`,
                         ...item
                     }
                 })

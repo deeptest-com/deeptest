@@ -44,7 +44,7 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 	// load endpoint interface
 	endpointInterface, err := s.GetEndpointInterface(req)
 	if err != nil {
-		//		return
+		return
 	}
 
 	// init and cache endpoint router if needed

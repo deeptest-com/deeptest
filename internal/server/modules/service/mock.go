@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
 	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
@@ -109,19 +110,26 @@ func (s *MockService) initMockGenerator() (err error) {
 }
 
 func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
-	endpointRouter, ok := s.getRouterFromMap(endpointId)
-	if ok && endpointRouter != nil {
-		return
-	}
+	//endpointRouter, ok := s.getRouterFromMap(endpointId)
+	//if ok && endpointRouter != nil {
+	//	return
+	//}
+	//
+	//// generate openapi spec
+	//endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	//if err != nil {
+	//	return
+	//}
+	//
+	//spec := s.EndpointService.Yaml(endpoint)
+	//doc3 := spec.(*openapi3.T)
 
-	// generate openapi spec
-	endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
-	if err != nil {
-		return
-	}
+	pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/test1.json"
 
-	spec := s.EndpointService.Yaml(endpoint)
-	doc3 := spec.(*openapi3.T)
+	ctx := context.Background()
+	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
+
+	doc3, err := loader.LoadFromFile(pth)
 
 	var result interface{}
 	commonUtils.JsonDecode(commonUtils.JsonEncode(doc3), &result)

@@ -15,6 +15,7 @@ func Error() iris.Handler {
 		defer func(ctx *context.Context) {
 			if err := recover(); err != nil {
 				logUtils.Info(fmt.Sprintf("%v", err))
+				panic(err)
 				(*ctx).JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 			}
 		}(ctx)

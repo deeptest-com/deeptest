@@ -2,11 +2,13 @@
   <div class="pre-script-main">
       <div class="content">
         <div class="codes">
-          <MonacoEditor theme="vs" language="typescript" class="editor"
-                        :value="scriptData.content"
-                        :timestamp="timestamp"
-                        :options="editorOptions"
-                        @change="editorChange" />
+          <MonacoEditor 
+            theme="vs" language="typescript" class="editor"
+            customId="pre-script-main-codes"
+            :value="scriptData.content"
+            :timestamp="timestamp"
+            :options="editorOptions"
+            @change="editorChange" />
         </div>
 
         <div class="refer">
@@ -97,19 +99,14 @@ onMounted(() => {
   bus.on(settings.paneResizeTop, () => {
       bus.emit(settings.eventEditorAction, {
         act: 'heightChanged',
-        container: 'codes'
+        container: 'codes',
+        id: 'pre-script-main-codes'
       })
     })
 })
 onBeforeUnmount( () => {
   console.log('onBeforeUnmount')
   bus.off(settings.eventConditionSave, save);
-  bus.off(settings.paneResizeTop, () => {
-      bus.emit(settings.eventEditorAction, {
-        act: 'heightChanged',
-        container: 'codes'
-      })
-    })
 })
 
 const labelCol = { span: 0 }

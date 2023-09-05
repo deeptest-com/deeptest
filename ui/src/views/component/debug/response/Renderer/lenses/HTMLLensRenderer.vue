@@ -29,14 +29,15 @@
 
     <div class="body">
       <MonacoEditor
-          class="editor"
-          :interfaceId="debugData.id"
-          :value="responseData.content"
-          :timestamp="timestamp"
-          :language="responseData.contentLang"
-          theme="vs"
-          :options="editorOptions"
-          :onExtractor="responseExtractor"
+        customId="html-lens-main"
+        class="editor"
+        :interfaceId="debugData.id"
+        :value="responseData.content"
+        :timestamp="timestamp"
+        :language="responseData.contentLang"
+        theme="vs"
+        :options="editorOptions"
+        :onExtractor="responseExtractor"
       />
     </div>
 
@@ -54,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, reactive, watch, inject} from "vue";
+import {computed, ref, reactive, watch, inject, onMounted, onUnmounted} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -164,6 +165,16 @@ const format = (item) => {
   console.log('format', item)
   bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
 }
+
+onMounted(() => {
+  bus.on(settings.paneResizeTop, () => {
+    bus.emit(settings.eventEditorAction, {
+      act: settings.eventTypeContainerHeightChanged,
+      container: 'response-html-main',
+      id: 'html-lens-main',
+    })
+  })
+});
 
 </script>
 

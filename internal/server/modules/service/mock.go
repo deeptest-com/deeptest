@@ -35,7 +35,7 @@ type MockService struct {
 	EndpointService *EndpointService `inject:""`
 }
 
-func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockResponse, err error) {
+func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGenerator.Response, err error) {
 	// init mock generator if needed
 	if !s.IsInit {
 		s.initMockGenerator()
@@ -86,6 +86,8 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp *MockR
 	}
 
 	log.Println(response)
+
+	resp = *response
 
 	return
 }
@@ -205,7 +207,7 @@ type MockRequest struct {
 }
 
 type MockResponse struct {
-	StatusCode  int         `json:"statusCode"`
-	ContentType string      `json:"contentType"`
-	Data        interface{} `json:"data"`
+	StatusCode  int                    `json:"statusCode"`
+	ContentType string                 `json:"contentType"`
+	Data        mockGenerator.Response `json:"data"`
 }

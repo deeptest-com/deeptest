@@ -51,6 +51,8 @@ const (
 
 	MaxLoopTimeForInterfaceTest   = 1000
 	MaxLoopTimeForPerformanceTest = 1000000
+
+	KEY_MOCKJS = "x-mock-type"
 )
 
 var (

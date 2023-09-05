@@ -16,13 +16,13 @@ func (c *MockCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 	ctx.StatusCode(resp.StatusCode)
 	ctx.ContentType(resp.ContentType)
 
-	str := fmt.Sprintf("%v", resp.Data)
-
 	switch resp.ContentType {
 	case context.ContentTextHeaderValue, context.ContentHTMLHeaderValue:
+		str := fmt.Sprintf("%v", data)
 		ctx.WriteString(str)
 
 	case context.ContentMarkdownHeaderValue:
+		str := fmt.Sprintf("%v", data)
 		ctx.Markdown([]byte(str))
 
 	case context.ContentJSONHeaderValue:

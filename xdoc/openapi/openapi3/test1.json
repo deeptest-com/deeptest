@@ -54,7 +54,8 @@
         {
           "name":
           {
-            "type": "string"
+            "type": "string",
+            "x-mock-type":"@mobiphone()"
           },
           "status":
           {

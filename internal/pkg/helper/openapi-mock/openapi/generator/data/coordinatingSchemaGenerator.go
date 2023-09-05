@@ -3,7 +3,8 @@ package mockData
 import (
 	"context"
 	"fmt"
-
+	mockjsHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mockjs"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/pkg/errors"
 )
@@ -16,6 +17,7 @@ func (generator *coordinatingSchemaGenerator) GenerateDataBySchema(ctx context.C
 	schemaType := generator.detectSchemaType(schema)
 
 	specificGenerator, exists := generator.generatorsByType[schemaType]
+	logUtils.Infof("*** use generator %#v", specificGenerator)
 	if !exists {
 		return nil, errors.WithStack(&ErrGenerationFailed{
 			GeneratorID: "coordinatingSchemaGenerator",
@@ -28,6 +30,9 @@ func (generator *coordinatingSchemaGenerator) GenerateDataBySchema(ctx context.C
 
 func (generator *coordinatingSchemaGenerator) detectSchemaType(schema *openapi3.Schema) string {
 	schemaType := schema.Type
+	if mockjsHelper.IsMockJsSchema(schema) {
+		return "mockjs"
+	}
 
 	switch {
 	case schema.OneOf != nil:

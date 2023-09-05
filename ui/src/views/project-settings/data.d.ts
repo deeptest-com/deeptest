@@ -202,6 +202,7 @@ export interface EnvReturnData {
     isShowAddEnv: Ref<boolean>;
     isShowEnvDetail: Ref<boolean>;
     activeEnvDetail: any;
+    isMockEnv: Ref<boolean>;
     getEnvsList: () => Promise<void>;
     showEnvDetail: (item: any, isAdd?: boolean) => void;
     addVar: () => void;

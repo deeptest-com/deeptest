@@ -62,12 +62,12 @@ func (r *SummaryProjectUserRankingRepo) FindProjectUserScenarioTotal() (projectU
 }
 
 func (r *SummaryProjectUserRankingRepo) FindProjectUserTestCasesTotal() (projectUserTotal []model.ProjectUserTotal, err error) {
-	err = r.DB.Model(&model.Processor{}).Raw("select project_id,create_user_id,count(id) as count from biz_processor where entity_category = 'processor_interface' And NOT deleted group by project_id,create_user_id order by count desc;	").Find(&projectUserTotal).Error
+	err = r.DB.Model(&model.Processor{}).Raw("select P.project_id,P.created_by as create_user_id,count(P.id) as count from biz_processor P join biz_scenario S on P.scenario_id = S.id where P.entity_category = 'processor_interface' And P.deleted != 1 And S.deleted != 1 group by project_id,create_user_id order by count desc;").Find(&projectUserTotal).Error
 	return
 }
 
 func (r *SummaryProjectUserRankingRepo) FindCasesTotalByProjectId(projectId int64) (result []model.UserTotal, err error) {
-	err = r.DB.Model(&model.Processor{}).Raw("select created_by as create_user_id,count(id) as count from biz_processor where entity_category = 'processor_interface' and project_id = ? And NOT deleted group by created_by order by count desc;", projectId).Find(&result).Error
+	err = r.DB.Model(&model.Processor{}).Raw("select P.created_by as create_user_id,count(P.id) as count from biz_processor P join biz_scenario S on P.scenario_id = S.id where P.entity_category = 'processor_interface' and P.project_id = ? And P.deleted != 1 And S.deleted != 1 group by created_by order by count desc;", projectId).Find(&result).Error
 	return
 }
 
@@ -77,7 +77,7 @@ func (r *SummaryProjectUserRankingRepo) FindScenariosTotalByProjectId(projectId 
 }
 
 func (r *SummaryProjectUserRankingRepo) FindUserLastUpdateTestCasesByProjectId(projectId int64) (result []model.UserUpdateTime, err error) {
-	err = r.DB.Model(&model.Processor{}).Raw("select max(updated_at) as updated_at,created_by from biz_processor where entity_category = 'processor_interface' and project_id = ? And NOT deleted group by created_by", projectId).Find(&result).Error
+	err = r.DB.Model(&model.Processor{}).Raw("select max(P.updated_at) as updated_at,P.created_by from biz_processor P join biz_scenario S on P.scenario_id = S.id where P.entity_category = 'processor_interface' and P.project_id = ? And P.deleted != 1 And S.deleted != 1 group by created_by;", projectId).Find(&result).Error
 	return
 }
 

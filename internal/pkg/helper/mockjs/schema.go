@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/getkin/kin-openapi/openapi3"
 	"strconv"
+	"strings"
 )
 
 func IsMockJsSchema(schema *openapi3.Schema) bool {
@@ -13,8 +14,10 @@ func IsMockJsSchema(schema *openapi3.Schema) bool {
 
 	for key, val := range extensionProps {
 		if key == consts.KEY_MOCKJS {
-			value, _ := val.(json.RawMessage).MarshalJSON()
-			if len(value) > 0 {
+			value, _ := json.Marshal(val.(json.RawMessage))
+			valueTrim := strings.Trim(string(value), "\"")
+
+			if len(valueTrim) > 0 {
 				return true
 			}
 		}
@@ -28,9 +31,9 @@ func GetMockJsSchemaExpression(schema *openapi3.Schema) (ret string) {
 
 	for key, val := range extensionProps {
 		if key == consts.KEY_MOCKJS {
-			value, _ := val.(json.RawMessage).MarshalJSON()
-			if len(value) > 0 {
-				ret = string(value)
+			value, _ := json.Marshal(val.(json.RawMessage))
+			ret = strings.Trim(string(value), "\"")
+			if len(ret) > 0 {
 				if ret[:1] != "@" {
 					ret = "@" + ret
 				}

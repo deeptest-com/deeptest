@@ -44,6 +44,7 @@ func (c *MockCtrl) Mock(ctx iris.Context) {
 	}
 
 	c.WriteRespByContentType(resp, ctx)
+
 }
 
 func (c *MockCtrl) Get(ctx iris.Context) {

@@ -13,7 +13,6 @@ import (
 	"github.com/getkin/kin-openapi/routers"
 	"github.com/getkin/kin-openapi/routers/gorillamux"
 	"github.com/kataras/iris/v12"
-	encoder "github.com/zwgblue/yaml-encoder"
 	"log"
 	"net/http"
 	"net/url"
@@ -36,6 +35,7 @@ type MockService struct {
 }
 
 func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGenerator.Response, err error) {
+
 	// init mock generator if needed
 	if !s.IsInit {
 		s.initMockGenerator()
@@ -44,7 +44,7 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 	// load endpoint interface
 	endpointInterface, err := s.GetEndpointInterface(req)
 	if err != nil {
-		return
+		//		return
 	}
 
 	// init and cache endpoint router if needed
@@ -85,7 +85,7 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 		return
 	}
 
-	log.Println(response)
+	log.Println(resp)
 
 	resp = *response
 
@@ -112,46 +112,59 @@ func (s *MockService) initMockGenerator() (err error) {
 }
 
 func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
-	//endpointRouter, ok := s.getRouterFromMap(endpointId)
-	//if ok && endpointRouter != nil {
-	//	return
-	//}
-	//
-	//// generate openapi spec
-	//endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
-	//if err != nil {
-	//	return
-	//}
-	//
-	//spec := s.EndpointService.Yaml(endpoint)
-	//doc3 := spec.(*openapi3.T)
 
-	pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/test1.json"
+	endpointRouter, ok := s.getRouterFromMap(endpointId)
+	if ok && endpointRouter != nil {
+		return
+	}
+	// generate openapi spec
+	endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	if err != nil {
+		return
+	}
 
+	doc3 := s.EndpointService.Yaml(endpoint)
+
+	/*
+
+		pth := "C:/Users/Lenovo/go/src/deeptest/xdoc/openapi/openapi3/test1.json"
+
+		ctx := context.Background()
+		loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
+
+		doc3, err := loader.LoadFromFile(pth)
+
+		var result interface{}
+		commonUtils.JsonDecode(commonUtils.JsonEncode(doc3), &result)
+		respContent, _ := encoder.NewEncoder(result).Encode()
+
+		log.Println(string(respContent))
+	*/
+	/*
+
+		// fix spec issues
+		doc3.Servers = nil                                                 // if not empty, will be used by s.router.FindRout() method
+		doc3.Paths["/json"].Post = nil                                     // ignore post method for testing
+		doc3.Info.Version = "1.0.0"                                        // cannot be empty
+		desc := "描述"                                                       // cannot be empty
+		doc3.Paths["/json"].Get.Responses["200"].Value.Description = &desc // cannot be empty
+
+		// load openapi spec from url or file
+		//specificationLoader := mockLoader.New()
+		//specification, err := specificationLoader.LoadFromURI(config.SpecificationURL)
+
+		// init mock router
+	*/
 	ctx := context.Background()
+	//pth := "C:/Users/Lenovo/go/src/deeptest/xdoc/openapi/openapi3/login.json"
 	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
-
-	doc3, err := loader.LoadFromFile(pth)
-
-	var result interface{}
-	commonUtils.JsonDecode(commonUtils.JsonEncode(doc3), &result)
-	respContent, _ := encoder.NewEncoder(result).Encode()
-
-	log.Println(string(respContent))
-
-	// fix spec issues
-	doc3.Servers = nil                                                 // if not empty, will be used by s.router.FindRout() method
-	doc3.Paths["/json"].Post = nil                                     // ignore post method for testing
-	doc3.Info.Version = "1.0.0"                                        // cannot be empty
-	desc := "描述"                                                       // cannot be empty
-	doc3.Paths["/json"].Get.Responses["200"].Value.Description = &desc // cannot be empty
-
-	// load openapi spec from url or file
-	//specificationLoader := mockLoader.New()
-	//specification, err := specificationLoader.LoadFromURI(config.SpecificationURL)
-
-	// init mock router
+	x := commonUtils.JsonEncode(doc3)
+	//logUtils.Infof(x)
+	doc3, err = loader.LoadFromData([]byte(x))
+	//doc3, err := loader.LoadFromFile(pth)
+	doc3.Servers = nil
 	ret, err := gorillamux.NewRouter(doc3)
+
 	if err != nil {
 		return
 	}

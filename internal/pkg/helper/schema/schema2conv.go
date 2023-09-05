@@ -65,7 +65,9 @@ func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
 		schema.Ref = schema.RefExt
 	}
 	schemaRef.Ref = schema.Ref
-	schemaRef.Value = &schema
+	if schemaRef.Ref == "" {
+		schemaRef.Value = &schema
+	}
 
 	return nil
 }
@@ -188,6 +190,9 @@ func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 		}
 
 		for key, property := range item.Value.Properties {
+			if property.Value == nil {
+				continue
+			}
 			if property.Value.Type == "" {
 				//continue
 			}

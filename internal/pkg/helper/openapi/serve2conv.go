@@ -43,9 +43,9 @@ func (s *serve2conv) components() (components openapi3.Components) {
 	for _, component := range s.serve.Components {
 		schema := new(openapi3.Schema)
 		if component.Type == openapi3.TypeObject {
-			var schemas openapi3.Schemas
-			_commUtils.JsonDecode(component.Content, &schemas)
-			schema.Properties = schemas
+			//var schemas openapi3.Schema
+			_commUtils.JsonDecode(component.Content, &schema)
+			//schema = schemas
 		} else {
 			var items *openapi3.SchemaRef
 			_commUtils.JsonDecode(component.Content, &items)

@@ -147,7 +147,6 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 		log.Println(string(respContent))
 	*/
 	/*
-
 		// fix spec issues
 		doc3.Servers = nil                                                 // if not empty, will be used by s.router.FindRout() method
 		doc3.Paths["/json"].Post = nil                                     // ignore post method for testing

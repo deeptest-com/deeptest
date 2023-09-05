@@ -63,11 +63,10 @@ func (r *EnvironmentRepo) GetByProject(projectId uint) (env model.Environment, e
 
 // GetDefaultByProject 默认/Mock
 func (r *EnvironmentRepo) GetDefaultByProject(projectId uint) (envs []model.Environment, err error) {
-
 	err = r.DB.
 		Where("project_id=?", projectId).
+		Where("name IN (?)", []string{"默认环境", "Mock环境"}).
 		Where("NOT deleted").
-		Limit(2).
 		Find(&envs).Error
 
 	return

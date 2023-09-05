@@ -16,6 +16,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/getkin/kin-openapi/openapi3"
 	"gorm.io/gorm"
 	"net/http"
 	"net/url"
@@ -149,7 +150,7 @@ func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
 
 }
 
-func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
+func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
 	serve, err := s.ServeRepo.Get(endpoint.ServeId)
 	if err != nil {
 		return
@@ -160,6 +161,7 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
 		return
 	}
 	serve.Components = serveComponent
+
 	serveServer, err := s.ServeRepo.ListServer(serve.ID)
 	if err != nil {
 		return

@@ -36,7 +36,16 @@ func (c *MockCtrl) Mock(ctx iris.Context) {
 		EndpointPath:        path,
 		EndpointInterfaceId: uint(endpointInterfaceId),
 	}
-	c.MockService.ByRequest(&req, ctx)
+
+	resp, err := c.MockService.ByRequest(&req, ctx)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.StatusCode(resp.StatusCode)
+	ctx.ContentType(resp.ContentType)
+	//ctx.Write(data)
 }
 
 func (c *MockCtrl) Get(ctx iris.Context) {

@@ -30,7 +30,7 @@ func Init() {
 	VIPER = v
 	VIPER.SetConfigType("yaml")
 
-	if consts.RunFrom == consts.FromServer {
+	if consts.RunFrom == consts.FromAgent {
 		home, _ := _fileUtils.GetUserHome()
 		consts.HomeDir = filepath.Join(home, consts.App)
 		consts.TmpDir = filepath.Join(consts.HomeDir, consts.FolderTmp)

@@ -112,11 +112,12 @@ func (s *MockService) initMockGenerator() (err error) {
 }
 
 func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
+	// cache if need
+	//endpointRouter, ok := s.getRouterFromMap(endpointId)
+	//if ok && endpointRouter != nil {
+	//	return
+	//}
 
-	endpointRouter, ok := s.getRouterFromMap(endpointId)
-	if ok && endpointRouter != nil {
-		return
-	}
 	// generate openapi spec
 	endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
 	if err != nil {

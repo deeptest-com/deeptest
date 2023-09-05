@@ -23,14 +23,19 @@ func IsMockJsSchema(schema *openapi3.Schema) bool {
 	return false
 }
 
-func GetMockJsSchemaExpression(schema *openapi3.Schema) string {
+func GetMockJsSchemaExpression(schema *openapi3.Schema) (ret string) {
 	extensionProps := schema.Extensions
 
 	for key, val := range extensionProps {
 		if key == consts.KEY_MOCKJS {
 			value, _ := val.(json.RawMessage).MarshalJSON()
 			if len(value) > 0 {
-				return string(value)
+				ret = string(value)
+				if ret[:1] != "@" {
+					ret = "@" + ret
+				}
+
+				return
 			}
 		}
 	}

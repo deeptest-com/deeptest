@@ -12,6 +12,7 @@ export function useGlobalEnv(formRef?: any): EnvReturnData {
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     const envList = computed<any>(() => store.state.ProjectSetting.envList);
     const activeEnvDetail = computed<any>(() => store.state.ProjectSetting.activeEnvDetail);
+    const isMockEnv = computed(() => activeEnvDetail.value.displayName === 'Mock环境'); // mock环境不可编辑
     const isShowEnvDetail = ref(false);
     const isShowAddEnv = ref(false);
     const router = useRouter();
@@ -143,6 +144,7 @@ export function useGlobalEnv(formRef?: any): EnvReturnData {
         isShowAddEnv,
         isShowEnvDetail,
         activeEnvDetail,
+        isMockEnv,
         getEnvsList,
         showEnvDetail,
         addVar,

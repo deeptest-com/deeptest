@@ -41,13 +41,15 @@
       <!-- ::::Mock请求链接： -->
       <div v-if="mockList?.length" style="margin-top: 16px;">
         <h3>Mock请求链接</h3>
-        <div class="path-info" v-for="mock in mockList" :key="mock.url">
-          <span><strong>{{ mock.name }}：</strong></span>
-          <a-tag class="method-tag" :color="getMethodColor(info.method)">{{ info.method }}</a-tag>
-          <span class="request-uri">
+        <div class="url-info-block">
+          <div class="path-info" v-for="mock in mockList" :key="mock.url">
+            <span><strong>{{ mock.name }}：</strong></span>
+            <a-tag class="method-tag" :color="getMethodColor(info.method)">{{ info.method }}</a-tag>
+            <span class="request-uri">
             <span class="ant-typography ant-typography-secondary">{{ mock.url }}</span>
             <CopyOutlined class="copy-icon" @click="copyURL(handlePathStr(mock.url))"/>
           </span>
+          </div>
         </div>
       </div>
       <div class="interface-request">

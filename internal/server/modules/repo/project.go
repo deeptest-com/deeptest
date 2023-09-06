@@ -886,3 +886,10 @@ func (r *ProjectRepo) GetAuditUsers(projectId uint) (users []model.SysUser, err 
 
 	return
 }
+
+func (r *ProjectRepo) ListAll() (res []model.Project, err error) {
+	err = r.DB.Model(model.Project{}).
+		Where("not disabled and not deleted").
+		Find(&res).Error
+	return
+}

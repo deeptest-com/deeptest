@@ -715,3 +715,16 @@ const (
 	MockPrioritySmart   MockPriority = "smart"
 	MockPriorityExample MockPriority = "example"
 )
+
+type MockCompareWay string
+
+const (
+	MockCompareEqual    MockCompareWay = "equal"
+	MockCompareNotEqual MockCompareWay = "notEqual"
+	MockCompareLike     MockCompareWay = "like"
+	MockCompareIn       MockCompareWay = "in"
+)
+
+func (e MockCompareWay) String() string {
+	return string(e)
+}

@@ -12,6 +12,8 @@ import (
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/jinzhu/copier"
 	encoder "github.com/zwgblue/yaml-encoder"
+	"gorm.io/gorm"
+	"strconv"
 )
 
 type ServeService struct {
@@ -19,6 +21,8 @@ type ServeService struct {
 	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
 	EndpointRepo             *repo.EndpointRepo          `inject:""`
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
+	ProjectRepo              *repo.ProjectRepo           `inject:""`
+	EnvironmentRepo          *repo.EnvironmentRepo       `inject:""`
 	Cron                     *cron.ServerCron            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
 }
@@ -303,5 +307,48 @@ func (s *ServeService) BindEndpoint(req v1.ServeVersionBindEndpointReq) (err err
 func (s *ServeService) ChangeServe(serveId, userId uint) (serve model.Serve, err error) {
 	serve, err = s.ServeRepo.ChangeServe(serveId, userId)
 
+	return
+}
+
+func (s *ServeService) AddServerForHistory(serverName string) (err error) {
+	projects, err := s.ProjectRepo.ListAll()
+	if len(projects) == 0 {
+		return
+	}
+
+	for _, v := range projects {
+		v := v
+		go func() {
+			server, err := s.EnvironmentRepo.GetByProjectAndName(v.ID, serverName)
+			if err != nil && err != gorm.ErrRecordNotFound {
+				return
+			}
+			if server.ID != 0 {
+				return
+			}
+
+			server.Name = "Mock环境"
+			server.ProjectId = v.ID
+			err = s.EnvironmentRepo.Save(&server)
+			if err != nil {
+				return
+			}
+
+			serveList, err := s.ServeRepo.ListByProject(v.ID)
+			if err != nil {
+				return
+			}
+
+			serveServer := make([]model.ServeServer, 0)
+			for _, serve := range serveList {
+				url := "http://127.0.0.1:8085/api/v1/mock/" + strconv.Itoa(int(serve.ID)) // TODO 改成Mock的地址
+				serveServerTmp := model.ServeServer{ServeId: serve.ID, EnvironmentId: server.ID, Url: url, Description: server.Name}
+				serveServer = append(serveServer, serveServerTmp)
+			}
+			if err = s.ServeServerRepo.BatchCreate(serveServer); err != nil {
+				return
+			}
+		}()
+	}
 	return
 }

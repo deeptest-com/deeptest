@@ -441,3 +441,14 @@ func (r *EnvironmentRepo) GetByIds(ids []uint) (envs map[uint]model.Environment,
 	}
 	return
 }
+
+func (r *EnvironmentRepo) GetByProjectAndName(projectId uint, name string) (env model.Environment, err error) {
+
+	err = r.DB.
+		Where("project_id=?", projectId).
+		Where("name=?", name).
+		Where("NOT deleted").
+		First(&env).Error
+
+	return
+}

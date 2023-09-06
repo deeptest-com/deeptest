@@ -8,7 +8,6 @@ import (
 	mockResponder "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/responder"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/routers"
 	"github.com/getkin/kin-openapi/routers/gorillamux"
@@ -164,7 +163,10 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 
 	doc3, err = loader.LoadFromData([]byte(x))
 	doc3.Servers = nil
-
+	//pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/test1.json"
+	//ctx := context.Background()
+	//loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}
+	//doc3, err = loader.LoadFromFile(pth)
 	ret, err := gorillamux.NewRouter(doc3)
 
 	if err != nil {
@@ -178,13 +180,24 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 
 func (s *MockService) GetEndpointInterface(req *MockRequest) (ret model.EndpointInterface, err error) {
 	if req.EndpointInterfaceId <= 0 {
-		serve, _ := s.ServeRepo.Get(uint(req.ServeId))
-		endpoint, _ := s.EndpointRepo.GetByPath(serve.ID, "/"+req.EndpointPath)
+		var serve model.Serve
+		serve, err = s.ServeRepo.Get(uint(req.ServeId))
+		if err != nil {
+			return
+		}
+		var endpoint model.Endpoint
+		endpoint, err = s.EndpointRepo.GetByPath(serve.ID, "/"+req.EndpointPath)
+		if err != nil {
+			return
+		}
 
 		_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(endpoint.ID, req.EndpointMethod)
 	}
 
 	ret, err = s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
+	if err != nil {
+		return
+	}
 
 	return
 }

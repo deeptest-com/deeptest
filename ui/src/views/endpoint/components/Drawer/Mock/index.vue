@@ -1,24 +1,23 @@
 <template>
   <div class="endpoint-mock-main">
     <a-tabs type="card" v-model:activeKey="activeKey" class="tabs">
-      <a-tab-pane key="expect" tab="期望">
-
-      </a-tab-pane>
-      <a-tab-pane key="script" tab="脚本">
-
-      </a-tab-pane>
+      <a-tab-pane key="expect" tab="期望" />
+      <a-tab-pane key="script" tab="脚本" />
     </a-tabs>
 
     <div class="content">
       <ExclamationCircleOutlined />
       当您请求Mock接口时，会根据请求参数匹配的期望条件自动返回响应的结果，Mock请求地址：
       {{serverUrl}}/mocks/{{endpoint.id}}{{endpoint.path}}。
+
+      <EndpointMockExpect v-if="activeKey==='expect'" />
+
+      <EndpointMockScript v-if="activeKey==='script'" />
     </div>
 
     <div class="toolbar">
       是否开启<a-switch v-model:checked="advancedMockEnabled" class="switch" />
       <a-button @click="createExpect" type="primary" class="btn-create">新建期望</a-button>
-
     </div>
   </div>
 </template>
@@ -29,6 +28,8 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
 import {getUrls} from "@/utils/request";
+import EndpointMockExpect from './expect.vue';
+import EndpointMockScript from './script.vue';
 
 const {t} = useI18n()
 
@@ -58,10 +59,12 @@ const createExpect = () => {
   .tabs {
   }
   .content {
-
   }
   .toolbar {
-    margin-top: -52px;
+    position: absolute;
+    top: 12px;
+    right: 0px;
+
     text-align: right;
 
     .switch {

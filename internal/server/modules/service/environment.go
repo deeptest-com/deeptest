@@ -64,6 +64,7 @@ func (s *EnvironmentService) Copy(envId int) (err error) {
 }
 
 func (s *EnvironmentService) Create(env *model.Environment, projectId uint) (err error) {
+	env.Sort = s.EnvironmentRepo.GetMaxOrder(projectId)
 	err = s.EnvironmentRepo.Save(env)
 	err = s.ProjectRepo.UpdateDefaultEnvironment(projectId, env.ID)
 
@@ -148,6 +149,7 @@ func (s *EnvironmentService) DisableAllShareVar(interfaceId uint) (err error) {
 func (s *EnvironmentService) Save(req v1.EnvironmentReq) (id uint, err error) {
 	var environment model.Environment
 	copier.CopyWithOption(&environment, req, copier.Option{DeepCopy: true})
+	environment.Sort = s.EnvironmentRepo.GetMaxOrder(req.ProjectId)
 	err = s.EnvironmentRepo.SaveEnvironment(&environment)
 	id = environment.ID
 	return

@@ -60,59 +60,13 @@ export default defineComponent({
     console.log('editor mounted')
 
     this.initMonaco()
-
-    /**
-     * 这里做下兼容：
-     * monacoEditor使用在各自场景中，当它处于 可拖拽改变高度元素的场景时，它需要根据父级元素的高度动态绘制
-     * 避免展示不全
-     */
-    const resizeIt = (data) => {
-      console.error('resizeIt', data);
-      const container = document.getElementsByClassName(data.container || 'response-renderer')[0]
-      if (!container) {
-        return;
+  
+    bus.on(settings.eventEditorAction, (data) => {
+      console.log('eventEditorAction', data)
+      if (data.act === settings.eventTypeFormat) {
+        this.formatDocUpdate(this.editor)
       }
-      const size = {width: container.clientWidth, height: container.clientHeight-30}
-      /**
-       * 由于同一个页面内可能有多个 monacoEditor ,避免混乱调用， 在该事件触发时，传入id与 props.id 对比 
-       * 为同一个才可以触发重置editor layout
-       */
-      console.log('重新设置编辑器layout', data, this.$props)
-      if (data.id === this.$props.customId) {
-        console.log(
-        '%c 触发monacoEditor重新设置layout 当前id',
-        'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: green;',
-        data.id
-        );
-        console.log(
-        '%c 触发monacoEditor重新设置layout 当前容器',
-        'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: red;',
-        data.container
-        );
-        console.log(
-        '%c 触发monacoEditor重新设置layout 当前编辑器',
-        'border: 1px solid white;border-radius: 3px 0 0 3px;padding: 2px 5px;color: white;background-color: red;',
-        this.editor._domElement
-        );
-        this.editor.layout(size)
-      }
-    };
-
-    /**
-     * 元素高度发生变化时：
-     * data.act === settings.eventTypeContainerHeightChanged, 
-     * data => { id[当前editor容器的id], container[editor需要同步布局的父元素], act [用户操作]  }
-     */
-    setTimeout(() => {
-      bus.on(settings.eventEditorAction, (data) => {
-        console.log('eventEditorAction', data)
-        if (data.act === settings.eventTypeContainerHeightChanged) {
-          resizeIt(data)
-        } else if (data.act === settings.eventTypeFormat) {
-          this.formatDocUpdate(this.editor)
-        }
-      });
-    }, 0);
+    });
   },
 
   beforeUnmount() {
@@ -124,7 +78,7 @@ export default defineComponent({
   unmounted() {
     console.log('editor unmounted', this.$props, this.editor);
     this.editor && this.editor.dispose();
-    // bus.off(settings.eventEditorAction)
+    bus.off(settings.eventEditorAction)
   },
 
   methods: {
@@ -252,7 +206,29 @@ export default defineComponent({
     _setOriginal(){
       const { original } = this.editor.getModel()
       original.setValue(this.original)
-    }
+    },
+
+    
+    /**
+     * 这里做下兼容：
+     * monacoEditor使用在各自场景中，当它处于 可拖拽改变高度元素的场景时，它需要根据父级元素的高度动态绘制
+     * 避免展示不全
+     */
+    resizeIt(data) {
+      console.error('resizeIt', data);
+      const container = document.getElementsByClassName(data.container || 'response-renderer')[0]
+      if (!container) {
+        return;
+      }
+      const size = {width: container.clientWidth, height: container.clientHeight - (data.mixedHeight || 30)}
+      /**
+       * 由于同一个页面内可能有多个 monacoEditor ,避免混乱调用， 在该事件触发时，传入id与 props.id 对比 
+       * 为同一个才可以触发重置editor layout
+       */
+      if (data.id === this.$props.customId) {
+        this.editor.layout(size)
+      }
+    },
   },
 
   watch: {

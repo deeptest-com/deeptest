@@ -30,6 +30,7 @@
 
     <div class="body">
       <MonacoEditor 
+        ref="monacoEditor"
         customId="json-lens-main"
         class="editor"
         :value="responseData.content"
@@ -37,7 +38,6 @@
         :language="language"
         theme="vs"
         :options="editorOptions"
-        :key='language'
         :onExtractor="responseExtractor" />
     </div>
 
@@ -79,6 +79,7 @@ const responseData = computed<any>(() => store.state.Debug.responseData);
 const language = ref(responseData.value.contentLang)
 const content = ref(responseData.value.content)
 
+const monacoEditor = ref();
 const timestamp = ref('')
 watch(responseData, (newVal) => {
   timestamp.value = Date.now() + ''
@@ -159,11 +160,11 @@ const format = (item) => {
 
 onMounted(() => {
   bus.on(settings.paneResizeTop, () => {
-    bus.emit(settings.eventEditorAction, {
+    monacoEditor.value?.resizeIt({
       act: settings.eventTypeContainerHeightChanged,
       container: 'response-json-main',
-      id: 'json-lens-main',
-    })
+      id: 'json-lens-main'
+    });
   })
 });
 

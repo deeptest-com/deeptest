@@ -27,6 +27,7 @@
 
     <div class="body">
       <MonacoEditor
+        ref="monacoEditor"
         customId="raw-lens-main"
         class="editor"
         :value="responseData.content"
@@ -85,6 +86,7 @@ const responseExtractorVisible = ref(false)
 const expr = ref('')
 const exprType = ref('')
 const result = ref('')
+const monacoEditor = ref();
 
 const responseExtractor = (data) => {
   result.value = ''
@@ -144,7 +146,7 @@ const responseExtractorCancel = () => {
 
 onMounted(() => {
   bus.on(settings.paneResizeTop, () => {
-    bus.emit(settings.eventEditorAction, {
+    monacoEditor.value?.resizeIt({
       act: settings.eventTypeContainerHeightChanged,
       container: 'response-raw-main',
       id: 'raw-lens-main',

@@ -3,6 +3,7 @@
       <div class="content">
         <div class="codes">
           <MonacoEditor 
+            ref="monacoEditor"
             theme="vs" language="typescript" class="editor"
             customId="pre-script-main-codes"
             :value="scriptData.content"
@@ -56,6 +57,7 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const scriptData = computed<any>(() => store.state.Debug.scriptData);
 
 const timestamp = ref('')
+const monacoEditor = ref();
 watch(scriptData, (newVal) => {
   timestamp.value = Date.now() + ''
 }, {immediate: true, deep: true})
@@ -97,10 +99,11 @@ onMounted(() => {
   console.log('onMounted')
   bus.on(settings.eventConditionSave, save);
   bus.on(settings.paneResizeTop, () => {
-      bus.emit(settings.eventEditorAction, {
+    monacoEditor.value?.resizeIt({
         act: 'heightChanged',
         container: 'codes',
-        id: 'pre-script-main-codes'
+        id: 'pre-script-main-codes',
+        mixedHeight: 1,
       })
     })
 })

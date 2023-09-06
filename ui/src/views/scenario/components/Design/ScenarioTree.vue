@@ -632,6 +632,7 @@ const removeNode = () => {
 //复制节点
 const copyNode = () => {
   console.log('copyNode')
+  store.commit("Global/setSpinning", true)
   const node = treeDataMap.value[targetModelId];
   store.dispatch('Scenario/copyProcessor', node).then((newModeId) => {
     if (checkIfHasElse(targetModelId)) {
@@ -641,6 +642,7 @@ const copyNode = () => {
     selectNode([newModeId], null)
     expandOneKey(treeDataMap.value, newModeId, expandedKeys.value) // expend parent node
     setExpandedKeys('scenario', treeData.value[0].scenarioId, expandedKeys.value);
+    store.commit("Global/setSpinning", false)
   })
 }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="endpoint-mock-script-main">
-    2
+    script
   </div>
 </template>
 

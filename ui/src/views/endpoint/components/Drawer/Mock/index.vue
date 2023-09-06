@@ -17,8 +17,8 @@
 
     <div class="toolbar">
       是否开启<a-switch v-model:checked="advancedMockEnabled" class="switch" />
-      <a-button @click="createExpect" type="primary" class="btn-create">新建期望</a-button>
     </div>
+
   </div>
 </template>
 
@@ -38,15 +38,11 @@ const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
 
 const {serverUrl, agentUrl} = getUrls()
 const activeKey = ref('expect')
-const advancedMockEnabled = ref(true)
 
+const advancedMockEnabled = ref(true)
 watch(() => endpoint.value.advancedMockDisabled, (newVal, oldVal) => {
   advancedMockEnabled.value = !endpoint.value.advancedMockDisabled
 })
-
-const createExpect = () => {
-  console.log('createExpect')
-}
 
 </script>
 
@@ -63,15 +59,12 @@ const createExpect = () => {
   .toolbar {
     position: absolute;
     top: 12px;
-    right: 0px;
+    right: 108px;
 
     text-align: right;
 
     .switch {
       margin-left: 6px;
-    }
-    .btn-create {
-      margin-left: 30px;
     }
   }
 }

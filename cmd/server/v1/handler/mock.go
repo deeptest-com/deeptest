@@ -27,6 +27,7 @@ func (c *MockCtrl) Mock(ctx iris.Context) {
 	serveId, _ := ctx.Params().GetInt("serveId")
 	path := ctx.Params().Get("path")
 	endpointInterfaceId := ctx.URLParamIntDefault("id", 0)
+	code := ctx.URLParamDefault("code", "")
 
 	logUtils.Infof("%s %d/%s", method, serveId, path)
 
@@ -35,6 +36,7 @@ func (c *MockCtrl) Mock(ctx iris.Context) {
 		EndpointMethod:      consts.HttpMethod(method),
 		EndpointPath:        path,
 		EndpointInterfaceId: uint(endpointInterfaceId),
+		Code:                code,
 	}
 
 	resp, err := c.MockService.ByRequest(&req, ctx)

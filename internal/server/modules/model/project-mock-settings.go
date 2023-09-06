@@ -9,7 +9,7 @@ type ProjectMockSetting struct {
 	BaseModel
 
 	Priority    consts.MockPriority      `json:"priority"`
-	UseExamples mockData.UseExamplesEnum `gorm:"default:1" json:"useExamplesEnum"`
+	UseExamples mockData.UseExamplesEnum `gorm:"-" json:"useExamplesEnum"`
 
 	ProjectId uint `json:"projectId"`
 }

@@ -48,6 +48,8 @@ func (r *ProjectSettingsRepo) GetMock(projectId uint) (po model.ProjectMockSetti
 
 	if po.Priority == consts.MockPriorityExample {
 		po.UseExamples = mockData.IfPresent
+	} else {
+		po.UseExamples = mockData.No
 	}
 
 	return

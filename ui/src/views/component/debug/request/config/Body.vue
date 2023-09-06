@@ -51,6 +51,7 @@
 
       <div v-else class="editor-container">
         <MonacoEditor
+          ref="monacoEditor"
           customId="request-body-main"
           class="editor"
           v-model:value="debugData.body"
@@ -92,10 +93,10 @@ const codeLang = computed(() => {
   return getCodeLang()
 })
 const editorOptions = ref(Object.assign({usedWith: 'request'}, MonacoOptions))
-
 const bodyTypes = ref(getRequestBodyTypes())
-
 const timestamp = ref('')
+const monacoEditor = ref();
+
 watch(debugData, (newVal) => {
   timestamp.value = Date.now() + ''
 }, {immediate: true, deep: true})
@@ -116,11 +117,11 @@ const replaceRequest = (data) => {
 
 onMounted(() => {
   bus.on(settings.paneResizeTop, async () => {
-    bus.emit(settings.eventEditorAction, {
+    monacoEditor.value?.resizeIt({
       act: settings.eventTypeContainerHeightChanged,
       container: 'request-body-main',
       id: 'request-body-main'
-    })
+    });
   })
 })
 

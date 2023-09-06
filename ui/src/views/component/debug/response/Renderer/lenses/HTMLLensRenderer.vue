@@ -29,6 +29,7 @@
 
     <div class="body">
       <MonacoEditor
+        ref="monacoEditor"
         customId="html-lens-main"
         class="editor"
         :interfaceId="debugData.id"
@@ -89,6 +90,7 @@ const responseExtractorVisible = ref(false)
 const expr = ref('')
 const exprType = ref('')
 const result = ref('')
+const monacoEditor = ref();
 
 // let frameElem: HTMLIFrameElement
 // let frameDoc: Document
@@ -168,7 +170,7 @@ const format = (item) => {
 
 onMounted(() => {
   bus.on(settings.paneResizeTop, () => {
-    bus.emit(settings.eventEditorAction, {
+    monacoEditor.value?.resizeIt({
       act: settings.eventTypeContainerHeightChanged,
       container: 'response-html-main',
       id: 'html-lens-main',

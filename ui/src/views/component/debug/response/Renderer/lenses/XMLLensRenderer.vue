@@ -27,6 +27,7 @@
 
     <div class="body">
       <MonacoEditor
+        ref="monacoEditor"
         customId="xml-lens-main"
         class="editor"
         :value="content"
@@ -86,6 +87,7 @@ const responseExtractorVisible = ref(false)
 const expr = ref('')
 const exprType = ref('')
 const result = ref('')
+const monacoEditor = ref();
 
 const responseExtractor = (data) => {
   result.value = ''
@@ -154,11 +156,11 @@ const format = (item) => {
 
 onMounted(() => {
   bus.on(settings.paneResizeTop, () => {
-    bus.emit(settings.eventEditorAction, {
+    monacoEditor.value?.resizeIt({
       act: settings.eventTypeContainerHeightChanged,
       container: 'response-xml-main',
       id: 'xml-lens-main',
-    })
+    });
   })
 });
 

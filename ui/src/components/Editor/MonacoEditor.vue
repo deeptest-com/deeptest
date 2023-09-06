@@ -216,11 +216,21 @@ export default defineComponent({
      */
     resizeIt(data) {
       console.error('resizeIt', data);
-      const container = document.getElementsByClassName(data.container || 'response-renderer')[0]
+      const container = document.getElementsByClassName(data.container)[0]
       if (!container) {
         return;
       }
-      const size = {width: container.clientWidth, height: container.clientHeight - (data.mixedHeight || 30)}
+      let height = container.clientHeight;
+      if (!container.clientHeight) {
+        const parentContainer = document.getElementsByClassName('response-renderer')[0];
+        height = parentContainer.clientHeight - 46;
+
+        if (!height <= 0) {
+          height = this.editor._domElement.clientHeight + ((data.mixedHeight || 30));
+        }
+      }
+      
+      const size = {width: container.clientWidth, height: height - (data.mixedHeight || 30)}
       /**
        * 由于同一个页面内可能有多个 monacoEditor ,避免混乱调用， 在该事件触发时，传入id与 props.id 对比 
        * 为同一个才可以触发重置editor layout

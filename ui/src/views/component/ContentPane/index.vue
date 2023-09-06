@@ -3,13 +3,13 @@
 -->
 <template>
   <div class="container" :style="containerStyle || {}">
-    <div class="content">
+    <div :class="['content', showExpand && 'expand-content']">
       <multipane class="vertical-panes" layout="vertical" @paneResize="handlePaneResize">
         <div ref="paneLeft" :class="['pane', 'left', !isFold && 'unfold']">
           <slot name="left"></slot>
         </div>
         <multipane-resizer />
-        <div class="pane right" :style="{ flexGrow: 1  }">
+        <div :class="['pane', 'right', !isFold && 'unfold']" :style="{ flexGrow: 1  }">
           <slot name="right"></slot>
           <div v-if="showExpand" class="expand-icon" @click="toggle">
             <menu-fold-outlined v-if="isFold" />
@@ -59,6 +59,12 @@ const handlePaneResize = (...args) => {
     position: relative;
     height: 100%;
 
+    &.expand-content {
+      .right {
+        overflow: unset;
+      }
+    }
+
     .left {
       overflow-y: scroll;
       position: relative;
@@ -77,6 +83,10 @@ const handlePaneResize = (...args) => {
       flex: 1;
       overflow: scroll;
       position: relative;
+
+      &.unfold {
+        overflow: scroll;
+      }
 
       &:has(.expand-icon:hover) {
         overflow: unset;

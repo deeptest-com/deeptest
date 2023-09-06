@@ -329,6 +329,7 @@ func (s *ServeService) AddServerForHistory(serverName string) (err error) {
 
 			server.Name = "Mock环境"
 			server.ProjectId = v.ID
+			server.Sort = s.EnvironmentRepo.GetMaxOrder(v.ID)
 			err = s.EnvironmentRepo.Save(&server)
 			if err != nil {
 				return

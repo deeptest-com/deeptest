@@ -64,6 +64,7 @@ func (s *EnvironmentService) Copy(envId int) (err error) {
 }
 
 func (s *EnvironmentService) Create(env *model.Environment, projectId uint) (err error) {
+	env.Sort = s.EnvironmentRepo.GetMaxOrder(projectId)
 	err = s.EnvironmentRepo.Save(env)
 	err = s.ProjectRepo.UpdateDefaultEnvironment(projectId, env.ID)
 

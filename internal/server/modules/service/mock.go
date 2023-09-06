@@ -20,32 +20,31 @@ import (
 )
 
 type MockService struct {
-	IsInit            bool
-	endpointRouterMap sync.Map // maintain router for each endpoint in a map
-
-	generator mockGenerator.ResponseGenerator
 	responder mockResponder.Responder
+
+	endpointRouterMap   sync.Map // maintain router for each endpoint in a map
+	projectGeneratorMap sync.Map // maintain generate for each project in a map
+	projectOptionsMap   sync.Map // maintain options for each project in a map
 
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ProjectRepo           *repo.ProjectRepo           `inject:""`
 
-	EndpointService *EndpointService `inject:""`
+	EndpointService     *EndpointService          `inject:""`
+	ProjectSettingsRepo *repo.ProjectSettingsRepo `inject:""`
 }
 
 func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGenerator.Response, err error) {
-
-	// init mock generator if needed
-	if !s.IsInit {
-		s.initMockGenerator()
-	}
-
 	// load endpoint interface
 	endpointInterface, err := s.GetEndpointInterface(req)
 	if err != nil {
 		return
 	}
+
+	// init mock generator if needed
+	settings, _ := s.ProjectSettingsRepo.GetMock(endpointInterface.ProjectId)
+	req.UseExamples = settings.UseExamples
 
 	// init and cache endpoint router if needed
 	s.generateEndpointRouter(endpointInterface.EndpointId)
@@ -80,7 +79,10 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 	//}
 
 	// generate response
-	response, err := s.generator.GenerateResponse(&apiRequest, requestRoute, req.Code)
+
+	generator, _ := s.getGeneratorFromMap(endpointInterface.ProjectId, req)
+	response, err := (*generator).GenerateResponse(&apiRequest, requestRoute, req.Code)
+
 	if err != nil {
 		return
 	}
@@ -92,9 +94,9 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 	return
 }
 
-func (s *MockService) initMockGenerator() (err error) {
+func (s *MockService) initMockGenerator(config mockData.Options) (ret mockGenerator.ResponseGenerator, err error) {
 	options := mockData.Options{
-		//UseExamples:     config.UseExamples,
+		UseExamples: config.UseExamples,
 		//NullProbability: config.NullProbability,
 		//DefaultMinInt:   config.DefaultMinInt,
 		//DefaultMaxInt:   config.DefaultMaxInt,
@@ -103,10 +105,8 @@ func (s *MockService) initMockGenerator() (err error) {
 		//SuppressErrors:  config.SuppressErrors,
 	}
 	dataGenerator := mockData.New(options)
-	s.generator = mockGenerator.New(dataGenerator)
+	ret = mockGenerator.New(dataGenerator)
 	s.responder = mockResponder.New()
-
-	s.IsInit = true
 
 	return
 }
@@ -217,6 +217,52 @@ func (s *MockService) findRequestRoute(httpRequest http.Request, endpointId uint
 	return
 }
 
+func (s *MockService) getGeneratorFromMap(projectId uint, req *MockRequest) (ret *mockGenerator.ResponseGenerator, ok bool) {
+	obj, ok := s.projectGeneratorMap.Load(projectId)
+	if ok {
+		temp := obj.(*mockGenerator.ResponseGenerator)
+		ret = temp
+	}
+
+	if obj == nil || s.isOptionsChanged(projectId, req) {
+		newConfig := mockData.Options{
+			UseExamples: req.UseExamples,
+		}
+		temp, _ := s.initMockGenerator(newConfig)
+		ret = &temp
+
+		s.projectOptionsMap.Store(projectId, newConfig)
+		s.projectGeneratorMap.Store(projectId, ret)
+	}
+
+	return
+}
+func (s *MockService) getOptionsFromMap(projectId uint) (ret *mockData.Options, ok bool) {
+	obj, ok := s.projectOptionsMap.Load(projectId)
+	if ok {
+		val := obj.(mockData.Options)
+		ret = &val
+	}
+
+	if ret == nil {
+		ret = &mockData.Options{
+			UseExamples: mockData.No,
+		}
+		s.endpointRouterMap.Store(projectId, ret)
+	}
+
+	return
+}
+func (s *MockService) isOptionsChanged(projectId uint, req *MockRequest) (ret bool) {
+	old, _ := s.getOptionsFromMap(projectId)
+
+	if old.UseExamples != req.UseExamples {
+		return true
+	} else {
+		return false
+	}
+}
+
 func (s *MockService) getRouterFromMap(key uint) (ret routers.Router, ok bool) {
 	obj, ok := s.endpointRouterMap.Load(key)
 
@@ -231,11 +277,12 @@ type MockRequest struct {
 	ProjectId int `json:"projectCode"`
 	ServeId   int `json:"serveCode"`
 
-	EndpointPath   string            `json:"endpointPath"`
-	EndpointMethod consts.HttpMethod `json:"endpointMethod"`
+	EndpointPath        string            `json:"endpointPath"`
+	EndpointMethod      consts.HttpMethod `json:"endpointMethod"`
+	EndpointInterfaceId uint              `json:"endpointInterfaceId"`
 
-	EndpointInterfaceId uint   `json:"endpointInterfaceId"`
-	Code                string `json:"code"`
+	Code        string                   `json:"code"`
+	UseExamples mockData.UseExamplesEnum `json:"endpointInterfaceId"`
 }
 
 type MockResponse struct {

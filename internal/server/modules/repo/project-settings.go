@@ -2,6 +2,7 @@ package repo
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"time"
 )
@@ -43,6 +44,10 @@ func (r *ProjectSettingsRepo) GetMock(projectId uint) (po model.ProjectMockSetti
 			Priority:  consts.MockPrioritySmart,
 			ProjectId: projectId,
 		}
+	}
+
+	if po.Priority == consts.MockPriorityExample {
+		po.UseExamples = mockData.IfPresent
 	}
 
 	return

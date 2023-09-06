@@ -539,7 +539,7 @@ func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
 			Url:           serverConsts.DefaultSever,
 		}
 		if v.Name == "Mock环境" {
-			server.Url = "http://127.0.0.1:8085/api/v1/mock/" + strconv.Itoa(int(projectId)) // TODO 改成Mock的地址
+			server.Url = "http://127.0.0.1:8085/api/v1/mock/" + strconv.Itoa(int(serveId)) // TODO 改成Mock的地址
 		}
 		defaultServer = append(defaultServer, server)
 	}

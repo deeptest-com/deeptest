@@ -8,6 +8,7 @@ import (
 	mockResponder "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/responder"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/getkin/kin-openapi/routers"
 	"github.com/getkin/kin-openapi/routers/gorillamux"
@@ -78,13 +79,15 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 	//}
 
 	// generate response
+
 	generator, _ := s.getGeneratorFromMap(endpointInterface.ProjectId, req)
-	response, err := (*generator).GenerateResponse(&apiRequest, requestRoute)
+	response, err := (*generator).GenerateResponse(&apiRequest, requestRoute, req.Code)
+
 	if err != nil {
 		return
 	}
 
-	log.Println(resp)
+	log.Println(response)
 
 	resp = *response
 
@@ -278,6 +281,7 @@ type MockRequest struct {
 	EndpointMethod      consts.HttpMethod `json:"endpointMethod"`
 	EndpointInterfaceId uint              `json:"endpointInterfaceId"`
 
+	Code        string                   `json:"code"`
 	UseExamples mockData.UseExamplesEnum `json:"endpointInterfaceId"`
 }
 

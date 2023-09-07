@@ -4,11 +4,13 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type EndpointMockExpect struct {
 	BaseModel
-	Name       string `json:"name"`
-	EndpointId uint   `json:"endpointId"`
-	Ordr       int    `json:"ordr"`
-	CreateUser string `json:"createUser"`
-	UpdateUser string `json:"updateUser"`
+	Name                string            `json:"name"`
+	EndpointId          uint              `json:"endpointId"`
+	EndpointInterfaceId uint              `json:"endpointInterfaceId"`
+	Method              consts.HttpMethod `json:"method"`
+	Ordr                int               `json:"ordr"`
+	CreateUser          string            `json:"createUser"`
+	UpdateUser          string            `json:"updateUser"`
 }
 
 func (EndpointMockExpect) TableName() string {

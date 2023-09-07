@@ -40,6 +40,7 @@ func EvaluateExpression(req serverDomain.MockJsExpression) (ret serverDomain.Moc
 func initJsRuntime() {
 	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 	mockJsVm.JsRuntime = goja.New()
+	mockJsVm.JsRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
 
 	mockJsRequire = registry.Enable(mockJsVm.JsRuntime)
 

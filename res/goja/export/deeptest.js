@@ -30,8 +30,15 @@ variables.clear.prototype = {};
 // environment.clear = clearEnvironmentVariable;
 // environment.clear.prototype = {};
 
+const request = {}
+
+const response = {}
+
 module.exports = {
-    datapool: datapool,
-    variables: variables,
-    // environment: environment,
+    datapool,
+    variables,
+    // environment,
+
+    request,
+    response,
 }

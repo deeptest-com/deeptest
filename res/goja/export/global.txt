@@ -1,3 +1,12 @@
+declare type Request = {
+  url: string;
+  method: string;
+};
+declare type Response = {
+  url: string;
+  method: string;
+};
+
 declare global {
   const dt: {
     datapool: {
@@ -7,7 +16,10 @@ declare global {
       get: (variable_name: string) => any,
       set: (variable_name: string, variable_value: any) => {},
       clear: (variable_name: string) => {},
-    }
+    },
+
+    request: Request,
+    response: Response,
   }
 }
 

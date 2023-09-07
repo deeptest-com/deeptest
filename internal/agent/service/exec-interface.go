@@ -18,9 +18,10 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 
 	agentExec.ExecScene = req.ExecScene
 
-	//
+	// init context
 	agentExec.InitDebugExecContext()
 	agentExec.InitJsRuntime()
+	agentExec.SetValue("request", req.DebugData.BaseRequest) // store request data to js engine
 
 	// exec interface
 	agentExec.ExecPreConditions(&req)

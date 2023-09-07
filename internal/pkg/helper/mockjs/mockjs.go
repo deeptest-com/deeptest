@@ -14,6 +14,7 @@ import (
 var (
 	mockJsVm      JsVm
 	mockJsRequire *require.RequireModule
+	logs          []string
 
 	mockFunc func(p interface{}) interface{}
 )

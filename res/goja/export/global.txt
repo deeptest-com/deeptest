@@ -21,6 +21,8 @@ declare global {
     request: Request,
     response: Response,
   }
+
+  const log : (obj: any) => {},
 }
 
 export default {};

@@ -134,8 +134,8 @@ func defineJsFuncs() {
 	})
 
 	log := func(value goja.Value) {
-		str, _ := json.Marshal(value)
-		logs = append(logs, string(str))
+		bytes, _ := json.Marshal(value)
+		logs = append(logs, string(bytes))
 	}
 	if err := MyVm.JsRuntime.Set("log", log); err != nil {
 		panic(err)

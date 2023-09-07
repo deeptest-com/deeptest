@@ -115,6 +115,7 @@ var (
 		&SwaggerSync{},
 		&ProjectMockSetting{},
 
+		&EndpointMockScript{},
 		&EndpointMockExpect{},
 		&EndpointMockExpectRequest{},
 		&EndpointMockExpectResponse{},

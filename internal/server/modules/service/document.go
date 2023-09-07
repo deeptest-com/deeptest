@@ -316,6 +316,31 @@ func (s *DocumentService) GetDocumentDetail(documentId, endpointId, interfaceId 
 	res = make(map[string]interface{})
 	res["interface"] = interfaceDetail
 	res["servers"] = serves
+	res["mock"] = s.mock(serves, interfaceDetail)
 
 	return
+}
+
+func (s *DocumentService) mock(serves []model.ServeServer, interfaceDetail model.EndpointInterface) (ret []interface{}) {
+	url := s.getMockEnvironment(serves)
+	if url == "" {
+		return
+	}
+	responseBodies := interfaceDetail.ResponseBodies
+	path := interfaceDetail.Url
+	for _, item := range responseBodies {
+		ret = append(ret, map[string]interface{}{"name": item.Code, "url": url + path + "?code=" + item.Code})
+	}
+
+	return
+}
+
+func (s *DocumentService) getMockEnvironment(serves []model.ServeServer) string {
+	for _, item := range serves {
+		if item.EnvironmentName == "Mock环境" {
+			return item.Url
+		}
+	}
+
+	return ""
 }

@@ -5,6 +5,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
+	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -329,6 +330,7 @@ func (s *ServeService) AddServerForHistory(serverName string) (err error) {
 
 			server.Name = "Mock环境"
 			server.ProjectId = v.ID
+			server.Sort = s.EnvironmentRepo.GetMaxOrder(v.ID)
 			err = s.EnvironmentRepo.Save(&server)
 			if err != nil {
 				return
@@ -341,7 +343,8 @@ func (s *ServeService) AddServerForHistory(serverName string) (err error) {
 
 			serveServer := make([]model.ServeServer, 0)
 			for _, serve := range serveList {
-				url := "http://127.0.0.1:8085/api/v1/mock/" + strconv.Itoa(int(serve.ID)) // TODO 改成Mock的地址
+				host, _ := cache.GetCacheString("host")
+				url := host + "/api/v1/mock/" + strconv.Itoa(int(serve.ID))
 				serveServerTmp := model.ServeServer{ServeId: serve.ID, EnvironmentId: server.ID, Url: url, Description: server.Name}
 				serveServer = append(serveServer, serveServerTmp)
 			}

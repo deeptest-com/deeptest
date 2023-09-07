@@ -315,3 +315,17 @@ export function getMockExpressions(params) {
         params: params
     });
 }
+
+export function getMockScript(id) {
+    return request({
+        url: `/mockScripts/${id}`,
+        method: 'get'
+    });
+}
+export function updateMockScript(data: any) {
+    return request({
+        url: `/mockScripts`,
+        method: 'put',
+        data: data
+    });
+}

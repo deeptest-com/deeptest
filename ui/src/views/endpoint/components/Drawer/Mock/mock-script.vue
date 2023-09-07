@@ -1,17 +1,17 @@
 <template>
-  <div class="pre-condition-main">
+  <div class="endpoint-mock-script-main">
     <div class="head">
       <a-row type="flex" class="row">
         <a-col flex="1" class="left">
           <icon-svg type="script" class="icon"  />
-          <span>JavaScript代码</span>
+          <span>自定义JavaScript代码</span>
         </a-col>
 
         <a-col flex="100px" class="dp-right">
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>保存</template>
             <icon-svg type="save" class="dp-icon dp-link-primary dp-icon-large"
-                      @click.stop="save" />
+                      @click.stop="updateMockScript" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
@@ -29,55 +29,51 @@
     </div>
 
     <div class="content">
-      <Script />
+      <MockScript />
     </div>
 
     <FullScreenPopup v-if="fullscreen"
                      :visible="fullscreen"
-                     :model="scriptData"
+                     :model="mockScript"
                      :onCancel="closeFullScreen" />
   </div>
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref, watch} from "vue";
+import {ref, computed, watch, provide} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
+import IconSvg from "@/components/IconSvg";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
+import FullScreenPopup from "./script/Popup.vue";
+import MockScript from "./script/Script.vue";
 import {UsedBy} from "@/utils/enum";
-import IconSvg from "@/components/IconSvg";
 
-import {StateType as Debug} from "@/views/component/debug/store";
-import Script from "./conditions-pre/Script.vue";
-import FullScreenPopup from "./ConditionPopup.vue";
+const {t} = useI18n()
+provide('usedBy', UsedBy.MockData)
 
-const store = useStore<{  Debug: Debug }>()
-const debugData = computed<any>(() => store.state.Debug.debugData)
-const debugInfo = computed<any>(() => store.state.Debug.debugInfo)
-const scriptData = computed<any>(() => store.state.Debug.scriptData);
+const store = useStore<{ Endpoint }>();
+const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
+const mockScript = computed<any>(() => store.state.Endpoint.mockScript);
 
-const usedBy = inject('usedBy') as UsedBy
-const {t} = useI18n();
-
-const fullscreen = ref(false)
-
-const getPreConditionScript = () => {
-  console.log('getPreConditionScript')
-  store.dispatch('Debug/getPreConditionScript')
+const getMockScript = () => {
+  console.log('getMockScript')
+  store.dispatch('Endpoint/getMockScript', endpoint.value.id)
 }
 
-watch(debugData, (newVal) => {
+watch(() => endpoint.value.id, (newVal) => {
   console.log('watch debugData')
-  getPreConditionScript()
+  getMockScript()
 }, {immediate: true, deep: true});
 
-const save = () => {
-  console.log('save')
-  bus.emit(settings.eventConditionSave, {});
+const updateMockScript = () => {
+  console.log('updateMockScript')
+  store.dispatch('Endpoint/updateMockScript', mockScript.value)
 }
 
+const fullscreen = ref(false)
 const openFullscreen = () => {
   console.log('openFullscreen')
   fullscreen.value = true
@@ -95,7 +91,7 @@ const format = (item) => {
 </script>
 
 <style lang="less">
-.pre-condition-main {
+.endpoint-mock-script-main {
   .codes {
     height: 100%;
     min-height: 160px;
@@ -109,7 +105,7 @@ const format = (item) => {
 </style>
 
 <style lang="less" scoped>
-.pre-condition-main {
+.endpoint-mock-script-main {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -130,7 +126,6 @@ const format = (item) => {
   .content {
     flex: 1;
     height: calc(100% - 30px);
-    overflow-y: auto;
 
     display: flex;
     &>div {

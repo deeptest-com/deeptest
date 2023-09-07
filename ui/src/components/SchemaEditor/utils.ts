@@ -190,6 +190,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         if (isRef(obj)) {
             // 需要兼容两种写法，三方导入的$ref
             obj.ref = obj.ref || obj.$ref;
+            obj.$ref = obj.ref || obj.$ref;
             obj.name = obj.ref?.split('/')?.pop();
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},

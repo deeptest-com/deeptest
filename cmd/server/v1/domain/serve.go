@@ -164,3 +164,8 @@ type MockReq struct {
 	Priority  consts.MockPriority `json:"priority"`
 	ProjectId uint                `json:"projectId"`
 }
+
+type HistoryServeAddServesReq struct {
+	ServerName string `json:"serverName"`
+	Url        string `json:"url"`
+}

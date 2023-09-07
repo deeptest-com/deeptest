@@ -70,7 +70,7 @@ type ScriptBase struct {
 
 	Output       string              `gorm:"type:longtext;" json:"output"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
-	ResultMsg    string              `json:"resultMsg"`
+	ResultMsg    string              `gorm:"type:longtext" json:"resultMsg"`
 
 	ConditionId         uint                 `json:"conditionId"`
 	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object

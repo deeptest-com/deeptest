@@ -23,7 +23,7 @@ type JsVm struct {
 	JsRuntime *goja.Runtime
 }
 
-func ExecScript(scriptObj *domain.ScriptBase) (err error) {
+func ExecScript(scriptObj *domain.ScriptBase, request domain.BaseRequest, response domain.DebugResponse) (err error) {
 	VariableSettings = []domain.ExecVariable{}
 	if MyVm.JsRuntime == nil {
 		InitJsRuntime()
@@ -50,8 +50,25 @@ func InitJsRuntime() {
 	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 
 	MyVm.JsRuntime = goja.New()
+	MyVm.JsRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
 
-	// below script will get/set the variables in exec context
+	defineJsFuncs()
+	defineGoFuncs()
+
+	// load global script
+	MyRequire = registry.Enable(MyVm.JsRuntime)
+	pth := filepath.Join(consts.TmpDir, "deeptest.js")
+	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
+	dt, err := MyRequire.Require(pth)
+	if err != nil {
+		logUtils.Info(err.Error())
+		return
+	}
+
+	MyVm.JsRuntime.Set("dt", dt)
+}
+
+func defineJsFuncs() {
 	MyVm.JsRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
 		rowIndex := getDatapoolRow(dpName, seq, ExecScene.Datapools)
 
@@ -101,16 +118,25 @@ func InitJsRuntime() {
 		}
 		ClearVariable(scopeId, name)
 	})
+}
 
-	// load global script
-	MyRequire = registry.Enable(MyVm.JsRuntime)
-	pth := filepath.Join(consts.TmpDir, "deeptest.js")
-	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
-	dt, err := MyRequire.Require(pth)
+var (
+	_setValueFunc func(name string, value interface{})
+)
+
+func defineGoFuncs() {
+	// set data
+	script := `function _setData(name, val) {
+					dt[name] = val
+				}`
+	_, err := MyVm.JsRuntime.RunString(script)
 	if err != nil {
-		logUtils.Info(err.Error())
-		return
+		logUtils.Infof(err.Error())
 	}
 
-	MyVm.JsRuntime.Set("dt", dt)
+	err = MyVm.JsRuntime.ExportTo(MyVm.JsRuntime.Get("_setData"), &_setValueFunc)
+}
+
+func SetValue(name string, value interface{}) {
+	_setValueFunc(name, value)
 }

@@ -603,13 +603,14 @@ func (c *ServeCtrl) DeleteSecurity(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) AddServerForHistory(ctx iris.Context) {
-	name := ctx.URLParam("name")
-	if name == "" {
+	req := serverDomain.HistoryServeAddServesReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err := c.ServeService.AddServerForHistory(name)
+	err = c.ServeService.AddServerForHistory(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

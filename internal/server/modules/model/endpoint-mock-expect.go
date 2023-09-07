@@ -4,13 +4,19 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type EndpointMockExpect struct {
 	BaseModel
-	Name                string            `json:"name"`
-	EndpointId          uint              `json:"endpointId"`
-	EndpointInterfaceId uint              `json:"endpointInterfaceId"`
-	Method              consts.HttpMethod `json:"method"`
-	Ordr                int               `json:"ordr"`
-	CreateUser          string            `json:"createUser"`
-	UpdateUser          string            `json:"updateUser"`
+	Name                string                             `json:"name"`
+	EndpointId          uint                               `json:"endpointId"`
+	EndpointInterfaceId uint                               `json:"endpointInterfaceId"`
+	Method              consts.HttpMethod                  `json:"method"`
+	Ordr                int                                `json:"ordr"`
+	CreateUser          string                             `json:"createUser"`
+	UpdateUser          string                             `json:"updateUser"`
+	RequestHeaders      []EndpointMockExpectRequest        `gorm:"-" json:"requestHeaders"`
+	RequestBodies       []EndpointMockExpectRequest        `gorm:"-" json:"requestBodies"`
+	RequestQueryParams  []EndpointMockExpectRequest        `gorm:"-" json:"requestQueryParams"`
+	RequestPathParams   []EndpointMockExpectRequest        `gorm:"-" json:"requestPathParams"`
+	ResponseBody        EndpointMockExpectResponse         `gorm:"-" json:"responseBody"`
+	ResponseHeaders     []EndpointMockExpectResponseHeader `gorm:"-" json:"responseHeaders"`
 }
 
 func (EndpointMockExpect) TableName() string {

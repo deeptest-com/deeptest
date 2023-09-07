@@ -15,7 +15,7 @@ func ExecPreConditions(obj *InterfaceExecObj) (err error) {
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
 
-			err = ExecScript(&scriptBase)
+			err = ExecScript(&scriptBase, obj.DebugData.BaseRequest, domain.DebugResponse{})
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 
@@ -52,14 +52,13 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 				continue
 			}
 
-			err = ExecScript(&scriptBase)
+			err = ExecScript(&scriptBase, obj.DebugData.BaseRequest, resp)
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(scriptBase)
 
 		} else if condition.Type == consts.ConditionTypeCheckpoint {
-
 			var checkpointBase domain.CheckpointBase
 			json.Unmarshal(condition.Raw, &checkpointBase)
 			if checkpointBase.Disabled {

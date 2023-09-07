@@ -111,9 +111,23 @@ func (s *DocumentService) GetServes(serveIds []uint, endpoints map[uint][]domain
 		serve.Component = schemas[uint(serve.ID)]
 		serve.Securities = securities[uint(serve.ID)]
 		serve.Servers = servers[uint(serve.ID)]
+		s.mocks(serve.Endpoints, serve.Servers)
 		serves = append(serves, serve)
 	}
 	return
+}
+
+func (s *DocumentService) mocks(endpoints []domain.EndpointReq, servers []domain.ServeServer) {
+	var serve []model.ServeServer
+	copier.CopyWithOption(&serve, &servers, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+	for key1, endpoint := range endpoints {
+		for key2, interf := range endpoint.Interfaces {
+			var interfaceDetail model.EndpointInterface
+			copier.CopyWithOption(&interfaceDetail, &interf, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+			endpoints[key1].Interfaces[key2].Mock = s.mock(serve, interfaceDetail)
+		}
+	}
+
 }
 
 func (s *DocumentService) GetSchemas(serveIds []uint) (schemas map[uint][]domain.ServeSchemaReq) {

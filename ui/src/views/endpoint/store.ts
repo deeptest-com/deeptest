@@ -34,6 +34,9 @@ import {
     getEndpointList,
     saveEndpoint, copyEndpointCase,loadCaseTree,reBuildTree,
     getMockExpressions,
+
+    getMockScript,
+    updateMockScript,
 } from './service';
 
 import {
@@ -85,6 +88,8 @@ export interface StateType {
     caseTree:any;
     caseTreeMap:any;
     mockExpressions:any;
+
+    mockScript:any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -124,6 +129,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setInterfaces:Mutation<StateType>;
         setMockExpressions:Mutation<StateType>;
+        setMockScript:Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -176,6 +182,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         removeUnSavedMethods: Action<StateType, StateType>;
         getMockExpressions: Action<StateType, StateType>;
+
+        getMockScript: Action<StateType, StateType>;
+        updateMockScript: Action<StateType, StateType>;
     }
 }
 
@@ -218,7 +227,9 @@ const initState: StateType = {
     tagList:[],
     caseTree:[],
     caseTreeMap:[],
-    mockExpressions:[]
+    mockExpressions:[],
+
+    mockScript: {},
 };
 
 const StoreModel: ModuleType = {
@@ -350,7 +361,11 @@ const StoreModel: ModuleType = {
         },
         setMockExpressions(state, payload){
             state.mockExpressions = payload
-        }
+        },
+
+        setMockScript(state, payload){
+            state.mockScript = payload
+        },
     },
     actions: {
         async listEndpoint({commit, dispatch, state}, params: QueryParams) {
@@ -958,6 +973,24 @@ const StoreModel: ModuleType = {
                 return false;
             }
 
+        },
+
+        async getMockScript({ commit }, endpointId){
+            try {
+                const res = await getMockScript(endpointId);
+                commit('setMockScript', res.data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async updateMockScript({ commit }, payload){
+            try {
+                const res = await updateMockScript(payload);
+                return true;
+            } catch (error) {
+                return false;
+            }
         },
     },
 };

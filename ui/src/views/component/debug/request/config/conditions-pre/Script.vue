@@ -73,6 +73,7 @@ const addSnippet = (snippetName) => {
   store.dispatch('Debug/addSnippet', snippetName)
 }
 const editorChange = (newScriptCode) => {
+  console.log('editorChange')
   scriptData.value.content = newScriptCode;
 }
 

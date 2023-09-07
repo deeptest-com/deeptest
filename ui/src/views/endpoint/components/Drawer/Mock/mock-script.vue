@@ -126,7 +126,6 @@ const format = (item) => {
   .content {
     flex: 1;
     height: calc(100% - 30px);
-    overflow-y: auto;
 
     display: flex;
     &>div {

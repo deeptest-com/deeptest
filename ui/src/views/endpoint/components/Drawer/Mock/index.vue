@@ -7,6 +7,7 @@
 
     <div class="content">
       <EndpointMockExpect v-if="activeKey==='expect'" />
+
       <EndpointMockScript v-if="activeKey==='script'" />
     </div>
 
@@ -42,7 +43,9 @@ watch(() => endpoint.value.advancedMockDisabled, (newVal, oldVal) => {
 
 <style lang="less" scoped>
 .endpoint-mock-main {
+  //height: calc(100vh - 100px);
   height: 100%;
+
   padding-top: 8px;
   position: relative;
 

@@ -14,35 +14,35 @@
 
           <div class="title">示例代码：</div>
           <div class="sample">
-<!--            <a-card class="sample-content">-->
-<!--              <div class="item">-->
-<!--                <div>// 获取自动Mock响应数据</div>-->
-<!--                <div>var responseJson = fox.mockResponse.json();</div>-->
-<!--                <br />-->
-<!--                <div>// 修改数据里的分页信息</div>-->
-<!--                <div>// 修改page当前页数字段</div>-->
-<!--                <div>responseJson.page = fox.mockRequest.getParam('page');</div>-->
-<!--                <br />-->
-<!--                <div>// 修改total总页数字段</div>-->
-<!--                <div>responseJson.total = 120;</div>-->
-<!--                <br />-->
-<!--                <div>// 将修改后的结果写入fox.mockResponse</div>-->
-<!--                <div>fox.mockResponse.setBody(responseJson);</div>-->
-<!--              </div>-->
-<!--              <div class="item">-->
-<!--                <div>请求对象: fox.mockRequest</div>-->
-<!--                <div>fox.mockRequest.getParam(key: string) 获取请求参数，包括Path参数、Body参数、Query参数。</div>-->
-<!--                <div>fox.mockRequest.headers 请求的HTTP头</div>-->
-<!--                <div>fox.mockRequest.cookies 请求带的Cookies</div>-->
-<!--                <br />-->
-<!--                <div>响应对象: fox.mockResponse</div>-->
-<!--                <div>fox.mockResponse.json() 系统自动生成的JSON格式响应数据</div>-->
-<!--                <div>fox.mockResponse.setBody(body: any) 设置接口返回Body, 参数支持JSON或字符串。</div>-->
-<!--                <div>fox.mockResponse.setCode(code: number) 设置接口返回的HTTP状态码</div>-->
-<!--                <div>fox.mockResponse.setDelay(duration: number) 设置Mock响应延时，单位为毫秒。</div>-->
-<!--                <div>fox.mockResponse.headers 响应的HTTP头</div>-->
-<!--              </div>-->
-<!--            </a-card>-->
+            <a-card class="sample-content">
+              <div class="item">
+                <div>// 获取自动Mock响应数据</div>
+                <div>var responseJson = fox.mockResponse.json();</div>
+                <br />
+                <div>// 修改数据里的分页信息</div>
+                <div>// 修改page当前页数字段</div>
+                <div>responseJson.page = fox.mockRequest.getParam('page');</div>
+                <br />
+                <div>// 修改total总页数字段</div>
+                <div>responseJson.total = 120;</div>
+                <br />
+                <div>// 将修改后的结果写入fox.mockResponse</div>
+                <div>fox.mockResponse.setBody(responseJson);</div>
+              </div>
+              <div class="item">
+                <div>请求对象: fox.mockRequest</div>
+                <div>fox.mockRequest.getParam(key: string) 获取请求参数，包括Path参数、Body参数、Query参数。</div>
+                <div>fox.mockRequest.headers 请求的HTTP头</div>
+                <div>fox.mockRequest.cookies 请求带的Cookies</div>
+                <br />
+                <div>响应对象: fox.mockResponse</div>
+                <div>fox.mockResponse.json() 系统自动生成的JSON格式响应数据</div>
+                <div>fox.mockResponse.setBody(body: any) 设置接口返回Body, 参数支持JSON或字符串。</div>
+                <div>fox.mockResponse.setCode(code: number) 设置接口返回的HTTP状态码</div>
+                <div>fox.mockResponse.setDelay(duration: number) 设置Mock响应延时，单位为毫秒。</div>
+                <div>fox.mockResponse.headers 响应的HTTP头</div>
+              </div>
+            </a-card>
           </div>
 
           <div class="title">代码片段：</div>

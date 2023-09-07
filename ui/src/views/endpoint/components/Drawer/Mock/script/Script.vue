@@ -3,7 +3,7 @@
       <div class="content">
         <div class="codes">
           <MonacoEditor theme="vs" language="typescript" class="editor"
-                        :value="scriptData.content"
+                        :value="mockScript.content"
                         :timestamp="timestamp"
                         :options="editorOptions"
                         @change="editorChange" />
@@ -29,13 +29,16 @@
                 <div>// 将修改后的结果写入fox.mockResponse</div>
                 <div>fox.mockResponse.setBody(responseJson);</div>
               </div>
+              <br />
               <div class="item">
                 <div>请求对象: fox.mockRequest</div>
+                <br />
                 <div>fox.mockRequest.getParam(key: string) 获取请求参数，包括Path参数、Body参数、Query参数。</div>
                 <div>fox.mockRequest.headers 请求的HTTP头</div>
                 <div>fox.mockRequest.cookies 请求带的Cookies</div>
                 <br />
                 <div>响应对象: fox.mockResponse</div>
+                <br />
                 <div>fox.mockResponse.json() 系统自动生成的JSON格式响应数据</div>
                 <div>fox.mockResponse.setBody(body: any) 设置接口返回Body, 参数支持JSON或字符串。</div>
                 <div>fox.mockResponse.setCode(code: number) 设置接口返回的HTTP状态码</div>
@@ -77,14 +80,12 @@ const useForm = Form.useForm;
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 
-const store = useStore<{  Debug: Debug }>();
-
-const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
-const debugData = computed<any>(() => store.state.Debug.debugData);
-const scriptData = computed<any>(() => store.state.Debug.scriptData);
+const store = useStore<{ Endpoint }>();
+const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
+const mockScript = computed<any>(() => store.state.Endpoint.mockScript);
 
 const timestamp = ref('')
-watch(scriptData, (newVal) => {
+watch(mockScript, (newVal) => {
   timestamp.value = Date.now() + ''
 }, {immediate: true, deep: true})
 
@@ -103,27 +104,11 @@ const addSnippet = (snippetName) => {
   store.dispatch('Debug/addSnippet', snippetName)
 }
 const editorChange = (newScriptCode) => {
-  scriptData.value.content = newScriptCode;
-}
-
-const save = async () => {
-  console.log('save', scriptData.value)
-
-  scriptData.value.debugInterfaceId = debugInfo.value.debugInterfaceId
-  scriptData.value.endpointInterfaceId = debugInfo.value.endpointInterfaceId
-  scriptData.value.projectId = debugData.value.projectId
-
-  const result = await store.dispatch('Debug/saveScript', scriptData.value)
-  if (result) {
-    notifySuccess(`保存成功`)
-  } else {
-    notifyError(`保存失败`);
-  }
+  mockScript.value.content = newScriptCode;
 }
 
 onMounted(() => {
   console.log('onMounted')
-  bus.on(settings.eventConditionSave, save);
   bus.on(settings.paneResizeTop, () => {
       bus.emit(settings.eventEditorAction, {
         act: 'heightChanged',
@@ -133,7 +118,6 @@ onMounted(() => {
 })
 onBeforeUnmount( () => {
   console.log('onBeforeUnmount')
-  bus.off(settings.eventConditionSave, save);
   bus.off(settings.paneResizeTop, () => {
       bus.emit(settings.eventEditorAction, {
         act: 'heightChanged',
@@ -148,13 +132,12 @@ const wrapperCol = { span: 24 }
 </script>
 
 <style lang="less">
-.pre-script-main {
+.mock-script-main {
   .ant-card.sample-content .ant-card-body {
     padding: 10px !important;
   }
 }
 </style>
-
 
 <style lang="less" scoped>
 .mock-script-main {

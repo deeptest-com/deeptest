@@ -11,7 +11,7 @@
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>保存</template>
             <icon-svg type="save" class="dp-icon dp-link-primary dp-icon-large"
-                      @click.stop="save" />
+                      @click.stop="updateMockScript" />
           </a-tooltip>
 
           <a-tooltip overlayClassName="dp-tip-small">
@@ -60,7 +60,7 @@ const mockScript = computed<any>(() => store.state.Endpoint.mockScript);
 
 const getMockScript = () => {
   console.log('getMockScript')
-  // store.dispatch('Debug/getPreConditionScript')
+  store.dispatch('Endpoint/getMockScript', endpoint.value.id)
 }
 
 watch(() => endpoint.value.id, (newVal) => {
@@ -68,9 +68,9 @@ watch(() => endpoint.value.id, (newVal) => {
   getMockScript()
 }, {immediate: true, deep: true});
 
-const save = () => {
-  console.log('save')
-  bus.emit(settings.eventConditionSave, {});
+const updateMockScript = () => {
+  console.log('updateMockScript')
+  store.dispatch('Endpoint/updateMockScript', mockScript.value)
 }
 
 const fullscreen = ref(false)

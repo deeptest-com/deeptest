@@ -541,7 +541,7 @@ func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
 		}
 		if v.Name == "Mock环境" {
 			host, _ := cache.GetCacheString("host")
-			server.Url = host + "/api/v1/mock/" + strconv.Itoa(int(serveId))
+			server.Url = host + "mocks/" + strconv.Itoa(int(serveId))
 		}
 		defaultServer = append(defaultServer, server)
 	}

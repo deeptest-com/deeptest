@@ -151,7 +151,6 @@ func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
 }
 
 func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
-
 	serve, err := s.ServeRepo.Get(endpoint.ServeId)
 	if err != nil {
 		return
@@ -175,6 +174,7 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
 	}
 	serve.Securities = Securities
 
+	s.SchemasConv(&endpoint)
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
 	return

@@ -311,6 +311,7 @@ func (s *serve2conv) responsesBodySchema(responseBody model.EndpointInterfaceRes
 
 	schema = new(openapi3.SchemaRef)
 	responseBody.SchemaItem.Content = strings.ReplaceAll(responseBody.SchemaItem.Content, "\n", "")
+	responseBody.SchemaItem.Content = strings.ReplaceAll(responseBody.SchemaItem.Content, "\"ref\":", "\"$ref\":")
 	_commUtils.JsonDecode(responseBody.SchemaItem.Content, schema)
 
 	return

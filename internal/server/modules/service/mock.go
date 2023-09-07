@@ -163,7 +163,7 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 	*/
 	loader := &openapi3.Loader{Context: context.Background(), IsExternalRefsAllowed: true}
 	x := commonUtils.JsonEncode(doc3)
-
+	//logUtils.Info(x)
 	doc3, err = loader.LoadFromData([]byte(x))
 	doc3.Servers = nil
 	//pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/test1.json"

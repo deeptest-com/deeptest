@@ -31,11 +31,10 @@ type Schema struct {
 }
 
 func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
-
 	schema := Schema{}
 	if schemaRef.Ref == "" {
 		schemaRef.Ref = schemaRef.RefExt
-		schemaRef.RefExt = ""
+		//schemaRef.RefExt = ""
 	}
 	if schemaRef.Ref != "" {
 		schema.Ref = schemaRef.Ref

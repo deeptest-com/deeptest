@@ -7,7 +7,6 @@
 
     <div class="content">
       <EndpointMockExpect v-if="activeKey==='expect'" />
-
       <EndpointMockScript v-if="activeKey==='script'" />
     </div>
 
@@ -47,9 +46,8 @@ watch(() => endpoint.value.advancedMockDisabled, (newVal, oldVal) => {
   padding-top: 8px;
   position: relative;
 
-  .tabs {
-  }
   .content {
+    height: calc(100% - 56px);
   }
   .toolbar {
     position: absolute;

@@ -50,6 +50,7 @@ func InitJsRuntime() {
 	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 
 	MyVm.JsRuntime = goja.New()
+	MyVm.JsRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
 
 	defineJsFuncs()
 	defineGoFuncs()

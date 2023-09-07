@@ -1,6 +1,7 @@
 package agentExec
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -133,7 +134,8 @@ func defineJsFuncs() {
 	})
 
 	log := func(value goja.Value) {
-		logs = append(logs, fmt.Sprintf("%v", value))
+		str, _ := json.Marshal(value)
+		logs = append(logs, string(str))
 	}
 	if err := MyVm.JsRuntime.Set("log", log); err != nil {
 		panic(err)

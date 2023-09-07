@@ -89,3 +89,12 @@ func (r *ServeServerRepo) SetUrl(serveId uint, url string) (err error) {
 func (r *ServeServerRepo) BatchCreate(req []model.ServeServer) error {
 	return r.DB.Create(req).Error
 }
+
+func (r *ServeServerRepo) UpdateUrlByServerAndServer(serveId, serverId uint, url string) error {
+	err := r.DB.Model(&model.ServeServer{}).
+		Where("serve_id = ?", serveId).
+		Where("environment_id = ?", serverId).
+		Update("url", url).Error
+
+	return err
+}

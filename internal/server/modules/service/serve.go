@@ -311,7 +311,7 @@ func (s *ServeService) ChangeServe(serveId, userId uint) (serve model.Serve, err
 	return
 }
 
-func (s *ServeService) AddServerForHistory(serverName string) (err error) {
+func (s *ServeService) AddServerForHistory(req v1.HistoryServeAddServesReq) (err error) {
 	projects, err := s.ProjectRepo.ListAll()
 	if len(projects) == 0 {
 		return
@@ -320,19 +320,8 @@ func (s *ServeService) AddServerForHistory(serverName string) (err error) {
 	for _, v := range projects {
 		v := v
 		go func() {
-			server, err := s.EnvironmentRepo.GetByProjectAndName(v.ID, serverName)
+			server, err := s.EnvironmentRepo.GetByProjectAndName(v.ID, req.ServerName)
 			if err != nil && err != gorm.ErrRecordNotFound {
-				return
-			}
-			if server.ID != 0 {
-				return
-			}
-
-			server.Name = "Mock环境"
-			server.ProjectId = v.ID
-			server.Sort = s.EnvironmentRepo.GetMaxOrder(v.ID)
-			err = s.EnvironmentRepo.Save(&server)
-			if err != nil {
 				return
 			}
 
@@ -340,16 +329,47 @@ func (s *ServeService) AddServerForHistory(serverName string) (err error) {
 			if err != nil {
 				return
 			}
+			host, _ := cache.GetCacheString("host")
 
-			serveServer := make([]model.ServeServer, 0)
-			for _, serve := range serveList {
-				host, _ := cache.GetCacheString("host")
-				url := host + "/api/v1/mock/" + strconv.Itoa(int(serve.ID))
-				serveServerTmp := model.ServeServer{ServeId: serve.ID, EnvironmentId: server.ID, Url: url, Description: server.Name}
-				serveServer = append(serveServer, serveServerTmp)
-			}
-			if err = s.ServeServerRepo.BatchCreate(serveServer); err != nil {
-				return
+			//新增Mock环境
+			if server.ID == 0 {
+				server.Name = req.ServerName
+				server.ProjectId = v.ID
+				server.Sort = s.EnvironmentRepo.GetMaxOrder(v.ID)
+				err = s.EnvironmentRepo.Save(&server)
+				if err != nil {
+					return
+				}
+
+				serveServer := make([]model.ServeServer, 0)
+				for _, serve := range serveList {
+					url := host + "mocks/" + strconv.Itoa(int(serve.ID))
+					if req.Url != "" {
+						url = req.Url
+					}
+					if url == "" {
+						return
+					}
+
+					serveServerTmp := model.ServeServer{ServeId: serve.ID, EnvironmentId: server.ID, Url: url, Description: server.Name}
+					serveServer = append(serveServer, serveServerTmp)
+				}
+				if err = s.ServeServerRepo.BatchCreate(serveServer); err != nil {
+					return
+				}
+			} else {
+				//更新url
+				for _, serve := range serveList {
+					url := host + "mocks/" + strconv.Itoa(int(serve.ID))
+					if req.Url != "" {
+						url = req.Url
+					}
+					if url == "" {
+						return
+					}
+					_ = s.ServeServerRepo.UpdateUrlByServerAndServer(serve.ID, server.ID, url)
+
+				}
 			}
 		}()
 	}

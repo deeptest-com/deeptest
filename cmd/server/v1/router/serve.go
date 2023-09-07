@@ -45,7 +45,7 @@ func (m *ServeModule) Party() module.WebModule {
 
 		public.Get("/listByProject", m.ServeCtrl.ListByProject).Name = "获取项目下的服务"
 		public.Post("/changeServe", m.ServeCtrl.ChangeServe).Name = "切换用户当前服务"
-		public.Get("/addServerForHistory", m.ServeCtrl.AddServerForHistory).Name = "为历史项目和服务增加环境"
+		public.Post("/addServerForHistory", m.ServeCtrl.AddServerForHistory).Name = "为历史项目和服务增加环境"
 	}
 
 	return module.NewModule("/serves", handler)

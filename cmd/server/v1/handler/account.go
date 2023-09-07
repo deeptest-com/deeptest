@@ -43,7 +43,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.LoginErr.Code})
 		return
 	}
-	cache.SetCache("host", ctx.Request().Host, -1)
+	cache.SetCache("host", ctx.Request().Header.Get("Referer"), -1)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
 }
 

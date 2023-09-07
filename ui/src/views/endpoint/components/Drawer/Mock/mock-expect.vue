@@ -1,5 +1,11 @@
 <template>
   <div class="endpoint-mock-expect-main">
+    <ExclamationCircleOutlined />
+    <span>
+      当您请求Mock接口时，会根据请求参数匹配的期望条件自动返回响应的结果，Mock请求地址：
+      {{serverUrl}}/mocks/{{endpoint.id}}{{endpoint.path}}。
+    </span>
+
     <div class="toolbar">
       <a-button @click="createExpect" type="primary" class="btn-create">新建期望</a-button>
     </div>
@@ -17,6 +23,8 @@ const {t} = useI18n()
 
 const store = useStore<{ Endpoint }>();
 const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
+
+const {serverUrl, agentUrl} = getUrls()
 
 const createExpect = () => {
   console.log('createExpect')

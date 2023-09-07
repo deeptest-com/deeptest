@@ -6,10 +6,6 @@
     </a-tabs>
 
     <div class="content">
-      <ExclamationCircleOutlined />
-      当您请求Mock接口时，会根据请求参数匹配的期望条件自动返回响应的结果，Mock请求地址：
-      {{serverUrl}}/mocks/{{endpoint.id}}{{endpoint.path}}。
-
       <EndpointMockExpect v-if="activeKey==='expect'" />
 
       <EndpointMockScript v-if="activeKey==='script'" />
@@ -28,15 +24,14 @@ import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
 import {getUrls} from "@/utils/request";
-import EndpointMockExpect from './expect.vue';
-import EndpointMockScript from './script.vue';
+import EndpointMockExpect from './mock-expect.vue';
+import EndpointMockScript from './mock-script.vue';
 
 const {t} = useI18n()
 
 const store = useStore<{ Endpoint }>();
 const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
 
-const {serverUrl, agentUrl} = getUrls()
 const activeKey = ref('expect')
 
 const advancedMockEnabled = ref(true)

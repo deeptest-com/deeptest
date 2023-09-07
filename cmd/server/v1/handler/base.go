@@ -16,6 +16,7 @@ func (c *MockCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 	ctx.StatusCode(resp.StatusCode)
 	ctx.ContentType(resp.ContentType)
 
+	/** string **/
 	switch resp.ContentType {
 	case context.ContentTextHeaderValue, context.ContentHTMLHeaderValue:
 		str := fmt.Sprintf("%v", data)
@@ -25,11 +26,20 @@ func (c *MockCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 		str := fmt.Sprintf("%v", data)
 		ctx.Markdown([]byte(str))
 
-	case context.ContentJSONHeaderValue:
-		ctx.JSON(data)
+	// proto.Message
+	case context.ContentProtobufHeaderValue:
+		msg, ok := data.(proto.Message)
+		if ok {
+			ctx.Protobuf(msg)
+		}
 
+	// map
 	case context.ContentJSONProblemHeaderValue, context.ContentXMLProblemHeaderValue:
 		ctx.Problem(data)
+
+	/** object to marshal **/
+	case context.ContentJSONHeaderValue:
+		ctx.JSON(data)
 
 	case context.ContentJavascriptHeaderValue:
 		ctx.JSONP(data)
@@ -42,12 +52,6 @@ func (c *MockCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 
 	case context.ContentYAMLTextHeaderValue:
 		ctx.TextYAML(data)
-
-	case context.ContentProtobufHeaderValue:
-		msg, ok := data.(proto.Message)
-		if ok {
-			ctx.Protobuf(msg)
-		}
 
 	case context.ContentMsgPackHeaderValue, context.ContentMsgPack2HeaderValue:
 		ctx.MsgPack(data)

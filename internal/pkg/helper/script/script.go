@@ -102,10 +102,6 @@ func GenResultMsg(po *domain.ScriptBase) {
 		name = "后处理" + name
 	}
 
-	if po.Output == "undefined" {
-		po.Output = "空"
-	}
-
 	po.ResultMsg = fmt.Sprintf("%s%s%s，输出\"%s\"。", name,
 		_i118Utils.Sprintf("exec"), _i118Utils.Sprintf(po.ResultStatus.String()),
 		po.Output)

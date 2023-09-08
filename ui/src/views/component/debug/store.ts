@@ -738,12 +738,19 @@ const StoreModel: ModuleType = {
             }
         },
         async addSnippet({commit, dispatch, state}, name: string) {
-            const json = await getSnippet(name)
-            if (json.code === 0) {
-                let script = (state.scriptData.content ? state.scriptData.content: '') + '\n' +  json.data.script
-                script = script.trim()
-                commit('setScriptContent', script);
+            let line = ''
+            if (name === 'log') {
+                line = "log('test')"
+            } else {
+                const json = await getSnippet(name)
+                if (json.code === 0) {
+                    line = json.data.script
+                }
             }
+
+            let script = (state.scriptData.content ? state.scriptData.content: '') + '\n' + line
+            script = script.trim()
+            commit('setScriptContent', script);
 
             return true;
         },

@@ -31,7 +31,6 @@ variables.clear.prototype = {};
 // environment.clear.prototype = {};
 
 const request = {}
-
 const response = {}
 
 module.exports = {

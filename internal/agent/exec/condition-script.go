@@ -1,6 +1,7 @@
 package agentExec
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -10,6 +11,7 @@ import (
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	"path/filepath"
+	"strings"
 )
 
 var (
@@ -17,6 +19,8 @@ var (
 	MyRequire *require.RequireModule
 
 	VariableSettings []domain.ExecVariable
+
+	logs []string
 )
 
 type JsVm struct {
@@ -33,14 +37,24 @@ func ExecScript(scriptObj *domain.ScriptBase, request domain.BaseRequest, respon
 		return
 	}
 
-	result, err := MyVm.JsRuntime.RunString(scriptObj.Content)
+	logs = nil
+	resultVal, err := MyVm.JsRuntime.RunString(scriptObj.Content)
+
+	result := fmt.Sprintf("%v", resultVal)
+	if result == "undefined" {
+		result = "空"
+	}
+
+	output := strings.Join(logs, ", ")
+
 	if err != nil {
 		scriptObj.ResultStatus = consts.Fail
-		scriptObj.Output = fmt.Sprintf("%v, ERROR: %s", result, err.Error())
+		scriptObj.Output = fmt.Sprintf("RESULT: %v; OUTPUT: %s; ERROR: %s", result, output, err.Error())
 		logUtils.Error(scriptObj.Output)
+
 	} else {
 		scriptObj.ResultStatus = consts.Pass
-		scriptObj.Output = fmt.Sprintf("%v", result)
+		scriptObj.Output = fmt.Sprintf("%s", output)
 	}
 
 	return
@@ -118,6 +132,14 @@ func defineJsFuncs() {
 		}
 		ClearVariable(scopeId, name)
 	})
+
+	log := func(value goja.Value) {
+		bytes, _ := json.Marshal(value)
+		logs = append(logs, string(bytes))
+	}
+	if err := MyVm.JsRuntime.Set("log", log); err != nil {
+		panic(err)
+	}
 }
 
 var (

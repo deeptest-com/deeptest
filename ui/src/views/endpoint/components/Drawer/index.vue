@@ -56,6 +56,7 @@
               :data="docsData"
               @switchToDefineTab="switchToDefineTab"
               :show-menu="true"/> <!-- use v-if to force page reload-->
+        <Mock v-if="activeTabKey === 'mock'" />      
       </div>
     </template>
   </DrawerLayout>
@@ -71,6 +72,7 @@ import EndpointDefine from './Define/index.vue';
 import EndpointDebug from './Debug/index.vue';
 import EndpointCases from './Cases/index.vue';
 import Docs from '@/components/Docs/index.vue';
+import Mock from './MockExcept/index.vue';
 import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
@@ -104,6 +106,10 @@ const tabsList = [
   {
     "key": "cases",
     "label": "用例"
+  },
+  {
+    "key": "mock",
+    "label": "高级Mock"
   },
   {
     "key": "docs",

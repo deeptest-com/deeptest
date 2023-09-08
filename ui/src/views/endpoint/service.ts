@@ -315,3 +315,68 @@ export function getMockExpressions(params) {
         params: params
     });
 }
+
+export function getExpectList(params) {
+    console.log(params);
+    return request({
+        url: `/mockExpect/list`,
+        method: 'get',
+        params,
+    });
+}
+
+export function getMockExpectDetail(params) {
+    return request({
+        url: `/mockExpect/${params.id}`,
+        method: 'get',
+        params,
+    });
+}
+
+export function saveMockExpect(params) {
+    return request({
+        url: '/mockExpect/save',
+        method: 'post',
+        params,
+    })
+}
+
+export function copyMockExpect(params) {
+    return request({
+        url: '/mockExpect/copy',
+        method: 'get',
+        params,
+    })
+}
+
+export function updateMockExpectDisabled(params) {
+    return request({
+        url: 'mockExpect/updateExpectDisabled',
+        method: 'post',
+        params,
+    })
+}
+
+export function deleteMockExpect(params) {
+    return request({
+        url: `/mockExpect/${params.id}`,
+        method: 'delete',
+        params,
+    })
+}
+
+export function updateMockStatus(params) {
+    return request({
+        url: 'endpoint/updateMockStatus',
+        method: 'post',
+        params,
+    })
+}
+
+export function getMockDropDownOptions(params) {
+    return request({
+        url: '/mockExpect/requestOptions',
+        method: 'get',
+        params,
+    })
+}

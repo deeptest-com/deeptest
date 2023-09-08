@@ -34,6 +34,8 @@ import {
     getEndpointList,
     saveEndpoint, copyEndpointCase,loadCaseTree,reBuildTree,
     getMockExpressions,
+    getExpectList,
+    getMockExpectDetail,
 } from './service';
 
 import {
@@ -85,6 +87,12 @@ export interface StateType {
     caseTree:any;
     caseTreeMap:any;
     mockExpressions:any;
+
+    /**
+     * 高级mock
+     */
+    mockExpectList: any[];
+    mockExpectDetail: any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -124,6 +132,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setInterfaces:Mutation<StateType>;
         setMockExpressions:Mutation<StateType>;
+
+        setMockExpectList: Mutation<StateType>;
+        setMockExpectDetail: Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -176,6 +187,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         removeUnSavedMethods: Action<StateType, StateType>;
         getMockExpressions: Action<StateType, StateType>;
+
+        getMockExpectList: Action<StateType, StateType>;
+        getMockExpectDetail: Action<StateType, StateType>;
+
+        saveMockExpect: Action<StateType, StateType>;
+        cloneMockExpect: Action<StateType, StateType>;
+        sortMockExpect: Action<StateType, StateType>;
+        disabledMockExpect: Action<StateType, StateType>;
     }
 }
 
@@ -218,7 +237,13 @@ const initState: StateType = {
     tagList:[],
     caseTree:[],
     caseTreeMap:[],
-    mockExpressions:[]
+    mockExpressions:[],
+
+    /**
+     * 高级mock相关
+     */
+    mockExpectList: [],
+    mockExpectDetail: {},
 };
 
 const StoreModel: ModuleType = {
@@ -350,7 +375,13 @@ const StoreModel: ModuleType = {
         },
         setMockExpressions(state, payload){
             state.mockExpressions = payload
-        }
+        },
+        setMockExpectList(state, payload) {
+            state.mockExpectList = payload;
+        },
+        setMockExpectDetail(state, payload) {
+            state.mockExpectDetail = payload;
+        },
     },
     actions: {
         async listEndpoint({commit, dispatch, state}, params: QueryParams) {
@@ -959,6 +990,56 @@ const StoreModel: ModuleType = {
             }
 
         },
+
+        async getMockExpectList({ commit, state, rootState }: any, payload) {
+            try {
+                const data: any = await getExpectList({
+                    endpointId: state.endpointId,
+                    currProjectId: rootState.ProjectGlobal.currPorject?.id,
+                });
+                const { code, data: listData } = data;
+                if (code === 0) {
+                    commit('setMockExpectList', listData);
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async getMockExpectDetail({ commit, rootState }: any, payload) {
+            try {
+                const responseData: any = await getMockExpectDetail({
+                    id: payload.id,
+                    currProjectId: rootState.ProjectGlobal.currPorject?.id,
+                });
+                const { code, data } = responseData;
+                if (code === 0) {
+                    commit('setMockExpectDetail', data);
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async cloneMockExpect({ commit }, payload) {
+            console.log('克隆');
+        },
+
+        async saveMockExpect({ commit }, payload) {
+            console.log('克隆');
+        },
+
+        async sortMockExpect({ commit }, payload) {
+            console.log('克隆');
+        },
+
+        async disabledMockExpect({ commit }, payload) {
+            console.log('禁用');
+        }
     },
 };
 

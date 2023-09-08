@@ -16,7 +16,7 @@ type MockJsRepo struct {
 
 func (r *MockJsRepo) ListExpressions() (tos []serverDomain.MockJsExpression, err error) {
 	err = r.DB.Model(&model.MockJsExpression{}).
-		Where("NOT deleted").
+		Where("NOT deleted and expression != ''").
 		Order("ordr ASC").
 		Find(&tos).Error
 	return

@@ -151,18 +151,18 @@ func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 		object.([]interface{})[0] = s.Schema2Example(*schema.Value.Items)
 	case openapi3.TypeString:
 		if schema.Value.XMockType == "" {
-			schema.Value.XMockType = "word()"
+			schema.Value.XMockType = "@word()"
 		}
 		object = s.mock(schema.Value.XMockType, schema.Value.Type)
 	case openapi3.TypeBoolean:
 		object = true
 	case openapi3.TypeInteger:
 		if schema.Value.XMockType == "" {
-			schema.Value.XMockType = "integer(1,100)"
+			schema.Value.XMockType = "@integer(1,100)"
 		}
 		object = s.mock(schema.Value.XMockType, schema.Value.Type)
 	case openapi3.TypeNumber:
-		schema.Value.XMockType = "float(1, 10, 2, 5)"
+		schema.Value.XMockType = "@float(1, 10, 2, 5)"
 		object = s.mock(schema.Value.XMockType, schema.Value.Type)
 
 	}

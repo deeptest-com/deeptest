@@ -49,37 +49,6 @@ func (c *MockCtrl) Mock(ctx iris.Context) {
 
 }
 
-func (c *MockCtrl) Get(ctx iris.Context) {
-	respType := ctx.URLParam("respType")
-
-	username, password, ok := ctx.Request().BasicAuth()
-	if ok {
-		logUtils.Infof("BasicAuth - username: %s, password: %s, ok: %t", username, password, ok)
-	}
-
-	authorization := ctx.GetHeader(consts.Authorization)
-	logUtils.Infof("JWT Token - %s", authorization)
-
-	value := ctx.GetHeader("k1")
-	logUtils.Infof("API KEY - %s: %s", "k1", value)
-
-	co := ctx.GetCookie("cookie_from_client")
-	log.Print(co)
-
-	ctx.SetCookieKV("cookie_from_client", "token_"+co)
-	ctx.SetCookieKV("cookie_from_server", "value_from_server")
-
-	if respType == "html" {
-		ctx.HTML(mockHelper.GetHtmlData())
-	} else if respType == "xml" {
-		ctx.XML(mockHelper.GetXmlData())
-	} else if respType == "json" {
-		ctx.JSON(mockHelper.GetJsonData())
-	} else {
-		ctx.Text(mockHelper.GetTextData())
-	}
-}
-
 func (c *MockCtrl) Posts(ctx iris.Context) {
 	repType := ctx.URLParam("reqType")
 	reqBodyType := ctx.GetHeader(consts.ContentType)

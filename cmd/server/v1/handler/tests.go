@@ -1,19 +1,112 @@
 package handler
 
 import (
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
-	"log"
 )
 
 type TestsCtrl struct {
 	BaseCtrl
 }
 
-func (c *TestsCtrl) Test(ctx iris.Context) {
-	param1 := ctx.URLParams()
+func (c *TestsCtrl) Gets(ctx iris.Context) {
+	_, respStatusCode, respContentType := c.getParams(ctx)
 
-	log.Println(param1)
+	resp := mockGenerator.Response{
+		StatusCode:  respStatusCode,
+		ContentType: respContentType,
+		Data:        iris.Map{"key": "key", "value": "value", "params": ctx.URLParams()},
+	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	username, password, ok := ctx.Request().BasicAuth()
+	if ok {
+		logUtils.Infof("BasicAuth - username: %s, password: %s, ok: %t", username, password, ok)
+	}
+
+	authorization := ctx.GetHeader(consts.Authorization)
+	logUtils.Infof("JWT Token - %s", authorization)
+
+	value := ctx.GetHeader("k1")
+	logUtils.Infof("API KEY - %s: %s", "k1", value)
+
+	co := ctx.GetCookie("cookie_from_client")
+
+	ctx.SetCookieKV("cookie_from_client", "token_"+co)
+	ctx.SetCookieKV("cookie_from_server", "value_from_server")
+
+	c.WriteRespByContentType(resp, ctx)
+}
+
+func (c *TestsCtrl) Posts(ctx iris.Context) {
+	reqContentType, respStatusCode, respContentType := c.getParams(ctx)
+
+	resp := mockGenerator.Response{
+		StatusCode:  respStatusCode,
+		ContentType: respContentType,
+	}
+
+	if reqContentType == consts.ContentTypeJSON {
+		var req serverDomain.MockReqJson
+		ctx.ReadJSON(&req)
+
+		resp.Data = iris.Map{"req": req}
+
+	} else if reqContentType == consts.ContentTypeFormData {
+		name := ctx.FormValue("name")
+		password := ctx.FormValue("password")
+		file, _, _ := ctx.FormFile("file")
+
+		resp.Data = iris.Map{"name": name, "password": password, "file": file}
+	}
+
+	c.WriteRespByContentType(resp, ctx)
+}
+
+func (c *TestsCtrl) Head(ctx iris.Context) {
+	ctx.Header(consts.Server, "kataras iris v12")
+}
+
+func (c *TestsCtrl) Connect(ctx iris.Context) {
+	ctx.Header(consts.Server, "kataras iris v12")
+}
+
+func (c *TestsCtrl) Options(ctx iris.Context) {
+	ctx.Header(consts.Server, "kataras iris v12")
+	ctx.Header(consts.Allow, "GET, POST, PUT, DELETE, PATCH, HEAD, CONNECT, OPTIONS, TRACE")
+	ctx.Header(consts.ContentType, consts.ContentTypeUnixDir.String())
+}
+
+func (c *TestsCtrl) Trace(ctx iris.Context) {
+	ctx.Header(consts.Server, "kataras iris v12")
+	ctx.Header(consts.Connection, "close")
+	ctx.Header(consts.Host, "deeptest.com")
+}
+
+func (c *TestsCtrl) getParams(ctx iris.Context) (reqContentType consts.HttpContentType, respStatusCode consts.HttpRespCode, respContentType consts.HttpContentType) {
+	reqContentTypeStr := ctx.URLParam("reqContentTypeStr")
+	respStatusCodeInt, _ := ctx.URLParamInt("respStatusCodeInt")
+	respContentTypeStr := ctx.URLParam("respContentTypeStr")
+
+	if reqContentTypeStr != "" {
+		reqContentType = consts.HttpContentType(reqContentTypeStr)
+	} else {
+		reqContentType = consts.ContentTypeJSON
+	}
+
+	if respStatusCodeInt > 0 {
+		respStatusCode = consts.HttpRespCode(respStatusCodeInt)
+	} else {
+		respStatusCode = consts.OK
+	}
+
+	if respContentTypeStr != "" {
+		respContentType = consts.HttpContentType(respContentTypeStr)
+	} else {
+		respContentType = consts.ContentTypeJSON
+	}
+
+	return
 }

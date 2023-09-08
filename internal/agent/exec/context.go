@@ -13,6 +13,8 @@ var (
 	ServerApiPath = "api/v1"
 	ServerToken   = ""
 
+	CurrRequest domain.BaseRequest
+
 	CurrScenarioProcessor   *Processor
 	CurrScenarioProcessorId = uint(0)
 	CurrDebugInterfaceId    = uint(0)

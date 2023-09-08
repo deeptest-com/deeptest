@@ -1,6 +1,7 @@
 package mockGenerator
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	mockContent "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/content"
 	mockNegotiator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/negotiator"
 	"net/http"
@@ -30,8 +31,8 @@ func (generator *coordinatingGenerator) GenerateResponse(request *http.Request, 
 	}
 
 	response := &Response{
-		StatusCode:  statusCode,
-		ContentType: contentType,
+		StatusCode:  consts.HttpRespCode(statusCode),
+		ContentType: consts.HttpContentType(contentType),
 		Data:        contentData,
 	}
 

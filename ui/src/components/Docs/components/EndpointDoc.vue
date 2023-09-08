@@ -33,8 +33,8 @@
           <span><strong>{{ path.name }}：</strong></span>
           <a-tag class="method-tag" :color="getMethodColor(info.method)">{{ info.method }}</a-tag>
           <span class="request-uri">
-            <span class="ant-typography ant-typography-secondary">{{ handlePathStr(path.url + '/' + path.path) }}</span>
-            <CopyOutlined class="copy-icon" @click="copyURL(handlePathStr(path.url + '/' + path.path))"/>
+            <span class="ant-typography ant-typography-secondary">{{ handlePathStr(path.url + path.path) }}</span>
+            <CopyOutlined class="copy-icon" @click="copyURL(handlePathStr(path.url + path.path))"/>
           </span>
         </div>
       </div>

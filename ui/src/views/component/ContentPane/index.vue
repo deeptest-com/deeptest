@@ -12,8 +12,7 @@
         <div :class="['pane', 'right', !isFold && 'unfold']" :style="{ flexGrow: 1  }">
           <slot name="right"></slot>
           <div v-if="showExpand" class="expand-icon" @click="toggle">
-            <menu-fold-outlined v-if="isFold" />
-            <menu-unfold-outlined v-else />
+            <img :src="PutAway" />
           </div>
         </div>
       </multipane>
@@ -27,6 +26,7 @@ import { defineProps, nextTick, ref } from 'vue'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons-vue";
 
 import {Multipane, MultipaneResizer} from '@/components/Resize/index';
+import PutAway from '@/assets/images/put-away.png';
 
 const {t} = useI18n();
 const props = defineProps(['containerStyle', 'showExpand'])
@@ -83,9 +83,15 @@ const handlePaneResize = (...args) => {
       flex: 1;
       overflow: scroll;
       position: relative;
+      z-index: 2;
 
       &.unfold {
         overflow: scroll;
+
+        .expand-icon {
+          transform: rotate(180deg);
+          left: -14px;
+        }
       }
 
       &:has(.expand-icon:hover) {
@@ -96,9 +102,15 @@ const handlePaneResize = (...args) => {
       .expand-icon {
         position: absolute;
         top: 6px;
-        left: -8px;
-        font-size: 20px;
-        color: #1890ff;
+        left: -16px;
+        width: 30px;
+        height: 30px;
+
+        img {
+          width: 100%;
+          height: 100%;
+          image-rendering: pixelated; 
+        }
       }
     }
   }

@@ -3,7 +3,6 @@
 // datapool
 const datapool = {};
 
-
 datapool.get = function getDatapoolVariable(datapool_name, variable_name, seq) {};
 datapool.get.prototype = {};
 

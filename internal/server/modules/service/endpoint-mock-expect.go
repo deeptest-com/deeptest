@@ -88,6 +88,11 @@ func (s *EndpointMockExpectService) UpdateExpectDisabled(expectId uint, disabled
 	return
 }
 
+func (s *EndpointMockExpectService) UpdateExpectName(expectId uint, name string) (err error) {
+	err = s.EndpointMockExpectRepo.UpdateExpectName(expectId, name)
+	return
+}
+
 func (s *EndpointMockExpectService) GetExpectRequestOptions(endpointId, endpointInterfaceId uint) (ret v1.MockExpectRequestOptions, err error) {
 	ret = make(map[consts.ParamIn][]string)
 

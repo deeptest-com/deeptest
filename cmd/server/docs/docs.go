@@ -6398,6 +6398,70 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/mockExpect/requestOptions": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "获取请求参数下拉选项",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointId",
+                        "name": "endpointId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointInterfaceId",
+                        "name": "endpointInterfaceId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.MockExpectRequestOptions"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/mockExpect/save": {
             "post": {
                 "consumes": [
@@ -15839,6 +15903,24 @@ const docTemplate = `{
                 "Excel"
             ]
         },
+        "consts.DataSyncType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "Add": "新增",
+                "AutoAdd": "智能合并",
+                "FullCover": "完全覆盖"
+            },
+            "x-enum-varnames": [
+                "FullCover",
+                "AutoAdd",
+                "Add"
+            ]
+        },
         "consts.DataType": {
             "type": "string",
             "enum": [
@@ -16299,10 +16381,12 @@ const docTemplate = `{
         "consts.SourceType": {
             "type": "integer",
             "enum": [
-                1
+                1,
+                2
             ],
             "x-enum-varnames": [
-                "Swagger"
+                "SwaggerSync",
+                "SwaggerImport"
             ]
         },
         "consts.SwitchStatus": {
@@ -16314,15 +16398,6 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "SwitchON",
                 "SwitchOFF"
-            ]
-        },
-        "consts.SyncType": {
-            "type": "integer",
-            "enum": [
-                1
-            ],
-            "x-enum-varnames": [
-                "FullCopy"
             ]
         },
         "consts.TestStage": {
@@ -16398,21 +16473,6 @@ const docTemplate = `{
                 "CaseDebug",
                 "DiagnoseDebug",
                 "ScenarioDebug"
-            ]
-        },
-        "convert.DataSyncType": {
-            "type": "string",
-            "enum": [
-                "full_cover",
-                "copy_add"
-            ],
-            "x-enum-comments": {
-                "CopyAdd": "复制新增",
-                "FullCover": "完全覆盖"
-            },
-            "x-enum-varnames": [
-                "FullCover",
-                "CopyAdd"
             ]
         },
         "convert.DriverType": {
@@ -16727,6 +16787,11 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/domain.ExecCookie"
                     }
+                },
+                "data": {
+                    "description": "Content obj in goja",
+                    "type": "object",
+                    "additionalProperties": true
                 },
                 "headers": {
                     "type": "array",
@@ -21155,7 +21220,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/consts.SwitchStatus"
                 },
                 "syncType": {
-                    "$ref": "#/definitions/consts.SyncType"
+                    "$ref": "#/definitions/consts.DataSyncType"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -21791,6 +21856,10 @@ const docTemplate = `{
                 "logo": {
                     "type": "string"
                 },
+                "mock": {
+                    "type": "array",
+                    "items": {}
+                },
                 "name": {
                     "type": "string"
                 },
@@ -22362,7 +22431,7 @@ const docTemplate = `{
                     "description": "数据同步方式",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/convert.DataSyncType"
+                            "$ref": "#/definitions/consts.DataSyncType"
                         }
                     ]
                 },
@@ -22387,6 +22456,9 @@ const docTemplate = `{
                 "serveId": {
                     "description": "服务ID",
                     "type": "integer"
+                },
+                "sourceType": {
+                    "$ref": "#/definitions/consts.SourceType"
                 },
                 "userId": {
                     "type": "integer"
@@ -22422,6 +22494,10 @@ const docTemplate = `{
                 },
                 "method": {
                     "type": "string"
+                },
+                "mock": {
+                    "type": "array",
+                    "items": {}
                 },
                 "name": {
                     "type": "string"
@@ -22569,6 +22645,15 @@ const docTemplate = `{
                 },
                 "user_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "serverDomain.MockExpectRequestOptions": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "string"
                 }
             }
         },
@@ -23851,7 +23936,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/consts.SwitchStatus"
                 },
                 "syncType": {
-                    "$ref": "#/definitions/consts.SyncType"
+                    "$ref": "#/definitions/consts.DataSyncType"
                 },
                 "url": {
                     "type": "string"

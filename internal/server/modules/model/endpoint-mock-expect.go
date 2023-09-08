@@ -4,6 +4,7 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type EndpointMockExpect struct {
 	BaseModel
+	Disabled            bool                               `json:"disabled" gorm:"default:false"`
 	Name                string                             `json:"name"`
 	EndpointId          uint                               `json:"endpointId"`
 	EndpointInterfaceId uint                               `json:"endpointInterfaceId"`
@@ -25,11 +26,11 @@ func (EndpointMockExpect) TableName() string {
 
 type EndpointMockExpectRequest struct {
 	BaseModel
-	EndpointMockExpectId uint                  `json:"endpointMockExpectId"`
-	CompareWay           consts.MockCompareWay `json:"compareWay"`
-	Name                 string                `json:"name"`
-	Value                string                `json:"value"`
-	Source               consts.ParamIn        `json:"source"`
+	EndpointMockExpectId uint                      `json:"endpointMockExpectId"`
+	CompareWay           consts.ComparisonOperator `json:"compareWay"`
+	Name                 string                    `json:"name"`
+	Value                string                    `json:"value"`
+	Source               consts.ParamIn            `json:"source"`
 }
 
 func (EndpointMockExpectRequest) TableName() string {

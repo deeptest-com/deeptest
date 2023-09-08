@@ -349,6 +349,10 @@ const (
 
 	Contain    ComparisonOperator = "contain"
 	NotContain ComparisonOperator = "notContain"
+
+	RegularMatch ComparisonOperator = "regularMatch"
+	Exist        ComparisonOperator = "exist"
+	NotExist     ComparisonOperator = "notExist"
 )
 
 func (e ComparisonOperator) String() string {
@@ -710,19 +714,6 @@ const (
 	MockPrioritySmart   MockPriority = "smart"
 	MockPriorityExample MockPriority = "example"
 )
-
-type MockCompareWay string
-
-const (
-	MockCompareEqual    MockCompareWay = "equal"
-	MockCompareNotEqual MockCompareWay = "notEqual"
-	MockCompareLike     MockCompareWay = "like"
-	MockCompareIn       MockCompareWay = "in"
-)
-
-func (e MockCompareWay) String() string {
-	return string(e)
-}
 
 type DataSyncType uint
 

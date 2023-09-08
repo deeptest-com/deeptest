@@ -56,5 +56,6 @@ const (
 )
 
 var (
-	DirUpload = "upload"
+	DirUpload     = "upload"
+	HeaderOptions = []string{"Accept", "Accept-Encoding", "Accept-Language", "Connection", "Host", "Referer", "User-Agent", "Cache-Control", "Cookie", "Range"}
 )

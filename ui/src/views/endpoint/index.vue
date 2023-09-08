@@ -198,7 +198,6 @@ import debounce from "lodash.debounce";
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
-import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ContentPane from '@/views/component/ContentPane/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import PubDocs from './components/PubDocs.vue';
@@ -413,9 +412,11 @@ async function handleUpdateEndpoint(value: string, record: any) {
       {...record, title: value}
   );
 }
-
+// 打开抽屉
 async function editEndpoint(record) {
   await store.dispatch('Endpoint/getEndpointDetail', {id: record.id});
+  // 打开抽屉详情时，拉取mock表达式列表
+  await store.dispatch('Endpoint/getMockExpressions');
   drawerVisible.value = true;
 }
 
@@ -541,6 +542,7 @@ async function handleImport(data, callback) {
 
   const res = await store.dispatch('Endpoint/importEndpointData', {
     ...data,
+    "sourceType":2,
     "serveId": currServe.value.id,
   });
 

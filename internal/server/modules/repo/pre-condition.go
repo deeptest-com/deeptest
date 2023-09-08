@@ -180,7 +180,6 @@ func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (r
 
 			ret = append(ret, condition)
 		}
-
 	}
 
 	return

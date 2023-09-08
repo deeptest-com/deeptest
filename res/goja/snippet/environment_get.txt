@@ -1,1 +1,0 @@
-dt.environment.get("variable_name");

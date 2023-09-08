@@ -134,6 +134,7 @@ async function selectMenu(item) {
       selectedItem.value = {
         ...selectedItem.value,
         ...res.interface,
+        mock: res?.mock || null
       };
     }
   }

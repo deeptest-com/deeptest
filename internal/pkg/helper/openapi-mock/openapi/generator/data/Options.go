@@ -13,9 +13,9 @@ type Options struct {
 type UseExamplesEnum int
 
 const (
-	No UseExamplesEnum = iota
-	IfPresent
-	Exclusively
+	No          UseExamplesEnum = 0
+	IfPresent                   = 1
+	Exclusively                 = 2
 )
 
 func (enum UseExamplesEnum) String() string {

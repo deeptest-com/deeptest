@@ -16,16 +16,30 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.CurrDebugInterfaceId = req.DebugData.DebugInterfaceId
 	agentExec.CurrScenarioProcessorId = 0 // not in a scenario
 
+	agentExec.CurrRequest = domain.BaseRequest{}
+	agentExec.CurrResponse = domain.DebugResponse{}
 	agentExec.ExecScene = req.ExecScene
 
-	//
+	// init context
 	agentExec.InitDebugExecContext()
 	agentExec.InitJsRuntime()
 
-	// exec interface
-	agentExec.ExecPreConditions(&req)
+	originalReqUri, _ := PreRequest(&req.DebugData)
+	agentExec.SetReqValueToGoja(req.DebugData.BaseRequest)
+	agentExec.ExecPreConditions(req)
+
+	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
+	if agentExec.CurrRequest.Url != "" {
+		req.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
+	}
+
 	resultResp, err = RequestInterface(&req.DebugData)
-	agentExec.ExecPostConditions(&req, resultResp)
+
+	agentExec.SetRespValueToGoja(resultResp)
+	agentExec.ExecPostConditions(req, resultResp)
+	agentExec.UpdateResponseData()
+	PostRequest(originalReqUri, &req.DebugData)
+	resultResp = agentExec.CurrResponse
 
 	// submit result
 	err = SubmitInterfaceResult(req, resultResp, call.ServerUrl, call.Token)
@@ -35,27 +49,34 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	return
 }
 
-func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err error) {
+func PreRequest(req *domain.DebugData) (originalReqUri string, err error) {
 	// replace variables
 	agentExec.ReplaceVariables(&req.BaseRequest, consts.InterfaceDebug)
 
 	// gen url
-	reqUri := agentExec.ReplacePathParams(req.Url, req.PathParams)
+	originalReqUri = agentExec.ReplacePathParams(req.Url, req.PathParams)
 
 	notUseBaseUrl := execUtils.IsUseBaseUrl(req.UsedBy, req.ProcessorInterfaceSrc)
-
 	if notUseBaseUrl {
-		req.BaseRequest.Url = reqUri
+		req.BaseRequest.Url = originalReqUri
 	} else {
-		req.BaseRequest.Url = _httpUtils.CombineUrls(req.BaseUrl, reqUri)
+		req.BaseRequest.Url = _httpUtils.CombineUrls(req.BaseUrl, originalReqUri)
 	}
 	req.BaseRequest.FullUrlToDisplay = req.BaseRequest.Url
 	logUtils.Info("requested url: " + req.BaseRequest.Url)
 
+	return
+}
+
+func PostRequest(originalReqUri string, req *domain.DebugData) (err error) {
+	req.BaseRequest.Url = originalReqUri // rollback for saved to db
+
+	return
+}
+
+func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err error) {
 	// send request
 	ret, err = agentExec.Invoke(&req.BaseRequest)
-
-	req.BaseRequest.Url = reqUri // rollback for saved to db
 
 	ret.Id = req.DebugInterfaceId
 

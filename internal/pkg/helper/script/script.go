@@ -19,14 +19,14 @@ func GetScript(name ScriptType) string {
 
 	} else if name == ScriptGlobal {
 		if GlobalScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "global.txt"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "global.ts"))
 			GlobalScript = string(bytes)
 		}
 		return GlobalScript
 
 	} else if name == ScriptModule {
 		if ModuleScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "module.txt"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "module.ts"))
 			ModuleScript = string(bytes)
 		}
 		return ModuleScript
@@ -102,7 +102,7 @@ func GenResultMsg(po *domain.ScriptBase) {
 		name = "后处理" + name
 	}
 
-	po.ResultMsg = fmt.Sprintf("%s%s%s，输出\"%s\"。", name,
+	po.ResultMsg = fmt.Sprintf("%s%s%s，输出%s。", name,
 		_i118Utils.Sprintf("exec"), _i118Utils.Sprintf(po.ResultStatus.String()),
 		po.Output)
 

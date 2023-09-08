@@ -111,9 +111,23 @@ func (s *DocumentService) GetServes(serveIds []uint, endpoints map[uint][]domain
 		serve.Component = schemas[uint(serve.ID)]
 		serve.Securities = securities[uint(serve.ID)]
 		serve.Servers = servers[uint(serve.ID)]
+		s.mocks(serve.Endpoints, serve.Servers)
 		serves = append(serves, serve)
 	}
 	return
+}
+
+func (s *DocumentService) mocks(endpoints []domain.EndpointReq, servers []domain.ServeServer) {
+	var serve []model.ServeServer
+	copier.CopyWithOption(&serve, &servers, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+	for key1, endpoint := range endpoints {
+		for key2, interf := range endpoint.Interfaces {
+			var interfaceDetail model.EndpointInterface
+			copier.CopyWithOption(&interfaceDetail, &interf, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+			endpoints[key1].Interfaces[key2].Mock = s.mock(serve, interfaceDetail)
+		}
+	}
+
 }
 
 func (s *DocumentService) GetSchemas(serveIds []uint) (schemas map[uint][]domain.ServeSchemaReq) {
@@ -316,6 +330,31 @@ func (s *DocumentService) GetDocumentDetail(documentId, endpointId, interfaceId 
 	res = make(map[string]interface{})
 	res["interface"] = interfaceDetail
 	res["servers"] = serves
+	res["mock"] = s.mock(serves, interfaceDetail)
 
 	return
+}
+
+func (s *DocumentService) mock(serves []model.ServeServer, interfaceDetail model.EndpointInterface) (ret []interface{}) {
+	url := s.getMockEnvironment(serves)
+	if url == "" {
+		return
+	}
+	responseBodies := interfaceDetail.ResponseBodies
+	path := interfaceDetail.Url
+	for _, item := range responseBodies {
+		ret = append(ret, map[string]interface{}{"name": item.Code, "url": url + path + "?code=" + item.Code})
+	}
+
+	return
+}
+
+func (s *DocumentService) getMockEnvironment(serves []model.ServeServer) string {
+	for _, item := range serves {
+		if item.EnvironmentName == "Mock环境" {
+			return item.Url
+		}
+	}
+
+	return ""
 }

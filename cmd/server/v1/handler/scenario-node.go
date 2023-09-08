@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -322,7 +323,12 @@ func (c *ScenarioNodeCtrl) CopyProcessor(ctx iris.Context) {
 
 	var rootId uint
 	createBy := multi.GetUserId(ctx)
-	bizErr := c.ScenarioNodeService.CopyProcessor(&req, createBy, "siblings", &rootId)
+	mod := "siblings"
+	if req.EntityType == consts.ProcessorLogicElse {
+		mod = "child"
+	}
+
+	bizErr := c.ScenarioNodeService.CopyProcessor(&req, createBy, mod, &rootId)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,

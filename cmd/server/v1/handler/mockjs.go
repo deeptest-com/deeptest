@@ -2,6 +2,7 @@ package handler
 
 import (
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	mockjsHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mockjs"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
@@ -12,6 +13,12 @@ type MockJsCtrl struct {
 	BaseCtrl
 }
 
+// ListExpressions
+// @Tags	mock
+// @summary	mockJs规则列表
+// @Produce application/json
+// @success	200	{object}	_domain.Response{data=[]serverDomain.MockJsExpression}
+// @Router	/api/v1/mockjs/expressions	[get]
 func (c *MockJsCtrl) ListExpressions(ctx iris.Context) {
 	data, err := c.MockJsService.ListExpressions()
 	if err != nil {
@@ -29,7 +36,7 @@ func (c *MockJsCtrl) EvaluateExpression(ctx iris.Context) {
 		Expression: expression,
 	}
 
-	data, err := c.MockJsService.EvaluateExpression(req)
+	data, err := mockjsHelper.EvaluateExpression(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

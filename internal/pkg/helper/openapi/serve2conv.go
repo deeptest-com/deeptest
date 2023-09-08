@@ -30,7 +30,7 @@ func (s *serve2conv) ToV3() *openapi3.T {
 
 func (s *serve2conv) info() (info *openapi3.Info) {
 	info = new(openapi3.Info)
-	info.Version = ""
+	info.Version = "1.0.0"
 	info.Title = s.serve.Name
 	info.Description = s.serve.Description
 	return
@@ -38,13 +38,14 @@ func (s *serve2conv) info() (info *openapi3.Info) {
 
 func (s *serve2conv) components() (components openapi3.Components) {
 	components = openapi3.NewComponents()
+
 	components.Schemas = openapi3.Schemas{}
 	for _, component := range s.serve.Components {
 		schema := new(openapi3.Schema)
 		if component.Type == openapi3.TypeObject {
-			var schemas openapi3.Schemas
-			_commUtils.JsonDecode(component.Content, &schemas)
-			schema.Properties = schemas
+			//var schemas openapi3.Schema
+			_commUtils.JsonDecode(component.Content, &schema)
+			//schema = schemas
 		} else {
 			var items *openapi3.SchemaRef
 			_commUtils.JsonDecode(component.Content, &items)
@@ -52,6 +53,7 @@ func (s *serve2conv) components() (components openapi3.Components) {
 		}
 		components.Schemas[component.Name] = openapi3.NewSchemaRef("", schema)
 	}
+
 	components.SecuritySchemes = s.security()
 	return
 }
@@ -229,8 +231,25 @@ func (s *serve2conv) requestBodySchema(item model.EndpointInterfaceRequestBodyIt
 }
 
 func (s *serve2conv) requestBodyExamples(examplesStr string) (examples openapi3.Examples) {
+	examples = make(openapi3.Examples)
 	//examplesStr = "{\"user\":{\"value\":{\"id\":1,\"name\":\"王大锤\"}},\"product\":{\"value\":{\"id\":1,\"name\":\"服装\"}}}"
-	_commUtils.JsonDecode(examplesStr, &examples)
+	var examplesArr []map[string]string
+	_commUtils.JsonDecode(examplesStr, &examplesArr)
+	for _, item := range examplesArr {
+		example := new(openapi3.ExampleRef)
+		content := item["content"]
+		content = strings.ReplaceAll(content, "\r\n", "")
+		content = strings.ReplaceAll(content, "\n", "")
+		var res interface{}
+		_commUtils.JsonDecode(content, &res)
+		if res != nil {
+			example.Value = new(openapi3.Example)
+			example.Value.Value = res
+			examples[item["name"]] = example
+		}
+
+	}
+
 	return
 }
 
@@ -243,8 +262,10 @@ func (s *serve2conv) responsesBody(bodies []model.EndpointInterfaceResponseBody)
 		responsesBody[body.Code].Value.Content = openapi3.Content{}
 		responsesBody[body.Code].Value.Content[body.MediaType] = new(openapi3.MediaType)
 		responsesBody[body.Code].Value.Content[body.MediaType].Schema = new(openapi3.SchemaRef)
-		responsesBody[body.Code].Value.Content[body.MediaType].Schema.Value = s.responsesBodySchema(body.SchemaItem)
+		responsesBody[body.Code].Value.Content[body.MediaType].Schema = s.responsesBodySchema(body)
+		responsesBody[body.Code].Value.Content[body.MediaType].Examples = s.responsesBodyExamples(body)
 		responsesBody[body.Code].Value.Headers = s.responseBodyHeaders(body.Headers)
+		responsesBody[body.Code].Value.Description = &body.Description
 	}
 	return
 }
@@ -266,24 +287,58 @@ func (s *serve2conv) responseBodyHeaders(headers []model.EndpointInterfaceRespon
 	return
 }
 
-func (s *serve2conv) responsesBodySchema(item model.EndpointInterfaceResponseBodyItem) (schema *openapi3.Schema) {
-	schema = new(openapi3.Schema)
-	schema.Type = item.Type
-	//fmt.Println(item, "++++++++++++++++")
-	if item.Type == "object" {
-		//schema.Properties = openapi3.Schemas{}
-		var schemas openapi3.Schemas
-		item.Content = strings.ReplaceAll(item.Content, "\n", "")
-		_commUtils.JsonDecode(item.Content, &schemas)
-		//fmt.Println(item.Content, &schemas)
-		//for _,val := range content{
-		//v := val.(map[string]interface{})
-		//schema.Properties[v["name"].(string)] =
-		//}
-		schema.Properties = schemas
-	} else {
+func (s *serve2conv) responsesBodySchema(responseBody model.EndpointInterfaceResponseBody) (schema *openapi3.SchemaRef) {
+	//schema = new(openapi3.Schema)
 
-	}
+	/*
+		schema.Type = item.Type
+		//fmt.Println(item, "++++++++++++++++")
+		if item.Type == "object" {
+			//schema.Properties = openapi3.Schemas{}
+			var schemas openapi3.Schemas
+			item.Content = strings.ReplaceAll(item.Content, "\n", "")
+			_commUtils.JsonDecode(item.Content, &schemas)
+			//fmt.Println(item.Content, &schemas)
+			//for _,val := range content{
+			//v := val.(map[string]interface{})
+			//schema.Properties[v["name"].(string)] =
+			//}
+			schema.Properties = schemas
+		} else {
+
+		}
+	*/
+
+	schema = new(openapi3.SchemaRef)
+	responseBody.SchemaItem.Content = strings.ReplaceAll(responseBody.SchemaItem.Content, "\n", "")
+	responseBody.SchemaItem.Content = strings.ReplaceAll(responseBody.SchemaItem.Content, "\"ref\":", "\"$ref\":")
+	_commUtils.JsonDecode(responseBody.SchemaItem.Content, schema)
 
 	return
+}
+
+func (s *serve2conv) responsesBodyExamples(responseBody model.EndpointInterfaceResponseBody) (examples openapi3.Examples) {
+	//schema = new(openapi3.Schema)
+
+	/*
+		schema.Type = item.Type
+		//fmt.Println(item, "++++++++++++++++")
+		if item.Type == "object" {
+			//schema.Properties = openapi3.Schemas{}
+			var schemas openapi3.Schemas
+			item.Content = strings.ReplaceAll(item.Content, "\n", "")
+			_commUtils.JsonDecode(item.Content, &schemas)
+			//fmt.Println(item.Content, &schemas)
+			//for _,val := range content{
+			//v := val.(map[string]interface{})
+			//schema.Properties[v["name"].(string)] =
+			//}
+			schema.Properties = schemas
+		} else {
+
+		}
+	*/
+
+	return s.requestBodyExamples(responseBody.Examples)
+
 }

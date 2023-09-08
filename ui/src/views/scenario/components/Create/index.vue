@@ -58,7 +58,7 @@ import {useI18n} from "vue-i18n";
 import {Form} from 'ant-design-vue';
 
 const useForm = Form.useForm;
-import {StateType} from "../store";
+import {StateType} from "../../store";
 import {priorityOptions, testTypeOptions} from "@/config/constant"
 import {getSelectedKey} from "@/utils/cache";
 

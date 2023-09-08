@@ -21,55 +21,32 @@ func (c *MockCtrl) OAuth2Callback(ctx iris.Context) {
 }
 
 func (c *MockCtrl) Mock(ctx iris.Context) {
-	// http://127.0.0.1:8085/api/v1/mock/project1/serve1/json?endpointInterfaceId=44
+	// http://127.0.0.1:8085/mocks/serve_id/json?id=44
 
 	method := ctx.Method()
-	endpointInterfaceId, _ := ctx.URLParamInt("endpointInterfaceId")
-	projectCode := ctx.Params().Get("projectCode")
-	serveCode := ctx.Params().Get("serveCode")
+	serveId, _ := ctx.Params().GetInt("serveId")
 	path := ctx.Params().Get("path")
+	endpointInterfaceId := ctx.URLParamIntDefault("id", 0)
+	code := ctx.URLParamDefault("code", "")
 
-	logUtils.Infof("%s/%s/%s/%s", method, projectCode, serveCode, path)
+	logUtils.Infof("%s %d/%s", method, serveId, path)
 
 	req := service.MockRequest{
-		ProjectCode:         projectCode,
-		ServeCode:           serveCode,
+		ServeId:             serveId,
 		EndpointMethod:      consts.HttpMethod(method),
 		EndpointPath:        path,
 		EndpointInterfaceId: uint(endpointInterfaceId),
-	}
-	c.MockService.ByRequest(&req, ctx)
-}
-
-func (c *MockCtrl) Get(ctx iris.Context) {
-	respType := ctx.URLParam("respType")
-
-	username, password, ok := ctx.Request().BasicAuth()
-	if ok {
-		logUtils.Infof("BasicAuth - username: %s, password: %s, ok: %t", username, password, ok)
+		Code:                code,
 	}
 
-	authorization := ctx.GetHeader(consts.Authorization)
-	logUtils.Infof("JWT Token - %s", authorization)
-
-	value := ctx.GetHeader("k1")
-	logUtils.Infof("API KEY - %s: %s", "k1", value)
-
-	co := ctx.GetCookie("cookie_from_client")
-	log.Print(co)
-
-	ctx.SetCookieKV("cookie_from_client", "token_"+co)
-	ctx.SetCookieKV("cookie_from_server", "value_from_server")
-
-	if respType == "html" {
-		ctx.HTML(mockHelper.GetHtmlData())
-	} else if respType == "xml" {
-		ctx.XML(mockHelper.GetXmlData())
-	} else if respType == "json" {
-		ctx.JSON(mockHelper.GetJsonData())
-	} else {
-		ctx.Text(mockHelper.GetTextData())
+	resp, err := c.MockService.ByRequest(&req, ctx)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
 	}
+
+	c.WriteRespByContentType(resp, ctx)
+
 }
 
 func (c *MockCtrl) Posts(ctx iris.Context) {

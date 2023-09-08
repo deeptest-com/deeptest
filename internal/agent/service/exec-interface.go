@@ -28,7 +28,8 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.SetReqValueToGoja(req.DebugData.BaseRequest)
 	agentExec.ExecPreConditions(req)
 
-	if agentExec.CurrRequest.Url != "" { // a new interface may not has an pre-script, which will not update agentExec.CurrRequest
+	// a new interface may not has an pre-script, which will not update agentExec.CurrRequest
+	if agentExec.CurrRequest.Url != "" {
 		req.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
 	}
 

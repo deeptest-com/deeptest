@@ -29,9 +29,6 @@ type JsVm struct {
 
 func ExecScript(scriptObj *domain.ScriptBase, request *domain.BaseRequest, response *domain.DebugResponse) (err error) {
 	VariableSettings = []domain.ExecVariable{}
-	if MyVm.JsRuntime == nil {
-		InitJsRuntime()
-	}
 
 	if scriptObj.Content == "" {
 		return
@@ -66,6 +63,10 @@ func ExecScript(scriptObj *domain.ScriptBase, request *domain.BaseRequest, respo
 }
 
 func InitJsRuntime() {
+	if MyVm.JsRuntime != nil {
+		return
+	}
+
 	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 
 	MyVm.JsRuntime = goja.New()

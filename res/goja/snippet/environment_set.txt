@@ -1,1 +1,0 @@
-dt.environment.set("variable_name", "variable_value");

@@ -3,19 +3,20 @@
 // datapool
 const datapool = {};
 
-datapool.get = getDatapoolVariable;
+
+datapool.get = function getDatapoolVariable(datapool_name, variable_name, seq) {};
 datapool.get.prototype = {};
 
 // variables
 const variables = {};
 
-variables.get = getVariable;
+variables.get = function getVariable(variable_name){};
 variables.get.prototype = {};
 
-variables.set = setVariable;
+variables.set = function setVariable(variable_name, variable_value){};
 variables.set.prototype = {};
 
-variables.clear = clearVariable;
+variables.clear = function clearVariable(variable_name){};
 variables.clear.prototype = {};
 
 module.exports = {

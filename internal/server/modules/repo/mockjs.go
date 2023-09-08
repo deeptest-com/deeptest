@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"errors"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -37,13 +36,20 @@ func (r *MockJsRepo) BatchCreateExpression(pos []model.MockJsExpression) (succes
 
 func (r *MockJsRepo) CreateExpression(po model.MockJsExpression) (id uint, err error) {
 	menu, err := r.FindExpressionByName(po.Name)
-	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
-		logUtils.Errorf("创建mockjs变量失败%s", err.Error())
-		return
-	}
+	/*
+		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
+			logUtils.Errorf("创建mockjs变量失败%s", err.Error())
+			return
+		}
+	*/
 
 	if menu.ID != 0 {
-		logUtils.Infof("mockjs变量%s已经存在", po.Name)
+		po.ID = menu.ID
+		err = r.DB.Save(&po).Error
+		if err != nil {
+			logUtils.Errorf("更新mockjs变量失败%s", err.Error())
+			return
+		}
 		return
 	}
 

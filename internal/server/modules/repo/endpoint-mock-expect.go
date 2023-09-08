@@ -250,6 +250,14 @@ func (r *EndpointMockExpectRepo) UpdateDisabledStatus(expectId uint, disabled bo
 	return
 }
 
+func (r *EndpointMockExpectRepo) UpdateExpectName(expectId uint, name string) (err error) {
+	err = r.DB.Model(&model.EndpointMockExpect{}).
+		Where("id = ?", expectId).
+		Update("name", name).Error
+
+	return
+}
+
 func (r *EndpointMockExpectRepo) GetMaxOrder(endpointId uint) (order int) {
 	expect := model.EndpointMockExpect{}
 

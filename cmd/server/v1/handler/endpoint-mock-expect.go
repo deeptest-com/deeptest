@@ -187,7 +187,7 @@ func (c *EndpointMockExpectCtrl) Order(ctx iris.Context) {
 // @Param 	id 	body 	int	true 	"期望ID"
 // @Param 	disabled 	body 	bool	true 	"是否禁用"
 // @success	200	{object}	_domain.Response
-// @Router	/api/v1/mockExpect/order	[post]
+// @Router	/api/v1/mockExpect/updateExpectDisabled	[post]
 func (c *EndpointMockExpectCtrl) UpdateExpectDisabled(ctx iris.Context) {
 	req := model.EndpointMockExpect{}
 	err := ctx.ReadJSON(&req)
@@ -197,6 +197,33 @@ func (c *EndpointMockExpectCtrl) UpdateExpectDisabled(ctx iris.Context) {
 	}
 
 	if err = c.EndpointMockExpectService.UpdateExpectDisabled(req.ID, req.Disabled); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// UpdateExpectName
+// @Tags	Mock期望
+// @summary	修改期望名字
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization		header	string							true	"Authentication header"
+// @Param 	currProjectId		query	int								true	"当前项目ID"
+// @Param 	id 	body 	int	true 	"期望ID"
+// @Param 	name 	body 	string	true 	"期望名字"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/mockExpect/updateName	[post]
+func (c *EndpointMockExpectCtrl) UpdateExpectName(ctx iris.Context) {
+	req := model.EndpointMockExpect{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	if err = c.EndpointMockExpectService.UpdateExpectName(req.ID, req.Name); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}

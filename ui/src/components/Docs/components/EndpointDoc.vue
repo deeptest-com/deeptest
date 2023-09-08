@@ -152,7 +152,6 @@ const isInterface = computed(() => {
 })
 
 const paths = computed(() => {
-  debugger
   const list: any = [];
   if (info?.value?.serveInfo?.servers) {
     info?.value?.serveInfo?.servers.forEach((item: any) => {

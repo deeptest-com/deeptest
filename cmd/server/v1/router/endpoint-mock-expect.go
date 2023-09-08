@@ -23,6 +23,7 @@ func (m *EndpointMockExpectModule) Party() module.WebModule {
 		public.Delete("/{id:uint}", m.EndpointMockExpectCtrl.Delete).Name = "删除期望"
 		public.Post("/order", m.EndpointMockExpectCtrl.Order).Name = "对期望排序"
 		public.Post("/updateExpectDisabled", m.EndpointMockExpectCtrl.UpdateExpectDisabled).Name = "启用/禁用单个期望"
+		public.Post("/updateName", m.EndpointMockExpectCtrl.UpdateExpectName).Name = "修改期望名字"
 		public.Get("/requestOptions", m.EndpointMockExpectCtrl.GetExpectRequestOptions).Name = "获取请求参数下拉选项"
 	}
 	return module.NewModule("/mockExpect", handler)

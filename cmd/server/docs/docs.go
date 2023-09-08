@@ -6353,7 +6353,7 @@ const docTemplate = `{
                 "tags": [
                     "Mock期望"
                 ],
-                "summary": "启用或者禁用单个期望",
+                "summary": "对期望排序",
                 "parameters": [
                     {
                         "type": "string",
@@ -6370,21 +6370,15 @@ const docTemplate = `{
                         "required": true
                     },
                     {
-                        "description": "期望ID",
-                        "name": "id",
+                        "description": "对期望排序的请求体",
+                        "name": "MockExpectIdsReq",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "description": "是否禁用",
-                        "name": "disabled",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "type": "boolean"
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
                         }
                     }
                 ],
@@ -6516,6 +6510,118 @@ const docTemplate = `{
                                     }
                                 }
                             ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockExpect/updateExpectDisabled": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "启用或者禁用单个期望",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "期望ID",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "是否禁用",
+                        "name": "disabled",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockExpect/updateName": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "修改期望名字",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "期望ID",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "期望名字",
+                        "name": "name",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
                         }
                     }
                 }
@@ -15853,7 +15959,10 @@ const docTemplate = `{
                 "lessThan",
                 "lessThanOrEqual",
                 "contain",
-                "notContain"
+                "notContain",
+                "regularMatch",
+                "exist",
+                "notExist"
             ],
             "x-enum-varnames": [
                 "Equal",
@@ -15863,7 +15972,10 @@ const docTemplate = `{
                 "LessThan",
                 "LessThanOrEqual",
                 "Contain",
-                "NotContain"
+                "NotContain",
+                "RegularMatch",
+                "Exist",
+                "NotExist"
             ]
         },
         "consts.ConditionType": {
@@ -16166,21 +16278,6 @@ const docTemplate = `{
                 "LangXML",
                 "LangHTML",
                 "LangTEXT"
-            ]
-        },
-        "consts.MockCompareWay": {
-            "type": "string",
-            "enum": [
-                "equal",
-                "notEqual",
-                "like",
-                "in"
-            ],
-            "x-enum-varnames": [
-                "MockCompareEqual",
-                "MockCompareNotEqual",
-                "MockCompareLike",
-                "MockCompareIn"
             ]
         },
         "consts.NodeType": {
@@ -19344,7 +19441,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "compareWay": {
-                    "$ref": "#/definitions/consts.MockCompareWay"
+                    "$ref": "#/definitions/consts.ComparisonOperator"
                 },
                 "createdAt": {
                     "type": "string"
@@ -22678,7 +22775,10 @@ const docTemplate = `{
                 "ordr": {
                     "type": "integer"
                 },
-                "result": {}
+                "result": {},
+                "type": {
+                    "type": "string"
+                }
             }
         },
         "serverDomain.OpenApiCookie": {

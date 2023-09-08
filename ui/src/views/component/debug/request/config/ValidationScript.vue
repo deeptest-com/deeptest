@@ -30,11 +30,12 @@
     <div class="content">
       <div class="codes">
         <MonacoEditor
-            class="editor"
-            :value="debugData.validationScript"
-            language="javascript"
-            theme="vs"
-            :options="editorOptions"
+          customId="request-script-main"
+          class="editor"
+          :value="debugData.validationScript"
+          language="javascript"
+          theme="vs"
+          :options="editorOptions"
         />
       </div>
       <div class="refer">

@@ -23,7 +23,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.InitJsRuntime()
 
 	originalReqUri, _ := PreRequest(&req.DebugData)
-	agentExec.SetValueToGoja("request", req.DebugData.BaseRequest)
+	agentExec.SetReqValueToGoja(req.DebugData.BaseRequest)
 	agentExec.ExecPreConditions(req)
 	req.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
 
@@ -31,7 +31,9 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 
 	agentExec.SetRespValueToGoja(resultResp)
 	agentExec.ExecPostConditions(req, resultResp)
+	agentExec.UpdateResponseData()
 	PostRequest(originalReqUri, &req.DebugData)
+	resultResp = agentExec.CurrResponse
 
 	// submit result
 	err = SubmitInterfaceResult(req, resultResp, call.ServerUrl, call.Token)

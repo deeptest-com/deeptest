@@ -40,6 +40,8 @@ func ExecScript(scriptObj *domain.ScriptBase, request *domain.BaseRequest, respo
 	// update changed js request to go debugData
 	if scriptObj.ConditionSrc == consts.ConditionSrcPre {
 		scriptObj.Content += "; updateRequestData(dt.request);"
+	} else if scriptObj.ConditionSrc == consts.ConditionSrcPost {
+		scriptObj.Content += "; updateResponseData(dt.response);"
 	}
 
 	logs = nil
@@ -138,13 +140,18 @@ func defineJsFuncs() {
 		ClearVariable(scopeId, name)
 	})
 
+	MyVm.JsRuntime.Set("updateRequestData", func(value domain.BaseRequest) {
+		CurrRequest = value
+	})
+	MyVm.JsRuntime.Set("updateResponseData", func(value domain.DebugResponse) {
+		bytes, _ := json.Marshal(value.Data)
+		value.Content = string(bytes)
+		CurrResponse = value
+	})
+
 	MyVm.JsRuntime.Set("log", func(value interface{}) {
 		bytes, _ := json.Marshal(value)
 		logs = append(logs, string(bytes))
-	})
-
-	MyVm.JsRuntime.Set("updateRequestData", func(value interface{}) {
-		CurrRequest = value.(domain.BaseRequest)
 	})
 }
 
@@ -165,6 +172,14 @@ func defineGoFuncs() {
 	err = MyVm.JsRuntime.ExportTo(MyVm.JsRuntime.Get("_setData"), &_setValueFunc)
 }
 
+func SetRespValueToGoja(resp domain.DebugResponse) {
+	data := map[string]interface{}{}
+	json.Unmarshal([]byte(resp.Content), &data)
+
+	resp.Data = data
+
+	_setValueFunc("response", resp)
+}
 func SetValueToGoja(name string, value interface{}) {
 	_setValueFunc(name, value)
 }

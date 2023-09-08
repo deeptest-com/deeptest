@@ -51,13 +51,13 @@ declare type Response = {
     headers: Header[];
     cookies: ExecCookie[];
 
-    content: string;
+    data: any;
     contentType: string;
 
     contentLang: string;
     contentCharset: string;
     contentLength: number;
-};
+}
 
 declare global {
     const dt: {
@@ -76,5 +76,7 @@ declare global {
 
     const log : (obj: any) => {}
 }
+
+
 
 export default {};

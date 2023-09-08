@@ -19,14 +19,14 @@ func GetScript(name ScriptType) string {
 
 	} else if name == ScriptGlobal {
 		if GlobalScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "global.txt"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "global.ts"))
 			GlobalScript = string(bytes)
 		}
 		return GlobalScript
 
 	} else if name == ScriptModule {
 		if ModuleScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "module.txt"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "module.ts"))
 			ModuleScript = string(bytes)
 		}
 		return ModuleScript

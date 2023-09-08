@@ -1,7 +1,9 @@
 package mockGenerator
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+
 type Response struct {
-	StatusCode  int
-	ContentType string
+	StatusCode  consts.HttpRespCode
+	ContentType consts.HttpContentType
 	Data        interface{}
 }

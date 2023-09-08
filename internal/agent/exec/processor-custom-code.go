@@ -47,7 +47,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 		Content: entity.Content,
 	}
 
-	err = ExecScript(&scriptBase, domain.BaseRequest{}, domain.DebugResponse{})
+	err = ExecScript(&scriptBase, nil, nil)
 	scriptHelper.GenResultMsg(&scriptBase)
 	//scriptBase.VariableSettings = VariableSettings
 

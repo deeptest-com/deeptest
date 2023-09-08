@@ -11,10 +11,10 @@ import (
 type BaseCtrl struct {
 }
 
-func (c *MockCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.Context) {
+func (c *BaseCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.Context) {
 	data := resp.Data
-	ctx.StatusCode(resp.StatusCode)
-	ctx.ContentType(resp.ContentType)
+	ctx.StatusCode(resp.StatusCode.Int())
+	ctx.ContentType(resp.ContentType.String())
 
 	/** string **/
 	switch resp.ContentType {

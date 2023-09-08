@@ -27,7 +27,7 @@ type JsVm struct {
 	JsRuntime *goja.Runtime
 }
 
-func ExecScript(scriptObj *domain.ScriptBase, request domain.BaseRequest, response domain.DebugResponse) (err error) {
+func ExecScript(scriptObj *domain.ScriptBase, request *domain.BaseRequest, response *domain.DebugResponse) (err error) {
 	VariableSettings = []domain.ExecVariable{}
 	if MyVm.JsRuntime == nil {
 		InitJsRuntime()
@@ -35,6 +35,11 @@ func ExecScript(scriptObj *domain.ScriptBase, request domain.BaseRequest, respon
 
 	if scriptObj.Content == "" {
 		return
+	}
+
+	// update changed js request to go debugData
+	if scriptObj.ConditionSrc == consts.ConditionSrcPre {
+		scriptObj.Content += "; updateRequestData(dt.request);"
 	}
 
 	logs = nil
@@ -45,7 +50,7 @@ func ExecScript(scriptObj *domain.ScriptBase, request domain.BaseRequest, respon
 		result = "空"
 	}
 
-	output := strings.Join(logs, ", ")
+	output := strings.Join(logs, "; ")
 
 	if err != nil {
 		scriptObj.ResultStatus = consts.Fail
@@ -133,13 +138,14 @@ func defineJsFuncs() {
 		ClearVariable(scopeId, name)
 	})
 
-	log := func(value goja.Value) {
+	MyVm.JsRuntime.Set("log", func(value interface{}) {
 		bytes, _ := json.Marshal(value)
 		logs = append(logs, string(bytes))
-	}
-	if err := MyVm.JsRuntime.Set("log", log); err != nil {
-		panic(err)
-	}
+	})
+
+	MyVm.JsRuntime.Set("updateRequestData", func(value interface{}) {
+		CurrRequest = value.(domain.BaseRequest)
+	})
 }
 
 var (
@@ -159,6 +165,6 @@ func defineGoFuncs() {
 	err = MyVm.JsRuntime.ExportTo(MyVm.JsRuntime.Get("_setData"), &_setValueFunc)
 }
 
-func SetValue(name string, value interface{}) {
+func SetValueToGoja(name string, value interface{}) {
 	_setValueFunc(name, value)
 }

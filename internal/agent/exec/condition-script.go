@@ -180,10 +180,12 @@ func SetReqValueToGoja(req domain.BaseRequest) {
 	SetValueToGoja("request", req)
 }
 func SetRespValueToGoja(resp domain.DebugResponse) {
-	data := map[string]interface{}{}
-	json.Unmarshal([]byte(resp.Content), &data)
+	var data interface{}
+	err := json.Unmarshal([]byte(resp.Content), &data)
 
-	resp.Data = data
+	if err == nil {
+		resp.Data = data
+	}
 
 	SetValueToGoja("response", resp)
 }

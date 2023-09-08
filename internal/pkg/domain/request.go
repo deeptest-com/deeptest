@@ -15,7 +15,7 @@ type DebugResponse struct {
 	Cookies []ExecCookie `gorm:"-" json:"cookies"`
 
 	Content     string                 `gorm:"default:''" json:"content,omitempty"`
-	Data        map[string]interface{} `gorm:"-" json:"data"` // Content obj in goja
+	Data        interface{}            `gorm:"-" json:"data"` // Content obj in goja
 	ContentType consts.HttpContentType `json:"contentType"`
 
 	ContentLang    consts.HttpRespLangType `json:"contentLang"`

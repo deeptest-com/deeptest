@@ -39,7 +39,10 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.ExecPostConditions(req, resultResp)
 	agentExec.UpdateResponseData()
 	PostRequest(originalReqUri, &req.DebugData)
-	resultResp = agentExec.CurrResponse
+
+	if agentExec.CurrResponse.Data != nil {
+		resultResp = agentExec.CurrResponse
+	}
 
 	// submit result
 	err = SubmitInterfaceResult(req, resultResp, call.ServerUrl, call.Token)

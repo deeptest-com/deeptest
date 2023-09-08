@@ -132,7 +132,7 @@ func (r *EndpointMockExpectRepo) Save(req model.EndpointMockExpect) (expectId ui
 		}
 
 		for _, v := range req.ResponseHeaders {
-			if err = r.DB.Save(v).Error; err != nil {
+			if err = r.DB.Save(&v).Error; err != nil {
 				return 0, err
 			}
 		}

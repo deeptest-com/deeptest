@@ -4,6 +4,7 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type EndpointMockExpect struct {
 	BaseModel
+	Disabled            bool                               `json:"disabled" gorm:"default:false"`
 	Name                string                             `json:"name"`
 	EndpointId          uint                               `json:"endpointId"`
 	EndpointInterfaceId uint                               `json:"endpointInterfaceId"`

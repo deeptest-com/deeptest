@@ -203,3 +203,36 @@ func (c *EndpointMockExpectCtrl) UpdateExpectDisabled(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+// GetExpectRequestOptions
+// @Tags	Mock期望
+// @summary	获取请求参数下拉选项
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization		header	string	true	"Authentication header"
+// @Param 	currProjectId		query	int		true	"当前项目ID"
+// @Param 	endpointId 			query 	int		true 	"endpointId"
+// @Param 	endpointInterfaceId query 	int		true 	"endpointInterfaceId"
+// @success	200	{object}	_domain.Response{data=serverDomain.MockExpectRequestOptions}
+// @Router	/api/v1/mockExpect/requestOptions	[get]
+func (c *EndpointMockExpectCtrl) GetExpectRequestOptions(ctx iris.Context) {
+	endpointId, err := ctx.URLParamInt("endpointId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	options, err := c.EndpointMockExpectService.GetExpectRequestOptions(uint(endpointId), uint(endpointInterfaceId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: options, Msg: _domain.NoErr.Msg})
+}

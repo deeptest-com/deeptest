@@ -600,6 +600,20 @@ definitions:
     x-enum-varnames:
     - Text
     - Excel
+  consts.DataSyncType:
+    enum:
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      Add: 新增
+      AutoAdd: 智能合并
+      FullCover: 完全覆盖
+    x-enum-varnames:
+    - FullCover
+    - AutoAdd
+    - Add
   consts.DataType:
     enum:
     - int
@@ -996,9 +1010,11 @@ definitions:
   consts.SourceType:
     enum:
     - 1
+    - 2
     type: integer
     x-enum-varnames:
-    - Swagger
+    - SwaggerSync
+    - SwaggerImport
   consts.SwitchStatus:
     enum:
     - 1
@@ -1007,12 +1023,6 @@ definitions:
     x-enum-varnames:
     - SwitchON
     - SwitchOFF
-  consts.SyncType:
-    enum:
-    - 1
-    type: integer
-    x-enum-varnames:
-    - FullCopy
   consts.TestStage:
     enum:
     - unit_test
@@ -1073,17 +1083,6 @@ definitions:
     - CaseDebug
     - DiagnoseDebug
     - ScenarioDebug
-  convert.DataSyncType:
-    enum:
-    - full_cover
-    - copy_add
-    type: string
-    x-enum-comments:
-      CopyAdd: 复制新增
-      FullCover: 完全覆盖
-    x-enum-varnames:
-    - FullCover
-    - CopyAdd
   convert.DriverType:
     enum:
     - postman
@@ -1295,6 +1294,10 @@ definitions:
         items:
           $ref: '#/definitions/domain.ExecCookie'
         type: array
+      data:
+        additionalProperties: true
+        description: Content obj in goja
+        type: object
       headers:
         items:
           $ref: '#/definitions/domain.Header'
@@ -4221,7 +4224,7 @@ definitions:
       switch:
         $ref: '#/definitions/consts.SwitchStatus'
       syncType:
-        $ref: '#/definitions/consts.SyncType'
+        $ref: '#/definitions/consts.DataSyncType'
       updatedAt:
         type: string
       url:
@@ -4647,6 +4650,9 @@ definitions:
         type: boolean
       logo:
         type: string
+      mock:
+        items: {}
+        type: array
       name:
         type: string
       orgId:
@@ -5020,7 +5026,7 @@ definitions:
         type: integer
       dataSyncType:
         allOf:
-        - $ref: '#/definitions/convert.DataSyncType'
+        - $ref: '#/definitions/consts.DataSyncType'
         description: 数据同步方式
       driverType:
         allOf:
@@ -5036,6 +5042,8 @@ definitions:
       serveId:
         description: 服务ID
         type: integer
+      sourceType:
+        $ref: '#/definitions/consts.SourceType'
       userId:
         type: integer
     required:
@@ -5063,6 +5071,9 @@ definitions:
         type: integer
       method:
         type: string
+      mock:
+        items: {}
+        type: array
       name:
         type: string
       operationId:
@@ -5159,6 +5170,12 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  serverDomain.MockExpectRequestOptions:
+    additionalProperties:
+      items:
+        type: string
+      type: array
     type: object
   serverDomain.MockJsExpression:
     properties:
@@ -6008,7 +6025,7 @@ definitions:
       switch:
         $ref: '#/definitions/consts.SwitchStatus'
       syncType:
-        $ref: '#/definitions/consts.SyncType'
+        $ref: '#/definitions/consts.DataSyncType'
       url:
         type: string
     type: object
@@ -10156,6 +10173,46 @@ paths:
           schema:
             $ref: '#/definitions/_domain.Response'
       summary: 启用或者禁用单个期望
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/requestOptions:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: endpointId
+        in: query
+        name: endpointId
+        required: true
+        type: integer
+      - description: endpointInterfaceId
+        in: query
+        name: endpointInterfaceId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.MockExpectRequestOptions'
+              type: object
+      summary: 获取请求参数下拉选项
       tags:
       - Mock期望
   /api/v1/mockExpect/save:

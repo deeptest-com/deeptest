@@ -152,6 +152,7 @@ const isInterface = computed(() => {
 })
 
 const paths = computed(() => {
+  debugger
   const list: any = [];
   if (info?.value?.serveInfo?.servers) {
     info?.value?.serveInfo?.servers.forEach((item: any) => {
@@ -215,7 +216,8 @@ function selectCode(code) {
 }
 
 function handlePathStr(str) {
-  return str.replace(/\/{2,}/g, '/');
+  return str
+  //return str.replace(/\/{2,}/g, '/');
 }
 
 function copyURL(url) {

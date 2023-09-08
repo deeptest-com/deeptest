@@ -13,6 +13,7 @@ type MockJsExpression struct {
 	Format     string `json:"format"`
 	Desc       string `json:"desc"`
 	Ordr       int    `json:"ordr"`
+	Type       string `json:"type"`
 
 	Result interface{} `gorm:"-" json:"result"`
 }

@@ -562,6 +562,9 @@ definitions:
     - lessThanOrEqual
     - contain
     - notContain
+    - regularMatch
+    - exist
+    - notExist
     type: string
     x-enum-varnames:
     - Equal
@@ -572,6 +575,9 @@ definitions:
     - LessThanOrEqual
     - Contain
     - NotContain
+    - RegularMatch
+    - Exist
+    - NotExist
   consts.ConditionType:
     enum:
     - extractor
@@ -827,18 +833,6 @@ definitions:
     - LangXML
     - LangHTML
     - LangTEXT
-  consts.MockCompareWay:
-    enum:
-    - equal
-    - notEqual
-    - like
-    - in
-    type: string
-    x-enum-varnames:
-    - MockCompareEqual
-    - MockCompareNotEqual
-    - MockCompareLike
-    - MockCompareIn
   consts.NodeType:
     enum:
     - elem
@@ -2983,7 +2977,7 @@ definitions:
   model.EndpointMockExpectRequest:
     properties:
       compareWay:
-        $ref: '#/definitions/consts.MockCompareWay'
+        $ref: '#/definitions/consts.ComparisonOperator'
       createdAt:
         type: string
       disabled:
@@ -5192,6 +5186,8 @@ definitions:
       ordr:
         type: integer
       result: {}
+      type:
+        type: string
     type: object
   serverDomain.OpenApiCookie:
     properties:
@@ -10153,18 +10149,14 @@ paths:
         name: currProjectId
         required: true
         type: integer
-      - description: 期望ID
+      - description: 对期望排序的请求体
         in: body
-        name: id
+        name: MockExpectIdsReq
         required: true
         schema:
-          type: integer
-      - description: 是否禁用
-        in: body
-        name: disabled
-        required: true
-        schema:
-          type: boolean
+          items:
+            type: integer
+          type: array
       produces:
       - application/json
       responses:
@@ -10172,7 +10164,7 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/_domain.Response'
-      summary: 启用或者禁用单个期望
+      summary: 对期望排序
       tags:
       - Mock期望
   /api/v1/mockExpect/requestOptions:
@@ -10249,6 +10241,80 @@ paths:
                   type: integer
               type: object
       summary: 保存期望
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/updateExpectDisabled:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: 是否禁用
+        in: body
+        name: disabled
+        required: true
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 启用或者禁用单个期望
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/updateName:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: 期望名字
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 修改期望名字
       tags:
       - Mock期望
   /api/v1/mockScripts:

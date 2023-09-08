@@ -16,6 +16,8 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.CurrDebugInterfaceId = req.DebugData.DebugInterfaceId
 	agentExec.CurrScenarioProcessorId = 0 // not in a scenario
 
+	agentExec.CurrRequest = domain.BaseRequest{}
+	agentExec.CurrResponse = domain.DebugResponse{}
 	agentExec.ExecScene = req.ExecScene
 
 	// init context
@@ -25,7 +27,10 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	originalReqUri, _ := PreRequest(&req.DebugData)
 	agentExec.SetReqValueToGoja(req.DebugData.BaseRequest)
 	agentExec.ExecPreConditions(req)
-	req.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
+
+	if agentExec.CurrRequest.Url != "" { // a new interface may not has an pre-script, which will not update agentExec.CurrRequest
+		req.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
+	}
 
 	resultResp, err = RequestInterface(&req.DebugData)
 

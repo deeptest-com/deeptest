@@ -76,7 +76,7 @@ func InitJsRuntime() {
 
 	// load global script
 	MyRequire = registry.Enable(MyVm.JsRuntime)
-	pth := filepath.Join(consts.TmpDir, "deeptest.js")
+	pth := filepath.Join(consts.TmpDir, "deeptest.ts")
 	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
 	dt, err := MyRequire.Require(pth)
 	if err != nil {

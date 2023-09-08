@@ -33,6 +33,7 @@ type IndexModule struct {
 	SnippetModule            *router.SnippetModule            `inject:""`
 	MockJsModule             *router.MockJsModule             `inject:""`
 	EndpointMockScriptModule *router.EndpointMockScriptModule `inject:""`
+	EndpointMockExpectModule *router.EndpointMockExpectModule `inject:""`
 
 	ImportModule      *router.ImportModule      `inject:""`
 	AuthModule        *router.AuthModule        `inject:""`
@@ -106,6 +107,7 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.SnippetModule.Party(),
 		m.MockJsModule.Party(),
 		m.EndpointMockScriptModule.Party(),
+		m.EndpointMockExpectModule.Party(),
 
 		m.ImportModule.Party(),
 		m.AuthModule.Party(),

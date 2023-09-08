@@ -41,7 +41,7 @@ type EndpointMockExpectResponse struct {
 	EndpointMockExpectId uint   `json:"endpointMockExpectId"`
 	Code                 string `json:"code"`
 	DelayTime            uint   `json:"delayTime"`
-	Value                string `json:"value"`
+	Value                string `gorm:"type:text" json:"value"`
 }
 
 func (EndpointMockExpectResponse) TableName() string {

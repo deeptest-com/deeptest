@@ -16,3 +16,5 @@ type MockJsExpression struct {
 
 	Result interface{} `gorm:"-" json:"result"`
 }
+
+type MockExpectIdsReq []uint

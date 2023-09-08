@@ -12,13 +12,20 @@ import {StateType as ServeStateType} from "@/store/serve";
 const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
 
 const mockExpressions = computed(() => {
-  const options = store.state.Endpoint?.mockExpressions || [];
-  if (!keywords.value) {
-    return options
+  let options = store.state.Endpoint?.mockExpressions || [];
+  // 如果有类型，则需要过滤相同类型的数据
+  if (props.tree?.type) {
+    options = options.filter((item) => {
+      return item.type && item.type === props.tree?.type;
+    })
   }
-  return options.filter((item) => {
-    return item.label.includes(keywords.value) || item.name.includes(keywords.value);
-  });
+  if (keywords.value) {
+    options = options.filter((item) => {
+      return item.label.includes(keywords.value) || item.name.includes(keywords.value);
+    });
+  }
+  // console.log('83222 options', options)
+  return [...options];
 });
 
 
@@ -35,6 +42,7 @@ watch(() => {
       immediate: true
     }
 );
+
 
 const emit = defineEmits(['update']);
 
@@ -69,8 +77,8 @@ const handleChange = (val: string) => {
         @search="handleSearch"
         @change="handleChange"
     >
-      <template #option="{ value, label, name }">
-        <span class="select-item" :key="value" >
+      <template #option="{ value, label, name, id }">
+        <span class="select-item" :key="value || id">
             <span class="left" :title="label">
               {{ label }}
             </span>

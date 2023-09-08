@@ -242,7 +242,7 @@ export interface VersionListReqParams {
 }
 
 export interface SwaggerSync {
-    switch: boolean,
+    switch: number,
     syncType: number,
     categoryId: number,
     url: '',

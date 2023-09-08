@@ -2,11 +2,13 @@
   <div class="content">
 <a-form  :model="formState" :label-col="{ style: { width: '140px', textAlign:'left' } }" :wrapper-col="{ span: 14 }" :rules="rules">
     <a-form-item label="是否开启自动同步" style="position: relative;left:10px">
-      <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2"/> 
+      <span style="display: inline-block;z-index: 8;position: relative">
+        <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2"/>
+      </span>
       <div class="execTime" v-if="formState.switch==1 && formState.execTime"> 上次更新时间：{{formState.execTime || '-'}}</div>
-      <span style="padding-top:-25px;">开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中</span>
+      <div style="padding-top:5px;">开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中</div>
     </a-form-item>
-    
+
     <a-form-item name="syncType" v-if="formState.switch==1">
       <template v-slot:label>
         数据合并策略
@@ -98,7 +100,7 @@ const treeData: any = computed(() => {
   return  data?.[0]?.children || [];
 });
 
-const formState = ref<SwaggerSync>(store.state.ProjectSetting.swaggerSyncDetail)
+const formState = ref<SwaggerSync>(store.state?.ProjectSetting?.swaggerSyncDetail || {})
 
 const rules = ref({
   syncType: [{required: true}],
@@ -151,10 +153,11 @@ watch(()=>{
   return store.state.ProjectSetting.swaggerSyncDetail;
 },(newVal)=>{
   if (newVal?.id){
-    formState.value = newVal
+    formState.value = {...newVal}
   }
 }, {
-  immediate: true
+  immediate: true,
+  deep:true
 })
 
 

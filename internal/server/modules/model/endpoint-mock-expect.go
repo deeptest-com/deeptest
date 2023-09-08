@@ -26,11 +26,11 @@ func (EndpointMockExpect) TableName() string {
 
 type EndpointMockExpectRequest struct {
 	BaseModel
-	EndpointMockExpectId uint                  `json:"endpointMockExpectId"`
-	CompareWay           consts.MockCompareWay `json:"compareWay"`
-	Name                 string                `json:"name"`
-	Value                string                `json:"value"`
-	Source               consts.ParamIn        `json:"source"`
+	EndpointMockExpectId uint                      `json:"endpointMockExpectId"`
+	CompareWay           consts.ComparisonOperator `json:"compareWay"`
+	Name                 string                    `json:"name"`
+	Value                string                    `json:"value"`
+	Source               consts.ParamIn            `json:"source"`
 }
 
 func (EndpointMockExpectRequest) TableName() string {

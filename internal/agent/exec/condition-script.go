@@ -180,6 +180,7 @@ func SetReqValueToGoja(req domain.BaseRequest) {
 	SetValueToGoja("request", req)
 }
 func SetRespValueToGoja(resp domain.DebugResponse) {
+	// set resp.Data to json object for goja edit
 	if resp.ContentType == consts.ContentTypeJSON {
 		var data interface{}
 		err := json.Unmarshal([]byte(resp.Content), &data)

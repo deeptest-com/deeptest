@@ -12,7 +12,7 @@ import (
 func GetScript(name ScriptType) string {
 	if name == ScriptDeepTest {
 		if DpScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest.ts"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest.js"))
 			DpScript = string(bytes)
 		}
 		return DpScript

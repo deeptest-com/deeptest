@@ -29,9 +29,6 @@ type JsVm struct {
 
 func ExecScript(scriptObj *domain.ScriptBase, request *domain.BaseRequest, response *domain.DebugResponse) (err error) {
 	VariableSettings = []domain.ExecVariable{}
-	if MyVm.JsRuntime == nil {
-		InitJsRuntime()
-	}
 
 	if scriptObj.Content == "" {
 		return
@@ -66,6 +63,10 @@ func ExecScript(scriptObj *domain.ScriptBase, request *domain.BaseRequest, respo
 }
 
 func InitJsRuntime() {
+	if MyVm.JsRuntime != nil {
+		return
+	}
+
 	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 
 	MyVm.JsRuntime = goja.New()
@@ -76,7 +77,7 @@ func InitJsRuntime() {
 
 	// load global script
 	MyRequire = registry.Enable(MyVm.JsRuntime)
-	pth := filepath.Join(consts.TmpDir, "deeptest.ts")
+	pth := filepath.Join(consts.TmpDir, "deeptest.js")
 	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
 	dt, err := MyRequire.Require(pth)
 	if err != nil {

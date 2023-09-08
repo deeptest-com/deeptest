@@ -1,6 +1,7 @@
 package agentExec
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -10,6 +11,7 @@ import (
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	"path/filepath"
+	"strings"
 )
 
 var (
@@ -17,41 +19,81 @@ var (
 	MyRequire *require.RequireModule
 
 	VariableSettings []domain.ExecVariable
+
+	logs []string
 )
 
 type JsVm struct {
 	JsRuntime *goja.Runtime
 }
 
-func ExecScript(scriptObj *domain.ScriptBase) (err error) {
+func ExecScript(scriptObj *domain.ScriptBase, request *domain.BaseRequest, response *domain.DebugResponse) (err error) {
 	VariableSettings = []domain.ExecVariable{}
-	if MyVm.JsRuntime == nil {
-		InitJsRuntime()
-	}
 
 	if scriptObj.Content == "" {
 		return
 	}
 
-	result, err := MyVm.JsRuntime.RunString(scriptObj.Content)
+	// update changed js request to go debugData
+	if scriptObj.ConditionSrc == consts.ConditionSrcPre {
+		scriptObj.Content += "; updateRequestData(dt.request);"
+	}
+
+	logs = nil
+	resultVal, err := MyVm.JsRuntime.RunString(scriptObj.Content)
+
+	result := fmt.Sprintf("%v", resultVal)
+	if result == "undefined" {
+		result = "空"
+	}
+
+	output := strings.Join(logs, "; ")
+
 	if err != nil {
 		scriptObj.ResultStatus = consts.Fail
-		scriptObj.Output = fmt.Sprintf("%v, ERROR: %s", result, err.Error())
+		scriptObj.Output = fmt.Sprintf("RESULT: %v; OUTPUT: %s; ERROR: %s", result, output, err.Error())
 		logUtils.Error(scriptObj.Output)
+
 	} else {
 		scriptObj.ResultStatus = consts.Pass
-		scriptObj.Output = fmt.Sprintf("%v", result)
+		scriptObj.Output = fmt.Sprintf("%s", output)
 	}
 
 	return
 }
 
 func InitJsRuntime() {
+	if MyVm.JsRuntime != nil {
+		return
+	}
+
 	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 
 	MyVm.JsRuntime = goja.New()
+	MyVm.JsRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
 
-	// below script will get/set the variables in exec context
+	defineJsFuncs()
+	defineGoFuncs()
+
+	// load global script
+	MyRequire = registry.Enable(MyVm.JsRuntime)
+	pth := filepath.Join(consts.TmpDir, "deeptest.js")
+	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
+	dt, err := MyRequire.Require(pth)
+	if err != nil {
+		logUtils.Info(err.Error())
+		return
+	}
+
+	MyVm.JsRuntime.Set("dt", dt)
+}
+
+func UpdateResponseData() (err error) {
+	_, err = MyVm.JsRuntime.RunString("updateResponseData(dt.response);")
+	return
+}
+
+func defineJsFuncs() {
 	MyVm.JsRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
 		rowIndex := getDatapoolRow(dpName, seq, ExecScene.Datapools)
 
@@ -102,15 +144,49 @@ func InitJsRuntime() {
 		ClearVariable(scopeId, name)
 	})
 
-	// load global script
-	MyRequire = registry.Enable(MyVm.JsRuntime)
-	pth := filepath.Join(consts.TmpDir, "deeptest.js")
-	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
-	dt, err := MyRequire.Require(pth)
+	MyVm.JsRuntime.Set("updateRequestData", func(value domain.BaseRequest) {
+		CurrRequest = value
+	})
+	MyVm.JsRuntime.Set("updateResponseData", func(value domain.DebugResponse) {
+		bytes, _ := json.Marshal(value.Data)
+		value.Content = string(bytes)
+		CurrResponse = value
+	})
+
+	MyVm.JsRuntime.Set("log", func(value interface{}) {
+		bytes, _ := json.Marshal(value)
+		logs = append(logs, string(bytes))
+	})
+}
+
+var (
+	_setValueFunc func(name string, value interface{})
+)
+
+func defineGoFuncs() {
+	// set data
+	script := `function _setData(name, val) {
+					dt[name] = val
+				}`
+	_, err := MyVm.JsRuntime.RunString(script)
 	if err != nil {
-		logUtils.Info(err.Error())
-		return
+		logUtils.Infof(err.Error())
 	}
 
-	MyVm.JsRuntime.Set("dt", dt)
+	err = MyVm.JsRuntime.ExportTo(MyVm.JsRuntime.Get("_setData"), &_setValueFunc)
+}
+
+func SetReqValueToGoja(req domain.BaseRequest) {
+	SetValueToGoja("request", req)
+}
+func SetRespValueToGoja(resp domain.DebugResponse) {
+	data := map[string]interface{}{}
+	json.Unmarshal([]byte(resp.Content), &data)
+
+	resp.Data = data
+
+	SetValueToGoja("response", resp)
+}
+func SetValueToGoja(name string, value interface{}) {
+	_setValueFunc(name, value)
 }

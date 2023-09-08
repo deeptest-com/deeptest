@@ -284,17 +284,17 @@ export async function loadCaseTree(data: QueryCaseTreeParams): Promise<any> {
 
 
 export function reBuildTree(node:any,parentId:any) {
-  
+
    let newNode:any
     if (node?.count > 0 || !node?.isDir) {
 
          newNode = Object.assign({},node)
-      
+
         //newNode.parentId = parentId
         newNode.children = []
         if (node?.children) {
             node?.children.forEach((child:any)=>{
-          
+
                 const newChild = reBuildTree(child,node.id)
                 if (newChild) {
                     newNode.children.push(newChild)
@@ -303,6 +303,29 @@ export function reBuildTree(node:any,parentId:any) {
         }
         return newNode
     }
-    
+
     return newNode
+}
+
+
+export function getMockExpressions(params) {
+    return request({
+        url: `/mockjs/expressions`,
+        method: 'get',
+        params: params
+    });
+}
+
+export function getMockScript(id) {
+    return request({
+        url: `/mockScripts/${id}`,
+        method: 'get'
+    });
+}
+export function updateMockScript(data: any) {
+    return request({
+        url: `/mockScripts`,
+        method: 'put',
+        data: data
+    });
 }

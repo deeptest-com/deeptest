@@ -13,7 +13,16 @@ type TestsModule struct {
 // Party 脚本
 func (m *TestsModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Get("/test", m.TestsCtrl.Test).Name = "测试用"
+		index.Get("/", m.TestsCtrl.Gets).Name = "模拟接口测试"
+		index.Post("/", m.TestsCtrl.Posts).Name = "模拟接口测试"
+		index.Put("/", m.TestsCtrl.Posts).Name = "模拟接口测试"
+		index.Delete("/", m.TestsCtrl.Posts).Name = "模拟接口测试"
+
+		index.Patch("/", m.TestsCtrl.Posts).Name = "模拟接口测试"
+		index.Head("/", m.TestsCtrl.Head).Name = "模拟接口测试"
+
+		index.Connect("/", m.TestsCtrl.Connect).Name = "模拟接口测试"
+		index.Trace("/", m.TestsCtrl.Trace).Name = "模拟接口测试"
 	}
-	return module.NewModule("/tests", handler)
+	return module.NewModule("/test", handler)
 }

@@ -7,13 +7,15 @@
         <div class="envDetail-content">
             <a-form-item :labelCol="{ span: 2 }" :wrapperCol="{ span: 10 }" label="环境名称" name="name"
                 :rules="rules.name">
-                <a-input class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
+                <a-input :disabled="isMockEnv" class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
                     placeholder="请输入环境名称" />
             </a-form-item>
             <div class="serveServers">
                 <div class="serveServers-header">服务访问地址</div>
                 <PermissionButton
                     code="LINK-SERVICE"
+                    :disabled="isMockEnv"
+                    :tip="isMockEnv ? 'Mock环境为系统生成，不可编辑' : ''"
                     class="envDetail-btn"
                     text="关联服务"
                     @handle-access="addService">
@@ -21,22 +23,27 @@
                         <PlusOutlined />
                     </template>
                 </PermissionButton>
-                <a-table v-if="activeEnvDetail.serveServers.length > 0" size="small" bordered :pagination="false"
+                <a-table :style="isMockEnv ? { marginTop: '16px' } : undefined" v-if="activeEnvDetail.serveServers.length > 0" size="small" bordered :pagination="false"
                     :columns="serveServersColumns" :data-source="activeEnvDetail.serveServers" :rowKey="(_record, index) => index">
                     <template #customUrl="{ text, index }">
                         <a-form-item :name="['serveServers', index, 'url']"
                             :rules="rules.serveUrl">
-                            <a-input :value="text" @change="(e) => {
-                                handleEnvChange('serveServers', 'url', index, e);
-                            }" placeholder="http 或 https 起始的合法 URL" />
+                            <a-input 
+                                :disabled="isMockEnv" 
+                                :value="text" @change="(e) => {
+                                    handleEnvChange('serveServers', 'url', index, e);
+                                }" 
+                                placeholder="http 或 https 起始的合法 URL" />
                         </a-form-item>
                     </template>
                     <template #customAction="{ index }">
                         <PermissionButton
                             code="UNLINK-SERVICE"
                             type="text"
+                            :disabled="isMockEnv"
                             size="small"
                             :danger="true"
+                            :tip="isMockEnv ? 'Mock环境为系统生成，不可编辑' : ''"
                             text="解除关联"
                             @handle-access="handleEnvChange('serveServers', '', index, '', 'delete')" />
                     </template>
@@ -137,7 +144,8 @@ const {
     addVar,
     addEnvData,
     handleEnvChange,
-    handleEnvNameChange
+    handleEnvNameChange,
+    isMockEnv
 } = useGlobalEnv(formRef);
 
 const rules = {

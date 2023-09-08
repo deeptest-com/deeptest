@@ -3411,6 +3411,62 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/endpoint/updateMockStatus": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "设计器"
+                ],
+                "summary": "启用或者禁用接口所有期望",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "endpoint_id",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "接口的mock禁用状态 true:禁用 false:启用",
+                        "name": "advancedMockDisabled",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/endpoint/updateStatus": {
             "put": {
                 "consumes": [
@@ -4288,7 +4344,7 @@ const docTemplate = `{
                 "tags": [
                     "环境管理"
                 ],
-                "summary": "环境列表(ListExpressions)",
+                "summary": "环境列表(List)",
                 "parameters": [
                     {
                         "type": "string",
@@ -6047,6 +6103,538 @@ const docTemplate = `{
                                                 "count": {
                                                     "type": "integer"
                                                 }
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockExpect": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "期望详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "期望ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.EndpointMockExpect"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "删除期望",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "期望ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockExpect/copy": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "复制期望",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "期望ID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockExpect/list": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "期望列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointId",
+                        "name": "endpointId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/model.EndpointMockExpect"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockExpect/order": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "启用或者禁用单个期望",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "期望ID",
+                        "name": "id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "description": "是否禁用",
+                        "name": "disabled",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockExpect/requestOptions": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "获取请求参数下拉选项",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointId",
+                        "name": "endpointId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "endpointInterfaceId",
+                        "name": "endpointInterfaceId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/serverDomain.MockExpectRequestOptions"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockExpect/save": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "保存期望",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "保存期望的请求体",
+                        "name": "EndpointMockExpect",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EndpointMockExpect"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "integer"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockScripts": {
+            "put": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock脚本管理"
+                ],
+                "summary": "更新脚本",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "update Mock Script Object",
+                        "name": "EndpointMockScript",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.EndpointMockScript"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockScripts/{id}": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock脚本管理"
+                ],
+                "summary": "脚本详情",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Endpoint ID",
+                        "name": "endpointId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.EndpointMockScript"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/mockjs/expressions": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "mock"
+                ],
+                "summary": "mockJs规则列表",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/serverDomain.MockJsExpression"
                                             }
                                         }
                                     }
@@ -9009,20 +9597,6 @@ const docTemplate = `{
                         "type": "integer",
                         "description": "当前项目ID",
                         "name": "currProjectId",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "用户ID",
-                        "name": "user_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "项目ID",
-                        "name": "project_id",
                         "in": "query",
                         "required": true
                     }
@@ -14467,6 +15041,10 @@ const docTemplate = `{
                 "data": {},
                 "msg": {
                     "type": "string"
+                },
+                "msgKey": {
+                    "description": "show i118 msg on client side",
+                    "type": "string"
                 }
             }
         },
@@ -14678,6 +15256,36 @@ const docTemplate = `{
                 }
             }
         },
+        "agentDomain.InterfaceStat": {
+            "type": "object",
+            "properties": {
+                "checkpointFail": {
+                    "type": "integer"
+                },
+                "checkpointPass": {
+                    "type": "integer"
+                },
+                "interfaceCount": {
+                    "type": "integer"
+                },
+                "interfaceDurationAverage": {
+                    "type": "integer"
+                },
+                "interfaceDurationTotal": {
+                    "description": "milliseconds",
+                    "type": "integer"
+                },
+                "interfaceFail": {
+                    "type": "integer"
+                },
+                "interfacePass": {
+                    "type": "integer"
+                },
+                "interfaceSkip": {
+                    "type": "integer"
+                }
+            }
+        },
         "agentDomain.PlanExecResult": {
             "type": "object",
             "properties": {
@@ -14698,6 +15306,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/agentDomain.ScenarioExecResult"
                     }
+                },
+                "stat": {
+                    "$ref": "#/definitions/agentDomain.InterfaceStat"
                 }
             }
         },
@@ -14814,13 +15425,8 @@ const docTemplate = `{
                     "description": "for loop break processor",
                     "type": "boolean"
                 },
-                "checkpointsResult": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.CheckpointBase"
-                    }
-                },
                 "cost": {
+                    "description": "milliseconds",
                     "type": "integer"
                 },
                 "debugInterfaceId": {
@@ -14841,12 +15447,6 @@ const docTemplate = `{
                 },
                 "environmentId": {
                     "type": "integer"
-                },
-                "extractorsResult": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.ExtractorBase"
-                    }
                 },
                 "httpStatusCode": {
                     "$ref": "#/definitions/consts.HttpRespCode"
@@ -14883,6 +15483,18 @@ const docTemplate = `{
                 "parentLogId": {
                     "type": "string"
                 },
+                "postConditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.InterfaceExecCondition"
+                    }
+                },
+                "preConditions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.InterfaceExecCondition"
+                    }
+                },
                 "processorCategory": {
                     "$ref": "#/definitions/consts.ProcessorCategory"
                 },
@@ -14911,26 +15523,25 @@ const docTemplate = `{
                 "resultStatus": {
                     "$ref": "#/definitions/consts.ResultStatus"
                 },
+                "round": {
+                    "type": "string"
+                },
                 "scenarioId": {
                     "type": "integer"
                 },
                 "scenarioReportId": {
                     "type": "integer"
                 },
-                "scriptsResult": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.ScriptBase"
-                    }
-                },
                 "startTime": {
                     "type": "string"
+                },
+                "stat": {
+                    "$ref": "#/definitions/agentDomain.InterfaceStat"
                 },
                 "summary": {
                     "type": "string"
                 },
                 "useId": {
-                    "description": "ReportId uint ` + "`" + `json:\"reportId\"` + "`" + `",
                     "type": "integer"
                 }
             }
@@ -15039,6 +15650,9 @@ const docTemplate = `{
                 "result": {
                     "$ref": "#/definitions/agentDomain.ScenarioExecResult"
                 },
+                "round": {
+                    "type": "string"
+                },
                 "scenarioId": {
                     "type": "integer"
                 },
@@ -15106,6 +15720,9 @@ const docTemplate = `{
                 },
                 "result": {
                     "$ref": "#/definitions/agentDomain.ScenarioExecResult"
+                },
+                "round": {
+                    "type": "string"
                 },
                 "scenarioId": {
                     "type": "integer"
@@ -15249,31 +15866,33 @@ const docTemplate = `{
                 "NotContain"
             ]
         },
-        "consts.ConditionSrc": {
-            "type": "string",
-            "enum": [
-                "pre",
-                "post"
-            ],
-            "x-enum-varnames": [
-                "ConditionSrcPre",
-                "ConditionSrcPost"
-            ]
-        },
         "consts.ConditionType": {
             "type": "string",
             "enum": [
                 "extractor",
                 "checkpoint",
-                "script"
+                "script",
+                "responseDefine"
             ],
             "x-enum-varnames": [
                 "ConditionTypeExtractor",
                 "ConditionTypeCheckpoint",
-                "ConditionTypeScript"
+                "ConditionTypeScript",
+                "ConditionTypeResponseDefine"
             ]
         },
-        "consts.DataSource": {
+        "consts.DataItSrc": {
+            "type": "string",
+            "enum": [
+                "fileUpload",
+                "datapool"
+            ],
+            "x-enum-varnames": [
+                "SrcFileUpload",
+                "SrcDatapool"
+            ]
+        },
+        "consts.DataItType": {
             "type": "string",
             "enum": [
                 "text",
@@ -15282,6 +15901,24 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "Text",
                 "Excel"
+            ]
+        },
+        "consts.DataSyncType": {
+            "type": "integer",
+            "enum": [
+                1,
+                2,
+                3
+            ],
+            "x-enum-comments": {
+                "Add": "新增",
+                "AutoAdd": "智能合并",
+                "FullCover": "完全覆盖"
+            },
+            "x-enum-varnames": [
+                "FullCover",
+                "AutoAdd",
+                "Add"
             ]
         },
         "consts.DataType": {
@@ -15316,11 +15953,13 @@ const docTemplate = `{
             "type": "string",
             "enum": [
                 "header",
-                "body"
+                "body",
+                "cookie"
             ],
             "x-enum-varnames": [
                 "Header",
-                "Body"
+                "Body",
+                "Cookie"
             ]
         },
         "consts.ExtractorType": {
@@ -15529,6 +16168,21 @@ const docTemplate = `{
                 "LangTEXT"
             ]
         },
+        "consts.MockCompareWay": {
+            "type": "string",
+            "enum": [
+                "equal",
+                "notEqual",
+                "like",
+                "in"
+            ],
+            "x-enum-varnames": [
+                "MockCompareEqual",
+                "MockCompareNotEqual",
+                "MockCompareLike",
+                "MockCompareIn"
+            ]
+        },
         "consts.NodeType": {
             "type": "string",
             "enum": [
@@ -15636,7 +16290,6 @@ const docTemplate = `{
                 "processor_loop_in",
                 "processor_loop_range",
                 "processor_loop_until",
-                "processor_loop_break",
                 "processor_variable_set",
                 "processor_variable_clear",
                 "processor_assertion_default",
@@ -15644,11 +16297,9 @@ const docTemplate = `{
                 "processor_extractor_jsonquery",
                 "processor_extractor_htmlquery",
                 "processor_extractor_xmlquery",
-                "processor_cookie_get",
                 "processor_cookie_set",
                 "processor_cookie_clear",
-                "processor_data_text",
-                "processor_data_excel",
+                "processor_data_default",
                 "processor_custom_code_default"
             ],
             "x-enum-varnames": [
@@ -15663,7 +16314,6 @@ const docTemplate = `{
                 "ProcessorLoopIn",
                 "ProcessorLoopRange",
                 "ProcessorLoopUntil",
-                "ProcessorLoopBreak",
                 "ProcessorVariableSet",
                 "ProcessorVariableClear",
                 "ProcessorAssertionDefault",
@@ -15671,11 +16321,9 @@ const docTemplate = `{
                 "ProcessorExtractorJsonQuery",
                 "ProcessorExtractorHtmlQuery",
                 "ProcessorExtractorXmlQuery",
-                "ProcessorCookieGet",
                 "ProcessorCookieSet",
                 "ProcessorCookieClear",
-                "ProcessorDataText",
-                "ProcessorDataExcel",
+                "ProcessorDataDefault",
                 "ProcessorCustomCodeDefault"
             ]
         },
@@ -15733,10 +16381,12 @@ const docTemplate = `{
         "consts.SourceType": {
             "type": "integer",
             "enum": [
-                1
+                1,
+                2
             ],
             "x-enum-varnames": [
-                "Swagger"
+                "SwaggerSync",
+                "SwaggerImport"
             ]
         },
         "consts.SwitchStatus": {
@@ -15748,15 +16398,6 @@ const docTemplate = `{
             "x-enum-varnames": [
                 "SwitchON",
                 "SwitchOFF"
-            ]
-        },
-        "consts.SyncType": {
-            "type": "integer",
-            "enum": [
-                1
-            ],
-            "x-enum-varnames": [
-                "FullCopy"
             ]
         },
         "consts.TestStage": {
@@ -15832,21 +16473,6 @@ const docTemplate = `{
                 "CaseDebug",
                 "DiagnoseDebug",
                 "ScenarioDebug"
-            ]
-        },
-        "convert.DataSyncType": {
-            "type": "string",
-            "enum": [
-                "full_cover",
-                "copy_add"
-            ],
-            "x-enum-comments": {
-                "CopyAdd": "复制新增",
-                "FullCover": "完全覆盖"
-            },
-            "x-enum-varnames": [
-                "FullCover",
-                "CopyAdd"
             ]
         },
         "convert.DriverType": {
@@ -15936,54 +16562,30 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.CheckpointBase": {
+        "domain.Condition": {
             "type": "object",
             "properties": {
-                "actualResult": {
+                "desc": {
                     "type": "string"
-                },
-                "conditionEntityId": {
-                    "description": "refer to entity po id in domain object",
-                    "type": "integer"
-                },
-                "conditionEntityType": {
-                    "description": "for log only",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/consts.ConditionType"
-                        }
-                    ]
-                },
-                "conditionId": {
-                    "type": "integer"
                 },
                 "disabled": {
                     "type": "boolean"
                 },
-                "expression": {
-                    "type": "string"
-                },
-                "extractorVariable": {
-                    "type": "string"
-                },
-                "invokeId": {
-                    "description": "for log only",
+                "entityData": {},
+                "entityId": {
                     "type": "integer"
                 },
-                "operator": {
-                    "$ref": "#/definitions/consts.ComparisonOperator"
-                },
-                "resultMsg": {
+                "entityType": {
                     "type": "string"
                 },
-                "resultStatus": {
-                    "$ref": "#/definitions/consts.ResultStatus"
+                "id": {
+                    "type": "integer"
                 },
-                "type": {
-                    "$ref": "#/definitions/consts.CheckpointType"
-                },
-                "value": {
+                "name": {
                     "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
                 }
             }
         },
@@ -15992,8 +16594,7 @@ const docTemplate = `{
             "additionalProperties": {
                 "type": "array",
                 "items": {
-                    "type": "object",
-                    "additionalProperties": true
+                    "$ref": "#/definitions/domain.VarKeyValuePair"
                 }
             }
         },
@@ -16109,6 +16710,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/domain.Param"
                     }
                 },
+                "responseDefine": {
+                    "$ref": "#/definitions/domain.Condition"
+                },
                 "scenarioProcessorId": {
                     "type": "integer"
                 },
@@ -16184,6 +16788,11 @@ const docTemplate = `{
                         "$ref": "#/definitions/domain.ExecCookie"
                     }
                 },
+                "data": {
+                    "description": "Content obj in goja",
+                    "type": "object",
+                    "additionalProperties": true
+                },
                 "headers": {
                     "type": "array",
                     "items": {
@@ -16229,6 +16838,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "name": {
+                    "type": "string"
+                },
+                "path": {
                     "type": "string"
                 },
                 "value": {}
@@ -16517,27 +17129,6 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.ExecVariable": {
-            "type": "object",
-            "properties": {
-                "expression": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "interfaceId": {
-                    "type": "integer"
-                },
-                "isShare": {
-                    "$ref": "#/definitions/consts.ExtractorScope"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "value": {}
-            }
-        },
         "domain.ExtractorBase": {
             "type": "object",
             "properties": {
@@ -16567,6 +17158,10 @@ const docTemplate = `{
                 },
                 "conditionId": {
                     "type": "integer"
+                },
+                "default": {
+                    "description": "for cookie",
+                    "type": "string"
                 },
                 "disabled": {
                     "type": "boolean"
@@ -16932,54 +17527,6 @@ const docTemplate = `{
                 },
                 "type": {
                     "type": "string"
-                }
-            }
-        },
-        "domain.ScriptBase": {
-            "type": "object",
-            "properties": {
-                "conditionEntityId": {
-                    "description": "refer to po id in domain object",
-                    "type": "integer"
-                },
-                "conditionEntityType": {
-                    "description": "for log only",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/consts.ConditionType"
-                        }
-                    ]
-                },
-                "conditionId": {
-                    "type": "integer"
-                },
-                "conditionType": {
-                    "$ref": "#/definitions/consts.ConditionSrc"
-                },
-                "content": {
-                    "type": "string"
-                },
-                "disabled": {
-                    "type": "boolean"
-                },
-                "invokeId": {
-                    "description": "for log only",
-                    "type": "integer"
-                },
-                "output": {
-                    "type": "string"
-                },
-                "resultMsg": {
-                    "type": "string"
-                },
-                "resultStatus": {
-                    "$ref": "#/definitions/consts.ResultStatus"
-                },
-                "variableSettings": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/domain.ExecVariable"
-                    }
                 }
             }
         },
@@ -17359,6 +17906,10 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "default": {
+                    "description": "for cookie",
                     "type": "string"
                 },
                 "disabled": {
@@ -17989,6 +18540,9 @@ const docTemplate = `{
                 "updatedAt": {
                     "type": "string"
                 },
+                "updatedBy": {
+                    "type": "integer"
+                },
                 "useId": {
                     "type": "integer"
                 }
@@ -17997,6 +18551,9 @@ const docTemplate = `{
         "model.Endpoint": {
             "type": "object",
             "properties": {
+                "advancedMockDisabled": {
+                    "type": "boolean"
+                },
                 "categoryId": {
                     "type": "integer"
                 },
@@ -18026,6 +18583,12 @@ const docTemplate = `{
                 },
                 "maintainer": {
                     "type": "string"
+                },
+                "methods": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/consts.HttpMethod"
+                    }
                 },
                 "path": {
                     "type": "string"
@@ -18064,6 +18627,9 @@ const docTemplate = `{
                     }
                 },
                 "title": {
+                    "type": "string"
+                },
+                "updateUser": {
                     "type": "string"
                 },
                 "updatedAt": {
@@ -18703,6 +19269,201 @@ const docTemplate = `{
                 }
             }
         },
+        "model.EndpointMockExpect": {
+            "type": "object",
+            "properties": {
+                "createUser": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointId": {
+                    "type": "integer"
+                },
+                "endpointInterfaceId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "requestBodies": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointMockExpectRequest"
+                    }
+                },
+                "requestHeaders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointMockExpectRequest"
+                    }
+                },
+                "requestPathParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointMockExpectRequest"
+                    }
+                },
+                "requestQueryParams": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointMockExpectRequest"
+                    }
+                },
+                "responseBody": {
+                    "$ref": "#/definitions/model.EndpointMockExpectResponse"
+                },
+                "responseHeaders": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.EndpointMockExpectResponseHeader"
+                    }
+                },
+                "updateUser": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointMockExpectRequest": {
+            "type": "object",
+            "properties": {
+                "compareWay": {
+                    "$ref": "#/definitions/consts.MockCompareWay"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointMockExpectId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "source": {
+                    "$ref": "#/definitions/consts.ParamIn"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointMockExpectResponse": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "delayTime": {
+                    "type": "integer"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointMockExpectId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointMockExpectResponseHeader": {
+            "type": "object",
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointMockExpectId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.EndpointMockScript": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createUser": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "disabled": {
+                    "type": "boolean"
+                },
+                "endpointId": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "method": {
+                    "description": "EndpointInterfaceId uint              ` + "`" + `json:\"endpointInterfaceId\"` + "`" + `",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/consts.HttpMethod"
+                        }
+                    ]
+                },
+                "updateUser": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
+                }
+            }
+        },
         "model.EndpointPathParam": {
             "type": "object",
             "properties": {
@@ -18997,6 +19758,10 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "default": {
+                    "description": "for cookie",
+                    "type": "string"
+                },
                 "disabled": {
                     "type": "boolean"
                 },
@@ -19044,9 +19809,6 @@ const docTemplate = `{
         "model.ExecLogProcessor": {
             "type": "object",
             "properties": {
-                "Detail": {
-                    "type": "string"
-                },
                 "createdAt": {
                     "type": "string"
                 },
@@ -19054,6 +19816,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "desc": {
+                    "type": "string"
+                },
+                "detail": {
                     "type": "string"
                 },
                 "disabled": {
@@ -19086,6 +19851,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/model.ExecLogExtractor"
                     }
+                },
+                "invokeId": {
+                    "type": "integer"
                 },
                 "logs": {
                     "type": "array",
@@ -19132,6 +19900,9 @@ const docTemplate = `{
                 },
                 "resultStatus": {
                     "$ref": "#/definitions/consts.ResultStatus"
+                },
+                "round": {
+                    "type": "string"
                 },
                 "scenarioId": {
                     "type": "integer"
@@ -19200,6 +19971,13 @@ const docTemplate = `{
                 },
                 "categoryId": {
                     "type": "integer"
+                },
+                "createUserId": {
+                    "type": "integer"
+                },
+                "createUserName": {
+                    "description": "创建人姓名",
+                    "type": "string"
                 },
                 "createdAt": {
                     "type": "string"
@@ -19350,6 +20128,9 @@ const docTemplate = `{
                 "startTime": {
                     "type": "string"
                 },
+                "stat": {
+                    "type": "string"
+                },
                 "totalAssertionNum": {
                     "type": "integer"
                 },
@@ -19402,6 +20183,9 @@ const docTemplate = `{
                 "execEnvId": {
                     "description": "执行环境Id",
                     "type": "integer"
+                },
+                "execUserName": {
+                    "type": "string"
                 },
                 "failAssertionNum": {
                     "type": "integer"
@@ -19470,6 +20254,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "stat": {
                     "type": "string"
                 },
                 "totalAssertionNum": {
@@ -19567,6 +20354,9 @@ const docTemplate = `{
                 "createdAt": {
                     "type": "string"
                 },
+                "datapoolId": {
+                    "type": "integer"
+                },
                 "default": {
                     "type": "string"
                 },
@@ -19591,9 +20381,6 @@ const docTemplate = `{
                 "processorID": {
                     "type": "integer"
                 },
-                "processorInterfaceSrc": {
-                    "$ref": "#/definitions/consts.ProcessorInterfaceSrc"
-                },
                 "processorType": {
                     "$ref": "#/definitions/consts.ProcessorType"
                 },
@@ -19603,8 +20390,11 @@ const docTemplate = `{
                 "separator": {
                     "type": "string"
                 },
+                "src": {
+                    "$ref": "#/definitions/consts.DataItSrc"
+                },
                 "type": {
-                    "$ref": "#/definitions/consts.DataSource"
+                    "$ref": "#/definitions/consts.DataItType"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -19882,9 +20672,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "createUserName": {
+                    "description": "用户登录名",
                     "type": "string"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "creatorName": {
                     "type": "string"
                 },
                 "currEnvId": {
@@ -19922,6 +20716,12 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/consts.TestType"
+                },
+                "updateUserId": {
+                    "type": "integer"
+                },
+                "updateUserName": {
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -19944,9 +20744,13 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "createUserName": {
+                    "description": "用户登录名",
                     "type": "string"
                 },
                 "createdAt": {
+                    "type": "string"
+                },
+                "creatorName": {
                     "type": "string"
                 },
                 "currEnvId": {
@@ -19984,6 +20788,12 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/consts.TestType"
+                },
+                "updateUserId": {
+                    "type": "integer"
+                },
+                "updateUserName": {
+                    "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -20023,6 +20833,9 @@ const docTemplate = `{
                 },
                 "execEnvId": {
                     "type": "integer"
+                },
+                "execUserName": {
+                    "type": "string"
                 },
                 "failAssertionNum": {
                     "type": "integer"
@@ -20091,6 +20904,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "stat": {
                     "type": "string"
                 },
                 "totalAssertionNum": {
@@ -20141,6 +20957,9 @@ const docTemplate = `{
                 "execEnvId": {
                     "type": "integer"
                 },
+                "execUserName": {
+                    "type": "string"
+                },
                 "failAssertionNum": {
                     "type": "integer"
                 },
@@ -20208,6 +21027,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "startTime": {
+                    "type": "string"
+                },
+                "stat": {
                     "type": "string"
                 },
                 "totalAssertionNum": {
@@ -20398,7 +21220,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/consts.SwitchStatus"
                 },
                 "syncType": {
-                    "$ref": "#/definitions/consts.SyncType"
+                    "$ref": "#/definitions/consts.DataSyncType"
                 },
                 "updatedAt": {
                     "type": "string"
@@ -20962,6 +21784,9 @@ const docTemplate = `{
         "serverDomain.DiagnoseInterfaceSaveReq": {
             "type": "object",
             "properties": {
+                "createdBy": {
+                    "type": "integer"
+                },
                 "id": {
                     "type": "integer"
                 },
@@ -20982,6 +21807,9 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/serverConsts.DiagnoseInterfaceType"
+                },
+                "updatedBy": {
+                    "type": "integer"
                 }
             }
         },
@@ -21027,6 +21855,10 @@ const docTemplate = `{
                 },
                 "logo": {
                     "type": "string"
+                },
+                "mock": {
+                    "type": "array",
+                    "items": {}
                 },
                 "name": {
                     "type": "string"
@@ -21207,6 +22039,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
+                },
                 "name": {
                     "type": "string"
                 },
@@ -21267,7 +22102,7 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "parentId": {
-                    "type": "integer"
+                    "type": "string"
                 },
                 "projectId": {
                     "type": "integer"
@@ -21366,6 +22201,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "title": {
+                    "type": "string"
+                },
+                "updateUser": {
                     "type": "string"
                 },
                 "version": {
@@ -21593,7 +22431,7 @@ const docTemplate = `{
                     "description": "数据同步方式",
                     "allOf": [
                         {
-                            "$ref": "#/definitions/convert.DataSyncType"
+                            "$ref": "#/definitions/consts.DataSyncType"
                         }
                     ]
                 },
@@ -21618,6 +22456,9 @@ const docTemplate = `{
                 "serveId": {
                     "description": "服务ID",
                     "type": "integer"
+                },
+                "sourceType": {
+                    "$ref": "#/definitions/consts.SourceType"
                 },
                 "userId": {
                     "type": "integer"
@@ -21653,6 +22494,10 @@ const docTemplate = `{
                 },
                 "method": {
                     "type": "string"
+                },
+                "mock": {
+                    "type": "array",
+                    "items": {}
                 },
                 "name": {
                     "type": "string"
@@ -21801,6 +22646,39 @@ const docTemplate = `{
                 "user_id": {
                     "type": "integer"
                 }
+            }
+        },
+        "serverDomain.MockExpectRequestOptions": {
+            "type": "object",
+            "additionalProperties": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                }
+            }
+        },
+        "serverDomain.MockJsExpression": {
+            "type": "object",
+            "properties": {
+                "desc": {
+                    "type": "string"
+                },
+                "expression": {
+                    "type": "string"
+                },
+                "format": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "ordr": {
+                    "type": "integer"
+                },
+                "result": {}
             }
         },
         "serverDomain.OpenApiCookie": {
@@ -22110,6 +22988,10 @@ const docTemplate = `{
             "properties": {
                 "adminName": {
                     "description": "负责人姓名",
+                    "type": "string"
+                },
+                "createUserName": {
+                    "description": "创建人姓名",
                     "type": "string"
                 },
                 "createdAt": {
@@ -22604,8 +23486,14 @@ const docTemplate = `{
         "serverDomain.ScenarioAddScenarioReq": {
             "type": "object",
             "properties": {
+                "comments": {
+                    "type": "string"
+                },
                 "createBy": {
                     "type": "integer"
+                },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
                 },
                 "mode": {
                     "type": "string"
@@ -22623,6 +23511,9 @@ const docTemplate = `{
                     "$ref": "#/definitions/consts.ProcessorType"
                 },
                 "projectId": {
+                    "type": "integer"
+                },
+                "srcProcessorId": {
                     "type": "integer"
                 },
                 "targetProcessorCategory": {
@@ -23045,7 +23936,7 @@ const docTemplate = `{
                     "$ref": "#/definitions/consts.SwitchStatus"
                 },
                 "syncType": {
-                    "$ref": "#/definitions/consts.SyncType"
+                    "$ref": "#/definitions/consts.DataSyncType"
                 },
                 "url": {
                     "type": "string"

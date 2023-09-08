@@ -8,7 +8,7 @@ import (
 )
 
 func TestOpenAPIV3(t *testing.T) {
-	pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/spec.yaml"
+	pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/my-other-openapi.json"
 
 	ctx := context.Background()
 	loader := &openapi3.Loader{Context: ctx, IsExternalRefsAllowed: true}

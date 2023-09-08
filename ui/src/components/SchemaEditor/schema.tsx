@@ -5,6 +5,7 @@ import {DownOutlined, PlusOutlined, RightOutlined,} from '@ant-design/icons-vue'
 import Actions from "./Actions.vue";
 import ExtraActions from "./ExtraActions.vue";
 import DataTypeSetting from './DataTypeSetting.vue';
+import MockRule from "./MockRule.vue";
 import cloneDeep from "lodash/cloneDeep";
 import {
     addExtraViewInfo,
@@ -25,6 +26,8 @@ import {message, notification} from "ant-design-vue";
 import {useStore} from "vuex";
 import {StateType as ServeStateType} from "@/store/serve";
 import {notifyWarn} from "@/utils/notify";
+
+
 
 export default defineComponent({
     name: 'SchemeEditor',
@@ -91,6 +94,12 @@ export default defineComponent({
             // 插入纯文本
             document.execCommand("insertHTML", false, text);
         }
+
+        const updateMockType = (tree: any, mockType: string) => {
+            tree['x-mock-type'] = mockType;
+            data.value = addExtraViewInfo(data.value);
+        };
+
         const keyNameKeyDown = (oldKey: any, keyIndex: any, parent: any, event: any) => {
             // 获取用户输入的字符
             const char = event.key;
@@ -413,12 +422,21 @@ export default defineComponent({
                 return <RightOutlined onClick={expandIt.bind(this, tree, options)} class={'expandIcon'}/>
             }
         }
+
+        const renderMockRule = (options: any) => {
+            const {tree, isRefChildNode, isRoot} = options;
+            // if(isRefChildNode) return null;
+            // console.log('renderMockRule', tree);
+            return <MockRule tree={tree} readonly={!!isRefChildNode}  onUpdate={updateMockType.bind(this,tree)}/>
+        }
+
         const renderHorizontalLine = (depth: number) => {
             if (depth === 1) return null;
             return <div class={'horizontalLine'}
                         style={{left: `${(depth - 1) * treeLevelWidth + 8}px`}}/>
         }
         const renderNormalType = (options: any) => {
+            const { tree} = options;
             return (<div key={options.index}
                          class={'leafNode'} style={{'paddingLeft': `${options.depth * treeLevelWidth}px`}}>
                 {!options.isRoot ? <div class={'leafNodeHorizontalLine'}
@@ -426,6 +444,7 @@ export default defineComponent({
                 <div class={'baseInfo'}>
                     {renderKeyName(options)}
                     {renderDataTypeSetting(options)}
+                    {!isRef(tree) ? renderMockRule(options) : null}
                 </div>
                 {renderAction(options)}
                 {renderExtraAction(options)}

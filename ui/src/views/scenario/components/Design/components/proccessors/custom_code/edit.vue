@@ -19,12 +19,12 @@
           <!-- <div @click="addSnippet('environment_get')" class="dp-link-primary">Get an environment variable</div>
                <div @click="addSnippet('environment_set')" class="dp-link-primary">Set an environment variable</div>
                <div @click="addSnippet('environment_clear')" class="dp-link-primary">Clear an environment variable</div>-->
+          <div @click="addSnippet('variables_get')" class="dp-link-primary">获取变量</div>
+          <div @click="addSnippet('variables_set')" class="dp-link-primary">设置变量</div>
+          <div @click="addSnippet('variables_clear')" class="dp-link-primary">清除变量</div>
 
-          <div @click="addSnippet('variables_get')" class="dp-link-primary">Get an variable</div>
-          <div @click="addSnippet('variables_set')" class="dp-link-primary">Set an variable</div>
-          <div @click="addSnippet('variables_clear')" class="dp-link-primary">Clear an variable</div>
-
-          <div @click="addSnippet('datapool_get')" class="dp-link-primary">Get datapool variable</div>
+          <div @click="addSnippet('datapool_get')" class="dp-link-primary">获取数据池变量</div>
+          <div @click="addSnippet('log')" class="dp-link-primary">打印日志</div>
         </div>
       </div>
     </div>

@@ -2,7 +2,6 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -603,40 +602,24 @@ func (c *ServeCtrl) DeleteSecurity(ctx iris.Context) {
 	}
 }
 
-// SaveSwaggerSync
-// @Tags	自动同步
-// @summary	保存同步信息
-// @accept 	application/json
-// @Produce application/json
-// @Param	Authorization	header	string						true	"Authentication header"
-// @Param 	currProjectId	query	int							true	"当前项目ID"
-// @Param 	SwaggerSyncReq	body	serverDomain.SwaggerSyncReq	true	"保存同步信息的请求参数"
-// @success	200	{object}	_domain.Response{data=model.SwaggerSync}
-// @Router	/api/v1/serves/saveSwaggerSync	[post]
-func (c *ServeCtrl) SaveSwaggerSync(ctx iris.Context) {
-	var req serverDomain.SwaggerSyncReq
-	if err := ctx.ReadJSON(&req); err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	//
-	if req.Switch == consts.SwitchOFF {
-
-	}
-
-	projectId, _ := ctx.URLParamInt("currProjectId")
-	if req.ProjectId == 0 {
-		req.ProjectId = uint(projectId)
-	}
-	res, err := c.ServeService.SaveSwaggerSync(req)
+func (c *ServeCtrl) AddServerForHistory(ctx iris.Context) {
+	req := serverDomain.HistoryServeAddServesReq{}
+	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+
+	err = c.ServeService.AddServerForHistory(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
+/*
 // SwaggerSyncDetail
 // @Tags	自动同步
 // @summary	获取同步信息
@@ -651,7 +634,7 @@ func (c *ServeCtrl) SwaggerSyncDetail(ctx iris.Context) {
 	res, err := c.ServeService.SwaggerSyncDetail(uint(projectId))
 	if err != nil {
 		res.CategoryId = -1
-		res.SyncType = consts.FullCopy
+		res.SyncType = consts.FullCover
 		res.Cron = "23 * * * *"
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
@@ -665,4 +648,6 @@ func (c *ServeCtrl) InitSwaggerCron() {
 	for _, item := range syncList {
 		c.ServeService.AddSwaggerCron(item)
 	}
+
 }
+*/

@@ -31,7 +31,7 @@
               <MenuOutlined class="handle dp-drag" />
 
               <span class="text"> {{ element.displayName }} </span>
-              <span class="action">
+              <span v-if="!isMockEnv(element.displayName)" class="action">
                 <copy-outlined class="copy" @click.stop="copyEnvData(element)" />
                 <delete-outlined class="delete" @click.stop="deleteEnvData(element)" />
               </span>
@@ -95,6 +95,7 @@ const routeName = router.currentRoute.value.name;
 const isShowGlobalVars = ref(routeName === RouteNameMap.Var);
 const isShowGlobalParams: any = ref(routeName === RouteNameMap.Params);
 const isShowAddEnv = ref(routeName === RouteNameMap.Detail && !params.id);
+const isMockEnv = (name: string) => name === 'Mock环境';
 
 
 function handleDragEnd(_e: any) {
@@ -264,6 +265,7 @@ watch(() => {
 
     .action {
       display: none;
+
       .copy {
         margin-right: 6px;
       }

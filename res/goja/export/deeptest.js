@@ -3,35 +3,22 @@
 // datapool
 const datapool = {};
 
-datapool.get = getDatapoolVariable;
+datapool.get = function getDatapoolVariable(datapool_name, variable_name, seq) {};
 datapool.get.prototype = {};
 
 // variables
 const variables = {};
 
-variables.get = getVariable;
+variables.get = function getVariable(variable_name){};
 variables.get.prototype = {};
 
-variables.set = setVariable;
+variables.set = function setVariable(variable_name, variable_value){};
 variables.set.prototype = {};
 
-variables.clear = clearVariable;
+variables.clear = function clearVariable(variable_name){};
 variables.clear.prototype = {};
 
-// environment
-// const environment = {};
-//
-// environment.get = getEnvironmentVariable;
-// environment.get.prototype = {};
-//
-// environment.set = setEnvironmentVariable;
-// environment.set.prototype = {};
-//
-// environment.clear = clearEnvironmentVariable;
-// environment.clear.prototype = {};
-
 module.exports = {
-    datapool: datapool,
-    variables: variables,
-    // environment: environment,
+    datapool,
+    variables,
 }

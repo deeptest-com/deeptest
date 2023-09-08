@@ -202,6 +202,7 @@ export interface EnvReturnData {
     isShowAddEnv: Ref<boolean>;
     isShowEnvDetail: Ref<boolean>;
     activeEnvDetail: any;
+    isMockEnv: Ref<boolean>;
     getEnvsList: () => Promise<void>;
     showEnvDetail: (item: any, isAdd?: boolean) => void;
     addVar: () => void;
@@ -241,11 +242,12 @@ export interface VersionListReqParams {
 }
 
 export interface SwaggerSync {
-    switch: boolean,
+    switch: number,
     syncType: number,
     categoryId: number,
     url: '',
     cron:'',
     projectId:number,
-    exec_time:''
+    execTime:''
+    sourceType:number,
   }

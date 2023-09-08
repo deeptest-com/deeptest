@@ -730,7 +730,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 			interfaceIds[endpoint.Interfaces[0].Name+"-"+string(endpoint.Interfaces[0].Method)] = endpoint.Interfaces[0].ID
 		}
 
-		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
+		//r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
 
 		//TODO 创建场景
 		scenario.ProjectId = projectId
@@ -884,5 +884,12 @@ func (r *ProjectRepo) GetAuditUsers(projectId uint) (users []model.SysUser, err 
 		Where("m.project_id=? and r.name=? and not m.deleted and not m.disabled", projectId, consts.Admin).
 		Find(&users).Error
 
+	return
+}
+
+func (r *ProjectRepo) ListAll() (res []model.Project, err error) {
+	err = r.DB.Model(model.Project{}).
+		Where("not disabled and not deleted").
+		Find(&res).Error
 	return
 }

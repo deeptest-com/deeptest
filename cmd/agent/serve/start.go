@@ -38,8 +38,8 @@ func Init() *AgentServer {
 	consts.RunFrom = consts.FromAgent
 	consts.WorkDir = commUtils.GetWorkDir()
 
-	config.Init("agent")
-	zapLog.Init("agent")
+	config.Init()
+	zapLog.Init()
 	_i118Utils.Init(consts.Language, "")
 
 	app := iris.New()

@@ -56,6 +56,7 @@ type InterfaceResp struct {
 	Body           string                `gorm:"default:{}" json:"body"`
 	BodyType       string                `gorm:"default:''" json:"bodyType"`
 	ResponseCodes  string                `json:"responseCodes"`
+	Mock           []interface{}         `gorm:"-" json:"mock"`
 	//AuthorizationType string                 `gorm:"default:''" json:"authorizationType"`
 	//PreRequestScript  string                 `gorm:"default:''" json:"preRequestScript"`
 	//ValidationScript  string                 `gorm:"default:''" json:"validationScript"`

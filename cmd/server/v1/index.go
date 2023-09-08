@@ -26,12 +26,14 @@ type IndexModule struct {
 
 	MockModule *router.MockModule `inject:""`
 
-	ProjectModule     *router.ProjectModule     `inject:""`
-	ProjectPerModule  *router.ProjectPermModule `inject:""`
-	ProjectMenuModule *router.ProjectMenuModule `inject:""`
-	DatapoolModule    *router.DatapoolModule    `inject:""`
-	SnippetModule     *router.SnippetModule     `inject:""`
-	MockJsModule      *router.MockJsModule      `inject:""`
+	ProjectModule            *router.ProjectModule            `inject:""`
+	ProjectPerModule         *router.ProjectPermModule        `inject:""`
+	ProjectMenuModule        *router.ProjectMenuModule        `inject:""`
+	DatapoolModule           *router.DatapoolModule           `inject:""`
+	SnippetModule            *router.SnippetModule            `inject:""`
+	MockJsModule             *router.MockJsModule             `inject:""`
+	EndpointMockScriptModule *router.EndpointMockScriptModule `inject:""`
+	EndpointMockExpectModule *router.EndpointMockExpectModule `inject:""`
 
 	ImportModule      *router.ImportModule      `inject:""`
 	AuthModule        *router.AuthModule        `inject:""`
@@ -68,8 +70,9 @@ type IndexModule struct {
 	DocumentModule       *router.DocumentModule       `inject:""`
 	HealthzModule        *router.HealthzModule        `inject:""`
 
-	ConfigModule *router.ConfigModule `inject:""`
-	TestsModule  *router.TestsModule  `inject:""`
+	ProjectSettingsModule *router.ProjectSettingsModule `inject:""`
+	ConfigModule          *router.ConfigModule          `inject:""`
+	TestsModule           *router.TestsModule           `inject:""`
 
 	ResponseDefineModule *router.ResponseDefineModule `inject:""`
 }
@@ -78,8 +81,8 @@ func NewIndexModule() *IndexModule {
 	return &IndexModule{}
 }
 
-// Party v1 模块
-func (m *IndexModule) Party() module.WebModule {
+// Party API 模块
+func (m *IndexModule) ApiParty() module.WebModule {
 	handler := func(v1 iris.Party) {
 		if !config.CONFIG.Limit.Disable {
 			limitV1 := rate.Limit(
@@ -97,14 +100,14 @@ func (m *IndexModule) Party() module.WebModule {
 		m.PermModule.Party(),
 		m.UserModule.Party(),
 
-		m.MockModule.Party(),
-
 		m.ProjectModule.Party(),
 		m.ProjectPerModule.Party(),
 		m.ProjectMenuModule.Party(),
 		m.DatapoolModule.Party(),
 		m.SnippetModule.Party(),
 		m.MockJsModule.Party(),
+		m.EndpointMockScriptModule.Party(),
+		m.EndpointMockExpectModule.Party(),
 
 		m.ImportModule.Party(),
 		m.AuthModule.Party(),
@@ -146,9 +149,28 @@ func (m *IndexModule) Party() module.WebModule {
 		m.DocumentModule.Party(),
 		m.HealthzModule.Party(),
 
+		m.ProjectSettingsModule.Party(),
 		m.ConfigModule.Party(),
-		m.TestsModule.Party(),
 		m.ResponseDefineModule.Party(),
 	}
-	return module.NewModule(consts.ApiPath, handler, modules...)
+
+	return module.NewModule(consts.ApiPathServer, handler, modules...)
+}
+
+// Party Mock 模块
+func (m *IndexModule) MockParty() module.WebModule {
+	handler := func(v1 iris.Party) {
+		if !config.CONFIG.Limit.Disable {
+			limitV1 := rate.Limit(
+				config.CONFIG.Limit.Limit,
+				config.CONFIG.Limit.Burst,
+				rate.PurgeEvery(time.Minute, 5*time.Minute))
+			v1.Use(limitV1)
+		}
+	}
+	modules := []module.WebModule{
+		m.MockModule.Party(),
+		m.TestsModule.Party(),
+	}
+	return module.NewModule(consts.ApiPathMock, handler, modules...)
 }

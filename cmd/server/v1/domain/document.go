@@ -16,6 +16,7 @@ type DocumentRep struct {
 	GlobalVars   []EnvironmentParam     `json:"globalVars"`
 	Version      string                 `json:"version"`
 	DocumentId   uint                   `json:"documentId"`
+	Mock         []interface{}          `json:"mock"`
 }
 
 type DocumentServe struct {

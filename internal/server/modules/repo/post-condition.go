@@ -343,7 +343,6 @@ func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint
 }
 
 func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (condition domain.Condition) {
-
 	if endpointInterfaceId == 0 {
 		return
 	}

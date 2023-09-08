@@ -25,7 +25,7 @@ type formatGuess struct {
 
 func (responder *coordinatingResponder) WriteResponse(ctx context.Context, writer http.ResponseWriter,
 	response *mockGenerator.Response) {
-	format := responder.guessSerializationFormat(response.ContentType)
+	format := responder.guessSerializationFormat(response.ContentType.String())
 
 	data, err := responder.serializer.Serialize(response.Data, format)
 	if err != nil {
@@ -37,7 +37,7 @@ func (responder *coordinatingResponder) WriteResponse(ctx context.Context, write
 		writer.Header().Set("Content-Type", fmt.Sprintf("%s; charset=utf-8", response.ContentType))
 	}
 
-	writer.WriteHeader(response.StatusCode)
+	writer.WriteHeader(response.StatusCode.Int())
 	_, _ = writer.Write(data)
 }
 

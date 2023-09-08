@@ -290,6 +290,8 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 			if err == nil {
 				continue
 			}
+		} else { //相同ref组件能创建新的
+			continue
 		}
 
 		newComponents = append(newComponents, component)
@@ -308,15 +310,10 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 		if err != nil && err != gorm.ErrRecordNotFound {
 			continue
 		}
-		if req.DataSyncType == consts.FullCover {
-			if err == nil {
-				category.ID = res.ID
-				goto here
-			}
-		} else if req.DataSyncType == consts.AutoAdd {
-			if err == nil {
-				continue
-			}
+
+		if err == nil { //同级目录下不创建同名目录
+			category.ID = res.ID
+			goto here
 		}
 
 		err = s.CategoryRepo.Save(&category)

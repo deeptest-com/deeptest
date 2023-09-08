@@ -28,8 +28,8 @@ func (s *ProjectSettingsService) SaveSwaggerSync(req v1.SwaggerSyncReq) (data mo
 	serve, _ := s.ServeRepo.GetDefault(req.ProjectId)
 	swaggerSync.ServeId = int(serve.ID)
 	err = s.ProjectSettingsRepo.SaveSwaggerSync(&swaggerSync)
-	data = swaggerSync
-	s.AddSwaggerCron(data)
+	s.AddSwaggerCron(swaggerSync)
+	data, err = s.ProjectSettingsRepo.GetSwaggerSync(req.ProjectId)
 	return
 }
 

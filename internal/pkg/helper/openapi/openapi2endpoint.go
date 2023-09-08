@@ -187,6 +187,7 @@ func (o *openapi2endpoint) makeDirs(tags []string) []string {
 }
 
 func (o *openapi2endpoint) makeDir(tag string, d *Dirs) *Dirs {
+	tag = strings.TrimSpace(tag)
 	if d.Dirs == nil {
 		d.Dirs = map[string]*Dirs{}
 	}

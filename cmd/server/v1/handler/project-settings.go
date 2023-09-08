@@ -62,7 +62,7 @@ func (c *ProjectSettingsCtrl) SwaggerSyncDetail(ctx iris.Context) {
 	res, err := c.ProjectSettingsService.SwaggerSyncDetail(uint(projectId))
 	if err != nil {
 		res.CategoryId = -1
-		res.SyncType = consts.FullCopy
+		res.SyncType = consts.FullCover
 		res.Cron = "23 * * * *"
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})

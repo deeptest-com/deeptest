@@ -14,7 +14,7 @@ func (r *EndpointMockExpectRepo) ListByEndpointId(endpointId uint) (res []model.
 	err = r.DB.Model(model.EndpointMockExpect{}).
 		Where("endpoint_id = ?", endpointId).
 		Where("NOT deleted AND NOT disabled").
-		Order("id desc").
+		Order("CASE WHEN method='GET' THEN 1 WHEN method='POST' THEN 2 WHEN method='PUT' THEN 3 WHEN method='PATCH' THEN 4 WHEN method='DELETE' THEN 5 WHEN method='HEAD' THEN 6 WHEN method='OPTIONS' THEN 7 WHEN method='TRACE' THEN 8 ELSE 9 END, id desc").
 		Find(&res).Error
 
 	return

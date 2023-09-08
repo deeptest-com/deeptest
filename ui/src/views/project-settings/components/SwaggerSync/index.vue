@@ -2,7 +2,7 @@
   <div class="content">
 <a-form  :model="formState" :label-col="{ style: { width: '140px', textAlign:'left' } }" :wrapper-col="{ span: 14 }" :rules="rules">
     <a-form-item label="是否开启自动同步" style="position: relative;left:10px">
-      <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2" /> 
+      <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2"/> 
       <div class="execTime" v-if="formState.switch==1 && formState.execTime"> 上次更新时间：{{formState.execTime || '-'}}</div>
       <span style="padding-top:-25px;">开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中</span>
     </a-form-item>
@@ -98,7 +98,7 @@ const treeData: any = computed(() => {
   return  data?.[0]?.children || [];
 });
 
-const formState = computed<SwaggerSync>(() => store.state.ProjectSetting.swaggerSyncDetail)
+const formState = ref<SwaggerSync>(store.state.ProjectSetting.swaggerSyncDetail)
 
 const rules = ref({
   syncType: [{required: true}],
@@ -111,7 +111,8 @@ const {validate, validateInfos} = useForm(formState, rules);
 
 const onSubmit = () => {
   validate().then(async () => {
-    const result = await store.dispatch('ProjectSetting/saveSwaggerSync', formState.value)
+    formState.value.sourceType = 1
+    await store.dispatch('ProjectSetting/saveSwaggerSync', formState.value)
     notifySuccess('保存成功');
   }).catch(() => {
     console.log('error:', formState.value);
@@ -146,12 +147,23 @@ onMounted(async () => {
   formState.value.projectId = currProject.value.id
 })
 
+watch(()=>{
+  return store.state.ProjectSetting.swaggerSyncDetail;
+},(newVal)=>{
+  if (newVal?.id){
+    formState.value = newVal
+  }
+}, {
+  immediate: true
+})
+
 
 watch(() => {
   return currProject.value;
 }, async (newVal) => {
   if (newVal?.id) {
     await store.dispatch('ProjectSetting/getSwaggerSync');
+    formState.value.projectId = currProject.value.id
   }
 }, {
   immediate: true

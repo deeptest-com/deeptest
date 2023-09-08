@@ -248,5 +248,6 @@ export interface SwaggerSync {
     url: '',
     cron:'',
     projectId:number,
-    exec_time:''
+    execTime:''
+    sourceType:number,
   }

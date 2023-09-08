@@ -542,6 +542,7 @@ async function handleImport(data, callback) {
 
   const res = await store.dispatch('Endpoint/importEndpointData', {
     ...data,
+    "sourceType":2,
     "serveId": currServe.value.id,
   });
 

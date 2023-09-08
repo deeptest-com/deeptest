@@ -618,3 +618,36 @@ func (c *ServeCtrl) AddServerForHistory(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
+
+/*
+// SwaggerSyncDetail
+// @Tags	自动同步
+// @summary	获取同步信息
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @success	200	{object}	_domain.Response{data=model.SwaggerSync}
+// @Router	/api/v1/serves/swaggerSyncDetail	[get]
+func (c *ServeCtrl) SwaggerSyncDetail(ctx iris.Context) {
+	projectId := ctx.URLParamUint64("currProjectId")
+	res, err := c.ServeService.SwaggerSyncDetail(uint(projectId))
+	if err != nil {
+		res.CategoryId = -1
+		res.SyncType = consts.FullCover
+		res.Cron = "23 * * * *"
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
+func (c *ServeCtrl) InitSwaggerCron() {
+	syncList, err := c.ServeService.SwaggerSyncList()
+	if err != nil {
+		return
+	}
+	for _, item := range syncList {
+		c.ServeService.AddSwaggerCron(item)
+	}
+
+}
+*/

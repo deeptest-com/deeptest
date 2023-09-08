@@ -152,7 +152,7 @@ type ChangeServeReq struct {
 type SwaggerSyncReq struct {
 	ID         int                 `json:"id"`
 	Switch     consts.SwitchStatus `json:"switch"`
-	SyncType   consts.SyncType     `json:"syncType"`
+	SyncType   consts.DataSyncType `json:"syncType"`
 	CategoryId int                 `json:"categoryId"`
 	Url        string              `json:"url"`
 	Cron       string              `json:"cron"`

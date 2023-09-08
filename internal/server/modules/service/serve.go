@@ -375,3 +375,68 @@ func (s *ServeService) AddServerForHistory(req v1.HistoryServeAddServesReq) (err
 	}
 	return
 }
+
+/*
+func (s *ServeService) SaveSwaggerSync(req v1.SwaggerSyncReq) (data model.SwaggerSync, err error) {
+	var swaggerSync model.SwaggerSync
+	copier.CopyWithOption(&swaggerSync, req, copier.Option{DeepCopy: true})
+	serve, _ := s.ServeRepo.GetDefault(req.ProjectId)
+	swaggerSync.ServeId = int(serve.ID)
+	err = s.ServeRepo.SaveSwaggerSync(&swaggerSync)
+	data = swaggerSync
+	s.AddSwaggerCron(data)
+	return
+}
+
+func (s *ServeService) SwaggerSyncDetail(projectId uint) (data model.SwaggerSync, err error) {
+	return s.ServeRepo.GetSwaggerSync(projectId)
+}
+
+func (s *ServeService) SwaggerSyncList() (data []model.SwaggerSync, err error) {
+	return s.ServeRepo.GetSwaggerSyncList()
+}
+
+func (s *ServeService) GetSwaggerSyncById(id uint) (data model.SwaggerSync, err error) {
+	data, err = s.ServeRepo.GetSwaggerSyncById(id)
+	return
+}
+
+func (s *ServeService) UpdateSwaggerSyncExecTimeById(id uint) (err error) {
+	return s.ServeRepo.UpdateSwaggerSyncExecTimeById(id)
+}
+
+func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
+
+	name := "swaggerSync" + "_" + strconv.Itoa(int(item.ID))
+	s.Cron.RemoveTask(name)
+
+	if item.Switch == consts.SwitchOFF {
+		return
+	}
+
+	taskId := item.ID
+	s.Cron.AddCommonTask(name, item.Cron, func() {
+		task, err := s.GetSwaggerSyncById(taskId)
+		logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(item))
+		if err != nil {
+			logUtils.Errorf("swagger定时导入任务失败,任务ID：%v,错误原因：%v", name, err.Error())
+			return
+		}
+		if task.Switch == consts.SwitchOFF {
+			logUtils.Infof("swagger定时导入关闭,任务ID:%v", name)
+			return
+		}
+		req := v1.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: consts.FullCover}
+		err = s.EndpointInterfaceService.ImportEndpointData(req)
+		if err != nil {
+			logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
+		}
+
+		//更新实现执行时间
+		s.UpdateSwaggerSyncExecTimeById(taskId)
+		logUtils.Info("swagger定时任务结束：" + _commUtils.JsonEncode(item))
+	})
+
+}
+
+*/

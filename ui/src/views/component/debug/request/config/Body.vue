@@ -51,14 +51,16 @@
 
       <div v-else class="editor-container">
         <MonacoEditor
-            class="editor"
-            v-model:value="debugData.body"
-            :language="codeLang"
-            theme="vs"
-            :options="editorOptions"
-            @change="editorChange"
-            :onReplace="replaceRequest"
-            :timestamp="timestamp" />
+          ref="monacoEditor"
+          customId="request-body-main"
+          class="editor"
+          v-model:value="debugData.body"
+          :language="codeLang"
+          theme="vs"
+          :options="editorOptions"
+          @change="editorChange"
+          :onReplace="replaceRequest"
+          :timestamp="timestamp" />
       </div>
     </div>
 
@@ -66,7 +68,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, onMounted, onUnmounted, ref, watch} from "vue";
+import {computed, inject, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined, ImportOutlined } from '@ant-design/icons-vue';
@@ -91,10 +93,10 @@ const codeLang = computed(() => {
   return getCodeLang()
 })
 const editorOptions = ref(Object.assign({usedWith: 'request'}, MonacoOptions))
-
 const bodyTypes = ref(getRequestBodyTypes())
-
 const timestamp = ref('')
+const monacoEditor = ref();
+
 watch(debugData, (newVal) => {
   timestamp.value = Date.now() + ''
 }, {immediate: true, deep: true})
@@ -113,22 +115,14 @@ const replaceRequest = (data) => {
   bus.emit(settings.eventVariableSelectionStatus, {src: 'body', index: 0, data: data});
 }
 
-/**
- * 通过pane resizer 拖动元素高度发生变化时，重新绘制 monacoEditor的高度
- */
-watch(() => {
-  return debugData.value;
-}, val => {
-  if (val.bodyType !== 'multipart/form-data' && val.bodyType !== 'application/x-www-form-urlencoded') {
-    bus.on(settings.paneResizeTop, () => {
-      bus.emit(settings.eventEditorAction, {
-        act: 'heightChanged',
-        container: 'request-body-main'
-      })
-    })
-  }
-}, {
-  immediate: true,
+onMounted(() => {
+  bus.on(settings.paneResizeTop, async () => {
+    monacoEditor.value?.resizeIt({
+      act: settings.eventTypeContainerHeightChanged,
+      container: 'request-body-main',
+      id: 'request-body-main'
+    });
+  })
 })
 
 </script>

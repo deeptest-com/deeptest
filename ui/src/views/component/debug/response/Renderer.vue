@@ -13,19 +13,19 @@
           </a-tab-pane>
 
           <a-tab-pane key="header" tab="响应头">
-            <ResponseHeaders v-if="activeKey === 'header'" />
+            <ResponseHeaders />
           </a-tab-pane>
 
           <a-tab-pane key="cookie" tab="Cookie">
-            <ResponseCookies v-if="activeKey === 'cookie'" />
+            <ResponseCookies />
           </a-tab-pane>
 
           <a-tab-pane key="console" tab="控制台">
-            <ResponseConsole v-if="activeKey === 'console'" />
+            <ResponseConsole />
           </a-tab-pane>
 
           <a-tab-pane key="info" tab="实际请求">
-            <ResponseInfo v-if="activeKey === 'info'" />
+            <ResponseInfo />
           </a-tab-pane>
 
         </a-tabs>

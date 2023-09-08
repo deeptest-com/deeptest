@@ -22,7 +22,7 @@ export async function startAgent() {
     let {SERVER_EXE_PATH: agentExePath} = process.env;
     logInfo(1, agentExePath)
     if (!agentExePath && !DEBUG) {
-        agentExePath = getBinPath('agent');
+        agentExePath = getBinPath('deeptest-agent');
         logInfo(2, agentExePath)
     }
 
@@ -33,7 +33,7 @@ export async function startAgent() {
         }
         return new Promise((resolve, reject) => {
             const cwd = process.env.AGENT_CWD_PATH || path.dirname(agentExePath);
-            logInfo(`>> starting agent with ${agentExePath} -p ${portAgent} -uuid ${uuid} in ${cwd} ...`);
+            logInfo(`>> starting deeptest-agent with ${agentExePath} -p ${portAgent} -uuid ${uuid} in ${cwd} ...`);
 
             const cmd = spawn('"'+agentExePath+'"', ['-p', portAgent, '-uuid', uuid], {
                 cwd,
@@ -41,10 +41,10 @@ export async function startAgent() {
             });
 
             _agentProcess = cmd;
-            logInfo(`>> agent server process = ${_agentProcess.pid}`)
+            logInfo(`>> deeptest-agent service process = ${_agentProcess.pid}`)
 
             cmd.on('close', (code) => {
-                logInfo(`>> agent server closed with code ${code}`);
+                logInfo(`>> deeptest-agent service closed with code ${code}`);
                 _agentProcess = null;
                 cmd.kill()
             });
@@ -66,7 +66,7 @@ export async function startAgent() {
                             break;
                         }
                     } else if (line.startsWith('[ERRO]')) {
-                        reject(new Error(`start agent server failed, error: ${line.substring('[ERRO]'.length)}`));
+                        reject(new Error(`start agent service failed, error: ${line.substring('[ERRO]'.length)}`));
                         if (!DEBUG) {
                             break;
                         }
@@ -74,7 +74,7 @@ export async function startAgent() {
                 }
             });
             cmd.on('error', spawnError => {
-                logErr('>>> start agent server failed with error', spawnError);
+                logErr('>>> start agent service failed with error', spawnError);
                 reject(spawnError)
             });
         });
@@ -82,13 +82,13 @@ export async function startAgent() {
 
     return new Promise((resolve, reject) => {
         const cwd = process.env.AGENT_CWD_PATH || path.resolve(app.getAppPath(), '../');
-        logInfo(`>> starting agent development server from source with command "go run cmd/agent/main.go -p ${portAgent}" in "${cwd}"`);
+        logInfo(`>> starting deeptest-agent development service from source with command "go run cmd/agent/main.go -p ${portAgent}" in "${cwd}"`);
         const cmd = spawn('go', ['run', 'cmd/agent/main.go', '-p', portAgent], {
             cwd,
             shell: true,
         });
         cmd.on('close', (code) => {
-            logInfo(`>> agent server closed with code ${code}`);
+            logInfo(`>> deeptest-agent service closed with code ${code}`);
             _agentProcess = null;
         });
         cmd.stdout.on('data', data => {
@@ -104,7 +104,7 @@ export async function startAgent() {
                         break;
                     }
                 } else if (line.startsWith('[ERRO]')) {
-                    reject(new Error(`start agent server failed, error: ${line.substring('[ERRO]'.length)}`));
+                    reject(new Error(`start deeptest-agent service failed, error: ${line.substring('[ERRO]'.length)}`));
                     if (!DEBUG) {
                         break;
                     }
@@ -112,7 +112,7 @@ export async function startAgent() {
             }
         });
         cmd.on('error', spawnError => {
-            console.error('>>> start agent server failed with error', spawnError);
+            console.error('>>> start deeptest-agent service failed with error', spawnError);
             reject(spawnError)
         });
         _agentProcess = cmd;
@@ -124,17 +124,17 @@ export function killAgent() {
         logInfo(`>> not windows`);
 
         const cmd = `ps -ef | grep ${uuid} | grep -v "grep" | awk '{print $2}' | xargs kill -9`
-        logInfo(`>> kill agent cmd: ${cmd}`);
+        logInfo(`>> kill deeptest-agent cmd: ${cmd}`);
 
         const stdout  = execSync(cmd).toString().trim()
-        logInfo(`>> kill agent result: ${stdout}`);
+        logInfo(`>> kill deeptest-agent result: ${stdout}`);
 
     } else {
         const cmd = 'WMIC path win32_process  where "Commandline like \'%%' + uuid + '%%\'" get Processid,Caption';
-        logInfo(`>> list agent process cmd: ${cmd}`);
+        logInfo(`>> list deeptest-agent process cmd: ${cmd}`);
 
         const stdout = execSync(cmd, {windowsHide: true}).toString().trim()
-        logInfo(`>> list agent process result: ${stdout}`)
+        logInfo(`>> list deeptest-agent process result: ${stdout}`)
 
         let pid = 0
         const lines = stdout.split('\n')
@@ -146,8 +146,8 @@ export function killAgent() {
 
             if (line.indexOf('deeptest') > -1 && cols.length > 3) {
                 const pidStr = cols[3].trim()
-                console.log(`>> agent pid: ${pidStr}`);
-                logInfo(`>> agent pid: ${pidStr}`)
+                console.log(`>> deeptest-agent pid: ${pidStr}`);
+                logInfo(`>> deeptest-agent pid: ${pidStr}`)
 
                 if (pidStr && parseInt(pidStr, 10)) {
                     pid = parseInt(pidStr, 10)
@@ -157,10 +157,10 @@ export function killAgent() {
 
         if (pid && pid > 0) {
             const killCmd = `taskkill /F /pid ${pid}`
-            logInfo(`>> kill agent cmd: exec ${killCmd}`)
+            logInfo(`>> kill deeptest-agent cmd: exec ${killCmd}`)
 
             const out = execSync(`taskkill /F /pid ${pid}`, {windowsHide: true}).toString().trim()
-            logInfo(`>> kill agent result: ${out}`)
+            logInfo(`>> kill deeptest-agent result: ${out}`)
         }
     }
 }

@@ -6,7 +6,7 @@
       </a-tab-pane>
 
       <a-tab-pane key="path-param" tab="路径参数">
-        <PathParameters v-if="activeKey === 'path-param'" />
+        <PathParameters />
       </a-tab-pane>
 
       <a-tab-pane key="body" tab="请求体">

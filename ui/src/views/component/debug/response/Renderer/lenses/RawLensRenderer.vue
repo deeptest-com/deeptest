@@ -27,13 +27,15 @@
 
     <div class="body">
       <MonacoEditor
-          class="editor"
-          :value="responseData.content"
-          :timestamp="timestamp"
-          :language="responseData.contentLang"
-          theme="vs"
-          :options="editorOptions"
-          :onExtractor="responseExtractor"
+        ref="monacoEditor"
+        customId="raw-lens-main"
+        class="editor"
+        :value="responseData.content"
+        :timestamp="timestamp"
+        :language="responseData.contentLang"
+        theme="vs"
+        :options="editorOptions"
+        :onExtractor="responseExtractor"
       />
 
       <ResponseExtractor
@@ -51,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref, watch} from "vue";
+import {computed, inject, ref, watch, onMounted, onUnmounted} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -62,6 +64,9 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import ResponseExtractor from "@/components/Editor/ResponseExtractor.vue";
 import {parseText, testExpr} from "@/views/component/debug/service";
 import {ExtractorSrc, ExtractorType, UsedBy} from "@/utils/enum";
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 const store = useStore<{  Debug: Debug }>();
@@ -81,6 +86,7 @@ const responseExtractorVisible = ref(false)
 const expr = ref('')
 const exprType = ref('')
 const result = ref('')
+const monacoEditor = ref();
 
 const responseExtractor = (data) => {
   result.value = ''
@@ -137,6 +143,16 @@ const responseExtractorCancel = () => {
   console.log('responseExtractorCancel')
   responseExtractorVisible.value = false
 }
+
+onMounted(() => {
+  bus.on(settings.paneResizeTop, () => {
+    monacoEditor.value?.resizeIt({
+      act: settings.eventTypeContainerHeightChanged,
+      container: 'response-raw-main',
+      id: 'raw-lens-main',
+    })
+  })
+});
 
 </script>
 

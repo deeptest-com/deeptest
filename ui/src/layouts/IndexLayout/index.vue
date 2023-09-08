@@ -187,7 +187,7 @@ export default defineComponent({
     .indexlayout-right-main {
       flex: 1;
       min-width: 1217px;
-      overflow: auto;
+      overflow: hidden;
     }
   }
 }

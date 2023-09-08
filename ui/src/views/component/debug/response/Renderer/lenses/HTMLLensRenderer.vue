@@ -29,14 +29,16 @@
 
     <div class="body">
       <MonacoEditor
-          class="editor"
-          :interfaceId="debugData.id"
-          :value="responseData.content"
-          :timestamp="timestamp"
-          :language="responseData.contentLang"
-          theme="vs"
-          :options="editorOptions"
-          :onExtractor="responseExtractor"
+        ref="monacoEditor"
+        customId="html-lens-main"
+        class="editor"
+        :interfaceId="debugData.id"
+        :value="responseData.content"
+        :timestamp="timestamp"
+        :language="responseData.contentLang"
+        theme="vs"
+        :options="editorOptions"
+        :onExtractor="responseExtractor"
       />
     </div>
 
@@ -54,7 +56,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref, reactive, watch, inject} from "vue";
+import {computed, ref, reactive, watch, inject, onMounted, onUnmounted} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { DownloadOutlined, CopyOutlined, ClearOutlined } from '@ant-design/icons-vue';
@@ -88,6 +90,7 @@ const responseExtractorVisible = ref(false)
 const expr = ref('')
 const exprType = ref('')
 const result = ref('')
+const monacoEditor = ref();
 
 // let frameElem: HTMLIFrameElement
 // let frameDoc: Document
@@ -164,6 +167,16 @@ const format = (item) => {
   console.log('format', item)
   bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
 }
+
+onMounted(() => {
+  bus.on(settings.paneResizeTop, () => {
+    monacoEditor.value?.resizeIt({
+      act: settings.eventTypeContainerHeightChanged,
+      container: 'response-html-main',
+      id: 'html-lens-main',
+    })
+  })
+});
 
 </script>
 

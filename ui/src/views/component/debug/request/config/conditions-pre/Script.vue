@@ -2,11 +2,14 @@
   <div class="pre-script-main">
       <div class="content">
         <div class="codes">
-          <MonacoEditor theme="vs" language="typescript" class="editor"
-                        :value="scriptData.content"
-                        :timestamp="timestamp"
-                        :options="editorOptions"
-                        @change="editorChange" />
+          <MonacoEditor 
+            ref="monacoEditor"
+            theme="vs" language="typescript" class="editor"
+            customId="pre-script-main-codes"
+            :value="scriptData.content"
+            :timestamp="timestamp"
+            :options="editorOptions"
+            @change="editorChange" />
         </div>
 
         <div class="refer">
@@ -54,6 +57,7 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const scriptData = computed<any>(() => store.state.Debug.scriptData);
 
 const timestamp = ref('')
+const monacoEditor = ref();
 watch(scriptData, (newVal) => {
   timestamp.value = Date.now() + ''
 }, {immediate: true, deep: true})
@@ -95,21 +99,17 @@ onMounted(() => {
   console.log('onMounted')
   bus.on(settings.eventConditionSave, save);
   bus.on(settings.paneResizeTop, () => {
-      bus.emit(settings.eventEditorAction, {
+    monacoEditor.value?.resizeIt({
         act: 'heightChanged',
-        container: 'codes'
+        container: 'codes',
+        id: 'pre-script-main-codes',
+        mixedHeight: 1,
       })
     })
 })
 onBeforeUnmount( () => {
   console.log('onBeforeUnmount')
   bus.off(settings.eventConditionSave, save);
-  bus.off(settings.paneResizeTop, () => {
-      bus.emit(settings.eventEditorAction, {
-        act: 'heightChanged',
-        container: 'codes'
-      })
-    })
 })
 
 const labelCol = { span: 0 }

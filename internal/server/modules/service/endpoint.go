@@ -551,3 +551,8 @@ func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId ui
 		interf.ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
 	}
 }
+
+func (s *EndpointService) UpdateAdvancedMockDisabled(endpointId uint, disabled bool) (err error) {
+	err = s.EndpointRepo.UpdateAdvancedMockDisabled(endpointId, disabled)
+	return
+}

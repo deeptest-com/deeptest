@@ -489,3 +489,11 @@ func (r *EndpointRepo) GetByPath(serveId uint, pth string) (ret model.Endpoint, 
 
 	return
 }
+
+func (r *EndpointRepo) UpdateAdvancedMockDisabled(endpointId uint, advancedMockDisabled bool) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		Update("advanced_mock_disabled", advancedMockDisabled).Error
+
+	return
+}

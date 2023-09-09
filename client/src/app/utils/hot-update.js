@@ -48,6 +48,7 @@ const doUpdate = async (downloadPath, version) => {
     ok = changeVersion(version);
     if (!ok) return
     // 重启应用
+    logInfo(`restart app ... 832222`)
     restart();
 }
 
@@ -102,18 +103,20 @@ const downLoadApp = (version, mainWin, cb) => {
  * */
 const copyFiles = (downloadPath) => {
     const downloadDir = path.dirname(downloadPath)
-
     const extractedPath = path.resolve(downloadDir, 'extracted')
     logInfo(`downloadPath=${downloadPath}, extractedPath=${extractedPath}`)
-
     const unzip = new admZip(downloadPath, {});
+    logInfo(`13333333`)
     let pass = ''
     unzip.extractAllTo(extractedPath, true, true, pass);
-    logInfo(pass)
+    logInfo(`success to extract ${downloadPath}`)
+    logInfo(`${extractedPath} ${pass}`)
 
+
+    // todo 这里问题很大，因为这里的文件是在运行时被占用的，所以无法删除？？？
+    // 在排查一下
     const {uiPath, agentPath} = getResPath()
     logInfo(`uiPath=${uiPath}, agentPath=${agentPath}`)
-
     killAgent();
     fs.rmSync(uiPath, {recursive: true})
     fs.rmSync(agentPath)

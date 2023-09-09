@@ -3,7 +3,7 @@ import os from "os";
 import {App, downloadUrl, ResDir, WorkDir} from "./consts";
 import {app} from "electron";
 import {logInfo} from "./log";
-
+import {killAgent} from "../core/agent";
 import fs from 'node:fs';
 import got from 'got';
 import crypto from "crypto";
@@ -30,6 +30,10 @@ export function getCurrVersion() {
     let currVersionStr = '0';
 
     const {versionPath} = getResPath()
+    logInfo(`83222 versionPath=${versionPath}`)
+
+    logInfo(`83222 versionPath=${app.getVersion()}`)
+
     if (fs.existsSync(versionPath)) {
         const content = fs.readFileSync(versionPath)
         let json = JSON.parse(content);
@@ -45,6 +49,8 @@ export function getCurrVersion() {
 
 export async function getRemoteVersion() {
     const versionUrl = getVersionUrl();
+
+    logInfo(`83222${versionUrl}`)
 
     const json = await got.get(versionUrl).json();
     const newVersionStr = json.version;
@@ -76,10 +82,15 @@ export function changeVersion(newVersion) {
 }
 
 export function restart() {
-    app.relaunch({
-        args: process.argv.slice(1)
-    });
-    app.exit(0);
+    try {
+        killAgent();
+        app.relaunch({
+            args: process.argv.slice(1)
+        });
+        app.exit(0);
+    }catch (e) {
+        logInfo(`83222 restart error: ${e}`)
+    }
 }
 
 export function getResPath() {

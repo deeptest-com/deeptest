@@ -63,8 +63,10 @@ export class DeepTestApp {
                 webSecurity: false,
             }
         })
+
         if (IS_LINUX && !DEBUG) {
-            const pth = path.join(__dirname, 'icon', 'favicon.png')
+            // const pth = path.join(__dirname, 'icon', 'favicon.png')
+            const pth = path.join(__dirname, '../../',Config.pkg.linuxIcon);
             mainWin.setIcon(pth);
         }
 
@@ -159,6 +161,7 @@ export class DeepTestApp {
         this.buildAppMenu();
         this.openOrCreateWindow()
         this.setAboutPanel();
+        // 使用默认的快捷键，和常用的快捷键有冲突
         globalShortcut.register('CommandOrControl+D', () => {
             const mainWin = this._windows.get('main');
             mainWin.toggleDevTools()

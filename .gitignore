@@ -26,7 +26,9 @@ ui/src/assets/images/local
 ui/.env.ly
 my-app
 node_modules
-client-ly/node_modules
-client-ly/out
-client-ly/.webpack
+client/icon/ly
+ui-vue3-demo
+
+
+
 

@@ -2,8 +2,8 @@
 #PROJECT=deeptest
 
 # ly 打包配置，开源版可以删除
-VERSION="0.0.3"
-PROJECT="LeyanAPI"
+VERSION=7.0.0
+PROJECT=LeyanAPI
 
 
 ifeq ($(OS),Windows_NT)
@@ -23,9 +23,11 @@ else
 endif
 
 # ly打包的路径,单独设置
-ifeq ($(PROJECT),"LeyanAPI")
+ifeq ($(PROJECT),LeyanAPI)
 	QINIU_DIR=~/nk2/ly/
 endif
+
+
 
 QINIU_DIST_DIR=${QINIU_DIR}${PROJECT}/${VERSION}/
 

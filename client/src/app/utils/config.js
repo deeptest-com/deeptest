@@ -1,5 +1,8 @@
-import pkg from '../package.json';
-
+/**
+ *  打包ly的包时，需要修改下面的引用 package 路径
+ * */
+// import pkg from '../package.json';
+const pkg = require('../package-ly.json');
 /**
  * 运行时配置对象
  * @type {{pkg: Object, media: Object, system: Object}}

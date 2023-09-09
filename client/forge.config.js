@@ -1,24 +1,31 @@
+/**
+ *  打包ly的包时，需要修改下面的引用 package 路径
+ * */
+// import pkg from './src/app/package.json';
+const pkg = require('./src/app/package-ly.json');
+
 module.exports = {
+    // Windows and macOS only 设置图标
     packagerConfig: {
-        // "name": "deeptest",
-        "name": "LeyanAPI1",
+        "name": pkg?.name || "deeptest",
         asar: true,
-        "icon": "./icon/favicon",
+        "icon": pkg?.icon || "./icon/favicon",  // no file extension required
         extraResource: [
             './bin',
             './ui',
             './lang',
         ]
     },
-    electronPackagerConfig: {
-        "name": "deeptest",
-        "icon": "./ui/favicon.ico"
-    },
+    // electronPackagerConfig: {
+    //     "name": "deeptest",
+    //     "icon": "./ui/favicon.ico"
+    // },
     makers: [
+        // 使用 Electron Forge 为你的 Electron 应用程序创建 Windows 安装程序
         {
             name: '@electron-forge/maker-squirrel',
             config: {
-                name: 'deeptest' //todo 从package.json中获取
+                name: pkg?.name || 'deeptest'
             }
         },
         {
@@ -27,9 +34,14 @@ module.exports = {
                 'darwin'
             ]
         },
+        // Linux 下  需要显式 设置 icon
         {
             name: '@electron-forge/maker-deb',
-            config: {}
+            config: {
+                options: {
+                    icon: pkg?.linuxIcon || './icon/favicon.png'
+                }
+            }
         },
         {
             name: '@electron-forge/maker-rpm',

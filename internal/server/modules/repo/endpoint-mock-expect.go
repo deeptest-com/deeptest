@@ -222,6 +222,14 @@ func (r *EndpointMockExpectRepo) DeleteById(expectId uint) (err error) {
 	return
 }
 
+func (r *EndpointMockExpectRepo) Disable(endpointId uint) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		Update("advanced_mock_disabled", gorm.Expr("NOT disabled")).Error
+
+	return
+}
+
 func (r *EndpointMockExpectRepo) DeleteDetailByExpectId(model interface{}, expectId uint) (err error) {
 	err = r.DB.Model(&model).
 		Where("endpoint_mock_expect_id = ?", expectId).

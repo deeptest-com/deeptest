@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/kataras/iris/v12"
+	"log"
 )
 
 type MockAdvanceService struct {
@@ -29,7 +30,7 @@ func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInter
 	}
 
 	if !endpoint.AdvancedMockDisabled {
-		resp, byAdvance = s.ByExpect(endpointInterface, endpoint)
+		resp, byAdvance = s.ByExpect(endpointInterface, endpoint, ctx)
 		if !byAdvance {
 			return
 		}
@@ -42,8 +43,7 @@ func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInter
 	return
 }
 
-func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface, endpoint model.Endpoint) (
-	resp mockGenerator.Response, byAdvance bool) {
+func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (resp mockGenerator.Response, byAdvance bool) {
 	expects, _ := s.EndpointMockExpectRepo.ListByEndpointId(endpointInterface.EndpointId)
 
 	for _, expect := range expects {
@@ -52,7 +52,7 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 		}
 
 		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(endpointInterface.EndpointId)
-		if s.MatchExpect(expectRequestMap, endpoint) {
+		if s.MatchExpect(expectRequestMap, endpoint, ctx) {
 			respBody, respHeaders := s.GetExpectResult(expect)
 
 			resp.ContentType = endpointInterface.BodyType
@@ -71,11 +71,23 @@ func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, resp *mockGenerat
 	return
 }
 
-func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]model.EndpointMockExpectRequest,
-	endpoint model.Endpoint) (ret bool) {
-	//for source, expectRequests := range expectRequestMap {
-	//
-	//}
+func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]model.EndpointMockExpectRequest, endpoint model.Endpoint, ctx iris.Context) (ret bool) {
+	headers, queryParams, pathParams, body, bodyForm := s.getReqValues(ctx, endpoint)
+
+	for source, expectRequests := range expectRequestMap {
+		if source == consts.ParamInQuery {
+
+		} else if source == consts.ParamInPath {
+
+		} else if source == consts.ParamInHeader {
+
+		} else if source == consts.ParamInBody {
+
+		}
+
+		// TODO:
+		log.Println(headers, queryParams, pathParams, body, bodyForm, expectRequests)
+	}
 
 	return
 }

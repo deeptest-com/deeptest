@@ -16,3 +16,7 @@ func (s *EndpointMockScriptService) Get(id uint) (model.EndpointMockScript, erro
 func (s *EndpointMockScriptService) Update(req model.EndpointMockScript) error {
 	return s.EndpointMockScriptRepo.Update(req)
 }
+
+func (s *EndpointMockScriptService) Disable(endpointId uint) error {
+	return s.EndpointMockScriptRepo.Disable(endpointId)
+}

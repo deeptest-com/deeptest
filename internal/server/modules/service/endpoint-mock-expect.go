@@ -78,6 +78,11 @@ func (s *EndpointMockExpectService) DeleteById(expectId uint) (err error) {
 	return
 }
 
+func (s *EndpointMockExpectService) Disable(endpointId uint) (err error) {
+	err = s.EndpointMockExpectRepo.Disable(endpointId)
+	return
+}
+
 func (s *EndpointMockExpectService) SaveOrder(req v1.MockExpectIdsReq) (err error) {
 	err = s.EndpointMockExpectRepo.SaveOrder(req)
 	return

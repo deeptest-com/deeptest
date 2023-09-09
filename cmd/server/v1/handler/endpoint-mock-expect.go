@@ -151,6 +151,22 @@ func (c *EndpointMockExpectCtrl) Delete(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+func (c *EndpointMockExpectCtrl) Disable(ctx iris.Context) {
+	endpointId, err := ctx.Params().GetInt("endpointId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	err = c.EndpointMockExpectService.Disable(uint(endpointId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
 // Order
 // @Tags	Mock期望
 // @summary	对期望排序

@@ -31,6 +31,7 @@ type MockService struct {
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ProjectRepo           *repo.ProjectRepo           `inject:""`
 
+	MockAdvanceService  *MockAdvanceService       `inject:""`
 	EndpointService     *EndpointService          `inject:""`
 	ProjectSettingsRepo *repo.ProjectSettingsRepo `inject:""`
 }
@@ -40,6 +41,11 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 	endpointInterface, err := s.GetEndpointInterface(req)
 	if err != nil {
 		return
+	}
+
+	isAdvanceMockDisabled := s.MockAdvanceService.IsAdvanceMockDisabled(endpointInterface.EndpointId)
+	if isAdvanceMockDisabled {
+		//return
 	}
 
 	// init mock generator if needed

@@ -1,3 +1,8 @@
+/**
+ * @description 启动 agent 服务
+ *
+ * */
+
 import {app} from 'electron';
 import os from 'os';
 import path from 'path';

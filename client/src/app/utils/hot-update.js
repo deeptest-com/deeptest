@@ -14,6 +14,9 @@ import {IS_WINDOWS_OS} from "../utils/env";
 import fse from 'fs-extra'
 import {logErr, logInfo} from "./log";
 
+/**
+ * 检查更新，如果有更新，则通知渲染进程，即 UI 服务
+ * */
 export async function checkUpdate(mainWin) {
     logInfo('checkUpdate ...')
 
@@ -33,17 +36,18 @@ export async function checkUpdate(mainWin) {
     }
 }
 
+// 更新应用
 export const updateApp = (version, mainWin) => {
     downLoadApp(version, mainWin, doUpdate)
 }
 
+// 更新应用后，复制静态文件，即 ui目录和 Agent 目录，重启应用
 const doUpdate = async (downloadPath, version) => {
     let ok = copyFiles(downloadPath);
     if (!ok) return
-
     ok = changeVersion(version);
     if (!ok) return
-
+    // 重启应用
     restart();
 }
 
@@ -61,7 +65,10 @@ const pipeline = promisify(stream.pipeline);
 
 mkdir(path.join('tmp', 'download'))
 
+// 下载应用
 const downLoadApp = (version, mainWin, cb) => {
+
+    // 通过 Node.js 内置的 http 模块发送请求，获取文件，然后写入到本地文件
     const downloadUrl = getAppUrl(version)
     const downloadPath = getDownloadPath(version)
 
@@ -70,14 +77,14 @@ const downLoadApp = (version, mainWin, cb) => {
 
     logInfo(`start download ${downloadUrl} ...`)
 
+    // 更新下载进度，然后通知渲染进程
     downloadStream.on("downloadProgress", ({ transferred, total, percent }) => {
         mainWin.webContents.send(electronMsgDownloading, {percent})
     });
 
     pipeline(downloadStream, fileWriterStream).then(async () => {
         logInfo(`success to downloaded to ${downloadPath}`)
-
-        const md5Pass = await checkMd5(version, downloadPath)
+        const md5Pass = await checkMd5(version, downloadPath);
         if (md5Pass) {
             cb(downloadPath, version)
         } else {
@@ -89,6 +96,10 @@ const downLoadApp = (version, mainWin, cb) => {
     });
 }
 
+
+/**
+ * 复制然后解压，杀 Agent 进程等操作
+ * */
 const copyFiles = (downloadPath) => {
     const downloadDir = path.dirname(downloadPath)
 

@@ -9,12 +9,14 @@
           :show-search="showSearch"
           @select="updateField"
           :treeDefaultExpandAll="true"
+          :searchPlaceholder="'请输入'"
+          :searchValue="searchValue"
+          @search="search"
           @treeExpand="treeExpand"
           tree-node-filter-prop="name"
           :replaceFields="{ title: 'name',value:'id'}"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
-          placeholder="请选择"
-          allow-clear/>
+          placeholder="请选择"/>
   </div>
   <div :class="['editor', 'show-on-hover']" v-else>
     <span class="title" @click.stop="handleClick">{{ label }}</span> &nbsp;&nbsp;
@@ -76,6 +78,11 @@ const isOpen = ref(false);
 
 function treeExpand(open) {
   isOpen.value = open;
+}
+
+const searchValue = ref(props.label || '');
+function search(value) {
+    searchValue.value = value;
 }
 
 function handleClick() {

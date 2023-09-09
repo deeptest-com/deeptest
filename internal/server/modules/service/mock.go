@@ -13,7 +13,6 @@ import (
 	"github.com/getkin/kin-openapi/routers"
 	"github.com/getkin/kin-openapi/routers/gorillamux"
 	"github.com/kataras/iris/v12"
-	"log"
 	"net/http"
 	"net/url"
 	"sync"
@@ -43,10 +42,10 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 		return
 	}
 
-	isAdvanceMockDisabled := s.MockAdvanceService.IsAdvanceMockDisabled(endpointInterface.EndpointId)
-	if isAdvanceMockDisabled {
-		//return
-	}
+	//resp, ok := s.MockAdvanceService.ByAdvanceMock(endpointInterface, ctx)
+	//if ok {
+	//	return
+	//}
 
 	// init mock generator if needed
 	settings, _ := s.ProjectSettingsRepo.GetMock(endpointInterface.ProjectId)
@@ -92,8 +91,6 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 	if err != nil {
 		return
 	}
-
-	log.Println(response)
 
 	resp = *response
 

@@ -102,7 +102,7 @@ func (s *MockAdvanceService) GetExpectResult(expect model.EndpointMockExpect) (
 }
 
 func (s *MockAdvanceService) getReqValues(ctx iris.Context, endpoint model.Endpoint) (
-	headers map[string]string, queryParams map[string]string, pathParams map[string]string,
+	headers map[string]string, queryParams map[string]string, pathParams []model.InterfaceParamBase,
 	body string, bodyForm map[string][]string) {
 
 	ctx.ReadHeaders(&headers)
@@ -116,7 +116,7 @@ func (s *MockAdvanceService) getReqValues(ctx iris.Context, endpoint model.Endpo
 	return
 }
 
-func (s *MockAdvanceService) getPathParamValues(ctx iris.Context, endpoint model.Endpoint) (pathParams map[string]string) {
+func (s *MockAdvanceService) getPathParamValues(ctx iris.Context, endpoint model.Endpoint) (pathParams []model.InterfaceParamBase) {
 	return
 }
 

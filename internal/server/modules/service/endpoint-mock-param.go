@@ -76,8 +76,7 @@ func (s *EndpointMockParamService) getRealPathParamValues(ctx iris.Context, endp
 func (s *EndpointMockParamService) getRealHeaderParamValues(ctx iris.Context, endpointInterface model.EndpointInterface) (ret []model.InterfaceParamBase) {
 	definedParams, _ := s.EndpointInterfaceRepo.ListHeaders(endpointInterface.ID)
 
-	realParams := map[string]string{}
-	ctx.ReadHeaders(&realParams)
+	realParams := ctx.Request().Header
 
 	for _, mockParam := range definedParams {
 		item := model.InterfaceParamBase{
@@ -87,7 +86,7 @@ func (s *EndpointMockParamService) getRealHeaderParamValues(ctx iris.Context, en
 
 		val, ok := realParams[mockParam.Name]
 		if ok {
-			item.Value = val
+			item.Value = strings.Join(val, ",")
 			ret = append(ret, item)
 		}
 	}

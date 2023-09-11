@@ -19,6 +19,8 @@ type MockAdvanceService struct {
 	EndpointMockExpectRepo    *repo.EndpointMockExpectRepo `inject:""`
 	EndpointMockExpectService *EndpointMockExpectService   `inject:""`
 	EndpointMockScriptService *EndpointMockScriptService   `inject:""`
+
+	EndpointMockParamService *EndpointMockParamService `inject:""`
 }
 
 func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInterface, paramsMap map[string]string, ctx iris.Context) (resp mockGenerator.Response, byAdvance bool) {
@@ -74,31 +76,12 @@ func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, resp *mockGenerat
 
 func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]model.EndpointMockExpectRequest,
 	endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (ret bool) {
-	headerParams, queryParams, pathParams, body, bodyForm := s.getRealRequestValues(ctx, endpointInterface, endpoint)
+	headerParams, queryParams, pathParams, body, bodyForm :=
+		s.EndpointMockParamService.GetRealRequestValues(ctx, endpointInterface, endpoint)
 
 	ret = true
 	for source, expectRequests := range expectRequestMap {
-		if source == consts.ParamInHeader {
-			for _, item := range expectRequests {
-				result := false
-
-				for _, param := range headerParams {
-					if item.Name == param.Name {
-						actualVal := param.Value
-						expectVal := item.Value
-
-						if actualVal == expectVal {
-							result = true
-						}
-					}
-				}
-
-				if !result {
-					return false
-				}
-			}
-
-		} else if source == consts.ParamInQuery {
+		if source == consts.ParamInQuery {
 			for _, item := range expectRequests {
 				result := false
 
@@ -123,6 +106,26 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 				result := false
 
 				for _, param := range pathParams {
+					if item.Name == param.Name {
+						actualVal := param.Value
+						expectVal := item.Value
+
+						if actualVal == expectVal {
+							result = true
+						}
+					}
+				}
+
+				if !result {
+					return false
+				}
+			}
+
+		} else if source == consts.ParamInHeader {
+			for _, item := range expectRequests {
+				result := false
+
+				for _, param := range headerParams {
 					if item.Name == param.Name {
 						actualVal := param.Value
 						expectVal := item.Value
@@ -165,110 +168,6 @@ func (s *MockAdvanceService) GetExpectResult(expect model.EndpointMockExpect) (
 
 	respContent, _ = s.EndpointMockExpectRepo.GetExpectResponse(expect.ID)
 	respHeaders, _ = s.EndpointMockExpectRepo.GetExpectResponseHeaders(expect.ID)
-
-	return
-}
-
-func (s *MockAdvanceService) getRealRequestValues(ctx iris.Context,
-	endpointInterface model.EndpointInterface, endpoint model.Endpoint) (
-	headers []model.InterfaceParamBase, queryParams []model.InterfaceParamBase, pathParams []model.InterfaceParamBase,
-	body string, bodyForm map[string][]string) {
-
-	headers = s.getRealHeaderParamValues(ctx, endpointInterface)
-
-	queryParams = s.getRealQueryParamValues(ctx, endpointInterface)
-
-	pathParams = s.getRealPathParamValues(ctx, endpoint)
-
-	body, bodyForm = s.getBody(ctx)
-
-	return
-}
-
-func (s *MockAdvanceService) getRealHeaderParamValues(ctx iris.Context, endpointInterface model.EndpointInterface) (ret []model.InterfaceParamBase) {
-	definedParams, _ := s.EndpointInterfaceRepo.ListHeaders(endpointInterface.ID)
-
-	realParams := map[string]string{}
-	ctx.ReadHeaders(&realParams)
-
-	for _, mockParam := range definedParams {
-		item := model.InterfaceParamBase{
-			Name: mockParam.Name,
-			Type: mockParam.Type,
-		}
-
-		val, ok := realParams[mockParam.Name]
-		if ok {
-			item.Value = val
-		}
-
-		ret = append(ret, item)
-	}
-
-	return
-}
-
-func (s *MockAdvanceService) getRealQueryParamValues(ctx iris.Context, endpointInterface model.EndpointInterface) (ret []model.InterfaceParamBase) {
-	definedParams, _ := s.EndpointInterfaceRepo.ListParams(endpointInterface.ID)
-
-	realParams := map[string]string{}
-	ctx.ReadQuery(&realParams)
-
-	for _, mockParam := range definedParams {
-		item := model.InterfaceParamBase{
-			Name: mockParam.Name,
-			Type: mockParam.Type,
-		}
-
-		val, ok := realParams[mockParam.Name]
-		if ok {
-			item.Value = val
-		}
-
-		ret = append(ret, item)
-	}
-
-	return
-}
-
-func (s *MockAdvanceService) getRealPathParamValues(ctx iris.Context, endpoint model.Endpoint) (ret []model.InterfaceParamBase) {
-	definedParams, _ := s.EndpointRepo.GetEndpointPathParams(endpoint.ID)
-
-	realParams := map[string]string{}
-	ctx.ReadParams(&realParams)
-
-	for _, mockParam := range definedParams {
-		item := model.InterfaceParamBase{
-			Name: mockParam.Name,
-			Type: mockParam.Type,
-		}
-
-		val, ok := realParams[mockParam.Name]
-		if ok {
-			item.Value = val
-		}
-
-		ret = append(ret, item)
-	}
-
-	return
-}
-
-func (s *MockAdvanceService) getBody(ctx iris.Context) (body string, bodyForm map[string][]string) {
-	method := ctx.Method()
-	if method != consts.POST.String() && method != consts.PUT.String() && method != consts.DELETE.String() {
-		return
-	}
-
-	reqContentType := ctx.GetContentType()
-
-	if reqContentType == consts.ContentTypeJSON.String() {
-		var req interface{}
-		ctx.ReadJSON(&req)
-
-	} else if reqContentType == consts.ContentTypeFormData.String() {
-		bodyForm = ctx.FormValues()
-	}
 
 	return
 }

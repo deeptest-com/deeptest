@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"errors"
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
 	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
@@ -17,8 +16,6 @@ import (
 	"github.com/kataras/iris/v12"
 	"net/http"
 	"net/url"
-	"regexp"
-	"strings"
 	"sync"
 )
 
@@ -34,9 +31,10 @@ type MockService struct {
 	ServeRepo             *repo.ServeRepo             `inject:""`
 	ProjectRepo           *repo.ProjectRepo           `inject:""`
 
-	MockAdvanceService  *MockAdvanceService       `inject:""`
-	EndpointService     *EndpointService          `inject:""`
-	ProjectSettingsRepo *repo.ProjectSettingsRepo `inject:""`
+	MockAdvanceService       *MockAdvanceService       `inject:""`
+	EndpointService          *EndpointService          `inject:""`
+	EndpointMockParamService *EndpointMockParamService `inject:""`
+	ProjectSettingsRepo      *repo.ProjectSettingsRepo `inject:""`
 }
 
 func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGenerator.Response, err error) {
@@ -235,45 +233,17 @@ func (s *MockService) FindEndpointInterface(req *MockRequest) (
 	return
 }
 
-func (s *MockService) findEndpointByPath(serveId uint, pth string, method consts.HttpMethod) (
+func (s *MockService) findEndpointByPath(serveId uint, mockPath string, method consts.HttpMethod) (
 	ret model.Endpoint, paramsMap map[string]string, err error) {
 
 	endpoints, _ := s.EndpointRepo.ListByProjectIdAndServeId(serveId, method)
 
 	for _, endpoint := range endpoints {
-		pathParams, _ := s.EndpointRepo.GetEndpointPathParams(endpoint.ID)
-		pathParamRegxMap := map[string]string{}
-		for _, pathParam := range pathParams {
-			paramRegxStr := ""
-			if pathParam.Type == "number" || pathParam.Type == "interger" {
-				paramRegxStr = "\\d"
-			} else if pathParam.Type == "boolean" {
-				paramRegxStr = "true|false"
-			} else {
-				paramRegxStr = ".+"
-			}
-			pathParamRegxMap[pathParam.Name] = fmt.Sprintf("(%s)", paramRegxStr)
-		}
+		paramsMap1, matched := s.EndpointMockParamService.computerMockPathParam(mockPath, *endpoint)
 
-		pathRegxStr := endpoint.Path
-		arr := regexp.MustCompile(`(?U)\{(.+)\}`).FindAllStringSubmatch(endpoint.Path, -1)
-		for _, items := range arr {
-			regxStr, ok := pathParamRegxMap[items[1]]
-			if !ok {
-				continue
-			}
-			pathRegxStr = strings.Replace(pathRegxStr, items[0], regxStr, 1)
-		}
-
-		arr1 := regexp.MustCompile("^"+pathRegxStr+"$").FindAllStringSubmatch(pth, -1)
-		if len(arr1) > 0 {
+		if matched {
 			ret = *endpoint
-
-			paramsMap = map[string]string{}
-			for index, pathParam := range pathParams {
-				paramsMap[pathParam.Name] = arr1[0][index+1]
-			}
-
+			paramsMap = paramsMap1
 			return
 		}
 	}

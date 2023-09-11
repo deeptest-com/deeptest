@@ -24,3 +24,5 @@ export const ResDir = process.resourcesPath;
 // export const downloadUrl = 'http://127.0.0.1:8085/upload/';
 // export const downloadUrl = 'http://111.231.16.35:8085/upload/';
 export const downloadUrl = 'http://127.0.0.1:8080/';
+// Agent进程名称
+export const agentProcessName = 'deeptest-agent'

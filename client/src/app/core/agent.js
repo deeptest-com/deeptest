@@ -8,7 +8,7 @@ import os from 'os';
 import path from 'path';
 import {execSync, spawn} from 'child_process';
 
-import {DEBUG, portAgent, uuid} from '../utils/consts';
+import {DEBUG, portAgent, uuid,agentProcessName} from '../utils/consts';
 import {IS_WINDOWS_OS} from "../utils/env";
 import {logErr, logInfo} from '../utils/log';
 import {getBinPath} from "../utils/comm";
@@ -27,7 +27,7 @@ export async function startAgent() {
     let {SERVER_EXE_PATH: agentExePath} = process.env;
     logInfo(111111, agentExePath)
     if (!agentExePath && !DEBUG) {
-        agentExePath = getBinPath('deeptest-agent');
+        agentExePath = getBinPath(agentProcessName);
         logInfo(222222, agentExePath)
     }
 

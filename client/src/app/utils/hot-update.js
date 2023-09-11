@@ -7,7 +7,7 @@ import {
     getResPath, mkdir,
     restart
 } from "./comm";
-import {electronMsgDownloading, electronMsgUpdate, WorkDir} from "./consts";
+import {agentProcessName, electronMsgDownloading, electronMsgUpdate, WorkDir} from "./consts";
 import path from "path";
 import {execSync} from 'child_process';
 import {IS_WINDOWS_OS} from "../utils/env";
@@ -128,7 +128,7 @@ const copyFiles = (downloadPath) => {
         return false
     }
 
-    const agentFileName = `deeptest-agent${os.platform() === 'win32' ? '.exe' : ''}`
+    const agentFileName = `${agentProcessName}${os.platform() === 'win32' ? '.exe' : ''}`
 
     fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'),          uiPath, {recursive: true})
     fse.copySync(path.resolve(downloadDir, 'extracted', agentFileName), agentPath)

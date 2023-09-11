@@ -1,6 +1,6 @@
 import path from "path";
 import os from "os";
-import {App, downloadUrl, ResDir, WorkDir} from "./consts";
+import {agentProcessName, App, downloadUrl, ResDir, WorkDir} from "./consts";
 import {app} from "electron";
 import {logInfo} from "./log";
 import {killAgent} from "../core/agent";
@@ -96,13 +96,16 @@ export function restart() {
 export function getResPath() {
     const versionPath = path.resolve(ResDir, 'version.json')
     const uiPath =  path.resolve(ResDir, 'ui');
-    const agentPath = getBinPath('deeptest-agent')
+    const agentPath = getBinPath(agentProcessName);
 
     return {
         versionPath, uiPath, agentPath
     }
 }
 
+/**
+ * @param name: bin name
+ * */
 export function getBinPath(name) {
     const platform = os.platform(); // 'darwin', 'linux', 'win32'
     const execPath = `bin/${platform}/${name}${platform === 'win32' ? '.exe' : ''}`;

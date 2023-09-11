@@ -150,10 +150,12 @@ func (s *EndpointMockExpectService) GetExpectRequestBodyOptions(endpointInterfac
 		return
 	}
 
-	content := ReqBodyOther{}
-	err = json.Unmarshal([]byte(body.SchemaItem.Content), &content)
-	for name, _ := range content.Properties {
-		options = append(options, name)
+	if body.SchemaItem.Content != "" {
+		content := ReqBodyOther{}
+		err = json.Unmarshal([]byte(body.SchemaItem.Content), &content)
+		for name, _ := range content.Properties {
+			options = append(options, name)
+		}
 	}
 
 	return

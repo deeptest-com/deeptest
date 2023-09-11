@@ -750,3 +750,15 @@ const (
 func (e DataSyncType) String() string {
 	return string(e)
 }
+
+type ExpectRequestSelectType string
+
+const (
+	KeyValue ExpectRequestSelectType = "keyValue"
+	Xpath    ExpectRequestSelectType = "xPath"
+	FullText ExpectRequestSelectType = "fullText"
+)
+
+func (e ExpectRequestSelectType) String() string {
+	return string(e)
+}

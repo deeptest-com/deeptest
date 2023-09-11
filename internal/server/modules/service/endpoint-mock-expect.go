@@ -173,7 +173,7 @@ func (s *EndpointMockExpectService) GetExpectRequestQueryOptions(endpointInterfa
 }
 
 func (s *EndpointMockExpectService) GetExpectRequestPathOptions(endpointId uint) (options []string, err error) {
-	paths, err := s.EndpointRepo.GetEndpointParams(endpointId)
+	paths, err := s.EndpointRepo.GetEndpointPathParams(endpointId)
 	if err != nil {
 		return
 	}

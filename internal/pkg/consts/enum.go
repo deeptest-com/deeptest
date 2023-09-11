@@ -359,6 +359,30 @@ func (e ComparisonOperator) String() string {
 	return string(e)
 }
 
+var StringComparisons = []ComparisonOperator{
+	// number
+	GreaterThan,
+	GreaterThanOrEqual,
+	LessThan,
+	LessThanOrEqual,
+
+	Equal,
+	NotEqual,
+	Contain,
+	NotContain,
+	RegularMatch,
+
+	Exist,
+	NotExist,
+}
+var TextComparisons = []ComparisonOperator{
+	Equal,
+	NotEqual,
+	Contain,
+	NotContain,
+	RegularMatch,
+}
+
 type ValueOperator string
 
 const (

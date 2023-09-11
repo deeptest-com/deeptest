@@ -2,6 +2,8 @@ package service
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
 	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
@@ -15,6 +17,8 @@ import (
 	"github.com/kataras/iris/v12"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 	"sync"
 )
 
@@ -37,15 +41,15 @@ type MockService struct {
 
 func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGenerator.Response, err error) {
 	// load endpoint interface
-	endpointInterface, err := s.GetEndpointInterface(req)
+	endpointInterface, paramsMap, err := s.FindEndpointInterface(req)
 	if err != nil {
 		return
 	}
 
-	//resp, ok := s.MockAdvanceService.ByAdvanceMock(endpointInterface, ctx)
-	//if ok {
-	//	return
-	//}
+	resp, ok := s.MockAdvanceService.ByAdvanceMock(endpointInterface, paramsMap, ctx)
+	if ok {
+		return
+	}
 
 	// init mock generator if needed
 	settings, _ := s.ProjectSettingsRepo.GetMock(endpointInterface.ProjectId)
@@ -184,27 +188,78 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 	return
 }
 
-func (s *MockService) GetEndpointInterface(req *MockRequest) (ret model.EndpointInterface, err error) {
+func (s *MockService) FindEndpointInterface(req *MockRequest) (
+	endpointInterface model.EndpointInterface, paramsMap map[string]string, err error) {
+
 	if req.EndpointInterfaceId <= 0 {
 		var serve model.Serve
 		serve, err = s.ServeRepo.Get(uint(req.ServeId))
 		if err != nil {
 			return
 		}
-		var endpoint model.Endpoint
-		endpoint, err = s.EndpointRepo.GetByPath(serve.ID, "/"+req.EndpointPath)
-		if err != nil {
+
+		endpoint, paramsMap1, err1 := s.findEndpointByPath(serve.ProjectId, serve.ID, "/"+req.EndpointPath)
+		if err1 != nil {
+			err = errors.New("not found")
 			return
 		}
 
+		paramsMap = paramsMap1
 		_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(endpoint.ID, req.EndpointMethod)
 	}
 
-	ret, err = s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
+	endpointInterface, err = s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
 	if err != nil {
 		return
 	}
 
+	return
+}
+
+func (s *MockService) findEndpointByPath(projectId, serveId uint, pth string) (
+	ret model.Endpoint, paramsMap map[string]string, err error) {
+
+	endpoints, _ := s.EndpointRepo.ListByProjectIdAndServeId(projectId, serveId)
+
+	for _, endpoint := range endpoints {
+		pathParams, _ := s.EndpointRepo.GetEndpointPathParams(endpoint.ID)
+		pathParamRegxMap := map[string]string{}
+		for _, pathParam := range pathParams {
+			paramRegxStr := ""
+			if pathParam.Type == "number" || pathParam.Type == "interger" {
+				paramRegxStr = "\\d"
+			} else if pathParam.Type == "boolean" {
+				paramRegxStr = "true|false"
+			} else {
+				paramRegxStr = ".+"
+			}
+			pathParamRegxMap[pathParam.Name] = fmt.Sprintf("(%s)", paramRegxStr)
+		}
+
+		pathRegxStr := endpoint.Path
+		arr := regexp.MustCompile(`(?U)\{(.+)\}`).FindAllStringSubmatch(endpoint.Path, -1)
+		for _, items := range arr {
+			regxStr, ok := pathParamRegxMap[items[1]]
+			if !ok {
+				continue
+			}
+			pathRegxStr = strings.Replace(pathRegxStr, items[0], regxStr, 1)
+		}
+
+		arr1 := regexp.MustCompile("^"+pathRegxStr+"$").FindAllStringSubmatch(pth, -1)
+		if len(arr1) > 0 {
+			ret = *endpoint
+
+			paramsMap = map[string]string{}
+			for index, pathParam := range pathParams {
+				paramsMap[pathParam.Name] = arr1[0][index+1]
+			}
+
+			return
+		}
+	}
+
+	err = errors.New("not found")
 	return
 }
 

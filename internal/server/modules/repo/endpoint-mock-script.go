@@ -44,7 +44,7 @@ func (r *EndpointMockScriptRepo) Update(po model.EndpointMockScript) (err error)
 func (r *EndpointMockScriptRepo) Disable(endpointId uint) (err error) {
 	err = r.DB.Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
-		Update("script_mock_disabled", gorm.Expr("NOT disabled")).Error
+		Update("script_mock_disabled", gorm.Expr("NOT script_mock_disabled")).Error
 
 	return
 }

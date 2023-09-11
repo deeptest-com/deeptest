@@ -291,7 +291,7 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 	}
 
 	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
-	endpoint.PathParams, _ = r.GetEndpointParams(id)
+	endpoint.PathParams, _ = r.GetEndpointPathParams(id)
 	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
 
 	return
@@ -304,7 +304,7 @@ func (r *EndpointRepo) GetWithInterface(id uint, version string) (endpoint model
 	}
 
 	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
-	endpoint.PathParams, _ = r.GetEndpointParams(id)
+	endpoint.PathParams, _ = r.GetEndpointPathParams(id)
 	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
 
 	return
@@ -315,7 +315,7 @@ func (r *EndpointRepo) Get(id uint) (res model.Endpoint, err error) {
 	return
 }
 
-func (r *EndpointRepo) GetEndpointParams(endpointId uint) (pathParam []model.EndpointPathParam, err error) {
+func (r *EndpointRepo) GetEndpointPathParams(endpointId uint) (pathParam []model.EndpointPathParam, err error) {
 	err = r.DB.Find(&pathParam, "endpoint_id=?", endpointId).Error
 	return
 }
@@ -471,9 +471,9 @@ func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, p
 
 }
 
-func (r *EndpointRepo) ListByProjectIdAndServeId(projectId, serveId uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
+func (r *EndpointRepo) ListByProjectIdAndServeId(projectId, serveId uint) (endpoints []*model.Endpoint, err error) {
 	err = r.DB.Where("project_id = ? and serve_id = ? and not deleted and not disabled", projectId, serveId).Find(&endpoints).Error
-	//r.GetByEndpoints(endpoints, needDetail)
+
 	return
 }
 

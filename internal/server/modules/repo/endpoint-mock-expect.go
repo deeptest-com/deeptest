@@ -44,7 +44,7 @@ func (r *EndpointMockExpectRepo) GetExpectDetail(expectId uint) (expect model.En
 	}
 
 	responseBody, err := r.GetExpectResponse(expectId)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return
 	}
 	expect.ResponseBody = responseBody

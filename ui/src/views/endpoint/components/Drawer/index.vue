@@ -49,9 +49,10 @@
         <EndpointCases v-if="activeTabKey === 'cases'"
                        v-model:showList="showList"
                        @switchToDefineTab="switchToDefineTab" />
-
+        
         <EndpointMock v-if="activeTabKey === 'mock'"
-                      @switchToDefineTab="switchToDefineTab" />
+                     @switchToDefineTab="switchToDefineTab" />
+      
 
         <Docs :onlyShowDocs="true"
               :showHeader="false"
@@ -108,10 +109,10 @@ const tabsList = [
     "key": "cases",
     "label": "用例"
   },
-  {
-    "key": "mock",
-    "label": "Mock"
-  },
+ // {
+ //   "key": "mock",
+ //   "label": "Mock"
+ // },
   {
     "key": "docs",
     "label": "文档"

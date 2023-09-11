@@ -337,7 +337,7 @@ export function saveMockExpect(params) {
     return request({
         url: '/mockExpect/save',
         method: 'post',
-        params,
+        data: params,
     })
 }
 
@@ -353,7 +353,7 @@ export function updateMockExpectDisabled(params) {
     return request({
         url: 'mockExpect/updateExpectDisabled',
         method: 'post',
-        params,
+        data: params,
     })
 }
 
@@ -361,7 +361,7 @@ export function deleteMockExpect(params) {
     return request({
         url: `/mockExpect/${params.id}`,
         method: 'delete',
-        params,
+        data: params,
     })
 }
 
@@ -369,7 +369,23 @@ export function updateMockStatus(params) {
     return request({
         url: 'endpoint/updateMockStatus',
         method: 'post',
-        params,
+        data: params,
+    })
+}
+
+export function sortMockExpect(params) {
+    return request({
+        url: 'mockExpect/order',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function updateMockName(params) {
+    return request({
+        url: 'mockExpect/updateName',
+        method: 'post',
+        data: params,
     })
 }
 

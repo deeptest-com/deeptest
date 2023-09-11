@@ -8,24 +8,74 @@ const defaultData = {
 
 const conditionOptions = (type: string) => {
   const conditionArray = [
-    !['body'].includes(type) && {
-      name: '等于',
-      value: '等于',
-    }, 
-    !['body'].includes(type) && {
-      name: '不等于',
-      value: '不等于',
-    }, {
-      name: '包含',
-      value: '包含',
-    }, {
-      name: '不包含',
-      value: '不包含',
-  }];
-  return [...conditionArray.filter((e: any) => ![undefined, null, false].includes(e))];
+    {
+      "label": "等于",
+      "value": "equal"
+    },
+    {
+      "label": "不等于",
+      "value": "notEqual"
+    },
+    {
+      "label": "大于",
+      "value": "greaterThan"
+    },
+    {
+      "label": "大于或等于",
+      "value": "greaterThanOrEqual"
+    },
+    {
+      "label": "小于",
+      "value": "lessThan"
+    },
+    {
+      "label": "小于或等于",
+      "value": "lessThanOrEqual"
+    },
+    {
+      "label": "包含",
+      "value": "contain"
+    },
+    {
+      "label": "不包含",
+      "value": "notContain"
+    },
+    {
+      "label": "正则匹配",
+      "value": "regularMatch"
+    },
+    {
+      "label": "存在",
+      "value": "exist"
+    },
+    {
+      "label": "不存在",
+      "value": "notExist"
+    }
+  ];
+
+  const bodyConditionArray = [
+    {
+      "label": "等于",
+      "value": "equal"
+    },
+    {
+      "label": "不等于",
+      "value": "notEqual"
+    },
+    {
+      "label": "包含",
+      "value": "contain"
+    },
+    {
+      "label": "不包含",
+      "value": "notContain"
+    },
+  ];
+  return ['requestBodies'].includes(type) ? bodyConditionArray : conditionArray;
 }
 
-const Columns = (type: string, onChange: (...args: any[]) => void, onDelete: (...args: any[]) => void) => {
+const Columns = (type: string, onColumnChange: (...args: any[]) => void, onDelete: (...args: any[]) => void, options: any) => {
   const columnsArray = [
     {
       title: '参数名',
@@ -34,17 +84,17 @@ const Columns = (type: string, onChange: (...args: any[]) => void, onDelete: (..
       customRender({ record }) {
         const handleInputChange = (e) => {
           record.name = e.target.value;
-          onChange(type);
+          onColumnChange(type);
         }
         const handleSelectChange = (e) => {
           record.name = e;
-          onChange(type);
+          onColumnChange(type);
         };
         return (
           <>
             {
-              ['header', 'body'].includes(type) ? (
-                <a-select value={record.name} options={[]} onChange={(e) => handleSelectChange(e)} />
+              (['requestHeaders', 'requestBodies'].includes(type) && options[type === 'requestBodies' ? 'body' : 'header']) ? (
+                <a-select value={record.name} options={options[type === 'requestBodies' ? 'body' : 'header'].map(option => ({ label: option, value: option }))} onChange={(e) => handleSelectChange(e)} />
               ) : (
                 <a-input value={record.name} onChange={(e) => handleInputChange(e)} />
               )
@@ -53,17 +103,16 @@ const Columns = (type: string, onChange: (...args: any[]) => void, onDelete: (..
         )
       },
     },
-    !['responseHeader'].includes(type) && {
+    !['responseHeaders'].includes(type) && {
       title: '比较',
-      dataIndex: 'condition',
-      key: 'condition',
+      dataIndex: 'compareWay',
+      key: 'compareWay',
       customRender({ record }) {
-        const onChange = (e) => {
-          console.log(e);
-          record.condition = e;
+        const onConditionChange = (e) => {
+          record.compareWay = e;
         };
         return (
-          <a-select value={record.condition} options={conditionOptions(type)} onChange={(e) => onChange(e)} />
+          <a-select value={record.compareWay} options={conditionOptions(type)} onChange={(e) => onConditionChange(e)} />
         )
       },
     },
@@ -72,8 +121,11 @@ const Columns = (type: string, onChange: (...args: any[]) => void, onDelete: (..
       dataIndex: 'value',
       key: 'value',
       customRender({ record }) {
+        const handleChange = (e) => {
+          record.value = e.target.value;
+        }
         return (
-          <a-input value={record.value} onChange={e => record.value = e} />
+          <a-input value={record.value} onChange={e => handleChange(e)} />
         )
       },
     },
@@ -82,12 +134,9 @@ const Columns = (type: string, onChange: (...args: any[]) => void, onDelete: (..
       dataIndex: 'enbaled',
       key: 'enbaled',
       width: 100,
-      customRender({ record }) {
-        const handleDelete = (e) => {
-          console.log(e);
-        };
+      customRender({ record, index }) {
         return (
-          <div class="except-action" style={{ display: 'flex', alignItems:'center', justifyContent: 'center' }}>
+          <div class="except-action" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <a-tooltip placement="top" title="删除">
               <span class="except-action-item" onClick={() => onDelete(record, type)}>
                 <DeleteOutlined />
@@ -102,21 +151,20 @@ const Columns = (type: string, onChange: (...args: any[]) => void, onDelete: (..
 }
 
 const List = (props) => {
-  console.log(props);
-  const { type, data, onChange, onDelete } = props;
+  const { type, data, onColumnChange, onDelete, optionsMap } = props;
   return (
-    <a-table 
-      class="mock-detail-response" 
-      rowKey={(_record, index) => _record.idx} 
-      columns={Columns(type, onChange, onDelete)} 
-      dataSource={data[type]} 
-      pagination={false} 
+    <a-table
+      class="mock-detail-response"
+      rowKey={(_record, index) => _record.idx}
+      columns={Columns(type, onColumnChange, onDelete, optionsMap)}
+      dataSource={data[type]}
+      pagination={false}
       bordered />
   )
 };
 
 export const MockData = (props) => {
-  return (  
+  return (
     <div style="max-height: 200px; overflow-y: scroll">
       <List {...props} />
     </div>

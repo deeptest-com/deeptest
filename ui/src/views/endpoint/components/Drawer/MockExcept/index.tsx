@@ -1,29 +1,44 @@
-import { CopyOutlined, DeleteOutlined, ExclamationCircleOutlined, HolderOutlined } from "@ant-design/icons-vue";
-import TooltipCell from "@/components/Table/tooltipCell.vue";
-import { Modal } from "ant-design-vue";
 import { createVNode, ref } from "vue";
+import { Modal } from "ant-design-vue";
+import { CopyOutlined, DeleteOutlined, ExclamationCircleOutlined, HolderOutlined } from "@ant-design/icons-vue";
+import { useStore } from "vuex";
 
-const handleChange = (record, e) => {
-  console.log(record, e);
+import TooltipCell from "@/components/Table/tooltipCell.vue";
+
+const handleChange = async (record, e, store) => {
+  await store.commit('Global/setSpinning', true);
+  await store.dispatch('Endpoint/disabledMockExpect', {
+    id: record.id,
+    disabled: !e,
+  })
+  await store.commit('Global/setSpinning', false);
 };
 
-const handleClone = (record) => {
-  console.log('克隆的对象', record);
+const handleClone = async (record, store) => {
+  await store.commit('Global/setSpinning', true);
+  await store.dispatch('Endpoint/cloneMockExpect', {
+    id: record.id,
+  })
+  await store.commit('Global/setSpinning', false);
 };
 
-const handleDelete = (record) => {
+const handleDelete = (record, store) => {
   Modal.confirm({
     title: '确认要删除该Mock用例吗',
     icon: createVNode(ExclamationCircleOutlined),
     okText: '确定',
     cancelText: '取消',
-    onOk() {
-      console.log('删除对象', record.id);
+    async onOk() {
+      await store.commit('Global/setSpinning', true);
+      await store.dispatch('Endpoint/deleteMockExpect', {
+        id: record.id,
+      })
+      await store.commit('Global/setSpinning', false);
     },
   });
 };
 
-export const exceptColumns = [
+export const exceptColumns = (store) => [
   {
     title() {
       return (
@@ -34,15 +49,8 @@ export const exceptColumns = [
     },
     dataIndex: 'name',
     key: 'name',
+    width: 200,
     slots: { customRender: 'mockName' },
-    // customRender({ record }) {
-    //   return (
-    //     <div class="except-name">
-    //       <HolderOutlined class="except-sort" style={{ marginRight: '6px' }} />
-    //       <TooltipCell tip={record.name} text={record.name} width={200} onEdit={(e) => handleEdit(record)} /> 
-    //     </div>
-    //   )
-    // },
   },
   {
     title: '启用',
@@ -50,7 +58,7 @@ export const exceptColumns = [
     key: 'disabled',
     customRender({ record }) {
       return (
-        <a-switch checked={record.disabled} onChange={(e) => handleChange(record, e)} />
+        <a-switch checked={!record.disabled} onChange={(e) => handleChange(record, e, store)} />
       )
     },
   },
@@ -88,12 +96,12 @@ export const exceptColumns = [
       return (
         <div class="except-action">
           <a-tooltip placement="top" title="克隆">
-            <span class="except-action-item" onClick={() => handleClone(record)}>
+            <span class="except-action-item" onClick={() => handleClone(record, store)}>
               <CopyOutlined />
             </span>
           </a-tooltip>
           <a-tooltip placement="top" title="删除">
-            <span class="except-action-item" onClick={() => handleDelete(record)}>
+            <span class="except-action-item" onClick={() => handleDelete(record, store)}>
               <DeleteOutlined />
             </span>
           </a-tooltip>
@@ -105,14 +113,14 @@ export const exceptColumns = [
 
 export const requestTabs = [{
   title: '请求头',
-  type: 'header',
+  type: 'requestHeaders',
 }, {
   title: '请求体',
-  type: 'body',
+  type: 'requestBodies',
 }, {
   title: 'Query参数',
-  type: 'queryParams',
+  type: 'requestQueryParams',
 }, {
   title: '路径参数',
-  type: 'pathParams',
+  type: 'requestPathParams',
 }];

@@ -239,7 +239,7 @@ func (s *MockService) findEndpointByPath(serveId uint, mockPath string, method c
 	endpoints, _ := s.EndpointRepo.ListByProjectIdAndServeId(serveId, method)
 
 	for _, endpoint := range endpoints {
-		paramsMap1, matched := s.EndpointMockParamService.MatchEndpointAndComputerMockPathParam(mockPath, *endpoint)
+		paramsMap1, matched := s.EndpointMockParamService.MatchEndpointByPathAndReturnPathParam(mockPath, *endpoint)
 
 		if matched {
 			ret = *endpoint

@@ -33,6 +33,7 @@
     "neffos.js": "0.1.32",
     "node-fetch": "2.6.6",
     "nprogress": "^0.2.0",
+    "sortablejs": "^1.15.0",
     "vue": "^3.2.18",
     "vue-contenteditable": "^4.1.0",
     "vue-i18n": "9.1.9",

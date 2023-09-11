@@ -32,7 +32,8 @@ export default defineComponent({
       type: String,
     }
   },
-  setup(props, { slots }) {
+  emits: ['edit'],
+  setup(props, { slots, emit }) {
     const showTooltip = ref(false);
     const textRef = ref();
     const { proxy } :any= getCurrentInstance();
@@ -49,6 +50,11 @@ export default defineComponent({
       });
     };
 
+    const handleClick = () => {
+      console.log('edit');
+      emit('edit');
+    };
+
     onMounted(() => {
       setTooltip();
     })
@@ -61,6 +67,7 @@ export default defineComponent({
       textRef,
       showTooltip,
       setTooltip,
+      handleClick,
       // slots,
     };
   },
@@ -68,7 +75,7 @@ export default defineComponent({
     return (
       <div style={{ width: this.width ? `${this.width}px` : 'max-content', maxWidth: (this.maxWidth || this.width) ?`${this.maxWidth || this.width}px` : '100%' ,cursor: this.showTooltip ? 'pointer' : 'unset' }}>
         <a-tooltip placement="top" arrowPointAtCenter={true} title={this.showTooltip ? this.tip || this.text : null}>
-          <div class={['out', this.customClass]}>
+          <div class={['out', this.customClass]} onClick={() => this.handleClick()}>
             <span ref="textRef" class="text">
               {this.text}
               {/* 支持 插入自定义标签 */}

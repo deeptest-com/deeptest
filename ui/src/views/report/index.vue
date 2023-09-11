@@ -1,6 +1,7 @@
 <template>
     <div class="report-container">
-        <div class="report-table-filter">
+      <Mock />
+        <!-- <div class="report-table-filter">
             <TableFilter :formState="formState" @handle-filter="handleFilter" />
         </div>
         <div class="report-list">
@@ -13,13 +14,14 @@
           :drawer-visible="drawerVisible"
           :report-id="currPlanId"
           :scene="ReportDetailType.QueryDetail"
-          @on-close="drawerVisible = false" />
+          @on-close="drawerVisible = false" /> -->
     </div>
 </template>
 <script setup lang="ts">
 import { computed, ref, watch, reactive } from "vue";
 import { useStore } from "vuex";
 
+import Mock from '@/views/endpoint/components/Drawer/MockExcept/index.vue';
 import { TableFilter } from '@/views/component/Report/components';
 import List from './List/index.vue';
 import DetailDrawer from './Detail/index.vue';

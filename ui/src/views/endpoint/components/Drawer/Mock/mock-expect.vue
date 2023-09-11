@@ -10,7 +10,10 @@
       是否开启<a-switch @change="disable()" class="switch" v-model:checked="advancedMockEnabled" />
       <a-button @click="createExpect" type="primary" class="btn-create">新建期望</a-button>
     </div>
+
+    <Expect />
   </div>
+  <Detail v-if="open" @cancel="open = false" />
 </template>
 
 <script setup lang="ts">
@@ -20,12 +23,15 @@ import {useStore} from "vuex";
 import {ExclamationCircleOutlined} from "@ant-design/icons-vue";
 import {getUrls} from "@/utils/request";
 import {disableAdvMock, disableScriptMock} from "@/views/endpoint/service";
+import Expect from './expect/index.vue';
+import Detail from './expect/detail.vue';
 
 const {t} = useI18n()
 
 const store = useStore<{ Endpoint }>();
 const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
 
+const open = ref(false);
 const advancedMockEnabled = ref(true)
 watch(() => endpoint.value.advancedMockDisabled, (newVal, oldVal) => {
   console.log('watch advancedMockEnabled', endpoint.value.advancedMockEnabled)
@@ -35,7 +41,8 @@ watch(() => endpoint.value.advancedMockDisabled, (newVal, oldVal) => {
 const {serverUrl, agentUrl} = getUrls()
 
 const createExpect = () => {
-  console.log('createExpect')
+  open.value = true;
+  store.commit('Endpoint/setMockExpectDetail', {});
 }
 
 const disable = () => {

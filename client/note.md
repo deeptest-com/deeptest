@@ -50,6 +50,9 @@ sudo SERVER_EXE_PATH=bin/darwin/deeptest-agent UI_SERVER_URL=./ui UI_SERVER_PORT
 sudo SERVER_EXE_PATH=bin/darwin/deeptest-agent UI_SERVER_URL=http://localhost:5173/  UI_SERVER_PORT=8000 yarn start
 
 
+sudo  NODE_ENV=development SERVER_EXE_PATH=bin/darwin/deeptest-agent    UI_SERVER_PORT=8000 yarn start
+
+
 ```
 
 

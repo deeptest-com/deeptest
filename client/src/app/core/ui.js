@@ -27,9 +27,15 @@ export function startUIService() {
 
     // 从环境变量中获取 ui 服务地址
     let {UI_SERVER_URL: uiServerUrl} = process.env;
+
     if (!uiServerUrl && !DEBUG) {
         uiServerUrl = path.resolve(process.resourcesPath, 'ui');
     }
+
+
+    uiServerUrl = path.resolve(process.resourcesPath, 'ui');
+    console.log(`8222uiServerUrl=${uiServerUrl}`);
+
 
     if (uiServerUrl) {
         // 有效的 http 地址

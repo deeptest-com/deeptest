@@ -104,7 +104,7 @@ const downLoadApp = (version, mainWin, cb) => {
 const copyFiles = (downloadPath) => {
     const downloadDir = path.dirname(downloadPath)
     const extractedPath = path.resolve(downloadDir, 'extracted')
-    logInfo(`downloadPath=${downloadPath}, extractedPath=${extractedPath}`)
+    logInfo(`downloadPath=${downloadPath}, extractedPath=${extractedPath}`);
     const unzip = new admZip(downloadPath, {});
     logInfo(`13333333`)
     let pass = ''

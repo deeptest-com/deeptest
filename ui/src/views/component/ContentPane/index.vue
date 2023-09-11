@@ -3,18 +3,17 @@
 -->
 <template>
   <div class="container" :style="containerStyle || {}">
-    <div class="content">
+    <div :class="['content', showExpand && 'expand-content']">
       <multipane class="vertical-panes" layout="vertical" @paneResize="handlePaneResize">
-        <div ref="paneLeft" :class="['pane', 'left', !isFold && 'unfold']" :style="{ minWidth: '150px', width: '300px', maxWidth: '600px' }">
+        <div ref="paneLeft" :class="['pane', 'left', !isFold && 'unfold']">
           <slot name="left"></slot>
         </div>
-        <multipane-resizer v-if="isFold"/>
-        <div class="pane right" :style="{ flexGrow: 1  }">
+        <multipane-resizer />
+        <div :class="['pane', 'right', !isFold && 'unfold']" :style="{ flexGrow: 1  }">
           <slot name="right"></slot>
-        </div>
-        <div v-if="showExpand" class="expand-icon" @click="toggle" :style="{ marginLeft: foldIconLeft }">
-          <menu-fold-outlined v-if="isFold" />
-          <menu-unfold-outlined v-else />
+          <div v-if="showExpand" class="expand-icon" @click="toggle">
+            <img :src="PutAway" />
+          </div>
         </div>
       </multipane>
     </div>
@@ -27,6 +26,7 @@ import { defineProps, nextTick, ref } from 'vue'
 import { MenuFoldOutlined, MenuUnfoldOutlined } from "@ant-design/icons-vue";
 
 import {Multipane, MultipaneResizer} from '@/components/Resize/index';
+import PutAway from '@/assets/images/put-away.png';
 
 const {t} = useI18n();
 const props = defineProps(['containerStyle', 'showExpand'])
@@ -36,16 +36,10 @@ const foldIconLeft = ref('288px');
 
 const toggle = async () => {
   isFold.value = !isFold.value;
-  await nextTick();
-  setTimeout(() => {
-    const width = paneLeft.value ? paneLeft.value.getBoundingClientRect().width : 0;
-    foldIconLeft.value = !isFold.value ? '-12px' : `${width - 12}px`;
-  }, 200)
 };
 
 const handlePaneResize = (...args) => {
-  const width = Number(args[2].split('px')[0]);
-  foldIconLeft.value = `${(width < 150 ? 150 : width > 600 ? 600 : width) - 12}px`;
+  isFold.value = true;
 };
 
 </script>
@@ -55,7 +49,7 @@ const handlePaneResize = (...args) => {
   margin: 16px;
   background: #ffffff;
   height: calc(100vh - 96px);
-  overflow: hidden;
+
   :deep(.ant-pagination) {
     margin-right: 24px;
   }
@@ -65,23 +59,22 @@ const handlePaneResize = (...args) => {
     position: relative;
     height: 100%;
 
-    .expand-icon {
-      position: fixed;
-      font-size: 18px;
-      color: #1890ff;
+    &.expand-content {
+      .right {
+        overflow: unset;
+      }
     }
+
     .left {
       overflow-y: scroll;
       position: relative;
-
-      &:not(.left-drag) {
-        transition: all .2s ease-in-out;
-      }
+      min-width: 150px;
+      width: 300px;
+      max-width: 600px;
 
       &.unfold {
         width: 0 !important;
         min-width: 0 !important;
-        transition: all .5s ease-in-out;
       }
 
     }
@@ -89,6 +82,36 @@ const handlePaneResize = (...args) => {
     .right {
       flex: 1;
       overflow: scroll;
+      position: relative;
+      z-index: 2;
+
+      &.unfold {
+        overflow: scroll;
+
+        .expand-icon {
+          transform: rotate(180deg);
+          left: -14px;
+        }
+      }
+
+      &:has(.expand-icon:hover) {
+        overflow: unset;
+        z-index: 2;
+      }
+
+      .expand-icon {
+        position: absolute;
+        top: 6px;
+        left: -16px;
+        width: 30px;
+        height: 30px;
+
+        img {
+          width: 100%;
+          height: 100%;
+          image-rendering: pixelated; 
+        }
+      }
     }
   }
 }

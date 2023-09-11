@@ -198,7 +198,6 @@ import debounce from "lodash.debounce";
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
-import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ContentPane from '@/views/component/ContentPane/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import PubDocs from './components/PubDocs.vue';
@@ -543,6 +542,7 @@ async function handleImport(data, callback) {
 
   const res = await store.dispatch('Endpoint/importEndpointData', {
     ...data,
+    "sourceType":2,
     "serveId": currServe.value.id,
   });
 

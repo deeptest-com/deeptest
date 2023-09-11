@@ -562,6 +562,9 @@ definitions:
     - lessThanOrEqual
     - contain
     - notContain
+    - regularMatch
+    - exist
+    - notExist
     type: string
     x-enum-varnames:
     - Equal
@@ -572,6 +575,9 @@ definitions:
     - LessThanOrEqual
     - Contain
     - NotContain
+    - RegularMatch
+    - Exist
+    - NotExist
   consts.ConditionType:
     enum:
     - extractor
@@ -600,6 +606,20 @@ definitions:
     x-enum-varnames:
     - Text
     - Excel
+  consts.DataSyncType:
+    enum:
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      Add: 新增
+      AutoAdd: 智能合并
+      FullCover: 完全覆盖
+    x-enum-varnames:
+    - FullCover
+    - AutoAdd
+    - Add
   consts.DataType:
     enum:
     - int
@@ -984,9 +1004,11 @@ definitions:
   consts.SourceType:
     enum:
     - 1
+    - 2
     type: integer
     x-enum-varnames:
-    - Swagger
+    - SwaggerSync
+    - SwaggerImport
   consts.SwitchStatus:
     enum:
     - 1
@@ -995,12 +1017,6 @@ definitions:
     x-enum-varnames:
     - SwitchON
     - SwitchOFF
-  consts.SyncType:
-    enum:
-    - 1
-    type: integer
-    x-enum-varnames:
-    - FullCopy
   consts.TestStage:
     enum:
     - unit_test
@@ -1061,17 +1077,6 @@ definitions:
     - CaseDebug
     - DiagnoseDebug
     - ScenarioDebug
-  convert.DataSyncType:
-    enum:
-    - full_cover
-    - copy_add
-    type: string
-    x-enum-comments:
-      CopyAdd: 复制新增
-      FullCover: 完全覆盖
-    x-enum-varnames:
-    - FullCover
-    - CopyAdd
   convert.DriverType:
     enum:
     - postman
@@ -1283,6 +1288,10 @@ definitions:
         items:
           $ref: '#/definitions/domain.ExecCookie'
         type: array
+      data:
+        additionalProperties: true
+        description: Content obj in goja
+        type: object
       headers:
         items:
           $ref: '#/definitions/domain.Header'
@@ -2443,6 +2452,8 @@ definitions:
     type: object
   model.Endpoint:
     properties:
+      advancedMockDisabled:
+        type: boolean
       categoryId:
         type: integer
       createUser:
@@ -2912,6 +2923,133 @@ definitions:
       name:
         type: string
       type:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.EndpointMockExpect:
+    properties:
+      createUser:
+        type: string
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      endpointId:
+        type: integer
+      endpointInterfaceId:
+        type: integer
+      id:
+        type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
+      name:
+        type: string
+      ordr:
+        type: integer
+      requestBodies:
+        items:
+          $ref: '#/definitions/model.EndpointMockExpectRequest'
+        type: array
+      requestHeaders:
+        items:
+          $ref: '#/definitions/model.EndpointMockExpectRequest'
+        type: array
+      requestPathParams:
+        items:
+          $ref: '#/definitions/model.EndpointMockExpectRequest'
+        type: array
+      requestQueryParams:
+        items:
+          $ref: '#/definitions/model.EndpointMockExpectRequest'
+        type: array
+      responseBody:
+        $ref: '#/definitions/model.EndpointMockExpectResponse'
+      responseHeaders:
+        items:
+          $ref: '#/definitions/model.EndpointMockExpectResponseHeader'
+        type: array
+      updateUser:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.EndpointMockExpectRequest:
+    properties:
+      compareWay:
+        $ref: '#/definitions/consts.ComparisonOperator'
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      endpointMockExpectId:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      source:
+        $ref: '#/definitions/consts.ParamIn'
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.EndpointMockExpectResponse:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      delayTime:
+        type: integer
+      disabled:
+        type: boolean
+      endpointMockExpectId:
+        type: integer
+      id:
+        type: integer
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.EndpointMockExpectResponseHeader:
+    properties:
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      endpointMockExpectId:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.EndpointMockScript:
+    properties:
+      content:
+        type: string
+      createUser:
+        type: string
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      endpointId:
+        type: integer
+      id:
+        type: integer
+      method:
+        allOf:
+        - $ref: '#/definitions/consts.HttpMethod'
+        description: EndpointInterfaceId uint              `json:"endpointInterfaceId"`
+      updateUser:
         type: string
       updatedAt:
         type: string
@@ -4080,7 +4218,7 @@ definitions:
       switch:
         $ref: '#/definitions/consts.SwitchStatus'
       syncType:
-        $ref: '#/definitions/consts.SyncType'
+        $ref: '#/definitions/consts.DataSyncType'
       updatedAt:
         type: string
       url:
@@ -4506,6 +4644,9 @@ definitions:
         type: boolean
       logo:
         type: string
+      mock:
+        items: {}
+        type: array
       name:
         type: string
       orgId:
@@ -4879,7 +5020,7 @@ definitions:
         type: integer
       dataSyncType:
         allOf:
-        - $ref: '#/definitions/convert.DataSyncType'
+        - $ref: '#/definitions/consts.DataSyncType'
         description: 数据同步方式
       driverType:
         allOf:
@@ -4895,6 +5036,8 @@ definitions:
       serveId:
         description: 服务ID
         type: integer
+      sourceType:
+        $ref: '#/definitions/consts.SourceType'
       userId:
         type: integer
     required:
@@ -4922,6 +5065,9 @@ definitions:
         type: integer
       method:
         type: string
+      mock:
+        items: {}
+        type: array
       name:
         type: string
       operationId:
@@ -5019,11 +5165,19 @@ definitions:
       user_id:
         type: integer
     type: object
+  serverDomain.MockExpectRequestOptions:
+    additionalProperties:
+      items:
+        type: string
+      type: array
+    type: object
   serverDomain.MockJsExpression:
     properties:
       desc:
         type: string
       expression:
+        type: string
+      format:
         type: string
       id:
         type: integer
@@ -5032,6 +5186,8 @@ definitions:
       ordr:
         type: integer
       result: {}
+      type:
+        type: string
     type: object
   serverDomain.OpenApiCookie:
     properties:
@@ -5568,8 +5724,12 @@ definitions:
     type: object
   serverDomain.ScenarioAddScenarioReq:
     properties:
+      comments:
+        type: string
       createBy:
         type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       mode:
         type: string
       name:
@@ -5581,6 +5741,8 @@ definitions:
       processorType:
         $ref: '#/definitions/consts.ProcessorType'
       projectId:
+        type: integer
+      srcProcessorId:
         type: integer
       targetProcessorCategory:
         $ref: '#/definitions/consts.ProcessorCategory'
@@ -5859,7 +6021,7 @@ definitions:
       switch:
         $ref: '#/definitions/consts.SwitchStatus'
       syncType:
-        $ref: '#/definitions/consts.SyncType'
+        $ref: '#/definitions/consts.DataSyncType'
       url:
         type: string
     type: object
@@ -8133,6 +8295,43 @@ paths:
       summary: 用例详情
       tags:
       - 设计器/标签
+  /api/v1/endpoint/updateMockStatus:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: endpoint_id
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: 接口的mock禁用状态 true:禁用 false:启用
+        in: body
+        name: advancedMockDisabled
+        required: true
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 启用或者禁用接口所有期望
+      tags:
+      - 设计器
   /api/v1/endpoint/updateStatus:
     put:
       consumes:
@@ -9794,6 +9993,386 @@ paths:
       summary: 未读消息数
       tags:
       - 消息管理
+  /api/v1/mockExpect:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 删除期望
+      tags:
+      - Mock期望
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.EndpointMockExpect'
+              type: object
+      summary: 期望详情
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/copy:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 复制期望
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: endpointId
+        in: query
+        name: endpointId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.EndpointMockExpect'
+                  type: array
+              type: object
+      summary: 期望列表
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/order:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 对期望排序的请求体
+        in: body
+        name: MockExpectIdsReq
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 对期望排序
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/requestOptions:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: endpointId
+        in: query
+        name: endpointId
+        required: true
+        type: integer
+      - description: endpointInterfaceId
+        in: query
+        name: endpointInterfaceId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.MockExpectRequestOptions'
+              type: object
+      summary: 获取请求参数下拉选项
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/save:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存期望的请求体
+        in: body
+        name: EndpointMockExpect
+        required: true
+        schema:
+          $ref: '#/definitions/model.EndpointMockExpect'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 保存期望
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/updateExpectDisabled:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: 是否禁用
+        in: body
+        name: disabled
+        required: true
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 启用或者禁用单个期望
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/updateName:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: 期望名字
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 修改期望名字
+      tags:
+      - Mock期望
+  /api/v1/mockScripts:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: update Mock Script Object
+        in: body
+        name: EndpointMockScript
+        required: true
+        schema:
+          $ref: '#/definitions/model.EndpointMockScript'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新脚本
+      tags:
+      - Mock脚本管理
+  /api/v1/mockScripts/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Endpoint ID
+        in: path
+        name: endpointId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.EndpointMockScript'
+              type: object
+      summary: 脚本详情
+      tags:
+      - Mock脚本管理
   /api/v1/mockjs/expressions:
     get:
       produces:

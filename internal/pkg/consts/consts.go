@@ -51,8 +51,11 @@ const (
 
 	MaxLoopTimeForInterfaceTest   = 1000
 	MaxLoopTimeForPerformanceTest = 1000000
+
+	KEY_MOCKJS = "x-mock-type"
 )
 
 var (
-	DirUpload = "upload"
+	DirUpload     = "upload"
+	HeaderOptions = []string{"Accept", "Accept-Encoding", "Accept-Language", "Connection", "Host", "Referer", "User-Agent", "Cache-Control", "Cookie", "Range"}
 )

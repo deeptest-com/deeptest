@@ -307,7 +307,6 @@ export function reBuildTree(node:any,parentId:any) {
     return newNode
 }
 
-
 export function getMockExpressions(params) {
     return request({
         url: `/mockjs/expressions`,
@@ -395,4 +394,30 @@ export function getMockDropDownOptions(params) {
         method: 'get',
         params,
     })
+}
+export function getMockScript(endpointId) {
+    return request({
+        url: `/mockScripts/${endpointId}`,
+        method: 'get'
+    });
+}
+export function updateMockScript(data: any) {
+    return request({
+        url: `/mockScripts`,
+        method: 'put',
+        data: data
+    });
+}
+
+export function disableAdvMock(endpointId: number) {
+    return request({
+        url: `/mockExpect/${endpointId}/disable`,
+        method: 'post',
+    });
+}
+export function disableScriptMock(endpointId: number) {
+    return request({
+        url: `/mockScripts/${endpointId}/disable`,
+        method: 'post',
+    });
 }

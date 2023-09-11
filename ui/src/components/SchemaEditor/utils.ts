@@ -77,7 +77,7 @@ function handleCompositeChildNode(val) {
  * 根据传入的 schema 结构信息，添加需要额外的渲染属性
  * */
 export function addExtraViewInfo(val: Object | any | undefined | null): any {
-    console.log(8321, 'addExtraViewInfo', val);
+    // console.log(8321, 'addExtraViewInfo', val);
     if (!val) {
         return null;
     }
@@ -190,6 +190,7 @@ export function addExtraViewInfo(val: Object | any | undefined | null): any {
         if (isRef(obj)) {
             // 需要兼容两种写法，三方导入的$ref
             obj.ref = obj.ref || obj.$ref;
+            obj.$ref = obj.ref || obj.$ref;
             obj.name = obj.ref?.split('/')?.pop();
             obj.extraViewInfo = {
                 ...obj.extraViewInfo || {},

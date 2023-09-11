@@ -291,7 +291,7 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 	}
 
 	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
-	endpoint.PathParams, _ = r.GetEndpointParams(id)
+	endpoint.PathParams, _ = r.GetEndpointPathParams(id)
 	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
 
 	return
@@ -304,7 +304,7 @@ func (r *EndpointRepo) GetWithInterface(id uint, version string) (endpoint model
 	}
 
 	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
-	endpoint.PathParams, _ = r.GetEndpointParams(id)
+	endpoint.PathParams, _ = r.GetEndpointPathParams(id)
 	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
 
 	return
@@ -315,7 +315,7 @@ func (r *EndpointRepo) Get(id uint) (res model.Endpoint, err error) {
 	return
 }
 
-func (r *EndpointRepo) GetEndpointParams(endpointId uint) (pathParam []model.EndpointPathParam, err error) {
+func (r *EndpointRepo) GetEndpointPathParams(endpointId uint) (pathParam []model.EndpointPathParam, err error) {
 	err = r.DB.Find(&pathParam, "endpoint_id=?", endpointId).Error
 	return
 }
@@ -471,9 +471,10 @@ func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, p
 
 }
 
-func (r *EndpointRepo) ListByProjectIdAndServeId(projectId, serveId uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
-	err = r.DB.Where("project_id = ? and serve_id = ? and not deleted and not disabled", projectId, serveId).Find(&endpoints).Error
-	//r.GetByEndpoints(endpoints, needDetail)
+func (r *EndpointRepo) ListByProjectIdAndServeId(serveId uint, method consts.HttpMethod) (endpoints []*model.Endpoint, err error) {
+
+	err = r.DB.Model(&model.Endpoint{}).Select("biz_endpoint.*").Joins("left join biz_endpoint_interface on biz_endpoint_interface.endpoint_id = biz_endpoint.id").Where("not biz_endpoint.deleted and not biz_endpoint_interface.deleted and biz_endpoint.serve_id=? and biz_endpoint_interface.method=?", serveId, method).Scan(&endpoints).Error
+
 	return
 }
 
@@ -486,6 +487,14 @@ func (r *EndpointRepo) GetByPath(serveId uint, pth string) (ret model.Endpoint, 
 	}
 
 	err = db.First(&ret).Error
+
+	return
+}
+
+func (r *EndpointRepo) UpdateAdvancedMockDisabled(endpointId uint, advancedMockDisabled bool) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		Update("advanced_mock_disabled", advancedMockDisabled).Error
 
 	return
 }

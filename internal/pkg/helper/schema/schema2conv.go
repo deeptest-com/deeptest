@@ -2,6 +2,9 @@ package schemaHelper
 
 import (
 	"encoding/json"
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	mockjsHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mockjs"
+	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 	"github.com/getkin/kin-openapi/openapi3"
 	"math/rand"
 	"reflect"
@@ -19,6 +22,7 @@ type Schemas map[string]*SchemaRef
 type Schema struct {
 	openapi3.ExtensionProps
 	Type        string     `json:"type,omitempty" yaml:"type,omitempty"`
+	XMockType   string     `json:"x-mock-type,omitempty" yaml:"x-mock-type,omitempty"`
 	Items       *SchemaRef `json:"items,omitempty" yaml:"items,omitempty"`
 	Properties  Schemas    `json:"properties,omitempty" yaml:"properties,omitempty"`
 	AllOf       SchemaRefs `json:"allOf,omitempty" yaml:"allOf,omitempty"`
@@ -30,11 +34,10 @@ type Schema struct {
 }
 
 func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
-
 	schema := Schema{}
 	if schemaRef.Ref == "" {
 		schemaRef.Ref = schemaRef.RefExt
-		schemaRef.RefExt = ""
+		//schemaRef.RefExt = ""
 	}
 	if schemaRef.Ref != "" {
 		schema.Ref = schemaRef.Ref
@@ -65,7 +68,9 @@ func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
 		schema.Ref = schema.RefExt
 	}
 	schemaRef.Ref = schema.Ref
-	schemaRef.Value = &schema
+	if schemaRef.Ref == "" {
+		schemaRef.Value = &schema
+	}
 
 	return nil
 }
@@ -75,11 +80,13 @@ type Components map[string]*SchemaRef
 type Schema2conv struct {
 	Components Components
 	sets       map[string]int64
+	generator  mockData.MockjsGenerator
 }
 
 func NewSchema2conv() *Schema2conv {
 	obj := new(Schema2conv)
 	obj.sets = map[string]int64{}
+	obj.generator = mockData.MockjsGenerator{}
 	return obj
 }
 
@@ -143,15 +150,36 @@ func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 		}
 		object.([]interface{})[0] = s.Schema2Example(*schema.Value.Items)
 	case openapi3.TypeString:
-		object = "string"
+		if schema.Value.XMockType == "" {
+			schema.Value.XMockType = "@word()"
+		}
+		object = s.mock(schema.Value.XMockType, schema.Value.Type)
 	case openapi3.TypeBoolean:
 		object = true
 	case openapi3.TypeInteger:
-		object = 0
+		if schema.Value.XMockType == "" {
+			schema.Value.XMockType = "@integer(1,100)"
+		}
+		object = s.mock(schema.Value.XMockType, schema.Value.Type)
 	case openapi3.TypeNumber:
-		object = 0.0
+		schema.Value.XMockType = "@float(1, 10, 2, 5)"
+		object = s.mock(schema.Value.XMockType, schema.Value.Type)
+
 	}
 	return
+}
+
+func (s *Schema2conv) mock(expr string, typ string) interface{} {
+	req := serverDomain.MockJsExpression{
+		Expression: expr,
+	}
+
+	ret, err := mockjsHelper.EvaluateExpression(req)
+	if err != nil {
+		return nil
+	}
+
+	return mockjsHelper.ConvertData(ret.Result, typ)
 }
 
 func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
@@ -188,6 +216,9 @@ func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 		}
 
 		for key, property := range item.Value.Properties {
+			if property.Value == nil {
+				continue
+			}
 			if property.Value.Type == "" {
 				//continue
 			}

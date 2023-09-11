@@ -1,33 +1,36 @@
 <template>
   <div class="content">
-    <a-form ref="" :model="formState" :label-col="{ style: { width: '140px', textAlign:'left' } }"
-            :wrapper-col="{ span: 14 }" :rules="rules">
-      <a-form-item label="是否开启自动同步" style="position: relative;left:10px">
+<a-form  :model="formState" :label-col="{ style: { width: '140px', textAlign:'left' } }" :wrapper-col="{ span: 14 }" :rules="rules">
+    <a-form-item label="是否开启自动同步" style="position: relative;left:10px">
+      <span style="display: inline-block;z-index: 8;position: relative">
         <a-switch v-model:checked="formState.switch" :checkedValue="1" :unCheckedValue="2"/>
-        <div class="execTime" v-if="formState.switch==1 && formState.execTime">
-          上次更新时间：{{ formState.execTime || '-' }}
-        </div>
-        <span
-            style="padding-top:-25px;">开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中</span>
-      </a-form-item>
+      </span>
+      <div class="execTime" v-if="formState.switch==1 && formState.execTime"> 上次更新时间：{{formState.execTime || '-'}}</div>
+      <div style="padding-top:5px;">开启Swagger自动同步，系统将从指定的Swagger地址中定时自动同步接口定义到当前项目中</div>
+    </a-form-item>
 
-      <a-form-item name="syncType" v-if="formState.switch==1">
-        <template v-slot:label>
-          数据合并策略
-          <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip">
-            <template v-slot:title>
-              <span class="title">完全覆盖</span><br>
-              通过Swagger导入/同步的接口定义，同步更新时使用接口方法和路径进行匹配。<br>
-              匹配到的相同接口同步时不保留平台中的旧数据，完全使用Swagger文档中的新数据进行覆盖。<br>
-              通过平台创建的接口定义不会被覆盖。<br>
-            </template>
-            <QuestionCircleOutlined class="icon" style=" font-size: 14px;transform: scale(0.9)"/>
-          </a-tooltip>
-        </template>
-        <a-select v-model:value="formState.syncType" :options="syncTypes"/>
-        <span>完全覆盖会导致通过平台上的接口定义更新被覆盖，请谨慎使用</span>
-      </a-form-item>
-      <a-form-item label="同步至分类目录" name="categoryId" v-if="formState.switch==1">
+    <a-form-item name="syncType" v-if="formState.switch==1">
+      <template v-slot:label>
+        数据合并策略
+        <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip">
+          <template v-slot:title>
+            <span class="title">完全覆盖</span><br>
+            通过swagger导入/同步的接口定义，同步更新时使用接口方法和路径进行匹配。<br>
+            匹配到的相同接口同步时不保留平台中的旧数据，完全使用swagger文档中的新数据进行覆盖。<br>
+            通过平台创建的接口定义不会被覆盖。<br>
+            <span class="title">智能合并</span><br>
+            已存在的文件夹不再重复创建。<br>
+            相同接口如果在平台上做了修改，则不导入。<br>
+            相同接口在平台上没有做过修改，则不覆盖。<br>
+            新增接口导入<br>
+         </template>
+        <QuestionCircleOutlined class="icon" style=" font-size: 14px;transform: scale(0.9)" />
+        </a-tooltip>
+      </template>
+      <a-select v-model:value="formState.syncType" :options="syncTypes" />
+      <span>完全覆盖会导致通过平台上的接口定义更新被覆盖，请谨慎使用</span>
+    </a-form-item>
+    <a-form-item label="同步至分类目录" name="categoryId" v-if="formState.switch==1">
         <a-tree-select
             @change="selectedCategory"
             :value="formState.categoryId"
@@ -72,7 +75,7 @@
         <a-input v-model:value="formState.cron" type="textarea" placeholder="请输入Linux定时任务表达式"/>
       </a-form-item>
       <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-        <a-button type="primary" @click="onSubmit" :disabled="!dataChanged">保存</a-button>
+        <a-button type="primary" @click="onSubmit">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -97,7 +100,7 @@ const treeData: any = computed(() => {
   return  data?.[0]?.children || [];
 });
 
-const formState = computed<SwaggerSync>(() => store.state.ProjectSetting.swaggerSyncDetail)
+const formState = ref<SwaggerSync>(store.state?.ProjectSetting?.swaggerSyncDetail || {})
 
 const rules = ref({
   syncType: [{required: true}],
@@ -110,19 +113,26 @@ const {validate, validateInfos} = useForm(formState, rules);
 
 const onSubmit = () => {
   validate().then(async () => {
-    const result = await store.dispatch('ProjectSetting/saveSwaggerSync', formState.value)
-    if (result) dataChanged.value = false
-
+    formState.value.sourceType = 1
+    await store.dispatch('ProjectSetting/saveSwaggerSync', formState.value)
     notifySuccess('保存成功');
   }).catch(() => {
     console.log('error:', formState.value);
   })
+};
 
+/*
+async function saveSwaggerSync(data:SwaggerSync) {
+  console.log(data)
+  data.sourceType = 1
+  await store.dispatch('ProjectSetting/saveSwaggerSync', data);
 }
+*/
 
 const syncTypes = [
-  {label: '完全覆盖', value: 1},
-];
+      { label: '完全覆盖', value: 1 },
+      { label: '智能合并', value: 2 }
+    ];
 
 function selectedCategory(value) {
   formState.value.categoryId = value;
@@ -132,25 +142,31 @@ async function loadCategories() {
   await store.dispatch('Endpoint/loadCategory');
 }
 
-const dataLoaded = ref(false)
+
 onMounted(async () => {
   await loadCategories();
   await store.dispatch('ProjectSetting/getSwaggerSync');
   formState.value.projectId = currProject.value.id
-  dataLoaded.value = true
 })
 
-const dataChanged = ref(false)
-watch(() => formState.value, (val) => {
-  if (!dataLoaded.value) return
-  dataChanged.value = true
-}, {immediate: false, deep: true});
+watch(()=>{
+  return store.state.ProjectSetting.swaggerSyncDetail;
+},(newVal)=>{
+  if (newVal?.id){
+    formState.value = {...newVal}
+  }
+}, {
+  immediate: true,
+  deep:true
+})
+
 
 watch(() => {
   return currProject.value;
 }, async (newVal) => {
   if (newVal?.id) {
     await store.dispatch('ProjectSetting/getSwaggerSync');
+    formState.value.projectId = currProject.value.id
   }
 }, {
   immediate: true
@@ -179,8 +195,11 @@ span {
   color: #a5a3a1;
 }
 
+</style>
+
+<style lang="less">
 .memo-tooltip {
-  min-width: 800px;
+  min-width:712px;
 }
 
 </style>

@@ -1,5 +1,7 @@
 package serverDomain
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+
 type MockReqJson struct {
 	Name string `json:"name"`
 	Key  string `json:"key"`
@@ -13,6 +15,11 @@ type MockJsExpression struct {
 	Format     string `json:"format"`
 	Desc       string `json:"desc"`
 	Ordr       int    `json:"ordr"`
+	Type       string `json:"type"`
 
 	Result interface{} `gorm:"-" json:"result"`
 }
+
+type MockExpectIdsReq []uint
+
+type MockExpectRequestOptions map[consts.ParamIn][]string

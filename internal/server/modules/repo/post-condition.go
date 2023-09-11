@@ -290,6 +290,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 
 			entity, _ := r.ScriptRepo.Get(po.EntityId)
 			copier.CopyWithOption(&script, entity, copier.Option{DeepCopy: true})
+			script.Output = ""
 			script.ConditionId = po.ID
 			script.ConditionEntityId = po.EntityId
 
@@ -343,7 +344,6 @@ func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint
 }
 
 func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (condition domain.Condition) {
-
 	if endpointInterfaceId == 0 {
 		return
 	}

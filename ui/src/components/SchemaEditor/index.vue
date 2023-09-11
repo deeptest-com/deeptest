@@ -74,6 +74,7 @@
                 <MonacoEditor
                     class="editor"
                     :value="activeExample?.content"
+                    :key="editorKey"
                     :language="'json'"
                     :height="200"
                     theme="vs"
@@ -144,6 +145,7 @@ const emit = defineEmits<{
 const content: any = ref(null);
 const examples: any = ref([]);
 
+const editorKey = ref(0);
 const activeExample: any = ref(null);
 const activeExampleIndex: any = ref(0);
 
@@ -152,9 +154,18 @@ function addExample() {
 }
 
 function clickExampleItem(index: number) {
+  // debugger;
   activeExampleIndex.value = index;
   activeExample.value = examples.value[index];
+  console.log(examples.value, activeExampleIndex.value, activeExample.value);
 }
+
+watch(() => {
+  return activeExample.value
+},() => {
+  editorKey.value = editorKey.value + 1;
+  // console.log('activeExample 123', activeExample.value)
+})
 
 const activeTab = ref('schema');
 

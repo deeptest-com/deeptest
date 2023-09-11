@@ -1,4 +1,7 @@
-
+limit:
+  disable: true
+  limit: 10
+  burst: 5
 system:
   level: debug
   agentAddress: 0.0.0.0:8086

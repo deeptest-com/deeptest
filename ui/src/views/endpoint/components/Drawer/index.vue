@@ -41,14 +41,18 @@
     <template #tabContent>
       <div class="tab-pane">
         <EndpointDefine v-if="activeTabKey === 'request'"
-                        @switchMode="switchMode"/>
+                        @switchMode="switchMode" />
 
         <EndpointDebug v-if="activeTabKey === 'run'"
-                       @switchToDefineTab="switchToDefineTab"/>
+                       @switchToDefineTab="switchToDefineTab" />
 
         <EndpointCases v-if="activeTabKey === 'cases'"
                        v-model:showList="showList"
-                       @switchToDefineTab="switchToDefineTab"/>
+                       @switchToDefineTab="switchToDefineTab" />
+        
+        <EndpointMock v-if="activeTabKey === 'mock'"
+                     @switchToDefineTab="switchToDefineTab" />
+      
 
         <Docs :onlyShowDocs="true"
               :showHeader="false"
@@ -56,7 +60,6 @@
               :data="docsData"
               @switchToDefineTab="switchToDefineTab"
               :show-menu="true"/> <!-- use v-if to force page reload-->
-        <Mock v-if="activeTabKey === 'mock'" />      
       </div>
     </template>
   </DrawerLayout>
@@ -71,12 +74,11 @@ import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EndpointDefine from './Define/index.vue';
 import EndpointDebug from './Debug/index.vue';
 import EndpointCases from './Cases/index.vue';
+import EndpointMock from './Mock/index.vue';
 import Docs from '@/components/Docs/index.vue';
-import Mock from './MockExcept/index.vue';
 import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
 import {useStore} from "vuex";
 import {Endpoint} from "@/views/endpoint/data";
-import {message, notification} from "ant-design-vue";
 import {notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal,Global }>();
@@ -107,6 +109,10 @@ const tabsList = [
     "key": "cases",
     "label": "用例"
   },
+ // {
+ //   "key": "mock",
+ //   "label": "Mock"
+ // },
   {
     "key": "mock",
     "label": "高级Mock"
@@ -222,3 +228,4 @@ provide('notScrollIntoView', true);
   }
 }
 </style>
+

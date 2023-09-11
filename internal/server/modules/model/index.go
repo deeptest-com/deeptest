@@ -115,6 +115,12 @@ var (
 		&SwaggerSync{},
 		&ProjectMockSetting{},
 
+		&EndpointMockScript{},
+		&EndpointMockExpect{},
+		&EndpointMockExpectRequest{},
+		&EndpointMockExpectResponse{},
+		&EndpointMockExpectResponseHeader{},
+
 		&DebugConditionResponseDefine{},
 		&ExecLogResponseDefine{},
 

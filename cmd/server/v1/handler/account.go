@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -42,6 +43,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.LoginErr.Code})
 		return
 	}
+	cache.SetCache("host", ctx.Request().Header.Get("Referer"), -1)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
 }
 

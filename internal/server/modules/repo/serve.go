@@ -5,6 +5,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -539,7 +540,8 @@ func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
 			Url:           serverConsts.DefaultSever,
 		}
 		if v.Name == "Mock环境" {
-			server.Url = "http://127.0.0.1:8085/api/v1/mock/" + strconv.Itoa(int(projectId)) // TODO 改成Mock的地址
+			host, _ := cache.GetCacheString("host")
+			server.Url = host + "mocks/" + strconv.Itoa(int(serveId))
 		}
 		defaultServer = append(defaultServer, server)
 	}

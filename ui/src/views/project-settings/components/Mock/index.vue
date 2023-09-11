@@ -20,7 +20,7 @@
         </div>
       </a-form-item>
 
-      <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
+      <a-form-item :wrapper-col="{ offset: 5 }">
         <a-button type="primary" @click="onSubmit" :disabled="!dataChanged && modelRef.id > 0">保存</a-button>
       </a-form-item>
     </a-form>

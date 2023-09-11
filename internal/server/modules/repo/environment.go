@@ -143,6 +143,7 @@ func (r *EnvironmentRepo) AddDefaultForProject(projectId uint) (err error) {
 	mockEnv := model.Environment{
 		ProjectId: projectId,
 		Name:      "Mock环境",
+		Sort:      1,
 	}
 	err = r.Save(&mockEnv)
 	//err = r.ProjectRepo.UpdateDefaultEnvironment(projectId, env.ID)
@@ -439,5 +440,31 @@ func (r *EnvironmentRepo) GetByIds(ids []uint) (envs map[uint]model.Environment,
 	for _, item := range res {
 		envs[item.ID] = item
 	}
+	return
+}
+
+func (r *EnvironmentRepo) GetByProjectAndName(projectId uint, name string) (env model.Environment, err error) {
+
+	err = r.DB.
+		Where("project_id=?", projectId).
+		Where("name=?", name).
+		Where("NOT deleted").
+		First(&env).Error
+
+	return
+}
+
+func (r *EnvironmentRepo) GetMaxOrder(projectId uint) (order uint) {
+	environment := model.Environment{}
+
+	err := r.DB.Model(&model.Environment{}).
+		Where("project_id = ?", projectId).
+		Order("sort DESC").
+		First(&environment).Error
+
+	if err == nil {
+		order = environment.Sort + 1
+	}
+
 	return
 }

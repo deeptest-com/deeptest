@@ -1,23 +1,12 @@
 <template>
   <!-- 高级mock 期望 -->
   <div class="container">
-    <div class="mock-top">
-      <div class="top-tabs">
-        <a-button 
-          v-for="(item, index) in tabs"
-          :type="activityKey === item.key ? 'primary' : 'link'"
-          :key="index"
-          @click="activityKey = item.key">
-          {{ item.value }}
-        </a-button>
-      </div>
-      <div class="top-action">
-        <span class="enable">
-          是否开启 &nbsp;&nbsp;
-          <a-switch v-model:checked="checked" @change="handleChange" />
-        </span>
-        <a-button type="primary" @click="handleCreate">新建期望</a-button>
-      </div>
+    <div class="top-action">
+      <span class="enable">
+        是否开启 &nbsp;&nbsp;
+        <a-switch v-model:checked="checked" @change="handleChange" />
+      </span>
+      <a-button type="primary" @click="handleCreate">新建期望</a-button>
     </div>
     <div class="except-list" v-if="activityKey === 'mock'">
       <div class="except-tip">
@@ -43,9 +32,6 @@
           </div>
         </template>
       </a-table>
-    </div>
-    <div v-else>
-      脚本内容
     </div>
   </div>
 

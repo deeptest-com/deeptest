@@ -33,15 +33,28 @@
             placeholder="请选择所属分类"
             allow-clear/>
       </a-form-item>
-      <!---
-      <a-form-item label="数据同步方式" name="dataSyncType">
+      
+      <a-form-item name="dataSyncType">
+        <template v-slot:label>
+        数据合并策略
+        <a-tooltip placement="topLeft" arrow-point-at-center overlayClassName="memo-tooltip">
+          <template v-slot:title>
+            <span class="title">智能合并</span><br>
+            已存在的文件夹不再重复创建。<br>
+            相同接口如果在平台上做了修改，则不导入。<br>
+            相同接口在平台上没有做过修改，则不覆盖。<br>
+            新增接口导入<br>
+         </template>
+        <QuestionCircleOutlined class="icon" style=" font-size: 14px;transform: scale(0.9)" />
+        </a-tooltip>
+      </template>
         <a-select
             style="width: 100%"
             v-model:value="formState.dataSyncType"
             :options="dataSyncTypeOpts"
             placeholder="请选择"/>
       </a-form-item>
-      -->
+      
       <a-form-item label="开启url导入" name="openUrlImport">
         <a-radio-group :disabled="disabled"
             :options="openUrlImportOpts"
@@ -72,17 +85,13 @@
 <script lang="ts" setup>
 import {ValidateErrorEntity} from 'ant-design-vue/es/form/interface';
 import {
-  reactive,
   ref,
-  UnwrapRef,
   defineProps,
   defineEmits,
   computed, watch,
 } from 'vue';
 import {useStore} from "vuex";
-import {NewEndpointFormState} from "@/views/Endpoint/data";
-import {InboxOutlined, UploadOutlined} from '@ant-design/icons-vue';
-import {message, notification} from 'ant-design-vue';
+import {UploadOutlined,QuestionCircleOutlined} from '@ant-design/icons-vue';
 import {notifyWarn} from "@/utils/notify";
 
 const store = useStore<{ Endpoint }>();
@@ -108,13 +117,19 @@ const driverTypeOpts = [
 
 const dataSyncTypeOpts = [
   {
-    label: '完全覆盖',
-    value: 'full_cover',
+    label: '新增',
+    value: 3,
   },
   {
-    label: '复制新增',
-    value: 'copy_add',
+    label: '智能合并',
+    value: 2,
+  },
+  /*  
+  {
+    label: '完全覆盖',
+    value: 'full_cover',
   }
+  */
 ]
 
 const openUrlImportOpts = [
@@ -274,4 +289,13 @@ const disabled = computed(()=>{
   display: flex;
   justify-content: flex-end;
 }
+
 </style>
+
+
+<style lang="less">
+.memo-tooltip {
+  min-width:500px;
+}
+</style>
+

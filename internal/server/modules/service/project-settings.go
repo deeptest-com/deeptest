@@ -28,8 +28,8 @@ func (s *ProjectSettingsService) SaveSwaggerSync(req v1.SwaggerSyncReq) (data mo
 	serve, _ := s.ServeRepo.GetDefault(req.ProjectId)
 	swaggerSync.ServeId = int(serve.ID)
 	err = s.ProjectSettingsRepo.SaveSwaggerSync(&swaggerSync)
-	data = swaggerSync
-	s.AddSwaggerCron(data)
+	s.AddSwaggerCron(swaggerSync)
+	data, err = s.ProjectSettingsRepo.GetSwaggerSync(req.ProjectId)
 	return
 }
 
@@ -66,7 +66,7 @@ func (s *ProjectSettingsService) AddSwaggerCron(item model.SwaggerSync) {
 			logUtils.Infof("swagger定时导入关闭,任务ID:%v", name)
 			return
 		}
-		req := v1.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: convert.FullCover}
+		req := v1.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: task.SyncType}
 		err = s.EndpointInterfaceService.ImportEndpointData(req)
 		if err != nil {
 			logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())

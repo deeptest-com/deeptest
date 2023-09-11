@@ -44,6 +44,9 @@ import {
     deleteMockExpect,
     sortMockExpect,
     updateMockName,
+
+    getMockScript,
+    updateMockScript,
 } from './service';
 
 import {
@@ -104,6 +107,7 @@ export interface StateType {
     mockExpectOptions: any;
     selectMockExpect: any;
     mockExpectLoading: boolean;
+    mockScript:any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -149,6 +153,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setMockExpectOptions: Mutation<StateType>;
         setSelectedMockExpect: Mutation<StateType>;
         setMockExpectLoading: Mutation<StateType>;
+        setMockScript:Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -213,6 +218,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         disabledMockExpect: Action<StateType, StateType>;
         updateMockExpectName: Action<StateType, StateType>;
         updateMockStatus: Action<StateType, StateType>;
+        getMockScript: Action<StateType, StateType>;
+        updateMockScript: Action<StateType, StateType>;
     }
 }
 
@@ -265,6 +272,7 @@ const initState: StateType = {
     mockExpectOptions: {},
     selectMockExpect: {},
     mockExpectLoading: false,
+    mockScript: {},
 };
 
 const StoreModel: ModuleType = {
@@ -411,7 +419,11 @@ const StoreModel: ModuleType = {
         },
         setMockExpectLoading(state, payload) {
             state.mockExpectLoading = payload;
-        }
+        },
+
+        setMockScript(state, payload){
+            state.mockScript = payload
+        },
     },
     actions: {
         async listEndpoint({commit, dispatch, state}, params: QueryParams) {
@@ -1008,8 +1020,8 @@ const StoreModel: ModuleType = {
                 if (response.code != 0) return;
                 const options = response?.data?.map((item:any)=>{
                     return {
-                        label:item.expression,
-                        value:item.id,
+                        label:`@${item.expression}`,
+                        value:`@${item.expression}`,
                         ...item
                     }
                 })
@@ -1058,6 +1070,16 @@ const StoreModel: ModuleType = {
             }
         },
 
+        async getMockScript({ commit }, endpointId){
+            try {
+                const res = await getMockScript(endpointId);
+                commit('setMockScript', res.data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+
         async cloneMockExpect({ commit, state, dispatch }, payload) {
             try {
                 const responseData: any = await copyMockExpect({
@@ -1068,6 +1090,15 @@ const StoreModel: ModuleType = {
                     return true;
                 }
                 return false;
+            } catch (error) {
+                return false;
+            }
+        },
+        
+        async updateMockScript({ commit }, payload){
+            try {
+                const res = await updateMockScript(payload);
+                return true;
             } catch (error) {
                 return false;
             }

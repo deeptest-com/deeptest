@@ -96,7 +96,7 @@ export default defineComponent({
         }
 
         const updateMockType = (tree: any, mockType: string) => {
-            tree.mockType = mockType;
+            tree['x-mock-type'] = mockType;
             data.value = addExtraViewInfo(data.value);
         };
 
@@ -427,7 +427,7 @@ export default defineComponent({
             const {tree, isRefChildNode, isRoot} = options;
             // if(isRefChildNode) return null;
             // console.log('renderMockRule', tree);
-            return <MockRule readonly={!!isRefChildNode}  onUpdate={updateMockType.bind(this,tree)}/>
+            return <MockRule tree={tree} readonly={!!isRefChildNode}  onUpdate={updateMockType.bind(this,tree)}/>
         }
 
         const renderHorizontalLine = (depth: number) => {

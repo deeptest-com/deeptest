@@ -1,6 +1,7 @@
 package mockGenerator
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	mockContent "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/content"
 	mockNegotiator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/negotiator"
 	"net/http"
@@ -15,8 +16,8 @@ type coordinatingGenerator struct {
 	contentGenerator      mockContent.Generator
 }
 
-func (generator *coordinatingGenerator) GenerateResponse(request *http.Request, route *routers.Route) (*Response, error) {
-	responseKey, statusCode, err := generator.statusCodeNegotiator.NegotiateStatusCode(request, route.Operation.Responses)
+func (generator *coordinatingGenerator) GenerateResponse(request *http.Request, route *routers.Route, code string) (*Response, error) {
+	responseKey, statusCode, err := generator.statusCodeNegotiator.NegotiateStatusCode(request, route.Operation.Responses, code)
 	if err != nil {
 		return nil, errors.WithMessage(err, "[coordinatingGenerator] failed to negotiate response")
 	}
@@ -30,8 +31,8 @@ func (generator *coordinatingGenerator) GenerateResponse(request *http.Request, 
 	}
 
 	response := &Response{
-		StatusCode:  statusCode,
-		ContentType: contentType,
+		StatusCode:  consts.HttpRespCode(statusCode),
+		ContentType: consts.HttpContentType(contentType),
 		Data:        contentData,
 	}
 

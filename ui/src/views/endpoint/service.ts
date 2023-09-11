@@ -315,6 +315,86 @@ export function getMockExpressions(params) {
     });
 }
 
+export function getExpectList(params) {
+    console.log(params);
+    return request({
+        url: `/mockExpect/list`,
+        method: 'get',
+        params,
+    });
+}
+
+export function getMockExpectDetail(params) {
+    return request({
+        url: `/mockExpect/${params.id}`,
+        method: 'get',
+        params,
+    });
+}
+
+export function saveMockExpect(params) {
+    return request({
+        url: '/mockExpect/save',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function copyMockExpect(params) {
+    return request({
+        url: '/mockExpect/copy',
+        method: 'get',
+        params,
+    })
+}
+
+export function updateMockExpectDisabled(params) {
+    return request({
+        url: 'mockExpect/updateExpectDisabled',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function deleteMockExpect(params) {
+    return request({
+        url: `/mockExpect/${params.id}`,
+        method: 'delete',
+        data: params,
+    })
+}
+
+export function updateMockStatus(params) {
+    return request({
+        url: 'endpoint/updateMockStatus',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function sortMockExpect(params) {
+    return request({
+        url: 'mockExpect/order',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function updateMockName(params) {
+    return request({
+        url: 'mockExpect/updateName',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function getMockDropDownOptions(params) {
+    return request({
+        url: '/mockExpect/requestOptions',
+        method: 'get',
+        params,
+    })
+}
 export function getMockScript(endpointId) {
     return request({
         url: `/mockScripts/${endpointId}`,

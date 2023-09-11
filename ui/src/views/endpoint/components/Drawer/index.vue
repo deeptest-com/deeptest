@@ -114,6 +114,10 @@ const tabsList = [
  //   "label": "Mock"
  // },
   {
+    "key": "mock",
+    "label": "高级Mock"
+  },
+  {
     "key": "docs",
     "label": "文档"
   },

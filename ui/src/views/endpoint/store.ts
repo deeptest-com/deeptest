@@ -34,6 +34,16 @@ import {
     getEndpointList,
     saveEndpoint, copyEndpointCase,loadCaseTree,reBuildTree,
     getMockExpressions,
+    getExpectList,
+    getMockExpectDetail,
+    getMockDropDownOptions,
+    saveMockExpect,
+    copyMockExpect,
+    updateMockExpectDisabled,
+    updateMockStatus,
+    deleteMockExpect,
+    sortMockExpect,
+    updateMockName,
 
     getMockScript,
     updateMockScript,
@@ -89,6 +99,14 @@ export interface StateType {
     caseTreeMap:any;
     mockExpressions:any;
 
+    /**
+     * 高级mock
+     */
+    mockExpectList: any[];
+    mockExpectDetail: any;
+    mockExpectOptions: any;
+    selectMockExpect: any;
+    mockExpectLoading: boolean;
     mockScript:any;
 }
 
@@ -129,6 +147,12 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setInterfaces:Mutation<StateType>;
         setMockExpressions:Mutation<StateType>;
+
+        setMockExpectList: Mutation<StateType>;
+        setMockExpectDetail: Mutation<StateType>;
+        setMockExpectOptions: Mutation<StateType>;
+        setSelectedMockExpect: Mutation<StateType>;
+        setMockExpectLoading: Mutation<StateType>;
         setMockScript:Mutation<StateType>;
     };
     actions: {
@@ -183,6 +207,17 @@ export interface ModuleType extends StoreModuleType<StateType> {
         removeUnSavedMethods: Action<StateType, StateType>;
         getMockExpressions: Action<StateType, StateType>;
 
+        getMockExpectList: Action<StateType, StateType>;
+        getMockExpectDetail: Action<StateType, StateType>;
+        getMockExpectOptions: Action<StateType, StateType>;
+
+        saveMockExpect: Action<StateType, StateType>;
+        cloneMockExpect: Action<StateType, StateType>;
+        deleteMockExpect: Action<StateType, StateType>;
+        sortMockExpect: Action<StateType, StateType>;
+        disabledMockExpect: Action<StateType, StateType>;
+        updateMockExpectName: Action<StateType, StateType>;
+        updateMockStatus: Action<StateType, StateType>;
         getMockScript: Action<StateType, StateType>;
         updateMockScript: Action<StateType, StateType>;
     }
@@ -229,6 +264,14 @@ const initState: StateType = {
     caseTreeMap:[],
     mockExpressions:[],
 
+    /**
+     * 高级mock相关
+     */
+    mockExpectList: [],
+    mockExpectDetail: {},
+    mockExpectOptions: {},
+    selectMockExpect: {},
+    mockExpectLoading: false,
     mockScript: {},
 };
 
@@ -361,6 +404,21 @@ const StoreModel: ModuleType = {
         },
         setMockExpressions(state, payload){
             state.mockExpressions = payload
+        },
+        setMockExpectList(state, payload) {
+            state.mockExpectList = payload;
+        },
+        setMockExpectDetail(state, payload) {
+            state.mockExpectDetail = payload;
+        },
+        setMockExpectOptions(state, payload) {
+            state.mockExpectOptions = payload;
+        },
+        setSelectedMockExpect(state, payload) {
+            state.selectMockExpect = payload;
+        },
+        setMockExpectLoading(state, payload) {
+            state.mockExpectLoading = payload;
         },
 
         setMockScript(state, payload){
@@ -975,6 +1033,43 @@ const StoreModel: ModuleType = {
 
         },
 
+        async getMockExpectList({ commit, state, rootState }: any, payload) {
+            try {
+                commit('setMockExpectLoading', true);
+                const data: any = await getExpectList({
+                    endpointId: state.endpointDetail.id,
+                    currProjectId: rootState.ProjectGlobal.currPorject?.id,
+                });
+                commit('setMockExpectLoading', false);
+                const { code, data: listData } = data;
+                if (code === 0) {
+                    commit('setMockExpectList', (listData || []).sort((prev, next) => prev.ordr - next.ordr));
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                commit('setMockExpectLoading', false);
+                return false;
+            }
+        },
+
+        async getMockExpectDetail({ commit, rootState }: any, payload) {
+            try {
+                const responseData: any = await getMockExpectDetail({
+                    id: payload.id,
+                    currProjectId: rootState.ProjectGlobal.currPorject?.id,
+                });
+                const { code, data } = responseData;
+                if (code === 0) {
+                    commit('setMockExpectDetail', data);
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                return false;
+            }
+        },
+
         async getMockScript({ commit }, endpointId){
             try {
                 const res = await getMockScript(endpointId);
@@ -984,6 +1079,22 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+
+        async cloneMockExpect({ commit, state, dispatch }, payload) {
+            try {
+                const responseData: any = await copyMockExpect({
+                    ...payload,
+                });
+                if (responseData.code === 0) {
+                    dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+        
         async updateMockScript({ commit }, payload){
             try {
                 const res = await updateMockScript(payload);
@@ -992,6 +1103,115 @@ const StoreModel: ModuleType = {
                 return false;
             }
         },
+
+        async saveMockExpect({ commit, state, dispatch }, payload) {
+            const interfaceData: any = state.endpointDetail.interfaces.filter(e => e.method === state.selectedMethodDetail.method);
+            try {
+                const responseData: any = await saveMockExpect({
+                    ...payload,
+                    endpointId: state.endpointDetail.id,
+                    endpointInterfaceId: interfaceData?.[0]?.id,
+                });
+                if (responseData.code === 0) {
+                    dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async sortMockExpect({ commit, state, dispatch }, payload) {
+            const interfaceData: any = state.endpointDetail.interfaces.filter(e => e.method === state.selectedMethodDetail.method);
+            try {
+                const responseData: any = await sortMockExpect(payload);
+                if (responseData.code === 0) {
+                    dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async deleteMockExpect({ commit, state, dispatch }, payload) {
+            const interfaceData: any = state.endpointDetail.interfaces.filter(e => e.method === state.selectedMethodDetail.method);
+            try {
+                const responseData: any = await deleteMockExpect(payload);
+                if (responseData.code === 0) {
+                    dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async disabledMockExpect({ dispatch }, payload) {
+            try {
+                const responseData: any = await updateMockExpectDisabled({
+                    ...payload,
+                });
+                if (responseData.code === 0) {
+                    dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async updateMockExpectName({ dispatch }, payload) {
+            try {
+                const responseData: any = await updateMockName({
+                    ...payload,
+                });
+                if (responseData.code === 0) {
+                    dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async updateMockStatus({ dispatch, state }, payload) {
+            try {
+                const responseData: any = await updateMockStatus({
+                    id: state.endpointDetail.id,
+                    ...payload,
+                });
+                if (responseData.code === 0) {
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async getMockExpectOptions({ commit, state, rootState }: any, payload) {
+            try {
+                const interfaceData: any = state.endpointDetail.interfaces.filter(e => e.method === state.selectedMethodDetail.method);
+                const response:any = await getMockDropDownOptions({
+                    endpointId: state.endpointDetail.id,
+                    endpointInterfaceId: interfaceData?.[0]?.id,
+                    currProjectId: rootState.Global.currPorject?.id,
+                });
+                if (response.code === 0) {
+                    commit('setMockExpectOptions', response.data);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        }
     },
 };
 

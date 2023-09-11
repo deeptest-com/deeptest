@@ -45,6 +45,7 @@ func (s *EndpointMockExpectService) Copy(expectId uint) (id uint, err error) {
 
 func (s *EndpointMockExpectService) InitExpectId(expect *model.EndpointMockExpect) {
 	expect.ID = 0
+	expect.Name = "copy-" + expect.Name
 	expect.ResponseBody.ID = 0
 
 	for k, v := range expect.RequestHeaders {

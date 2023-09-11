@@ -880,3 +880,18 @@ func (r *EndpointInterfaceRepo) BatchGetByEndpointIds(endpointIds []uint) (field
 		Find(&fields).Error
 	return
 }
+
+func (r *EndpointInterfaceRepo) GetByMethodAndPathAndServeId(serveId uint, path string, method consts.HttpMethod) (endpointInterfaceId uint) {
+
+	type result struct {
+		Id uint
+	}
+	var data result
+
+	err := r.DB.Model(&model.EndpointInterface{}).Select("biz_endpoint_interface.id").Joins("left join biz_endpoint on biz_endpoint_interface.endpoint_id = biz_endpoint.id").Where("not biz_endpoint.deleted and not biz_endpoint_interface.deleted and biz_endpoint.serve_id=? and biz_endpoint.path=? and biz_endpoint_interface.method=?", serveId, path, method).Scan(&data).Error
+	if err != nil {
+		return 0
+	}
+	return data.Id
+
+}

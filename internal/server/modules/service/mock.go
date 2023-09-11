@@ -53,7 +53,7 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 	apiRequest := http.Request{
 		Method: req.EndpointMethod.String(),
 		URL: &url.URL{
-			Path: "/" + req.EndpointPath,
+			Path: req.EndpointPath,
 		},
 	}
 
@@ -183,18 +183,22 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 
 func (s *MockService) GetEndpointInterface(req *MockRequest) (ret model.EndpointInterface, err error) {
 	if req.EndpointInterfaceId <= 0 {
-		var serve model.Serve
-		serve, err = s.ServeRepo.Get(uint(req.ServeId))
-		if err != nil {
-			return
-		}
-		var endpoint model.Endpoint
-		endpoint, err = s.EndpointRepo.GetByPath(serve.ID, "/"+req.EndpointPath)
-		if err != nil {
-			return
-		}
+		/*
+			var serve model.Serve
+			serve, err = s.ServeRepo.Get(uint(req.ServeId))
+			if err != nil {
+				return
+			}
+			var endpoint model.Endpoint
+			endpoint, err = s.EndpointRepo.GetByPath(serve.ID, "/"+req.EndpointPath)
+			if err != nil {
+				return
+			}
+		*/
 
-		_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(endpoint.ID, req.EndpointMethod)
+		req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethodAndPathAndServeId(uint(req.ServeId), req.EndpointPath, req.EndpointMethod)
+
+		//_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(endpoint.ID, req.EndpointMethod)
 	}
 
 	ret, err = s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)

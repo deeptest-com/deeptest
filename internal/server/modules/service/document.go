@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/base64"
+	"fmt"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -343,7 +344,7 @@ func (s *DocumentService) mock(serves []model.ServeServer, interfaceDetail model
 	responseBodies := interfaceDetail.ResponseBodies
 	path := interfaceDetail.Url
 	for _, item := range responseBodies {
-		ret = append(ret, map[string]interface{}{"name": item.Code, "url": url + path + "?code=" + item.Code})
+		ret = append(ret, map[string]interface{}{"name": item.Code, "url": fmt.Sprintf("%s%s?id=%d&code=%s", url, path, interfaceDetail.ID, item.Code)})
 	}
 
 	return

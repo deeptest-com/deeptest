@@ -120,7 +120,7 @@ func (s *EndpointMockParamService) MatchEndpointByPathAndReturnPathParam(mockPat
 	pathParamRegxMap := map[string]string{}
 	for _, pathParam := range pathParams {
 		paramRegxStr := ""
-		if pathParam.Type == "number" || pathParam.Type == "interger" {
+		if pathParam.Type == "number" || pathParam.Type == "integer" {
 			paramRegxStr = "\\d"
 		} else if pathParam.Type == "boolean" {
 			paramRegxStr = "true|false"

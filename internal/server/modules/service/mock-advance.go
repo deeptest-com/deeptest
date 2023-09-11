@@ -52,7 +52,7 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 			continue
 		}
 
-		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(endpointInterface.EndpointId)
+		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(expect.ID)
 		if s.MatchExpect(expectRequestMap, endpointInterface, endpoint, ctx) {
 			respBody, respHeaders := s.GetExpectResult(expect)
 

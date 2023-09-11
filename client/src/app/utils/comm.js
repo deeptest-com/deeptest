@@ -29,7 +29,7 @@ export function getDownloadPath(version) {
 export function getCurrVersion() {
     let currVersionStr = '0';
 
-    const {versionPath} = getResPath()
+    const {versionPath} = getResPath();
     logInfo(`83222 versionPath=${versionPath}`)
 
     logInfo(`83222 versionPath=${app.getVersion()}`)
@@ -65,20 +65,27 @@ export async function getRemoteVersion() {
 }
 
 export function changeVersion(newVersion) {
-    const versionPath = path.resolve(ResDir, 'version.json');
-    logInfo(`ResDir=${ResDir}, versionPath=${versionPath}`)
+    let res = false;
+    try {
 
-    let json = {}
-    if (fs.existsSync(versionPath)) {
-        const content = fs.readFileSync(versionPath)
-        json = JSON.parse(content);
+        const versionPath = getResPath().versionPath;
+        logInfo(`ResDir=${ResDir}, versionPath=${versionPath}`)
+
+        let json = {}
+        if (fs.existsSync(versionPath)) {
+            const content = fs.readFileSync(versionPath)
+            json = JSON.parse(content);
+        }
+
+        json.version = newVersion;
+        fs.writeFileSync(versionPath, JSON.stringify(json));
+        logInfo(`success to write new version`)
+        res = true;
+    }catch (e){
+        logInfo(`83222 changeVersion error: ${e}`)
     }
 
-    json.version = newVersion;
-    fs.writeFileSync(versionPath, JSON.stringify(json));
-    logInfo(`success to write new version`)
-
-    return true
+    return  res;
 }
 
 export function restart() {
@@ -92,9 +99,9 @@ export function restart() {
         logInfo(`83222 restart error: ${e}`)
     }
 }
-
 export function getResPath() {
-    const versionPath = path.resolve(ResDir, 'version.json')
+    // const versionPath = path.resolve(ResDir, 'version.json');
+    const versionPath =`${ResDir}/version.json`;
     const uiPath =  path.resolve(ResDir, 'ui');
     const agentPath = getBinPath(agentProcessName);
 

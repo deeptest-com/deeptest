@@ -130,12 +130,23 @@ const copyFiles = (downloadPath) => {
 
     const agentFileName = `${agentProcessName}${os.platform() === 'win32' ? '.exe' : ''}`
 
+    logInfo(`8322 agentFileName=${agentFileName}`)
+
     fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'),          uiPath, {recursive: true})
     fse.copySync(path.resolve(downloadDir, 'extracted', agentFileName), agentPath)
 
+    logInfo(`8322 agentFileName=${IS_WINDOWS_OS}`)
+
     if (!IS_WINDOWS_OS) {
         const cmd = `chmod +x ${agentPath}`
-        execSync(cmd, {windowsHide: true})
+        logInfo(`8322 cmd=${cmd}`)
+        try {
+            execSync(cmd, {windowsHide: true})
+            logInfo(`83222 success to chmod +x ${agentPath}`)
+        }catch (e){
+            logInfo(`83222 failed to chmod +x ${agentPath}`, e)
+        }
+
     }
 
     logInfo(`success to copy new resources`)

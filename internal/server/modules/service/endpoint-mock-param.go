@@ -55,7 +55,7 @@ func (s *EndpointMockParamService) getRealPathParamValues(ctx iris.Context, endp
 	definedParams, _ := s.EndpointRepo.GetEndpointPathParams(endpoint.ID)
 
 	mockPath := "/" + ctx.Params().Get("path")
-	realParams, _ := s.computerMockPathParam(mockPath, endpoint)
+	realParams, _ := s.MatchEndpointAndComputerMockPathParam(mockPath, endpoint)
 
 	for _, mockParam := range definedParams {
 		item := model.InterfaceParamBase{
@@ -113,8 +113,8 @@ func (s *EndpointMockParamService) getRealBody(ctx iris.Context) (body string, b
 	return
 }
 
-func (s *EndpointMockParamService) computerMockPathParam(mockPath string, endpoint model.Endpoint) (
-	paramsMap map[string]string, matched bool) {
+func (s *EndpointMockParamService) MatchEndpointAndComputerMockPathParam(mockPath string, endpoint model.Endpoint) (
+	pathParamsMap map[string]string, matched bool) {
 
 	pathParams, _ := s.EndpointRepo.GetEndpointPathParams(endpoint.ID)
 	pathParamRegxMap := map[string]string{}
@@ -144,9 +144,9 @@ func (s *EndpointMockParamService) computerMockPathParam(mockPath string, endpoi
 	if len(arr1) > 0 {
 		matched = true
 
-		paramsMap = map[string]string{}
+		pathParamsMap = map[string]string{}
 		for index, pathParam := range pathParams {
-			paramsMap[pathParam.Name] = arr1[0][index+1]
+			pathParamsMap[pathParam.Name] = arr1[0][index+1]
 		}
 	}
 

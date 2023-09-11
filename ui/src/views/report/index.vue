@@ -1,27 +1,25 @@
 <template>
     <div class="report-container">
-      <Mock />
-        <!-- <div class="report-table-filter">
-            <TableFilter :formState="formState" @handle-filter="handleFilter" />
-        </div>
-        <div class="report-list">
-            <List :loading="loading" :list="list" @get-list="getList" @query-detail="queryDetail"/>
-        </div>
-        <DetailDrawer
-          :title="'测试报告详情'"
-          :show-scenario-info="true"
-          :scenario-expand-active="false"
-          :drawer-visible="drawerVisible"
-          :report-id="currPlanId"
-          :scene="ReportDetailType.QueryDetail"
-          @on-close="drawerVisible = false" /> -->
+      <div class="report-table-filter">
+          <TableFilter :formState="formState" @handle-filter="handleFilter" />
+      </div>
+      <div class="report-list">
+          <List :loading="loading" :list="list" @get-list="getList" @query-detail="queryDetail"/>
+      </div>
+      <DetailDrawer
+        :title="'测试报告详情'"
+        :show-scenario-info="true"
+        :scenario-expand-active="false"
+        :drawer-visible="drawerVisible"
+        :report-id="currPlanId"
+        :scene="ReportDetailType.QueryDetail"
+        @on-close="drawerVisible = false" />
     </div>
 </template>
 <script setup lang="ts">
 import { computed, ref, watch, reactive } from "vue";
 import { useStore } from "vuex";
 
-import Mock from '@/views/endpoint/components/Drawer/MockExcept/index.vue';
 import { TableFilter } from '@/views/component/Report/components';
 import List from './List/index.vue';
 import DetailDrawer from './Detail/index.vue';

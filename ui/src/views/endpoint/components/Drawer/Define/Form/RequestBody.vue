@@ -101,6 +101,9 @@ async function handleGenerateExample(examples: any) {
     name: `Example ${examples.length + 1}`,
     content: JSON.stringify(res),
   };
+  if(!activeReqBodySchema?.value?.examples?.length) {
+    activeReqBodySchema.value.examples = [];
+  }
   activeReqBodySchema.value.examples.push(example);
   exampleStr.value = JSON.stringify(activeReqBodySchema.value.examples);
 }

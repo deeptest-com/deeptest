@@ -34,7 +34,7 @@ func (c *MockCtrl) Mock(ctx iris.Context) {
 	req := service.MockRequest{
 		ServeId:             serveId,
 		EndpointMethod:      consts.HttpMethod(method),
-		EndpointPath:        path,
+		EndpointPath:        "/" + path,
 		EndpointInterfaceId: uint(endpointInterfaceId),
 		Code:                code,
 	}

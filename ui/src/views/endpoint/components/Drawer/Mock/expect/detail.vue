@@ -12,13 +12,12 @@
       <a-form 
         layout="vertical"
         :model="formState" 
-        :label-col="labelCol" 
         class="mock-detail-form"
         ref="mockFormRef">
-        <a-form-item label="期望名称" :rules="rules.name" name="name">
+        <a-form-item class="expect-name" label="期望名称" :rules="rules.name" name="name">
           <a-input style="width: 600px" v-model:value="formState.name" placeholder="请填写mock期望名称" />
         </a-form-item>
-        <a-form-item label="请求方法" :rules="rules.method" name="method">
+        <a-form-item class="expect-method" label="请求方法" :rules="rules.method" name="method">
           <a-select style="width: 200px;" v-model:value="formState.method" placeholder="请选择请求方法" :options="requestMethodOpts" />
         </a-form-item>
         <a-form-item label="期望条件">
@@ -48,8 +47,8 @@
               <div class="form-response">
                 <div class="top">
                   <div class="response-left">
-                    <a-radio-group v-model:value="language">
-                      <a-radio-button value="pretty">pretty</a-radio-button>
+                    <a-radio-group v-model:value="language" @change="handleLanguageChange">
+                      <a-radio-button value="json">pretty</a-radio-button>
                       <a-radio-button value="raw">raw</a-radio-button>
                     </a-radio-group>
                   </div>
@@ -62,8 +61,8 @@
                     ref="monacoEditor"
                     customId="request-body-main"
                     class="editor"
-                    v-model:value="formState.responseBody.value"
-                    :language="'javascript'"
+                    :value="formState.responseBody.value"
+                    :language="language"
                     theme="vs"
                     height="300"
                     @change="handleEditorChange"
@@ -130,6 +129,8 @@ const formState: any = reactive({
   responseHeaders: [{...defaultData}], // 响应头
 });
 
+const jsonContent = ref('');
+
 /**
  * 页面绑定data
  */
@@ -137,7 +138,7 @@ const mockFormRef = ref();
 const activeKey = ref('1');
 const requestActiveKey = ref('requestHeaders');
 const editorOptions = ref(Object.assign( { usedWith: 'response', readOnly:false }, MonacoOptions ) );
-const language = ref('pretty');
+const language = ref('json');
 const dropdownOptions = computed(() => {
   return store.state.Endpoint.mockExpectOptions;
 });
@@ -190,7 +191,7 @@ const rules = {
   }]
 }
 
-const labelCol = { style: { width: '150px' } };
+// const labelCol = { style: { width: '150px' } };
 
 const setDataList = (data: any[], type?: string) => {
   return cloneDeep(data).filter(e => e.name !== '').map(e => {
@@ -239,6 +240,14 @@ const handleCancel = () => {
   emits('cancel', false);
 };
 
+const handleLanguageChange = (e) => {
+  const val = e.target.value;
+  if (val == 'raw') {
+    console.log(1);
+    formState.responseBody.value = jsonContent.value.replace(/\r\n/g,'').replace(/\n/g,'').replace(/\s+/g,'')
+  }
+}
+
 const handleChange = (...args) => {
   const [type] = args;
   try {
@@ -260,7 +269,9 @@ const handleDelete = (record, type) => {
 }
 
 const handleEditorChange = (e) => {
+  console.log(e);
   formState.responseBody.value = e;
+  jsonContent.value = e;
 }
 
 onMounted(() => {
@@ -304,6 +315,16 @@ watch(() => {
 
 </script>
 <style scoped lang="less">
+.expect-name, .expect-method {
+  flex-direction: row !important;
+
+  :deep(.ant-form-item-label) {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+  }
+}
 .mock-response-data {
 
   &:has(.ant-form-item-has-error) {
@@ -314,7 +335,7 @@ watch(() => {
     align-items: center;
     flex-direction: row;
     margin-bottom: 0 !important;
-
+  
     .ant-form-item-label {
       padding: 0 !important;
       margin-right: 6px;

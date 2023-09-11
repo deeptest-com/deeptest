@@ -26,32 +26,21 @@
 </template>
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue';
-import Sortable from 'sortablejs';
-import { QuestionCircleOutlined, HolderOutlined } from '@ant-design/icons-vue';
+import { HolderOutlined } from '@ant-design/icons-vue';
 import { useStore } from 'vuex';
+import { message } from 'ant-design-vue';
+import Sortable from 'sortablejs';
+
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import Detail from './detail.vue';
 
 import { StateType as EndpointStateType } from '@/views/endpoint/store';
 import { exceptColumns } from './index';
-import { message } from 'ant-design-vue';
 
 const store = useStore<{ Endpoint: EndpointStateType }>();
-
 const expectList = computed(() => store.state.Endpoint.mockExpectList);
 const loading = computed(() => store.state.Endpoint.mockExpectLoading);
-const endpointDetail = computed(() => store.state.Endpoint.endpointDetail);
 const open = ref(false);
-const checked = ref(!endpointDetail.value.advancedMockDisabled);
-const activityKey = ref('mock');
-
-const tabs = [{
-  value: '期望',
-  key: 'mock'
-}, {
-  value: '脚本',
-  key: 'sh'
-}];
 
 /**
  * 列表拖拽排序
@@ -91,17 +80,6 @@ const handleEdit = async (record) => {
   open.value = true;
 }
 
-const handleChange = async (value) => {
-  await store.dispatch('Endpoint/updateMockStatus', {
-    advancedMockDisabled: !value,
-  })
-}
-
-const handleCreate = () => {
-  open.value = true;
-  store.commit('Endpoint/setMockExpectDetail', {});
-}
-
 onMounted(() => {
   initSortable();
   store.dispatch('Endpoint/getMockExpectList');
@@ -110,26 +88,6 @@ onMounted(() => {
 <style scoped lang="less">
 .container {
   margin-top: 20px;
-}
-
-.mock-top {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.top-action {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-
-  .enable {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-  }
 }
 
 .except-list {

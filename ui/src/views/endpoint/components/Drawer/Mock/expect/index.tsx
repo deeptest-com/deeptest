@@ -6,12 +6,16 @@ import { useStore } from "vuex";
 import TooltipCell from "@/components/Table/tooltipCell.vue";
 
 const handleChange = async (record, e, store) => {
-  await store.commit('Global/setSpinning', true);
-  await store.dispatch('Endpoint/disabledMockExpect', {
+  record.disabled = !e;
+  // await store.commit('Global/setSpinning', true);
+  const result = await store.dispatch('Endpoint/disabledMockExpect', {
     id: record.id,
     disabled: !e,
   })
-  await store.commit('Global/setSpinning', false);
+  if (result) {
+    record.disabled = !e;
+  }
+  // await store.commit('Global/setSpinning', false);
 };
 
 const handleClone = async (record, store) => {

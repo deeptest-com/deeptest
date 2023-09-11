@@ -1127,7 +1127,7 @@ const StoreModel: ModuleType = {
             try {
                 const responseData: any = await sortMockExpect(payload);
                 if (responseData.code === 0) {
-                    dispatch('getMockExpectList');
+                    // dispatch('getMockExpectList');
                     return true;
                 }
                 return false;
@@ -1156,7 +1156,7 @@ const StoreModel: ModuleType = {
                     ...payload,
                 });
                 if (responseData.code === 0) {
-                    dispatch('getMockExpectList');
+                    // dispatch('getMockExpectList');
                     return true;
                 }
                 return false;

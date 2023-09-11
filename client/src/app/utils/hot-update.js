@@ -128,7 +128,7 @@ const copyFiles = (downloadPath) => {
         return false
     }
 
-    const agentFileName = `agent${os.platform() === 'win32' ? '.exe' : ''}`
+    const agentFileName = `deeptest-agent${os.platform() === 'win32' ? '.exe' : ''}`
 
     fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'),          uiPath, {recursive: true})
     fse.copySync(path.resolve(downloadDir, 'extracted', agentFileName), agentPath)

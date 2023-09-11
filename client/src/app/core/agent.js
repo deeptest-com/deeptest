@@ -25,10 +25,10 @@ export async function startAgent() {
     }
 
     let {SERVER_EXE_PATH: agentExePath} = process.env;
-    logInfo(1, agentExePath)
+    logInfo(111111, agentExePath)
     if (!agentExePath && !DEBUG) {
         agentExePath = getBinPath('deeptest-agent');
-        logInfo(2, agentExePath)
+        logInfo(222222, agentExePath)
     }
 
     if (agentExePath) {

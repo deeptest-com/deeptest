@@ -11,10 +11,6 @@
       <EndpointMockScript v-if="activeKey==='script'" />
     </div>
 
-    <div class="toolbar">
-      是否开启<a-switch v-model:checked="advancedMockEnabled" class="switch" />
-    </div>
-
   </div>
 </template>
 
@@ -34,11 +30,6 @@ const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
 
 const activeKey = ref('expect')
 
-const advancedMockEnabled = ref(true)
-watch(() => endpoint.value.advancedMockDisabled, (newVal, oldVal) => {
-  advancedMockEnabled.value = !endpoint.value.advancedMockDisabled
-})
-
 </script>
 
 <style lang="less" scoped>
@@ -51,17 +42,6 @@ watch(() => endpoint.value.advancedMockDisabled, (newVal, oldVal) => {
 
   .content {
     height: calc(100% - 56px);
-  }
-  .toolbar {
-    position: absolute;
-    top: 12px;
-    right: 108px;
-
-    text-align: right;
-
-    .switch {
-      margin-left: 6px;
-    }
   }
 }
 </style>

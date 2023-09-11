@@ -614,7 +614,7 @@ func (r *EndpointInterfaceRepo) GetInterfaces(endpointIds []uint, needDetail boo
 	}
 
 	var params map[uint][]model.EndpointInterfaceParam
-	params, err = r.GetParams(interfaceIds)
+	params, err = r.GetQueryParams(interfaceIds)
 	if err != nil {
 		return
 	}
@@ -653,7 +653,7 @@ func (r *EndpointInterfaceRepo) GetInterfaces(endpointIds []uint, needDetail boo
 
 }
 
-func (r *EndpointInterfaceRepo) GetParams(interfaceIds []uint) (params map[uint][]model.EndpointInterfaceParam, err error) {
+func (r *EndpointInterfaceRepo) GetQueryParams(interfaceIds []uint) (params map[uint][]model.EndpointInterfaceParam, err error) {
 	var result []model.EndpointInterfaceParam
 	err = r.DB.Where("NOT deleted and interface_id in ?", interfaceIds).Find(&result).Error
 

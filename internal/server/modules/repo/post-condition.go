@@ -290,6 +290,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 
 			entity, _ := r.ScriptRepo.Get(po.EntityId)
 			copier.CopyWithOption(&script, entity, copier.Option{DeepCopy: true})
+			script.Output = ""
 			script.ConditionId = po.ID
 			script.ConditionEntityId = po.EntityId
 

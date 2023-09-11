@@ -61,3 +61,19 @@ func (c *EndpointMockScriptCtrl) Update(ctx iris.Context) {
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+func (c *EndpointMockScriptCtrl) Disable(ctx iris.Context) {
+	endpointId, err := ctx.Params().GetInt("endpointId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	err = c.EndpointMockScriptService.Disable(uint(endpointId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}

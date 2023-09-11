@@ -78,6 +78,11 @@ func (s *EndpointMockExpectService) DeleteById(expectId uint) (err error) {
 	return
 }
 
+func (s *EndpointMockExpectService) Disable(endpointId uint) (err error) {
+	err = s.EndpointMockExpectRepo.Disable(endpointId)
+	return
+}
+
 func (s *EndpointMockExpectService) SaveOrder(req v1.MockExpectIdsReq) (err error) {
 	err = s.EndpointMockExpectRepo.SaveOrder(req)
 	return
@@ -168,7 +173,7 @@ func (s *EndpointMockExpectService) GetExpectRequestQueryOptions(endpointInterfa
 }
 
 func (s *EndpointMockExpectService) GetExpectRequestPathOptions(endpointId uint) (options []string, err error) {
-	paths, err := s.EndpointRepo.GetEndpointParams(endpointId)
+	paths, err := s.EndpointRepo.GetEndpointPathParams(endpointId)
 	if err != nil {
 		return
 	}

@@ -32,6 +32,10 @@
       <MockScript />
     </div>
 
+    <div class="toolbar">
+      是否开启<a-switch @change="disable()" class="switch" v-model:checked="scriptMockEnabled" />
+    </div>
+
     <FullScreenPopup v-if="fullscreen"
                      :visible="fullscreen"
                      :model="mockScript"
@@ -50,6 +54,7 @@ import settings from "@/config/settings";
 import FullScreenPopup from "./script/Popup.vue";
 import MockScript from "./script/Script.vue";
 import {UsedBy} from "@/utils/enum";
+import {disableScriptMock} from "@/views/endpoint/service";
 
 const {t} = useI18n()
 provide('usedBy', UsedBy.MockData)
@@ -57,6 +62,12 @@ provide('usedBy', UsedBy.MockData)
 const store = useStore<{ Endpoint }>();
 const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
 const mockScript = computed<any>(() => store.state.Endpoint.mockScript);
+
+const scriptMockEnabled = ref(true)
+watch(() => endpoint.value.scriptMockDisabled, (newVal, oldVal) => {
+  console.log('watch scriptMockDisabled', endpoint.value.scriptMockDisabled)
+  scriptMockEnabled.value = !endpoint.value.scriptMockDisabled
+}, {immediate: true})
 
 const getMockScript = () => {
   console.log('getMockScript')
@@ -71,6 +82,11 @@ watch(() => endpoint.value.id, (newVal) => {
 const updateMockScript = () => {
   console.log('updateMockScript')
   store.dispatch('Endpoint/updateMockScript', mockScript.value)
+}
+
+const disable = () => {
+  disableScriptMock(endpoint.value.id)
+  endpoint.value.scriptMockDisabled = !endpoint.value.scriptMockDisabled
 }
 
 const fullscreen = ref(false)
@@ -109,6 +125,7 @@ const format = (item) => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 
   .head {
     height: 30px;
@@ -185,6 +202,17 @@ const format = (item) => {
           width: 100%;
         }
       }
+    }
+  }
+
+  .toolbar {
+    position: absolute;
+    top: -50px;
+    right: 0px;
+    text-align: right;
+
+    .switch {
+      margin-left: 16px;
     }
   }
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -32,11 +33,6 @@ func ExecScript(scriptObj *domain.ScriptBase, request *domain.BaseRequest, respo
 
 	if scriptObj.Content == "" {
 		return
-	}
-
-	// update changed js request to go debugData
-	if scriptObj.ConditionSrc == consts.ConditionSrcPre {
-		scriptObj.Content += "; updateRequestData(dt.request);"
 	}
 
 	logs = nil
@@ -88,8 +84,12 @@ func InitJsRuntime() {
 	MyVm.JsRuntime.Set("dt", dt)
 }
 
-func UpdateResponseData() (err error) {
-	_, err = MyVm.JsRuntime.RunString("updateResponseData(dt.response);")
+func GetReqValueFromGoja() (err error) {
+	_, err = MyVm.JsRuntime.RunString("getReqValueFromGoja(dt.request);")
+	return
+}
+func GetRespValueFromGoja() (err error) {
+	_, err = MyVm.JsRuntime.RunString("getRespValueFromGoja(dt.response);")
 	return
 }
 
@@ -144,13 +144,18 @@ func defineJsFuncs() {
 		ClearVariable(scopeId, name)
 	})
 
-	MyVm.JsRuntime.Set("updateRequestData", func(value domain.BaseRequest) {
+	MyVm.JsRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
 		CurrRequest = value
 	})
-	MyVm.JsRuntime.Set("updateResponseData", func(value domain.DebugResponse) {
-		bytes, _ := json.Marshal(value.Data)
-		value.Content = string(bytes)
-		CurrResponse = value
+	MyVm.JsRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
+		if httpHelper.IsJsonResp(value) {
+			bytes, _ := json.Marshal(value.Data)
+			value.Content = string(bytes)
+			CurrResponse = value
+		} else {
+			value.Content = value.Data.(string)
+			CurrResponse = value
+		}
 	})
 
 	MyVm.JsRuntime.Set("log", func(value interface{}) {
@@ -180,11 +185,17 @@ func SetReqValueToGoja(req domain.BaseRequest) {
 	SetValueToGoja("request", req)
 }
 func SetRespValueToGoja(resp domain.DebugResponse) {
-	var data interface{}
-	err := json.Unmarshal([]byte(resp.Content), &data)
-
-	if err == nil {
-		resp.Data = data
+	// set resp.Data to json object for goja edit
+	if httpHelper.IsJsonResp(resp) {
+		var data interface{}
+		err := json.Unmarshal([]byte(resp.Content), &data)
+		if err == nil {
+			resp.Data = data
+		} else {
+			resp.Data = resp.Content
+		}
+	} else {
+		resp.Data = resp.Content
 	}
 
 	SetValueToGoja("response", resp)

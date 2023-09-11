@@ -2,7 +2,7 @@
 #PROJECT=deeptest
 
 # ly 打包配置，开源版可以删除
-VERSION=7.0.0
+VERSION=8.0.0
 PROJECT=LeyanAPI
 
 

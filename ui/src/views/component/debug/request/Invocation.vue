@@ -276,6 +276,7 @@ function hasDefinedMethod(method: string) {
 }
 
 function pathUpdated(e) {
+  console.log('pathUpdated')
   const path = e.target.value.trim();
 
   if (!validatePath()) {

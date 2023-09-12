@@ -240,6 +240,8 @@ export const getMethodColor = (method, disabled) => {
 }
 
 export function handlePathLinkParams(path, oldPathParams) {
+    console.log('handlePathLinkParams')
+
     // 支持字母下划线及中划线
     const pathParams = oldPathParams || [];
 
@@ -254,7 +256,7 @@ export function handlePathLinkParams(path, oldPathParams) {
     }
 
     if (params.length < pathParams.length) {
-        pathParams.splice(params.length - 1);
+        pathParams.splice(params.length);
     }
 
     params.forEach((item, index) => {
@@ -272,6 +274,7 @@ export function handlePathLinkParams(path, oldPathParams) {
 }
 
 export function handleParamsLinkPath(path, oldPathParams) {
+    console.log('handleParamsLinkPath')
     const pathParams = oldPathParams || [];
 
     const params = pathParams.map(item => item.name);
@@ -293,10 +296,19 @@ export function handleParamsLinkPath(path, oldPathParams) {
         })
     }
 
-    const newPath = paths.filter((item) => {
+    let newPath = paths.filter((item) => {
         return !!item
-    }).join('').replace('//', '/');
+    }).join('');
 
+    const arr = newPath.split('://')
+    if (arr.length < 2) {
+        return newPath.replace('//', '/')
+    }
+
+    const urlSchema = arr[0]
+    const urlPath = arr[1].replace('//', '/')
+
+    newPath = urlSchema + '://' + urlPath
 
     return newPath
 }

@@ -30,9 +30,9 @@ export function getCurrVersion() {
     let currVersionStr = '0';
 
     const {versionPath} = getResPath();
-    logInfo(`83222 versionPath=${versionPath}`)
+    logInfo(` versionPath=${versionPath}`)
 
-    logInfo(`83222 versionPath=${app.getVersion()}`)
+    logInfo(`versionPath=${app.getVersion()}`)
 
     if (fs.existsSync(versionPath)) {
         const content = fs.readFileSync(versionPath)
@@ -50,7 +50,7 @@ export function getCurrVersion() {
 export async function getRemoteVersion() {
     const versionUrl = getVersionUrl();
 
-    logInfo(`83222${versionUrl}`)
+    logInfo(`${versionUrl}`)
 
     const json = await got.get(versionUrl).json();
     const newVersionStr = json.version;
@@ -82,7 +82,7 @@ export function changeVersion(newVersion) {
         logInfo(`success to write new version`)
         res = true;
     }catch (e){
-        logInfo(`83222 changeVersion error: ${e}`)
+        logInfo(` changeVersion error: ${e}`)
     }
 
     return  res;
@@ -96,7 +96,7 @@ export function restart() {
         });
         app.exit(0);
     }catch (e) {
-        logInfo(`83222 restart error: ${e}`)
+        logInfo(`restart error: ${e}`)
     }
 }
 export function getResPath() {

@@ -170,7 +170,7 @@ export function killAgent() {
             }
         }
     }catch (e){
-        logInfo(`83222 killAgent error: ${e}`)
+        logInfo(`killAgent error: ${e}`)
     }
 
 }

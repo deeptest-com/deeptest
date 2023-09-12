@@ -48,7 +48,7 @@ const doUpdate = async (downloadPath, version) => {
     ok = changeVersion(version);
     if (!ok) return
     // 重启应用
-    logInfo(`restart app ... 832222`)
+    logInfo(`restart app ...`)
     restart();
 }
 
@@ -106,15 +106,10 @@ const copyFiles = (downloadPath) => {
     const extractedPath = path.resolve(downloadDir, 'extracted')
     logInfo(`downloadPath=${downloadPath}, extractedPath=${extractedPath}`);
     const unzip = new admZip(downloadPath, {});
-    logInfo(`13333333`)
     let pass = ''
     unzip.extractAllTo(extractedPath, true, true, pass);
     logInfo(`success to extract ${downloadPath}`)
     logInfo(`${extractedPath} ${pass}`)
-
-
-    // todo 这里问题很大，因为这里的文件是在运行时被占用的，所以无法删除？？？
-    // 在排查一下
     const {uiPath, agentPath} = getResPath()
     logInfo(`uiPath=${uiPath}, agentPath=${agentPath}`)
     killAgent();
@@ -130,21 +125,21 @@ const copyFiles = (downloadPath) => {
 
     const agentFileName = `${agentProcessName}${os.platform() === 'win32' ? '.exe' : ''}`
 
-    logInfo(`8322 agentFileName=${agentFileName}`)
+    logInfo(`agentFileName=${agentFileName}`)
 
     fse.copySync(path.resolve(downloadDir, 'extracted', 'ui'),          uiPath, {recursive: true})
     fse.copySync(path.resolve(downloadDir, 'extracted', agentFileName), agentPath)
 
-    logInfo(`8322 agentFileName=${IS_WINDOWS_OS}`)
+    logInfo(`agentFileName=${IS_WINDOWS_OS}`)
 
     if (!IS_WINDOWS_OS) {
         const cmd = `chmod +x ${agentPath}`
-        logInfo(`8322 cmd=${cmd}`)
+        logInfo(`cmd=${cmd}`)
         try {
             execSync(cmd, {windowsHide: true})
-            logInfo(`83222 success to chmod +x ${agentPath}`)
+            logInfo(`success to chmod +x ${agentPath}`)
         }catch (e){
-            logInfo(`83222 failed to chmod +x ${agentPath}`, e)
+            logInfo(`failed to chmod +x ${agentPath}`, e)
         }
 
     }

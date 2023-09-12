@@ -24,6 +24,13 @@ func GetScript(name ScriptType) string {
 		}
 		return GlobalScript
 
+	} else if name == ScriptMock {
+		if MockScript == "" {
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "mock.ts"))
+			MockScript = string(bytes)
+		}
+		return MockScript
+
 	} else if name == ScriptModule {
 		if ModuleScript == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "module.ts"))
@@ -113,6 +120,7 @@ var (
 	DpScript = ""
 
 	GlobalScript = ""
+	MockScript   = ""
 	ModuleScript = ""
 
 	EnvironmentGet   = ""
@@ -129,7 +137,11 @@ type ScriptType string
 const (
 	ScriptDeepTest = "deeptest"
 	ScriptGlobal   = "global"
-	ScriptModule   = "module"
+
+	ScriptModule = "module"
+
+	ScriptMocke = "mocke"
+	ScriptMock  = "mock"
 
 	ScriptDatapoolGet = "datapool_get"
 

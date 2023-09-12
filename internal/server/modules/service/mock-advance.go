@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	mockHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mock"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -19,6 +20,7 @@ type MockAdvanceService struct {
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
 
 	EndpointMockExpectRepo    *repo.EndpointMockExpectRepo `inject:""`
+	EndpointMockScriptRepo    *repo.EndpointMockScriptRepo `inject:""`
 	EndpointMockExpectService *EndpointMockExpectService   `inject:""`
 	EndpointMockScriptService *EndpointMockScriptService   `inject:""`
 
@@ -67,7 +69,7 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 			resp.Headers = respHeaders
 			resp.Content = respData.Value
 
-			resp.UseAdvMockMock = true
+			resp.UseAdvMock = true
 			byAdvance = true
 
 			respDefine := s.EndpointInterfaceRepo.GetResponse(endpointInterface.ID, respData.Code)
@@ -86,6 +88,19 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 }
 
 func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, resp *mockGenerator.Response) {
+	script, err := s.EndpointMockScriptRepo.Get(endpoint.ID)
+	if err != nil || script.Disabled || script.Content == "" {
+		return
+	}
+
+	mockHelper.InitJsRuntime()
+	mockHelper.SetRespValueToGoja(*resp)
+	mockHelper.ExecScript(script.Content)
+	mockHelper.GetRespValueFromGoja()
+
+	if mockHelper.CurrResponse.Data != nil {
+		*resp = mockHelper.CurrResponse
+	}
 
 	return
 }

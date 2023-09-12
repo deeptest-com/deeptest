@@ -28,7 +28,7 @@ type JsVm struct {
 	JsRuntime *goja.Runtime
 }
 
-func ExecScript(scriptObj *domain.ScriptBase, request *domain.BaseRequest, response *domain.DebugResponse) (err error) {
+func ExecScript(scriptObj *domain.ScriptBase) (err error) {
 	VariableSettings = []domain.ExecVariable{}
 
 	if scriptObj.Content == "" {

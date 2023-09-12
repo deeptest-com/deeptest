@@ -15,7 +15,7 @@ func ExecPreConditions(execObj InterfaceExecObj) (err error) {
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
 
-			err = ExecScript(&scriptBase, &execObj.DebugData.BaseRequest, nil)
+			err = ExecScript(&scriptBase)
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 
@@ -52,7 +52,7 @@ func ExecPostConditions(obj InterfaceExecObj, resp domain.DebugResponse) (err er
 				continue
 			}
 
-			err = ExecScript(&scriptBase, &obj.DebugData.BaseRequest, &resp)
+			err = ExecScript(&scriptBase)
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 

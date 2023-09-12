@@ -55,6 +55,7 @@ import FullScreenPopup from "./script/Popup.vue";
 import MockScript from "./script/Script.vue";
 import {UsedBy} from "@/utils/enum";
 import {disableScriptMock} from "@/views/endpoint/service";
+import {notifyError, notifySuccess} from "@/utils/notify";
 
 const {t} = useI18n()
 provide('usedBy', UsedBy.MockData)
@@ -79,9 +80,14 @@ watch(() => endpoint.value.id, (newVal) => {
   getMockScript()
 }, {immediate: true, deep: true});
 
-const updateMockScript = () => {
+const updateMockScript = async () => {
   console.log('updateMockScript')
-  store.dispatch('Endpoint/updateMockScript', mockScript.value)
+  const result = await store.dispatch('Endpoint/updateMockScript', mockScript.value)
+  if (result) {
+    notifySuccess(`保存成功`);
+  } else {
+    notifyError(`保存失败`);
+  }
 }
 
 const disable = () => {

@@ -60,7 +60,7 @@ export default defineComponent({
     console.log('editor mounted')
 
     this.initMonaco()
-  
+
     bus.on(settings.eventEditorAction, (data) => {
       console.log('eventEditorAction', data)
       if (data.act === settings.eventTypeFormat) {
@@ -108,13 +108,13 @@ export default defineComponent({
       this.diffEditor && this._setModel(this.value, this.original);
 
 
-      // const usedBy = inject('usedBy')
+      const usedBy = inject('usedBy')
       // if (usedBy === UsedBy.InterfaceDebug) {
-      if (this.options.usedWith === 'response') {
-        addExtractAction(this.editor, this.onExtractor)
-      } else if (this.options.usedWith === 'request') {
-        addReplaceAction(this.editor, this.onReplace)
-      }
+        if (this.options.usedWith === 'response') {
+          addExtractAction(this.editor, this.onExtractor)
+        } else if (this.options.usedWith === 'request') {
+          addReplaceAction(this.editor, this.onReplace)
+        }
       // }
 
       // @event `change`
@@ -152,7 +152,9 @@ export default defineComponent({
       }, 500)
 
       if (options.initTsModules) {
-        getSnippet('global').then(json => {
+        const snippet = usedBy == UsedBy.MockData ? 'mock' : 'global'
+
+        getSnippet(snippet).then(json => {
           if (json.code === 0) {
             // const externalDtsFileName = 'ex.d.ts';
             // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://modelRef/${externalDtsFileName}`);
@@ -208,7 +210,7 @@ export default defineComponent({
       original.setValue(this.original)
     },
 
-    
+
     /**
      * 这里做下兼容：
      * monacoEditor使用在各自场景中，当它处于 可拖拽改变高度元素的场景时，它需要根据父级元素的高度动态绘制
@@ -229,10 +231,10 @@ export default defineComponent({
           height = this.editor._domElement.clientHeight + ((data.mixedHeight || 30));
         }
       }
-      
+
       const size = {width: container.clientWidth, height: height - (data.mixedHeight || 30)}
       /**
-       * 由于同一个页面内可能有多个 monacoEditor ,避免混乱调用， 在该事件触发时，传入id与 props.id 对比 
+       * 由于同一个页面内可能有多个 monacoEditor ,避免混乱调用， 在该事件触发时，传入id与 props.id 对比
        * 为同一个才可以触发重置editor layout
        */
       if (data.id === this.$props.customId) {

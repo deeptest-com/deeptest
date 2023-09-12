@@ -4,6 +4,7 @@ import { CopyOutlined, DeleteOutlined, ExclamationCircleOutlined, HolderOutlined
 import { useStore } from "vuex";
 
 import TooltipCell from "@/components/Table/tooltipCell.vue";
+import { momentUtc } from "@/utils/datetime";
 
 const handleChange = async (record, e, store) => {
   record.disabled = !e;
@@ -77,7 +78,7 @@ export const exceptColumns = (store) => [
     key: 'createdAt',
     customRender({ record }) {
       return (
-        <TooltipCell tip={record.createdAt} text={record.createdAt} width={180} />
+        <TooltipCell tip={momentUtc(record.createdAt)} text={momentUtc(record.createdAt)} width={180} />
       )
     },
   },
@@ -87,7 +88,7 @@ export const exceptColumns = (store) => [
     key: 'updatedAt',
     customRender({ record }) {
       return (
-        <TooltipCell tip={record.updatedAt} text={record.updatedAt} width={180} />
+        <TooltipCell tip={momentUtc(record.updatedAt)} text={momentUtc(record.updatedAt)} width={180} />
       )
     },
   },
@@ -116,15 +117,15 @@ export const exceptColumns = (store) => [
 ];
 
 export const requestTabs = [{
-  title: '请求头',
-  type: 'requestHeaders',
-}, {
-  title: '请求体',
-  type: 'requestBodies',
-}, {
-  title: 'Query参数',
+  title: '查询参数',
   type: 'requestQueryParams',
 }, {
   title: '路径参数',
   type: 'requestPathParams',
+}, {
+  title: '请求体',
+  type: 'requestBodies',
+}, {
+  title: '请求头',
+  type: 'requestHeaders',
 }];

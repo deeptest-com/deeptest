@@ -44,7 +44,7 @@ func (r *EndpointMockExpectRepo) GetExpectDetail(expectId uint) (expect model.En
 	}
 
 	responseBody, err := r.GetExpectResponse(expectId)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return
 	}
 	expect.ResponseBody = responseBody
@@ -123,8 +123,10 @@ func (r *EndpointMockExpectRepo) Save(req model.EndpointMockExpect) (expectId ui
 			v.EndpointMockExpectId = req.ID
 			expectResponseHeaders = append(expectResponseHeaders, v)
 		}
-		if err = r.BatchCreateExpectResponseHeader(expectResponseHeaders); err != nil {
-			return 0, err
+		if len(expectResponseHeaders) > 0 {
+			if err = r.BatchCreateExpectResponseHeader(expectResponseHeaders); err != nil {
+				return 0, err
+			}
 		}
 	} else {
 		if err = r.UpdateExpectRequest(req); err != nil {
@@ -160,7 +162,9 @@ func (r *EndpointMockExpectRepo) CreateExpectRequest(req model.EndpointMockExpec
 		expectRequest = append(expectRequest, path)
 	}
 
-	err = r.BatchCreateExpectRequest(expectRequest)
+	if len(expectRequest) > 0 {
+		err = r.BatchCreateExpectRequest(expectRequest)
+	}
 
 	return
 }

@@ -70,6 +70,7 @@ const handleChange = (val: string) => {
         style="width: 200px"
         :default-active-first-option="false"
         :show-arrow="false"
+        :allow-clear="true"
         :filter-option="false"
         :dropdownStyle="{minWidth: '300px'}"
         :not-found-content="null"

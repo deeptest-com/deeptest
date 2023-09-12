@@ -47,6 +47,7 @@ import {
 
     getMockScript,
     updateMockScript,
+    generateJsonExample,
 } from './service';
 
 import {
@@ -218,6 +219,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         disabledMockExpect: Action<StateType, StateType>;
         updateMockExpectName: Action<StateType, StateType>;
         updateMockStatus: Action<StateType, StateType>;
+        generateJsonExample: Action<StateType, StateType>;
         getMockScript: Action<StateType, StateType>;
         updateMockScript: Action<StateType, StateType>;
     }
@@ -1123,11 +1125,10 @@ const StoreModel: ModuleType = {
         },
 
         async sortMockExpect({ commit, state, dispatch }, payload) {
-            const interfaceData: any = state.endpointDetail.interfaces.filter(e => e.method === state.selectedMethodDetail.method);
             try {
                 const responseData: any = await sortMockExpect(payload);
                 if (responseData.code === 0) {
-                    dispatch('getMockExpectList');
+                    // dispatch('getMockExpectList');
                     return true;
                 }
                 return false;
@@ -1137,7 +1138,6 @@ const StoreModel: ModuleType = {
         },
 
         async deleteMockExpect({ commit, state, dispatch }, payload) {
-            const interfaceData: any = state.endpointDetail.interfaces.filter(e => e.method === state.selectedMethodDetail.method);
             try {
                 const responseData: any = await deleteMockExpect(payload);
                 if (responseData.code === 0) {
@@ -1156,7 +1156,7 @@ const StoreModel: ModuleType = {
                     ...payload,
                 });
                 if (responseData.code === 0) {
-                    dispatch('getMockExpectList');
+                    // dispatch('getMockExpectList');
                     return true;
                 }
                 return false;
@@ -1209,6 +1209,22 @@ const StoreModel: ModuleType = {
                 }
                 return false;
             } catch (error) {
+                return false;
+            }
+        },
+
+        async generateJsonExample({ commit, state }, payload) {
+            try {
+                const response: any = await generateJsonExample({
+                    ...payload,
+                    endpointId: state.endpointDetail.id,
+                });
+                if (response.code === 0) {
+                    return response.data;
+                }
+                return false;
+            } catch (error) {
+                console.log('get mock responseJson failed', error);
                 return false;
             }
         }

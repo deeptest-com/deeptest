@@ -576,6 +576,8 @@ func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{
 	schema := schemaHelper.SchemaRef{}
 	_commUtils.JsonDecode(bodyItem.Content, &schema)
 
+	ret = schema2conv.Schema2Example(schema)
+
 	return
 
 }

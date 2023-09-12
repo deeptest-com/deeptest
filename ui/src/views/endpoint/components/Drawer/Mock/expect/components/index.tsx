@@ -37,14 +37,6 @@ const conditionArray = [
     "label": "正则匹配",
     "value": "regularMatch"
   },
-  {
-    "label": "存在",
-    "value": "exist"
-  },
-  {
-    "label": "不存在",
-    "value": "notExist"
-  }
 ];
 
 // 不同的类型 下拉选择项也不同
@@ -191,7 +183,7 @@ const List = (props) => {
       class="mock-detail-response"
       rowKey={(_record, index) => _record.idx}
       columns={Columns(props)}
-      dataSource={data[type]}
+      dataSource={type === 'requestBodies' ? data[type].filter(e => e.selectType === props.selectType) : data[type]}
       pagination={false}
       bordered />
   )

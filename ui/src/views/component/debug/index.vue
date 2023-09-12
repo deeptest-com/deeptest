@@ -44,24 +44,25 @@
           </a-tab-pane>
 
         </a-tabs>
+        <div class="right-tab">
+          <div 
+            v-if="rightTabKey==='env'"
+            :style="posStyleEnv"
+            class="right-float-tab dp-bg-white">
+            <div class="dp-bg-light">
+              <RequestEnv :onClose="closeRightTab" />
+            </div>
+          </div>
+          <div 
+            v-if="rightTabKey==='history'"
+            :style="posStyleHis"
+            class="right-float-tab dp-bg-white">
+            <div class="dp-bg-light">
+              <RequestHistory :onClose="closeRightTab" />
+            </div>
+          </div>
+        </div>
       </div>
-
-      <Teleport to="body">
-        <div v-if="rightTabKey==='env'"
-             :style="posStyleEnv"
-             class="right-float-tab dp-bg-white">
-          <div class="dp-bg-light">
-            <RequestEnv :onClose="closeRightTab" />
-          </div>
-        </div>
-        <div v-if="rightTabKey==='history'"
-             :style="posStyleHis"
-             class="right-float-tab dp-bg-white">
-          <div class="dp-bg-light">
-            <RequestHistory :onClose="closeRightTab" />
-          </div>
-        </div>
-      </Teleport>
     </div>
   </div>
 

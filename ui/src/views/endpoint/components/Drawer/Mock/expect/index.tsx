@@ -1,14 +1,13 @@
 import { createVNode, ref } from "vue";
 import { Modal } from "ant-design-vue";
 import { CopyOutlined, DeleteOutlined, ExclamationCircleOutlined, HolderOutlined } from "@ant-design/icons-vue";
-import { useStore } from "vuex";
+import store from '@/config/store';
 
 import TooltipCell from "@/components/Table/tooltipCell.vue";
 import { momentUtc } from "@/utils/datetime";
 
-const handleChange = async (record, e, store) => {
+const handleChange = async (record, e) => {
   record.disabled = !e;
-  // await store.commit('Global/setSpinning', true);
   const result = await store.dispatch('Endpoint/disabledMockExpect', {
     id: record.id,
     disabled: !e,
@@ -16,10 +15,9 @@ const handleChange = async (record, e, store) => {
   if (result) {
     record.disabled = !e;
   }
-  // await store.commit('Global/setSpinning', false);
 };
 
-const handleClone = async (record, store) => {
+const handleClone = async (record) => {
   await store.commit('Global/setSpinning', true);
   await store.dispatch('Endpoint/cloneMockExpect', {
     id: record.id,
@@ -27,7 +25,7 @@ const handleClone = async (record, store) => {
   await store.commit('Global/setSpinning', false);
 };
 
-const handleDelete = (record, store) => {
+const handleDelete = (record) => {
   Modal.confirm({
     title: '确认要删除该Mock用例吗',
     icon: createVNode(ExclamationCircleOutlined),
@@ -43,7 +41,7 @@ const handleDelete = (record, store) => {
   });
 };
 
-export const exceptColumns = (store) => [
+export const exceptColumns = [
   {
     title() {
       return (
@@ -63,7 +61,7 @@ export const exceptColumns = (store) => [
     key: 'disabled',
     customRender({ record }) {
       return (
-        <a-switch checked={!record.disabled} onChange={(e) => handleChange(record, e, store)} />
+        <a-switch checked={!record.disabled} onChange={(e) => handleChange(record, e)} />
       )
     },
   },
@@ -71,6 +69,12 @@ export const exceptColumns = (store) => [
     title: '创建人',
     dataIndex: 'createUser',
     key: 'createUser',
+    customRender({ record }) {
+      const state: any = store.state;
+      const project: any = state.Project || {};
+      const result = (project?.userList || []).find(arrItem => arrItem.value == record.createUser);
+      return <span>{ result.name || '--' }</span>
+    }
   },
   {
     title: '创建时间',
@@ -101,12 +105,12 @@ export const exceptColumns = (store) => [
       return (
         <div class="except-action">
           <a-tooltip placement="top" title="克隆">
-            <span class="except-action-item" onClick={() => handleClone(record, store)}>
+            <span class="except-action-item" onClick={() => handleClone(record)}>
               <CopyOutlined />
             </span>
           </a-tooltip>
           <a-tooltip placement="top" title="删除">
-            <span class="except-action-item" onClick={() => handleDelete(record, store)}>
+            <span class="except-action-item" onClick={() => handleDelete(record)}>
               <DeleteOutlined />
             </span>
           </a-tooltip>

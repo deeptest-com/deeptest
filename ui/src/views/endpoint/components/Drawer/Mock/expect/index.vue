@@ -6,7 +6,7 @@
       :rowKey="(record) => record.id" 
       :dataSource="expectList"
       :loading="loading" 
-      :columns="exceptColumns(store)" 
+      :columns="exceptColumns" 
       id="except-table">
       <template #mockName="{ record }">
         <div class="except-name">

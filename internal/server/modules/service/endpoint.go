@@ -566,7 +566,7 @@ func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{
 
 	var bodyItem model.EndpointInterfaceResponseBodyItem
 	bodyItem, err = s.EndpointInterfaceRepo.GetResponseDefine(req.EndpointId, req.Method, req.Code)
-	if err != nil {
+	if err != nil || bodyItem.Content == "" {
 		return
 	}
 

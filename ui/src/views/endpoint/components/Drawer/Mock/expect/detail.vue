@@ -313,7 +313,6 @@ const handleDelete = (record, type) => {
 }
 
 const handleEditorChange = (e) => {
-  console.log(e);
   formState.responseBody.value = e;
   jsonContent.value = e;
 }
@@ -353,7 +352,7 @@ const initListData = (array: any) => {
 watch(() => {
   return unref(mockExpectDetail);
 }, val => {
-  console.log('获取当前查看的mockExpect详情', val);
+  console.error('获取当前查看的mockExpect详情', val);
   if (val.id) {
     // 设置当前formState
     Object.assign(formState, {
@@ -370,7 +369,6 @@ watch(() => {
   }
 }, {
   immediate: true,
-  deep: true
 });
 
 watch(() => {

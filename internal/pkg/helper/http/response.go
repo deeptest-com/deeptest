@@ -13,3 +13,11 @@ func IsJsonResp(resp domain.DebugResponse) (ret bool) {
 
 	return
 }
+
+func IsJsonRespType(typ consts.HttpContentType) (ret bool) {
+	ret = strings.Contains(
+		strings.ToLower(typ.String()),
+		strings.ToLower(consts.ContentTypeJSON.String()))
+
+	return
+}

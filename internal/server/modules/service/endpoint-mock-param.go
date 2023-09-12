@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -100,11 +101,14 @@ func (s *EndpointMockParamService) getRealBody(ctx iris.Context) (body string, b
 		return
 	}
 
-	reqContentType := ctx.GetContentType()
+	reqContentType := ctx.GetContentTypeRequested()
 
 	if reqContentType == consts.ContentTypeJSON.String() {
 		var req interface{}
 		ctx.ReadJSON(&req)
+
+		bodyBytes, _ := json.Marshal(req)
+		body = string(bodyBytes)
 
 	} else if reqContentType == consts.ContentTypeFormData.String() {
 		bodyForm = ctx.FormValues()

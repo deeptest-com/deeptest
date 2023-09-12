@@ -1,11 +1,14 @@
 package service
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/kataras/iris/v12"
+	"strconv"
 )
 
 type MockAdvanceService struct {
@@ -51,19 +54,26 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 	expects, _ := s.EndpointMockExpectRepo.ListByEndpointId(endpointInterface.EndpointId)
 
 	for _, expect := range expects {
-		if expect.Disabled {
+		if expect.Disabled || expect.Method != endpointInterface.Method {
 			continue
 		}
 
 		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(expect.ID)
 		if s.MatchExpect(expectRequestMap, endpointInterface, endpoint, ctx) {
-			respBody, respHeaders := s.GetExpectResult(expect)
+			respData, respHeaders := s.GetExpectResult(expect)
 
+			codeInt, _ := strconv.ParseInt(respData.Code, 10, 64)
+			resp.StatusCode = consts.HttpRespCode(codeInt)
 			resp.ContentType = endpointInterface.BodyType
-			resp.Content = respBody.Value
 			resp.Headers = respHeaders
+			resp.Content = respData.Value
 
 			resp.UseAdvMockMock = true
+			byAdvance = true
+
+			if httpHelper.IsJsonRespType(resp.ContentType) {
+				json.Unmarshal([]byte(resp.Content), &resp.Data)
+			}
 		}
 	}
 

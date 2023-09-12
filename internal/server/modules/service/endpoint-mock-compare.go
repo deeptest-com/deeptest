@@ -21,9 +21,13 @@ type EndpointMockCompareService struct {
 func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMockExpectRequest, contentType consts.HttpContentType, body string, bodyForm map[string][]string) (ret bool) {
 	if httpHelper.IsJsonContent(contentType.String()) { // json
 		if expectRequest.SelectType == consts.KeyValue {
-			jsn, _ := simplejson.NewJson([]byte(body))
+			jsn, err := simplejson.NewJson([]byte(body))
+			if err != nil {
+				return false
+			}
+
 			expectValue := expectRequest.Value
-			actualValue := jsn.Get(expectRequest.Name) // get value of key on first level
+			actualValue, _ := jsn.Get(expectRequest.Name).String() // get value of key on first level
 
 			ret = s.CompareObject(expectValue, actualValue, expectRequest.CompareWay)
 
@@ -35,7 +39,7 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 
 			ret = s.CompareObject(expectValue, actualValue, expectRequest.CompareWay)
 
-		} else if expectRequest.SelectType == consts.FullText { // use
+		} else if expectRequest.SelectType == consts.FullText || expectRequest.SelectType == "" {
 			expectValue := expectRequest.Value
 			actualValue := body
 

@@ -630,6 +630,16 @@ definitions:
     - Int
     - Float
     - String
+  consts.ExpectRequestSelectType:
+    enum:
+    - keyValue
+    - xPath
+    - fullText
+    type: string
+    x-enum-varnames:
+    - KeyValue
+    - Xpath
+    - FullText
   consts.ExtractorScope:
     enum:
     - private
@@ -1289,9 +1299,7 @@ definitions:
           $ref: '#/definitions/domain.ExecCookie'
         type: array
       data:
-        additionalProperties: true
         description: Content obj in goja
-        type: object
       headers:
         items:
           $ref: '#/definitions/domain.Header'
@@ -2486,6 +2494,8 @@ definitions:
         type: array
       projectId:
         type: integer
+      scriptMockDisabled:
+        type: boolean
       serialNumber:
         type: string
       serveId:
@@ -2988,6 +2998,8 @@ definitions:
         type: integer
       name:
         type: string
+      selectType:
+        $ref: '#/definitions/consts.ExpectRequestSelectType'
       source:
         $ref: '#/definitions/consts.ParamIn'
       updatedAt:
@@ -4502,6 +4514,15 @@ definitions:
     properties:
       id:
         type: integer
+    type: object
+  serverDomain.CreateExampleReq:
+    properties:
+      code:
+        type: string
+      endpointId:
+        type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
     type: object
   serverDomain.DataReq:
     properties:
@@ -10095,6 +10116,27 @@ paths:
                   type: integer
               type: object
       summary: 复制期望
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/createExample:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 生成响应体
+        in: body
+        name: createExampleReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.CreateExampleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 生成响应体
       tags:
       - Mock期望
   /api/v1/mockExpect/list:

@@ -23,3 +23,9 @@ type MockJsExpression struct {
 type MockExpectIdsReq []uint
 
 type MockExpectRequestOptions map[consts.ParamIn][]string
+
+type CreateExampleReq struct {
+	EndpointId uint              `json:"endpointId"`
+	Method     consts.HttpMethod `json:"method"`
+	Code       string            `json:"code"`
+}

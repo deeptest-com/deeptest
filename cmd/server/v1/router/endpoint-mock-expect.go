@@ -27,6 +27,7 @@ func (m *EndpointMockExpectModule) Party() module.WebModule {
 		public.Get("/requestOptions", m.EndpointMockExpectCtrl.GetExpectRequestOptions).Name = "获取请求参数下拉选项"
 
 		public.Post("/{endpointId:uint}/disable", m.EndpointMockExpectCtrl.Disable).Name = "更新项目"
+		public.Post("/createExample", m.EndpointMockExpectCtrl.CreateExample).Name = "获取请求参数下拉选项"
 	}
 	return module.NewModule("/mockExpect", handler)
 }

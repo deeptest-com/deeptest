@@ -556,3 +556,26 @@ func (s *EndpointService) UpdateAdvancedMockDisabled(endpointId uint, disabled b
 	err = s.EndpointRepo.UpdateAdvancedMockDisabled(endpointId, disabled)
 	return
 }
+
+func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{}, err error) {
+	var endpoint model.Endpoint
+	endpoint, err = s.EndpointRepo.Get(req.EndpointId)
+	if err != nil {
+		return
+	}
+
+	var bodyItem model.EndpointInterfaceResponseBodyItem
+	bodyItem, err = s.EndpointInterfaceRepo.GetResponseDefine(req.EndpointId, req.Method, req.Code)
+	if err != nil {
+		return
+	}
+
+	schema2conv := schemaHelper.NewSchema2conv()
+	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
+
+	schema := schemaHelper.SchemaRef{}
+	_commUtils.JsonDecode(bodyItem.Content, &schema)
+
+	return
+
+}

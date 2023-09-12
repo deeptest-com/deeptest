@@ -6282,6 +6282,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/mockExpect/createExample": {
+            "post": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mock期望"
+                ],
+                "summary": "生成响应体",
+                "parameters": [
+                    {
+                        "description": "生成响应体",
+                        "name": "createExampleReq",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/serverDomain.CreateExampleReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/mockExpect/list": {
             "get": {
                 "consumes": [
@@ -16046,6 +16079,19 @@ const docTemplate = `{
                 "String"
             ]
         },
+        "consts.ExpectRequestSelectType": {
+            "type": "string",
+            "enum": [
+                "keyValue",
+                "xPath",
+                "fullText"
+            ],
+            "x-enum-varnames": [
+                "KeyValue",
+                "Xpath",
+                "FullText"
+            ]
+        },
         "consts.ExtractorScope": {
             "type": "string",
             "enum": [
@@ -16886,9 +16932,7 @@ const docTemplate = `{
                     }
                 },
                 "data": {
-                    "description": "Content obj in goja",
-                    "type": "object",
-                    "additionalProperties": true
+                    "description": "Content obj in goja"
                 },
                 "headers": {
                     "type": "array",
@@ -18699,6 +18743,9 @@ const docTemplate = `{
                 "projectId": {
                     "type": "integer"
                 },
+                "scriptMockDisabled": {
+                    "type": "boolean"
+                },
                 "serialNumber": {
                     "type": "string"
                 },
@@ -19457,6 +19504,9 @@ const docTemplate = `{
                 },
                 "name": {
                     "type": "string"
+                },
+                "selectType": {
+                    "$ref": "#/definitions/consts.ExpectRequestSelectType"
                 },
                 "source": {
                     "$ref": "#/definitions/consts.ParamIn"
@@ -21735,6 +21785,20 @@ const docTemplate = `{
             "properties": {
                 "id": {
                     "type": "integer"
+                }
+            }
+        },
+        "serverDomain.CreateExampleReq": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "endpointId": {
+                    "type": "integer"
+                },
+                "method": {
+                    "$ref": "#/definitions/consts.HttpMethod"
                 }
             }
         },

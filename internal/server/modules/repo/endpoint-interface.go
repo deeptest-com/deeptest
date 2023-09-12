@@ -895,3 +895,26 @@ func (r *EndpointInterfaceRepo) GetByMethodAndPathAndServeId(serveId uint, path 
 	return data.Id
 
 }
+
+func (r *EndpointInterfaceRepo) GetResponseDefine(endpointId uint, method consts.HttpMethod, code string) (ret model.EndpointInterfaceResponseBodyItem, err error) {
+
+	var endpointInterface model.EndpointInterface
+	err = r.DB.Where("endpoint_id=? AND method=? AND  NOT deleted", endpointId, method).First(&endpointInterface).Error
+	if err != nil {
+		return
+	}
+
+	response := r.GetResponse(endpointInterface.ID, code)
+	if response.ID == 0 {
+		return
+	}
+
+	var bodyItems map[uint]model.EndpointInterfaceResponseBodyItem
+	bodyItems, err = r.GetResponseBodyItems([]uint{response.ID})
+	if err != nil {
+		return
+	}
+
+	return bodyItems[response.ID], nil
+
+}

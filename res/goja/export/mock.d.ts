@@ -33,4 +33,3 @@ declare global {
 
     const log : (obj: any) => {}
 }
-

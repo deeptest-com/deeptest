@@ -351,8 +351,9 @@ const (
 	NotContain ComparisonOperator = "notContain"
 
 	RegularMatch ComparisonOperator = "regularMatch"
-	Exist        ComparisonOperator = "exist"
-	NotExist     ComparisonOperator = "notExist"
+
+	Exist    ComparisonOperator = "exist"
+	NotExist ComparisonOperator = "notExist"
 )
 
 func (e ComparisonOperator) String() string {
@@ -360,26 +361,25 @@ func (e ComparisonOperator) String() string {
 }
 
 var StringComparisons = []ComparisonOperator{
-	// number
+	Equal,
+	NotEqual,
 	GreaterThan,
 	GreaterThanOrEqual,
 	LessThan,
 	LessThanOrEqual,
 
-	Equal,
-	NotEqual,
 	Contain,
 	NotContain,
-	RegularMatch,
 
-	Exist,
-	NotExist,
+	RegularMatch,
 }
 var TextComparisons = []ComparisonOperator{
 	Equal,
 	NotEqual,
+
 	Contain,
 	NotContain,
+
 	RegularMatch,
 }
 

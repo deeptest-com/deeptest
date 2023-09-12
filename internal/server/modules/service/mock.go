@@ -39,12 +39,12 @@ type MockService struct {
 
 func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGenerator.Response, err error) {
 	// load endpoint interface
-	endpointInterface, paramsMap, err := s.FindEndpointInterface(req)
+	endpointInterface, _, err := s.FindEndpointInterface(req)
 	if err != nil {
 		return
 	}
 
-	resp, ok := s.MockAdvanceService.ByAdvanceMock(endpointInterface, paramsMap, ctx)
+	resp, ok := s.MockAdvanceService.ByAdvanceMock(endpointInterface, ctx)
 	if ok {
 		return
 	}

@@ -6,7 +6,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/kataras/iris/v12"
-	"log"
 )
 
 type MockAdvanceService struct {
@@ -20,10 +19,12 @@ type MockAdvanceService struct {
 	EndpointMockExpectService *EndpointMockExpectService   `inject:""`
 	EndpointMockScriptService *EndpointMockScriptService   `inject:""`
 
-	EndpointMockParamService *EndpointMockParamService `inject:""`
+	EndpointMockParamService   *EndpointMockParamService   `inject:""`
+	EndpointMockCompareService *EndpointMockCompareService `inject:""`
 }
 
-func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInterface, paramsMap map[string]string, ctx iris.Context) (resp mockGenerator.Response, byAdvance bool) {
+func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInterface, ctx iris.Context) (
+	resp mockGenerator.Response, byAdvance bool) {
 
 	endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
 
@@ -76,6 +77,7 @@ func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, resp *mockGenerat
 
 func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]model.EndpointMockExpectRequest,
 	endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (ret bool) {
+
 	headerParams, queryParams, pathParams, body, bodyForm :=
 		s.EndpointMockParamService.GetRealRequestValues(ctx, endpointInterface, endpoint)
 
@@ -143,17 +145,15 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 
 		} else if source == consts.ParamInBody {
 			for _, item := range expectRequests {
-				actualVal := body
-				expectVal := item.Value
+				contentType := endpointInterface.BodyType
 
-				if actualVal != expectVal {
-					return false
+				ret = s.EndpointMockCompareService.CompareBody(item, contentType, body, bodyForm)
+
+				if !ret {
+					return
 				}
 			}
 		}
-
-		// TODO:
-		log.Println(headerParams, queryParams, pathParams, body, bodyForm, expectRequests)
 	}
 
 	return

@@ -12,6 +12,7 @@ import (
 type EndpointMockExpectCtrl struct {
 	BaseCtrl
 	EndpointMockExpectService *service.EndpointMockExpectService `inject:""`
+	EndpointService           *service.EndpointService           `inject:""`
 }
 
 // List
@@ -278,4 +279,29 @@ func (c *EndpointMockExpectCtrl) GetExpectRequestOptions(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: options, Msg: _domain.NoErr.Msg})
+}
+
+// CreateExample
+// @Tags	Mock期望
+// @summary	生成响应体
+// @accept	application/json
+// @Produce	application/json
+// @Param 	createExampleReq 	body 	serverDomain.CreateExampleReq	true 	"生成响应体"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/mockExpect/createExample	[post]
+func (c *EndpointMockExpectCtrl) CreateExample(ctx iris.Context) {
+
+	req := serverDomain.CreateExampleReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	data, err := c.EndpointService.CreateExample(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }

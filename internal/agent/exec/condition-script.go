@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	MyVm      JsVm
-	MyRequire *require.RequireModule
+	execVm      JsVm
+	execRequire *require.RequireModule
 
 	VariableSettings []domain.ExecVariable
 
@@ -36,7 +36,7 @@ func ExecScript(scriptObj *domain.ScriptBase) (err error) {
 	}
 
 	logs = nil
-	resultVal, err := MyVm.JsRuntime.RunString(scriptObj.Content)
+	resultVal, err := execVm.JsRuntime.RunString(scriptObj.Content)
 
 	result := fmt.Sprintf("%v", resultVal)
 	if result == "undefined" {
@@ -59,42 +59,42 @@ func ExecScript(scriptObj *domain.ScriptBase) (err error) {
 }
 
 func InitJsRuntime() {
-	if MyVm.JsRuntime != nil {
+	if execVm.JsRuntime != nil {
 		return
 	}
 
 	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 
-	MyVm.JsRuntime = goja.New()
-	MyVm.JsRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
+	execVm.JsRuntime = goja.New()
+	execVm.JsRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
 
 	defineJsFuncs()
 	defineGoFuncs()
 
 	// load global script
-	MyRequire = registry.Enable(MyVm.JsRuntime)
+	execRequire = registry.Enable(execVm.JsRuntime)
 	pth := filepath.Join(consts.TmpDir, "deeptest.js")
 	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
-	dt, err := MyRequire.Require(pth)
+	dt, err := execRequire.Require(pth)
 	if err != nil {
 		logUtils.Info(err.Error())
 		return
 	}
 
-	MyVm.JsRuntime.Set("dt", dt)
+	execVm.JsRuntime.Set("dt", dt)
 }
 
 func GetReqValueFromGoja() (err error) {
-	_, err = MyVm.JsRuntime.RunString("getReqValueFromGoja(dt.request);")
+	_, err = execVm.JsRuntime.RunString("getReqValueFromGoja(dt.request);")
 	return
 }
 func GetRespValueFromGoja() (err error) {
-	_, err = MyVm.JsRuntime.RunString("getRespValueFromGoja(dt.response);")
+	_, err = execVm.JsRuntime.RunString("getRespValueFromGoja(dt.response);")
 	return
 }
 
 func defineJsFuncs() {
-	MyVm.JsRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
+	execVm.JsRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
 		rowIndex := getDatapoolRow(dpName, seq, ExecScene.Datapools)
 
 		if ExecScene.Datapools[dpName] == nil {
@@ -115,7 +115,7 @@ func defineJsFuncs() {
 		return
 	})
 
-	MyVm.JsRuntime.Set("getVariable", func(name string) interface{} {
+	execVm.JsRuntime.Set("getVariable", func(name string) interface{} {
 		var scopeId uint
 		if CurrScenarioProcessor != nil {
 			scopeId = CurrScenarioProcessor.ParentId
@@ -123,7 +123,7 @@ func defineJsFuncs() {
 		vari, _ := GetVariable(scopeId, name)
 		return vari.Value
 	})
-	MyVm.JsRuntime.Set("setVariable", func(name, val string) {
+	execVm.JsRuntime.Set("setVariable", func(name, val string) {
 		var scopeId uint
 		if CurrScenarioProcessor != nil {
 			scopeId = CurrScenarioProcessor.ParentId
@@ -136,7 +136,7 @@ func defineJsFuncs() {
 
 		return
 	})
-	MyVm.JsRuntime.Set("clearVariable", func(name string) {
+	execVm.JsRuntime.Set("clearVariable", func(name string) {
 		var scopeId uint
 		if CurrScenarioProcessor != nil {
 			scopeId = CurrScenarioProcessor.ParentId
@@ -144,10 +144,10 @@ func defineJsFuncs() {
 		ClearVariable(scopeId, name)
 	})
 
-	MyVm.JsRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
+	execVm.JsRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
 		CurrRequest = value
 	})
-	MyVm.JsRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
+	execVm.JsRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
 		if httpHelper.IsJsonResp(value) {
 			bytes, _ := json.Marshal(value.Data)
 			value.Content = string(bytes)
@@ -158,7 +158,7 @@ func defineJsFuncs() {
 		}
 	})
 
-	MyVm.JsRuntime.Set("log", func(value interface{}) {
+	execVm.JsRuntime.Set("log", func(value interface{}) {
 		bytes, _ := json.Marshal(value)
 		logs = append(logs, string(bytes))
 	})
@@ -173,12 +173,12 @@ func defineGoFuncs() {
 	script := `function _setData(name, val) {
 					dt[name] = val
 				}`
-	_, err := MyVm.JsRuntime.RunString(script)
+	_, err := execVm.JsRuntime.RunString(script)
 	if err != nil {
 		logUtils.Infof(err.Error())
 	}
 
-	err = MyVm.JsRuntime.ExportTo(MyVm.JsRuntime.Get("_setData"), &_setValueFunc)
+	err = execVm.JsRuntime.ExportTo(execVm.JsRuntime.Get("_setData"), &_setValueFunc)
 }
 
 func SetReqValueToGoja(req domain.BaseRequest) {

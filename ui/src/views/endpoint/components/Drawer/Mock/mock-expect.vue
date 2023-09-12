@@ -59,7 +59,7 @@ const disable = () => {
 
   .toolbar {
     position: absolute;
-    top: -50px;
+    top: -58px;
     right: 0px;
 
     text-align: right;

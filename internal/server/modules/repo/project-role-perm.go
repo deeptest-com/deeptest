@@ -88,19 +88,59 @@ func (r *ProjectRolePermRepo) GetByRoleAndPerm(roleId, permId uint) (ret model.P
 }
 
 // GetProjectPermsForRole TODO: 每个角色需要的权限还未确定，需要改动
+// TODO: 后续可能会有其他需求，禁止某些角色访问部分接口，需要对这部分代码进行优化，并改成配置化
 func (r *ProjectRolePermRepo) GetProjectPermsForRole() (res map[consts.RoleType][]uint, err error) {
-	var permIds, testPermIds []uint
+	var permIds, excludePermIds []uint
+
+	//查找所有ID，放在permIds中
 	err = r.DB.Model(&model.ProjectPerm{}).Select("id").Find(&permIds).Error
-	err = r.DB.Model(&model.ProjectPerm{}).Select("id").Where("name like ?", "/api/v1/projects%").Find(&testPermIds).Error
-	res = map[consts.RoleType][]uint{
-		consts.Admin:          permIds,
-		consts.User:           permIds,
-		consts.Tester:         permIds,
-		consts.Developer:      permIds,
-		consts.ProductManager: permIds,
+	if err != nil {
+		return
+	}
+
+	//需要特殊处理的接口路径（当某些角色不能访问某些接口时，通过这块把id提出来）
+	apiPath := [...]string{"/api/v1/users/invite", "/api/v1/projects/changeUserRole"}
+	err = r.DB.Model(&model.ProjectPerm{}).Select("id").Where("name in ?", apiPath).Find(&excludePermIds).Error
+	if err != nil {
+		return
+	}
+	res = make(map[consts.RoleType][]uint)
+	// 遍历枚举类型，并将每个枚举值添加到映射中
+	for role := range map[consts.RoleType]struct{}{
+		consts.Admin:          {},
+		consts.User:           {},
+		consts.Tester:         {},
+		consts.Developer:      {},
+		consts.ProductManager: {},
+	} {
+		res[role] = []uint{} // 将枚举值作为键，空结构体作为值存储在映射中
+	}
+
+	for role := range res {
+		//复制permIds的值给tmp，避免传递索引，导致最终改动一个role，其他都变化
+		tmp := make([]uint, len(permIds)) // 创建一次tmp切片，然后对其进行修改
+		copy(tmp, permIds)                // 复制permIds的值给tmp
+
+		if role == consts.Developer || role == consts.Tester || role == consts.User {
+			// 移除与excludePermIds中的路径ID相匹配的权限ID
+			tmp = excludePerms(tmp, excludePermIds)
+		}
+		res[role] = tmp
 	}
 
 	return
+}
+
+func excludePerms(perms []uint, excludePerms []uint) []uint {
+	for _, perm := range excludePerms {
+		for i := 0; i < len(perms); i++ {
+			if perms[i] == perm {
+				perms = append(perms[:i], perms[i+1:]...)
+				i-- // 调整索引，确保不跳过元素
+			}
+		}
+	}
+	return perms
 }
 
 func (r *ProjectRolePermRepo) AddPermForProjectRole(roleName consts.RoleType, perms []uint) (successCount int, failItems []string) {

@@ -64,9 +64,9 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 
 			codeInt, _ := strconv.ParseInt(respData.Code, 10, 64)
 			resp.StatusCode = consts.HttpRespCode(codeInt)
-
 			resp.ContentType = endpointInterface.BodyType
 			resp.Headers = respHeaders
+			resp.Content = respData.Value
 
 			resp.UseAdvMockMock = true
 			byAdvance = true

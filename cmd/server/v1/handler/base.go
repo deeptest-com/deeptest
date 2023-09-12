@@ -39,7 +39,7 @@ func (c *BaseCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 
 	/** object to marshal **/
 	case context.ContentJSONHeaderValue:
-		ctx.JSONP(data)
+		ctx.JSON(data)
 
 	case context.ContentJavascriptHeaderValue:
 		ctx.JSONP(data)

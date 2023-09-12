@@ -129,6 +129,10 @@ func (r *EndpointMockExpectRepo) Save(req model.EndpointMockExpect) (expectId ui
 			}
 		}
 	} else {
+		if err = r.DeleteRequestByExpectIdAndSource(req.ID, consts.ParamInBody); err != nil {
+			return 0, err
+		}
+
 		if err = r.UpdateExpectRequest(req); err != nil {
 			return 0, err
 		}
@@ -237,6 +241,15 @@ func (r *EndpointMockExpectRepo) Disable(endpointId uint) (err error) {
 func (r *EndpointMockExpectRepo) DeleteDetailByExpectId(model interface{}, expectId uint) (err error) {
 	err = r.DB.Model(&model).
 		Where("endpoint_mock_expect_id = ?", expectId).
+		Update("deleted", 1).Error
+
+	return
+}
+
+func (r *EndpointMockExpectRepo) DeleteRequestByExpectIdAndSource(expectId uint, selectType consts.ParamIn) (err error) {
+	err = r.DB.Model(&model.EndpointMockExpectRequest{}).
+		Where("endpoint_mock_expect_id = ?", expectId).
+		Where("source = ?", selectType).
 		Update("deleted", 1).Error
 
 	return

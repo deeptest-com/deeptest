@@ -73,7 +73,7 @@ export const exceptColumns = [
       const state: any = store.state;
       const project: any = state.Project || {};
       const result = (project?.userList || []).find(arrItem => arrItem.value == record.createUser);
-      return <span>{ result.name || '--' }</span>
+      return <span>{ result?.name || '--' }</span>
     }
   },
   {

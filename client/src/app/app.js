@@ -362,6 +362,7 @@ export class DeepTestApp {
         if (!app.setAboutPanelOptions) {
             return;
         }
+        // todo 需要更新字段，待转成内部仓库后更新
         let version = Config.pkg.buildTime ? 'build at ' + new Date(Config.pkg.buildTime).toLocaleString() : ''
         version +=  DEBUG ? '[debug]' : ''
         app.setAboutPanelOptions({

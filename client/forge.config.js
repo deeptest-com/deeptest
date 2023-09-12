@@ -1,8 +1,5 @@
-/**
- *  打包ly的包时，需要修改下面的引用 package 路径
- * */
-// import pkg from './src/app/package.json';
-const pkg = require('./src/app/package-ly.json');
+console.log(`process.env.IS_LY_PACK=${process.env.IS_LY_PACK}`, process.env.IS_LY_PACK );
+const pkg = process.env.IS_LY_PACK == 1 ? require('./src/app/package-ly.json') : require('./src/app/package.json');
 
 module.exports = {
     // Windows and macOS only 设置图标
@@ -16,10 +13,6 @@ module.exports = {
             './lang',
         ]
     },
-    // electronPackagerConfig: {
-    //     "name": "deeptest",
-    //     "icon": "./ui/favicon.ico"
-    // },
     makers: [
         // 使用 Electron Forge 为你的 Electron 应用程序创建 Windows 安装程序
         {

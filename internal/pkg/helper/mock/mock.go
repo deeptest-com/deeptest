@@ -130,9 +130,9 @@ func InitJsRuntime() {
 
 	// load global script
 	mockRequire = registry.Enable(mockVm.JsRuntime)
-	pth := filepath.Join(consts.WorkDir, "mocke.js")
+	pth := filepath.Join(consts.WorkDir, "mock.js")
 
-	script := scriptHelper.GetScript(scriptHelper.ScriptMocke)
+	script := scriptHelper.GetScript(scriptHelper.ScriptMock)
 	fileUtils.WriteFile(pth, script)
 
 	dt, err := mockRequire.Require(pth)

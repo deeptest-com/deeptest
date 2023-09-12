@@ -106,7 +106,7 @@ func (r *ScriptRepo) CreateDefault(conditionId uint, src consts.ConditionSrc) (p
 	po = model.DebugConditionScript{
 		ScriptBase: domain.ScriptBase{
 			ConditionId:  conditionId,
-			Content:      scriptHelper.GetScript(scriptHelper.ScriptVariablesGet),
+			Content:      scriptHelper.GetScript(scriptHelper.SnippetVariablesGet),
 			ConditionSrc: src,
 		},
 	}

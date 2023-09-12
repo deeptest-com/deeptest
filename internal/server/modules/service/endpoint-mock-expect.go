@@ -100,19 +100,13 @@ func (s *EndpointMockExpectService) UpdateExpectName(expectId uint, name string)
 }
 
 func (s *EndpointMockExpectService) GetExpectRequestOptions(endpointId, endpointInterfaceId uint) (ret v1.MockExpectRequestOptions, err error) {
-	ret = make(map[consts.ParamIn][]string)
+	ret = make(v1.MockExpectRequestOptions)
 
 	headerOptions, err := s.GetExpectRequestHeaderOptions(endpointInterfaceId)
 	if err != nil {
 		return
 	}
 	ret[consts.ParamInHeader] = headerOptions
-
-	bodyOptions, err := s.GetExpectRequestBodyOptions(endpointInterfaceId)
-	if err != nil {
-		return
-	}
-	ret[consts.ParamInBody] = bodyOptions
 
 	queryOptions, err := s.GetExpectRequestQueryOptions(endpointInterfaceId)
 	if err != nil {
@@ -129,18 +123,29 @@ func (s *EndpointMockExpectService) GetExpectRequestOptions(endpointId, endpoint
 	return
 }
 
-func (s *EndpointMockExpectService) GetExpectRequestHeaderOptions(endpointInterfaceId uint) (options []string, err error) {
+func (s *EndpointMockExpectService) GetExpectRequestHeaderOptions(endpointInterfaceId uint) (options []v1.MockExpectRequestOption, err error) {
 	headers, err := s.EndpointInterfaceRepo.ListHeaders(endpointInterfaceId)
 	if err != nil {
 		return
 	}
 
-	options = consts.HeaderOptions
+	headerOptionArr := make([]string, 0)
 	for _, v := range headers {
-		options = append(options, v.Name)
+		options = append(options, v1.MockExpectRequestOption{
+			Name: v.Name,
+			Type: v.Type,
+		})
+		headerOptionArr = append(headerOptionArr, v.Name)
 	}
 
-	options = _commUtils.ArrayRemoveDuplication(options)
+	commonOptions := consts.HeaderOptions
+	for _, v := range commonOptions {
+		if !_commUtils.InArray(v, headerOptionArr) {
+			options = append(options, v1.MockExpectRequestOption{
+				Name: v,
+			})
+		}
+	}
 
 	return
 }
@@ -162,27 +167,27 @@ func (s *EndpointMockExpectService) GetExpectRequestBodyOptions(endpointInterfac
 	return
 }
 
-func (s *EndpointMockExpectService) GetExpectRequestQueryOptions(endpointInterfaceId uint) (options []string, err error) {
+func (s *EndpointMockExpectService) GetExpectRequestQueryOptions(endpointInterfaceId uint) (options []v1.MockExpectRequestOption, err error) {
 	queries, err := s.EndpointInterfaceRepo.ListParams(endpointInterfaceId)
 	if err != nil {
 		return
 	}
 
 	for _, v := range queries {
-		options = append(options, v.Name)
+		options = append(options, v1.MockExpectRequestOption{Name: v.Name, Type: v.Type})
 	}
 
 	return
 }
 
-func (s *EndpointMockExpectService) GetExpectRequestPathOptions(endpointId uint) (options []string, err error) {
+func (s *EndpointMockExpectService) GetExpectRequestPathOptions(endpointId uint) (options []v1.MockExpectRequestOption, err error) {
 	paths, err := s.EndpointRepo.GetEndpointPathParams(endpointId)
 	if err != nil {
 		return
 	}
 
 	for _, v := range paths {
-		options = append(options, v.Name)
+		options = append(options, v1.MockExpectRequestOption{Name: v.Name, Type: v.Type})
 	}
 
 	return

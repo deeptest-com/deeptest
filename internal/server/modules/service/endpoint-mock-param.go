@@ -103,8 +103,7 @@ func (s *EndpointMockParamService) getRealBody(ctx iris.Context) (body string, b
 	reqContentType := ctx.GetContentTypeRequested()
 
 	if reqContentType == consts.ContentTypeJSON.String() {
-		var req interface{}
-		ctx.ReadJSON(&req)
+		ctx.ReadJSON(&body)
 
 	} else if reqContentType == consts.ContentTypeFormData.String() {
 		bodyForm = ctx.FormValues()

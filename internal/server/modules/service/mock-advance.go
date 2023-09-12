@@ -51,7 +51,7 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 	expects, _ := s.EndpointMockExpectRepo.ListByEndpointId(endpointInterface.EndpointId)
 
 	for _, expect := range expects {
-		if expect.Disabled {
+		if expect.Disabled || expect.Method != endpointInterface.Method {
 			continue
 		}
 

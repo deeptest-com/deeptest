@@ -1,7 +1,9 @@
 package service
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -62,12 +64,16 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 
 			codeInt, _ := strconv.ParseInt(respData.Code, 10, 64)
 			resp.StatusCode = consts.HttpRespCode(codeInt)
-			resp.Content = respData.Value
+
 			resp.ContentType = endpointInterface.BodyType
 			resp.Headers = respHeaders
 
 			resp.UseAdvMockMock = true
 			byAdvance = true
+
+			if httpHelper.IsJsonRespType(resp.ContentType) {
+				json.Unmarshal([]byte(resp.Content), &resp.Data)
+			}
 		}
 	}
 

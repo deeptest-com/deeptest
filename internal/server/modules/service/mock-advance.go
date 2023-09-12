@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/kataras/iris/v12"
+	"strconv"
 )
 
 type MockAdvanceService struct {
@@ -57,13 +58,16 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 
 		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(expect.ID)
 		if s.MatchExpect(expectRequestMap, endpointInterface, endpoint, ctx) {
-			respBody, respHeaders := s.GetExpectResult(expect)
+			respData, respHeaders := s.GetExpectResult(expect)
 
+			codeInt, _ := strconv.ParseInt(respData.Code, 10, 64)
+			resp.StatusCode = consts.HttpRespCode(codeInt)
+			resp.Content = respData.Value
 			resp.ContentType = endpointInterface.BodyType
-			resp.Content = respBody.Value
 			resp.Headers = respHeaders
 
 			resp.UseAdvMockMock = true
+			byAdvance = true
 		}
 	}
 

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
 	"github.com/kataras/iris/v12"
@@ -39,7 +40,9 @@ func (c *BaseCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 
 	/** object to marshal **/
 	case context.ContentJSONHeaderValue:
-		ctx.JSON(data)
+		var jsn interface{}
+		json.Unmarshal([]byte(resp.Content), &jsn)
+		ctx.JSON(jsn)
 
 	case context.ContentJavascriptHeaderValue:
 		ctx.JSONP(data)

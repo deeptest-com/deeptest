@@ -64,15 +64,20 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 
 			codeInt, _ := strconv.ParseInt(respData.Code, 10, 64)
 			resp.StatusCode = consts.HttpRespCode(codeInt)
-			resp.ContentType = endpointInterface.BodyType
 			resp.Headers = respHeaders
 			resp.Content = respData.Value
 
 			resp.UseAdvMockMock = true
 			byAdvance = true
 
+			respDefine := s.EndpointInterfaceRepo.GetResponse(endpointInterface.ID, respData.Code)
+
+			resp.ContentType = consts.HttpContentType(respDefine.MediaType)
+
 			if httpHelper.IsJsonRespType(resp.ContentType) {
 				json.Unmarshal([]byte(resp.Content), &resp.Data)
+			} else {
+				resp.Data = resp.Content
 			}
 		}
 	}

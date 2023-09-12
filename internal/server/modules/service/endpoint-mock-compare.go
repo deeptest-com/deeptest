@@ -51,28 +51,29 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 			expectValue := expectRequest.Value
 
 			items := bodyForm[expectRequest.Name]
-			for item := range items {
+			for _, item := range items {
 				actualValue := item
 				result := s.CompareObject(expectValue, actualValue, expectRequest.CompareWay)
-				if !result {
-					return false
+				if result {
+					return true
 				}
 			}
-
 		}
+
 	} else if contentType == consts.ContentTypeFormUrlencoded {
 		if expectRequest.SelectType == consts.KeyValue { // key/value
 			expectValue := expectRequest.Value
 
 			items := bodyForm[expectRequest.Name]
-			for item := range items {
+			for _, item := range items {
 				actualValue := item
 				result := s.CompareObject(expectValue, actualValue, expectRequest.CompareWay)
-				if !result {
-					return false
+				if result {
+					return true
 				}
 			}
 		}
+
 	} else { // xml, html, text etc.
 		if expectRequest.SelectType == consts.FullText {
 			expectValue := expectRequest.Value
@@ -80,6 +81,7 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 
 			ret = s.CompareObject(expectValue, actualValue, expectRequest.CompareWay)
 		}
+
 	}
 
 	return

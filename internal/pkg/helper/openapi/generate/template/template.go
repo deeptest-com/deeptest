@@ -75,6 +75,7 @@ func (t *template) AddField(field field) {
 
 	field.fieldType = t.fieldTypeConv(field.fieldType)
 	if _, ok := t.fields[field.fieldName]; !ok {
+		t.fieldArray = append(filedArray{field}, t.fieldArray...)
 		t.fieldArray = append(t.fieldArray, field)
 	}
 }

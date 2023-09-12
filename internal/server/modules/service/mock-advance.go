@@ -159,10 +159,6 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 	return
 }
 
-func (s *MockAdvanceService) compare(expect model.EndpointMockExpect) (ret bool) {
-	return
-}
-
 func (s *MockAdvanceService) GetExpectResult(expect model.EndpointMockExpect) (
 	respContent model.EndpointMockExpectResponse, respHeaders []model.EndpointMockExpectResponseHeader) {
 

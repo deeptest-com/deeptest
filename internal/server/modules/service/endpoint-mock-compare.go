@@ -27,7 +27,7 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 			}
 
 			expectValue := expectRequest.Value
-			actualValue := jsn.Get(expectRequest.Name) // get value of key on first level
+			actualValue, _ := jsn.Get(expectRequest.Name).String() // get value of key on first level
 
 			ret = s.CompareObject(expectValue, actualValue, expectRequest.CompareWay)
 

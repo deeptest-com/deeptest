@@ -12,22 +12,30 @@
       <a-form 
         layout="vertical"
         :model="formState" 
-        :label-col="labelCol" 
         class="mock-detail-form"
         ref="mockFormRef">
-        <a-form-item label="期望名称" :rules="rules.name" name="name">
+        <a-form-item class="expect-name" label="期望名称" :rules="rules.name" name="name">
           <a-input style="width: 600px" v-model:value="formState.name" placeholder="请填写mock期望名称" />
         </a-form-item>
-        <a-form-item label="请求方法" :rules="rules.method" name="method">
-          <a-select style="width: 200px;" v-model:value="formState.method" placeholder="请选择请求方法" :options="requestMethodOpts" />
+        <a-form-item class="expect-method" label="请求方法" :rules="rules.method" name="method">
+          <a-select style="width: 200px;" v-model:value="formState.method" placeholder="请选择请求方法" :options="methods" />
         </a-form-item>
         <a-form-item label="期望条件">
           <a-tabs v-model:activeKey="requestActiveKey">
             <a-tab-pane v-for="(item) in requestTabs" :key="item.type" :tab="item.title">
+              <div v-if="item.type === 'requestBodies'" class="requestbodies-select-type">
+                <span>匹配对象: &nbsp;</span>
+                <a-radio-group v-model:value="requestBodyType" @change="handleRequestBodyTypeChanged">
+                  <a-radio value="keyValue">键值</a-radio>
+                  <a-radio value="XPath">XPath元素</a-radio>
+                  <a-radio value="fullText">全文本</a-radio>
+                </a-radio-group>
+              </div>
               <MockData 
                 :type="item.type" 
                 :data="formState" 
                 :optionsMap="dropdownOptions"
+                :selectType="requestBodyType"
                 @columnChange="handleChange" 
                 @delete="handleDelete" />
             </a-tab-pane>
@@ -36,7 +44,13 @@
         <a-form-item label="响应数据">
           <a-row class="mock-response-data">
             <a-form-item label="返回HTTP状态码" name="code" style="margin-right: 20px;" :rules="rules.reponseCode">
-              <a-input placeholder="请输入http状态码" v-model:value="formState.code" />
+              <a-auto-complete
+                v-model:value="formState.code"
+                :options="defaultResponseCodes.map(e => ({ value: e, label: e }))"
+                style="width: 200px"
+                placeholder="请输入或选择http状态码"
+                :filter-option="false"
+              />
             </a-form-item>
             <a-form-item label="返回延迟" name="delayTime" :rules="rules.responseDelay">
               <a-input-number v-model:value="formState.delayTime" />
@@ -48,13 +62,13 @@
               <div class="form-response">
                 <div class="top">
                   <div class="response-left">
-                    <a-radio-group v-model:value="language">
-                      <a-radio-button value="pretty">pretty</a-radio-button>
+                    <a-radio-group v-model:value="language" @change="handleLanguageChange">
+                      <a-radio-button value="json">pretty</a-radio-button>
                       <a-radio-button value="raw">raw</a-radio-button>
                     </a-radio-group>
                   </div>
                   <div class="response-right">
-                    <a-button type="link">自动生成</a-button>
+                    <a-button type="link" @click="generateJsonExample">自动生成</a-button>
                   </div>
                 </div>
                 <div class="bottom">
@@ -63,9 +77,10 @@
                     customId="request-body-main"
                     class="editor"
                     v-model:value="formState.responseBody.value"
-                    :language="'javascript'"
+                    :language="language"
                     theme="vs"
                     height="300"
+                    :timestamp="timestamp"
                     @change="handleEditorChange"
                     :options="editorOptions"/>
                 </div>
@@ -94,7 +109,7 @@ import { MockData } from './components/index';
 
 import { requestTabs } from './index';
 import { MonacoOptions } from "@/utils/const";
-import { requestMethodOpts } from '@/config/constant';
+import { defaultResponseCodes, responseCodes } from '@/config/constant';
 
 const props = defineProps<{
   title?: String;
@@ -108,13 +123,19 @@ const defaultData = {
   name: '',
   value: '',
   compareWay: ''
-}
+};
+/**
+ * method 可选项
+ */
+const methods = computed(() => {
+  return (store.state.Endpoint.endpointDetail.interfaces || []).map(e => e.method).map(e => ({ label: e, value: e }));
+});
 /**
  * form 表单信息
  */
 const formState: any = reactive({
   name: '', // 期望名称
-  method: requestMethodOpts[0].value, // 请求方法
+  method: methods.value[0]?.value, // 请求方法
   code: '',
   delayTime: 0,
   // 列表信息
@@ -130,21 +151,27 @@ const formState: any = reactive({
   responseHeaders: [{...defaultData}], // 响应头
 });
 
+const requestBodyType = ref<any>('keyValue'); // 请求体选择类型： keyValue / XPath表达式 / fullText 对应的表格填写内容不同
+
+const jsonContent = ref('');
+
 /**
  * 页面绑定data
  */
 const mockFormRef = ref();
-const activeKey = ref('1');
-const requestActiveKey = ref('requestHeaders');
+const activeKey = ref('1'); //响应内容tab切换key
+const requestActiveKey = ref('requestQueryParams'); //请求条件tab切换key
 const editorOptions = ref(Object.assign( { usedWith: 'response', readOnly:false }, MonacoOptions ) );
-const language = ref('pretty');
+const language = ref('json');
 const dropdownOptions = computed(() => {
   return store.state.Endpoint.mockExpectOptions;
-});
+}); // 下拉选项
 const mockExpectDetail = computed(() => {
   return store.state.Endpoint.mockExpectDetail;
-});
+}); // 期望详情
 const loading = ref(false);
+
+const timestamp = ref('');
 
 /**
  * http响应码校验
@@ -190,10 +217,11 @@ const rules = {
   }]
 }
 
-const labelCol = { style: { width: '150px' } };
+// const labelCol = { style: { width: '150px' } };
 
 const setDataList = (data: any[], type?: string) => {
-  return cloneDeep(data).filter(e => e.name !== '').map(e => {
+  const list = (type === 'body' && requestBodyType.value === 'fullText') ? cloneDeep(data).filter(e => e.value !== '') : cloneDeep(data).filter(e => e.name !== '');
+  return list.map(e => {
     delete e.idx;
     if (!e.id) {
       delete e.id;
@@ -203,6 +231,9 @@ const setDataList = (data: any[], type?: string) => {
     }
     if (formState.id) {
       e.endpointMockExpectId = formState.id;
+    }
+    if (type === 'body') {
+      e.selectType = requestBodyType.value;
     }
     return e;
   })
@@ -239,10 +270,32 @@ const handleCancel = () => {
   emits('cancel', false);
 };
 
+const handleLanguageChange = (e) => {
+  const val = e.target.value;
+  if (val == 'raw') {
+    console.log(1);
+    formState.responseBody.value = jsonContent.value.replace(/\r\n/g,'').replace(/\n/g,'').replace(/\s+/g,'')
+  }
+}
+
+const handleRequestBodyTypeChanged = (e) => {
+  formState.requestBodies = [{ ...defaultData }].map((e, index) => ({
+    ...e,
+    idx: index + 1,
+  }));
+}
+
 const handleChange = (...args) => {
   const [type] = args;
   try {
     if (!formState[type].some(e => e.name === '')) {
+      const lastElIdx = formState[type][formState[type].length - 1].idx;
+      formState[type].push({ ...defaultData, idx: lastElIdx + 1 });
+    }
+    /**
+     * 请求体类型为fullText时，name为空。
+     */
+    if (requestBodyType.value === 'fullText' && type === 'requestBodies' && formState[type].length === 1) {
       const lastElIdx = formState[type][formState[type].length - 1].idx;
       formState[type].push({ ...defaultData, idx: lastElIdx + 1 });
     }
@@ -260,7 +313,24 @@ const handleDelete = (record, type) => {
 }
 
 const handleEditorChange = (e) => {
+  console.log(e);
   formState.responseBody.value = e;
+  jsonContent.value = e;
+}
+
+const generateJsonExample = async () => {
+  if (!formState.code) {
+    message.error('请先填写http响应状态码');
+    return;
+  }
+  const result = await store.dispatch('Endpoint/generateJsonExample', {
+    code: formState.code,
+    method: formState.method,
+  });
+  console.log(result);
+  if (result !== false) {
+    formState.responseBody.value = result === null ? '' : JSON.stringify(result);
+  }
 }
 
 onMounted(() => {
@@ -296,40 +366,59 @@ watch(() => {
       code: val.responseBody.code,
       delayTime: val.responseBody.delayTime,
     })
+    requestBodyType.value = [...new Set((val.requestBodies || []).map(e => e.selectType))]?.[0] || 'keyValue';
   }
 }, {
   immediate: true,
   deep: true
+});
+
+watch(() => {
+  return formState.responseBody.value;
+}, () => {
+  timestamp.value = Date.now() + '';
+}, {
+  immediate: true,
+  deep: true,
 })
 
 </script>
 <style scoped lang="less">
-.mock-response-data {
+.expect-name, .expect-method {
+  flex-direction: row !important;
 
-  &:has(.ant-form-item-has-error) {
-    margin-bottom: 20px;
-  }
-  :deep(.ant-form-item) {
+  :deep(.ant-form-item-label) {
+    padding: 0;
     display: flex;
     align-items: center;
+    margin-right: 10px;
+    height: 32px;
+  }
+}
+.mock-response-data {
+
+  :deep(.ant-form-item) {
     flex-direction: row;
     margin-bottom: 0 !important;
-
+  
     .ant-form-item-label {
-      padding: 0 !important;
       margin-right: 6px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      height: 32px;
     }
 
     .ant-row.ant-form-item {
       margin-bottom: 0 !important;
     }
 
-    .ant-form-item-explain.ant-form-item-explain-error {
-      position: absolute;
-      left: 0;
-      bottom: -24px;
-      white-space: pre;
-    }
+    // .ant-form-item-explain.ant-form-item-explain-error {
+    //   position: absolute;
+    //   left: 0;
+    //   bottom: -24px;
+    //   white-space: pre;
+    // }
   }
 }
 
@@ -339,15 +428,18 @@ watch(() => {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 10px;
-
-    .response-left {
-
-    }
   }
 
   .bottom {
     width: 100%;
     border: 1px solid #d9d9d9;
   }
+}
+
+.requestbodies-select-type {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  margin-bottom: 18px;
 }
 </style>

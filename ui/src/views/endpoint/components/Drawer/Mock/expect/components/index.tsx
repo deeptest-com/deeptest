@@ -1,83 +1,121 @@
 import { DeleteOutlined } from "@ant-design/icons-vue";
 
-const defaultData = {
-  name: '',
-  value: '',
-  condition: ''
+const conditionArray = [
+  {
+    "label": "等于",
+    "value": "equal"
+  },
+  {
+    "label": "不等于",
+    "value": "notEqual"
+  },
+  {
+    "label": "大于",
+    "value": "greaterThan"
+  },
+  {
+    "label": "大于或等于",
+    "value": "greaterThanOrEqual"
+  },
+  {
+    "label": "小于",
+    "value": "lessThan"
+  },
+  {
+    "label": "小于或等于",
+    "value": "lessThanOrEqual"
+  },
+  {
+    "label": "包含",
+    "value": "contain"
+  },
+  {
+    "label": "不包含",
+    "value": "notContain"
+  },
+  {
+    "label": "正则匹配",
+    "value": "regularMatch"
+  },
+  {
+    "label": "存在",
+    "value": "exist"
+  },
+  {
+    "label": "不存在",
+    "value": "notExist"
+  }
+];
+
+// 不同的类型 下拉选择项也不同
+const CompareWayOfString = ['equal', 'notEqual', 'contain', 'notContain', 'regularMatch'];
+
+const CompareWayOfBodies = ['equal', 'notEqual', 'contain', 'notContain'];
+
+const conditionOptions = (type: string, record: any, optionsMap) => {
+  if (type === 'requestBodies') {
+    return conditionArray.filter(condition => CompareWayOfBodies.includes(condition.value));
+  }
+  if (['requestQueryParams', 'requestPathParams'].includes(type)) {
+    return conditionArray;
+  }
+  const options = optionsMap['header'] || [];
+  if (record.name) {
+    const selectHeaderType = options.find(option => option.name === record.name)?.type;
+    return selectHeaderType === 'string' ? conditionArray.filter(condition => CompareWayOfString.includes(condition.value)) : conditionArray;
+  }
+  return conditionArray;
 }
 
-const conditionOptions = (type: string) => {
-  const conditionArray = [
-    {
-      "label": "等于",
-      "value": "equal"
-    },
-    {
-      "label": "不等于",
-      "value": "notEqual"
-    },
-    {
-      "label": "大于",
-      "value": "greaterThan"
-    },
-    {
-      "label": "大于或等于",
-      "value": "greaterThanOrEqual"
-    },
-    {
-      "label": "小于",
-      "value": "lessThan"
-    },
-    {
-      "label": "小于或等于",
-      "value": "lessThanOrEqual"
-    },
-    {
-      "label": "包含",
-      "value": "contain"
-    },
-    {
-      "label": "不包含",
-      "value": "notContain"
-    },
-    {
-      "label": "正则匹配",
-      "value": "regularMatch"
-    },
-    {
-      "label": "存在",
-      "value": "exist"
-    },
-    {
-      "label": "不存在",
-      "value": "notExist"
-    }
-  ];
-
-  const bodyConditionArray = [
-    {
-      "label": "等于",
-      "value": "equal"
-    },
-    {
-      "label": "不等于",
-      "value": "notEqual"
-    },
-    {
-      "label": "包含",
-      "value": "contain"
-    },
-    {
-      "label": "不包含",
-      "value": "notContain"
-    },
-  ];
-  return ['requestBodies'].includes(type) ? bodyConditionArray : conditionArray;
-}
-
-const Columns = (type: string, onColumnChange: (...args: any[]) => void, onDelete: (...args: any[]) => void, options: any) => {
+const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void, onDelete: (...args: any[]) => void, optionsMap: any, selectType: string}) => {
+  const { type, onColumnChange, onDelete, optionsMap, selectType } = opts;
   const columnsArray = [
-    {
+    // 请求头渲染参数名
+    ['requestHeaders'].includes(type) && {
+      title: '参数名',
+      dataIndex: 'name',
+      key: 'name',
+      customRender({ record }) {
+        const handleSelectChange = (e) => {
+          record.name = e;
+          onColumnChange(type);
+        };
+        return (
+          <>
+            <a-select 
+              value={record.name} 
+              options={(optionsMap['header'] || []).map(option => ({ label: option.name, value: option.name }))} 
+              onChange={(e) => handleSelectChange(e)} />
+          </>
+        )
+      },
+    },
+    // 请求体渲染参数名
+    ['requestBodies'].includes(type) && selectType !== 'fullText' && {
+      title() {
+        return (
+          <>
+            {selectType === 'keyValue' ? '参数名' : 'XPath表达式'}
+          </>
+        )
+      },
+      dataIndex: 'name',
+      key: 'name',
+      customRender({ record }) {
+        const handleInputChange = (e) => {
+          record.name = e.target.value;
+          onColumnChange(type);
+        }
+        return (
+          <>
+            <a-input 
+              value={record.name} 
+              onChange={(e) => handleInputChange(e)} />
+          </>
+        )
+      },
+    },
+    ['responseHeaders', 'requestQueryParams', 'requestPathParams'].includes(type)&& {
       title: '参数名',
       dataIndex: 'name',
       key: 'name',
@@ -86,19 +124,11 @@ const Columns = (type: string, onColumnChange: (...args: any[]) => void, onDelet
           record.name = e.target.value;
           onColumnChange(type);
         }
-        const handleSelectChange = (e) => {
-          record.name = e;
-          onColumnChange(type);
-        };
         return (
           <>
-            {
-              (['requestHeaders', 'requestBodies'].includes(type) && options[type === 'requestBodies' ? 'body' : 'header']) ? (
-                <a-select value={record.name} options={options[type === 'requestBodies' ? 'body' : 'header'].map(option => ({ label: option, value: option }))} onChange={(e) => handleSelectChange(e)} />
-              ) : (
-                <a-input value={record.name} onChange={(e) => handleInputChange(e)} />
-              )
-            }
+            <a-input 
+              value={record.name} 
+              onChange={(e) => handleInputChange(e)} />
           </>
         )
       },
@@ -107,12 +137,16 @@ const Columns = (type: string, onColumnChange: (...args: any[]) => void, onDelet
       title: '比较',
       dataIndex: 'compareWay',
       key: 'compareWay',
+      width: 180,
       customRender({ record }) {
         const onConditionChange = (e) => {
           record.compareWay = e;
+          if (selectType === 'fullText') {
+            onColumnChange(type);
+          }
         };
         return (
-          <a-select value={record.compareWay} options={conditionOptions(type)} onChange={(e) => onConditionChange(e)} />
+          <a-select value={record.compareWay} options={conditionOptions(type, record, optionsMap)} onChange={(e) => onConditionChange(e)} />
         )
       },
     },
@@ -151,12 +185,12 @@ const Columns = (type: string, onColumnChange: (...args: any[]) => void, onDelet
 }
 
 const List = (props) => {
-  const { type, data, onColumnChange, onDelete, optionsMap } = props;
+  const { type, data } = props;
   return (
     <a-table
       class="mock-detail-response"
       rowKey={(_record, index) => _record.idx}
-      columns={Columns(type, onColumnChange, onDelete, optionsMap)}
+      columns={Columns(props)}
       dataSource={data[type]}
       pagination={false}
       bordered />

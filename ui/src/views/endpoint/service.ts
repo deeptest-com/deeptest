@@ -421,3 +421,11 @@ export function disableScriptMock(endpointId: number) {
         method: 'post',
     });
 }
+
+export function generateJsonExample(data: { code: string, endponitId: number, method: string }) {
+    return request({
+        url: 'mockExpect/createExample',
+        method: 'post',
+        data,
+    })
+}

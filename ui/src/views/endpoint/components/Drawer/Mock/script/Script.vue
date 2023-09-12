@@ -16,6 +16,10 @@
           <div class="sample">
             <a-card class="sample-content">
               <div class="item">
+                <div>TODO:</div>
+              </div>
+
+<!--              <div class="item">
                 <div>// 获取自动Mock响应数据</div>
                 <div>var responseJson = fox.mockResponse.json();</div>
                 <br />
@@ -44,7 +48,7 @@
                 <div>fox.mockResponse.setCode(code: number) 设置接口返回的HTTP状态码</div>
                 <div>fox.mockResponse.setDelay(duration: number) 设置Mock响应延时，单位为毫秒。</div>
                 <div>fox.mockResponse.headers 响应的HTTP头</div>
-              </div>
+              </div>-->
             </a-card>
           </div>
 

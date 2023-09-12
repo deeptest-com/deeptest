@@ -125,7 +125,7 @@ func (s *EndpointMockParamService) MatchEndpointByMockPath(mockPath string, endp
 	for _, pathParam := range pathParams {
 		paramRegxStr := ""
 		if pathParam.Type == "number" || pathParam.Type == "integer" {
-			paramRegxStr = "\\d"
+			paramRegxStr = "\\d+"
 		} else if pathParam.Type == "boolean" {
 			paramRegxStr = "true|false"
 		} else {
@@ -144,7 +144,8 @@ func (s *EndpointMockParamService) MatchEndpointByMockPath(mockPath string, endp
 		pathRegxStr = strings.Replace(pathRegxStr, items[0], regxStr, 1)
 	}
 
-	arr1 := regexp.MustCompile("^"+pathRegxStr+"$").FindAllStringSubmatch(mockPath, -1)
+	pathRegxStr = "^" + strings.TrimSuffix(pathRegxStr, "/") + "/?$"
+	arr1 := regexp.MustCompile(pathRegxStr).FindAllStringSubmatch(mockPath, -1)
 	if len(arr1) > 0 {
 		matched = true
 

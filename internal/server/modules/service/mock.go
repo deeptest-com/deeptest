@@ -190,24 +190,6 @@ func (s *MockService) FindEndpointInterface(req *MockRequest) (
 	endpointInterface model.EndpointInterface, paramsMap map[string]string, err error) {
 
 	if req.EndpointInterfaceId <= 0 {
-
-		/*
-			var serve model.Serve
-			serve, err = s.ServeRepo.Get(uint(req.ServeId))
-			if err != nil {
-				return
-			}
-			var endpoint model.Endpoint
-			endpoint, err = s.EndpointRepo.GetByPath(serve.ID, "/"+req.EndpointPath)
-			if err != nil {
-				return
-			}
-		*/
-
-		//	req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethodAndPathAndServeId(uint(req.ServeId), req.EndpointPath, req.EndpointMethod)
-
-		//_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(endpoint.ID, req.EndpointMethod)
-
 		var serve model.Serve
 		serve, err = s.ServeRepo.Get(uint(req.ServeId))
 		if err != nil {

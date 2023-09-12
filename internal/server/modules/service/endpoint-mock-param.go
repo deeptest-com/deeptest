@@ -100,7 +100,7 @@ func (s *EndpointMockParamService) getRealBody(ctx iris.Context) (body string, b
 		return
 	}
 
-	reqContentType := ctx.GetContentType()
+	reqContentType := ctx.GetContentTypeRequested()
 
 	if reqContentType == consts.ContentTypeJSON.String() {
 		var req interface{}

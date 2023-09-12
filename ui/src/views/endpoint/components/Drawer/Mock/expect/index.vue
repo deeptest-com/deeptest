@@ -122,9 +122,12 @@ onMounted(() => {
       display: flex;
       align-items: center;
 
+      .except-action-item {
+        cursor: pointer;
+      }
+
       .except-action-item:not(:last-child) {
         margin-right: 10px;
-        cursor: pointer;
       }
     }
   }

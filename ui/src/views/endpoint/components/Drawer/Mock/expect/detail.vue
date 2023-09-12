@@ -18,7 +18,7 @@
           <a-input style="width: 600px" v-model:value="formState.name" placeholder="请填写mock期望名称" />
         </a-form-item>
         <a-form-item class="expect-method" label="请求方法" :rules="rules.method" name="method">
-          <a-select style="width: 200px;" v-model:value="formState.method" placeholder="请选择请求方法" :options="requestMethodOpts" />
+          <a-select style="width: 200px;" v-model:value="formState.method" placeholder="请选择请求方法" :options="methods" />
         </a-form-item>
         <a-form-item label="期望条件">
           <a-tabs v-model:activeKey="requestActiveKey">
@@ -111,9 +111,12 @@ const defaultData = {
 /**
  * form 表单信息
  */
+const methods = computed(() => {
+  return (store.state.Endpoint.endpointDetail.interfaces || []).map(e => e.method).map(e => ({ label: e, value: e }));
+})
 const formState: any = reactive({
   name: '', // 期望名称
-  method: requestMethodOpts[0].value, // 请求方法
+  method: methods.value[0]?.value, // 请求方法
   code: '',
   delayTime: 0,
   // 列表信息

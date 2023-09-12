@@ -1123,7 +1123,6 @@ const StoreModel: ModuleType = {
         },
 
         async sortMockExpect({ commit, state, dispatch }, payload) {
-            const interfaceData: any = state.endpointDetail.interfaces.filter(e => e.method === state.selectedMethodDetail.method);
             try {
                 const responseData: any = await sortMockExpect(payload);
                 if (responseData.code === 0) {
@@ -1137,7 +1136,6 @@ const StoreModel: ModuleType = {
         },
 
         async deleteMockExpect({ commit, state, dispatch }, payload) {
-            const interfaceData: any = state.endpointDetail.interfaces.filter(e => e.method === state.selectedMethodDetail.method);
             try {
                 const responseData: any = await deleteMockExpect(payload);
                 if (responseData.code === 0) {

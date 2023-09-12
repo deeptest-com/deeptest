@@ -50,20 +50,12 @@
           保存
         </a-button>
       </div>
-
+      <!--
       <div v-if="usedBy === UsedBy.InterfaceDebug"
            :disabled="!isPathValid"
            class="save-as-case">
         <a-button trigger="click" @click="saveAsCase" class="dp-bg-light">
           另存为用例
-        </a-button>
-      </div>
-      <!--
-      <div v-if="usedBy === UsedBy.InterfaceDebug"
-           :disabled="!isPathValid"
-           class="save-as-case">
-        <a-button trigger="click" @click="generateCases" class="dp-bg-light">
-          生成用例
         </a-button>
       </div>
       -->

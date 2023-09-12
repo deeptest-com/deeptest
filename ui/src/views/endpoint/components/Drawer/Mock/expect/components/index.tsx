@@ -183,7 +183,7 @@ const List = (props) => {
       class="mock-detail-response"
       rowKey={(_record, index) => _record.idx}
       columns={Columns(props)}
-      dataSource={data[type]}
+      dataSource={type === 'requestBodies' ? data[type].filter(e => e.selectType === props.selectType) : data[type]}
       pagination={false}
       bordered />
   )

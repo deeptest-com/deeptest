@@ -99,7 +99,7 @@
 /**
  * ::todo 后续在做代码层面的拆分优化
  */
-import { ref, defineProps, defineEmits, reactive, onMounted, computed, watch, unref, } from 'vue';
+import { ref, defineProps, defineEmits, reactive, onMounted, computed, watch, unref, nextTick, } from 'vue';
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import cloneDeep from "lodash/cloneDeep";
@@ -109,7 +109,7 @@ import { MockData } from './components/index';
 
 import { requestTabs } from './index';
 import { MonacoOptions } from "@/utils/const";
-import { defaultResponseCodes, responseCodes } from '@/config/constant';
+import { defaultResponseCodes } from '@/config/constant';
 
 const props = defineProps<{
   title?: String;
@@ -124,12 +124,30 @@ const defaultData = {
   value: '',
   compareWay: ''
 };
+
+const requestBodyType = ref<any>('keyValue'); // 请求体选择类型： keyValue / XPath表达式 / fullText 对应的表格填写内容不同
+const jsonContent = ref('');
 /**
  * method 可选项
  */
 const methods = computed(() => {
   return (store.state.Endpoint.endpointDetail.interfaces || []).map(e => e.method).map(e => ({ label: e, value: e }));
 });
+
+/**
+ * 初始化表格
+ * @param array 
+ * @param type 
+ */
+const initListData = (array: any, type?: string) => {
+  return (array || []).concat([{ ...defaultData }]).map((e, index) => {
+    e.idx = index + 1;
+    if (type) {
+      e.selectType = requestBodyType.value;
+    }
+    return e;
+  });
+};
 /**
  * form 表单信息
  */
@@ -139,21 +157,17 @@ const formState: any = reactive({
   code: '',
   delayTime: 0,
   // 列表信息
-  requestHeaders: [{...defaultData}], // 请求头
-  requestBodies: [{...defaultData}], // 请求体
-  requestQueryParams: [{...defaultData}], // 查询参数
-  requestPathParams: [{...defaultData}], // 路径参数
+  requestHeaders: initListData([]), // 请求头
+  requestBodies: initListData([], 'body'), // 请求体
+  requestQueryParams: initListData([]), // 查询参数
+  requestPathParams: initListData([]), // 路径参数
   responseBody: {
     code: '',
     delayTime: '',
     value: ''
   },
-  responseHeaders: [{...defaultData}], // 响应头
+  responseHeaders: initListData([]), // 响应头
 });
-
-const requestBodyType = ref<any>('keyValue'); // 请求体选择类型： keyValue / XPath表达式 / fullText 对应的表格填写内容不同
-
-const jsonContent = ref('');
 
 /**
  * 页面绑定data
@@ -220,7 +234,12 @@ const rules = {
 // const labelCol = { style: { width: '150px' } };
 
 const setDataList = (data: any[], type?: string) => {
-  const list = (type === 'body' && requestBodyType.value === 'fullText') ? cloneDeep(data).filter(e => e.value !== '') : cloneDeep(data).filter(e => e.name !== '');
+  let list: any[] = [];
+  if (type === 'body') {
+    list = cloneDeep(data).filter(e => e.selectType === requestBodyType.value).filter(e => requestBodyType.value === 'fullText' ? e.value !== '' : e.name !== '');
+  } else {
+    list = cloneDeep(data).filter(e => e.name !== '')
+  }
   return list.map(e => {
     delete e.idx;
     if (!e.id) {
@@ -279,25 +298,31 @@ const handleLanguageChange = (e) => {
 }
 
 const handleRequestBodyTypeChanged = (e) => {
-  formState.requestBodies = [{ ...defaultData }].map((e, index) => ({
-    ...e,
-    idx: index + 1,
-  }));
+  const filterData = formState.requestBodies.filter(bodyData => bodyData.selectType === e.target.value);
+  if (filterData.length === 0) {
+    formState.requestBodies = formState.requestBodies.concat([{ ...defaultData }].map((bodyData, index) => ({
+    ...bodyData,
+    idx: formState.requestBodies.length + index + 1 + 1,
+    selectType: e.target.value,
+  })))
+  }
+  console.log(formState.requestBodies);
 }
 
 const handleChange = (...args) => {
   const [type] = args;
+  const list = type === 'requestBodies' ? formState[type].filter(e => e.selectType === requestBodyType.value) : formState[type];
   try {
-    if (!formState[type].some(e => e.name === '')) {
+    if (
+      !(list.some(e => e.name === '')) ||
+      (requestBodyType.value === 'fullText' && type === 'requestBodies' && list.length === 1)
+    ) {
       const lastElIdx = formState[type][formState[type].length - 1].idx;
-      formState[type].push({ ...defaultData, idx: lastElIdx + 1 });
-    }
-    /**
-     * 请求体类型为fullText时，name为空。
-     */
-    if (requestBodyType.value === 'fullText' && type === 'requestBodies' && formState[type].length === 1) {
-      const lastElIdx = formState[type][formState[type].length - 1].idx;
-      formState[type].push({ ...defaultData, idx: lastElIdx + 1 });
+      const newObject: any = { ...defaultData, idx: lastElIdx + 1 };
+      if (type === 'requestBodies') {
+        newObject.selectType = requestBodyType.value;
+      }
+      formState[type].push(cloneDeep(newObject));
     }
   } catch (error) {
     console.log(error);
@@ -336,28 +361,17 @@ onMounted(() => {
   store.dispatch('Endpoint/getMockExpectOptions');
 })
 
-const initListData = (array: any) => {
-  let result: any[] = [];
-  if (array) {
-    result = array.concat([defaultData]).map((e, index) => ({
-      idx: index + 1,
-      ...e,
-    }));
-  } else {
-    result = [{ ...defaultData }];
-  }
-  return result;
-};
-
 watch(() => {
   return unref(mockExpectDetail);
-}, val => {
+}, async val => {
   console.error('获取当前查看的mockExpect详情', val);
   if (val.id) {
+    requestBodyType.value = [...new Set((val.requestBodies || []).map(e => e.selectType))]?.[0] || 'keyValue';
+    await nextTick();
     // 设置当前formState
     Object.assign(formState, {
       ...val,
-      requestBodies: initListData(val.requestBodies),
+      requestBodies: initListData(val.requestBodies, 'body'),
       requestHeaders: initListData(val.requestHeaders),
       requestQueryParams: initListData(val.requestQueryParams),
       requestPathParams: initListData(val.requestPathParams),
@@ -365,7 +379,6 @@ watch(() => {
       code: val.responseBody.code,
       delayTime: val.responseBody.delayTime,
     })
-    requestBodyType.value = [...new Set((val.requestBodies || []).map(e => e.selectType))]?.[0] || 'keyValue';
   }
 }, {
   immediate: true,

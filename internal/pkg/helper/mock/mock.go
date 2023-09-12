@@ -96,17 +96,18 @@ func GetRespValueFromGoja() (err error) {
 }
 func SetRespValueToGoja(resp mockGenerator.Response) {
 	// set resp.Data to json object for goja edit
-	if httpHelper.IsJsonRespType(resp.ContentType) {
-		var data interface{}
-		err := json.Unmarshal([]byte(resp.Content), &data)
-		if err == nil {
-			resp.Data = data
-		} else {
-			resp.Data = resp.Content
-		}
-	} else {
-		resp.Data = resp.Content
-	}
+	// already done before return mock result
+	//if httpHelper.IsJsonRespType(resp.ContentType) {
+	//	var data interface{}
+	//	err := json.Unmarshal([]byte(resp.Content), &data)
+	//	if err == nil {
+	//		resp.Data = data
+	//	} else {
+	//		resp.Data = resp.Content
+	//	}
+	//} else {
+	//	resp.Data = resp.Content
+	//}
 
 	SetValueToGoja("response", resp)
 }

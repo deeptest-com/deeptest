@@ -3,3 +3,4 @@ declare module 'DeepTest' {
   const bar:() => void
 }
 
+export default {};

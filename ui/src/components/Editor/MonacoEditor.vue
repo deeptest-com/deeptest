@@ -152,7 +152,7 @@ export default defineComponent({
       }, 500)
 
       if (options.initTsModules) {
-        const snippet = usedBy == UsedBy.MockData ? 'mock' : 'global'
+        const snippet = usedBy == UsedBy.MockData ? 'mock.d' : 'global'
 
         getSnippet(snippet).then(json => {
           if (json.code === 0) {

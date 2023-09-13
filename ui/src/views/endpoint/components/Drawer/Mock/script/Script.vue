@@ -54,12 +54,13 @@
 
           <div class="title">代码片段：</div>
           <div>
-            <div @click="addSnippet('get_mock_request')" class="dp-link-primary">
-              获取请求
+            <div @click="addSnippet('log')" class="dp-link-primary">
+              打印日志
             </div>
             <div @click="addSnippet('set_mock_response')" class="dp-link-primary">
               设置响应
             </div>
+
           </div>
         </div>
       </div>
@@ -105,7 +106,7 @@ const editorOptions = ref(Object.assign({
 ))
 
 const addSnippet = (snippetName) => {
-  store.dispatch('Debug/addSnippet', snippetName)
+  store.dispatch('Endpoint/addSnippet', snippetName)
 }
 const editorChange = (newScriptCode) => {
   mockScript.value.content = newScriptCode;

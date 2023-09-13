@@ -76,3 +76,5 @@ declare global {
 
     const log : (obj: any) => {}
 }
+
+export default {};

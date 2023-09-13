@@ -124,7 +124,7 @@ const (
 	DeclareModule  = "modules"
 
 	ScriptMock  = "mock"
-	DeclareMock = "mock"
+	DeclareMock = "mock.d"
 
 	SnippetDatapoolGet    = "datapool_get"
 	SnippetVariablesGet   = "variables_get"

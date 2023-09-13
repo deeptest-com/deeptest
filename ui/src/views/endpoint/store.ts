@@ -1233,11 +1233,12 @@ const StoreModel: ModuleType = {
             let line = ''
             if (name === 'log') {
                 line = "log('test')"
-            } else {
-                const json = await getSnippet(name)
-                if (json.code === 0) {
-                    line = json.data.script
-                }
+            } else if (name === 'set_mock_resp_code') {
+                line = "dt.response.statusCode = 404;"
+            } else if (name === 'set_mock_resp_field') {
+                line = "dt.response.data.field1 = 'val';"
+            } else if (name === 'set_mock_resp_text') {
+                line = "dt.response.data = dt.response.data.replace('old', 'new');"
             }
 
             state.mockScript.content += '\n' + line

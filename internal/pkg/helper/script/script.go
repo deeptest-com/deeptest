@@ -18,11 +18,11 @@ func GetScript(name ScriptType) string {
 		return DpScript
 
 	} else if name == DeclareGlobal {
-		if GlobalScript == "" {
+		if GlobalDeclare == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "global.d.ts"))
-			GlobalScript = string(bytes)
+			GlobalDeclare = string(bytes)
 		}
-		return GlobalScript
+		return GlobalDeclare
 
 	} else if name == ScriptMock {
 		if MockScript == "" {
@@ -32,11 +32,11 @@ func GetScript(name ScriptType) string {
 		return MockScript
 
 	} else if name == DeclareMock {
-		if MockScript == "" {
+		if MockDeclare == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "mock.d.ts"))
-			MockScript = string(bytes)
+			MockDeclare = string(bytes)
 		}
-		return MockScript
+		return MockDeclare
 
 	} else if name == DeclareModule {
 		if ModuleScript == "" {
@@ -103,13 +103,10 @@ func GenResultMsg(po *domain.ScriptBase) {
 var (
 	DpScript = ""
 
-	GlobalScript = ""
-	MockScript   = ""
-	ModuleScript = ""
-
-	EnvironmentGet   = ""
-	EnvironmentSet   = ""
-	EnvironmentClear = ""
+	GlobalDeclare = ""
+	MockScript    = ""
+	MockDeclare   = ""
+	ModuleScript  = ""
 
 	VariablesGet   = ""
 	VariablesSet   = ""

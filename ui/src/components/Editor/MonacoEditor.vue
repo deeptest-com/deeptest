@@ -151,6 +151,7 @@ export default defineComponent({
         this.formatDocInit(editor)
       }, 500)
 
+      console.log('=== initTsModules', options.initTsModules)
       if (options.initTsModules) {
         const snippet = usedBy == UsedBy.MockData ? 'mock.d' : 'global'
 

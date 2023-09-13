@@ -137,8 +137,9 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
             onColumnChange(type);
           }
         };
+        const options = conditionOptions(type, record, optionsMap);
         return (
-          <a-select value={record.compareWay} options={conditionOptions(type, record, optionsMap)} onChange={(e) => onConditionChange(e)} />
+          <a-select value={record.compareWay || (record.name ? options[0].value : '')} options={options} onChange={(e) => onConditionChange(e)} />
         )
       },
     },

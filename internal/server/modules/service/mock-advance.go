@@ -73,8 +73,10 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 			byAdvance = true
 
 			respDefine := s.EndpointInterfaceRepo.GetResponse(endpointInterface.ID, respData.Code)
-
 			resp.ContentType = consts.HttpContentType(respDefine.MediaType)
+
+			expectResp, _ := s.EndpointMockExpectRepo.GetExpectResponse(expect.ID)
+			resp.DelayTime = expectResp.DelayTime
 
 			if httpHelper.IsJsonRespType(resp.ContentType) {
 				json.Unmarshal([]byte(resp.Content), &resp.Data)

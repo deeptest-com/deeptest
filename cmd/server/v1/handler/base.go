@@ -6,12 +6,17 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"google.golang.org/protobuf/proto"
+	"time"
 )
 
 type BaseCtrl struct {
 }
 
 func (c *BaseCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.Context) {
+	if resp.DelayTime > 0 {
+		time.Sleep(time.Duration(resp.DelayTime) * time.Second)
+	}
+
 	data := resp.Data
 	ctx.StatusCode(resp.StatusCode.Int())
 	ctx.ContentType(resp.ContentType.String())

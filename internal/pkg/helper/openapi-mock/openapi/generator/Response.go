@@ -15,4 +15,5 @@ type Response struct {
 
 	UseAdvMock bool   `json:"useAdvMock"`
 	Content    string `json:"content"`
+	DelayTime  uint   `json:"delayTime"`
 }

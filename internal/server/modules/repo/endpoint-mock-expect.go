@@ -195,7 +195,7 @@ func (r *EndpointMockExpectRepo) UpdateExpectRequest(req model.EndpointMockExpec
 		}
 	}
 	for _, body := range req.RequestBodies {
-		if body.SelectType != consts.FullText && (body.Name == "" || body.CompareWay == "") {
+		if body.CompareWay == "" || (body.SelectType != consts.FullText && body.Name == "") {
 			continue
 		}
 		if err = r.DB.Save(&body).Error; err != nil {

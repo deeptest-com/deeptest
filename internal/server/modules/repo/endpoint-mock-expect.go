@@ -150,18 +150,30 @@ func (r *EndpointMockExpectRepo) Save(req model.EndpointMockExpect) (expectId ui
 func (r *EndpointMockExpectRepo) CreateExpectRequest(req model.EndpointMockExpect) (err error) {
 	expectRequest := make([]model.EndpointMockExpectRequest, 0)
 	for _, header := range req.RequestHeaders {
+		if header.Name == "" || header.CompareWay == "" {
+			continue
+		}
 		header.EndpointMockExpectId = req.ID
 		expectRequest = append(expectRequest, header)
 	}
 	for _, body := range req.RequestBodies {
+		if body.SelectType != consts.FullText && (body.Name == "" || body.CompareWay == "") {
+			continue
+		}
 		body.EndpointMockExpectId = req.ID
 		expectRequest = append(expectRequest, body)
 	}
 	for _, query := range req.RequestQueryParams {
+		if query.Name == "" || query.CompareWay == "" {
+			continue
+		}
 		query.EndpointMockExpectId = req.ID
 		expectRequest = append(expectRequest, query)
 	}
 	for _, path := range req.RequestPathParams {
+		if path.Name == "" || path.CompareWay == "" {
+			continue
+		}
 		path.EndpointMockExpectId = req.ID
 		expectRequest = append(expectRequest, path)
 	}
@@ -175,21 +187,33 @@ func (r *EndpointMockExpectRepo) CreateExpectRequest(req model.EndpointMockExpec
 
 func (r *EndpointMockExpectRepo) UpdateExpectRequest(req model.EndpointMockExpect) (err error) {
 	for _, header := range req.RequestHeaders {
+		if header.Name == "" || header.CompareWay == "" {
+			continue
+		}
 		if err = r.DB.Save(&header).Error; err != nil {
 			return err
 		}
 	}
 	for _, body := range req.RequestBodies {
+		if body.SelectType != consts.FullText && (body.Name == "" || body.CompareWay == "") {
+			continue
+		}
 		if err = r.DB.Save(&body).Error; err != nil {
 			return err
 		}
 	}
 	for _, query := range req.RequestQueryParams {
+		if query.Name == "" || query.CompareWay == "" {
+			continue
+		}
 		if err = r.DB.Save(&query).Error; err != nil {
 			return err
 		}
 	}
 	for _, path := range req.RequestPathParams {
+		if path.Name == "" || path.CompareWay == "" {
+			continue
+		}
 		if err = r.DB.Save(&path).Error; err != nil {
 			return err
 		}

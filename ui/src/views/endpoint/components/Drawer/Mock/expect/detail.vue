@@ -315,7 +315,7 @@ const handleChange = (...args) => {
   const list = type === 'requestBodies' ? formState[type].filter(e => e.selectType === requestBodyType.value) : formState[type];
   try {
     if (
-      !(list.some(e => e.name === '')) ||
+      (list[list.length - 1].name !== '' || list[list.length - 1].compareWay !== '' || list[list.length - 1].value !== '') ||
       (requestBodyType.value === 'fullText' && type === 'requestBodies' && list.length === 1)
     ) {
       const lastElIdx = formState[type][formState[type].length - 1].idx;

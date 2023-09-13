@@ -4,7 +4,9 @@ import { ResponseData } from '@/utils/request';
 import { setToken } from '@/utils/localToken';
 import { accountLogin } from './service';
 import { LoginParamsType } from "./data.d";
-
+import {getCache, setCache} from "@/utils/localCache";
+import settings from "@/config/settings";
+import {ref} from "vue/dist/vue";
 export interface StateType {
     loginStatus?: 'ok' | 'error';
 }
@@ -40,7 +42,15 @@ const StoreModel: ModuleType = {
             try {
                 const response: ResponseData = await accountLogin(payload);
                 const { data } = response;
-                setToken(data.token || '');
+                await setToken(data.token || '');
+
+                // 乐研客户端里，保存用户信息
+                const isElectron = !!window?.require;
+                const ipcRenderer = undefined as any
+                if (isElectron && !ipcRenderer) {
+                    await setCache(settings.lyElectronUserInfo, JSON.stringify(payload));
+                }
+
                 status = 'ok';
             } catch (error) {
                 if (error.message && error.message === 'CustomError') {

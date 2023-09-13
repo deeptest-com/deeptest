@@ -60,7 +60,7 @@ func (r *EndpointMockExpectRepo) GetExpectDetail(expectId uint) (expect model.En
 func (r *EndpointMockExpectRepo) GetExpectById(expectId uint) (expect model.EndpointMockExpect, err error) {
 	err = r.DB.Model(&model.EndpointMockExpect{}).
 		Where("id = ?", expectId).
-		Where("NOT deleted AND NOT disabled").
+		Where("NOT deleted").
 		First(&expect).Error
 
 	return

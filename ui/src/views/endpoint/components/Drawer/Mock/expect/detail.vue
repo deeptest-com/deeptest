@@ -365,7 +365,7 @@ onMounted(() => {
 watch(() => {
   return unref(mockExpectDetail);
 }, async val => {
-  console.error('获取当前查看的mockExpect详情', val);
+  // console.error('获取当前查看的mockExpect详情', val);
   if (val.id) {
     requestBodyType.value = [...new Set((val.requestBodies || []).map(e => e.selectType))]?.[0] || 'keyValue';
     await nextTick();

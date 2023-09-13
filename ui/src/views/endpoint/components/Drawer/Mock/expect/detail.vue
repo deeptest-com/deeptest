@@ -110,6 +110,7 @@ import { MockData } from './components/index';
 import { requestTabs } from './index';
 import { MonacoOptions } from "@/utils/const";
 import { defaultResponseCodes } from '@/config/constant';
+import { notifySuccess } from '@/utils/notify';
 
 const props = defineProps<{
   title?: String;
@@ -275,7 +276,7 @@ const handleOk = async (e: MouseEvent) => {
     const result = await store.dispatch('Endpoint/saveMockExpect', requestParams);
     loading.value = false;
     if (result) {
-      message.success(`${formState.id ? '修改' : '新建'}Mock期望成功`);
+      notifySuccess(`${formState.id ? '修改' : '新建'}Mock期望成功`);
     }
     emits('cancel');
   } catch (err: any) {
@@ -314,7 +315,7 @@ const handleChange = (...args) => {
   const list = type === 'requestBodies' ? formState[type].filter(e => e.selectType === requestBodyType.value) : formState[type];
   try {
     if (
-      !(list.some(e => e.name === '')) ||
+      (list[list.length - 1].name !== '' || list[list.length - 1].compareWay !== '' || list[list.length - 1].value !== '') ||
       (requestBodyType.value === 'fullText' && type === 'requestBodies' && list.length === 1)
     ) {
       const lastElIdx = formState[type][formState[type].length - 1].idx;

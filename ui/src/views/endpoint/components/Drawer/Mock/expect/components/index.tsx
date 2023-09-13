@@ -74,9 +74,10 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
         };
         return (
           <>
-            <a-select 
+            <a-auto-complete
               value={record.name} 
               options={(optionsMap['header'] || []).map(option => ({ label: option.name, value: option.name }))} 
+              filter-option={false}
               onChange={(e) => handleSelectChange(e)} />
           </>
         )
@@ -133,12 +134,14 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
       customRender({ record }) {
         const onConditionChange = (e) => {
           record.compareWay = e;
-          if (selectType === 'fullText') {
-            onColumnChange(type);
-          }
+          onColumnChange(type);
         };
+        const options = conditionOptions(type, record, optionsMap);
+        if (record.name && !record.compareWay) {
+          record.compareWay = options[0].value;
+        }
         return (
-          <a-select value={record.compareWay} options={conditionOptions(type, record, optionsMap)} onChange={(e) => onConditionChange(e)} />
+          <a-select value={record.compareWay} options={options} onChange={(e) => onConditionChange(e)} />
         )
       },
     },
@@ -149,6 +152,7 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
       customRender({ record }) {
         const handleChange = (e) => {
           record.value = e.target.value;
+          onColumnChange(type);
         }
         return (
           <a-input value={record.value} onChange={e => handleChange(e)} />

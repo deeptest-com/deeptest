@@ -1,9 +1,9 @@
-VERSION=1.1.1
-PROJECT=deeptest
+#VERSION=1.1.1
+#PROJECT=deeptest
 
 # ly 打包配置，开源版可以删除
-#VERSION=19.0.0
-#PROJECT=LeyanAPI
+VERSION=5.0.0
+PROJECT=LeyanAPI
 
 
 ifeq ($(OS),Windows_NT)

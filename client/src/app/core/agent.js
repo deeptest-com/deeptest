@@ -148,10 +148,11 @@ export function killAgent() {
                 line = line.trim()
                 console.log(`<${line}>`)
                 logInfo(`<${line}>`)
-                const cols = line.split(/\s/)
+                const cols = line.split(/\s+/)
 
-                if (line.indexOf('deeptest') > -1 && cols.length > 3) {
-                    const pidStr = cols[3].trim()
+                logInfo(`cols.length=${cols.length}`, JSON.stringify(cols));
+                if (line.indexOf('deeptest') > -1 && cols.length > 1) {
+                    const pidStr = cols[1].trim();
                     console.log(`>> deeptest-agent pid: ${pidStr}`);
                     logInfo(`>> deeptest-agent pid: ${pidStr}`)
 

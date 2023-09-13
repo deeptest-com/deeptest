@@ -3,7 +3,7 @@
     <ExclamationCircleOutlined />
     <span>
       当您请求Mock接口时，会根据请求参数匹配的期望条件自动返回响应的结果，Mock请求地址：
-      {{serverUrl}}/mocks/{{endpoint.id}}{{endpoint.path}}。
+      {{getMockUrl(serverUrl)}}/mocks/{{endpoint.id}}{{endpoint.path}}。
     </span>
 
     <div class="toolbar">
@@ -39,6 +39,9 @@ watch(() => endpoint.value.advancedMockDisabled, (newVal, oldVal) => {
 }, {immediate: true})
 
 const {serverUrl, agentUrl} = getUrls()
+const getMockUrl = (serverUrl) => {
+  return serverUrl.replace('/api/v1', '')
+}
 
 const createExpect = () => {
   open.value = true;

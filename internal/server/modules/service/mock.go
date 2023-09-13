@@ -218,7 +218,10 @@ func (s *MockService) FindEndpointInterface(req *MockRequest) (
 func (s *MockService) findEndpointByPath(serveId uint, mockPath string, method consts.HttpMethod) (
 	ret model.Endpoint, paramsMap map[string]string, err error) {
 
-	endpoints, _ := s.EndpointRepo.ListByProjectIdAndServeId(serveId, method)
+	endpoints, _ := s.EndpointRepo.GetByPath(serveId, mockPath, method)
+	if len(endpoints) == 0 {
+		endpoints, _ = s.EndpointRepo.ListByProjectIdAndServeId(serveId, method)
+	}
 
 	for _, endpoint := range endpoints {
 		paramsMap1, matched := s.EndpointMockParamService.MatchEndpointByMockPath(mockPath, *endpoint)

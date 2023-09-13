@@ -86,7 +86,7 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 			expectResp, _ := s.EndpointMockExpectRepo.GetExpectResponse(expect.ID)
 			resp.DelayTime = expectResp.DelayTime
 
-			if httpHelper.IsJsonRespType(resp.ContentType) {
+			if httpHelper.IsJsonRespType(resp.ContentType) && resp.Content != "" {
 				json.Unmarshal([]byte(resp.Content), &resp.Data)
 			} else {
 				resp.Data = resp.Content
@@ -118,6 +118,10 @@ func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, req mockGenerator
 
 func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]model.EndpointMockExpectRequest,
 	endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (ret bool) {
+
+	if len(expectRequestMap) == 0 {
+		return false
+	}
 
 	headerParams, queryParams, pathParams, body, bodyForm :=
 		s.EndpointMockParamService.GetRealRequestValues(ctx, endpointInterface, endpoint)

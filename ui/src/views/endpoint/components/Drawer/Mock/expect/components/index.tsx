@@ -74,9 +74,10 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
         };
         return (
           <>
-            <a-select 
+            <a-auto-complete
               value={record.name} 
               options={(optionsMap['header'] || []).map(option => ({ label: option.name, value: option.name }))} 
+              filter-option={false}
               onChange={(e) => handleSelectChange(e)} />
           </>
         )

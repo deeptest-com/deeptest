@@ -46,13 +46,18 @@ func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInter
 	}
 
 	if !endpoint.ScriptMockDisabled {
-		s.ByScript(endpoint, &resp)
+		req := mockGenerator.Request{
+			Method: endpointInterface.Method,
+		}
+		s.ByScript(endpoint, req, &resp)
 	}
 
 	return
 }
 
-func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (resp mockGenerator.Response, byAdvance bool) {
+func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (
+	resp mockGenerator.Response, byAdvance bool) {
+
 	expects, _ := s.EndpointMockExpectRepo.ListByEndpointId(endpointInterface.EndpointId)
 
 	for _, expect := range expects {
@@ -92,13 +97,14 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 	return
 }
 
-func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, resp *mockGenerator.Response) {
+func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, req mockGenerator.Request, resp *mockGenerator.Response) {
 	script, err := s.EndpointMockScriptRepo.Get(endpoint.ID)
 	if err != nil || script.Disabled || script.Content == "" {
 		return
 	}
 
 	mockHelper.InitJsRuntime()
+	mockHelper.SetReqValueToGoja(req)
 	mockHelper.SetRespValueToGoja(*resp)
 	mockHelper.ExecScript(script.Content)
 	mockHelper.GetRespValueFromGoja()

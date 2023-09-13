@@ -27,7 +27,10 @@
                 <div>dt.response.data.field1 = 'val';</div>
                 <br />
                 <div>// 修改字符串响应内容</div>
-                <div>dt.response.data = dt.response.data.replace('old', 'new');</div>
+                <div>if (dt.request.method.toLowerCase() == 'get') {</div>
+                <div style="padding-left: 20px;">dt.response.data = </div>
+                <div style="padding-left: 40px;">dt.response.data.replace('old', 'new');</div>
+                <div>}</div>
               </div>
             </a-card>
           </div>

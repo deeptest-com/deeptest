@@ -100,13 +100,13 @@ compile_server_win64:
 	@echo 'start compile win64'
 	@CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ${BIN_DIR}win64/${PROJECT}-server.exe ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}win64/${PROJECT}-server.exe ${SERVER_MAIN_FILE} ${PROJECT}
 
 compile_server_win32:
 	@echo 'start compile win32'
 	@CGO_ENABLED=1 CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ${BIN_DIR}win32/${PROJECT}-server.exe ${SERVER_MAIN_FILE}
+		-o ${BIN_DIR}win32/${PROJECT}-server.exe ${SERVER_MAIN_FILE} ${PROJECT}
 
 compile_server_linux:
 	@echo 'start compile linux'
@@ -134,7 +134,7 @@ compile_agent_win64:
 	@rm -rf ./${CLIENT_BIN_DIR}/*
 	@CGO_ENABLED=1 CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ${CLIENT_BIN_DIR}win32/deeptest-agent.exe ${AGENT_MAIN_FILE}
+		-o ${CLIENT_BIN_DIR}win32/deeptest-agent.exe ${AGENT_MAIN_FILE} ${PROJECT}
 	@rm -rf "${CLIENT_OUT_DIR_UPGRADE}win64" && mkdir -p "${CLIENT_OUT_DIR_UPGRADE}win64" && \
 		cp ${CLIENT_BIN_DIR}win32/deeptest-agent.exe "${CLIENT_OUT_DIR_UPGRADE}win64"
 package_gui_win64_client:
@@ -148,7 +148,7 @@ compile_agent_win32:
 	@rm -rf ./${CLIENT_BIN_DIR}/*
 	@CGO_ENABLED=1 CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ${CLIENT_BIN_DIR}win32/deeptest-agent.exe ${AGENT_MAIN_FILE}
+		-o ${CLIENT_BIN_DIR}win32/deeptest-agent.exe ${AGENT_MAIN_FILE} ${PROJECT}
 	@rm -rf "${CLIENT_OUT_DIR_UPGRADE}win32" && mkdir -p "${CLIENT_OUT_DIR_UPGRADE}win32" && \
 		cp ${CLIENT_BIN_DIR}win32/deeptest-agent.exe "${CLIENT_OUT_DIR_UPGRADE}win32"
 package_gui_win32_client:

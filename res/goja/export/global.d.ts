@@ -45,7 +45,7 @@ declare type Request = {
     bodyLang: string;
 };
 declare type Response = {
-    statusCode: string;
+    statusCode: number;
     statusContent: string;
 
     headers: Header[];
@@ -76,7 +76,5 @@ declare global {
 
     const log : (obj: any) => {}
 }
-
-
 
 export default {};

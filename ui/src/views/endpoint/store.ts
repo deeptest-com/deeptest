@@ -71,6 +71,7 @@ import {
     getSchemaList, getSchemaDetail
 } from "@/views/project-settings/service";
 import { changeServe } from '../project-settings/service';
+import {getSnippet} from "@/views/component/debug/service";
 
 
 export interface StateType {
@@ -222,6 +223,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         generateJsonExample: Action<StateType, StateType>;
         getMockScript: Action<StateType, StateType>;
         updateMockScript: Action<StateType, StateType>;
+        addSnippet: Action<StateType, StateType>;
     }
 }
 
@@ -1072,16 +1074,6 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async getMockScript({ commit }, endpointId){
-            try {
-                const res = await getMockScript(endpointId);
-                commit('setMockScript', res.data);
-                return true;
-            } catch (error) {
-                return false;
-            }
-        },
-
         async cloneMockExpect({ commit, state, dispatch }, payload) {
             try {
                 const responseData: any = await copyMockExpect({
@@ -1092,15 +1084,6 @@ const StoreModel: ModuleType = {
                     return true;
                 }
                 return false;
-            } catch (error) {
-                return false;
-            }
-        },
-        
-        async updateMockScript({ commit }, payload){
-            try {
-                const res = await updateMockScript(payload);
-                return true;
             } catch (error) {
                 return false;
             }
@@ -1227,7 +1210,43 @@ const StoreModel: ModuleType = {
                 console.log('get mock responseJson failed', error);
                 return false;
             }
-        }
+        },
+
+        async getMockScript({ commit }, endpointId){
+            try {
+                const res = await getMockScript(endpointId);
+                commit('setMockScript', res.data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async updateMockScript({ commit }, payload){
+            try {
+                const res = await updateMockScript(payload);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async addSnippet({commit, dispatch, state}, name: string) {
+            let line = ''
+            if (name === 'log') {
+                line = "log('test')"
+            } else if (name === 'set_mock_resp_code') {
+                line = "dt.response.statusCode = 404;"
+            } else if (name === 'set_mock_resp_field') {
+                line = "dt.response.data.field1 = 'val';"
+            } else if (name === 'set_mock_resp_text') {
+                line = "dt.response.data = dt.response.data.replace('old', 'new');"
+            }
+
+            state.mockScript.content += '\n' + line
+            state.mockScript.content = state.mockScript.content.trim()
+            commit('setMockScript', state.mockScript);
+
+            return true;
+        },
     },
 };
 

@@ -107,6 +107,7 @@ onMounted(() => {
       padding-left: 22px;
     }
     .except-name {
+      width: 200px;
       display: flex;
       align-items: center;
       color: #447DFD;

@@ -63,6 +63,7 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(expect.ID)
 		if s.MatchExpect(expectRequestMap, endpointInterface, endpoint, ctx) {
 			respData, respHeaders := s.GetExpectResult(expect)
+			respDefine := s.EndpointInterfaceRepo.GetResponse(endpointInterface.ID, respData.Code)
 
 			codeInt, _ := strconv.ParseInt(respData.Code, 10, 64)
 			resp.StatusCode = consts.HttpRespCode(codeInt)
@@ -72,8 +73,10 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 			resp.UseAdvMock = true
 			byAdvance = true
 
-			respDefine := s.EndpointInterfaceRepo.GetResponse(endpointInterface.ID, respData.Code)
 			resp.ContentType = consts.HttpContentType(respDefine.MediaType)
+			if resp.ContentType == "" {
+				resp.ContentType = consts.ContentTypeJSON
+			}
 
 			expectResp, _ := s.EndpointMockExpectRepo.GetExpectResponse(expect.ID)
 			resp.DelayTime = expectResp.DelayTime

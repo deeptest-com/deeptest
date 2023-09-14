@@ -147,7 +147,7 @@ func (s *EndpointMockCompareService) compareObject(actualValue interface{}, expe
 	return
 }
 
-func (s *EndpointMockCompareService) CompareContent(actualValue interface{}, expectValue string,
+func (s *EndpointMockCompareService) CompareValue(actualValue interface{}, expectValue string,
 	comparator consts.ComparisonOperator) (ret bool) {
 
 	if comparator == consts.Equal {

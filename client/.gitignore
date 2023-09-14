@@ -5,3 +5,4 @@ ui/
 /node_modules/
 /yarn.lock
 /package-lock.json
+src/app/package-ly.json

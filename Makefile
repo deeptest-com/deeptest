@@ -2,7 +2,7 @@
 #PROJECT=deeptest
 
 # ly 打包配置，开源版可以删除
-VERSION=5.0.0
+VERSION=0.0.1
 PROJECT=LeyanAPI
 
 
@@ -62,6 +62,14 @@ win32: prepare build_gui_win32 compile_launcher_win32 compile_server_win32 copy_
 linux: prepare build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
 mac:   prepare build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
 
+# 乐研 打包
+ly-win64: prepare compile_ly_ui_client build_gui_win64 compile_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
+ly-win32: prepare compile_ly_ui_client build_gui_win32 compile_launcher_win32 compile_server_win32 copy_files_win32 zip_win32 zip_win32_upgrade
+ly-linux: prepare compile_ly_ui_client build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
+ly-mac:   prepare compile_ly_ui_client build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
+
+
+
 prepare: update_version
 
 update_version: gen_version_file
@@ -77,6 +85,8 @@ compile_ui_demo:
 	@cd ui && yarn build --mode deeptest-demo --dest ../client/ui && cd ..
 compile_ui_client:
 	@cd ui && yarn build --mode deeptest-client --dest ../client/ui && cd ..
+compile_ly_ui_client:
+	@cd ui && yarn build --mode ly-client --dest ../client/ui && cd ..
 
 # launcher
 compile_launcher_win64:
@@ -84,7 +94,7 @@ compile_launcher_win64:
 	@cd cmd/launcher && \
         CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ../../${BIN_DIR}win64/${PROJECT}-gui.exe ${PROJECT} && \
+		-o ../../${BIN_DIR}win64/${PROJECT}-gui.exe && \
 		cd ..
 
 compile_launcher_win32:
@@ -92,7 +102,7 @@ compile_launcher_win32:
 	@cd cmd/launcher && \
         CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ../../${BIN_DIR}win32/${PROJECT}-gui.exe ${PROJECT} && \
+		-o ../../${BIN_DIR}win32/${PROJECT}-gui.exe && \
         cd ..
 
 # server
@@ -286,4 +296,3 @@ upload_to:
 	@find ${QINIU_DIR} -name ".DS_Store" -type f -delete
 	@qshell qupload2 --src-dir=${QINIU_DIR} --bucket=download --thread-count=10 --log-file=qshell.log \
 					 --skip-path-prefixes=ztf,zd,zv,zmanager,driver --rescan-local --overwrite --check-hash
-

@@ -28,6 +28,7 @@ my-app
 node_modules
 client/icon/ly
 ui-vue3-demo
+client/src/app/package-ly.json
 
 
 

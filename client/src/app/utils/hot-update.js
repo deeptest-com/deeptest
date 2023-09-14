@@ -14,6 +14,31 @@ import {IS_WINDOWS_OS} from "../utils/env";
 import fse from 'fs-extra'
 import {logErr, logInfo} from "./log";
 
+
+
+/**
+ * 版本号大小比较
+ * @param {string} v1 版本号1
+ * @param {string} v2 版本号2
+ * @return {number} 1: v1 > v2, 0: v1 = v2, -1: v1 < v2
+ * */
+function compareVersion(v1, v2) {
+    const [x1, y1, z1] = v1.split('.');
+    const [x2, y2, z2] = v2.split('.');
+
+    if (x1 !== x2) {
+        return parseInt(x1) > parseInt(x2) ? 1 : -1;
+    }
+    if (y1 !== y2) {
+        return parseInt(y1) > parseInt(y2) ? 1 : -1;
+    }
+    if (z1 !== z2) {
+        return parseInt(z1) > parseInt(z2) ? 1 : -1;
+    }
+
+    return 0;
+}
+
 /**
  * 检查更新，如果有更新，则通知渲染进程，即 UI 服务
  * */
@@ -25,7 +50,8 @@ export async function checkUpdate(mainWin) {
     logInfo(`currVersion=${currVersion}(${currVersionStr}), newVersion=${newVersion}(${newVersionStr}), forceUpdate=${forceUpdate}`)
     logInfo(currVersion < newVersion)
 
-    if (currVersion < newVersion) {
+    // 需要更新
+    if (compareVersion(newVersionStr, currVersionStr) === 1) {
         if (forceUpdate) {
             // logInfo('forceUpdate')
         } else {

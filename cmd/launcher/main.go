@@ -23,11 +23,7 @@ func main() {
 	pth := ""
 	var cmd *exec.Cmd
 	if commonUtils.IsWin() {
-		projectName := "LeyanAPI"
-		if len(os.Args) > 1 {
-			projectName = os.Args[1]
-		}
-		pth = "gui\\" + projectName + ".exe"
+		pth = "gui\\LeyanAPI.exe"
 		cmd = exec.Command("cmd", "/C", "start", pth)
 	}
 

@@ -112,7 +112,6 @@ func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, req mockGenerator
 	if mockHelper.CurrResponse.Data != nil {
 		*resp = mockHelper.CurrResponse
 	}
-
 	return
 }
 

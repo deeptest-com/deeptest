@@ -36,3 +36,23 @@ func JsonQuery(content string, expression string) (result string) {
 
 	return
 }
+
+func JsonQueryWithType(content string, expression string) (result interface{}) {
+	doc, err := jsonquery.Parse(strings.NewReader(content))
+	if err != nil {
+		result = consts.ContentErr
+		return
+	}
+
+	elem, err := jsonquery.Query(doc, expression)
+	if err != nil || elem == nil {
+		result = consts.ExtractorErr
+		return
+	}
+
+	result = elem.Value()
+
+	//isFloat64 := fmt.Sprintf("%T", result) == "float64"
+
+	return
+}

@@ -41,11 +41,11 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 
 			ret = s.compareObject(actualValue, expectValue, expectRequest.CompareWay)
 
-		} else if expectRequest.SelectType == consts.Xpath { // use xpath
+		} else if strings.ToLower(expectRequest.SelectType.String()) == strings.ToLower(consts.Xpath.String()) { // use xpath
 			xpath := expectRequest.Name
 
 			expectValue := expectRequest.Value
-			actualValue := queryUtils.JsonQuery(body, xpath)
+			actualValue := queryUtils.JsonQueryWithType(body, xpath)
 
 			ret = s.compareObject(actualValue, expectValue, expectRequest.CompareWay)
 

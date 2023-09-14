@@ -218,7 +218,7 @@ export default defineComponent({
      * 避免展示不全
      */
     resizeIt(data) {
-      console.error('resizeIt', data);
+      // console.error('resizeIt', data);
       const container = document.getElementsByClassName(data.container)[0]
       if (!container) {
         return;

@@ -413,7 +413,6 @@ watch(() => {
 
   :deep(.ant-form-item) {
     flex-direction: row;
-    margin-bottom: 0 !important;
 
     .ant-form-item-label {
       margin-right: 6px;
@@ -426,17 +425,6 @@ watch(() => {
         font-weight: normal;
       }
     }
-
-    .ant-row.ant-form-item {
-      margin-bottom: 0 !important;
-    }
-
-    // .ant-form-item-explain.ant-form-item-explain-error {
-    //   position: absolute;
-    //   left: 0;
-    //   bottom: -24px;
-    //   white-space: pre;
-    // }
   }
 }
 

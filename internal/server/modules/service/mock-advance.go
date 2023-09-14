@@ -138,7 +138,7 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 						expectVal := item.Value
 						compareWay := item.CompareWay
 
-						if s.EndpointMockCompareService.CompareText(actualVal, expectVal, compareWay) {
+						if s.EndpointMockCompareService.CompareValue(actualVal, expectVal, compareWay) {
 							result = true
 						}
 					}
@@ -159,7 +159,7 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 						expectVal := item.Value
 						compareWay := item.CompareWay
 
-						if s.EndpointMockCompareService.CompareText(actualVal, expectVal, compareWay) {
+						if s.EndpointMockCompareService.CompareValue(actualVal, expectVal, compareWay) {
 							result = true
 						}
 					}
@@ -180,7 +180,7 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 						expectVal := item.Value
 						compareWay := item.CompareWay
 
-						if s.EndpointMockCompareService.CompareText(actualVal, expectVal, compareWay) {
+						if s.EndpointMockCompareService.CompareValue(actualVal, expectVal, compareWay) {
 							result = true
 						}
 					}

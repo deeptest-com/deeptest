@@ -147,14 +147,14 @@ func (s *EndpointMockCompareService) compareObject(actualValue interface{}, expe
 	return
 }
 
-func (s *EndpointMockCompareService) CompareText(actualValue interface{}, expectValue string,
+func (s *EndpointMockCompareService) CompareValue(actualValue interface{}, expectValue string,
 	comparator consts.ComparisonOperator) (ret bool) {
 
 	if comparator == consts.Equal {
 		ret = fmt.Sprintf("%v", actualValue) == expectValue
 
 	} else if comparator == consts.NotEqual {
-		ret = fmt.Sprintf("%v", actualValue) == expectValue
+		ret = fmt.Sprintf("%v", actualValue) != expectValue
 
 	} else if comparator == consts.Contain {
 		ret = strings.Contains(fmt.Sprintf("%v", actualValue), expectValue)

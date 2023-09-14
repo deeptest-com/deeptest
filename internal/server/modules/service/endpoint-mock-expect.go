@@ -6,7 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"sort"
 )
 
 type EndpointMockExpectService struct {
@@ -108,18 +108,6 @@ func (s *EndpointMockExpectService) GetExpectRequestOptions(endpointId, endpoint
 	}
 	ret[consts.ParamInHeader] = headerOptions
 
-	queryOptions, err := s.GetExpectRequestQueryOptions(endpointInterfaceId)
-	if err != nil {
-		return
-	}
-	ret[consts.ParamInQuery] = queryOptions
-
-	pathOptions, err := s.GetExpectRequestPathOptions(endpointId)
-	if err != nil {
-		return
-	}
-	ret[consts.ParamInPath] = pathOptions
-
 	return
 }
 
@@ -130,21 +118,23 @@ func (s *EndpointMockExpectService) GetExpectRequestHeaderOptions(endpointInterf
 	}
 
 	headerOptionArr := make([]string, 0)
+	headerOptionMap := make(map[string]string)
 	for _, v := range headers {
-		options = append(options, v1.MockExpectRequestOption{
-			Name: v.Name,
-			Type: v.Type,
-		})
 		headerOptionArr = append(headerOptionArr, v.Name)
+		headerOptionMap[v.Name] = v.Type
 	}
 
-	commonOptions := consts.HeaderOptions
+	commonOptions := append(headerOptionArr, consts.HeaderOptions...)
+	sort.Strings(commonOptions)
+
 	for _, v := range commonOptions {
-		if !_commUtils.InArray(v, headerOptionArr) {
-			options = append(options, v1.MockExpectRequestOption{
-				Name: v,
-			})
+		option := v1.MockExpectRequestOption{
+			Name: v,
 		}
+		if optionType, ok := headerOptionMap[v]; ok {
+			option.Type = optionType
+		}
+		options = append(options, option)
 	}
 
 	return

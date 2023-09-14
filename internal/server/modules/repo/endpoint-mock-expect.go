@@ -60,7 +60,7 @@ func (r *EndpointMockExpectRepo) GetExpectDetail(expectId uint) (expect model.En
 func (r *EndpointMockExpectRepo) GetExpectById(expectId uint) (expect model.EndpointMockExpect, err error) {
 	err = r.DB.Model(&model.EndpointMockExpect{}).
 		Where("id = ?", expectId).
-		Where("NOT deleted AND NOT disabled").
+		Where("NOT deleted").
 		First(&expect).Error
 
 	return
@@ -99,10 +99,12 @@ func (r *EndpointMockExpectRepo) GetExpectResponseHeaders(expectId uint) (respon
 }
 
 func (r *EndpointMockExpectRepo) Save(req model.EndpointMockExpect) (expectId uint, err error) {
-	isCreate := false
 	if req.ID == 0 {
-		isCreate = true
 		req.Ordr = r.GetMaxOrder(req.EndpointId)
+	} else {
+		if err = r.DeleteDetail(req.ID); err != nil {
+			return 0, err
+		}
 	}
 	if err = r.DB.Save(&req).Error; err != nil {
 		return
@@ -113,36 +115,14 @@ func (r *EndpointMockExpectRepo) Save(req model.EndpointMockExpect) (expectId ui
 		return
 	}
 
-	if isCreate {
-		if err = r.CreateExpectRequest(req); err != nil {
-			return 0, err
-		}
-
-		expectResponseHeaders := make([]model.EndpointMockExpectResponseHeader, 0)
-		for _, v := range req.ResponseHeaders {
-			v.EndpointMockExpectId = req.ID
-			expectResponseHeaders = append(expectResponseHeaders, v)
-		}
-		if len(expectResponseHeaders) > 0 {
-			if err = r.BatchCreateExpectResponseHeader(expectResponseHeaders); err != nil {
-				return 0, err
-			}
-		}
-	} else {
-		if err = r.DeleteRequestByExpectIdAndSource(req.ID, consts.ParamInBody); err != nil {
-			return 0, err
-		}
-
-		if err = r.UpdateExpectRequest(req); err != nil {
-			return 0, err
-		}
-
-		for _, v := range req.ResponseHeaders {
-			if err = r.DB.Save(&v).Error; err != nil {
-				return 0, err
-			}
-		}
+	if err = r.CreateExpectRequest(req); err != nil {
+		return
 	}
+
+	if err = r.CreateExpectResponseHeaders(req); err != nil {
+		return 0, err
+	}
+
 	expectId = req.ID
 	return
 }
@@ -150,19 +130,35 @@ func (r *EndpointMockExpectRepo) Save(req model.EndpointMockExpect) (expectId ui
 func (r *EndpointMockExpectRepo) CreateExpectRequest(req model.EndpointMockExpect) (err error) {
 	expectRequest := make([]model.EndpointMockExpectRequest, 0)
 	for _, header := range req.RequestHeaders {
+		if header.Name == "" || header.CompareWay == "" {
+			continue
+		}
 		header.EndpointMockExpectId = req.ID
+		header.ID = 0
 		expectRequest = append(expectRequest, header)
 	}
 	for _, body := range req.RequestBodies {
+		if body.CompareWay == "" || (body.SelectType != consts.FullText && body.Name == "") {
+			continue
+		}
 		body.EndpointMockExpectId = req.ID
+		body.ID = 0
 		expectRequest = append(expectRequest, body)
 	}
 	for _, query := range req.RequestQueryParams {
+		if query.Name == "" || query.CompareWay == "" {
+			continue
+		}
 		query.EndpointMockExpectId = req.ID
+		query.ID = 0
 		expectRequest = append(expectRequest, query)
 	}
 	for _, path := range req.RequestPathParams {
+		if path.Name == "" || path.CompareWay == "" {
+			continue
+		}
 		path.EndpointMockExpectId = req.ID
+		path.ID = 0
 		expectRequest = append(expectRequest, path)
 	}
 
@@ -173,27 +169,17 @@ func (r *EndpointMockExpectRepo) CreateExpectRequest(req model.EndpointMockExpec
 	return
 }
 
-func (r *EndpointMockExpectRepo) UpdateExpectRequest(req model.EndpointMockExpect) (err error) {
-	for _, header := range req.RequestHeaders {
-		if err = r.DB.Save(&header).Error; err != nil {
-			return err
-		}
+func (r *EndpointMockExpectRepo) CreateExpectResponseHeaders(req model.EndpointMockExpect) (err error) {
+	expectResponseHeaders := make([]model.EndpointMockExpectResponseHeader, 0)
+	for _, v := range req.ResponseHeaders {
+		v.EndpointMockExpectId = req.ID
+		expectResponseHeaders = append(expectResponseHeaders, v)
 	}
-	for _, body := range req.RequestBodies {
-		if err = r.DB.Save(&body).Error; err != nil {
-			return err
-		}
+
+	if len(expectResponseHeaders) > 0 {
+		err = r.BatchCreateExpectResponseHeader(expectResponseHeaders)
 	}
-	for _, query := range req.RequestQueryParams {
-		if err = r.DB.Save(&query).Error; err != nil {
-			return err
-		}
-	}
-	for _, path := range req.RequestPathParams {
-		if err = r.DB.Save(&path).Error; err != nil {
-			return err
-		}
-	}
+
 	return
 }
 
@@ -217,6 +203,12 @@ func (r *EndpointMockExpectRepo) DeleteById(expectId uint) (err error) {
 		return
 	}
 
+	err = r.DeleteDetail(expectId)
+
+	return
+}
+
+func (r *EndpointMockExpectRepo) DeleteDetail(expectId uint) (err error) {
 	modelArr := []interface{}{
 		model.EndpointMockExpectRequest{},
 		model.EndpointMockExpectResponse{},
@@ -227,9 +219,9 @@ func (r *EndpointMockExpectRepo) DeleteById(expectId uint) (err error) {
 			return err
 		}
 	}
+
 	return
 }
-
 func (r *EndpointMockExpectRepo) Disable(endpointId uint) (err error) {
 	err = r.DB.Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
@@ -241,15 +233,6 @@ func (r *EndpointMockExpectRepo) Disable(endpointId uint) (err error) {
 func (r *EndpointMockExpectRepo) DeleteDetailByExpectId(model interface{}, expectId uint) (err error) {
 	err = r.DB.Model(&model).
 		Where("endpoint_mock_expect_id = ?", expectId).
-		Update("deleted", 1).Error
-
-	return
-}
-
-func (r *EndpointMockExpectRepo) DeleteRequestByExpectIdAndSource(expectId uint, selectType consts.ParamIn) (err error) {
-	err = r.DB.Model(&model.EndpointMockExpectRequest{}).
-		Where("endpoint_mock_expect_id = ?", expectId).
-		Where("source = ?", selectType).
 		Update("deleted", 1).Error
 
 	return

@@ -34,19 +34,21 @@ func (s *EndpointMockParamService) GetRealRequestValues(ctx iris.Context,
 
 func (s *EndpointMockParamService) getRealQueryParamValues(ctx iris.Context, endpointInterface model.EndpointInterface) (ret []model.InterfaceParamBase) {
 	definedParams, _ := s.EndpointInterfaceRepo.ListParams(endpointInterface.ID)
+
+	definedParamTypeMap := map[string]string{}
+	for _, definedParam := range definedParams {
+		definedParamTypeMap[definedParam.Name] = definedParam.Type
+	}
+
 	realParams := ctx.URLParams()
-
-	for _, mockParam := range definedParams {
+	for key, realParam := range realParams {
 		item := model.InterfaceParamBase{
-			Name: mockParam.Name,
-			Type: mockParam.Type,
+			Name:  key,
+			Type:  definedParamTypeMap[key],
+			Value: realParam,
 		}
 
-		val, ok := realParams[mockParam.Name]
-		if ok {
-			item.Value = val
-			ret = append(ret, item)
-		}
+		ret = append(ret, item)
 	}
 
 	return
@@ -55,20 +57,21 @@ func (s *EndpointMockParamService) getRealQueryParamValues(ctx iris.Context, end
 func (s *EndpointMockParamService) getRealPathParamValues(ctx iris.Context, endpoint model.Endpoint) (ret []model.InterfaceParamBase) {
 	definedParams, _ := s.EndpointRepo.GetEndpointPathParams(endpoint.ID)
 
+	definedParamTypeMap := map[string]string{}
+	for _, definedParam := range definedParams {
+		definedParamTypeMap[definedParam.Name] = definedParam.Type
+	}
+
 	mockPath := "/" + ctx.Params().Get("path")
 	realParams, _ := s.MatchEndpointByMockPath(mockPath, endpoint)
-
-	for _, mockParam := range definedParams {
+	for key, realParam := range realParams {
 		item := model.InterfaceParamBase{
-			Name: mockParam.Name,
-			Type: mockParam.Type,
+			Name:  key,
+			Type:  definedParamTypeMap[key],
+			Value: realParam,
 		}
 
-		val, ok := realParams[mockParam.Name]
-		if ok {
-			item.Value = val
-			ret = append(ret, item)
-		}
+		ret = append(ret, item)
 	}
 
 	return
@@ -77,19 +80,20 @@ func (s *EndpointMockParamService) getRealPathParamValues(ctx iris.Context, endp
 func (s *EndpointMockParamService) getRealHeaderParamValues(ctx iris.Context, endpointInterface model.EndpointInterface) (ret []model.InterfaceParamBase) {
 	definedParams, _ := s.EndpointInterfaceRepo.ListHeaders(endpointInterface.ID)
 
+	definedParamTypeMap := map[string]string{}
+	for _, definedParam := range definedParams {
+		definedParamTypeMap[definedParam.Name] = definedParam.Type
+	}
+
 	realParams := ctx.Request().Header
-
-	for _, mockParam := range definedParams {
+	for key, realParam := range realParams {
 		item := model.InterfaceParamBase{
-			Name: mockParam.Name,
-			Type: mockParam.Type,
+			Name:  key,
+			Type:  definedParamTypeMap[key],
+			Value: strings.Join(realParam, ","),
 		}
 
-		val, ok := realParams[mockParam.Name]
-		if ok {
-			item.Value = strings.Join(val, ",")
-			ret = append(ret, item)
-		}
+		ret = append(ret, item)
 	}
 
 	return

@@ -94,6 +94,9 @@ func GetRespValueFromGoja() (err error) {
 	_, err = mockVm.JsRuntime.RunString("getRespValueFromGoja(dt.response);")
 	return
 }
+func SetReqValueToGoja(req mockGenerator.Request) {
+	SetValueToGoja("request", req)
+}
 func SetRespValueToGoja(resp mockGenerator.Response) {
 	SetValueToGoja("response", resp)
 }

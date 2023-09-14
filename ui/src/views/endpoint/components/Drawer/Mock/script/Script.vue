@@ -27,25 +27,20 @@
                 <div>dt.response.data.field1 = 'val';</div>
                 <br />
                 <div>// 修改字符串响应内容</div>
-                <div>dt.response.data = dt.response.data.replace('aaa', 'new');</div>
+                <div>if (dt.request.method.toLowerCase() == 'get') {</div>
+                <div style="padding-left: 20px;">dt.response.data = </div>
+                <div style="padding-left: 40px;">dt.response.data.replace('old', 'new');</div>
+                <div>}</div>
               </div>
             </a-card>
           </div>
 
           <div class="title">代码片段：</div>
           <div>
-            <div @click="addSnippet('log')" class="dp-link-primary">
-              打印日志
-            </div>
-            <div @click="addSnippet('set_mock_resp_code')" class="dp-link-primary">
-              设置响应码
-            </div>
-            <div @click="addSnippet('set_mock_resp_field')" class="dp-link-primary">
-              修改JSON响应字段
-            </div>
-            <div @click="addSnippet('set_mock_resp_text')" class="dp-link-primary">
-              修改字符串响应内容
-            </div>
+            <div @click="addSnippet('log')" class="dp-link-primary">打印日志</div>
+            <div @click="addSnippet('set_mock_resp_code')" class="dp-link-primary">设置响应码</div>
+            <div @click="addSnippet('set_mock_resp_field')" class="dp-link-primary">修改JSON响应字段</div>
+            <div @click="addSnippet('set_mock_resp_text')" class="dp-link-primary">修改字符串响应内容</div>
           </div>
         </div>
       </div>

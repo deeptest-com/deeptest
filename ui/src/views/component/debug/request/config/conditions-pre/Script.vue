@@ -2,7 +2,7 @@
   <div class="pre-script-main">
       <div class="content">
         <div class="codes">
-          <MonacoEditor 
+          <MonacoEditor
             ref="monacoEditor"
             theme="vs" language="typescript" class="editor"
             customId="pre-script-main-codes"
@@ -17,9 +17,6 @@
 
           <div class="title">代码片段：</div>
           <div>
-            <!--      <div @click="addSnippet('environment_get')" class="dp-link-primary">Get an environment variable</div>
-                      <div @click="addSnippet('environment_set')" class="dp-link-primary">Set an environment variable</div>
-                      <div @click="addSnippet('environment_clear')" class="dp-link-primary">Clear an environment variable</div>-->
             <div @click="addSnippet('variables_get')" class="dp-link-primary">获取变量</div>
             <div @click="addSnippet('variables_set')" class="dp-link-primary">设置变量</div>
             <div @click="addSnippet('variables_clear')" class="dp-link-primary">清除变量</div>

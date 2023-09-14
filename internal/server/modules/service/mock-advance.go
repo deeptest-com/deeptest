@@ -46,13 +46,18 @@ func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInter
 	}
 
 	if !endpoint.ScriptMockDisabled {
-		s.ByScript(endpoint, &resp)
+		req := mockGenerator.Request{
+			Method: endpointInterface.Method,
+		}
+		s.ByScript(endpoint, req, &resp)
 	}
 
 	return
 }
 
-func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (resp mockGenerator.Response, byAdvance bool) {
+func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (
+	resp mockGenerator.Response, byAdvance bool) {
+
 	expects, _ := s.EndpointMockExpectRepo.ListByEndpointId(endpointInterface.EndpointId)
 
 	for _, expect := range expects {
@@ -63,6 +68,7 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(expect.ID)
 		if s.MatchExpect(expectRequestMap, endpointInterface, endpoint, ctx) {
 			respData, respHeaders := s.GetExpectResult(expect)
+			respDefine := s.EndpointInterfaceRepo.GetResponse(endpointInterface.ID, respData.Code)
 
 			codeInt, _ := strconv.ParseInt(respData.Code, 10, 64)
 			resp.StatusCode = consts.HttpRespCode(codeInt)
@@ -72,13 +78,15 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 			resp.UseAdvMock = true
 			byAdvance = true
 
-			respDefine := s.EndpointInterfaceRepo.GetResponse(endpointInterface.ID, respData.Code)
 			resp.ContentType = consts.HttpContentType(respDefine.MediaType)
+			if resp.ContentType == "" {
+				resp.ContentType = consts.ContentTypeJSON
+			}
 
 			expectResp, _ := s.EndpointMockExpectRepo.GetExpectResponse(expect.ID)
 			resp.DelayTime = expectResp.DelayTime
 
-			if httpHelper.IsJsonRespType(resp.ContentType) {
+			if httpHelper.IsJsonRespType(resp.ContentType) && resp.Content != "" {
 				json.Unmarshal([]byte(resp.Content), &resp.Data)
 			} else {
 				resp.Data = resp.Content
@@ -89,13 +97,14 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 	return
 }
 
-func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, resp *mockGenerator.Response) {
+func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, req mockGenerator.Request, resp *mockGenerator.Response) {
 	script, err := s.EndpointMockScriptRepo.Get(endpoint.ID)
 	if err != nil || script.Disabled || script.Content == "" {
 		return
 	}
 
 	mockHelper.InitJsRuntime()
+	mockHelper.SetReqValueToGoja(req)
 	mockHelper.SetRespValueToGoja(*resp)
 	mockHelper.ExecScript(script.Content)
 	mockHelper.GetRespValueFromGoja()
@@ -110,6 +119,10 @@ func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, resp *mockGenerat
 func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]model.EndpointMockExpectRequest,
 	endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (ret bool) {
 
+	if len(expectRequestMap) == 0 {
+		return false
+	}
+
 	headerParams, queryParams, pathParams, body, bodyForm :=
 		s.EndpointMockParamService.GetRealRequestValues(ctx, endpointInterface, endpoint)
 
@@ -123,8 +136,9 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 					if item.Name == param.Name {
 						actualVal := param.Value
 						expectVal := item.Value
+						compareWay := item.CompareWay
 
-						if actualVal == expectVal {
+						if s.EndpointMockCompareService.CompareString(actualVal, expectVal, compareWay) {
 							result = true
 						}
 					}
@@ -143,8 +157,9 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 					if item.Name == param.Name {
 						actualVal := param.Value
 						expectVal := item.Value
+						compareWay := item.CompareWay
 
-						if actualVal == expectVal {
+						if s.EndpointMockCompareService.CompareString(actualVal, expectVal, compareWay) {
 							result = true
 						}
 					}
@@ -163,8 +178,9 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 					if item.Name == param.Name {
 						actualVal := param.Value
 						expectVal := item.Value
+						compareWay := item.CompareWay
 
-						if actualVal == expectVal {
+						if s.EndpointMockCompareService.CompareString(actualVal, expectVal, compareWay) {
 							result = true
 						}
 					}

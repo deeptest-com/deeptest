@@ -70,23 +70,6 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 		return
 	}
 
-	// ignore validate request
-	//routingValidation := &openapi3filter.RequestValidationInput{
-	//	Request:    &apiRequest,
-	//	PathParams: pathParameters,
-	//	Route:      requestRoute,
-	//	Options: &openapi3filter.Options{
-	//		ExcludeRequestBody: true,
-	//	},
-	//}
-	//err = openapi3filter.ValidateRequest(ctx, routingValidation)
-	//var requestError *openapi3filter.RequestError
-	//if errors.As(err, &requestError) {
-	//	return
-	//}
-
-	// generate response
-
 	generator, _ := s.getGeneratorFromMap(endpointInterface.ProjectId, req)
 	response, err := (*generator).GenerateResponse(&apiRequest, requestRoute, req.Code)
 

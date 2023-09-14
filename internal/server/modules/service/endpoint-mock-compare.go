@@ -154,7 +154,7 @@ func (s *EndpointMockCompareService) CompareText(actualValue interface{}, expect
 		ret = fmt.Sprintf("%v", actualValue) == expectValue
 
 	} else if comparator == consts.NotEqual {
-		ret = fmt.Sprintf("%v", actualValue) == expectValue
+		ret = fmt.Sprintf("%v", actualValue) != expectValue
 
 	} else if comparator == consts.Contain {
 		ret = strings.Contains(fmt.Sprintf("%v", actualValue), expectValue)

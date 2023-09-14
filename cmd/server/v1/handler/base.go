@@ -14,7 +14,7 @@ type BaseCtrl struct {
 
 func (c *BaseCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.Context) {
 	if resp.DelayTime > 0 {
-		time.Sleep(time.Duration(resp.DelayTime) * time.Second)
+		time.Sleep(time.Duration(resp.DelayTime) * time.Millisecond)
 	}
 
 	data := resp.Data

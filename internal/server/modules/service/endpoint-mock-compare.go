@@ -89,7 +89,7 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 	return
 }
 
-func (s *EndpointMockCompareService) CompareValue(actualValue interface{}, expectValue string,
+func (s *EndpointMockCompareService) CompareString(actualValue interface{}, expectValue string,
 	comparator consts.ComparisonOperator) (ret bool) {
 
 	if comparator == consts.Equal {

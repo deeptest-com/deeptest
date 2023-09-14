@@ -58,15 +58,6 @@
           另存为用例
         </a-button>
       </div>
-      <!--
-      <div v-if="usedBy === UsedBy.InterfaceDebug"
-           :disabled="!isPathValid"
-           class="save-as-case">
-        <a-button trigger="click" @click="generateCases" class="dp-bg-light">
-          生成用例
-        </a-button>
-      </div>
-      -->
       <div v-if="isShowSync"
            :disabled="!isPathValid"
            class="sync">
@@ -128,10 +119,6 @@ const props = defineProps({
     required: true
   },
   onSaveAsCase: {
-    type: Function,
-    required: false
-  },
-  onGenerateCases: {
     type: Function,
     required: false
   },

@@ -1,6 +1,10 @@
 <template>
   <div class="endpoint-debug-cases-list">
     <div class="toolbar">
+<!--      <a-button trigger="click" @click="generateCases">
+        <span>备选用例</span>
+      </a-button>-->
+
       <a-button type="primary" trigger="click" @click="create">
         <span>新建用例</span>
       </a-button>
@@ -58,6 +62,13 @@
         :model="editModel"
         :onFinish="createFinish"
         :onCancel="createCancel"/>
+
+<!--    <GenerateCasePopup
+        v-if="generateCasesVisible"
+        :visible="generateCasesVisible"
+        :model="generateCasesModel"
+        :onFinish="generateCasesFinish"
+        :onCancel="generateCasesCancel" />-->
   </div>
 </template>
 
@@ -72,19 +83,27 @@ import {momentUtc} from '@/utils/datetime';
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
 
+import {StateType as Endpoint} from "@/views/endpoint/store";
+import {StateType as Debug} from "@/views/component/debug/store";
+import {StateType as Project} from "@/views/project/store";
+
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import CaseEdit from "./edit.vue";
-import {NotificationKeyCommon} from "@/utils/const";
 import {notifyError, notifySuccess} from "@/utils/notify";
+import GenerateCasePopup from "./generate.vue";
 
 provide('usedBy', UsedBy.InterfaceDebug)
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
 const {t} = useI18n();
 
-const store = useStore<{ Endpoint,Project }>();
+const store = useStore<{ Endpoint: Endpoint, Debug: Debug, Project: Project }>();
 const endpoint = computed<any>(() => store.state.Endpoint.endpointDetail);
 const caseList = computed<any[]>(() => store.state.Endpoint.caseList);
 const userList = computed<any>(() => store.state.Project.userList);
+
+const debugData = computed<any>(() => store.state.Debug.debugData);
+const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
+
 const props = defineProps({
   onDesign: {
     type: Function,
@@ -162,6 +181,36 @@ const username = (user:string)=>{
   return result?.label || '-'
 }
 
+
+const generateCasesVisible = ref(false)
+const generateCasesModel = ref({} as any)
+const generateCases = () => {
+  console.log('generateCases')
+  generateCasesVisible.value = true
+  generateCasesModel.value = {}
+}
+const generateCasesFinish = async (model) => {
+  console.log('generateCasesFinish', model, debugData.value.url)
+
+  const data = Object.assign({...model}, debugInfo.value)
+
+  store.commit("Global/setSpinning",true)
+  const res = await store.dispatch('Debug/generateCases', data)
+  store.commit("Global/setSpinning",false)
+
+  if (res === true) {
+    generateCasesVisible.value = false
+
+    notifySuccess(`自动生成用例成功`);
+  } else {
+    notifyError(`自动生成用例保存失败`);
+  }
+}
+const generateCasesCancel = () => {
+  console.log('generateCasesCancel')
+  generateCasesVisible.value = false
+}
+
 const columns = [
   {
     title: '编号',
@@ -215,7 +264,10 @@ const columns = [
     z-index: 999999;
     top: -42px;
     right: 0;
-    width: 100px;
+    width: 200px;
+    .ant-btn {
+      margin-left: 10px;
+    }
   }
 
   .content {

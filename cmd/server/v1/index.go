@@ -24,16 +24,17 @@ type IndexModule struct {
 	DebugInvokeModule       *router.DebugInvokeModule       `inject:""`
 	DiagnoseInterfaceModule *router.DiagnoseInterfaceModule `inject:""`
 
-	MockModule *router.MockModule `inject:""`
+	ProjectModule     *router.ProjectModule     `inject:""`
+	ProjectPerModule  *router.ProjectPermModule `inject:""`
+	ProjectMenuModule *router.ProjectMenuModule `inject:""`
+	DatapoolModule    *router.DatapoolModule    `inject:""`
+	SnippetModule     *router.SnippetModule     `inject:""`
 
-	ProjectModule            *router.ProjectModule            `inject:""`
-	ProjectPerModule         *router.ProjectPermModule        `inject:""`
-	ProjectMenuModule        *router.ProjectMenuModule        `inject:""`
-	DatapoolModule           *router.DatapoolModule           `inject:""`
-	SnippetModule            *router.SnippetModule            `inject:""`
-	MockJsModule             *router.MockJsModule             `inject:""`
-	EndpointMockScriptModule *router.EndpointMockScriptModule `inject:""`
-	EndpointMockExpectModule *router.EndpointMockExpectModule `inject:""`
+	EndpointCaseAlternativeModule *router.EndpointCaseAlternativeModule `inject:""`
+	MockModule                    *router.MockModule                    `inject:""`
+	EndpointMockScriptModule      *router.EndpointMockScriptModule      `inject:""`
+	EndpointMockExpectModule      *router.EndpointMockExpectModule      `inject:""`
+	MockJsModule                  *router.MockJsModule                  `inject:""`
 
 	ImportModule      *router.ImportModule      `inject:""`
 	AuthModule        *router.AuthModule        `inject:""`
@@ -105,9 +106,11 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.ProjectMenuModule.Party(),
 		m.DatapoolModule.Party(),
 		m.SnippetModule.Party(),
-		m.MockJsModule.Party(),
+
+		m.EndpointCaseAlternativeModule.Party(),
 		m.EndpointMockScriptModule.Party(),
 		m.EndpointMockExpectModule.Party(),
+		m.MockJsModule.Party(),
 
 		m.ImportModule.Party(),
 		m.AuthModule.Party(),

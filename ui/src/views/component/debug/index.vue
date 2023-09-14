@@ -45,7 +45,7 @@
 
         </a-tabs>
         <div class="right-tab">
-          <div 
+          <div
             v-if="rightTabKey==='env'"
             :style="posStyleEnv"
             class="right-float-tab dp-bg-white">
@@ -53,7 +53,7 @@
               <RequestEnv :onClose="closeRightTab" />
             </div>
           </div>
-          <div 
+          <div
             v-if="rightTabKey==='history'"
             :style="posStyleHis"
             class="right-float-tab dp-bg-white">
@@ -102,10 +102,6 @@ const props = defineProps({
     type: Function,
     required: false
   },
-  onGenerateCases: {
-    type: Function,
-    required: false
-  },
   onSyncDebugData: {
     type: Function,
     required: false
@@ -137,13 +133,8 @@ const saveAsCase = async () => {
     props.onSaveAsCase()
   }
 }
-const generateCases = async () => {
-  if (props.onGenerateCases) {
-    props.onGenerateCases()
-  }
-}
 
-  const syncDebugData = async () => {
+const syncDebugData = async () => {
   if (props.onSyncDebugData)
     props.onSyncDebugData()
 };

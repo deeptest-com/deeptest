@@ -13,6 +13,7 @@ type DebugInfo struct {
 	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"` // load by interface diagnose
 
 	UsedBy consts.UsedBy `json:"usedBy"`
+	UserId uint          `json:"userId"`
 }
 
 type SubmitDebugResultRequest struct {

@@ -158,14 +158,14 @@ export class DeepTestApp {
     ready() {
         logInfo('>> deeptest app ready.');
         initLang()
-        this.buildAppMenu();
+        // this.buildAppMenu();
         this.openOrCreateWindow()
         this.setAboutPanel();
         // 使用默认的快捷键，和常用的快捷键有冲突
-        globalShortcut.register('CommandOrControl+D', () => {
-            const mainWin = this._windows.get('main');
-            mainWin.toggleDevTools()
-        })
+        // globalShortcut.register('CommandOrControl+D', () => {
+        //     const mainWin = this._windows.get('main');
+        //     mainWin.toggleDevTools()
+        // })
         // check update,检查是否需要更新应用
         ipcMain.on(electronMsgUpdate, (event, arg) => {
             logInfo('update confirm from renderer', arg)
@@ -187,7 +187,7 @@ export class DeepTestApp {
         app.on('activate', () => {
             logInfo('>> event: app activate');
 
-            this.buildAppMenu();
+            // this.buildAppMenu();
 
             // 在 OS X 系统上，可能存在所有应用窗口关闭了，但是程序还没关闭，此时如果收到激活应用请求，需要重新打开应用窗口并创建应用菜单。
             this.openOrCreateWindow()
@@ -369,7 +369,7 @@ export class DeepTestApp {
             applicationName: Lang.string(Config.pkg.name) || Config.pkg.displayName,
             applicationVersion: Config.pkg.version,
             copyright: `${Config.pkg.copyright} ${Config.pkg.company}`,
-            credits: `Licence: ${Config.pkg.license}`,
+            // credits: `Licence: ${Config.pkg.license}`,
             version: version
         });
     }
@@ -476,7 +476,6 @@ export class DeepTestApp {
                     }]
                 }
             ];
-
             const menu = Menu.buildFromTemplate(template);
             Menu.setApplicationMenu(menu);
         } else {

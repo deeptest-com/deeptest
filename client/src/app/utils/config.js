@@ -1,4 +1,5 @@
-const pkg = process.env.IS_LY_PACK == 1 ? require('../package-ly.json') : require('../package.json');
+// const pkg = process.env.IS_LY_PACK == 1 ? require('../package-ly.json') : require('../package.json');
+const pkg = require('../package-ly.json');
 /**
  * 运行时配置对象
  * @type {{pkg: Object, media: Object, system: Object}}

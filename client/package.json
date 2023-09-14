@@ -1,7 +1,7 @@
 {
   "name": "deeptest",
   "productName": "deeptest",
-  "version": "1.0.0",
+  "version": "0.0.5",
   "description": "deeptest",
   "main": ".webpack/main",
   "scripts": {

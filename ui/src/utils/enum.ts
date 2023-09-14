@@ -12,6 +12,7 @@ export enum UsedBy {
     DiagnoseDebug = "diagnose_debug",
     CaseDebug = "case_debug",
     MockData = "mock_data",
+    MockResp = "mock_resp",
 }
 
 export enum ProcessorInterfaceSrc {

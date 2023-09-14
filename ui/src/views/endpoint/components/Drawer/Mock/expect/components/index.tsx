@@ -44,9 +44,9 @@ const CompareWayOfString = ['equal', 'notEqual', 'contain', 'notContain', 'regul
 
 const CompareWayOfBodies = ['equal', 'notEqual', 'contain', 'notContain'];
 
-const conditionOptions = (type: string, record: any, optionsMap) => {
+const conditionOptions = (type: string, record: any, optionsMap: any, selectType?: string) => {
   if (type === 'requestBodies') {
-    return conditionArray.filter(condition => CompareWayOfBodies.includes(condition.value));
+    return ['fullText'].includes(selectType || '') ? conditionArray.filter(condition => CompareWayOfBodies.includes(condition.value)) : conditionArray;
   }
   if (['requestQueryParams', 'requestPathParams'].includes(type)) {
     return conditionArray;
@@ -136,7 +136,7 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
           record.compareWay = e;
           onColumnChange(type);
         };
-        const options = conditionOptions(type, record, optionsMap);
+        const options = conditionOptions(type, record, optionsMap, selectType);
         if (record.name && !record.compareWay) {
           record.compareWay = options[0].value;
         }

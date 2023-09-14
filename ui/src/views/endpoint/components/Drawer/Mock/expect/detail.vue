@@ -158,7 +158,7 @@ const initListData = (array: any, type?: string) => {
 const formState: any = reactive({
   name: '', // 期望名称
   method: methods.value[0]?.value, // 请求方法
-  code: '',
+  code: '200',
   delayTime: 0,
   // 列表信息
   requestHeaders: initListData([]), // 请求头
@@ -421,6 +421,10 @@ watch(() => {
       display: flex;
       align-items: center;
       height: 32px;
+      
+      label {
+        font-weight: normal;
+      }
     }
 
     .ant-row.ant-form-item {
@@ -442,6 +446,13 @@ watch(() => {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 10px;
+    height: 24px;
+
+    :deep(.ant-radio-button-wrapper) {
+      height: 24px;
+      padding: 0 7px;
+      line-height: 20px;
+    }
   }
 
   .bottom {
@@ -455,5 +466,11 @@ watch(() => {
   align-items: center;
   justify-content: flex-start;
   margin-bottom: 18px;
+}
+
+.mock-detail-form {
+  :deep(.ant-form-item-label label) {
+    font-weight: bold;
+  }
 }
 </style>

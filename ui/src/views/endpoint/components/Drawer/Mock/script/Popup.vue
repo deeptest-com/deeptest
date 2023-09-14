@@ -25,13 +25,13 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, ref} from "vue";
+import {computed, defineProps, inject, provide, ref} from "vue";
 import {useI18n} from "vue-i18n";
 
 import MockScript from "./Script.vue";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
-
+import {UsedBy} from "@/utils/enum";
 const {t} = useI18n();
 
 const props = defineProps({

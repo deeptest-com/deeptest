@@ -1,7 +1,7 @@
 <template>
-  <a-modal 
+  <a-modal
     :visible="true"
-    :title="mockExpectDetail.id ? '编辑Mock期望' : '新建Mock期望'" 
+    :title="mockExpectDetail.id ? '编辑Mock期望' : '新建Mock期望'"
     width="1000px"
     @cancel="handleCancel">
     <template #footer>
@@ -9,9 +9,9 @@
       <a-button :loading="loading" key="submit" html-type="submit" type="primary" @click="handleOk">确定</a-button>
     </template>
     <div style="max-height: 650px;overflow-y: scroll;">
-      <a-form 
+      <a-form
         layout="vertical"
-        :model="formState" 
+        :model="formState"
         class="mock-detail-form"
         ref="mockFormRef">
         <a-form-item class="expect-name" label="期望名称" :rules="rules.name" name="name">
@@ -31,12 +31,12 @@
                   <a-radio value="fullText">全文本</a-radio>
                 </a-radio-group>
               </div>
-              <MockData 
-                :type="item.type" 
-                :data="formState" 
+              <MockData
+                :type="item.type"
+                :data="formState"
                 :optionsMap="dropdownOptions"
                 :selectType="requestBodyType"
-                @columnChange="handleChange" 
+                @columnChange="handleChange"
                 @delete="handleDelete" />
             </a-tab-pane>
           </a-tabs>
@@ -99,7 +99,7 @@
 /**
  * ::todo 后续在做代码层面的拆分优化
  */
-import { ref, defineProps, defineEmits, reactive, onMounted, computed, watch, unref, nextTick, } from 'vue';
+import {ref, defineProps, defineEmits, reactive, onMounted, computed, watch, unref, nextTick, provide,} from 'vue';
 import { useStore } from 'vuex';
 import { message } from 'ant-design-vue';
 import cloneDeep from "lodash/cloneDeep";
@@ -111,6 +111,9 @@ import { requestTabs } from './index';
 import { MonacoOptions } from "@/utils/const";
 import { defaultResponseCodes } from '@/config/constant';
 import { notifySuccess } from '@/utils/notify';
+import {UsedBy} from "@/utils/enum";
+
+provide('usedBy', UsedBy.MockResp)
 
 const props = defineProps<{
   title?: String;
@@ -137,8 +140,8 @@ const methods = computed(() => {
 
 /**
  * 初始化表格
- * @param array 
- * @param type 
+ * @param array
+ * @param type
  */
 const initListData = (array: any, type?: string) => {
   return (array || []).concat([{ ...defaultData }]).map((e, index) => {
@@ -365,7 +368,6 @@ onMounted(() => {
 watch(() => {
   return unref(mockExpectDetail);
 }, async val => {
-  console.error('获取当前查看的mockExpect详情', val);
   if (val.id) {
     requestBodyType.value = [...new Set((val.requestBodies || []).map(e => e.selectType))]?.[0] || 'keyValue';
     await nextTick();
@@ -412,7 +414,7 @@ watch(() => {
   :deep(.ant-form-item) {
     flex-direction: row;
     margin-bottom: 0 !important;
-  
+
     .ant-form-item-label {
       margin-right: 6px;
       padding: 0;

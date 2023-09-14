@@ -30,6 +30,7 @@ export default defineComponent({
     onReplace: {type: Function},
     hooks: String,
     timestamp: String,
+    customId: String,
   },
   emits: [
     'editorWillMount',
@@ -60,24 +61,9 @@ export default defineComponent({
 
     this.initMonaco()
 
-    /**
-     * 这里做下兼容：
-     * monacoEditor使用在各自场景中，当它处于 可拖拽改变高度元素的场景时，它需要根据父级元素的高度动态绘制
-     * 避免展示不全
-     */
-    const resizeIt = debounce((data) => {
-      console.log('resizeIt')
-      const container = document.getElementsByClassName(data.container || 'response-renderer')[0]
-      const size = {width: container.clientWidth, height: container.clientHeight-30}
-
-      this.editor.layout(size)
-    }, 500);
-
     bus.on(settings.eventEditorAction, (data) => {
       console.log('eventEditorAction', data)
-      if (data.act === settings.eventTypeContainerHeightChanged) {
-        resizeIt(data)
-      } else if (data.act === settings.eventTypeFormat) {
+      if (data.act === settings.eventTypeFormat) {
         this.formatDocUpdate(this.editor)
       }
     });
@@ -90,7 +76,7 @@ export default defineComponent({
     bus.off(settings.eventEditorAction)
   },
   unmounted() {
-    console.log('editor unmounted')
+    console.log('editor unmounted', this.$props, this.editor);
     this.editor && this.editor.dispose();
     bus.off(settings.eventEditorAction)
   },
@@ -116,18 +102,19 @@ export default defineComponent({
         language: language,
         theme: theme,
         ...options,
+        scrollBeyondLastLine: false,
       });
 
       this.diffEditor && this._setModel(this.value, this.original);
 
 
-      // const usedBy = inject('usedBy')
+      const usedBy = inject('usedBy')
       // if (usedBy === UsedBy.InterfaceDebug) {
-      if (this.options.usedWith === 'response') {
-        addExtractAction(this.editor, this.onExtractor)
-      } else if (this.options.usedWith === 'request') {
-        addReplaceAction(this.editor, this.onReplace)
-      }
+        if (this.options.usedWith === 'response') {
+          addExtractAction(this.editor, this.onExtractor)
+        } else if (this.options.usedWith === 'request') {
+          addReplaceAction(this.editor, this.onReplace)
+        }
       // }
 
       // @event `change`
@@ -164,8 +151,11 @@ export default defineComponent({
         this.formatDocInit(editor)
       }, 500)
 
+      console.log('=== initTsModules', options.initTsModules)
       if (options.initTsModules) {
-        getSnippet('global').then(json => {
+        const snippet = usedBy == UsedBy.MockData ? 'mock.d' : 'global'
+
+        getSnippet(snippet).then(json => {
           if (json.code === 0) {
             // const externalDtsFileName = 'ex.d.ts';
             // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://modelRef/${externalDtsFileName}`);
@@ -219,7 +209,39 @@ export default defineComponent({
     _setOriginal(){
       const { original } = this.editor.getModel()
       original.setValue(this.original)
-    }
+    },
+
+
+    /**
+     * 这里做下兼容：
+     * monacoEditor使用在各自场景中，当它处于 可拖拽改变高度元素的场景时，它需要根据父级元素的高度动态绘制
+     * 避免展示不全
+     */
+    resizeIt(data) {
+      // console.error('resizeIt', data);
+      const container = document.getElementsByClassName(data.container)[0]
+      if (!container) {
+        return;
+      }
+      let height = container.clientHeight;
+      if (!container.clientHeight) {
+        const parentContainer = document.getElementsByClassName('response-renderer')[0];
+        height = parentContainer.clientHeight - 46;
+
+        if (!height <= 0) {
+          height = this.editor._domElement.clientHeight + ((data.mixedHeight || 30));
+        }
+      }
+
+      const size = {width: container.clientWidth, height: height - (data.mixedHeight || 30)}
+      /**
+       * 由于同一个页面内可能有多个 monacoEditor ,避免混乱调用， 在该事件触发时，传入id与 props.id 对比
+       * 为同一个才可以触发重置editor layout
+       */
+      if (data.id === this.$props.customId) {
+        this.editor.layout(size)
+      }
+    },
   },
 
   watch: {

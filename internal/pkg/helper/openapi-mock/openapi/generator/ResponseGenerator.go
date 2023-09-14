@@ -10,7 +10,7 @@ import (
 )
 
 type ResponseGenerator interface {
-	GenerateResponse(request *http.Request, route *routers.Route) (*Response, error)
+	GenerateResponse(request *http.Request, route *routers.Route, code string) (*Response, error)
 }
 
 func New(dataGenerator mockData.MediaGenerator) ResponseGenerator {

@@ -5,12 +5,14 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"sort"
+	"strconv"
 	"time"
 )
 
@@ -279,6 +281,19 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 	return
 }
 
+func (r *ServeRepo) SaveServerForServe(serveId uint, servers []model.ServeServer) (err error) {
+	if len(servers) == 0 {
+		return
+	}
+	err = r.DB.Delete(&model.ServeServer{}, "serve_id=?", serveId).Error
+	if err != nil {
+		return err
+	}
+
+	err = r.DB.Create(servers).Error
+	return
+}
+
 func (r *ServeRepo) ServeExist(id, projectId uint, name string) (res bool) {
 	var count int64
 	err := r.DB.Model(&model.Serve{}).Where("id != ? and name = ? and project_id = ? AND NOT deleted", id, name, projectId).Count(&count).Error
@@ -510,16 +525,28 @@ func (r *ServeRepo) AddDefaultCategory(projectId uint) (err error) {
 }
 
 func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
-	var defaultEnv model.Environment
-	defaultEnv, err = r.EnvironmentRepo.GetByProject(projectId)
+	//var defaultEnv model.Environment
+	defaultEnvs, err := r.EnvironmentRepo.GetDefaultByProject(projectId)
 	if err != nil {
 		return
 	}
 
 	var defaultServer []model.ServeServer
-	defaultServer = append(defaultServer, model.ServeServer{ServeId: serveId, EnvironmentId: defaultEnv.ID, Url: serverConsts.DefaultSever})
+	for _, v := range defaultEnvs {
+		server := model.ServeServer{
+			ServeId:       serveId,
+			EnvironmentId: v.ID,
+			Description:   v.Name,
+			Url:           serverConsts.DefaultSever,
+		}
+		if v.Name == "Mock环境" {
+			host, _ := cache.GetCacheString("host")
+			server.Url = host + "mocks/" + strconv.Itoa(int(serveId))
+		}
+		defaultServer = append(defaultServer, server)
+	}
+	err = r.SaveServerForServe(serveId, defaultServer)
 
-	err = r.SaveServer(defaultEnv.ID, defaultEnv.Name, defaultServer)
 	if err != nil {
 		return
 	}

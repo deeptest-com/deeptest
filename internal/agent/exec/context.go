@@ -13,6 +13,10 @@ var (
 	ServerApiPath = "api/v1"
 	ServerToken   = ""
 
+	// used to exchange request and response data between goja and go
+	CurrRequest  domain.BaseRequest
+	CurrResponse domain.DebugResponse
+
 	CurrScenarioProcessor   *Processor
 	CurrScenarioProcessorId = uint(0)
 	CurrDebugInterfaceId    = uint(0)

@@ -2,11 +2,14 @@
   <div class="pre-script-main">
       <div class="content">
         <div class="codes">
-          <MonacoEditor theme="vs" language="typescript" class="editor"
-                        :value="scriptData.content"
-                        :timestamp="timestamp"
-                        :options="editorOptions"
-                        @change="editorChange" />
+          <MonacoEditor
+            ref="monacoEditor"
+            theme="vs" language="typescript" class="editor"
+            customId="pre-script-main-codes"
+            :value="scriptData.content"
+            :timestamp="timestamp"
+            :options="editorOptions"
+            @change="editorChange" />
         </div>
 
         <div class="refer">
@@ -14,15 +17,12 @@
 
           <div class="title">代码片段：</div>
           <div>
-            <!--      <div @click="addSnippet('environment_get')" class="dp-link-primary">Get an environment variable</div>
-                      <div @click="addSnippet('environment_set')" class="dp-link-primary">Set an environment variable</div>
-                      <div @click="addSnippet('environment_clear')" class="dp-link-primary">Clear an environment variable</div>-->
+            <div @click="addSnippet('variables_get')" class="dp-link-primary">获取变量</div>
+            <div @click="addSnippet('variables_set')" class="dp-link-primary">设置变量</div>
+            <div @click="addSnippet('variables_clear')" class="dp-link-primary">清除变量</div>
 
-            <div @click="addSnippet('variables_get')" class="dp-link-primary">Get an variable</div>
-            <div @click="addSnippet('variables_set')" class="dp-link-primary">Set an variable</div>
-            <div @click="addSnippet('variables_clear')" class="dp-link-primary">Clear an variable</div>
-
-            <div @click="addSnippet('datapool_get')" class="dp-link-primary">Get datapool variable</div>
+            <div @click="addSnippet('datapool_get')" class="dp-link-primary">获取数据池变量</div>
+            <div @click="addSnippet('log')" class="dp-link-primary">打印日志</div>
           </div>
         </div>
       </div>
@@ -54,6 +54,7 @@ const debugData = computed<any>(() => store.state.Debug.debugData);
 const scriptData = computed<any>(() => store.state.Debug.scriptData);
 
 const timestamp = ref('')
+const monacoEditor = ref();
 watch(scriptData, (newVal) => {
   timestamp.value = Date.now() + ''
 }, {immediate: true, deep: true})
@@ -73,6 +74,7 @@ const addSnippet = (snippetName) => {
   store.dispatch('Debug/addSnippet', snippetName)
 }
 const editorChange = (newScriptCode) => {
+  console.log('editorChange')
   scriptData.value.content = newScriptCode;
 }
 
@@ -95,21 +97,17 @@ onMounted(() => {
   console.log('onMounted')
   bus.on(settings.eventConditionSave, save);
   bus.on(settings.paneResizeTop, () => {
-      bus.emit(settings.eventEditorAction, {
+    monacoEditor.value?.resizeIt({
         act: 'heightChanged',
-        container: 'codes'
+        container: 'codes',
+        id: 'pre-script-main-codes',
+        mixedHeight: 1,
       })
     })
 })
 onBeforeUnmount( () => {
   console.log('onBeforeUnmount')
   bus.off(settings.eventConditionSave, save);
-  bus.off(settings.paneResizeTop, () => {
-      bus.emit(settings.eventEditorAction, {
-        act: 'heightChanged',
-        container: 'codes'
-      })
-    })
 })
 
 const labelCol = { span: 0 }

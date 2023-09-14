@@ -9,13 +9,13 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	"github.com/getkin/kin-openapi/openapi3"
 	"gorm.io/gorm"
 	"net/http"
 	"net/url"
@@ -149,7 +149,7 @@ func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
 
 }
 
-func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
+func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
 	serve, err := s.ServeRepo.Get(endpoint.ServeId)
 	if err != nil {
 		return
@@ -160,6 +160,7 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
 		return
 	}
 	serve.Components = serveComponent
+
 	serveServer, err := s.ServeRepo.ListServer(serve.ID)
 	if err != nil {
 		return
@@ -172,6 +173,7 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res interface{}) {
 	}
 	serve.Securities = Securities
 
+	//s.SchemasConv(&endpoint)
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
 	return
@@ -234,19 +236,26 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 	for _, endpoint := range endpoints {
 		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId = req.ProjectId, req.ServeId, req.CategoryId
 		endpoint.Status = 1
-		endpoint.SourceType = consts.Swagger
+		endpoint.SourceType = req.SourceType
 		if endpoint.CreateUser == "" {
 			endpoint.CreateUser = user.Username
 		}
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
-		if req.DataSyncType == convert.FullCover {
-			res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
+
+		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
+
+		//非Notfound
+		if err != nil && err != gorm.ErrRecordNotFound {
+			continue
+		}
+
+		if req.DataSyncType == consts.FullCover {
 			if err == nil {
 				endpoint.ID = res.ID
 			}
 
-			//非Notfound
-			if err != nil && err != gorm.ErrRecordNotFound {
+		} else if req.DataSyncType == consts.AutoAdd {
+			if err == nil {
 				continue
 			}
 		}
@@ -266,17 +275,25 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 	var newComponents []*model.ComponentSchema
 	for _, component := range components {
 		component.ServeId = int64(req.ServeId)
-		component.SourceType = consts.Swagger
-		if req.DataSyncType == convert.FullCover {
-			_, err := s.ServeRepo.GetComponentByItem(consts.Swagger, uint(component.ServeId), component.Ref)
+		component.SourceType = req.SourceType
+
+		res, err := s.ServeRepo.GetComponentByItem(component.SourceType, uint(component.ServeId), component.Ref)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			continue
+		}
+
+		if req.DataSyncType == consts.FullCover {
+			if err == nil {
+				component.ID = res.ID
+			}
+		} else if req.DataSyncType == consts.AutoAdd {
 			if err == nil {
 				continue
 			}
-			//非Notfound
-			if err != nil && err != gorm.ErrRecordNotFound {
-				continue
-			}
+		} else { //相同ref组件能创建新的
+			continue
 		}
+
 		newComponents = append(newComponents, component)
 	}
 
@@ -287,19 +304,21 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
 	for name, dirs := range data.Dirs {
 
-		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory, SourceType: consts.Swagger}
+		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory, SourceType: req.SourceType}
 		//全覆盖更新目录
-		if req.DataSyncType == convert.FullCover {
-			res, err := s.CategoryRepo.GetByItem(consts.Swagger, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
-			if err == nil {
-				category.ID = res.ID
-				goto here
-			}
+		res, err := s.CategoryRepo.GetByItem(req.SourceType, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			continue
+		}
+
+		if err == nil { //同级目录下不创建同名目录
+			category.ID = res.ID
+			goto here
 		}
 
 		err = s.CategoryRepo.Save(&category)
 		if err != nil {
-			return
+			return err
 		}
 
 	here:
@@ -531,4 +550,34 @@ func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId ui
 		}
 		interf.ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
 	}
+}
+
+func (s *EndpointService) UpdateAdvancedMockDisabled(endpointId uint, disabled bool) (err error) {
+	err = s.EndpointRepo.UpdateAdvancedMockDisabled(endpointId, disabled)
+	return
+}
+
+func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{}, err error) {
+	var endpoint model.Endpoint
+	endpoint, err = s.EndpointRepo.Get(req.EndpointId)
+	if err != nil {
+		return
+	}
+
+	var bodyItem model.EndpointInterfaceResponseBodyItem
+	bodyItem, err = s.EndpointInterfaceRepo.GetResponseDefine(req.EndpointId, req.Method, req.Code)
+	if err != nil || bodyItem.Content == "" {
+		return
+	}
+
+	schema2conv := schemaHelper.NewSchema2conv()
+	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
+
+	schema := schemaHelper.SchemaRef{}
+	_commUtils.JsonDecode(bodyItem.Content, &schema)
+
+	ret = schema2conv.Schema2Example(schema)
+
+	return
+
 }

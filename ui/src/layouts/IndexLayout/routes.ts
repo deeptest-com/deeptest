@@ -232,13 +232,23 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         }
       },
       {
+        icon: 'mock',
+        title: 'projectSetting.mock',
+        path: 'mock',
+        component: () => import('@/views/project-settings/components/Mock/index.vue'),
+        hidden: false,
+        meta: {
+          code: 'PROJECT-SETTING-MOCK'
+        }
+      },
+      {
         icon: 'swaggerSync',
         title: 'projectSetting.swaggerSync',
         path: 'swaggerSync',
         component: () => import('@/views/project-settings/components/SwaggerSync/index.vue'),
         hidden: false,
         meta: {
-          code: 'PROJECT-SETTING-MEMBERS'
+          code: 'PROJECT-SETTING-SWAGGERSYNC'
         }
       },
     ],

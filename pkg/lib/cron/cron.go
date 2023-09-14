@@ -3,11 +3,12 @@ package _cronUtils
 import (
 	"fmt"
 	"github.com/robfig/cron/v3"
+	"sync"
 )
 
 var cronInst *cron.Cron
 
-var taskFunc = make(map[string]cron.EntryID)
+var taskFuncMap = sync.Map{}
 
 func GetCrontabInstance() *cron.Cron {
 	if cronInst != nil {
@@ -20,13 +21,13 @@ func GetCrontabInstance() *cron.Cron {
 }
 
 func AddTask(name string, schedule string, f func()) (entryID cron.EntryID, err error) {
-	if _, ok := taskFunc[name]; !ok {
+	if _, ok := getTaskFuncFromMap(name); !ok {
 		fmt.Println("Add a new task:", name)
 
 		cInstance := GetCrontabInstance()
 		entryID, err = cInstance.AddFunc(schedule, f)
 		if err != nil {
-			taskFunc[name] = entryID
+			taskFuncMap.Store(name, entryID)
 		}
 
 	} else {
@@ -36,7 +37,7 @@ func AddTask(name string, schedule string, f func()) (entryID cron.EntryID, err 
 }
 
 func RemoveTask(name string) {
-	if entryID, ok := taskFunc[name]; ok {
+	if entryID, ok := getTaskFuncFromMap(name); ok {
 		fmt.Println("remove task:", name)
 		cInstance := GetCrontabInstance()
 		cInstance.Remove(entryID)
@@ -45,4 +46,14 @@ func RemoveTask(name string) {
 
 func Stop() {
 	cronInst.Stop()
+}
+
+func getTaskFuncFromMap(key string) (ret cron.EntryID, ok bool) {
+	obj, ok := taskFuncMap.Load(key)
+
+	if ok {
+		ret = obj.(cron.EntryID)
+	}
+
+	return
 }

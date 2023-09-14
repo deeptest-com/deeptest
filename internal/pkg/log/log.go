@@ -2,6 +2,7 @@ package zapLog
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	myZap "github.com/aaronchen2k/deeptest/pkg/core/zap"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/snowlyg/helper/dir"
@@ -13,11 +14,11 @@ import (
 var level zapcore.Level
 
 // Init 初始化日志服务
-func Init(app string) {
+func Init() {
 	var logger *zap.Logger
 
 	logDir := "log"
-	if app == "server" {
+	if consts.RunFrom == consts.FromServer {
 		logDir = config.CONFIG.Zap.Director
 	}
 

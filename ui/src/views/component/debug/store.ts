@@ -738,12 +738,20 @@ const StoreModel: ModuleType = {
             }
         },
         async addSnippet({commit, dispatch, state}, name: string) {
-            const json = await getSnippet(name)
-            if (json.code === 0) {
-                let script = (state.scriptData.content ? state.scriptData.content: '') + '\n' +  json.data.script
-                script = script.trim()
-                commit('setScriptContent', script);
+            let line = ''
+            if (name === 'log') {
+                line = "log('test');"
+            } else if (name === 'set_mock_resp_code') {
+                line = "dt.response.statusCode = 404;"
+            } else if (name === 'set_mock_resp_field') {
+                line = "dt.response.data.field1 = 'val';"
+            } else if (name === 'set_mock_resp_text') {
+                line = "dt.response.data = dt.response.data.replace('old', 'new');"
             }
+
+            let script = (state.scriptData.content ? state.scriptData.content: '') + '\n' + line
+            script = script.trim()
+            commit('setScriptContent', script);
 
             return true;
         },

@@ -61,6 +61,17 @@ func (r *EnvironmentRepo) GetByProject(projectId uint) (env model.Environment, e
 	return
 }
 
+// GetDefaultByProject 默认/Mock
+func (r *EnvironmentRepo) GetDefaultByProject(projectId uint) (envs []model.Environment, err error) {
+	err = r.DB.
+		Where("project_id=?", projectId).
+		Where("name IN (?)", []string{"默认环境", "Mock环境"}).
+		Where("NOT deleted").
+		Find(&envs).Error
+
+	return
+}
+
 func (r *EnvironmentRepo) GetVars(envId uint) (vars []model.EnvironmentVar, err error) {
 	err = r.DB.
 		Where("environment_id=?", envId).
@@ -125,7 +136,16 @@ func (r *EnvironmentRepo) AddDefaultForProject(projectId uint) (err error) {
 		ProjectId: projectId,
 		Name:      "默认环境",
 	}
-	err = r.Save(&env)
+	if err = r.Save(&env); err != nil {
+		return
+	}
+
+	mockEnv := model.Environment{
+		ProjectId: projectId,
+		Name:      "Mock环境",
+		Sort:      1,
+	}
+	err = r.Save(&mockEnv)
 	//err = r.ProjectRepo.UpdateDefaultEnvironment(projectId, env.ID)
 
 	return
@@ -420,5 +440,31 @@ func (r *EnvironmentRepo) GetByIds(ids []uint) (envs map[uint]model.Environment,
 	for _, item := range res {
 		envs[item.ID] = item
 	}
+	return
+}
+
+func (r *EnvironmentRepo) GetByProjectAndName(projectId uint, name string) (env model.Environment, err error) {
+
+	err = r.DB.
+		Where("project_id=?", projectId).
+		Where("name=?", name).
+		Where("NOT deleted").
+		First(&env).Error
+
+	return
+}
+
+func (r *EnvironmentRepo) GetMaxOrder(projectId uint) (order uint) {
+	environment := model.Environment{}
+
+	err := r.DB.Model(&model.Environment{}).
+		Where("project_id = ?", projectId).
+		Order("sort DESC").
+		First(&environment).Error
+
+	if err == nil {
+		order = environment.Sort + 1
+	}
+
 	return
 }

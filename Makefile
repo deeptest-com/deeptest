@@ -94,7 +94,7 @@ compile_launcher_win64:
 	@cd cmd/launcher && \
         CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ../../${BIN_DIR}win64/${PROJECT}-gui.exe && \
+		-o ../../${BIN_DIR}win64/${PROJECT}.exe && \
 		cd ..
 
 compile_launcher_win32:
@@ -102,7 +102,7 @@ compile_launcher_win32:
 	@cd cmd/launcher && \
         CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
 		${BUILD_CMD_WIN} -x -v \
-		-o ../../${BIN_DIR}win32/${PROJECT}-gui.exe && \
+		-o ../../${BIN_DIR}win32/${PROJECT}.exe && \
         cd ..
 
 # server
@@ -205,11 +205,11 @@ package_gui_mac_client:
 # copy files
 copy_files_win64:
 	@echo 'start copy files win64'
-	cp ${BIN_DIR}win64/${PROJECT}-gui.exe "${CLIENT_OUT_DIR_EXECUTABLE}win64"
+	cp ${BIN_DIR}win64/${PROJECT}.exe "${CLIENT_OUT_DIR_EXECUTABLE}win64"
 
 copy_files_win32:
 	@echo 'start copy files win32'
-	cp ${BIN_DIR}win32/${PROJECT}-gui.exe "${CLIENT_OUT_DIR_EXECUTABLE}win32"
+	cp ${BIN_DIR}win32/${PROJECT}.exe "${CLIENT_OUT_DIR_EXECUTABLE}win32"
 
 copy_files_linux:
 	@echo 'start copy files linux'

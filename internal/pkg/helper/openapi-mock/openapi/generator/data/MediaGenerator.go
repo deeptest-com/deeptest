@@ -23,6 +23,10 @@ func New(options Options) MediaGenerator {
 		merger: &combinedSchemaMerger{random: random},
 	}
 
+	mockjsGenerator := &MockjsGenerator{
+		Random: random,
+	}
+
 	generatorsByType := map[string]schemaGenerator{
 		"string":  newStringGenerator(random),
 		"boolean": &booleanGenerator{random: random},
@@ -41,6 +45,8 @@ func New(options Options) MediaGenerator {
 		"oneOf":  &oneOfGenerator{random: random},
 		"allOf":  combinedGenerator,
 		"anyOf":  combinedGenerator,
+
+		"mockjs": mockjsGenerator,
 	}
 
 	schemaGenerator := createCoordinatingSchemaGenerator(options, generatorsByType, random)

@@ -8,7 +8,7 @@ import (
 type SwaggerSync struct {
 	BaseModel
 	Switch     consts.SwitchStatus `json:"switch"`
-	SyncType   consts.SyncType     `json:"syncType"`
+	SyncType   consts.DataSyncType `json:"syncType"`
 	CategoryId int                 `json:"categoryId"`
 	Url        string              `json:"url"`
 	Cron       string              `json:"cron"`

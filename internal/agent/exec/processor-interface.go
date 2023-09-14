@@ -135,7 +135,6 @@ func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, sessio
 	return
 }
 func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detail map[string]interface{}) (err error) {
-
 	for _, condition := range entity.PostConditions {
 		if condition.Type == consts.ConditionTypeExtractor {
 			var extractorBase domain.ExtractorBase

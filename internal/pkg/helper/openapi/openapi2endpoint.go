@@ -187,6 +187,7 @@ func (o *openapi2endpoint) makeDirs(tags []string) []string {
 }
 
 func (o *openapi2endpoint) makeDir(tag string, d *Dirs) *Dirs {
+	tag = strings.TrimSpace(tag)
 	if d.Dirs == nil {
 		d.Dirs = map[string]*Dirs{}
 	}
@@ -263,12 +264,19 @@ func (o *openapi2endpoint) responseBody(response *openapi3.Response) (body model
 	body.Headers = o.responseHeader(response.Headers)
 	for key, item := range response.Content {
 		body.MediaType = key
-		body.Examples = commonUtils.JsonEncode(item.Examples)
+		body.Examples = commonUtils.JsonEncode(o.responseBodyExamples(item.Examples))
 		body.Description = *response.Description
 		body.SchemaItem = o.responseBodyItem(item.Schema)
 		return
 	}
 
+	return
+}
+
+func (o *openapi2endpoint) responseBodyExamples(examples openapi3.Examples) (ret []interface{}) {
+	for key, example := range examples {
+		ret = append(ret, map[string]interface{}{"name": "example_" + key, "content": example})
+	}
 	return
 }
 

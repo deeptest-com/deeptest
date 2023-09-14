@@ -349,10 +349,38 @@ const (
 
 	Contain    ComparisonOperator = "contain"
 	NotContain ComparisonOperator = "notContain"
+
+	RegularMatch ComparisonOperator = "regularMatch"
+
+	Exist    ComparisonOperator = "exist"
+	NotExist ComparisonOperator = "notExist"
 )
 
 func (e ComparisonOperator) String() string {
 	return string(e)
+}
+
+var StringComparisons = []ComparisonOperator{
+	Equal,
+	NotEqual,
+	GreaterThan,
+	GreaterThanOrEqual,
+	LessThan,
+	LessThanOrEqual,
+
+	Contain,
+	NotContain,
+
+	RegularMatch,
+}
+var TextComparisons = []ComparisonOperator{
+	Equal,
+	NotEqual,
+
+	Contain,
+	NotContain,
+
+	RegularMatch,
 }
 
 type ValueOperator string
@@ -690,12 +718,6 @@ func (e TestType) String() string {
 	return string(e)
 }
 
-type SyncType uint
-
-const (
-	FullCopy SyncType = 1
-)
-
 type SwitchStatus uint
 
 const (
@@ -706,5 +728,37 @@ const (
 type SourceType uint
 
 const (
-	Swagger SourceType = 1
+	SwaggerSync   SourceType = 1
+	SwaggerImport SourceType = 2
 )
+
+type MockPriority string
+
+const (
+	MockPrioritySmart   MockPriority = "smart"
+	MockPriorityExample MockPriority = "example"
+)
+
+type DataSyncType uint
+
+const (
+	FullCover DataSyncType = 1 //完全覆盖
+	AutoAdd   DataSyncType = 2 //智能合并
+	Add       DataSyncType = 3 //新增
+)
+
+func (e DataSyncType) String() string {
+	return string(e)
+}
+
+type ExpectRequestSelectType string
+
+const (
+	KeyValue ExpectRequestSelectType = "keyValue"
+	Xpath    ExpectRequestSelectType = "xPath"
+	FullText ExpectRequestSelectType = "fullText"
+)
+
+func (e ExpectRequestSelectType) String() string {
+	return string(e)
+}

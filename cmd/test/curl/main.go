@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/curl"
+	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
 	"log"
 )
 

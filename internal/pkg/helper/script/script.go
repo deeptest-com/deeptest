@@ -17,42 +17,56 @@ func GetScript(name ScriptType) string {
 		}
 		return DpScript
 
-	} else if name == ScriptGlobal {
-		if GlobalScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "global.txt"))
-			GlobalScript = string(bytes)
+	} else if name == DeclareGlobal {
+		if GlobalDeclare == "" {
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "global.d.ts"))
+			GlobalDeclare = string(bytes)
 		}
-		return GlobalScript
+		return GlobalDeclare
 
-	} else if name == ScriptModule {
+	} else if name == ScriptMock {
+		if MockScript == "" {
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "mock.js"))
+			MockScript = string(bytes)
+		}
+		return MockScript
+
+	} else if name == DeclareMock {
+		if MockDeclare == "" {
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "mock.d.ts"))
+			MockDeclare = string(bytes)
+		}
+		return MockDeclare
+
+	} else if name == DeclareModule {
 		if ModuleScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "module.txt"))
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "module.d.ts"))
 			ModuleScript = string(bytes)
 		}
 		return ModuleScript
 
-	} else if name == ScriptDatapoolGet {
+	} else if name == SnippetDatapoolGet {
 		if ModuleScript == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "datapool_get.txt"))
 			ModuleScript = string(bytes)
 		}
 		return ModuleScript
 
-	} else if name == ScriptVariablesGet {
+	} else if name == SnippetVariablesGet {
 		if VariablesGet == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_get.txt"))
 			VariablesGet = string(bytes)
 		}
 		return VariablesGet
 
-	} else if name == ScriptVariablesSet {
+	} else if name == SnippetVariablesSet {
 		if VariablesSet == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_set.txt"))
 			VariablesSet = string(bytes)
 		}
 		return VariablesSet
 
-	} else if name == ScriptVariablesClear {
+	} else if name == SnippetVariablesClear {
 		if VariablesClear == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "variables_clear.txt"))
 			VariablesClear = string(bytes)
@@ -60,29 +74,6 @@ func GetScript(name ScriptType) string {
 		return VariablesClear
 
 	}
-
-	//else if name == ScriptEnvironmentGet {
-	//	if EnvironmentGet == "" {
-	//		bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_get.txt"))
-	//		EnvironmentGet = string(bytes)
-	//	}
-	//	return EnvironmentGet
-	//
-	//} else if name == ScriptEnvironmentSet {
-	//	if EnvironmentSet == "" {
-	//		bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_set.txt"))
-	//		EnvironmentSet = string(bytes)
-	//	}
-	//	return EnvironmentSet
-	//
-	//} else if name == ScriptEnvironmentClear {
-	//	if EnvironmentClear == "" {
-	//		bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "environment_clear.txt"))
-	//		EnvironmentClear = string(bytes)
-	//	}
-	//	return EnvironmentClear
-	//
-	//}
 
 	return ""
 }
@@ -102,7 +93,7 @@ func GenResultMsg(po *domain.ScriptBase) {
 		name = "后处理" + name
 	}
 
-	po.ResultMsg = fmt.Sprintf("%s%s%s，输出\"%s\"。", name,
+	po.ResultMsg = fmt.Sprintf("%s%s%s，输出%s。", name,
 		_i118Utils.Sprintf("exec"), _i118Utils.Sprintf(po.ResultStatus.String()),
 		po.Output)
 
@@ -112,12 +103,10 @@ func GenResultMsg(po *domain.ScriptBase) {
 var (
 	DpScript = ""
 
-	GlobalScript = ""
-	ModuleScript = ""
-
-	EnvironmentGet   = ""
-	EnvironmentSet   = ""
-	EnvironmentClear = ""
+	GlobalDeclare = ""
+	MockScript    = ""
+	MockDeclare   = ""
+	ModuleScript  = ""
 
 	VariablesGet   = ""
 	VariablesSet   = ""
@@ -128,18 +117,16 @@ type ScriptType string
 
 const (
 	ScriptDeepTest = "deeptest"
-	ScriptGlobal   = "global"
-	ScriptModule   = "module"
+	DeclareGlobal  = "global"
+	DeclareModule  = "modules"
 
-	ScriptDatapoolGet = "datapool_get"
+	ScriptMock  = "mock"
+	DeclareMock = "mock.d"
 
-	//ScriptEnvironmentGet   = "environment_get"
-	//ScriptEnvironmentSet   = "environment_set"
-	//ScriptEnvironmentClear = "environment_clear"
-
-	ScriptVariablesGet   = "variables_get"
-	ScriptVariablesSet   = "variables_set"
-	ScriptVariablesClear = "variables_clear"
+	SnippetDatapoolGet    = "datapool_get"
+	SnippetVariablesGet   = "variables_get"
+	SnippetVariablesSet   = "variables_set"
+	SnippetVariablesClear = "variables_clear"
 )
 
 func (e ScriptType) String() string {

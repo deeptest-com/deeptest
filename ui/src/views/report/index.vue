@@ -1,19 +1,19 @@
 <template>
     <div class="report-container">
-        <div class="report-table-filter">
-            <TableFilter :formState="formState" @handle-filter="handleFilter" />
-        </div>
-        <div class="report-list">
-            <List :loading="loading" :list="list" @get-list="getList" @query-detail="queryDetail"/>
-        </div>
-        <DetailDrawer
-          :title="'测试报告详情'"
-          :show-scenario-info="true"
-          :scenario-expand-active="false"
-          :drawer-visible="drawerVisible"
-          :report-id="currPlanId"
-          :scene="ReportDetailType.QueryDetail"
-          @on-close="drawerVisible = false" />
+      <div class="report-table-filter">
+          <TableFilter :formState="formState" @handle-filter="handleFilter" />
+      </div>
+      <div class="report-list">
+          <List :loading="loading" :list="list" @get-list="getList" @query-detail="queryDetail"/>
+      </div>
+      <DetailDrawer
+        :title="'测试报告详情'"
+        :show-scenario-info="true"
+        :scenario-expand-active="false"
+        :drawer-visible="drawerVisible"
+        :report-id="currPlanId"
+        :scene="ReportDetailType.QueryDetail"
+        @on-close="drawerVisible = false" />
     </div>
 </template>
 <script setup lang="ts">

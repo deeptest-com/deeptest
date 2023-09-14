@@ -16,9 +16,10 @@ const (
 
 	UserAgentChrome = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.0.0 Safari/537.36"
 
-	ApiPath      = "/api/v1"
-	ApiPathAgent = "/api/v1"
-	WsPath       = ApiPathAgent + "/ws"
+	ApiPathServer = "/api/v1"
+	ApiPathAgent  = "/api/v1"
+	ApiPathMock   = "/mocks"
+	WsPath        = ApiPathAgent + "/ws"
 
 	WsDefaultNameSpace = "default"
 	WsDefaultRoom      = "default"
@@ -50,8 +51,11 @@ const (
 
 	MaxLoopTimeForInterfaceTest   = 1000
 	MaxLoopTimeForPerformanceTest = 1000000
+
+	KEY_MOCKJS = "x-mock-type"
 )
 
 var (
-	DirUpload = "upload"
+	DirUpload     = "upload"
+	HeaderOptions = []string{"Accept", "Accept-Encoding", "Accept-Language", "Connection", "Host", "Referer", "User-Agent", "Cache-Control", "Cookie", "Range"}
 )

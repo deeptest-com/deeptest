@@ -14,7 +14,7 @@ import (
 )
 
 type StatusCodeNegotiator interface {
-	NegotiateStatusCode(request *http.Request, responses openapi3.Responses) (key string, code int, err error)
+	NegotiateStatusCode(request *http.Request, responses openapi3.Responses, expectCode string) (key string, code int, err error)
 }
 
 func NewStatusCodeNegotiator() StatusCodeNegotiator {
@@ -27,7 +27,7 @@ type statusCodeNegotiator struct {
 	rangeDefinitionPattern *regexp.Regexp
 }
 
-func (negotiator *statusCodeNegotiator) NegotiateStatusCode(request *http.Request, responses openapi3.Responses) (key string, code int, err error) {
+func (negotiator *statusCodeNegotiator) NegotiateStatusCode(request *http.Request, responses openapi3.Responses, expectCode string) (key string, code int, err error) {
 	minSuccessCode := math.MaxInt32
 	minSuccessCodeKey := ""
 	hasSuccessCode := false
@@ -40,8 +40,12 @@ func (negotiator *statusCodeNegotiator) NegotiateStatusCode(request *http.Reques
 		if err != nil {
 			continue
 		}
-
-		if code >= 200 && code < 300 && code < minSuccessCode {
+		if expectCode != "" && key == expectCode {
+			hasSuccessCode = true
+			minSuccessCode = code
+			minSuccessCodeKey = key
+			break
+		} else if code >= 200 && code < 300 && code < minSuccessCode {
 			hasSuccessCode = true
 			minSuccessCode = code
 			minSuccessCodeKey = key

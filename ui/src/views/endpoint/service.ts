@@ -284,17 +284,17 @@ export async function loadCaseTree(data: QueryCaseTreeParams): Promise<any> {
 
 
 export function reBuildTree(node:any,parentId:any) {
-  
+
    let newNode:any
     if (node?.count > 0 || !node?.isDir) {
 
          newNode = Object.assign({},node)
-      
+
         //newNode.parentId = parentId
         newNode.children = []
         if (node?.children) {
             node?.children.forEach((child:any)=>{
-          
+
                 const newChild = reBuildTree(child,node.id)
                 if (newChild) {
                     newNode.children.push(newChild)
@@ -303,6 +303,129 @@ export function reBuildTree(node:any,parentId:any) {
         }
         return newNode
     }
-    
+
     return newNode
+}
+
+export function getMockExpressions(params) {
+    return request({
+        url: `/mockjs/expressions`,
+        method: 'get',
+        params: params
+    });
+}
+
+export function getExpectList(params) {
+    console.log(params);
+    return request({
+        url: `/mockExpect/list`,
+        method: 'get',
+        params,
+    });
+}
+
+export function getMockExpectDetail(params) {
+    return request({
+        url: `/mockExpect/${params.id}`,
+        method: 'get',
+        params,
+    });
+}
+
+export function saveMockExpect(params) {
+    return request({
+        url: '/mockExpect/save',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function copyMockExpect(params) {
+    return request({
+        url: '/mockExpect/copy',
+        method: 'get',
+        params,
+    })
+}
+
+export function updateMockExpectDisabled(params) {
+    return request({
+        url: 'mockExpect/updateExpectDisabled',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function deleteMockExpect(params) {
+    return request({
+        url: `/mockExpect/${params.id}`,
+        method: 'delete',
+        data: params,
+    })
+}
+
+export function updateMockStatus(params) {
+    return request({
+        url: 'endpoint/updateMockStatus',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function sortMockExpect(params) {
+    return request({
+        url: 'mockExpect/order',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function updateMockName(params) {
+    return request({
+        url: 'mockExpect/updateName',
+        method: 'post',
+        data: params,
+    })
+}
+
+export function getMockDropDownOptions(params) {
+    return request({
+        url: '/mockExpect/requestOptions',
+        method: 'get',
+        params,
+    })
+}
+export function getMockScript(endpointId) {
+    return request({
+        url: `/mockScripts/${endpointId}`,
+        method: 'get'
+    });
+}
+export function updateMockScript(data: any) {
+    return request({
+        url: `/mockScripts`,
+        method: 'put',
+        data: data
+    });
+}
+
+export function disableAdvMock(endpointId: number) {
+    return request({
+        url: `/mockExpect/${endpointId}/disable`,
+        method: 'post',
+    });
+}
+export function disableScriptMock(endpointId: number) {
+    return request({
+        url: `/mockScripts/${endpointId}/disable`,
+        method: 'post',
+    });
+}
+
+export function generateJsonExample(data: { code: string, endponitId: number, method: string }) {
+    return request({
+        url: 'mockExpect/createExample',
+        method: 'post',
+        data,
+    })
 }

@@ -28,7 +28,7 @@ import {
     deleteServeVersion,
     disableServeVersions,
     sortEnv, listDatapool, saveDatapool, deleteDatapool, disableDatapool, getDatapool,
-    saveSwaggerSync,getSwaggerSync
+    saveSwaggerSync, getSwaggerSync, saveMock, getMock
 } from './service';
 import {message, notification} from 'ant-design-vue';
 import {
@@ -65,6 +65,7 @@ export interface StateType {
     datapoolList: any;
     datapoolDetail: any;
     swaggerSyncDetail:any;
+    mockSettings:any;
 
     selectServiceDetail: any;
     serveVersionsList: any;
@@ -89,7 +90,9 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setDatapoolList: Mutation<StateType>,
         setDatapoolDetail: Mutation<StateType>,
+
         setSwaggerSync: Mutation<StateType>,
+        setMock: Mutation<StateType>,
     };
     actions: {
         // 环境-全局变量-全局参数相关
@@ -148,6 +151,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveSwaggerSync: Action<StateType, StateType>,
         getSwaggerSync: Action<StateType, StateType>,
 
+        saveMock: Action<StateType, StateType>,
+        getMock: Action<StateType, StateType>,
     }
 }
 
@@ -179,7 +184,8 @@ const initState: StateType = {
         vars: [],
     },
     selectEnvId: null,
-    swaggerSyncDetail: {}
+    swaggerSyncDetail: {},
+    mockSettings: {}
 };
 
 const StoreModel: ModuleType = {
@@ -230,6 +236,9 @@ const StoreModel: ModuleType = {
         },
         setSwaggerSync(state, payload){
             state.swaggerSyncDetail = payload;
+        },
+        setMock(state, payload){
+            state.mockSettings = payload;
         }
     },
     actions: {
@@ -675,11 +684,12 @@ const StoreModel: ModuleType = {
             const res = await saveSwaggerSync(params);
             if (res.code === 0) {
                  commit('setSwaggerSync', res.data)
+                return true
             } else {
-                notifyError('保存同步信息失败');
+                notifyError('保存同步信息失败')
+                return false
             }
         },
-
         async getSwaggerSync({ commit }){
             const res = await getSwaggerSync();
             if (res.code === 0) {
@@ -687,7 +697,27 @@ const StoreModel: ModuleType = {
             } else {
                 notifyError('获取同步信息失败');
             }
-        }
+        },
+
+        async saveMock({ commit }, params: SwaggerSync){
+            const res = await saveMock(params);
+            if (res.code === 0) {
+                commit('setMock', res.data)
+                notifySuccess('保存Mock设置成功');
+                return true
+            } else {
+                notifyError('保存Mock设置失败');
+                return false
+            }
+        },
+        async getMock({ commit }){
+            const res = await getMock();
+            if (res.code === 0) {
+                commit('setMock', res.data)
+            } else {
+                notifyError('获取Mock设置失败');
+            }
+        },
     }
 };
 

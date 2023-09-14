@@ -44,13 +44,3 @@ type CategoryCount struct {
 	Count      int64
 	CategoryId int64
 }
-
-type MockJsExpression struct {
-	ID         uint   `json:"id"`
-	Name       string `json:"name"`
-	Expression string `json:"expression"`
-	Desc       string `json:"desc"`
-	Ordr       int    `json:"ordr"`
-
-	Result interface{} `gorm:"-" json:"result"`
-}

@@ -69,7 +69,9 @@ require (
 
 require (
 	github.com/Joker/jade v1.1.3 // indirect
+	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f // indirect
+	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/mailgun/raymond/v2 v2.0.48 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 )

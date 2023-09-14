@@ -31,6 +31,7 @@ func (m *EndpointModule) Party() module.WebModule {
 		public.Get("/version/list", m.EndpointCtrl.ListVersions).Name = "版本列表"
 		public.Post("/batchUpdateField", m.EndpointCtrl.BatchUpdateField).Name = "批量更新字段内容"
 		public.Put("/updateTag", m.EndpointCtrl.UpdateTag).Name = "更新标签"
+		public.Post("/updateMockStatus", m.EndpointCtrl.UpdateAdvancedMockDisabled).Name = "启用/禁用接口所有期望"
 	}
 	return module.NewModule("/endpoint", handler)
 }

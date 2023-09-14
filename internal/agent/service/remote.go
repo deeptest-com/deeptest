@@ -46,7 +46,10 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 	}
 
 	respContent := _domain.Response{}
-	json.Unmarshal([]byte(resp.Content), &respContent)
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
 
 	if respContent.Code != 0 {
 		logUtils.Infof("get interface obj failed, response %v", resp.Content)

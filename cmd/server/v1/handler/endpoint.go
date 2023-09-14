@@ -406,6 +406,32 @@ func (c *EndpointCtrl) UpdateTag(ctx iris.Context) {
 	return
 }
 
+// UpdateAdvancedMockDisabled
+// @Tags	设计器
+// @summary	启用或者禁用接口所有期望
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization			header	string	true	"Authentication header"
+// @Param 	currProjectId			query	int		true	"当前项目ID"
+// @Param 	id 						body 	int		true 	"endpoint_id"
+// @Param 	advancedMockDisabled 	body 	bool	true 	"接口的mock禁用状态 true:禁用 false:启用"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/updateMockStatus	[post]
+func (c *EndpointCtrl) UpdateAdvancedMockDisabled(ctx iris.Context) {
+	var req model.Endpoint
+	if err := ctx.ReadJSON(&req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	if err := c.EndpointService.UpdateAdvancedMockDisabled(req.ID, req.AdvancedMockDisabled); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
 /*
 func (c *EndpointCtrl) Index() {
 	c.EndpointService.GetVersionsByEndpointId(1)

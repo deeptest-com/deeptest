@@ -16,6 +16,9 @@ definitions:
       data: {}
       msg:
         type: string
+      msgKey:
+        description: show i118 msg on client side
+        type: string
     type: object
   agentDomain.ExecIterator:
     properties:
@@ -153,6 +156,26 @@ definitions:
       useId:
         type: integer
     type: object
+  agentDomain.InterfaceStat:
+    properties:
+      checkpointFail:
+        type: integer
+      checkpointPass:
+        type: integer
+      interfaceCount:
+        type: integer
+      interfaceDurationAverage:
+        type: integer
+      interfaceDurationTotal:
+        description: milliseconds
+        type: integer
+      interfaceFail:
+        type: integer
+      interfacePass:
+        type: integer
+      interfaceSkip:
+        type: integer
+    type: object
   agentDomain.PlanExecResult:
     properties:
       desc:
@@ -167,6 +190,8 @@ definitions:
         items:
           $ref: '#/definitions/agentDomain.ScenarioExecResult'
         type: array
+      stat:
+        $ref: '#/definitions/agentDomain.InterfaceStat'
     type: object
   agentDomain.Report:
     properties:
@@ -244,11 +269,8 @@ definitions:
       break:
         description: for loop break processor
         type: boolean
-      checkpointsResult:
-        items:
-          $ref: '#/definitions/domain.CheckpointBase'
-        type: array
       cost:
+        description: milliseconds
         type: integer
       debugInterfaceId:
         type: integer
@@ -263,10 +285,6 @@ definitions:
         type: integer
       environmentId:
         type: integer
-      extractorsResult:
-        items:
-          $ref: '#/definitions/domain.ExtractorBase'
-        type: array
       httpStatusCode:
         $ref: '#/definitions/consts.HttpRespCode'
       httpStatusContent:
@@ -289,6 +307,14 @@ definitions:
         type: integer
       parentLogId:
         type: string
+      postConditions:
+        items:
+          $ref: '#/definitions/domain.InterfaceExecCondition'
+        type: array
+      preConditions:
+        items:
+          $ref: '#/definitions/domain.InterfaceExecCondition'
+        type: array
       processorCategory:
         $ref: '#/definitions/consts.ProcessorCategory'
       processorContent:
@@ -308,20 +334,19 @@ definitions:
         type: string
       resultStatus:
         $ref: '#/definitions/consts.ResultStatus'
+      round:
+        type: string
       scenarioId:
         type: integer
       scenarioReportId:
         type: integer
-      scriptsResult:
-        items:
-          $ref: '#/definitions/domain.ScriptBase'
-        type: array
       startTime:
         type: string
+      stat:
+        $ref: '#/definitions/agentDomain.InterfaceStat'
       summary:
         type: string
       useId:
-        description: ReportId uint `json:"reportId"`
         type: integer
     type: object
   agentExec.InterfaceExecObj:
@@ -393,6 +418,8 @@ definitions:
         type: integer
       result:
         $ref: '#/definitions/agentDomain.ScenarioExecResult'
+      round:
+        type: string
       scenarioId:
         type: integer
       slots:
@@ -438,6 +465,8 @@ definitions:
         type: integer
       result:
         $ref: '#/definitions/agentDomain.ScenarioExecResult'
+      round:
+        type: string
       scenarioId:
         type: integer
       slots:
@@ -533,6 +562,9 @@ definitions:
     - lessThanOrEqual
     - contain
     - notContain
+    - regularMatch
+    - exist
+    - notExist
     type: string
     x-enum-varnames:
     - Equal
@@ -543,25 +575,30 @@ definitions:
     - LessThanOrEqual
     - Contain
     - NotContain
-  consts.ConditionSrc:
-    enum:
-    - pre
-    - post
-    type: string
-    x-enum-varnames:
-    - ConditionSrcPre
-    - ConditionSrcPost
+    - RegularMatch
+    - Exist
+    - NotExist
   consts.ConditionType:
     enum:
     - extractor
     - checkpoint
     - script
+    - responseDefine
     type: string
     x-enum-varnames:
     - ConditionTypeExtractor
     - ConditionTypeCheckpoint
     - ConditionTypeScript
-  consts.DataSource:
+    - ConditionTypeResponseDefine
+  consts.DataItSrc:
+    enum:
+    - fileUpload
+    - datapool
+    type: string
+    x-enum-varnames:
+    - SrcFileUpload
+    - SrcDatapool
+  consts.DataItType:
     enum:
     - text
     - excel
@@ -569,6 +606,20 @@ definitions:
     x-enum-varnames:
     - Text
     - Excel
+  consts.DataSyncType:
+    enum:
+    - 1
+    - 2
+    - 3
+    type: integer
+    x-enum-comments:
+      Add: 新增
+      AutoAdd: 智能合并
+      FullCover: 完全覆盖
+    x-enum-varnames:
+    - FullCover
+    - AutoAdd
+    - Add
   consts.DataType:
     enum:
     - int
@@ -579,6 +630,16 @@ definitions:
     - Int
     - Float
     - String
+  consts.ExpectRequestSelectType:
+    enum:
+    - keyValue
+    - xPath
+    - fullText
+    type: string
+    x-enum-varnames:
+    - KeyValue
+    - Xpath
+    - FullText
   consts.ExtractorScope:
     enum:
     - private
@@ -594,10 +655,12 @@ definitions:
     enum:
     - header
     - body
+    - cookie
     type: string
     x-enum-varnames:
     - Header
     - Body
+    - Cookie
   consts.ExtractorType:
     enum:
     - boundary
@@ -871,7 +934,6 @@ definitions:
     - processor_loop_in
     - processor_loop_range
     - processor_loop_until
-    - processor_loop_break
     - processor_variable_set
     - processor_variable_clear
     - processor_assertion_default
@@ -879,11 +941,9 @@ definitions:
     - processor_extractor_jsonquery
     - processor_extractor_htmlquery
     - processor_extractor_xmlquery
-    - processor_cookie_get
     - processor_cookie_set
     - processor_cookie_clear
-    - processor_data_text
-    - processor_data_excel
+    - processor_data_default
     - processor_custom_code_default
     type: string
     x-enum-varnames:
@@ -898,7 +958,6 @@ definitions:
     - ProcessorLoopIn
     - ProcessorLoopRange
     - ProcessorLoopUntil
-    - ProcessorLoopBreak
     - ProcessorVariableSet
     - ProcessorVariableClear
     - ProcessorAssertionDefault
@@ -906,11 +965,9 @@ definitions:
     - ProcessorExtractorJsonQuery
     - ProcessorExtractorHtmlQuery
     - ProcessorExtractorXmlQuery
-    - ProcessorCookieGet
     - ProcessorCookieSet
     - ProcessorCookieClear
-    - ProcessorDataText
-    - ProcessorDataExcel
+    - ProcessorDataDefault
     - ProcessorCustomCodeDefault
   consts.ProgressStatus:
     enum:
@@ -957,9 +1014,11 @@ definitions:
   consts.SourceType:
     enum:
     - 1
+    - 2
     type: integer
     x-enum-varnames:
-    - Swagger
+    - SwaggerSync
+    - SwaggerImport
   consts.SwitchStatus:
     enum:
     - 1
@@ -968,12 +1027,6 @@ definitions:
     x-enum-varnames:
     - SwitchON
     - SwitchOFF
-  consts.SyncType:
-    enum:
-    - 1
-    type: integer
-    x-enum-varnames:
-    - FullCopy
   consts.TestStage:
     enum:
     - unit_test
@@ -1034,17 +1087,6 @@ definitions:
     - CaseDebug
     - DiagnoseDebug
     - ScenarioDebug
-  convert.DataSyncType:
-    enum:
-    - full_cover
-    - copy_add
-    type: string
-    x-enum-comments:
-      CopyAdd: 复制新增
-      FullCover: 完全覆盖
-    x-enum-varnames:
-    - FullCover
-    - CopyAdd
   convert.DriverType:
     enum:
     - postman
@@ -1104,44 +1146,28 @@ definitions:
       value:
         type: string
     type: object
-  domain.CheckpointBase:
+  domain.Condition:
     properties:
-      actualResult:
+      desc:
         type: string
-      conditionEntityId:
-        description: refer to entity po id in domain object
-        type: integer
-      conditionEntityType:
-        allOf:
-        - $ref: '#/definitions/consts.ConditionType'
-        description: for log only
-      conditionId:
-        type: integer
       disabled:
         type: boolean
-      expression:
-        type: string
-      extractorVariable:
-        type: string
-      invokeId:
-        description: for log only
+      entityData: {}
+      entityId:
         type: integer
-      operator:
-        $ref: '#/definitions/consts.ComparisonOperator'
-      resultMsg:
+      entityType:
         type: string
-      resultStatus:
-        $ref: '#/definitions/consts.ResultStatus'
-      type:
-        $ref: '#/definitions/consts.CheckpointType'
-      value:
+      id:
+        type: integer
+      name:
         type: string
+      ordr:
+        type: integer
     type: object
   domain.Datapools:
     additionalProperties:
       items:
-        additionalProperties: true
-        type: object
+        $ref: '#/definitions/domain.VarKeyValuePair'
       type: array
     type: object
   domain.DebugData:
@@ -1219,6 +1245,8 @@ definitions:
         items:
           $ref: '#/definitions/domain.Param'
         type: array
+      responseDefine:
+        $ref: '#/definitions/domain.Condition'
       scenarioProcessorId:
         type: integer
       serveId:
@@ -1270,6 +1298,8 @@ definitions:
         items:
           $ref: '#/definitions/domain.ExecCookie'
         type: array
+      data:
+        description: Content obj in goja
       headers:
         items:
           $ref: '#/definitions/domain.Header'
@@ -1300,6 +1330,8 @@ definitions:
       id:
         type: integer
       name:
+        type: string
+      path:
         type: string
       value: {}
     type: object
@@ -1490,20 +1522,6 @@ definitions:
           $ref: '#/definitions/domain.GlobalVar'
         type: array
     type: object
-  domain.ExecVariable:
-    properties:
-      expression:
-        type: string
-      id:
-        type: integer
-      interfaceId:
-        type: integer
-      isShare:
-        $ref: '#/definitions/consts.ExtractorScope'
-      name:
-        type: string
-      value: {}
-    type: object
   domain.ExtractorBase:
     properties:
       boundaryEnd:
@@ -1523,6 +1541,9 @@ definitions:
         description: for log only
       conditionId:
         type: integer
+      default:
+        description: for cookie
+        type: string
       disabled:
         type: boolean
       expression:
@@ -1764,37 +1785,6 @@ definitions:
         type: string
       type:
         type: string
-    type: object
-  domain.ScriptBase:
-    properties:
-      conditionEntityId:
-        description: refer to po id in domain object
-        type: integer
-      conditionEntityType:
-        allOf:
-        - $ref: '#/definitions/consts.ConditionType'
-        description: for log only
-      conditionId:
-        type: integer
-      conditionType:
-        $ref: '#/definitions/consts.ConditionSrc'
-      content:
-        type: string
-      disabled:
-        type: boolean
-      invokeId:
-        description: for log only
-        type: integer
-      output:
-        type: string
-      resultMsg:
-        type: string
-      resultStatus:
-        $ref: '#/definitions/consts.ResultStatus'
-      variableSettings:
-        items:
-          $ref: '#/definitions/domain.ExecVariable'
-        type: array
     type: object
   domain.SubmitDebugResultRequest:
     properties:
@@ -2043,6 +2033,9 @@ definitions:
       conditionId:
         type: integer
       createdAt:
+        type: string
+      default:
+        description: for cookie
         type: string
       disabled:
         type: boolean
@@ -2460,11 +2453,15 @@ definitions:
         $ref: '#/definitions/serverConsts.DiagnoseInterfaceType'
       updatedAt:
         type: string
+      updatedBy:
+        type: integer
       useId:
         type: integer
     type: object
   model.Endpoint:
     properties:
+      advancedMockDisabled:
+        type: boolean
       categoryId:
         type: integer
       createUser:
@@ -2485,6 +2482,10 @@ definitions:
         type: array
       maintainer:
         type: string
+      methods:
+        items:
+          $ref: '#/definitions/consts.HttpMethod'
+        type: array
       path:
         type: string
       pathParams:
@@ -2493,6 +2494,8 @@ definitions:
         type: array
       projectId:
         type: integer
+      scriptMockDisabled:
+        type: boolean
       serialNumber:
         type: string
       serveId:
@@ -2510,6 +2513,8 @@ definitions:
           type: string
         type: array
       title:
+        type: string
+      updateUser:
         type: string
       updatedAt:
         type: string
@@ -2932,6 +2937,135 @@ definitions:
       updatedAt:
         type: string
     type: object
+  model.EndpointMockExpect:
+    properties:
+      createUser:
+        type: string
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      endpointId:
+        type: integer
+      endpointInterfaceId:
+        type: integer
+      id:
+        type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
+      name:
+        type: string
+      ordr:
+        type: integer
+      requestBodies:
+        items:
+          $ref: '#/definitions/model.EndpointMockExpectRequest'
+        type: array
+      requestHeaders:
+        items:
+          $ref: '#/definitions/model.EndpointMockExpectRequest'
+        type: array
+      requestPathParams:
+        items:
+          $ref: '#/definitions/model.EndpointMockExpectRequest'
+        type: array
+      requestQueryParams:
+        items:
+          $ref: '#/definitions/model.EndpointMockExpectRequest'
+        type: array
+      responseBody:
+        $ref: '#/definitions/model.EndpointMockExpectResponse'
+      responseHeaders:
+        items:
+          $ref: '#/definitions/model.EndpointMockExpectResponseHeader'
+        type: array
+      updateUser:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  model.EndpointMockExpectRequest:
+    properties:
+      compareWay:
+        $ref: '#/definitions/consts.ComparisonOperator'
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      endpointMockExpectId:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      selectType:
+        $ref: '#/definitions/consts.ExpectRequestSelectType'
+      source:
+        $ref: '#/definitions/consts.ParamIn'
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.EndpointMockExpectResponse:
+    properties:
+      code:
+        type: string
+      createdAt:
+        type: string
+      delayTime:
+        type: integer
+      disabled:
+        type: boolean
+      endpointMockExpectId:
+        type: integer
+      id:
+        type: integer
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.EndpointMockExpectResponseHeader:
+    properties:
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      endpointMockExpectId:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  model.EndpointMockScript:
+    properties:
+      content:
+        type: string
+      createUser:
+        type: string
+      createdAt:
+        type: string
+      disabled:
+        type: boolean
+      endpointId:
+        type: integer
+      id:
+        type: integer
+      method:
+        allOf:
+        - $ref: '#/definitions/consts.HttpMethod'
+        description: EndpointInterfaceId uint              `json:"endpointInterfaceId"`
+      updateUser:
+        type: string
+      updatedAt:
+        type: string
+    type: object
   model.EndpointPathParam:
     properties:
       createdAt:
@@ -3124,6 +3258,9 @@ definitions:
         type: integer
       createdAt:
         type: string
+      default:
+        description: for cookie
+        type: string
       disabled:
         type: boolean
       expression:
@@ -3155,13 +3292,13 @@ definitions:
     type: object
   model.ExecLogProcessor:
     properties:
-      Detail:
-        type: string
       createdAt:
         type: string
       debugInterfaceId:
         type: integer
       desc:
+        type: string
+      detail:
         type: string
       disabled:
         type: boolean
@@ -3184,6 +3321,8 @@ definitions:
         items:
           $ref: '#/definitions/model.ExecLogExtractor'
         type: array
+      invokeId:
+        type: integer
       logs:
         items:
           $ref: '#/definitions/model.ExecLogProcessor'
@@ -3212,6 +3351,8 @@ definitions:
         type: string
       resultStatus:
         $ref: '#/definitions/consts.ResultStatus'
+      round:
+        type: string
       scenarioId:
         type: integer
       scenarioProcessorId:
@@ -3258,6 +3399,11 @@ definitions:
         type: string
       categoryId:
         type: integer
+      createUserId:
+        type: integer
+      createUserName:
+        description: 创建人姓名
+        type: string
       createdAt:
         type: string
       currEnvId:
@@ -3358,6 +3504,8 @@ definitions:
         type: string
       startTime:
         type: string
+      stat:
+        type: string
       totalAssertionNum:
         type: integer
       totalInterfaceNum:
@@ -3394,6 +3542,8 @@ definitions:
       execEnvId:
         description: 执行环境Id
         type: integer
+      execUserName:
+        type: string
       failAssertionNum:
         type: integer
       failInterfaceNum:
@@ -3439,6 +3589,8 @@ definitions:
       serialNumber:
         type: string
       startTime:
+        type: string
+      stat:
         type: string
       totalAssertionNum:
         type: integer
@@ -3503,6 +3655,8 @@ definitions:
         type: string
       createdAt:
         type: string
+      datapoolId:
+        type: integer
       default:
         type: string
       disabled:
@@ -3519,16 +3673,16 @@ definitions:
         $ref: '#/definitions/consts.ProcessorCategory'
       processorID:
         type: integer
-      processorInterfaceSrc:
-        $ref: '#/definitions/consts.ProcessorInterfaceSrc'
       processorType:
         $ref: '#/definitions/consts.ProcessorType'
       repeatTimes:
         type: integer
       separator:
         type: string
+      src:
+        $ref: '#/definitions/consts.DataItSrc'
       type:
-        $ref: '#/definitions/consts.DataSource'
+        $ref: '#/definitions/consts.DataItType'
       updatedAt:
         type: string
       url:
@@ -3712,8 +3866,11 @@ definitions:
       createUserId:
         type: integer
       createUserName:
+        description: 用户登录名
         type: string
       createdAt:
+        type: string
+      creatorName:
         type: string
       currEnvId:
         type: integer
@@ -3739,6 +3896,10 @@ definitions:
         $ref: '#/definitions/consts.TestStatus'
       type:
         $ref: '#/definitions/consts.TestType'
+      updateUserId:
+        type: integer
+      updateUserName:
+        type: string
       updatedAt:
         type: string
       version:
@@ -3753,8 +3914,11 @@ definitions:
       createUserId:
         type: integer
       createUserName:
+        description: 用户登录名
         type: string
       createdAt:
+        type: string
+      creatorName:
         type: string
       currEnvId:
         type: integer
@@ -3780,6 +3944,10 @@ definitions:
         $ref: '#/definitions/consts.TestStatus'
       type:
         $ref: '#/definitions/consts.TestType'
+      updateUserId:
+        type: integer
+      updateUserName:
+        type: string
       updatedAt:
         type: string
       version:
@@ -3806,6 +3974,8 @@ definitions:
         type: string
       execEnvId:
         type: integer
+      execUserName:
+        type: string
       failAssertionNum:
         type: integer
       failInterfaceNum:
@@ -3851,6 +4021,8 @@ definitions:
       serialNumber:
         type: string
       startTime:
+        type: string
+      stat:
         type: string
       totalAssertionNum:
         type: integer
@@ -3884,6 +4056,8 @@ definitions:
         type: string
       execEnvId:
         type: integer
+      execUserName:
+        type: string
       failAssertionNum:
         type: integer
       failInterfaceNum:
@@ -3929,6 +4103,8 @@ definitions:
       serialNumber:
         type: string
       startTime:
+        type: string
+      stat:
         type: string
       totalAssertionNum:
         type: integer
@@ -4054,7 +4230,7 @@ definitions:
       switch:
         $ref: '#/definitions/consts.SwitchStatus'
       syncType:
-        $ref: '#/definitions/consts.SyncType'
+        $ref: '#/definitions/consts.DataSyncType'
       updatedAt:
         type: string
       url:
@@ -4339,6 +4515,15 @@ definitions:
       id:
         type: integer
     type: object
+  serverDomain.CreateExampleReq:
+    properties:
+      code:
+        type: string
+      endpointId:
+        type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
+    type: object
   serverDomain.DataReq:
     properties:
       clearData:
@@ -4432,6 +4617,8 @@ definitions:
     type: object
   serverDomain.DiagnoseInterfaceSaveReq:
     properties:
+      createdBy:
+        type: integer
       id:
         type: integer
       mode:
@@ -4446,6 +4633,8 @@ definitions:
         type: string
       type:
         $ref: '#/definitions/serverConsts.DiagnoseInterfaceType'
+      updatedBy:
+        type: integer
     type: object
   serverDomain.DocumentRep:
     properties:
@@ -4476,6 +4665,9 @@ definitions:
         type: boolean
       logo:
         type: string
+      mock:
+        items: {}
+        type: array
       name:
         type: string
       orgId:
@@ -4594,6 +4786,8 @@ definitions:
         type: integer
       id:
         type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       name:
         type: string
       projectId:
@@ -4634,7 +4828,7 @@ definitions:
       ordr:
         type: integer
       parentId:
-        type: integer
+        type: string
       projectId:
         type: integer
       serveId:
@@ -4696,6 +4890,8 @@ definitions:
       status:
         type: integer
       title:
+        type: string
+      updateUser:
         type: string
       version:
         type: string
@@ -4845,7 +5041,7 @@ definitions:
         type: integer
       dataSyncType:
         allOf:
-        - $ref: '#/definitions/convert.DataSyncType'
+        - $ref: '#/definitions/consts.DataSyncType'
         description: 数据同步方式
       driverType:
         allOf:
@@ -4861,6 +5057,8 @@ definitions:
       serveId:
         description: 服务ID
         type: integer
+      sourceType:
+        $ref: '#/definitions/consts.SourceType'
       userId:
         type: integer
     required:
@@ -4888,6 +5086,9 @@ definitions:
         type: integer
       method:
         type: string
+      mock:
+        items: {}
+        type: array
       name:
         type: string
       operationId:
@@ -4984,6 +5185,30 @@ definitions:
         type: string
       user_id:
         type: integer
+    type: object
+  serverDomain.MockExpectRequestOptions:
+    additionalProperties:
+      items:
+        type: string
+      type: array
+    type: object
+  serverDomain.MockJsExpression:
+    properties:
+      desc:
+        type: string
+      expression:
+        type: string
+      format:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      ordr:
+        type: integer
+      result: {}
+      type:
+        type: string
     type: object
   serverDomain.OpenApiCookie:
     properties:
@@ -5190,6 +5415,9 @@ definitions:
     properties:
       adminName:
         description: 负责人姓名
+        type: string
+      createUserName:
+        description: 创建人姓名
         type: string
       createdAt:
         type: string
@@ -5517,8 +5745,12 @@ definitions:
     type: object
   serverDomain.ScenarioAddScenarioReq:
     properties:
+      comments:
+        type: string
       createBy:
         type: integer
+      method:
+        $ref: '#/definitions/consts.HttpMethod'
       mode:
         type: string
       name:
@@ -5530,6 +5762,8 @@ definitions:
       processorType:
         $ref: '#/definitions/consts.ProcessorType'
       projectId:
+        type: integer
+      srcProcessorId:
         type: integer
       targetProcessorCategory:
         $ref: '#/definitions/consts.ProcessorCategory'
@@ -5808,7 +6042,7 @@ definitions:
       switch:
         $ref: '#/definitions/consts.SwitchStatus'
       syncType:
-        $ref: '#/definitions/consts.SyncType'
+        $ref: '#/definitions/consts.DataSyncType'
       url:
         type: string
     type: object
@@ -8082,6 +8316,43 @@ paths:
       summary: 用例详情
       tags:
       - 设计器/标签
+  /api/v1/endpoint/updateMockStatus:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: endpoint_id
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: 接口的mock禁用状态 true:禁用 false:启用
+        in: body
+        name: advancedMockDisabled
+        required: true
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 启用或者禁用接口所有期望
+      tags:
+      - 设计器
   /api/v1/endpoint/updateStatus:
     put:
       consumes:
@@ -9743,6 +10014,426 @@ paths:
       summary: 未读消息数
       tags:
       - 消息管理
+  /api/v1/mockExpect:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 删除期望
+      tags:
+      - Mock期望
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.EndpointMockExpect'
+              type: object
+      summary: 期望详情
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/copy:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 复制期望
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/createExample:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: 生成响应体
+        in: body
+        name: createExampleReq
+        required: true
+        schema:
+          $ref: '#/definitions/serverDomain.CreateExampleReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 生成响应体
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/list:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: endpointId
+        in: query
+        name: endpointId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/model.EndpointMockExpect'
+                  type: array
+              type: object
+      summary: 期望列表
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/order:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 对期望排序的请求体
+        in: body
+        name: MockExpectIdsReq
+        required: true
+        schema:
+          items:
+            type: integer
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 对期望排序
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/requestOptions:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: endpointId
+        in: query
+        name: endpointId
+        required: true
+        type: integer
+      - description: endpointInterfaceId
+        in: query
+        name: endpointInterfaceId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/serverDomain.MockExpectRequestOptions'
+              type: object
+      summary: 获取请求参数下拉选项
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/save:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 保存期望的请求体
+        in: body
+        name: EndpointMockExpect
+        required: true
+        schema:
+          $ref: '#/definitions/model.EndpointMockExpect'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  type: integer
+              type: object
+      summary: 保存期望
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/updateExpectDisabled:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: 是否禁用
+        in: body
+        name: disabled
+        required: true
+        schema:
+          type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 启用或者禁用单个期望
+      tags:
+      - Mock期望
+  /api/v1/mockExpect/updateName:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 期望ID
+        in: body
+        name: id
+        required: true
+        schema:
+          type: integer
+      - description: 期望名字
+        in: body
+        name: name
+        required: true
+        schema:
+          type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 修改期望名字
+      tags:
+      - Mock期望
+  /api/v1/mockScripts:
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: update Mock Script Object
+        in: body
+        name: EndpointMockScript
+        required: true
+        schema:
+          $ref: '#/definitions/model.EndpointMockScript'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/_domain.Response'
+      summary: 更新脚本
+      tags:
+      - Mock脚本管理
+  /api/v1/mockScripts/{id}:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Endpoint ID
+        in: path
+        name: endpointId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.EndpointMockScript'
+              type: object
+      summary: 脚本详情
+      tags:
+      - Mock脚本管理
+  /api/v1/mockjs/expressions:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/serverDomain.MockJsExpression'
+                  type: array
+              type: object
+      summary: mockJs规则列表
+      tags:
+      - mock
   /api/v1/notRelationScenarioList:
     get:
       consumes:
@@ -11003,7 +11694,7 @@ paths:
         name: currProjectId
         required: true
         type: integer
-      - description: Create project Request Object
+      - description: CreateExpression project Request Object
         in: body
         name: ProjectReq
         required: true
@@ -11618,16 +12309,6 @@ paths:
       - description: 当前项目ID
         in: query
         name: currProjectId
-        required: true
-        type: integer
-      - description: 用户ID
-        in: query
-        name: user_id
-        required: true
-        type: integer
-      - description: 项目ID
-        in: query
-        name: project_id
         required: true
         type: integer
       produces:

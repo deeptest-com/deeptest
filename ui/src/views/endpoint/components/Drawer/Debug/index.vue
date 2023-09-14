@@ -7,7 +7,6 @@
       <div id="debug-bottom">
         <DebugComp :onSaveDebugData="saveDebugInterface"
                    :onSaveAsCase="saveAsCase"
-                   :onGenerateCases="onGenerateCases"
                    :showMethodSelection="false" />
       </div>
     </div>
@@ -31,13 +30,6 @@
         :onFinish="saveAsFinish"
         :onCancel="saveAsCancel" />
 
-    <GenerateCasePopup
-        v-if="generateCasesVisible"
-        :visible="generateCasesVisible"
-        :model="generateCasesModel"
-        :onFinish="generateCasesFinish"
-        :onCancel="generateCasesCancel" />
-
   </div>
 </template>
 
@@ -47,7 +39,6 @@ import {useI18n} from "vue-i18n";
 import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
 
-import {NotificationKeyCommon} from "@/utils/const";
 import {UsedBy} from "@/utils/enum";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Endpoint} from "@/views/endpoint/store";
@@ -55,7 +46,6 @@ import {StateType as Endpoint} from "@/views/endpoint/store";
 import DebugMethod from './method.vue';
 import DebugComp from '@/views/component/debug/index.vue';
 import SaveAsCasePopup from "../Cases/edit.vue";
-import GenerateCasePopup from "../Cases/generate.vue";
 import {notifyError, notifySuccess} from "@/utils/notify";
 
 const store = useStore<{ Debug: Debug, Endpoint: Endpoint }>();
@@ -113,35 +103,6 @@ const saveAsFinish = async (model) => {
 const saveAsCancel = () => {
   console.log('saveAsVisible')
   saveAsVisible.value = false
-}
-
-const generateCasesVisible = ref(false)
-const generateCasesModel = ref({} as any)
-const onGenerateCases = () => {
-  console.log('onGenerateCases')
-  generateCasesVisible.value = true
-  generateCasesModel.value = {}
-}
-const generateCasesFinish = async (model) => {
-  console.log('generateCasesFinish', model, debugData.value.url)
-
-  const data = Object.assign({...model}, debugInfo.value)
-
-  store.commit("Global/setSpinning",true)
-  const res = await store.dispatch('Debug/generateCases', data)
-  store.commit("Global/setSpinning",false)
-
-  if (res === true) {
-    generateCasesVisible.value = false
-
-    notifySuccess(`自动生成用例成功`);
-  } else {
-    notifyError(`自动生成用例保存失败`);
-  }
-}
-const generateCasesCancel = () => {
-  console.log('generateCasesCancel')
-  generateCasesVisible.value = false
 }
 
 </script>

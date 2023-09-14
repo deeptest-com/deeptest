@@ -25,6 +25,9 @@ type Endpoint struct {
 	SourceType   consts.SourceType   `json:"sourceType"`
 	Maintainer   string              `gorm:"-" json:"maintainer"`
 	Methods      []consts.HttpMethod `gorm:"-" json:"methods"`
+
+	AdvancedMockDisabled bool `json:"advancedMockDisabled"`
+	ScriptMockDisabled   bool `json:"scriptMockDisabled"`
 }
 
 func (Endpoint) TableName() string {

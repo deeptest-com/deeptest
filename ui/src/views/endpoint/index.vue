@@ -198,7 +198,6 @@ import debounce from "lodash.debounce";
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
 import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
-import EditAndShowField from '@/components/EditAndShow/index.vue';
 import ContentPane from '@/views/component/ContentPane/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
 import PubDocs from './components/PubDocs.vue';
@@ -413,9 +412,11 @@ async function handleUpdateEndpoint(value: string, record: any) {
       {...record, title: value}
   );
 }
-
+// 打开抽屉
 async function editEndpoint(record) {
   await store.dispatch('Endpoint/getEndpointDetail', {id: record.id});
+  // 打开抽屉详情时，拉取mock表达式列表
+  await store.dispatch('Endpoint/getMockExpressions');
   drawerVisible.value = true;
 }
 
@@ -541,6 +542,7 @@ async function handleImport(data, callback) {
 
   const res = await store.dispatch('Endpoint/importEndpointData', {
     ...data,
+    "sourceType":2,
     "serveId": currServe.value.id,
   });
 
@@ -617,14 +619,14 @@ async function refreshList(resetPage?: string) {
 }
 
 watch(
-    () => [createApiModalVisible.value, showImportModal.value, drawerVisible.value],
+    () => [createApiModalVisible.value, showImportModal.value],
     async (newValue, oldVal) => {
       /**
        * 分享场景打开页面： 自动打开抽屉展示指定接口详情，会触发这里的监听，
        * 这里改成： 必须是触发了关闭弹窗 才触发，避免此场景 多次调用 loadCategory接口
        */
       const oldValue = oldVal || [];
-      if ((!newValue[0] && oldValue[0]) || (!newValue[1] && oldValue[1]) || (!newValue[2] && oldValue[2])) {
+      if ((!newValue[0] && oldValue[0]) || (!newValue[1] && oldValue[1])) {
         await store.dispatch('Endpoint/loadCategory');
       }
     },

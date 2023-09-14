@@ -21,7 +21,6 @@
           </span>
           </div>
         </div>
-
       </div>
       <Securitys :items="info?.securities"/>
     </div>
@@ -34,9 +33,23 @@
           <span><strong>{{ path.name }}：</strong></span>
           <a-tag class="method-tag" :color="getMethodColor(info.method)">{{ info.method }}</a-tag>
           <span class="request-uri">
-            <span class="ant-typography ant-typography-secondary">{{ handlePathStr(path.url + '/' + path.path) }}</span>
-            <CopyOutlined class="copy-icon" @click="copyURL(handlePathStr(path.url + '/' + path.path))"/>
+            <span class="ant-typography ant-typography-secondary">{{ handlePathStr(path.url + path.path) }}</span>
+            <CopyOutlined class="copy-icon" @click="copyURL(handlePathStr(path.url + path.path))"/>
           </span>
+        </div>
+      </div>
+      <!-- ::::Mock请求链接： -->
+      <div v-if="mockList?.length" style="margin-top: 16px;">
+        <h3>Mock请求链接</h3>
+        <div class="url-info-block">
+          <div class="path-info" v-for="mock in mockList" :key="mock.url">
+            <span><strong>{{ mock.name }}：</strong></span>
+            <a-tag class="method-tag" :color="getMethodColor(info.method)">{{ info.method }}</a-tag>
+            <span class="request-uri">
+            <span class="ant-typography ant-typography-secondary">{{ mock.url }}</span>
+            <CopyOutlined class="copy-icon" @click="copyURL(handlePathStr(mock.url))"/>
+          </span>
+          </div>
         </div>
       </div>
       <div class="interface-request">
@@ -152,6 +165,19 @@ const paths = computed(() => {
   return list;
 })
 
+const mockList = computed(() => {
+  const list: any = [];
+  if (info?.value?.mock) {
+    info.value?.mock.forEach((item: any) => {
+      list.push({
+        url: item.url,
+        name: item.name
+      })
+    })
+  }
+  return list;
+})
+
 const serveList = computed(() => {
   const list: any = [];
   if (info?.value?.servers) {
@@ -189,7 +215,8 @@ function selectCode(code) {
 }
 
 function handlePathStr(str) {
-  return str.replace(/\/{2,}/g, '/');
+  return str
+  //return str.replace(/\/{2,}/g, '/');
 }
 
 function copyURL(url) {

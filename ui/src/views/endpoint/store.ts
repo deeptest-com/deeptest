@@ -32,7 +32,22 @@ import {
     expireEndpoint,
     getEndpointDetail,
     getEndpointList,
-    saveEndpoint, copyEndpointCase,loadCaseTree,reBuildTree
+    saveEndpoint, copyEndpointCase,loadCaseTree,reBuildTree,
+    getMockExpressions,
+    getExpectList,
+    getMockExpectDetail,
+    getMockDropDownOptions,
+    saveMockExpect,
+    copyMockExpect,
+    updateMockExpectDisabled,
+    updateMockStatus,
+    deleteMockExpect,
+    sortMockExpect,
+    updateMockName,
+
+    getMockScript,
+    updateMockScript,
+    generateJsonExample,
 } from './service';
 
 import {
@@ -56,6 +71,7 @@ import {
     getSchemaList, getSchemaDetail
 } from "@/views/project-settings/service";
 import { changeServe } from '../project-settings/service';
+import {getSnippet} from "@/views/component/debug/service";
 
 
 export interface StateType {
@@ -83,6 +99,17 @@ export interface StateType {
     tagList: any;
     caseTree:any;
     caseTreeMap:any;
+    mockExpressions:any;
+
+    /**
+     * 高级mock
+     */
+    mockExpectList: any[];
+    mockExpectDetail: any;
+    mockExpectOptions: any;
+    selectMockExpect: any;
+    mockExpectLoading: boolean;
+    mockScript:any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -121,6 +148,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setCaseTreeMap:Mutation<StateType>;
 
         setInterfaces:Mutation<StateType>;
+        setMockExpressions:Mutation<StateType>;
+
+        setMockExpectList: Mutation<StateType>;
+        setMockExpectDetail: Mutation<StateType>;
+        setMockExpectOptions: Mutation<StateType>;
+        setSelectedMockExpect: Mutation<StateType>;
+        setMockExpectLoading: Mutation<StateType>;
+        setMockScript:Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -172,6 +207,23 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getCaseTree: Action<StateType, StateType>;
 
         removeUnSavedMethods: Action<StateType, StateType>;
+        getMockExpressions: Action<StateType, StateType>;
+
+        getMockExpectList: Action<StateType, StateType>;
+        getMockExpectDetail: Action<StateType, StateType>;
+        getMockExpectOptions: Action<StateType, StateType>;
+
+        saveMockExpect: Action<StateType, StateType>;
+        cloneMockExpect: Action<StateType, StateType>;
+        deleteMockExpect: Action<StateType, StateType>;
+        sortMockExpect: Action<StateType, StateType>;
+        disabledMockExpect: Action<StateType, StateType>;
+        updateMockExpectName: Action<StateType, StateType>;
+        updateMockStatus: Action<StateType, StateType>;
+        generateJsonExample: Action<StateType, StateType>;
+        getMockScript: Action<StateType, StateType>;
+        updateMockScript: Action<StateType, StateType>;
+        addSnippet: Action<StateType, StateType>;
     }
 }
 
@@ -214,6 +266,17 @@ const initState: StateType = {
     tagList:[],
     caseTree:[],
     caseTreeMap:[],
+    mockExpressions:[],
+
+    /**
+     * 高级mock相关
+     */
+    mockExpectList: [],
+    mockExpectDetail: {},
+    mockExpectOptions: {},
+    selectMockExpect: {},
+    mockExpectLoading: false,
+    mockScript: {},
 };
 
 const StoreModel: ModuleType = {
@@ -342,7 +405,29 @@ const StoreModel: ModuleType = {
         },
         setInterfaces(state, payload){
             state.endpointDetail.interfaces = payload
-        }
+        },
+        setMockExpressions(state, payload){
+            state.mockExpressions = payload
+        },
+        setMockExpectList(state, payload) {
+            state.mockExpectList = payload;
+        },
+        setMockExpectDetail(state, payload) {
+            state.mockExpectDetail = payload;
+        },
+        setMockExpectOptions(state, payload) {
+            state.mockExpectOptions = payload;
+        },
+        setSelectedMockExpect(state, payload) {
+            state.selectMockExpect = payload;
+        },
+        setMockExpectLoading(state, payload) {
+            state.mockExpectLoading = payload;
+        },
+
+        setMockScript(state, payload){
+            state.mockScript = payload
+        },
     },
     actions: {
         async listEndpoint({commit, dispatch, state}, params: QueryParams) {
@@ -931,7 +1016,237 @@ const StoreModel: ModuleType = {
             }
 
             return true
-        }
+        },
+
+        async getMockExpressions({ commit }, payload){
+            try {
+                const response:any = await getMockExpressions(payload);
+                if (response.code != 0) return;
+                const options = response?.data?.map((item:any)=>{
+                    return {
+                        label:`@${item.expression}`,
+                        value:`@${item.expression}`,
+                        ...item
+                    }
+                })
+                commit('setMockExpressions', options || []);
+                return true;
+            } catch (error) {
+                return false;
+            }
+
+        },
+
+        async getMockExpectList({ commit, state, rootState }: any, payload) {
+            try {
+                commit('setMockExpectLoading', true);
+                const data: any = await getExpectList({
+                    endpointId: state.endpointDetail.id,
+                    currProjectId: rootState.ProjectGlobal.currPorject?.id,
+                });
+                commit('setMockExpectLoading', false);
+                const { code, data: listData } = data;
+                if (code === 0) {
+                    commit('setMockExpectList', (listData || []).sort((prev, next) => prev.ordr - next.ordr));
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                commit('setMockExpectLoading', false);
+                return false;
+            }
+        },
+
+        async getMockExpectDetail({ commit, rootState }: any, payload) {
+            try {
+                const responseData: any = await getMockExpectDetail({
+                    id: payload.id,
+                    currProjectId: rootState.ProjectGlobal.currPorject?.id,
+                });
+                const { code, data } = responseData;
+                if (code === 0) {
+                    commit('setMockExpectDetail', data);
+                } else {
+                    return false;
+                }
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async cloneMockExpect({ commit, state, dispatch }, payload) {
+            try {
+                const responseData: any = await copyMockExpect({
+                    ...payload,
+                });
+                if (responseData.code === 0) {
+                    dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async saveMockExpect({ commit, state, dispatch }, payload) {
+            const interfaceData: any = state.endpointDetail.interfaces.filter(e => e.method === state.selectedMethodDetail.method);
+            try {
+                const responseData: any = await saveMockExpect({
+                    ...payload,
+                    endpointId: state.endpointDetail.id,
+                    endpointInterfaceId: interfaceData?.[0]?.id,
+                });
+                if (responseData.code === 0) {
+                    dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async sortMockExpect({ commit, state, dispatch }, payload) {
+            try {
+                const responseData: any = await sortMockExpect(payload);
+                if (responseData.code === 0) {
+                    // dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async deleteMockExpect({ commit, state, dispatch }, payload) {
+            try {
+                const responseData: any = await deleteMockExpect(payload);
+                if (responseData.code === 0) {
+                    dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async disabledMockExpect({ dispatch }, payload) {
+            try {
+                const responseData: any = await updateMockExpectDisabled({
+                    ...payload,
+                });
+                if (responseData.code === 0) {
+                    // dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async updateMockExpectName({ dispatch }, payload) {
+            try {
+                const responseData: any = await updateMockName({
+                    ...payload,
+                });
+                if (responseData.code === 0) {
+                    dispatch('getMockExpectList');
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async updateMockStatus({ dispatch, state }, payload) {
+            try {
+                const responseData: any = await updateMockStatus({
+                    id: state.endpointDetail.id,
+                    ...payload,
+                });
+                if (responseData.code === 0) {
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async getMockExpectOptions({ commit, state, rootState }: any, payload) {
+            try {
+                const interfaceData: any = state.endpointDetail.interfaces.filter(e => e.method === state.selectedMethodDetail.method);
+                const response:any = await getMockDropDownOptions({
+                    endpointId: state.endpointDetail.id,
+                    endpointInterfaceId: interfaceData?.[0]?.id,
+                    currProjectId: rootState.Global.currPorject?.id,
+                });
+                if (response.code === 0) {
+                    commit('setMockExpectOptions', response.data);
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                return false;
+            }
+        },
+
+        async generateJsonExample({ commit, state }, payload) {
+            try {
+                const response: any = await generateJsonExample({
+                    ...payload,
+                    endpointId: state.endpointDetail.id,
+                });
+                if (response.code === 0) {
+                    return response.data;
+                }
+                return false;
+            } catch (error) {
+                console.log('get mock responseJson failed', error);
+                return false;
+            }
+        },
+
+        async getMockScript({ commit }, endpointId){
+            try {
+                const res = await getMockScript(endpointId);
+                commit('setMockScript', res.data);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async updateMockScript({ commit }, payload){
+            try {
+                const res = await updateMockScript(payload);
+                return true;
+            } catch (error) {
+                return false;
+            }
+        },
+        async addSnippet({commit, dispatch, state}, name: string) {
+            let line = ''
+            if (name === 'log') {
+                line = "log('test')"
+            } else if (name === 'set_mock_resp_code') {
+                line = "dt.response.statusCode = 404;"
+            } else if (name === 'set_mock_resp_field') {
+                line = "dt.response.data.field1 = 'val';"
+            } else if (name === 'set_mock_resp_text') {
+                line = "dt.response.data = dt.response.data.replace('old', 'new');"
+            }
+
+            state.mockScript.content += '\n' + line
+            state.mockScript.content = state.mockScript.content.trim()
+            commit('setMockScript', state.mockScript);
+
+            return true;
+        },
     },
 };
 

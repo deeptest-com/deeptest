@@ -73,11 +73,6 @@ watch(debugData, (newVal) => {
   getPreConditionScript()
 }, {immediate: true, deep: true});
 
-const format = (item) => {
-  console.log('format', item)
-  bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
-}
-
 const save = () => {
   console.log('save')
   bus.emit(settings.eventConditionSave, {});
@@ -90,6 +85,11 @@ const openFullscreen = () => {
 const closeFullScreen = () => {
   console.log('closeFullScreen')
   fullscreen.value = false
+}
+
+const format = (item) => {
+  console.log('format', item)
+  bus.emit(settings.eventEditorAction, {act: settings.eventTypeFormat})
 }
 
 </script>
@@ -193,8 +193,4 @@ const closeFullScreen = () => {
     }
   }
 }
-</style>
-
-<style lang="less" scoped>
-
 </style>

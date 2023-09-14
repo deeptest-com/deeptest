@@ -14,7 +14,7 @@
         <slot name="header"/>
       </div>
     </template>
-  
+
     <a-spin tip="Loading..." :spinning="spinning" style="z-index: 2000;">
     <div class="dp-drawer-content" ref="contentRef">
       <!-- 基本信息区域 -->
@@ -39,9 +39,9 @@ import {
   ref,
   defineProps,
   defineEmits,
-  computed, 
-  watch, 
-  onUnmounted, 
+  computed,
+  watch,
+  onUnmounted,
   onMounted,
   provide,
 } from 'vue';
@@ -165,6 +165,7 @@ provide('containerScrollTop', computed(() => containerScrollTop.value));
     :deep(.tab-pane) {
       position: relative;
       //margin-top: 16px;
+      height: calc(100vh - 96px);
       min-height: calc(100vh - 96px);
     }
   }

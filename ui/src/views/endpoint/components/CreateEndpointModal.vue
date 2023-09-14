@@ -31,7 +31,7 @@
       <a-form-item label="描述" name="description">
         <a-textarea
             v-model:value="formState.description"
-            placeholder="清输入接口描述信息"
+            placeholder="请输入接口描述信息"
             :auto-size="{ minRows: 2, maxRows: 5 }"
         />
       </a-form-item>

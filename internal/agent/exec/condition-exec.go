@@ -9,8 +9,8 @@ import (
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 )
 
-func ExecPreConditions(obj *InterfaceExecObj) (err error) {
-	for index, condition := range obj.PreConditions {
+func ExecPreConditions(execObj InterfaceExecObj) (err error) {
+	for index, condition := range execObj.PreConditions {
 		if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
@@ -19,14 +19,14 @@ func ExecPreConditions(obj *InterfaceExecObj) (err error) {
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 
-			obj.PreConditions[index].Raw, _ = json.Marshal(scriptBase)
+			execObj.PreConditions[index].Raw, _ = json.Marshal(scriptBase)
 		}
 	}
 
 	return
 }
 
-func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err error) {
+func ExecPostConditions(obj InterfaceExecObj, resp domain.DebugResponse) (err error) {
 	for index, condition := range obj.PostConditions {
 		if condition.Type == consts.ConditionTypeExtractor {
 			var extractorBase domain.ExtractorBase
@@ -59,7 +59,6 @@ func ExecPostConditions(obj *InterfaceExecObj, resp domain.DebugResponse) (err e
 			obj.PostConditions[index].Raw, _ = json.Marshal(scriptBase)
 
 		} else if condition.Type == consts.ConditionTypeCheckpoint {
-
 			var checkpointBase domain.CheckpointBase
 			json.Unmarshal(condition.Raw, &checkpointBase)
 			if checkpointBase.Disabled {

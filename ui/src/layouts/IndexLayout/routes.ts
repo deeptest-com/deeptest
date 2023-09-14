@@ -9,7 +9,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: BlankLayout,
     children: [
       {
-        icon: 'home',
+        icon: 'workspace',
         title: 'workbench',
         path: 'index',
         component: () => import('@/views/workbench/index.vue'),
@@ -19,7 +19,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         }
       },
       {
-        icon: 'home',
+        icon: 'workspace',
         title: 'workplace',
         path: ':id',
         component: () => import('@/views/workbench/index.vue'),
@@ -34,7 +34,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: BlankLayout,
     children: [
       {
-        icon: 'endpoint',
+        icon: 'define',
         title: 'endpoint-management',
         path: 'index',
         component: () => import('@/views/endpoint/index.vue'),
@@ -52,7 +52,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: BlankLayout,
     children: [
       {
-        icon: 'doc',
+        icon: 'docs',
         title: 'endpoint-docs',
         path: 'index',
         component: () => import('@/views/docs/index.vue'),
@@ -70,7 +70,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: BlankLayout,
     children: [
       {
-        icon: 'diagnose',
+        icon: 'debug',
         title: 'diagnose',
         path: 'index',
         component: () => import('@/views/diagnose/index.vue'),
@@ -88,7 +88,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: BlankLayout,
     children: [
       {
-        icon: 'scenario',
+        icon: 'test',
         title: 'scenario',
         path: 'index',
         component: () => import('@/views/scenario/index.vue'),
@@ -107,7 +107,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: BlankLayout,
     children: [
       {
-        icon: 'plan',
+        icon: 'tp',
         title: 'plan',
         path: 'index',
         component: () => import('@/views/plan/index.vue'),
@@ -117,7 +117,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         }
       },
       {
-        icon: 'plan',
+        icon: 'tp',
         title: 'plan.exec',
         path: 'exec/:id',
         component: () => import('@/views/plan/exec/index.vue'),
@@ -133,7 +133,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     component: () => import('@/views/report/index.vue'),
     children: [
       {
-        icon: 'report',
+        icon: 'tr',
         title: 'report',
         path: 'index',
         component: () => import('@/views/report/index.vue'),

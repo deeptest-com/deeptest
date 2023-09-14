@@ -163,6 +163,7 @@ watch(() => {return shareId.value}, async (newVal) => {
   margin: 16px;
   background: #ffffff;
   //min-height: calc(100vh - 106px);
+  height: calc(100vh - 96px);
   overflow: hidden;
 }
 .full-container{

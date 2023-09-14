@@ -27,7 +27,7 @@
                 <span>匹配对象: &nbsp;</span>
                 <a-radio-group v-model:value="requestBodyType" @change="handleRequestBodyTypeChanged">
                   <a-radio value="keyValue">键值</a-radio>
-                  <a-radio value="XPath">XPath元素</a-radio>
+                  <a-radio value="xPath">XPath元素</a-radio>
                   <a-radio value="fullText">全文本</a-radio>
                 </a-radio-group>
               </div>
@@ -43,53 +43,53 @@
         </a-form-item>
         <a-form-item label="响应数据">
           <a-row class="mock-response-data">
-            <a-form-item label="返回HTTP状态码" name="code" style="margin-right: 20px;" :rules="rules.reponseCode">
-              <a-auto-complete
-                v-model:value="formState.code"
-                :options="defaultResponseCodes.map(e => ({ value: e, label: e }))"
-                style="width: 200px"
-                placeholder="请输入或选择http状态码"
-                :filter-option="false"
-              />
-            </a-form-item>
-            <a-form-item label="返回延迟" name="delayTime" :rules="rules.responseDelay">
-              <a-input-number v-model:value="formState.delayTime" />
-              ms
-            </a-form-item>
+          <a-form-item label="返回HTTP状态码" name="code" style="margin-right: 20px;" :rules="rules.reponseCode">
+            <a-auto-complete
+              v-model:value="formState.code"
+              :options="defaultResponseCodes.map(e => ({ value: e, label: e }))"
+              style="width: 200px"
+              placeholder="请输入或选择http状态码"
+              :filter-option="false"
+            />
+          </a-form-item>
+          <a-form-item label="返回延迟" name="delayTime" :rules="rules.responseDelay">
+              <a-input-number v-model:value="formState.delayTime" @change="handleInputDelayTime" />
+            ms
+          </a-form-item>
           </a-row>
-          <a-tabs v-model:activeKey="activeKey">
-            <a-tab-pane key="1" tab="响应体">
-              <div class="form-response">
-                <div class="top">
-                  <div class="response-left">
-                    <a-radio-group v-model:value="language" @change="handleLanguageChange">
-                      <a-radio-button value="json">pretty</a-radio-button>
-                      <a-radio-button value="raw">raw</a-radio-button>
-                    </a-radio-group>
-                  </div>
-                  <div class="response-right">
-                    <a-button type="link" @click="generateJsonExample">自动生成</a-button>
-                  </div>
+        <a-tabs v-model:activeKey="activeKey">
+          <a-tab-pane key="1" tab="响应体">
+            <div class="form-response">
+              <div class="top">
+                <div class="response-left">
+                  <a-radio-group v-model:value="language" @change="handleLanguageChange">
+                    <a-radio-button value="json">pretty</a-radio-button>
+                    <a-radio-button value="raw">raw</a-radio-button>
+                  </a-radio-group>
                 </div>
-                <div class="bottom">
-                  <MonacoEditor
-                    ref="monacoEditor"
-                    customId="request-body-main"
-                    class="editor"
-                    v-model:value="formState.responseBody.value"
-                    :language="language"
-                    theme="vs"
-                    height="300"
-                    :timestamp="timestamp"
-                    @change="handleEditorChange"
-                    :options="editorOptions"/>
+                <div class="response-right">
+                  <a-button type="link" @click="generateJsonExample">自动生成</a-button>
                 </div>
               </div>
-            </a-tab-pane>
-            <a-tab-pane key="2" tab="响应头">
-              <MockData type="responseHeaders" :data="formState"  @columnChange="handleChange" @delete="handleDelete"/>
-            </a-tab-pane>
-          </a-tabs>
+              <div class="bottom">
+                <MonacoEditor
+                  ref="monacoEditor"
+                  customId="request-body-main"
+                  class="editor"
+                  v-model:value="formState.responseBody.value"
+                  :language="language"
+                  theme="vs"
+                  height="300"
+                  :timestamp="timestamp"
+                  @change="handleEditorChange"
+                  :options="editorOptions"/>
+              </div>
+            </div>
+          </a-tab-pane>
+          <a-tab-pane key="2" tab="响应头">
+            <MockData type="responseHeaders" :data="formState"  @columnChange="handleChange" @delete="handleDelete"/>
+          </a-tab-pane>
+        </a-tabs>
         </a-form-item>
       </a-form>
     </div>
@@ -339,6 +339,11 @@ const handleDelete = (record, type) => {
   }
   const index = formState[type].findIndex(e => e.idx === record.idx);
   formState[type].splice(index, 1);
+}
+
+const handleInputDelayTime = (e) => {
+  const number = String(e).replace(/^0+(\d)|[^\d]+/g, '');
+  formState.delayTime = Number(number);
 }
 
 const handleEditorChange = (e) => {

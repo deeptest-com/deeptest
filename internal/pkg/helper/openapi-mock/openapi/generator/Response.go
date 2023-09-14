@@ -5,6 +5,10 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 )
 
+type Request struct {
+	Method consts.HttpMethod `json:"method"`
+}
+
 type Response struct {
 	StatusCode  consts.HttpRespCode    `json:"statusCode"`
 	ContentType consts.HttpContentType `json:"contentType"`

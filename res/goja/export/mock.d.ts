@@ -17,6 +17,9 @@ declare type MockResponseHeader = {
     value: any;
 }
 
+declare type Request = {
+    method: string;
+}
 declare type Response = {
     statusCode: number;
     contentType: string;
@@ -28,6 +31,7 @@ declare type Response = {
 
 declare global {
     const dt: {
+        request: Request,
         response: Response,
     }
 

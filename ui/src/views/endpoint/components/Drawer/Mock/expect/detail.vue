@@ -27,7 +27,7 @@
                 <span>匹配对象: &nbsp;</span>
                 <a-radio-group v-model:value="requestBodyType" @change="handleRequestBodyTypeChanged">
                   <a-radio value="keyValue">键值</a-radio>
-                  <a-radio value="XPath">XPath元素</a-radio>
+                  <a-radio value="xPath">XPath元素</a-radio>
                   <a-radio value="fullText">全文本</a-radio>
                 </a-radio-group>
               </div>
@@ -53,7 +53,7 @@
               />
             </a-form-item>
             <a-form-item label="返回延迟" name="delayTime" :rules="rules.responseDelay">
-              <a-input-number v-model:value="formState.delayTime" />
+              <a-input-number v-model:value="formState.delayTime" @change="handleInputDelayTime" />
               ms
             </a-form-item>
           </a-row>
@@ -346,6 +346,11 @@ const handleEditorChange = (e) => {
   jsonContent.value = e;
 }
 
+const handleInputDelayTime = (e) => {
+  const number = String(e).replace(/^0+(\d)|[^\d]+/g, '');
+  formState.delayTime = Number(number);
+}
+
 const generateJsonExample = async () => {
   if (!formState.code) {
     message.error('请先填写http响应状态码');
@@ -413,7 +418,6 @@ watch(() => {
 
   :deep(.ant-form-item) {
     flex-direction: row;
-    margin-bottom: 0 !important;
 
     .ant-form-item-label {
       margin-right: 6px;
@@ -427,16 +431,6 @@ watch(() => {
       }
     }
 
-    .ant-row.ant-form-item {
-      margin-bottom: 0 !important;
-    }
-
-    // .ant-form-item-explain.ant-form-item-explain-error {
-    //   position: absolute;
-    //   left: 0;
-    //   bottom: -24px;
-    //   white-space: pre;
-    // }
   }
 }
 

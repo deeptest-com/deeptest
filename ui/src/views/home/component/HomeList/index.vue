@@ -25,7 +25,7 @@
                 >申请加入
                 </a-button>
               </a-menu-item>
-              <a-menu-item key="1" v-if="item.accessible === 1">
+              <a-menu-item key="1" v-if="record.accessible === 1">
                 <a-button
                     style="width: 80px"
                     @click="handleEdit(record)"
@@ -40,7 +40,7 @@
                   >禁用/启用</a-button
                 >
               </a-menu-item> -->
-              <a-menu-item key="3" v-if="item.accessible === 1">
+              <a-menu-item key="3" v-if="record.accessible === 1">
                 <a-button
                     style="width: 80px"
                     type="link"
@@ -50,7 +50,7 @@
                 </a-button
                 >
               </a-menu-item>
-              <a-menu-item key="4" v-if="item.accessible === 1">
+              <a-menu-item key="4" v-if="record.accessible === 1">
                 <a-button
                     style="width: 80px"
                     type="link"

@@ -29,7 +29,7 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 			}
 
 			expectValue := expectRequest.Value
-			actualValue, _ := jsn.Get(expectRequest.Name).String() // get value of key on first level
+			actualValue := jsn.Get(expectRequest.Name) // get value of key on first level
 
 			ret = s.compareObject(actualValue, expectValue, expectRequest.CompareWay)
 
@@ -89,64 +89,6 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 	return
 }
 
-func (s *EndpointMockCompareService) compareObject(actualValue interface{}, expectValue string, comparator consts.ComparisonOperator) (ret bool) {
-	if comparator == consts.Equal {
-		ret = fmt.Sprintf("%v", actualValue) == expectValue
-
-	} else if comparator == consts.NotEqual {
-		ret = fmt.Sprintf("%v", actualValue) != expectValue
-
-	} else if comparator == consts.GreaterThan {
-		actualFloat, err2 := s.InterfaceToNumber(actualValue)
-		expectFloat, err1 := s.StrToNumber(expectValue)
-		if err1 != nil || err2 != nil {
-			return false
-		}
-
-		ret = actualFloat > expectFloat
-
-	} else if comparator == consts.GreaterThanOrEqual {
-		actualFloat, err2 := s.InterfaceToNumber(actualValue)
-		expectFloat, err1 := s.StrToNumber(expectValue)
-		if err1 != nil || err2 != nil {
-			return false
-		}
-
-		ret = actualFloat >= expectFloat
-
-	} else if comparator == consts.LessThan {
-		actualFloat, err2 := s.InterfaceToNumber(actualValue)
-		expectFloat, err1 := s.StrToNumber(expectValue)
-		if err1 != nil || err2 != nil {
-			return false
-		}
-
-		ret = actualFloat < expectFloat
-
-	} else if comparator == consts.LessThanOrEqual {
-		actualFloat, err2 := s.InterfaceToNumber(actualValue)
-		expectFloat, err1 := s.StrToNumber(expectValue)
-		if err1 != nil || err2 != nil {
-			return false
-		}
-
-		ret = actualFloat <= expectFloat
-
-	} else if comparator == consts.Contain {
-		ret = strings.Contains(fmt.Sprintf("%v", actualValue), expectValue)
-
-	} else if comparator == consts.NotContain {
-		ret = !strings.Contains(fmt.Sprintf("%v", actualValue), expectValue)
-
-	} else if comparator == consts.RegularMatch {
-		regx := regexp.MustCompile(expectValue)
-		ret = regx.MatchString(fmt.Sprintf("%v", actualValue))
-
-	}
-
-	return
-}
-
 func (s *EndpointMockCompareService) CompareValue(actualValue interface{}, expectValue string,
 	comparator consts.ComparisonOperator) (ret bool) {
 
@@ -171,15 +113,73 @@ func (s *EndpointMockCompareService) CompareValue(actualValue interface{}, expec
 	return
 }
 
-func (s *EndpointMockCompareService) StrToNumber(val string) (ret float64, err error) {
+func (s *EndpointMockCompareService) compareObject(actualValue interface{}, expectValue string, comparator consts.ComparisonOperator) (ret bool) {
+	if comparator == consts.Equal {
+		ret = fmt.Sprintf("%v", actualValue) == expectValue
+
+	} else if comparator == consts.NotEqual {
+		ret = fmt.Sprintf("%v", actualValue) != expectValue
+
+	} else if comparator == consts.GreaterThan {
+		actualFloat, err2 := s.interfaceToNumber(actualValue)
+		expectFloat, err1 := s.strToNumber(expectValue)
+		if err1 != nil || err2 != nil {
+			return false
+		}
+
+		ret = actualFloat > expectFloat
+
+	} else if comparator == consts.GreaterThanOrEqual {
+		actualFloat, err2 := s.interfaceToNumber(actualValue)
+		expectFloat, err1 := s.strToNumber(expectValue)
+		if err1 != nil || err2 != nil {
+			return false
+		}
+
+		ret = actualFloat >= expectFloat
+
+	} else if comparator == consts.LessThan {
+		actualFloat, err2 := s.interfaceToNumber(actualValue)
+		expectFloat, err1 := s.strToNumber(expectValue)
+		if err1 != nil || err2 != nil {
+			return false
+		}
+
+		ret = actualFloat < expectFloat
+
+	} else if comparator == consts.LessThanOrEqual {
+		actualFloat, err2 := s.interfaceToNumber(actualValue)
+		expectFloat, err1 := s.strToNumber(expectValue)
+		if err1 != nil || err2 != nil {
+			return false
+		}
+
+		ret = actualFloat <= expectFloat
+
+	} else if comparator == consts.Contain {
+		ret = strings.Contains(fmt.Sprintf("%v", actualValue), expectValue)
+
+	} else if comparator == consts.NotContain {
+		ret = !strings.Contains(fmt.Sprintf("%v", actualValue), expectValue)
+
+	} else if comparator == consts.RegularMatch {
+		regx := regexp.MustCompile(expectValue)
+		ret = regx.MatchString(fmt.Sprintf("%v", actualValue))
+
+	}
+
+	return
+}
+
+func (s *EndpointMockCompareService) strToNumber(val string) (ret float64, err error) {
 	ret, err = strconv.ParseFloat(val, 64)
 
 	return
 }
 
-func (s *EndpointMockCompareService) InterfaceToNumber(val interface{}) (ret float64, err error) {
+func (s *EndpointMockCompareService) interfaceToNumber(val interface{}) (ret float64, err error) {
 	str := fmt.Sprintf("%v", val)
-	ret, err = s.StrToNumber(str)
+	ret, err = s.strToNumber(str)
 
 	return
 }

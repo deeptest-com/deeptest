@@ -23,7 +23,6 @@ func (m *DebugInterfaceModule) Party() module.WebModule {
 
 			party.Post("/save", m.DebugInterfaceCtrl.Save).Name = "保存调试接口"
 			party.Post("/saveAsCase", m.DebugInterfaceCtrl.SaveAsCase).Name = "另存为接口用例"
-			party.Post("/generateCases", m.DebugInterfaceCtrl.GenerateCases).Name = "自动生成接口用例"
 		})
 	}
 	return module.NewModule("/debugs", handler)

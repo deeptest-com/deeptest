@@ -29,7 +29,15 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 			}
 
 			expectValue := expectRequest.Value
-			actualValue := jsn.Get(expectRequest.Name) // get value of key on first level
+			var actualValue interface{}
+
+			actualJson := jsn.Get(expectRequest.Name) // get value of key on first level
+			actualValueFloat, err := actualJson.Float64()
+			if err == nil {
+				actualValue = actualValueFloat
+			} else {
+				actualValue = actualJson.MustString()
+			}
 
 			ret = s.compareObject(actualValue, expectValue, expectRequest.CompareWay)
 
@@ -114,11 +122,23 @@ func (s *EndpointMockCompareService) CompareString(actualValue interface{}, expe
 }
 
 func (s *EndpointMockCompareService) compareObject(actualValue interface{}, expectValue string, comparator consts.ComparisonOperator) (ret bool) {
+	isFloat := s.isFloat(actualValue)
+
 	if comparator == consts.Equal {
-		ret = fmt.Sprintf("%v", actualValue) == expectValue
+		if isFloat {
+			actualFloat, expectFloat, err := s.getFloatValues(actualValue, expectValue)
+			ret = err == nil && actualFloat == expectFloat
+		} else {
+			ret = fmt.Sprintf("%v", actualValue) == expectValue
+		}
 
 	} else if comparator == consts.NotEqual {
-		ret = fmt.Sprintf("%v", actualValue) != expectValue
+		if isFloat {
+			actualFloat, expectFloat, err := s.getFloatValues(actualValue, expectValue)
+			ret = err == nil && actualFloat != expectFloat
+		} else {
+			ret = fmt.Sprintf("%v", actualValue) != expectValue
+		}
 
 	} else if comparator == consts.GreaterThan {
 		actualFloat, err2 := s.interfaceToNumber(actualValue)
@@ -182,4 +202,21 @@ func (s *EndpointMockCompareService) interfaceToNumber(val interface{}) (ret flo
 	ret, err = s.strToNumber(str)
 
 	return
+}
+
+func (s *EndpointMockCompareService) getFloatValues(actual interface{}, expect string) (actualFloat, expectFloat float64, err error) {
+	actualFloat = actual.(float64)
+	expectFloat, err = strconv.ParseFloat(expect, 64)
+
+	return
+}
+
+func (s *EndpointMockCompareService) isFloat(val interface{}) (ret bool) {
+	switch val.(type) {
+	case float64:
+		return true
+	default:
+	}
+
+	return false
 }

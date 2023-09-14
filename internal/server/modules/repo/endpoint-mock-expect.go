@@ -172,6 +172,7 @@ func (r *EndpointMockExpectRepo) CreateExpectRequest(req model.EndpointMockExpec
 func (r *EndpointMockExpectRepo) CreateExpectResponseHeaders(req model.EndpointMockExpect) (err error) {
 	expectResponseHeaders := make([]model.EndpointMockExpectResponseHeader, 0)
 	for _, v := range req.ResponseHeaders {
+		v.ID = 0
 		v.EndpointMockExpectId = req.ID
 		expectResponseHeaders = append(expectResponseHeaders, v)
 	}

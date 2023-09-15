@@ -2,7 +2,7 @@
 #PROJECT=deeptest
 
 # ly 打包配置，开源版可以删除
-VERSION=0.0.5
+VERSION=0.0.9
 PROJECT=LeyanAPI
 
 
@@ -96,6 +96,7 @@ compile_launcher_win64:
 		${BUILD_CMD_WIN} -x -v \
 		-o ../../${BIN_DIR}win64/${PROJECT}.exe && \
 		cd ..
+
 
 compile_launcher_win32:
 	@echo 'start compile win32 launcher'

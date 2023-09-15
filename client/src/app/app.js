@@ -52,10 +52,10 @@ export class DeepTestApp {
      * */
     async createWindow() {
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
-
         const mainWin = new BrowserWindow({
             show: false,
             frame: true, // 不创建无边框窗口，不然都没法拖动
+            autoHideMenuBar: true,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
@@ -175,7 +175,7 @@ export class DeepTestApp {
 
         setInterval(async () => {
             await checkUpdate(this._windows.get('main'))
-        }, 6000);
+        }, 6000*60*24);
     }
 
     quit() {
@@ -203,9 +203,10 @@ export class DeepTestApp {
         // explicitly with Cmd + Q.
         app.on('window-all-closed', () => {
             logInfo(`>> event: app window-all-closed`)
-            if (process.platform !== 'darwin') {
-                app.quit();
-            }
+            app.quit();
+            // if (process.platform !== 'darwin') {
+            //     app.quit();
+            // }
         });
 
         app.on('will-quit', (e) => {
@@ -377,6 +378,12 @@ export class DeepTestApp {
     // 构建应用菜单
     buildAppMenu() {
         logInfo('>> deeptest app: build application menu.');
+
+        if(IS_WINDOWS_OS){
+            Menu.setApplicationMenu(null);
+        }
+        return;
+
         if (IS_MAC_OSX) {
             const template = [
                 {

@@ -54,7 +54,6 @@ declare type Response = {
     data: any;
     contentType: string;
 
-    contentLang: string;
     contentCharset: string;
     contentLength: number;
 }

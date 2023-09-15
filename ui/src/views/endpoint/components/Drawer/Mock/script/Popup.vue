@@ -1,6 +1,6 @@
 <template>
   <a-modal
-      :title="'配置'+t(model.entityType)"
+      :title="'编辑Mock脚本'"
       :visible="visible"
       :footer="null"
       @cancel="cancel"
@@ -43,15 +43,19 @@ const props = defineProps({
     required: true,
     type: Object,
   },
+  onFinish: {
+    required: true,
+    type: Function,
+  },
   onCancel: {
     required: true,
     type: Function,
   },
 })
 
-const save = (item) => {
-  console.log('save', item)
-  bus.emit(settings.eventConditionSave, {});
+const save = () => {
+  console.log('save')
+  props.onFinish()
 }
 
 const cancel = () => {

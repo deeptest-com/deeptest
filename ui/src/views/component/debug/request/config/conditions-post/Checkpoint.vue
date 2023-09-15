@@ -163,6 +163,8 @@ const cancel = () => {
 onMounted(() => {
   console.log('onMounted')
   bus.on(settings.eventConditionSave, save);
+
+  loadExtractorVariable()
 })
 onBeforeUnmount( () => {
   console.log('onBeforeUnmount')
@@ -196,7 +198,6 @@ const loadExtractorVariable = () => {
     })
   }
 }
-loadExtractorVariable()
 
 const labelCol = { span: 4 }
 const wrapperCol = { span: 18 }

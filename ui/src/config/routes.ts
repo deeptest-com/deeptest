@@ -6,7 +6,7 @@ import NProgress from 'nprogress'; // progress bar
 import 'nprogress/nprogress.css'; // progress bar style
 NProgress.configure({ showSpinner: false, easing: 'ease', speed: 1000 }); // NProgress Configuration
 
-import { createRouter, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router';
 import { RoutesDataItem } from "@/utils/routes";
 import settings from "@/config/settings";
 
@@ -146,7 +146,7 @@ const router = createRouter({
   scrollBehavior(/* to, from, savedPosition */) {
     return { top: 0 }
   },
-  history: createWebHashHistory(process.env.BASE_URL),
+  history: createWebHistory(process.env.BASE_URL),
   routes: routes,
 });
 

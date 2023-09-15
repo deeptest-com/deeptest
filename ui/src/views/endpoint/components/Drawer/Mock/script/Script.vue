@@ -21,9 +21,14 @@
 
           <div class="title">代码片段：</div>
           <div>
+            <div @click="addSnippet('get_param')" class="dp-link-primary">获取指定参数值</div>
+            <div @click="addSnippet('get_header')" class="dp-link-primary">获取指定Header值</div>
+            <div @click="addSnippet('get_cookie')" class="dp-link-primary">获取指定Cookie对象</div>
+
             <div @click="addSnippet('set_mock_resp_code')" class="dp-link-primary">设置响应码</div>
             <div @click="addSnippet('set_mock_resp_field')" class="dp-link-primary">修改JSON响应字段</div>
             <div @click="addSnippet('set_mock_resp_text')" class="dp-link-primary">修改字符串响应内容</div>
+
           </div>
         </div>
       </div>
@@ -94,30 +99,39 @@ onBeforeUnmount( () => {
     })
 })
 
-const doc = `// 获取、设置响应对象
+const doc = `
+/** 获取请求和响应对象 */
+var req = dt.request;
 var resp = dt.response;
-dt.response = resp;
 
-// 判断请求方法
+/** 获取请求参数、Header和Cookie */
+var strVal = dt.getParam('name');
+var strVal = dt.getHeader('name');
+// cookie is an object with name, value, path, domain properties
+var objVal = dt.getCookie('name');
+
+/** 判断请求方法 */
 if (dt.request.method.toLowerCase() == 'get') {
   // do something
 }
-// 获取 (dt.request.method.toLowerCase() == 'get') {
+
+/** 判断响应内容类型 */
+if (dt.response.contentType == 'text/html') {
   // do something
 }
 
-// 修改响应码
+/** 修改响应码 */
 dt.response.statusCode = 404;
 
-// 修改JSON响应字段
-dt.response.data.field1 = 'val';
+/** 修改JSON响应字段 */
+dt.response.data.field1 = 'newValue';
 
-// 修改GET方法的字符串响应内容
-if (dt.request.method.toLowerCase() == 'get') {
+/** 修改HTML响应内容 */
+if (dt.response.contentType == 'text/html') {
   dt.response.data =
   dt.response.data.replace('old', 'new');
 }
-`
+`.trim()
 
 const labelCol = { span: 0 }
 const wrapperCol = { span: 24 }

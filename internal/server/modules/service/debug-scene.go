@@ -12,13 +12,14 @@ type DebugSceneService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	EnvironmentRepo       *repo.EnvironmentRepo       `inject:""`
 	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
+	ProfileRepo           *repo.ProfileRepo           `inject:""`
 
 	ShareVarService *ShareVarService `inject:""`
 
 	EnvironmentService *EnvironmentService `inject:""`
 }
 
-func (s *DebugSceneService) LoadScene(debugData *domain.DebugData) (
+func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userId uint) (
 	baseUrl string, shareVars []domain.GlobalVar, envVars []domain.GlobalVar,
 	globalVars []domain.GlobalVar, globalParams []domain.GlobalParam) {
 
@@ -46,6 +47,13 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData) (
 	}
 
 	envId := serveServer.EnvironmentId
+	if userId != 0 {
+		userProfile, _ := s.ProfileRepo.FindByUserId(userId)
+		if userProfile.CurrServerId != 0 {
+			envId = userProfile.CurrServerId
+		}
+	}
+
 	environment, _ := s.EnvironmentRepo.Get(envId)
 
 	if debugData.ProjectId == 0 {

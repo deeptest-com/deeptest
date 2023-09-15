@@ -39,6 +39,7 @@
     <FullScreenPopup v-if="fullscreen"
                      :visible="fullscreen"
                      :model="mockScript"
+                     :onFinish="updateMockScript"
                      :onCancel="closeFullScreen" />
   </div>
 </template>

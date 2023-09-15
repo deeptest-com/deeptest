@@ -134,14 +134,14 @@ type InterfaceResponseBodyBase struct {
 type InterfaceRequestBodyItemBase struct {
 	Name          string `json:"name"`
 	Type          string `json:"type"`
-	Content       string `gorm:"type:text" json:"content"`
+	Content       string `gorm:"type:longtext" json:"content"`
 	RequestBodyId uint   `json:"requestBodyId" gorm:"index"`
 }
 
 type InterfaceResponseBodyItemBase struct {
 	Name           string `json:"name"`
 	Type           string `json:"type"`
-	Content        string `gorm:"type:text" json:"content"`
+	Content        string `gorm:"type:longtext" json:"content"`
 	ResponseBodyId uint   `json:"ResponseBodyId" gorm:"index"`
 }
 

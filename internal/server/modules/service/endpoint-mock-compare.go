@@ -41,7 +41,7 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 
 			ret = s.compareObject(actualValue, expectValue, expectRequest.CompareWay)
 
-		} else if strings.ToLower(expectRequest.SelectType.String()) == strings.ToLower(consts.Xpath.String()) { // use xpath
+		} else if expectRequest.SelectType == consts.Xpath { // use xpath
 			xpath := expectRequest.Name
 
 			expectValue := expectRequest.Value

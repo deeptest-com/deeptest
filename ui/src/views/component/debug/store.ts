@@ -35,7 +35,7 @@ import {
     getPreConditionScript,
     saveResponseDefine, removeCookie, quickCreateCookie, saveCookie, getCookie,
 } from './service';
-import { serverList, changeServe } from '@/views/project-settings/service';
+import { serverList, changeServe, getVarsByEnv } from '@/views/project-settings/service';
 import {Checkpoint, Cookie, DebugInfo, Extractor, Interface, Response, Script} from "./data";
 import {ConditionCategory, ConditionType, UsedBy} from "@/utils/enum";
 import {ResponseData} from "@/utils/request";
@@ -193,6 +193,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         saveResponseDefine:Action<StateType, StateType>
 
         listServes: Action<StateType, StateType>;
+        getEnvVarsByEnv: Action<StateType, StateType>;
     };
 }
 
@@ -839,6 +840,20 @@ const StoreModel: ModuleType = {
                 })
                 commit('setServes', servers);
                 commit('setCurrServe', res.data.currServer);
+            }
+        },
+        async getEnvVarsByEnv({ state }) {
+            try {
+                if (!state.currServe.environmentId) {
+                    return false;
+                }
+                const res = await getVarsByEnv(state.currServe.environmentId);
+                if (res.code === 0) {
+                    return res.data;
+                }
+                return false;
+            } catch (error) {
+                return false;
             }
         }
     }

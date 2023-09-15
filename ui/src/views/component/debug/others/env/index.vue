@@ -72,7 +72,7 @@
               </div>
             </div>
 
-            <div v-for="(item, idx) in debugData.envVars" :key="idx" class="env">
+            <div v-for="(item, idx) in envVars" :key="idx" class="env">
               <div class="left">
                 <div class="name">
                   <a-tooltip class="name" overlayClassName="dp-tip-small">
@@ -185,7 +185,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, defineProps, inject, ref, watch} from "vue";
+import {computed, defineProps, inject, ref, unref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, ClearOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons-vue';
@@ -202,7 +202,9 @@ const store = useStore<{  Debug: Debug, ServeGlobal: ServeStateType, ProjectGlob
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-const currServe = computed<any>(() => store.state.ServeGlobal.currServe);
+const currServe = computed<any>(() => store.state.Debug.currServe);
+
+const envVars = ref<any[]>([]);
 
 const props = defineProps({
   onClose: {
@@ -224,6 +226,14 @@ const close = () => {
   if (props.onClose) props.onClose()
 }
 
+watch(() => {
+  return currServe.value;
+}, async val => {
+  const res = await store.dispatch('Debug/getEnvVarsByEnv');
+  envVars.value = res;
+}, {
+  immediate: true,
+})
 </script>
 
 <style lang="less">

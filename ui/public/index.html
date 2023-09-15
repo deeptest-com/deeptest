@@ -27,12 +27,24 @@
         }
 
         .app-loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-color: #fff;
+            z-index: 999999999;
             display: flex;
-            width: 100%;
-            height: 100vh;
             justify-content: center;
             align-items: center;
             flex-direction: column;
+            transition: all 0.5s ease-in-out;
+            opacity: 1;
+        }
+
+        .app-loading.hide {
+            opacity: 0;
+            z-index: -2;
         }
 
         .app-loading .dots {
@@ -143,28 +155,25 @@
         <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled.
                 Please enable it to continue.</strong>
     </noscript>
-    <div id="app">
-        <div class="app-loading">
-            <img src="" class="app-loading-logo" alt="Logo" />
-            <div class="app-loading-dots">
-                <span class="dot dot-spin"><i></i><i></i><i></i><i></i></span>
-            </div>
-            <div class="app-loading-title"></div>
-            <script>
-                const titleEl = document.getElementsByClassName('app-loading-title');
-                if (titleEl[0] && env === 'ly') {
-                    titleEl[0].innerHTML = location.host;
-                } else {
-                    titleEl[0].innerHTML = 'Deeptest.com';
-                }
-                const logoEl = document.getElementsByClassName('app-loading-logo');
-                if (logoEl[0] && env === 'ly') {
-                    logoEl[0].setAttribute('src', '/leyan-api-logo.png');
-                } else {
-                    logoEl[0].setAttribute('src', '/logo.png');
-                }
-            </script>
+    <div id="app"></div>
+    <div class="app-loading">
+        <% if(process.env.VUE_APP_DEPLOY_ENV === 'ly') { %>
+            <img src="/leyan-api-logo.png" class="app-loading-logo" alt="Logo" />
+        <% } else { %>
+            <img src="/logo.png" class="app-loading-logo" alt="Logo" />
+        <% } %>
+        <div class="app-loading-dots">
+            <span class="dot dot-spin"><i></i><i></i><i></i><i></i></span>
         </div>
+        <div class="app-loading-title"></div>
+        <script>
+            const titleEl = document.getElementsByClassName('app-loading-title');
+            if (titleEl[0] && env === 'ly') {
+                titleEl[0].innerHTML = location.host;
+            } else {
+                titleEl[0].innerHTML = 'Deeptest.com';
+            }
+        </script>
     </div>
     <!-- built files will be auto injected -->
 </body>

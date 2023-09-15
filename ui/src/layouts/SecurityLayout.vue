@@ -7,7 +7,7 @@
     <router-view v-if="isLogin" />
 </template>
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, onMounted, Ref, ref } from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, unref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { StateType as UserStateType, CurrentUser } from "@/store/user";
@@ -57,6 +57,18 @@ export default defineComponent({
                 console.log('getUser',err)
 
             });
+        })
+
+        watch(() => {
+            return unref(isLogin);
+        }, val => {
+            const appLoadingEl = document.getElementsByClassName('app-loading');
+            if (appLoadingEl[0]) {
+                appLoadingEl[0].classList.add('hide');
+                setTimeout(() => {
+                    document.body.removeChild(appLoadingEl[0]);
+                }, 600);
+            }
         })
 
         return {

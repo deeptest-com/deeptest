@@ -58,6 +58,9 @@ func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInter
 func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (
 	resp mockGenerator.Response, byAdvance bool) {
 
+	headerParams, queryParams, pathParams, body, bodyForm :=
+		s.EndpointMockParamService.GetRealRequestValues(ctx, endpointInterface, endpoint)
+
 	expects, _ := s.EndpointMockExpectRepo.ListByEndpointId(endpointInterface.EndpointId)
 
 	for _, expect := range expects {
@@ -66,7 +69,8 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 		}
 
 		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(expect.ID)
-		if s.MatchExpect(expectRequestMap, endpointInterface, endpoint, ctx) {
+		if s.MatchExpect(expectRequestMap, endpointInterface, endpoint,
+			headerParams, queryParams, pathParams, body, bodyForm, ctx) {
 			respData, respHeaders := s.GetExpectResult(expect)
 			respDefine := s.EndpointInterfaceRepo.GetResponse(endpointInterface.ID, respData.Code)
 
@@ -118,14 +122,13 @@ func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, req mockGenerator
 }
 
 func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]model.EndpointMockExpectRequest,
-	endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (ret bool) {
+	endpointInterface model.EndpointInterface, endpoint model.Endpoint,
+	headerParams []model.InterfaceParamBase, queryParams []model.InterfaceParamBase, pathParams []model.InterfaceParamBase,
+	body string, bodyForm map[string][]string, ctx iris.Context) (ret bool) {
 
 	if len(expectRequestMap) == 0 {
 		return false
 	}
-
-	headerParams, queryParams, pathParams, body, bodyForm :=
-		s.EndpointMockParamService.GetRealRequestValues(ctx, endpointInterface, endpoint)
 
 	ret = true
 	for source, expectRequests := range expectRequestMap {

@@ -69,7 +69,7 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
       key: 'name',
       customRender({ record }) {
         const handleSelectChange = (e) => {
-          record.name = e;
+          record.name = e.replace(/\s/ig, '');
           onColumnChange(type);
         };
         return (
@@ -96,7 +96,7 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
       key: 'name',
       customRender({ record }) {
         const handleInputChange = (e) => {
-          record.name = e.target.value;
+          record.name = e.target.value.replace(/\s/ig, '');
           onColumnChange(type);
         }
         return (
@@ -114,7 +114,7 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
       key: 'name',
       customRender({ record }) {
         const handleInputChange = (e) => {
-          record.name = e.target.value;
+          record.name = e.target.value.replace(/\s/ig, '');;
           onColumnChange(type);
         }
         return (

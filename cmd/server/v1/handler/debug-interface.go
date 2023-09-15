@@ -36,6 +36,7 @@ func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
 		return
 	}
 
+	req.UserId = multi.GetUserId(ctx)
 	data, err := c.DebugInterfaceService.Load(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

@@ -30,21 +30,22 @@ const router = useRouter();
 const activeRoute = ref<any>('');
 
 const handleChange = (e) => {
-  if (e === '/project-setting/enviroment') {
-    router.push('/project-setting/enviroment/var');
-  } else {
-    router.push(e);
-  }
+  console.log(e);
+  const path =  e === '/:projectId/project-setting/enviroment' ? '/:projectId/project-setting/enviroment/var' : e;
+  router.push(path.replace(':projectId', router.currentRoute.value.params.projectId));
 }
 
 watch(() => {
   return [router.currentRoute.value.path, tabs.value];
 }, (v) => {
-  const [path, list = []] = v;
+  const [path, list = []]: any = v;
   if (path && Array.isArray(list) && list.length > 0) {
-    const find = list?.find((route: any) => path.includes(route.path));
+    const currPath = path.replace(router.currentRoute.value.params.projectId, ':projectId');
+    const find = list?.find((route: any) => currPath.includes(route.path));
     activeRoute.value = find && find.path;
     console.log(activeRoute.value);
   }
+}, {
+  immediate: true,
 })
 </script>

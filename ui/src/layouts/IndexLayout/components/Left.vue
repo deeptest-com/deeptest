@@ -37,6 +37,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 import { StateType as GlobalStateType } from "@/store/global";
+import { StateType as ProjectGlobalStateType } from "@/store/project";
 import {RoutesDataItem} from '@/utils/routes';
 import SiderMenu from './SiderMenu.vue';
 import Icon from "./Icon.vue";
@@ -89,8 +90,9 @@ export default defineComponent({
   setup(props) {
     let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
     const router = useRouter();
-    const store = useStore<{ Global: GlobalStateType }>();
+    const store = useStore<{ Global: GlobalStateType, ProjectGlobal: ProjectGlobalStateType }>();
     const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
+    const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
     const isActive = computed(() => {
       return router.currentRoute.value.path.includes('project-setting');
     });
@@ -103,7 +105,7 @@ export default defineComponent({
     });
 
     const handleRedirect = () => {
-      router.push('/project-setting/enviroment');
+      router.push(`/${currProject.value.shortName}/project-setting/enviroment/var`);
     };  
   
     return {

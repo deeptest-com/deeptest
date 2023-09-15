@@ -29,6 +29,7 @@ import { RoutesDataItem, getRouteBelongTopMenu, hasChildRoute } from '@/utils/ro
 import {DownOutlined, RightOutlined,} from '@ant-design/icons-vue';
 import Icon from "./Icon.vue";
 import { useRouter } from 'vue-router';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   name: 'SiderMenuItem',
@@ -60,15 +61,25 @@ export default defineComponent({
     const { routeItem }: any = toRefs(props);
     const { t } = useI18n();
     const router = useRouter();
+    const store = useStore();
 
     const topMenuPath = computed<string>(()=> getRouteBelongTopMenu(routeItem.value as RoutesDataItem));
+    const currProject = computed(()=> store.state.ProjectGlobal.currProject);
+
+    const replaceLastChar = (path: string) => {
+      const routeArr = routeItem.value.path.split('/');
+      if (routeArr[routeArr.length - 1] === '') {
+        routeArr.splice(routeArr.length - 1, 1);
+      }
+      return routeArr.join('/');
+    };
 
     const handleRedirect = (path: string) => {
-      router.push(path);
-    }
+      router.push(replaceLastChar(path).replace(':projectId', currProject.value.shortName));
+    };
 
     const isActive = computed(() => {
-      return (props.selectedKeys || []).includes(routeItem.value.path);
+      return  (props.selectedKeys || []).includes(replaceLastChar(routeItem.value.path));
     });
   
     return {

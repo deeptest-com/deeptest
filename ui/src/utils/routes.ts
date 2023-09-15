@@ -220,7 +220,7 @@ export const getSelectLeftMenuPath = (route: RoutesDataItem): string[] => {
   if (route.path.includes('project-setting')) {
     ret.push('/' + route.path.split('/')[1] + '/' + route.path.split('/')[2]);
   } else {
-    ret.push('/' + route.path.split('/')[1] + '/index') // module root path
+    ret.push(route.path) // module root path
   }
 
   return ret

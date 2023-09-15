@@ -20,6 +20,9 @@ func (c *BaseCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 	data := resp.Data
 	ctx.StatusCode(resp.StatusCode.Int())
 	ctx.ContentType(resp.ContentType.String())
+	for _, header := range resp.Headers {
+		ctx.Header(header.Name, header.Value)
+	}
 
 	/** string **/
 	switch resp.ContentType {

@@ -149,7 +149,9 @@ func (s *EnvironmentService) DisableAllShareVar(interfaceId uint) (err error) {
 func (s *EnvironmentService) Save(req v1.EnvironmentReq) (id uint, err error) {
 	var environment model.Environment
 	copier.CopyWithOption(&environment, req, copier.Option{DeepCopy: true})
-	environment.Sort = s.EnvironmentRepo.GetMaxOrder(req.ProjectId)
+	if req.ID == 0 {
+		environment.Sort = s.EnvironmentRepo.GetMaxOrder(req.ProjectId)
+	}
 	err = s.EnvironmentRepo.SaveEnvironment(&environment)
 	id = environment.ID
 	return

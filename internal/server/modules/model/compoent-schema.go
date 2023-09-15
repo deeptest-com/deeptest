@@ -6,9 +6,9 @@ type ComponentSchema struct {
 	BaseModel
 	Name        string            `json:"name"`
 	Type        string            `json:"type"`
-	Content     string            `json:"content" gorm:"type:text"`
+	Content     string            `json:"content" gorm:"type:longtext"`
 	ServeId     int64             `json:"serveId"`
-	Examples    string            `json:"examples" gorm:"type:text"`
+	Examples    string            `json:"examples" gorm:"type:longtext"`
 	Tags        string            `json:"tags"`
 	Description string            `json:"description"`
 	Ref         string            `json:"ref"`

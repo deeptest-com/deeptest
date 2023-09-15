@@ -20,13 +20,22 @@
                 <div>var resp = dt.response;</div>
                 <div>dt.response = resp;</div>
                 <br />
+
                 <div>// 修改响应码</div>
                 <div>dt.response.statusCode = 404;</div>
                 <br />
+
                 <div>// 修改JSON响应字段</div>
                 <div>dt.response.data.field1 = 'val';</div>
                 <br />
-                <div>// 修改字符串响应内容</div>
+
+                <div>// 判断请求方法</div>
+                <div>if (dt.request.method.toLowerCase() == 'get') {</div>
+                <div style="padding-left: 20px;">// do something</div>
+                <div>}</div>
+                <br />
+
+                <div>// 修改GET方法的字符串响应内容</div>
                 <div>if (dt.request.method.toLowerCase() == 'get') {</div>
                 <div style="padding-left: 20px;">dt.response.data = </div>
                 <div style="padding-left: 40px;">dt.response.data.replace('old', 'new');</div>

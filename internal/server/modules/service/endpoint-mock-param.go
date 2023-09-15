@@ -133,7 +133,7 @@ func (s *EndpointMockParamService) MatchEndpointByMockPath(mockPath string, endp
 		} else if pathParam.Type == "boolean" {
 			paramRegxStr = "true|false"
 		} else {
-			paramRegxStr = ".+"
+			paramRegxStr = "[^/]+"
 		}
 		pathParamRegxMap[pathParam.Name] = fmt.Sprintf("(%s)", paramRegxStr)
 	}

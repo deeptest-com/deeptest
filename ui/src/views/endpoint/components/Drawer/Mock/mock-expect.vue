@@ -3,7 +3,7 @@
     <ExclamationCircleOutlined />
     <span>
       当您请求Mock接口时，会根据请求参数匹配的期望条件自动返回响应的结果，Mock请求地址：
-      {{getMockUrl(serverUrl)}}/mocks/{{endpoint.id}}{{endpoint.path}}。
+      {{getMockUrl(serverUrl)}}/mocks/{{endpoint.serveId}}{{endpoint.path}}。
     </span>
 
     <div class="toolbar">

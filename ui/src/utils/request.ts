@@ -31,13 +31,14 @@ export const getUrls = () => {
     const isElectron = !!window.require
     const nodeEnv = process.env.NODE_ENV
     console.log(`isElectron=${isElectron}, nodeEnv=${nodeEnv}, locationHref=${window.location.href}`)
-    const serverUrl = process.env.VUE_APP_API_SERVER
-    const agentUrl = process.env.VUE_APP_API_AGENT
+    const serverUrl = process.env.VUE_APP_API_SERVER;
+    const agentUrl = process.env.VUE_APP_API_AGENT;
+    const staticUrl = process.env.VUE_APP_API_STATIC;
     console.log(`serverUrl=${serverUrl}, agentUrl=${agentUrl}`)
-    return {serverUrl, agentUrl}
+    return {serverUrl, agentUrl,staticUrl}
 }
 
-const {serverUrl, agentUrl} = getUrls()
+const {serverUrl, agentUrl,staticUrl} = getUrls()
 const request = axios.create({
     baseURL: serverUrl,
     withCredentials: true, // 跨域请求时发送cookie
@@ -46,6 +47,10 @@ const request = axios.create({
 
 const requestAgent = axios.create({
     baseURL: agentUrl
+});
+
+const requestStatic = axios.create({
+    baseURL: staticUrl
 });
 
 // 全局设置 - post请求头
@@ -188,4 +193,11 @@ export function requestToAgent(config: AxiosRequestConfig | any): AxiosPromise<a
     return requestAgent(config).
         then((response: AxiosResponse) => response.data).
         catch(error => errorHandler(error));
+}
+
+// 转到静态资源服务器地址
+export function requestToStatic(config: AxiosRequestConfig | any): AxiosPromise<any> {
+    return requestStatic(config).
+    then((response: AxiosResponse) => response.data).
+    catch(error => errorHandler(error));
 }

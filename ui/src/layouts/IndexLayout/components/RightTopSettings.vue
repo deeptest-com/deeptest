@@ -2,9 +2,28 @@
   <div :class="['indexlayout-top-settings', theme]">
     <div class="user-info">
 
+      <!--  客户端下载 -->
+      <a-dropdown placement="bottomRight" v-if="isLyEnv && !isElectronEnv">
+        <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 4px;margin-left: 4px;">
+          <DesktopOutlined type="top-right-web" class="top-right-icon-desktop"/>
+<!--          <a-tooltip placement="left" :title="'由于浏览器跨域限制，网页版只支持访问非本地接口，如需访问本地 API，建议下载客户端。'">-->
+<!--        -->
+<!--          </a-tooltip>-->
+          <span class="user-name">{{ '客户端下载' }}</span>
+          <DownOutlined class="user-icon"/>
+        </a>
+        <template #overlay>
+          <a-menu @click="downloadClient">
+            <a-menu-item v-for="client in clientDownloadUrlOpts" :key="client.value">
+              {{ client.label }}
+            </a-menu-item>
+          </a-menu>
+        </template>
+      </a-dropdown>
+
       <!--  切换Agent -->
       <a-dropdown placement="bottomRight" v-if="isLyEnv">
-        <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 12px;">
+        <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 8px;">
           <IconSvg type="top-right-web" class="top-right-icon"/>
           <span class="user-name">{{ currentAgentLabel }}</span>
           <DownOutlined class="user-icon"/>
@@ -23,7 +42,7 @@
 
       <!-- ::::用户信息 -->
       <a-dropdown placement="bottomRight">
-        <a class="indexlayout-top-usermenu ant-dropdown-link">
+        <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 8px;">
           <UserOutlined class="user-icon"/>
           <span class="user-name">{{ currentUser.name }}</span>
           <DownOutlined class="user-icon"/>
@@ -72,6 +91,7 @@ import {
   LogoutOutlined,
   FullscreenOutlined,
   FullscreenExitOutlined,
+  DesktopOutlined,
 } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import IconSvg from "@/components/IconSvg";
@@ -85,6 +105,7 @@ export default defineComponent({
   components: {
     DownOutlined,
     SettingOutlined, UserOutlined, LogoutOutlined,
+    DesktopOutlined,
     IconSvg,
     FullscreenOutlined,
     FullscreenExitOutlined
@@ -149,7 +170,6 @@ export default defineComponent({
       }
     }
 
-
     function changeAgentEnv(event: any) {
       const {key} = event;
       const url = getAgentUrlByValue(agentUrlOpts.value, key);
@@ -157,6 +177,34 @@ export default defineComponent({
       window.localStorage.setItem('dp-cache-agent-url', url);
       window.location.reload();
     }
+
+    // 下载客户端
+    function downloadClient(event: any) {
+      if(event?.key){
+        window.open(event.key);
+      }
+    }
+
+    const isLyEnv = process?.env?.VUE_APP_DEPLOY_ENV === 'ly';
+    const clientDownloadUrlOpts = computed(() => {
+      if (!isLyEnv) {
+        return []
+      }
+      const clientVersion = store.state.Global.clientVersion;
+      const url = process?.env?.VUE_APP_API_STATIC;
+      return [
+        {
+          label: 'Windows 客户端',
+          desc: 'Windows 客户端',
+          value: `${url}/LeyanAPI/${clientVersion}/win64/LeyanAPI.zip`
+        },
+        {
+          label: 'macOS 客户端',
+          desc: 'macOS 客户端',
+          value: `${url}/LeyanAPI/${clientVersion}/darwin/LeyanAPI.zip`
+        }
+      ];
+    });
 
     const currentAgentLabel = computed(() => {
       return getAgentLabel(agentUrlOpts.value);
@@ -166,10 +214,10 @@ export default defineComponent({
       router.replace({path: '/user-manage/index'})
     }
 
-    const isLyEnv = process?.env?.VUE_APP_DEPLOY_ENV === 'ly';
 
     onMounted(async () => {
       if (isLyEnv) {
+
         const list = await store.dispatch('Global/getConfigByKey', {key: 'agentUrlOpts'});
         // 如果没有缓存，根据当前环境选择一个默认值
         if (!window.localStorage.getItem('dp-cache-agent-value')) {
@@ -178,6 +226,10 @@ export default defineComponent({
           window.localStorage.setItem('dp-cache-agent-value', agentValue);
           window.localStorage.setItem('dp-cache-agent-url', url);
         }
+
+        // 获取客户端最新版本号
+        await store.dispatch('Global/getClientVersion');
+
       }
     })
 
@@ -196,6 +248,9 @@ export default defineComponent({
       agentUrlOpts,
       currentAgentLabel,
       isLyEnv,
+      downloadClient,
+      clientDownloadUrlOpts,
+      isElectronEnv
     }
   }
 })
@@ -284,7 +339,10 @@ export default defineComponent({
   margin-right: 16px;
 }
 
-.top-right-icon{
+.top-right-icon {
   transform: scale(1.2);
+}
+.top-right-icon-desktop{
+  margin-right: 2px;
 }
 </style>

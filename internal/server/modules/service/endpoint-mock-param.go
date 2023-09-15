@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/kataras/iris/v12"
@@ -19,7 +20,7 @@ type EndpointMockParamService struct {
 func (s *EndpointMockParamService) GetRealRequestValues(ctx iris.Context,
 	endpointInterface model.EndpointInterface, endpoint model.Endpoint) (
 	headers []model.InterfaceParamBase, queryParams []model.InterfaceParamBase, pathParams []model.InterfaceParamBase,
-	body string, bodyForm map[string][]string) {
+	body string, bodyForm map[string][]string, cookies []domain.ExecCookie) {
 
 	queryParams = s.getRealQueryParamValues(ctx, endpointInterface)
 
@@ -28,6 +29,8 @@ func (s *EndpointMockParamService) GetRealRequestValues(ctx iris.Context,
 	headers = s.getRealHeaderParamValues(ctx, endpointInterface)
 
 	body, bodyForm = s.getRealBody(ctx)
+
+	cookies = s.getRealCookies(ctx)
 
 	return
 }
@@ -159,5 +162,15 @@ func (s *EndpointMockParamService) MatchEndpointByMockPath(mockPath string, endp
 		}
 	}
 
+	return
+}
+
+func (s *EndpointMockParamService) getRealCookies(ctx iris.Context) (ret []domain.ExecCookie) {
+	ctx.VisitAllCookies(func(name string, value string) {
+		ret = append(ret, domain.ExecCookie{
+			Name:  name,
+			Value: value,
+		})
+	})
 	return
 }

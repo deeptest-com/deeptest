@@ -91,6 +91,8 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 			} else {
 				resp.Data = resp.Content
 			}
+
+			return
 		}
 	}
 

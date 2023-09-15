@@ -1,50 +1,50 @@
 [
   {
-    "code":"workbench",
+    "code":"workspace",
     "title":"工作台",
-    "path":"/workbench",
+    "path":"/:projectId/workspace",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"endpoint",
-    "title":"接口管理",
-    "path":"/endpoint",
+    "code":"im",
+    "title":"接口定义",
+    "path":"/:projectId/IM",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"diagnose",
-    "title":"接口调试",
-    "path":"/diagnose",
+    "code":"docs",
+    "title":"接口文档",
+    "path":"/:projectId/docs",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"scenario",
+    "code":"debug",
+    "title":"快捷调试",
+    "path":"/:projectId/debug",
+    "type":"menu",
+    "parent":""
+  },
+  {
+    "code":"ts",
     "title":"测试开发",
-    "path":"/scenario",
+    "path":"/:projectId/TS",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"plan",
+    "code":"tp",
     "title":"测试计划",
-    "path":"/plan",
+    "path":"/:projectId/TP",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"report",
+    "code":"tr",
     "title":"测试报告",
-    "path":"/report",
-    "type":"menu",
-    "parent":""
-  },
-  {
-    "code":"diagnose",
-    "title":"接口调试",
-    "path":"/diagnose",
+    "path":"/:projectId/TR",
     "type":"menu",
     "parent":""
   },
@@ -58,42 +58,42 @@
   {
     "code":"project-setting-environment",
     "title":"环境管理",
-    "path":"/project-setting/environment",
+    "path":"/:projectId/project-setting/environment",
     "type":"menu",
     "parent":"project-setting"
   },
   {
     "code":"project-setting-data-pool",
     "title":"数据池",
-    "path":"/project-setting/data-pool",
+    "path":"/:projectId/project-setting/data-pool",
     "type":"menu",
     "parent":"project-setting"
   },
   {
     "code":"project-setting-service-setting",
     "title":"服务管理",
-    "path":"/project-setting/service-setting",
+    "path":"/:projectId/project-setting/service-setting",
     "type":"menu",
     "parent":"project-setting"
   },
   {
     "code":"project-setting-members",
     "title":"成员管理",
-    "path":"/project-setting/members",
+    "path":"/:projectId/project-setting/members",
     "type":"menu",
     "parent":"project-setting"
   },
   {
     "code":"project-setting-mock",
     "title":"Mock设置",
-    "path":"/project-setting/mock",
+    "path":"/:projectId/project-setting/mock",
     "type":"menu",
     "parent":"project-setting"
   },
   {
     "code":"project-setting-swaggerSync",
     "title":"自动同步",
-    "path":"/project-setting/swaggerSync",
+    "path":"/:projectId/project-setting/swaggerSync",
     "type":"menu",
     "parent":"project-setting"
   },

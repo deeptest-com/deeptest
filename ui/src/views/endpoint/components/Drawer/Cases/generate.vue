@@ -1,11 +1,23 @@
 <template>
-  <a-modal width="600px"
+  <a-modal width="1000px"
            :visible="visible"
            @ok="finish"
            @cancel="cancel"
            :title="(!model.id ? '新建' : '修改') + '用例'">
     <a-form :label-col="{ span: 6 }"
             :wrapper-col="{ span: 14 }">
+
+      <a-form-item label="请求方法" v-bind="validateInfos.method">
+        <a-select class="select-method"
+                  v-model:value="modelRef.method"
+                  @change="onMethodChanged">
+          <template v-for="method in Methods">
+            <a-select-option v-if="hasDefinedMethod(method)" :value="method" :key="method">
+              {{ method }}
+            </a-select-option>
+          </template>
+        </a-select>
+      </a-form-item>
 
       <a-form-item label="名称前缀" v-bind="validateInfos.name">
         <a-input v-model:value="modelRef.prefix"
@@ -53,14 +65,31 @@ const props = defineProps({
 })
 
 const modelRef = ref({
+  method: 'GET',
   prefix: '异常路径',
 });
+
+const loadCaseTree = () => {
+  store.dispatch('Endpoint/loadAlternativeCases',
+      {
+        endpointId: endpointDetail.value.id,
+        method: modelRef.value.method,
+      }).then((result) => {
+    console.log('saveCase', result)
+  })
+}
+const onMethodChanged = () => {
+  loadCaseTree()
+}
 
 watch(() => props.visible, () => {
   console.log('watch props.visible', props?.visible)
   modelRef.value = {
+    method: 'GET',
     prefix: props?.model?.prefix || '异常路径',
   }
+
+  loadCaseTree()
 }, {immediate: true, deep: true})
 
 const rulesRef = reactive({
@@ -86,15 +115,6 @@ const cancel = () => {
   console.log('cancel')
   resetFields()
   props.onCancel()
-}
-
-function listDefinedMethod() {
-  const methods = [] as string[]
-  endpointDetail?.value?.interfaces?.forEach((item) => {
-    methods.push(item.method)
-  })
-
-  return methods
 }
 
 function hasDefinedMethod(method: string) {

@@ -32,7 +32,7 @@ import {
     expireEndpoint,
     getEndpointDetail,
     getEndpointList,
-    saveEndpoint, copyEndpointCase,loadCaseTree,reBuildTree,
+    saveEndpoint, copyEndpointCase, loadCaseTree, reBuildTree,
     getMockExpressions,
     getExpectList,
     getMockExpectDetail,
@@ -47,7 +47,7 @@ import {
 
     getMockScript,
     updateMockScript,
-    generateJsonExample,
+    generateJsonExample, loadAlternativeCases,
 } from './service';
 
 import {
@@ -110,6 +110,8 @@ export interface StateType {
     selectMockExpect: any;
     mockExpectLoading: boolean;
     mockScript:any;
+
+    alternativeCases:any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -156,6 +158,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setSelectedMockExpect: Mutation<StateType>;
         setMockExpectLoading: Mutation<StateType>;
         setMockScript:Mutation<StateType>;
+
+        setAlternativeCases:Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -205,6 +209,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getEndpointTagList: Action<StateType, StateType>;
         updateEndpointTag: Action<StateType, StateType>;
         getCaseTree: Action<StateType, StateType>;
+
+        loadAlternativeCases: Action<StateType, StateType>;
 
         removeUnSavedMethods: Action<StateType, StateType>;
         getMockExpressions: Action<StateType, StateType>;
@@ -277,6 +283,8 @@ const initState: StateType = {
     selectMockExpect: {},
     mockExpectLoading: false,
     mockScript: {},
+
+    alternativeCases: [],
 };
 
 const StoreModel: ModuleType = {
@@ -427,6 +435,10 @@ const StoreModel: ModuleType = {
 
         setMockScript(state, payload){
             state.mockScript = payload
+        },
+
+        setAlternativeCases(state, payload){
+            state.alternativeCases = payload
         },
     },
     actions: {
@@ -934,6 +946,15 @@ const StoreModel: ModuleType = {
 
         async saveCaseDebugData({ state, dispatch }, payload: any) {
             const jsn = await saveEndpointCaseDebugData(payload)
+            if (jsn.code === 0) {
+                return true;
+            } else {
+                return false
+            }
+        },
+
+        async loadAlternativeCases({ state, dispatch }, payload: any) {
+            const jsn = await loadAlternativeCases(payload)
             if (jsn.code === 0) {
                 return true;
             } else {

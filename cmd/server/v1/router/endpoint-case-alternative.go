@@ -16,8 +16,9 @@ func (m *EndpointCaseAlternativeModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
-		public.Post("/", m.EndpointCaseAlternativeCtrl.GenerateCases).Name = "生成备选用例"
+		public.Post("/loadAlternative", m.EndpointCaseAlternativeCtrl.LoadAlternative).Name = "加载备选用例"
+		public.Post("/generate", m.EndpointCaseAlternativeCtrl.GenerateCases).Name = "生成测试用例"
 	}
 
-	return module.NewModule("/endpoints/cases/generate", handler)
+	return module.NewModule("/endpoints/cases", handler)
 }

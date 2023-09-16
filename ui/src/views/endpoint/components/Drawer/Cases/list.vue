@@ -1,9 +1,9 @@
 <template>
   <div class="endpoint-debug-cases-list">
     <div class="toolbar">
-<!--      <a-button trigger="click" @click="generateCases">
+      <a-button trigger="click" @click="generateCases">
         <span>备选用例</span>
-      </a-button>-->
+      </a-button>
 
       <a-button type="primary" trigger="click" @click="create">
         <span>新建用例</span>
@@ -63,12 +63,12 @@
         :onFinish="createFinish"
         :onCancel="createCancel"/>
 
-<!--    <GenerateCasePopup
+    <GenerateCasePopup
         v-if="generateCasesVisible"
         :visible="generateCasesVisible"
         :model="generateCasesModel"
         :onFinish="generateCasesFinish"
-        :onCancel="generateCasesCancel" />-->
+        :onCancel="generateCasesCancel" />
   </div>
 </template>
 

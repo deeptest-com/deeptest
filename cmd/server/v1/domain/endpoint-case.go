@@ -45,6 +45,14 @@ type EndpointCaseSaveReq struct {
 	DebugData domain.DebugData `json:"debugData"`
 }
 
+type EndpointCaseAlternativeLoadReq struct {
+	EndpointId uint              `json:"endpointId"`
+	Method     consts.HttpMethod `json:"method"`
+
+	CreateUserId   uint   `json:"createUserId"`
+	CreateUserName string `json:"createUserName"`
+}
+
 type EndpointCaseAlternativeGenerateReq struct {
 	ID     uint   `json:"id"`
 	Name   string `json:"name"`

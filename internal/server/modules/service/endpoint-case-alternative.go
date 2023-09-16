@@ -22,6 +22,20 @@ type EndpointCaseAlternativeService struct {
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
 
+func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.EndpointCaseAlternativeLoadReq) (err error) {
+	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
+	if endpointInterfaceId == 0 {
+		return
+	}
+
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	endpoint, err := s.EndpointRepo.GetWithInterface(endpointInterface.EndpointId, "v0.1.0")
+
+	log.Println(endpoint)
+
+	return
+}
+
 func (s *EndpointCaseAlternativeService) GenerateFromSpec(req serverDomain.EndpointCaseAlternativeGenerateReq) (err error) {
 	endpointInterfaceId := req.EndpointInterfaceId
 	if endpointInterfaceId == 0 {

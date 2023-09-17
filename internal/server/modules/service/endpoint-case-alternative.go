@@ -2,6 +2,7 @@ package service
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/cases"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -18,11 +19,14 @@ type EndpointCaseAlternativeService struct {
 	PostConditionRepo     *repo.PostConditionRepo     `inject:""`
 	CategoryRepo          *repo.CategoryRepo          `inject:""`
 
-	EndpointService       *EndpointService       `inject:""`
-	DebugInterfaceService *DebugInterfaceService `inject:""`
+	EndpointService          *EndpointService          `inject:""`
+	DebugInterfaceService    *DebugInterfaceService    `inject:""`
+	EndpointMockParamService *EndpointMockParamService `inject:""`
 }
 
-func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.EndpointCaseAlternativeLoadReq) (err error) {
+func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.EndpointCaseAlternativeLoadReq) (
+	root domain.AlternativeCase, err error) {
+
 	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
 	if endpointInterfaceId == 0 {
 		return
@@ -31,7 +35,19 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.Endpoi
 	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	endpoint, err := s.EndpointRepo.GetWithInterface(endpointInterface.EndpointId, "v0.1.0")
 
-	log.Println(endpoint)
+	// get spec
+	doc3 := s.EndpointService.Yaml(endpoint)
+	apiPathItem, _ := casesHelper.GetApiPathItem(doc3)
+
+	apiOperation, err := casesHelper.GetApiOperation(req.Method, apiPathItem)
+	if err != nil {
+		return
+	}
+
+	root.Category = consts.AlternativeCaseRoot
+	root.IsDir = true
+
+	root.Children = append(root.Children, casesHelper.LoadForQueryParams(apiOperation.Parameters))
 
 	return
 }
@@ -48,7 +64,7 @@ func (s *EndpointCaseAlternativeService) GenerateFromSpec(req serverDomain.Endpo
 	// get spec
 	spec := s.EndpointService.Yaml(endpoint)
 	doc3 := spec
-	apiPathItem, _ := cases.GetApiPathItem(doc3)
+	apiPathItem, _ := casesHelper.GetApiPathItem(doc3)
 
 	for _, interf := range endpoint.Interfaces {
 		basicDebugData, err1 := s.getBaseRequest(interf)
@@ -57,13 +73,13 @@ func (s *EndpointCaseAlternativeService) GenerateFromSpec(req serverDomain.Endpo
 		}
 		log.Println(basicDebugData)
 
-		apiOperation, err1 := cases.GetApiOperation(interf.Method, apiPathItem)
+		apiOperation, err1 := casesHelper.GetApiOperation(interf.Method, apiPathItem)
 		if err1 != nil {
 			continue
 		}
 		log.Println(apiOperation)
 
-		alternativeCases, err1 := cases.GenerateAlternativeCase(basicDebugData, apiOperation)
+		alternativeCases, err1 := casesHelper.GenerateAlternativeCase(basicDebugData, apiOperation)
 		if err1 != nil {
 			continue
 		}

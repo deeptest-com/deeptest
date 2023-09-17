@@ -1,9 +1,68 @@
-package cases
+package casesHelper
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/getkin/kin-openapi/openapi3"
 )
+
+func LoadForQueryParams(params openapi3.Parameters) (
+	category *domain.AlternativeCase) {
+
+	category = &domain.AlternativeCase{
+		Category: consts.AlternativeCaseGroup,
+		IsDir:    true,
+	}
+
+	for _, param := range params {
+		field := &domain.AlternativeCase{
+			Category: consts.AlternativeCaseField,
+			IsDir:    true,
+		}
+
+		addRequiredCase(param, category)
+		addTypeCase(param, category)
+
+		if len(field.Children) > 0 {
+			category.Children = append(category.Children, field)
+		}
+	}
+
+	return
+}
+
+func addRequiredCase(param *openapi3.ParameterRef, parent *domain.AlternativeCase) {
+	if !param.Value.Required {
+		return
+	}
+
+	required := &domain.AlternativeCase{
+		Category:      consts.AlternativeCaseCase,
+		Type:          consts.AlternativeCaseRequired,
+		FieldRequired: true,
+		IsDir:         false,
+	}
+
+	parent.Children = append(parent.Children, required)
+}
+
+func addTypeCase(param *openapi3.ParameterRef, parent *domain.AlternativeCase) {
+	schema := param.Value.Schema.Value
+	typ := FieldType(schema.Type)
+
+	if typ == FieldTypeString {
+		return
+	}
+
+	typeCase := &domain.AlternativeCase{
+		Category:  consts.AlternativeCaseCase,
+		Type:      consts.AlternativeCaseTyped,
+		FieldType: typ,
+		IsDir:     false,
+	}
+
+	parent.Children = append(parent.Children, typeCase)
+}
 
 func GenerateByQueryParams(basic domain.DebugData, params openapi3.Parameters) (ret []domain.DebugData, err error) {
 	for _, param := range params {
@@ -28,7 +87,7 @@ func GenerateByQueryParam(basic domain.DebugData, param *openapi3.ParameterRef) 
 }
 
 func generateByQueryParamRequired(basic domain.DebugData, param *openapi3.ParameterRef) (ret []domain.DebugData) {
-	if true { // param.Value.Required, away test empty
+	if param.Value.Required {
 		cs, err := updateQueryParam(basic, param.Value.Name, "")
 		if err == nil {
 			ret = append(ret, cs)

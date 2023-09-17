@@ -762,3 +762,21 @@ const (
 func (e ExpectRequestSelectType) String() string {
 	return string(e)
 }
+
+type AlternativeCaseCategory string
+
+const (
+	AlternativeCaseRoot   AlternativeCaseCategory = "root"
+	AlternativeCaseGroup  AlternativeCaseCategory = "group"
+	AlternativeCaseDir    AlternativeCaseCategory = "dir"
+	AlternativeCaseObject AlternativeCaseCategory = "object"
+	AlternativeCaseField  AlternativeCaseCategory = "field"
+	AlternativeCaseCase   AlternativeCaseCategory = "case"
+)
+
+type AlternativeCaseType string
+
+const (
+	AlternativeCaseRequired AlternativeCaseType = "required"
+	AlternativeCaseTyped    AlternativeCaseType = "typed"
+)

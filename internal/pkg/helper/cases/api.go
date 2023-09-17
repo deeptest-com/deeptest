@@ -1,4 +1,4 @@
-package cases
+package casesHelper
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"

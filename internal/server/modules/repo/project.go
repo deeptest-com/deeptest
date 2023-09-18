@@ -33,6 +33,8 @@ type ProjectRepo struct {
 	ScenarioProcessorRepo      *ScenarioProcessorRepo      `inject:""`
 	PlanRepo                   *PlanRepo                   `inject:""`
 	EndpointMockExpectRepo     *EndpointMockExpectRepo     `inject:""`
+	CategoryRepo               *CategoryRepo               `inject:""`
+	ScenarioInterfaceRepo      *ScenarioInterfaceRepo      `inject:""`
 }
 
 func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
@@ -176,7 +178,7 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	}
 
 	// create project endpoint category
-	err = r.AddProjectRootEndpointCategory(serve.ID, projectId)
+	categoryId, err := r.AddProjectRootEndpointCategory(serve.ID, projectId)
 	if err != nil {
 		logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
 		return
@@ -198,7 +200,7 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 
 	//create sample
 	if IncludeExample {
-		err = r.CreateSample(projectId, serve.ID, userId)
+		err = r.CreateSample(projectId, serve.ID, userId, categoryId)
 		if err != nil {
 			logUtils.Errorf("创建示例失败", zap.String("错误:", err.Error()))
 			return
@@ -410,7 +412,7 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role consts.RoleT
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (err error) {
+func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (id uint, err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.EndpointCategory,
@@ -420,7 +422,7 @@ func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (e
 	}
 	err = r.DB.Create(&root).Error
 
-	return
+	return root.ID, err
 }
 
 func (r *ProjectRepo) AddProjectRootScenarioCategory(projectId uint) (err error) {
@@ -692,7 +694,16 @@ func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err err
 	return
 }
 
-func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) {
+func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) (err error) {
+	//创建目录
+	var category model.Category
+	categoryJson := _fileUtils.ReadFile("./config/sample/category.json")
+	_commUtils.JsonDecode(categoryJson, &category)
+
+	var components []*model.ComponentSchema
+	componentJson := _fileUtils.ReadFile("./config/sample/component.json")
+	_commUtils.JsonDecode(componentJson, &components)
+
 	//获取接口配置
 	var endpoints []model.Endpoint
 	endpointJson := _fileUtils.ReadFile("./config/sample/endpoint.json")
@@ -729,12 +740,29 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 	_commUtils.JsonDecode(planJson, &plan)
 
 	return r.DB.Transaction(func(tx *gorm.DB) error {
+
+		for _, component := range components {
+			component.ServeId = int64(serveId)
+			component.Ref = "#/components/schemas/" + component.Name
+		}
+		err := r.ServeRepo.SaveSchemas(components)
+		if err != nil {
+			return err
+		}
+
+		category.ProjectId, category.ServeId, category.ParentId = projectId, serveId, int(categoryId)
+		err = r.CategoryRepo.Save(&category)
+		if err != nil {
+			return err
+		}
+
 		//创建接口
 		interfaceIds := map[string]uint{}
 		for _, endpoint := range endpoints {
 			endpoint.ServeId = serveId
 			endpoint.ProjectId = projectId
 			endpoint.CreateUser = user.Username
+			endpoint.CategoryId = int64(category.ID)
 			err = r.EndpointRepo.SaveAll(&endpoint)
 			if err != nil {
 				return err
@@ -742,7 +770,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 			interfaceIds[endpoint.Interfaces[0].Name+"-"+string(endpoint.Interfaces[0].Method)] = endpoint.Interfaces[0].ID
 		}
 
-		//r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
+		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
 
 		//TODO 创建Mock期望
 		for endpointName, mockExpects := range endpointMockExpectsMap {
@@ -783,15 +811,29 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 		//	}
 		//}
 
+		//创建场景目录
+		ScenarioCategory, err := r.CategoryRepo.GetByItem(0, 0, serverConsts.ScenarioCategory, projectId, "分类")
+		if err != nil {
+			return err
+		}
+		ScenarioCategory.ParentId = int(ScenarioCategory.ID)
+		ScenarioCategory.ID = 0
+		ScenarioCategory.Name = "宠物商店"
+		err = r.CategoryRepo.Save(&ScenarioCategory)
+		if err != nil {
+			return err
+		}
+
 		//TODO 创建场景
 		scenario.ProjectId = projectId
+		scenario.CategoryId = int64(ScenarioCategory.ID)
 		scenario, err = r.ScenarioRepo.Create(scenario)
 		if err != nil {
 			return err
 		}
 
 		//TODO 添加执行器
-		err = r.createProcessorTree(&root, interfaceIds, processorEntity, projectId, scenario.ID, 0, userId)
+		err = r.createProcessorTree(&root, interfaceIds, processorEntity, projectId, scenario.ID, 0, userId, serveId)
 		if err != nil {
 			return err
 		}
@@ -825,7 +867,7 @@ func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(userId uint, roleName consts.
 	return
 }
 
-func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceIds map[string]uint, processorEntity map[string]interface{}, projectId, scenarioId, parentId, userId uint) error {
+func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceIds map[string]uint, processorEntity map[string]interface{}, projectId, scenarioId, parentId, userId, serveId uint) error {
 	processor := model.Processor{
 		Name:           root.Name,
 		EntityCategory: root.EntityCategory,
@@ -916,12 +958,23 @@ func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceId
 			entity.ParentID = parentId
 			err = r.ScenarioProcessorRepo.SaveData(&entity)
 			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+		} else if processorCategory == consts.ProcessorInterface {
+			var debug model.DebugInterface
+			_commUtils.Map2Struct(item, &debug)
+			debug.EndpointInterfaceId = interfaceIds[root.Name]
+			debug.ProjectId = projectId
+			debug.ServeId = serveId
+			debug.ScenarioProcessorId = processor.ID
+			err = r.ScenarioInterfaceRepo.SaveDebugData(&debug)
+			r.ScenarioProcessorRepo.UpdateInterfaceId(debug.ScenarioProcessorId, debug.ID)
+			r.ScenarioProcessorRepo.UpdateMethod(debug.ScenarioProcessorId, debug.Method)
+
 		}
 
 	}
 
 	for _, child := range root.Children {
-		r.createProcessorTree(child, interfaceIds, processorEntity, projectId, scenarioId, processor.ID, userId)
+		r.createProcessorTree(child, interfaceIds, processorEntity, projectId, scenarioId, processor.ID, userId, serveId)
 	}
 
 	return nil

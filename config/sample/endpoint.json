@@ -6,7 +6,8 @@
     "pathParams":[
       {
         "name":"petId",
-        "type":"string"
+        "type":"string",
+        "default":1
       }
     ],
     "interfaces":[

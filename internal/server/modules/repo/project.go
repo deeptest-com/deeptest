@@ -767,7 +767,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 			if err != nil {
 				return err
 			}
-			interfaceIds[endpoint.Interfaces[0].Name+"-"+string(endpoint.Interfaces[0].Method)] = endpoint.Interfaces[0].ID
+			interfaceIds[endpoint.Interfaces[0].Name] = endpoint.Interfaces[0].ID
 		}
 
 		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
@@ -869,14 +869,15 @@ func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(userId uint, roleName consts.
 
 func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceIds map[string]uint, processorEntity map[string]interface{}, projectId, scenarioId, parentId, userId, serveId uint) error {
 	processor := model.Processor{
-		Name:           root.Name,
-		EntityCategory: root.EntityCategory,
-		EntityType:     root.EntityType,
-		//EndpointInterfaceId: interfaceIds[root.Name],
-		ParentId:   parentId,
-		ScenarioId: scenarioId,
-		ProjectId:  projectId,
-		CreatedBy:  userId,
+		Name:                  root.Name,
+		EntityCategory:        root.EntityCategory,
+		EntityType:            root.EntityType,
+		EndpointInterfaceId:   interfaceIds[root.Name],
+		ParentId:              parentId,
+		ScenarioId:            scenarioId,
+		ProjectId:             projectId,
+		ProcessorInterfaceSrc: root.ProcessorInterfaceSrc,
+		CreatedBy:             userId,
 	}
 	processor.Ordr = r.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
 	err := r.ScenarioNodeRepo.Save(&processor)
@@ -968,6 +969,7 @@ func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceId
 			err = r.ScenarioInterfaceRepo.SaveDebugData(&debug)
 			r.ScenarioProcessorRepo.UpdateInterfaceId(debug.ScenarioProcessorId, debug.ID)
 			r.ScenarioProcessorRepo.UpdateMethod(debug.ScenarioProcessorId, debug.Method)
+			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, debug.ID)
 
 		}
 

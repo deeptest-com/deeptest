@@ -37,6 +37,7 @@ export default defineComponent({
         const getUser = async () => {
             loading.value = true;
             await store.dispatch('User/fetchCurrent');
+            loading.value = false;
             if(!isLogin.value && router.currentRoute.value.path !== '/user/login') {
                 router.replace({
                     path: '/user/login',
@@ -45,9 +46,8 @@ export default defineComponent({
                         ...router.currentRoute.value.query
                     }
                 })
+                return;
             }
-
-            loading.value = false;
             isReady.value = true;
             await store.dispatch('Global/getPermissionList');
         }

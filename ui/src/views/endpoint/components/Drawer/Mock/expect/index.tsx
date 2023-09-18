@@ -46,7 +46,7 @@ export const exceptColumns = [
     title() {
       return (
         <div class="except-title">
-          用例名称
+          期望名称
         </div>
       )
     },

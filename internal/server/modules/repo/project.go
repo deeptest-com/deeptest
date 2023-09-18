@@ -35,6 +35,8 @@ type ProjectRepo struct {
 	EndpointMockExpectRepo     *EndpointMockExpectRepo     `inject:""`
 	CategoryRepo               *CategoryRepo               `inject:""`
 	ScenarioInterfaceRepo      *ScenarioInterfaceRepo      `inject:""`
+	EndpointCaseRepo           *EndpointCaseRepo           `inject:""`
+	DebugInterfaceRepo         *DebugInterfaceRepo         `inject:""`
 }
 
 func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
@@ -713,9 +715,9 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 	endpointMockExpectsJson := _fileUtils.ReadFile("./config/sample/endpoint-mock-expect.json")
 	_commUtils.JsonDecode(endpointMockExpectsJson, &endpointMockExpectsMap)
 
-	//endpointCaseMap := make(map[string][]string)
-	//endpointCaseJson := _fileUtils.ReadFile("./config/sample/endpoint-case.json")
-	//_commUtils.JsonDecode(endpointCaseJson, &endpointCaseMap)
+	endpointCaseMap := make(map[string][]map[string]model.DebugInterface)
+	endpointCaseJson := _fileUtils.ReadFile("./config/sample/endpoint-case.json")
+	_commUtils.JsonDecode(endpointCaseJson, &endpointCaseMap)
 
 	endpointNameMap := make(map[string]model.Endpoint)
 
@@ -772,44 +774,69 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 
 		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
 
-		//TODO 创建Mock期望
-		for endpointName, mockExpects := range endpointMockExpectsMap {
+		// 创建接口用例
+		for endpointName, caseDebugs := range endpointCaseMap {
 			endpoint, err := r.EndpointRepo.GetByNameAndProject(endpointName, projectId)
 			if err != nil {
 				return err
 			}
-			endpointNameMap[endpoint.Title] = endpoint
 
 			interfaces, err := r.EndpointInterfaceRepo.GetByEndpointId(endpoint.ID)
 			if err != nil {
 				return err
 			}
-			endpoint.Interfaces = interfaces
 
-			for _, mockExpect := range mockExpects {
-				mockExpect.EndpointId = endpoint.ID
-				mockExpect.EndpointInterfaceId = interfaces[0].ID
-				mockExpect.Method = interfaces[0].Method
-				mockExpect.CreateUser = user.Username
-				_, err = r.EndpointMockExpectRepo.Save(mockExpect)
-				if err != nil {
-					return err
+			endpoint.Interfaces = interfaces
+			endpointNameMap[endpoint.Title] = endpoint
+
+			for _, caseDebug := range caseDebugs {
+				for caseName, debug := range caseDebug {
+					serveServer, err := r.ServeServerRepo.GetByServeAndUrl(serveId, debug.BaseUrl)
+					if err != nil {
+						return err
+					}
+
+					endpointCase := model.EndpointCase{
+						Name:           caseName,
+						EndpointId:     endpoint.ID,
+						ServeId:        serveId,
+						ProjectId:      projectId,
+						CreateUserId:   userId,
+						CreateUserName: user.Username,
+					}
+					if err = r.EndpointCaseRepo.Save(&endpointCase); err != nil {
+						return err
+					}
+
+					debug.ProjectId = projectId
+					debug.EndpointInterfaceId = interfaces[0].ID
+					debug.ServeId = serveId
+					debug.ServerId = serveServer.EnvironmentId
+					debug.CaseInterfaceId = endpointCase.ID
+					r.DebugInterfaceRepo.Save(&debug)
+
+					if err = r.EndpointCaseRepo.UpdateDebugInterfaceId(debug.ID, endpointCase.ID); err != nil {
+						return err
+					}
 				}
 			}
 		}
 
-		//TODO 创建接口用例
-		//for endpointName, caseNames := range endpointCaseMap {
-		//	if endpoint, ok := endpointNameMap[endpointName]; ok {
-		//		for _, caseName := range caseNames{
-		//			createEndpointCaseReq := v1.EndpointCaseSaveReq{}
-		//			createEndpointCaseReq.EndpointId = endpoint.ID
-		//			createEndpointCaseReq.Method = endpoint.Interfaces[0].Method
-		//			createEndpointCaseReq.Name = caseName
-		//
-		//		}
-		//	}
-		//}
+		// 创建Mock期望
+		for endpointName, mockExpects := range endpointMockExpectsMap {
+			if endpoint, ok := endpointNameMap[endpointName]; ok {
+				for _, mockExpect := range mockExpects {
+					mockExpect.EndpointId = endpoint.ID
+					mockExpect.EndpointInterfaceId = endpoint.Interfaces[0].ID
+					mockExpect.Method = endpoint.Interfaces[0].Method
+					mockExpect.CreateUser = user.Username
+					_, err = r.EndpointMockExpectRepo.Save(mockExpect)
+					if err != nil {
+						return err
+					}
+				}
+			}
+		}
 
 		//创建场景目录
 		ScenarioCategory, err := r.CategoryRepo.GetByItem(0, 0, serverConsts.ScenarioCategory, projectId, "分类")

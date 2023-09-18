@@ -57,5 +57,6 @@ watch(
   margin: 16px;
   height: calc(100vh - 96px);
   overflow-y: scroll;
+  background-color: #fff;
 }
 </style>

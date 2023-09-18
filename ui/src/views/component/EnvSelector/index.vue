@@ -60,6 +60,7 @@ async function save() {
     notifyError('请先选择执行环境');
     return;
   }
+  await store.dispatch('ProjectSetting/saveEnvId', currEnvId.value);
   emits('onOk');
 }
 

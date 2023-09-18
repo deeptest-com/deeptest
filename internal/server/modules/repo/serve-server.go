@@ -98,3 +98,11 @@ func (r *ServeServerRepo) UpdateUrlByServerAndServer(serveId, serverId uint, url
 
 	return err
 }
+
+func (r *ServeServerRepo) GetByServeAndUrl(serveId uint, url string) (ret model.ServeServer, err error) {
+	err = r.DB.
+		Where("serve_id = ? AND url =? AND NOT deleted", serveId, url).
+		First(&ret).Error
+
+	return
+}

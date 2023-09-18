@@ -22,6 +22,9 @@ func LoadForQueryParams(params openapi3.Parameters) (
 
 		addRequiredCase(param, category)
 		addTypeCase(param, category)
+		addEnumCase(param, category)
+		addFormatCase(param, category)
+		addRuleCase(param, category)
 
 		if len(field.Children) > 0 {
 			category.Children = append(category.Children, field)
@@ -133,7 +136,7 @@ func addFormatCase(param *openapi3.ParameterRef, parent *AlternativeCase) {
 	parent.Children = append(parent.Children, typeCase)
 }
 
-func addStrRuleCase(param *openapi3.ParameterRef, parent *AlternativeCase) {
+func addRuleCase(param *openapi3.ParameterRef, parent *AlternativeCase) {
 	schema := param.Value.Schema.Value
 	typ := OasFieldType(schema.Type)
 

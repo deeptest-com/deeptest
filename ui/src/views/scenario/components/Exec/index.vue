@@ -98,6 +98,7 @@ const execStart = async () => {
     scenarioId: scenarioId.value,
     environmentId: currEnvId.value,
   }
+  console.error(data);
   WebSocket.sentMsg(settings.webSocketRoom, JSON.stringify({act: 'execScenario', scenarioExecReq: data}))
 }
 

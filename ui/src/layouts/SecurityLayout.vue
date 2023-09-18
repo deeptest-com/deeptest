@@ -7,7 +7,7 @@
     <router-view v-if="isLogin" />
 </template>
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, onMounted, Ref, ref } from "vue";
+import { computed, ComputedRef, defineComponent, onMounted, Ref, ref, unref, watch } from "vue";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { StateType as UserStateType, CurrentUser } from "@/store/user";
@@ -37,6 +37,7 @@ export default defineComponent({
         const getUser = async () => {
             loading.value = true;
             await store.dispatch('User/fetchCurrent');
+            loading.value = false;
             if(!isLogin.value && router.currentRoute.value.path !== '/user/login') {
                 router.replace({
                     path: '/user/login',
@@ -45,9 +46,8 @@ export default defineComponent({
                         ...router.currentRoute.value.query
                     }
                 })
+                return;
             }
-
-            loading.value = false;
             isReady.value = true;
             await store.dispatch('Global/getPermissionList');
         }
@@ -57,6 +57,18 @@ export default defineComponent({
                 console.log('getUser',err)
 
             });
+        })
+
+        watch(() => {
+            return unref(isLogin);
+        }, val => {
+            const appLoadingEl = document.getElementsByClassName('app-loading');
+            if (appLoadingEl[0]) {
+                appLoadingEl[0].classList.add('hide');
+                setTimeout(() => {
+                    document.body.removeChild(appLoadingEl[0]);
+                }, 600);
+            }
         })
 
         return {

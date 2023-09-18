@@ -1,10 +1,9 @@
 <template>
-  <div id="indexlayout-left" :class="{'narrow': collapsed}">
+  <div id="indexlayout-left">
     <div class="indexlayout-left-logo">
       <router-link to="/" class="logo-url">
         <div :class="{
           'logo-title':true,
-          'logo-title-collapsed':collapsed,
           'leyan-logo':isLeyanEnv}"/>
       </router-link>
     </div>
@@ -18,6 +17,12 @@
           :onOpenChange="onOpenChange"
           :menuData="menuData">
       </sider-menu>
+      <div v-if="hasSettingPermission" :class="['settings', isActive ? 'settings-active' : '' ]" @click="handleRedirect">
+        <div class="settings-menu">
+          <Icon :type="isActive ? 'settings-active' : 'settings'" />
+          <span class="left-menu-title">项目设置</span>
+        </div>
+      </div>
     </div>
     <div v-if="version" class="version">
       V{{ version }}
@@ -27,9 +32,15 @@
 
 <script lang="ts">
 
-import {defineComponent, onMounted, PropType, ref} from "vue";
+import {defineComponent, onMounted, PropType, ref, computed} from "vue";
+import { useStore } from "vuex";
+import { useRouter } from "vue-router";
+
+import { StateType as GlobalStateType } from "@/store/global";
+import { StateType as ProjectGlobalStateType } from "@/store/project";
 import {RoutesDataItem} from '@/utils/routes';
 import SiderMenu from './SiderMenu.vue';
+import Icon from "./Icon.vue";
 
 export default defineComponent({
   name: 'Left',
@@ -74,11 +85,34 @@ export default defineComponent({
   },
   components: {
     SiderMenu,
+    Icon,
   },
   setup(props) {
     let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
+    const router = useRouter();
+    const store = useStore<{ Global: GlobalStateType, ProjectGlobal: ProjectGlobalStateType }>();
+    const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
+    const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
+    const isActive = computed(() => {
+      return router.currentRoute.value.path.includes('project-setting');
+    });
+
+    const hasSettingPermission = computed(() => {
+      if (permissionRouteMenuMap.value && permissionRouteMenuMap.value['project-setting']) {
+        return true;
+      }
+      return false;
+    });
+
+    const handleRedirect = () => {
+      router.push(`/${currProject.value.shortName}/project-setting/enviroment/var`);
+    };  
+  
     return {
-      isLeyanEnv
+      isLeyanEnv,
+      isActive,
+      handleRedirect,
+      hasSettingPermission,
     };
   }
 
@@ -114,11 +148,6 @@ export default defineComponent({
       overflow: hidden;
 
       .logo-title {
-        //display: inline-block;
-        //margin: 0;
-        //font-size: 16px;
-        //font-family: Roboto, sans-serif;
-        //color: #c0c4cc;
         height: 64px;
         line-height: 64px;
         font-family: 'Helvetica', sans-serif;
@@ -128,39 +157,66 @@ export default defineComponent({
         color: #FFFFFF;
         margin-bottom: 0px;
         background-image: url("../../../assets/images/logo.png");
-        background-size: 105px 35px;
+        background-size: 100% auto;
         background-repeat: no-repeat;
         background-position: center;
-        transform: scale(1) translateX(-12px);
         &.leyan-logo{
-          transform: scale(1.1) translateX(0px);
-          background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016448.svg");
-        }
-      }
-
-      .logo-title-collapsed {
-        background-image: url("../../../assets/images/logo-mini.png");
-        background-size: 22px 22px;
-        background-repeat: no-repeat;
-        background-position: center;
-        transform: scale(1) translateX(0px);
-        &.leyan-logo{
-          background-size: 24px 24px;
-          background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016780.svg");
-          transform: scale(1) translateX(-2px);
+          width: 100%;
+          height: 40px;
+          background-image: url("../../../assets/images/leyan-api-logo.png");
+          background-size: 100% 100%;
+          transform: unset;
         }
       }
     }
 
-    img {
-      vertical-align: middle;
-    }
   }
 
   .indexlayout-left-menu {
     flex: 1;
     position: relative;
     overflow: hidden auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .settings {
+      width: 100%;
+      padding: 6px 4px;
+      border-top: 1px solid rgba(255,255,255,.1);
+      box-sizing: border-box;
+
+      &.settings-active {
+        color: white;
+
+        .settings-menu {
+          background-color: #10131E !important;
+          border-radius: 8px;
+        }
+      }
+
+      .settings-menu {
+        width: 64px;
+        height: 64px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        
+        .svg-icon {
+          width: 24px;
+          height: 24px;
+        }
+
+        .left-menu-title {
+          line-height: 20px;
+          font-size: 12px;
+          margin-top: 4px;
+          margin-left: 0 !important;
+        }
+      }
+    }
     // height: calc(100vh);
     .left-scrollbar {
       width: 100%;
@@ -196,11 +252,35 @@ export default defineComponent({
   :deep(.ant-menu-item) {
     margin-top: 0;
     margin-bottom: 8px;
+    width: 64px;
+    height: 64px;
+    padding: 0 !important;
+
+    .ant-menu-title-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      height: 100%;
+
+      .svg-icon {
+        width: 24px;
+        height: 24px;
+      }
+
+      .left-menu-title {
+        line-height: 20px;
+        font-size: 12px;
+        margin-top: 4px;
+        margin-left: 0 !important;
+      }
+    }
   }
 
   :deep(.ant-menu-item.ant-menu-item-selected) {
-    background-color: #2E3762 !important;
-    border-radius: 4px;
+    background-color: #10131E !important;
+    border-radius: 8px;
   }
 
   :deep(.ant-menu-item.ant-menu-item-selected .svg-icon),
@@ -222,7 +302,7 @@ export default defineComponent({
   }
 
   :deep(.indexlayout-left-menu .ant-menu) {
-    padding: 10px;
+    padding: 0 4px;
   }
 
 

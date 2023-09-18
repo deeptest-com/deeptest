@@ -17,12 +17,13 @@ export enum PermissionButtonType {
 }
 
 export enum RouteMenuType {
-    "WORKBENCH" = "workbench",
-    "ENDPOINT" = "endpoint",
-    "DIAGNOSE" = "diagnose",
-    "SCENARIO" = "scenario",
-    "PLAN" = "plan",
-    "REPORT" = "report",
+    "WORKSPACE" = "workspace",
+    "IM" = "im",
+    "DEBUG" = "debug",
+    "DOCS" = "docs",
+    "TS" = "ts",
+    "TP" = "tp",
+    "TR" = "tr",
 
     "PROJECT-SETTING" = "project-setting",
     "PROJECT-SETTING-ENVIRONMENT" = "project-setting-environment",

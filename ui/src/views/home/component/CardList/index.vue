@@ -191,7 +191,7 @@ async function goProject(item: any) {
   await store.dispatch("Global/getPermissionList");
   // 项目切换后，需要重新更新可选服务列表
   await store.dispatch("ServeGlobal/fetchServe");
-  router.push(`/workbench/index`);
+  router.push(`/${item.projectShortName}/workspace`);
 }
 </script>
 

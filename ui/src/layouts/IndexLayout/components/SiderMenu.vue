@@ -78,12 +78,11 @@ export default defineComponent({
       if(!topNavEnable.value) {
         return menuData.value as RoutesDataItem[];
       }
-      console.log(menuData.value);
       const MenuItems: RoutesDataItem[] = [];
       /**
          * 项目设置位置调整到左侧底部  设置按钮
          */
-      const sourceMenuData = isLeyanEnv ? menuData.value.filter(e => !e.path.includes('project-setting')) : menuData.value;
+      const sourceMenuData = menuData.value.filter(e => !e.path.includes('project-setting'));
       for (let index = 0, len = sourceMenuData.length; index < len; index += 1) {
         const element = sourceMenuData[index];
         

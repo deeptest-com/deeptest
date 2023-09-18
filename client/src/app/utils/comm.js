@@ -1,9 +1,9 @@
 import path from "path";
 import os from "os";
-import {App, downloadUrl, ResDir, WorkDir} from "./consts";
+import {agentProcessName, App, downloadUrl, ResDir, WorkDir} from "./consts";
 import {app} from "electron";
 import {logInfo} from "./log";
-
+import {killAgent} from "../core/agent";
 import fs from 'node:fs';
 import got from 'got';
 import crypto from "crypto";
@@ -29,7 +29,11 @@ export function getDownloadPath(version) {
 export function getCurrVersion() {
     let currVersionStr = '0';
 
-    const {versionPath} = getResPath()
+    const {versionPath} = getResPath();
+    logInfo(` versionPath=${versionPath}`)
+
+    logInfo(`versionPath=${app.getVersion()}`)
+
     if (fs.existsSync(versionPath)) {
         const content = fs.readFileSync(versionPath)
         let json = JSON.parse(content);
@@ -46,6 +50,8 @@ export function getCurrVersion() {
 export async function getRemoteVersion() {
     const versionUrl = getVersionUrl();
 
+    logInfo(`${versionUrl}`)
+
     const json = await got.get(versionUrl).json();
     const newVersionStr = json.version;
     const newVersion = parseFloat(newVersionStr);
@@ -59,39 +65,54 @@ export async function getRemoteVersion() {
 }
 
 export function changeVersion(newVersion) {
-    const versionPath = path.resolve(ResDir, 'version.json');
-    logInfo(`ResDir=${ResDir}, versionPath=${versionPath}`)
+    let res = false;
+    try {
 
-    let json = {}
-    if (fs.existsSync(versionPath)) {
-        const content = fs.readFileSync(versionPath)
-        json = JSON.parse(content);
+        const versionPath = getResPath().versionPath;
+        logInfo(`ResDir=${ResDir}, versionPath=${versionPath}`)
+
+        let json = {}
+        if (fs.existsSync(versionPath)) {
+            const content = fs.readFileSync(versionPath)
+            json = JSON.parse(content);
+        }
+
+        json.version = newVersion;
+        fs.writeFileSync(versionPath, JSON.stringify(json));
+        logInfo(`success to write new version`)
+        res = true;
+    }catch (e){
+        logInfo(` changeVersion error: ${e}`)
     }
 
-    json.version = newVersion;
-    fs.writeFileSync(versionPath, JSON.stringify(json));
-    logInfo(`success to write new version`)
-
-    return true
+    return  res;
 }
 
 export function restart() {
-    app.relaunch({
-        args: process.argv.slice(1)
-    });
-    app.exit(0);
+    try {
+        killAgent();
+        app.relaunch({
+            args: process.argv.slice(1)
+        });
+        app.exit(0);
+    }catch (e) {
+        logInfo(`restart error: ${e}`)
+    }
 }
-
 export function getResPath() {
-    const versionPath = path.resolve(ResDir, 'version.json')
+    // const versionPath = path.resolve(ResDir, 'version.json');
+    const versionPath =`${ResDir}/version.json`;
     const uiPath =  path.resolve(ResDir, 'ui');
-    const agentPath = getBinPath('agent')
+    const agentPath = getBinPath(agentProcessName);
 
     return {
         versionPath, uiPath, agentPath
     }
 }
 
+/**
+ * @param name: bin name
+ * */
 export function getBinPath(name) {
     const platform = os.platform(); // 'darwin', 'linux', 'win32'
     const execPath = `bin/${platform}/${name}${platform === 'win32' ? '.exe' : ''}`;

@@ -6,6 +6,7 @@ import settings from '@/config/settings';
 import router from '@/config/routes';
 import { getPermissionMenuList } from '@/services/project';
 import {getConfigByKey, getServerConfig} from "@/services/config";
+import {getClientVersion} from "@/services/static";
 
 export interface StateType {
   // 左侧展开收起
@@ -24,6 +25,7 @@ export interface StateType {
   serverConfig: any;
   configInfo: any,
   spinning:boolean;
+  clientVersion: string;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -37,12 +39,14 @@ export interface ModuleType extends StoreModuleType<StateType> {
     setPermissionMenuAndBtn: Mutation<StateType>;
     setServerConfig: Mutation<StateType>;
     setConfigByKey: Mutation<StateType>;
+    setClientVersion: Mutation<StateType>;
     setSpinning: Mutation<StateType>;
   };
   actions: {
     getPermissionList: Action<StateType, StateType>;
     getServerConfig: Action<StateType, StateType>;
     getConfigByKey: Action<StateType, StateType>;
+    getClientVersion: Action<StateType, StateType>;
   };
 }
 
@@ -64,6 +68,7 @@ const initState: StateType = {
   serverConfig: {},
   configInfo: {},
   spinning:false,
+  clientVersion: '0.0.1',
 };
 
 const StoreModel: ModuleType = {
@@ -98,6 +103,9 @@ const StoreModel: ModuleType = {
     },
     setConfigByKey(state, payload) {
       state.configInfo[payload.key] = payload.value
+    },
+    setClientVersion(state, payload) {
+        state.clientVersion = payload
     },
     setSpinning(state, payload) {
       state.spinning = payload
@@ -134,6 +142,7 @@ const StoreModel: ModuleType = {
         commit('setServerConfig', result.data);
       }
     },
+
     async getConfigByKey({ commit },payload) {
       const result = await getConfigByKey(payload.key);
       if (result.code === 0) {
@@ -142,6 +151,14 @@ const StoreModel: ModuleType = {
           value:JSON.parse(result.data ||null)
         });
         return JSON.parse(result.data ||null);
+      }
+    },
+
+    // 获取客户端版本
+    async getClientVersion({ commit },payload) {
+      const result = await getClientVersion();
+      if (result?.version) {
+        commit('setClientVersion',result.version);
       }
     }
   }

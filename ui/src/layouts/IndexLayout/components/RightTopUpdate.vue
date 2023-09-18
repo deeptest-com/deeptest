@@ -2,15 +2,15 @@
   <div class="right-top-update-main">
     <div></div>
 
-    <a-modal title="升级提醒"
+    <a-modal title="客户端升级提醒"
            :visible="isVisible"
            :onCancel="onCancel"
            :maskClosable="false"
            class="update-modal">
       <div>
-        发现新的版本<b>{{newVersion}}</b>，请确定是否升级。
+        发现新的版本<b>{{newVersion}}</b>，请确定是否升级？
       </div>
-      <div v-if="downloadingPercent > 0">
+      <div v-if="sureUpdate">
         <a-progress :percent="downloadingPercent" />
       </div>
 
@@ -59,8 +59,11 @@
     })
   }
 
+  const sureUpdate = ref(false);
+
   const update  = () => {
     console.log('update')
+    sureUpdate.value = true;
     ipcRenderer.send(settings.electronMsgUpdate, {
       currVersion: currVersion.value,
       newVersion: newVersion.value,
@@ -88,7 +91,7 @@
 <style lang="less">
 .update-modal{
   .ant-modal-footer {
-    text-align: center;
+    text-align: right;
   }
 }
 </style>

@@ -1,10 +1,10 @@
 {
-    "name": "deeptest",
-    "displayName": "DeeptTest",
+    "name": "LeyanAPI",
+    "displayName": "LeyanAPI",
     "version": "0.8",
     "main": "./main.js",
-    "icon": "./icon/favicon",
-    "linuxIcon": "./icon/favicon.png",
+    "icon": "./icon/ly/favicon",
+    "linuxIcon": "./icon/ly/favicon.png",
     "author": {
         "name": "Aaron Chen",
         "email": "462826@qq.com"

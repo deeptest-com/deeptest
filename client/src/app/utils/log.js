@@ -1,8 +1,8 @@
 export const logger = require('electron-log');
-import {DEBUG} from './consts';
+import {DEBUG,App} from './consts';
 
 logger.transports.file.resolvePath = () =>
-    require("path").join(require("os").homedir(), 'deeptest', 'log', 'electron.log');
+    require("path").join(require("os").homedir(), App, 'log', 'electron.log');
 
 export function logDebug(...params) {
     if (DEBUG) {

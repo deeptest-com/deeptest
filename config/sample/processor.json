@@ -1,140 +1,149 @@
 {
-  "name":"宠物商店",
+  "name":"宠物增删改查",
   "entityCategory":"processor_root",
   "entityType":"processor_root_default",
   "children":[
     {
-      "name":"添加宠物",
-      "entityCategory":"processor_group",
-      "entityType":"processor_group_default",
-      "children":[
-        {
-          "name":"迭代列表",
-          "entityCategory":"processor_loop",
-          "entityType":"processor_loop_in",
-          "children":[
-            {
-              "name":"输出",
-              "entityCategory":"processor_print",
-              "entityType":"processor_print_default",
-              "slots":{
-                "icon":"icon"
-              },
-              "isLeaf":true
-            },
-            {
-              "name":"添加宠物-POST",
-              "entityCategory":"processor_interface",
-              "entityType":"processor_interface_default",
-              "slots":{
-                "icon":"icon"
-              },
-              "isLeaf":true
-            }
-          ],
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":false
-        }
-      ],
-      "slots":{
-        "icon":"icon"
-      },
-      "isLeaf":false
+      "name":"操作前最后一个宠物id",
+      "method":"GET",
+      "entityCategory":"processor_interface",
+      "entityType":"processor_interface_default",
+      "ordr":1,
+      "processorInterfaceSrc":"case"
     },
     {
-      "name":"宠物列表",
-      "entityCategory":"processor_group",
-      "entityType":"processor_group_default",
+      "name":"批量创建宠物",
+      "entityCategory":"processor_loop",
+      "entityType":"processor_loop_in",
       "children":[
         {
-          "name":"宠物列表-GET",
+          "entityCategory":"processor_print",
+          "entityType":"processor_print_default",
+          "ordr":10,
+          "isDir":false
+        },
+        {
+          "name":"新增宠物",
+          "method":"POST",
           "entityCategory":"processor_interface",
           "entityType":"processor_interface_default",
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":true
-        }
-      ],
-      "slots":{
-        "icon":"icon"
-      },
-      "isLeaf":false
-    },
-    {
-      "name":"查看宠物",
-      "entityCategory":"processor_group",
-      "entityType":"processor_group_default",
-      "children":[
+          "ordr":11,
+          "isDir":false,
+          "processorInterfaceSrc":"define"
+        },
         {
-          "name":"迭代次数",
-          "entityCategory":"processor_loop",
-          "entityType":"processor_loop_time",
+          "name":"如果新增成功",
+          "entityCategory":"processor_logic",
+          "entityType":"processor_logic_if",
+          "ordr":12,
           "children":[
             {
-              "name":"宠物详情-GET",
+              "name":"宠物详情",
+              "method":"GET",
               "entityCategory":"processor_interface",
               "entityType":"processor_interface_default",
-              "slots":{
-                "icon":"icon"
-              },
-              "isLeaf":true
+              "ordr":1,
+              "isDir":false,
+              "processorInterfaceSrc":"define"
             }
           ],
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":false
+          "isDir":true
         }
       ],
-      "slots":{
-        "icon":"icon"
-      },
-      "isLeaf":false
+      "isDir":true
     },
     {
-      "name":"删除宠物",
+      "name":"操作后最后一个宠物id",
+      "method":"GET",
+      "entityCategory":"processor_interface",
+      "entityType":"processor_interface_default",
+      "ordr":4,
+      "processorInterfaceSrc":"define"
+    },
+    {
+      "name":"最后一个宠物id增加",
+      "entityCategory":"processor_assertion",
+      "entityType":"processor_assertion_default",
+      "ordr":6,
+      "isDir":false
+    },
+    {
+      "name":"销售宠物",
       "entityCategory":"processor_group",
       "entityType":"processor_group_default",
+      "ordr":8,
       "children":[
         {
-          "name":"设置删除宠物id",
+          "name":"获取编号为4的宠物",
+          "method":"GET",
+          "entityCategory":"processor_interface",
+          "entityType":"processor_interface_default",
+          "ordr":1,
+          "isDir":false,
+          "processorInterfaceSrc":"case"
+        },
+        {
+          "name":"售出宠物",
+          "method":"PUT",
+          "entityCategory":"processor_interface",
+          "entityType":"processor_interface_default",
+          "ordr":2,
+          "isDir":false,
+          "processorInterfaceSrc":"case"
+        },
+        {
+          "name":"确认宠物已经售出",
+          "method":"GET",
+          "entityCategory":"processor_interface",
+          "entityType":"processor_interface_default",
+          "ordr":3,
+          "isDir":false,
+          "processorInterfaceSrc":"define"
+        }
+      ],
+      "isDir":true
+    },
+    {
+      "name":"批量清除新建宠物",
+      "entityCategory":"processor_loop",
+      "entityType":"processor_loop_time",
+      "ordr":11,
+      "children":[
+        {
+          "name":"petid_to_delete",
           "entityCategory":"processor_variable",
           "entityType":"processor_variable_set",
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":true
+          "ordr":1,
+          "isDir":false
         },
         {
-          "name":"删除宠物-DELETE",
+          "name":"删除宠物",
+          "method":"DELETE",
           "entityCategory":"processor_interface",
           "entityType":"processor_interface_default",
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":true
-        },
-        {
-          "name":"宠物详情-GET",
-          "entityCategory":"processor_interface",
-          "entityType":"processor_interface_default",
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":true
+          "ordr":2,
+          "isDir":false,
+          "processorInterfaceSrc":"define"
         }
       ],
-      "slots":{
-        "icon":"icon"
-      },
-      "isLeaf":false
+      "isDir":true
+    },
+    {
+      "name":"获取当前最后一个宠物id",
+      "method":"GET",
+      "entityCategory":"processor_interface",
+      "entityType":"processor_interface_default",
+      "ordr":12,
+      "isDir":false,
+      "processorInterfaceSrc":"define"
+    },
+    {
+      "name":"最后一个petid和初始一致",
+      "entityCategory":"processor_assertion",
+      "entityType":"processor_assertion_default",
+      "ordr":13,
+      "isDir":false
     }
   ],
-  "slots":{
-    "icon":"icon"
-  },
-  "isLeaf":false
+  "isDir":true
 }

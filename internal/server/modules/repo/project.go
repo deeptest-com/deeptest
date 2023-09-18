@@ -31,6 +31,7 @@ type ProjectRepo struct {
 	ScenarioNodeRepo           *ScenarioNodeRepo           `inject:""`
 	ScenarioProcessorRepo      *ScenarioProcessorRepo      `inject:""`
 	PlanRepo                   *PlanRepo                   `inject:""`
+	CategoryRepo               *CategoryRepo               `inject:""`
 }
 
 func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
@@ -174,7 +175,7 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	}
 
 	// create project endpoint category
-	err = r.AddProjectRootEndpointCategory(serve.ID, projectId)
+	category, err := r.AddProjectRootEndpointCategory(serve.ID, projectId)
 	if err != nil {
 		logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
 		return
@@ -196,7 +197,7 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 
 	//create sample
 	if IncludeExample {
-		err = r.CreateSample(projectId, serve.ID, userId)
+		err = r.CreateSample(projectId, serve.ID, userId, category.ID)
 		if err != nil {
 			logUtils.Errorf("创建示例失败", zap.String("错误:", err.Error()))
 			return
@@ -408,8 +409,8 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role consts.RoleT
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (err error) {
-	root := model.Category{
+func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (root *model.Category, err error) {
+	root = &model.Category{
 		Name:      "分类",
 		Type:      serverConsts.EndpointCategory,
 		ServeId:   serveId,
@@ -690,7 +691,12 @@ func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err err
 	return
 }
 
-func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) {
+func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) (err error) {
+	//创建目录
+	var category model.Category
+	categoryJson := _fileUtils.ReadFile("./config/sample/category.json")
+	_commUtils.JsonDecode(categoryJson, &category)
+
 	//获取接口配置
 	var endpoints []model.Endpoint
 	endpointJson := _fileUtils.ReadFile("./config/sample/endpoint.json")
@@ -717,12 +723,18 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 	_commUtils.JsonDecode(planJson, &plan)
 
 	return r.DB.Transaction(func(tx *gorm.DB) error {
+		category.ProjectId, category.ServeId, category.ParentId = projectId, serveId, int(categoryId)
+		err = r.CategoryRepo.Save(&category)
+		if err != nil {
+			return err
+		}
 		//创建接口
 		interfaceIds := map[string]uint{}
 		for _, endpoint := range endpoints {
 			endpoint.ServeId = serveId
 			endpoint.ProjectId = projectId
 			endpoint.CreateUser = user.Username
+			endpoint.CategoryId = int64(category.ID)
 			err = r.EndpointRepo.SaveAll(&endpoint)
 			if err != nil {
 				return err
@@ -730,10 +742,24 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) 
 			interfaceIds[endpoint.Interfaces[0].Name+"-"+string(endpoint.Interfaces[0].Method)] = endpoint.Interfaces[0].ID
 		}
 
-		//r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
+		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
+
+		//创建场景目录
+		ScenarioCategory, err := r.CategoryRepo.GetByItem(0, 0, serverConsts.ScenarioCategory, projectId, "分类")
+		if err != nil {
+			return err
+		}
+		ScenarioCategory.ParentId = int(ScenarioCategory.ID)
+		ScenarioCategory.ID = 0
+		ScenarioCategory.Name = "宠物商店"
+		err = r.CategoryRepo.Save(&ScenarioCategory)
+		if err != nil {
+			return err
+		}
 
 		//TODO 创建场景
 		scenario.ProjectId = projectId
+		scenario.CategoryId = int64(ScenarioCategory.ID)
 		scenario, err = r.ScenarioRepo.Create(scenario)
 		if err != nil {
 			return err

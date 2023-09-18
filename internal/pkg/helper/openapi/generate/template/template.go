@@ -1,36 +1,20 @@
 package template
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/fields"
+
 type languageInter interface {
-	fieldTypeConv(fieldType fieldType) (newType fieldType)
-	fieldString(field field) (ret string)
-	classString(class class) (ret string)
+	//fieldTypeConv(fieldType fields.fieldType) (newType fieldType)
+	//fieldString(field field) (ret string)
 }
 
-type field struct {
-	fieldName fieldName
-	fieldType fieldType
-}
-
-type fieldType string
-
-type fieldName string
-
-type fields map[fieldName]fieldType
-
-type filedArray []field
-
-type class struct {
-	name string
-}
-
-type langType string
+type LangType string
 
 const (
-	Go langType = "golang"
-	TS langType = "typeScript"
+	Go LangType = "golang"
+	TS LangType = "typeScript"
 )
 
-type languages map[langType]languageInter
+type languages map[LangType]languageInter
 
 var language languages
 
@@ -42,47 +26,27 @@ func init() {
 		Go: newGolang(),
 		TS: newTypeScript(),
 	}
-
-	varTpl = ` ${__class__} {
-				${__fields__}
-         };`
-
-	fieldTpl = `${__name__}:${__type__},`
 }
 
 type template struct {
-	varType    fieldType
-	fields     fields
-	class      class
-	fieldArray filedArray
+	fieldArray fields.FieldArray
 	language   languageInter
 }
 
-func newTemplate(langType langType, class class) (ret *template) {
-	ret = &template{class: class}
+func NewTemplate(langType LangType, fields *fields.FieldArray) (ret *template) {
 	ret.setLanguage(langType)
 	return
 }
 
-func (t *template) setLanguage(langType langType) {
+func (t *template) setLanguage(langType LangType) {
 	t.language = language[langType]
 }
 
-func (t *template) AddField(field field) {
-	if t.fields == nil {
-		t.fields = make(fields)
-	}
-
-	field.fieldType = t.fieldTypeConv(field.fieldType)
-	if _, ok := t.fields[field.fieldName]; !ok {
-		t.fieldArray = append(t.fieldArray, field)
-	}
+func (t *template) CreateCode() string {
+	return ""
 }
 
-func (t *template) SetClass(class class) {
-	t.class = class
-}
-
+/*
 func (t *template) fieldTypeConv(fieldType fieldType) (newType fieldType) {
 	newType = t.language.fieldTypeConv(fieldType)
 	return
@@ -91,6 +55,7 @@ func (t *template) fieldTypeConv(fieldType fieldType) (newType fieldType) {
 func (t *template) ClassContent() (ret string) {
 	return
 }
+*/
 
 /*
 func (t *template) fieldString(field field) (ret string) {

@@ -116,6 +116,42 @@ func (s *EndpointMockCompareService) CompareString(actualValue interface{}, expe
 		regx := regexp.MustCompile(expectValue)
 		ret = regx.MatchString(fmt.Sprintf("%v", actualValue))
 
+	} else if comparator == consts.GreaterThan {
+		actualFloat, err2 := s.interfaceToNumber(actualValue)
+		expectFloat, err1 := s.strToNumber(expectValue)
+		if err1 != nil || err2 != nil {
+			return false
+		}
+
+		ret = actualFloat > expectFloat
+
+	} else if comparator == consts.GreaterThanOrEqual {
+		actualFloat, err2 := s.interfaceToNumber(actualValue)
+		expectFloat, err1 := s.strToNumber(expectValue)
+		if err1 != nil || err2 != nil {
+			return false
+		}
+
+		ret = actualFloat >= expectFloat
+
+	} else if comparator == consts.LessThan {
+		actualFloat, err2 := s.interfaceToNumber(actualValue)
+		expectFloat, err1 := s.strToNumber(expectValue)
+		if err1 != nil || err2 != nil {
+			return false
+		}
+
+		ret = actualFloat < expectFloat
+
+	} else if comparator == consts.LessThanOrEqual {
+		actualFloat, err2 := s.interfaceToNumber(actualValue)
+		expectFloat, err1 := s.strToNumber(expectValue)
+		if err1 != nil || err2 != nil {
+			return false
+		}
+
+		ret = actualFloat <= expectFloat
+
 	}
 
 	return

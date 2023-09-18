@@ -478,15 +478,8 @@ func (r *EndpointRepo) ListByProjectIdAndServeId(serveId uint, method consts.Htt
 	return
 }
 
-func (r *EndpointRepo) GetByPath(serveId uint, pth string) (ret model.Endpoint, err error) {
-	db := r.DB.Model(&ret).
-		Where("path = ? AND NOT deleted", pth)
-
-	if serveId > 0 {
-		db.Where("serve_id = ?", serveId)
-	}
-
-	err = db.First(&ret).Error
+func (r *EndpointRepo) GetByPath(serveId uint, pth string, method consts.HttpMethod) (endpoints []*model.Endpoint, err error) {
+	err = r.DB.Model(&model.Endpoint{}).Select("biz_endpoint.*").Joins("left join biz_endpoint_interface on biz_endpoint_interface.endpoint_id = biz_endpoint.id").Where("not biz_endpoint.deleted and not biz_endpoint_interface.deleted and biz_endpoint.serve_id=? and biz_endpoint_interface.method=? and biz_endpoint.path=?", serveId, method, pth).Scan(&endpoints).Error
 
 	return
 }

@@ -1,10 +1,14 @@
+declare type Param = {
+    name: string;
+    value: string;
+    type: string;
+}
 declare type Header = {
     name: string;
     value: string;
-    disabled:    boolean;
     type: string;
 }
-declare type ExecCookie = {
+declare type Cookie = {
     name: string;
     value: any;
     path: string;
@@ -12,27 +16,39 @@ declare type ExecCookie = {
     domain: string;
     expireTime: Date;
 }
-declare type MockResponseHeader = {
+declare type FormItem = {
     name: string;
-    value: any;
+    value: string;
+    type: string;
 }
 
 declare type Request = {
     method: string;
-}
+    url: string;
+    queryParams: Param[];
+    pathParams: Param[];
+    headers: Header[];
+    cookies: Cookie[];
+
+    body: string;
+    formData:       FormItem[];
+    bodyType: string;
+};
 declare type Response = {
     statusCode: number;
-    contentType: string;
 
     data: any;
-    // used by adv mock
-    headers: MockResponseHeader[];
+    contentType: string;
 }
 
 declare global {
     const dt: {
         request: Request,
         response: Response,
+
+        getParam: (name) => string,
+        getHeader: (name) => string,
+        getCookie: (name) => Cookie,
     }
 
     const log : (obj: any) => {}

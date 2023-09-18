@@ -46,6 +46,7 @@ func (m *EnvironmentModule) Party() module.WebModule {
 
 		index.PartyFunc("/envVars", func(party iris.Party) {
 			party.Get("/", m.EnvironmentVarCtrl.List).Name = "列出环境变量"
+			party.Get("/byEnv", m.EnvironmentVarCtrl.ListByEnvId).Name = "根据环境列出环境变量"
 		})
 
 		index.PartyFunc("/shareVars", func(party iris.Party) {

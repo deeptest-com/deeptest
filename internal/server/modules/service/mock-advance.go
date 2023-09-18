@@ -3,6 +3,7 @@ package service
 import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	mockHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mock"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
@@ -10,6 +11,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/kataras/iris/v12"
 	"strconv"
+	"strings"
 )
 
 type MockAdvanceService struct {
@@ -38,17 +40,15 @@ func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInter
 		return
 	}
 
+	var req mockGenerator.Request
 	if !endpoint.AdvancedMockDisabled { // expect result
-		resp, byAdvance = s.ByExpect(endpointInterface, endpoint, ctx)
+		req, resp, byAdvance = s.ByExpect(endpointInterface, endpoint, ctx)
 		if !byAdvance { // return if failed
 			return
 		}
 	}
 
 	if !endpoint.ScriptMockDisabled {
-		req := mockGenerator.Request{
-			Method: endpointInterface.Method,
-		}
 		s.ByScript(endpoint, req, &resp)
 	}
 
@@ -56,10 +56,14 @@ func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInter
 }
 
 func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (
-	resp mockGenerator.Response, byAdvance bool) {
+	req mockGenerator.Request, resp mockGenerator.Response, byAdvance bool) {
 
-	headerParams, queryParams, pathParams, body, bodyForm :=
+	headerParams, queryParams, pathParams, body, bodyForm, cookies :=
 		s.EndpointMockParamService.GetRealRequestValues(ctx, endpointInterface, endpoint)
+
+	req = s.genRequest(headerParams, queryParams, pathParams, body, bodyForm, cookies)
+	req.Url = ctx.Path()
+	req.Method = endpointInterface.Method
 
 	expects, _ := s.EndpointMockExpectRepo.ListByEndpointId(endpointInterface.EndpointId)
 
@@ -69,8 +73,10 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 		}
 
 		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(expect.ID)
+
 		if s.MatchExpect(expectRequestMap, endpointInterface, endpoint,
 			headerParams, queryParams, pathParams, body, bodyForm, ctx) {
+
 			respData, respHeaders := s.GetExpectResult(expect)
 			respDefine := s.EndpointInterfaceRepo.GetResponse(endpointInterface.ID, respData.Code)
 
@@ -123,7 +129,7 @@ func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, req mockGenerator
 
 func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]model.EndpointMockExpectRequest,
 	endpointInterface model.EndpointInterface, endpoint model.Endpoint,
-	headerParams []model.InterfaceParamBase, queryParams []model.InterfaceParamBase, pathParams []model.InterfaceParamBase,
+	headerParams []domain.Param, queryParams []domain.Param, pathParams []domain.Param,
 	body string, bodyForm map[string][]string, ctx iris.Context) (ret bool) {
 
 	if len(expectRequestMap) == 0 {
@@ -212,10 +218,60 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 }
 
 func (s *MockAdvanceService) GetExpectResult(expect model.EndpointMockExpect) (
-	respContent model.EndpointMockExpectResponse, respHeaders []model.EndpointMockExpectResponseHeader) {
+	respContent model.EndpointMockExpectResponse, respHeaders []domain.Param) {
 
 	respContent, _ = s.EndpointMockExpectRepo.GetExpectResponse(expect.ID)
-	respHeaders, _ = s.EndpointMockExpectRepo.GetExpectResponseHeaders(expect.ID)
+	headers, _ := s.EndpointMockExpectRepo.GetExpectResponseHeaders(expect.ID)
+
+	for _, item := range headers {
+		header := domain.Param{
+			Name:  item.Name,
+			Value: item.Value,
+		}
+		respHeaders = append(respHeaders, header)
+	}
+
+	return
+}
+
+func (s *MockAdvanceService) genRequest(
+	headerParams []domain.Param, queryParams []domain.Param,
+	pathParams []domain.Param, body string, form map[string][]string, cookies []domain.ExecCookie) (
+	req mockGenerator.Request) {
+
+	req.Cookies = cookies
+	req.Body = body
+
+	for _, item := range headerParams {
+		req.Headers = append(req.Headers, domain.Param{
+			Name:  item.Name,
+			Value: item.Value,
+			Type:  item.Type,
+		})
+	}
+
+	for _, item := range queryParams {
+		req.QueryParams = append(req.QueryParams, domain.Param{
+			Name:  item.Name,
+			Value: item.Value,
+			Type:  item.Type,
+		})
+	}
+
+	for _, item := range pathParams {
+		req.PathParams = append(req.PathParams, domain.Param{
+			Name:  item.Name,
+			Value: item.Value,
+			Type:  item.Type,
+		})
+	}
+
+	for key, val := range form {
+		req.FormData = append(req.FormData, domain.BodyFormDataItem{
+			Name:  key,
+			Value: strings.Join(val, ","),
+		})
+	}
 
 	return
 }

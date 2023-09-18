@@ -69,14 +69,14 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
       key: 'name',
       customRender({ record }) {
         const handleSelectChange = (e) => {
-          record.name = e;
+          record.name = e.replace(/\s/ig, '');
           onColumnChange(type);
         };
         return (
           <>
             <a-auto-complete
-              value={record.name} 
-              options={(optionsMap['header'] || []).map(option => ({ label: option.name, value: option.name }))} 
+              value={record.name}
+              options={(optionsMap['header'] || []).map(option => ({ label: option.name, value: option.name }))}
               filter-option={false}
               onChange={(e) => handleSelectChange(e)} />
           </>
@@ -96,13 +96,13 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
       key: 'name',
       customRender({ record }) {
         const handleInputChange = (e) => {
-          record.name = e.target.value;
+          record.name = e.target.value.replace(/\s/ig, '');
           onColumnChange(type);
         }
         return (
           <>
-            <a-input 
-              value={record.name} 
+            <a-input
+              value={record.name}
               onChange={(e) => handleInputChange(e)} />
           </>
         )
@@ -114,13 +114,13 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
       key: 'name',
       customRender({ record }) {
         const handleInputChange = (e) => {
-          record.name = e.target.value;
+          record.name = e.target.value.replace(/\s/ig, '');
           onColumnChange(type);
         }
         return (
           <>
-            <a-input 
-              value={record.name} 
+            <a-input
+              value={record.name}
               onChange={(e) => handleInputChange(e)} />
           </>
         )

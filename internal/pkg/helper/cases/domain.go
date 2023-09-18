@@ -1,8 +1,7 @@
-package domain
+package casesHelper
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	casesHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/cases"
 	"github.com/kataras/iris/v12"
 )
 
@@ -13,8 +12,10 @@ type AlternativeCase struct {
 	Desc  string `json:"desc"`
 	IsDir bool   `json:"isDir"`
 
-	FieldRequired bool                  `json:"fieldRequired"`
-	FieldType     casesHelper.FieldType `json:"fieldType"`
+	FieldRequired bool         `json:"fieldRequired"`
+	FieldType     OasFieldType `json:"fieldType"`
+
+	Sample interface{} `json:"sample"`
 
 	Category consts.AlternativeCaseCategory `json:"category"`
 	Type     consts.AlternativeCaseType     `json:"type"`

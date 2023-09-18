@@ -9,8 +9,8 @@ import (
 func GenerateAlternativeCase(basicDebugData domain.DebugData, apiOperation *openapi3.Operation) (
 	alternativeCase []domain.DebugData, err error) {
 
-	cases, err := GenerateByQueryParams(basicDebugData, apiOperation.Parameters)
-	alternativeCase = append(alternativeCase, cases...)
+	//cases, err := GenerateByQueryParams(basicDebugData, apiOperation.Parameters)
+	//alternativeCase = append(alternativeCase, cases...)
 
 	return
 }

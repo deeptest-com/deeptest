@@ -1,8 +1,8 @@
 package queryUtils
 
 import (
-	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/antchfx/jsonquery"
 	"strings"
 )
@@ -26,12 +26,7 @@ func JsonQuery(content string, expression string) (result string) {
 	case string:
 		result = obj.(string)
 	default:
-		bytes, err := json.Marshal(obj)
-		if err != nil {
-			result = err.Error()
-		} else {
-			result = string(bytes)
-		}
+		result = _stringUtils.JsonWithoutHtmlEscaped(obj)
 	}
 
 	return

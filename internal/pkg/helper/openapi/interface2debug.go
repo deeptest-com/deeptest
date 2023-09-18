@@ -30,7 +30,7 @@ func (i *interfaces2debug) Convert() (debugInterface *model.DebugInterface) {
 			debugInterfaceParam := modelRef.DebugInterfaceParam{
 				InterfaceParamBase: modelRef.InterfaceParamBase{
 					Name:  param.Name,
-					Value: param.Value,
+					Sample: param.Sample,
 				},
 			}
 			debugInterface.PathParams = append(debugInterface.PathParams, debugInterfaceParam)

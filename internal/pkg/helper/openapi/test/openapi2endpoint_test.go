@@ -15,8 +15,8 @@ func TestOpenapi2endpoint(t *testing.T) {
 	_commUtils.JsonDecode(json, &schema)
 	/*
 		schemaRef := new(responseDefineHelper.SchemaRef)
-		schemaRef.Value = new(responseDefineHelper.Schema)
-		schemaRef.Value.Type = "string"
+		schemaRef.Sample = new(responseDefineHelper.Schema)
+		schemaRef.Sample.Type = "string"
 		schema = map[string]*responseDefineHelper.SchemaRef{
 			"/components/schemas/_domain.Response": schemaRef,
 		}

@@ -25,7 +25,7 @@ type EndpointCaseAlternativeService struct {
 }
 
 func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.EndpointCaseAlternativeLoadReq) (
-	root domain.AlternativeCase, err error) {
+	root casesHelper.AlternativeCase, err error) {
 
 	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
 	if endpointInterfaceId == 0 {

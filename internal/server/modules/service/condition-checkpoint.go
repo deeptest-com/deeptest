@@ -73,7 +73,7 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 //
 //	// Response ResultStatus
 //	if checkpoint.Type == consts.ResponseStatus {
-//		expectCode := stringUtils.ParseInt(checkpoint.Value)
+//		expectCode := stringUtils.ParseInt(checkpoint.Sample)
 //
 //		checkpoint.ActualResult = fmt.Sprintf("%d", resp.StatusCode.Int())
 //
@@ -94,18 +94,18 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 //		headerValue := ""
 //		for _, h := range resp.Headers {
 //			if h.Name == checkpoint.Expression {
-//				headerValue = h.Value
+//				headerValue = h.Sample
 //				break
 //			}
 //		}
 //
 //		checkpoint.ActualResult = headerValue
 //
-//		if checkpoint.Operator == consts.Equal && headerValue == checkpoint.Value {
+//		if checkpoint.Operator == consts.Equal && headerValue == checkpoint.Sample {
 //			checkpoint.ResultStatus = consts.Pass
-//		} else if checkpoint.Operator == consts.NotEqual && headerValue != checkpoint.Value {
+//		} else if checkpoint.Operator == consts.NotEqual && headerValue != checkpoint.Sample {
 //			checkpoint.ResultStatus = consts.Pass
-//		} else if checkpoint.Operator == consts.Contain && strings.Contains(headerValue, checkpoint.Value) {
+//		} else if checkpoint.Operator == consts.Contain && strings.Contains(headerValue, checkpoint.Sample) {
 //			checkpoint.ResultStatus = consts.Pass
 //		} else {
 //			checkpoint.ResultStatus = consts.Fail
@@ -124,11 +124,11 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 //
 //	// Response Body
 //	if checkpoint.Type == consts.ResponseBody {
-//		if checkpoint.Operator == consts.Equal && resp.Content == checkpoint.Value {
+//		if checkpoint.Operator == consts.Equal && resp.Content == checkpoint.Sample {
 //			checkpoint.ResultStatus = consts.Pass
-//		} else if checkpoint.Operator == consts.NotEqual && resp.Content != checkpoint.Value {
+//		} else if checkpoint.Operator == consts.NotEqual && resp.Content != checkpoint.Sample {
 //			checkpoint.ResultStatus = consts.Pass
-//		} else if checkpoint.Operator == consts.Contain && strings.Contains(resp.Content, checkpoint.Value) {
+//		} else if checkpoint.Operator == consts.Contain && strings.Contains(resp.Content, checkpoint.Sample) {
 //			checkpoint.ResultStatus = consts.Pass
 //		} else {
 //			checkpoint.ResultStatus = consts.Fail
@@ -168,7 +168,7 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 //		extractorPo, _ := s.ExtractorRepo.GetByInterfaceVariable(checkpoint.ExtractorVariable, 0, postCondition.DebugInterfaceId)
 //		checkpoint.ActualResult = extractorPo.Result
 //
-//		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
+//		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Sample)
 //
 //		s.CheckpointRepo.UpdateResult(checkpoint, usedBy)
 //

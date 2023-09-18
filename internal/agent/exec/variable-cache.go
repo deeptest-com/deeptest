@@ -6,14 +6,14 @@ package agentExec
 //	variables := listCachedVariable(processorId)
 //
 //	for _, item := range variables {
-//		valMap, isMap := item.Value.(domain.VarKeyValuePair)
+//		valMap, isMap := item.Sample.(domain.VarKeyValuePair)
 //
 //		if isMap {
 //			for propKey, v := range valMap {
 //				ret[fmt.Sprintf("%s.%s", item.Name, propKey)] = v
 //			}
 //		} else {
-//			ret[item.Name] = item.Value
+//			ret[item.Name] = item.Sample
 //		}
 //	}
 //

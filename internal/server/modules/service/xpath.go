@@ -522,7 +522,7 @@ func (s *XPathService) getXmlAttr(node *xmlquery.Node, name string) (ret string)
 func (s *XPathService) getJsonAttr(node *jsonquery.Node, name string) (ret string) {
 	//for _, attr := range node. {
 	//	if attr.Name == name {
-	//		return attr.Value
+	//		return attr.Sample
 	//	}
 	//}
 	return

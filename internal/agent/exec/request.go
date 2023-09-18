@@ -130,7 +130,7 @@ func replaceQueryParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 
 			req.QueryParams = append(req.QueryParams, domain.Param{
 				Name:  p.Name,
-				Value: p.DefaultValue,
+				Sample: p.DefaultValue,
 			})
 		}
 
@@ -150,7 +150,7 @@ func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 			if p.In == consts.ParamInQuery {
 				req.QueryParams = append(req.QueryParams, domain.Param{
 					Name:  p.Name,
-					Value: p.DefaultValue,
+					Sample: p.DefaultValue,
 				})
 			}
 		}
@@ -158,7 +158,7 @@ func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 
 	for idx, param := range req.PathParams {
 		req.PathParams[idx].Value = ReplaceVariableValue(param.Value)
-		//fmt.Println(param.Value, req.PathParams[idx].Value, "+-+")
+		//fmt.Println(param.Sample, req.PathParams[idx].Sample, "+-+")
 	}
 	return
 }

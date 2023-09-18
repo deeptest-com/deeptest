@@ -779,4 +779,5 @@ type AlternativeCaseType string
 const (
 	AlternativeCaseRequired AlternativeCaseType = "required"
 	AlternativeCaseTyped    AlternativeCaseType = "typed"
+	AlternativeCaseEnum     AlternativeCaseType = "enum"
 )

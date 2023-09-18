@@ -19,7 +19,7 @@ type EndpointMockParamService struct {
 
 func (s *EndpointMockParamService) GetRealRequestValues(ctx iris.Context,
 	endpointInterface model.EndpointInterface, endpoint model.Endpoint) (
-	headers []model.InterfaceParamBase, queryParams []model.InterfaceParamBase, pathParams []model.InterfaceParamBase,
+	headers []domain.Param, queryParams []domain.Param, pathParams []domain.Param,
 	body string, bodyForm map[string][]string, cookies []domain.ExecCookie) {
 
 	queryParams = s.getRealQueryParamValues(ctx, endpointInterface)
@@ -35,7 +35,8 @@ func (s *EndpointMockParamService) GetRealRequestValues(ctx iris.Context,
 	return
 }
 
-func (s *EndpointMockParamService) getRealQueryParamValues(ctx iris.Context, endpointInterface model.EndpointInterface) (ret []model.InterfaceParamBase) {
+func (s *EndpointMockParamService) getRealQueryParamValues(ctx iris.Context, endpointInterface model.EndpointInterface) (
+	ret []domain.Param) {
 	definedParams, _ := s.EndpointInterfaceRepo.ListParams(endpointInterface.ID)
 
 	definedParamTypeMap := map[string]string{}
@@ -45,7 +46,7 @@ func (s *EndpointMockParamService) getRealQueryParamValues(ctx iris.Context, end
 
 	realParams := ctx.URLParams()
 	for key, realParam := range realParams {
-		item := model.InterfaceParamBase{
+		item := domain.Param{
 			Name:  key,
 			Type:  definedParamTypeMap[key],
 			Value: realParam,
@@ -57,7 +58,8 @@ func (s *EndpointMockParamService) getRealQueryParamValues(ctx iris.Context, end
 	return
 }
 
-func (s *EndpointMockParamService) getRealPathParamValues(ctx iris.Context, endpoint model.Endpoint) (ret []model.InterfaceParamBase) {
+func (s *EndpointMockParamService) getRealPathParamValues(ctx iris.Context, endpoint model.Endpoint) (
+	ret []domain.Param) {
 	definedParams, _ := s.EndpointRepo.GetEndpointPathParams(endpoint.ID)
 
 	definedParamTypeMap := map[string]string{}
@@ -68,7 +70,7 @@ func (s *EndpointMockParamService) getRealPathParamValues(ctx iris.Context, endp
 	mockPath := "/" + ctx.Params().Get("path")
 	realParams, _ := s.MatchEndpointByMockPath(mockPath, endpoint)
 	for key, realParam := range realParams {
-		item := model.InterfaceParamBase{
+		item := domain.Param{
 			Name:  key,
 			Type:  definedParamTypeMap[key],
 			Value: realParam,
@@ -80,7 +82,8 @@ func (s *EndpointMockParamService) getRealPathParamValues(ctx iris.Context, endp
 	return
 }
 
-func (s *EndpointMockParamService) getRealHeaderParamValues(ctx iris.Context, endpointInterface model.EndpointInterface) (ret []model.InterfaceParamBase) {
+func (s *EndpointMockParamService) getRealHeaderParamValues(ctx iris.Context, endpointInterface model.EndpointInterface) (
+	ret []domain.Param) {
 	definedParams, _ := s.EndpointInterfaceRepo.ListHeaders(endpointInterface.ID)
 
 	definedParamTypeMap := map[string]string{}
@@ -90,7 +93,7 @@ func (s *EndpointMockParamService) getRealHeaderParamValues(ctx iris.Context, en
 
 	realParams := ctx.Request().Header
 	for key, realParam := range realParams {
-		item := model.InterfaceParamBase{
+		item := domain.Param{
 			Name:  key,
 			Type:  definedParamTypeMap[key],
 			Value: strings.Join(realParam, ","),
@@ -167,10 +170,19 @@ func (s *EndpointMockParamService) MatchEndpointByMockPath(mockPath string, endp
 
 func (s *EndpointMockParamService) getRealCookies(ctx iris.Context) (ret []domain.ExecCookie) {
 	ctx.VisitAllCookies(func(name string, value string) {
-		ret = append(ret, domain.ExecCookie{
+		item := domain.ExecCookie{
 			Name:  name,
 			Value: value,
-		})
+		}
+
+		cookie, err := ctx.GetRequestCookie(name)
+		if err == nil && cookie != nil {
+			item.Path = cookie.Path
+			item.Domain = cookie.Domain
+			item.ExpireTime = &cookie.Expires
+		}
+
+		ret = append(ret, item)
 	})
 	return
 }

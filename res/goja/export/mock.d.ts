@@ -1,17 +1,14 @@
 declare type Param = {
     name: string;
     value: string;
-    paramIn: string;
-    disabled: boolean;
     type: string;
 }
 declare type Header = {
     name: string;
     value: string;
-    disabled:    boolean;
     type: string;
 }
-declare type ExecCookie = {
+declare type Cookie = {
     name: string;
     value: any;
     path: string;
@@ -31,7 +28,7 @@ declare type Request = {
     queryParams: Param[];
     pathParams: Param[];
     headers: Header[];
-    cookies: ExecCookie[];
+    cookies: Cookie[];
 
     body: string;
     formData:       FormItem[];
@@ -48,6 +45,10 @@ declare global {
     const dt: {
         request: Request,
         response: Response,
+
+        getParam: (name) => string,
+        getHeader: (name) => string,
+        getCookie: (name) => Cookie,
     }
 
     const log : (obj: any) => {}

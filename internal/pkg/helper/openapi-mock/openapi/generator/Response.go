@@ -11,7 +11,7 @@ type Request struct {
 	Url         string              `json:"url"`
 	QueryParams []domain.Param      `json:"queryParams,omitempty"`
 	PathParams  []domain.Param      `json:"pathParams,omitempty"`
-	Headers     []domain.Header     `json:"headers,omitempty"`
+	Headers     []domain.Param      `json:"headers,omitempty"`
 	Cookies     []domain.ExecCookie `json:"cookies,omitempty"`
 
 	Body     string                    `json:"body,omitempty"`
@@ -22,7 +22,7 @@ type Response struct {
 	StatusCode consts.HttpRespCode `json:"statusCode"`
 
 	ContentType consts.HttpContentType `json:"contentType"`
-	Headers     []domain.Header        `json:"headers,omitempty"`
+	Headers     []domain.Param         `json:"headers,omitempty"`
 
 	Data interface{} `json:"data,omitempty"`
 

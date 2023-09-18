@@ -60,7 +60,10 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 
 	headerParams, queryParams, pathParams, body, bodyForm, cookies :=
 		s.EndpointMockParamService.GetRealRequestValues(ctx, endpointInterface, endpoint)
-	req = s.genRequest(endpointInterface.Method, headerParams, queryParams, pathParams, body, bodyForm, cookies)
+
+	req = s.genRequest(headerParams, queryParams, pathParams, body, bodyForm, cookies)
+	req.Url = ctx.Path()
+	req.Method = endpointInterface.Method
 
 	expects, _ := s.EndpointMockExpectRepo.ListByEndpointId(endpointInterface.EndpointId)
 
@@ -126,7 +129,7 @@ func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, req mockGenerator
 
 func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]model.EndpointMockExpectRequest,
 	endpointInterface model.EndpointInterface, endpoint model.Endpoint,
-	headerParams []model.InterfaceParamBase, queryParams []model.InterfaceParamBase, pathParams []model.InterfaceParamBase,
+	headerParams []domain.Param, queryParams []domain.Param, pathParams []domain.Param,
 	body string, bodyForm map[string][]string, ctx iris.Context) (ret bool) {
 
 	if len(expectRequestMap) == 0 {
@@ -215,13 +218,13 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 }
 
 func (s *MockAdvanceService) GetExpectResult(expect model.EndpointMockExpect) (
-	respContent model.EndpointMockExpectResponse, respHeaders []domain.Header) {
+	respContent model.EndpointMockExpectResponse, respHeaders []domain.Param) {
 
 	respContent, _ = s.EndpointMockExpectRepo.GetExpectResponse(expect.ID)
 	headers, _ := s.EndpointMockExpectRepo.GetExpectResponseHeaders(expect.ID)
 
 	for _, item := range headers {
-		header := domain.Header{
+		header := domain.Param{
 			Name:  item.Name,
 			Value: item.Value,
 		}
@@ -232,16 +235,15 @@ func (s *MockAdvanceService) GetExpectResult(expect model.EndpointMockExpect) (
 }
 
 func (s *MockAdvanceService) genRequest(
-	method consts.HttpMethod, headerParams []model.InterfaceParamBase, queryParams []model.InterfaceParamBase,
-	pathParams []model.InterfaceParamBase, body string, form map[string][]string, cookies []domain.ExecCookie) (
+	headerParams []domain.Param, queryParams []domain.Param,
+	pathParams []domain.Param, body string, form map[string][]string, cookies []domain.ExecCookie) (
 	req mockGenerator.Request) {
 
-	req.Method = method
 	req.Cookies = cookies
 	req.Body = body
 
 	for _, item := range headerParams {
-		req.Headers = append(req.Headers, domain.Header{
+		req.Headers = append(req.Headers, domain.Param{
 			Name:  item.Name,
 			Value: item.Value,
 			Type:  item.Type,

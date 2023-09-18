@@ -75,18 +75,18 @@ type Header struct {
 type Param struct {
 	Name        string         `json:"name"`
 	Value       string         `json:"value"`
-	ParamIn     consts.ParamIn `json:"paramIn"`
-	Disabled    bool           `json:"disabled"`
-	Description string         `json:"Description"`
-	Type        string         `json:"type"`
+	ParamIn     consts.ParamIn `json:"paramIn,omitempty"`
+	Disabled    bool           `json:"disabled,omitempty"`
+	Description string         `json:"Description,omitempty"`
+	Type        string         `json:"type,omitempty"`
 }
 
 type BodyFormDataItem struct {
 	Name        string              `json:"name"`
 	Value       string              `json:"value"`
-	Type        consts.FormDataType `json:"type"`
-	Desc        string              `json:"desc"`
-	InterfaceId uint                `json:"interfaceId"`
+	Type        consts.FormDataType `json:"type,omitempty"`
+	Desc        string              `json:"desc,omitempty"`
+	InterfaceId uint                `json:"interfaceId,omitempty"`
 }
 
 type BodyFormUrlEncodedItem struct {

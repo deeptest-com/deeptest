@@ -1233,10 +1233,20 @@ const StoreModel: ModuleType = {
             let line = ''
             if (name === 'log') {
                 line = "log('test')"
-            } else if (name === 'set_mock_resp_code') {
+            }
+
+            else if (name === 'get_param') {
+                line = "var strVal = dt.getParam('name');"
+            } else if (name === 'get_header') {
+                line = "var strVal = dt.getHeader('name');"
+            } else if (name === 'get_cookie') {
+                line = "var objVal = dt.getCookie('name');"
+            }
+
+            else if (name === 'set_mock_resp_code') {
                 line = "dt.response.statusCode = 404;"
             } else if (name === 'set_mock_resp_field') {
-                line = "dt.response.data.field1 = 'val';"
+                line = "dt.response.data.field1 = 'value';"
             } else if (name === 'set_mock_resp_text') {
                 line = "dt.response.data = dt.response.data.replace('old', 'new');"
             }

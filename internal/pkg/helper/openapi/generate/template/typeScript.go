@@ -1,9 +1,5 @@
 package template
 
-import (
-	"strings"
-)
-
 type typeScript struct {
 	fieldTpl string
 	classTpl string
@@ -15,7 +11,9 @@ func newTypeScript() (ret *typeScript) {
 	return
 }
 
-func (t *typeScript) fieldTypeConv(fieldType fieldType) (newType fieldType) {
+/*
+
+func (t *typeScript) fieldTypeConv(fieldType ieldType) (newType fieldType) {
 	return
 }
 

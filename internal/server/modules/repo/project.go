@@ -25,13 +25,14 @@ type ProjectRepo struct {
 	UserRepo                   *UserRepo                   `inject:""`
 	ServeRepo                  *ServeRepo                  `inject:""`
 	EndpointRepo               *EndpointRepo               `inject:""`
+	EndpointInterfaceRepo      *EndpointInterfaceRepo      `inject:""`
 	ProjectRecentlyVisitedRepo *ProjectRecentlyVisitedRepo `inject:""`
 	ServeServerRepo            *ServeServerRepo            `inject:""`
 	ScenarioRepo               *ScenarioRepo               `inject:""`
 	ScenarioNodeRepo           *ScenarioNodeRepo           `inject:""`
 	ScenarioProcessorRepo      *ScenarioProcessorRepo      `inject:""`
 	PlanRepo                   *PlanRepo                   `inject:""`
-	CategoryRepo               *CategoryRepo               `inject:""`
+	EndpointMockExpectRepo     *EndpointMockExpectRepo     `inject:""`
 }
 
 func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
@@ -175,7 +176,7 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	}
 
 	// create project endpoint category
-	category, err := r.AddProjectRootEndpointCategory(serve.ID, projectId)
+	err = r.AddProjectRootEndpointCategory(serve.ID, projectId)
 	if err != nil {
 		logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
 		return
@@ -197,7 +198,7 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 
 	//create sample
 	if IncludeExample {
-		err = r.CreateSample(projectId, serve.ID, userId, category.ID)
+		err = r.CreateSample(projectId, serve.ID, userId)
 		if err != nil {
 			logUtils.Errorf("创建示例失败", zap.String("错误:", err.Error()))
 			return
@@ -409,8 +410,8 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role consts.RoleT
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (root *model.Category, err error) {
-	root = &model.Category{
+func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (err error) {
+	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.EndpointCategory,
 		ServeId:   serveId,
@@ -691,16 +692,21 @@ func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err err
 	return
 }
 
-func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) (err error) {
-	//创建目录
-	var category model.Category
-	categoryJson := _fileUtils.ReadFile("./config/sample/category.json")
-	_commUtils.JsonDecode(categoryJson, &category)
-
+func (r *ProjectRepo) CreateSample(projectId, serveId, userId uint) (err error) {
 	//获取接口配置
 	var endpoints []model.Endpoint
 	endpointJson := _fileUtils.ReadFile("./config/sample/endpoint.json")
 	_commUtils.JsonDecode(endpointJson, &endpoints)
+
+	endpointMockExpectsMap := make(map[string][]model.EndpointMockExpect)
+	endpointMockExpectsJson := _fileUtils.ReadFile("./config/sample/endpoint-mock-expect.json")
+	_commUtils.JsonDecode(endpointMockExpectsJson, &endpointMockExpectsMap)
+
+	//endpointCaseMap := make(map[string][]string)
+	//endpointCaseJson := _fileUtils.ReadFile("./config/sample/endpoint-case.json")
+	//_commUtils.JsonDecode(endpointCaseJson, &endpointCaseMap)
+
+	endpointNameMap := make(map[string]model.Endpoint)
 
 	user, _ := r.UserRepo.FindById(userId)
 
@@ -723,18 +729,12 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 	_commUtils.JsonDecode(planJson, &plan)
 
 	return r.DB.Transaction(func(tx *gorm.DB) error {
-		category.ProjectId, category.ServeId, category.ParentId = projectId, serveId, int(categoryId)
-		err = r.CategoryRepo.Save(&category)
-		if err != nil {
-			return err
-		}
 		//创建接口
 		interfaceIds := map[string]uint{}
 		for _, endpoint := range endpoints {
 			endpoint.ServeId = serveId
 			endpoint.ProjectId = projectId
 			endpoint.CreateUser = user.Username
-			endpoint.CategoryId = int64(category.ID)
 			err = r.EndpointRepo.SaveAll(&endpoint)
 			if err != nil {
 				return err
@@ -742,24 +742,49 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 			interfaceIds[endpoint.Interfaces[0].Name+"-"+string(endpoint.Interfaces[0].Method)] = endpoint.Interfaces[0].ID
 		}
 
-		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
+		//r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
 
-		//创建场景目录
-		ScenarioCategory, err := r.CategoryRepo.GetByItem(0, 0, serverConsts.ScenarioCategory, projectId, "分类")
-		if err != nil {
-			return err
+		//TODO 创建Mock期望
+		for endpointName, mockExpects := range endpointMockExpectsMap {
+			endpoint, err := r.EndpointRepo.GetByNameAndProject(endpointName, projectId)
+			if err != nil {
+				return err
+			}
+			endpointNameMap[endpoint.Title] = endpoint
+
+			interfaces, err := r.EndpointInterfaceRepo.GetByEndpointId(endpoint.ID)
+			if err != nil {
+				return err
+			}
+			endpoint.Interfaces = interfaces
+
+			for _, mockExpect := range mockExpects {
+				mockExpect.EndpointId = endpoint.ID
+				mockExpect.EndpointInterfaceId = interfaces[0].ID
+				mockExpect.Method = interfaces[0].Method
+				mockExpect.CreateUser = user.Username
+				_, err = r.EndpointMockExpectRepo.Save(mockExpect)
+				if err != nil {
+					return err
+				}
+			}
 		}
-		ScenarioCategory.ParentId = int(ScenarioCategory.ID)
-		ScenarioCategory.ID = 0
-		ScenarioCategory.Name = "宠物商店"
-		err = r.CategoryRepo.Save(&ScenarioCategory)
-		if err != nil {
-			return err
-		}
+
+		//TODO 创建接口用例
+		//for endpointName, caseNames := range endpointCaseMap {
+		//	if endpoint, ok := endpointNameMap[endpointName]; ok {
+		//		for _, caseName := range caseNames{
+		//			createEndpointCaseReq := v1.EndpointCaseSaveReq{}
+		//			createEndpointCaseReq.EndpointId = endpoint.ID
+		//			createEndpointCaseReq.Method = endpoint.Interfaces[0].Method
+		//			createEndpointCaseReq.Name = caseName
+		//
+		//		}
+		//	}
+		//}
 
 		//TODO 创建场景
 		scenario.ProjectId = projectId
-		scenario.CategoryId = int64(ScenarioCategory.ID)
 		scenario, err = r.ScenarioRepo.Create(scenario)
 		if err != nil {
 			return err

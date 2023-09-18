@@ -121,7 +121,7 @@ export default defineComponent({
     }
 
     const gotoMessage = () => {
-      router.replace({path: '/user-manage/message'})
+      router.replace({path: '/message'})
     }
 
     // 点击菜单
@@ -131,7 +131,7 @@ export default defineComponent({
       const {key} = event;
 
       if (key === 'profile') {
-        router.replace({path: '/user-manage/profile'})
+        router.replace({path: '/profile'})
       } else if (key === 'logout') {
         store.dispatch('User/logout').then((res) => {
           if (res === true) {
@@ -145,7 +145,7 @@ export default defineComponent({
           }
         })
       } else if (key === 'management') {
-        router.replace({path: '/user-manage/index'})
+        router.replace({path: '/user-manage'})
       }
     }
 
@@ -163,7 +163,7 @@ export default defineComponent({
     })
 
     const onManagementClick = () => {
-      router.replace({path: '/user-manage/index'})
+      router.replace({path: '/user-manage'})
     }
 
     const isLyEnv = process?.env?.VUE_APP_DEPLOY_ENV === 'ly';

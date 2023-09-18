@@ -1,70 +1,72 @@
 <template>
-  <div class="profile-main">
-    <a-card>
-      <template #title>
-        <div>用户信息</div>
-      </template>
-      <template #extra></template>
+  <HomeLayout>
+    <div class="profile-main">
+      <a-card>
+        <template #title>
+          <div>用户信息</div>
+        </template>
+        <template #extra></template>
 
-      <div>
-        <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
-          <a-form-item label="邮箱" v-bind="validateInfos.email">
-            <span v-if="changing === 'email'" class="editor">
-              <span class="input">
-                <a-input v-model:value="modelRef.email"
-                         @blur="validate('email', { trigger: 'blur' }).catch(() => {})"/>
+        <div>
+          <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
+            <a-form-item label="邮箱" v-bind="validateInfos.email">
+              <span v-if="changing === 'email'" class="editor">
+                <span class="input">
+                  <a-input v-model:value="modelRef.email"
+                          @blur="validate('email', { trigger: 'blur' }).catch(() => {})"/>
+                </span>
+
+                <span class="btns">
+                  <CheckOutlined @click.stop="updateEmail()"
+                                :class="{disabled: validateInfos.email.validateStatus === 'error'}"/>&nbsp;
+                  <CloseOutlined @click.stop="changing = ''"/>
+                </span>
               </span>
 
-              <span class="btns">
-                <CheckOutlined @click.stop="updateEmail()"
-                               :class="{disabled: validateInfos.email.validateStatus === 'error'}"/>&nbsp;
-                <CloseOutlined @click.stop="changing = ''"/>
+              <span v-else>
+                <span>{{ modelRef.email }}</span> &nbsp;
+                <EditOutlined @click.stop="changeEmail()"/>
               </span>
-            </span>
+            </a-form-item>
 
-            <span v-else>
-              <span>{{ modelRef.email }}</span> &nbsp;
-              <EditOutlined @click.stop="changeEmail()"/>
-            </span>
-          </a-form-item>
+            <a-form-item label="用户名" v-bind="validateInfos.username">
+              <span v-if="changing === 'username'" class="editor">
+                <span class="input">
+                  <a-input v-model:value="modelRef.username"
+                          @blur="validate('username', { trigger: 'blur' }).catch(() => {})"/>
+                </span>
 
-          <a-form-item label="用户名" v-bind="validateInfos.username">
-            <span v-if="changing === 'username'" class="editor">
-              <span class="input">
-                <a-input v-model:value="modelRef.username"
-                         @blur="validate('username', { trigger: 'blur' }).catch(() => {})"/>
+                <span class="btns">
+                  <CheckOutlined @click.stop="updateName()"
+                                :class="{disabled: validateInfos.username.validateStatus === 'error'}"/>&nbsp;
+                  <CloseOutlined @click.stop="changing = ''"/>
+                </span>
               </span>
 
-              <span class="btns">
-                <CheckOutlined @click.stop="updateName()"
-                               :class="{disabled: validateInfos.username.validateStatus === 'error'}"/>&nbsp;
-                <CloseOutlined @click.stop="changing = ''"/>
+              <span v-else>
+                <span>{{ modelRef.username }}</span> &nbsp;
+                <EditOutlined @click.stop="changeName()"/>
               </span>
-            </span>
+            </a-form-item>
 
-            <span v-else>
-              <span>{{ modelRef.username }}</span> &nbsp;
-              <EditOutlined @click.stop="changeName()"/>
-            </span>
-          </a-form-item>
+            <a-form-item label="密码" v-bind="validateInfos.password">
+              <span>******</span> &nbsp;
+              <EditOutlined @click.stop="changePassword()"/>
+            </a-form-item>
+          </a-form>
+        </div>
 
-          <a-form-item label="密码" v-bind="validateInfos.password">
-            <span>******</span> &nbsp;
-            <EditOutlined @click.stop="changePassword()"/>
-          </a-form-item>
-        </a-form>
-      </div>
+      </a-card>
 
-    </a-card>
+      <ChangePassword
+          v-if="showChangePassword"
+          :isVisible="showChangePassword"
+          :submit="updatePassword"
+          :cancel="cancelChangePassword"
+      />
 
-    <ChangePassword
-        v-if="showChangePassword"
-        :isVisible="showChangePassword"
-        :submit="updatePassword"
-        :cancel="cancelChangePassword"
-    />
-
-  </div>
+    </div>
+  </HomeLayout>
 </template>
 
 <script setup lang="ts">
@@ -72,9 +74,10 @@ import {computed, onMounted, reactive, ref} from "vue";
 import {useRouter} from 'vue-router';
 import {useI18n} from "vue-i18n";
 import {EditOutlined, CloseOutlined, CheckOutlined} from "@ant-design/icons-vue";
-
 import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
+
+import HomeLayout from "@/layouts/HomeLayout.vue";
 import {StateType as UserStateType} from "@/store/user";
 import {NotificationKeyCommon, pattern} from "@/utils/const";
 import ChangePassword from './changePassword.vue'

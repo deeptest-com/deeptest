@@ -18,7 +18,6 @@ import IndexLayout from '@/layouts/IndexLayout/index.vue';
 import UserLayoutRoutes from '@/layouts/UserLayout/routes';
 import UserLayout from '@/layouts/UserLayout/index.vue';
 import BlankLayout from "@/layouts/BlankLayout.vue";
-import HomeLayout from "@/layouts/HomeLayout.vue";
 
 const routes: RoutesDataItem[] = [
   {
@@ -63,50 +62,35 @@ const routes: RoutesDataItem[] = [
   {
     title: 'empty',
     path: '/',
+    redirect: '/',
     component: SecurityLayout,
     children: [
       {
+        icon: 'home',
         title: 'home',
-        path: '/',
-        redirect: '/home',
-        component: HomeLayout,
-        children: [
-          {
-            icon: 'home',
-            title: 'home',
-            path: 'home',
-            component: () => import('@/views/home/index.vue'),
-            hidden: false,
-          }
-        ],
+        path: '',
+        component: () => import('@/views/home/index.vue'),
       },
       {
-        title: 'index-layout.menu',
-        path: '/user-manage',
-        component: HomeLayout,
-        children: [
-          {
-            icon: 'profile',
-            title: 'profile',
-            path: 'profile',
-            component: () => import('@/views/user/info/profile.vue'),
-            hidden: true,
-          },
-          {
-            icon: 'message',
-            title: 'message',
-            path: 'message',
-            component: () => import('@/views/user/info/message.vue'),
-            hidden: true,
-          },
-          {
-            icon: 'user',
-            title: 'user.management',
-            path: 'index',
-            component: () => import('@/views/user/list/index.vue'),
-            hidden: true
-          }
-        ],
+        icon: 'profile',
+        title: 'profile',
+        path: 'profile',
+        component: () => import('@/views/user/info/profile.vue'),
+        hidden: true,
+      },
+      {
+        icon: 'message',
+        title: 'message',
+        path: 'message',
+        component: () => import('@/views/user/info/message.vue'),
+        hidden: true,
+      },
+      {
+        icon: 'user',
+        title: 'user.management',
+        path: 'user-manage',
+        component: () => import('@/views/user/list/index.vue'),
+        hidden: true
       },
     ]
   },

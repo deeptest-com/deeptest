@@ -29,6 +29,8 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 		}
 
 	} else {
+		extractor.Expression = strings.TrimSpace(extractor.Expression)
+
 		if httpHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
 			result = queryUtils.JsonQuery(resp.Content, extractor.Expression)
 

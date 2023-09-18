@@ -1,9 +1,11 @@
 package queryUtils
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/antchfx/jsonquery"
+	"github.com/antchfx/xpath"
 	"strings"
 )
 
@@ -13,6 +15,15 @@ func JsonQuery(content string, expression string) (result string) {
 		result = consts.ContentErr
 		return
 	}
+
+	if isEvaluate(expression) {
+		expr, _ := xpath.Compile(expression)
+		float := expr.Evaluate(jsonquery.CreateXPathNavigator(doc))
+		result = fmt.Sprintf("%v", float)
+
+		return
+	}
+
 	elem, err := jsonquery.Query(doc, expression)
 
 	if err != nil || elem == nil {
@@ -48,6 +59,12 @@ func JsonQueryWithType(content string, expression string) (result interface{}) {
 	result = elem.Value()
 
 	//isFloat64 := fmt.Sprintf("%T", result) == "float64"
+
+	return
+}
+
+func isEvaluate(expression string) (ret bool) {
+	ret = strings.Index(expression, "count") == 0
 
 	return
 }

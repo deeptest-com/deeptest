@@ -3,13 +3,28 @@ package casesHelper
 import "math/rand"
 
 const (
-	letters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	letters  = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	specials = "~!@#$%^&*()_+"
 )
 
 func RandStr() (ret string) {
-	b := make([]byte, 6)
+	return RandStrWithLen(6)
+}
+
+func RandStrWithLen(length int) (ret string) {
+	b := make([]byte, length)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
+	}
+	ret = string(b)
+
+	return
+}
+
+func RandStrSpecial() (ret string) {
+	b := make([]byte, 6)
+	for i := range b {
+		b[i] = specials[rand.Intn(len(letters))]
 	}
 	ret = string(b)
 

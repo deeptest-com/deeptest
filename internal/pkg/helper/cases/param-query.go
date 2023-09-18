@@ -3,6 +3,7 @@ package casesHelper
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/getkin/kin-openapi/openapi3"
+	"math"
 )
 
 func LoadForQueryParams(params openapi3.Parameters) (
@@ -132,57 +133,57 @@ func addFormatCase(param *openapi3.ParameterRef, parent *AlternativeCase) {
 	parent.Children = append(parent.Children, typeCase)
 }
 
-//func addStrRuleCase(param *openapi3.ParameterRef, parent *AlternativeCase) {
-//	pattern
-//	minLength
-//	maxLength
-//
-//	schema := param.Value.Schema.Value
-//	typ := OasFieldType(schema.Type)
-//	format := OasFieldFormat(schema.Format)
-//
-//	var sample interface{}
-//	if typ == OasFieldTypeInteger {
-//		if format == OasFieldFormatInt32 {
-//			sample = RandInt64()
-//		} else if format == OasFieldFormatInt64 {
-//			sample = RandStr()
-//		}
-//	}
-//
-//	if typ == OasFieldTypeNumber {
-//		if format == OasFieldFormatFloat {
-//			sample = RandFloat64()
-//		} else if format == OasFieldFormatDouble {
-//			sample = RandStr()
-//		}
-//	}
-//
-//	if typ == OasFieldTypeString {
-//		sample = RandStr()
-//	}
-//	//
-//	//typeCase := &AlternativeCase{
-//	//	Sample: RandStr(),
-//	//
-//	//	Category:  consts.AlternativeCaseCase,
-//	//	Type:      consts.AlternativeCaseEnum,
-//	//	FieldType: OasFieldType(schema.Type),
-//	//	IsDir:     false,
-//	//}
-//	//
-//	//parent.Children = append(parent.Children, typeCase)
-//}
+func addStrRuleCase(param *openapi3.ParameterRef, parent *AlternativeCase) {
+	schema := param.Value.Schema.Value
+	typ := OasFieldType(schema.Type)
 
-//
-//func addNumberRuleCase(param *openapi3.ParameterRef, parent *AlternativeCase) {
-//	minimum
-//	maximum
-//	maxLength
-//	multipleOf
-//	exclusiveMin
-//	exclusiveMax
-//}
+	var sample interface{}
+	if typ == OasFieldTypeInteger || typ == OasFieldTypeNumber {
+		if *(schema.Min) != 0 {
+			sample = *schema.Min - 1
+		} else if *(schema.Max) != 0 {
+			sample = *schema.Max + 1
+		} else if *schema.MaxLength > 0 {
+			if typ == OasFieldTypeInteger {
+				sample = 1 * math.Pow(10, float64(*schema.MaxLength))
+			} else {
+				sample = 1 / math.Pow(10, float64(*schema.MaxLength-1))
+			}
+		} else if schema.MinLength > 0 {
+			sample = 1
+		} else if *schema.MultipleOf != 0 {
+			if typ == OasFieldTypeInteger {
+				sample = *schema.MultipleOf + 1
+			} else {
+				sample = *schema.MultipleOf + *schema.MultipleOf*0.1
+			}
+		} else if schema.ExclusiveMin {
+			sample = *schema.Min
+		} else if schema.ExclusiveMax {
+			sample = *schema.Max
+		}
+
+	} else {
+		if schema.Pattern != "" {
+			sample = RandStrSpecial()
+		} else if *(schema.MaxLength) > 0 {
+			sample = RandStrWithLen(int(*(schema.MaxLength) + 1))
+		} else if schema.MinLength > 0 {
+			sample = RandStrWithLen(int(schema.MinLength - 1))
+		}
+	}
+
+	typeCase := &AlternativeCase{
+		Sample: sample,
+
+		Category:  consts.AlternativeCaseCase,
+		Type:      consts.AlternativeCaseEnum,
+		FieldType: OasFieldType(schema.Type),
+		IsDir:     false,
+	}
+
+	parent.Children = append(parent.Children, typeCase)
+}
 
 //func GenerateByQueryParams(basic DebugData, params openapi3.Parameters) (ret []DebugData, err error) {
 //	for _, param := range params {

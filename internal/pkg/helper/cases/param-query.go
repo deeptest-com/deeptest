@@ -6,9 +6,7 @@ import (
 	"math"
 )
 
-func LoadForQueryParams(params openapi3.Parameters) (
-	category *AlternativeCase) {
-
+func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) {
 	category = &AlternativeCase{
 		Category: consts.AlternativeCaseGroup,
 		IsDir:    true,

@@ -97,6 +97,17 @@ export default defineComponent({
         }
       })
 
+      const usedBy = inject('usedBy')
+      if (options.initTsModules) {
+        const snippet = usedBy == UsedBy.MockData ? 'mock.d' : 'global'
+
+        getSnippet(snippet).then(json => {
+          if (json.code === 0) {
+            monaco.languages.typescript.typescriptDefaults.setExtraLibs([{content: json.data.script}]);
+          }
+        })
+      }
+
       this.editor = monaco.editor[this.diffEditor ? 'createDiffEditor' : 'create'](this.$el, {
         value: value,
         language: language,
@@ -107,8 +118,6 @@ export default defineComponent({
 
       this.diffEditor && this._setModel(this.value, this.original);
 
-
-      const usedBy = inject('usedBy')
       // if (usedBy === UsedBy.InterfaceDebug) {
         if (this.options.usedWith === 'response') {
           addExtractAction(this.editor, this.onExtractor)
@@ -150,19 +159,6 @@ export default defineComponent({
       setTimeout(() => {
         this.formatDocInit(editor)
       }, 500)
-
-      console.log('=== initTsModules', options.initTsModules)
-      if (options.initTsModules) {
-        const snippet = usedBy == UsedBy.MockData ? 'mock.d' : 'global'
-
-        getSnippet(snippet).then(json => {
-          if (json.code === 0) {
-            // const externalDtsFileName = 'ex.d.ts';
-            // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://modelRef/${externalDtsFileName}`);
-            monaco.languages.typescript.typescriptDefaults.addExtraLib(json.data.script);
-          }
-        })
-      }
     },
 
     formatDocInit: (editor) => {
@@ -260,7 +256,7 @@ export default defineComponent({
     },
 
     timestamp() {
-      console.log('watch timestamp', this.value);
+      console.log('watch timestamp');
       this.value !== this._getValue() && this._setValue(this.value);
     },
     // value() {

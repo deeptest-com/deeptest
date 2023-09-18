@@ -7,7 +7,7 @@
       {
         "name":"petId",
         "type":"string",
-        "default":1
+        "example":1
       }
     ],
     "interfaces":[
@@ -60,7 +60,8 @@
     "pathParams":[
       {
         "name":"petId",
-        "type":"string"
+        "type":"string",
+        "example":1
       }
     ],
     "interfaces":[
@@ -98,7 +99,6 @@
     "interfaces":[
       {
         "name":"新增宠物",
-        "projectId":61,
         "url":"/pet",
         "method":"POST",
         "bodyType":"application/json",
@@ -109,7 +109,6 @@
             "name":"",
             "type":"object",
             "content":"{\"type\":\"object\",\"ref\":\"#/components/schemas/petRequest\",\"name\":\"petRequest\",\"$ref\":\"#/components/schemas/petRequest\"}",
-            "requestBodyId":8998381
           }
         },
         "responseBodies":[
@@ -172,7 +171,6 @@
             "schemaItem":{
               "type":"string",
               "content":"{\"type\":\"string\"}",
-              "ResponseBodyId":8797227
             }
           },
           {

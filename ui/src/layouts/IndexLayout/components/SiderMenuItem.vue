@@ -75,15 +75,22 @@ export default defineComponent({
     };
 
     const handleRedirect = (path: string) => {
-      router.push(replaceLastChar(path).replace(':projectId', currProject.value.shortName));
+      router.push(replaceLastChar(path).replace(':projectNameAbbr', currProject.value.shortName));
     };
 
+    const item = computed(() => {
+      return {
+        ...routeItem.value,
+        path: replaceLastChar(routeItem.value.path), 
+      }
+    });
+
     const isActive = computed(() => {
-      return  (props.selectedKeys || []).includes(replaceLastChar(routeItem.value.path));
+      return  (props.selectedKeys || []).includes(item.value.path);
     });
   
     return {
-      item: routeItem,
+      item,
       topMenuPath,
       hasChildRoute,
       t,

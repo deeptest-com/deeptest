@@ -4,8 +4,8 @@ import BlankLayout from '@/layouts/BlankLayout.vue';
 const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
     title: 'workbench',
-    path: '/:projectId/workspace',
-    redirect: '/:projectId/workspace',
+    path: '/:projectNameAbbr/workspace',
+    redirect: '/:projectNameAbbr/workspace',
     component: BlankLayout,
     children: [
       {
@@ -29,8 +29,8 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
   {
     title: 'index-layout.menu',
-    path: '/:projectId/IM',
-    redirect: '/:projectId/IM',
+    path: '/:projectNameAbbr/IM',
+    redirect: '/:projectNameAbbr/IM',
     component: BlankLayout,
     children: [
       {
@@ -47,8 +47,8 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
   {
     title: 'index-layout.menu',
-    path: '/:projectId/docs',
-    redirect: '/:projectId/docs',
+    path: '/:projectNameAbbr/docs',
+    redirect: '/:projectNameAbbr/docs',
     component: BlankLayout,
     children: [
       {
@@ -65,8 +65,8 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
   {
     title: 'index-layout.menu',
-    path: '/:projectId/debug',
-    redirect: '/:projectId/debug',
+    path: '/:projectNameAbbr/debug',
+    redirect: '/:projectNameAbbr/debug',
     component: BlankLayout,
     children: [
       {
@@ -83,8 +83,8 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
   {
     title: 'index-layout.menu',
-    path: '/:projectId/TS',
-    redirect: '/:projectId/TS',
+    path: '/:projectNameAbbr/TS',
+    redirect: '/:projectNameAbbr/TS',
     component: BlankLayout,
     children: [
       {
@@ -102,8 +102,8 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
 
   {
     title: 'index-layout.menu',
-    path: '/:projectId/TP',
-    redirect: '/:projectId/TP',
+    path: '/:projectNameAbbr/TP',
+    redirect: '/:projectNameAbbr/TP',
     component: BlankLayout,
     children: [
       {
@@ -128,8 +128,8 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
 
   {
     title: 'index-layout.menu',
-    path: '/:projectId/TR',
-    redirect: '/:projectId/TR',
+    path: '/:projectNameAbbr/TR',
+    redirect: '/:projectNameAbbr/TR',
     component: () => import('@/views/report/index.vue'),
     children: [
       {
@@ -148,8 +148,8 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
    // 项目管理
   {
     title: '项目设置',
-    path: '/:projectId/project-setting',
-    redirect: '/:projectId/project-setting',
+    path: '/:projectNameAbbr/project-setting',
+    redirect: '/:projectNameAbbr/project-setting',
     component: () => import('@/views/project-settings/index.vue'),
     children: [
       {

@@ -856,6 +856,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 		}
 		//TODO 创建计划
 		plan.ProjectId = projectId
+		plan.Status = consts.Draft
 		plan, _ = r.PlanRepo.Create(plan)
 
 		//关联场景

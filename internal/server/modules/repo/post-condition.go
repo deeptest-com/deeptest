@@ -42,6 +42,8 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 		db.Where("entity_type = ? or entity_type = ?", consts.ConditionTypeResponseDefine, consts.ConditionTypeCheckpoint)
 	}
 
+	db.Order("ordr ASC")
+
 	err = db.Find(&pos).Error
 
 	return

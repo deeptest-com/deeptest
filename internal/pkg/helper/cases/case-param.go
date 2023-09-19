@@ -114,11 +114,11 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 
 	var sample interface{}
 	if typ == OasFieldTypeInteger || typ == OasFieldTypeNumber {
-		if *(schema.Min) != 0 {
+		if schema.Min != nil && *schema.Min != 0 {
 			sample = *schema.Min - 1
-		} else if *(schema.Max) != 0 {
+		} else if schema.Max != nil && *schema.Max != 0 {
 			sample = *schema.Max + 1
-		} else if *schema.MaxLength > 0 {
+		} else if schema.MaxLength != nil && *schema.MaxLength > 0 {
 			if typ == OasFieldTypeInteger {
 				sample = 1 * math.Pow(10, float64(*schema.MaxLength))
 			} else {
@@ -126,7 +126,7 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 			}
 		} else if schema.MinLength > 0 {
 			sample = 1
-		} else if *schema.MultipleOf != 0 {
+		} else if schema.MultipleOf != nil && *schema.MultipleOf != 0 {
 			if typ == OasFieldTypeInteger {
 				sample = *schema.MultipleOf + 1
 			} else {
@@ -141,7 +141,7 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 	} else {
 		if schema.Pattern != "" {
 			sample = RandStrSpecial()
-		} else if *(schema.MaxLength) > 0 {
+		} else if schema.MaxLength != nil && *(schema.MaxLength) > 0 {
 			sample = RandStrWithLen(int(*(schema.MaxLength) + 1))
 		} else if schema.MinLength > 0 {
 			sample = RandStrWithLen(int(schema.MinLength - 1))

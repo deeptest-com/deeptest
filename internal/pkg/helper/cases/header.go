@@ -23,11 +23,11 @@ func LoadForHeaders(params openapi3.Parameters) (category *AlternativeCase) {
 			IsDir:    true,
 		}
 
-		addParamRequiredCase(param, paramCase)
-		addParamTypeCase(param, paramCase)
-		addParamEnumCase(param, paramCase)
-		addParamFormatCase(param, paramCase)
-		addParamRuleCase(param, paramCase)
+		addParamRequiredCase(param.Value, paramCase)
+		addParamTypeCase(param.Value, paramCase)
+		addParamEnumCase(param.Value, paramCase)
+		addParamFormatCase(param.Value, paramCase)
+		addParamRuleCase(param.Value, paramCase)
 
 		if len(paramCase.Children) > 0 {
 			category.Children = append(category.Children, paramCase)

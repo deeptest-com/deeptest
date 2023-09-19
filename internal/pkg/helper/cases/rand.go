@@ -24,7 +24,7 @@ func RandStrWithLen(length int) (ret string) {
 func RandStrSpecial() (ret string) {
 	b := make([]byte, 6)
 	for i := range b {
-		b[i] = specials[rand.Intn(len(letters))]
+		b[i] = specials[rand.Intn(len(specials))]
 	}
 	ret = string(b)
 

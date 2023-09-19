@@ -14,7 +14,15 @@
         :options="servers"
         @change="e => $emit('change', e)"
         placeholder="请选择环境"
-      />
+      >
+        <template #dropdownRender="{ menuNode: menu }">
+          <v-nodes :vnodes="menu" />
+          <a-divider style="margin: 4px 0" />
+          <a-button type="link" @click="handleRedirectEnv">
+            <SettingOutlined />
+            环境管理</a-button>
+        </template>
+      </a-select>
     </div>
   </Teleport>
 </template>
@@ -27,9 +35,24 @@ import {
   onMounted,
   watch,
   inject,
+  defineComponent,
 } from "vue";
 import { useStore } from "vuex";
 import { StateType as Debug } from "@/views/component/debug/store";
+import { SettingOutlined } from "@ant-design/icons-vue";
+import { useRouter } from "vue-router";
+
+const VNodes = defineComponent({
+  props: {
+    vnodes: {
+      type: Object,
+      required: true,
+    },
+  },
+  render() {
+    return this.vnodes;
+  },
+});
 
 const props = defineProps<{
   serverId: any;
@@ -40,6 +63,7 @@ const props = defineProps<{
 const emits = defineEmits(["change"]);
 
 const containerScrollTop = inject("containerScrollTop", null) as any;
+const router = useRouter();
 
 const store = useStore<{ Debug: Debug; Endpoint; Global }>();
 const servers = computed<any[]>(() => store.state.Debug.serves);
@@ -82,6 +106,11 @@ const getSelectEnvLeftPosition = () => {
   }
   const { width = 0 } = rect;
   return `${width + 16 + 20}px`;
+};
+
+const handleRedirectEnv = (e) => {
+  e.preventDefault();
+  window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/var`, '_blank');
 };
 
 watch(

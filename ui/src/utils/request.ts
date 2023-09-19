@@ -71,12 +71,6 @@ const requestInterceptors = async (config: AxiosRequestConfig & { cType?: boolea
         config.headers[settings.ajaxHeadersTokenKey] = 'Bearer ' + jwtToken;
     }
 
-    // 修改示例请求指向mock地址
-    const url = config.url || '';
-    if (url.indexOf('/home') > -1 || url.indexOf('/pages') > -1) {
-        config.baseURL = '/api';
-    }
-
     // 加随机数清除缓存
     config.params = {...config.params, ts: Date.now()};
     if (!config.params.currProjectId) {
@@ -101,7 +95,6 @@ requestAgent.interceptors.request.use(
  */
 const responseInterceptors = async (axiosResponse: AxiosResponse) => {
     console.log('=== response ===', axiosResponse.config.url, axiosResponse)
-
     const res: ResponseData = axiosResponse.data;
     const {code, token} = res;
 
@@ -146,9 +139,9 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
         const noNeedLogin = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
         if (code === 401 && !noNeedLogin) {
             router.replace('/user/login');
-        } else if (code === 403 && !router.currentRoute.value.fullPath.includes('home')) {
+        } else if (code === 403 && router.currentRoute.value.fullPath !== '/') {
             // 无权限访问时 返回到首页
-            router.replace('/home');
+            router.replace('/');
         }
 
     } else {

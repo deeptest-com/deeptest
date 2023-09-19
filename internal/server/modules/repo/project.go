@@ -797,15 +797,15 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 
 			for _, caseDebug := range caseDebugs {
 				for caseName, debug := range caseDebug {
-					serveServer, err := r.ServeServerRepo.GetByServeAndUrl(serveId, debug.BaseUrl)
-					if err != nil {
-						return err
-					}
+					//serveServer, err := r.ServeServerRepo.GetByServeAndUrl(serveId, debug.BaseUrl)
+					//if err != nil {
+					//	return err
+					//}
 
 					endpointCase := model.EndpointCase{
-						Name:           caseName,
-						EndpointId:     endpoint.ID,
-						ServeId:        serveId,
+						Name:       caseName,
+						EndpointId: endpoint.ID,
+						//ServeId:        serveId,
 						ProjectId:      projectId,
 						CreateUserId:   userId,
 						CreateUserName: user.Username,
@@ -816,8 +816,8 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 
 					debug.ProjectId = projectId
 					debug.EndpointInterfaceId = interfaces[0].ID
-					debug.ServeId = serveId
-					debug.ServerId = serveServer.EnvironmentId
+					//debug.ServeId = serveId
+					//debug.ServerId = serveServer.EnvironmentId
 					debug.CaseInterfaceId = endpointCase.ID
 					r.DebugInterfaceRepo.Save(&debug)
 

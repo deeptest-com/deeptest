@@ -119,11 +119,11 @@ export default defineComponent({
       this.diffEditor && this._setModel(this.value, this.original);
 
       // if (usedBy === UsedBy.InterfaceDebug) {
-        if (this.options.usedWith === 'response') {
-          addExtractAction(this.editor, this.onExtractor)
-        } else if (this.options.usedWith === 'request') {
-          addReplaceAction(this.editor, this.onReplace)
-        }
+      if (this.options.usedWith === 'response') {
+        addExtractAction(this.editor, this.onExtractor)
+      } else if (this.options.usedWith === 'request') {
+        addReplaceAction(this.editor, this.onReplace)
+      }
       // }
 
       // @event `change`

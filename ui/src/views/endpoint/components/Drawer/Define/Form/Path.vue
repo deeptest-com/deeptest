@@ -65,9 +65,12 @@ import Field from './Field.vue'
 import {Endpoint} from "@/views/endpoint/data";
 import {cloneByJSON} from "@/utils/object";
 import {handleParamsLinkPath, handlePathLinkParams} from "@/utils/dom";
+import { useRouter } from 'vue-router';
 
 const props = defineProps({});
 const emit = defineEmits([]);
+
+const router = useRouter();
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -92,7 +95,7 @@ const collapse = ref(true);
  * 跳转去新建环境
  * */
 function addEnv() {
-  window.open(`/#/project-setting/enviroment/envdetail`, '_blank')
+  window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/envdetail`, '_blank')
 }
 
 async function changeServer(val) {

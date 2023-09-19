@@ -56,6 +56,7 @@ import {message, notification} from "ant-design-vue";
 import {NewEndpointFormState} from "@/views/Endpoint/data";
 import {InboxOutlined, UploadOutlined} from '@ant-design/icons-vue';
 import {notifySuccess} from "@/utils/notify";
+import { useRouter } from 'vue-router';
 
 const store = useStore<{ Endpoint }>();
 
@@ -85,7 +86,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['ok', 'cancal']);
-
+const router = useRouter();
 const formRef = ref();
 
 async function ok() {
@@ -114,7 +115,7 @@ async function ok() {
         );
         if (res) {
           notifySuccess('发布成功');
-          window.location.href = `/#/docs/index?documentId=${res.data}`
+          window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/docs?documentId=${res.data}`, '_blank')
         }
         reset();
         emit('ok');

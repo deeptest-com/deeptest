@@ -249,7 +249,7 @@ async function shareDocs() {
   })
 
   if (res) {
-    source.value = `${window.location.origin}/#/docs/share?code=${res.code}`;
+    source.value = `${window.location.origin}/docs/share?code=${res.code}`;
     copyUrl();
   }
   // Modal.confirm({

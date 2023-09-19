@@ -355,7 +355,7 @@ const fetching = ref(false);
 
 /*查看选中的接口文档*/
 function goDocs() {
-  window.open(`/docs/view?endpointIds=${selectedRowIds.value.join(',')}`);
+  window.open(`${window.location.origin}/docs/view?endpointIds=${selectedRowIds.value.join(',')}`, '_blank');
 }
 
 const showPublishDocsModal: any = ref(false)
@@ -429,7 +429,7 @@ function share(record: any) {
     endpointId: record.id,
     selectedCategoryId: selectedCategoryId.value,
   };
-  const text = `${window.location.origin}${window.location.hash.split('?')[0]}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
+  const text = `${window.location.origin}${window.location.pathname}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
   if (!navigator.clipboard) {
     var ele = document.createElement("input");
     ele.value = text;

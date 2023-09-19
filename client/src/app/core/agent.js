@@ -8,14 +8,17 @@ import os from 'os';
 import path from 'path';
 import {execSync, spawn} from 'child_process';
 
-import {DEBUG, portAgent, uuid,agentProcessName} from '../utils/consts';
+import {DEBUG, uuid,agentProcessName} from '../utils/consts';
 import {IS_WINDOWS_OS} from "../utils/env";
 import {logErr, logInfo} from '../utils/log';
 import {getBinPath} from "../utils/comm";
 
 let _agentProcess;
+let _uuid = uuid;
 
-export async function startAgent() {
+export async function startAgent(portAgent) {
+    // uuid 和 portAgent 一起作为 agent 的唯一标识
+    _uuid = uuid + '@' + portAgent;
     if (process.env.SKIP_AGENT_SERVER) {
         logInfo(`>> skip to start deeptest agent service by env "SKIP_AGENT_SERVER=${process.env.SKIP_AGENT_SERVER}".`);
         return Promise.resolve();
@@ -23,12 +26,9 @@ export async function startAgent() {
     if (_agentProcess) {
         return Promise.resolve(_agentProcess);
     }
-
     let {SERVER_EXE_PATH: agentExePath} = process.env;
-    logInfo(111111, agentExePath)
     if (!agentExePath && !DEBUG) {
         agentExePath = getBinPath(agentProcessName);
-        logInfo(222222, agentExePath)
     }
 
     if (agentExePath) {
@@ -38,9 +38,9 @@ export async function startAgent() {
         }
         return new Promise((resolve, reject) => {
             const cwd = process.env.AGENT_CWD_PATH || path.dirname(agentExePath);
-            logInfo(`>> starting deeptest-agent with ${agentExePath} -p ${portAgent} -uuid ${uuid} in ${cwd} ...`);
+            logInfo(`>> starting deeptest-agent with ${agentExePath} -p ${portAgent} -uuid ${_uuid} in ${cwd} ...`);
 
-            const cmd = spawn('"'+agentExePath+'"', ['-p', portAgent, '-uuid', uuid], {
+            const cmd = spawn('"'+agentExePath+'"', ['-p', portAgent, '-uuid', _uuid], {
                 cwd,
                 shell: true,
             });
@@ -129,14 +129,14 @@ export function killAgent() {
         if (!IS_WINDOWS_OS) {
             logInfo(`>> not windows`);
 
-            const cmd = `ps -ef | grep ${uuid} | grep -v "grep" | awk '{print $2}' | xargs kill -9`
+            const cmd = `ps -ef | grep ${_uuid} | grep -v "grep" | awk '{print $2}' | xargs kill -9`
             logInfo(`>> kill deeptest-agent cmd: ${cmd}`);
 
             const stdout  = execSync(cmd).toString().trim()
             logInfo(`>> kill deeptest-agent result: ${stdout}`);
 
         } else {
-            const cmd = 'WMIC path win32_process  where "Commandline like \'%%' + uuid + '%%\'" get Processid,Caption';
+            const cmd = 'WMIC path win32_process  where "Commandline like \'%%' + _uuid + '%%\'" get Processid,Caption';
             logInfo(`>> list deeptest-agent process cmd: ${cmd}`);
 
             const stdout = execSync(cmd, {windowsHide: true}).toString().trim()

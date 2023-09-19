@@ -72,6 +72,7 @@ var (
 	ErrNameExist          = BizErr{10100, "同名记录已存在"}
 	ErrUsernameExist      = BizErr{10200, "用户名已占用"}
 	ErrEmailExist         = BizErr{10300, "邮箱已存在"}
+	ErrShortNameExist     = BizErr{10400, "英文缩写已存在"}
 	ErrPasswordMustBeSame = BizErr{10500, "两次密码必须一样"}
 )
 

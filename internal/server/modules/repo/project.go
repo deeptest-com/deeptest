@@ -132,6 +132,12 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 		return
 	}
 
+	po, err = r.GetByCode(req.ShortName)
+	if po.ShortName != "" {
+		bizErr = _domain.ErrShortNameExist
+		return
+	}
+
 	// create project
 	project := model.Project{ProjectBase: req.ProjectBase}
 	err = r.DB.Model(&model.Project{}).Create(&project).Error

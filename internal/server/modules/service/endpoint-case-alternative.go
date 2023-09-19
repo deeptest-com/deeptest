@@ -40,7 +40,7 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.Endpoi
 	//// get spec
 	//doc3 := s.EndpointService.Yaml(endpoint)
 
-	pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/_test.yaml"
+	pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/test2.yaml"
 	loader := &openapi3.Loader{Context: context.Background(), IsExternalRefsAllowed: true}
 	doc3, err := loader.LoadFromFile(pth)
 

@@ -8,7 +8,7 @@ import (
 func LoadForPathParams(params openapi3.Parameters) (category *AlternativeCase) {
 	category = &AlternativeCase{
 		Title:    "路径参数",
-		Category: consts.AlternativeCaseGroup,
+		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,
 	}
 

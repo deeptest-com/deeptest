@@ -8,7 +8,7 @@ import (
 func LoadForHeaders(params openapi3.Parameters) (category *AlternativeCase) {
 	category = &AlternativeCase{
 		Title:    "请求头",
-		Category: consts.AlternativeCaseGroup,
+		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,
 	}
 

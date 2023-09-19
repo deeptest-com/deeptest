@@ -8,7 +8,7 @@ import (
 func LoadForBody(body *openapi3.RequestBodyRef) (category *AlternativeCase) {
 	category = &AlternativeCase{
 		Title:    "请求体",
-		Category: consts.AlternativeCaseGroup,
+		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,
 	}
 

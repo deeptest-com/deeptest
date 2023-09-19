@@ -355,7 +355,7 @@ const fetching = ref(false);
 
 /*查看选中的接口文档*/
 function goDocs() {
-  window.open(`/#/docs/view?endpointIds=${selectedRowIds.value.join(',')}`);
+  window.open(`/docs/view?endpointIds=${selectedRowIds.value.join(',')}`);
 }
 
 const showPublishDocsModal: any = ref(false)

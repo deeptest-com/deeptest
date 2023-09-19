@@ -844,6 +844,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 		//TODO 创建场景
 		scenario.ProjectId = projectId
 		scenario.CategoryId = int64(ScenarioCategory.ID)
+		scenario.Status = consts.Draft
 		scenario, err = r.ScenarioRepo.Create(scenario)
 		if err != nil {
 			return err

@@ -187,6 +187,7 @@ watch(() => {
   if (newVal?.id && oldVal?.id) { // 初始化 旧值为undefined 不需要重复调用loadCategories
     selectedKeys.value = [];
     expandedKeys.value = [];
+    store.commit('Endpoint/setTreeDataCategory', {});
     await loadCategories();
   }
 }, {

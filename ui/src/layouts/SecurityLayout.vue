@@ -49,7 +49,10 @@ export default defineComponent({
                 return;
             }
             isReady.value = true;
-            await store.dispatch('Global/getPermissionList');
+            // 查看具体项目页面时刷新才会校验 权限按钮以及权限路由
+            if (router.currentRoute.value.params.projectNameAbbr) {
+                await store.dispatch('Global/getPermissionList');
+            }
         }
 
         onMounted(() => {

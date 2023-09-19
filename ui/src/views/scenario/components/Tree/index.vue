@@ -145,6 +145,7 @@ watch(() => {
   return currProject.value;
 }, async (newVal) => {
   if (newVal?.id) {
+    store.commit('Scenario/setTreeDataCategory', {});
     await loadCategorys();
   }
 }, {

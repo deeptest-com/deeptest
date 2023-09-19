@@ -17,7 +17,7 @@ const renderfeedback = (currentUser: any) => {
         const help = [
             {
                 name: '后端开发',
-                desc: '后端开发可以在平台设计和定义接口、进行接口自测、发布接口文档、debug调试等工作',
+                desc: '后端开发可以在平台设计和定义遵循OpenAPI 3.0规范的接口，进行接口自测、发布接口文档、debug调试等工作。',
                 arrowHide: false,
                 list: [
                     {
@@ -26,11 +26,11 @@ const renderfeedback = (currentUser: any) => {
                         popover: {
                             content: [
                                 {
-                                    title: '在功能开发前，前后端先约定接口协议，便于前后端分离、并行开发，提高开发效率。',
+                                    title: '在功能开发前，前后端先约定接口协议，便于前后端分离并行开发，提高开发效率。',
                                     content: [
-                                        '接口定义遵循OpenAPI 3.0规范，可基于endpoint路径定义多种请求方法，定义不同请求方法的请求参数、响应数据结构等。',
-                                        '支持基本数据类型、自定义复合类型，可饮用数据组件。',
-                                        '支持从swagger等常见接口格式数据批量导入接口定义',
+                                        '接口定义遵循OpenAPI 3.0规范，可基于endpoint路径定义多种请求方法，定义不同请求方法的请求参数、响应数据结构等。' +
+                                        '支持基本数据类型、自定义复合类型，可引用数据组件。' +
+                                        '支持从swagger等常见格式接口数据批量导入接口定义',
                                     ]
                                 }
                             ],
@@ -122,7 +122,6 @@ const renderfeedback = (currentUser: any) => {
                             ],
                         },
                     },
-
                     {
                         label: '开发联调',
                         icon: require('@/assets/feedback/code.svg'),
@@ -255,7 +254,6 @@ const renderfeedback = (currentUser: any) => {
                             ],
                         },
                     },
-
                     {
                         label: '项目成员',
                         icon: require('@/assets/feedback/user.svg'),

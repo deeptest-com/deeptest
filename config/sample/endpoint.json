@@ -108,7 +108,7 @@
           "schemaItem":{
             "name":"",
             "type":"object",
-            "content":"{\"type\":\"object\",\"ref\":\"#/components/schemas/petRequest\",\"name\":\"petRequest\",\"$ref\":\"#/components/schemas/petRequest\"}",
+            "content":"{\"type\":\"object\",\"ref\":\"#/components/schemas/petRequest\",\"name\":\"petRequest\",\"$ref\":\"#/components/schemas/petRequest\"}"
           }
         },
         "responseBodies":[
@@ -170,7 +170,7 @@
             "code":"204",
             "schemaItem":{
               "type":"string",
-              "content":"{\"type\":\"string\"}",
+              "content":"{\"type\":\"string\"}"
             }
           },
           {

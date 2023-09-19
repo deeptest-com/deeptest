@@ -1323,12 +1323,8 @@ export const requestHeaderOptions = [
 
 export const responseHeaderOptions = [
     {
-        "value": "Location",
-        "label": "Location"
-    },
-    {
-        "value": "Server",
-        "label": "Server"
+        "value": "Content-Disposition",
+        "label": "Content-Disposition"
     },
     {
         "value": "Content-Encoding",
@@ -1343,12 +1339,16 @@ export const responseHeaderOptions = [
         "label": "Last-Modified"
     },
     {
+        "value": "Location",
+        "label": "Location"
+    },
+    {
         "value": "Refresh",
         "label": "Refresh"
     },
     {
-        "value": "Content-Disposition",
-        "label": "Content-Disposition"
+        "value": "Server",
+        "label": "Server"
     },
     {
         "value": "Transfer-Encoding",

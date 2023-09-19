@@ -157,9 +157,7 @@ export default defineComponent({
 
         getSnippet(snippet).then(json => {
           if (json.code === 0) {
-            // const externalDtsFileName = 'ex.d.ts';
-            // monaco.languages.typescript.typescriptDefaults.addExtraLib(libSource, `inmemory://modelRef/${externalDtsFileName}`);
-            monaco.languages.typescript.typescriptDefaults.addExtraLib(json.data.script);
+            monaco.languages.typescript.typescriptDefaults.setExtraLibs([{content: json.data.script}]);
           }
         })
       }

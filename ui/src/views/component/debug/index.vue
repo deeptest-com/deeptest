@@ -5,7 +5,6 @@
         <Invocation :showMethodSelection = "showMethodSelection"
                     :onSave="saveDebugData"
                     :onSaveAsCase="saveAsCase"
-                    :onGenerateCases="generateCases"
                     :onSync="syncDebugData"
                     :baseUrlDisabled="baseUrlDisabled"
                     :urlDisabled="urlDisabled" />

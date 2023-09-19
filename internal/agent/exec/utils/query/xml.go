@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/antchfx/xmlquery"
+	"github.com/antchfx/xpath"
 	"strings"
 )
 
@@ -11,6 +12,14 @@ func XmlQuery(content string, expression string) (result string) {
 	doc, err := xmlquery.Parse(strings.NewReader(content))
 	if err != nil {
 		result = consts.ContentErr
+		return
+	}
+
+	if isEvaluate(expression) {
+		expr, _ := xpath.Compile(expression)
+		float := expr.Evaluate(xmlquery.CreateXPathNavigator(doc))
+		result = fmt.Sprintf("%v", float)
+
 		return
 	}
 

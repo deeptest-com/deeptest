@@ -219,12 +219,6 @@ const saveAsCase = () => {
     props.onSaveAsCase()
   }
 }
-const generateCases = () => {
-  console.log('generateCases')
-  if (props.onGenerateCases) {
-    props.onGenerateCases()
-  }
-}
 
 const sync = (e) => {
   if (validateInfo() && props.onSync) {

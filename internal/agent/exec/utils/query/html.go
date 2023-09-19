@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/antchfx/htmlquery"
+	"github.com/antchfx/xpath"
 	"strings"
 )
 
@@ -17,6 +18,14 @@ func HtmlQuery(content string, expression string) (result string) {
 	doc, err := htmlquery.Parse(strings.NewReader(content))
 	if err != nil {
 		result = consts.ContentErr
+		return
+	}
+
+	if isEvaluate(expression) {
+		expr, _ := xpath.Compile(expression)
+		float := expr.Evaluate(htmlquery.CreateXPathNavigator(doc))
+		result = fmt.Sprintf("%v", float)
+
 		return
 	}
 

@@ -5,12 +5,12 @@
       :footer="null"
       @cancel="cancel"
       width="100%"
-      wrapClassName="dp-full-modal condition-edit-fullscreen">
+      wrapClassName="dp-full-modal mock-script-fullscreen"
+      :bodyStyle="{height: 'calc(100% - 36px)'}">
 
     <div class="content">
-      <div class="condition-form">
-        <MockScript :condition="model"
-                    :finish="onCancel"/>
+      <div class="form">
+        <MockScript />
       </div>
 
       <div class="buttons">
@@ -68,7 +68,7 @@ const wrapperCol = { span: 18, offset:4 }
 </script>
 
 <style lang="less">
-.condition-edit-fullscreen {
+.mock-script-fullscreen {
   height: 100%;
 
   .head {
@@ -79,7 +79,7 @@ const wrapperCol = { span: 18, offset:4 }
   .content {
     height: calc(100% - 30px);
 
-    .condition-form {
+    .form {
       height: calc(100% - 36px);
     }
     .buttons {

@@ -112,14 +112,14 @@ async function toVarPage() {
   isShowGlobalVars.value = true;
   isShowGlobalParams.value = false;
   store.dispatch('ProjectSetting/setEnvDetail', null);
-  router.push(`/${router.currentRoute.value.params.projectId}/project-setting/enviroment/var`);
+  router.push(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/var`);
 }
 
 async function toParamsPage() {
   isShowGlobalParams.value = true;
   isShowGlobalVars.value = false;
   store.dispatch('ProjectSetting/setEnvDetail', null);
-  router.push(`/${router.currentRoute.value.params.projectId}/project-setting/enviroment/params`);
+  router.push(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/params`);
 }
 
 async function toEnvDetail(env: any) {
@@ -127,8 +127,7 @@ async function toEnvDetail(env: any) {
   isShowGlobalParams.value = false;
   isShowAddEnv.value = !env;
   await store.dispatch('ProjectSetting/setEnvDetail', env);
-  console.log(router.currentRoute.value.params.projectId);
-  router.push(`/${router.currentRoute.value.params.projectId}/project-setting/enviroment/envdetail${env ? `/${env.id}` : ''}`);
+  router.push(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/envdetail${env ? `/${env.id}` : ''}`);
 }
 
 /**

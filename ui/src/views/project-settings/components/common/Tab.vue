@@ -31,8 +31,8 @@ const activeRoute = ref<any>('');
 
 const handleChange = (e) => {
   console.log(e);
-  const path =  e === '/:projectId/project-setting/enviroment' ? '/:projectId/project-setting/enviroment/var' : e;
-  router.push(path.replace(':projectId', router.currentRoute.value.params.projectId));
+  const path =  e === '/:projectNameAbbr/project-setting/enviroment' ? '/:projectNameAbbr/project-setting/enviroment/var' : e;
+  router.push(path.replace(':projectNameAbbr', router.currentRoute.value.params.projectNameAbbr));
 }
 
 watch(() => {
@@ -40,7 +40,7 @@ watch(() => {
 }, (v) => {
   const [path, list = []]: any = v;
   if (path && Array.isArray(list) && list.length > 0) {
-    const currPath = path.replace(router.currentRoute.value.params.projectId, ':projectId');
+    const currPath = path.replace(router.currentRoute.value.params.projectNameAbbr, ':projectNameAbbr');
     const find = list?.find((route: any) => currPath.includes(route.path));
     activeRoute.value = find && find.path;
     console.log(activeRoute.value);

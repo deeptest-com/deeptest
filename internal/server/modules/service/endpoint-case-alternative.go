@@ -48,6 +48,9 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.Endpoi
 	root.IsDir = true
 
 	root.Children = append(root.Children, casesHelper.LoadForQueryParams(apiOperation.Parameters))
+	root.Children = append(root.Children, casesHelper.LoadForPathParams(apiOperation.Parameters))
+	root.Children = append(root.Children, casesHelper.LoadForHeaders(apiOperation.Parameters))
+	root.Children = append(root.Children, casesHelper.LoadForBody(apiOperation.RequestBody))
 
 	return
 }
@@ -79,11 +82,11 @@ func (s *EndpointCaseAlternativeService) GenerateFromSpec(req serverDomain.Endpo
 		}
 		log.Println(apiOperation)
 
-		alternativeCases, err1 := casesHelper.GenerateAlternativeCase(basicDebugData, apiOperation)
-		if err1 != nil {
-			continue
-		}
-		log.Println(alternativeCases)
+		//alternativeCases, err1 := casesHelper.GenerateAlternativeCase(basicDebugData, apiOperation)
+		//if err1 != nil {
+		//	continue
+		//}
+		//log.Println(alternativeCases)
 	}
 
 	return

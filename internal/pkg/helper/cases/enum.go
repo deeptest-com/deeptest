@@ -9,6 +9,8 @@ const (
 	OasFieldTypeInteger OasFieldType = "integer"
 	OasFieldTypeBoolean OasFieldType = "boolean"
 	OasFieldTypeArray   OasFieldType = "array"
+
+	OasFieldTypeObject OasFieldType = "object"
 )
 
 func (e OasFieldType) String() string {

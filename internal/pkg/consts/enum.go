@@ -769,8 +769,10 @@ const (
 	AlternativeCaseRoot   AlternativeCaseCategory = "root"
 	AlternativeCaseGroup  AlternativeCaseCategory = "group"
 	AlternativeCaseDir    AlternativeCaseCategory = "dir"
+	AlternativeCaseParam  AlternativeCaseCategory = "param"
 	AlternativeCaseObject AlternativeCaseCategory = "object"
-	AlternativeCaseField  AlternativeCaseCategory = "field"
+	AlternativeCaseArray  AlternativeCaseCategory = "array"
+	AlternativeCaseProp   AlternativeCaseCategory = "prop"
 	AlternativeCaseCase   AlternativeCaseCategory = "case"
 )
 

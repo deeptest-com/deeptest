@@ -22,6 +22,6 @@ type AlternativeCase struct {
 	ParentId int                            `json:"parentId"`
 
 	Ordr     int                `json:"ordr"`
-	Children []*AlternativeCase `gorm:"-" json:"children"`
-	Slots    iris.Map           `gorm:"-" json:"slots"`
+	Children []*AlternativeCase `json:"children"`
+	Slots    iris.Map           `json:"slots"`
 }

@@ -782,4 +782,6 @@ const (
 	AlternativeCaseRequired AlternativeCaseType = "required"
 	AlternativeCaseTyped    AlternativeCaseType = "typed"
 	AlternativeCaseEnum     AlternativeCaseType = "enum"
+	AlternativeCaseFormat   AlternativeCaseType = "format"
+	AlternativeCaseRule     AlternativeCaseType = "rule"
 )

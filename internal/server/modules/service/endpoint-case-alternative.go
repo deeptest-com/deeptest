@@ -1,12 +1,14 @@
 package service
 
 import (
+	"context"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/cases"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/getkin/kin-openapi/openapi3"
 	"log"
 )
 
@@ -27,20 +29,25 @@ type EndpointCaseAlternativeService struct {
 func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.EndpointCaseAlternativeLoadReq) (
 	root casesHelper.AlternativeCase, err error) {
 
-	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
-	if endpointInterfaceId == 0 {
-		return
-	}
+	//_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
+	//if endpointInterfaceId == 0 {
+	//	return
+	//}
+	//
+	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
+	//endpoint, err := s.EndpointRepo.GetWithInterface(endpointInterface.EndpointId, "v0.1.0")
+	//
+	//// get spec
+	//doc3 := s.EndpointService.Yaml(endpoint)
 
-	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-	endpoint, err := s.EndpointRepo.GetWithInterface(endpointInterface.EndpointId, "v0.1.0")
+	pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/_test.yaml"
+	loader := &openapi3.Loader{Context: context.Background(), IsExternalRefsAllowed: true}
+	doc3, err := loader.LoadFromFile(pth)
 
-	// get spec
-	doc3 := s.EndpointService.Yaml(endpoint)
 	apiPathItem, _ := casesHelper.GetApiPathItem(doc3)
 
 	apiOperation, err := casesHelper.GetApiOperation(req.Method, apiPathItem)
-	if err != nil {
+	if err != nil || apiOperation == nil {
 		return
 	}
 

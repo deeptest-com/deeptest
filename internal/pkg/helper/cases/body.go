@@ -21,17 +21,18 @@ func LoadForBody(body *openapi3.RequestBodyRef) (category *AlternativeCase) {
 
 		schema := mediaObj.Schema.Value
 		props := schema.Properties
+		requires := schema.Required
 
-		for name, propRef := range props {
+		for propName, propRef := range props {
 			propVal := propRef.Value
 
 			propCase := &AlternativeCase{
-				Title:    name,
+				Title:    propName,
 				Category: consts.AlternativeCaseProp,
 				IsDir:    true,
 			}
 
-			addPropCase(propVal, propCase)
+			addPropCase(propName, propVal, requires, propCase)
 
 			if len(propCase.Children) > 0 {
 				mediaCase.Children = append(mediaCase.Children, propCase)

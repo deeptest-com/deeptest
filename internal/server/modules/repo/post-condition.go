@@ -314,6 +314,10 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			responseDefine.ConditionId = po.ID
 			responseDefine.ConditionEntityId = po.EntityId
 			responseBody := r.EndpointInterfaceRepo.GetResponse(endpointInterfaceId, entity.Code)
+			if responseBody.ID == 0 {
+				logUtils.Infof("响应体拿不到数据 %v", po.EntityId)
+				continue
+			}
 			responseDefine.Schema = responseBody.SchemaItem.Content
 			responseDefine.Code = entity.Code
 			responseDefine.MediaType = responseBody.MediaType

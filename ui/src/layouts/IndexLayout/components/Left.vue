@@ -180,6 +180,10 @@ export default defineComponent({
     flex-direction: column;
     justify-content: space-between;
 
+    &::-webkit-scrollbar{
+      width: 0;
+    }
+
     .settings {
       width: 100%;
       padding: 6px 4px;

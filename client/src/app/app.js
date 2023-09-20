@@ -5,6 +5,7 @@ import {
     electronMsg,
     electronMsgReplay,
     electronMsgUpdate,
+    electronMsgUsePort,
     minimumSizeHeight,
     minimumSizeWidth
 } from './utils/consts';
@@ -30,6 +31,9 @@ const getBuffer = bent('buffer')
 app.commandLine.appendSwitch('disable-web-security');
 let postmanToOpenApi = null
 
+// agent 服务端口
+let port = '';
+
 mkdir('converted')
 
 export class DeepTestApp {
@@ -41,7 +45,7 @@ export class DeepTestApp {
         this._windows = new Map();
         // 需要启动本地 Agent 服务，之后再会启动 UI 服务
         (async () => {
-            const port = await getUsefulPort(portAgent,56999);
+            port = await getUsefulPort(portAgent,56999);
             startAgent(port).then((agentUrl)=> {
                 if (agentUrl) logInfo(`>> deeptest server started successfully on : ${agentUrl}`);
                 this.bindElectronEvents();
@@ -88,11 +92,12 @@ export class DeepTestApp {
         mainWin.show()
 
         this._windows.set('main', mainWin);
-
         // 最终都是返回 http地址，远端 或者 本地http服务
         const uiPort = process.env.UI_SERVER_PORT || await getUsefulPort(portClient,55999);
         const url = await startUIService(uiPort);
         await mainWin.loadURL(url);
+        // 通知渲染进程，agent服务端口
+        mainWin.webContents.send(electronMsgUsePort, {uiPort,agentPort:port});
         // 进程间通信逻辑
         ipcMain.on(electronMsg, (event, arg) => {
             logInfo('::::msg from renderer', JSON.stringify(arg))
@@ -181,7 +186,7 @@ export class DeepTestApp {
 
         setInterval(async () => {
             await checkUpdate(this._windows.get('main'))
-        }, 6000*60*24);
+        }, 6000);
     }
 
     async quit() {

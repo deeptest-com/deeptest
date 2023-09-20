@@ -169,7 +169,7 @@
         <script>
             const titleEl = document.getElementsByClassName('app-loading-title');
             if (titleEl[0] && env === 'ly') {
-                titleEl[0].innerHTML = location.host;
+                titleEl[0].innerHTML =!!window.require ? "<%= process.env.VUE_APP_DEPLOY_ENV_TITLE %>" : location.host;
             } else {
                 titleEl[0].innerHTML = 'Deeptest.com';
             }

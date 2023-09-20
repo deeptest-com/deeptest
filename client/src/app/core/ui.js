@@ -16,6 +16,7 @@ import express from 'express';
 
 import {DEBUG} from '../utils/consts';
 import {logInfo, logErr} from '../utils/log';
+const history = require('connect-history-api-fallback');
 
 let _uiService;
 
@@ -50,6 +51,7 @@ export function startUIService(portClient) {
             logInfo(`>> starting ui serer at ${uiServerUrl} with port ${port}`);
 
             const uiServer = express();
+            uiServer.use(history());
             uiServer.use(express.static(uiServerUrl));
             const server = uiServer.listen(port, serverError => {
                 if (serverError) {

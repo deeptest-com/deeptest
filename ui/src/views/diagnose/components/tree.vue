@@ -280,12 +280,14 @@ async function handleModalOk(model) {
     serveId: currServe.value.id,
   })
 
-  const interfaceData = await store.dispatch('DiagnoseInterface/saveInterface', model)
+  const interfaceData = await store.dispatch('DiagnoseInterface/saveInterface', model);
   if (interfaceData) {
-    currentNode.value = null
-    expandOneKey(treeDataMap.value, model.parentId, expandedKeys.value)
-    selectNode([interfaceData.id], null)
-    store.dispatch('DiagnoseInterface/openInterfaceTab', interfaceData);
+    currentNode.value = null;
+    if (interfaceData.type !== 'dir') {
+      expandOneKey(treeDataMap.value, model.parentId, expandedKeys.value);
+      selectNode([interfaceData.id], null);
+      store.dispatch('DiagnoseInterface/openInterfaceTab', interfaceData);
+    }
   }
 }
 
@@ -395,6 +397,11 @@ watch(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+
+  .nodata-tip {
+    margin-left: 0 !important;
   }
 }
 </style>

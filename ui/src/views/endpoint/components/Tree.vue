@@ -475,6 +475,7 @@ async function onDrop(info: DropEvent) {
 
 .nodata-tip {
   margin-top: 8px;
+  margin-left: 0 !important;
   text-align: center;
   display: flex;
   align-items: center;

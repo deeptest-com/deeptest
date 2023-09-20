@@ -49,6 +49,7 @@
 
                 <span v-else>
                   {{ nodeProps.sample }}
+                  &nbsp;
                   <EditOutlined @click="editStart(nodeProps.key)" />
                 </span>
 

@@ -127,12 +127,22 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 	if typ == OasFieldTypeInteger || typ == OasFieldTypeNumber {
 		if schema.Min != nil && *schema.Min != 0 {
 			sample = *schema.Min - 1
-			addRuleCase(paramVal.Name, sample, typ, consts.AlternativeCaseRulesMin, parent)
+
+			if schema.ExclusiveMin {
+				sample = *schema.Min
+			}
+
+			addRuleCase(paramVal.Name, sample, typ, *schema.Min, consts.AlternativeCaseRulesMin, parent)
 		}
 
 		if schema.Max != nil && *schema.Max != 0 {
 			sample = *schema.Max + 1
-			addRuleCase(paramVal.Name, sample, typ, consts.AlternativeCaseRulesMax, parent)
+
+			if schema.ExclusiveMax {
+				sample = *schema.Max
+			}
+
+			addRuleCase(paramVal.Name, sample, typ, *schema.Max, consts.AlternativeCaseRulesMax, parent)
 		}
 
 		if schema.MaxLength != nil && *schema.MaxLength > 0 {
@@ -141,12 +151,12 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 			} else {
 				sample = 1 / math.Pow(10, float64(*schema.MaxLength-1))
 			}
-			addRuleCase(paramVal.Name, sample, typ, consts.AlternativeCaseRulesMaxLength, parent)
+			addRuleCase(paramVal.Name, sample, typ, *schema.MaxLength, consts.AlternativeCaseRulesMaxLength, parent)
 		}
 
 		if schema.MinLength > 0 {
 			sample = 1
-			addRuleCase(paramVal.Name, sample, typ, consts.AlternativeCaseRulesMinLength, parent)
+			addRuleCase(paramVal.Name, sample, typ, schema.MinLength, consts.AlternativeCaseRulesMinLength, parent)
 		}
 
 		if schema.MultipleOf != nil && *schema.MultipleOf != 0 {
@@ -155,40 +165,30 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 			} else {
 				sample = *schema.MultipleOf + *schema.MultipleOf*0.1
 			}
-			addRuleCase(paramVal.Name, sample, typ, consts.AlternativeCaseRulesMultipleOf, parent)
-		}
-
-		if schema.ExclusiveMin {
-			sample = *schema.Min
-			addRuleCase(paramVal.Name, sample, typ, consts.AlternativeCaseRulesExclusiveMin, parent)
-		}
-
-		if schema.ExclusiveMax {
-			sample = *schema.Max
-			addRuleCase(paramVal.Name, sample, typ, consts.AlternativeCaseRulesExclusiveMax, parent)
+			addRuleCase(paramVal.Name, sample, typ, *schema.MultipleOf, consts.AlternativeCaseRulesMultipleOf, parent)
 		}
 
 	} else {
 		if schema.Pattern != "" {
 			sample = RandStrSpecial()
-			addRuleCase(paramVal.Name, sample, typ, consts.AlternativeCaseRulesPattern, parent)
+			addRuleCase(paramVal.Name, sample, typ, schema.Pattern, consts.AlternativeCaseRulesPattern, parent)
 		}
 
 		if schema.MaxLength != nil && *(schema.MaxLength) > 0 {
 			sample = RandStrWithLen(int(*(schema.MaxLength) + 1))
-			addRuleCase(paramVal.Name, sample, typ, consts.AlternativeCaseRulesMaxLength, parent)
+			addRuleCase(paramVal.Name, sample, typ, *schema.MaxLength, consts.AlternativeCaseRulesMaxLength, parent)
 		}
 
 		if schema.MinLength > 0 {
 			sample = RandStrWithLen(int(schema.MinLength - 1))
-			addRuleCase(paramVal.Name, sample, typ, consts.AlternativeCaseRulesMinLength, parent)
+			addRuleCase(paramVal.Name, sample, typ, schema.MinLength, consts.AlternativeCaseRulesMinLength, parent)
 		}
 	}
 }
 
-func addRuleCase(name string, sample interface{}, typ OasFieldType, rule consts.AlternativeCaseRules, parent *AlternativeCase) {
+func addRuleCase(name string, sample interface{}, typ OasFieldType, tag interface{}, rule consts.AlternativeCaseRules, parent *AlternativeCase) {
 	ruleCase := &AlternativeCase{
-		Title:  fmt.Sprintf("rule - %s", rule.String()),
+		Title:  fmt.Sprintf("%s (%v)", rule.String(), tag),
 		Sample: sample,
 
 		Category:  consts.AlternativeCaseCase,

@@ -56,6 +56,9 @@ const routes: RoutesDataItem[] = [
         path: 'view',
         component: () => import('@/views/docs/index.vue'),
         hidden: true,
+        meta: {
+          title: '查看文档'
+        }
       },
     ],
   },
@@ -67,30 +70,42 @@ const routes: RoutesDataItem[] = [
     children: [
       {
         icon: 'home',
-        title: 'home',
+        title: '首页',
         path: '',
         component: () => import('@/views/home/index.vue'),
+        meta: {
+          title: '首页'
+        }
       },
       {
         icon: 'profile',
-        title: 'profile',
+        title: '个人信息',
         path: 'profile',
         component: () => import('@/views/user/info/profile.vue'),
         hidden: true,
+        meta: {
+          title: '个人信息'
+        }
       },
       {
         icon: 'message',
-        title: 'message',
+        title: '消息',
         path: 'message',
         component: () => import('@/views/user/info/message.vue'),
         hidden: true,
+        meta: {
+          title: '消息'
+        }
       },
       {
         icon: 'user',
-        title: 'user.management',
+        title: '用户管理',
         path: 'user-manage',
         component: () => import('@/views/user/list/index.vue'),
-        hidden: true
+        hidden: true,
+        meta: {
+          title: '用户管理'
+        }
       },
     ]
   },

@@ -134,8 +134,10 @@ const columns = [
     title: "序号",
     dataIndex: "index",
     width: 80,
-    customRender: ({ text, index }: { text: any; index: number }) =>
-      (pagination.value.current - 1) * pagination.value.pageSize + index + 1,
+    customRender: ({ text, index }: { text: any; index: number }) => {
+      // console.error(pagination.value);
+      return (pagination.value.current - 1) * pagination.value.pageSize + index + 1
+    },
   },
   {
     title: "用户名",

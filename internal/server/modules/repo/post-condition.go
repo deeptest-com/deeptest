@@ -42,6 +42,8 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 		db.Where("entity_type = ? or entity_type = ?", consts.ConditionTypeResponseDefine, consts.ConditionTypeCheckpoint)
 	}
 
+	db.Order("ordr ASC")
+
 	err = db.Find(&pos).Error
 
 	return
@@ -314,6 +316,10 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 			responseDefine.ConditionId = po.ID
 			responseDefine.ConditionEntityId = po.EntityId
 			responseBody := r.EndpointInterfaceRepo.GetResponse(endpointInterfaceId, entity.Code)
+			if responseBody.ID == 0 {
+				logUtils.Infof("响应体拿不到数据 %v", po.EntityId)
+				continue
+			}
 			responseDefine.Schema = responseBody.SchemaItem.Content
 			responseDefine.Code = entity.Code
 			responseDefine.MediaType = responseBody.MediaType

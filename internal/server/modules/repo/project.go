@@ -725,8 +725,6 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 	endpointCaseJson := _fileUtils.ReadFile("./config/sample/endpoint-case.json")
 	_commUtils.JsonDecode(endpointCaseJson, &endpointCaseMap)
 
-	endpointNameMap := make(map[string]model.Endpoint)
-
 	user, _ := r.UserRepo.FindById(userId)
 
 	//获取场景配置
@@ -765,7 +763,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 		}
 
 		//创建接口
-		interfaceIds := map[string]uint{}
+		interfaceIds := map[string]model.EndpointInterface{}
 		for _, endpoint := range endpoints {
 			endpoint.ServeId = serveId
 			endpoint.ProjectId = projectId
@@ -775,7 +773,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 			if err != nil {
 				return err
 			}
-			interfaceIds[endpoint.Interfaces[0].Name] = endpoint.Interfaces[0].ID
+			interfaceIds[endpoint.Interfaces[0].Name] = endpoint.Interfaces[0]
 		}
 
 		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
@@ -787,25 +785,12 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 				return err
 			}
 
-			interfaces, err := r.EndpointInterfaceRepo.GetByEndpointId(endpoint.ID)
-			if err != nil {
-				return err
-			}
-
-			endpoint.Interfaces = interfaces
-			endpointNameMap[endpoint.Title] = endpoint
-
 			for _, caseDebug := range caseDebugs {
 				for caseName, debug := range caseDebug {
-					//serveServer, err := r.ServeServerRepo.GetByServeAndUrl(serveId, debug.BaseUrl)
-					//if err != nil {
-					//	return err
-					//}
-
 					endpointCase := model.EndpointCase{
-						Name:       caseName,
-						EndpointId: endpoint.ID,
-						//ServeId:        serveId,
+						Name:           caseName,
+						EndpointId:     endpoint.ID,
+						ServeId:        serveId,
 						ProjectId:      projectId,
 						CreateUserId:   userId,
 						CreateUserName: user.Username,
@@ -815,9 +800,8 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 					}
 
 					debug.ProjectId = projectId
-					debug.EndpointInterfaceId = interfaces[0].ID
-					//debug.ServeId = serveId
-					//debug.ServerId = serveServer.EnvironmentId
+					debug.EndpointInterfaceId = interfaceIds[endpoint.Title].ID
+					debug.ServeId = serveId
 					debug.CaseInterfaceId = endpointCase.ID
 					r.DebugInterfaceRepo.Save(&debug)
 
@@ -830,11 +814,11 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 
 		// 创建Mock期望
 		for endpointName, mockExpects := range endpointMockExpectsMap {
-			if endpoint, ok := endpointNameMap[endpointName]; ok {
-				for _, mockExpect := range mockExpects {
-					mockExpect.EndpointId = endpoint.ID
-					mockExpect.EndpointInterfaceId = endpoint.Interfaces[0].ID
-					mockExpect.Method = endpoint.Interfaces[0].Method
+			for _, mockExpect := range mockExpects {
+				if endpointInterface, ok := interfaceIds[endpointName]; ok {
+					mockExpect.EndpointId = endpointInterface.EndpointId
+					mockExpect.EndpointInterfaceId = endpointInterface.ID
+					mockExpect.Method = endpointInterface.Method
 					mockExpect.CreateUser = user.Username
 					_, err = r.EndpointMockExpectRepo.Save(mockExpect)
 					if err != nil {
@@ -860,6 +844,9 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 		//TODO 创建场景
 		scenario.ProjectId = projectId
 		scenario.CategoryId = int64(ScenarioCategory.ID)
+		scenario.Status = consts.Draft
+		scenario.CreateUserId = userId
+		scenario.CreateUserName = user.Username
 		scenario, err = r.ScenarioRepo.Create(scenario)
 		if err != nil {
 			return err
@@ -872,6 +859,8 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 		}
 		//TODO 创建计划
 		plan.ProjectId = projectId
+		plan.Status = consts.Draft
+		plan.CreateUserId = userId
 		plan, _ = r.PlanRepo.Create(plan)
 
 		//关联场景
@@ -900,12 +889,12 @@ func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(userId uint, roleName consts.
 	return
 }
 
-func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceIds map[string]uint, processorEntity map[string]interface{}, projectId, scenarioId, parentId, userId, serveId uint) error {
+func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceIds map[string]model.EndpointInterface, processorEntity map[string]interface{}, projectId, scenarioId, parentId, userId, serveId uint) error {
 	processor := model.Processor{
 		Name:                  root.Name,
 		EntityCategory:        root.EntityCategory,
 		EntityType:            root.EntityType,
-		EndpointInterfaceId:   interfaceIds[root.Name],
+		EndpointInterfaceId:   interfaceIds[root.Name].ID,
 		ParentId:              parentId,
 		ScenarioId:            scenarioId,
 		ProjectId:             projectId,
@@ -995,7 +984,7 @@ func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceId
 		} else if processorCategory == consts.ProcessorInterface {
 			var debug model.DebugInterface
 			_commUtils.Map2Struct(item, &debug)
-			debug.EndpointInterfaceId = interfaceIds[root.Name]
+			debug.EndpointInterfaceId = interfaceIds[root.Name].ID
 			debug.ProjectId = projectId
 			debug.ServeId = serveId
 			debug.ScenarioProcessorId = processor.ID

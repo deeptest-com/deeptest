@@ -107,5 +107,9 @@ onMounted(() => {
 <style lang="less" scoped>
 .processor_interface_default-main {
   height: 100%;
+
+  .debug-index-wrapper {
+    height: calc(100% - 40px);
+  }
 }
 </style>

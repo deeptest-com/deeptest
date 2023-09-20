@@ -29,7 +29,6 @@
         <permission :roles="routeItem.roles">
           <router-view></router-view>
         </permission>
-        <right-footer></right-footer>
       </div>
     </div>
   </div>
@@ -57,7 +56,6 @@ import IndexLayoutRoutes from './routes';
 import Permission from '@/components/Permission/index.vue';
 import Left from '@/layouts/IndexLayout/components/Left.vue';
 import RightTop from '@/layouts/IndexLayout/components/RightTop.vue';
-import RightFooter from '@/layouts/IndexLayout/components/RightFooter.vue';
 
 export default defineComponent({
   name: 'IndexLayout',
@@ -65,7 +63,6 @@ export default defineComponent({
     Permission,
     Left,
     RightTop,
-    RightFooter,
   },
   setup() {
     const store = useStore<{ Global: GlobalStateType; User: UserStateType; }>();
@@ -188,6 +185,7 @@ export default defineComponent({
       flex: 1;
       min-width: 1217px;
       overflow: hidden;
+      padding: 16px;
     }
   }
 }

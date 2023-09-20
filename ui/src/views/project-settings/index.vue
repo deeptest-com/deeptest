@@ -45,9 +45,8 @@ watch(() => {
 
 <style scoped lang="less">
 .container {
-  margin: 16px;
   background: #ffffff;
-  min-height: calc(100vh - 92px);
+  height: 100%;
   overflow: hidden;
 }
 

@@ -46,9 +46,8 @@ const handlePaneResize = (...args) => {
 
 <style lang="less" scoped>
 .container {
-  margin: 16px;
   background: #ffffff;
-  height: calc(100vh - 96px);
+  height: 100%;
 
   :deep(.ant-pagination) {
     margin-right: 24px;

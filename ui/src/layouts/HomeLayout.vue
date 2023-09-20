@@ -8,7 +8,9 @@
       </div>
     </div>
     <!-- <router-view></router-view> -->
-    <slot />
+    <div class="home-content">
+      <slot />
+    </div>
     <RightTopUpdate />
   </div>
 </template>
@@ -43,6 +45,8 @@ export default defineComponent({
 .home-wrap {
   background: #F5F5F5;
   min-width: 1440px;
+  max-height: 100vh;
+  overflow: hidden;
 
   .home-header {
     width: 100%;
@@ -67,6 +71,11 @@ export default defineComponent({
         background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016448.svg");
       }
     }
+  }
+ 
+  .home-content {
+    max-height: calc(100vh - 64px);
+    overflow-y: scroll;
   }
 }
 </style>

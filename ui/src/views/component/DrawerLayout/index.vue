@@ -99,7 +99,7 @@ provide('containerScrollTop', computed(() => containerScrollTop.value));
   height: 100vh;
 
   .dp-drawer-content {
-    height: calc(100vh - 48px);
+    height: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
   }
@@ -164,9 +164,7 @@ provide('containerScrollTop', computed(() => containerScrollTop.value));
     padding: 0 16px;
     :deep(.tab-pane) {
       position: relative;
-      //margin-top: 16px;
       height: calc(100vh - 96px);
-      min-height: calc(100vh - 96px);
     }
   }
   .dp-drawer-header{

@@ -102,6 +102,7 @@ components:
           type: integer
           minimum: 11
           maximum: 99
+          exclusiveMinimum: true
 
         username:
           type: string

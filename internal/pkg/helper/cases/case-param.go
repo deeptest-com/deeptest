@@ -131,7 +131,7 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 
 			if schema.ExclusiveMin {
 				sample = *schema.Min
-				tag = tag + " ExclusiveMin"
+				tag = tag + " exclusive"
 			}
 
 			addRuleCase(paramVal.Name, sample, typ, tag, consts.AlternativeCaseRulesMin, parent)
@@ -143,7 +143,7 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 
 			if schema.ExclusiveMax {
 				sample = *schema.Max
-				tag = tag + " ExclusiveMax"
+				tag = tag + " exclusive"
 			}
 
 			addRuleCase(paramVal.Name, sample, typ, tag, consts.AlternativeCaseRulesMax, parent)

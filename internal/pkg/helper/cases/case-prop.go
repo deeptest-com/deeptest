@@ -175,7 +175,7 @@ func addPropRuleCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 
 			if schema.ExclusiveMin {
 				sample = *schema.Min
-				tag = tag + " ExclusiveMin"
+				tag = tag + " exclusive"
 			}
 
 			addRuleCase(name, sample, typ, tag, consts.AlternativeCaseRulesMin, parent)
@@ -187,7 +187,7 @@ func addPropRuleCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 
 			if schema.ExclusiveMax {
 				sample = *schema.Max
-				tag = tag + " ExclusiveMax"
+				tag = tag + " exclusive"
 			}
 
 			addRuleCase(name, sample, typ, tag, consts.AlternativeCaseRulesMax, parent)

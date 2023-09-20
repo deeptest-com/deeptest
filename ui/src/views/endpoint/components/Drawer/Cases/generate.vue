@@ -38,7 +38,21 @@
           <template #title="nodeProps">
             <span class="tree-title">
               <span>{{ nodeProps.title }}</span>
-              <span v-if="nodeProps.sample">: {{ nodeProps.sample }}</span>
+              <template v-if="nodeProps.category==='case'">
+                <span>: &nbsp;&nbsp;&nbsp;</span>
+
+                <span v-if="treeDataMap[nodeProps.key]?.isEdit">
+                  <a-input size="small"
+                           v-model:value="sampleRef" />
+                  <CheckOutlined @click="editFinish(nodeProps.key)" class="dp-icon-btn dp-trans-80" />
+                </span>
+
+                <span v-else>
+                  {{ nodeProps.sample }}
+                  <EditOutlined @click="editStart(nodeProps.key)" />
+                </span>
+
+              </template>
             </span>
           </template>
 
@@ -58,7 +72,8 @@ import {computed, defineProps, inject, reactive, ref, watch} from 'vue';
 import {Methods, UsedBy} from "@/utils/enum";
 import {Form} from "ant-design-vue";
 import {useStore} from "vuex";
-import {FolderOutlined, FolderOpenOutlined, FileOutlined, CaretDownOutlined} from '@ant-design/icons-vue';
+import {FolderOutlined, FolderOpenOutlined, FileOutlined, CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
+
 import {Endpoint} from "@/views/endpoint/data";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";
 
@@ -68,6 +83,13 @@ const usedBy = inject('usedBy') as UsedBy
 const store = useStore<{ Endpoint: EndpointStateType }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
 const alternativeCases = computed<any>(() => store.state.Endpoint.alternativeCases);
+
+const sampleRef = ref('')
+const treeDataMap = ref({})
+
+watch(alternativeCases, (newVal) => {
+  getNodeMap({key: '', children: newVal}, treeDataMap.value)
+}, {deep: true, immediate: true});
 
 const props = defineProps({
   visible: {
@@ -172,11 +194,52 @@ function hasDefinedMethod(method: string) {
   })
 }
 
+const editStart = (key) => {
+  console.log('editStart', key)
+  resetEdit()
+  treeDataMap.value[key].isEdit = true
+  sampleRef.value = treeDataMap.value[key].sample
+}
+const editFinish = (key) => {
+  console.log('editFinish', key)
+  treeDataMap.value[key].isEdit = false
+  treeDataMap.value[key].sample = sampleRef.value
+}
+function resetEdit() {
+  Object.keys(treeDataMap.value).forEach((key) => {
+    treeDataMap.value[key].isEdit = false
+  })
+}
+function getNodeMap(treeNode: any, mp: any) {
+  if (!treeNode) return
+
+  treeNode.entity = null
+  mp[treeNode.key] = treeNode
+
+  if (treeNode.children) {
+    treeNode.children.forEach((item, index) => {
+      getNodeMap(item, mp)
+    })
+  }
+
+  return
+}
+
 </script>
 
 <style lang="less" scoped>
 .modal-btns {
   display: flex;
   justify-content: flex-end;
+
+  .ant-tree {
+    .ant-tree-title {
+      height: 24px;
+      input {
+        height: 24px;
+        background-color: white;
+      }
+    }
+  }
 }
 </style>

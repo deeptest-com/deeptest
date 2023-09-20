@@ -54,16 +54,16 @@ onUnmounted(() => {
 
 <style lang="less" scoped>
 #debug-form-main {
-  flex-direction: column;
   height: calc(100% - 33px);
   display: flex;
-
+  flex-direction: column;
   padding: 0;
   position: relative;
 
   .container {
     margin-top: 0px !important;
     margin-bottom: 0px !important;
+    height: 100%;
   }
 
   #debug-form-top {

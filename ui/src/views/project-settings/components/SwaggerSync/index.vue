@@ -74,8 +74,8 @@
         </template>
         <a-input v-model:value="formState.cron" type="textarea" placeholder="请输入Linux定时任务表达式"/>
       </a-form-item>
-      <a-form-item :wrapper-col="{ span: 14, offset: 4 }">
-        <a-button type="primary" @click="onSubmit">保存</a-button>
+      <a-form-item>
+        <a-button style="margin-left: 140px" type="primary" @click="onSubmit">保存</a-button>
       </a-form-item>
     </a-form>
   </div>
@@ -175,8 +175,8 @@ watch(() => {
 
 <style lang="less" scoped>
 .content {
-  margin-top: 40px;
-  margin-left: 100px;
+  margin-top: 24px;
+  margin-left: 24px;
 }
 
 .title {

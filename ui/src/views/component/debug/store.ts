@@ -748,6 +748,11 @@ const StoreModel: ModuleType = {
                 line = "dt.response.data.field1 = 'val';"
             } else if (name === 'set_mock_resp_text') {
                 line = "dt.response.data = dt.response.data.replace('old', 'new');"
+            } else {
+                const json = await getSnippet(name)
+                if (json.code === 0) {
+                    line = json.data.script
+                }
             }
 
             let script = (state.scriptData.content ? state.scriptData.content: '') + '\n' + line

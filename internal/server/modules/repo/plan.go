@@ -339,7 +339,7 @@ func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId
 		Select("biz_scenario.*, c.name category_name").
 		Joins("LEFT JOIN biz_plan_scenario_r r ON biz_scenario.id=r.scenario_id").
 		Joins("LEFT JOIN biz_category c ON biz_scenario.category_id=c.id").
-		Where("r.plan_id = ? AND NOT biz_scenario.deleted", planId)
+		Where("r.plan_id = ? AND NOT biz_scenario.deleted AND NOT r.deleted", planId)
 
 	if req.Keywords != "" {
 		db = db.Where("biz_scenario.name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))

@@ -2,7 +2,6 @@
   <div id="indexlayout-right-top" :class="{'topNavEnable': !topNavEnable, 'tabNavEnable': !tabNavEnable }">
     <div class="indexlayout-right-top-top">
       <div class="indexlayout-top-menu">
-        <CollapsedIcon @click="toggleCollapsed"  :collapsed="collapsed"/>
         <RightTopProject/>
         <RightTopServer v-if="showServerSelector" />
       </div>
@@ -25,14 +24,12 @@ import RightTopSettings from './RightTopSettings.vue';
 import RightTopWebsocket from './RightTopWebsocket.vue';
 import RightTopUpdate from './RightTopUpdate.vue';
 import useTopMenuWidth from "../composables/useTopMenuWidth";
-import CollapsedIcon from "@/components/CollapsedIcon/index.vue"
 
 export default defineComponent({
   name: 'RightTop',
   components: {
     RightTopProject,
     RightTopSettings,
-    CollapsedIcon,
     RightTopWebsocket,
     RightTopUpdate,
     RightTopServer
@@ -83,7 +80,7 @@ export default defineComponent({
     const {topMenuCon, topMenuWidth} = useTopMenuWidth(topNavEnable);
 
     watch(() => {return router.currentRoute.value.path;}, (val: string) => {
-      showServerSelector.value = val.includes('endpoint');
+      showServerSelector.value = val.includes('IM');
     }, {immediate: true})
 
     return {
@@ -160,7 +157,7 @@ export default defineComponent({
       overflow: hidden;
       overflow-x: auto;
       width: 280px;
-      padding-left: 36px;
+      padding-left: 16px;
 
       .indexlayout-top-menu-li {
         display: inline-block;
@@ -184,7 +181,7 @@ export default defineComponent({
     }
 
     .indexlayout-top-menu-right {
-      width: 280px;
+      width: 380px;
       height: @headerHeight;
       line-height: @headerHeight;
       .indexlayout-top-project {

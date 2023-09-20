@@ -12,7 +12,12 @@ export const isElectronEnv = win?.versions?.electron;
  *
  * */
 export function getAgentUrl() {
-    return window.localStorage.getItem('dp-cache-agent-url') || process.env.VUE_APP_API_AGENT || '';
+    let agentUrl =  window.localStorage.getItem('dp-cache-agent-url') || process.env.VUE_APP_API_AGENT || '';
+    const localAgentPort = window.localStorage.getItem('dp-cache-agent-local-port') || '';
+    if(isElectronEnv && localAgentPort?.length === 5 && agentUrl.includes('127.0.0.1')){
+        agentUrl = agentUrl.replace(/\d{5}/,localAgentPort);
+    }
+    return agentUrl;
 }
 
 /**

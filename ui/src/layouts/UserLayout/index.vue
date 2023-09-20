@@ -15,7 +15,7 @@
   </div>
 </template>
 <script lang="ts">
-import { computed, defineComponent, ref } from "vue";
+import { computed, defineComponent, onMounted, ref } from "vue";
 import { useRoute } from 'vue-router';
 import { getRouteItem, RoutesDataItem, vueRoutes } from '@/utils/routes';
 import UserLayoutRoutes from './routes';
@@ -39,6 +39,16 @@ export default defineComponent({
 
     // 设置title
     useTitle(routeItem);
+
+    onMounted(() => {
+      const appLoadingEl = document.getElementsByClassName('app-loading');
+      if (appLoadingEl[0]) {
+        appLoadingEl[0].classList.add('hide');
+        setTimeout(() => {
+            document.body.removeChild(appLoadingEl[0]);
+        }, 600);
+      }
+    });
 
     return {
       isLeyanEnv

@@ -1,21 +1,27 @@
 <!-- ::::参数设置器-->
 <template>
   <div class="main">
-    <a-input :value="fieldState.name"
-             @change="handleChangeName"
-             style="width: 300px"
-             :disabled="hasRef"
-             placeholder="输入字段名称">
-      <template #addonAfter>
-        <a-select
-            :value="fieldState.type"
-            placeholder="请选择类型"
-            @change="handleTypeChange"
-            :disabled="hasRef"
-            :options="pathParamsDataTypesOpts"
-            style="width: 100px"/>
-      </template>
-    </a-input>
+    <a-input 
+      v-if="!needAutoComplete" :value="fieldState.name"
+      @change="handleChangeName"
+      style="width: 200px"
+      :disabled="hasRef"
+      placeholder="输入字段名称" />
+    <a-auto-complete
+      v-else 
+      :value="fieldState.name"
+      @change="handleChangeName"
+      style="width: 200px"
+      :disabled="hasRef"
+      :options="options"
+      placeholder="输入字段名称" />         
+    <a-select
+      :value="fieldState.type"
+      placeholder="请选择类型"
+      @change="handleTypeChange"
+      :disabled="hasRef"
+      :options="pathParamsDataTypesOpts"
+      style="width: 100px"/>
     <a-input :value="fieldState.example"
              placeholder="输入示例"
              :disabled="hasRef"
@@ -171,7 +177,7 @@ interface fieldStateType {
   minLength: number
   maxLength: number
 }
-const props = defineProps(['fieldData', 'hideRequire', 'hideRef', 'hideOther', 'hideDel']);
+const props = defineProps(['fieldData', 'hideRequire', 'hideRef', 'hideOther', 'hideDel', 'needAutoComplete', 'options']);
 const emit = defineEmits(['del', 'setRef', 'settingOther', 'change']);
 
 const store = useStore<{ Endpoint, ProjectGlobal, ServeGlobal }>();

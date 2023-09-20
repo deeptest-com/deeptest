@@ -1,0 +1,122 @@
+{
+  "宠物详情": [
+    {
+      "宠物不存在": {
+        "name": "宠物详情",
+        "url": "/pet/{petId}",
+        "method": "GET",
+        "bodyType": "application/json",
+        "baseUrl": "http://192.168.5.224:50400",
+        "pathParams": [
+          {
+            "name": "petId",
+            "value": "10000",
+            "paramIn": "path"
+          }
+        ]
+      }
+    },
+    {
+      "成功请求": {
+        "name": "宠物详情",
+        "url": "/pet/{petId}",
+        "method": "GET",
+        "bodyType": "application/json",
+        "baseUrl": "http://192.168.5.224:50400",
+        "pathParams": [
+          {
+            "name": "petId",
+            "value": "4",
+            "paramIn": "path"
+          }
+        ]
+      }
+    }
+  ],
+  "更新宠物": [
+    {
+      "成功修改": {
+        "name": "更新宠物",
+        "url": "/pet/{petId}",
+        "method": "PUT",
+        "body": "{\"id\":4,\"name\":\"dog\",\"status\":\"sold\"}",
+        "bodyType": "application/json",
+        "baseUrl": "http://192.168.5.224:50400",
+        "pathParams": [
+          {
+            "name": "petId",
+            "value": "4",
+            "paramIn": "path"
+          }
+        ]
+      }
+    }
+  ],
+  "新增宠物": [
+    {
+      "新增宠物-成功": {
+        "name": "新增宠物",
+        "url": "/pet",
+        "method": "POST",
+        "body": "{\"name\":\"sheep\",\"status\":\"available\"}",
+        "bodyType": "application/json",
+        "baseUrl": "http://192.168.5.224:50400"
+      }
+    },
+    {
+      "请求体数据格式不正确": {
+        "name": "新增宠物",
+        "url": "/pet",
+        "method": "POST",
+        "body": "{\"name\":\"monkey\",}",
+        "bodyType": "application/json",
+        "baseUrl": "http://192.168.5.224:50400"
+      }
+    }
+  ],
+  "删除宠物": [
+    {
+      "宠物Id格式错误": {
+        "name": "删除宠物",
+        "url": "/pet/{petId}",
+        "method": "DELETE",
+        "bodyType": "application/json",
+        "baseUrl": "http://192.168.5.224:50400",
+        "pathParams": [
+          {
+            "name": "petId",
+            "value": "不是数字",
+            "paramIn": "path"
+          }
+        ]
+      }
+    },
+    {
+      "删除宠物成功": {
+        "name": "删除宠物",
+        "url": "/pet/{petId}",
+        "method": "DELETE",
+        "bodyType": "application/json",
+        "baseUrl": "http://192.168.5.224:50400",
+        "pathParams": [
+          {
+            "name": "petId",
+            "value": "100",
+            "paramIn": "path"
+          }
+        ]
+      }
+    }
+  ],
+  "宠物列表": [
+    {
+      "请求成功": {
+        "name": "宠物列表",
+        "url": "/pet",
+        "method": "GET",
+        "bodyType": "application/json",
+        "baseUrl": "http://192.168.5.224:50400"
+      }
+    }
+  ]
+}

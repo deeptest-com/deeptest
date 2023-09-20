@@ -28,7 +28,6 @@ func GenRequestUrlWithBaseUrlAndPathParam(req *domain.BaseRequest, debugInterfac
 
 func ReplacePathParams(uri string, pathParams []domain.Param) (ret string) {
 	ret = uri
-
 	for _, param := range pathParams {
 		if param.ParamIn != consts.ParamInPath {
 			continue

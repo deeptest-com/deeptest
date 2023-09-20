@@ -50,8 +50,6 @@ const handlePaneResizeTop = () => {
 .container {
   margin: 16px;
   background: #ffffff;
-  //height: 100%;
-  height: calc(100vh - 96px);
   overflow: hidden;
   :deep(.ant-pagination) {
     margin-right: 24px;

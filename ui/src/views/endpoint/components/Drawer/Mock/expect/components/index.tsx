@@ -72,12 +72,13 @@ const Columns = (opts: { type: string, onColumnChange: (...args: any[]) => void,
           record.name = e.replace(/\s/ig, '');
           onColumnChange(type);
         };
+        const options = (optionsMap['header'] || []).map(option => ({ label: option.name, value: option.name }));
         return (
           <>
             <a-auto-complete
               value={record.name}
-              options={(optionsMap['header'] || []).map(option => ({ label: option.name, value: option.name }))}
-              filter-option={false}
+              options={options}
+              filter-option={options}
               onChange={(e) => handleSelectChange(e)} />
           </>
         )

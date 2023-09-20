@@ -22,7 +22,14 @@
           {{ method.label }}
         </a-radio-button>
       </a-radio-group>
-
+      <span class="delete-icon">
+                  <a-popconfirm title="确定删除当前选中方法吗？"
+                         @confirm="confirmDeleteMethod"
+                         @cancel="cancelDeleteMethod">
+                    <template #icon><question-circle-outlined style="color: red"/></template>
+                     <a-button v-if="selectedMethodDetail"><DeleteOutlined/>删除 </a-button>
+                  </a-popconfirm>
+              </span>
       <div class="form-item-request" v-if="collapse">
         <div v-if="selectedMethodDetail">
           <!-- Operation ID -->
@@ -76,7 +83,7 @@ import {
   requestMethodOpts,
   defaultEndpointDetail,
 } from '@/config/constant';
-import {PlusOutlined, RightOutlined, DownOutlined} from '@ant-design/icons-vue';
+import {PlusOutlined, RightOutlined, DownOutlined,QuestionCircleOutlined} from '@ant-design/icons-vue';
 import Response from './Response.vue';
 import RequestParams from './RequestParams.vue';
 import RequestBody from './RequestBody.vue';
@@ -155,6 +162,16 @@ function addEndpoint() {
   })
 }
 
+function confirmDeleteMethod() {
+  console.log('confirmDeleteMethod', selectedMethod.value);
+  store.commit('Endpoint/deleteInterfaceMethodToObjMap', selectedMethod.value);
+  selectedMethodDetail.value = null;
+}
+
+function cancelDeleteMethod(code: string) {
+  console.log('cancelDeleteMethod', code);
+}
+
 </script>
 <style lang="less" scoped>
 
@@ -198,5 +215,10 @@ function addEndpoint() {
 }
 .label-name {
   margin-left: 4px;
+}
+
+.delete-icon {
+  margin-left: 5px;
+  color: #ff4d4f;
 }
 </style>

@@ -23,7 +23,7 @@ func main() {
 	pth := ""
 	var cmd *exec.Cmd
 	if commonUtils.IsWin() {
-		pth = "gui\\deeptest.exe"
+		pth = "gui\\LeyanAPI.exe"
 		cmd = exec.Command("cmd", "/C", "start", pth)
 	}
 

@@ -9,6 +9,7 @@
     <a-col :span="17">
       <div class="path-param-header">
         <a-input class="path-param-header-input" :value="endpointDetail.path" @change="updatePath" placeholder="请输入路径">
+          <!---
           <template #addonBefore>
             <a-select
                 :options="serveServers"
@@ -21,8 +22,10 @@
                 <a-button type="link" @click="addEnv" class="add-env-btn">新建环境</a-button>
               </template>
             </a-select>
+          
             <span v-if="currentEnvURL" class="current-env-url">{{ currentEnvURL || '---' }}</span>
           </template>
+            -->
         </a-input>
         <a-button @click="addPathParams" class="path-param-header-btn">
           <template #icon>
@@ -62,9 +65,12 @@ import Field from './Field.vue'
 import {Endpoint} from "@/views/endpoint/data";
 import {cloneByJSON} from "@/utils/object";
 import {handleParamsLinkPath, handlePathLinkParams} from "@/utils/dom";
+import { useRouter } from 'vue-router';
 
 const props = defineProps({});
 const emit = defineEmits([]);
+
+const router = useRouter();
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -89,7 +95,7 @@ const collapse = ref(true);
  * 跳转去新建环境
  * */
 function addEnv() {
-  window.open(`/#/project-setting/enviroment/envdetail`, '_blank')
+  window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/envdetail`, '_blank')
 }
 
 async function changeServer(val) {

@@ -55,7 +55,10 @@
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeData" class="nodata-tip"><a-spin v-if="!treeData"/></div>
+        <div v-if="!treeData.length" class="nodata-tip">
+          <div v-if="showKeywordsTip">搜索结果为空 ~</div>
+          <a-spin v-else/>
+        </div>
       </div>
     </div>
     <!--  创建接口 Tag  -->
@@ -80,13 +83,14 @@ import {
   ExclamationCircleOutlined
 } from '@ant-design/icons-vue';
 import {message, Modal, notification} from 'ant-design-vue';
+import cloneDeep from "lodash/cloneDeep";
 import CreateCategoryModal from '@/components/CreateCategoryModal/index.vue';
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";
 import {StateType as ProjectStateType} from "@/store/project";
 import {setSelectedKey} from "@/utils/cache";
-import {filterTree} from "@/utils/tree";
+import {filterByKeyword, filterTree} from "@/utils/tree";
 import {getCache} from "@/utils/localCache";
 import settings from "@/config/settings";
 import { getUrlKey } from '@/utils/url';
@@ -113,7 +117,7 @@ const treeItemRef = ref({});
 const treeData: any = computed(() => {
   const data = treeDataCategory.value;
   if(!data?.[0]?.id){
-    return null;
+    return [];
   }
   data[0].children = data[0].children || [];
   function fn(arr: any) {
@@ -141,11 +145,26 @@ const treeData: any = computed(() => {
       children: []
     })
   }
-
-  const ret = data?.[0]?.children || null;
-
-  return ret
+  const childrenData = cloneDeep(children);
+  if (childrenData?.length > 0) {
+    return [...filterByKeyword(childrenData, searchValue.value, 'name')];
+  }
+  return [];
 });
+
+/**
+ * 默认空列表展示
+ */
+const showEmptyTip = computed(() => {
+  return !searchValue.value && treeData.value.length === 0;
+});
+
+/**
+ * 搜索结果为空时展示
+ */
+const showKeywordsTip = computed(() => {
+  return searchValue.value && treeData.value.length === 0;
+})
 
 function handleFindSearch() {
   const result = getUrlKey('shareInfo', window.location.href) || "";
@@ -187,6 +206,8 @@ watch(() => {
   if (newVal?.id && oldVal?.id) { // 初始化 旧值为undefined 不需要重复调用loadCategories
     selectedKeys.value = [];
     expandedKeys.value = [];
+    store.commit('Endpoint/setTreeDataCategory', {}); // 切换项目，重置category list
+    searchValue.value = ''; // 切换项目，清空检索关键词
     await loadCategories();
   }
 }, {
@@ -454,6 +475,7 @@ async function onDrop(info: DropEvent) {
 
 .nodata-tip {
   margin-top: 8px;
+  margin-left: 0 !important;
   text-align: center;
   display: flex;
   align-items: center;

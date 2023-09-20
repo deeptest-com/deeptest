@@ -918,3 +918,10 @@ func (r *EndpointInterfaceRepo) GetResponseDefine(endpointId uint, method consts
 	return bodyItems[response.ID], nil
 
 }
+
+func (r *EndpointInterfaceRepo) GetByEndpointId(endpointId uint) (fields []model.EndpointInterface, err error) {
+	err = r.DB.Model(model.EndpointInterface{}).
+		Where("endpoint_id = ? AND NOT deleted", endpointId).
+		Find(&fields).Error
+	return
+}

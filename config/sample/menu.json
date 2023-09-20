@@ -1,50 +1,50 @@
 [
   {
-    "code":"workbench",
+    "code":"workspace",
     "title":"工作台",
-    "path":"/workbench",
+    "path":"/:projectNameAbbr/workspace",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"endpoint",
-    "title":"接口管理",
-    "path":"/endpoint",
+    "code":"im",
+    "title":"接口定义",
+    "path":"/:projectNameAbbr/IM",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"diagnose",
-    "title":"接口调试",
-    "path":"/diagnose",
+    "code":"docs",
+    "title":"接口文档",
+    "path":"/:projectNameAbbr/docs",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"scenario",
+    "code":"debug",
+    "title":"快捷调试",
+    "path":"/:projectNameAbbr/debug",
+    "type":"menu",
+    "parent":""
+  },
+  {
+    "code":"ts",
     "title":"测试开发",
-    "path":"/scenario",
+    "path":"/:projectNameAbbr/TS",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"plan",
+    "code":"tp",
     "title":"测试计划",
-    "path":"/plan",
+    "path":"/:projectNameAbbr/TP",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"report",
+    "code":"tr",
     "title":"测试报告",
-    "path":"/report",
-    "type":"menu",
-    "parent":""
-  },
-  {
-    "code":"diagnose",
-    "title":"接口调试",
-    "path":"/diagnose",
+    "path":"/:projectNameAbbr/TR",
     "type":"menu",
     "parent":""
   },
@@ -58,42 +58,42 @@
   {
     "code":"project-setting-environment",
     "title":"环境管理",
-    "path":"/project-setting/environment",
+    "path":"/:projectNameAbbr/project-setting/environment",
     "type":"menu",
     "parent":"project-setting"
   },
   {
     "code":"project-setting-data-pool",
     "title":"数据池",
-    "path":"/project-setting/data-pool",
+    "path":"/:projectNameAbbr/project-setting/data-pool",
     "type":"menu",
     "parent":"project-setting"
   },
   {
     "code":"project-setting-service-setting",
     "title":"服务管理",
-    "path":"/project-setting/service-setting",
+    "path":"/:projectNameAbbr/project-setting/service-setting",
     "type":"menu",
     "parent":"project-setting"
   },
   {
     "code":"project-setting-members",
     "title":"成员管理",
-    "path":"/project-setting/members",
+    "path":"/:projectNameAbbr/project-setting/members",
     "type":"menu",
     "parent":"project-setting"
   },
   {
     "code":"project-setting-mock",
     "title":"Mock设置",
-    "path":"/project-setting/mock",
+    "path":"/:projectNameAbbr/project-setting/mock",
     "type":"menu",
     "parent":"project-setting"
   },
   {
     "code":"project-setting-swaggerSync",
     "title":"自动同步",
-    "path":"/project-setting/swaggerSync",
+    "path":"/:projectNameAbbr/project-setting/swaggerSync",
     "type":"menu",
     "parent":"project-setting"
   },
@@ -102,98 +102,98 @@
     "title":"新建接口",
     "path":"",
     "type":"button",
-    "parent":"endpoint"
+    "parent":"im"
   },
   {
     "code":"endpoint-copy-interface",
     "title":"复制",
     "path":"",
     "type":"button",
-    "parent":"endpoint"
+    "parent":"im"
   },
   {
     "code":"endpoint-delete-interface",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"endpoint"
+    "parent":"im"
   },
   {
     "code":"endpoint-outdated-interface",
     "title":"过时",
     "path":"",
     "type":"button",
-    "parent":"endpoint"
+    "parent":"im"
   },
   {
     "code":"scenario-create",
     "title":"新建",
     "path":"",
     "type":"button",
-    "parent":"scenario"
+    "parent":"ts"
   },
   {
     "code":"scenario-execute",
     "title":"执行",
     "path":"",
     "type":"button",
-    "parent":"scenario"
+    "parent":"ts"
   },
   {
     "code":"scenario-design",
     "title":"设计",
     "path":"",
     "type":"button",
-    "parent":"scenario"
+    "parent":"ts"
   },
   {
     "code":"scenario-edit",
     "title":"编辑",
     "path":"",
     "type":"button",
-    "parent":"scenario"
+    "parent":"ts"
   },
   {
     "code":"scenario-delete",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"scenario"
+    "parent":"ts"
   },
   {
     "code":"scenario-start-execute",
     "title":"开始执行",
     "path":"",
     "type":"button",
-    "parent":"scenario"
+    "parent":"ts"
   },
   {
     "code":"plan-create",
     "title":"新建",
     "path":"",
     "type":"button",
-    "parent":"plan"
+    "parent":"tp"
   },
   {
     "code":"plan-execute",
     "title":"执行",
     "path":"",
     "type":"button",
-    "parent":"plan"
+    "parent":"tp"
   },
   {
     "code":"plan-delete",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"plan"
+    "parent":"tp"
   },
   {
     "code":"report-export",
     "title":"导出报告",
     "path":"",
     "type":"button",
-    "parent":"report"
+    "parent":"tr"
   },
   {
     "code":"project-setting-environment-add-global-variable",

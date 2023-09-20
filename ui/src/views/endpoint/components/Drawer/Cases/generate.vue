@@ -37,7 +37,7 @@
             :show-icon="true">
           <template #title="nodeProps">
             <span class="tree-title">
-              {{ nodeProps.title }}
+              <span>{{ nodeProps.title }}</span>
               <span v-if="nodeProps.sample">: {{ nodeProps.sample }}</span>
             </span>
           </template>

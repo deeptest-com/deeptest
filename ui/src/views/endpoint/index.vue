@@ -595,11 +595,11 @@ const filter = ref()
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据
 watch(() => [currProject.value.id, currServe.value.id], async (newVal, oldVal) => {
   const [newProjectId, newServeId] = newVal;
-  const [oldProjectId] = oldVal || [];
+  const [oldProjectId, oldServeId] = oldVal || [];
   if (newProjectId !== undefined && oldProjectId !== undefined && newProjectId !== oldProjectId) {
     selectedCategoryId.value = "";
   }
-  if (newProjectId !== undefined) {
+  if (newProjectId !== undefined && newServeId !== oldServeId) {
     await loadList(1, pagination.value.pageSize);
     await store.dispatch('Endpoint/getEndpointTagList');
     if (newServeId) {

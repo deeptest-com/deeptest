@@ -1,6 +1,7 @@
 {
     "name": "LeyanAPI",
     "displayName": "LeyanAPI",
+    "version": "0.0.14",
     "main": "./main.js",
     "icon": "./icon/ly/favicon",
     "linuxIcon": "./icon/ly/favicon.png",

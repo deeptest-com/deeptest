@@ -3,7 +3,7 @@
 
 # ly 打包配置，开源版可以删除
 
-VERSION=0.0.13
+VERSION=0.0.14
 PROJECT=LeyanAPI
 
 

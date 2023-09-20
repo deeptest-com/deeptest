@@ -23,7 +23,7 @@
             @drop="onDrop"
             @expand="onExpand"
             @select="selectNode"
-            :tree-data="treeData?.[0]?.children"
+            :tree-data="list"
             :replace-fields="replaceFields">
 
           <template #switcherIcon>
@@ -69,8 +69,9 @@
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeData?.[0]?.children?.length" class="loading-container">
-          <div v-if="!loading" class="nodata-tip">请点击上方按钮添加目录 ~</div>
+        <div v-if="!list.length" class="loading-container">
+          <div v-if="showKeywordsTip" class="nodata-tip">搜索结果为空 ~</div>
+          <div v-else-if="!loading && !showKeywordsTip" class="nodata-tip">请点击上方按钮添加目录 ~</div>
           <Spin style="margin-top: 20px;" v-else />
         </div>
         
@@ -113,6 +114,7 @@ import {
 import {message, Modal, notification, Spin} from 'ant-design-vue';
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
+import cloneDeep from "lodash/cloneDeep";
 import {getSelectedKey, setExpandedKeys, setSelectedKey} from "@/utils/cache";
 
 import {StateType as ProjectStateType} from "@/store/project";
@@ -121,7 +123,7 @@ import {StateType as ServeStateType} from "@/store/serve";
 
 import {expandOneKey} from "@/services/tree";
 import EditModal from './edit.vue'
-import {filterTree} from "@/utils/tree";
+import {filterByKeyword, filterTree} from "@/utils/tree";
 import {confirmToDelete} from "@/utils/confirm";
 import debounce from "lodash.debounce";
 import InterfaceSelectionFromDefine from "@/views/component/InterfaceSelectionFromDefine/main.vue";
@@ -149,6 +151,21 @@ const expandedKeys = ref<number[]>([]);
 const autoExpandParent = ref<boolean>(false);
 const loading = ref(false);
 
+const list = computed(() => {
+  const data = cloneDeep(unref(treeData)?.[0]?.children);
+  if (data?.length > 0) {
+    return [...filterByKeyword(data, keywords.value, 'title')];
+  }
+  return [];
+}); 
+
+/**
+ * 根据搜索关键词搜索结果为空展示
+ */
+const showKeywordsTip = computed(() => {
+  return keywords.value && list.value.length === 0;
+});
+
 async function loadTreeData() {
   if (currProject?.value?.id > 0 && currServe?.value?.id > 0) {
     await store.dispatch('DiagnoseInterface/loadTree', {projectId: currProject.value.id, serveId: currServe.value.id});
@@ -168,9 +185,10 @@ watch(() => currServe.value, async (newVal, oldVal) => {
   if ((newServeId !== oldServeId) || (newProjectId !== oldProjectId)) {
     // serverId 发生变化
     loading.value = true;
+    keywords.value = '';
     await loadTreeData();
-    await getServeServers()
-    selectStoredKeyCall()
+    await getServeServers();
+    selectStoredKeyCall();
     setTimeout(() => {
       loading.value = false
     }, 300);
@@ -262,12 +280,14 @@ async function handleModalOk(model) {
     serveId: currServe.value.id,
   })
 
-  const interfaceData = await store.dispatch('DiagnoseInterface/saveInterface', model)
+  const interfaceData = await store.dispatch('DiagnoseInterface/saveInterface', model);
   if (interfaceData) {
-    currentNode.value = null
-    expandOneKey(treeDataMap.value, model.parentId, expandedKeys.value)
-    selectNode([interfaceData.id], null)
-    store.dispatch('DiagnoseInterface/openInterfaceTab', interfaceData);
+    currentNode.value = null;
+    if (interfaceData.type !== 'dir') {
+      expandOneKey(treeDataMap.value, model.parentId, expandedKeys.value);
+      selectNode([interfaceData.id], null);
+      store.dispatch('DiagnoseInterface/openInterfaceTab', interfaceData);
+    }
   }
 }
 
@@ -377,6 +397,11 @@ watch(() => {
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+
+
+  .nodata-tip {
+    margin-left: 0 !important;
   }
 }
 </style>

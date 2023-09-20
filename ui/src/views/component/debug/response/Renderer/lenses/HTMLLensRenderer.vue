@@ -25,8 +25,6 @@
       </a-row>
     </div>
 
-    <iframe id="iframe" height="0"></iframe>
-
     <div class="body">
       <MonacoEditor
         ref="monacoEditor"

@@ -37,7 +37,7 @@ const getChildren = (node, mp) => {
 }
 
 export function filterTree(treeDataValue, keywords): number[] {
-    if (!treeDataValue) return []
+    if (!treeDataValue || !treeDataValue.length) return []
 
     const flattenTreeList = flattenTree(treeDataValue[0]);
 

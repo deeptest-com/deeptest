@@ -38,16 +38,10 @@
       </template>
 
       <template #tabContent>
-        <div class="tab-pane">
-          <div v-if="activeKey==='1'">
-            <Design :id="detailResult?.id"/>
-          </div>
-          <div v-if="activeKey==='2'" style="padding: 16px">
-            <ExecList @showDetail="showDetail"/>
-          </div>
-          <div style="padding: 16px" v-if="activeKey==='3'">
-            <PlanList :linked="true"/>
-          </div>
+        <div class="tab-pane" :style="activeKey !== '1' ? { padding: '16px'} : null">
+          <Design v-if="activeKey === '1'" :id="detailResult?.id"/>
+          <ExecList v-if="activeKey === '2'" @showDetail="showDetail"/>
+          <PlanList v-if="activeKey === '3'" :linked="true"/>
         </div>
       </template>
     </DrawerLayout>

@@ -392,7 +392,7 @@ func (s *EndpointService) getInterfaces(name string, cURL *curlHelper.CURL, wf *
 	interf.Cookies = s.getCookies(wf.Cookies)
 	bodyType := ""
 	contentType := strings.Split(cURL.ContentType, ";")
-	if len(contentType) > 1 {
+	if len(contentType) >= 1 {
 		bodyType = contentType[0]
 	}
 	interf.BodyType = consts.HttpContentType(bodyType)

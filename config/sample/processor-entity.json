@@ -1,67 +1,84 @@
 {
-  "添加宠物":{
-    "Name":"添加宠物",
-    "Comments":"宠物商店",
-    "Default":"",
-    "ProcessorCategory":"processor_group",
-    "ProcessorType":"processor_group_default"
-  },
-  "迭代列表":{
-    "name":"迭代列表",
-    "comments":"宠物列表",
-    "processorCategory":"processor_loop",
-    "processorType":"processor_loop_in",
-    "times":0,
-    "range":"",
-    "list":"pig,dog,snake",
-    "step":"",
-    "isRand":false,
-    "variableName":"name",
-    "untilExpression":"",
-    "breakIfExpression":"",
-    "repeatTimes":1
-  },
-  "输出":{
-    "name":"输出",
-    "comments":"宠物名称",
-    "default":"",
-    "processorCategory":"processor_print",
-    "processorType":"processor_print_default",
-    "rightValue":"${name}",
-    "leftValue":"",
-    "operator":"equal"
-  },
-  "宠物列表":{
-    "name":"宠物列表",
-    "comments":"宠物列表",
+  "批量创建宠物": {
+    "name":"批量创建宠物",
     "processorCategory":"processor_group",
     "processorType":"processor_group_default"
   },
-  "查看宠物":{
-    "name":"查看宠物",
-    "comments":"查看宠物",
-    "processorCategory":"processor_group",
-    "processorType":"processor_group_default"
+  "循环列表": {
+    "processorCategory": "processor_loop",
+    "processorType": "processor_loop_in",
+    "list": "pig,dog,bird",
+    "isRand": false,
+    "variableName": "pet"
   },
-  "迭代次数":{
-    "name":"迭代次数",
-    "processorCategory":"processor_loop",
-    "processorType":"processor_loop_time",
-    "times":3,
-    "isRand":false,
-    "variableName":"id"
+  "pet不为空":{
+    "name": "pet不为空",
+    "processorCategory": "processor_logic",
+    "processorType": "processor_logic_if",
+    "expression": "${pet}!=''"
   },
-  "删除宠物":{
+  "创建成功":{
+    "name": "创建成功",
+    "processorCategory": "processor_print",
+    "processorType": "processor_print_default",
+    "rightValue": "创建宠物：${pet} 成功"
+  },
+  "ELSE": {
+    "processorCategory": "processor_logic",
+    "processorType": "processor_logic_else"
+  },
+  "创建不成功": {
+    "name": "创建不成功",
+    "processorCategory": "processor_print",
+    "processorType": "processor_print_default",
+    "rightValue": "宠物名为空"
+  },
+  "宠物列表": {
+    "method": "GET",
+    "url": "/pet",
+    "bodyType": "application/json",
+    "name": "宠物列表",
+    "usedBy": "scenario_debug",
+    "processorInterfaceSrc": "define"
+  },
+  "新增宠物": {
+    "method":"POST",
+    "url":"/pet",
+    "body":"{\r\"name\":\"${pet}\",\r\"status\":\"available\"\r}",
+    "bodyType":"application/json",
+    "name":"新增宠物",
+    "usedBy":"scenario_debug",
+    "processorInterfaceSrc":"define"
+  },
+  "更新宠物": {
+    "method":"PUT",
+    "url":"/pet/{petId}",
+    "pathParams":[
+      {
+        "name":"petId",
+        "value":"4",
+        "paramIn":"path"
+      }
+    ],
+    "body":"{\r\"id\":4,\r\"name\":\"dog\",\r\"status\":\"sold\"\r}",
+    "bodyType":"application/json",
+    "name":"更新宠物",
+    "usedBy":"scenario_debug",
+    "processorInterfaceSrc":"define"
+  },
+  "删除宠物": {
+    "method":"DELETE",
+    "url":"/pet/{petId}",
+    "pathParams":[
+      {
+        "name":"petId",
+        "value":"10",
+        "paramIn":"path"
+      }
+    ],
+    "bodyType":"application/json",
     "name":"删除宠物",
-    "comments":"删除宠物",
-    "processorCategory":"processor_group",
-    "processorType":"processor_group_default"
-  },
-  "设置删除宠物id":{
-    "name":"设置删除宠物id",
-    "processorCategory":"processor_variable",
-    "processorType":"processor_variable_set",
-    "variableName":"id",
-    "expression":"1"
+    "usedBy":"scenario_debug",
+    "processorInterfaceSrc":"define"
   }
 }

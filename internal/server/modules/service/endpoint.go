@@ -545,7 +545,7 @@ func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId ui
 	for k, response := range interf.ResponseBodies {
 		schema := new(schemaHelper.SchemaRef)
 		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
-		if len(schema.Value.AllOf) > 0 {
+		if schema.Value != nil && len(schema.Value.AllOf) > 0 {
 			schema2conv.CombineSchemas(schema)
 		}
 		interf.ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)

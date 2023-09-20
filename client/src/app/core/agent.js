@@ -1,9 +1,14 @@
+/**
+ * @description 启动 agent 服务
+ *
+ * */
+
 import {app} from 'electron';
 import os from 'os';
 import path from 'path';
 import {execSync, spawn} from 'child_process';
 
-import {DEBUG, portAgent, uuid} from '../utils/consts';
+import {DEBUG, portAgent, uuid,agentProcessName} from '../utils/consts';
 import {IS_WINDOWS_OS} from "../utils/env";
 import {logErr, logInfo} from '../utils/log';
 import {getBinPath} from "../utils/comm";
@@ -20,10 +25,10 @@ export async function startAgent() {
     }
 
     let {SERVER_EXE_PATH: agentExePath} = process.env;
-    logInfo(1, agentExePath)
+    logInfo(111111, agentExePath)
     if (!agentExePath && !DEBUG) {
-        agentExePath = getBinPath('deeptest-agent');
-        logInfo(2, agentExePath)
+        agentExePath = getBinPath(agentProcessName);
+        logInfo(222222, agentExePath)
     }
 
     if (agentExePath) {
@@ -120,47 +125,53 @@ export async function startAgent() {
 }
 
 export function killAgent() {
-    if (!IS_WINDOWS_OS) {
-        logInfo(`>> not windows`);
+    try {
+        if (!IS_WINDOWS_OS) {
+            logInfo(`>> not windows`);
 
-        const cmd = `ps -ef | grep ${uuid} | grep -v "grep" | awk '{print $2}' | xargs kill -9`
-        logInfo(`>> kill deeptest-agent cmd: ${cmd}`);
+            const cmd = `ps -ef | grep ${uuid} | grep -v "grep" | awk '{print $2}' | xargs kill -9`
+            logInfo(`>> kill deeptest-agent cmd: ${cmd}`);
 
-        const stdout  = execSync(cmd).toString().trim()
-        logInfo(`>> kill deeptest-agent result: ${stdout}`);
+            const stdout  = execSync(cmd).toString().trim()
+            logInfo(`>> kill deeptest-agent result: ${stdout}`);
 
-    } else {
-        const cmd = 'WMIC path win32_process  where "Commandline like \'%%' + uuid + '%%\'" get Processid,Caption';
-        logInfo(`>> list deeptest-agent process cmd: ${cmd}`);
+        } else {
+            const cmd = 'WMIC path win32_process  where "Commandline like \'%%' + uuid + '%%\'" get Processid,Caption';
+            logInfo(`>> list deeptest-agent process cmd: ${cmd}`);
 
-        const stdout = execSync(cmd, {windowsHide: true}).toString().trim()
-        logInfo(`>> list deeptest-agent process result: ${stdout}`)
+            const stdout = execSync(cmd, {windowsHide: true}).toString().trim()
+            logInfo(`>> list deeptest-agent process result: ${stdout}`)
 
-        let pid = 0
-        const lines = stdout.split('\n')
-        lines.forEach(function(line){
-            line = line.trim()
-            console.log(`<${line}>`)
-            logInfo(`<${line}>`)
-            const cols = line.split(/\s/)
+            let pid = 0
+            const lines = stdout.split('\n')
+            lines.forEach(function(line){
+                line = line.trim()
+                console.log(`<${line}>`)
+                logInfo(`<${line}>`)
+                const cols = line.split(/\s+/)
 
-            if (line.indexOf('deeptest') > -1 && cols.length > 3) {
-                const pidStr = cols[3].trim()
-                console.log(`>> deeptest-agent pid: ${pidStr}`);
-                logInfo(`>> deeptest-agent pid: ${pidStr}`)
+                logInfo(`cols.length=${cols.length}`, JSON.stringify(cols));
+                if (line.indexOf('deeptest') > -1 && cols.length > 1) {
+                    const pidStr = cols[1].trim();
+                    console.log(`>> deeptest-agent pid: ${pidStr}`);
+                    logInfo(`>> deeptest-agent pid: ${pidStr}`)
 
-                if (pidStr && parseInt(pidStr, 10)) {
-                    pid = parseInt(pidStr, 10)
+                    if (pidStr && parseInt(pidStr, 10)) {
+                        pid = parseInt(pidStr, 10)
+                    }
                 }
+            });
+
+            if (pid && pid > 0) {
+                const killCmd = `taskkill /F /pid ${pid}`
+                logInfo(`>> kill deeptest-agent cmd: exec ${killCmd}`)
+
+                const out = execSync(`taskkill /F /pid ${pid}`, {windowsHide: true}).toString().trim()
+                logInfo(`>> kill deeptest-agent result: ${out}`)
             }
-        });
-
-        if (pid && pid > 0) {
-            const killCmd = `taskkill /F /pid ${pid}`
-            logInfo(`>> kill deeptest-agent cmd: exec ${killCmd}`)
-
-            const out = execSync(`taskkill /F /pid ${pid}`, {windowsHide: true}).toString().trim()
-            logInfo(`>> kill deeptest-agent result: ${out}`)
         }
+    }catch (e){
+        logInfo(`killAgent error: ${e}`)
     }
+
 }

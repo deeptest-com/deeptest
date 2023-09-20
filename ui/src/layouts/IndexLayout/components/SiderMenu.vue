@@ -11,6 +11,7 @@
         v-for="item in newMenuData"
         :key="item.path"
         :routeItem="item"
+        :selectedKeys="selectedKeys"
         :topNavEnable="topNavEnable"
         :belongTopMenu="belongTopMenu">
     </sider-menu-item>
@@ -71,26 +72,35 @@ export default defineComponent({
     const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
     const { menuData, topNavEnable }  = toRefs(props);
     const newMenuData = ref<RoutesDataItem[]>([]);
+    const isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
 
     const getNewMenuData = () => {
       if(!topNavEnable.value) {
         return menuData.value as RoutesDataItem[];
       }
       const MenuItems: RoutesDataItem[] = [];
-
-      for (let index = 0, len = menuData.value.length; index < len; index += 1) {
-        const element = menuData.value[index];
+      /**
+         * 项目设置位置调整到左侧底部  设置按钮
+         */
+      const sourceMenuData = menuData.value.filter(e => !e.path.includes('project-setting'));
+      for (let index = 0, len = sourceMenuData.length; index < len; index += 1) {
+        const element = sourceMenuData[index];
+        
         if (element.children) {
           const routeDataItem: RoutesDataItem = { ...element.children[0], children: [] };
 
-          const childrenRoute = element.children.length > 1 ? element.children.slice(1) : [];
-          if (childrenRoute.length > 0) {
-            childrenRoute.forEach((routeItem: RoutesDataItem) => {
-              if (!routeItem.hidden && permissionRouteMenuMap.value && permissionRouteMenuMap.value[RouteMenuType[`${routeItem.meta?.code}`]]) {
-                routeDataItem.children?.push(routeItem);
-              }
-            })
-          }
+          /**
+           * 左侧菜单无需展示二级菜单了。
+           * 二级菜单将在 一级菜单页面以tab的形式切换
+           */
+          // const childrenRoute = element.children.length > 1 ? element.children.slice(1) : [];
+          // if (childrenRoute.length > 0) {
+          //   childrenRoute.forEach((routeItem: RoutesDataItem) => {
+          //     if (!routeItem.hidden && permissionRouteMenuMap.value && permissionRouteMenuMap.value[RouteMenuType[`${routeItem.meta?.code}`]]) {
+          //       routeDataItem.children?.push(routeItem);
+          //     }
+          //   })
+          // }
 
           // 根据可访问权限路由表来做匹配可展示的路由menu
           if (permissionRouteMenuMap.value && permissionRouteMenuMap.value[RouteMenuType[`${routeDataItem.meta?.code}`]]) {

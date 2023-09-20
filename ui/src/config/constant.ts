@@ -1320,3 +1320,38 @@ export const requestHeaderOptions = [
         value: 'Range'
     },
 ];
+
+export const responseHeaderOptions = [
+    {
+        "value": "Content-Disposition",
+        "label": "Content-Disposition"
+    },
+    {
+        "value": "Content-Encoding",
+        "label": "Content-Encoding"
+    },
+    {
+        "value": "Content-Type",
+        "label": "Content-Type"
+    },
+    {
+        "value": "Last-Modified",
+        "label": "Last-Modified"
+    },
+    {
+        "value": "Location",
+        "label": "Location"
+    },
+    {
+        "value": "Refresh",
+        "label": "Refresh"
+    },
+    {
+        "value": "Server",
+        "label": "Server"
+    },
+    {
+        "value": "Transfer-Encoding",
+        "label": "Transfer-Encoding"
+    }
+];

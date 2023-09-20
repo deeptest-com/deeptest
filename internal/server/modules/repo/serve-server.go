@@ -82,7 +82,7 @@ func (r *ServeServerRepo) FindByServeAndExecEnv(serveId, environmentId uint) (re
 }
 
 func (r *ServeServerRepo) SetUrl(serveId uint, url string) (err error) {
-	err = r.DB.Model(model.ServeServer{}).Where("serve_id=?", serveId).Update("url", url).Error
+	err = r.DB.Model(model.ServeServer{}).Where("serve_id=? and  url=?", serveId, "http://localhost").Update("url", url).Error
 	return
 }
 
@@ -97,4 +97,12 @@ func (r *ServeServerRepo) UpdateUrlByServerAndServer(serveId, serverId uint, url
 		Update("url", url).Error
 
 	return err
+}
+
+func (r *ServeServerRepo) GetByServeAndUrl(serveId uint, url string) (ret model.ServeServer, err error) {
+	err = r.DB.
+		Where("serve_id = ? AND url =? AND NOT deleted", serveId, url).
+		First(&ret).Error
+
+	return
 }

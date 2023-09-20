@@ -343,7 +343,7 @@ func (s *ServeService) AddServerForHistory(req v1.HistoryServeAddServesReq) (err
 
 				serveServer := make([]model.ServeServer, 0)
 				for _, serve := range serveList {
-					url := host + "mocks/" + strconv.Itoa(int(serve.ID))
+					url := host + "/mocks/" + strconv.Itoa(int(serve.ID))
 					if req.Url != "" {
 						url = req.Url
 					}

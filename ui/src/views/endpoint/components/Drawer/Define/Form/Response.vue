@@ -92,6 +92,8 @@
                         <Field
                             :fieldData="{...item,index:index}"
                             :showRequire="false"
+                            :options="responseHeaderOptions"
+                            :needAutoComplete="true"
                             @del="deleteResHeader(index)"
                             @change="(val) => { handleResHeaderChange(val);}"/>
                       </div>
@@ -131,6 +133,7 @@ import {
   defaultHeaderParams,
   defaultCodeResponse,
   defaultResponseCodes,
+responseHeaderOptions,
 } from '@/config/constant';
 import {PlusOutlined, DownOutlined, RightOutlined, DeleteOutlined, QuestionCircleOutlined} from '@ant-design/icons-vue';
 import Field from './Field.vue'

@@ -42,7 +42,7 @@
     </div>
 </template>
 <script lang="ts">
-import { computed, ComputedRef, defineComponent, reactive, Ref, ref, watch } from "vue";
+import {computed, ComputedRef, defineComponent, onMounted, reactive, Ref, ref, watch} from "vue";
 import { useRouter } from 'vue-router';
 import { useStore } from 'vuex';
 import { useI18n } from "vue-i18n";
@@ -56,6 +56,8 @@ import { LoginParamsType } from './data.d';
 import { StateType as UserLoginStateType } from './store';
 import { NotificationKeyCommon } from "@/utils/const";
 import {notifySuccess, notifyWarn} from "@/utils/notify";
+import {setCache,getCache} from "@/utils/localCache";
+import settings from "@/config/settings";
 
 interface UserLoginSetupData {
     t: (key: string | number) => string;
@@ -80,6 +82,19 @@ export default defineComponent({
             username: '',
             password: ''
         });
+
+        onMounted(async () => {
+          // 乐研客户端里，自动填充用户名和密码
+          const isElectron = !!window?.require;
+          const ipcRenderer = undefined as any
+          if (isElectron && !ipcRenderer) {
+            const userInfoStr = await getCache(settings.lyElectronUserInfo);
+            const userInfo = JSON.parse(userInfoStr || '{}');
+            modelRef.username = userInfo?.username || '';
+            modelRef.password = userInfo?.password || '';
+          }
+        });
+
         // 表单验证
         const rulesRef = reactive({
             username: [

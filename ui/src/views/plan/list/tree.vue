@@ -146,6 +146,7 @@ watch(() => {
   return currProject.value;
 }, async (newVal) => {
   if (newVal?.id) {
+    store.commit('Plan/setTreeDataCategory', {});
     await loadCategories();
   }
 }, {

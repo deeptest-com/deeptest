@@ -1,7 +1,7 @@
 {
   "name": "deeptest",
   "productName": "deeptest",
-  "version": "1.0.0",
+  "version": "0.0.10",
   "description": "deeptest",
   "main": ".webpack/main",
   "scripts": {
@@ -11,6 +11,11 @@
     "package-linux": "npm run package -- --platform=linux",
     "package-win64": "npm run package -- --platform=win32 --arch=x64",
     "package-win32": "npm run package -- --platform=win32 --arch=ia32",
+    "ly-package-mac": "IS_LY_PACK=1 npm run package -- --platform=darwin",
+    "ly-package-win64": "IS_LY_PACK=1 npm run package -- --platform=win32 --arch=x64",
+    "ly-package-linux": "IS_LY_PACK=1 npm run package -- --platform=linux",
+    "ly-package-win32": "IS_LY_PACK=1 npm run package -- --platform=win32 --arch=ia32",
+    "dev": "sudo sh moveUI.sh && sudo SERVER_EXE_PATH=bin/darwin/deeptest-agent  UI_SERVER_PORT=8000 yarn start",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\""
@@ -25,16 +30,17 @@
     "forge": "./forge.config.js"
   },
   "devDependencies": {
-    "@electron-forge/cli": "6.0.0-beta.61",
-    "@electron-forge/maker-deb": "6.0.0-beta.61",
-    "@electron-forge/maker-rpm": "6.0.0-beta.61",
-    "@electron-forge/maker-squirrel": "6.0.0-beta.61",
-    "@electron-forge/maker-zip": "6.0.0-beta.61",
-    "@electron-forge/plugin-webpack": "6.0.0-beta.61",
     "@timfish/forge-externals-plugin": "^0.2.0",
-    "@vercel/webpack-asset-relocator-loader": "^1.7.0",
+    "electron": "26.1.0",
+    "@electron-forge/cli": "^6.4.1",
+    "@electron-forge/maker-deb": "^6.4.1",
+    "@electron-forge/maker-rpm": "^6.4.1",
+    "@electron-forge/maker-squirrel": "^6.4.1",
+    "@electron-forge/maker-zip": "^6.4.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^6.4.1",
+    "@electron-forge/plugin-webpack": "^6.4.1",
+    "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "css-loader": "^6.5.1",
-    "electron": "16.0.6",
     "electron-packager": "15.4.0",
     "node-loader": "^2.0.0",
     "style-loader": "^3.3.1"

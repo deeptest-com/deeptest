@@ -27,7 +27,14 @@
       <div class="params">
         <a-row v-for="(item, idx) in debugData.headers" :key="idx" type="flex" class="param">
           <a-col flex="1">
-            <a-input v-model:value="item.name" @change="onParamChange(idx)" class="dp-bg-input-transparent" />
+            <a-auto-complete 
+              class="dp-bg-input-transparent"
+              :value="item.name"
+              style="width: 100%"
+              allowClear
+              @change="onParamChange(idx)"
+              :options="requestHeaderOptions"
+            />
           </a-col>
           <a-col flex="1">
             <a-input :id="'header' + idx"
@@ -85,6 +92,7 @@ import ContextMenu from "@/views/component/debug/others/variable-replace/Context
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import useVariableReplace from "@/hooks/variable-replace";
+import { requestHeaderOptions } from "@/config/constant";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();

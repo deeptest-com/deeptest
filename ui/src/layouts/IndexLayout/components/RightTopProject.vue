@@ -21,7 +21,7 @@
             <div class="menu-scroll-item"
                  :class="{'first':index===0}" v-for="(item,index) in myRecentProject"
                  @click="() => {
-                  selectProject(item.id)
+                  selectProject(item)
                  }"
                  :key="'recently' + item.id + Math.random()">
               <span class="icon"><img :src="getProjectLogo(item?.logo)" alt=""></span>
@@ -33,7 +33,7 @@
             <div class="menu-scroll-item"
                  :class="{'first':index===0}"
                  @click="() => {
-                  selectProject(item.id)
+                  selectProject(item)
                  }"
                  v-for="(item,index) in myProject"
                  :key="'my' + item.id + Math.random()">
@@ -65,7 +65,7 @@
 </template>
 
 <script setup lang="ts">
-import {computed, watch, ref, onMounted, onUnmounted} from "vue";
+import {computed, watch, ref, onMounted, onUnmounted, unref} from "vue";
 import {useStore} from "vuex";
 import {useRoute} from "vue-router";
 import router from '@/config/routes';
@@ -106,7 +106,7 @@ const myRecentProject = computed(() => {
 });
 
 function viewAllProject() {
-  router.push({path:'/home',query:{type:'all'}});
+  router.push({path:'',query:{type:'all'}});
 }
 
 function newProject() {
@@ -119,21 +119,19 @@ const handleCreateSuccess = async () => {
   await store.dispatch("ProjectGlobal/fetchProject");
 };
 
-const selectProject = async (value): Promise<void> => {
-  console.log('selectProject', value);
+const selectProject = async (item): Promise<void> => {
   dropdownVisible.value = false;
-  window.localStorage.setItem('currentProjectId', value);
-  await store.dispatch('ProjectGlobal/changeProject', value);
-  await store.dispatch('Environment/getEnvironment', {id: 0, projectId: value});
+  window.localStorage.setItem('currentProjectId', item.id);
+  const { path, params }: any = unref(router.currentRoute);
+  router.replace(path.replace(params.projectNameAbbr, item.shortName));
+  await store.dispatch('ProjectGlobal/changeProject', item.id);
+  await store.dispatch('Environment/getEnvironment', {id: 0, projectId: item.id});
 
   // 项目切换后，需要重新更新可选服务列表
   await store.dispatch("ServeGlobal/fetchServe");
 
   // 更新左侧菜单以及按钮权限
   await store.dispatch('Global/getPermissionList');
-  if (router.currentRoute.value.path.indexOf('/scenario/') > -1) {
-    router.replace('/scenario/index')
-  }
 }
 
 const handleClickOut = (event) => {

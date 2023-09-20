@@ -23,12 +23,15 @@
             <a-form-item label="项目名称" v-bind="validateInfos.name">
               <a-input
                   v-model:value="formStateRef.name"
+                  placeholder="请输入项目名称"
                   @blur="validate('name', { trigger: 'blur' }).catch(() => {})"
               />
             </a-form-item>
             <a-form-item label="英文缩写" v-bind="validateInfos.shortName">
-              <a-input v-model:value="formStateRef.shortName"
-                       @blur="validate('shortName', { trigger: 'blur' }).catch(() => {})"/>
+              <a-input 
+                v-model:value="formStateRef.shortName"
+                placeholder="大写英文字母开头,仅限字母和数字,<=10位"
+                @blur="validate('shortName', { trigger: 'blur' }).catch(() => {})" />
             </a-form-item>
             <a-form-item label="logo" v-bind="validateInfos.logo">
               <div class="logo-picker">
@@ -124,25 +127,18 @@ const filterOption = (input: string, option: any) => {
   }
 };
 
-let validateShortName = async (rule: RuleObject, value: string) => {
-  const reg = /^[A-Za-z][A-Za-z0-9_\\-]{0,9}$/;
-
-  if (value == "") {
-    return Promise.reject("请输入英文缩写");
-  } else if (!reg.test(value)) {
-    return Promise.reject("必须由英文字母开头，字母、数字和下划线组成，并且最多10位字符、。");
-  } else {
-    return Promise.resolve();
-  }
-};
-
 const rulesRef = reactive({
   name: [
     {required: true, message: "请输入名称", trigger: "blur"},
     {max: 20, message: "项目名称应小于20位", trigger: "blur"},
   ],
   shortName: [
-    {required: true, validator: validateShortName, trigger: "blur"},
+    { required: true, message: '首字母大写,英文和数字请正确输入' },
+    { max: 10, message: '不超过10位，请正确输入' },
+    {
+      pattern: /^[A-Z]{1}[A-Za-z0-9]*$/,
+      message: '首字母大写,英文和数字请正确输入',
+    },
   ],
   adminId: [{required: true, message: "请选择管理员"}],
   desc: [{max: 180, message: "项目简介应小于180位", trigger: "blur"}],

@@ -87,9 +87,14 @@ export interface SettingsType {
     eventGetPlanDetail: string;
 
     /**
-     * pane resize 
+     * pane resize
      */
     paneResizeTop: string;
+
+    /**
+     * ly api 客户端本地存储的用户信息
+     * */
+    lyElectronUserInfo: string;
 }
 
 const settings: SettingsType = {
@@ -140,10 +145,12 @@ const settings: SettingsType = {
 
     // 测试计划相关的
     eventGetPlanDetail: 'eventGetPlanDetail',
-    eventGetPlansReports: 'eventGetPlansReports', 
+    eventGetPlansReports: 'eventGetPlansReports',
 
     // pane Resizer
     paneResizeTop: 'paneResizeTop',
+
+    lyElectronUserInfo: 'lyElectronUserInfo',
 };
 
 export default settings;

@@ -1,120 +1,213 @@
 [
   {
-    "title":"宠物列表",
-    "path":"pet",
-    "version":"v0.1.0",
+    "title":"宠物详情",
+    "path":"/pet/{petId}",
     "status":1,
-    "categoryId":-1,
+    "pathParams":[
+      {
+        "name":"petId",
+        "type":"string",
+        "example":1
+      }
+    ],
     "interfaces":[
       {
-        "name":"宠物列表",
-        "url":"pet",
+        "name":"宠物详情",
+        "url":"/pet/{petId}",
         "method":"GET",
+        "body":"",
         "bodyType":"application/json",
+        "Version":"v0.1.0",
         "responseBodies":[
           {
             "code":"200",
             "mediaType":"application/json",
-            "examples":"[{\"name\":\"Example 1\",\"content\":\"[{\\\"id\\\":0,\\\"name\\\":\\\"string\\\",\\\"status\\\":\\\"string\\\"}]\"}]",
             "schemaItem":{
-              "type":"array",
-              "content":"{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"},\"status\":{\"type\":\"string\"}},\"type\":\"object\",\"types\":[\"array\"]}}"
+              "type":"string",
+              "content":"{\"ref\":\"#/components/schemas/petDetail\",\"type\":\"string\",\"$ref\":\"#/components/schemas/petDetail\",\"name\":\"petDetail\"}"
+            },
+            "headers":[
+
+            ]
+          },
+          {
+            "code":"404",
+            "mediaType":"application/json",
+            "description":"Not Found",
+            "schemaItem":{
+              "type":"object",
+              "content":"{\"type\":\"object\",\"properties\":{\"code\":{\"type\":\"number\"},\"message\":{\"type\":\"string\"}}}"
+            }
+          },
+          {
+            "code":"400",
+            "mediaType":"application/json",
+            "description":"Bad Request",
+            "examples":"",
+            "schemaItem":{
+              "type":"object",
+              "content":"{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"}}}"
             }
           }
-        ]
+        ],
+        "responseCodes":"200,301,302,401,402,500,404,400"
       }
     ]
   },
   {
-    "title":"添加宠物",
-    "path":"pet",
-    "version":"v0.1.0",
-    "status":1,
-    "categoryId":-1,
+    "title":"更新宠物",
+    "path":"/pet/{petId}",
+    "pathParams":[
+      {
+        "name":"petId",
+        "type":"string",
+        "example":1
+      }
+    ],
     "interfaces":[
       {
-        "name":"添加宠物",
-        "url":"pet",
-        "method":"POST",
+        "name":"更新宠物",
+        "url":"/pet/{petId}",
+        "method":"PUT",
         "bodyType":"application/json",
         "requestBody":{
           "mediaType":"application/json",
-          "examples":"[{\"name\":\"Example 1\",\"content\":\"{\\r\\n  \\\"name\\\": \\\"${name}\\\",\\r\\n  \\\"status\\\": \\\"available\\\"\\r\\n}\"}]",
           "schemaItem":{
             "name":"",
             "type":"object",
-            "content":"{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\"},\"status\":{\"type\":\"string\"}}}"
+            "content":"{\"type\":\"object\",\"ref\":\"#/components/schemas/petRequest\",\"name\":\"petRequest\",\"$ref\":\"#/components/schemas/petRequest\"}"
+          }
+        },
+        "responseBodies":[
+          {
+            "code":"204",
+            "mediaType":"application/json",
+            "schemaItem":{
+              "type":"string",
+              "content":"{\"type\":\"string\"}"
+            }
+          }
+        ],
+        "responseCodes":"200,301,302,401,402,500,204"
+      }
+    ]
+  },
+  {
+    "title":"新增宠物",
+    "path":"/pet",
+    "status":1,
+    "interfaces":[
+      {
+        "name":"新增宠物",
+        "url":"/pet",
+        "method":"POST",
+        "bodyType":"application/json",
+        "Version":"v0.1.0",
+        "requestBody":{
+          "mediaType":"application/json",
+          "schemaItem":{
+            "name":"",
+            "type":"object",
+            "content":"{\"type\":\"object\",\"ref\":\"#/components/schemas/petRequest\",\"name\":\"petRequest\",\"$ref\":\"#/components/schemas/petRequest\"}"
           }
         },
         "responseBodies":[
           {
             "code":"200",
             "mediaType":"application/json",
-            "examples":"[{\"name\":\"Example 1\",\"content\":\"{}\"},{\"name\":\"Example 1\",\"content\":\"{\\\"id\\\":0,\\\"name\\\":\\\"string\\\",\\\"status\\\":\\\"string\\\"}\"}]",
             "schemaItem":{
-              "name":"",
-              "type":"object",
-              "content":"{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"},\"status\":{\"type\":\"string\"}}}"
+              "type":"string",
+              "content":"{\"ref\":\"#/components/schemas/petDetail\",\"type\":\"string\",\"$ref\":\"#/components/schemas/petDetail\",\"name\":\"petDetail\"}"
             }
-          }
-        ]
-      }
-    ]
-  },
-  {
-    "title":"宠物详情",
-    "path":"pet/{petId}",
-    "version":"v0.1.0",
-    "status":1,
-    "categoryId":-1,
-    "pathParams":[
-      {
-        "name":"petId",
-        "value":"1",
-        "type":"integer",
-        "default":"${id}",
-        "required":true
-      }
-    ],
-    "interfaces":[
-      {
-        "name":"宠物详情",
-        "url":"pet/{petId}",
-        "method":"GET",
-        "responseBodies":[
+          },
           {
-            "code":"200",
+            "code":"201",
             "mediaType":"application/json",
             "schemaItem":{
               "name":"",
               "type":"object",
-              "content":"{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"},\"status\":{\"type\":\"string\"}}}"
+              "content":"{\"ref\":\"#/components/schemas/petDetail\"}"
+            }
+          },
+          {
+            "code":"400",
+            "mediaType":"application/json",
+            "description":"bad request",
+            "schemaItem":{
+              "name":"",
+              "type":"object",
+              "content":"{\"type\":\"object\",\"properties\":{\"code\":{\"type\":\"number\"},\"message\":{\"type\":\"string\"}}}"
             }
           }
-        ]
+        ],
+        "responseCodes":"200,301,302,401,402,500,201,400"
       }
     ]
   },
   {
     "title":"删除宠物",
-    "path":"pet/{petId}",
-    "version":"v0.1.0",
+    "path":"/pet/{petId}",
     "status":1,
-    "categoryId":-1,
     "pathParams":[
       {
         "name":"petId",
         "value":"",
         "type":"integer",
-        "default":"1",
         "required":true
       }
     ],
     "interfaces":[
       {
         "name":"删除宠物",
-        "url":"pet/{petId}",
-        "method":"DELETE"
+        "url":"/pet/{petId}",
+        "method":"DELETE",
+        "bodyType":"application/json",
+        "requestBody":{
+          "mediaType":"application/json"
+        },
+        "responseBodies":[
+          {
+            "code":"204",
+            "schemaItem":{
+              "type":"string",
+              "content":"{\"type\":\"string\"}"
+            }
+          },
+          {
+            "code":"400",
+            "mediaType":"application/json",
+            "description":"Bad Request",
+            "schemaItem":{
+              "type":"object",
+              "content":"{\"type\":\"object\",\"properties\":{\"message\":{\"type\":\"string\"}}}"
+            }
+          }
+        ],
+        "responseCodes":"200,301,302,401,402,500,204,400"
+      }
+    ]
+  },
+  {
+    "title":"宠物列表",
+    "path":"/pet",
+    "status":1,
+    "interfaces":[
+      {
+        "name":"宠物列表",
+        "url":"/pet",
+        "method":"GET",
+        "bodyType":"application/json",
+        "responseBodies":[
+          {
+            "code":"200",
+            "mediaType":"application/json",
+            "description":"successful operation",
+            "schemaItem":{
+              "type":"array",
+              "content":"{\"type\":\"array\",\"items\":{\"ref\":\"#/components/schemas/petDetail\",\"types\":[\"array\"],\"type\":\"string\",\"$ref\":\"#/components/schemas/petDetail\",\"name\":\"petDetail\"}}"
+            }
+          }
+        ]
       }
     ]
   }

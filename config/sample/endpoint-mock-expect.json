@@ -1,0 +1,53 @@
+{
+  "宠物详情": [
+    {
+      "name":"请求成功",
+      "requestPathParams": [
+        {
+          "compareWay":"equal",
+          "name": "petId",
+          "value": "5",
+          "source": "path"
+        }
+      ],
+      "responseBody": {
+        "code": "200",
+        "delayTime": 0,
+        "value": "{\"id\": 5,\"name\": \"dog\",\"status\": \"sold\"}"
+      }
+    },
+    {
+      "name":"无效路径参数",
+      "requestPathParams": [
+        {
+          "compareWay":"contain",
+          "name": "petId",
+          "value": "不是数字",
+          "source": "path"
+        }
+      ],
+      "responseBody": {
+        "code": "400",
+        "delayTime": 0,
+        "value": "{\"message\": \"Invalid format for parameter petId, invalid syntax\"}"
+      }
+    },
+    {
+      "name":"宠物不存在",
+      "requestPathParams": [
+        {
+          "compareWay":"equal",
+          "name": "petId",
+          "value": "10000",
+          "source": "path"
+        }
+      ],
+      "responseBody": {
+        "code": "404",
+        "delayTime": 0,
+        "value": "{\"code\": 404,\"message\": \"not found\"}"
+      }
+    }
+  ]
+}
+

@@ -1,14 +1,16 @@
 <template>
   <div class="project-settings-mock-main">
-    <a-form :label-col="labelCol" :wrapper-col="wrapperCol">
+    <a-form :label-col="labelCol" :wrapper-col="wrapperCol" labelAlign="left">
       <a-form-item label="Mock引擎">
         <div>Mock.js</div>
       </a-form-item>
 
       <a-form-item label="Mock优先方式">
-        <a-radio-group name="radioGroup"
-                       v-model:value="modelRef.priority"
-                       @blur="validate('priority', { trigger: 'change' }).catch(() => {})">
+        <a-radio-group 
+          name="radioGroup"
+          style="height: 32px;display: flex;align-items: center;"
+          v-model:value="modelRef.priority"
+          @blur="validate('priority', { trigger: 'change' }).catch(() => {})">
           <a-radio value="smart">智能Mock优先</a-radio>
           <a-radio value="example">响应示例优先</a-radio>
         </a-radio-group>
@@ -20,7 +22,7 @@
         </div>
       </a-form-item>
 
-      <a-form-item :wrapper-col="{ offset: 5 }">
+      <a-form-item :wrapper-col="{ offset: 2 }">
         <a-button type="primary" @click="onSubmit" :disabled="!dataChanged && modelRef.id > 0">保存</a-button>
       </a-form-item>
     </a-form>
@@ -65,13 +67,13 @@ const onSubmit = () => {
   })
 }
 
-const labelCol = {span: 4}
-const wrapperCol = {span: 18, offset: 1}
+const labelCol = {span: 2}
+const wrapperCol = {span: 18}
 
 </script>
 
 <style lang="less" scoped>
   .project-settings-mock-main {
-    padding: 36px;
+    padding: 24px;
   }
 </style>

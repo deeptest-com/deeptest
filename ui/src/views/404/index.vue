@@ -9,3 +9,16 @@
         </template>
     </a-result>
 </template>
+<script setup lang="ts">
+import { onMounted } from 'vue';
+
+onMounted(() => {
+    const appLoadingEl = document.getElementsByClassName('app-loading');
+    if (appLoadingEl[0]) {
+        appLoadingEl[0].classList.add('hide');
+        setTimeout(() => {
+            document.body.removeChild(appLoadingEl[0]);
+        }, 600)
+    } 
+})
+</script>

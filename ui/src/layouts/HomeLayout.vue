@@ -7,7 +7,8 @@
         <UserSetting :theme="'white-theme'"/>
       </div>
     </div>
-    <router-view></router-view>
+    <!-- <router-view></router-view> -->
+    <slot />
     <RightTopUpdate />
   </div>
 </template>

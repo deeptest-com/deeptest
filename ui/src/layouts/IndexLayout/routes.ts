@@ -4,22 +4,22 @@ import BlankLayout from '@/layouts/BlankLayout.vue';
 const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
     title: 'workbench',
-    path: '/workbench',
-    redirect: '/workbench/index',
+    path: '/:projectNameAbbr/workspace',
+    redirect: '/:projectNameAbbr/workspace',
     component: BlankLayout,
     children: [
       {
-        icon: 'home',
+        icon: 'workspace',
         title: 'workbench',
-        path: 'index',
+        path: '',
         component: () => import('@/views/workbench/index.vue'),
         hidden: false,
         meta: {
-          code: 'WORKBENCH'
+          code: 'WORKSPACE'
         }
       },
       {
-        icon: 'home',
+        icon: 'workspace',
         title: 'workplace',
         path: ':id',
         component: () => import('@/views/workbench/index.vue'),
@@ -29,72 +29,72 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
   },
   {
     title: 'index-layout.menu',
-    path: '/endpoint',
-    redirect: '/endpoint/index',
+    path: '/:projectNameAbbr/IM',
+    redirect: '/:projectNameAbbr/IM',
     component: BlankLayout,
     children: [
       {
-        icon: 'endpoint',
+        icon: 'define',
         title: 'endpoint-management',
-        path: 'index',
+        path: '',
         component: () => import('@/views/endpoint/index.vue'),
         hidden: false,
         meta: {
-          code: 'ENDPOINT'
+          code: 'IM'
         }
       }
     ],
   },
   {
     title: 'index-layout.menu',
-    path: '/docs',
-    redirect: '/docs',
+    path: '/:projectNameAbbr/docs',
+    redirect: '/:projectNameAbbr/docs',
     component: BlankLayout,
     children: [
       {
-        icon: 'doc',
+        icon: 'docs',
         title: 'endpoint-docs',
-        path: 'index',
+        path: '',
         component: () => import('@/views/docs/index.vue'),
         hidden: false,
         meta: {
-          code: 'ENDPOINT'
+          code: 'DOCS'
         }
       },
     ],
   },
   {
     title: 'index-layout.menu',
-    path: '/diagnose',
-    redirect: '/diagnose/index',
+    path: '/:projectNameAbbr/debug',
+    redirect: '/:projectNameAbbr/debug',
     component: BlankLayout,
     children: [
       {
-        icon: 'diagnose',
+        icon: 'debug',
         title: 'diagnose',
-        path: 'index',
+        path: '',
         component: () => import('@/views/diagnose/index.vue'),
         hidden: false,
         meta: {
-          code: 'DIAGNOSE'
+          code: 'DEBUG'
         }
       },
     ],
   },
   {
     title: 'index-layout.menu',
-    path: '/scenario',
-    redirect: '/scenario/index',
+    path: '/:projectNameAbbr/TS',
+    redirect: '/:projectNameAbbr/TS',
     component: BlankLayout,
     children: [
       {
-        icon: 'scenario',
+        icon: 'test',
         title: 'scenario',
-        path: 'index',
+        path: '',
         component: () => import('@/views/scenario/index.vue'),
         hidden: false,
         meta: {
-          code: 'SCENARIO'
+          code: 'TS'
         }
       }
     ],
@@ -102,22 +102,22 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
 
   {
     title: 'index-layout.menu',
-    path: '/plan',
-    redirect: '/plan/index',
+    path: '/:projectNameAbbr/TP',
+    redirect: '/:projectNameAbbr/TP',
     component: BlankLayout,
     children: [
       {
-        icon: 'plan',
+        icon: 'tp',
         title: 'plan',
-        path: 'index',
+        path: '',
         component: () => import('@/views/plan/index.vue'),
         hidden: false,
         meta: {
-          code: 'PLAN'
+          code: 'TP'
         }
       },
       {
-        icon: 'plan',
+        icon: 'tp',
         title: 'plan.exec',
         path: 'exec/:id',
         component: () => import('@/views/plan/exec/index.vue'),
@@ -128,18 +128,18 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
 
   {
     title: 'index-layout.menu',
-    path: '/report',
-    redirect: '/report/index',
+    path: '/:projectNameAbbr/TR',
+    redirect: '/:projectNameAbbr/TR',
     component: () => import('@/views/report/index.vue'),
     children: [
       {
-        icon: 'report',
+        icon: 'tr',
         title: 'report',
-        path: 'index',
+        path: '',
         component: () => import('@/views/report/index.vue'),
         hidden: false,
         meta: {
-          code: 'REPORT'
+          code: 'TR'
         }
       }
     ],
@@ -148,14 +148,14 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
    // 项目管理
   {
     title: '项目设置',
-    path: '/project-setting',
-    redirect: '/project-setting/index',
+    path: '/:projectNameAbbr/project-setting',
+    redirect: '/:projectNameAbbr/project-setting',
     component: () => import('@/views/project-settings/index.vue'),
     children: [
       {
         icon:'set',
         title: 'projectSetting',
-        path: 'index',
+        path: '',
         component: BlankLayout,
         hidden: false,
         meta: {

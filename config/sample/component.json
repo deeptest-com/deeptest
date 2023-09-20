@@ -1,0 +1,20 @@
+[
+  {
+    "name": "petRequest",
+    "content": "{\"type\":\"object\",\"properties\":{\"name\":{\"type\":\"string\",\"x-mock-type\":\"@name()\"},\"status\":{\"type\":\"string\"}}}",
+    "examples": "[]",
+    "type": "object"
+  },
+  {
+    "name":"petError",
+    "content":"{\"type\":\"object\"}",
+    "examples":"[]",
+    "type":"object"
+  },
+  {
+    "name":"petDetail",
+    "content":"{\"type\":\"object\",\"properties\":{\"id\":{\"type\":\"integer\",\"x-mock-type\":\"@increment(1)\"},\"name\":{\"type\":\"string\",\"x-mock-type\":\"@name()\"},\"status\":{\"type\":\"string\"}}}",
+    "examples":"[]",
+    "type":"object"
+  }
+]

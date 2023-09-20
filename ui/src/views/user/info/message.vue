@@ -1,17 +1,19 @@
 <template>
-  <div class="message-main">
-    <a-card>
-      <template #title>
-        <div>用户消息</div>
-      </template>
-      <template #extra></template>
+  <HomeLayout>
+    <div class="message-main">
+      <a-card>
+        <template #title>
+          <div>用户消息</div>
+        </template>
+        <template #extra></template>
 
-      <div>
-      </div>
+        <div>
+        </div>
 
-    </a-card>
+      </a-card>
 
-  </div>
+    </div>
+  </HomeLayout>
 </template>
 
 <script setup lang="ts">
@@ -22,6 +24,7 @@ import {useI18n} from "vue-i18n";
 import {Form, notification} from 'ant-design-vue';
 import {useStore} from "vuex";
 import {StateType as UserStateType} from "@/store/user";
+import HomeLayout from "@/layouts/HomeLayout.vue";
 
 const useForm = Form.useForm;
 

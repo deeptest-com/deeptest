@@ -171,22 +171,26 @@ func addPropRuleCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 	if typ == OasFieldTypeInteger || typ == OasFieldTypeNumber {
 		if schema.Min != nil && *schema.Min != 0 {
 			sample = *schema.Min - 1
+			tag := fmt.Sprintf("%v", *schema.Min)
 
 			if schema.ExclusiveMin {
 				sample = *schema.Min
+				tag = tag + " ExclusiveMin"
 			}
 
-			addRuleCase(name, sample, typ, *schema.Min, consts.AlternativeCaseRulesMin, parent)
+			addRuleCase(name, sample, typ, tag, consts.AlternativeCaseRulesMin, parent)
 		}
 
 		if schema.Max != nil && *schema.Max != 0 {
 			sample = *schema.Max + 1
+			tag := fmt.Sprintf("%v", *schema.Max)
 
 			if schema.ExclusiveMax {
 				sample = *schema.Max
+				tag = tag + " ExclusiveMax"
 			}
 
-			addRuleCase(name, sample, typ, *schema.Max, consts.AlternativeCaseRulesMax, parent)
+			addRuleCase(name, sample, typ, tag, consts.AlternativeCaseRulesMax, parent)
 		}
 
 		if schema.MaxLength != nil && *schema.MaxLength > 0 {

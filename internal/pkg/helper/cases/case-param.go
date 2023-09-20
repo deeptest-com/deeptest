@@ -127,22 +127,26 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 	if typ == OasFieldTypeInteger || typ == OasFieldTypeNumber {
 		if schema.Min != nil && *schema.Min != 0 {
 			sample = *schema.Min - 1
+			tag := fmt.Sprintf("%v", *schema.Min)
 
 			if schema.ExclusiveMin {
 				sample = *schema.Min
+				tag = tag + " ExclusiveMin"
 			}
 
-			addRuleCase(paramVal.Name, sample, typ, *schema.Min, consts.AlternativeCaseRulesMin, parent)
+			addRuleCase(paramVal.Name, sample, typ, tag, consts.AlternativeCaseRulesMin, parent)
 		}
 
 		if schema.Max != nil && *schema.Max != 0 {
 			sample = *schema.Max + 1
+			tag := fmt.Sprintf("%v", *schema.Max)
 
 			if schema.ExclusiveMax {
 				sample = *schema.Max
+				tag = tag + " ExclusiveMax"
 			}
 
-			addRuleCase(paramVal.Name, sample, typ, *schema.Max, consts.AlternativeCaseRulesMax, parent)
+			addRuleCase(paramVal.Name, sample, typ, tag, consts.AlternativeCaseRulesMax, parent)
 		}
 
 		if schema.MaxLength != nil && *schema.MaxLength > 0 {
@@ -186,7 +190,9 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 	}
 }
 
-func addRuleCase(name string, sample interface{}, typ OasFieldType, tag interface{}, rule consts.AlternativeCaseRules, parent *AlternativeCase) {
+func addRuleCase(name string, sample interface{}, typ OasFieldType, tag interface{},
+	rule consts.AlternativeCaseRules, parent *AlternativeCase) {
+
 	ruleCase := &AlternativeCase{
 		Title:  fmt.Sprintf("%s (%v)", rule.String(), tag),
 		Sample: sample,

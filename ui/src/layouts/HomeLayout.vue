@@ -15,10 +15,11 @@
   </div>
 </template>
 <script lang="ts">
-import {defineComponent} from 'vue';
-import {useRouter} from 'vue-router';
+import { computed, defineComponent, ref, unref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import UserSetting from './IndexLayout/components/RightTopSettings.vue';
 import RightTopUpdate from './IndexLayout/components/RightTopUpdate.vue';
+import settings from '@/config/settings';
 
 export default defineComponent({
   name: 'HomeLayout',
@@ -29,6 +30,18 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
+
+    watch(() => {
+      return router.currentRoute.value;
+    }, (val: any) => {
+      if (val.meta.title) {
+        document.title = `${val.meta.title} - ${settings.siteTitle}`;
+      } else {
+        document.title = settings.siteTitle;
+      }
+    }, {
+      immediate: true,
+    })
 
     function handleRedirect() {
       router.push('/');

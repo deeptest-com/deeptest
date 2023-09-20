@@ -462,7 +462,6 @@ function checkShareInfo() {
       editEndpoint({ id: shareInfo.endpointId }); // 默认打开该接口的抽屉详情
     }
     if (shareInfo.selectedCategoryId) {
-      console.log(12340);
       selectNode(shareInfo.selectedCategoryId);
     }
   } catch (error) {

@@ -94,8 +94,6 @@ export default defineComponent({
     // 有权限的菜单
     const permissionMenuData = computed<RoutesDataItem[]>(() => getPermissionMenuData(store.state.User.currentUser.sysRoles, menuData));
 
-    console.log('!!!', permissionMenuData)
-
     // 当前路由的顶部菜单path
     const belongTopMenu = computed<string>(() => getRouteBelongTopMenu(routeItem.value))
 

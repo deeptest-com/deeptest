@@ -1,17 +1,17 @@
 {
     "name": "LeyanAPI",
     "displayName": "LeyanAPI",
-    "version": "0.8",
     "main": "./main.js",
     "icon": "./icon/ly/favicon",
     "linuxIcon": "./icon/ly/favicon.png",
     "author": {
-        "name": "Aaron Chen",
-        "email": "462826@qq.com"
+        "name": "能科科技股份有限公司",
+        "email": "Marketing@nancal.com"
     },
-    "homepage": "https://deeptest.com",
-    "company": "苏州谷笛",
+    "homepage": "https://nancal.com/",
+    "company": "能科科技股份有限公司",
     "license": "GPL 3.0",
-    "copyright": "Copyright (C) 2022",
-    "buildTime": "2022/10/18 09:01::01"
+    "copyright": "Copyright (C) 2023",
+    "buildTime": "2023/09/20 09:01:01"
 }
+

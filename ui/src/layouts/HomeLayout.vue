@@ -64,7 +64,7 @@ export default defineComponent({
       &.leyan-logo{
         transform: scale(1.1) translateX(5px);
 
-        background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016448.svg");
+        background-image: url("https://leyanapi.nancalcloud.com/upload/images/202306291016448.svg");
       }
     }
   }

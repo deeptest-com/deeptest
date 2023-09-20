@@ -799,3 +799,7 @@ const (
 
 	AlternativeCaseRulesPattern AlternativeCaseRules = "pattern"
 )
+
+func (e AlternativeCaseRules) String() string {
+	return string(e)
+}

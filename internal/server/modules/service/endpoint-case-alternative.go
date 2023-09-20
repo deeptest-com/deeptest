@@ -8,7 +8,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/cases"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/kataras/iris/v12"
 	"log"
 )
 
@@ -28,6 +30,12 @@ type EndpointCaseAlternativeService struct {
 
 func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.EndpointCaseAlternativeLoadReq) (
 	root casesHelper.AlternativeCase, err error) {
+
+	root.Title = "备选用例"
+	root.Category = consts.AlternativeCaseRoot
+	root.Key = _stringUtils.Uuid()
+	root.Slots = iris.Map{"icon": "icon"}
+	root.IsDir = true
 
 	//_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
 	//if endpointInterfaceId == 0 {
@@ -50,9 +58,6 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.Endpoi
 	if err != nil || apiOperation == nil {
 		return
 	}
-
-	root.Category = consts.AlternativeCaseRoot
-	root.IsDir = true
 
 	root.Children = append(root.Children, casesHelper.LoadForQueryParams(apiOperation.Parameters))
 	root.Children = append(root.Children, casesHelper.LoadForPathParams(apiOperation.Parameters))

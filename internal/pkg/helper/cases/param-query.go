@@ -2,7 +2,9 @@ package casesHelper
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/kataras/iris/v12"
 )
 
 func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) {
@@ -10,6 +12,8 @@ func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) 
 		Title:    "查询参数",
 		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,
+		Key:      _stringUtils.Uuid(),
+		Slots:    iris.Map{"icon": "icon"},
 	}
 
 	for _, paramRef := range params {
@@ -22,6 +26,8 @@ func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) 
 			Title:    paramVal.Name,
 			Category: consts.AlternativeCaseParam,
 			IsDir:    true,
+			Key:      _stringUtils.Uuid(),
+			Slots:    iris.Map{"icon": "icon"},
 		}
 
 		addParamRequiredCase(paramVal, paramCase)

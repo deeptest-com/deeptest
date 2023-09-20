@@ -7,6 +7,7 @@ const (
 	OasFieldTypeString  OasFieldType = "string"
 	OasFieldTypeNumber  OasFieldType = "number"
 	OasFieldTypeInteger OasFieldType = "integer"
+	OasFieldTypeByte    OasFieldType = "byte"
 	OasFieldTypeBoolean OasFieldType = "boolean"
 	OasFieldTypeArray   OasFieldType = "array"
 

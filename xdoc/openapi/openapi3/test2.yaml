@@ -103,18 +103,19 @@ components:
           minimum: 11
           maximum: 99
 
-        number:
-          type: number
-          minimum: 200
-          maximum: 300
+        username:
+          type: string
+          format: email
+          enum:
+            - open
+            - merged
+            - declined
 
         byte:
           type: byte
-          minimum: 97
+          minimum: 98
           maximum: 100
 
-        nickname:
-          type: string
         profile:
           type: object
           $ref: '#/components/schemas/Cat'

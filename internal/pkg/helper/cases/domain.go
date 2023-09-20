@@ -6,7 +6,7 @@ import (
 )
 
 type AlternativeCase struct {
-	Id uint `json:"id"`
+	Key string `json:"key"`
 
 	Title string `json:"title"`
 	Desc  string `json:"desc"`

@@ -25,9 +25,9 @@ func (c *EndpointCaseAlternativeCtrl) LoadAlternative(ctx iris.Context) {
 	req.CreateUserName = multi.GetUsername(ctx)
 	req.CreateUserId = multi.GetUserId(ctx)
 
-	c.EndpointCaseAlternativeService.LoadAlternative(req)
+	root, err := c.EndpointCaseAlternativeService.LoadAlternative(req)
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: root})
 }
 
 // GenerateCases

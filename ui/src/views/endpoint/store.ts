@@ -956,6 +956,7 @@ const StoreModel: ModuleType = {
         async loadAlternativeCases({ state, dispatch }, payload: any) {
             const jsn = await loadAlternativeCases(payload)
             if (jsn.code === 0) {
+                state.alternativeCases = jsn.data.children
                 return true;
             } else {
                 return false

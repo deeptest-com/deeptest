@@ -43,11 +43,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.LoginErr.Code})
 		return
 	}
-	hostPrefix := "http"
-	if ctx.Request().TLS != nil {
-		hostPrefix = "https"
-	}
-	cache.SetCache("host", hostPrefix+"://"+ctx.Request().Header.Get("host"), -1)
+	cache.SetCache("host", ctx.Request().Header.Get("Origin"), -1)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
 }
 

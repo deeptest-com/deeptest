@@ -175,7 +175,7 @@ watch(() => {return shareId.value}, async (newVal) => {
 }
 .full-container{
   margin: 0;
-  //height: 100vh;
+  height: 100vh;
 }
 
 </style>

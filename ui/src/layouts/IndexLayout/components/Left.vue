@@ -106,8 +106,8 @@ export default defineComponent({
 
     const handleRedirect = () => {
       router.push(`/${currProject.value.shortName}/project-setting/enviroment/var`);
-    };  
-  
+    };
+
     return {
       isLeyanEnv,
       isActive,
@@ -148,6 +148,7 @@ export default defineComponent({
       overflow: hidden;
 
       .logo-title {
+        margin: 0px 6px;
         height: 64px;
         line-height: 64px;
         font-family: 'Helvetica', sans-serif;
@@ -155,9 +156,8 @@ export default defineComponent({
         font-style: normal;
         font-size: 18px;
         color: #FFFFFF;
-        margin-bottom: 0px;
         background-image: url("../../../assets/images/logo.png");
-        background-size: 100% auto;
+        background-size: 100% 50%;
         background-repeat: no-repeat;
         background-position: center;
         &.leyan-logo{
@@ -203,7 +203,7 @@ export default defineComponent({
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        
+
         .svg-icon {
           width: 24px;
           height: 24px;

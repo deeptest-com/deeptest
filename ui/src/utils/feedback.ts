@@ -210,6 +210,7 @@ const renderfeedback = (currentUser: any) => {
             },
             {
                 name: '项目管理员',
+                arrowHide: true,
                 desc: '管理员或开发/测试负责人，通过“项目设置”功能入口进行项目成员维护、环境管理、服务管理，设置Mock策略、通过数据池共享数据等。',
                 list: [
                     {

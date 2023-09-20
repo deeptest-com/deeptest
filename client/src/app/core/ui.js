@@ -14,12 +14,13 @@ import path from 'path';
 import {spawn} from 'child_process';
 import express from 'express';
 
-import {DEBUG, portClient} from '../utils/consts';
+import {DEBUG} from '../utils/consts';
 import {logInfo, logErr} from '../utils/log';
+const history = require('connect-history-api-fallback');
 
 let _uiService;
 
-export function startUIService() {
+export function startUIService(portClient) {
     // ui 已经启动
     if (_uiService) {
         return Promise.resolve();
@@ -32,9 +33,7 @@ export function startUIService() {
         uiServerUrl = path.resolve(process.resourcesPath, 'ui');
     }
 
-
     uiServerUrl = path.resolve(process.resourcesPath, 'ui');
-    console.log(`8222uiServerUrl=${uiServerUrl}`);
 
 
     if (uiServerUrl) {
@@ -48,10 +47,11 @@ export function startUIService() {
                 uiServerUrl = path.resolve(app.getAppPath(), uiServerUrl);
             }
 
-            const port = process.env.UI_SERVER_PORT || portClient;
+            const port = portClient;
             logInfo(`>> starting ui serer at ${uiServerUrl} with port ${port}`);
 
             const uiServer = express();
+            uiServer.use(history());
             uiServer.use(express.static(uiServerUrl));
             const server = uiServer.listen(port, serverError => {
                 if (serverError) {

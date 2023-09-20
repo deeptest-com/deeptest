@@ -8,6 +8,8 @@ if (require('electron-squirrel-startup')) {  // eslint-disable-line global-requi
   app.quit();
 }
 
+
+
 const isDev = require('electron-is-dev')
 const mode = isDev ? 'development' : 'production'
 logInfo(`Start DeepTest v${app.getVersion()} in ${mode} mode ...`)

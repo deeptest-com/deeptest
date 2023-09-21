@@ -112,14 +112,12 @@ const StoreModel: ModuleType = {
     },
   },
   actions: {
-    async getPermissionList({ commit }) {
-      const result = await getPermissionMenuList();
-
-      if (result.code === 0) {
-        const menuData = {};
-        const buttonData = {};
-
-        if (result.data.result) {
+    async getPermissionList({ commit }, payload: any) {
+      const menuData = {};
+      const buttonData = {};
+      try {
+        const result = await getPermissionMenuList(payload);
+        if (result.code === 0 && result.data.result) {
           result.data.result.forEach(e => {
             if (e.type === 'menu') {
               menuData[e.code] = e;
@@ -127,12 +125,11 @@ const StoreModel: ModuleType = {
               buttonData[e.code] = e;
             }
           })
-
-          console.log('~permissionMenu --', menuData);
-          console.log('~permissionButton --', buttonData);
         }
-
         commit('setPermissionMenuAndBtn', { permissionButtonMap: buttonData, permissionMenuMap: menuData });
+        return { menuData, buttonData };
+      } catch(error) {
+        return { menuData, buttonData };
       }
     },
     async getServerConfig({ commit }) {

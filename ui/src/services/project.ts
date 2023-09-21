@@ -22,10 +22,11 @@ export async function changeProject(projectId: number): Promise<any> {
     });
 }
 
-export async function getPermissionMenuList(): Promise<any> {
+export async function getPermissionMenuList(payload): Promise<any> {
     return request({
         url: `/${apiPath}/menus/userMenuList`,
         method: 'GET',
+        params: payload,
     })
 }
 
@@ -35,4 +36,12 @@ export async function queryMembers(params): Promise<any> {
         method: 'get',
         params,
     });
+}
+
+export async function checkProjectAndUser(params) {
+    return request({
+        url: `/${apiPath}/checkProjectAndUser`,
+        method: 'get',
+        params,
+    })
 }

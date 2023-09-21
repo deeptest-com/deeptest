@@ -115,7 +115,7 @@ async function ok() {
         );
         if (res) {
           notifySuccess('发布成功');
-          window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/docs?documentId=${res.data}`, '_blank')
+          window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/docs?documentId=${res.data}`, '_self')
         }
         reset();
         emit('ok');

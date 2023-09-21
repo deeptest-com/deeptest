@@ -51,7 +51,9 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.Endpoi
 	pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/test2.yaml"
 	loader := &openapi3.Loader{Context: context.Background(), IsExternalRefsAllowed: true}
 	doc3, err := loader.LoadFromFile(pth)
-
+	if err != nil || doc3 == nil {
+		return
+	}
 	apiPathItem, _ := casesHelper.GetApiPathItem(doc3)
 
 	apiOperation, err := casesHelper.GetApiOperation(req.Method, apiPathItem)

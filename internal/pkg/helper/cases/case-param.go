@@ -6,7 +6,6 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
-	"math"
 )
 
 func addParamRequiredCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
@@ -14,8 +13,10 @@ func addParamRequiredCase(paramVal *openapi3.Parameter, parent *AlternativeCase)
 		return
 	}
 
+	sample := getRequiredSample()
 	required := &AlternativeCase{
-		Sample: ExampleEmpty,
+		Title:  fmt.Sprintf("required"),
+		Sample: sample,
 
 		Category:      consts.AlternativeCaseCase,
 		Type:          consts.AlternativeCaseRequired,
@@ -36,14 +37,13 @@ func addParamTypeCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 		return
 	}
 
-	var sample interface{}
-	if typ == OasFieldTypeBoolean || typ == OasFieldTypeNumber || typ == OasFieldTypeArray {
-		sample = RandStr()
-	} else if typ == OasFieldTypeInteger {
-		sample = RandFloat32()
+	sample := getTypeSample(typ)
+	if sample == nil {
+		return
 	}
 
 	typeCase := &AlternativeCase{
+		Title:  fmt.Sprintf("%v", typ),
 		Sample: sample,
 
 		Category:  consts.AlternativeCaseCase,
@@ -65,8 +65,10 @@ func addParamEnumCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 		return
 	}
 
+	sample := getEnumSample()
 	typeCase := &AlternativeCase{
-		Sample: RandStr(),
+		Title:  fmt.Sprintf("enum %v", enum),
+		Sample: sample,
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseEnum,
@@ -88,24 +90,10 @@ func addParamFormatCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 		return
 	}
 
-	var sample interface{}
-	if typ == OasFieldTypeInteger {
-		if format == OasFieldFormatInt32 {
-			sample = RandInt64()
-		} else if format == OasFieldFormatInt64 {
-			sample = RandStr()
-		}
-	} else if typ == OasFieldTypeNumber {
-		if format == OasFieldFormatFloat {
-			sample = RandFloat64()
-		} else if format == OasFieldFormatDouble {
-			sample = RandStr()
-		}
-	} else if typ == OasFieldTypeString {
-		sample = RandStr()
-	}
+	sample := getFormatSample(format, typ)
 
-	typeCase := &AlternativeCase{
+	formatCase := &AlternativeCase{
+		Title:  fmt.Sprintf("format (%s)", format),
 		Sample: sample,
 
 		Category:  consts.AlternativeCaseCase,
@@ -116,77 +104,22 @@ func addParamFormatCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 		Slots:     iris.Map{"icon": "icon"},
 	}
 
-	parent.Children = append(parent.Children, typeCase)
+	parent.Children = append(parent.Children, formatCase)
 }
 
 func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 	schema := paramVal.Schema.Value
-	typ := OasFieldType(schema.Type)
 
-	var sample interface{}
-	if typ == OasFieldTypeInteger || typ == OasFieldTypeNumber {
-		if schema.Min != nil && *schema.Min != 0 {
-			sample = *schema.Min - 1
-			tag := fmt.Sprintf("%v", *schema.Min)
+	arr := getRuleSamples(schema, paramVal.Name)
 
-			if schema.ExclusiveMin {
-				sample = *schema.Min
-				tag = tag + " exclusive"
-			}
+	for _, item := range arr {
+		name := item[0].(string)
+		sample := item[1]
+		typ := item[2].(OasFieldType)
+		tag := item[3]
+		rule := item[4].(consts.AlternativeCaseRules)
 
-			addRuleCase(paramVal.Name, sample, typ, tag, consts.AlternativeCaseRulesMin, parent)
-		}
-
-		if schema.Max != nil && *schema.Max != 0 {
-			sample = *schema.Max + 1
-			tag := fmt.Sprintf("%v", *schema.Max)
-
-			if schema.ExclusiveMax {
-				sample = *schema.Max
-				tag = tag + " exclusive"
-			}
-
-			addRuleCase(paramVal.Name, sample, typ, tag, consts.AlternativeCaseRulesMax, parent)
-		}
-
-		if schema.MaxLength != nil && *schema.MaxLength > 0 {
-			if typ == OasFieldTypeInteger {
-				sample = 1 * math.Pow(10, float64(*schema.MaxLength))
-			} else {
-				sample = 1 / math.Pow(10, float64(*schema.MaxLength-1))
-			}
-			addRuleCase(paramVal.Name, sample, typ, *schema.MaxLength, consts.AlternativeCaseRulesMaxLength, parent)
-		}
-
-		if schema.MinLength > 0 {
-			sample = 1
-			addRuleCase(paramVal.Name, sample, typ, schema.MinLength, consts.AlternativeCaseRulesMinLength, parent)
-		}
-
-		if schema.MultipleOf != nil && *schema.MultipleOf != 0 {
-			if typ == OasFieldTypeInteger {
-				sample = *schema.MultipleOf + 1
-			} else {
-				sample = *schema.MultipleOf + *schema.MultipleOf*0.1
-			}
-			addRuleCase(paramVal.Name, sample, typ, *schema.MultipleOf, consts.AlternativeCaseRulesMultipleOf, parent)
-		}
-
-	} else {
-		if schema.Pattern != "" {
-			sample = RandStrSpecial()
-			addRuleCase(paramVal.Name, sample, typ, schema.Pattern, consts.AlternativeCaseRulesPattern, parent)
-		}
-
-		if schema.MaxLength != nil && *(schema.MaxLength) > 0 {
-			sample = RandStrWithLen(int(*(schema.MaxLength) + 1))
-			addRuleCase(paramVal.Name, sample, typ, *schema.MaxLength, consts.AlternativeCaseRulesMaxLength, parent)
-		}
-
-		if schema.MinLength > 0 {
-			sample = RandStrWithLen(int(schema.MinLength - 1))
-			addRuleCase(paramVal.Name, sample, typ, schema.MinLength, consts.AlternativeCaseRulesMinLength, parent)
-		}
+		addRuleCase(name, sample, typ, tag, rule, parent)
 	}
 }
 

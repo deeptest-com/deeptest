@@ -3,7 +3,7 @@
            :visible="visible"
            @ok="finish"
            @cancel="cancel"
-           :title="(!model.id ? '新建' : '修改') + '用例'"
+           :title="'备选用例'"
             :bodyStyle="{height: 'calc(100vh - 266px)', overflowY: 'auto'}">
     <a-form :label-col="{ span: 3 }"
             :wrapper-col="{ span: 20 }">
@@ -37,18 +37,21 @@
             :show-icon="true">
           <template #title="nodeProps">
             <span class="tree-title">
-              <span>{{ nodeProps.title }}</span>
+              <span>{{ nodeProps.title}}</span>
               <template v-if="nodeProps.category==='case'">
                 <span>: &nbsp;&nbsp;&nbsp;</span>
 
                 <span v-if="treeDataMap[nodeProps.key]?.isEdit">
                   <a-input size="small"
+                           :style="{width: '160px'}"
                            v-model:value="sampleRef" />
-                  <CheckOutlined @click="editFinish(nodeProps.key)" class="dp-icon-btn dp-trans-80" />
+                  &nbsp;
+                  <CheckOutlined @click="editFinish(nodeProps.key)" class="dp-icon-btn2 dp-trans-80" />
+                  <CloseOutlined @click="editCancel(nodeProps.key)"  class="dp-icon-btn2 dp-trans-80" />
                 </span>
 
                 <span v-else>
-                  {{ nodeProps.sample }}
+                  {{ nodeProps.sample ? nodeProps.sample : '空' }}
                   &nbsp;
                   <EditOutlined @click="editStart(nodeProps.key)" />
                 </span>
@@ -73,7 +76,7 @@ import {computed, defineProps, inject, reactive, ref, watch} from 'vue';
 import {Methods, UsedBy} from "@/utils/enum";
 import {Form} from "ant-design-vue";
 import {useStore} from "vuex";
-import {FolderOutlined, FolderOpenOutlined, FileOutlined, CheckOutlined, EditOutlined} from '@ant-design/icons-vue';
+import {FolderOutlined, FolderOpenOutlined, FileOutlined, CheckOutlined, EditOutlined, CloseOutlined} from '@ant-design/icons-vue';
 
 import {Endpoint} from "@/views/endpoint/data";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";
@@ -205,6 +208,10 @@ const editFinish = (key) => {
   console.log('editFinish', key)
   treeDataMap.value[key].isEdit = false
   treeDataMap.value[key].sample = sampleRef.value
+}
+const editCancel = (key) => {
+  console.log('editCancel', key)
+  treeDataMap.value[key].isEdit = false
 }
 function resetEdit() {
   Object.keys(treeDataMap.value).forEach((key) => {

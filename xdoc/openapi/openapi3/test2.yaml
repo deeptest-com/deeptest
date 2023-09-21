@@ -2,29 +2,46 @@ openapi: 3.0.0
 servers:
   - url: //petstore.swagger.io/v2
     description: Default server
-  - url: //petstore.swagger.io/sandbox
-    description: Sandbox server
-info:
-  description: |
-    This is a sample server Petstore server.
-
-  version: 1.0.0
-  title: Petstore
-  termsOfService: 'http://swagger.io/terms/'
-  contact:
-    name: API Support
-    email: apiteam@swagger.io
-    url: https://github.com/Redocly/redoc
-  x-logo:
-    url: 'https://redocly.github.io/redoc/petstore-logo.png'
-    altText: Petstore logo
-  license:
-    name: Apache 2.0
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 
 paths:
   /users/{userid}:
     post:
+      parameters:
+        - name: count
+          in: query
+          required: true
+          schema:
+            type: number
+            minimum: 11
+            maximum: 99
+            maxLength: 8
+            minLength: 4
+
+        - name: total
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 99
+            maxLength: 6
+            minLength: 3
+            exclusiveMaximum: true
+            exclusiveMinimum: true
+
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uri
+            maxLength: 20
+            minLength: 10
+            enum:
+              - open
+              - merged
+              - declined
+
       requestBody:
         description: ''
         content:

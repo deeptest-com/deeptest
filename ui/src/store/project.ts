@@ -4,7 +4,6 @@ import { ResponseData } from '@/utils/request';
 import settings from '@/config/settings';
 import {changeProject, checkProjectAndUser, getByUser} from '@/services/project';
 import {setCache} from "@/utils/localCache";
-import { message } from 'ant-design-vue';
 
 export interface StateType {
   projects: any[]
@@ -79,11 +78,9 @@ const StoreModel: ModuleType = {
           return result.data;
         }
         if (result.code === 10600) {
-          message.error('用户暂无无权限访问，请联系管理员');
           return false;
         }
         if (result.code === 10700) {
-          message.error('访问项目异常');
           return false;
         }
         return false;

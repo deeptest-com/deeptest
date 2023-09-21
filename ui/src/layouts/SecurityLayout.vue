@@ -12,7 +12,7 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { StateType as UserStateType, CurrentUser } from "@/store/user";
 import { RouteMenuType } from "@/types/permission";
-import { message } from "ant-design-vue";
+import { notifyError } from "@/utils/notify";
 
 interface SecurityLayoutSetupData {
     isLogin: ComputedRef<boolean>;
@@ -68,7 +68,7 @@ export default defineComponent({
                 // 校验路由权限
                 if (!menuData[RouteMenuType[`${code}`]]) {
                     isReady.value = true;
-                    message.error('暂无权限访问，请联系管理员');
+                    notifyError('权限不足');
                     router.replace('/');
                     return;
                 }

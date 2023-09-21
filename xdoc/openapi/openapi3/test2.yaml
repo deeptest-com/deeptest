@@ -16,6 +16,7 @@ paths:
             maximum: 99
             maxLength: 8
             minLength: 4
+            multipleOf: 5
 
         - name: total
           in: query
@@ -28,6 +29,7 @@ paths:
             minLength: 3
             exclusiveMaximum: true
             exclusiveMinimum: true
+            multipleOf: 5
 
         - name: url
           in: query
@@ -37,6 +39,7 @@ paths:
             format: uri
             maxLength: 20
             minLength: 10
+            pattern: ^[a-zA-Z]{3,6}$
             enum:
               - open
               - merged
@@ -53,38 +56,6 @@ paths:
         "200":
           $ref: "#/components/responses/200_resp"
 
-        "201":
-          $ref: "#/components/responses/201_resp"
-
-        '501':
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/501_resp'
-          description: |-
-            The namespaced PIDs of processes
-
-        '502':
-          content:
-            application/json:
-              examples:
-                foo:
-                  value:
-                    {
-                      "versions": [
-                        {
-                          "status": "CURRENT",
-                          "id": "v2.0",
-                          "links": [
-                            {
-                              "href": "http://127.0.0.1:8774/v2/",
-                              "rel": "self"
-                            }
-                          ]
-                        }
-                      ]
-                    }
-
 components:
   responses:
     200_resp:
@@ -93,23 +64,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/user'
-
-          examples:
-            json:
-              $ref: "#/components/examples/BadRequest"
-            xml:
-              value: "XML CONTENT"
-
-    201_resp:
-      description: The Cat
-      content:
-        application/json:
-          schema:
-            allOf:
-              - $ref: '#/components/schemas/Cat'
-#              - $ref: '#/components/schemas/user'
-            discriminator:
-              propertyName: pet_type
 
   schemas:
     user:
@@ -133,98 +87,3 @@ components:
           type: byte
           minimum: 98
           maximum: 100
-
-        profile:
-          type: object
-          $ref: '#/components/schemas/Cat'
-
-    501_resp:
-      title: Root Type for PIDMap
-      description: |-
-        A "map" of the PIDs of processes in PID namespaces
-      type: array
-      items:
-        $ref: '#/components/schemas/pids'
-      example:
-        -
-          - pid: 11
-            nsid: 501_resp-1862620
-          - pid: 22
-            nsid: 501_resp-1862620
-        -
-          - pid: 33
-            nsid: 501_resp-1862620
-
-    pids:
-      description: |-
-        The list of namespaced PIDs of a process
-      type: array
-      items:
-        $ref: '#/components/schemas/pid'
-      example:
-        - pid: 12345
-          nsid: pids-4026531905
-        - pid: 1
-          nsid: pids-4026532382
-
-    pid:
-      title: Root Type for NamespacedPID
-      description: |-
-        A process identifier (PID) valid only in the accompanying PID namespace.
-      required:
-        - pid
-        - nsid
-      type: object
-      properties:
-        pid:
-          description: a process identifier
-          type: integer
-        nsid:
-          format: int64
-          description: |-
-            a PID namespace identified
-          type: integer
-      example:
-        pid: 1
-        nsid: 462826
-
-    Cat:
-      allOf:
-        - $ref: "#/components/schemas/animal"
-        - $ref: "#/components/schemas/Pet"
-        - $ref: "#/components/schemas/Dog"
-
-    animal:
-      type: string
-
-    Pet:
-      type: object
-      properties:
-        sameProp:
-          type: string
-        owner:
-          type: string
-
-    Dog:
-      type: object
-      properties:
-        sameProp:
-          type: string
-        dogProp1:
-          type: integer
-        dogProp2:
-          format: int64
-
-  examples:
-    BadRequest:
-      summary: Wrong format
-      value:
-        error:
-          type: validation-error
-          title: Your request parameters didn't validate.
-          status: 400
-          invalid-params:
-            - name: age
-              reason: must be a positive integer
-            - name: color
-              reason: must be 'green', 'red' or 'blue'

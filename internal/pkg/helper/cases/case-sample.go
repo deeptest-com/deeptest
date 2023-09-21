@@ -116,7 +116,7 @@ func getRuleSamples(schema *openapi3.Schema, name string) (ret [][]interface{}) 
 				sample = *schema.MultipleOf + *schema.MultipleOf*0.1
 			}
 
-			tag := schema.MultipleOf
+			tag := *schema.MultipleOf
 			item := []interface{}{name, sample, typ, tag, consts.AlternativeCaseRulesMultipleOf}
 			ret = append(ret, item)
 		}

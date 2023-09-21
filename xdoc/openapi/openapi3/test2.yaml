@@ -87,3 +87,15 @@ components:
           type: byte
           minimum: 98
           maximum: 100
+
+        pet:
+          $ref: "#/components/schemas/Pet"
+    Pet:
+      type: object
+      properties:
+        age:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+          format: email

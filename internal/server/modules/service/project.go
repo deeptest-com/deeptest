@@ -136,6 +136,20 @@ func (s *ProjectService) AuditUsers(projectId uint) (data []model.SysUser, err e
 	return s.ProjectRepo.GetAuditUsers(projectId)
 }
 
+func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (project model.Project, userInProject bool, err error) {
+	project, err = s.ProjectRepo.GetByShortName(shortName)
+	if err != nil {
+		return
+	}
+
+	userInProject, err = s.ProjectRepo.IfProjectMember(userId, project.ID)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 /*
 func (s *ProjectService) createSample(projectId uint) (err error) {
 	serve, endpoint, _ := s.SampleSource.GetSources()

@@ -9,6 +9,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"strings"
 )
 
@@ -419,4 +420,32 @@ func (c *ProjectCtrl) AuditUsers(ctx iris.Context) {
 		return
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
+// CheckProjectAndUser
+// @Tags	项目管理
+// @summary	校验项目和成员是否存在
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	project_code	query	string	true	"项目缩写"
+// @success	200	{object}	_domain.Response{data=model.Project}
+// @Router	/api/v1/projects/checkProjectAndUser	[get]
+func (c *ProjectCtrl) CheckProjectAndUser(ctx iris.Context) {
+	projectCode := ctx.URLParam("project_code")
+	userId := multi.GetUserId(ctx)
+
+	project, userInProject, err := c.ProjectService.CheckProjectAndUser(projectCode, userId)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	} else if project.ID == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ErrProjectNotExist.Code, Msg: _domain.ErrProjectNotExist.Msg, Data: project})
+	} else if !userInProject {
+		ctx.JSON(_domain.Response{Code: _domain.ErrUserNotInProject.Code, Msg: _domain.ErrUserNotInProject.Msg, Data: project})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: project})
+	}
+
+	return
 }

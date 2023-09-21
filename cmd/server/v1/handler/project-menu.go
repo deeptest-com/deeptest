@@ -23,8 +23,10 @@ type ProjectMenuCtrl struct {
 // @Router	/api/v1/projects/menus/userMenuList	[get]
 func (c *ProjectMenuCtrl) UserMenuList(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
-	projectId, err := ctx.URLParamInt("currProjectId")
+
+	projectId, err := ctx.URLParamInt("projectId")
 	if projectId == 0 {
+		projectId, err = ctx.URLParamInt("currProjectId")
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}

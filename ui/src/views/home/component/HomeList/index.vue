@@ -191,7 +191,7 @@ async function goProject(item: any) {
   await store.dispatch("ProjectGlobal/changeProject", item?.projectId);
 
   // 更新左侧菜单以及按钮权限
-  await store.dispatch("Global/getPermissionList");
+  await store.dispatch("Global/getPermissionList", { projectId: item.projectId });
 
   // 项目切换后，需要重新更新可选服务列表
   await store.dispatch("ServeGlobal/fetchServe");

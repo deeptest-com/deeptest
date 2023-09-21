@@ -74,6 +74,8 @@ var (
 	ErrEmailExist         = BizErr{10300, "邮箱已存在"}
 	ErrShortNameExist     = BizErr{10400, "英文缩写已存在"}
 	ErrPasswordMustBeSame = BizErr{10500, "两次密码必须一样"}
+	ErrUserNotInProject   = BizErr{10600, "不是该项目的成员"}
+	ErrProjectNotExist    = BizErr{10700, "项目不存在"}
 )
 
 func (e BizErr) Error() string {

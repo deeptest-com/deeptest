@@ -89,15 +89,6 @@ const currentEnvURL = computed(() => {
 // 是否折叠,默认展开
 const collapse = ref(true);
 
-
-
-/**
- * 跳转去新建环境
- * */
-function addEnv() {
-  window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/envdetail`, '_blank')
-}
-
 async function changeServer(val) {
   await store.dispatch('Debug/changeServer', { serverId: val, requestEnvVars: true }); // 切换环境
   endpointDetail.value.serverId = val;

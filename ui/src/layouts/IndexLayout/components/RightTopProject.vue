@@ -131,7 +131,7 @@ const selectProject = async (item): Promise<void> => {
   await store.dispatch("ServeGlobal/fetchServe");
 
   // 更新左侧菜单以及按钮权限
-  await store.dispatch('Global/getPermissionList');
+  await store.dispatch('Global/getPermissionList', { projectId: item.id });
 }
 
 const handleClickOut = (event) => {

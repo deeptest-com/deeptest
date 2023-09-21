@@ -13,6 +13,8 @@ export enum UsedBy {
     CaseDebug = "case_debug",
     MockData = "mock_data",
     MockResp = "mock_resp",
+
+    OpenAPIYaml = "openapi_yaml",
 }
 
 export enum ProcessorInterfaceSrc {

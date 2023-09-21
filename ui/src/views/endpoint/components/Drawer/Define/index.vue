@@ -35,7 +35,7 @@ import {
   ref,
   defineProps,
   defineEmits,
-  computed, watch,
+  computed, watch, provide,
 } from 'vue';
 import {useStore} from "vuex";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
@@ -46,6 +46,9 @@ const store = useStore<{ Endpoint, ProjectGlobal }>();
 const endpointDetail = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetail);
 const endpointDetailYamlCode = computed<any>(() => store.state.Endpoint.endpointDetailYamlCode);
 import EndpointForm from './Form/index.vue'
+import {UsedBy} from "@/utils/enum";
+
+provide('usedBy', UsedBy.OpenAPIYaml)
 
 const timestamp = ref('')
 watch(endpointDetailYamlCode, (newVal) => {

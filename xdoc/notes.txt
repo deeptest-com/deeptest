@@ -31,6 +31,7 @@ nohup go run cmd/agent/main.go  > agent.log 2>&1 &
 nohup go run ./deeptest-server  > server.log 2>&1 &
 nohup go run ./agent  > agent.log 2>&1 &
 
+cd ~/rd/actions-runner
 nohup ./run.sh > runner.log 2>&1 &
 
 # 部署
@@ -58,5 +59,7 @@ scp ~/work/qiniu/deeptest/1.1.1/darwin/deeptest-upgrade.zip* \
     lighthouse@111.231.16.35:~/rd/project/deeptest/upload/deeptest/1.1.1/darwin
 
 scp -r client/ui/* lighthouse@111.231.16.35:~/rd/project/deeptest/ui/dist
+
+scp -r Download/ lighthouse@111.231.16.35:~/rd/download
 
 npm config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/

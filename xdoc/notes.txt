@@ -58,3 +58,5 @@ scp ~/work/qiniu/deeptest/1.1.1/darwin/deeptest-upgrade.zip* \
     lighthouse@111.231.16.35:~/rd/project/deeptest/upload/deeptest/1.1.1/darwin
 
 scp -r client/ui/* lighthouse@111.231.16.35:~/rd/project/deeptest/ui/dist
+
+npm config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/

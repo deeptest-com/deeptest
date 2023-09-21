@@ -38,7 +38,7 @@ func getFormatSample(format OasFieldFormat, typ OasFieldType) (sample interface{
 		} else if format == OasFieldFormatDouble {
 			sample = RandStr()
 		}
-	} else if typ == OasFieldTypeString {
+	} else if typ == OasFieldTypeString { // others
 		sample = RandStr()
 	}
 

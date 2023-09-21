@@ -38,21 +38,17 @@ Error: EACCES: permission denied, rmdir '/tmp/electron-packager'
 
 ## 具体的打包打包步骤如下
 
-1. 打包 UI 服务
+1. 修改版本号
+   1. Makefile 文件中的 VERSION 变量 
+   2. client/package.json 中的 version 字段
+   3. package-ly.json 中的 version 字段 
 
-2. 修改 
-
+2. 执行打包命令
 
 ```bash
-
-sudo SERVER_EXE_PATH=bin/darwin/deeptest-agent UI_SERVER_URL=./ui UI_SERVER_PORT=8000 yarn start
-
-sudo SERVER_EXE_PATH=bin/darwin/deeptest-agent UI_SERVER_URL=http://localhost:5173/  UI_SERVER_PORT=8000 yarn start
-
-sudo  NODE_ENV=development SERVER_EXE_PATH=bin/darwin/deeptest-agent    UI_SERVER_PORT=8000 yarn start
-
-
-```
+sudo make ly-mac # mac
+sudo make ly-win # windows
+```      
 
 
 

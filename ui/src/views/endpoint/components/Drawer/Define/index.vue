@@ -24,7 +24,8 @@
           :height="600"
           theme="vs"
           :options="{...MonacoOptions}"
-          @change="handleYamlCodeChange"/>
+          @change="handleYamlCodeChange"
+          :timestamp="timestamp" />
     </div>
   </div>
 </template>
@@ -34,7 +35,7 @@ import {
   ref,
   defineProps,
   defineEmits,
-  computed,
+  computed, watch,
 } from 'vue';
 import {useStore} from "vuex";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
@@ -43,8 +44,13 @@ import {Endpoint} from "@/views/endpoint/data";
 import {MonacoOptions} from '@/utils/const';
 const store = useStore<{ Endpoint, ProjectGlobal }>();
 const endpointDetail = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetail);
-const endpointDetailYamlCode = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetailYamlCode);
+const endpointDetailYamlCode = computed<any>(() => store.state.Endpoint.endpointDetailYamlCode);
 import EndpointForm from './Form/index.vue'
+
+const timestamp = ref('')
+watch(endpointDetailYamlCode, (newVal) => {
+  timestamp.value = Date.now() + ''
+}, {immediate: true, deep: true})
 
 const props = defineProps({});
 const emit = defineEmits(['switchMode']);

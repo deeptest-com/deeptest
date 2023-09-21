@@ -5,7 +5,7 @@
             <ConBoxTitle :title="activeEnvDetail.displayName"/>
         </div>
         <div class="envDetail-content">
-            <a-form-item :labelCol="{ span: 2 }" :wrapperCol="{ span: 10 }" label="环境名称" name="name"
+            <a-form-item :wrapperCol="{ span: 10 }" label="环境名称" name="name"
                 :rules="rules.name">
                 <a-input :disabled="isMockEnv" class="env-name" :value="activeEnvDetail.name || ''" @change="handleEnvNameChange"
                     placeholder="请输入环境名称" />

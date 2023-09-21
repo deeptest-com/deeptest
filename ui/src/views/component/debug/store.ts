@@ -307,7 +307,6 @@ const StoreModel: ModuleType = {
             state.debugData.body = payload;
         },
         setServes(state, payload) {
-            console.log('292---- ', payload);
             state.serves = payload || [];
         },
         setCurrServe(state, payload) {

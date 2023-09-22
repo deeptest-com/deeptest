@@ -138,6 +138,13 @@ watch(() => {
 // 获取版本列表
 onMounted(async () => {
   if (isDocsSharePage || isDocsViewPage) {
+    const appLoadingEl = document.getElementsByClassName('app-loading');
+    if (appLoadingEl[0]) {
+      appLoadingEl[0].classList.add('hide');
+      setTimeout(() => {
+          document.body.removeChild(appLoadingEl[0]);
+      }, 600);
+    }
     return;
   }
   await store.dispatch('Docs/getVersionList', {
@@ -160,14 +167,14 @@ watch(() => {return shareId.value}, async (newVal) => {
 </script>
 <style scoped lang="less">
 .container {
-  margin: 16px;
   background: #ffffff;
+  height: 100%;
   //min-height: calc(100vh - 106px);
   overflow: hidden;
 }
 .full-container{
   margin: 0;
-  //height: 100vh;
+  height: 100vh;
 }
 
 </style>

@@ -25,9 +25,9 @@ export function useGlobalEnv(formRef?: any): EnvReturnData {
 
     function showEnvDetail(item: any, isAdd?: boolean) {
         if (item) {
-            router.push(`/project-setting/enviroment/envdetail/${item.id}`)
+            router.push(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/envdetail/${item.id}`)
         } else {
-            router.replace('/project-setting/enviroment/envdetail')
+            router.replace(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/envdetail`)
         }
 
         if (isAdd) {

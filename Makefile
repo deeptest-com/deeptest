@@ -1,5 +1,11 @@
-VERSION=1.1.1
-PROJECT=deeptest
+#VERSION=1.1.1
+#PROJECT=deeptest
+
+# ly 打包配置，开源版可以删除
+
+VERSION=0.0.15
+PROJECT=LeyanAPI
+
 
 ifeq ($(OS),Windows_NT)
     PLATFORM="windows"
@@ -12,10 +18,25 @@ else
 endif
 
 ifeq ($(PLATFORM),"mac")
-    QINIU_DIR=/Users/aaron/work/qiniu/
+	QINIU_DIR=/Users/aaron/work/qiniu/
 else
     QINIU_DIR=~/work/qiniu/
 endif
+
+
+# ly打包的路径,单独设置
+PKG_W64=npm run package-win64
+PKG_MAC=npm run package-mac
+PKG_W32=npm run package-win32
+PKG_LINUX=npm run package-linux
+ifeq ($(PROJECT),LeyanAPI)
+	QINIU_DIR=~/nk2/ly/
+	PKG_W64=npm run ly-package-win64
+	PKG_MAC=npm run ly-package-mac
+	PKG_W32=npm run ly-package-win32
+	PKG_LINUX=npm run ly-package-linux
+endif
+
 
 QINIU_DIST_DIR=${QINIU_DIR}${PROJECT}/${VERSION}/
 
@@ -42,6 +63,14 @@ win32: prepare build_gui_win32 compile_launcher_win32 compile_server_win32 copy_
 linux: prepare build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
 mac:   prepare build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
 
+# 乐研 打包
+ly-win64: prepare compile_ly_ui_client build_gui_win64 compile_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
+ly-win32: prepare compile_ly_ui_client build_gui_win32 compile_launcher_win32 compile_server_win32 copy_files_win32 zip_win32 zip_win32_upgrade
+ly-linux: prepare compile_ly_ui_client build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
+ly-mac:   prepare compile_ly_ui_client build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
+
+
+
 prepare: update_version
 
 update_version: gen_version_file
@@ -57,6 +86,8 @@ compile_ui_demo:
 	@cd ui && yarn build --mode deeptest-demo --dest ../client/ui && cd ..
 compile_ui_client:
 	@cd ui && yarn build --mode deeptest-client --dest ../client/ui && cd ..
+compile_ly_ui_client:
+	@cd ui && yarn build --mode ly-client --dest ../client/ui && cd ..
 
 # launcher
 compile_launcher_win64:
@@ -66,6 +97,7 @@ compile_launcher_win64:
 		${BUILD_CMD_WIN} -x -v \
 		-o ../../${BIN_DIR}win64/${PROJECT}.exe && \
 		cd ..
+
 
 compile_launcher_win32:
 	@echo 'start compile win32 launcher'
@@ -118,7 +150,7 @@ compile_agent_win64:
 	@rm -rf "${CLIENT_OUT_DIR_UPGRADE}win64" && mkdir -p "${CLIENT_OUT_DIR_UPGRADE}win64" && \
 		cp ${CLIENT_BIN_DIR}win32/deeptest-agent.exe "${CLIENT_OUT_DIR_UPGRADE}win64"
 package_gui_win64_client:
-	@cd client && npm run package-win64 && cd ..
+	@cd client && ${PKG_W64} && cd ..
 	@rm -rf ${CLIENT_OUT_DIR_EXECUTABLE}win64 && mkdir -p ${CLIENT_OUT_DIR_EXECUTABLE}win64 && \
 		mv ${CLIENT_OUT_DIR}${PROJECT}-win32-x64 ${CLIENT_OUT_DIR_EXECUTABLE}win64/gui
 
@@ -132,7 +164,7 @@ compile_agent_win32:
 	@rm -rf "${CLIENT_OUT_DIR_UPGRADE}win32" && mkdir -p "${CLIENT_OUT_DIR_UPGRADE}win32" && \
 		cp ${CLIENT_BIN_DIR}win32/deeptest-agent.exe "${CLIENT_OUT_DIR_UPGRADE}win32"
 package_gui_win32_client:
-	@cd client && npm run package-win32 && cd ..
+	@cd client && ${PKG_W32} && cd ..
 	@rm -rf ${CLIENT_OUT_DIR_EXECUTABLE}win32 && mkdir -p ${CLIENT_OUT_DIR_EXECUTABLE}win32 && \
 		mv ${CLIENT_OUT_DIR}${PROJECT}-win32-ia32 ${CLIENT_OUT_DIR_EXECUTABLE}win32/gui
 
@@ -152,7 +184,7 @@ endif
 	@rm -rf "${CLIENT_OUT_DIR_UPGRADE}win32" && mkdir -p "${CLIENT_OUT_DIR_UPGRADE}linux" && \
 		cp ${CLIENT_BIN_DIR}linux/deeptest-agent "${CLIENT_OUT_DIR_UPGRADE}linux"
 package_gui_linux_client:
-	@cd client && npm run package-linux && cd ..
+	@cd client && ${PKG_LINUX} && cd ..
 	@rm -rf ${CLIENT_OUT_DIR_EXECUTABLE}linux && mkdir -p ${CLIENT_OUT_DIR_EXECUTABLE}linux && \
 		mv ${CLIENT_OUT_DIR}${PROJECT}-linux-x64 ${CLIENT_OUT_DIR_EXECUTABLE}linux/gui
 
@@ -167,7 +199,7 @@ compile_agent_mac:
 	@rm -rf "${CLIENT_OUT_DIR_UPGRADE}darwin" && mkdir -p "${CLIENT_OUT_DIR_UPGRADE}darwin" && \
 		cp ${CLIENT_BIN_DIR}darwin/deeptest-agent "${CLIENT_OUT_DIR_UPGRADE}darwin"
 package_gui_mac_client:
-	@cd client && npm run package-mac && cd ..
+	@cd client && ${PKG_MAC} && cd ..
 	@rm -rf ${CLIENT_OUT_DIR_EXECUTABLE}darwin && mkdir -p ${CLIENT_OUT_DIR_EXECUTABLE}darwin && \
 		mv ${CLIENT_OUT_DIR}${PROJECT}-darwin-x64 ${CLIENT_OUT_DIR_EXECUTABLE}darwin/gui && \
 		mv ${CLIENT_OUT_DIR_EXECUTABLE}darwin/gui/${PROJECT}.app ${CLIENT_OUT_DIR_EXECUTABLE}darwin/${PROJECT}.app && rm -rf ${CLIENT_OUT_DIR_EXECUTABLE}darwin/gui
@@ -266,4 +298,3 @@ upload_to:
 	@find ${QINIU_DIR} -name ".DS_Store" -type f -delete
 	@qshell qupload2 --src-dir=${QINIU_DIR} --bucket=download --thread-count=10 --log-file=qshell.log \
 					 --skip-path-prefixes=ztf,zd,zv,zmanager,driver --rescan-local --overwrite --check-hash
-

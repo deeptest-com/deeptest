@@ -185,6 +185,10 @@ func (s *Schema2conv) mock(expr string, typ string) interface{} {
 func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 	var combineSchemas SchemaRefs
 
+	if schema.Value == nil {
+		return
+	}
+
 	if len(schema.Value.AllOf) >= 1 {
 		combineSchemas = schema.Value.AllOf
 		//	fmt.Println(combineSchemas)

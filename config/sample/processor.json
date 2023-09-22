@@ -1,140 +1,91 @@
 {
-  "name":"宠物商店",
+  "name":"宠物增删改查",
   "entityCategory":"processor_root",
   "entityType":"processor_root_default",
   "children":[
     {
-      "name":"添加宠物",
+      "name":"宠物列表",
+      "method":"GET",
+      "entityCategory":"processor_interface",
+      "entityType":"processor_interface_default",
+      "isDir":false,
+      "processorInterfaceSrc":"define"
+    },
+    {
+      "name":"批量创建宠物",
       "entityCategory":"processor_group",
       "entityType":"processor_group_default",
+      "ordr":1,
       "children":[
         {
-          "name":"迭代列表",
+          "name":"循环列表",
           "entityCategory":"processor_loop",
           "entityType":"processor_loop_in",
+          "ordr":2,
           "children":[
             {
-              "name":"输出",
-              "entityCategory":"processor_print",
-              "entityType":"processor_print_default",
-              "slots":{
-                "icon":"icon"
-              },
-              "isLeaf":true
+              "name":"pet不为空",
+              "entityCategory":"processor_logic",
+              "entityType":"processor_logic_if",
+              "ordr":2,
+              "children":[
+                {
+                  "name":"新增宠物",
+                  "method":"POST",
+                  "entityCategory":"processor_interface",
+                  "entityType":"processor_interface_default",
+                  "ordr":1,
+                  "isDir":false,
+                  "processorInterfaceSrc":"define"
+                },
+                {
+                  "name":"创建成功",
+                  "entityCategory":"processor_print",
+                  "entityType":"processor_print_default"
+                }
+              ],
+              "isDir":true
             },
             {
-              "name":"添加宠物-POST",
-              "entityCategory":"processor_interface",
-              "entityType":"processor_interface_default",
-              "slots":{
-                "icon":"icon"
-              },
-              "isLeaf":true
+              "name": "ELSE",
+              "entityCategory":"processor_logic",
+              "entityType":"processor_logic_else",
+              "ordr":3,
+              "children":[
+                {
+                  "name":"创建不成功",
+                  "entityCategory":"processor_print",
+                  "entityType":"processor_print_default",
+                  "ordr":1,
+                  "isDir":false
+                }
+              ],
+              "isDir":true
             }
           ],
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":false
+          "isDir":true
         }
       ],
-      "slots":{
-        "icon":"icon"
-      },
-      "isLeaf":false
+      "isDir":true
     },
     {
-      "name":"宠物列表",
-      "entityCategory":"processor_group",
-      "entityType":"processor_group_default",
-      "children":[
-        {
-          "name":"宠物列表-GET",
-          "entityCategory":"processor_interface",
-          "entityType":"processor_interface_default",
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":true
-        }
-      ],
-      "slots":{
-        "icon":"icon"
-      },
-      "isLeaf":false
-    },
-    {
-      "name":"查看宠物",
-      "entityCategory":"processor_group",
-      "entityType":"processor_group_default",
-      "children":[
-        {
-          "name":"迭代次数",
-          "entityCategory":"processor_loop",
-          "entityType":"processor_loop_time",
-          "children":[
-            {
-              "name":"宠物详情-GET",
-              "entityCategory":"processor_interface",
-              "entityType":"processor_interface_default",
-              "slots":{
-                "icon":"icon"
-              },
-              "isLeaf":true
-            }
-          ],
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":false
-        }
-      ],
-      "slots":{
-        "icon":"icon"
-      },
-      "isLeaf":false
+      "name":"更新宠物",
+      "method":"PUT",
+      "entityCategory":"processor_interface",
+      "entityType":"processor_interface_default",
+      "ordr":2,
+      "isDir":false,
+      "processorInterfaceSrc":"define"
     },
     {
       "name":"删除宠物",
-      "entityCategory":"processor_group",
-      "entityType":"processor_group_default",
-      "children":[
-        {
-          "name":"设置删除宠物id",
-          "entityCategory":"processor_variable",
-          "entityType":"processor_variable_set",
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":true
-        },
-        {
-          "name":"删除宠物-DELETE",
-          "entityCategory":"processor_interface",
-          "entityType":"processor_interface_default",
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":true
-        },
-        {
-          "name":"宠物详情-GET",
-          "entityCategory":"processor_interface",
-          "entityType":"processor_interface_default",
-          "slots":{
-            "icon":"icon"
-          },
-          "isLeaf":true
-        }
-      ],
-      "slots":{
-        "icon":"icon"
-      },
-      "isLeaf":false
+      "method":"DELETE",
+      "entityCategory":"processor_interface",
+      "entityType":"processor_interface_default",
+      "ordr":3,
+      "isDir":false,
+      "processorInterfaceSrc":"define"
     }
   ],
-  "slots":{
-    "icon":"icon"
-  },
-  "isLeaf":false
+  "isDir":true
 }

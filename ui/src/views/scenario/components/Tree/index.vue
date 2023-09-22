@@ -54,7 +54,10 @@
             </div>
           </template>
         </a-tree>
-        <div v-if="!treeData" class="nodata-tip"><a-spin v-if="!treeData"/></div>
+        <div v-if="!treeData.length" class="nodata-tip">
+          <div v-if="showKeywordsTip">搜索结果为空 ~</div>
+          <a-spin v-else/>
+        </div>
       </div>
     </div>
     <!--  创建接口 Tag  -->
@@ -80,10 +83,11 @@ import {message, Modal} from 'ant-design-vue';
 import CreateCategoryModal from '@/components/CreateCategoryModal/index.vue'
 import {DropEvent} from 'ant-design-vue/es/tree/Tree';
 import {useStore} from "vuex";
+import cloneDeep from "lodash/cloneDeep";
 import {StateType as ProjectStateType} from "@/store/project";
 import {setSelectedKey} from "@/utils/cache";
 import {StateType as ScenarioStateType} from "@/views/scenario/store";
-import {filterTree} from "@/utils/tree";
+import {filterTree, filterByKeyword} from "@/utils/tree";
 import {notifyError, notifySuccess, notifyWarn} from "@/utils/notify";
 
 const store = useStore<{ Scenario: ScenarioStateType, ProjectGlobal: ProjectStateType }>();
@@ -104,7 +108,7 @@ const autoExpandParent = ref<boolean>(false);
 const treeData: any = computed(() => {
   const data = treeDataCategory.value;
   if(!data?.[0]?.id){
-    return null;
+    return [];
   }
   data[0].children = data[0].children || [];
   function fn(arr: any) {
@@ -133,18 +137,32 @@ const treeData: any = computed(() => {
       children: []
     })
   }
-  return data?.[0]?.children || null;
+  const childrenData = cloneDeep(children);
+  if (childrenData?.length > 0) {
+    return [...filterByKeyword(childrenData, searchValue.value, 'name')];
+  }
+  return [];
 });
+
+/**
+ * 搜索结果为空时展示
+ */
+ const showKeywordsTip = computed(() => {
+  return searchValue.value && treeData.value.length === 0;
+})
 
 async function loadCategorys() {
   await store.dispatch('Scenario/loadCategory');
   expandAll();
 }
 
+// 切换项目  重置搜索关键词/重置分类列表
 watch(() => {
   return currProject.value;
 }, async (newVal) => {
   if (newVal?.id) {
+    store.commit('Scenario/setTreeDataCategory', {});
+    searchValue.value = '';
     await loadCategorys();
   }
 }, {

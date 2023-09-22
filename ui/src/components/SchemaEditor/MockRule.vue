@@ -11,17 +11,23 @@ import {StateType as ServeStateType} from "@/store/serve";
 
 const store = useStore<{ Endpoint, ServeGlobal: ServeStateType }>();
 
+const typeMap = {
+  "number":["integer","number"],
+  "integer":["integer"],
+  "string":["string"]
+}
+
 const mockExpressions = computed(() => {
   let options = store.state.Endpoint?.mockExpressions || [];
   // 如果有类型，则需要过滤相同类型的数据
   if (props.tree?.type) {
     options = options.filter((item) => {
-      return item.type && item.type === props.tree?.type;
+      return item.type && typeMap[props.tree.type]?.includes(item.type);
     })
   }
   if (keywords.value) {
     options = options.filter((item) => {
-      return item.label.includes(keywords.value) || item.name.includes(keywords.value);
+      return item.label?.includes(keywords.value) || item.name?.includes(keywords.value);
     });
   }
   // console.log('83222 options', options)

@@ -61,6 +61,7 @@ export interface SettingsType {
     eventVariableSelectionResult: any,
     webSocketRoom: string,
     electronMsg: string,
+    electronMsgUsePort: string,
     electronMsgReplay: string,
     electronMsgUpdate: string,
     electronMsgDownloading: string,
@@ -87,9 +88,14 @@ export interface SettingsType {
     eventGetPlanDetail: string;
 
     /**
-     * pane resize 
+     * pane resize
      */
     paneResizeTop: string;
+
+    /**
+     * ly api 客户端本地存储的用户信息
+     * */
+    lyElectronUserInfo: string;
 }
 
 const settings: SettingsType = {
@@ -127,6 +133,7 @@ const settings: SettingsType = {
     eventVariableSelectionResult: 'eventVariableSelectionResult',
     webSocketRoom: 'webSocketRoom',
     electronMsg: 'electronMsg',
+    electronMsgUsePort: 'electronMsgUsePort',
     electronMsgReplay: 'electronMsgReplay',
     electronMsgUpdate: 'electronMsgUpdate',
     electronMsgDownloading: 'electronMsgDownloading',
@@ -140,10 +147,12 @@ const settings: SettingsType = {
 
     // 测试计划相关的
     eventGetPlanDetail: 'eventGetPlanDetail',
-    eventGetPlansReports: 'eventGetPlansReports', 
+    eventGetPlansReports: 'eventGetPlansReports',
 
     // pane Resizer
     paneResizeTop: 'paneResizeTop',
+
+    lyElectronUserInfo: 'lyElectronUserInfo',
 };
 
 export default settings;

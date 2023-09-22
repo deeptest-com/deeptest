@@ -4,142 +4,128 @@ import BlankLayout from '@/layouts/BlankLayout.vue';
 const IndexLayoutRoutes: Array<RoutesDataItem> = [
   {
     title: 'workbench',
-    path: '/workbench',
-    redirect: '/workbench/index',
+    path: '/:projectNameAbbr/workspace',
+    redirect: '/:projectNameAbbr/workspace',
     component: BlankLayout,
     children: [
       {
-        icon: 'home',
+        icon: 'workspace',
         title: 'workbench',
-        path: 'index',
+        path: '',
         component: () => import('@/views/workbench/index.vue'),
         hidden: false,
         meta: {
-          code: 'WORKBENCH'
+          code: 'WORKSPACE'
         }
-      },
-      {
-        icon: 'home',
-        title: 'workplace',
-        path: ':id',
-        component: () => import('@/views/workbench/index.vue'),
-        hidden: true,
-      },
+      }
     ],
   },
   {
-    title: 'index-layout.menu',
-    path: '/endpoint',
-    redirect: '/endpoint/index',
+    title: 'index-layout.menu.im',
+    path: '/:projectNameAbbr/IM',
+    redirect: '/:projectNameAbbr/IM',
     component: BlankLayout,
     children: [
       {
-        icon: 'endpoint',
+        icon: 'define',
         title: 'endpoint-management',
-        path: 'index',
+        path: '',
         component: () => import('@/views/endpoint/index.vue'),
         hidden: false,
         meta: {
-          code: 'ENDPOINT'
+          code: 'IM'
         }
       }
     ],
   },
   {
-    title: 'index-layout.menu',
-    path: '/docs',
-    redirect: '/docs',
+    title: 'index-layout.menu.docs',
+    path: '/:projectNameAbbr/docs',
+    redirect: '/:projectNameAbbr/docs',
     component: BlankLayout,
     children: [
       {
-        icon: 'doc',
-        title: 'endpoint-docs',
-        path: 'index',
+        icon: 'docs',
+        title: 'index-layout.menu.docs',
+        path: '',
         component: () => import('@/views/docs/index.vue'),
         hidden: false,
         meta: {
-          code: 'ENDPOINT'
+          code: 'DOCS'
         }
       },
     ],
   },
   {
-    title: 'index-layout.menu',
-    path: '/diagnose',
-    redirect: '/diagnose/index',
+    title: 'index-layout.menu.debug',
+    path: '/:projectNameAbbr/debug',
+    redirect: '/:projectNameAbbr/debug',
     component: BlankLayout,
     children: [
       {
-        icon: 'diagnose',
-        title: 'diagnose',
-        path: 'index',
+        icon: 'debug',
+        title: 'index-layout.menu.debug',
+        path: '',
         component: () => import('@/views/diagnose/index.vue'),
         hidden: false,
         meta: {
-          code: 'DIAGNOSE'
+          code: 'DEBUG'
         }
       },
     ],
   },
   {
-    title: 'index-layout.menu',
-    path: '/scenario',
-    redirect: '/scenario/index',
+    title: 'index-layout.menu.ts',
+    path: '/:projectNameAbbr/TS',
+    redirect: '/:projectNameAbbr/TS',
     component: BlankLayout,
     children: [
       {
-        icon: 'scenario',
-        title: 'scenario',
-        path: 'index',
+        icon: 'test',
+        title: 'index-layout.menu.ts',
+        path: '',
         component: () => import('@/views/scenario/index.vue'),
         hidden: false,
         meta: {
-          code: 'SCENARIO'
+          code: 'TS'
         }
       }
     ],
   },
 
   {
-    title: 'index-layout.menu',
-    path: '/plan',
-    redirect: '/plan/index',
+    title: 'index-layout.menu.tp',
+    path: '/:projectNameAbbr/TP',
+    redirect: '/:projectNameAbbr/TP',
     component: BlankLayout,
     children: [
       {
-        icon: 'plan',
-        title: 'plan',
-        path: 'index',
+        icon: 'tp',
+        title: 'index-layout.menu.tp',
+        path: '',
         component: () => import('@/views/plan/index.vue'),
         hidden: false,
         meta: {
-          code: 'PLAN'
+          code: 'TP'
         }
-      },
-      {
-        icon: 'plan',
-        title: 'plan.exec',
-        path: 'exec/:id',
-        component: () => import('@/views/plan/exec/index.vue'),
-        hidden: true,
       },
     ],
   },
 
   {
-    title: 'index-layout.menu',
-    path: '/report',
-    redirect: '/report/index',
+    title: 'index-layout.menu.tr',
+    path: '/:projectNameAbbr/TR',
+    redirect: '/:projectNameAbbr/TR',
     component: () => import('@/views/report/index.vue'),
     children: [
       {
-        icon: 'report',
-        title: 'report',
-        path: 'index',
+        icon: 'tr',
+        title: 'index-layout.menu.tr',
+        path: '',
         component: () => import('@/views/report/index.vue'),
         hidden: false,
         meta: {
-          code: 'REPORT'
+          code: 'TR'
         }
       }
     ],
@@ -147,15 +133,15 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
 
    // 项目管理
   {
-    title: '项目设置',
-    path: '/project-setting',
-    redirect: '/project-setting/index',
+    title: 'index-layout.menu.project.setting',
+    path: '/:projectNameAbbr/project-setting',
+    redirect: '/:projectNameAbbr/project-setting',
     component: () => import('@/views/project-settings/index.vue'),
     children: [
       {
         icon:'set',
-        title: 'projectSetting',
-        path: 'index',
+        title: 'index-layout.menu.project.setting',
+        path: '',
         component: BlankLayout,
         hidden: false,
         meta: {
@@ -164,7 +150,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon:'set',
-        title: 'projectSetting.enviroment',
+        title: 'index-layout.menu.project.setting.enviroment',
         path: 'enviroment',
         name: 'enviroment',
         component: () => import('@/views/project-settings/components/EnvSetting/index.vue'),
@@ -175,7 +161,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         children: [
           {
             icon: 'set',
-            title: 'envsetting.var',
+            title: 'index-layout.menu.project.setting.var',
             path: 'var',
             name: 'enviroment.var',
             component: () => import('@/views/project-settings/components/EnvSetting/GlobalVar.vue'),
@@ -183,7 +169,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
           },
           {
             icon: 'set',
-            title: 'envsetting.params',
+            title: 'index-layout.menu.project.setting.params',
             path: 'params',
             name: 'enviroment.params',
             component: () => import('@/views/project-settings/components/EnvSetting/GlobalParams.vue'),
@@ -191,7 +177,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
           },
           {
             icon: 'set',
-            title: 'envsetting.envdetail',
+            title: 'index-layout.menu.project.setting.envdetail',
             path: 'envdetail/:id(\\d+)?',
             name: 'enviroment.envdetail',
             component: () => import('@/views/project-settings/components/EnvSetting/EnvDetail.vue'),
@@ -201,7 +187,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon:'set',
-        title: 'projectSetting.datapool',
+        title: 'index-layout.menu.project.setting.datapool',
         path: 'datapool',
         name: 'datapool',
         component: () => import('@/views/project-settings/components/DataPool/index.vue'),
@@ -212,7 +198,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon:'set',
-        title: 'projectSetting.service',
+        title: 'index-layout.menu.project.setting.service',
         path: 'service-setting',
         name: 'service-setting',
         component: () => import('@/views/project-settings/components/ServiceSetting/index.vue'),
@@ -223,7 +209,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon: 'members',
-        title: 'project.members',
+        title: 'index-layout.menu.project.setting.members',
         path: 'members',
         component: () => import('@/views/project/edit/members.vue'),
         hidden: false,
@@ -233,7 +219,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon: 'mock',
-        title: 'projectSetting.mock',
+        title: 'index-layout.menu.project.setting.mock',
         path: 'mock',
         component: () => import('@/views/project-settings/components/Mock/index.vue'),
         hidden: false,
@@ -243,7 +229,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon: 'swaggerSync',
-        title: 'projectSetting.swaggerSync',
+        title: 'index-layout.menu.project.setting.swaggerSync',
         path: 'swaggerSync',
         component: () => import('@/views/project-settings/components/SwaggerSync/index.vue'),
         hidden: false,

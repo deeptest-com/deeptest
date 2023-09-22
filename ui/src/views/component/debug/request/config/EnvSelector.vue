@@ -12,9 +12,18 @@
       <a-select
         :value="currServerId"
         :options="servers"
+        @focus="handleFocus"
         @change="e => $emit('change', e)"
         placeholder="请选择环境"
-      />
+      >
+        <template #dropdownRender="{ menuNode: menu }">
+          <v-nodes :vnodes="menu" />
+          <a-divider style="margin: 4px 0" />
+          <a-button type="link" @click="handleRedirectEnv">
+            <SettingOutlined />
+            环境管理</a-button>
+        </template>
+      </a-select>
     </div>
   </Teleport>
 </template>
@@ -27,9 +36,24 @@ import {
   onMounted,
   watch,
   inject,
+  defineComponent,
 } from "vue";
 import { useStore } from "vuex";
 import { StateType as Debug } from "@/views/component/debug/store";
+import { SettingOutlined } from "@ant-design/icons-vue";
+import { useRouter } from "vue-router";
+
+const VNodes = defineComponent({
+  props: {
+    vnodes: {
+      type: Object,
+      required: true,
+    },
+  },
+  render() {
+    return this.vnodes;
+  },
+});
 
 const props = defineProps<{
   serverId: any;
@@ -40,10 +64,12 @@ const props = defineProps<{
 const emits = defineEmits(["change"]);
 
 const containerScrollTop = inject("containerScrollTop", null) as any;
+const router = useRouter();
 
-const store = useStore<{ Debug: Debug; Endpoint; Global }>();
+const store = useStore<{ Debug: Debug; Endpoint; Global; ServeGlobal; }>();
 const servers = computed<any[]>(() => store.state.Debug.serves);
-const currServerId = computed<any[]>(() => store.state.Debug.currServe.environmentId || null);
+const currServerId = computed<any[]>(() => store.state.Debug.currServe.environmentId || null);  //当前选择的环境id
+const currServe = computed<any>(() => store.state.ServeGlobal.currServe); // 当前选择的服务
 
 const selectEnvTopPosition = ref("0px");
 const selectEnvLeftPosition = ref("0px");
@@ -82,6 +108,17 @@ const getSelectEnvLeftPosition = () => {
   }
   const { width = 0 } = rect;
   return `${width + 16 + 20}px`;
+};
+
+const handleRedirectEnv = (e) => {
+  e.preventDefault();
+  window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/var`, '_blank');
+};
+
+const handleFocus = () => {
+  store.dispatch('Debug/listServes', {
+    serveId: currServe.value.id,
+  })
 };
 
 watch(

@@ -1,5 +1,6 @@
 <template>
   <div class="container">
+    <Tab />
     <router-view></router-view>
   </div>
 </template>
@@ -9,6 +10,7 @@ import { ref, watch } from 'vue';
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { StateType as ProjectSettingStateType } from './store';
+import Tab from './components/common/Tab.vue';
 
 const router = useRouter();
 
@@ -43,9 +45,8 @@ watch(() => {
 
 <style scoped lang="less">
 .container {
-  margin: 16px;
   background: #ffffff;
-  min-height: calc(100vh - 92px);
+  height: 100%;
   overflow: hidden;
 }
 

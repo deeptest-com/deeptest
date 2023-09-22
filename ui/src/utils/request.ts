@@ -31,13 +31,14 @@ export const getUrls = () => {
     const isElectron = !!window.require
     const nodeEnv = process.env.NODE_ENV
     console.log(`isElectron=${isElectron}, nodeEnv=${nodeEnv}, locationHref=${window.location.href}`)
-    const serverUrl = process.env.VUE_APP_API_SERVER
-    const agentUrl = process.env.VUE_APP_API_AGENT
+    const serverUrl = process.env.VUE_APP_API_SERVER;
+    const agentUrl = process.env.VUE_APP_API_AGENT;
+    const staticUrl = process.env.VUE_APP_API_STATIC;
     console.log(`serverUrl=${serverUrl}, agentUrl=${agentUrl}`)
-    return {serverUrl, agentUrl}
+    return {serverUrl, agentUrl,staticUrl}
 }
 
-const {serverUrl, agentUrl} = getUrls()
+const {serverUrl, agentUrl,staticUrl} = getUrls()
 const request = axios.create({
     baseURL: serverUrl,
     withCredentials: true, // 跨域请求时发送cookie
@@ -46,6 +47,10 @@ const request = axios.create({
 
 const requestAgent = axios.create({
     baseURL: agentUrl
+});
+
+const requestStatic = axios.create({
+    baseURL: staticUrl
 });
 
 // 全局设置 - post请求头
@@ -64,12 +69,6 @@ const requestInterceptors = async (config: AxiosRequestConfig & { cType?: boolea
     const jwtToken = await getToken();
     if (jwtToken) {
         config.headers[settings.ajaxHeadersTokenKey] = 'Bearer ' + jwtToken;
-    }
-
-    // 修改示例请求指向mock地址
-    const url = config.url || '';
-    if (url.indexOf('/home') > -1 || url.indexOf('/pages') > -1) {
-        config.baseURL = '/api';
     }
 
     // 加随机数清除缓存
@@ -96,7 +95,6 @@ requestAgent.interceptors.request.use(
  */
 const responseInterceptors = async (axiosResponse: AxiosResponse) => {
     console.log('=== response ===', axiosResponse.config.url, axiosResponse)
-
     const res: ResponseData = axiosResponse.data;
     const {code, token} = res;
 
@@ -141,9 +139,9 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
         const noNeedLogin = settings.ajaxResponseNoVerifyUrl.includes(reqUrl);
         if (code === 401 && !noNeedLogin) {
             router.replace('/user/login');
-        } else if (code === 403 && !router.currentRoute.value.fullPath.includes('home')) {
+        } else if (code === 403 && router.currentRoute.value.fullPath !== '/') {
             // 无权限访问时 返回到首页
-            router.replace('/home');
+            router.replace('/');
         }
 
     } else {
@@ -188,4 +186,11 @@ export function requestToAgent(config: AxiosRequestConfig | any): AxiosPromise<a
     return requestAgent(config).
         then((response: AxiosResponse) => response.data).
         catch(error => errorHandler(error));
+}
+
+// 转到静态资源服务器地址
+export function requestToStatic(config: AxiosRequestConfig | any): AxiosPromise<any> {
+    return requestStatic(config).
+    then((response: AxiosResponse) => response.data).
+    catch(error => errorHandler(error));
 }

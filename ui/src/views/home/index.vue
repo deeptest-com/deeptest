@@ -1,84 +1,90 @@
 <template>
-  <div class="home">
-    <StatisticHeader :params="cardData" :type="0"/>
-    <div style="margin-top: 16px">
-      <a-card :bordered="false">
-        <template #title>
-          <a-tabs v-model:activeKey="activeKey">
-            <a-tab-pane :key="1" tab="我的项目"/>
-            <a-tab-pane :key="0" tab="所有项目"/>
-          </a-tabs
-          >
-        </template>
-        <template #extra>
-          <a-input-search
-              v-model:value="keywordsMap[activeKey]"
-              style="width: 200px; margin-right: 20px"
-              placeholder="请输入项目名称搜索"/>
-          <a-button
-              type="primary"
-              style="margin-right: 20px"
-              @click="handleOpenAdd">新建项目
-          </a-button>
-          <a-radio-group v-model:value="showMode" button-style="solid">
-            <a-radio-button value="card">卡片</a-radio-button>
-            <a-radio-button value="list">列表</a-radio-button>
-          </a-radio-group>
-        </template>
-        <div>
-          <HomeList
-              v-if="showMode === 'list'"
-              :activeKey="activeKey"
-              :searchValue="keywordsMap[activeKey]"
-              @join="handleJoin"
-              :isLoading="isLoadingList"
-              @edit="handleOpenEdit"
-              @delete="handleDelete"
-              @exit="handleExit"/>
-          <CardList v-if="showMode === 'card'"
-                    :activeKey="activeKey"
-                    :searchValue="keywordsMap[activeKey]"
-                    :isLoading="isLoadingList"
-                    @join="handleJoin"
-                    @edit="handleOpenEdit"
-                    @delete="handleDelete"
-                    @exit="handleExit"/>
-        </div>
-      </a-card>
-    </div>
+  <HomeLayout>
+    <div class="home">
+      <StatisticHeader :params="cardData" :type="0"/>
+      <div style="margin-top: 16px">
+        <a-card :bordered="false">
+          <template #title>
+            <a-tabs v-model:activeKey="activeKey">
+              <a-tab-pane :key="1" tab="我的项目"/>
+              <a-tab-pane :key="0" tab="所有项目"/>
+            </a-tabs
+            >
+          </template>
+          <template #extra>
+            <a-input-search
+                v-model:value="keywordsMap[activeKey]"
+                style="width: 200px; margin-right: 20px"
+                placeholder="请输入项目名称搜索"/>
+            <a-button
+                type="primary"
+                style="margin-right: 20px"
+                @click="handleOpenAdd">新建项目
+            </a-button>
+            <a-radio-group v-model:value="showMode" button-style="solid">
+              <a-radio-button value="card">卡片</a-radio-button>
+              <a-radio-button value="list">列表</a-radio-button>
+            </a-radio-group>
+          </template>
+          <div>
+            <HomeList
+                v-if="showMode === 'list'"
+                :activeKey="activeKey"
+                :searchValue="keywordsMap[activeKey]"
+                @join="handleJoin"
+                :isLoading="isLoadingList"
+                @edit="handleOpenEdit"
+                @delete="handleDelete"
+                @exit="handleExit"/>
+            <CardList v-if="showMode === 'card'"
+                      :activeKey="activeKey"
+                      :searchValue="keywordsMap[activeKey]"
+                      :isLoading="isLoadingList"
+                      @join="handleJoin"
+                      @edit="handleOpenEdit"
+                      @delete="handleDelete"
+                      @exit="handleExit"/>
+          </div>
+        </a-card>
+      </div>
 
-    <!-- 创建项目弹窗 -->
-    <CreateProjectModal
-        :visible="createProjectModalVisible"
-        :formState="formState"
-        @update:visible="createProjectModalVisible = false"
-        @handleSuccess="handleCreateSuccess"
-    />
-    <!-- 申请项目权限弹窗 -->
-    <ApplyProPermissionsModal
-        :visible="applyProPermissionsModalVisible"
-        :item="applyItem"
-        @update:visible="applyProPermissionsModalVisible = false"
-        @handleSuccess="handleSuccess"
-    />
-  </div>
+      <!-- 创建项目弹窗 -->
+      <CreateProjectModal
+          :visible="createProjectModalVisible"
+          :formState="formState"
+          @update:visible="createProjectModalVisible = false"
+          @handleSuccess="handleCreateSuccess"
+      />
+      <!-- 申请项目权限弹窗 -->
+      <ApplyProPermissionsModal
+          :visible="applyProPermissionsModalVisible"
+          :item="applyItem"
+          @update:visible="applyProPermissionsModalVisible = false"
+          @handleSuccess="handleSuccess"
+      />
+    </div>
+  </HomeLayout>
 </template>
 
 <script setup lang="ts">
 import {computed, onMounted, reactive, ref, watch} from "vue";
+import {useStore} from "vuex";
+import {useRouter} from "vue-router";
 import {Modal, notification} from "ant-design-vue";
+
 import StatisticHeader from "@/components/StatisticHeader/index.vue";
 import CreateProjectModal from "@/components/CreateProjectModal/index.vue";
 import ApplyProPermissionsModal from "@/components/ApplyProPermissions/index.vue";
 import HomeList from "./component/HomeList/index.vue";
 import CardList from "./component/CardList/index.vue";
-import {useStore} from "vuex";
+import HomeLayout from "@/layouts/HomeLayout.vue";
 import {StateType} from "./store";
-import {useRouter} from "vue-router";
 import {removeMember} from "@/views/project/service";
+
 import {NotificationKeyCommon} from "@/utils/const";
 import {CurrentUser, StateType as UserStateType} from "@/store/user";
 import {notifyError, notifySuccess} from "@/utils/notify";
+
 // 获取当前登录用户信息
 const router = useRouter();
 const store = useStore<{ Home: StateType, User: UserStateType }>();

@@ -491,3 +491,10 @@ func (r *EndpointRepo) UpdateAdvancedMockDisabled(endpointId uint, advancedMockD
 
 	return
 }
+
+func (r *EndpointRepo) GetByNameAndProject(name string, projectId uint) (res model.Endpoint, err error) {
+	err = r.DB.Where("title = ?", name).
+		Where("project_id = ?", projectId).
+		First(&res).Error
+	return
+}

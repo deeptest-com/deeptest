@@ -1,10 +1,11 @@
-import {app, BrowserWindow, ipcMain, Menu, shell, dialog, globalShortcut} from 'electron';
+import {app, BrowserWindow, ipcMain, Menu, shell, dialog, globalShortcut,createWindow} from 'electron';
 const path = require('path');
 import {
     DEBUG,
     electronMsg,
     electronMsgReplay,
     electronMsgUpdate,
+    electronMsgUsePort,
     minimumSizeHeight,
     minimumSizeWidth
 } from './utils/consts';
@@ -18,6 +19,8 @@ import { nanoid } from 'nanoid'
 import {uploadFile} from "./utils/upload";
 import {getCurrVersion, mkdir} from "./utils/comm";
 import {checkUpdate, updateApp} from "./utils/hot-update";
+import {portAgent,portClient} from "./utils/consts";
+import {getUsefulPort} from "./utils/checkPort";
 
 const cp = require('child_process');
 const fs = require('fs');
@@ -28,46 +31,41 @@ const getBuffer = bent('buffer')
 app.commandLine.appendSwitch('disable-web-security');
 let postmanToOpenApi = null
 
+// agent 服务端口
+let port = '';
+
 mkdir('converted')
 
 export class DeepTestApp {
     constructor() {
         app.name = Lang.string('app.title', Config.pkg.displayName);
-
         app.commandLine.appendSwitch('disable-features', 'OutOfBlinkCors')
         app.commandLine.appendSwitch('disable-site-isolation-trials')
         app.commandLine.appendSwitch('disable-features','BlockInsecurePrivateNetworkRequests')
-
         this._windows = new Map();
+        // 需要启动本地 Agent 服务，之后再会启动 UI 服务
+        (async () => {
+            port = await getUsefulPort(portAgent,56999);
+            startAgent(port).then((agentUrl)=> {
+                if (agentUrl) logInfo(`>> deeptest server started successfully on : ${agentUrl}`);
+                this.bindElectronEvents();
+            }).catch((err) => {
+                logErr('>> agent started failed, err: ' + err);
+                process.exit(1);
+            })
+        })()
 
-        startAgent().then((agentUrl)=> {
-            if (agentUrl) logInfo(`>> deeptest-agent service started successfully on : ${agentUrl}`);
-            this.bindElectronEvents();
-        }).catch((err) => {
-            logErr('>> deeptest-agent service started failed, err: ' + err);
-            process.exit(1);
-        })
     }
 
-    showAndFocus() {
-        logInfo(`>> deeptest app: AppWindow[${this.name}]: show and focus`);
-
-        const {browserWindow} = this;
-        if (browserWindow.isMinimized()) {
-            browserWindow.restore();
-        } else {
-            browserWindow.setOpacity(1);
-            browserWindow.show();
-        }
-        browserWindow.focus();
-    }
-
+    /**
+     * @description 创建主窗口
+     * */
     async createWindow() {
         process.env['ELECTRON_DISABLE_SECURITY_WARNINGS'] = 'true';
-
         const mainWin = new BrowserWindow({
             show: false,
             frame: true, // 不创建无边框窗口，不然都没法拖动
+            autoHideMenuBar: true,
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
@@ -75,13 +73,16 @@ export class DeepTestApp {
                 webSecurity: false,
             }
         })
+
         if (IS_LINUX && !DEBUG) {
-            const pth = path.join(__dirname, 'icon', 'favicon.png')
+            // const pth = path.join(__dirname, 'icon', 'favicon.png')
+            const pth = path.join(__dirname, '../../',Config.pkg.linuxIcon);
             mainWin.setIcon(pth);
         }
 
         require('@electron/remote/main').initialize()
-        require('@electron/remote/main').enable(mainWin.webContents)
+        require('@electron/remote/main').enable(mainWin.webContents);
+
         const {currVersionStr} = getCurrVersion()
         global.sharedObj =  { version : currVersionStr};
 
@@ -91,22 +92,15 @@ export class DeepTestApp {
         mainWin.show()
 
         this._windows.set('main', mainWin);
-
-        const url = await startUIService()
+        // 最终都是返回 http地址，远端 或者 本地http服务
+        const uiPort = process.env.UI_SERVER_PORT || await getUsefulPort(portClient,55999);
+        const url = await startUIService(uiPort);
         await mainWin.loadURL(url);
-
-        // const temp = path.resolve(process.resourcesPath, 'ui_temp')
-        // logInfo('===' + temp)
-        // fs.mkdirSync(temp);
-        // let url = 'http://110.42.146.127:8085/ui'
-        // if (process.env.UI_SERVER_URL) {
-        //     url = process.env.UI_SERVER_URL
-        // }
-        // logInfo('load ' + url)
-
+        // 通知渲染进程，agent服务端口
+        mainWin.webContents.send(electronMsgUsePort, {uiPort,agentPort:port});
+        // 进程间通信逻辑
         ipcMain.on(electronMsg, (event, arg) => {
-            logInfo('msg from renderer', JSON.stringify(arg))
-
+            logInfo('::::msg from renderer', JSON.stringify(arg))
             if (arg.act == 'loadSpec') { // load openapi spec
                 this.loadSpec(event, arg)
                 return
@@ -117,7 +111,6 @@ export class DeepTestApp {
                 this.uploadFile(event, arg)
                 return
             }
-
             switch (arg) {
                 case 'selectDir':
                     this.showFolderSelection(event)
@@ -125,7 +118,6 @@ export class DeepTestApp {
                 case 'selectFile':
                     this.showFileSelection(event)
                     break;
-
                 case 'fullScreen':
                     mainWin.setFullScreen(!mainWin.isFullScreen());
                     break;
@@ -138,7 +130,6 @@ export class DeepTestApp {
                 case 'unmaximize':
                     mainWin.unmaximize();
                     break;
-
                 case 'help':
                     shell.openExternal('https://deeptest.com');
                     break;
@@ -146,15 +137,16 @@ export class DeepTestApp {
                     app.quit()
                     break;
                 default:
-                   logInfo('--', arg.action, arg.path)
+                    logInfo('--', arg.action, arg.path);
                     if (arg.action == 'openInExplore')
                         this.openInExplore(arg.path)
-                   else if (arg.action == 'openInTerminal')
+                    else if (arg.action == 'openInTerminal')
                         this.openInTerminal(arg.path)
             }
         })
     }
 
+    // 打开或者重新创建主窗口
     async openOrCreateWindow() {
         const mainWin = this._windows.get('main');
         if (mainWin) {
@@ -174,48 +166,59 @@ export class DeepTestApp {
         mainWin.focus();
     }
 
-     ready() {
+    ready() {
         logInfo('>> deeptest app ready.');
-
         initLang()
-        this.buildAppMenu();
+        // this.buildAppMenu();
         this.openOrCreateWindow()
         this.setAboutPanel();
+        // 使用默认的快捷键，和常用的快捷键有冲突
+        // globalShortcut.register('CommandOrControl+D', () => {
+        //     const mainWin = this._windows.get('main');
+        //     mainWin.toggleDevTools()
+        // })
+        // check update,检查是否需要更新应用
+        ipcMain.on(electronMsgUpdate, (event, arg) => {
+            logInfo('update confirm from renderer', arg)
+            const mainWin = this._windows.get('main');
+            updateApp(arg.newVersion, mainWin)
+        });
 
-         globalShortcut.register('CommandOrControl+D', () => {
-             const mainWin = this._windows.get('main');
-             mainWin.toggleDevTools()
-         })
-
-         ipcMain.on(electronMsgUpdate, (event, arg) => {
-             logInfo('update confirm from renderer', arg)
-
-             const mainWin = this._windows.get('main');
-             updateApp(arg.newVersion, mainWin)
-         });
-
-         setInterval(async () => {
-             await checkUpdate(this._windows.get('main'))
-         }, 6000);
+        // 一个小时检查一次更新
+        setInterval(async () => {
+            await checkUpdate(this._windows.get('main'))
+        }, 1000*60*60);
     }
 
-    quit() {
+    async quit() {
         killAgent();
     }
 
+    // 绑定 electron 事件
     bindElectronEvents() {
         app.on('activate', () => {
             logInfo('>> event: app activate');
 
-            this.buildAppMenu();
+            // this.buildAppMenu();
 
             // 在 OS X 系统上，可能存在所有应用窗口关闭了，但是程序还没关闭，此时如果收到激活应用请求，需要重新打开应用窗口并创建应用菜单。
             this.openOrCreateWindow()
-        });
 
+            // On OS X it's common to re-create a window in the app when the
+            // dock icon is clicked and there are no other windows open.
+            // if (BrowserWindow.getAllWindows().length === 0) {
+            //     createWindow();
+            // }
+        });
+        // Quit when all windows are closed, except on macOS. There, it's common
+        // for applications and their menu bar to stay active until the user quits
+        // explicitly with Cmd + Q.
         app.on('window-all-closed', () => {
             logInfo(`>> event: app window-all-closed`)
             app.quit();
+            // if (process.platform !== 'darwin') {
+            //     app.quit();
+            // }
         });
 
         app.on('will-quit', (e) => {
@@ -232,6 +235,8 @@ export class DeepTestApp {
         app.on('quit', () => {
             logInfo(`>> event: app quit`)
         });
+
+
     }
 
     // choose file
@@ -336,9 +341,12 @@ export class DeepTestApp {
         }
     }
 
+    // 打开文件夹
     openInExplore(pth) {
         shell.showItemInFolder(pth);
     }
+
+    // 打开终端
     openInTerminal(pth) {
         logInfo('openInTerminal')
 
@@ -357,29 +365,36 @@ export class DeepTestApp {
         }
     }
 
-    get windows() {
+    // // 获取当前应用的主窗口
+    // get windows() {
+    //     return this._windows;
+    // }
 
-        return this._windows;
-    }
-
+    // 设置关于应用面板
     setAboutPanel() {
         if (!app.setAboutPanelOptions) {
             return;
         }
-
+        // todo 需要更新字段，待转成内部仓库后更新
         let version = Config.pkg.buildTime ? 'build at ' + new Date(Config.pkg.buildTime).toLocaleString() : ''
         version +=  DEBUG ? '[debug]' : ''
         app.setAboutPanelOptions({
             applicationName: Lang.string(Config.pkg.name) || Config.pkg.displayName,
             applicationVersion: Config.pkg.version,
             copyright: `${Config.pkg.copyright} ${Config.pkg.company}`,
-            credits: `Licence: ${Config.pkg.license}`,
+            // credits: `Licence: ${Config.pkg.license}`,
             version: version
         });
     }
 
+    // 构建应用菜单
     buildAppMenu() {
         logInfo('>> deeptest app: build application menu.');
+
+        if(IS_WINDOWS_OS){
+            Menu.setApplicationMenu(null);
+        }
+        return;
 
         if (IS_MAC_OSX) {
             const template = [
@@ -480,7 +495,6 @@ export class DeepTestApp {
                     }]
                 }
             ];
-
             const menu = Menu.buildFromTemplate(template);
             Menu.setApplicationMenu(menu);
         } else {

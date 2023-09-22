@@ -54,6 +54,7 @@ watch(
 
 <style lang="less" scoped>
 .workbench {
-  padding: 16px;
+  height: 100%;
+  overflow-y: scroll;
 }
 </style>

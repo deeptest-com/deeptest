@@ -5,7 +5,8 @@
       :footer="null"
       @cancel="cancel"
       width="100%"
-      wrapClassName="dp-full-modal condition-edit-fullscreen">
+      wrapClassName="dp-full-modal condition-edit-fullscreen"
+      :bodyStyle="{height: 'calc(100% - 36px)'}">
 
     <div class="content">
       <div class="condition-form">

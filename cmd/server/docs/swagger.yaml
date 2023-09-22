@@ -1281,6 +1281,8 @@ definitions:
         type: integer
       usedBy:
         $ref: '#/definitions/consts.UsedBy'
+      userId:
+        type: integer
     type: object
   domain.DebugResponse:
     properties:
@@ -5186,10 +5188,17 @@ definitions:
       user_id:
         type: integer
     type: object
+  serverDomain.MockExpectRequestOption:
+    properties:
+      name:
+        type: string
+      type:
+        type: string
+    type: object
   serverDomain.MockExpectRequestOptions:
     additionalProperties:
       items:
-        type: string
+        $ref: '#/definitions/serverDomain.MockExpectRequestOption'
       type: array
     type: object
   serverDomain.MockJsExpression:
@@ -9161,7 +9170,7 @@ paths:
         name: currProjectId
         required: true
         type: integer
-      - description: 服务ID
+      - description: serverId
         in: query
         name: serverId
         required: true
@@ -9585,6 +9594,43 @@ paths:
           schema:
             $ref: '#/definitions/_domain.Response'
       summary: 保存全局变量
+      tags:
+      - 环境管理/全局变量
+  /api/v1/environments/varsByEnv:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 环境ID
+        in: query
+        name: envId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/domain.GlobalVar'
+                  type: array
+              type: object
+      summary: 根据环境列出环境变量
       tags:
       - 环境管理/全局变量
   /api/v1/environments{id}:
@@ -12025,6 +12071,41 @@ paths:
           schema:
             $ref: '#/definitions/_domain.Response'
       summary: 更新项目成员的角色
+      tags:
+      - 项目管理
+  /api/v1/projects/checkProjectAndUser:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Authentication header
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 当前项目ID
+        in: query
+        name: currProjectId
+        required: true
+        type: integer
+      - description: 项目缩写
+        in: query
+        name: project_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/_domain.Response'
+            - properties:
+                data:
+                  $ref: '#/definitions/model.Project'
+              type: object
+      summary: 校验项目和成员是否存在
       tags:
       - 项目管理
   /api/v1/projects/getByUser:

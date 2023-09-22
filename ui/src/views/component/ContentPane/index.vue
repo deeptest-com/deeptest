@@ -46,9 +46,8 @@ const handlePaneResize = (...args) => {
 
 <style lang="less" scoped>
 .container {
-  margin: 16px;
   background: #ffffff;
-  height: calc(100vh - 96px);
+  height: 100%;
 
   :deep(.ant-pagination) {
     margin-right: 24px;
@@ -69,7 +68,7 @@ const handlePaneResize = (...args) => {
       overflow-y: scroll;
       position: relative;
       min-width: 150px;
-      width: 300px;
+      width: 250px;
       max-width: 600px;
 
       &.unfold {

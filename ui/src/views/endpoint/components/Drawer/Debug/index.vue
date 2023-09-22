@@ -110,12 +110,9 @@ const saveAsCancel = () => {
 <style lang="less" scoped>
 .endpoint-debug-index-wrapper {
   height: 100%;
-  padding-bottom: 16px;
 
   #endpoint-debug-index {
     height: 100%;
-    //height: calc(100vh - 96px);
-
     width: 100%;
     flex-direction: column;
     display: flex;

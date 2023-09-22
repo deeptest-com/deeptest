@@ -379,19 +379,20 @@ func (s *EndpointService) curlToEndpoint(endpoint *model.Endpoint) (err error) {
 
 	endpoint.Path = curlObj.ParsedURL.Path
 
-	endpoint.Interfaces = s.getInterfaces(curlObj, wf)
+	endpoint.Interfaces = s.getInterfaces(endpoint.Title, curlObj, wf)
 
 	return
 }
 
-func (s *EndpointService) getInterfaces(cURL *curlHelper.CURL, wf *requests.Temporary) (interfaces []model.EndpointInterface) {
+func (s *EndpointService) getInterfaces(name string, cURL *curlHelper.CURL, wf *requests.Temporary) (interfaces []model.EndpointInterface) {
 	interf := model.EndpointInterface{}
+	interf.Name = name
 	interf.Params = s.getQueryParams(wf.GetQuery())
 	interf.Headers = s.getHeaders(wf.Header)
 	interf.Cookies = s.getCookies(wf.Cookies)
 	bodyType := ""
 	contentType := strings.Split(cURL.ContentType, ";")
-	if len(contentType) > 1 {
+	if len(contentType) >= 1 {
 		bodyType = contentType[0]
 	}
 	interf.BodyType = consts.HttpContentType(bodyType)
@@ -545,7 +546,7 @@ func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId ui
 	for k, response := range interf.ResponseBodies {
 		schema := new(schemaHelper.SchemaRef)
 		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
-		if len(schema.Value.AllOf) > 0 {
+		if schema.Value != nil && len(schema.Value.AllOf) > 0 {
 			schema2conv.CombineSchemas(schema)
 		}
 		interf.ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)

@@ -127,6 +127,7 @@ import {
   watch,
   computed,
 } from 'vue';
+import { useRouter } from 'vue-router';
 import {useStore} from "vuex";
 import {
   defaultCookieParams,
@@ -171,9 +172,9 @@ const paramTypeOpts = [
 
 // 当前选中的参数类型
 const selectedParamType = ref('query');
-
+const router = useRouter();
 function goEditSecurity() {
-  window.open(`/#/project-setting/service-setting?sectab=service-security&serveId=${endpointDetail.value.serveId}`, '_blank')
+  window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/project-setting/service-setting?sectab=service-security&serveId=${endpointDetail.value.serveId}`, '_blank')
 }
 
 function delSecurity() {

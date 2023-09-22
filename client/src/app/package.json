@@ -3,6 +3,8 @@
     "displayName": "DeeptTest",
     "version": "0.8",
     "main": "./main.js",
+    "icon": "./icon/favicon",
+    "linuxIcon": "./icon/favicon.png",
     "author": {
         "name": "Aaron Chen",
         "email": "462826@qq.com"

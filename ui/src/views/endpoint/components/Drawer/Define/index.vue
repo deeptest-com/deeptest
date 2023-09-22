@@ -24,7 +24,9 @@
           :height="600"
           theme="vs"
           :options="{...MonacoOptions}"
-          @change="handleYamlCodeChange"/>
+          @change="handleYamlCodeChange"
+          :timestamp="timestamp"
+          />
     </div>
   </div>
 </template>
@@ -35,6 +37,7 @@ import {
   defineProps,
   defineEmits,
   computed,
+  watch
 } from 'vue';
 import {useStore} from "vuex";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
@@ -64,6 +67,12 @@ function handleYamlCodeChange(code) {
   console.log(code);
   // store.commit("Endpoint/setYamlCode", code);
 }
+
+const timestamp = ref('')
+
+watch(endpointDetailYamlCode.value, (newVal) => {
+  timestamp.value = Date.now() + ''
+}, {immediate: true, deep: true})
 
 </script>
 

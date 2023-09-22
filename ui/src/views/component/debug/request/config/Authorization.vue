@@ -18,10 +18,10 @@
           </a-select>
         </a-col>
         <a-col flex="80px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small">
+          <a-tooltip overlayClassName="dp-tip-small dp-tip-white">
             <template #title>
               <div class="tips">
-                <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
+                <div>授权头将会在你发送请求时自动生成。</div>
                 <div class="dp-link-primary">了解更多
                   <ArrowRightOutlined/>
                 </div>

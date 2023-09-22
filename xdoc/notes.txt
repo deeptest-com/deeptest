@@ -60,6 +60,6 @@ scp ~/work/qiniu/deeptest/1.1.1/darwin/deeptest-upgrade.zip* \
 
 scp -r client/ui/* lighthouse@111.231.16.35:~/rd/project/deeptest/ui/dist
 
-scp -r Download/ lighthouse@111.231.16.35:~/rd/download
+scp -r ~/Downloads/actions-runner-linux-x64-2.309.0.tar.gz  lighthouse@111.231.16.35:~/rd/download
 
 npm config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/

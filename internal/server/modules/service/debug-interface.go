@@ -66,10 +66,10 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agent
 	ret.DebugData, _ = s.Load(loadReq)
 
 	// load default environment for user
-	env, _ := s.EnvironmentRepo.GetByUserAndProject(loadReq.UserId, uint(loadReq.ProjectId))
-	if env.ID > 0 {
-		ret.DebugData.ServerId = env.ID
-	}
+	//env, _ := s.EnvironmentRepo.GetByUserAndProject(loadReq.UserId, uint(loadReq.ProjectId))
+	//if env.ID > 0 {
+	//	ret.DebugData.ServerId = env.ID
+	//}
 
 	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
 		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)

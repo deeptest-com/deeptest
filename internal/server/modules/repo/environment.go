@@ -61,6 +61,23 @@ func (r *EnvironmentRepo) GetByProject(projectId uint) (env model.Environment, e
 	return
 }
 
+func (r *EnvironmentRepo) GetByUserAndProject(userId, projectId uint) (env model.Environment, err error) {
+	relaPo := model.ProjectUserServer{}
+
+	err = r.DB.
+		Where("user_id = ? AND project_id=?", userId, projectId).
+		Where("NOT deleted").
+		First(&relaPo).Error
+
+	if err != nil {
+		return
+	}
+
+	env, err = r.Get(relaPo.ServerId)
+
+	return
+}
+
 // GetDefaultByProject 默认/Mock
 func (r *EnvironmentRepo) GetDefaultByProject(projectId uint) (envs []model.Environment, err error) {
 	err = r.DB.

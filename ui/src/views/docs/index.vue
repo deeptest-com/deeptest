@@ -167,15 +167,14 @@ watch(() => {return shareId.value}, async (newVal) => {
 </script>
 <style scoped lang="less">
 .container {
-  margin: 16px;
   background: #ffffff;
+  height: 100%;
   //min-height: calc(100vh - 106px);
-  height: calc(100vh - 96px);
   overflow: hidden;
 }
 .full-container{
   margin: 0;
-  //height: 100vh;
+  height: 100vh;
 }
 
 </style>

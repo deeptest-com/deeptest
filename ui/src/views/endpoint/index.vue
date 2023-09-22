@@ -355,7 +355,7 @@ const fetching = ref(false);
 
 /*查看选中的接口文档*/
 function goDocs() {
-  window.open(`/#/docs/view?endpointIds=${selectedRowIds.value.join(',')}`);
+  window.open(`${window.location.origin}/docs/view?endpointIds=${selectedRowIds.value.join(',')}`, '_blank');
 }
 
 const showPublishDocsModal: any = ref(false)
@@ -429,7 +429,7 @@ function share(record: any) {
     endpointId: record.id,
     selectedCategoryId: selectedCategoryId.value,
   };
-  const text = `${window.location.origin}${window.location.hash.split('?')[0]}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
+  const text = `${window.location.origin}${window.location.pathname}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
   if (!navigator.clipboard) {
     var ele = document.createElement("input");
     ele.value = text;
@@ -462,7 +462,6 @@ function checkShareInfo() {
       editEndpoint({ id: shareInfo.endpointId }); // 默认打开该接口的抽屉详情
     }
     if (shareInfo.selectedCategoryId) {
-      console.log(12340);
       selectNode(shareInfo.selectedCategoryId);
     }
   } catch (error) {
@@ -595,11 +594,11 @@ const filter = ref()
 // 实时监听项目/服务 ID，如果项目切换了则重新请求数据
 watch(() => [currProject.value.id, currServe.value.id], async (newVal, oldVal) => {
   const [newProjectId, newServeId] = newVal;
-  const [oldProjectId] = oldVal || [];
+  const [oldProjectId, oldServeId] = oldVal || [];
   if (newProjectId !== undefined && oldProjectId !== undefined && newProjectId !== oldProjectId) {
     selectedCategoryId.value = "";
   }
-  if (newProjectId !== undefined) {
+  if (newProjectId !== undefined && newServeId !== oldServeId) {
     await loadList(1, pagination.value.pageSize);
     await store.dispatch('Endpoint/getEndpointTagList');
     if (newServeId) {

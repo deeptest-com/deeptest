@@ -34,6 +34,8 @@ func (m *ProjectModule) Party() module.WebModule {
 		index.Post("/audit", m.ProjectCtrl.Audit).Name = "审批操作"
 		index.Get("/auditUsers", m.ProjectCtrl.AuditUsers).Name = "审批人"
 
+		index.Get("/checkProjectAndUser", m.ProjectCtrl.CheckProjectAndUser).Name = "校验项目和成员是否存在"
+
 	}
 	return module.NewModule("/projects", handler)
 }

@@ -57,6 +57,7 @@
   {
     "title":"更新宠物",
     "path":"/pet/{petId}",
+    "status":1,
     "pathParams":[
       {
         "name":"petId",

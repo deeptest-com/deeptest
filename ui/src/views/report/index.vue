@@ -83,9 +83,8 @@ watch(currProject, (val) => {
 </script>
 <style lang="less" scoped>
 .report-container {
-    margin: 16px;
     background: #ffffff;
-    min-height: calc(100vh - 92px);
+    height: 100%;
     overflow: hidden;
     padding: 20px;
     box-sizing: border-box;

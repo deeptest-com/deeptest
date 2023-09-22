@@ -47,20 +47,25 @@ import {
   watch,
 } from 'vue';
 import {useStore} from "vuex";
+import { useRouter } from 'vue-router';
 
 import LeftTreeView from "./components/LeftTreeView.vue";
 import EndpointDoc from "./components/EndpointDoc.vue";
 import DocsHeader from "./components/DocsHeader.vue";
 import ContentPane from '@/views/component/ContentPane/index.vue';
 
-const store = useStore<{ Docs }>();
+const store = useStore<{ Docs, ProjectGlobal }>();
 const props = defineProps(['showMenu', 'data', 'onlyShowDocs', 'showHeader']);
 const emit = defineEmits(['changeVersion', 'switchToDefineTab']);
 const currDocId = computed<any>(() => store.state.Docs.currDocId);
-const isEndpointPage = window.location.href.includes('/endpoint/index');
+const currProject = computed(() => store.state.ProjectGlobal.currProject);
+const router = useRouter();
+const isEndpointPage = window.location.href.includes('/IM');
 const isSharePage = window.location.href.includes('/docs/share');
 const isViewPage = window.location.href.includes('/docs/view');
-const isDocsPage = window.location.href.includes('/docs/index');
+const isDocsPage = computed(() => {
+  return router.currentRoute.value.path === `/${currProject.value.shortName}/docs`;
+}) ;
 
 const isDocsFullPage = isSharePage || isViewPage;
 

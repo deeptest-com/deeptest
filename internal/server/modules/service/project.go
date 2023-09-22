@@ -13,6 +13,7 @@ type ProjectService struct {
 	ProjectRepo  *repo.ProjectRepo    `inject:""`
 	ServeRepo    *repo.ServeRepo      `inject:""`
 	SampleSource *source.SampleSource `inject:""`
+	UserRepo     *repo.UserRepo       `inject:""`
 }
 
 func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _domain.PageData, err error) {
@@ -134,6 +135,28 @@ func (s *ProjectService) AuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 
 func (s *ProjectService) AuditUsers(projectId uint) (data []model.SysUser, err error) {
 	return s.ProjectRepo.GetAuditUsers(projectId)
+}
+
+func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (project model.Project, userInProject bool, err error) {
+	project, err = s.ProjectRepo.GetByShortName(shortName)
+	if err != nil {
+		return
+	}
+
+	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
+	if err != nil {
+		return
+	}
+	if isAdminUser {
+		return project, true, nil
+	}
+
+	userInProject, err = s.ProjectRepo.IfProjectMember(userId, project.ID)
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 /*

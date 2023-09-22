@@ -8,15 +8,18 @@
       </div>
     </div>
     <!-- <router-view></router-view> -->
-    <slot />
+    <div class="home-content">
+      <slot />
+    </div>
     <RightTopUpdate />
   </div>
 </template>
 <script lang="ts">
-import {defineComponent} from 'vue';
-import {useRouter} from 'vue-router';
+import { computed, defineComponent, ref, unref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import UserSetting from './IndexLayout/components/RightTopSettings.vue';
 import RightTopUpdate from './IndexLayout/components/RightTopUpdate.vue';
+import settings from '@/config/settings';
 
 export default defineComponent({
   name: 'HomeLayout',
@@ -27,6 +30,18 @@ export default defineComponent({
   setup() {
     const router = useRouter();
     let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
+
+    watch(() => {
+      return router.currentRoute.value;
+    }, (val: any) => {
+      if (val.meta.title) {
+        document.title = `${val.meta.title} - ${settings.siteTitle}`;
+      } else {
+        document.title = settings.siteTitle;
+      }
+    }, {
+      immediate: true,
+    })
 
     function handleRedirect() {
       router.push('/');
@@ -43,6 +58,8 @@ export default defineComponent({
 .home-wrap {
   background: #F5F5F5;
   min-width: 1440px;
+  max-height: 100vh;
+  overflow: hidden;
 
   .home-header {
     width: 100%;
@@ -64,9 +81,14 @@ export default defineComponent({
       &.leyan-logo{
         transform: scale(1.1) translateX(5px);
 
-        background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016448.svg");
+        background-image: url("https://leyanapi.nancalcloud.com/upload/images/202306291016448.svg");
       }
     }
+  }
+ 
+  .home-content {
+    max-height: calc(100vh - 64px);
+    overflow-y: scroll;
   }
 }
 </style>

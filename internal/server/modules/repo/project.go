@@ -845,6 +845,8 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 		scenario.ProjectId = projectId
 		scenario.CategoryId = int64(ScenarioCategory.ID)
 		scenario.Status = consts.Draft
+		scenario.CreateUserId = userId
+		scenario.CreateUserName = user.Username
 		scenario, err = r.ScenarioRepo.Create(scenario)
 		if err != nil {
 			return err
@@ -858,6 +860,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 		//TODO 创建计划
 		plan.ProjectId = projectId
 		plan.Status = consts.Draft
+		plan.CreateUserId = userId
 		plan, _ = r.PlanRepo.Create(plan)
 
 		//关联场景
@@ -1016,5 +1019,13 @@ func (r *ProjectRepo) ListAll() (res []model.Project, err error) {
 	err = r.DB.Model(model.Project{}).
 		Where("not disabled and not deleted").
 		Find(&res).Error
+	return
+}
+
+func (r *ProjectRepo) GetByShortName(shortName string) (project model.Project, err error) {
+	err = r.DB.Model(&model.Project{}).
+		Where("short_name = ? and not deleted", shortName).
+		First(&project).Error
+
 	return
 }

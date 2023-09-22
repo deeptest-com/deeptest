@@ -65,9 +65,12 @@ import Field from './Field.vue'
 import {Endpoint} from "@/views/endpoint/data";
 import {cloneByJSON} from "@/utils/object";
 import {handleParamsLinkPath, handlePathLinkParams} from "@/utils/dom";
+import { useRouter } from 'vue-router';
 
 const props = defineProps({});
 const emit = defineEmits([]);
+
+const router = useRouter();
 
 const store = useStore<{ Endpoint, Debug, ProjectGlobal, User,ServeGlobal }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
@@ -85,15 +88,6 @@ const currentEnvURL = computed(() => {
 
 // 是否折叠,默认展开
 const collapse = ref(true);
-
-
-
-/**
- * 跳转去新建环境
- * */
-function addEnv() {
-  window.open(`/#/project-setting/enviroment/envdetail`, '_blank')
-}
 
 async function changeServer(val) {
   await store.dispatch('Debug/changeServer', { serverId: val, requestEnvVars: true }); // 切换环境

@@ -137,6 +137,8 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setStatus: Mutation<StateType>;
 
         setInterfaceMethodToObjMap: Mutation<StateType>;
+        deleteInterfaceMethodToObjMap: Mutation<StateType>;
+     
         clearInterfaceMethodToObjMap: Mutation<StateType>;
         setRefsOptions: Mutation<StateType>;
         setSelectedMethodDetail: Mutation<StateType>;
@@ -362,6 +364,16 @@ const StoreModel: ModuleType = {
         },
         setInterfaceMethodToObjMap(state, payload) {
             state.interfaceMethodToObjMap[payload.method] = payload.value;
+        },
+        deleteInterfaceMethodToObjMap(state, payload) {
+            state.interfaceMethodToObjMap[payload]=null;
+            const interfaces: any = [];
+            state.endpointDetail.interfaces.forEach((item) => {
+                if (item.method !== payload) {
+                    interfaces.push(item);
+                }
+            })
+            state.endpointDetail.interfaces = [...interfaces];
         },
         clearInterfaceMethodToObjMap(state, payload) {
             state.interfaceMethodToObjMap = {};

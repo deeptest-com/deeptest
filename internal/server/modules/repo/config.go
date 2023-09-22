@@ -18,7 +18,7 @@ func (r *ConfigRepo) Get(key string) (config model.SysConfig, err error) {
 
 func (r *ConfigRepo) Save(req model.SysConfig) (err error) {
 	config, err := r.Get(req.Key)
-	if err != gorm.ErrRecordNotFound {
+	if err != nil && err != gorm.ErrRecordNotFound {
 		return
 	}
 

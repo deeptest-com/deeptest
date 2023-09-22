@@ -29,7 +29,7 @@
           <a-col flex="1">
             <a-auto-complete 
               class="dp-bg-input-transparent"
-              :value="item.name"
+              v-model:value="item.name"
               style="width: 100%"
               allowClear
               @change="onParamChange(idx)"

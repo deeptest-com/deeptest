@@ -22,12 +22,12 @@ const mockExpressions = computed(() => {
   // 如果有类型，则需要过滤相同类型的数据
   if (props.tree?.type) {
     options = options.filter((item) => {
-      return item.type && typeMap[props.tree.type].includes(item.type);
+      return item.type && typeMap[props.tree.type]?.includes(item.type);
     })
   }
   if (keywords.value) {
     options = options.filter((item) => {
-      return item.label.includes(keywords.value) || item.name.includes(keywords.value);
+      return item.label?.includes(keywords.value) || item.name?.includes(keywords.value);
     });
   }
   // console.log('83222 options', options)

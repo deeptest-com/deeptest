@@ -26,7 +26,7 @@ func AddTask(name string, schedule string, f func()) (entryID cron.EntryID, err 
 
 		cInstance := GetCrontabInstance()
 		entryID, err = cInstance.AddFunc(schedule, f)
-		if err != nil {
+		if err == nil {
 			taskFuncMap.Store(name, entryID)
 		}
 
@@ -61,6 +61,5 @@ func getTaskFuncFromMap(key string) (ret cron.EntryID, ok bool) {
 
 func deleteTaskFuncFromMap(key string) {
 	taskFuncMap.Delete(key)
-
 	return
 }

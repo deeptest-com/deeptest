@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: dp-ubt
+    runs-on: dt-ubt
     defaults:
       run:
         working-directory: /home/lighthouse/rd/project/deeptest

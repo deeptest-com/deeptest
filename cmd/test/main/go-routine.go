@@ -12,7 +12,8 @@ var (
 )
 
 func main() {
-	for i := 1; i < 4; i++ {
+	// start 3 jobs
+	for i := 1; i <= 3; i++ {
 		jobId := fmt.Sprintf("%d", i)
 
 		ch := make(chan int, 10)
@@ -22,22 +23,24 @@ func main() {
 		go run(jobId, ch)
 	}
 
-	time.Sleep(time.Duration(10) * time.Second)
+	time.Sleep(time.Duration(5) * time.Second)
+	// stop the 2nd job
 	stop("2")
+	time.Sleep(time.Duration(3) * time.Second)
 
-	for i := 1; i < 1000000; i++ {
-		time.Sleep(time.Duration(3) * time.Second)
-		jobChannelMap.Range(func(key, value interface{}) bool {
-			log.Println(key)
-			log.Println(value)
+	// check channel is nil and job removed
+	jobChannelMap.Range(func(key, value interface{}) bool {
+		log.Println(key)
 
-			return true
-		})
-	}
+		ch := value.(chan int)
+		log.Println(ch)
+
+		return true
+	})
 }
 
 func run(jobId string, ch chan int) {
-	for i := 1; i < 1000000; i++ {
+	for true {
 		// 耗时操作
 		time.Sleep(time.Duration(3) * time.Second)
 
@@ -46,14 +49,13 @@ func run(jobId string, ch chan int) {
 			goto GOTO
 
 		default:
-			log.Println(i)
 		}
 	}
 
 GOTO:
 
 	if ch != nil {
-		jobChannelMap.Delete(jobId)
+		//jobChannelMap.Delete(jobId)
 		close(ch)
 	}
 }

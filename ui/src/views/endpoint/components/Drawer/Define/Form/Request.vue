@@ -83,7 +83,7 @@ import {
   requestMethodOpts,
   defaultEndpointDetail,
 } from '@/config/constant';
-import {PlusOutlined, RightOutlined, DownOutlined,QuestionCircleOutlined} from '@ant-design/icons-vue';
+import {PlusOutlined, RightOutlined, DownOutlined,QuestionCircleOutlined, DeleteOutlined} from '@ant-design/icons-vue';
 import Response from './Response.vue';
 import RequestParams from './RequestParams.vue';
 import RequestBody from './RequestBody.vue';

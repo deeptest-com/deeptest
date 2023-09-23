@@ -95,7 +95,7 @@ const onParamChange = (idx) => {
 
   .author-content {
     display: flex;
-    height: 100%;
+    height: calc(100% - 30px);
 
     .params {
       flex: 2;

@@ -19,17 +19,29 @@ import { useRouter } from 'vue-router';
 const { t } = useI18n();
 const store = useStore<{ Global: GlobalStateType }>();
 
-const r = routes[3] as any
-const menuData: RoutesDataItem[] = vueRoutes(r.children);
+const menuData: RoutesDataItem[] = vueRoutes((routes[3] as any).children);
 const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
 
-const tabs = computed(() => {
-  console.log('999', tabs, menuData)
+const tabs = ref([] as any[])
+
+watch(permissionRouteMenuMap, (v) => {
+  console.log('watch permissionRouteMenuMap', permissionRouteMenuMap)
+  getTabs()
+}, {immediate: true})
+
+store.dispatch("Global/getPermissionList", { projectId: 0 });
+
+function getTabs () {
+  console.log('getTabs', tabs, menuData)
+
+  if (!permissionRouteMenuMap.value) {
+    return []
+  }
 
   const sysSettingMenu = menuData.find(e => e.path.includes('sys-setting'));
   const routeList = sysSettingMenu?.children;
 
-  const ret = routeList?.filter(routeItem => {
+  tabs.value = routeList?.filter(routeItem => {
     const notHidden = !routeItem.hidden
 
     const code = routeItem.meta?.code as string
@@ -38,8 +50,7 @@ const tabs = computed(() => {
 
     return notHidden && found
   })
-  return ret
-});
+}
 
 const router = useRouter();
 

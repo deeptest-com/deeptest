@@ -336,7 +336,7 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 	for _, tag := range tags {
 		dirs = dirs.Dirs[tag]
 	}
-	if dirs.Id == rootId {
+	if dirs.Id == rootId && rootId == 0 {
 		return -1
 	}
 	return dirs.Id

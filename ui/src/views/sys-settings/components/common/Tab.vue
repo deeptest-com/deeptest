@@ -22,7 +22,7 @@ const store = useStore<{ Global: GlobalStateType }>();
 const menuData: RoutesDataItem[] = vueRoutes((routes[3] as any).children);
 const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
 
-const tabs = ref([] as any[])
+const tabs = ref([] as any[] | undefined)
 
 watch(permissionRouteMenuMap, (v) => {
   console.log('watch permissionRouteMenuMap', permissionRouteMenuMap)

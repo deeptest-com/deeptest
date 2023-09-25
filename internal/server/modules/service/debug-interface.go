@@ -24,6 +24,7 @@ type DebugInterfaceService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	ExtractorRepo         *repo.ExtractorRepo         `inject:""`
 	CheckpointRepo        *repo.CheckpointRepo        `inject:""`
+	EnvironmentRepo       *repo.EnvironmentRepo       `inject:""`
 
 	DebugSceneService        *DebugSceneService        `inject:""`
 	ScenarioInterfaceService *ScenarioInterfaceService `inject:""`
@@ -63,6 +64,12 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 
 func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agentExec.InterfaceExecObj, err error) {
 	ret.DebugData, _ = s.Load(loadReq)
+
+	// load default environment for user
+	//env, _ := s.EnvironmentRepo.GetByUserAndProject(loadReq.UserId, uint(loadReq.ProjectId))
+	//if env.ID > 0 {
+	//	ret.DebugData.ServerId = env.ID
+	//}
 
 	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
 		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)

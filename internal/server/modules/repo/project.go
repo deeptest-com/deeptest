@@ -829,7 +829,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 		}
 
 		//创建场景目录
-		ScenarioCategory, err := r.CategoryRepo.GetByItem(0, 0, serverConsts.ScenarioCategory, projectId, "分类")
+		ScenarioCategory, err := r.CategoryRepo.GetByItem(0, serverConsts.ScenarioCategory, projectId, "分类")
 		if err != nil {
 			return err
 		}

@@ -64,6 +64,9 @@ func (c *DebugInterfaceCtrl) LoadForExec(ctx iris.Context) {
 		return
 	}
 
+	req.UserId = multi.GetUserId(ctx)
+	req.ProjectId, err = ctx.URLParamInt("currProjectId")
+
 	data, err := c.DebugInterfaceService.LoadForExec(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

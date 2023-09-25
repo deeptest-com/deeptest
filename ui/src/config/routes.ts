@@ -96,17 +96,7 @@ const routes: RoutesDataItem[] = [
         meta: {
           title: '消息'
         }
-      },
-      {
-        icon: 'user',
-        title: '用户管理',
-        path: 'user-manage',
-        component: () => import('@/views/user/list/index.vue'),
-        hidden: true,
-        meta: {
-          title: '用户管理'
-        }
-      },
+      }
     ]
   },
   {

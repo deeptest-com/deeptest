@@ -1,14 +1,14 @@
 <template>
   <a-tabs v-if="(tabs || []).length > 0" v-model:activeKey="activeRoute" @change="handleChange">
-    <a-tab-pane 
-      v-for="item in tabs" 
-      :key="item?.path" 
+    <a-tab-pane
+      v-for="item in tabs"
+      :key="item?.path"
       :tab="t(item.title)" />
   </a-tabs>
 </template>
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
-import { useStore } from 'vuex';  
+import { useStore } from 'vuex';
 import { useI18n } from "vue-i18n";
 import { RoutesDataItem, vueRoutes } from '@/utils/routes';
 import IndexLayoutRoutes from '@/layouts/IndexLayout/routes';
@@ -31,7 +31,7 @@ const activeRoute = ref<any>('');
 
 const handleChange = (e) => {
   console.log(e);
-  const path =  e === '/:projectNameAbbr/project-setting/enviroment' ? '/:projectNameAbbr/project-setting/enviroment/var' : e;
+  const path =  e === '/:projectNameAbbr/project-setting/environment' ? '/:projectNameAbbr/project-setting/environment/var' : e;
   router.push(path.replace(':projectNameAbbr', router.currentRoute.value.params.projectNameAbbr));
 }
 

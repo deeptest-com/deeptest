@@ -150,9 +150,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon:'set',
-        title: 'index-layout.menu.project.setting.enviroment',
-        path: 'enviroment',
-        name: 'enviroment',
+        title: 'index-layout.menu.project.setting.environment',
+        path: 'environment',
+        name: 'environment',
         component: () => import('@/views/project-settings/components/EnvSetting/index.vue'),
         hidden: false,
         meta: {
@@ -163,7 +163,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             icon: 'set',
             title: 'index-layout.menu.project.setting.var',
             path: 'var',
-            name: 'enviroment.var',
+            name: 'environment.var',
             component: () => import('@/views/project-settings/components/EnvSetting/GlobalVar.vue'),
             hidden: true
           },
@@ -171,7 +171,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             icon: 'set',
             title: 'index-layout.menu.project.setting.params',
             path: 'params',
-            name: 'enviroment.params',
+            name: 'environment.params',
             component: () => import('@/views/project-settings/components/EnvSetting/GlobalParams.vue'),
             hidden: true
           },
@@ -179,7 +179,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             icon: 'set',
             title: 'index-layout.menu.project.setting.envdetail',
             path: 'envdetail/:id(\\d+)?',
-            name: 'enviroment.envdetail',
+            name: 'environment.envdetail',
             component: () => import('@/views/project-settings/components/EnvSetting/EnvDetail.vue'),
             hidden: true
           }
@@ -240,6 +240,37 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
     ],
   },
 
+  // 系统管理
+  {
+    title: 'index-layout.menu.sys.setting',
+    path: '/sys-setting',
+    redirect: '/sys-setting/user-manage',
+    component: () => import('@/views/sys-settings/index.vue'),
+    children: [
+      {
+        icon: 'user',
+        title: '用户管理',
+        path: 'user-manage',
+        component: () => import('@/views/user/list/index.vue'),
+        hidden: false,
+        meta: {
+          title: '用户管理',
+          code: 'SYS-SETTING-USER-MANAGE'
+        }
+      },
+      {
+        icon: 'script',
+        title: '自定义脚本库',
+        path: 'jslib',
+        component: () => import('@/views/sys-settings/JsLib/index.vue'),
+        hidden: false,
+        meta: {
+          title: '自定义脚本库',
+          code: 'SYS-SETTING-JSLIB'
+        }
+      },
+    ]
+  }
 ] as Array<RoutesDataItem>;
 
 export default IndexLayoutRoutes;

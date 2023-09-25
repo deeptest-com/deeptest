@@ -30,7 +30,7 @@ export default {
     'endpoint-docs': '接口文档',
     'diagnose': '快捷调试',
     'projectSetting': '项目设置', // 新版 接口模块
-    'projectSetting.enviroment': '环境管理',
+    'projectSetting.environment': '环境管理',
     'projectSetting.datapool': '数据池',
     'projectSetting.service': '服务管理',
     'projectSetting.mock': 'Mock设置',

@@ -56,10 +56,9 @@
                   </a-tooltip>
                 </a-menu-item>
               </a-sub-menu>
-
-              <a-menu-item key="management">
+<!--              <a-menu-item key="management">
                 用户管理
-              </a-menu-item>
+              </a-menu-item>-->
               <a-menu-item key="download">
                 下载客户端
               </a-menu-item>
@@ -182,7 +181,7 @@ const onMenuClick = (event: any) => {
       }
     })
   } else if (key === 'management') {
-    router.replace({path: '/user-manage'})
+    router.replace({path: '/sys-setting/user-manage'})
   }
 }
 
@@ -192,7 +191,7 @@ const onSysMenuClick = (event: any) => {
   const {key, keyPath} = event;
 
   if (key === 'management') { //
-    router.replace({path: '/user-manage'})
+    router.replace({path: '/sys-setting/user-manage'})
 
   } else if (key === 'download') {
     window.open('https://deeptest.com/setup.html');
@@ -244,10 +243,6 @@ const clientDownloadUrlOpts = computed(() => {
 const currentAgentLabel = computed(() => {
   return getAgentLabel(agentUrlOpts.value);
 })
-
-const onManagementClick = () => {
-  router.replace({path: '/user-manage'})
-}
 
 onMounted(async () => {
     const list = await store.dispatch('Global/getConfigByKey', {key: 'agentUrlOpts'});

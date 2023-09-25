@@ -76,9 +76,9 @@ import { EnvDataItem } from '../../data';
 import { useGlobalEnv } from '../../hooks/useGlobalEnv';
 
 enum RouteNameMap {
-  Var = 'enviroment.var',
-  Params = 'enviroment.params',
-  Detail = 'enviroment.envdetail'
+  Var = 'environment.var',
+  Params = 'environment.params',
+  Detail = 'environment.envdetail'
 }
 
 const { activeEnvDetail, deleteEnvData, copyEnvData } = useGlobalEnv();
@@ -112,14 +112,14 @@ async function toVarPage() {
   isShowGlobalVars.value = true;
   isShowGlobalParams.value = false;
   store.dispatch('ProjectSetting/setEnvDetail', null);
-  router.push(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/var`);
+  router.push(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/environment/var`);
 }
 
 async function toParamsPage() {
   isShowGlobalParams.value = true;
   isShowGlobalVars.value = false;
   store.dispatch('ProjectSetting/setEnvDetail', null);
-  router.push(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/params`);
+  router.push(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/environment/params`);
 }
 
 async function toEnvDetail(env: any) {
@@ -127,7 +127,7 @@ async function toEnvDetail(env: any) {
   isShowGlobalParams.value = false;
   isShowAddEnv.value = !env;
   await store.dispatch('ProjectSetting/setEnvDetail', env);
-  router.push(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/envdetail${env ? `/${env.id}` : ''}`);
+  router.push(`/${router.currentRoute.value.params.projectNameAbbr}/project-setting/environment/envdetail${env ? `/${env.id}` : ''}`);
 }
 
 /**

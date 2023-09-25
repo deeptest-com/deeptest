@@ -36,7 +36,7 @@ export default {
   'index-layout.menu.tr': '测试报告',
   'index-layout.menu.project.setting': '项目设置',
   'index-layout.menu.project.setting.var': '全局变量',
-  'index-layout.menu.project.setting.enviroment': '环境管理',
+  'index-layout.menu.project.setting.environment': '环境管理',
   'index-layout.menu.project.setting.params': '全局参数',
   'index-layout.menu.project.setting.envdetail': '环境详情',
   'index-layout.menu.project.setting.datapool': '数据池',

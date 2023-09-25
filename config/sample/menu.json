@@ -97,6 +97,7 @@
     "type":"menu",
     "parent":"project-setting"
   },
+
   {
     "code":"endpoint-add-interface",
     "title":"新建接口",
@@ -384,6 +385,7 @@
     "type":"button",
     "parent":"project-setting-members"
   },
+
   {
     "code":"user-manage-list",
     "title":"成员",
@@ -418,5 +420,27 @@
     "path":"",
     "type":"button",
     "parent":""
+  },
+
+  {
+    "code":"sys-setting",
+    "title":"系统设置",
+    "path":"/sys-setting",
+    "type":"menu",
+    "parent":""
+  },
+  {
+    "code":"sys-setting-user-manage",
+    "title":"用户管理",
+    "path":"/sys-setting/user-manage",
+    "type":"menu",
+    "parent":"sys-setting"
+  },
+  {
+    "code":"sys-setting-jslib",
+    "title":"自定义脚本库管理",
+    "path":"/sys-setting/jslib",
+    "type":"menu",
+    "parent":"sys-setting"
   }
 ]

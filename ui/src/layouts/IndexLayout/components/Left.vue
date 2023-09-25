@@ -17,12 +17,21 @@
           :onOpenChange="onOpenChange"
           :menuData="menuData">
       </sider-menu>
-      <div v-if="hasSettingPermission" :class="['settings', isActive ? 'settings-active' : '' ]" @click="handleRedirect">
+
+      <div v-if="hasProjectSettingPermission" :class="['settings', isProjectSettingsActive ? 'settings-active' : '' ]" @click="gotoProjectSettings">
         <div class="settings-menu">
-          <Icon :type="isActive ? 'settings-active' : 'settings'" />
+          <Icon :type="isProjectSettingsActive ? 'settings-active' : 'settings'" />
           <span class="left-menu-title">项目设置</span>
         </div>
       </div>
+
+      <div v-if="hasSysSettingPermission" :class="['settings', isSysSettingsActive ? 'settings-active' : '' ]" @click="gotoSysSettings">
+        <div class="settings-menu">
+          <Icon :type="isSysSettingsActive ? 'settings-active' : 'settings'" />
+          <span class="left-menu-title">系统设置</span>
+        </div>
+      </div>
+
     </div>
     <div v-if="version" class="version">
       V{{ version }}
@@ -93,26 +102,43 @@ export default defineComponent({
     const store = useStore<{ Global: GlobalStateType, ProjectGlobal: ProjectGlobalStateType }>();
     const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-    const isActive = computed(() => {
+
+    const isProjectSettingsActive = computed(() => {
       return router.currentRoute.value.path.includes('project-setting');
     });
+    const isSysSettingsActive = computed(() => {
+      return router.currentRoute.value.path.includes('sys-setting');
+    });
 
-    const hasSettingPermission = computed(() => {
+    const hasProjectSettingPermission = computed(() => {
       if (permissionRouteMenuMap.value && permissionRouteMenuMap.value['project-setting']) {
         return true;
       }
       return false;
     });
+    const hasSysSettingPermission = computed(() => {
+      if (permissionRouteMenuMap.value && permissionRouteMenuMap.value['sys-setting']) {
+        return true;
+      }
+      return false;
+    });
 
-    const handleRedirect = () => {
-      router.push(`/${currProject.value.shortName}/project-setting/enviroment/var`);
+    const gotoProjectSettings = () => {
+      router.push(`/${currProject.value.shortName}/project-setting/environment/var`);
+    };
+
+    const gotoSysSettings = () => {
+      router.push(`/sys-setting`);
     };
 
     return {
       isLeyanEnv,
-      isActive,
-      handleRedirect,
-      hasSettingPermission,
+      isProjectSettingsActive,
+      isSysSettingsActive,
+      gotoProjectSettings,
+      gotoSysSettings,
+      hasProjectSettingPermission,
+      hasSysSettingPermission,
     };
   }
 

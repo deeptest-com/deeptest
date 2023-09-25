@@ -33,10 +33,10 @@ function setActiveKey() {
 watch(() => {
   return router.currentRoute.value.query;
 }, async () => {
-  if (router.currentRoute.value.path === '/project-setting/enviroment') {
-    router.push('/project-setting/enviroment/var')
+  if (router.currentRoute.value.path === '/project-setting/environment') {
+    router.push('/project-setting/environment/var')
     store.dispatch('ProjectSetting/setEnvDetail', null);
-    activeKey.value = 'enviroment';
+    activeKey.value = 'environment';
   }
 }, {
   immediate: true

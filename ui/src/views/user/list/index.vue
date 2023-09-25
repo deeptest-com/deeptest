@@ -1,10 +1,9 @@
 <template>
-  <HomeLayout>
     <div class="user-main-list">
       <a-tabs>
         <a-tab-pane key="1" v-if="isAdmin" tab="成员">
           <Member :isAdmin="isAdmin"/>
-      
+
         </a-tab-pane>
         <a-tab-pane key="2" tab="我的审批" force-render>
           <Audit/>
@@ -16,8 +15,7 @@
         >
       </a-tabs>
     </div>
-  </HomeLayout>
-  
+
 </template>
 <script setup lang="ts">
 import {onMounted, ref} from "vue";

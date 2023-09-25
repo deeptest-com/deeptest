@@ -40,22 +40,7 @@
         </template>
 
         <template #action="{ record }">
-            <a-dropdown>
-                <MoreOutlined />
-                <template #overlay>
-                    <a-menu>
-<!--                        <a-menu-item key="1">-->
-<!--                            <a class="operation-a" href="javascript:void (0)" @click="handleExport(record.id)">导出</a>-->
-<!--                        </a-menu-item>-->
-                        <a-menu-item key="2">
-                            <a class="operation-a" href="javascript:void (0)" @click="handleQueryDetail(record)">查看报告</a>
-                        </a-menu-item>
-                        <a-menu-item key="3">
-                            <a class="operation-a" href="javascript:void (0)" @click="handleDelete(record.id)">删除</a>
-                        </a-menu-item>
-                    </a-menu>
-                </template>
-            </a-dropdown>
+            <DropdownActionMenu :dropdown-list="dropdownMenuList" :record="record" />
         </template>
     </a-table>
 </template>
@@ -70,6 +55,7 @@ import { StateType } from "../store";
 import { PaginationConfig } from "../data";
 import { momentUtc, formatWithSeconds } from "@/utils/datetime";
 import ToolTipCell from '@/components/Table/tooltipCell.vue';
+import { DropdownActionMenu } from "@/components/DropDownMenu";
 import {notifyError, notifySuccess} from "@/utils/notify";
 
 
@@ -136,6 +122,24 @@ const columns = [
         width: 80,
         fixed: 'right',
         slots: { customRender: 'action' },
+    },
+];
+
+const dropdownMenuList = [
+    // {
+    //     label: '导出',
+    //     action: (record) => exec(record),
+    //     auth: '',
+    // },
+    {
+        label: '查看报告',
+        action: (record) => handleQueryDetail(record),
+        auth: '',
+    },
+    {
+        label: '删除',
+        action: (record) => handleDelete(record.id),
+        auth: '',
     },
 ];
 

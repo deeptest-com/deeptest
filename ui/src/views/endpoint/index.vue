@@ -131,24 +131,9 @@
                   </div>
                 </template>
                 <template #action="{record}">
-                  <a-dropdown>
+                  <DropdownActionMenu :dropdownList="MenuList" :record="record">
                     <MoreOutlined/>
-                    <template #overlay>
-                      <a-menu>
-                        <a-menu-item v-for="menuItem in MenuList" :key="menuItem.key">
-                          <PermissionButton
-                              style="width: 80px"
-                              :text="menuItem.text"
-                              size="small"
-                              type="link"
-                              :code="menuItem.code"
-                              :dataCreateUser="record.createUser"
-                              :action="menuItem.text ==='删除' ? 'delete' : ''"
-                              @handle-access="menuItem.action(record)"/>
-                        </a-menu-item>
-                      </a-menu>
-                    </template>
-                  </a-dropdown>
+                  </DropdownActionMenu>
                 </template>
               </a-table>
             </template>
@@ -211,11 +196,13 @@ import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {message, Modal, notification} from 'ant-design-vue';
+import {Menu, message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
 import Tags from './components/Tags/index.vue';
 import TooltipCell from '@/components/Table/tooltipCell.vue';
+import { DropdownActionMenu } from '@/components/DropDownMenu/index';
+
 import { getUrlKey } from '@/utils/url';
 import { getMethodColor } from '@/utils/interface';
 import {notifyError, notifySuccess} from "@/utils/notify";
@@ -303,27 +290,27 @@ const columns = [
 const MenuList = [
   {
     key: '1',
-    code: 'ENDPOINT-COPY',
-    text: '克隆',
+    auth: 'ENDPOINT-COPY-1',
+    label: '克隆',
     action: (record: any) => copy(record)
   },
   {
     key: '2',
-    code: '',
-    text: '分享链接',
+    auth: '',
+    label: '分享链接',
     action: (record: any) => share(record)
   },
 
   {
     key: '3',
-    code: 'ENDPOINT-DELETEE',
-    text: '删除',
+    auth: 'ENDPOINT-DELETEE',
+    label: '删除',
     action: (record: any) => del(record)
   },
   {
     key: '4',
-    code: 'ENDPOINT-OUTDATED',
-    text: '过期',
+    auth: 'ENDPOINT-OUTDATED',
+    label: '过期',
     action: (record: any) => disabled(record)
   },
 ]

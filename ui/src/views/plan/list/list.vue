@@ -78,28 +78,7 @@
           </template>
 
           <template #action="{ record }">
-            <a-dropdown>
-              <MoreOutlined />
-              <template #overlay>
-                <a-menu>
-                  <a-menu-item key="1">
-                    <a class="operation-a" href="javascript:void (0)" @click="exec(record)">执行</a>
-                  </a-menu-item>
-                  <a-menu-item key="1">
-                    <a class="operation-a" href="javascript:void (0)" @click="report(record)">测试报告</a>
-                  </a-menu-item>
-                  <!-- <a-menu-item key="1">
-                    <a class="operation-a" href="javascript:void (0)" @click="exec(record.id)">执行</a>
-                  </a-menu-item> -->
-                  <a-menu-item key="1">
-                    <a class="operation-a" href="javascript:void (0)" @click="clone(record.id)">克隆</a>
-                  </a-menu-item>
-                  <a-menu-item key="2">
-                    <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
-                  </a-menu-item>
-                </a-menu>
-              </template>
-            </a-dropdown>
+            <DropdownActionMenu :dropdown-list="dropdownMenuList" :record="record" />
           </template>
 
         </a-table>
@@ -140,8 +119,6 @@
 <script setup lang="ts">
 import {computed, onMounted, provide, reactive, ref, watch} from "vue";
 import { useStore } from "vuex";
-import {message, notification} from 'ant-design-vue';
-import { MoreOutlined } from "@ant-design/icons-vue";
 import { Modal } from "ant-design-vue";
 import debounce from "lodash.debounce";
 
@@ -157,8 +134,11 @@ import { StateType } from "../store";
 import { momentUtc } from "@/utils/datetime";
 import { planStatusColorMap, planStatusTextMap, planStatusOptions } from "@/config/constant";
 
-
 import Select from '@/components/Select/index.vue';
+import { DropdownActionMenu } from "@/components/DropDownMenu";
+import { ReportDetailType } from "@/utils/enum";
+import {notifyError} from "@/utils/notify";
+
 const columns = [
   {
     title: '编号',
@@ -213,8 +193,28 @@ const columns = [
   },
 ];
 
-import { ReportDetailType } from "@/utils/enum";
-import {notifyError} from "@/utils/notify";
+const dropdownMenuList = [
+  {
+    label: '执行',
+    action: (record) => exec(record),
+    auth: '',
+  },
+  {
+    label: '测试报告',
+    action: (record) => report(record),
+    auth: '',
+  },
+  {
+    label: '克隆',
+    action: (record) => clone(record.id),
+    auth: '',
+  },
+  {
+    label: '删除',
+    action: (record) => remove(record.id),
+    auth: '',
+  }
+]
 
 const store = useStore<{ Plan: StateType, ProjectGlobal: ProjectStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);

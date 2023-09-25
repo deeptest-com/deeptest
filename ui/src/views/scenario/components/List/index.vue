@@ -116,25 +116,7 @@
       </template>
 
       <template #action="{ record }">
-        <a-dropdown>
-          <MoreOutlined/>
-          <template #overlay>
-            <a-menu>
-              <a-menu-item key="0">
-                <a class="operation-a" href="javascript:void (0)" @click="editScenario(record,'3')">关联计划</a>
-              </a-menu-item>
-              <a-menu-item key="1">
-                <a class="operation-a" href="javascript:void (0)" @click="execScenario(record)">执行</a>
-              </a-menu-item>
-              <a-menu-item key="2">
-                <a class="operation-a" href="javascript:void (0)" @click="editScenario(record,'2')">执行历史</a>
-              </a-menu-item>
-              <a-menu-item key="4">
-                <a class="operation-a" href="javascript:void (0)" @click="remove(record.id)">删除</a>
-              </a-menu-item>
-            </a-menu>
-          </template>
-        </a-dropdown>
+        <DropdownActionMenu :record="record" :dropdown-list="dropdownMenuList" />
       </template>
     </a-table>
   </div>
@@ -204,6 +186,7 @@ import {ExclamationCircleOutlined} from '@ant-design/icons-vue';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import Select from '@/components/Select/index.vue';
 import TooltipCell from '@/components/Table/tooltipCell.vue';
+import { DropdownActionMenu } from "@/components/DropDownMenu";
 import {notifyError, notifySuccess} from "@/utils/notify";
 
 type Key = ColumnProps['key'];
@@ -229,6 +212,29 @@ let queryParams = reactive<QueryParams>({
 
 const userList = computed<any>(() => store.state.Project.userList);
 const currModelId = ref(0)
+
+const dropdownMenuList = [
+  {
+    label: '关联计划',
+    action: (record) => editScenario(record, '3'),
+    auth: '',
+  },
+  {
+    label: '执行',
+    action: (record) => execScenario(record),
+    auth: '',
+  },
+  {
+    label: '执行历史',
+    action: (record) => editScenario(record, '2'),
+    auth: '',
+  },
+  {
+    label: '删除',
+    action: (record) => remove(record.id),
+    auth: '',
+  }
+]
 
 watch(nodeDataCategory, () => {
   getList(1, nodeDataCategory.value?.id || 0);

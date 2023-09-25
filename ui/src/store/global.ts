@@ -142,12 +142,13 @@ const StoreModel: ModuleType = {
 
     async getConfigByKey({ commit },payload) {
       const result = await getConfigByKey(payload.key);
+
       if (result.code === 0) {
         commit('setConfigByKey',{
           key:payload.key,
-          value:JSON.parse(result.data ||null)
+          value:JSON.parse(result.data || null)
         });
-        return JSON.parse(result.data ||null);
+        return JSON.parse(result.data || null);
       }
     },
 

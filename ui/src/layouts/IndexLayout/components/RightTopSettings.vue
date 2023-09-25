@@ -2,43 +2,71 @@
   <div :class="['indexlayout-top-settings', theme]">
     <div class="user-info">
 
-      <!--  客户端下载 -->
-      <a-dropdown placement="bottomRight" v-if="isLyEnv && !isElectronEnv">
-        <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 4px;margin-left: 4px;">
-          <DesktopOutlined type="top-right-web" class="top-right-icon-desktop"/>
-<!--          <a-tooltip placement="left" :title="'由于浏览器跨域限制，网页版只支持访问非本地接口，如需访问本地 API，建议下载客户端。'">-->
-<!--        -->
-<!--          </a-tooltip>-->
-          <span class="user-name">{{ '客户端下载' }}</span>
-          <DownOutlined class="user-icon"/>
-        </a>
-        <template #overlay>
-          <a-menu @click="downloadClient">
-            <a-menu-item v-for="client in clientDownloadUrlOpts" :key="client.value">
-              {{ client.label }}
-            </a-menu-item>
-          </a-menu>
-        </template>
-      </a-dropdown>
+      <template v-if="isLyEnv">
+        <!--  客户端下载 -->
+        <a-dropdown placement="bottomRight" v-if="!isElectronEnv">
+          <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 4px;margin-left: 4px;">
+            <DesktopOutlined type="top-right-web" class="top-right-icon-desktop"/>
+            <span class="user-name">{{ '客户端下载' }}</span>
+            <DownOutlined class="user-icon"/>
+          </a>
+          <template #overlay>
+            <a-menu @click="downloadClient">
+              <a-menu-item v-for="client in clientDownloadUrlOpts" :key="client.value">
+                {{ client.label }}
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
 
-      <!--  切换Agent -->
-      <a-dropdown placement="bottomRight" v-if="isLyEnv">
-        <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 8px;">
-          <IconSvg type="top-right-web" class="top-right-icon"/>
-          <span class="user-name">{{ currentAgentLabel }}</span>
-          <DownOutlined class="user-icon"/>
-        </a>
-        <template #overlay>
-          <a-menu @click="changeAgentEnv">
-            <a-menu-item v-for="agent in agentUrlOpts" :key="agent.value"
-                         :style="agent.label === currentAgentLabel ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
-              <a-tooltip placement="left" :title="agent.desc">
-                {{ agent.label }}
-              </a-tooltip>
-            </a-menu-item>
-          </a-menu>
-        </template>
-      </a-dropdown>
+        <!--  切换Agent -->
+        <a-dropdown placement="bottomRight">
+          <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 8px;">
+            <IconSvg type="top-right-web" class="top-right-icon"/>
+            <span class="user-name">{{ currentAgentLabel }}</span>
+            <DownOutlined class="user-icon"/>
+          </a>
+          <template #overlay>
+            <a-menu @click="changeAgentEnv">
+              <a-menu-item v-for="agent in agentUrlOpts" :key="agent.value"
+                           :style="agent.label === currentAgentLabel ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
+                <a-tooltip placement="left" :title="agent.desc">
+                  {{ agent.label }}
+                </a-tooltip>
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+      </template>
+
+      <template v-else> <!-- 系统菜单 -->
+        <a-dropdown placement="bottomRight">
+          <a class="indexlayout-top-sysmenu ant-dropdown-link" style="margin-right: 6px;margin-left: 8px;">
+            <SettingOutlined class="top-right-icon-desktop"/>
+            <span class="user-name">系统</span>
+            <DownOutlined class="user-icon"/>
+          </a>
+          <template #overlay>
+            <a-menu @click="onSysMenuClick">
+              <a-sub-menu key="agent-sub-menu" title="切换代理 &nbsp;">
+                <a-menu-item v-for="agent in agentUrlOpts" :key="agent.value"
+                             :style="agent.label === currentAgentLabel ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
+                  <a-tooltip placement="left" :title="agent.desc">
+                    {{ agent.label }}
+                  </a-tooltip>
+                </a-menu-item>
+              </a-sub-menu>
+
+              <a-menu-item key="management">
+                用户管理
+              </a-menu-item>
+              <a-menu-item key="download">
+                下载客户端
+              </a-menu-item>
+            </a-menu>
+          </template>
+        </a-dropdown>
+      </template>
 
       <!-- ::::用户信息 -->
       <a-dropdown placement="bottomRight">
@@ -53,7 +81,7 @@
               <SettingOutlined class="settings"/>
               个人信息
             </a-menu-item>
-            <a-menu-item key="management">
+            <a-menu-item v-if="isLyEnv" key="management">
               <SettingOutlined class="settings"/>
               用户管理
             </a-menu-item>
@@ -65,7 +93,6 @@
         </template>
       </a-dropdown>
 
-
       <a-tooltip placement="bottom" @click="toggle">
         <template #title>{{ isFullscreen ? '退出全屏' : '全屏' }}</template>
         <a-button type="text" class="share-btn">
@@ -75,13 +102,12 @@
                                   :style="{'font-size': '14px','color':theme === 'white-theme' ? '#fff' : '#8A8A8A'}"/>
         </a-button>
       </a-tooltip>
-
-
     </div>
   </div>
 </template>
-<script lang="ts">
-import {computed, defineComponent, onMounted, ref} from "vue";
+
+<script setup lang="ts">
+import {computed, defineProps, onMounted, ref} from "vue";
 import {useStore} from "vuex";
 import {getAgentLabel, getAgentUrl, getAgentUrlByValue, isElectronEnv} from '@/utils/agentEnv'
 import {
@@ -91,7 +117,7 @@ import {
   LogoutOutlined,
   FullscreenOutlined,
   FullscreenExitOutlined,
-  DesktopOutlined,
+  DesktopOutlined, CheckOutlined,
 } from '@ant-design/icons-vue';
 import {useI18n} from "vue-i18n";
 import IconSvg from "@/components/IconSvg";
@@ -100,160 +126,146 @@ import {useRouter} from "vue-router";
 import {useFullscreen} from '@vueuse/core';
 import {StateType as GlobalStateType} from "@/store/global";
 
-export default defineComponent({
-  name: 'RightTopSettings',
-  components: {
-    DownOutlined,
-    SettingOutlined, UserOutlined, LogoutOutlined,
-    DesktopOutlined,
-    IconSvg,
-    FullscreenOutlined,
-    FullscreenExitOutlined
-  },
-  props: {
-    theme: {
-      required: false,
-      type: String
-    }
-  },
-  setup() {
-    const {t} = useI18n();
-    const router = useRouter();
-    const store = useStore<{ User: UserStateType, Global: GlobalStateType }>();
-    const {isFullscreen, enter, exit, toggle} = useFullscreen();
-    // 获取当前登录用户信息
-    const currentUser = computed<CurrentUser>(() => store.state.User.currentUser);
-
-    // 获取当前可以切换的 Agent 地址
-    const agentUrlOpts = computed(() => {
-      const opts = store.state.Global.configInfo?.agentUrlOpts;
-      if (opts?.length > 0) {
-        if (!isElectronEnv) {
-          return opts.filter((item) => item.value !== 'local');
-        }
-        return opts;
-      }
-      return [];
-    });
-
-    const selectLangVisible = ref(false)
-    const closeSelectLang = async (event: any) => {
-      selectLangVisible.value = false
-    }
-
-    const gotoMessage = () => {
-      router.replace({path: '/message'})
-    }
-
-    // 点击菜单
-    const onMenuClick = (event: any) => {
-      console.log('onMenuClick')
-      // console.log(currentUser.value);
-      const {key} = event;
-
-      if (key === 'profile') {
-        router.replace({path: '/profile'})
-      } else if (key === 'logout') {
-        store.dispatch('User/logout').then((res) => {
-          if (res === true) {
-            router.replace({
-              path: '/user/login',
-              query: {
-                redirect: router.currentRoute.value.path,
-                ...router.currentRoute.value.query
-              }
-            })
-          }
-        })
-      } else if (key === 'management') {
-        router.replace({path: '/user-manage'})
-      }
-    }
-
-    function changeAgentEnv(event: any) {
-      const {key} = event;
-      const url = getAgentUrlByValue(agentUrlOpts.value, key);
-      window.localStorage.setItem('dp-cache-agent-value', key);
-      window.localStorage.setItem('dp-cache-agent-url', url);
-      window.location.reload();
-    }
-
-    // 下载客户端
-    function downloadClient(event: any) {
-      if(event?.key){
-        window.open(event.key);
-      }
-    }
-
-    const isLyEnv = process?.env?.VUE_APP_DEPLOY_ENV === 'ly';
-    const clientDownloadUrlOpts = computed(() => {
-      if (!isLyEnv) {
-        return []
-      }
-      const clientVersion = store.state.Global.clientVersion;
-      const url = process?.env?.VUE_APP_API_STATIC;
-      return [
-        {
-          label: 'Windows 客户端',
-          desc: 'Windows 客户端',
-          value: `${url}/LeyanAPI/${clientVersion}/win64/LeyanAPI.zip`
-        },
-        {
-          label: 'macOS 客户端',
-          desc: 'macOS 客户端',
-          value: `${url}/LeyanAPI/${clientVersion}/darwin/LeyanAPI.zip`
-        }
-      ];
-    });
-
-    const currentAgentLabel = computed(() => {
-      return getAgentLabel(agentUrlOpts.value);
-    })
-
-    const onManagementClick = () => {
-      router.replace({path: '/user-manage'})
-    }
-
-
-    onMounted(async () => {
-      if (isLyEnv) {
-
-        const list = await store.dispatch('Global/getConfigByKey', {key: 'agentUrlOpts'});
-        // 如果没有缓存，根据当前环境选择一个默认值
-        if (!window.localStorage.getItem('dp-cache-agent-value')) {
-          const agentValue = isElectronEnv ? 'local' : 'test';
-          const url = getAgentUrlByValue(list, agentValue);
-          window.localStorage.setItem('dp-cache-agent-value', agentValue);
-          window.localStorage.setItem('dp-cache-agent-url', url);
-        }
-
-        // 获取客户端最新版本号
-        await store.dispatch('Global/getClientVersion');
-
-      }
-    })
-
-
-    return {
-      t,
-      currentUser,
-      gotoMessage,
-      onMenuClick,
-      selectLangVisible,
-      closeSelectLang,
-      onManagementClick,
-      toggle,
-      isFullscreen,
-      changeAgentEnv,
-      agentUrlOpts,
-      currentAgentLabel,
-      isLyEnv,
-      downloadClient,
-      clientDownloadUrlOpts,
-      isElectronEnv
-    }
+const props = defineProps({
+  theme: {
+    required: false,
+    type: String
   }
 })
+
+const {t} = useI18n();
+const router = useRouter();
+const store = useStore<{ User: UserStateType, Global: GlobalStateType }>();
+const {isFullscreen, enter, exit, toggle} = useFullscreen();
+// 获取当前登录用户信息
+const currentUser = computed<CurrentUser>(() => store.state.User.currentUser);
+
+// 获取当前可以切换的 Agent 地址
+const agentUrlOpts = computed(() => {
+  const opts = store.state.Global.configInfo?.agentUrlOpts;
+  if (opts?.length > 0) {
+    if (!isElectronEnv) {
+      return opts.filter((item) => item.value !== 'local');
+    }
+    return opts;
+  }
+  return [];
+});
+
+const selectLangVisible = ref(false)
+const closeSelectLang = async (event: any) => {
+  selectLangVisible.value = false
+}
+
+const gotoMessage = () => {
+  router.replace({path: '/message'})
+}
+
+// 点击菜单
+const onMenuClick = (event: any) => {
+  console.log('onMenuClick')
+  // console.log(currentUser.value);
+  const {key} = event;
+
+  if (key === 'profile') {
+    router.replace({path: '/profile'})
+  } else if (key === 'logout') {
+    store.dispatch('User/logout').then((res) => {
+      if (res === true) {
+        router.replace({
+          path: '/user/login',
+          query: {
+            redirect: router.currentRoute.value.path,
+            ...router.currentRoute.value.query
+          }
+        })
+      }
+    })
+  } else if (key === 'management') {
+    router.replace({path: '/user-manage'})
+  }
+}
+
+// 系统菜单
+const onSysMenuClick = (event: any) => {
+  console.log('onSysMenuClick', event)
+  const {key, keyPath} = event;
+
+  if (key === 'management') { //
+    router.replace({path: '/user-manage'})
+
+  } else if (key === 'download') {
+    window.open('https://deeptest.com/setup.html');
+
+  } else if (keyPath[0] === 'agent-sub-menu') {
+    const url = getAgentUrlByValue(agentUrlOpts.value, key);
+    window.localStorage.setItem('dp-cache-agent-value', key);
+    window.localStorage.setItem('dp-cache-agent-url', url);
+    window.location.reload();
+  }
+}
+
+function changeAgentEnv(event: any) {
+  const {key} = event;
+  const url = getAgentUrlByValue(agentUrlOpts.value, key);
+  window.localStorage.setItem('dp-cache-agent-value', key);
+  window.localStorage.setItem('dp-cache-agent-url', url);
+  window.location.reload();
+}
+
+// 下载客户端
+function downloadClient(event: any) {
+  if(event?.key){
+    window.open(event.key);
+  }
+}
+
+const isLyEnv = process?.env?.VUE_APP_DEPLOY_ENV === 'ly';
+const clientDownloadUrlOpts = computed(() => {
+  if (!isLyEnv) {
+    return []
+  }
+  const clientVersion = store.state.Global.clientVersion;
+  const url = process?.env?.VUE_APP_API_STATIC;
+  return [
+    {
+      label: 'Windows 客户端',
+      desc: 'Windows 客户端',
+      value: `${url}/LeyanAPI/${clientVersion}/win64/LeyanAPI.zip`
+    },
+    {
+      label: 'macOS 客户端',
+      desc: 'macOS 客户端',
+      value: `${url}/LeyanAPI/${clientVersion}/darwin/LeyanAPI.zip`
+    }
+  ];
+});
+
+const currentAgentLabel = computed(() => {
+  return getAgentLabel(agentUrlOpts.value);
+})
+
+const onManagementClick = () => {
+  router.replace({path: '/user-manage'})
+}
+
+onMounted(async () => {
+    const list = await store.dispatch('Global/getConfigByKey', {key: 'agentUrlOpts'});
+
+    console.log('===-==', agentUrlOpts.value)
+
+    // 如果没有缓存，根据当前环境选择一个默认值
+    if (!window.localStorage.getItem('dp-cache-agent-value')) {
+      const agentValue = isElectronEnv ? 'local' : 'test';
+      const url = getAgentUrlByValue(list, agentValue);
+      window.localStorage.setItem('dp-cache-agent-value', agentValue);
+      window.localStorage.setItem('dp-cache-agent-url', url);
+    }
+
+    // 获取客户端最新版本号
+    await store.dispatch('Global/getClientVersion');
+})
+
 </script>
 
 <style lang="less" scoped>
@@ -292,6 +304,9 @@ export default defineComponent({
   }
 
   .indexlayout-top-usermenu {
+    color: #c0c4cc;
+  }
+  .indexlayout-top-sysmenu {
     color: #c0c4cc;
   }
 }

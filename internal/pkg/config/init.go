@@ -30,6 +30,7 @@ func Init() {
 	VIPER = v
 	VIPER.SetConfigType("yaml")
 
+	// agent
 	if consts.RunFrom == consts.FromAgent {
 		home, _ := _fileUtils.GetUserHome()
 		consts.HomeDir = filepath.Join(home, consts.App)
@@ -55,6 +56,7 @@ func Init() {
 		return
 	}
 
+	// server
 	// 初始化Casbin配置
 	casbinPath := consts.CasbinFileName
 
@@ -105,5 +107,6 @@ func Init() {
 		fmt.Println(err)
 	}
 
+	CONFIG.System.SysEnv = _commUtils.GetEnvVar("SysEnv", CONFIG.System.SysEnv)
 	myZap.ZapInst = CONFIG.Zap
 }

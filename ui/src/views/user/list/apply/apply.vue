@@ -49,8 +49,6 @@ const getRoleName = (val:any)=>{
   return rolesList[val.text]
 }
 const auditLst = ref({});
-const auditModal = ref(false);
-const auditId = ref(0);
 const applyColumns = [
 {
     title: "ID",

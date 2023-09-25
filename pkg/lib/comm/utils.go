@@ -312,3 +312,13 @@ func InArray(target string, array []string) bool {
 	}
 	return false
 }
+
+func GetEnvVar(name, def string) (ret string) {
+	ret = os.Getenv(name)
+
+	if ret == "" {
+		ret = def
+	}
+
+	return
+}

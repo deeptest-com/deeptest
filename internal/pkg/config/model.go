@@ -17,7 +17,8 @@ type Config struct {
 }
 
 type System struct {
-	Level         string `mapstructure:"level" json:"level" yaml:"level"` // debug,release,test
+	SysEnv        string `mapstructure:"sysEnv" json:"sysEnv" yaml:"sysEnv"` // dev, leyan_test, deeptest_demo etc.
+	Level         string `mapstructure:"level" json:"level" yaml:"level"`    // debug,release,test
 	ServerAddress string `mapstructure:"serverAddress" json:"serverAddress" yaml:"serverAddress"`
 	AgentAddress  string `mapstructure:"agentAddress" json:"agentAddress" yaml:"agentAddress"`
 	StaticPath    string `mapstructure:"static-path" json:"staticPath" yaml:"static-path"`

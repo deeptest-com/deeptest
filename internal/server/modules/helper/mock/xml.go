@@ -15,8 +15,8 @@ var (
 				<Address>master@deeptest.com</Address>
 			</Email>
 			<Group>
-				<Value>admin</Value>
-				<Value>dev</Value>
+				<Sample>admin</Sample>
+				<Sample>dev</Sample>
 			</Group>
 			<City>Suzhou</City>
 			<State>Jiangsu</State>
@@ -36,7 +36,7 @@ type Result struct {
 	Name    string   `xml:"FullName"`
 	Phone   string
 	Email   []Email
-	Groups  []string `xml:"Group>Value"`
+	Groups  []string `xml:"Group>Sample"`
 	Address
 }
 type Email struct {

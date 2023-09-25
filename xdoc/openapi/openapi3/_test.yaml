@@ -33,6 +33,8 @@ paths:
               properties:
                 id: { type: string }
                 email: { format: email }
+              required:
+                - id
       responses:
         "200":
           $ref: "#/components/responses/200_resp"

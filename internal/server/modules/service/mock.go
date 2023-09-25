@@ -141,7 +141,7 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 		doc3.Paths["/json"].Post = nil                                     // ignore post method for testing
 		doc3.Info.Version = "1.0.0"                                        // cannot be empty
 		desc := "描述"                                                       // cannot be empty
-		doc3.Paths["/json"].Get.Responses["200"].Value.Description = &desc // cannot be empty
+		doc3.Paths["/json"].Get.Responses["200"].Sample.Description = &desc // cannot be empty
 
 		// load openapi spec from url or file
 		//specificationLoader := mockLoader.New()

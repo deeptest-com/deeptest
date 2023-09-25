@@ -54,7 +54,7 @@ func (o *openapi2endpoint) convertComponents() {
 		}
 		component := model.ComponentSchema{Name: key, Type: schema.Value.Type, Content: string(content), Ref: ref}
 		o.components[ref] = &component
-		//o.componentSchemas[ref] = Schema{Type: schema.Value.Type,Items: }
+		//o.componentSchemas[ref] = Schema{Type: schema.Sample.Type,Items: }
 	}
 }
 

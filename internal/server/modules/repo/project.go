@@ -1021,3 +1021,11 @@ func (r *ProjectRepo) ListAll() (res []model.Project, err error) {
 		Find(&res).Error
 	return
 }
+
+func (r *ProjectRepo) GetByShortName(shortName string) (project model.Project, err error) {
+	err = r.DB.Model(&model.Project{}).
+		Where("short_name = ? and not deleted", shortName).
+		First(&project).Error
+
+	return
+}

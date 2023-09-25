@@ -4707,7 +4707,7 @@ const docTemplate = `{
                     },
                     {
                         "type": "integer",
-                        "description": "服务ID",
+                        "description": "serverId",
                         "name": "serverId",
                         "in": "query",
                         "required": true
@@ -5378,6 +5378,66 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/environments/varsByEnv": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "环境管理/全局变量"
+                ],
+                "summary": "根据环境列出环境变量",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "环境ID",
+                        "name": "envId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/domain.GlobalVar"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -9247,6 +9307,63 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/_domain.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/projects/checkProjectAndUser": {
+            "get": {
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "项目管理"
+                ],
+                "summary": "校验项目和成员是否存在",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Authentication header",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "当前项目ID",
+                        "name": "currProjectId",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "项目缩写",
+                        "name": "project_code",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/_domain.Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/model.Project"
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     }
                 }
@@ -16904,6 +17021,9 @@ const docTemplate = `{
                 },
                 "usedBy": {
                     "$ref": "#/definitions/consts.UsedBy"
+                },
+                "userId": {
+                    "type": "integer"
                 }
             }
         },
@@ -22809,12 +22929,23 @@ const docTemplate = `{
                 }
             }
         },
+        "serverDomain.MockExpectRequestOption": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
         "serverDomain.MockExpectRequestOptions": {
             "type": "object",
             "additionalProperties": {
                 "type": "array",
                 "items": {
-                    "type": "string"
+                    "$ref": "#/definitions/serverDomain.MockExpectRequestOption"
                 }
             }
         },

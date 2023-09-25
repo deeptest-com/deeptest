@@ -80,7 +80,7 @@ export default defineComponent({
     background-size: cover;
    background-repeat: no-repeat;
     &.ly-logo{
-      background-image: url("https://od-1310531898.cos.ap-beijing.myqcloud.com/202306291016448.svg");
+      background-image: url("https://leyanapi.nancalcloud.com/upload/images/202306291016448.svg");
       background-size: contain;
     }
   }

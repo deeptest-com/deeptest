@@ -13,6 +13,23 @@ type EndpointCaseAlternativeCtrl struct {
 	DebugInterfaceService          *service.DebugInterfaceService          `inject:""`
 }
 
+// LoadAlternative
+func (c *EndpointCaseAlternativeCtrl) LoadAlternative(ctx iris.Context) {
+	req := serverDomain.EndpointCaseAlternativeLoadReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	req.CreateUserName = multi.GetUsername(ctx)
+	req.CreateUserId = multi.GetUserId(ctx)
+
+	root, err := c.EndpointCaseAlternativeService.LoadAlternative(req)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: root})
+}
+
 // GenerateCases
 func (c *EndpointCaseAlternativeCtrl) GenerateCases(ctx iris.Context) {
 	req := serverDomain.EndpointCaseAlternativeGenerateReq{}

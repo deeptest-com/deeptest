@@ -762,3 +762,44 @@ const (
 func (e ExpectRequestSelectType) String() string {
 	return string(e)
 }
+
+type AlternativeCaseCategories string
+
+const (
+	AlternativeCaseRoot     AlternativeCaseCategories = "root"
+	AlternativeCaseCategory AlternativeCaseCategories = "category"
+	AlternativeCaseDir      AlternativeCaseCategories = "dir"
+	AlternativeCaseParam    AlternativeCaseCategories = "param"
+	AlternativeCaseObject   AlternativeCaseCategories = "object"
+	AlternativeCaseArray    AlternativeCaseCategories = "array"
+	AlternativeCaseProp     AlternativeCaseCategories = "prop"
+	AlternativeCaseCase     AlternativeCaseCategories = "case"
+)
+
+type AlternativeCaseTypes string
+
+const (
+	AlternativeCaseRequired AlternativeCaseTypes = "required"
+	AlternativeCaseTyped    AlternativeCaseTypes = "typed"
+	AlternativeCaseEnum     AlternativeCaseTypes = "enum"
+	AlternativeCaseFormat   AlternativeCaseTypes = "format"
+	AlternativeCaseRule     AlternativeCaseTypes = "rule"
+)
+
+type AlternativeCaseRules string
+
+const (
+	AlternativeCaseRulesMin          AlternativeCaseRules = "min"
+	AlternativeCaseRulesMax          AlternativeCaseRules = "max"
+	AlternativeCaseRulesMaxLength    AlternativeCaseRules = "maxLength"
+	AlternativeCaseRulesMinLength    AlternativeCaseRules = "minLength"
+	AlternativeCaseRulesMultipleOf   AlternativeCaseRules = "multipleOf"
+	AlternativeCaseRulesExclusiveMin AlternativeCaseRules = "exclusiveMin"
+	AlternativeCaseRulesExclusiveMax AlternativeCaseRules = "exclusiveMax"
+
+	AlternativeCaseRulesPattern AlternativeCaseRules = "pattern"
+)
+
+func (e AlternativeCaseRules) String() string {
+	return string(e)
+}

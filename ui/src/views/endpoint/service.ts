@@ -239,6 +239,14 @@ export async function removeEndpointCase(data): Promise<any> {
     });
 }
 
+export async function loadAlternativeCases(data: any): Promise<any> {
+    return request({
+        url: `/${apiPathCase}/loadAlternative`,
+        method: 'POST',
+        data
+    })
+}
+
 /**
  * 批量修改接口字段的值
  * @param data
@@ -274,14 +282,12 @@ export async function updateTag(data: any): Promise<any> {
     });
 }
 
-
 export async function loadCaseTree(data: QueryCaseTreeParams): Promise<any> {
     return request({
         url: `/endpoints/cases/loadTree?serveId=${data.serveId}`,
         method: 'GET',
     });
 }
-
 
 export function reBuildTree(node:any,parentId:any) {
 

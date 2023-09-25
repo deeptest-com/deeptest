@@ -35,6 +35,9 @@ export const getUrls = () => {
     const agentUrl = process.env.VUE_APP_API_AGENT;
     const staticUrl = process.env.VUE_APP_API_STATIC;
     console.log(`serverUrl=${serverUrl}, agentUrl=${agentUrl}`)
+
+    console.log(process.env)
+
     return {serverUrl, agentUrl,staticUrl}
 }
 

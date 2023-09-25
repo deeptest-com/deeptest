@@ -63,12 +63,12 @@
         :onFinish="createFinish"
         :onCancel="createCancel"/>
 
-<!--    <GenerateCasePopup
+    <GenerateCasePopup
         v-if="generateCasesVisible"
         :visible="generateCasesVisible"
         :model="generateCasesModel"
         :onFinish="generateCasesFinish"
-        :onCancel="generateCasesCancel" />-->
+        :onCancel="generateCasesCancel" />
   </div>
 </template>
 
@@ -265,6 +265,7 @@ const columns = [
     top: -42px;
     right: 0;
     width: 200px;
+    text-align: right;
     .ant-btn {
       margin-left: 10px;
     }

@@ -1,13 +1,44 @@
-package cases
+package casesHelper
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/kataras/iris/v12"
 )
 
-func GenerateByHeader(basicDebugData domain.DebugData, apiOperation *openapi3.Operation) (
-	alternativeCase []model.EndpointCase, err error) {
+func LoadForHeaders(params openapi3.Parameters) (category *AlternativeCase) {
+	category = &AlternativeCase{
+		Title:    "请求头",
+		Category: consts.AlternativeCaseCategory,
+		IsDir:    true,
+		Key:      _stringUtils.Uuid(),
+		Slots:    iris.Map{"icon": "icon"},
+	}
+
+	for _, param := range params {
+		if param.Value.In != consts.ParamInHeader.String() {
+			continue
+		}
+
+		paramCase := &AlternativeCase{
+			Title:    param.Value.Name,
+			Category: consts.AlternativeCaseParam,
+			IsDir:    true,
+			Key:      _stringUtils.Uuid(),
+			Slots:    iris.Map{"icon": "icon"},
+		}
+
+		addParamRequiredCase(param.Value, paramCase)
+		addParamTypeCase(param.Value, paramCase)
+		addParamEnumCase(param.Value, paramCase)
+		addParamFormatCase(param.Value, paramCase)
+		addParamRuleCase(param.Value, paramCase)
+
+		if len(paramCase.Children) > 0 {
+			category.Children = append(category.Children, paramCase)
+		}
+	}
 
 	return
 }

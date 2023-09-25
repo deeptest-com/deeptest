@@ -30,6 +30,7 @@ func HtmlQuery(content string, expression string) (result string) {
 	}
 
 	expression, propName := GetExpressionForXpathSelector(expression)
+
 	elem, err := htmlquery.Query(doc, expression)
 	if err != nil || elem == nil {
 		result = consts.ExtractorErr

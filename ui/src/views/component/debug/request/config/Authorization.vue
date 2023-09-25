@@ -18,11 +18,11 @@
           </a-select>
         </a-col>
         <a-col flex="80px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small">
+          <a-tooltip overlayClassName="dp-tip-small dp-tip-white">
             <template #title>
               <div class="tips">
-                <div class="dp-light">授权头将会在你发送请求时自动生成。</div>
-                <div class="dp-link-primary">了解更多
+                <div>授权头将会在你发送请求时自动生成。</div>
+                <div @click="openHelp('why_interface')" class="dp-link-primary">了解更多
                   <ArrowRightOutlined/>
                 </div>
               </div>
@@ -63,16 +63,14 @@ import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, ArrowRightOutline
 import EmptyPage from "@/components/others/empty.vue";
 import RequestAuthorBasic from "./author/BasicAuthor.vue"
 import RequestAuthorBearerToken from "./author/BearerToken.vue"
-import RequestAuthorOAuth2 from "./author/OAuth2.vue"
 import RequestAuthorApiKey from "./author/ApiKey.vue"
 import {AuthorizationTypes, UsedBy} from "@/utils/enum";
+import {openHelp} from "@/utils/link";
+import {StateType as Debug} from "@/views/component/debug/store";
+import {getEnumSelectItems} from "@/utils/comm";
 
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
-
-import {Param} from "@/views/component/debug/data";
-import {StateType as Debug} from "@/views/component/debug/store";
-import {getEnumSelectItems} from "@/utils/comm";
 const store = useStore<{  Debug: Debug }>();
 
 const debugData = computed<any>(() => store.state.Debug.debugData);
@@ -97,7 +95,7 @@ const onParamChange = (idx) => {
 
   .author-content {
     display: flex;
-    height: 100%;
+    height: calc(100% - 30px);
 
     .params {
       flex: 2;

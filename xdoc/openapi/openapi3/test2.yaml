@@ -1,0 +1,101 @@
+openapi: 3.0.0
+servers:
+  - url: //petstore.swagger.io/v2
+    description: Default server
+
+paths:
+  /users/{userid}:
+    post:
+      parameters:
+        - name: count
+          in: query
+          required: true
+          schema:
+            type: number
+            minimum: 11
+            maximum: 99
+            maxLength: 8
+            minLength: 4
+            multipleOf: 5
+
+        - name: total
+          in: query
+          required: true
+          schema:
+            type: integer
+            minimum: 11
+            maximum: 99
+            maxLength: 6
+            minLength: 3
+            exclusiveMaximum: true
+            exclusiveMinimum: true
+            multipleOf: 5
+
+        - name: url
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uri
+            maxLength: 20
+            minLength: 10
+            pattern: ^[a-zA-Z]{3,6}$
+            enum:
+              - open
+              - merged
+              - declined
+
+      requestBody:
+        description: ''
+        content:
+          'application/json':
+            schema:
+              $ref: "#/components/schemas/user"
+
+      responses:
+        "200":
+          $ref: "#/components/responses/200_resp"
+
+components:
+  responses:
+    200_resp:
+      description: The User
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/user'
+
+  schemas:
+    user:
+      type: object
+      properties:
+        id:
+          type: integer
+          minimum: 11
+          maximum: 99
+          exclusiveMinimum: true
+
+        username:
+          type: string
+          format: email
+          enum:
+            - open
+            - merged
+            - declined
+
+        byte:
+          type: byte
+          minimum: 98
+          maximum: 100
+
+        pet:
+          $ref: "#/components/schemas/Pet"
+    Pet:
+      type: object
+      properties:
+        age:
+          type: integer
+          minimum: 1
+        name:
+          type: string
+          format: email

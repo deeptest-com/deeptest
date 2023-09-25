@@ -37,3 +37,5 @@ client-ly/out
 client-ly/.webpack
 ui-vue3-demo
 client/icon/ly
+
+package-ly.json

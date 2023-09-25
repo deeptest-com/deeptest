@@ -33,7 +33,7 @@ func (j *JSON) Scan(value interface{}) error {
 	return err
 }
 
-// 实现 driver.Valuer 接口，Value 返回 json value
+// 实现 driver.Valuer 接口，Sample 返回 json value
 func (j JSON) Value() (driver.Value, error) {
 	if len(j) == 0 {
 		return nil, nil

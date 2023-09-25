@@ -1,11 +1,24 @@
 <template>
-  <a-modal width="600px"
+  <a-modal width="1000px"
            :visible="visible"
            @ok="finish"
            @cancel="cancel"
-           :title="(!model.id ? '新建' : '修改') + '用例'">
-    <a-form :label-col="{ span: 6 }"
-            :wrapper-col="{ span: 14 }">
+           :title="'备选用例'"
+            :bodyStyle="{height: 'calc(100vh - 266px)', overflowY: 'auto'}">
+    <a-form :label-col="{ span: 3 }"
+            :wrapper-col="{ span: 20 }">
+
+      <a-form-item label="请求方法" v-bind="validateInfos.method">
+        <a-select class="select-method"
+                  v-model:value="modelRef.method"
+                  @change="onMethodChanged">
+          <template v-for="method in Methods">
+            <a-select-option v-if="hasDefinedMethod(method)" :value="method" :key="method">
+              {{ method }}
+            </a-select-option>
+          </template>
+        </a-select>
+      </a-form-item>
 
       <a-form-item label="名称前缀" v-bind="validateInfos.name">
         <a-input v-model:value="modelRef.prefix"
@@ -15,6 +28,45 @@
         </div>
       </a-form-item>
 
+      <a-form-item label="备选用例">
+        <a-tree
+            :replaceFields="replaceFields"
+            :tree-data="alternativeCases"
+            :expandedKeys="expandedKeys"
+            :checkable="true"
+            :show-icon="true">
+          <template #title="nodeProps">
+            <span class="tree-title">
+              <span>{{ nodeProps.title}}</span>
+              <template v-if="nodeProps.category==='case'">
+                <span>: &nbsp;&nbsp;&nbsp;</span>
+
+                <span v-if="treeDataMap[nodeProps.key]?.isEdit">
+                  <a-input size="small"
+                           :style="{width: '160px'}"
+                           v-model:value="sampleRef" />
+                  &nbsp;
+                  <CheckOutlined @click="editFinish(nodeProps.key)" class="dp-icon-btn2 dp-trans-80" />
+                  <CloseOutlined @click="editCancel(nodeProps.key)"  class="dp-icon-btn2 dp-trans-80" />
+                </span>
+
+                <span v-else>
+                  {{ nodeProps.sample ? nodeProps.sample : '空' }}
+                  &nbsp;
+                  <EditOutlined @click="editStart(nodeProps.key)" />
+                </span>
+
+              </template>
+            </span>
+          </template>
+
+          <template #icon="slotProps">
+            <FolderOutlined v-if="slotProps.isDir && !slotProps.expanded"/>
+            <FolderOpenOutlined v-if="slotProps.isDir && slotProps.expanded"/>
+            <FileOutlined v-if="!slotProps.isDir"/>
+          </template>
+        </a-tree>
+      </a-form-item>
     </a-form>
   </a-modal>
 </template>
@@ -24,6 +76,8 @@ import {computed, defineProps, inject, reactive, ref, watch} from 'vue';
 import {Methods, UsedBy} from "@/utils/enum";
 import {Form} from "ant-design-vue";
 import {useStore} from "vuex";
+import {FolderOutlined, FolderOpenOutlined, FileOutlined, CheckOutlined, EditOutlined, CloseOutlined} from '@ant-design/icons-vue';
+
 import {Endpoint} from "@/views/endpoint/data";
 import {StateType as EndpointStateType} from "@/views/endpoint/store";
 
@@ -32,6 +86,14 @@ const usedBy = inject('usedBy') as UsedBy
 
 const store = useStore<{ Endpoint: EndpointStateType }>();
 const endpointDetail: any = computed<Endpoint>(() => store.state.Endpoint.endpointDetail);
+const alternativeCases = computed<any>(() => store.state.Endpoint.alternativeCases);
+
+const sampleRef = ref('')
+const treeDataMap = ref({})
+
+watch(alternativeCases, (newVal) => {
+  getNodeMap({key: '', children: newVal}, treeDataMap.value)
+}, {deep: true, immediate: true});
 
 const props = defineProps({
   visible: {
@@ -53,14 +115,56 @@ const props = defineProps({
 })
 
 const modelRef = ref({
+  method: 'GET',
   prefix: '异常路径',
 });
+
+const replaceFields = {key: 'key'};
+const expandedKeys = ref<number[]>([]);
+
+const loadCaseTree = () => {
+  store.dispatch('Endpoint/loadAlternativeCases',
+      {
+        endpointId: endpointDetail.value.id,
+        method: modelRef.value.method,
+      }).then((result) => {
+          console.log('loadCaseTree', result)
+          expandAll()
+      })
+}
+
+function expandAll() {
+  const keys: any = [];
+  const data = alternativeCases.value;
+
+  function fn(arr: any) {
+    if (!Array.isArray(arr)) {
+      return;
+    }
+    arr.forEach((item, index) => {
+      keys.push(item.key);
+      if (Array.isArray(item.children)) {
+        fn(item.children)
+      }
+    });
+  }
+
+  fn(data);
+  expandedKeys.value = keys;
+}
+
+const onMethodChanged = () => {
+  loadCaseTree()
+}
 
 watch(() => props.visible, () => {
   console.log('watch props.visible', props?.visible)
   modelRef.value = {
+    method: 'GET',
     prefix: props?.model?.prefix || '异常路径',
   }
+
+  loadCaseTree()
 }, {immediate: true, deep: true})
 
 const rulesRef = reactive({
@@ -88,19 +192,45 @@ const cancel = () => {
   props.onCancel()
 }
 
-function listDefinedMethod() {
-  const methods = [] as string[]
-  endpointDetail?.value?.interfaces?.forEach((item) => {
-    methods.push(item.method)
-  })
-
-  return methods
-}
-
 function hasDefinedMethod(method: string) {
   return endpointDetail?.value?.interfaces?.some((item) => {
     return item.method === method;
   })
+}
+
+const editStart = (key) => {
+  console.log('editStart', key)
+  resetEdit()
+  treeDataMap.value[key].isEdit = true
+  sampleRef.value = treeDataMap.value[key].sample
+}
+const editFinish = (key) => {
+  console.log('editFinish', key)
+  treeDataMap.value[key].isEdit = false
+  treeDataMap.value[key].sample = sampleRef.value
+}
+const editCancel = (key) => {
+  console.log('editCancel', key)
+  treeDataMap.value[key].isEdit = false
+}
+function resetEdit() {
+  Object.keys(treeDataMap.value).forEach((key) => {
+    treeDataMap.value[key].isEdit = false
+  })
+}
+function getNodeMap(treeNode: any, mp: any) {
+  if (!treeNode) return
+
+  treeNode.entity = null
+  mp[treeNode.key] = treeNode
+
+  if (treeNode.children) {
+    treeNode.children.forEach((item, index) => {
+      getNodeMap(item, mp)
+    })
+  }
+
+  return
 }
 
 </script>
@@ -109,5 +239,15 @@ function hasDefinedMethod(method: string) {
 .modal-btns {
   display: flex;
   justify-content: flex-end;
+
+  .ant-tree {
+    .ant-tree-title {
+      height: 24px;
+      input {
+        height: 24px;
+        background-color: white;
+      }
+    }
+  }
 }
 </style>

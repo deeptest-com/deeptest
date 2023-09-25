@@ -91,7 +91,7 @@
                 <div class="right"></div>
               </div>
             </div>
-            <div v-if="!debugData.envVars || debugData.envVars.length===0" class="env">空</div>
+            <div v-if="!envVars || envVars.length===0" class="env">空</div>
           </div>
         </div>
       </div>

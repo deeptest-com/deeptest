@@ -31,5 +31,6 @@ func (r *ConfigRepo) Save(req model.SysConfig) (err error) {
 	err = r.DB.Model(&model.SysConfig{}).
 		Where("k = ?", req.Key).
 		Update("v", req.Value).Error
+
 	return
 }

@@ -140,9 +140,7 @@ const wrapperCol = { span: 24 }
 
 <style lang="less">
 .mock-script-main {
-  .ant-card.sample-content .ant-card-body {
-    padding: 10px !important;
-  }
+
 }
 </style>
 
@@ -150,6 +148,10 @@ const wrapperCol = { span: 24 }
 .mock-script-main {
   height: 100%;
   width: 100%;
+
+  .ant-card.sample-content .ant-card-body {
+    padding: 10px !important;
+  }
 
   .head {
     padding: 2px 3px;

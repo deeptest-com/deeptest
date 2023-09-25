@@ -17,7 +17,7 @@ import (
 
 // for interface invocation in both endpoint and scenario
 func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
-	url := fmt.Sprintf("debugs/interface/loadForExec")
+	url := fmt.Sprintf("debugs/interface/loadForExec?currProjectId=%d", req.Data.ProjectId)
 	body, err := json.Marshal(req.Data)
 	if err != nil {
 		logUtils.Infof("marshal request data failed, error, %s", err.Error())

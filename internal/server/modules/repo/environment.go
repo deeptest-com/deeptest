@@ -62,18 +62,35 @@ func (r *EnvironmentRepo) GetByProject(projectId uint) (env model.Environment, e
 }
 
 func (r *EnvironmentRepo) GetByUserAndProject(userId, projectId uint) (env model.Environment, err error) {
-	relaPo := model.ProjectUserServer{}
-
-	err = r.DB.
-		Where("user_id = ? AND project_id=?", userId, projectId).
-		Where("NOT deleted").
-		First(&relaPo).Error
-
+	relaPo, err := r.GetProjectUserServer(projectId, userId)
 	if err != nil {
 		return
 	}
 
 	env, err = r.Get(relaPo.ServerId)
+
+	return
+}
+
+func (r *EnvironmentRepo) SetProjectUserServer(projectId, userId, serverId uint) (err error) {
+	data, err := r.GetProjectUserServer(projectId, userId)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return
+	}
+
+	data.ProjectId = projectId
+	data.UserId = userId
+	data.ServerId = serverId
+	err = r.DB.Save(&data).Error
+
+	return
+}
+
+func (r *EnvironmentRepo) GetProjectUserServer(projectId, userId uint) (res model.ProjectUserServer, err error) {
+	err = r.DB.
+		Where("user_id = ? AND project_id=?", userId, projectId).
+		Where("NOT deleted").
+		First(&res).Error
 
 	return
 }

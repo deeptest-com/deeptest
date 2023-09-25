@@ -103,9 +103,9 @@ func (r *ProjectRoleRepo) GetRoleIdNameMap(roleIds []uint) (data map[uint]consts
 		return
 	}
 
-	roleIdNameMap := make(map[uint]consts.RoleType)
+	data = make(map[uint]consts.RoleType)
 	for _, v := range projectRoles {
-		roleIdNameMap[v.ID] = v.Name
+		data[v.ID] = v.Name
 	}
 	return
 }

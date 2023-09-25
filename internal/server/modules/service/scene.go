@@ -86,8 +86,8 @@ func (s *SceneService) LoadEnvVars(scene *domain.ExecScene, debugData domain.Deb
 	scene.EnvToVariables = domain.EnvToVariables{}
 	scene.DebugInterfaceToEnvMap = domain.InterfaceToEnvMap{}
 
-	serveServer, _ := s.ServeServerRepo.Get(debugData.ServerId)
-	envId := serveServer.EnvironmentId
+	//serveServer, _ := s.ServeServerRepo.Get(debugData.ServerId)
+	envId := debugData.ServerId
 
 	scene.DebugInterfaceToEnvMap[debugData.DebugInterfaceId] = envId
 

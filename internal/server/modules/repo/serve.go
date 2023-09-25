@@ -426,19 +426,15 @@ func (r *ServeRepo) SetCurrServeByUser(serveId, userId uint) (err error) {
 	return
 }
 
-func (r *ServeRepo) GetCurrServerByUser(userId uint) (currServer model.ServeServer, err error) {
-	var user model.SysUser
-	err = r.DB.Preload("Profile").
-		Where("id = ?", userId).
-		First(&user).
-		Error
+func (r *ServeRepo) GetCurrServerByUser(projectId, userId uint) (currServer model.ServeServer, err error) {
+	projectUserServer, err := r.EnvironmentRepo.GetProjectUserServer(projectId, userId)
 	if err != nil {
 		return
 	}
 
 	// may be null
 	err = r.DB.Model(&model.ServeServer{}).
-		Where("environment_id = ?", user.Profile.CurrServerId).
+		Where("environment_id = ?", projectUserServer.ServerId).
 		First(&currServer).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return
@@ -447,7 +443,7 @@ func (r *ServeRepo) GetCurrServerByUser(userId uint) (currServer model.ServeServ
 		return currServer, nil
 	}
 
-	environment, err := r.EnvironmentRepo.Get(user.Profile.CurrServerId)
+	environment, err := r.EnvironmentRepo.Get(projectUserServer.ServerId)
 	if err != nil {
 		return
 	}

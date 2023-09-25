@@ -117,7 +117,7 @@ func (s *ServeService) DisableVersionById(id uint) (err error) {
 	return
 }
 
-func (s *ServeService) ListServer(req v1.ServeServer, userId uint) (res []model.ServeServer, currServer model.ServeServer, err error) {
+func (s *ServeService) ListServer(req v1.ServeServer, projectId, userId uint) (res []model.ServeServer, currServer model.ServeServer, err error) {
 	if req.ServeId == 0 {
 		server, _ := s.ServeServerRepo.Get(req.ServerId)
 		req.ServeId = server.ServeId
@@ -128,22 +128,22 @@ func (s *ServeService) ListServer(req v1.ServeServer, userId uint) (res []model.
 		return
 	}
 
-	currServer, err = s.ServeRepo.GetCurrServerByUser(userId)
+	currServer, err = s.ServeRepo.GetCurrServerByUser(projectId, userId)
 	if currServer.ServeId != req.ServeId {
 		if len(res) != 0 {
-			currServer, err = s.ChangeServer(res[0].EnvironmentId, userId)
+			currServer, err = s.ChangeServer(projectId, userId, res[0].EnvironmentId)
 		}
 	}
 
 	return
 }
 
-func (s *ServeService) ChangeServer(serverId, userId uint) (currServer model.ServeServer, err error) {
-	if err = s.ServeRepo.SetCurrServerByUser(serverId, userId); err != nil {
+func (s *ServeService) ChangeServer(projectId, userId, serverId uint) (currServer model.ServeServer, err error) {
+	if err = s.EnvironmentRepo.SetProjectUserServer(projectId, userId, serverId); err != nil {
 		return
 	}
 
-	currServer, err = s.ServeRepo.GetCurrServerByUser(userId)
+	currServer, err = s.ServeRepo.GetCurrServerByUser(projectId, userId)
 	return
 }
 

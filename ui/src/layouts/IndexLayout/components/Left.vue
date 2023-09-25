@@ -25,13 +25,6 @@
         </div>
       </div>
 
-      <div v-if="hasSysSettingPermission" :class="['settings', isSysSettingsActive ? 'settings-active' : '' ]" @click="gotoSysSettings">
-        <div class="settings-menu">
-          <Icon :type="isSysSettingsActive ? 'settings-active' : 'settings'" />
-          <span class="left-menu-title">系统设置</span>
-        </div>
-      </div>
-
     </div>
     <div v-if="version" class="version">
       V{{ version }}
@@ -106,18 +99,9 @@ export default defineComponent({
     const isProjectSettingsActive = computed(() => {
       return router.currentRoute.value.path.includes('project-setting');
     });
-    const isSysSettingsActive = computed(() => {
-      return router.currentRoute.value.path.includes('sys-setting');
-    });
 
     const hasProjectSettingPermission = computed(() => {
       if (permissionRouteMenuMap.value && permissionRouteMenuMap.value['project-setting']) {
-        return true;
-      }
-      return false;
-    });
-    const hasSysSettingPermission = computed(() => {
-      if (permissionRouteMenuMap.value && permissionRouteMenuMap.value['sys-setting']) {
         return true;
       }
       return false;
@@ -134,11 +118,9 @@ export default defineComponent({
     return {
       isLeyanEnv,
       isProjectSettingsActive,
-      isSysSettingsActive,
       gotoProjectSettings,
       gotoSysSettings,
       hasProjectSettingPermission,
-      hasSysSettingPermission,
     };
   }
 

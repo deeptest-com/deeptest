@@ -89,8 +89,7 @@ export default defineComponent({
     const routeItem = computed<RoutesDataItem>(() => getRouteItem(route.path, menuData));
 
     // 有权限的菜单
-    const permissionMenuData = computed<RoutesDataItem[]>(
-        () => getPermissionMenuData(store.state.User.currentUser.sysRoles, menuData));
+    const permissionMenuData = computed<RoutesDataItem[]>(() => getPermissionMenuData(store.state.User.currentUser.sysRoles, menuData));
 
     // 当前路由的顶部菜单path
     const belongTopMenu = computed<string>(() => getRouteBelongTopMenu(routeItem.value))

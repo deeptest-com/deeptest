@@ -60,6 +60,8 @@ export default {
     'user.management': '用户管理',
     'user.list': '用户列表',
 
+    'custom.lib': '自定义JS库',
+
     'mock.oauth2.callback': 'OAuth2回调模拟',
 
     'json': 'JSON',

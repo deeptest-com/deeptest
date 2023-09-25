@@ -56,9 +56,9 @@
                   </a-tooltip>
                 </a-menu-item>
               </a-sub-menu>
-<!--              <a-menu-item key="management">
+              <a-menu-item key="management">
                 用户管理
-              </a-menu-item>-->
+              </a-menu-item>
               <a-menu-item key="download">
                 下载客户端
               </a-menu-item>

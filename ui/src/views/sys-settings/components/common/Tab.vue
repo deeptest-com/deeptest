@@ -11,7 +11,7 @@ import { computed, ref, watch } from 'vue';
 import { useStore } from 'vuex';
 import { useI18n } from "vue-i18n";
 import { RoutesDataItem, vueRoutes } from '@/utils/routes';
-import IndexLayoutRoutes from '@/layouts/IndexLayout/routes';
+import {routes} from '@/config/routes';
 import { StateType as GlobalStateType } from "@/store/global";
 import { RouteMenuType } from '@/types/permission';
 import { useRouter } from 'vue-router';
@@ -19,11 +19,12 @@ import { useRouter } from 'vue-router';
 const { t } = useI18n();
 const store = useStore<{ Global: GlobalStateType }>();
 
-const menuData: RoutesDataItem[] = vueRoutes(IndexLayoutRoutes);
+const r = routes[3] as any
+const menuData: RoutesDataItem[] = vueRoutes(r.children);
 const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
 
 const tabs = computed(() => {
-  console.log('======', tabs)
+  console.log('999', tabs, menuData)
 
   const sysSettingMenu = menuData.find(e => e.path.includes('sys-setting'));
   const routeList = sysSettingMenu?.children;

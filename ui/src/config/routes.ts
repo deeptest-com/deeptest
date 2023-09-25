@@ -19,7 +19,7 @@ import UserLayoutRoutes from '@/layouts/UserLayout/routes';
 import UserLayout from '@/layouts/UserLayout/index.vue';
 import BlankLayout from "@/layouts/BlankLayout.vue";
 
-const routes: RoutesDataItem[] = [
+export const routes: RoutesDataItem[] = [
   {
     title: 'empty',
     path: '/mock',
@@ -96,6 +96,36 @@ const routes: RoutesDataItem[] = [
         meta: {
           title: '消息'
         }
+      },
+
+      // 系统管理
+      {
+        title: 'sys.setting',
+        path: '/sys-setting',
+        redirect: '/sys-setting/user',
+        component: () => import('@/views/sys-settings/index.vue'),
+        children: [
+          {
+            icon: 'user',
+            title: 'user.management',
+            path: 'user-manage',
+            component: () => import('@/views/user/list/index.vue'),
+            meta: {
+              title: 'user.management',
+              code: 'SYS-SETTING-USER-MANAGE'
+            }
+          },
+          {
+            icon: 'script',
+            title: 'custom.lib',
+            path: 'jslib',
+            component: () => import('@/views/sys-settings/JsLib/index.vue'),
+            meta: {
+              title: 'custom.lib',
+              code: 'SYS-SETTING-JSLIB'
+            }
+          },
+        ]
       }
     ]
   },

@@ -3,26 +3,7 @@ import { useStore } from "vuex";
 import { PermissionButtonType } from "@/types/permission";
 import "./index.less";
 import { MoreOutlined } from "@ant-design/icons-vue";
-
-type Recordable<T = any> = {
-  [x: string]: T;
-}
-
-interface MenuItem {
-  /** 提示 */
-  tooltip?: string;
-  /** 显示图标，只支持图片 */
-  icon?: string;
-  /** 操作名称 */
-  label?: string | JSX.Element | ((record: Recordable) => VNode | string);
-  /** 是否渲染 */
-  ifShow?: boolean | ((record: Recordable) => boolean);
-  /** 权限编码 */
-  auth?: string;
-  children?: MenuItem[];
-  disabled?: boolean;
-  key?: string;
-} 
+import { MenuItem, Recordable } from "./type";
 
 /**
  * props定义
@@ -105,9 +86,9 @@ const ActionList = (opts: { list: MenuItem[], record: Recordable}) => {
   };
   return (
     <div class="action-list">
-      {list.map((action: MenuItem) => {
+      {list.map((action: MenuItem) => (
         <div onClick={() => handleClick()}>{action.label}</div>
-      })}
+      ))}
     </div>
   )
 };
@@ -174,12 +155,12 @@ export const DropdownActionMenu = defineComponent({
     return () => {
       return (
         <div class="drop-down-action-wrap">
-          {actionList.value.length > 0 && (
+          {/* {actionList.value.length > 0 && (
             <ActionList list={actionList.value} record={record.value} />
           )}
           {actionList.value.length > 0 && (
             <a-divider type="vertical" />
-          )}
+          )} */}
           {dropdownList.value.length > 0 && (
             <DropdownList list={dropdownList.value.filter(e => ifShow(e, props))} record={record.value} v-slots={slots} />
           )}

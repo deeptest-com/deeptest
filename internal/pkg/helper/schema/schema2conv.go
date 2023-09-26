@@ -185,7 +185,19 @@ func (s *Schema2conv) SchemaComponents(schema SchemaRef, components Components) 
 		components[ref] = component
 	}
 
-	s.CombineSchemas(&schema)
+	for _, item := range schema.Value.AnyOf {
+		s.SchemaComponents(*item, components)
+	}
+
+	for _, item := range schema.Value.OneOf {
+		s.SchemaComponents(*item, components)
+	}
+
+	for _, item := range schema.Value.AllOf {
+		s.SchemaComponents(*item, components)
+	}
+
+	//s.CombineSchemas(&schema)
 
 	switch schema.Value.Type {
 	case openapi3.TypeObject:

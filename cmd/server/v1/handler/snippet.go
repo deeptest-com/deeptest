@@ -34,3 +34,13 @@ func (c *SnippetCtrl) Get(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: snippet})
 }
+
+func (c *SnippetCtrl) GetJslibs(ctx iris.Context) {
+	snippets, err := c.SnippetService.GetJslibs()
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: snippets})
+}

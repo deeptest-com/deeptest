@@ -54,7 +54,6 @@
                 </a-upload>
               </div>
             </div>
-
           </a-form-item>
 
           <a-form-item label="上传类型文件">
@@ -89,7 +88,6 @@
                 </a-upload>
               </div>
             </div>
-
           </a-form-item>
 
           <a-form-item :wrapperCol="{ span: wrapperCol.span, offset: labelCol.span }">

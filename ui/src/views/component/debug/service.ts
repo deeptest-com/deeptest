@@ -438,6 +438,12 @@ export async function getSnippet(name): Promise<any> {
         params
     });
 }
+export async function getJslibs(): Promise<any> {
+    return request({
+        url: `/${apiSnippets}/getJslibs`,
+        method: 'GET',
+    });
+}
 
 export async function saveResponseDefine(data): Promise<any> {
     return request({

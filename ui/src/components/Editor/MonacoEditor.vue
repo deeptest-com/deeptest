@@ -9,7 +9,7 @@ import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import debounce from "lodash.debounce";
 import {addExtractAction, addReplaceAction} from "@/components/Editor/service";
-import {getSnippet} from "@/views/component/debug/service";
+import {getJslibs, getSnippet} from "@/views/component/debug/service";
 
 import {UsedBy} from "@/utils/enum";
 
@@ -82,7 +82,7 @@ export default defineComponent({
   },
 
   methods: {
-    initMonaco() {
+    async initMonaco() {
       console.log('initMonaco ...')
       this.$emit('editorWillMount', this.monaco)
 
@@ -99,13 +99,25 @@ export default defineComponent({
 
       const usedBy = inject('usedBy')
       if (options.initTsModules) {
-        const snippet = usedBy == UsedBy.MockData ? 'mock.d' : 'global'
+        const declareSnippet = usedBy == UsedBy.MockData ? 'mock.d' : 'deeptest.d'
 
-        getSnippet(snippet).then(json => {
-          if (json.code === 0) {
-            monaco.languages.typescript.typescriptDefaults.setExtraLibs([{content: json.data.script}]);
-          }
-        })
+        const typeFiles = []
+
+        const defaultDeclareJson = await getSnippet(declareSnippet)
+        if (defaultDeclareJson.code === 0) {
+          typeFiles.push({content: defaultDeclareJson.data.script})
+        }
+
+        const jslibsDeclareJson = await getJslibs()
+        if (jslibsDeclareJson.code === 0) {
+          jslibsDeclareJson.data.forEach((item) => {
+            typeFiles.push({content: item.script})
+          })
+        }
+
+        console.log('typeFiles', typeFiles)
+
+        monaco.languages.typescript.typescriptDefaults.setExtraLibs(typeFiles);
       }
 
       this.editor = monaco.editor[this.diffEditor ? 'createDiffEditor' : 'create'](this.$el, {

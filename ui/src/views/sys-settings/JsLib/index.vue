@@ -21,7 +21,7 @@
                 <EditAndShowField :custom-class="'custom-serve show-on-hover'" placeholder="请输入自定义脚本库名称"
                                   :value="text || ''"
                                   @update="(e: string) => updateName(e, record)"
-                                  @edit="onEdit(record.id)"/>
+                                  @edit="edit(record.id)"/>
               </div>
             </template>
 
@@ -66,7 +66,7 @@
                     </a-menu-item>
 
                     <a-menu-item key="2">
-                      <span class="dp-link operation" @click="onDelete(record)">删除</span>
+                      <span class="dp-link operation" @click="remove(record)">删除</span>
                     </a-menu-item>
                   </a-menu>
                 </template>
@@ -129,13 +129,13 @@ function updateName(value: string, record: any) {
   });
 }
 
-const onEdit = (id) => {
-  console.log('onEdit')
+const edit = (id) => {
+  console.log('edit')
   modelId.value = id;
   drawerVisible.value = true;
 }
 
-async function onDelete(record: any) {
+async function remove(record: any) {
   Modal.confirm({
     title: '确认要删除该自定义脚本库吗',
     icon: createVNode(ExclamationCircleOutlined),

@@ -12,9 +12,14 @@ type JslibRepo struct {
 }
 
 func (r *JslibRepo) List(keywords string) (pos []model.SysJslib, err error) {
-	err = r.DB.Model(&model.SysJslib{}).
-		Where("name LIKE ? AND NOT deleted", fmt.Sprintf("%%%s%%", keywords)).
-		Find(&pos).Error
+	db := r.DB.Model(&model.SysJslib{}).
+		Where("NOT deleted")
+
+	if keywords != "" {
+		db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", keywords))
+	}
+
+	err = db.Find(&pos).Error
 
 	return
 }

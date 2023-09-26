@@ -11,18 +11,18 @@ import (
 
 func GetScript(name ScriptType) string {
 	if name == ScriptDeepTest {
-		if DpScript == "" {
+		if DeepTestScript == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest.js"))
-			DpScript = string(bytes)
+			DeepTestScript = string(bytes)
 		}
-		return DpScript
+		return DeepTestScript
 
-	} else if name == DeclareGlobal {
-		if GlobalDeclare == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "global.d.ts"))
-			GlobalDeclare = string(bytes)
+	} else if name == DeclareDeepTest {
+		if DeepTestDeclare == "" {
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest.d.ts"))
+			DeepTestDeclare = string(bytes)
 		}
-		return GlobalDeclare
+		return DeepTestDeclare
 
 	} else if name == ScriptMock {
 		if MockScript == "" {
@@ -38,19 +38,12 @@ func GetScript(name ScriptType) string {
 		}
 		return MockDeclare
 
-	} else if name == DeclareModule {
-		if ModuleScript == "" {
-			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "module.d.ts"))
-			ModuleScript = string(bytes)
-		}
-		return ModuleScript
-
 	} else if name == SnippetDatapoolGet {
-		if ModuleScript == "" {
+		if DatapoolGetScript == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "snippet", "datapool_get.txt"))
-			ModuleScript = string(bytes)
+			DatapoolGetScript = string(bytes)
 		}
-		return ModuleScript
+		return DatapoolGetScript
 
 	} else if name == SnippetVariablesGet {
 		if VariablesGet == "" {
@@ -101,27 +94,30 @@ func GenResultMsg(po *domain.ScriptBase) {
 }
 
 var (
-	DpScript = ""
+	DeepTestScript  = ""
+	DeepTestDeclare = ""
 
-	GlobalDeclare = ""
-	MockScript    = ""
-	MockDeclare   = ""
-	ModuleScript  = ""
+	MockScript  = ""
+	MockDeclare = ""
 
-	VariablesGet   = ""
-	VariablesSet   = ""
-	VariablesClear = ""
+	JslibsDeclares = ""
+
+	DatapoolGetScript = ""
+	VariablesGet      = ""
+	VariablesSet      = ""
+	VariablesClear    = ""
 )
 
 type ScriptType string
 
 const (
-	ScriptDeepTest = "deeptest"
-	DeclareGlobal  = "global"
-	DeclareModule  = "modules"
+	ScriptDeepTest  = "deeptest"
+	DeclareDeepTest = "deeptest.d"
 
 	ScriptMock  = "mock"
 	DeclareMock = "mock.d"
+
+	DeclareJslibs = "jslibs"
 
 	SnippetDatapoolGet    = "datapool_get"
 	SnippetVariablesGet   = "variables_get"

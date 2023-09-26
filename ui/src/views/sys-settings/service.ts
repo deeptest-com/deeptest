@@ -13,7 +13,7 @@ export async function listJslib(params): Promise<any> {
 export async function getJslib(id): Promise<any> {
     const params = {id}
     return request({
-        url: `/${apiPathJslib}`,
+        url: `/${apiPathJslib}/${id}`,
         method: 'get',
         params
     });

@@ -131,9 +131,7 @@
                   </div>
                 </template>
                 <template #action="{record}">
-                  <DropdownActionMenu :dropdownList="MenuList" :record="record">
-                    <MoreOutlined/>
-                  </DropdownActionMenu>
+                  <DropdownActionMenu :dropdownList="MenuList" :record="record" />
                 </template>
               </a-table>
             </template>
@@ -283,14 +281,14 @@ const columns = [
     title: '操作',
     key: 'operation',
     fixed: 'right',
-    width: 80,
+    width: 100,
     slots: {customRender: 'action'},
   },
 ];
 const MenuList = [
   {
     key: '1',
-    auth: 'ENDPOINT-COPY-1',
+    auth: 'ENDPOINT-COPY',
     label: '克隆',
     action: (record: any) => copy(record)
   },

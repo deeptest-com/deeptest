@@ -381,8 +381,13 @@ func (c *ServeCtrl) ListServer(ctx iris.Context) {
 		return
 	}
 	userId := multi.GetUserId(ctx)
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
 
-	servers, currServer, err := c.ServeService.ListServer(req, userId)
+	servers, currServer, err := c.ServeService.ListServer(req, uint(projectId), userId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -413,8 +418,13 @@ func (c *ServeCtrl) ChangeServer(ctx iris.Context) {
 		return
 	}
 	userId := multi.GetUserId(ctx)
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
 
-	currServer, err := c.ServeService.ChangeServer(req.ServerId, userId)
+	currServer, err := c.ServeService.ChangeServer(uint(projectId), userId, req.ServerId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

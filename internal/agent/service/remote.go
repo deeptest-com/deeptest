@@ -17,7 +17,7 @@ import (
 
 // for interface invocation in both endpoint and scenario
 func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
-	url := fmt.Sprintf("debugs/interface/loadForExec")
+	url := fmt.Sprintf("debugs/interface/loadForExec?currProjectId=%d", req.Data.ProjectId)
 	body, err := json.Marshal(req.Data)
 	if err != nil {
 		logUtils.Infof("marshal request data failed, error, %s", err.Error())
@@ -136,8 +136,12 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 			},
 		},
 	}
+	request, err := json.Marshal(httpReq)
+	logUtils.Infof("get exec obj request, request: %s", string(request))
 
 	resp, err := httpHelper.Get(httpReq)
+	logUtils.Infof("get exec obj response, response: %s", resp.Content)
+
 	if err != nil {
 		logUtils.Infof("get exec obj failed, error, %s", err.Error())
 		return
@@ -162,7 +166,12 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 		return
 	}
 
-	json.Unmarshal(bytes, &ret)
+	err = json.Unmarshal(bytes, &ret)
+	if err != nil {
+		logUtils.Infof("get exec obj failed,err:%v", err)
+	}
+	response, _ := json.Marshal(ret)
+	logUtils.Infof("get exec obj ret: %v", response)
 
 	ret.ServerUrl = req.ServerUrl
 	ret.Token = req.Token

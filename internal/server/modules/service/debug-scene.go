@@ -48,9 +48,9 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userId uint) 
 
 	envId := serveServer.EnvironmentId
 	if userId != 0 {
-		userProfile, _ := s.ProfileRepo.FindByUserId(userId)
-		if userProfile.CurrServerId != 0 {
-			envId = userProfile.CurrServerId
+		projectUserServer, _ := s.EnvironmentRepo.GetProjectUserServer(debugData.ProjectId, userId)
+		if projectUserServer.ServerId != 0 {
+			envId = projectUserServer.ServerId
 		}
 	}
 

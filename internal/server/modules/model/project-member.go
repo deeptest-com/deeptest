@@ -9,7 +9,7 @@ type ProjectMember struct {
 	ProjectRoleId uint `json:"projectRoleId"`
 	UserId        uint `json:"userId"`
 
-	ProjectRoleName consts.RoleType `gorm:"-" json:"-"`
+	ProjectRoleName consts.RoleType `json:"projectRoleName"`
 }
 
 func (ProjectMember) TableName() string {

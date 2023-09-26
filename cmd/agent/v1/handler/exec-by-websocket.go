@@ -14,6 +14,7 @@ import (
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
+	"runtime/debug"
 )
 
 var (
@@ -99,7 +100,9 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	go func() {
 		defer func(wsMsg websocket.Message) {
 			if wsMsgerr := recover(); wsMsgerr != nil {
-				sendErr(fmt.Errorf("%v", wsMsgerr), &wsMsg)
+				s := string(debug.Stack())
+				fmt.Printf("err=%v, stack=%s\n", wsMsgerr, s)
+				sendErr(fmt.Errorf("%+v", wsMsgerr), &wsMsg)
 			}
 		}(wsMsg)
 

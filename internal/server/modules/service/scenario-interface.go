@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -119,11 +120,21 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 
 	if debugInterface.DiagnoseInterfaceId > 0 {
 		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(debugInterface.DiagnoseInterfaceId)
+		if diagnoseInterface.Deleted {
+			err = errors.New("interface is deleted")
+			return
+		}
+
 		diagnoseInterfaceTo := s.DiagnoseInterfaceRepo.ToTo(&diagnoseInterface)
 		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromDiagnose(diagnoseInterfaceTo, parentProcessor, scenarioProcessor.Ordr)
 
 	} else if debugInterface.CaseInterfaceId > 0 {
 		endpointCase, _ := s.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
+		if endpointCase.Deleted {
+			err = errors.New("interface is deleted")
+			return
+		}
+
 		interfaceCase := serverDomain.InterfaceCase{}
 		copier.CopyWithOption(&interfaceCase, &endpointCase, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 
@@ -133,7 +144,10 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 	} else if debugInterface.EndpointInterfaceId > 0 {
 		serveId := uint(0)
 		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name, scenarioProcessor.Ordr)
+	}
 
+	if err != nil {
+		return
 	}
 
 	s.DebugInvokeRepo.ChangeProcessorOwner(scenarioProcessor.ID, newProcessor.ID, newProcessor.EntityId, newProcessor.EndpointInterfaceId)

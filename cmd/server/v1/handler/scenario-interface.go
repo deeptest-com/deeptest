@@ -63,7 +63,11 @@ func (c *ScenarioInterfaceCtrl) ResetDebugData(ctx iris.Context) {
 
 	newProcessor, err := c.ScenarioInterfaceService.ResetDebugData(scenarioProcessorId, createBy)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		if err.Error() == "interface is deleted" {
+			ctx.JSON(_domain.Response{Code: _domain.ErrImportSourceDeleted.Code, Msg: _domain.ErrImportSourceDeleted.Msg})
+		} else {
+			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		}
 		return
 	}
 

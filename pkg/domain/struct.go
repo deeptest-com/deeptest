@@ -68,14 +68,15 @@ var (
 	SystemErr  = BizErr{4000, "系统错误"}
 	LoginErr   = BizErr{5000, "登录失败"}
 
-	ErrNoUser             = BizErr{10100, "找不到用户"}
-	ErrNameExist          = BizErr{10100, "同名记录已存在"}
-	ErrUsernameExist      = BizErr{10200, "用户名已占用"}
-	ErrEmailExist         = BizErr{10300, "邮箱已存在"}
-	ErrShortNameExist     = BizErr{10400, "英文缩写已存在"}
-	ErrPasswordMustBeSame = BizErr{10500, "两次密码必须一样"}
-	ErrUserNotInProject   = BizErr{10600, "不是该项目的成员"}
-	ErrProjectNotExist    = BizErr{10700, "项目不存在"}
+	ErrNoUser              = BizErr{10100, "找不到用户"}
+	ErrNameExist           = BizErr{10100, "同名记录已存在"}
+	ErrUsernameExist       = BizErr{10200, "用户名已占用"}
+	ErrEmailExist          = BizErr{10300, "邮箱已存在"}
+	ErrShortNameExist      = BizErr{10400, "英文缩写已存在"}
+	ErrPasswordMustBeSame  = BizErr{10500, "两次密码必须一样"}
+	ErrUserNotInProject    = BizErr{10600, "不是该项目的成员"}
+	ErrProjectNotExist     = BizErr{10700, "项目不存在"}
+	ErrImportSourceDeleted = BizErr{10800, "导入来源已删除"}
 )
 
 func (e BizErr) Error() string {

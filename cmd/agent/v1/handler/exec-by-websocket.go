@@ -99,7 +99,7 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	go func() {
 		defer func(wsMsg websocket.Message) {
 			if wsMsgerr := recover(); wsMsgerr != nil {
-				sendErr(fmt.Errorf("%v", wsMsgerr), &wsMsg)
+				sendErr(fmt.Errorf("%+v", wsMsgerr), &wsMsg)
 			}
 		}(wsMsg)
 

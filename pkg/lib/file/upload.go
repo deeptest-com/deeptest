@@ -51,18 +51,19 @@ func Upload(url string, files []string, extraParams map[string]string) {
 }
 
 func GetUploadFileName(name string) (ret string, err error) {
-	fns := strings.Split(strings.TrimPrefix(name, "./"), ".")
-	if len(fns) != 2 {
-		msg := fmt.Sprintf("文件名错误 %s", name)
+	name = strings.TrimPrefix(name, "./")
 
+	index := strings.LastIndex(name, ".")
+
+	if index <= 0 {
+		msg := fmt.Sprintf("文件名错误 %s", name)
 		logUtils.Info(msg)
 		err = errors.New(msg)
-
 		return
 	}
 
-	base := fns[0]
-	ext := fns[1]
+	base := name[:index]
+	ext := name[index+1:]
 
 	entropy := rand.New(rand.NewSource(time.Now().UnixNano()))
 	ms := ulid.Timestamp(time.Now())

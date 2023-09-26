@@ -111,7 +111,7 @@ export const routes: RoutesDataItem[] = [
             path: 'user-manage',
             component: () => import('@/views/user/list/index.vue'),
             meta: {
-              title: 'user.management',
+              title: '用户管理',
               code: 'SYS-SETTING-USER-MANAGE'
             }
           },
@@ -121,7 +121,7 @@ export const routes: RoutesDataItem[] = [
             path: 'jslib',
             component: () => import('@/views/sys-settings/JsLib/index.vue'),
             meta: {
-              title: 'custom.lib',
+              title: '自定义脚本库',
               code: 'SYS-SETTING-JSLIB'
             }
           },

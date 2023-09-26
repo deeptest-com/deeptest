@@ -657,7 +657,6 @@ const username = (user:string)=>{
   return result?.label || '-'
 }
 
-
 </script>
 <style scoped lang="less">
 

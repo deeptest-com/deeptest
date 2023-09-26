@@ -56,9 +56,15 @@
                   </a-tooltip>
                 </a-menu-item>
               </a-sub-menu>
-              <a-menu-item key="management">
+
+              <a-menu-item key="userManage">
                 用户管理
               </a-menu-item>
+
+              <a-menu-item key="jslibManage">
+                自定义代码库
+              </a-menu-item>
+
               <a-menu-item key="download">
                 下载客户端
               </a-menu-item>
@@ -190,8 +196,11 @@ const onSysMenuClick = (event: any) => {
   console.log('onSysMenuClick', event)
   const {key, keyPath} = event;
 
-  if (key === 'management') { //
+  if (key === 'userManage') { //
     router.replace({path: '/sys-setting/user-manage'})
+
+  } else if (key === 'jslibManage') { //
+    router.replace({path: '/sys-setting/jslib'})
 
   } else if (key === 'download') {
     window.open('https://deeptest.com/setup.html');

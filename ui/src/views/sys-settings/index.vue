@@ -1,14 +1,14 @@
 <template>
   <HomeLayout>
     <div class="sys-setting-main">
-      <Tab />
+      <RouteTab />
       <router-view></router-view>
     </div>
   </HomeLayout>
 </template>
 
 <script setup lang="ts">
-import Tab from './components/common/Tab.vue';
+import RouteTab from './components/common/Tab.vue';
 import HomeLayout from "@/layouts/HomeLayout.vue";
 
 </script>

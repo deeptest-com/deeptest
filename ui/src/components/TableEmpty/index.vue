@@ -10,12 +10,13 @@
         <slot name="content"></slot>
     </a-config-provider>
 </template>
+
 <script setup lang="ts">
 import { defineProps } from 'vue';
 
 defineProps<{
     text?: String
-}>();   
+}>();
 </script>
 
 <style scoped lang="less">

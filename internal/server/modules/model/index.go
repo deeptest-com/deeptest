@@ -125,5 +125,6 @@ var (
 		&ExecLogResponseDefine{},
 
 		&SysConfig{},
+		&SysJslib{},
 	}
 )

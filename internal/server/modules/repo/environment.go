@@ -414,9 +414,11 @@ func (r *EnvironmentRepo) SaveParams(projectId uint, params []model.EnvironmentP
 		if err != nil {
 			return err
 		}
-		err = r.DB.Create(params).Error
-		if err != nil {
-			return err
+		if len(params) > 0 {
+			err = r.DB.Create(params).Error
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	})

@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
@@ -14,6 +15,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
+	"gorm.io/gorm"
 	"log"
 	"strings"
 )
@@ -228,7 +230,11 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	ret model.Processor, err error) {
 
 	endpointInterface, err := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-	if err != nil {
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return
+	}
+	if err == gorm.ErrRecordNotFound {
+		err = errors.New("interface is deleted")
 		return
 	}
 

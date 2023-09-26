@@ -1,21 +1,25 @@
 <template>
   <div class="editor show-on-hover" v-if="isEditing"    v-on-click-outside="cancelEdit">
-      <a-tree-select
+    <Empty :loading="loading">
+      <template #content>
+        <a-tree-select
           :value="fieldValue"
-          :multiple="false"
-          :treeData="treeData"
-          style="width: 200px"
+          :treeData="treeSelectData"
           :size="'small'"
+          style="width: 200px"
           :show-search="showSearch"
           @select="updateField"
           :treeDefaultExpandAll="true"
           :searchPlaceholder="'请输入'"
           v-model:searchValue="searchValue"
           @treeExpand="treeExpand"
-          tree-node-filter-prop="name"
           :replaceFields="{ title: 'name',value:'id'}"
           :dropdown-style="{ maxHeight: '400px', overflow: 'auto' }"
+          @search="handleSearch"
+          :filterTreeNode="false"
           placeholder="请选择"/>
+      </template>
+    </Empty>
   </div>
   <div :class="['editor', 'show-on-hover']" v-else>
     <span class="title" @click.stop="handleClick">{{ label }}</span> &nbsp;&nbsp;
@@ -31,7 +35,10 @@ import {
 import {
   EditOutlined,
 } from '@ant-design/icons-vue';
+import cloneDeep from "lodash/cloneDeep";
 import { vOnClickOutside } from '@vueuse/components';
+import Empty from '@/components/TableEmpty/index.vue';
+import { filterByKeyword } from '@/utils/tree';
 const isEditing:any = ref(false);
 const fieldValue:any = ref('');
 const props = defineProps({
@@ -59,6 +66,10 @@ const props = defineProps({
 })
 const emit = defineEmits(['update', 'edit']);
 
+const loading = ref(false);
+
+const treeSelectData = ref(cloneDeep(props.treeData || []));
+
 function updateField(value,node) {
   fieldValue.value = value;
   // searchValue.value = node.title;
@@ -81,12 +92,17 @@ function treeExpand(open) {
 }
 
 const searchValue = ref('');
-// function change(value,label) {
-//     searchValue.value = label;
-// }
-
 function handleClick() {
   emit('edit');
+}
+
+const handleSearch = (evt) => {
+  loading.value = true;
+  treeSelectData.value = [];
+  setTimeout(() => {
+    treeSelectData.value = filterByKeyword(cloneDeep(props.treeData || []) , evt, 'name');
+    loading.value = false;
+  }, 500);
 }
 
 watch(() => {return props.value}, (newVal) => {
@@ -102,6 +118,7 @@ watch(() => {
 },(newVal) => {
   if(newVal){
     searchValue.value = props.label;
+    treeSelectData.value = props.treeData;
   }
 })
 

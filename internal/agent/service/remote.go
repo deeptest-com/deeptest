@@ -136,8 +136,9 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 			},
 		},
 	}
-	logUtils.Infof("get exec obj request, request %v", httpReq)
-	
+	request, err := json.Marshal(httpReq)
+	logUtils.Infof("get exec obj request, request: %s", string(request))
+
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get exec obj failed, error, %s", err.Error())
@@ -164,7 +165,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 	}
 
 	json.Unmarshal(bytes, &ret)
-	logUtils.Infof("get exec obj response, response %v", resp)
+	logUtils.Infof("get exec obj response, response: %s", resp.Content)
 
 	ret.ServerUrl = req.ServerUrl
 	ret.Token = req.Token

@@ -29,14 +29,15 @@ export function startUIService(portClient) {
     // 从环境变量中获取 ui 服务地址
     let {UI_SERVER_URL: uiServerUrl} = process.env;
 
+
     if (!uiServerUrl && !DEBUG) {
         uiServerUrl = path.resolve(process.resourcesPath, 'ui');
     }
 
-    uiServerUrl = path.resolve(process.resourcesPath, 'ui');
-
+    uiServerUrl = uiServerUrl || path.resolve(process.resourcesPath, 'ui');
 
     if (uiServerUrl) {
+        logInfo(`>> ui server url is ${uiServerUrl}`);
         // 有效的 http 地址
         if (/^https?:\/\//.test(uiServerUrl)) {
             return Promise.resolve(uiServerUrl);

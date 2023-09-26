@@ -74,7 +74,7 @@
                           @blur="validate('desc', { trigger: 'blur' }).catch(() => {})"/>
             </a-form-item>
             <a-form-item :wrapper-col="{ span: 12, offset: 18 }">
-              <a-button type="primary" @click.prevent="submitForm">确定</a-button>
+              <a-button type="primary" @click.prevent="submitForm" :loading="loading">确定</a-button>
               <a-button @click="handleCancel" style="margin-left:10px">取消</a-button>
             </a-form-item>
           </a-form>
@@ -118,6 +118,7 @@ const projectInfo = {
 };
 
 const formStateRef = reactive(props.formState || projectInfo);
+const loading = ref(false);
 
 const filterOption = (input: string, option: any) => {
   let optionArr = option.key.split('-')
@@ -150,10 +151,11 @@ const {validate, validateInfos, resetFields} = useForm(
     rulesRef
 );
 const submitForm = async () => {
-  console.log("submitForm", formStateRef);
+  loading.value = true;
   validate()
       .then(() => {
         store.dispatch("Project/saveProject", {...formStateRef}).then((res) => {
+          loading.value = false;
           if (res === true) {
             notifySuccess("保存成功");
             emits("handleSuccess");
@@ -163,6 +165,7 @@ const submitForm = async () => {
         });
       })
       .catch((err) => {
+        loading.value = false;
         console.log("error", err);
       });
 };

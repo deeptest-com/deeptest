@@ -1,6 +1,6 @@
 <template>
   <a-drawer class="dp-drawer-container"
-            :width="1200"
+            :width="isFullscreen ? '100vw' : '1200px'"
             :placement="'right'"
             :closable="true"
             :visible="visible"
@@ -22,7 +22,7 @@
         <slot name="basicInfo"/>
       </div>
       <!-- Tab 切换区域头部信息 -->
-      <div class="dp-drawer-content-tabs-header">
+      <div class="dp-drawer-content-tabs-header" v-if="showTabHeader">
         <slot name="tabHeader"/>
       </div>
       <!-- Tab 切换区域内容区域 -->
@@ -47,10 +47,28 @@ import {
 } from 'vue';
 
 import {useStore} from "vuex";
+import { useClipboard } from '@vueuse/core'
+import { notifySuccess } from '@/utils/notify';
+import bus from "@/utils/eventBus";
+import settings from "@/config/settings";
+
 const store = useStore<{ Global}>();
+const { copy } = useClipboard({});
 
-
-const props = defineProps(['visible', 'stickyKey']);
+const props = defineProps({
+  visible: {
+    type: Boolean,
+  },
+  stickyKey: {
+    type: String,
+    required: false,
+  },
+  showTabHeader: {
+    type: Boolean,
+    required: false,
+    default: true,
+  }
+});
 const emit = defineEmits(['ok', 'close', 'refreshList']);
 
 function onCloseDrawer() {
@@ -62,10 +80,28 @@ const contentRef: any = ref(null)
 const spinning = computed( ()=>store.state.Global.spinning )
 
 const containerScrollTop = ref(0);
+const isFullscreen = ref(false);
 
 const onScroll = (event) => {
   containerScrollTop.value = (event.target && event.target.scrollTop) || 0;
 };
+
+const setFullScreen = (value: boolean) => {
+  isFullscreen.value = value;
+  setTimeout(() => {
+    bus.emit(settings.paneResizeTop);
+  }, 300);
+  
+};
+
+const toDetail = (url: string) => {
+  console.log('查看详情', url);
+};
+
+const shareLink = (url: string) => {
+  copy(url);
+  notifySuccess('复制成功，项目成员可通过此链接访问');
+}
 
 
 watch(() => {
@@ -91,6 +127,11 @@ onUnmounted(() => {
 });
 
 provide('containerScrollTop', computed(() => containerScrollTop.value));
+
+provide('toDetail', toDetail);
+provide('shareLink', shareLink);
+provide('setFullScreen', setFullScreen);
+provide('isFullScreen', computed(() => isFullscreen.value));
 </script>
 
 <style lang="less" scoped>
@@ -179,15 +220,21 @@ provide('containerScrollTop', computed(() => containerScrollTop.value));
       margin-right: 6px;
     }
 
-    :deep(.header-operation) {
+    :deep(.drawer-action) {
       padding-right: 40px;
+      display: flex;
+      align-items: center;
       cursor: pointer;
 
-      .anticon.anticon-share-alt {
-        color: rgb(153, 153, 153);
+      .drawer-action-item {
+        margin-left: 18px;
 
-        &:hover {
-          color: #1677ff;
+        .anticon {
+          color: rgb(153, 153, 153);
+
+          &:hover {
+            color: #1677ff;
+          }
         }
       }
     }

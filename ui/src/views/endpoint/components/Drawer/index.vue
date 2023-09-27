@@ -7,11 +7,11 @@
         <EditAndShowField :custom-class="'show-on-hover'" placeholder="修改标题" :value="endpointDetail?.title || ''"
                           @update="updateTitle"/>
       </div>
-      <div class="header-operation">
-        <a-tooltip :title="'分享链接'">
-          <ShareAltOutlined @click.stop="handleShare" />
-        </a-tooltip>
-      </div>
+      <DrawerAction 
+        :show-share="true" 
+        :show-full-screen="true" 
+        :share-link="getShareLink"
+      />
     </template>
     <template #basicInfo>
       <!-- 基本信息 -->
@@ -67,7 +67,8 @@
 
 <script lang="ts" setup>
 import {computed, defineEmits, defineProps, provide, ref,} from 'vue';
-import { ShareAltOutlined } from '@ant-design/icons-vue';
+import {useStore} from "vuex";
+
 import IconSvg from "@/components/IconSvg";
 import EndpointBasicInfo from './EndpointBasicInfo.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
@@ -77,7 +78,8 @@ import EndpointCases from './Cases/index.vue';
 import EndpointMock from './Mock/index.vue';
 import Docs from '@/components/Docs/index.vue';
 import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
-import {useStore} from "vuex";
+import { DrawerAction } from '@/views/component/DrawerLayout/drawerAction';
+
 import {Endpoint} from "@/views/endpoint/data";
 import {notifySuccess} from "@/utils/notify";
 
@@ -88,6 +90,9 @@ const props = defineProps({
   visible: {
     required: true,
     type: Boolean,
+  },
+  selectedCategoryId: {
+    required: false,
   }
 })
 
@@ -213,9 +218,14 @@ async function save() {
   emit('refreshList');
 }
 
-function handleShare() {
-  emit('share', endpointDetail.value.id);
-}
+const getShareLink = computed(() => {
+  const searchParams = {
+    endpointId: endpointDetail.value.id,
+    selectedCategoryId: props.selectedCategoryId || '',
+  };
+  const text = `${window.location.origin}${window.location.pathname}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
+  return text;
+})
 
 provide('notScrollIntoView', true);
 </script>

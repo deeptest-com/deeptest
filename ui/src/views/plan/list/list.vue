@@ -93,14 +93,16 @@
     @get-list="getList(1)"
   />
   <!-- 编辑计划抽屉 -->
-  <PlanEdit
-    :tab-active-key="editTabActiveKey"
-    :edit-drawer-visible="editDrawerVisible"
-    @update:tab-key="e => editTabActiveKey = e"
-    @onSelectEnv="handleEnvSelect"
-    @onUpdate="handleUpdate"
-    @on-cancel="editDrawerVisible = false" />
-
+  <div v-if="editDrawerVisible">
+    <PlanEdit
+      :tab-active-key="editTabActiveKey"
+      :edit-drawer-visible="editDrawerVisible"
+      @update:tab-key="e => editTabActiveKey = e"
+      @onSelectEnv="handleEnvSelect"
+      @onUpdate="handleUpdate"
+      @on-cancel="editDrawerVisible = false" />
+  </div>
+  
   <!-- 执行计划抽屉 -->
   <ExecResult
     :drawer-visible="execReportVisible"
@@ -110,10 +112,11 @@
     :scene="ReportDetailType.ExecPlan"
     @on-close="execReportVisible = false"
   />
-  <EnvSelector @on-cancel="envSelectVisible = false;execEnvId= null"
-               :execEnvId="execEnvId"
-               :env-select-drawer-visible="envSelectVisible"
-               @on-ok="onExec" />
+  <EnvSelector 
+    @on-cancel="envSelectVisible = false;execEnvId= null"
+    :execEnvId="execEnvId"
+    :env-select-drawer-visible="envSelectVisible"
+    @on-ok="onExec" />
 </template>
 
 <script setup lang="ts">

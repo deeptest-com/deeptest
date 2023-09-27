@@ -7,6 +7,7 @@
         <!--        <span class="serialNumber">[{{ planDetail?.serialNumber }}]</span>-->
         <EditAndShowField :value="(currPlan && currPlan.name) || '暂无'" placeholder="输入计划名称" @update="handleUpdateName"/>
       </div>
+      <DrawerAction :show-full-screen="true"/>
     </template>
     <!-- 基本信息 -->
     <template #basicInfo>
@@ -69,6 +70,7 @@ import {useStore} from 'vuex';
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
+import { DrawerAction } from '@/views/component/DrawerLayout/drawerAction';
 
 import {ScenarioList, ReportList} from '../components';
 import {momentUtc} from '@/utils/datetime';

@@ -10,6 +10,7 @@
                             :value="detailResult?.name || ''"
                             @update="updateTitle"/>
         </div>
+        <DrawerAction :show-full-screen="true"/>
       </template>
 
       <!-- 基本信息 -->
@@ -101,6 +102,7 @@ import ExecInfo from "../Exec/index.vue";
 import EnvSelector from "@/views/component/EnvSelector/index.vue";
 import ExecListDetail from "./ExecListDetail.vue";
 import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
+import { DrawerAction } from '@/views/component/DrawerLayout/drawerAction';
 import {ProcessorInterfaceSrc} from "@/utils/enum";
 
 const store = useStore<{ Debug: Debug, Scenario: ScenarioStateType, ProjectGlobal, ServeGlobal, Report }>();

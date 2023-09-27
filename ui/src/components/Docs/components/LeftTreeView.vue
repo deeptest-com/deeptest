@@ -40,7 +40,7 @@ import {RightOutlined} from '@ant-design/icons-vue';
 import {getMethodColor} from '@/utils/interface';
 
 const openKeysMap = ref<any>({});
-const notScrollIntoView = inject('notScrollIntoView') || false;
+const notScrollIntoView = inject('notScrollIntoView', false);
 
 
 const props = defineProps({

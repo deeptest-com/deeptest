@@ -1,28 +1,33 @@
 <template>
-  <a-drawer 
+  <DrawerLayout 
     class="report-drawer" 
     wrapClassName="report-drawer-exec-history" 
-    :closable="true" 
-    :width="1000" 
     :visible="drawerVisible"
+    :show-tab-header="false"
     @close="onClose">
-    <template #title>
+    <template #header>
       <div class="drawer-header">
         <div>{{ detailResult.name || '测试报告详情' }}</div>
       </div>
+      <DrawerAction :show-full-screen="true"/>
     </template>
-    <div class="report-exec-info-main">
-      <ReportBasicInfo :items="detailResult.basicInfoList" :scene="scene" :show-operation="true"/>
-      <StatisticTable :data="statisticData" :value="statInfo"/>
-      <LogTreeView :treeData="scenarioReports"/>
-    </div>
-  </a-drawer>
+    <template #tabContent>
+      <div class="report-exec-info-main">
+        <ReportBasicInfo :items="detailResult.basicInfoList" :scene="scene" :show-operation="true"/>
+        <StatisticTable :data="statisticData" :value="statInfo"/>
+        <LogTreeView :treeData="scenarioReports"/>
+      </div>
+    </template>
+    
+  </DrawerLayout>
 </template>
 <script setup lang="ts">
 import {defineProps, defineEmits, ref, computed} from 'vue';
 import {useStore} from 'vuex';
 
 import {ReportBasicInfo, StatisticTable, LogTreeView} from '@/views/component/Report/components';
+import DrawerLayout from "@/views/component/DrawerLayout/index.vue";
+import { DrawerAction } from '@/views/component/DrawerLayout/drawerAction';
 
 import {StateType as ReportStateType} from "../store";
 import {StateType as PlanStateType} from '@/views/plan/store';

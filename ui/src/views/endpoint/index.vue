@@ -166,6 +166,7 @@
           @share="id => share({ id })"
           :destroyOnClose="true"
           :visible="drawerVisible"
+          :selectedCategoryId="selectedCategoryId"
           @refreshList="refreshList"
           @close="drawerVisible = false;"/>
     </div>

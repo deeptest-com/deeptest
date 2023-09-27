@@ -9,7 +9,7 @@
 
       <template #title>
         <div class="drawer-header">
-          <div>编辑自定义类库</div>
+          <div>{{model.id?'编辑':'新建'}}自定义类库</div>
         </div>
       </template>
 
@@ -93,7 +93,7 @@
           <a-form-item :wrapperCol="{ span: wrapperCol.span, offset: labelCol.span }">
             <div class="dp-input-tip">
               代码中使用 {{model.name?model.name:'name'}}() 的形式来调用自定义库函数。<br />
-              需要准备实现和定义两个JavaScript文件，具体请参照<a href="https://deeptest.com/jslib.html" target="_blank">这里</a>。
+              需要准备实现和声明两个JavaScript文件，具体请参照<a href="https://deeptest.com/jslib.html" target="_blank">这里</a>。
             </div>
           </a-form-item>
 

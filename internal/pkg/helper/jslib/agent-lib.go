@@ -61,12 +61,12 @@ func SetAgentCache(id uint, val time.Time) {
 func getJslibsFromServer(serverUrl, token string) (libs []Jslib) {
 	url := fmt.Sprintf("snippets/getJslibsForAgent")
 
-	data := map[uint]time.Time{}
+	loadedLibs := map[uint]time.Time{}
 	AgentLoadedLibs.Range(func(key, value interface{}) bool {
-		data[key.(uint)] = value.(time.Time)
+		loadedLibs[key.(uint)] = value.(time.Time)
 		return true
 	})
-	body, err := json.Marshal(data)
+	body, err := json.Marshal(loadedLibs)
 
 	httpReq := domain.BaseRequest{
 		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + url,

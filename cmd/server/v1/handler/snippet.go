@@ -5,6 +5,7 @@ import (
 	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"time"
 )
 
 type SnippetCtrl struct {
@@ -37,6 +38,23 @@ func (c *SnippetCtrl) Get(ctx iris.Context) {
 
 func (c *SnippetCtrl) GetJslibs(ctx iris.Context) {
 	snippets, err := c.SnippetService.GetJslibs()
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: snippets})
+}
+
+func (c *SnippetCtrl) GetJslibsForAgent(ctx iris.Context) {
+	agentLoadedLibs := map[uint]time.Time{}
+	err := ctx.ReadJSON(&agentLoadedLibs)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	snippets, err := c.SnippetService.GetJslibsForAgent(agentLoadedLibs)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

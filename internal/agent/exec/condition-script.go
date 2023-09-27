@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -29,6 +30,10 @@ type JsVm struct {
 }
 
 func ExecScript(scriptObj *domain.ScriptBase) (err error) {
+	if execVm.JsRuntime == nil {
+		InitJsRuntime()
+	}
+
 	VariableSettings = []domain.ExecVariable{}
 
 	if scriptObj.Content == "" {
@@ -60,6 +65,7 @@ func ExecScript(scriptObj *domain.ScriptBase) (err error) {
 
 func InitJsRuntime() {
 	if execVm.JsRuntime != nil {
+		jslibHelper.LoadAgentJslibs(execVm.JsRuntime, execRequire, ServerUrl, ServerToken)
 		return
 	}
 
@@ -82,6 +88,9 @@ func InitJsRuntime() {
 	}
 
 	execVm.JsRuntime.Set("dt", dt)
+
+	// import other custom libs
+	jslibHelper.LoadAgentJslibs(execVm.JsRuntime, execRequire, ServerUrl, ServerToken)
 }
 
 func GetReqValueFromGoja() (err error) {

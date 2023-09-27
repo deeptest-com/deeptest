@@ -9,7 +9,7 @@
 
       <template #title>
         <div class="drawer-header">
-          <div>自定义类库编辑</div>
+          <div>编辑自定义类库</div>
         </div>
       </template>
 

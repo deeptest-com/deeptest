@@ -37,6 +37,8 @@ func LoadServerJslibs(runtime *goja.Runtime, require *require.RequireModule) {
 			}
 
 			runtime.Set(lib.Name, module)
+
+			SetServerCache(id, lib.UpdatedAt)
 		}
 
 		return true

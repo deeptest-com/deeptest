@@ -54,6 +54,7 @@ func InitJslibCache() (err error) {
 		content := fileUtils.ReadFile(pth)
 
 		to := Jslib{
+			Name:      po.Name,
 			Script:    content,
 			UpdatedAt: *po.UpdatedAt,
 		}

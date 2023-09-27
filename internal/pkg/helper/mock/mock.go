@@ -107,7 +107,7 @@ func SetValueToGoja(name string, value interface{}) {
 
 func InitJsRuntime() {
 	if mockVm.JsRuntime != nil {
-		jslibHelper.LoadServerJslibs(mockRequire)
+		jslibHelper.LoadServerJslibs(mockVm.JsRuntime, mockRequire)
 		return
 	}
 
@@ -134,5 +134,5 @@ func InitJsRuntime() {
 
 	mockVm.JsRuntime.Set("dt", dt)
 
-	jslibHelper.LoadServerJslibs(mockRequire)
+	jslibHelper.LoadServerJslibs(mockVm.JsRuntime, mockRequire)
 }

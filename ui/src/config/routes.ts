@@ -19,7 +19,7 @@ import UserLayoutRoutes from '@/layouts/UserLayout/routes';
 import UserLayout from '@/layouts/UserLayout/index.vue';
 import BlankLayout from "@/layouts/BlankLayout.vue";
 
-const routes: RoutesDataItem[] = [
+export const routes: RoutesDataItem[] = [
   {
     title: 'empty',
     path: '/mock',
@@ -97,16 +97,36 @@ const routes: RoutesDataItem[] = [
           title: '消息'
         }
       },
+
+      // 系统管理 not to move, used by routes[3] in @/view/sys-settings/components/common/Tab.vue
       {
-        icon: 'user',
-        title: '用户管理',
-        path: 'user-manage',
-        component: () => import('@/views/user/list/index.vue'),
-        hidden: true,
-        meta: {
-          title: '用户管理'
-        }
-      },
+        title: 'sys.setting',
+        path: '/sys-setting',
+        redirect: '/sys-setting/user',
+        component: () => import('@/views/sys-settings/index.vue'),
+        children: [
+          {
+            icon: 'user',
+            title: 'user.management',
+            path: 'user-manage',
+            component: () => import('@/views/user/list/index.vue'),
+            meta: {
+              title: '用户管理',
+              code: 'SYS-SETTING-USER-MANAGE'
+            }
+          },
+          {
+            icon: 'script',
+            title: 'custom.lib',
+            path: 'jslib',
+            component: () => import('@/views/sys-settings/JsLib/index.vue'),
+            meta: {
+              title: '自定义脚本库',
+              code: 'SYS-SETTING-JSLIB'
+            }
+          },
+        ]
+      }
     ]
   },
   {

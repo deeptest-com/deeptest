@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	"path/filepath"
 	"sync"
@@ -15,7 +16,7 @@ var (
 	ServerLoadedLibs sync.Map
 )
 
-func LoadServerJslibs(require *require.RequireModule) {
+func LoadServerJslibs(runtime *goja.Runtime, require *require.RequireModule) {
 	LoadCacheIfNeeded()
 
 	JslibCache.Range(func(key, value interface{}) bool {
@@ -30,10 +31,12 @@ func LoadServerJslibs(require *require.RequireModule) {
 		if !ok || updateTime.Before(lib.UpdatedAt) {
 			pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d.js", id))
 			fileUtils.WriteFile(pth, lib.Script)
-			_, err := require.Require(pth)
+			module, err := require.Require(pth)
 			if err != nil {
 				logUtils.Info(err.Error())
 			}
+
+			runtime.Set(lib.Name, module)
 		}
 
 		return true

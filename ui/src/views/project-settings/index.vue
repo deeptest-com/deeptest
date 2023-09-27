@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <RouteTab />
+    <Tab />
     <router-view></router-view>
   </div>
 </template>
@@ -10,7 +10,7 @@ import { ref, watch } from 'vue';
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { StateType as ProjectSettingStateType } from './store';
-import RouteTab from './components/common/Tab.vue';
+import Tab from './components/common/Tab.vue';
 
 const router = useRouter();
 
@@ -33,10 +33,10 @@ function setActiveKey() {
 watch(() => {
   return router.currentRoute.value.query;
 }, async () => {
-  if (router.currentRoute.value.path === '/project-setting/environment') {
-    router.push('/project-setting/environment/var')
+  if (router.currentRoute.value.path === '/project-setting/enviroment') {
+    router.push('/project-setting/enviroment/var')
     store.dispatch('ProjectSetting/setEnvDetail', null);
-    activeKey.value = 'environment';
+    activeKey.value = 'enviroment';
   }
 }, {
   immediate: true

@@ -306,7 +306,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 
 		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory, SourceType: req.SourceType}
 		//全覆盖更新目录
-		res, err := s.CategoryRepo.GetByItem(req.SourceType, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
+		res, err := s.CategoryRepo.GetByItem(uint(category.ParentId), category.Type, category.ProjectId, category.Name)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			continue
 		}
@@ -336,7 +336,7 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 	for _, tag := range tags {
 		dirs = dirs.Dirs[tag]
 	}
-	if dirs.Id == rootId {
+	if dirs.Id == rootId && rootId == 0 {
 		return -1
 	}
 	return dirs.Id

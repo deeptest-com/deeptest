@@ -518,14 +518,13 @@ func (r *ProjectRepo) RemoveMember(userId, projectId int) (err error) {
 	return
 }
 
-func (r *ProjectRepo) FindRolesByUser(userId uint) (ret []model.ProjectMember, err error) {
-	var members []model.ProjectMember
+func (r *ProjectRepo) FindRolesByUser(userId uint) (members []model.ProjectMember, err error) {
 
-	r.DB.Model(&model.ProjectMember{}).
+	err = r.DB.Model(&model.ProjectMember{}).
 		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
 		Select("biz_project_member.*, r.name project_role_name").
 		Where("biz_project_member.user_id = ?", userId).
-		Find(&members)
+		Find(&members).Error
 
 	return
 }
@@ -829,7 +828,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 		}
 
 		//创建场景目录
-		ScenarioCategory, err := r.CategoryRepo.GetByItem(0, 0, serverConsts.ScenarioCategory, projectId, "分类")
+		ScenarioCategory, err := r.CategoryRepo.GetByItem(0, serverConsts.ScenarioCategory, projectId, "分类")
 		if err != nil {
 			return err
 		}

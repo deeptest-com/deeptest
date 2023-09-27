@@ -27,6 +27,8 @@ func (c *ProjectMenuCtrl) UserMenuList(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("projectId")
 	if projectId == 0 {
 		projectId, err = ctx.URLParamInt("currProjectId")
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
 	}
 
 	data, err := c.ProjectMenuService.GetUserMenuList(uint(projectId), userId)

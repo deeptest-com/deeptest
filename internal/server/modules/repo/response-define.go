@@ -8,6 +8,7 @@ import (
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type ResponseDefineRepo struct {
@@ -82,14 +83,18 @@ func (r *ResponseDefineRepo) GetLog(conditionId, invokeId uint) (ret model.ExecL
 	return
 }
 
-func (r *ResponseDefineRepo) Components(endpointInterfaceId uint) (components responseDefineHelper.Components) {
+func (r *ResponseDefineRepo) Components(endpointInterfaceId uint) responseDefineHelper.Components {
 	endpointInterface, _ := r.EndpointInterfaceRepo.Get(endpointInterfaceId)
 	endpoint, _ := r.EndpointRepo.Get(endpointInterface.EndpointId)
 
-	components = responseDefineHelper.Components{}
+	components := responseDefineHelper.Components{}
 	result, err := r.ServeRepo.GetSchemasByServeId(endpoint.ServeId)
 	if err != nil {
-		return
+		return nil
+	}
+	responseBodies, err := r.EndpointInterfaceRepo.ListResponseBodies(endpointInterfaceId)
+	if err != nil {
+		return nil
 	}
 
 	for _, item := range result {
@@ -98,6 +103,26 @@ func (r *ResponseDefineRepo) Components(endpointInterfaceId uint) (components re
 		components[item.Ref] = &schema
 	}
 
-	return
+	return r.requiredComponents(responseBodies, components)
 
+}
+
+func (r *ResponseDefineRepo) requiredComponents(responseBodies []model.EndpointInterfaceResponseBody, components responseDefineHelper.Components) (ret responseDefineHelper.Components) {
+	ret = responseDefineHelper.Components{}
+	for _, responseBody := range responseBodies {
+		r.dependComponents(responseBody, components, ret)
+	}
+
+	return
+}
+
+func (r *ResponseDefineRepo) dependComponents(responseBody model.EndpointInterfaceResponseBody, components, dependComponents responseDefineHelper.Components) {
+	schema := new(responseDefineHelper.SchemaRef)
+	responseBody.SchemaItem.Content = strings.ReplaceAll(responseBody.SchemaItem.Content, "\\u0026", "&")
+	responseBody.SchemaItem.Content = strings.ReplaceAll(responseBody.SchemaItem.Content, "\n", "")
+	responseBody.SchemaItem.Content = strings.ReplaceAll(responseBody.SchemaItem.Content, "\"ref\":", "\"$ref\":")
+	_commUtils.JsonDecode(responseBody.SchemaItem.Content, schema)
+	schema2conv := responseDefineHelper.NewSchema2conv()
+	schema2conv.Components = components
+	schema2conv.SchemaComponents(*schema, dependComponents)
 }

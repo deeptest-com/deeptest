@@ -16,9 +16,9 @@
         <a-input placeholder="请输入名称" v-model:value="formState.title"/>
       </a-form-item>
 
-      <a-form-item :label="(formState.type === 'interface' ? '接口' : '目录') + '备注'" name="desc">
+      <!-- <a-form-item :label="(formState.type === 'interface' ? '接口' : '目录') + '备注'" name="desc">
         <a-input placeholder="请输入备注" v-model:value="formState.desc"/>
-      </a-form-item>
+      </a-form-item> -->
 
     </a-form>
   </a-modal>

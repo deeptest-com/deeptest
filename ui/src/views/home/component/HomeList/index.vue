@@ -11,57 +11,9 @@
         </div>
       </template>
       <template #action="{ record }">
-        <a-dropdown>
+        <DropdownActionMenu :dropdown-list="dropDownList" :record="record">
           <MoreOutlined/>
-          <template #overlay>
-            <a-menu>
-              <a-menu-item v-if="record.accessible === 0" key="2">
-                <a href="javascript:void (0);"></a>
-                <a-button
-                    style="width: 80px"
-                    @click="handleJoin(record)"
-                    type="link"
-                    size="small"
-                >申请加入
-                </a-button>
-              </a-menu-item>
-              <a-menu-item key="1" v-if="record.accessible === 1">
-                <a-button
-                    style="width: 80px"
-                    @click="handleEdit(record)"
-                    type="link"
-                    size="small"
-                >编辑
-                </a-button
-                >
-              </a-menu-item>
-              <!-- <a-menu-item key="2">
-                <a-button style="width: 80px" type="link" size="small"
-                  >禁用/启用</a-button
-                >
-              </a-menu-item> -->
-              <a-menu-item key="3" v-if="record.accessible === 1">
-                <a-button
-                    style="width: 80px"
-                    type="link"
-                    size="small"
-                    @click.stop="handleDelete(record.projectId)"
-                >删除
-                </a-button
-                >
-              </a-menu-item>
-              <a-menu-item key="4" v-if="record.accessible === 1">
-                <a-button
-                    style="width: 80px"
-                    type="link"
-                    size="small"
-                    @click.stop="handleExit(record)"
-                >退出项目
-                </a-button>
-              </a-menu-item>
-            </a-menu>
-          </template>
-        </a-dropdown>
+        </DropdownActionMenu>
       </template>
     </a-table>
   </div>
@@ -81,6 +33,7 @@ import {StateType} from "../../store";
 import {StateType as UserStateType} from "@/store/user";
 import {StateType as ProjectStateType} from "@/store/project";
 import {MoreOutlined} from "@ant-design/icons-vue";
+import {DropdownActionMenu} from "@/components/DropDownMenu/index";
 
 const router = useRouter();
 const store = useStore<{
@@ -117,6 +70,33 @@ const props = defineProps({
     default: false,
   },
 });
+
+const dropDownList = [
+  {
+    label: '申请加入',
+    action: (record) => emit("join", record),
+    auth: '',
+    ifShow: (record) => record.accessible === 0,
+  },
+  {
+    label: '编辑',
+    action: (record) => emit("edit", record),
+    auth: '',
+    ifShow: (record) => record.accessible === 1,
+  },
+  {
+    label: '删除',
+    action: (record) => emit("delete", record),
+    auth: '',
+    ifShow: (record) => record.accessible === 1,
+  },
+  {
+    label: '退出项目',
+    action: (record) => emit("exit", record),
+    auth: '',
+    ifShow: (record) => record.accessible === 1,
+  }
+]
 
 
 //暴露内部方法
@@ -202,19 +182,6 @@ async function goProject(item: any) {
 async function handleJoin(item) {
   emit("join", item);
 }
-
-async function handleEdit(item) {
-  emit("edit", item);
-}
-
-async function handleDelete(id) {
-  emit("delete", id);
-}
-
-async function handleExit(item) {
-  emit("exit", item);
-}
-
 
 </script>
 

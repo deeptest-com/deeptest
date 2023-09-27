@@ -17,14 +17,12 @@
           :onOpenChange="onOpenChange"
           :menuData="menuData">
       </sider-menu>
-
-      <div v-if="hasProjectSettingPermission" :class="['settings', isProjectSettingsActive ? 'settings-active' : '' ]" @click="gotoProjectSettings">
+      <div v-if="hasSettingPermission" :class="['settings', isActive ? 'settings-active' : '' ]" @click="handleRedirect">
         <div class="settings-menu">
-          <Icon :type="isProjectSettingsActive ? 'settings-active' : 'settings'" />
+          <Icon :type="isActive ? 'settings-active' : 'settings'" />
           <span class="left-menu-title">项目设置</span>
         </div>
       </div>
-
     </div>
     <div v-if="version" class="version">
       V{{ version }}
@@ -95,32 +93,26 @@ export default defineComponent({
     const store = useStore<{ Global: GlobalStateType, ProjectGlobal: ProjectGlobalStateType }>();
     const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
     const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
-
-    const isProjectSettingsActive = computed(() => {
+    const isActive = computed(() => {
       return router.currentRoute.value.path.includes('project-setting');
     });
 
-    const hasProjectSettingPermission = computed(() => {
+    const hasSettingPermission = computed(() => {
       if (permissionRouteMenuMap.value && permissionRouteMenuMap.value['project-setting']) {
         return true;
       }
       return false;
     });
 
-    const gotoProjectSettings = () => {
-      router.push(`/${currProject.value.shortName}/project-setting/environment/var`);
-    };
-
-    const gotoSysSettings = () => {
-      router.push(`/sys-setting`);
+    const handleRedirect = () => {
+      router.push(`/${currProject.value.shortName}/project-setting/enviroment/var`);
     };
 
     return {
       isLeyanEnv,
-      isProjectSettingsActive,
-      gotoProjectSettings,
-      gotoSysSettings,
-      hasProjectSettingPermission,
+      isActive,
+      handleRedirect,
+      hasSettingPermission,
     };
   }
 

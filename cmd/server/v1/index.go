@@ -71,12 +71,11 @@ type IndexModule struct {
 	DocumentModule       *router.DocumentModule       `inject:""`
 	HealthzModule        *router.HealthzModule        `inject:""`
 
-	ConfigModule         *router.ConfigModule         `inject:""`
-	TestsModule          *router.TestsModule          `inject:""`
-	ResponseDefineModule *router.ResponseDefineModule `inject:""`
-
 	ProjectSettingsModule *router.ProjectSettingsModule `inject:""`
-	JslibModule           *router.JslibModule           `inject:""`
+	ConfigModule          *router.ConfigModule          `inject:""`
+	TestsModule           *router.TestsModule           `inject:""`
+
+	ResponseDefineModule *router.ResponseDefineModule `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -156,7 +155,6 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.ProjectSettingsModule.Party(),
 		m.ConfigModule.Party(),
 		m.ResponseDefineModule.Party(),
-		m.JslibModule.Party(),
 	}
 
 	return module.NewModule(consts.ApiPathServer, handler, modules...)

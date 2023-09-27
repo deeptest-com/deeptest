@@ -45,6 +45,7 @@
           <template #role="{ record }">
             <div class="customTitleColRender">
               <a-select
+              :disabled="currentUser.projectRoles[currProject.id] !== 'admin' && currentUser.sysRoles.indexOf('admin') === -1"
                 :value="record.roleId"
                 style="width: 100px"
                 :size="'small'"

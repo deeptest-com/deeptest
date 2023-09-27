@@ -169,6 +169,48 @@ func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 	return
 }
 
+func (s *Schema2conv) SchemaComponents(schema SchemaRef, components Components) {
+	if components == nil {
+		components = Components{}
+	}
+
+	ref := schema.Ref
+
+	if _, ok := components[ref]; ok {
+		return
+	}
+
+	if component, ok := s.Components[schema.Ref]; ok {
+		schema = *component
+		components[ref] = component
+	}
+
+	for _, item := range schema.Value.AnyOf {
+		s.SchemaComponents(*item, components)
+	}
+
+	for _, item := range schema.Value.OneOf {
+		s.SchemaComponents(*item, components)
+	}
+
+	for _, item := range schema.Value.AllOf {
+		s.SchemaComponents(*item, components)
+	}
+
+	//s.CombineSchemas(&schema)
+
+	switch schema.Value.Type {
+	case openapi3.TypeObject:
+		for _, property := range schema.Value.Properties {
+			s.SchemaComponents(*property, components)
+		}
+	case openapi3.TypeArray:
+		s.SchemaComponents(*schema.Value.Items, components)
+
+	}
+	return
+}
+
 func (s *Schema2conv) mock(expr string, typ string) interface{} {
 	req := serverDomain.MockJsExpression{
 		Expression: expr,

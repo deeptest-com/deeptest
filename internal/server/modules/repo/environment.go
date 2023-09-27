@@ -61,6 +61,40 @@ func (r *EnvironmentRepo) GetByProject(projectId uint) (env model.Environment, e
 	return
 }
 
+func (r *EnvironmentRepo) GetByUserAndProject(userId, projectId uint) (env model.Environment, err error) {
+	relaPo, err := r.GetProjectUserServer(projectId, userId)
+	if err != nil {
+		return
+	}
+
+	env, err = r.Get(relaPo.ServerId)
+
+	return
+}
+
+func (r *EnvironmentRepo) SetProjectUserServer(projectId, userId, serverId uint) (err error) {
+	data, err := r.GetProjectUserServer(projectId, userId)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return
+	}
+
+	data.ProjectId = projectId
+	data.UserId = userId
+	data.ServerId = serverId
+	err = r.DB.Save(&data).Error
+
+	return
+}
+
+func (r *EnvironmentRepo) GetProjectUserServer(projectId, userId uint) (res model.ProjectUserServer, err error) {
+	err = r.DB.
+		Where("user_id = ? AND project_id=?", userId, projectId).
+		Where("NOT deleted").
+		First(&res).Error
+
+	return
+}
+
 // GetDefaultByProject 默认/Mock
 func (r *EnvironmentRepo) GetDefaultByProject(projectId uint) (envs []model.Environment, err error) {
 	err = r.DB.
@@ -380,9 +414,11 @@ func (r *EnvironmentRepo) SaveParams(projectId uint, params []model.EnvironmentP
 		if err != nil {
 			return err
 		}
-		err = r.DB.Create(params).Error
-		if err != nil {
-			return err
+		if len(params) > 0 {
+			err = r.DB.Create(params).Error
+			if err != nil {
+				return err
+			}
 		}
 		return nil
 	})

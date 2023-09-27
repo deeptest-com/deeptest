@@ -30,7 +30,7 @@ export default {
     'endpoint-docs': '接口文档',
     'diagnose': '快捷调试',
     'projectSetting': '项目设置', // 新版 接口模块
-    'projectSetting.environment': '环境管理',
+    'projectSetting.enviroment': '环境管理',
     'projectSetting.datapool': '数据池',
     'projectSetting.service': '服务管理',
     'projectSetting.mock': 'Mock设置',
@@ -59,8 +59,6 @@ export default {
     'user': '用户',
     'user.management': '用户管理',
     'user.list': '用户列表',
-
-    'custom.lib': '自定义JS库',
 
     'mock.oauth2.callback': 'OAuth2回调模拟',
 
@@ -201,5 +199,5 @@ export default {
     'biz_10500': '两次密码必须一样',
     'biz_10600': '权限不足',
     'biz_10700': '项目不存在',
-
+    'biz_10800': '导入来源已删除',
 }

@@ -30,43 +30,9 @@
                 </div>
 
                 <div class="action">
-                  <a-dropdown>
-                    <span class="ant-dropdown-link" @click.prevent.stop>
-                      <EllipsisOutlined key="ellipsis"/>
-                    </span>
-                    <template #overlay>
-                      <a-menu>
-                        <a-menu-item
-                            v-if="item.accessible === 0"
-                            @click="handleJoin(item)"
-                        >
-                          <a href="javascript:;">申请加入</a>
-                        </a-menu-item>
-                        <a-menu-item
-                            v-if="item.accessible === 1"
-                            @click="handleEdit(item)">
-                          <a href="javascript:;">编辑</a>
-                        </a-menu-item>
-                        <!-- <a-menu-item>
-                          <a href="javascript:;">启用/禁用</a>
-                        </a-menu-item> -->
-                        <a-menu-item v-if="item.accessible === 1">
-                          <a
-                              href="javascript:;"
-                              @click.stop="handleDelete(item.projectId)"
-                          >删除</a
-                          >
-                        </a-menu-item>
-                        <a-menu-item v-if="item.accessible === 1">
-                          <a
-                              href="javascript:;"
-                              @click.stop="handleExit(item)"
-                          >退出项目</a
-                          >
-                        </a-menu-item>
-                      </a-menu>
-                    </template>
-                  </a-dropdown>
+                  <DropdownActionMenu :dropdown-list="dropDownList" :record="item">
+                    <EllipsisOutlined key="ellipsis"/>
+                  </DropdownActionMenu>
                 </div>
               </div>
               <div class="card-desc" :title="item?.projectDescr">
@@ -118,6 +84,7 @@ import {useRouter} from "vue-router";
 import {useStore} from "vuex";
 import {StateType} from "../../store";
 import {getProjectLogo} from "@/components/CreateProjectModal";
+import {DropdownActionMenu} from "@/components/DropDownMenu/index";
 
 // 组件接收参数
 const props = defineProps({
@@ -154,6 +121,33 @@ const loading = ref(true);
 const current = ref(1);
 const total = computed(() => filterList.value.length);
 
+const dropDownList = [
+  {
+    label: '申请加入',
+    action: (record) => emit("join", record),
+    auth: '',
+    ifShow: (record) => record.accessible === 0,
+  },
+  {
+    label: '编辑',
+    action: (record) => emit("edit", record),
+    auth: '',
+    ifShow: (record) => record.accessible === 1,
+  },
+  {
+    label: '删除',
+    action: (record) => emit("delete", record),
+    auth: '',
+    ifShow: (record) => record.accessible === 1,
+  },
+  {
+    label: '退出项目',
+    action: (record) => emit("exit", record),
+    auth: '',
+    ifShow: (record) => record.accessible === 1,
+  }
+]
+
 watch(() => props?.searchValue, (val) => {
   current.value = 1;
 })
@@ -167,18 +161,6 @@ function handlePageChange(page) {
 
 async function handleJoin(item) {
   emit("join", item);
-}
-
-async function handleEdit(item) {
-  emit("edit", item);
-}
-
-async function handleDelete(id) {
-  emit("delete", id);
-}
-
-async function handleExit(item) {
-  emit("exit", item);
 }
 
 async function goProject(item: any) {

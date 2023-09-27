@@ -150,9 +150,9 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
       },
       {
         icon:'set',
-        title: 'index-layout.menu.project.setting.environment',
-        path: 'environment',
-        name: 'environment',
+        title: 'index-layout.menu.project.setting.enviroment',
+        path: 'enviroment',
+        name: 'enviroment',
         component: () => import('@/views/project-settings/components/EnvSetting/index.vue'),
         hidden: false,
         meta: {
@@ -163,7 +163,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             icon: 'set',
             title: 'index-layout.menu.project.setting.var',
             path: 'var',
-            name: 'environment.var',
+            name: 'enviroment.var',
             component: () => import('@/views/project-settings/components/EnvSetting/GlobalVar.vue'),
             hidden: true
           },
@@ -171,7 +171,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             icon: 'set',
             title: 'index-layout.menu.project.setting.params',
             path: 'params',
-            name: 'environment.params',
+            name: 'enviroment.params',
             component: () => import('@/views/project-settings/components/EnvSetting/GlobalParams.vue'),
             hidden: true
           },
@@ -179,7 +179,7 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
             icon: 'set',
             title: 'index-layout.menu.project.setting.envdetail',
             path: 'envdetail/:id(\\d+)?',
-            name: 'environment.envdetail',
+            name: 'enviroment.envdetail',
             component: () => import('@/views/project-settings/components/EnvSetting/EnvDetail.vue'),
             hidden: true
           }
@@ -238,7 +238,8 @@ const IndexLayoutRoutes: Array<RoutesDataItem> = [
         }
       },
     ],
-  }
+  },
+
 ] as Array<RoutesDataItem>;
 
 export default IndexLayoutRoutes;

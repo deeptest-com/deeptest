@@ -2,7 +2,6 @@ package repo
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/kataras/iris/v12"
@@ -219,10 +218,10 @@ func (r *CategoryRepo) GetMaxOrder(parentId uint, typ serverConsts.CategoryDiscr
 	return
 }
 
-func (r *CategoryRepo) GetByItem(sourceType consts.SourceType, parentId uint, typ serverConsts.CategoryDiscriminator, projectId uint, name string) (res model.Category, err error) {
+func (r *CategoryRepo) GetByItem(parentId uint, typ serverConsts.CategoryDiscriminator, projectId uint, name string) (res model.Category, err error) {
 
 	err = r.DB.Model(&model.Category{}).
-		Where("source_type=? and parent_id=? AND type = ? AND project_id = ? AND name = ?", sourceType, parentId, typ, projectId, name).
+		Where("parent_id=? AND type = ? AND project_id = ? AND name = ?", parentId, typ, projectId, name).
 		Order("ordr DESC").
 		First(&res).Error
 

@@ -112,7 +112,7 @@ const getSelectEnvLeftPosition = () => {
 
 const handleRedirectEnv = (e) => {
   e.preventDefault();
-  window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/project-setting/environment/var`, '_blank');
+  window.open(`${window.location.origin}/${router.currentRoute.value.params.projectNameAbbr}/project-setting/enviroment/var`, '_blank');
 };
 
 const handleFocus = () => {

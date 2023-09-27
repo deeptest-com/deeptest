@@ -6,8 +6,7 @@
         <router-view></router-view>
       </div>
       <div class="right-footer">
-        Copyright © 2018 能科科技股份有限公司 <br>
-        All Rights Reserved 京ICP备18044627号-4
+        Copyright © 2018 @deeptest.com 
       </div>
     </div>
     <div class="lang">

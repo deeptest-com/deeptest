@@ -20,8 +20,8 @@ export default defineComponent({
 
     const notifyErr = (result: any) => {
       if (!result.httpCode) result.httpCode = 1000
-
-      const msg = result.httpCode === 200 ? t('biz_'+result.resultCode) : t('http_'+result.httpCode)
+      const text = result.resultCode === 10800 ? result.resultMsg : t('biz_'+result.resultCode);
+      const msg = result.httpCode === 200 ? text : t('http_'+result.httpCode)
       const desc = result.resultMsg ? result.resultMsg : ''
 
       if (result.resultCode !== 401) {

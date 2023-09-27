@@ -173,14 +173,14 @@ function handleOpenEdit(item) {
   createProjectModalVisible.value = true;
 }
 
-async function handleDelete(id) {
+async function handleDelete(record:any) {
   Modal.confirm({
     title: "删除项目",
     content: "确定删除指定的项目？",
     okText: "确认",
     cancelText: "取消",
     onOk: async () => {
-      store.dispatch("Project/removeProject", id).then((res) => {
+      store.dispatch("Project/removeProject", record.projectId).then((res) => {
         console.log("res", res);
         if (res === true) {
           notifySuccess(`删除成功`);

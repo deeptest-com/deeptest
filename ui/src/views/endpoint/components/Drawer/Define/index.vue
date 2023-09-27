@@ -16,7 +16,7 @@
 
     <EndpointForm v-if="showMode === 'form'"/>
 
-    <div class="endpoint-code" v-if="showMode === 'code'">
+    <div class="endpoint-code" v-if="showMode === 'code' && endpointDetailYamlCode!=''">
       <MonacoEditor
           class="editor"
           :value="endpointDetailYamlCode"
@@ -25,7 +25,9 @@
           theme="vs"
           :options="{...MonacoOptions}"
           @change="handleYamlCodeChange"
-          :timestamp="timestamp" />
+          :timestamp="timestamp"
+          />
+
     </div>
   </div>
 </template>
@@ -45,6 +47,7 @@ import {MonacoOptions} from '@/utils/const';
 const store = useStore<{ Endpoint, ProjectGlobal }>();
 const endpointDetail = computed<Endpoint[]>(() => store.state.Endpoint.endpointDetail);
 const endpointDetailYamlCode = computed<any>(() => store.state.Endpoint.endpointDetailYamlCode);
+
 import EndpointForm from './Form/index.vue'
 import {UsedBy} from "@/utils/enum";
 
@@ -60,19 +63,21 @@ const emit = defineEmits(['switchMode']);
 const showMode = ref('form');
 
 async function switchMode(val) {
-  showMode.value = val;
+  
   // 需求去请求YAML格式
   if (val === 'code') {
     await store.dispatch('Endpoint/getYamlCode', endpointDetail.value);
   }
+  showMode.value = val;
   emit('switchMode', val);
 
 }
 
 function handleYamlCodeChange(code) {
   console.log(code);
-  // store.commit("Endpoint/setYamlCode", code);
+  //store.commit("Endpoint/setYamlCode", code);
 }
+
 
 </script>
 

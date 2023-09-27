@@ -134,5 +134,6 @@ func InitJsRuntime() {
 
 	mockVm.JsRuntime.Set("dt", dt)
 
+	// import other custom libs
 	jslibHelper.LoadServerJslibs(mockVm.JsRuntime, mockRequire)
 }

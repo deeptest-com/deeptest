@@ -89,7 +89,7 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 	req := model.Datapool{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 	req.ProjectId = uint(projectId)

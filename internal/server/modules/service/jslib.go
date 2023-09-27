@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -20,11 +21,19 @@ func (s *JslibService) Get(id uint) (model.SysJslib, error) {
 }
 
 func (s *JslibService) Save(req *model.SysJslib) (err error) {
-	return s.JslibRepo.Save(req)
+	err = s.JslibRepo.Save(req)
+
+	jslibHelper.InitJslibCache()
+
+	return
 }
 
 func (s *JslibService) UpdateName(req v1.JslibReq) (err error) {
-	return s.JslibRepo.UpdateName(req)
+	err = s.JslibRepo.UpdateName(req)
+
+	jslibHelper.InitJslibCache()
+
+	return
 }
 
 func (s *JslibService) Delete(id uint) (err error) {

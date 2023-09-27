@@ -92,7 +92,7 @@
 
           <a-form-item :wrapperCol="{ span: wrapperCol.span, offset: labelCol.span }">
             <div class="dp-input-tip">
-              有关自定义脚本库的编写方法，请参照<a href="https://deeptest.com/jslib.html" target="_blank">这里</a>。
+              需要准备实现和定义两个JavaScript文件，具体请参照<a href="https://deeptest.com/jslib.html" target="_blank">这里</a>。
             </div>
           </a-form-item>
 
@@ -119,6 +119,7 @@ import {getToken} from "@/utils/localToken";
 import {StateType as SysSettingStateType} from "../store";
 import {uploadRequest} from "@/utils/upload";
 import {notifyWarn} from "@/utils/notify";
+import {pattern} from "@/utils/const";
 
 const useForm = Form.useForm;
 
@@ -146,7 +147,7 @@ const onCancel = () => {
 
 const rulesRef = reactive({
   name: [
-    {required: true, message: '请输入变量名', trigger: 'blur'},
+    {required: true, message: '名称以字母开头包含字母和数字，且不能为空。', pattern: pattern.alphanumeric, trigger: 'blur'},
   ],
   scriptFile: [
     {required: true, message: '请上传脚本文件', trigger: 'blur'},

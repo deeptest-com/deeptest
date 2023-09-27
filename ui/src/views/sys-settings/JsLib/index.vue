@@ -2,7 +2,7 @@
   <div class="js-lib-list-main">
     <a-card :bordered="false">
       <template #title>
-        <a-button type="primary" @click="() => onEdit(0)">新建自定义库</a-button>
+        <a-button type="primary" @click="() => edit(0)">新建自定义库</a-button>
       </template>
       <template #extra>
         <a-input-search

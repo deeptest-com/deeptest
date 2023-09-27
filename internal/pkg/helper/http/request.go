@@ -7,7 +7,6 @@ import (
 	"crypto/tls"
 	"encoding/base64"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
@@ -180,8 +179,8 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
 		bodyFormData := genBodyFormData(req)
 
-		formDataWriter, _ := agentUtils.MultipartEncoder(bodyFormData)
-		formDataContentType = agentUtils.MultipartContentType(formDataWriter)
+		formDataWriter, _ := MultipartEncoder(bodyFormData)
+		formDataContentType = MultipartContentType(formDataWriter)
 
 		dataBytes = formDataWriter.Payload.Bytes()
 

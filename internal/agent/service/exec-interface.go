@@ -11,6 +11,8 @@ import (
 )
 
 func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
+	agentExec.ServerUrl = call.ServerUrl
+	agentExec.ServerToken = call.Token
 	req := GetInterfaceToExec(call)
 
 	agentExec.CurrDebugInterfaceId = req.DebugData.DebugInterfaceId

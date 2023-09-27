@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
@@ -106,6 +107,7 @@ func SetValueToGoja(name string, value interface{}) {
 
 func InitJsRuntime() {
 	if mockVm.JsRuntime != nil {
+		jslibHelper.LoadServerJslibs(mockRequire)
 		return
 	}
 
@@ -121,9 +123,9 @@ func InitJsRuntime() {
 	mockRequire = registry.Enable(mockVm.JsRuntime)
 	pth := filepath.Join(consts.WorkDir, "mock.js")
 
+	// import deeptest lib
 	script := scriptHelper.GetScript(scriptHelper.ScriptMock)
 	fileUtils.WriteFile(pth, script)
-
 	dt, err := mockRequire.Require(pth)
 	if err != nil {
 		logUtils.Info(err.Error())
@@ -131,4 +133,6 @@ func InitJsRuntime() {
 	}
 
 	mockVm.JsRuntime.Set("dt", dt)
+
+	jslibHelper.LoadServerJslibs(mockRequire)
 }

@@ -1,8 +1,8 @@
 package service
 
 import (
+	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	"github.com/snowlyg/helper/dir"
@@ -18,16 +18,16 @@ type SnippetService struct {
 	JslibRepo   *repo.JslibRepo   `inject:""`
 }
 
-func (s *SnippetService) Get(name scriptHelper.ScriptType) (po model.Snippet, err error) {
+func (s *SnippetService) Get(name scriptHelper.ScriptType) (po jslibHelper.Jslib, err error) {
 	script := scriptHelper.GetScript(name)
 
-	po = model.Snippet{
+	po = jslibHelper.Jslib{
 		Script: script,
 	}
 	return
 }
 
-func (s *SnippetService) GetJslibs() (pos []model.Snippet, err error) {
+func (s *SnippetService) GetJslibs() (pos []jslibHelper.Jslib, err error) {
 	//if JslibsDeclares == nil {
 
 	JslibsDeclares = nil
@@ -42,7 +42,7 @@ func (s *SnippetService) GetJslibs() (pos []model.Snippet, err error) {
 	//}
 
 	for _, item := range JslibsDeclares {
-		po := model.Snippet{
+		po := jslibHelper.Jslib{
 			Script: item,
 		}
 		pos = append(pos, po)

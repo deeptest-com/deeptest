@@ -76,6 +76,7 @@ type IndexModule struct {
 	TestsModule           *router.TestsModule           `inject:""`
 
 	ResponseDefineModule *router.ResponseDefineModule `inject:""`
+	JslibModule          *router.JslibModule
 }
 
 func NewIndexModule() *IndexModule {

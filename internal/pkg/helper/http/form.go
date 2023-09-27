@@ -1,4 +1,4 @@
-package agentUtils
+package httpHelper
 
 import (
 	"bytes"

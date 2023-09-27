@@ -173,13 +173,17 @@
 </template>
 <script setup lang="ts">
 import {
-  computed, reactive, toRefs, ref, onMounted,
+  computed, ref, onMounted,
   watch, createVNode, onUnmounted
 } from 'vue';
 import {useRouter} from 'vue-router';
+import {useStore} from "vuex";
 import debounce from "lodash.debounce";
 import {ColumnProps} from 'ant-design-vue/es/table/interface';
-import {ExclamationCircleOutlined, MoreOutlined} from '@ant-design/icons-vue';
+import {ExclamationCircleOutlined} from '@ant-design/icons-vue';
+import {Modal} from 'ant-design-vue';
+import {useClipboard} from '@vueuse/core'
+
 import {endpointStatusOpts, endpointStatus} from '@/config/constant';
 import ContentPane from '@/views/component/ContentPane/index.vue';
 import CreateEndpointModal from './components/CreateEndpointModal.vue';
@@ -190,11 +194,9 @@ import Drawer from './components/Drawer/index.vue'
 import EditAndShowSelect from '@/components/EditAndShowSelect/index.vue';
 import EmptyCom from '@/components/TableEmpty/index.vue';
 import PermissionButton from "@/components/PermissionButton/index.vue";
-import {useStore} from "vuex";
 import {Endpoint, PaginationConfig} from "@/views/endpoint/data";
 import {StateType as ServeStateType} from "@/store/serve";
 import {StateType as Debug} from "@/views/component/debug/store";
-import {Menu, message, Modal, notification} from 'ant-design-vue';
 import Tree from './components/Tree.vue'
 import BatchUpdateFieldModal from './components/BatchUpdateFieldModal.vue';
 import Tags from './components/Tags/index.vue';
@@ -204,6 +206,8 @@ import { DropdownActionMenu } from '@/components/DropDownMenu/index';
 import { getUrlKey } from '@/utils/url';
 import { getMethodColor } from '@/utils/interface';
 import {notifyError, notifySuccess} from "@/utils/notify";
+
+const { copy } = useClipboard({});
 
 const store = useStore<{ Endpoint, ProjectGlobal, Debug: Debug, ServeGlobal: ServeStateType,Project }>();
 const currProject = computed<any>(() => store.state.ProjectGlobal.currProject);
@@ -290,7 +294,7 @@ const MenuList = [
     key: '1',
     auth: 'ENDPOINT-COPY',
     label: '克隆',
-    action: (record: any) => copy(record)
+    action: (record: any) => clone(record)
   },
   {
     key: '2',
@@ -415,23 +419,8 @@ function share(record: any) {
     selectedCategoryId: selectedCategoryId.value,
   };
   const text = `${window.location.origin}${window.location.pathname}?shareInfo=${encodeURIComponent(JSON.stringify(searchParams))}`;
-  if (!navigator.clipboard) {
-    var ele = document.createElement("input");
-    ele.value = text;
-    document.body.appendChild(ele);
-    ele.select();
-    document.execCommand("copy");
-    document.body.removeChild(ele);
-    if (document.execCommand("copy")) {
-      notifySuccess('复制成功，项目成员可通过此链接访问');
-    }
-  } else {
-    navigator.clipboard.writeText(text).then(function () {
-      notifySuccess('复制成功，项目成员可通过此链接访问');
-    }).catch(function (err) {
-      console.log('分享失败', err);
-    })
-  }
+  copy(text);
+  notifySuccess('复制成功，项目成员可通过此链接访问');
 }
 
 function checkShareInfo() {
@@ -463,7 +452,7 @@ onMounted(() => {
  * @param record
  */
 
-async function copy(record: any) {
+async function clone(record: any) {
   await store.dispatch('Endpoint/copy', record);
 }
 

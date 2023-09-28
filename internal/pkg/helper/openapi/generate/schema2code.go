@@ -1,9 +1,11 @@
 package generate
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/fields"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/template"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -14,11 +16,10 @@ type Schema2Code struct {
 	sets     map[string]int64
 }
 
-func NewSchema2Code(langType template.LangType, nameRule string, components schemaHelper.Components) *Schema2Code {
+func NewSchema2Code(langType template.LangType, nameRule string) *Schema2Code {
 	obj := &Schema2Code{}
 	obj.langType = langType
 	obj.nameRule = nameRule
-	obj.Components = components
 
 	return obj
 }
@@ -61,6 +62,7 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 
 func (s *Schema2Code) Convert(schema schemaHelper.SchemaRef) string {
 	field := s.schema2Fields("response", schema)
+	fmt.Println(commonUtils.JsonEncode(field))
 	t := template.NewTemplate(s.langType, field.ToArray())
 	return t.CreateCode()
 }

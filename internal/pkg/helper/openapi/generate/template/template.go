@@ -1,10 +1,14 @@
 package template
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/fields"
+import (
+	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/fields"
+	"strings"
+)
 
 type languageInter interface {
 	//fieldTypeConv(fieldType fields.fieldType) (newType fieldType)
-	//fieldString(field field) (ret string)
+	CreateCode(field fields.Field) (ret string)
 }
 
 type LangType string
@@ -29,21 +33,31 @@ func init() {
 }
 
 type template struct {
-	fieldArray fields.FieldArray
+	fieldArray *fields.FieldArray
 	language   languageInter
 }
 
 func NewTemplate(langType LangType, fields *fields.FieldArray) (ret *template) {
+	ret = new(template)
+	ret.fieldArray = fields
 	ret.setLanguage(langType)
 	return
 }
 
 func (t *template) setLanguage(langType LangType) {
-	t.language = language[langType]
+	var ok bool
+	if t.language, ok = language[langType]; !ok {
+		panic(fmt.Errorf("no %s langType", langType))
+	}
+
 }
 
-func (t *template) CreateCode() string {
-	return ""
+func (t *template) CreateCode() (ret string) {
+	var codes []string
+	for _, field := range *t.fieldArray {
+		codes = append(codes, t.language.CreateCode(field))
+	}
+	return strings.Join(codes, "\n")
 }
 
 /*

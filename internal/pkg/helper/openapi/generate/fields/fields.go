@@ -3,12 +3,18 @@ package fields
 import "github.com/getkin/kin-openapi/openapi3"
 
 type Field struct {
-	FieldName  FieldName
-	FieldType  FieldType
-	SubField   *Field
-	Properties []*Field
-	IsProperty bool
+	FieldName  FieldName `json:"fieldName"`
+	FieldType  FieldType `json:"fieldType"`
+	SubField   *Field    `json:"subField"`
+	Properties []*Field  `json:"properties"`
+	IsProperty bool      `json:"isProperty"`
 }
+
+const (
+	Array  FieldType = "array"
+	Object FieldType = "object"
+	number FieldType = "number"
+)
 
 type FieldType string
 
@@ -23,6 +29,7 @@ func (f *FieldArray) Add(field Field) {
 }
 
 func (f *Field) ToArray() (arr *FieldArray) {
+	arr = new(FieldArray)
 	if f.FieldType == openapi3.TypeObject || !f.IsProperty {
 		arr.Add(*f)
 	}

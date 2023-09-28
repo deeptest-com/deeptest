@@ -141,6 +141,7 @@ const StoreModel: ModuleType = {
     },
 
     async getConfigByKey({ commit },payload) {
+      console.log('getConfigByKey', payload.key)
       const result = await getConfigByKey(payload.key);
 
       if (result.code === 0) {

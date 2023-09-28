@@ -82,7 +82,7 @@ export default defineComponent({
   },
 
   methods: {
-    async initMonaco() {
+    initMonaco() {
       console.log('initMonaco ...')
       this.$emit('editorWillMount', this.monaco)
 
@@ -99,25 +99,28 @@ export default defineComponent({
 
       const usedBy = inject('usedBy')
       if (options.initTsModules) {
-        const declareSnippet = usedBy == UsedBy.MockData ? 'mock.d' : 'deeptest.d'
+        const loadJsLibs = async () => {
+          const declareSnippet = usedBy == UsedBy.MockData ? 'mock.d' : 'deeptest.d'
 
-        const typeFiles = []
+          const typeFiles = []
 
-        const defaultDeclareJson = await getSnippet(declareSnippet)
-        if (defaultDeclareJson.code === 0) {
-          typeFiles.push({content: defaultDeclareJson.data.script})
+          const defaultDeclareJson = await getSnippet(declareSnippet)
+          if (defaultDeclareJson.code === 0 && !!defaultDeclareJson.data?.script) {
+            typeFiles.push({content: defaultDeclareJson.data.script})
+          }
+
+          const jslibsDeclareJson = await getJslibs()
+          if (jslibsDeclareJson.code === 0 && !!jslibsDeclareJson.data) {
+            jslibsDeclareJson.data.forEach((item) => {
+              typeFiles.push({content: item.script})
+            })
+          }
+
+          console.log('typeFiles', typeFiles)
+
+          monaco.languages.typescript.typescriptDefaults.setExtraLibs(typeFiles);
         }
-
-        const jslibsDeclareJson = await getJslibs()
-        if (jslibsDeclareJson.code === 0) {
-          jslibsDeclareJson.data.forEach((item) => {
-            typeFiles.push({content: item.script})
-          })
-        }
-
-        console.log('typeFiles', typeFiles)
-
-        monaco.languages.typescript.typescriptDefaults.setExtraLibs(typeFiles);
+        loadJsLibs()
       }
 
       this.editor = monaco.editor[this.diffEditor ? 'createDiffEditor' : 'create'](this.$el, {

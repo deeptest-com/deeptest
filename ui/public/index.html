@@ -58,9 +58,10 @@
             display: flex;
             margin-top: 30px;
             font-size: 30px;
-            color: rgba(0, 0, 0, 0.85);
+            color: #34495E;
             justify-content: center;
             align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
         }
 
         .app-loading .app-loading-logo {
@@ -160,9 +161,7 @@
         <% if(process.env.VUE_APP_DEPLOY_ENV === 'ly') { %>
             <img src="https://leyanapi.nancalcloud.com/upload/images/leyan-api-logo.jpg" class="app-loading-logo" alt="Logo" />
         <% } else { %>
-
-<!--            <img src="https://leyanapi.nancalcloud.com/upload/images/logo.jpg" class="app-loading-logo" alt="Logo" />-->
-
+            <!-- <img src="https://leyanapi.nancalcloud.com/upload/images/logo.jpg" class="app-loading-logo" alt="Logo" /> -->
         <% } %>
         <div class="app-loading-dots">
             <span class="dot dot-spin"><i></i><i></i><i></i><i></i></span>
@@ -173,7 +172,7 @@
             if (titleEl[0] && env === 'ly') {
                 titleEl[0].innerHTML =!!window.require ? "<%= process.env.VUE_APP_DEPLOY_ENV_TITLE %>" : location.host;
             } else {
-                titleEl[0].innerHTML = 'Deeptest.com';
+                titleEl[0].innerHTML = 'DeepTest.com';
             }
         </script>
     </div>

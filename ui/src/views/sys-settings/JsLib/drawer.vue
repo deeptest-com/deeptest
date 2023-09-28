@@ -92,8 +92,9 @@
 
           <a-form-item :wrapperCol="{ span: wrapperCol.span, offset: labelCol.span }">
             <div class="dp-input-tip">
-              请在代码中使用 {{model.name?model.name:'name'}}(参数) 的形式来调用自定义库函数。<br />
-              需要准备实现和声明两个JavaScript文件，具体请参照<a href="https://deeptest.com/jslib.html" target="_blank">这里</a>。
+              请参照<a href="https://deeptest.com/jslib.html" target="_blank">这里</a>准备实现和声明两个JavaScript文件，
+              在代码中使用 {{model.name?model.name:'name'}}(参数) 的形式来调用自定义库函数。<br />
+              注意：页面上填写的名称、.d.ts声明文件里的函数名称、以及.js实现文件里的函数名称，三者必须保持一致。
             </div>
           </a-form-item>
 

@@ -50,7 +50,7 @@ export default defineComponent({
                 })
                 return;
             }
-            
+
             const { params: { projectNameAbbr }, meta: { code } } = router.currentRoute.value;
             // 查看具体项目页面时刷新才会校验 权限按钮以及权限路由
             if (projectNameAbbr) {

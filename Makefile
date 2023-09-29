@@ -297,17 +297,20 @@ upload_to:
 	@qshell qupload2 --src-dir=${QINIU_DIR} --bucket=download --thread-count=10 --log-file=qshell.log \
 					 --skip-path-prefixes=ztf,zd,zv,zmanager,driver --rescan-local --overwrite --check-hash
 
+
+DEMO_BIN=/home/lighthouse/rd/server/deeptest
+
 demo: checkout compile_server_linux compile_agent_linux compile_ui_demo copy_file copy_file start_service
 checkout:
 	@git pull
 copy_file:
-	@cp -f bin/linux/deeptest-server ~/rd/server/deeptest
-	@cp -f client/bin/linux/agent ~/rd/server/deeptest/deeptest-agent
-	@rm -rf ~/rd/server/deeptest/ui
-	@mkdir -p ~/rd/server/deeptest/ui
-	@cp -fr client/ui ~/rd/server/deeptest/ui/dist
+	@cp -f bin/linux/deeptest-server ${DEMO_BIN}
+	@cp -f client/bin/linux/agent ${DEMO_BIN}/deeptest-agent
+	@rm -rf ${DEMO_BIN}/ui
+	@mkdir -p ${DEMO_BIN}/ui
+	@cp -fr client/ui ${DEMO_BIN}/ui/dist
 start_service:
 	@ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs --no-run-if-empty kill -9
-	@RUNNER_TRACKING_ID="" nohup ~/rd/server/deeptest/deeptest-server > server.log 2>&1 &
+	@RUNNER_TRACKING_ID="" nohup ${DEMO_BIN}/deeptest-server > ${DEMO_BIN}/server.log 2>&1 &
     @RUNNER_TRACKING_ID="" export DemoTestSite=http://111.231.16.35:9000 \
-        nohup ~/rd/server/deeptest/deeptest-agent > agent.log 2>&1 &
+        nohup ${DEMO_BIN}/deeptest-agent > ${DEMO_BIN}/agent.log 2>&1 &

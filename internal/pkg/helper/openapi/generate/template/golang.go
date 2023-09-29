@@ -1,7 +1,5 @@
 package template
 
-import "strings"
-
 type golang struct {
 }
 
@@ -11,7 +9,9 @@ func newGolang() (ret *typeScript) {
 	return
 }
 
-func (l *golang) fieldTypeConv(fieldType fieldType) (newType fieldType) {
+/*
+
+func (l *golang) fieldTypeConv(fieldType FieldType) (newType fieldType) {
 	return
 }
 
@@ -24,3 +24,5 @@ func (l *golang) fieldString(field field) (ret string) {
 func (l *golang) classString(class class) string {
 	return strings.ReplaceAll("export interface ${_name_} { ${_content_} }", "${_name_}", string(class.name))
 }
+
+*/

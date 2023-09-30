@@ -20,6 +20,7 @@ import { useRouter } from 'vue-router';
 import UserSetting from './IndexLayout/components/RightTopSettings.vue';
 import RightTopUpdate from './IndexLayout/components/RightTopUpdate.vue';
 import settings from '@/config/settings';
+import {isLeyan} from "@/utils/comm";
 
 export default defineComponent({
   name: 'HomeLayout',
@@ -29,7 +30,7 @@ export default defineComponent({
   },
   setup() {
     const router = useRouter();
-    let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
+    let isLeyanEnv = isLeyan();
 
     watch(() => {
       return router.currentRoute.value;
@@ -85,7 +86,7 @@ export default defineComponent({
       }
     }
   }
- 
+
   .home-content {
     max-height: calc(100vh - 64px);
     overflow-y: scroll;

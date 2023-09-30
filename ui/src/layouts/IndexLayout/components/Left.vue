@@ -41,6 +41,7 @@ import { StateType as ProjectGlobalStateType } from "@/store/project";
 import {RoutesDataItem} from '@/utils/routes';
 import SiderMenu from './SiderMenu.vue';
 import Icon from "./Icon.vue";
+import {isLeyan} from "@/utils/comm";
 
 export default defineComponent({
   name: 'Left',
@@ -88,7 +89,7 @@ export default defineComponent({
     Icon,
   },
   setup(props) {
-    let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
+    let isLeyanEnv = isLeyan();
     const router = useRouter();
     const store = useStore<{ Global: GlobalStateType, ProjectGlobal: ProjectGlobalStateType }>();
     const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);

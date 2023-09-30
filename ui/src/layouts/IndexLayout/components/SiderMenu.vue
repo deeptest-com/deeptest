@@ -25,6 +25,7 @@ import SiderMenuItem from './SiderMenuItem.vue';
 import { RoutesDataItem } from '@/utils/routes';
 import { StateType as GlobalStateType } from "@/store/global";
 import { RouteMenuType } from "@/types/permission";
+import {isLeyan} from "@/utils/comm";
 
 export default defineComponent({
   name: 'SiderMenu',
@@ -72,7 +73,7 @@ export default defineComponent({
     const permissionRouteMenuMap = computed(() => store.state.Global.permissionMenuMap);
     const { menuData, topNavEnable }  = toRefs(props);
     const newMenuData = ref<RoutesDataItem[]>([]);
-    const isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
+    const isLeyanEnv = isLeyan();
 
     const getNewMenuData = () => {
       if(!topNavEnable.value) {
@@ -85,7 +86,7 @@ export default defineComponent({
       const sourceMenuData = menuData.value.filter(e => !e.path.includes('project-setting'));
       for (let index = 0, len = sourceMenuData.length; index < len; index += 1) {
         const element = sourceMenuData[index];
-        
+
         if (element.children) {
           const routeDataItem: RoutesDataItem = { ...element.children[0], children: [] };
 

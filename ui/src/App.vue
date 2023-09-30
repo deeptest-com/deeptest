@@ -17,6 +17,7 @@ import { StateType as UserStateType, CurrentUser } from "@/store/user";
 import settings from "@/config/settings";
 import {getCache} from "@/utils/localCache";
 import {getAgentUrlByValue, isElectronEnv} from "@/utils/agentEnv";
+import {isLeyan} from "@/utils/comm";
 
 export default defineComponent({
   name: 'App',
@@ -27,7 +28,7 @@ export default defineComponent({
     const { locale } = useI18n();
     const antdLocales = computed(()=> antdMessages[locale.value]);
 
-    const isLyEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
+    const isLyEnv = isLeyan();
     // NOTICE: 以下代码仅适用于乐研环境，其他环境删除即可
     const store = useStore<{User: UserStateType}>();
     const currentUser = computed<CurrentUser>(()=> store.state.User.currentUser);

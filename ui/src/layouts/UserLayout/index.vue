@@ -6,7 +6,7 @@
         <router-view></router-view>
       </div>
       <div class="right-footer">
-        Copyright © 2018 @deeptest.com 
+        Copyright © 2018 @deeptest.com
       </div>
     </div>
     <div class="lang">
@@ -19,6 +19,7 @@ import { useRoute } from 'vue-router';
 import { getRouteItem, RoutesDataItem, vueRoutes } from '@/utils/routes';
 import UserLayoutRoutes from './routes';
 import useTitle from '@/composables/useTitle';
+import {isLeyan} from "@/utils/comm";
 
 export default defineComponent({
   name: 'UserLayout',
@@ -26,7 +27,7 @@ export default defineComponent({
   },
   setup() {
 
-    let isLeyanEnv = process.env.VUE_APP_DEPLOY_ENV === 'ly';
+    let isLeyanEnv = isLeyan();
 
     const route = useRoute();
 

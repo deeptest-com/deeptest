@@ -1,4 +1,5 @@
 import { RoutesDataItem } from "@/utils/routes";
+import {isLeyan} from "@/utils/comm";
 
 /**
  * 站点配置
@@ -99,7 +100,7 @@ export interface SettingsType {
 }
 
 const settings: SettingsType = {
-    siteTitle: process.env.VUE_APP_DEPLOY_ENV === 'ly' ? 'leyanapi.com' : 'deeptest.com',
+    siteTitle: isLeyan() ? 'leyanapi.com' : 'deeptest.com',
     topNavEnable: true,
     headFixed: true,
     tabNavEnable: false,

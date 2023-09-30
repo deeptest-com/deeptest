@@ -9,6 +9,7 @@ import bus from "@/utils/eventBus";
 import settings from '@/config/settings';
 import {getToken} from '@/utils/localToken';
 import {getCache} from '@/utils/localCache';
+import {isLeyan} from "@/utils/comm";
 
 
 export interface ResponseData {
@@ -183,7 +184,7 @@ export default function (config: AxiosRequestConfig): AxiosPromise<any> {
 
 export function requestToAgent(config: AxiosRequestConfig | any): AxiosPromise<any> {
     // Agent 可代理，根据下发的agentUrl进行代理
-    if(process.env.VUE_APP_DEPLOY_ENV === 'ly' && config.agentUrl){
+    if(isLeyan() && config.agentUrl){
         requestAgent.defaults.baseURL = config.agentUrl;
     }
     return requestAgent(config).

@@ -95,17 +95,12 @@ export enum ProcessorLoop {
 }
 
 export enum ProcessorVariable {
-    // Get = "processor_variable_get",
     Set = "processor_variable_set",
     Clear = "processor_variable_clear",
 }
 
 export enum ProcessorAssertion {
     Assertion = "processor_assertion_default",
-    // Equal      = "processor_assertion_equal",
-    // NotEqual   = "processor_assertion_not_equal",
-    // Contain    = "processor_assertion_contain",
-    // NotContain = "processor_assertion_not_contain"
 }
 
 export enum ProcessorExtractor {
@@ -116,19 +111,19 @@ export enum ProcessorExtractor {
 }
 
 export enum ProcessorCookie {
-    Get = "processor_cookie_get",
     Set = "processor_cookie_set",
     Clear = "processor_cookie_clear",
 }
 
 export enum ProcessorData {
-    Text = "processor_data_text",
-    Excel = "processor_data_excel",
+    Data = 'processor_data_default'
+    // Text = "processor_data_text",
+    // Excel = "processor_data_excel",
     // ZenData = "processor_data_zendata",
 }
 
 export enum ProcessorCustomCode {
-    CustomCodeDefault = "processor_custom_code_default",
+    CustomCodeDefault = "processor_custom_code",
 }
 
 export enum RequestBodyType {

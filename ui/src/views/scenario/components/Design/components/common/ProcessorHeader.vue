@@ -24,7 +24,10 @@
           <IconSvg :type="'arrange-link'" class="prefix-icon-svg"/>
           {{scenarioTypeBindText}}：<a href="javascript:void (0)">{{ linkedInterfaceName }}</a>
        </span>
-       <Tips v-else :section="nodeData.processorType" :title="nodeData.processorType" />
+
+       <Tips v-else
+             :section="section"
+             :title="scenarioType + '处理器'" />
     </div>
   </div>
 </template>
@@ -39,6 +42,7 @@ import Tips from "@/components/Tips/index.vue";
 import IconSvg from "@/components/IconSvg";
 import {DESIGN_TYPE_ICON_MAP, scenarioTypeMapToText,scenarioTypeMapToBindText} from "../../config";
 import {notifyError, notifySuccess} from "@/utils/notify";
+import {ProcessorLogic} from "@/utils/enum";
 
 const store = useStore<{ Debug: Debug, Scenario: Scenario }>();
 const nodeData: any = computed<boolean>(() => store.state.Scenario.nodeData);
@@ -50,6 +54,14 @@ const linkedInterfaceName = computed(() => {
 
 const showRight = computed(() => {
   return true
+})
+
+const section = computed(() => {
+  if (nodeData?.value.processorType === ProcessorLogic.Else) {
+    return ProcessorLogic.If
+  } else {
+    return nodeData?.value.processorType
+  }
 })
 
 const icon = computed(() => {

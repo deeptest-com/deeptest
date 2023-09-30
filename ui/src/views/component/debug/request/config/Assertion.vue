@@ -7,7 +7,7 @@
         </a-col>
 
         <a-col flex="100px" class="dp-right">
-          <Tips section="i" title="帮助" />
+          <Tips section="assert" title="针对响应的检查点断言" />
         </a-col>
       </a-row>
     </div>

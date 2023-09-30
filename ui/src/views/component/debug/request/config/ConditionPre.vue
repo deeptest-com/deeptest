@@ -14,7 +14,7 @@
                       @click.stop="save" />
           </a-tooltip>
 
-          <Tips section="i" title="帮助" />
+          <Tips section="pre-condition" title="请求前的预处理脚本" />
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全屏</template>

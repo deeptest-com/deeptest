@@ -18,7 +18,7 @@
         </a-col>
 
         <a-col flex="100px" class="dp-right">
-          <Tips section="i" title="发送到服务端的请求Body内容。" />
+          <Tips section="request-body" title="发送到服务端的请求Body内容" />
 
 <!--      <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全部清除</template>

@@ -7,7 +7,7 @@
           <a-col flex="1" class="title">参数值</a-col>
 
           <a-col flex="80px" class="dp-right">
-            <Tips section="i" title="帮助" />
+            <Tips section="query-param" title="发送到服务端的查询参数" />
 
             <a-tooltip @click="removeAll" overlayClassName="dp-tip-small">
               <template #title>全部清除</template>

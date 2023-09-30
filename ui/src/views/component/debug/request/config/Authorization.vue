@@ -18,7 +18,7 @@
           </a-select>
         </a-col>
         <a-col flex="80px" class="dp-right">
-          <Tips section="why_interface" title="授权头将会在你发送请求时自动生成。" />
+          <Tips section="request-auth" title="授权头将会在你发送请求时自动生成" />
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全部清除</template>

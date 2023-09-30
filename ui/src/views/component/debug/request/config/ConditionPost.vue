@@ -16,7 +16,7 @@
         </a-col>
 
         <a-col flex="100px" class="dp-right">
-          <Tips section="i" title="帮助" />
+          <Tips section="response-process" title="对请求响应的后处理" />
         </a-col>
       </a-row>
     </div>

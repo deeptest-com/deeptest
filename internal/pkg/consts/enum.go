@@ -470,10 +470,6 @@ const (
 	ProcessorVariableClear ProcessorType = "processor_variable_clear"
 
 	ProcessorAssertionDefault ProcessorType = "processor_assertion_default"
-	//ProcessorAssertionEqual      ProcessorType = "processor_assertion_equal"
-	//ProcessorAssertionNotEqual   ProcessorType = "processor_assertion_not_equal"
-	//ProcessorAssertionContain    ProcessorType = "processor_assertion_contain"
-	//ProcessorAssertionNotContain ProcessorType = "processor_assertion_not_contain"
 
 	ProcessorExtractorBoundary  ProcessorType = "processor_extractor_boundary"
 	ProcessorExtractorJsonQuery ProcessorType = "processor_extractor_jsonquery"
@@ -484,7 +480,7 @@ const (
 	ProcessorCookieClear ProcessorType = "processor_cookie_clear"
 
 	ProcessorDataDefault       ProcessorType = "processor_data_default"
-	ProcessorCustomCodeDefault ProcessorType = "processor_custom_code_default"
+	ProcessorCustomCodeDefault ProcessorType = "processor_custom_code"
 )
 
 func (e ProcessorType) ToString() string {

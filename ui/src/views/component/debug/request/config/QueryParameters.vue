@@ -7,7 +7,7 @@
           <a-col flex="1" class="title">参数值</a-col>
 
           <a-col flex="80px" class="dp-right">
-            <Tips section="i" title="帮助" />
+            <Tips section="path-param" title="请求URL中的路径参数" />
 
             <a-tooltip @click="removeAll" overlayClassName="dp-tip-small">
               <template #title>全部清除</template>

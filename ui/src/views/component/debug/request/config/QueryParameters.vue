@@ -7,10 +7,7 @@
           <a-col flex="1" class="title">参数值</a-col>
 
           <a-col flex="80px" class="dp-right">
-            <a-tooltip overlayClassName="dp-tip-small">
-              <template #title>帮助</template>
-              <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-            </a-tooltip>
+            <Tips section="i" title="帮助" />
 
             <a-tooltip @click="removeAll" overlayClassName="dp-tip-small">
               <template #title>全部清除</template>
@@ -74,10 +71,8 @@
 import {computed, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
-
-import bus from "@/utils/eventBus";
-import settings from "@/config/settings";
+import { DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
+import Tips from "@/components/Tips/index.vue";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 
 import {UsedBy} from "@/utils/enum";

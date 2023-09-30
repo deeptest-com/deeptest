@@ -18,17 +18,7 @@
           </a-select>
         </a-col>
         <a-col flex="80px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small dp-tip-white">
-            <template #title>
-              <div class="tips">
-                <div>授权头将会在你发送请求时自动生成。</div>
-                <div @click="openHelp('why_interface')" class="dp-link-primary">了解更多
-                  <ArrowRightOutlined/>
-                </div>
-              </div>
-            </template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
+          <Tips section="why_interface" title="授权头将会在你发送请求时自动生成。" />
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全部清除</template>
@@ -58,14 +48,14 @@
 import {computed, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, ArrowRightOutlined } from '@ant-design/icons-vue';
+import { DeleteOutlined, PlusOutlined, ArrowRightOutlined } from '@ant-design/icons-vue';
 
 import EmptyPage from "@/components/others/empty.vue";
+import Tips from "@/components/Tips/index.vue";
 import RequestAuthorBasic from "./author/BasicAuthor.vue"
 import RequestAuthorBearerToken from "./author/BearerToken.vue"
 import RequestAuthorApiKey from "./author/ApiKey.vue"
 import {AuthorizationTypes, UsedBy} from "@/utils/enum";
-import {openHelp} from "@/utils/link";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {getEnumSelectItems} from "@/utils/comm";
 

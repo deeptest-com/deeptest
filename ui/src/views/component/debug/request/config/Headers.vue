@@ -7,10 +7,7 @@
           <a-col flex="1" class="title">参数值</a-col>
 
           <a-col flex="80px" class="dp-right">
-            <a-tooltip overlayClassName="dp-tip-small">
-              <template #title>帮助</template>
-              <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-            </a-tooltip>
+            <Tips section="i" title="帮助" />
 
             <a-tooltip @click="removeAll" overlayClassName="dp-tip-small">
               <template #title>全部清除</template>
@@ -27,7 +24,7 @@
       <div class="params">
         <a-row v-for="(item, idx) in debugData.headers" :key="idx" type="flex" class="param">
           <a-col flex="1">
-            <a-auto-complete 
+            <a-auto-complete
               class="dp-bg-input-transparent"
               v-model:value="item.name"
               style="width: 100%"
@@ -77,16 +74,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ComputedRef, defineComponent, inject, PropType, Ref, ref} from "vue";
+import {computed, inject} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
-
-import bus from "@/utils/eventBus";
-import settings from "@/config/settings";
+import { DeleteOutlined, PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons-vue';
+import Tips from "@/components/Tips/index.vue";
 import {UsedBy} from "@/utils/enum";
-
-import {getContextMenuStyle2} from "@/utils/dom";
 import {Header} from "@/views/component/debug/data";
 import ContextMenu from "@/views/component/debug/others/variable-replace/ContextMenu.vue"
 

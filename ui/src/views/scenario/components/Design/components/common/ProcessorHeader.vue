@@ -2,7 +2,11 @@
 <template>
   <div class="header-con">
     <div class="left">
-      <span class="title"><IconSvg :type="icon" class="prefix-icon-svg"/> {{ scenarioType }}</span>
+      <span class="title">
+        <IconSvg :type="icon" class="prefix-icon-svg"/>
+        {{ scenarioType }}
+      </span>
+
       <div class="name">
         <EditAndShow placeholder="修改名称"
                      :autoFocus="false"
@@ -14,9 +18,13 @@
                      @update="updateTitle"/>
       </div>
     </div>
-     <div class="right" v-if="showRight && scenarioTypeBindText">
-      <IconSvg :type="'arrange-link'" class="prefix-icon-svg"/>
-      {{scenarioTypeBindText}}：<a href="javascript:void (0)">{{ linkedInterfaceName }}</a>
+
+     <div class="right" v-if="showRight">
+       <span v-if="scenarioTypeBindText">
+          <IconSvg :type="'arrange-link'" class="prefix-icon-svg"/>
+          {{scenarioTypeBindText}}：<a href="javascript:void (0)">{{ linkedInterfaceName }}</a>
+       </span>
+       <Tips v-else :section="nodeData.processorType" :title="nodeData.processorType" />
     </div>
   </div>
 </template>
@@ -27,6 +35,7 @@ import {useStore} from "vuex";
 import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Scenario} from "@/views/scenario/store";
 import EditAndShow from "@/components/EditAndShow/index.vue";
+import Tips from "@/components/Tips/index.vue";
 import IconSvg from "@/components/IconSvg";
 import {DESIGN_TYPE_ICON_MAP, scenarioTypeMapToText,scenarioTypeMapToBindText} from "../../config";
 import {notifyError, notifySuccess} from "@/utils/notify";
@@ -40,7 +49,7 @@ const linkedInterfaceName = computed(() => {
 })
 
 const showRight = computed(() => {
-  return nodeData.value?.processorType === 'processor_interface_default';
+  return true
 })
 
 const icon = computed(() => {

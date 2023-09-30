@@ -16,10 +16,7 @@
         </a-col>
 
         <a-col flex="100px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
+          <Tips section="i" title="帮助" />
         </a-col>
       </a-row>
     </div>
@@ -109,10 +106,11 @@
 import {computed, inject, ref, watch, getCurrentInstance, ComponentInternalInstance} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
+import { CheckCircleOutlined, DeleteOutlined,
   ClearOutlined, RightOutlined,
   DownOutlined, CloseCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
 import draggable from 'vuedraggable'
+import Tips from "@/components/Tips/index.vue";
 import {ConditionType, UsedBy} from "@/utils/enum";
 import {EnvDataItem} from "@/views/project-settings/data";
 import bus from "@/utils/eventBus";

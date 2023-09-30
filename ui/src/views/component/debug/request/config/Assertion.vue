@@ -7,10 +7,7 @@
         </a-col>
 
         <a-col flex="100px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
+          <Tips section="i" title="帮助" />
         </a-col>
       </a-row>
     </div>
@@ -89,13 +86,12 @@
 </template>
 
 <script setup lang="ts">
-import {computed, inject, ref, watch, getCurrentInstance, ComponentInternalInstance} from "vue";
+import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
 import { QuestionCircleOutlined, CheckCircleOutlined, DeleteOutlined,
   ClearOutlined, MenuOutlined, RightOutlined,
   DownOutlined, CloseCircleOutlined, FullscreenOutlined, SaveOutlined } from '@ant-design/icons-vue';
-import draggable from 'vuedraggable'
 import {ConditionType, UsedBy} from "@/utils/enum";
 import {EnvDataItem} from "@/views/project-settings/data";
 import bus from "@/utils/eventBus";
@@ -107,6 +103,8 @@ import IconSvg from "@/components/IconSvg";
 import Checkpoint from "./conditions-post/Checkpoint.vue";
 import FullScreenPopup from "./ConditionPopup.vue";
 import TooltipCell from "@/components/Table/tooltipCell.vue";
+import draggable from 'vuedraggable'
+import Tips from "@/components/Tips/index.vue";
 
 const store = useStore<{  Debug: Debug }>();
 const debugData = computed<any>(() => store.state.Debug.debugData);

@@ -18,17 +18,7 @@
         </a-col>
 
         <a-col flex="100px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small dp-tip-white">
-            <template #title>
-              <div class="tips">
-                <div>发送到服务端的请求Body内容。</div>
-                <div @click="openHelp('why_interface')" class="dp-link-primary">
-                  了解更多 <ArrowRightOutlined/>
-                </div>
-              </div>
-            </template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
+          <Tips section="i" title="发送到服务端的请求Body内容。" />
 
 <!--      <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全部清除</template>
@@ -78,9 +68,7 @@
 import {computed, inject, nextTick, onMounted, onUnmounted, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, ArrowRightOutlined } from '@ant-design/icons-vue';
 import {MonacoOptions} from "@/utils/const";
-import {openHelp} from "@/utils/link";
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {getCodeLangByType} from "@/views/component/debug/service";
@@ -89,6 +77,8 @@ import BodyFormUrlencoded from "./Body-FormUrlencoded.vue";
 import BodyFormData from "./Body-FormData.vue";
 import {getRequestBodyTypes} from "@/views/scenario/service";
 import {UsedBy} from "@/utils/enum";
+import Tips from "@/components/Tips/index.vue";
+
 const usedBy = inject('usedBy') as UsedBy
 const {t} = useI18n();
 

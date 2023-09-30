@@ -9,10 +9,7 @@
         </a-col>
 
         <a-col flex="100px" class="dp-right">
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
+          <Tips section="i" title="帮助" />
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>格式化</template>
@@ -54,14 +51,13 @@
 import {computed, defineComponent, inject, ref} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
+import { DeleteOutlined, ClearOutlined } from '@ant-design/icons-vue';
 
 import {MonacoOptions} from "@/utils/const";
 import ALink from "@/components/ALink/index.vue";
 import MonacoEditor from "@/components/Editor/MonacoEditor.vue";
 import {UsedBy} from "@/utils/enum";
-
-import {Param} from "@/views/component/debug/data";
+import Tips from "@/components/Tips/index.vue";
 import {StateType as Debug} from "@/views/component/debug/store";
 
 const usedBy = inject('usedBy') as UsedBy

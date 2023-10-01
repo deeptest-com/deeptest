@@ -28,13 +28,11 @@
           </a>
           <template #overlay>
             <a-menu @click="changeAgentEnv">
-              <template v-for="agent in agents" :key="agent.id"> <!--v-if="!(!isElectronEnv && agent.code === 'local')"-->
-                <a-menu-item :style="agent.id === currentAgentId ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
+                <a-menu-item v-for="agent in agents" :key="agent.id" :style="agent.id === currentAgent?.id ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
                   <a-tooltip placement="left" :title="agent.desc">
                     {{ agent.name }}
                   </a-tooltip>
                 </a-menu-item>
-              </template>
             </a-menu>
           </template>
         </a-dropdown>
@@ -50,13 +48,13 @@
           <template #overlay>
             <a-menu @click="onSysMenuClick">
               <a-sub-menu key="agent-sub-menu" title="切换代理 &nbsp;">
-                <template v-for="agent in agents" :key="agent.id"> <!--v-if="!(!isElectronEnv && agent.code === 'local')"-->
-                  <a-menu-item :style="agent.label === currentAgentId ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
+                  <a-menu-item v-for="agent in agents"
+                               :key="agent.id"
+                               :style="agent.id === currentAgent?.id ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
                     <a-tooltip placement="left" :title="agent.desc">
                       {{ agent.name }}
                     </a-tooltip>
                   </a-menu-item>
-                </template>
               </a-sub-menu>
 
               <a-menu-item key="agentManage">
@@ -120,7 +118,7 @@
 <script setup lang="ts">
 import {computed, defineProps, onMounted, ref} from "vue";
 import {useStore} from "vuex";
-import {getAgentLabel, getAgentUrl, getAgentUrlByValue, isElectronEnv} from '@/utils/agentEnv'
+import {getAgentUrlByValue, isElectronEnv} from '@/utils/agentEnv'
 import {
   DownOutlined,
   SettingOutlined,
@@ -152,15 +150,7 @@ const {isFullscreen, enter, exit, toggle} = useFullscreen();
 
 const agents = computed<any[]>(() => store.state.Global.agents);
 const currentUser = computed<CurrentUser>(() => store.state.User.currentUser);
-
-const selectLangVisible = ref(false)
-const closeSelectLang = async (event: any) => {
-  selectLangVisible.value = false
-}
-
-const gotoMessage = () => {
-  router.replace({path: '/message'})
-}
+const currentAgent = computed<any>(() => store.state.Global.currAgent);
 
 // 点击菜单
 const onMenuClick = (event: any) => {
@@ -207,16 +197,21 @@ const onSysMenuClick = (event: any) => {
     const url = getAgentUrlByValue(agents.value, key);
     window.localStorage.setItem(Cache_Key_Agent_Value, key);
     window.localStorage.setItem(Cache_Key_Agent_Url, url);
-    window.location.reload();
+
+    const currAgent = agents.value.find((item) => item.id === +key)
+    store.commit('Global/setCurrAgent', currAgent)
+    // window.location.reload();
   }
 }
 
 function changeAgentEnv(event: any) {
+  console.log('changeAgentEnv', event)
+
   const {key} = event;
   const url = getAgentUrlByValue(agents.value, key);
   window.localStorage.setItem(Cache_Key_Agent_Value, key);
   window.localStorage.setItem(Cache_Key_Agent_Url, url);
-  window.location.reload();
+  // window.location.reload();
 }
 
 // 下载客户端
@@ -247,24 +242,10 @@ const clientDownloadUrlOpts = computed(() => {
   ];
 });
 
-const currentAgentId = computed(() => {
-  return getAgentLabel(agents.value);
-})
-
-const onManagementClick = () => {
-  router.replace({path: '/user-manage'})
-}
-
 onMounted(async () => {
     await store.dispatch('Global/listAgent');
 
-    // 如果没有缓存，根据当前环境选择一个默认值
-    if (!window.localStorage.getItem(Cache_Key_Agent_Value)) {
-      const agentValue = isElectronEnv ? 'local' : 'test';
-      const url = getAgentUrlByValue(agents.value, agentValue);
-      window.localStorage.setItem(Cache_Key_Agent_Value, agentValue);
-      window.localStorage.setItem(Cache_Key_Agent_Url, url);
-    }
+  await store.commit('Global/setCurrAgent', null);
 
     // 获取客户端最新版本号
     await store.dispatch('Global/getClientVersion');

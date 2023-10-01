@@ -8,6 +8,7 @@ import { getPermissionMenuList } from '@/services/project';
 import {getConfigByKey, getServerConfig} from "@/services/config";
 import {getClientVersion} from "@/services/static";
 import {listAgent} from "@/views/sys-settings/service";
+import {Cache_Key_Agent_Url, Cache_Key_Agent_Value} from "@/utils/const";
 
 export interface StateType {
   // 左侧展开收起
@@ -26,6 +27,7 @@ export interface StateType {
   serverConfig: any;
   configInfo: any,
   agents: any[],
+  currAgent: any,
   spinning:boolean;
   clientVersion: string;
 }
@@ -44,6 +46,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
     setClientVersion: Mutation<StateType>;
     setSpinning: Mutation<StateType>;
     setAgents: Mutation<StateType>;
+    setCurrAgent: Mutation<StateType>;
   };
   actions: {
     getPermissionList: Action<StateType, StateType>;
@@ -73,6 +76,7 @@ const initState: StateType = {
   serverConfig: {},
   configInfo: {},
   agents: [],
+  currAgent: {},
   spinning:false,
   clientVersion: '0.0.1',
 };
@@ -118,6 +122,22 @@ const StoreModel: ModuleType = {
     },
     setAgents(state, payload) {
       state.agents = payload
+    },
+    setCurrAgent(state, payload) {
+      if (payload) {
+        state.currAgent = payload;
+      } else {
+        state.currAgent = payload;
+
+        let currAgentId = window.localStorage.getItem(Cache_Key_Agent_Value) || state.agents[0].id
+
+        if (!currAgentId && state.agents.length > 0) {
+          currAgentId = state.agents[0].id
+        }
+
+        const currAgent = state.agents.find((item) => currAgentId && item.id === +currAgentId)
+        state.currAgent = currAgent
+      }
     },
   },
   actions: {

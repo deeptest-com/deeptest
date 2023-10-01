@@ -45,7 +45,7 @@ const initState: StateType = {
     jslibModel: {},
 
     agentModels: [],
-    agentModel: {}
+    agentModel: {},
 };
 
 const StoreModel: ModuleType = {

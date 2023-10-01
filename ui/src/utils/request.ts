@@ -171,10 +171,11 @@ export default function (config: AxiosRequestConfig): AxiosPromise<any> {
 }
 
 export function requestToAgent(config: AxiosRequestConfig | any): AxiosPromise<any> {
-    // Agent 可代理，根据下发的agentUrl进行代理
-    if(isLeyan() && config.agentUrl){
+    // Agent 可代理，根据下发的agentUrl进行代理，在debug/service.ts里设置
+    if(config.agentUrl){
         requestAgent.defaults.baseURL = config.agentUrl;
     }
+
     return requestAgent(config).
         then((response: AxiosResponse) => response.data).
         catch(error => errorHandler(error));

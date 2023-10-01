@@ -22,23 +22,6 @@ export function getAgentUrl() {
 }
 
 /**
- * 获取当前的 Agent 的 URL
- * @param agentUrlOpts 可选的 Agent 服务地址
- *
- * */
-export function getAgentLabel(agents) {
-    const localCacheAgentVal = window.localStorage.getItem(Cache_Key_Agent_Value) || (isElectronEnv ? 'local' : 'test');
-    const selectedAgent = agents.find((item) => {
-        return item.code === localCacheAgentVal;
-    });
-
-    if (selectedAgent?.name) {
-        return selectedAgent?.name;
-    }
-    return '外网调试'
-}
-
-/**
  * @param agentUrlOpts 可选的 Agent 服务地址
  * @param value 选中的 Agent 服务地址
  * @returns {string} 选中的 Agent 服务地址

@@ -2,7 +2,7 @@
   <div :class="['indexlayout-top-settings', theme]">
     <div class="user-info">
 
-      <template v-if="isLyEnv">
+      <template v-if="!isLyEnv">
         <!--  客户端下载 -->
         <a-dropdown placement="bottomRight" v-if="!isElectronEnv">
           <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 4px;margin-left: 4px;">
@@ -23,16 +23,20 @@
         <a-dropdown placement="bottomRight">
           <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 8px;">
             <IconSvg type="top-right-web" class="top-right-icon"/>
-            <span class="user-name">{{ currentAgentLabel }}</span>
+            <span class="user-name">{{ currentAgent.name }}</span>
             <DownOutlined class="user-icon"/>
           </a>
           <template #overlay>
             <a-menu @click="changeAgentEnv">
-                <a-menu-item v-for="agent in agents" :key="agent.id" :style="agent.id === currentAgent?.id ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
-                  <a-tooltip placement="left" :title="agent.desc">
-                    {{ agent.name }}
-                  </a-tooltip>
-                </a-menu-item>
+              <template v-for="agent in agents">
+                <template v-if="agent.id !== currentAgent?.id">
+                  <a-menu-item :key="agent.id">
+                    <a-tooltip placement="left" :title="agent.desc">
+                      {{ agent.name }}
+                    </a-tooltip>
+                  </a-menu-item>
+                </template>
+              </template>
             </a-menu>
           </template>
         </a-dropdown>
@@ -204,8 +208,8 @@ function changeAgentEnv(event: any) {
   console.log('changeAgentEnv', event)
 
   const {key} = event;
-  const agent = agents.value.find((item) => item.id === +key)
-  window.localStorage.setItem(Cache_Key_Agent, agent);
+  const currAgent = agents.value.find((item) => item.id === +key)
+  store.commit('Global/setCurrAgent', currAgent)
   // window.location.reload();
 }
 

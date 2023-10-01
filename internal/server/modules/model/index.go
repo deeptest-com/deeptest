@@ -126,6 +126,7 @@ var (
 
 		&SysConfig{},
 		&SysJslib{},
+		&SysAgent{},
 		&ProjectUserServer{},
 	}
 )

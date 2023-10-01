@@ -57,6 +57,10 @@
                 </a-menu-item>
               </a-sub-menu>
 
+              <a-menu-item key="agentManage">
+                代理管理
+              </a-menu-item>
+
               <a-menu-item key="userManage">
                 用户管理
               </a-menu-item>
@@ -197,10 +201,12 @@ const onSysMenuClick = (event: any) => {
   console.log('onSysMenuClick', event)
   const {key, keyPath} = event;
 
-  if (key === 'userManage') { //
+  if (key === 'agentManage') {
+    router.replace({path: '/sys-setting/agent'})
+  } else if (key === 'userManage') {
     router.replace({path: '/sys-setting/user-manage'})
 
-  } else if (key === 'jslibManage') { //
+  } else if (key === 'jslibManage') {
     router.replace({path: '/sys-setting/jslib'})
 
   } else if (key === 'download') {

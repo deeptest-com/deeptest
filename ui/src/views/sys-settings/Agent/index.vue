@@ -1,8 +1,8 @@
 <template>
-  <div class="js-lib-list-main">
+  <div class="sys-agent-list-main">
     <a-card :bordered="false">
       <template #title>
-        <a-button type="primary" @click="() => edit(0)">新建自定义库</a-button>
+        <a-button type="primary" @click="() => edit(0)">新建执行代理</a-button>
       </template>
       <template #extra>
         <a-input-search
@@ -15,10 +15,10 @@
 
       <EmptyComp>
         <template #content>
-          <a-table :data-source="models" :columns="jslibColumns" :rowKey="(_record, index) => _record.id">
+          <a-table :data-source="models" :columns="agentColumns" :rowKey="(_record, index) => _record.id">
             <template #name="{ text, record }">
               <div class="record-name">
-                <EditAndShowField :custom-class="'custom-serve show-on-hover'" placeholder="请输入自定义脚本库名称"
+                <EditAndShowField :custom-class="'custom-serve show-on-hover'" placeholder="请输入名称"
                                   :value="text || ''"
                                   @update="(e: string) => updateName(e, record)"
                                   @edit="edit(record.id)"/>
@@ -29,14 +29,6 @@
               <a-tag :color="disabledStatusTagColor.get(record.disabled ? 1 : 0)">
                 {{ disabledStatus.get(record.disabled ? 1 : 0) }}
               </a-tag>
-            </template>
-
-            <template #typesFile="{ text }">
-             {{ text }}
-            </template>
-
-            <template #scriptFile="{ text }">
-              {{ text }}
             </template>
 
             <template #createUser="{record}">
@@ -95,7 +87,7 @@ import {notifyError, notifySuccess} from "@/utils/notify";
 import {Modal} from "ant-design-vue";
 import {momentUtc} from '@/utils/datetime';
 
-import {jslibColumns} from '../config';
+import {agentColumns} from '../config';
 import EditAndShowField from '@/components/EditAndShow/index.vue';
 import EmptyComp from '@/components/TableEmpty/index.vue';
 import EditDrawer from './drawer.vue';
@@ -104,7 +96,7 @@ import debounce from "lodash.debounce";
 const {t} = useI18n();
 
 const store = useStore<{ SysSetting: SysSettingStateType }>();
-const models = computed<any>(() => store.state.SysSetting.jslibModels);
+const models = computed<any>(() => store.state.SysSetting.agentModels);
 
 const drawerVisible = ref(false);
 const modelId = ref(0);
@@ -119,11 +111,11 @@ const onSearch = debounce(() => {
 list()
 function list() {
   console.log('list', queryParams.value)
-  store.dispatch('SysSetting/listJslib', queryParams.value)
+  store.dispatch('SysSetting/listAgent', queryParams.value)
 }
 
 function updateName(value: string, record: any) {
-  store.dispatch('SysSetting/updateJslibName', {
+  store.dispatch('SysSetting/updateAgentName', {
     id: record.id,
     name: value
   });
@@ -137,16 +129,16 @@ const edit = (id) => {
 
 async function remove(record: any) {
   Modal.confirm({
-    title: '确认要删除该自定义脚本库吗？',
+    title: '确认要删除该执行代理吗？',
     icon: createVNode(ExclamationCircleOutlined),
     onOk() {
-      store.dispatch('SysSetting/deleteJslib', record.id);
+      store.dispatch('SysSetting/deleteAgent', record.id);
     }
   })
 }
 
 async function onDisable(record: any) {
-  store.dispatch('SysSetting/disableJslib', record.id);
+  store.dispatch('SysSetting/disableAgent', record.id);
 }
 
 function onClose() {
@@ -156,7 +148,7 @@ function onClose() {
 </script>
 
 <style scoped lang="less">
-.js-lib-list-main {
+.sys-agent-list-main {
   margin: 20px;
 
   .search {

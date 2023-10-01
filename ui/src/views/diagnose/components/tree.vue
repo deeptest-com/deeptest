@@ -74,7 +74,7 @@
           <div v-else-if="!loading && !showKeywordsTip" class="nodata-tip">请点击上方按钮添加目录 ~</div>
           <Spin style="margin-top: 20px;" v-else />
         </div>
-        
+
       </div>
     </div>
 
@@ -157,7 +157,7 @@ const list = computed(() => {
     return [...filterByKeyword(data, keywords.value, 'title')];
   }
   return [];
-}); 
+});
 
 /**
  * 根据搜索关键词搜索结果为空展示
@@ -206,8 +206,7 @@ const getSelectedKeyName = () => {
 const selectStoredKeyCall = debounce(async () => {
   console.log('selectStoredKeyCall')
   let key = await getSelectedKey(getSelectedKeyName(), currProject.value.id)
-  console.log('key', key)
-  selectNode([key], null)
+  selectNode(key ? [key] : [], null)
 }, 300)
 
 const onExpand = (keys: number[]) => {
@@ -383,8 +382,7 @@ watch(() => {
 }, val => {
   console.log('当前tab id变化', val);
   selectedKeys.value = val ? [val] : [];
-  
-})
+}, {immediate: true})
 
 </script>
 

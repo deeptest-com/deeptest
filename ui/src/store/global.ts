@@ -138,7 +138,7 @@ const StoreModel: ModuleType = {
         state.currAgent = currAgent
       }
 
-      await setCache(Cache_Key_Agent, toRaw(state.currAgent))
+      await setCache(Cache_Key_Agent, state.currAgent)
     },
   },
   actions: {

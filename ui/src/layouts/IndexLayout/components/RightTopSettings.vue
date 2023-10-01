@@ -2,7 +2,7 @@
   <div :class="['indexlayout-top-settings', theme]">
     <div class="user-info">
 
-      <template v-if="!isLyEnv">
+      <template v-if="isLyEnv">
         <!--  客户端下载 -->
         <a-dropdown placement="bottomRight" v-if="!isElectronEnv">
           <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 4px;margin-left: 4px;">

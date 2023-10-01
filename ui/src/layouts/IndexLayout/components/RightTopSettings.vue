@@ -130,6 +130,7 @@ import {CurrentUser, StateType as UserStateType} from "@/store/user";
 import {useRouter} from "vue-router";
 import {useFullscreen} from '@vueuse/core';
 import {StateType as GlobalStateType} from "@/store/global";
+import {Cache_Key_Agent_Url, Cache_Key_Agent_Value} from "@/utils/const";
 
 const props = defineProps({
   theme: {
@@ -207,8 +208,8 @@ const onSysMenuClick = (event: any) => {
 
   } else if (keyPath[0] === 'agent-sub-menu') {
     const url = getAgentUrlByValue(agentUrlOpts.value, key);
-    window.localStorage.setItem('dp-cache-agent-value', key);
-    window.localStorage.setItem('dp-cache-agent-url', url);
+    window.localStorage.setItem(Cache_Key_Agent_Value, key);
+    window.localStorage.setItem(Cache_Key_Agent_Url, url);
     window.location.reload();
   }
 }
@@ -216,8 +217,8 @@ const onSysMenuClick = (event: any) => {
 function changeAgentEnv(event: any) {
   const {key} = event;
   const url = getAgentUrlByValue(agentUrlOpts.value, key);
-  window.localStorage.setItem('dp-cache-agent-value', key);
-  window.localStorage.setItem('dp-cache-agent-url', url);
+  window.localStorage.setItem(Cache_Key_Agent_Value, key);
+  window.localStorage.setItem(Cache_Key_Agent_Url, url);
   window.location.reload();
 }
 
@@ -263,11 +264,11 @@ onMounted(async () => {
     console.log('===-==', agentUrlOpts.value)
 
     // 如果没有缓存，根据当前环境选择一个默认值
-    if (!window.localStorage.getItem('dp-cache-agent-value')) {
+    if (!window.localStorage.getItem(Cache_Key_Agent_Value)) {
       const agentValue = isElectronEnv ? 'local' : 'test';
       const url = getAgentUrlByValue(list, agentValue);
-      window.localStorage.setItem('dp-cache-agent-value', agentValue);
-      window.localStorage.setItem('dp-cache-agent-url', url);
+      window.localStorage.setItem(Cache_Key_Agent_Value, agentValue);
+      window.localStorage.setItem(Cache_Key_Agent_Url, url);
     }
 
     // 获取客户端最新版本号

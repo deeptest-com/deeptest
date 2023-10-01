@@ -18,6 +18,7 @@ import settings from "@/config/settings";
 import {getCache} from "@/utils/localCache";
 import {getAgentUrlByValue, isElectronEnv} from "@/utils/agentEnv";
 import {isLeyan} from "@/utils/comm";
+import {Cache_Key_Agent_Local_Port, Cache_Key_Server_Url} from "@/utils/const";
 
 export default defineComponent({
   name: 'App',
@@ -48,10 +49,17 @@ export default defineComponent({
      ************************************************/
     if (isElectronEnv && window?.require('electron')?.ipcRenderer && isLyEnv) {
       const ipcRenderer = window.require('electron').ipcRenderer
+
       // 更新本地占用的端口号
       ipcRenderer.on(settings.electronMsgUsePort, async (event, data) => {
         console.log('use port msg from electron', event,data);
-        window.localStorage.setItem('dp-cache-agent-local-port',data?.agentPort || '');
+        window.localStorage.setItem(Cache_Key_Agent_Local_Port, data?.agentPort || '');
+      })
+
+      // 更新可能的服务地址
+      ipcRenderer.on(settings.electronMsgServerUrl, async (event, data) => {
+        console.log('server url msg from electron', event,data);
+        window.localStorage.setItem(Cache_Key_Server_Url, data?.serverUrl || null);
       })
     }
 

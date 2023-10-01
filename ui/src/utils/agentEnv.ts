@@ -1,6 +1,7 @@
 /**
  * 是否运行在客户端 Electron 容器中
  * */
+import {Cache_Key_Agent_Local_Port, Cache_Key_Agent_Url, Cache_Key_Agent_Value} from "@/utils/const";
 
 const win: any = window?.process;
 export const isElectronEnv = win?.versions?.electron;
@@ -12,8 +13,8 @@ export const isElectronEnv = win?.versions?.electron;
  *
  * */
 export function getAgentUrl() {
-    let agentUrl =  window.localStorage.getItem('dp-cache-agent-url') || process.env.VUE_APP_API_AGENT || '';
-    const localAgentPort = window.localStorage.getItem('dp-cache-agent-local-port') || '';
+    let agentUrl =  window.localStorage.getItem(Cache_Key_Agent_Url) || process.env.VUE_APP_API_AGENT || '';
+    const localAgentPort = window.localStorage.getItem(Cache_Key_Agent_Local_Port) || '';
     if(isElectronEnv && localAgentPort?.length === 5 && agentUrl.includes('127.0.0.1')){
         agentUrl = agentUrl.replace(/\d{5}/,localAgentPort);
     }
@@ -26,7 +27,7 @@ export function getAgentUrl() {
  *
  * */
 export function getAgentLabel(agentUrlOpts) {
-    const localCacheAgentVal = window.localStorage.getItem('dp-cache-agent-value') || (isElectronEnv ? 'local' : 'test');
+    const localCacheAgentVal = window.localStorage.getItem(Cache_Key_Agent_Value) || (isElectronEnv ? 'local' : 'test');
     const selectedAgent = agentUrlOpts.find((item) => {
         return item.value === localCacheAgentVal;
     });

@@ -63,6 +63,7 @@
     "form-data": "^4.0.0",
     "fs-extra": "^11.1.0",
     "got": "^12.5.3",
+    "js-yaml": "^4.1.0",
     "kill-port-process": "^3.0.1",
     "nanoid": "^4.0.0",
     "open-term": "^2.0.4",

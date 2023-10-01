@@ -3,6 +3,7 @@ package router
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
+	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	"github.com/kataras/iris/v12"
 )
 
@@ -13,6 +14,8 @@ type SysAgentModule struct {
 // Party 脚本
 func (m *SysAgentModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
+		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
+
 		index.Get("/", m.SysAgentCtrl.List).Name = "列出执行代理"
 		index.Get("/{id:uint}", m.SysAgentCtrl.Get).Name = "获取执行代理详情"
 		index.Post("/", m.SysAgentCtrl.Save).Name = "保存执行代理"

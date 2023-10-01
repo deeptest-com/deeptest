@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
@@ -10,10 +11,15 @@ type SysAgentRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *SysAgentRepo) List() (pos []model.SysAgent, err error) {
-	err = r.DB.
-		Where("NOT deleted").
-		Find(&pos).Error
+func (r *SysAgentRepo) List(keywords string) (pos []model.SysAgent, err error) {
+	db := r.DB.Model(&model.SysAgent{}).
+		Where("NOT deleted")
+
+	if keywords != "" {
+		db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", keywords))
+	}
+
+	err = db.Find(&pos).Error
 
 	return
 }
@@ -33,7 +39,7 @@ func (r *SysAgentRepo) Save(po *model.SysAgent) (err error) {
 	return
 }
 
-func (r *SysAgentRepo) UpdateName(to v1.JslibReq) (err error) {
+func (r *SysAgentRepo) UpdateName(to v1.AgentReq) (err error) {
 	err = r.DB.Model(&model.SysAgent{}).
 		Where("id = ?", to.Id).
 		Updates(map[string]interface{}{"name": to.Name, "update_user": to.UpdateUser}).Error

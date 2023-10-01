@@ -16,11 +16,13 @@ func (s *SysAgentSource) GetSources() (configs []model.SysAgent, err error) {
 		configs = []model.SysAgent{
 			{
 				Name: "本地代理",
+				Code: "local",
 				Url:  "http://127.0.0.1:8086/api/v1",
 				Desc: "客户端默认在本机启动的代理",
 			},
 			{
 				Name: "演示站点代理",
+				Code: "test",
 				Url:  "http://111.231.16.35:8086/api/v1",
 				Desc: "DeepTest演示站点上的代理",
 			},

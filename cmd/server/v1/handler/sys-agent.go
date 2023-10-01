@@ -15,7 +15,9 @@ type SysAgentCtrl struct {
 }
 
 func (c *SysAgentCtrl) List(ctx iris.Context) {
-	pos, err := c.SysAgentService.List()
+	keywords := ctx.URLParam("keywords")
+
+	pos, err := c.SysAgentService.List(keywords)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -48,6 +50,12 @@ func (c *SysAgentCtrl) Save(ctx iris.Context) {
 		return
 	}
 
+	if req.ID > 0 {
+		req.UpdateUser = multi.GetUsername(ctx)
+	} else {
+		req.CreateUser = multi.GetUsername(ctx)
+	}
+
 	err = c.SysAgentService.Save(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -58,7 +66,7 @@ func (c *SysAgentCtrl) Save(ctx iris.Context) {
 }
 
 func (c *SysAgentCtrl) UpdateName(ctx iris.Context) {
-	req := v1.JslibReq{}
+	req := v1.AgentReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

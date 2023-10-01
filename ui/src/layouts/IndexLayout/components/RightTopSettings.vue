@@ -28,12 +28,13 @@
           </a>
           <template #overlay>
             <a-menu @click="changeAgentEnv">
-              <a-menu-item v-for="agent in agentUrlOpts" :key="agent.value"
-                           :style="agent.label === currentAgentLabel ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
-                <a-tooltip placement="left" :title="agent.desc">
-                  {{ agent.label }}
-                </a-tooltip>
-              </a-menu-item>
+              <template v-for="agent in agents" :key="agent.id"> <!--v-if="!(!isElectronEnv && agent.code === 'local')"-->
+                <a-menu-item :style="agent.id === currentAgentId ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
+                  <a-tooltip placement="left" :title="agent.desc">
+                    {{ agent.name }}
+                  </a-tooltip>
+                </a-menu-item>
+              </template>
             </a-menu>
           </template>
         </a-dropdown>
@@ -49,12 +50,13 @@
           <template #overlay>
             <a-menu @click="onSysMenuClick">
               <a-sub-menu key="agent-sub-menu" title="切换代理 &nbsp;">
-                <a-menu-item v-for="agent in agentUrlOpts" :key="agent.value"
-                             :style="agent.label === currentAgentLabel ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
-                  <a-tooltip placement="left" :title="agent.desc">
-                    {{ agent.label }}
-                  </a-tooltip>
-                </a-menu-item>
+                <template v-for="agent in agents" :key="agent.id"> <!--v-if="!(!isElectronEnv && agent.code === 'local')"-->
+                  <a-menu-item :style="agent.label === currentAgentId ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
+                    <a-tooltip placement="left" :title="agent.desc">
+                      {{ agent.name }}
+                    </a-tooltip>
+                  </a-menu-item>
+                </template>
               </a-sub-menu>
 
               <a-menu-item key="agentManage">
@@ -147,20 +149,9 @@ const {t} = useI18n();
 const router = useRouter();
 const store = useStore<{ User: UserStateType, Global: GlobalStateType }>();
 const {isFullscreen, enter, exit, toggle} = useFullscreen();
-// 获取当前登录用户信息
-const currentUser = computed<CurrentUser>(() => store.state.User.currentUser);
 
-// 获取当前可以切换的 Agent 地址
-const agentUrlOpts = computed(() => {
-  const opts = store.state.Global.configInfo?.agentUrlOpts;
-  if (opts?.length > 0) {
-    if (!isElectronEnv) {
-      return opts.filter((item) => item.value !== 'local');
-    }
-    return opts;
-  }
-  return [];
-});
+const agents = computed<any[]>(() => store.state.Global.agents);
+const currentUser = computed<CurrentUser>(() => store.state.User.currentUser);
 
 const selectLangVisible = ref(false)
 const closeSelectLang = async (event: any) => {
@@ -213,7 +204,7 @@ const onSysMenuClick = (event: any) => {
     window.open('https://deeptest.com/setup.html');
 
   } else if (keyPath[0] === 'agent-sub-menu') {
-    const url = getAgentUrlByValue(agentUrlOpts.value, key);
+    const url = getAgentUrlByValue(agents.value, key);
     window.localStorage.setItem(Cache_Key_Agent_Value, key);
     window.localStorage.setItem(Cache_Key_Agent_Url, url);
     window.location.reload();
@@ -222,7 +213,7 @@ const onSysMenuClick = (event: any) => {
 
 function changeAgentEnv(event: any) {
   const {key} = event;
-  const url = getAgentUrlByValue(agentUrlOpts.value, key);
+  const url = getAgentUrlByValue(agents.value, key);
   window.localStorage.setItem(Cache_Key_Agent_Value, key);
   window.localStorage.setItem(Cache_Key_Agent_Url, url);
   window.location.reload();
@@ -256,8 +247,8 @@ const clientDownloadUrlOpts = computed(() => {
   ];
 });
 
-const currentAgentLabel = computed(() => {
-  return getAgentLabel(agentUrlOpts.value);
+const currentAgentId = computed(() => {
+  return getAgentLabel(agents.value);
 })
 
 const onManagementClick = () => {
@@ -265,14 +256,12 @@ const onManagementClick = () => {
 }
 
 onMounted(async () => {
-    const list = await store.dispatch('Global/getConfigByKey', {key: 'agentUrlOpts'});
-
-    console.log('===-==', agentUrlOpts.value)
+    await store.dispatch('Global/listAgent');
 
     // 如果没有缓存，根据当前环境选择一个默认值
     if (!window.localStorage.getItem(Cache_Key_Agent_Value)) {
       const agentValue = isElectronEnv ? 'local' : 'test';
-      const url = getAgentUrlByValue(list, agentValue);
+      const url = getAgentUrlByValue(agents.value, agentValue);
       window.localStorage.setItem(Cache_Key_Agent_Value, agentValue);
       window.localStorage.setItem(Cache_Key_Agent_Url, url);
     }

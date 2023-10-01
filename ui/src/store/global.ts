@@ -7,6 +7,7 @@ import router from '@/config/routes';
 import { getPermissionMenuList } from '@/services/project';
 import {getConfigByKey, getServerConfig} from "@/services/config";
 import {getClientVersion} from "@/services/static";
+import {listAgent} from "@/views/sys-settings/service";
 
 export interface StateType {
   // 左侧展开收起
@@ -24,6 +25,7 @@ export interface StateType {
   permissionButtonMap: any;
   serverConfig: any;
   configInfo: any,
+  agents: any[],
   spinning:boolean;
   clientVersion: string;
 }
@@ -41,12 +43,15 @@ export interface ModuleType extends StoreModuleType<StateType> {
     setConfigByKey: Mutation<StateType>;
     setClientVersion: Mutation<StateType>;
     setSpinning: Mutation<StateType>;
+    setAgents: Mutation<StateType>;
   };
   actions: {
     getPermissionList: Action<StateType, StateType>;
     getServerConfig: Action<StateType, StateType>;
     getConfigByKey: Action<StateType, StateType>;
     getClientVersion: Action<StateType, StateType>;
+
+    listAgent: Action<StateType, StateType>;
   };
 }
 
@@ -67,6 +72,7 @@ const initState: StateType = {
   permissionButtonMap: null,
   serverConfig: {},
   configInfo: {},
+  agents: [],
   spinning:false,
   clientVersion: '0.0.1',
 };
@@ -110,6 +116,9 @@ const StoreModel: ModuleType = {
     setSpinning(state, payload) {
       state.spinning = payload
     },
+    setAgents(state, payload) {
+      state.agents = payload
+    },
   },
   actions: {
     async getPermissionList({ commit }, payload: any) {
@@ -150,6 +159,15 @@ const StoreModel: ModuleType = {
           value:JSON.parse(result.data || null)
         });
         return JSON.parse(result.data || null);
+      }
+    },
+
+    async listAgent({ commit }) {
+      console.log('listAgent')
+      const result = await listAgent('');
+
+      if (result.code === 0) {
+        commit('setAgents',result.data);
       }
     },
 

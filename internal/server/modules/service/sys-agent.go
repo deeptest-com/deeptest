@@ -10,8 +10,8 @@ type SysAgentService struct {
 	SysAgentRepo *repo.SysAgentRepo `inject:""`
 }
 
-func (s *SysAgentService) List() (pos []model.SysAgent, err error) {
-	pos, err = s.SysAgentRepo.List()
+func (s *SysAgentService) List(keywords string) (pos []model.SysAgent, err error) {
+	pos, err = s.SysAgentRepo.List(keywords)
 
 	return
 }
@@ -27,7 +27,7 @@ func (s *SysAgentService) Save(req *model.SysAgent) (err error) {
 	return
 }
 
-func (s *SysAgentService) UpdateName(req v1.JslibReq) (err error) {
+func (s *SysAgentService) UpdateName(req v1.AgentReq) (err error) {
 	err = s.SysAgentRepo.UpdateName(req)
 	return
 }

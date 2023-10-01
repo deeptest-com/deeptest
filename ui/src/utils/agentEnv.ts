@@ -26,26 +26,26 @@ export function getAgentUrl() {
  * @param agentUrlOpts 可选的 Agent 服务地址
  *
  * */
-export function getAgentLabel(agentUrlOpts) {
+export function getAgentLabel(agents) {
     const localCacheAgentVal = window.localStorage.getItem(Cache_Key_Agent_Value) || (isElectronEnv ? 'local' : 'test');
-    const selectedAgent = agentUrlOpts.find((item) => {
-        return item.value === localCacheAgentVal;
+    const selectedAgent = agents.find((item) => {
+        return item.code === localCacheAgentVal;
     });
-    if (selectedAgent?.label) {
-        return selectedAgent?.label;
+
+    if (selectedAgent?.name) {
+        return selectedAgent?.name;
     }
     return '外网调试'
 }
-
 
 /**
  * @param agentUrlOpts 可选的 Agent 服务地址
  * @param value 选中的 Agent 服务地址
  * @returns {string} 选中的 Agent 服务地址
  * */
-export function getAgentUrlByValue(agentUrlOpts, value) {
-    const selectedAgent = agentUrlOpts.find((item) => {
-        return item.value === value;
+export function getAgentUrlByValue(agents, id) {
+    const selectedAgent = agents.find((item) => {
+        return item.id === id;
     });
     if (selectedAgent?.url) {
         return selectedAgent?.url;

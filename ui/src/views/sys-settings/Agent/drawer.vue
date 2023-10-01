@@ -19,9 +19,14 @@
                      @blur="validate('name', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
-          <a-form-item label="描述" v-bind="validateInfos.desc" required>
-            <a-input v-model:value="model.desc"
-                     @blur="validate('desc', { trigger: 'blur' }).catch(() => {})"/>
+          <a-form-item label="地址" v-bind="validateInfos.url" required>
+            <a-input v-model:value="model.url"
+                     @blur="validate('url', { trigger: 'blur' }).catch(() => {})"/>
+          </a-form-item>
+
+          <a-form-item label="描述" v-bind="validateInfos.desc">
+            <a-textarea v-model:value="model.desc"
+                        @blur="validate('desc', { trigger: 'blur' }).catch(() => {})"/>
           </a-form-item>
 
           <a-form-item :wrapper-col="{ span: wrapperCol.span, offset: labelCol.span }">
@@ -48,6 +53,7 @@ import {StateType as SysSettingStateType} from "../store";
 import {uploadRequest} from "@/utils/upload";
 import {notifyWarn} from "@/utils/notify";
 import {pattern} from "@/utils/const";
+import {urlValidator} from "@/utils/validate";
 
 const useForm = Form.useForm;
 
@@ -75,7 +81,10 @@ const onCancel = () => {
 
 const rulesRef = reactive({
   name: [
-    {required: true, message: '名称以字母开头包含字母和数字，且不能为空。', pattern: pattern.alphanumeric, trigger: 'blur'},
+    {required: true, message: '请输入名称', trigger: 'blur'},
+  ],
+  url: [
+    {required: true, validator: urlValidator, message: '请输入合法的代理URL地址', trigger: 'blur'},
   ],
 });
 

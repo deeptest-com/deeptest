@@ -91,7 +91,7 @@ export async function deleteAgent(id): Promise<any> {
 
 export async function disableAgent(id): Promise<any> {
     return request({
-        url: `/${apiPathJslib}/${id}/disable`,
+        url: `/${apiPathAgent}/${id}/disable`,
         method: 'put',
     });
 }

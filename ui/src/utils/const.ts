@@ -13,10 +13,9 @@ export const ScopeDeeptest = 'scope-com-deeptest'
 export const ActionRecordStart = 'recordStart'
 export const ActionRecordedMsg = 'recordMsg'
 
-export const Cache_Key_Server_Url = 'dp-cache-server-url'
-export const Cache_Key_Agent_Url = 'dp-cache-agent-url'
+export const Cache_Key_Server_Url = 'dp-cache-server'
+export const Cache_Key_Agent = 'dp-cache-agent'
 export const Cache_Key_Agent_Local_Port = 'dp-cache-agent-local-port'
-export const Cache_Key_Agent_Value = 'dp-cache-agent-value'
 
 export const MonacoOptions = {
     colorDecorators: true,

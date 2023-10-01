@@ -1,12 +1,7 @@
 /**
  * 是否运行在客户端 Electron 容器中
  * */
-import {
-    Cache_Key_Agent_Local_Port,
-    Cache_Key_Agent_Url,
-    Cache_Key_Agent_Value,
-    Cache_Key_Server_Url
-} from "@/utils/const";
+import {Cache_Key_Server_Url} from "@/utils/const";
 
 const win: any = window?.process;
 export const isElectronEnv = win?.versions?.electron;

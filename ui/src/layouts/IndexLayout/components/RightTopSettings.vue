@@ -134,7 +134,7 @@ import {CurrentUser, StateType as UserStateType} from "@/store/user";
 import {useRouter} from "vue-router";
 import {useFullscreen} from '@vueuse/core';
 import {StateType as GlobalStateType} from "@/store/global";
-import {Cache_Key_Agent_Url, Cache_Key_Agent_Value} from "@/utils/const";
+import {Cache_Key_Agent} from "@/utils/const";
 
 const props = defineProps({
   theme: {
@@ -194,10 +194,6 @@ const onSysMenuClick = (event: any) => {
     window.open('https://deeptest.com/setup.html');
 
   } else if (keyPath[0] === 'agent-sub-menu') {
-    const url = getAgentUrlByValue(agents.value, key);
-    window.localStorage.setItem(Cache_Key_Agent_Value, key);
-    window.localStorage.setItem(Cache_Key_Agent_Url, url);
-
     const currAgent = agents.value.find((item) => item.id === +key)
     store.commit('Global/setCurrAgent', currAgent)
     // window.location.reload();
@@ -208,9 +204,8 @@ function changeAgentEnv(event: any) {
   console.log('changeAgentEnv', event)
 
   const {key} = event;
-  const url = getAgentUrlByValue(agents.value, key);
-  window.localStorage.setItem(Cache_Key_Agent_Value, key);
-  window.localStorage.setItem(Cache_Key_Agent_Url, url);
+  const agent = agents.value.find((item) => item.id === +key)
+  window.localStorage.setItem(Cache_Key_Agent, agent);
   // window.location.reload();
 }
 
@@ -243,12 +238,12 @@ const clientDownloadUrlOpts = computed(() => {
 });
 
 onMounted(async () => {
-    await store.dispatch('Global/listAgent');
-
+  // 设置当前代理，LocalStore里没有，取列表中的第1个
+  await store.dispatch('Global/listAgent');
   await store.commit('Global/setCurrAgent', null);
 
-    // 获取客户端最新版本号
-    await store.dispatch('Global/getClientVersion');
+  // 获取客户端最新版本号
+  await store.dispatch('Global/getClientVersion');
 })
 
 </script>

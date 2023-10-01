@@ -8,7 +8,8 @@ import { getPermissionMenuList } from '@/services/project';
 import {getConfigByKey, getServerConfig} from "@/services/config";
 import {getClientVersion} from "@/services/static";
 import {listAgent} from "@/views/sys-settings/service";
-import {Cache_Key_Agent_Url, Cache_Key_Agent_Value} from "@/utils/const";
+import {Cache_Key_Agent} from "@/utils/const";
+import {getCache, setCache} from "@/utils/localCache";
 
 export interface StateType {
   // 左侧展开收起
@@ -123,21 +124,22 @@ const StoreModel: ModuleType = {
     setAgents(state, payload) {
       state.agents = payload
     },
-    setCurrAgent(state, payload) {
+    async setCurrAgent(state, payload) {
+      console.log('setCurrAgent', payload)
       if (payload) {
         state.currAgent = payload;
       } else {
-        state.currAgent = payload;
+        const currAgentStr = await getCache(Cache_Key_Agent)
+        let currAgent = currAgentStr ? JSON.parse(currAgentStr) : null
 
-        let currAgentId = window.localStorage.getItem(Cache_Key_Agent_Value) || state.agents[0].id
-
-        if (!currAgentId && state.agents.length > 0) {
-          currAgentId = state.agents[0].id
+        if (!currAgent && state.agents.length > 0) {
+          currAgent = state.agents[0]
         }
 
-        const currAgent = state.agents.find((item) => currAgentId && item.id === +currAgentId)
         state.currAgent = currAgent
       }
+
+      await setCache(Cache_Key_Agent, JSON.stringify(state.currAgent));
     },
   },
   actions: {

@@ -1,7 +1,8 @@
 /**
  * 是否运行在客户端 Electron 容器中
  * */
-import {Cache_Key_Agent_Local_Port, Cache_Key_Agent_Url, Cache_Key_Agent_Value} from "@/utils/const";
+import {Cache_Key_Agent_Local_Port, Cache_Key_Agent} from "@/utils/const";
+import {getCache} from "@/utils/localCache";
 
 const win: any = window?.process;
 export const isElectronEnv = win?.versions?.electron;
@@ -12,12 +13,17 @@ export const isElectronEnv = win?.versions?.electron;
  * @notice 仅仅适用于 LY 项目
  *
  * */
-export function getAgentUrl() {
-    let agentUrl =  window.localStorage.getItem(Cache_Key_Agent_Url) || process.env.VUE_APP_API_AGENT || '';
+export async function getAgentUrl() {
+    const currAgentStr = await getCache(Cache_Key_Agent)
+    const currAgent = currAgentStr ? JSON.parse(currAgentStr) : null
+
+    let agentUrl = currAgent ? currAgent.url : process.env.VUE_APP_API_AGENT;
+
     const localAgentPort = window.localStorage.getItem(Cache_Key_Agent_Local_Port) || '';
-    if(isElectronEnv && localAgentPort?.length === 5 && agentUrl.includes('127.0.0.1')){
-        agentUrl = agentUrl.replace(/\d{5}/,localAgentPort);
+    if (isElectronEnv && localAgentPort?.length === 5 && agentUrl.includes('127.0.0.1')) {
+        agentUrl = agentUrl.replace(/\d{5}/, localAgentPort);
     }
+
     return agentUrl;
 }
 

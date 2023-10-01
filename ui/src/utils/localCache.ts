@@ -10,7 +10,8 @@ export const setCache = async (key: string, val: any): Promise<boolean> => {
   try {
     await localforage.setItem(key, val);
     return true;
-  } catch (error) {
+  } catch (err) {
+    console.log('setCache err', err)
     return false;
   }
 };

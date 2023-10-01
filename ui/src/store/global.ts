@@ -1,4 +1,4 @@
-
+import { toRaw } from '@vue/reactivity'
 import { Mutation, Action } from 'vuex';
 import { StoreModuleType } from "@/utils/store";
 import { TabNavItem } from '@/utils/routes';
@@ -129,8 +129,7 @@ const StoreModel: ModuleType = {
       if (payload) {
         state.currAgent = payload;
       } else {
-        const currAgentStr = await getCache(Cache_Key_Agent)
-        let currAgent = currAgentStr ? JSON.parse(currAgentStr) : null
+        let currAgent = await getCache(Cache_Key_Agent)
 
         if (!currAgent && state.agents.length > 0) {
           currAgent = state.agents[0]
@@ -139,7 +138,7 @@ const StoreModel: ModuleType = {
         state.currAgent = currAgent
       }
 
-      await setCache(Cache_Key_Agent, JSON.stringify(state.currAgent));
+      await setCache(Cache_Key_Agent, toRaw(state.currAgent))
     },
   },
   actions: {

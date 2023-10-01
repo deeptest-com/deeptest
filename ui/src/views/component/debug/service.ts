@@ -60,7 +60,7 @@ export async function generateCases(data: Interface): Promise<any> {
 // agent debug invoke
 export async function call(data): Promise<any> {
    const agentUrl = getAgentUrl() || null
-    console.log('===call===', agentUrl, data)
+    console.log(`===call to agent ${agentUrl}===`, data)
 
     // call agent api
     return requestToAgent({

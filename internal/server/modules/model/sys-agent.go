@@ -4,7 +4,6 @@ type SysAgent struct {
 	BaseModel
 
 	Name string `json:"name" validate:"required"`
-	Code string `json:"code" validate:"required"`
 	Url  string `json:"url" validate:"required"`
 	Desc string `json:"desc"`
 

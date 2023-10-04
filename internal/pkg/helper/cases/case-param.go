@@ -6,6 +6,7 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
+	"path"
 )
 
 func addParamRequiredCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
@@ -15,8 +16,9 @@ func addParamRequiredCase(paramVal *openapi3.Parameter, parent *AlternativeCase)
 
 	sample := getRequiredSample()
 	required := &AlternativeCase{
-		Title:  fmt.Sprintf("required"),
+		Title:  "required",
 		Sample: sample,
+		Path:   path.Join(parent.Path, "required"),
 
 		Category:      consts.AlternativeCaseCase,
 		Type:          consts.AlternativeCaseRequired,
@@ -45,6 +47,7 @@ func addParamTypeCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 	typeCase := &AlternativeCase{
 		Title:  fmt.Sprintf("%v", typ),
 		Sample: sample,
+		Path:   path.Join(parent.Path, "type"),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseTyped,
@@ -69,6 +72,7 @@ func addParamEnumCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 	typeCase := &AlternativeCase{
 		Title:  fmt.Sprintf("enum %v", enum),
 		Sample: sample,
+		Path:   path.Join(parent.Path, "enum"),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseEnum,
@@ -95,6 +99,7 @@ func addParamFormatCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 	formatCase := &AlternativeCase{
 		Title:  fmt.Sprintf("format (%s)", format),
 		Sample: sample,
+		Path:   path.Join(parent.Path, "format"),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseEnum,
@@ -119,16 +124,18 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 		tag := item[3]
 		rule := item[4].(consts.AlternativeCaseRules)
 
-		addRuleCase(name, sample, typ, tag, rule, parent)
+		temp := path.Join("param", paramVal.In, name, "rule")
+		addRuleCase(name, sample, typ, tag, rule, parent, temp)
 	}
 }
 
 func addRuleCase(name string, sample interface{}, typ OasFieldType, tag interface{},
-	rule consts.AlternativeCaseRules, parent *AlternativeCase) {
+	rule consts.AlternativeCaseRules, parent *AlternativeCase, pth string) {
 
 	ruleCase := &AlternativeCase{
 		Title:  fmt.Sprintf("%s (%v)", rule.String(), tag),
 		Sample: sample,
+		Path:   path.Join(pth, rule.String()),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseRule,

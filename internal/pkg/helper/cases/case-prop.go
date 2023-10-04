@@ -6,19 +6,21 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
+	"path"
 )
 
-func addPropCase(propName string, propVal *openapi3.Schema, requires []string, parent *AlternativeCase) {
+func addPropCase(propName string, propVal *openapi3.Schema, requires []string, parent *AlternativeCase, pth string) {
 	if propVal.Type == OasFieldTypeArray.String() {
 		arrCase := &AlternativeCase{
 			Title:    "数组",
+			Path:     path.Join(pth, "arr"),
 			Category: consts.AlternativeCaseArray,
 			IsDir:    true,
 			Key:      _stringUtils.Uuid(),
 			Slots:    iris.Map{"icon": "icon"},
 		}
 
-		addPropCase(propName, propVal.Items.Value, nil, arrCase)
+		addPropCase(propName, propVal.Items.Value, nil, arrCase, arrCase.Path)
 
 		parent.Children = append(parent.Children, arrCase)
 
@@ -27,6 +29,7 @@ func addPropCase(propName string, propVal *openapi3.Schema, requires []string, p
 	} else if propVal.Type == OasFieldTypeObject.String() {
 		objCase := &AlternativeCase{
 			Title:    "对象",
+			Path:     path.Join(pth, "object"),
 			Category: consts.AlternativeCaseObject,
 			IsDir:    true,
 			Key:      _stringUtils.Uuid(),
@@ -34,7 +37,8 @@ func addPropCase(propName string, propVal *openapi3.Schema, requires []string, p
 		}
 
 		for propName, propRef := range propVal.Properties {
-			addPropCase(propName, propRef.Value, propVal.Required, objCase)
+			temp := path.Join(objCase.Path, propName)
+			addPropCase(propName, propRef.Value, propVal.Required, objCase, temp)
 		}
 
 		parent.Children = append(parent.Children, objCase)
@@ -42,14 +46,14 @@ func addPropCase(propName string, propVal *openapi3.Schema, requires []string, p
 		return
 	}
 
-	addPropRequiredCase(propName, propVal, requires, parent)
-	addPropTypeCase(propName, propVal, parent)
-	addPropEnumCase(propName, propVal, parent)
-	addPropFormatCase(propName, propVal, parent)
-	addPropRuleCase(propName, propVal, parent)
+	addPropRequiredCase(propName, propVal, requires, parent, pth)
+	addPropTypeCase(propName, propVal, parent, pth)
+	addPropEnumCase(propName, propVal, parent, pth)
+	addPropFormatCase(propName, propVal, parent, pth)
+	addPropRuleCase(propName, propVal, parent, pth)
 }
 
-func addPropRequiredCase(propName string, schemaVal *openapi3.Schema, requires []string, parent *AlternativeCase) {
+func addPropRequiredCase(propName string, schemaVal *openapi3.Schema, requires []string, parent *AlternativeCase, pth string) {
 	if !_stringUtils.StrInArr(propName, requires) {
 		return
 	}
@@ -59,6 +63,7 @@ func addPropRequiredCase(propName string, schemaVal *openapi3.Schema, requires [
 	required := &AlternativeCase{
 		Title:  fmt.Sprintf("required"),
 		Sample: sample,
+		Path:   path.Join(pth, "required"),
 
 		Category:      consts.AlternativeCaseCase,
 		Type:          consts.AlternativeCaseRequired,
@@ -71,7 +76,7 @@ func addPropRequiredCase(propName string, schemaVal *openapi3.Schema, requires [
 	parent.Children = append(parent.Children, required)
 }
 
-func addPropTypeCase(name string, schema *openapi3.Schema, parent *AlternativeCase) {
+func addPropTypeCase(name string, schema *openapi3.Schema, parent *AlternativeCase, pth string) {
 	typ := OasFieldType(schema.Type)
 
 	if typ == OasFieldTypeAny || typ == OasFieldTypeString {
@@ -86,6 +91,7 @@ func addPropTypeCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 	typeCase := &AlternativeCase{
 		Title:  fmt.Sprintf("%v", typ),
 		Sample: sample,
+		Path:   path.Join(pth, "type"),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseTyped,
@@ -98,7 +104,7 @@ func addPropTypeCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 	parent.Children = append(parent.Children, typeCase)
 }
 
-func addPropEnumCase(name string, schema *openapi3.Schema, parent *AlternativeCase) {
+func addPropEnumCase(name string, schema *openapi3.Schema, parent *AlternativeCase, pth string) {
 	enum := schema.Enum
 
 	if enum == nil {
@@ -110,6 +116,7 @@ func addPropEnumCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 	enumCase := &AlternativeCase{
 		Title:  fmt.Sprintf("enum %v", enum),
 		Sample: sample,
+		Path:   path.Join(pth, "enum"),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseEnum,
@@ -122,7 +129,7 @@ func addPropEnumCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 	parent.Children = append(parent.Children, enumCase)
 }
 
-func addPropFormatCase(name string, schema *openapi3.Schema, parent *AlternativeCase) {
+func addPropFormatCase(name string, schema *openapi3.Schema, parent *AlternativeCase, pth string) {
 	typ := OasFieldType(schema.Type)
 	format := OasFieldFormat(schema.Format)
 
@@ -135,6 +142,7 @@ func addPropFormatCase(name string, schema *openapi3.Schema, parent *Alternative
 	formatCase := &AlternativeCase{
 		Title:  fmt.Sprintf("format (%s)", format),
 		Sample: sample,
+		Path:   path.Join(pth, "format"),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseFormat,
@@ -147,7 +155,7 @@ func addPropFormatCase(name string, schema *openapi3.Schema, parent *Alternative
 	parent.Children = append(parent.Children, formatCase)
 }
 
-func addPropRuleCase(name string, schema *openapi3.Schema, parent *AlternativeCase) {
+func addPropRuleCase(name string, schema *openapi3.Schema, parent *AlternativeCase, pth string) {
 	arr := getRuleSamples(schema, name)
 
 	for _, item := range arr {
@@ -157,6 +165,6 @@ func addPropRuleCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 		tag := item[3]
 		rule := item[4].(consts.AlternativeCaseRules)
 
-		addRuleCase(name, sample, typ, tag, rule, parent)
+		addRuleCase(name, sample, typ, tag, rule, parent, path.Join(pth, "rule"))
 	}
 }

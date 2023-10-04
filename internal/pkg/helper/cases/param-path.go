@@ -5,11 +5,13 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
+	"path"
 )
 
 func LoadForPathParams(params openapi3.Parameters) (category *AlternativeCase) {
 	category = &AlternativeCase{
 		Title:    "路径参数",
+		Path:     consts.ParamInPath.String(),
 		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,
 		Key:      _stringUtils.Uuid(),
@@ -23,6 +25,7 @@ func LoadForPathParams(params openapi3.Parameters) (category *AlternativeCase) {
 
 		paramCase := &AlternativeCase{
 			Title:    param.Value.Name,
+			Path:     path.Join(consts.ParamInPath.String(), param.Value.Name),
 			Category: consts.AlternativeCaseParam,
 			IsDir:    true,
 			Key:      _stringUtils.Uuid(),

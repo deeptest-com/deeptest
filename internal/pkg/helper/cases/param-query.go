@@ -26,7 +26,7 @@ func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) 
 
 		paramCase := &AlternativeCase{
 			Title:    paramVal.Name,
-			Path:     path.Join(consts.ParamInQuery.String(), paramVal.Name),
+			Path:     path.Join("param", consts.ParamInQuery.String(), paramVal.Name),
 			Category: consts.AlternativeCaseParam,
 			IsDir:    true,
 			Key:      _stringUtils.Uuid(),

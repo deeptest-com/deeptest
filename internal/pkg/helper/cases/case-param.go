@@ -124,7 +124,7 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 		tag := item[3]
 		rule := item[4].(consts.AlternativeCaseRules)
 
-		temp := path.Join("param", paramVal.In, name, "rule")
+		temp := path.Join(parent.Path, "rule")
 		addRuleCase(name, sample, typ, tag, rule, parent, temp)
 	}
 }

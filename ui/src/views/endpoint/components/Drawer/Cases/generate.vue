@@ -4,7 +4,17 @@
            @ok="finish"
            @cancel="cancel"
            :title="'备选用例'"
-            :bodyStyle="{height: 'calc(100vh - 266px)', overflowY: 'auto'}">
+           class="case-generate-main">
+
+    <div class="toolbar">
+      <div class="left"></div>
+      <div class="right">
+        <a-button @click="saveAsCase">
+          另存为用例
+        </a-button>
+      </div>
+    </div>
+
     <a-form :label-col="{ span: 3 }"
             :wrapper-col="{ span: 20 }">
 
@@ -34,6 +44,7 @@
             :tree-data="alternativeCases"
             :expandedKeys="expandedKeys"
             :checkable="true"
+            v-model:checkedKeys="checkedKeys"
             :show-icon="true">
           <template #title="nodeProps">
             <span class="tree-title">
@@ -120,7 +131,8 @@ const modelRef = ref({
 });
 
 const replaceFields = {key: 'key'};
-const expandedKeys = ref<number[]>([]);
+const expandedKeys = ref<string[]>([]);
+const checkedKeys = ref<string[]>([])
 
 const loadCaseTree = () => {
   store.dispatch('Endpoint/loadAlternativeCases',
@@ -177,6 +189,10 @@ const rulesRef = reactive({
 });
 
 const {resetFields, validate, validateInfos} = useForm(modelRef, rulesRef);
+
+const saveAsCase = () => {
+  console.log('saveAsCase', checkedKeys.value)
+}
 
 const finish = () => {
   console.log('finish', modelRef.value)
@@ -235,19 +251,42 @@ function getNodeMap(treeNode: any, mp: any) {
 
 </script>
 
-<style lang="less" scoped>
-.modal-btns {
-  display: flex;
-  justify-content: flex-end;
+<style lang="less">
+.case-generate-main {
+  .ant-modal-content {
+    .ant-modal-body {
+      padding-top: 10px;
+      height: calc(100vh - 266px);
+      overflow-y: auto;
 
-  .ant-tree {
-    .ant-tree-title {
-      height: 24px;
-      input {
-        height: 24px;
-        background-color: white;
+      .toolbar {
+        display: flex;
+        margin-bottom: 10px;
+        .left {
+          flex: 1;
+        }
+        .right {
+          width: 100px;
+          text-align: right;
+        }
+      }
+
+      .modal-btns {
+        display: flex;
+        justify-content: flex-end;
+
+        .ant-tree {
+          .ant-tree-title {
+            height: 24px;
+            input {
+              height: 24px;
+              background-color: white;
+            }
+          }
+        }
       }
     }
   }
+
 }
 </style>

@@ -799,3 +799,18 @@ const (
 func (e AlternativeCaseRules) String() string {
 	return string(e)
 }
+
+type AlternativeCaseType string
+
+const (
+	QueryParam  AlternativeCaseType = "query_param"
+	PathParam   AlternativeCaseType = "path_param"
+	HeaderParam AlternativeCaseType = "header_param"
+
+	BodyField AlternativeCaseType = "body_field"
+	FormField AlternativeCaseType = "form_field"
+)
+
+func (e AlternativeCaseType) String() string {
+	return string(e)
+}

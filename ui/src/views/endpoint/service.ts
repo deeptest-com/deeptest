@@ -239,11 +239,20 @@ export async function removeEndpointCase(data): Promise<any> {
     });
 }
 
-export async function loadAlternativeCases(data: any): Promise<any> {
+export async function loadAlternativeCases(baseId: number): Promise<any> {
+    const params = {baseId}
     return request({
         url: `/${apiPathCase}/loadAlternative`,
         method: 'POST',
-        data
+        params
+    })
+}
+export async function loadAlternativeCasesSaved(baseId: number): Promise<any> {
+    const params = {baseId}
+    return request({
+        url: `/${apiPathCase}/loadAlternativeCasesSaved`,
+        method: 'POST',
+        params
     })
 }
 

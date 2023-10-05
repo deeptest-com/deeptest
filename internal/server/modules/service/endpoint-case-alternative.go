@@ -15,6 +15,9 @@ import (
 )
 
 type EndpointCaseAlternativeService struct {
+	EndpointCaseAlternativeRepo *repo.EndpointCaseAlternativeRepo `inject:""`
+	EndpointCaseRepo            *repo.EndpointCaseRepo            `inject:""`
+
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
@@ -28,7 +31,7 @@ type EndpointCaseAlternativeService struct {
 	EndpointMockParamService *EndpointMockParamService `inject:""`
 }
 
-func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.EndpointCaseAlternativeLoadReq) (
+func (s *EndpointCaseAlternativeService) LoadAlternative(baseId uint) (
 	root casesHelper.AlternativeCase, err error) {
 
 	root.Title = "备选用例"
@@ -36,6 +39,8 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.Endpoi
 	root.Key = _stringUtils.Uuid()
 	root.Slots = iris.Map{"icon": "icon"}
 	root.IsDir = true
+
+	casePo, _ := s.EndpointCaseRepo.Get(baseId)
 
 	//_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
 	//if endpointInterfaceId == 0 {
@@ -56,7 +61,7 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.Endpoi
 	}
 	apiPathItem, _ := casesHelper.GetApiPathItem(doc3)
 
-	apiOperation, err := casesHelper.GetApiOperation(req.Method, apiPathItem)
+	apiOperation, err := casesHelper.GetApiOperation(casePo.Method, apiPathItem)
 	if err != nil || apiOperation == nil {
 		return
 	}
@@ -65,6 +70,18 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(req serverDomain.Endpoi
 	root.Children = append(root.Children, casesHelper.LoadForPathParams(apiOperation.Parameters))
 	root.Children = append(root.Children, casesHelper.LoadForHeaders(apiOperation.Parameters))
 	root.Children = append(root.Children, casesHelper.LoadForBody(apiOperation.RequestBody))
+
+	return
+}
+
+func (s *EndpointCaseAlternativeService) LoadAlternativeSaved(caseId uint) (
+	ret map[string]model.EndpointCaseAlternative, err error) {
+
+	pos, err := s.EndpointCaseAlternativeRepo.List(caseId)
+
+	for _, po := range pos {
+		ret[po.Path] = po
+	}
 
 	return
 }

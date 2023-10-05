@@ -18,7 +18,7 @@
     <a-form :label-col="{ span: 3 }"
             :wrapper-col="{ span: 20 }">
 
-      <a-form-item label="请求方法" v-bind="validateInfos.method">
+<!--      <a-form-item label="请求方法" v-bind="validateInfos.method">
         <a-select class="select-method"
                   v-model:value="modelRef.method"
                   @change="onMethodChanged">
@@ -28,7 +28,7 @@
             </a-select-option>
           </template>
         </a-select>
-      </a-form-item>
+      </a-form-item>-->
 
       <a-form-item label="名称前缀" v-bind="validateInfos.name">
         <a-input v-model:value="modelRef.prefix"
@@ -126,7 +126,7 @@ const props = defineProps({
 })
 
 const modelRef = ref({
-  method: 'GET',
+  baseId: 0,
   prefix: '异常路径',
 });
 
@@ -135,14 +135,11 @@ const expandedKeys = ref<string[]>([]);
 const checkedKeys = ref<string[]>([])
 
 const loadCaseTree = () => {
-  store.dispatch('Endpoint/loadAlternativeCases',
-      {
-        endpointId: endpointDetail.value.id,
-        method: modelRef.value.method,
-      }).then((result) => {
+  store.dispatch('Endpoint/loadAlternativeCases', modelRef.value.baseId).then((result) => {
           console.log('loadCaseTree', result)
           expandAll()
       })
+  store.dispatch('Endpoint/loadAlternativeCasesSaved', modelRef.value.baseId)
 }
 
 function expandAll() {
@@ -165,14 +162,14 @@ function expandAll() {
   expandedKeys.value = keys;
 }
 
-const onMethodChanged = () => {
-  loadCaseTree()
-}
+// const onMethodChanged = () => {
+//   loadCaseTree()
+// }
 
 watch(() => props.visible, () => {
   console.log('watch props.visible', props?.visible)
   modelRef.value = {
-    method: 'GET',
+    baseId: props?.model.baseId,
     prefix: props?.model?.prefix || '异常路径',
   }
 

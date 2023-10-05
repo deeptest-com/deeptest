@@ -1,10 +1,6 @@
 <template>
   <div class="endpoint-debug-cases-list">
     <div class="toolbar">
-      <a-button trigger="click" @click="generateCases">
-        <span>备选用例</span>
-      </a-button>
-
       <a-button type="primary" trigger="click" @click="create">
         <span>新建用例</span>
       </a-button>
@@ -40,6 +36,10 @@
         </template>
 
         <template #action="{ record }">
+          <a-button type="link" @click="() => generateCases(record)">
+            <AppstoreAddOutlined title="备选用例" />
+          </a-button>
+
           <a-button type="link" @click="() => copy(record)">
             <CopyOutlined title="复制" />
           </a-button>
@@ -78,7 +78,7 @@ import {UsedBy} from "@/utils/enum";
 import {Empty, notification} from "ant-design-vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {DeleteOutlined, CopyOutlined} from '@ant-design/icons-vue';
+import {DeleteOutlined, CopyOutlined, AppstoreAddOutlined} from '@ant-design/icons-vue';
 import {momentUtc} from '@/utils/datetime';
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
@@ -181,13 +181,12 @@ const username = (user:string)=>{
   return result?.label || '-'
 }
 
-
 const generateCasesVisible = ref(false)
 const generateCasesModel = ref({} as any)
-const generateCases = () => {
+const generateCases = (record) => {
   console.log('generateCases')
   generateCasesVisible.value = true
-  generateCasesModel.value = {}
+  generateCasesModel.value = {baseId: record.id}
 }
 const generateCasesFinish = async (model) => {
   console.log('generateCasesFinish', model, debugData.value.url)

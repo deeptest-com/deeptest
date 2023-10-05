@@ -15,19 +15,28 @@ type EndpointCaseAlternativeCtrl struct {
 
 // LoadAlternative
 func (c *EndpointCaseAlternativeCtrl) LoadAlternative(ctx iris.Context) {
-	req := serverDomain.EndpointCaseAlternativeLoadReq{}
-	err := ctx.ReadJSON(&req)
+	baseId, err := ctx.URLParamInt("baseId")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	req.CreateUserName = multi.GetUsername(ctx)
-	req.CreateUserId = multi.GetUserId(ctx)
-
-	root, err := c.EndpointCaseAlternativeService.LoadAlternative(req)
+	root, err := c.EndpointCaseAlternativeService.LoadAlternative(uint(baseId))
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: root})
+}
+
+// LoadAlternativeSaved
+func (c *EndpointCaseAlternativeCtrl) LoadAlternativeSaved(ctx iris.Context) {
+	baseId, err := ctx.URLParamInt("baseId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ret, err := c.EndpointCaseAlternativeService.LoadAlternativeSaved(uint(baseId))
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
 
 // GenerateCases

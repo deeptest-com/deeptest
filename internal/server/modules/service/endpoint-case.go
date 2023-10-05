@@ -136,6 +136,7 @@ func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCa
 	po.ProjectId = endpoint.ProjectId
 	po.ServeId = endpoint.ServeId
 
+	po.Method = debugInterface.Method
 	po.DebugInterfaceId = debugInterface.ID
 	po.ID = 0
 	err = s.EndpointCaseRepo.Save(&po)

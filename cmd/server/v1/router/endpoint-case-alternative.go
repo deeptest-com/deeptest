@@ -17,6 +17,8 @@ func (m *EndpointCaseAlternativeModule) Party() module.WebModule {
 		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		public.Post("/loadAlternative", m.EndpointCaseAlternativeCtrl.LoadAlternative).Name = "加载备选用例"
+		public.Post("/loadAlternativeCasesSaved", m.EndpointCaseAlternativeCtrl.LoadAlternativeSaved).Name = "加载备选用例"
+
 		public.Post("/generate", m.EndpointCaseAlternativeCtrl.GenerateCases).Name = "生成测试用例"
 	}
 

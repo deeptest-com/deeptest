@@ -5,8 +5,9 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 type EndpointCase struct {
 	BaseModel
 
-	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Name   string            `json:"name"`
+	Desc   string            `json:"desc"`
+	Method consts.HttpMethod `json:"method"`
 
 	EndpointId uint `json:"endpointId"`
 	ServeId    uint `json:"serveId"`
@@ -31,10 +32,8 @@ type EndpointCaseAlternative struct {
 
 	BaseId uint `json:"baseId"`
 
-	Type      consts.AlternativeCaseType `json:"type"`
-	ParamName string                     `json:"paramName"`
-	FormField string                     `json:"formField"`
-	BodyPath  string                     `json:"bodyPath"`
+	Type consts.AlternativeCaseType `json:"type"`
+	Path string                     `json:"path"`
 }
 
 func (EndpointCaseAlternative) TableName() string {

@@ -47,7 +47,7 @@ import {
 
     getMockScript,
     updateMockScript,
-    generateJsonExample, loadAlternativeCases,
+    generateJsonExample, loadAlternativeCases, loadAlternativeCasesSaved,
 } from './service';
 
 import {
@@ -65,14 +65,11 @@ import {momentUtc} from "@/utils/datetime";
 import {
     example2schema,
     schema2example,
-    getEnvList,
     getSecurityList,
     serverList,
     getSchemaList, getSchemaDetail
 } from "@/views/project-settings/service";
 import { changeServe } from '../project-settings/service';
-import {getSnippet} from "@/views/component/debug/service";
-
 
 export interface StateType {
     endpointId: number;
@@ -112,6 +109,7 @@ export interface StateType {
     mockScript:any;
 
     alternativeCases:any;
+    alternativeCasesSaved:any;
 }
 
 export interface ModuleType extends StoreModuleType<StateType> {
@@ -138,7 +136,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         setInterfaceMethodToObjMap: Mutation<StateType>;
         deleteInterfaceMethodToObjMap: Mutation<StateType>;
-     
+
         clearInterfaceMethodToObjMap: Mutation<StateType>;
         setRefsOptions: Mutation<StateType>;
         setSelectedMethodDetail: Mutation<StateType>;
@@ -162,6 +160,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         setMockScript:Mutation<StateType>;
 
         setAlternativeCases:Mutation<StateType>;
+        setAlternativeCasesSaved:Mutation<StateType>;
     };
     actions: {
         listEndpoint: Action<StateType, StateType>;
@@ -213,6 +212,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
         getCaseTree: Action<StateType, StateType>;
 
         loadAlternativeCases: Action<StateType, StateType>;
+        loadAlternativeCasesSaved: Action<StateType, StateType>;
 
         removeUnSavedMethods: Action<StateType, StateType>;
         getMockExpressions: Action<StateType, StateType>;
@@ -287,6 +287,7 @@ const initState: StateType = {
     mockScript: {},
 
     alternativeCases: [],
+    alternativeCasesSaved: [],
 };
 
 const StoreModel: ModuleType = {
@@ -451,6 +452,9 @@ const StoreModel: ModuleType = {
 
         setAlternativeCases(state, payload){
             state.alternativeCases = payload
+        },
+        setAlternativeCasesSaved(state, payload){
+            state.alternativeCasesSaved = payload
         },
     },
     actions: {
@@ -964,10 +968,20 @@ const StoreModel: ModuleType = {
             }
         },
 
-        async loadAlternativeCases({ state, dispatch }, payload: any) {
-            const jsn = await loadAlternativeCases(payload)
+        async loadAlternativeCases({commit, state, dispatch }, baseId: number) {
+            const jsn = await loadAlternativeCases(baseId)
             if (jsn.code === 0) {
-                state.alternativeCases = jsn.data.children
+                commit('setAlternativeCases', jsn.data.children);
+                return true;
+            } else {
+                return false
+            }
+        },
+        async loadAlternativeCasesSaved({ commit, state, dispatch }, baseId: number) {
+            const jsn = await loadAlternativeCasesSaved(baseId)
+            if (jsn.code === 0) {
+                state.alternativeCasesSaved = jsn.data
+                commit('setAlternativeCasesSaved', jsn.data);
                 return true;
             } else {
                 return false

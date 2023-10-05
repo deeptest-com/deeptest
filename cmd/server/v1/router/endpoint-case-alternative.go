@@ -19,7 +19,9 @@ func (m *EndpointCaseAlternativeModule) Party() module.WebModule {
 		public.Post("/loadAlternative", m.EndpointCaseAlternativeCtrl.LoadAlternative).Name = "加载备选用例"
 		public.Post("/loadAlternativeCasesSaved", m.EndpointCaseAlternativeCtrl.LoadAlternativeSaved).Name = "加载备选用例"
 
-		public.Post("/generate", m.EndpointCaseAlternativeCtrl.GenerateCases).Name = "生成测试用例"
+		public.Post("/saveAlternativeCase", m.EndpointCaseAlternativeCtrl.SaveAlternativeCase).Name = "保存备选用例条目"
+
+		//public.Post("/generate", m.EndpointCaseAlternativeCtrl.GenerateCases).Name = "生成测试用例"
 	}
 
 	return module.NewModule("/endpoints/cases", handler)

@@ -11,7 +11,6 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
-	"log"
 )
 
 type EndpointCaseAlternativeService struct {
@@ -86,42 +85,47 @@ func (s *EndpointCaseAlternativeService) LoadAlternativeSaved(caseId uint) (
 	return
 }
 
-func (s *EndpointCaseAlternativeService) GenerateFromSpec(req serverDomain.EndpointCaseAlternativeGenerateReq) (err error) {
-	endpointInterfaceId := req.EndpointInterfaceId
-	if endpointInterfaceId == 0 {
-		return
-	}
-
-	endpointInterface, _ := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
-	endpoint, err := s.EndpointRepo.GetWithInterface(endpointInterface.EndpointId, "v0.1.0")
-
-	// get spec
-	spec := s.EndpointService.Yaml(endpoint)
-	doc3 := spec
-	apiPathItem, _ := casesHelper.GetApiPathItem(doc3)
-
-	for _, interf := range endpoint.Interfaces {
-		basicDebugData, err1 := s.getBaseRequest(interf)
-		if err1 != nil {
-			continue
-		}
-		log.Println(basicDebugData)
-
-		apiOperation, err1 := casesHelper.GetApiOperation(interf.Method, apiPathItem)
-		if err1 != nil {
-			continue
-		}
-		log.Println(apiOperation)
-
-		//alternativeCases, err1 := casesHelper.GenerateAlternativeCase(basicDebugData, apiOperation)
-		//if err1 != nil {
-		//	continue
-		//}
-		//log.Println(alternativeCases)
-	}
-
+func (s *EndpointCaseAlternativeService) SaveAlternativeCase(req serverDomain.EndpointCaseAlternativeSaveReq) (
+	po model.EndpointCaseAlternative, err error) {
 	return
 }
+
+//func (s *EndpointCaseAlternativeService) GenerateFromSpec(req serverDomain.EndpointCaseAlternativeGenerateReq) (err error) {
+//	endpointInterfaceId := req.EndpointInterfaceId
+//	if endpointInterfaceId == 0 {
+//		return
+//	}
+//
+//	endpointInterface, _ := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
+//	endpoint, err := s.EndpointRepo.GetWithInterface(endpointInterface.EndpointId, "v0.1.0")
+//
+//	// get spec
+//	spec := s.EndpointService.Yaml(endpoint)
+//	doc3 := spec
+//	apiPathItem, _ := casesHelper.GetApiPathItem(doc3)
+//
+//	for _, interf := range endpoint.Interfaces {
+//		basicDebugData, err1 := s.getBaseRequest(interf)
+//		if err1 != nil {
+//			continue
+//		}
+//		log.Println(basicDebugData)
+//
+//		apiOperation, err1 := casesHelper.GetApiOperation(interf.Method, apiPathItem)
+//		if err1 != nil {
+//			continue
+//		}
+//		log.Println(apiOperation)
+//
+//		//alternativeCases, err1 := casesHelper.GenerateAlternativeCase(basicDebugData, apiOperation)
+//		//if err1 != nil {
+//		//	continue
+//		//}
+//		//log.Println(alternativeCases)
+//	}
+//
+//	return
+//}
 
 func (s *EndpointCaseAlternativeService) getBaseRequest(endpointInterface model.EndpointInterface) (debugData domain.DebugData, err error) {
 	info := domain.DebugInfo{

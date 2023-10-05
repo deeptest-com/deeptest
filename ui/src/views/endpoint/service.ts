@@ -255,6 +255,13 @@ export async function loadAlternativeCasesSaved(baseId: number): Promise<any> {
         params
     })
 }
+export async function saveAlternativeCase(data: any): Promise<any> {
+    return request({
+        url: `/${apiPathCase}/saveAlternativeCase`,
+        method: 'POST',
+        data
+    })
+}
 
 /**
  * 批量修改接口字段的值

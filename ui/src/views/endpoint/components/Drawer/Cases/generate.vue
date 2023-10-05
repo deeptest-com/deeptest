@@ -217,10 +217,17 @@ const editStart = (key) => {
   treeDataMap.value[key].isEdit = true
   sampleRef.value = treeDataMap.value[key].sample
 }
-const editFinish = (key) => {
-  console.log('editFinish', key)
-  treeDataMap.value[key].isEdit = false
-  treeDataMap.value[key].sample = sampleRef.value
+const editFinish = async (key) => {
+  console.log('editFinish', key, treeDataMap.value[key])
+
+  const item = treeDataMap.value[key]
+  const data = {baseId: modelRef.value.baseId, path: item.path}
+
+  const result = await store.dispatch('Endpoint/saveAlternativeCase', data)
+  if (result) {
+    treeDataMap.value[key].isEdit = false
+    treeDataMap.value[key].sample = sampleRef.value
+  }
 }
 const editCancel = (key) => {
   console.log('editCancel', key)

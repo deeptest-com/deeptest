@@ -47,7 +47,7 @@ import {
 
     getMockScript,
     updateMockScript,
-    generateJsonExample, loadAlternativeCases, loadAlternativeCasesSaved,
+    generateJsonExample, loadAlternativeCases, loadAlternativeCasesSaved, saveAlternativeCase,
 } from './service';
 
 import {
@@ -213,6 +213,7 @@ export interface ModuleType extends StoreModuleType<StateType> {
 
         loadAlternativeCases: Action<StateType, StateType>;
         loadAlternativeCasesSaved: Action<StateType, StateType>;
+        saveAlternativeCase: Action<StateType, StateType>;
 
         removeUnSavedMethods: Action<StateType, StateType>;
         getMockExpressions: Action<StateType, StateType>;
@@ -982,6 +983,14 @@ const StoreModel: ModuleType = {
             if (jsn.code === 0) {
                 state.alternativeCasesSaved = jsn.data
                 commit('setAlternativeCasesSaved', jsn.data);
+                return true;
+            } else {
+                return false
+            }
+        },
+        async saveAlternativeCase({ commit, state, dispatch }, baseId: number) {
+            const jsn = await saveAlternativeCase(baseId)
+            if (jsn.code === 0) {
                 return true;
             } else {
                 return false

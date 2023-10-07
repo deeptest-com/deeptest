@@ -178,7 +178,7 @@ const upload = async (e) => {
     formState.value.separator = ',';
   }
 
-  return false
+  return true
 }
 
 watch(nodeData, (val: any) => {

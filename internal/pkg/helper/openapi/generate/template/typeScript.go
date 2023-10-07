@@ -17,6 +17,7 @@ func init() {
 	typeScriptTypeMap = map[fields.FieldType]string{
 		"number": "number",
 		"string": "string",
+		"object": "object",
 	}
 }
 
@@ -29,7 +30,8 @@ func newTypeScript() (ret *typeScript) {
 func (t *typeScript) typeConvert(fieldType fields.FieldType) (newType string) {
 	var ok bool
 	if newType, ok = typeScriptTypeMap[fieldType]; !ok {
-		panic(fmt.Errorf("%s can't convert", fieldType))
+		//panic(fmt.Errorf("%s can't convert", fieldType))
+		newType = string(fieldType)
 	}
 	return newType
 }
@@ -46,6 +48,7 @@ func (t *typeScript) CreateCode(field fields.Field) string {
 }
 
 func (t *typeScript) array(field fields.Field) string {
+	//if field.SubField.FieldType ==
 	return fmt.Sprintf("type %s = %s[]", field.FieldName, t.typeConvert(field.SubField.FieldType))
 }
 

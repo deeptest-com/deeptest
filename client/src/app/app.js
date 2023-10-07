@@ -184,10 +184,10 @@ export class DeepTestApp {
             updateApp(arg.newVersion, mainWin)
         });
 
-        // 一个小时检查一次更新
+        // 1 分钟 检查一次更新
         setInterval(async () => {
             await checkUpdate(this._windows.get('main'))
-        }, 1000*60*60);
+        }, 1000*60);
     }
 
     async quit() {

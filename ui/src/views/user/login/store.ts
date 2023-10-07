@@ -48,7 +48,7 @@ const StoreModel: ModuleType = {
                 const isElectron = !!window?.require;
                 const ipcRenderer = undefined as any
                 if (isElectron && !ipcRenderer) {
-                    await setCache(settings.lyElectronUserInfo, JSON.stringify(payload));
+                    await setCache(settings.lyElectronUserInfo, payload);
                 }
 
                 status = 'ok';

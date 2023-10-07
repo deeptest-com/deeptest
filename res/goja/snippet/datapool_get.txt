@@ -1,1 +1,1 @@
-dt.datapool.get("datapool_name", "field_name", "seq");
+dt.datapool.get("datapool_name", "column_name", "seq");

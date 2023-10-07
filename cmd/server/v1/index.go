@@ -73,6 +73,7 @@ type IndexModule struct {
 
 	ProjectSettingsModule *router.ProjectSettingsModule `inject:""`
 	ConfigModule          *router.ConfigModule          `inject:""`
+	SysAgentModule        *router.SysAgentModule        `inject:""`
 	TestsModule           *router.TestsModule           `inject:""`
 
 	ResponseDefineModule *router.ResponseDefineModule `inject:""`
@@ -157,6 +158,7 @@ func (m *IndexModule) ApiParty() module.WebModule {
 
 		m.ProjectSettingsModule.Party(),
 		m.ConfigModule.Party(),
+		m.SysAgentModule.Party(),
 		m.ResponseDefineModule.Party(),
 
 		m.JslibModule.Party(),

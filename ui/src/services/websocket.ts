@@ -20,7 +20,7 @@ export class WebSocket {
   static conn: NSConn
 
   static async init(reConn): Promise<any> {
-    const url = getWebSocketApi()
+    const url = await getWebSocketApi()
     console.log(`init websocket, connect to ` + url)
 
     if (reConn || !WebSocket.conn) {
@@ -92,13 +92,13 @@ export class WebSocket {
   }
 }
 
-export function getWebSocketApi (): string {
+export async function getWebSocketApi() {
   // const isProd = process.env.NODE_ENV === 'production'
   // const loc = window.location
   // console.log(`${isProd}, ${loc.toString()}`)
 
   // const apiHost = process.env.VUE_APP_API_AGENT ? process.env.VUE_APP_API_AGENT : ''
-  const apiHost = getAgentUrl();
+  const apiHost = await getAgentUrl();
   const url = apiHost.replace('http', 'ws') + '/ws'
   console.log(`websocket url = ${url}`)
 

@@ -59,10 +59,13 @@ export async function generateCases(data: Interface): Promise<any> {
 
 // agent debug invoke
 export async function call(data): Promise<any> {
+   const agentUrl = await getAgentUrl() || null
+    console.log(`===call to agent ${agentUrl}===`, data)
+
     // call agent api
     return requestToAgent({
         url: `/${apiAgentExec}/call`,
-        agentUrl: getAgentUrl() || null,
+        agentUrl: agentUrl,
         method: 'POST',
         data,
     });
@@ -104,20 +107,6 @@ export async function removeInvocation(id: number): Promise<any> {
     return request({
         url: `/${apiPathInvoke}/${id}`,
         method: 'DELETE',
-    });
-}
-
-export async function parseSpecInLocalAgent(data, targetId): Promise<any> {
-    data.targetId = targetId
-    data.serverUrl = process.env.VUE_APP_API_SERVER // used by agent to request server
-    data.token = await getToken()
-
-    return requestToAgent({
-        url: `/${apiSpec}/parseSpec`,
-        method: 'POST',
-        agentUrl: getAgentUrl() || null,
-        params: {targetId: targetId},
-        data: data,
     });
 }
 

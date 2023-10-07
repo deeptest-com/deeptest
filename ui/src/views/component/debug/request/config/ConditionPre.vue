@@ -14,10 +14,7 @@
                       @click.stop="save" />
           </a-tooltip>
 
-          <a-tooltip overlayClassName="dp-tip-small">
-            <template #title>帮助</template>
-            <QuestionCircleOutlined class="dp-icon-btn dp-trans-80"/>
-          </a-tooltip>
+          <Tips section="pre-condition" title="请求前的预处理脚本" />
 
           <a-tooltip overlayClassName="dp-tip-small">
             <template #title>全屏</template>
@@ -43,11 +40,12 @@
 import {computed, inject, ref, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import { QuestionCircleOutlined, FullscreenOutlined } from '@ant-design/icons-vue';
+import { FullscreenOutlined } from '@ant-design/icons-vue';
 import bus from "@/utils/eventBus";
 import settings from "@/config/settings";
 import {UsedBy} from "@/utils/enum";
 import IconSvg from "@/components/IconSvg";
+import Tips from "@/components/Tips/index.vue";
 
 import {StateType as Debug} from "@/views/component/debug/store";
 import Script from "./conditions-pre/Script.vue";

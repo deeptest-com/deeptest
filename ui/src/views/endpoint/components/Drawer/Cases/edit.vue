@@ -14,7 +14,7 @@
       <a-form-item label="请求方法" v-bind="validateInfos.method">
         <a-select class="select-method"
                   v-model:value="modelRef.method"
-                  :disabled="modelRef.id > 0">
+                  :disabled="modelRef.id > 0 || modelRef.from==='saveAs'">
           <template v-for="method in Methods">
             <a-select-option v-if="hasDefinedMethod(method)" :value="method" :key="method">
               {{ method }}
@@ -66,6 +66,7 @@ const modelRef = ref({
   id: 0,
   name: '',
   method: validMethods.length > 0 ? validMethods[0] : '',
+  from: ''
 });
 
 watch(() => props.visible, () => {
@@ -74,6 +75,7 @@ watch(() => props.visible, () => {
     id: props?.model?.id,
     name: props?.model?.name,
     method: props?.model?.method ? props?.model?.method : validMethods.length > 0 ? validMethods[0] : '',
+    from: props?.model?.from,
   }
 }, {immediate: true, deep: true})
 

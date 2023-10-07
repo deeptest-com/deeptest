@@ -69,8 +69,6 @@ ly-win32: prepare compile_ly_ui_client build_gui_win32 compile_launcher_win32 co
 ly-linux: prepare compile_ly_ui_client build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
 ly-mac:   prepare compile_ly_ui_client build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
 
-
-
 prepare: update_version
 
 update_version: gen_version_file
@@ -298,3 +296,21 @@ upload_to:
 	@find ${QINIU_DIR} -name ".DS_Store" -type f -delete
 	@qshell qupload2 --src-dir=${QINIU_DIR} --bucket=download --thread-count=10 --log-file=qshell.log \
 					 --skip-path-prefixes=ztf,zd,zv,zmanager,driver --rescan-local --overwrite --check-hash
+
+
+DEMO_BIN=/home/lighthouse/rd/server/deeptest
+
+demo: checkout compile_server_linux compile_agent_linux compile_ui_demo copy_file copy_file start_service
+checkout:
+	@git pull
+copy_file:
+	@cp -f bin/linux/deeptest-server ${DEMO_BIN}
+	@cp -f client/bin/linux/agent ${DEMO_BIN}/deeptest-agent
+	@rm -rf ${DEMO_BIN}/ui
+	@mkdir -p ${DEMO_BIN}/ui
+	@cp -fr client/ui ${DEMO_BIN}/ui/dist
+start_service:
+	@ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs --no-run-if-empty kill -9
+	@RUNNER_TRACKING_ID="" nohup ${DEMO_BIN}/deeptest-server > ${DEMO_BIN}/server.log 2>&1 &
+    @RUNNER_TRACKING_ID="" export DemoTestSite=http://111.231.16.35:9000 \
+        nohup ${DEMO_BIN}/deeptest-agent > ${DEMO_BIN}/agent.log 2>&1 &

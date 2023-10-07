@@ -7,17 +7,17 @@
             <span>校验接口返回的数据格式、结构及状态码是否符合接口定义</span>
             </template>
         <QuestionCircleOutlined />
-      </a-tooltip>
-        <a-switch size="small" v-model:checked="formState.open" @change="change"/> 
+      </a-tooltip>&nbsp;
+      <a-switch size="small" v-model:checked="formState.open" @change="change"/>
    </div>
    <div class="codes">
-    <a-select 
+    <a-select
         v-model:value="formState.code"
         :options="options"
         @change="select"
         :size="'small'"
         style="width: 80px;"
-        
+
         ></a-select>
    </div>
 <div style="clear:right;">
@@ -40,7 +40,7 @@ const options = computed(
 
 
 const formState = reactive({"open":props.open,"code":props.code})
-const change = (e)=> { 
+const change = (e)=> {
     formState.open = e
     console.log("responseDefine",formState)
     emits("change",formState)

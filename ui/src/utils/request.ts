@@ -9,6 +9,8 @@ import bus from "@/utils/eventBus";
 import settings from '@/config/settings';
 import {getToken} from '@/utils/localToken';
 import {getCache} from '@/utils/localCache';
+import {isLeyan} from "@/utils/comm";
+import {getCachedServerUrl} from "@/utils/serverEnv";
 
 
 export interface ResponseData {
@@ -31,6 +33,7 @@ export const getUrls = () => {
     const isElectron = !!window.require
     const nodeEnv = process.env.NODE_ENV
     console.log(`isElectron=${isElectron}, nodeEnv=${nodeEnv}, locationHref=${window.location.href}`)
+
     const serverUrl = process.env.VUE_APP_API_SERVER;
     const agentUrl = process.env.VUE_APP_API_AGENT;
     const staticUrl = process.env.VUE_APP_API_STATIC;
@@ -41,7 +44,7 @@ export const getUrls = () => {
     return {serverUrl, agentUrl,staticUrl}
 }
 
-const {serverUrl, agentUrl,staticUrl} = getUrls()
+const {serverUrl, agentUrl, staticUrl} = getUrls()
 const request = axios.create({
     baseURL: serverUrl,
     withCredentials: true, // 跨域请求时发送cookie
@@ -156,36 +159,23 @@ const errorHandler = (axiosResponse: AxiosResponse) => {
     return Promise.reject({})
 }
 
-/**
- * ajax 导出
- *
- * Method: get
- *     Request Headers
- *         无 - Content-Type
- *     Query String Parameters
- *         name: name
- *         age: age
- *
- * Method: post
- *     Request Headers
- *         Content-Type:application/json;charset=UTF-8
- *     Request Payload
- *         { name: name, age: age }
- *         Custom config parameters
- *             { cType: true }  Mandatory Settings Content-Type:application/json;charset=UTF-8
- * ......
- */
 export default function (config: AxiosRequestConfig): AxiosPromise<any> {
+    const cachedServerUrl = getCachedServerUrl()
+    if (cachedServerUrl) {
+        config.baseURL = cachedServerUrl
+    }
+
     return request(config).
     then((response: AxiosResponse) => response.data).
     catch(error => errorHandler(error));
 }
 
 export function requestToAgent(config: AxiosRequestConfig | any): AxiosPromise<any> {
-    // Agent 可代理，根据下发的agentUrl进行代理
-    if(process.env.VUE_APP_DEPLOY_ENV === 'ly' && config.agentUrl){
+    // Agent 可代理，根据下发的agentUrl进行代理，在debug/service.ts里设置
+    if(config.agentUrl){
         requestAgent.defaults.baseURL = config.agentUrl;
     }
+
     return requestAgent(config).
         then((response: AxiosResponse) => response.data).
         catch(error => errorHandler(error));

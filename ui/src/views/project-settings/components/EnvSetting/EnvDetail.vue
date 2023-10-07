@@ -28,11 +28,11 @@
                     <template #customUrl="{ text, index }">
                         <a-form-item :name="['serveServers', index, 'url']"
                             :rules="rules.serveUrl">
-                            <a-input 
-                                :disabled="isMockEnv" 
+                            <a-input
+                                :disabled="isMockEnv"
                                 :value="text" @change="(e) => {
                                     handleEnvChange('serveServers', 'url', index, e);
-                                }" 
+                                }"
                                 placeholder="http 或 https 起始的合法 URL" />
                         </a-form-item>
                     </template>
@@ -131,13 +131,13 @@ import { globalVarsColumns, serveServersColumns } from '../../config';
 import { useGlobalEnv } from '../../hooks/useGlobalEnv';
 import { StateType as ProjectSettingStateType } from "@/views/ProjectSetting/store";
 import {notifyError} from "@/utils/notify";
+import {urlValidator} from "@/utils/validate";
 
 const store = useStore<{ ProjectSetting: ProjectSettingStateType }>();
 const serviceOptions = computed<any>(() => store.state.ProjectSetting.serviceOptions);
 const addServiceModalVisible = ref(false);
 const selectedService = ref(null);
 const formRef = ref<any>();
-
 
 const {
     activeEnvDetail,
@@ -159,20 +159,6 @@ const rules = {
 // 添加服务弹窗操作
 async function addService() {
     addServiceModalVisible.value = true;
-}
-
-function urlValidator(...arg: any[]) {
-    const value = arg[1];
-    // 需要兼容 https://localhost
-    const urlReg = /http(s)?:\/\/[\w-]+/; // eslint-disable-line
-    if (value === '') {
-        return Promise.reject('url不能为空');
-    } else {
-        if (!urlReg.test(value)) {
-            return Promise.reject('url格式错误，请参考 http(s)://www.test.com ');
-        }
-        return Promise.resolve();
-    }
 }
 
 function handleAddServiceOk() {

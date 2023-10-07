@@ -22,7 +22,9 @@ var (
 )
 
 type DataService struct {
-	ConfigSource           *source.ConfigSource           `inject:""`
+	SysConfigSource *source.SysConfigSource `inject:""`
+	SysAgentSource  *source.SysAgentSource  `inject:""`
+
 	DataRepo               *repo.DataRepo                 `inject:""`
 	UserRepo               *repo.UserRepo                 `inject:""`
 	UserSource             *source.UserSource             `inject:""`
@@ -101,7 +103,8 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 
 	if req.ClearData {
 		err = s.initData(
-			s.ConfigSource,
+			s.SysConfigSource,
+			s.SysAgentSource,
 			s.PermSource,
 			s.RoleSource,
 			s.ProjectRoleSource,

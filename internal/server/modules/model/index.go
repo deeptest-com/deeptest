@@ -85,6 +85,7 @@ var (
 		&EndpointInterfaceResponseBody{},
 		&EndpointInterface{},
 		&EndpointCase{},
+		&EndpointCaseAlternative{},
 		&EndpointInterfaceParam{},
 		&EndpointInterfaceCookie{},
 		&EndpointInterfaceHeader{},
@@ -126,6 +127,7 @@ var (
 
 		&SysConfig{},
 		&SysJslib{},
+		&SysAgent{},
 		&ProjectUserServer{},
 	}
 )

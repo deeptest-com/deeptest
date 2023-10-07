@@ -10,8 +10,7 @@
             <a-select
                 v-model:value="item.type"
                 @change="onFormDataChange(idx)"
-                :bordered="false"
-            >
+                :bordered="false">
               <a-select-option value="text">Text</a-select-option>
               <a-select-option value="file">File</a-select-option>
             </a-select>

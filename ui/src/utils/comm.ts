@@ -1,4 +1,6 @@
-import {ProcessorCategory} from "@/utils/enum";
+export const isLeyan = () => {
+    return process.env.VUE_APP_DEPLOY_ENV === 'ly'
+}
 
 export const getArrSelectItems = (arr) => {
     const ret : any[] = []

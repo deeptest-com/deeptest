@@ -2,21 +2,27 @@
   <div class="endpoint-debug-cases-main">
     <CaseList
         v-if="show === 'list'"
-        :onDesign="design" />
+        :onDesign="design"
+        :onGenerate="generate"/>
 
     <CaseDesign
         v-if="show === 'design'"
+        :onBack="back" />
+
+    <CaseGenerate
+        v-if="show === 'generate'"
+        :model="baseModel"
         :onBack="back" />
   </div>
 </template>
 
 <script setup lang="ts">
-import {provide, ref, computed, defineProps, defineEmits, watch} from "vue";
+import {ref, computed, defineProps, defineEmits, watch} from "vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {UsedBy} from "@/utils/enum";
 import CaseList from "./list.vue";
 import CaseDesign from "./design.vue";
+import CaseGenerate from "./generate.vue";
 
 const {t} = useI18n()
 
@@ -48,6 +54,14 @@ const design = (record) => {
   emit('update:showList', false)
 
   store.commit('Endpoint/setEndpointCaseDetail', record);
+}
+
+const baseModel = ref({}as any)
+const generate = (record) => {
+  console.log('generate', record)
+  show.value = 'generate'
+  baseModel.value = {baseId: record.id}
+  emit('update:showList', false)
 }
 
 const back = () => {

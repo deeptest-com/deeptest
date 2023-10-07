@@ -1,9 +1,9 @@
-import {app, BrowserWindow, ipcMain, Menu, shell, dialog, globalShortcut,createWindow} from 'electron';
-const path = require('path');
+import {app, BrowserWindow, ipcMain, Menu, shell, dialog, globalShortcut, createWindow} from 'electron';
 import {
+    App,
     DEBUG,
     electronMsg,
-    electronMsgReplay,
+    electronMsgReplay, electronMsgServerUrl,
     electronMsgUpdate,
     electronMsgUsePort,
     minimumSizeHeight,
@@ -21,10 +21,13 @@ import {getCurrVersion, mkdir} from "./utils/comm";
 import {checkUpdate, updateApp} from "./utils/hot-update";
 import {portAgent,portClient} from "./utils/consts";
 import {getUsefulPort} from "./utils/checkPort";
+import logger from "electron-log";
 
 const cp = require('child_process');
+const path = require('path');
+const os = require("os")
 const fs = require('fs');
-
+const yaml = require('js-yaml');
 const bent = require('bent');
 const getBuffer = bent('buffer')
 
@@ -96,8 +99,29 @@ export class DeepTestApp {
         const uiPort = process.env.UI_SERVER_PORT || await getUsefulPort(portClient,55999);
         const url = await startUIService(uiPort);
         await mainWin.loadURL(url);
+
         // 通知渲染进程，agent服务端口
         mainWin.webContents.send(electronMsgUsePort, {uiPort,agentPort:port});
+
+        // 读取服务配置
+        const confPath = path.join(os.homedir(), App, 'conf.yaml');
+        if (!fs.existsSync(confPath)) {
+            const data = {
+                serverUrl: '',
+            }
+            const yamlStr = yaml.safeDump(data);
+            fs.writeFileSync(confPath, yamlStr, 'utf8');
+        }
+        try {
+            const doc = yaml.load(fs.readFileSync(confPath, 'utf8'));
+            logInfo('read conf.yaml', doc.serverUrl);
+            if (doc.serverUrl && doc.serverUrl.trim() != '') {
+                mainWin.webContents.send(electronMsgServerUrl, {serverUrl: doc.serverUrl});
+            }
+        } catch (e) {
+            logErr(e);
+        }
+
         // 进程间通信逻辑
         ipcMain.on(electronMsg, (event, arg) => {
             logInfo('::::msg from renderer', JSON.stringify(arg))

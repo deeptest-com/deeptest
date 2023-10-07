@@ -125,6 +125,16 @@ export const routes: RoutesDataItem[] = [
               code: 'SYS-SETTING-JSLIB'
             }
           },
+          {
+            icon: 'agent',
+            title: 'exec.agent',
+            path: 'agent',
+            component: () => import('@/views/sys-settings/Agent/index.vue'),
+            meta: {
+              title: '执行dialing',
+              code: 'SYS-SETTING-AGENT'
+            }
+          },
         ]
       }
     ]

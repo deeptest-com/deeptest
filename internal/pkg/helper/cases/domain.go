@@ -11,6 +11,7 @@ type AlternativeCase struct {
 	Title string `json:"title"`
 	Desc  string `json:"desc"`
 	IsDir bool   `json:"isDir"`
+	Path  string `json:"path"`
 
 	FieldRequired bool         `json:"fieldRequired"`
 	FieldType     OasFieldType `json:"fieldType"`

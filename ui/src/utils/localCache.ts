@@ -1,6 +1,7 @@
 
 import localforage from 'localforage';
 import settings from '@/config/settings';
+import {toRaw} from "@vue/reactivity";
 
 export const getCache = async (key: string): Promise<any | null> => {
   return await localforage.getItem(key);
@@ -8,9 +9,10 @@ export const getCache = async (key: string): Promise<any | null> => {
 
 export const setCache = async (key: string, val: any): Promise<boolean> => {
   try {
-    await localforage.setItem(key, val);
+    await localforage.setItem(key, toRaw(val));
     return true;
-  } catch (error) {
+  } catch (err) {
+    console.log('setCache err', err)
     return false;
   }
 };

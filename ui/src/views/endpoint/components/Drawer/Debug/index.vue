@@ -80,7 +80,7 @@ const saveAsModel = ref({} as any)
 const saveAsCase = () => {
   console.log('saveAsCase')
   saveAsVisible.value = true
-  saveAsModel.value = {title: ''}
+  saveAsModel.value = {title: '', method: debugData.value.method, from: 'saveAs'}
 }
 const saveAsFinish = async (model) => {
   console.log('saveAsFinish', model, debugData.value.url)

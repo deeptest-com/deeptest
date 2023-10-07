@@ -5,11 +5,13 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
+	"path"
 )
 
 func LoadForHeaders(params openapi3.Parameters) (category *AlternativeCase) {
 	category = &AlternativeCase{
 		Title:    "请求头",
+		Path:     consts.ParamInHeader.String(),
 		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,
 		Key:      _stringUtils.Uuid(),
@@ -23,6 +25,7 @@ func LoadForHeaders(params openapi3.Parameters) (category *AlternativeCase) {
 
 		paramCase := &AlternativeCase{
 			Title:    param.Value.Name,
+			Path:     path.Join(consts.ParamInHeader.String(), param.Value.Name),
 			Category: consts.AlternativeCaseParam,
 			IsDir:    true,
 			Key:      _stringUtils.Uuid(),

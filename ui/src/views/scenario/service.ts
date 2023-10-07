@@ -264,21 +264,6 @@ export function getProcessorCategories() {
     return ret
 }
 
-export function getProcessorTypeNames() {
-    return {
-        // ...getEnumMap(ProcessorThread),
-        ...getEnumMap(ProcessorGroup),
-        ...getEnumMap(ProcessorTimer),
-        ...getEnumMap(ProcessorLogic),
-
-        ...getEnumMap(ProcessorLoop),
-        ...getEnumMap(ProcessorExtractor),
-        ...getEnumMap(ProcessorVariable),
-        ...getEnumMap(ProcessorCookie),
-        ...getEnumMap(ProcessorData),
-    }
-}
-
 export const getEnumMap = (enumDef) => {
     const ret = {}
 
@@ -288,24 +273,6 @@ export const getEnumMap = (enumDef) => {
 
     return ret
 }
-
-export function getProcessorTypeMap() {
-    return {
-        // processor_thread: getEnumSelectItems(ProcessorThread),
-        processor_group: getEnumSelectItems(ProcessorGroup),
-        processor_timer: getEnumSelectItems(ProcessorTimer),
-        processor_print: getEnumSelectItems(ProcessorPrint),
-        processor_logic: getEnumSelectItems(ProcessorLogic),
-
-        processor_loop: getEnumSelectItems(ProcessorLoop),
-        processor_extractor: getEnumSelectItems(ProcessorExtractor),
-        processor_variable: getEnumSelectItems(ProcessorVariable),
-        processor_assertion: getEnumSelectItems(ProcessorAssertion),
-        processor_cookie: getEnumSelectItems(ProcessorCookie),
-        processor_data: getEnumSelectItems(ProcessorData),
-    }
-}
-
 
 export const isRoot = (type) => {
     return type === 'processor_root'
@@ -386,22 +353,6 @@ export const showMenuItem = (entityType, category) => {
 
     return false
 }
-
-export const showSubMenuItem = (entityType, category, type) => {
-    const isInterface = entityType === ProcessorInterface.Interface
-
-    if (isInterface &&
-        category.label === ProcessorCategory.ProcessorCookie && !isInArray(type, [ProcessorCookie.Get,])) {
-        return false
-    }
-
-    if (entityType !== ProcessorLogic.If && isInArray(type, [ProcessorLogic.Else,])) {
-        return false
-    }
-
-    return true
-}
-
 
 export async function importCurl(params:any): Promise<any> {
     return request({

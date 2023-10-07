@@ -5,11 +5,13 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/getkin/kin-openapi/openapi3"
 	"github.com/kataras/iris/v12"
+	"path"
 )
 
 func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) {
 	category = &AlternativeCase{
 		Title:    "查询参数",
+		Path:     consts.ParamInQuery.String(),
 		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,
 		Key:      _stringUtils.Uuid(),
@@ -24,6 +26,7 @@ func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) 
 
 		paramCase := &AlternativeCase{
 			Title:    paramVal.Name,
+			Path:     path.Join("param", consts.ParamInQuery.String(), paramVal.Name),
 			Category: consts.AlternativeCaseParam,
 			IsDir:    true,
 			Key:      _stringUtils.Uuid(),

@@ -18,4 +18,3 @@ export async function getConfigByKey(key): Promise<any> {
         method: 'GET',
     })
 }
-

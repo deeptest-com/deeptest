@@ -45,31 +45,40 @@ type EndpointCaseSaveReq struct {
 	DebugData domain.DebugData `json:"debugData"`
 }
 
-type EndpointCaseAlternativeLoadReq struct {
-	EndpointId uint              `json:"endpointId"`
-	Method     consts.HttpMethod `json:"method"`
+type EndpointCaseAlternativeSaveReq struct {
+	BaseId uint   `json:"baseId"`
+	Path   string `json:"path"`
+	Sample string `json:"sample"`
 
 	CreateUserId   uint   `json:"createUserId"`
 	CreateUserName string `json:"createUserName"`
 }
 
-type EndpointCaseAlternativeGenerateReq struct {
-	ID     uint   `json:"id"`
-	Name   string `json:"name"`
-	Method string `json:"method"`
-	Desc   string `json:"desc"`
+//type EndpointCaseAlternativeLoadReq struct {
+//	EndpointId uint              `json:"endpointId"`
+//	Method     consts.HttpMethod `json:"method"`
+//
+//	CreateUserId   uint   `json:"createUserId"`
+//	CreateUserName string `json:"createUserName"`
+//}
 
-	EndpointId uint `json:"endpointId"`
-	ServeId    uint `json:"serveId"`
-	ProjectId  uint `json:"projectId"`
-
-	CreateUserId   uint   `json:"createUserId"`
-	CreateUserName string `json:"createUserName"`
-
-	DebugInterfaceId    int    `json:"debugInterfaceId"`
-	EndpointInterfaceId int    `json:"endpointInterfaceId"`
-	UsedBy              string `json:"usedBy"`
-}
+//type EndpointCaseAlternativeGenerateReq struct {
+//	ID     uint   `json:"id"`
+//	Name   string `json:"name"`
+//	Method string `json:"method"`
+//	Desc   string `json:"desc"`
+//
+//	EndpointId uint `json:"endpointId"`
+//	ServeId    uint `json:"serveId"`
+//	ProjectId  uint `json:"projectId"`
+//
+//	CreateUserId   uint   `json:"createUserId"`
+//	CreateUserName string `json:"createUserName"`
+//
+//	DebugInterfaceId    int    `json:"debugInterfaceId"`
+//	EndpointInterfaceId int    `json:"endpointInterfaceId"`
+//	UsedBy              string `json:"usedBy"`
+//}
 
 type EndpointCaseTree struct {
 	Key int64  `json:"key"`

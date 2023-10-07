@@ -51,10 +51,10 @@ func (c *JslibCtrl) Save(ctx iris.Context) {
 	}
 
 	userName := multi.GetUsername(ctx)
-	if req.ID == 0 {
-		req.CreateUser = userName
-	} else {
+	if req.ID > 0 {
 		req.UpdateUser = userName
+	} else {
+		req.CreateUser = userName
 	}
 
 	err = c.JslibService.Save(&req)

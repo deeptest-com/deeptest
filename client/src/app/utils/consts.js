@@ -14,6 +14,7 @@ export const electronMsgUsePort = 'electronMsgUsePort'
 export const electronMsgReplay = 'electronMsgReplay'
 export const electronMsgUpdate = 'electronMsgUpdate'
 export const electronMsgDownloading = 'electronMsgDownloading'
+export const electronMsgServerUrl = 'electronMsgServerUrl'
 
 export const minimumSizeWidth = 1024
 export const minimumSizeHeight = 640

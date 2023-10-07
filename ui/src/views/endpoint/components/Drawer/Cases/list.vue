@@ -1,10 +1,6 @@
 <template>
   <div class="endpoint-debug-cases-list">
     <div class="toolbar">
-      <a-button trigger="click" @click="generateCases">
-        <span>备选用例</span>
-      </a-button>
-
       <a-button type="primary" trigger="click" @click="create">
         <span>新建用例</span>
       </a-button>
@@ -40,6 +36,10 @@
         </template>
 
         <template #action="{ record }">
+          <a-button type="link" @click="() => generate(record)">
+            <AppstoreAddOutlined title="备选用例" />
+          </a-button>
+
           <a-button type="link" @click="() => copy(record)">
             <CopyOutlined title="复制" />
           </a-button>
@@ -55,30 +55,16 @@
                v-if="caseList.length === 0"
                :image="simpleImage"/>
     </div>
-
-    <CaseEdit
-        v-if="editVisible"
-        :visible="editVisible"
-        :model="editModel"
-        :onFinish="createFinish"
-        :onCancel="createCancel"/>
-
-    <GenerateCasePopup
-        v-if="generateCasesVisible"
-        :visible="generateCasesVisible"
-        :model="generateCasesModel"
-        :onFinish="generateCasesFinish"
-        :onCancel="generateCasesCancel" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import {computed, defineProps, provide, ref} from "vue";
 import {UsedBy} from "@/utils/enum";
-import {Empty, notification} from "ant-design-vue";
+import {Empty} from "ant-design-vue";
 import {useI18n} from "vue-i18n";
 import {useStore} from "vuex";
-import {DeleteOutlined, CopyOutlined} from '@ant-design/icons-vue';
+import {DeleteOutlined, CopyOutlined, AppstoreAddOutlined} from '@ant-design/icons-vue';
 import {momentUtc} from '@/utils/datetime';
 import debounce from "lodash.debounce";
 import {confirmToDelete} from "@/utils/confirm";
@@ -88,9 +74,7 @@ import {StateType as Debug} from "@/views/component/debug/store";
 import {StateType as Project} from "@/views/project/store";
 
 import EditAndShowField from '@/components/EditAndShow/index.vue';
-import CaseEdit from "./edit.vue";
 import {notifyError, notifySuccess} from "@/utils/notify";
-import GenerateCasePopup from "./generate.vue";
 
 provide('usedBy', UsedBy.InterfaceDebug)
 const simpleImage = Empty.PRESENTED_IMAGE_SIMPLE
@@ -106,6 +90,10 @@ const debugInfo = computed<any>(() => store.state.Debug.debugInfo);
 
 const props = defineProps({
   onDesign: {
+    type: Function,
+    required: true,
+  },
+  onGenerate: {
     type: Function,
     required: true,
   },
@@ -181,34 +169,10 @@ const username = (user:string)=>{
   return result?.label || '-'
 }
 
-
 const generateCasesVisible = ref(false)
 const generateCasesModel = ref({} as any)
-const generateCases = () => {
-  console.log('generateCases')
-  generateCasesVisible.value = true
-  generateCasesModel.value = {}
-}
-const generateCasesFinish = async (model) => {
-  console.log('generateCasesFinish', model, debugData.value.url)
-
-  const data = Object.assign({...model}, debugInfo.value)
-
-  store.commit("Global/setSpinning",true)
-  const res = await store.dispatch('Debug/generateCases', data)
-  store.commit("Global/setSpinning",false)
-
-  if (res === true) {
-    generateCasesVisible.value = false
-
-    notifySuccess(`自动生成用例成功`);
-  } else {
-    notifyError(`自动生成用例保存失败`);
-  }
-}
-const generateCasesCancel = () => {
-  console.log('generateCasesCancel')
-  generateCasesVisible.value = false
+const generate = (record) => {
+  props.onGenerate(record)
 }
 
 const columns = [

@@ -23,17 +23,20 @@
         <a-dropdown placement="bottomRight">
           <a class="indexlayout-top-usermenu ant-dropdown-link" style="margin-right: 6px;margin-left: 8px;">
             <IconSvg type="top-right-web" class="top-right-icon"/>
-            <span class="user-name">{{ currentAgentLabel }}</span>
+            <span class="user-name">{{ currentAgent.name }}</span>
             <DownOutlined class="user-icon"/>
           </a>
           <template #overlay>
             <a-menu @click="changeAgentEnv">
-              <a-menu-item v-for="agent in agentUrlOpts" :key="agent.value"
-                           :style="agent.label === currentAgentLabel ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
-                <a-tooltip placement="left" :title="agent.desc">
-                  {{ agent.label }}
-                </a-tooltip>
-              </a-menu-item>
+              <template v-for="agent in agents">
+                <template v-if="agent.id !== currentAgent?.id">
+                  <a-menu-item :key="agent.id">
+                    <a-tooltip placement="left" :title="agent.desc">
+                      {{ agent.name }}
+                    </a-tooltip>
+                  </a-menu-item>
+                </template>
+              </template>
             </a-menu>
           </template>
         </a-dropdown>
@@ -49,13 +52,18 @@
           <template #overlay>
             <a-menu @click="onSysMenuClick">
               <a-sub-menu key="agent-sub-menu" title="切换代理 &nbsp;">
-                <a-menu-item v-for="agent in agentUrlOpts" :key="agent.value"
-                             :style="agent.label === currentAgentLabel ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
-                  <a-tooltip placement="left" :title="agent.desc">
-                    {{ agent.label }}
-                  </a-tooltip>
-                </a-menu-item>
+                  <a-menu-item v-for="agent in agents"
+                               :key="agent.id"
+                               :style="agent.id === currentAgent?.id ? {color:'#1890ff','background-color': '#e6f7ff'} : {}">
+                    <a-tooltip placement="left" :title="agent.desc">
+                      {{ agent.name }}
+                    </a-tooltip>
+                  </a-menu-item>
               </a-sub-menu>
+
+              <a-menu-item key="agentManage">
+                代理管理
+              </a-menu-item>
 
               <a-menu-item key="userManage">
                 用户管理
@@ -114,7 +122,7 @@
 <script setup lang="ts">
 import {computed, defineProps, onMounted, ref} from "vue";
 import {useStore} from "vuex";
-import {getAgentLabel, getAgentUrl, getAgentUrlByValue, isElectronEnv} from '@/utils/agentEnv'
+import {getAgentUrlByValue, isElectronEnv} from '@/utils/agentEnv'
 import {
   DownOutlined,
   SettingOutlined,
@@ -130,6 +138,7 @@ import {CurrentUser, StateType as UserStateType} from "@/store/user";
 import {useRouter} from "vue-router";
 import {useFullscreen} from '@vueuse/core';
 import {StateType as GlobalStateType} from "@/store/global";
+import {Cache_Key_Agent} from "@/utils/const";
 
 const props = defineProps({
   theme: {
@@ -142,29 +151,10 @@ const {t} = useI18n();
 const router = useRouter();
 const store = useStore<{ User: UserStateType, Global: GlobalStateType }>();
 const {isFullscreen, enter, exit, toggle} = useFullscreen();
-// 获取当前登录用户信息
+
+const agents = computed<any[]>(() => store.state.Global.agents);
 const currentUser = computed<CurrentUser>(() => store.state.User.currentUser);
-
-// 获取当前可以切换的 Agent 地址
-const agentUrlOpts = computed(() => {
-  const opts = store.state.Global.configInfo?.agentUrlOpts;
-  if (opts?.length > 0) {
-    if (!isElectronEnv) {
-      return opts.filter((item) => item.value !== 'local');
-    }
-    return opts;
-  }
-  return [];
-});
-
-const selectLangVisible = ref(false)
-const closeSelectLang = async (event: any) => {
-  selectLangVisible.value = false
-}
-
-const gotoMessage = () => {
-  router.replace({path: '/message'})
-}
+const currentAgent = computed<any>(() => store.state.Global.currAgent);
 
 // 点击菜单
 const onMenuClick = (event: any) => {
@@ -196,29 +186,31 @@ const onSysMenuClick = (event: any) => {
   console.log('onSysMenuClick', event)
   const {key, keyPath} = event;
 
-  if (key === 'userManage') { //
+  if (key === 'agentManage') {
+    router.replace({path: '/sys-setting/agent'})
+  } else if (key === 'userManage') {
     router.replace({path: '/sys-setting/user-manage'})
 
-  } else if (key === 'jslibManage') { //
+  } else if (key === 'jslibManage') {
     router.replace({path: '/sys-setting/jslib'})
 
   } else if (key === 'download') {
     window.open('https://deeptest.com/setup.html');
 
   } else if (keyPath[0] === 'agent-sub-menu') {
-    const url = getAgentUrlByValue(agentUrlOpts.value, key);
-    window.localStorage.setItem('dp-cache-agent-value', key);
-    window.localStorage.setItem('dp-cache-agent-url', url);
-    window.location.reload();
+    const currAgent = agents.value.find((item) => item.id === +key)
+    store.commit('Global/setCurrAgent', currAgent)
+    // window.location.reload();
   }
 }
 
 function changeAgentEnv(event: any) {
+  console.log('changeAgentEnv', event)
+
   const {key} = event;
-  const url = getAgentUrlByValue(agentUrlOpts.value, key);
-  window.localStorage.setItem('dp-cache-agent-value', key);
-  window.localStorage.setItem('dp-cache-agent-url', url);
-  window.location.reload();
+  const currAgent = agents.value.find((item) => item.id === +key)
+  store.commit('Global/setCurrAgent', currAgent)
+  // window.location.reload();
 }
 
 // 下载客户端
@@ -249,29 +241,13 @@ const clientDownloadUrlOpts = computed(() => {
   ];
 });
 
-const currentAgentLabel = computed(() => {
-  return getAgentLabel(agentUrlOpts.value);
-})
-
-const onManagementClick = () => {
-  router.replace({path: '/user-manage'})
-}
-
 onMounted(async () => {
-    const list = await store.dispatch('Global/getConfigByKey', {key: 'agentUrlOpts'});
+  // 设置当前代理，LocalStore里没有，取列表中的第1个
+  await store.dispatch('Global/listAgent');
+  await store.commit('Global/setCurrAgent', null);
 
-    console.log('===-==', agentUrlOpts.value)
-
-    // 如果没有缓存，根据当前环境选择一个默认值
-    if (!window.localStorage.getItem('dp-cache-agent-value')) {
-      const agentValue = isElectronEnv ? 'local' : 'test';
-      const url = getAgentUrlByValue(list, agentValue);
-      window.localStorage.setItem('dp-cache-agent-value', agentValue);
-      window.localStorage.setItem('dp-cache-agent-url', url);
-    }
-
-    // 获取客户端最新版本号
-    await store.dispatch('Global/getClientVersion');
+  // 获取客户端最新版本号
+  await store.dispatch('Global/getClientVersion');
 })
 
 </script>

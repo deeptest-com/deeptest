@@ -30,11 +30,19 @@ func (f *FieldArray) Add(field Field) {
 
 func (f *Field) ToArray() (arr *FieldArray) {
 	arr = new(FieldArray)
-	if f.FieldType == openapi3.TypeObject || !f.IsProperty {
-		arr.Add(*f)
-	}
-	for _, field := range f.Properties {
+	f.setArray(f, *arr)
+	return arr
+}
+
+func (f *Field) setArray(field *Field, arr FieldArray) {
+	if field.FieldType == openapi3.TypeObject || !field.IsProperty {
 		arr.Add(*field)
 	}
-	return arr
+	if field.SubField != nil {
+		f.setArray(field.SubField, arr)
+	}
+	for _, item := range field.Properties {
+		f.setArray(item, arr)
+	}
+	//return arr
 }

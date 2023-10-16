@@ -22,6 +22,9 @@ func (s *JslibService) Get(id uint) (model.SysJslib, error) {
 
 func (s *JslibService) Save(req *model.SysJslib) (err error) {
 	err = s.JslibRepo.Save(req)
+	if err != nil {
+		return
+	}
 
 	jslibHelper.InitJslibCache()
 

@@ -73,7 +73,7 @@ func (c *JslibCtrl) Save(ctx iris.Context) {
 
 	err = c.JslibService.Save(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Msg: err.Error()})
 		return
 	}
 

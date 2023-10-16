@@ -35,15 +35,15 @@ func (r *JslibRepo) Get(id uint) (po model.SysJslib, err error) {
 
 	return
 }
-func (r *JslibRepo) GetByName(id uint, name string) (po model.SysJslib, err error) {
+func (r *JslibRepo) GetByName(id, projectId uint, name string) (po model.SysJslib, err error) {
 	err = r.DB.Model(&model.SysJslib{}).
-		Where("id != ? AND name = ?", id, name).First(&po).Error
+		Where("id != ? AND project_id = ? AND name = ?", id, projectId, name).First(&po).Error
 
 	return
 }
 
 func (r *JslibRepo) Save(po *model.SysJslib) (err error) {
-	exist, _ := r.GetByName(po.ID, po.Name)
+	exist, _ := r.GetByName(po.ID, po.ProjectId, po.Name)
 	if exist.ID > 0 {
 		err = errors.New("名称不能和已存在的记录相同")
 		return

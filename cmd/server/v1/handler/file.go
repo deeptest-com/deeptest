@@ -60,3 +60,26 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,
 		Data: iris.Map{"path": pth, "format": format, "data": data}, Msg: _domain.NoErr.Msg})
 }
+
+func (c *FileCtrl) Do(ctx iris.Context) {
+	path := ctx.URLParam("path")
+
+	f, fh, err := ctx.FormFile("file")
+	if err != nil {
+		logUtils.Errorf("文件上传失败", zap.String("ctx.FormFile(\"file\")", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	defer f.Close()
+
+	pth, err := c.FileService.UploadFileByPath(ctx, fh, path)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	format := commUtils.GetDataFileFormat(pth)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,
+		Data: iris.Map{"path": pth, "format": format}, Msg: _domain.NoErr.Msg})
+}

@@ -55,6 +55,7 @@ func (s *ScenarioNodeService) GetTree(scenario model.Scenario, withDetail bool) 
 	root.Session = agentExec.Session{}
 
 	root.ScenarioId = scenario.ID
+	root.ProjectId = scenario.ProjectId
 
 	return
 }

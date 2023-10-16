@@ -1,7 +1,7 @@
 import pth from "path";
 import path from "path";
 import os from "os";
-
+import {App} from "./constant";
 export const DEBUG = process.env.NODE_ENV === 'development';
 export const WORK_DIR = process.cwd()
 
@@ -19,13 +19,8 @@ export const electronMsgServerUrl = 'electronMsgServerUrl'
 export const minimumSizeWidth = 1024
 export const minimumSizeHeight = 640
 
-export const App = 'LeyanAPI';
-// export const App = 'deeptest';
+
 export const WorkDir = path.join(os.homedir(), App);
 export const ResDir = process.resourcesPath;
-// export const downloadUrl = 'http://127.0.0.1:8085/upload/';
-// export const downloadUrl = 'http://111.231.16.35:8085/upload/';
-// export const downloadUrl = 'http://192.168.159.163:8080/';
-export const downloadUrl = 'https://leyanapi.nancalcloud.com/upload/';
 // Agent进程名称
 export const agentProcessName = 'deeptest-agent'

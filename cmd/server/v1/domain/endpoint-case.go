@@ -3,9 +3,20 @@ package serverDomain
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	casesHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/cases"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
 )
+
+type EndpointCaseReqPaginate struct {
+	_domain.PaginateReq
+
+	EndpointId int `json:"endpointId"`
+
+	Keywords string `json:"keywords"`
+	Enabled  string `json:"enabled"`
+}
 
 type EndpointCase struct {
 	Id int64 `json:"id"`
@@ -46,9 +57,10 @@ type EndpointCaseSaveReq struct {
 }
 
 type EndpointCaseAlternativeSaveReq struct {
-	BaseId uint   `json:"baseId"`
-	Path   string `json:"path"`
-	Sample string `json:"sample"`
+	Prefix string                        `json:"prefix"`
+	Type   string                        `json:"type"`
+	BaseId int                           `json:"baseId"`
+	Values []casesHelper.AlternativeCase `json:"values"`
 
 	CreateUserId   uint   `json:"createUserId"`
 	CreateUserName string `json:"createUserName"`

@@ -9,39 +9,50 @@ import (
 	"path"
 )
 
-func addPropCase(propName string, propVal *openapi3.Schema, requires []string, parent *AlternativeCase, pth string) {
+func addPropCase(propName string, propVal *openapi3.Schema, requires []string, parent *AlternativeCase, pth string,
+	doc3 *openapi3.T) {
 	if propVal.Type == OasFieldTypeArray.String() {
 		arrCase := &AlternativeCase{
 			Title:    "数组",
-			Path:     path.Join(pth, "arr"),
+			Path:     path.Join(pth, AddFix("arr")),
 			Category: consts.AlternativeCaseArray,
 			IsDir:    true,
 			Key:      _stringUtils.Uuid(),
 			Slots:    iris.Map{"icon": "icon"},
 		}
 
-		addPropCase(propName, propVal.Items.Value, nil, arrCase, arrCase.Path)
+		itemsValue := propVal.Items.Value
+		if itemsValue == nil {
+			arrCase.Title = fmt.Sprintf("数组[%s]", propVal.Items.Ref)
+			itemsValue = getRef(propVal.Items.Ref, doc3)
+		}
+
+		addPropCase(propName, itemsValue, nil, arrCase, arrCase.Path, doc3)
 
 		parent.Children = append(parent.Children, arrCase)
 
 		return
 
 	} else if propVal.Type == OasFieldTypeObject.String() {
-		objCase := &AlternativeCase{
-			Title:    "对象",
-			Path:     path.Join(pth, "object"),
-			Category: consts.AlternativeCaseObject,
-			IsDir:    true,
-			Key:      _stringUtils.Uuid(),
-			Slots:    iris.Map{"icon": "icon"},
-		}
-
 		for propName, propRef := range propVal.Properties {
-			temp := path.Join(objCase.Path, propName)
-			addPropCase(propName, propRef.Value, propVal.Required, objCase, temp)
-		}
+			propCase := &AlternativeCase{
+				Title:    propName,
+				Path:     path.Join(pth, propName),
+				Category: consts.AlternativeCaseProp,
+				IsDir:    true,
+				Key:      _stringUtils.Uuid(),
+				Slots:    iris.Map{"icon": "icon"},
+			}
 
-		parent.Children = append(parent.Children, objCase)
+			propVal := propRef.Value
+			if propVal == nil {
+				propVal = getRef(propRef.Ref, doc3)
+			}
+
+			addPropCase(propName, propVal, propVal.Required, propCase, propCase.Path, doc3)
+
+			parent.Children = append(parent.Children, propCase)
+		}
 
 		return
 	}
@@ -63,7 +74,7 @@ func addPropRequiredCase(propName string, schemaVal *openapi3.Schema, requires [
 	required := &AlternativeCase{
 		Title:  fmt.Sprintf("required"),
 		Sample: sample,
-		Path:   path.Join(pth, "required"),
+		Path:   path.Join(pth, AddFix("required")),
 
 		Category:      consts.AlternativeCaseCase,
 		Type:          consts.AlternativeCaseRequired,
@@ -91,7 +102,7 @@ func addPropTypeCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 	typeCase := &AlternativeCase{
 		Title:  fmt.Sprintf("%v", typ),
 		Sample: sample,
-		Path:   path.Join(pth, "type"),
+		Path:   path.Join(pth, AddFix("type")),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseTyped,
@@ -107,7 +118,7 @@ func addPropTypeCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 func addPropEnumCase(name string, schema *openapi3.Schema, parent *AlternativeCase, pth string) {
 	enum := schema.Enum
 
-	if enum == nil {
+	if enum == nil || len(enum) == 0 {
 		return
 	}
 
@@ -116,7 +127,7 @@ func addPropEnumCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 	enumCase := &AlternativeCase{
 		Title:  fmt.Sprintf("enum %v", enum),
 		Sample: sample,
-		Path:   path.Join(pth, "enum"),
+		Path:   path.Join(pth, AddFix("enum")),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseEnum,
@@ -137,12 +148,15 @@ func addPropFormatCase(name string, schema *openapi3.Schema, parent *Alternative
 		return
 	}
 
-	sample := getFormatSample(format, typ)
+	sample, ok := getFormatSample(format, typ)
+	if !ok {
+		return
+	}
 
 	formatCase := &AlternativeCase{
 		Title:  fmt.Sprintf("format (%s)", format),
 		Sample: sample,
-		Path:   path.Join(pth, "format"),
+		Path:   path.Join(pth, AddFix("format")),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseFormat,
@@ -165,6 +179,6 @@ func addPropRuleCase(name string, schema *openapi3.Schema, parent *AlternativeCa
 		tag := item[3]
 		rule := item[4].(consts.AlternativeCaseRules)
 
-		addRuleCase(name, sample, typ, tag, rule, parent, path.Join(pth, "rule"))
+		addRuleCase(name, sample, typ, tag, rule, parent, path.Join(pth, AddFix("rule")))
 	}
 }

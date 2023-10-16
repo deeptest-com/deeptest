@@ -1,8 +1,14 @@
 package repo
 
 import (
+	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"strconv"
 )
@@ -15,6 +21,39 @@ type EndpointCaseRepo struct {
 	DebugInterfaceRepo *DebugInterfaceRepo `inject:""`
 	ProjectRepo        *ProjectRepo        `inject:""`
 	CategoryRepo       *CategoryRepo       `inject:""`
+}
+
+func (r *EndpointCaseRepo) Paginate(req serverDomain.EndpointCaseReqPaginate) (data _domain.PageData, err error) {
+	var count int64
+
+	db := r.DB.Model(&model.EndpointCase{}).Where("endpoint_id = ? AND NOT deleted", req.EndpointId)
+
+	if req.Keywords != "" {
+		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+	if req.Enabled != "" {
+		db = db.Where("disabled = ?", _commUtils.IsDisable(req.Enabled))
+	}
+
+	err = db.Count(&count).Error
+	if err != nil {
+		logUtils.Errorf("count project error", zap.String("error:", err.Error()))
+		return
+	}
+
+	cases := make([]model.EndpointCase, 0)
+
+	err = db.
+		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
+		Find(&cases).Error
+	if err != nil {
+		logUtils.Errorf("query case error", zap.String("error:", err.Error()))
+		return
+	}
+
+	data.Populate(cases, count, req.Page, req.PageSize)
+
+	return
 }
 
 func (r *EndpointCaseRepo) List(endpointId uint) (pos []model.EndpointCase, err error) {

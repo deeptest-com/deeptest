@@ -33,7 +33,8 @@ export function startUIService(portClient) {
         uiServerUrl = path.resolve(process.resourcesPath, 'ui');
     }
 
-    uiServerUrl = path.resolve(process.resourcesPath, 'ui');
+    // uiServerUrl = path.resolve(process.resourcesPath, 'ui');
+    uiServerUrl = uiServerUrl || path.resolve(process.resourcesPath, 'ui');
 
 
     if (uiServerUrl) {

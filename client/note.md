@@ -32,6 +32,8 @@ An unhandled rejection has occurred inside Forge:
 Error: EACCES: permission denied, rmdir '/tmp/electron-packager'
 
 手动删除 /tmp/electron-packager 目录即可
+
+另外，如果提示权限问题，尝试 chmod授权 
 ```
 
 

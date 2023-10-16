@@ -1,5 +1,6 @@
 export const logger = require('electron-log');
-import {DEBUG,App} from './consts';
+import {DEBUG} from './consts';
+import {App} from './constant';
 
 logger.transports.file.resolvePath = () =>
     require("path").join(require("os").homedir(), App, 'log', 'electron.log');

@@ -1,5 +1,4 @@
-console.log(`process.env.IS_LY_PACK=${process.env.IS_LY_PACK}`, process.env.IS_LY_PACK );
-const pkg = process.env.IS_LY_PACK == 1 ? require('./src/app/package-ly.json') : require('./src/app/package.json');
+const pkg = require('./src/app/package.json');
 
 module.exports = {
     // Windows and macOS only 设置图标

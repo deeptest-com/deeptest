@@ -11,7 +11,7 @@ import (
 func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) {
 	category = &AlternativeCase{
 		Title:    "查询参数",
-		Path:     consts.ParamInQuery.String(),
+		Path:     AddFix(consts.ParamInQuery.String()),
 		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,
 		Key:      _stringUtils.Uuid(),
@@ -26,7 +26,7 @@ func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) 
 
 		paramCase := &AlternativeCase{
 			Title:    paramVal.Name,
-			Path:     path.Join("param", consts.ParamInQuery.String(), paramVal.Name),
+			Path:     path.Join(category.Path, paramVal.Name),
 			Category: consts.AlternativeCaseParam,
 			IsDir:    true,
 			Key:      _stringUtils.Uuid(),
@@ -46,91 +46,3 @@ func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) 
 
 	return
 }
-
-//func GenerateByQueryParams(basic DebugData, params openapi3.Parameters) (ret []DebugData, err error) {
-//	for _, param := range params {
-//		cases, _ := GenerateByQueryParam(basic, param)
-//
-//		ret = append(ret, cases...)
-//	}
-//
-//	return
-//}
-//
-//func GenerateByQueryParam(basic DebugData, param *openapi3.ParameterRef) (
-//	ret []DebugData, err error) {
-//
-//	casesByParamRequired := generateByQueryParamRequired(basic, param)
-//	ret = append(ret, casesByParamRequired...)
-//
-//	casesByParamType := generateByQueryParamType(basic, param)
-//	ret = append(ret, casesByParamType...)
-//
-//	return
-//}
-//
-//func generateByQueryParamRequired(basic DebugData, param *openapi3.ParameterRef) (ret []DebugData) {
-//	if param.Value.Required {
-//		cs, err := updateQueryParam(basic, param.Value.Name, "")
-//		if err == nil {
-//			ret = append(ret, cs)
-//		}
-//	}
-//
-//	return
-//}
-//
-//func generateByQueryParamType(basic DebugData, param *openapi3.ParameterRef) (ret []DebugData) {
-//	schema := param.Value.Schema.Value
-//
-//	typ := schema.Type
-//	var exceptionStringVal interface{}
-//
-//	// no string
-//	if typ == OasFieldTypeInteger.String() {
-//		exceptionStringVal = RandStr()
-//	} else if typ == OasFieldTypeNumber.String() {
-//		exceptionStringVal = RandStr()
-//	} else if typ == OasFieldTypeBoolean.String() {
-//		exceptionStringVal = RandStr()
-//	}
-//	//else if typ == FieldTypeString.String() {
-//	//
-//	//} else if typ == FieldTypeArray.String() {
-//	//
-//	//} else if typ == FieldTypeObject.String() {
-//	//
-//	//} else if typ == FieldTypeNull.String() {
-//	//
-//	//}
-//
-//	if exceptionStringVal != "" {
-//		cs, err := updateQueryParam(basic, param.Value.Name, exceptionStringVal)
-//		if err == nil {
-//			ret = append(ret, cs)
-//		}
-//	}
-//
-//	// integer
-//	if typ == OasFieldTypeInteger.String() {
-//		exceptionStringVal = RandFloat32()
-//		cs, err := updateQueryParam(basic, param.Value.Name, exceptionStringVal)
-//		if err == nil {
-//			ret = append(ret, cs)
-//		}
-//	}
-//
-//	return
-//}
-//
-//func updateQueryParam(basic DebugData, key, value string) (ret DebugData, err error) {
-//	ret = clone(basic)
-//
-//	for index, param := range ret.QueryParams {
-//		if param.Name == key {
-//			ret.QueryParams[index].Value = value
-//		}
-//	}
-//
-//	return
-//}

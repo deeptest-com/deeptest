@@ -12,6 +12,9 @@ type EndpointCodeService struct {
 }
 
 func (s *EndpointCodeService) Generate(langType template.LangType, serveId uint, data string) (code string) {
+	if data == "" {
+		return
+	}
 
 	schema2Code := generate.NewSchema2Code(langType, "")
 	schema2Code.Components = s.ServeService.Components(serveId)

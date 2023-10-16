@@ -1,6 +1,7 @@
 import path from "path";
 import os from "os";
-import {agentProcessName, App, downloadUrl, ResDir, WorkDir} from "./consts";
+import {agentProcessName, ResDir, WorkDir} from "./consts";
+import {App, downloadUrl} from "./constant";
 import {app} from "electron";
 import {logInfo} from "./log";
 import {killAgent} from "../core/agent";

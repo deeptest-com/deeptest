@@ -7,7 +7,7 @@ import (
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"github.com/bitly/go-simplejson"
+	"github.com/tidwall/gjson"
 	"regexp"
 	"strconv"
 	"strings"
@@ -23,20 +23,16 @@ func (s *EndpointMockCompareService) CompareBody(expectRequest model.EndpointMoc
 
 	if httpHelper.IsJsonContent(contentType.String()) { // json
 		if expectRequest.SelectType == consts.KeyValue {
-			jsn, err := simplejson.NewJson([]byte(body))
-			if err != nil {
-				return false
-			}
-
 			expectValue := expectRequest.Value
 			var actualValue interface{}
 
-			actualJson := jsn.Get(expectRequest.Name) // get value of key on first level
-			actualValueFloat, err := actualJson.Float64()
-			if err == nil {
-				actualValue = actualValueFloat
+			actualJson := gjson.Get(body, expectRequest.Name) // get value of key on first level
+			typ := actualJson.Type
+
+			if typ == gjson.Number {
+				actualValue = actualJson.Float()
 			} else {
-				actualValue = actualJson.MustString()
+				actualValue = actualJson.String()
 			}
 
 			ret = s.compareObject(actualValue, expectValue, expectRequest.CompareWay)

@@ -24,11 +24,12 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 
 	// init context
 	agentExec.InitDebugExecContext()
-	agentExec.InitJsRuntime()
+	agentExec.InitJsRuntime(call.Data.ProjectId)
 
+	agentExec.ExecPreConditions(req) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(&req.DebugData)
+
 	agentExec.SetReqValueToGoja(req.DebugData.BaseRequest)
-	agentExec.ExecPreConditions(req)
 	agentExec.GetReqValueFromGoja()
 
 	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip

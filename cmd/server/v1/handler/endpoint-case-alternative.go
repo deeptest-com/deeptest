@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type EndpointCaseAlternativeCtrl struct {
@@ -46,6 +47,9 @@ func (c *EndpointCaseAlternativeCtrl) SaveAlternativeCase(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
+
+	req.CreateUserId = multi.GetUserId(ctx)
+	req.CreateUserName = multi.GetUsername(ctx)
 
 	ret, err := c.EndpointCaseAlternativeService.SaveAlternativeCase(req)
 

@@ -16,7 +16,7 @@ func (m *EndpointCaseModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
-		public.Get("/list", m.EndpointCaseCtrl.List).Name = "用例列表"
+		public.Post("/query", m.EndpointCaseCtrl.Paginate).Name = "用例列表"
 		public.Get("/{id:uint}", m.EndpointCaseCtrl.Get).Name = "用例详情"
 		public.Post("/{id:uint}", m.EndpointCaseCtrl.Create).Name = "保存用例"
 		public.Post("/copy", m.EndpointCaseCtrl.Copy).Name = "复制用例"

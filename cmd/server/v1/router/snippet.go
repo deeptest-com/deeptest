@@ -18,6 +18,7 @@ func (m *SnippetModule) Party() module.WebModule {
 
 		index.Get("/", m.SnippetCtrl.Get).Name = "获取代码片段"
 
+		index.Get("/listJslibNames", m.SnippetCtrl.ListJslibNames).Name = "获取所有自定义库名称"
 		index.Get("/getJslibs", m.SnippetCtrl.GetJslibs).Name = "获取用户自定义脚本库"
 		index.Post("/getJslibsForAgent", m.SnippetCtrl.GetJslibsForAgent).Name = "获取用户自定义脚本库"
 	}

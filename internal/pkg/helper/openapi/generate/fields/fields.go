@@ -30,11 +30,11 @@ func (f *FieldArray) Add(field Field) {
 
 func (f *Field) ToArray() (arr *FieldArray) {
 	arr = new(FieldArray)
-	f.setArray(f, *arr)
+	f.setArray(f, arr)
 	return arr
 }
 
-func (f *Field) setArray(field *Field, arr FieldArray) {
+func (f *Field) setArray(field *Field, arr *FieldArray) {
 	if field.FieldType == openapi3.TypeObject || !field.IsProperty {
 		arr.Add(*field)
 	}

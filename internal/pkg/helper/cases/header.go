@@ -11,7 +11,7 @@ import (
 func LoadForHeaders(params openapi3.Parameters) (category *AlternativeCase) {
 	category = &AlternativeCase{
 		Title:    "请求头",
-		Path:     consts.ParamInHeader.String(),
+		Path:     AddFix(consts.ParamInHeader.String()),
 		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,
 		Key:      _stringUtils.Uuid(),
@@ -25,7 +25,7 @@ func LoadForHeaders(params openapi3.Parameters) (category *AlternativeCase) {
 
 		paramCase := &AlternativeCase{
 			Title:    param.Value.Name,
-			Path:     path.Join(consts.ParamInHeader.String(), param.Value.Name),
+			Path:     path.Join(category.Path, param.Value.Name),
 			Category: consts.AlternativeCaseParam,
 			IsDir:    true,
 			Key:      _stringUtils.Uuid(),

@@ -7,6 +7,7 @@ import (
 	checkpointHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/checkpoint"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 func ExecPreConditions(execObj InterfaceExecObj) (err error) {
@@ -15,7 +16,11 @@ func ExecPreConditions(execObj InterfaceExecObj) (err error) {
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
 
-			err = ExecScript(&scriptBase)
+			err = ExecScript(&scriptBase, execObj.DebugData.ProjectId)
+			if err != nil {
+				logUtils.Info(err.Error())
+				return
+			}
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 
@@ -52,7 +57,7 @@ func ExecPostConditions(obj InterfaceExecObj, resp domain.DebugResponse) (err er
 				continue
 			}
 
-			err = ExecScript(&scriptBase)
+			err = ExecScript(&scriptBase, obj.DebugData.ProjectId)
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 

@@ -1,6 +1,5 @@
 import {app, BrowserWindow, ipcMain, Menu, shell, dialog, globalShortcut, createWindow} from 'electron';
 import {
-    App,
     DEBUG,
     electronMsg,
     electronMsgReplay, electronMsgServerUrl,
@@ -21,6 +20,7 @@ import {getCurrVersion, mkdir} from "./utils/comm";
 import {checkUpdate, updateApp} from "./utils/hot-update";
 import {portAgent,portClient} from "./utils/consts";
 import {getUsefulPort} from "./utils/checkPort";
+import {App} from "./utils/constant";
 import logger from "electron-log";
 
 const cp = require('child_process');

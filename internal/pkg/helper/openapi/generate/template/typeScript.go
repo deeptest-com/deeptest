@@ -49,7 +49,11 @@ func (t *typeScript) CreateCode(field fields.Field) string {
 
 func (t *typeScript) array(field fields.Field) string {
 	//if field.SubField.FieldType ==
-	return fmt.Sprintf("type %s = %s[]", field.FieldName, t.typeConvert(field.SubField.FieldType))
+	varName := field.SubField.FieldName
+	if varName == "" {
+		varName = fields.FieldName(field.SubField.FieldType)
+	}
+	return fmt.Sprintf("type %s = %s[]", field.FieldName, t.typeConvert(fields.FieldType(varName)))
 }
 
 func (t *typeScript) object(field fields.Field) string {

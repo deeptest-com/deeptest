@@ -15,9 +15,15 @@ type JslibCtrl struct {
 }
 
 func (c *JslibCtrl) List(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
 	keywords := ctx.URLParam("keywords")
 
-	res, err := c.JslibService.List(keywords)
+	res, err := c.JslibService.List(keywords, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
@@ -43,12 +49,20 @@ func (c *JslibCtrl) Get(ctx iris.Context) {
 }
 
 func (c *JslibCtrl) Save(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
 	req := model.SysJslib{}
-	err := ctx.ReadJSON(&req)
+	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+
+	req.ProjectId = uint(projectId)
 
 	userName := multi.GetUsername(ctx)
 	if req.ID > 0 {

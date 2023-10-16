@@ -120,7 +120,7 @@ func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, sessio
 			var scriptBase domain.ScriptBase
 			json.Unmarshal(condition.Raw, &scriptBase)
 
-			err = ExecScript(&scriptBase)
+			err = ExecScript(&scriptBase, processor.ProjectId)
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 
@@ -166,7 +166,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 				continue
 			}
 
-			err = ExecScript(&scriptBase)
+			err = ExecScript(&scriptBase, processor.ProjectId)
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 

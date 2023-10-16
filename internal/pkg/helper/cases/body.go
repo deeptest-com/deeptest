@@ -9,10 +9,10 @@ import (
 	"strings"
 )
 
-func LoadForBody(body *openapi3.RequestBodyRef) (category *AlternativeCase) {
+func LoadForBody(body *openapi3.RequestBodyRef, doc3 *openapi3.T) (category *AlternativeCase) {
 	category = &AlternativeCase{
 		Title:    "请求体",
-		Path:     "body",
+		Path:     AddFix("body"),
 		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,
 		Key:      _stringUtils.Uuid(),
@@ -22,7 +22,7 @@ func LoadForBody(body *openapi3.RequestBodyRef) (category *AlternativeCase) {
 	for mediaType, mediaObj := range body.Value.Content {
 		mediaCase := &AlternativeCase{
 			Title:    mediaType,
-			Path:     path.Join(category.Path, strings.ReplaceAll(mediaType, "/", "-")),
+			Path:     path.Join(category.Path, AddFix(strings.ReplaceAll(mediaType, "/", "-"))),
 			Category: consts.AlternativeCaseObject,
 			IsDir:    true,
 			Key:      _stringUtils.Uuid(),
@@ -35,6 +35,13 @@ func LoadForBody(body *openapi3.RequestBodyRef) (category *AlternativeCase) {
 
 		for propName, propRef := range props {
 			propVal := propRef.Value
+			if propVal == nil {
+				propVal = getRef(propRef.Ref, doc3)
+			}
+
+			if propVal == nil {
+				continue
+			}
 
 			propCase := &AlternativeCase{
 				Title:    propName,
@@ -45,7 +52,7 @@ func LoadForBody(body *openapi3.RequestBodyRef) (category *AlternativeCase) {
 				Slots:    iris.Map{"icon": "icon"},
 			}
 
-			addPropCase(propName, propVal, requires, propCase, propCase.Path)
+			addPropCase(propName, propVal, requires, propCase, propCase.Path, doc3)
 
 			if len(propCase.Children) > 0 {
 				mediaCase.Children = append(mediaCase.Children, propCase)
@@ -53,6 +60,18 @@ func LoadForBody(body *openapi3.RequestBodyRef) (category *AlternativeCase) {
 		}
 
 		category.Children = append(category.Children, mediaCase)
+	}
+
+	return
+}
+
+func getRef(ref string, doc3 *openapi3.T) (ret *openapi3.Schema) {
+	for name, item := range doc3.Components.Schemas {
+		if "#/components/schemas/"+name == ref {
+			ret = item.Value
+			ret.Type = "object"
+			break
+		}
 	}
 
 	return

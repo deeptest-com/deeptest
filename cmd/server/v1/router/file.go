@@ -19,6 +19,8 @@ func (m *FileModule) Party() module.WebModule {
 
 		index.Post("/", iris.LimitRequestBodySize(config.CONFIG.MaxSize*iris.MB),
 			m.FileCtrl.Upload).Name = "上传文件"
+		index.Post("/do", iris.LimitRequestBodySize(config.CONFIG.MaxSize*iris.MB),
+			m.FileCtrl.Do).Name = "上传文件"
 	}
 	return module.NewModule("/upload", handler)
 }

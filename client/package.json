@@ -11,11 +11,7 @@
     "package-linux": "npm run package -- --platform=linux",
     "package-win64": "npm run package -- --platform=win32 --arch=x64",
     "package-win32": "npm run package -- --platform=win32 --arch=ia32",
-    "ly-package-mac": "IS_LY_PACK=1 npm run package -- --platform=darwin",
-    "ly-package-win64": "IS_LY_PACK=1 npm run package -- --platform=win32 --arch=x64",
-    "ly-package-linux": "IS_LY_PACK=1 npm run package -- --platform=linux",
-    "ly-package-win32": "IS_LY_PACK=1 npm run package -- --platform=win32 --arch=ia32",
-    "dev": "sudo sh moveUI.sh && sudo SERVER_EXE_PATH=bin/darwin/deeptest-agent  UI_SERVER_PORT=8000 yarn start",
+    "dev": "sudo SERVER_EXE_PATH=bin/darwin/deeptest-agent  UI_SERVER_PORT=8000 yarn start",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "echo \"No linting configured\""

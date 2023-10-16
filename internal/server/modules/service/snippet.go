@@ -19,6 +19,16 @@ type SnippetService struct {
 	JslibRepo   *repo.JslibRepo   `inject:""`
 }
 
+func (s *SnippetService) ListJslibNames(projectId int) (names []string, err error) {
+	libs, _ := s.JslibRepo.List("", projectId, true)
+
+	for _, po := range libs {
+		names = append(names, po.Name)
+	}
+
+	return
+}
+
 func (s *SnippetService) Get(name scriptHelper.ScriptType) (po jslibHelper.Jslib, err error) {
 	script := scriptHelper.GetScript(name)
 
@@ -28,11 +38,11 @@ func (s *SnippetService) Get(name scriptHelper.ScriptType) (po jslibHelper.Jslib
 	return
 }
 
-func (s *SnippetService) GetJslibs() (pos []jslibHelper.Jslib, err error) {
+func (s *SnippetService) GetJslibs(projectId int) (pos []jslibHelper.Jslib, err error) {
 	//if JslibsDeclares == nil {
 
 	JslibsDeclares = nil
-	libs, _ := s.JslibRepo.List("")
+	libs, _ := s.JslibRepo.List("", projectId, true)
 
 	for _, lib := range libs {
 		pth := filepath.Join(dir.GetCurrentAbPath(), lib.TypesFile)
@@ -52,8 +62,8 @@ func (s *SnippetService) GetJslibs() (pos []jslibHelper.Jslib, err error) {
 	return
 }
 
-func (s *SnippetService) GetJslibsForAgent(loadedLibs map[uint]time.Time) (tos []jslibHelper.Jslib, err error) {
-	pos, _ := s.JslibRepo.List("")
+func (s *SnippetService) GetJslibsForAgent(loadedLibs map[uint]time.Time, projectId int) (tos []jslibHelper.Jslib, err error) {
+	pos, _ := s.JslibRepo.List("", projectId, true)
 
 	for _, po := range pos {
 		pth := filepath.Join(dir.GetCurrentAbPath(), po.ScriptFile)

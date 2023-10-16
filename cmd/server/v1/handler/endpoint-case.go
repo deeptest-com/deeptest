@@ -14,7 +14,7 @@ type EndpointCaseCtrl struct {
 	DebugInterfaceService *service.DebugInterfaceService `inject:""`
 }
 
-// List
+// Paginate
 // @Tags	设计器/接口用例
 // @summary	用例列表
 // @accept 	application/json
@@ -24,10 +24,17 @@ type EndpointCaseCtrl struct {
 // @Param 	endpointId		query	int		true	"endpointId"
 // @success	200	{object}	_domain.Response{data=[]model.EndpointCase}
 // @Router	/api/v1/endpoints/cases/list	[get]
-func (c *EndpointCaseCtrl) List(ctx iris.Context) {
-	endpointId, _ := ctx.URLParamInt("endpointId")
+func (c *EndpointCaseCtrl) Paginate(ctx iris.Context) {
+	var req serverDomain.EndpointCaseReqPaginate
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
 
-	data, err := c.EndpointCaseService.List(uint(endpointId))
+	req.ConvertParams()
+
+	data, err := c.EndpointCaseService.Paginate(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

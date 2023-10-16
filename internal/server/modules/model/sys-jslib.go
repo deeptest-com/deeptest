@@ -7,6 +7,8 @@ type SysJslib struct {
 	ScriptFile string `json:"scriptFile" gorm:"type:text" validate:"required"`
 	TypesFile  string `json:"typesFile" gorm:"type:text"`
 
+	ProjectId uint `json:"projectId"`
+
 	CreateUser string `json:"createUser"`
 	UpdateUser string `json:"updateUser"`
 }

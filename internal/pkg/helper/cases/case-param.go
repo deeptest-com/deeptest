@@ -14,15 +14,19 @@ func addParamRequiredCase(paramVal *openapi3.Parameter, parent *AlternativeCase)
 		return
 	}
 
+	schema := paramVal.Schema.Value
+	typ := OasFieldType(schema.Type)
+
 	sample := getRequiredSample()
 	required := &AlternativeCase{
 		Title:  "required",
 		Sample: sample,
-		Path:   path.Join(parent.Path, "required"),
+		Path:   path.Join(parent.Path, AddFix("required")),
 
 		Category:      consts.AlternativeCaseCase,
 		Type:          consts.AlternativeCaseRequired,
 		FieldRequired: true,
+		FieldType:     typ,
 		IsDir:         false,
 		Key:           _stringUtils.Uuid(),
 		Slots:         iris.Map{"icon": "icon"},
@@ -47,7 +51,7 @@ func addParamTypeCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 	typeCase := &AlternativeCase{
 		Title:  fmt.Sprintf("%v", typ),
 		Sample: sample,
-		Path:   path.Join(parent.Path, "type"),
+		Path:   path.Join(parent.Path, AddFix("type")),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseTyped,
@@ -72,7 +76,7 @@ func addParamEnumCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 	typeCase := &AlternativeCase{
 		Title:  fmt.Sprintf("enum %v", enum),
 		Sample: sample,
-		Path:   path.Join(parent.Path, "enum"),
+		Path:   path.Join(parent.Path, AddFix("enum")),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseEnum,
@@ -94,12 +98,15 @@ func addParamFormatCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 		return
 	}
 
-	sample := getFormatSample(format, typ)
+	sample, ok := getFormatSample(format, typ)
+	if !ok {
+		return
+	}
 
 	formatCase := &AlternativeCase{
 		Title:  fmt.Sprintf("format (%s)", format),
 		Sample: sample,
-		Path:   path.Join(parent.Path, "format"),
+		Path:   path.Join(parent.Path, AddFix("format")),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseEnum,
@@ -124,7 +131,7 @@ func addParamRuleCase(paramVal *openapi3.Parameter, parent *AlternativeCase) {
 		tag := item[3]
 		rule := item[4].(consts.AlternativeCaseRules)
 
-		temp := path.Join(parent.Path, "rule")
+		temp := path.Join(parent.Path, AddFix("rule"))
 		addRuleCase(name, sample, typ, tag, rule, parent, temp)
 	}
 }
@@ -135,7 +142,7 @@ func addRuleCase(name string, sample interface{}, typ OasFieldType, tag interfac
 	ruleCase := &AlternativeCase{
 		Title:  fmt.Sprintf("%s (%v)", rule.String(), tag),
 		Sample: sample,
-		Path:   path.Join(pth, rule.String()),
+		Path:   path.Join(pth, AddFix(rule.String())),
 
 		Category:  consts.AlternativeCaseCase,
 		Type:      consts.AlternativeCaseRule,

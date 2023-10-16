@@ -21,8 +21,8 @@ var (
 	AgentLoadedLibs sync.Map
 )
 
-func LoadAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, serverUrl, token string) {
-	libs := getJslibsFromServer(serverUrl, token)
+func LoadAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, projectId uint, serverUrl, token string) {
+	libs := getJslibsFromServer(projectId, serverUrl, token)
 
 	for _, lib := range libs {
 		id := lib.Id
@@ -58,8 +58,8 @@ func SetAgentCache(id uint, val time.Time) {
 	AgentLoadedLibs.Store(id, val)
 }
 
-func getJslibsFromServer(serverUrl, token string) (libs []Jslib) {
-	url := fmt.Sprintf("snippets/getJslibsForAgent")
+func getJslibsFromServer(projectId uint, serverUrl, token string) (libs []Jslib) {
+	url := fmt.Sprintf("snippets/getJslibsForAgent?projectId=%d", projectId)
 
 	loadedLibs := map[uint]time.Time{}
 	AgentLoadedLibs.Range(func(key, value interface{}) bool {
@@ -75,6 +75,7 @@ func getJslibsFromServer(serverUrl, token string) (libs []Jslib) {
 		BearerToken: domain.BearerToken{
 			Token: token,
 		},
+
 		Body: string(body),
 	}
 

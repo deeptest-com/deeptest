@@ -65,18 +65,14 @@ require (
 	gorm.io/gorm v1.24.1-0.20221019064659-5dd2bb482755
 	gorm.io/plugin/dbresolver v1.4.0
 	syreclabs.com/go/faker v1.2.3
-)
 
-require (
 	github.com/Joker/jade v1.1.3 // indirect
-	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/golang/gddo v0.0.0-20210115222349-20d68f94ee1f // indirect
 	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/mailgun/raymond/v2 v2.0.48 // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
-)
+	github.com/tidwall/sjson v1.2.5 // indirect
 
-require (
 	github.com/BurntSushi/toml v1.3.2 // indirect
 	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/CloudyKit/jet/v6 v6.2.0 // indirect
@@ -176,9 +172,9 @@ require (
 	github.com/swaggo/swag v1.16.1
 	github.com/tdewolff/minify/v2 v2.12.7 // indirect
 	github.com/tdewolff/parse/v2 v2.6.6 // indirect
-	github.com/tidwall/gjson v1.12.0 // indirect
+	github.com/tidwall/gjson v1.17.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
-	github.com/tidwall/pretty v1.2.0 // indirect
+	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.30.0 // indirect

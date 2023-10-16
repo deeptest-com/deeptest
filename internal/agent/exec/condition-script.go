@@ -29,9 +29,9 @@ type JsVm struct {
 	JsRuntime *goja.Runtime
 }
 
-func ExecScript(scriptObj *domain.ScriptBase) (err error) {
+func ExecScript(scriptObj *domain.ScriptBase, projectId uint) (err error) {
 	if execVm.JsRuntime == nil {
-		InitJsRuntime()
+		InitJsRuntime(projectId)
 	}
 
 	VariableSettings = []domain.ExecVariable{}
@@ -63,9 +63,9 @@ func ExecScript(scriptObj *domain.ScriptBase) (err error) {
 	return
 }
 
-func InitJsRuntime() {
+func InitJsRuntime(projectId uint) {
 	if execVm.JsRuntime != nil {
-		jslibHelper.LoadAgentJslibs(execVm.JsRuntime, execRequire, ServerUrl, ServerToken)
+		jslibHelper.LoadAgentJslibs(execVm.JsRuntime, execRequire, projectId, ServerUrl, ServerToken)
 		return
 	}
 
@@ -90,7 +90,7 @@ func InitJsRuntime() {
 	execVm.JsRuntime.Set("dt", dt)
 
 	// import other custom libs
-	jslibHelper.LoadAgentJslibs(execVm.JsRuntime, execRequire, ServerUrl, ServerToken)
+	jslibHelper.LoadAgentJslibs(execVm.JsRuntime, execRequire, 0, ServerUrl, ServerToken)
 }
 
 func GetReqValueFromGoja() (err error) {
@@ -102,8 +102,8 @@ func GetRespValueFromGoja() (err error) {
 	return
 }
 
-func defineJsFuncs() {
-	execVm.JsRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
+func defineJsFuncs() (err error) {
+	err = execVm.JsRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
 		rowIndex := getDatapoolRow(dpName, seq, ExecScene.Datapools)
 
 		if ExecScene.Datapools[dpName] == nil {
@@ -124,7 +124,7 @@ func defineJsFuncs() {
 		return
 	})
 
-	execVm.JsRuntime.Set("getVariable", func(name string) interface{} {
+	err = execVm.JsRuntime.Set("getVariable", func(name string) interface{} {
 		var scopeId uint
 		if CurrScenarioProcessor != nil {
 			scopeId = CurrScenarioProcessor.ParentId
@@ -132,7 +132,7 @@ func defineJsFuncs() {
 		vari, _ := GetVariable(scopeId, name)
 		return vari.Value
 	})
-	execVm.JsRuntime.Set("setVariable", func(name, val string) {
+	err = execVm.JsRuntime.Set("setVariable", func(name, val string) {
 		var scopeId uint
 		if CurrScenarioProcessor != nil {
 			scopeId = CurrScenarioProcessor.ParentId
@@ -145,7 +145,7 @@ func defineJsFuncs() {
 
 		return
 	})
-	execVm.JsRuntime.Set("clearVariable", func(name string) {
+	err = execVm.JsRuntime.Set("clearVariable", func(name string) {
 		var scopeId uint
 		if CurrScenarioProcessor != nil {
 			scopeId = CurrScenarioProcessor.ParentId
@@ -153,10 +153,10 @@ func defineJsFuncs() {
 		ClearVariable(scopeId, name)
 	})
 
-	execVm.JsRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
+	err = execVm.JsRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
 		CurrRequest = value
 	})
-	execVm.JsRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
+	err = execVm.JsRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
 		if httpHelper.IsJsonResp(value) {
 			bytes, _ := json.Marshal(value.Data)
 			value.Content = string(bytes)
@@ -167,10 +167,12 @@ func defineJsFuncs() {
 		}
 	})
 
-	execVm.JsRuntime.Set("log", func(value interface{}) {
+	err = execVm.JsRuntime.Set("log", func(value interface{}) {
 		bytes, _ := json.Marshal(value)
 		logs = append(logs, string(bytes))
 	})
+
+	return
 }
 
 var (

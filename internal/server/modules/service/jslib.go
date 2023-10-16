@@ -11,8 +11,8 @@ type JslibService struct {
 	JslibRepo *repo.JslibRepo `inject:""`
 }
 
-func (s *JslibService) List(keywords string) (ret []model.SysJslib, err error) {
-	ret, err = s.JslibRepo.List(keywords)
+func (s *JslibService) List(keywords string, projectId int) (ret []model.SysJslib, err error) {
+	ret, err = s.JslibRepo.List(keywords, projectId, false)
 	return
 }
 

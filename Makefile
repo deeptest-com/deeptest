@@ -2,10 +2,8 @@
 #PROJECT=deeptest
 
 # ly 打包配置，开源版可以删除
-
 VERSION=0.0.15
 PROJECT=LeyanAPI
-
 
 ifeq ($(OS),Windows_NT)
     PLATFORM="windows"
@@ -24,17 +22,13 @@ else
 endif
 
 
-# ly打包的路径,单独设置
+# ly 打包的路径,单独设置
 PKG_W64=npm run package-win64
 PKG_MAC=npm run package-mac
 PKG_W32=npm run package-win32
 PKG_LINUX=npm run package-linux
 ifeq ($(PROJECT),LeyanAPI)
 	QINIU_DIR=~/nk2/ly/
-	PKG_W64=npm run ly-package-win64
-	PKG_MAC=npm run ly-package-mac
-	PKG_W32=npm run ly-package-win32
-	PKG_LINUX=npm run ly-package-linux
 endif
 
 
@@ -64,12 +58,16 @@ linux: prepare build_gui_linux                        compile_server_linux copy_
 mac:   prepare build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
 
 # 乐研 打包
-ly-win64: prepare compile_ly_ui_client build_gui_win64 compile_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
-ly-win32: prepare compile_ly_ui_client build_gui_win32 compile_launcher_win32 compile_server_win32 copy_files_win32 zip_win32 zip_win32_upgrade
+ly-win64: prepare compile_ly_ui_client build_gui_win64 compile_ly_launcher_win64 compile_server_win64 copy_files_win64 zip_win64 zip_win64_upgrade
+ly-win32: prepare compile_ly_ui_client build_gui_win32 compile_ly_launcher_win32 compile_server_win32 copy_files_win32 zip_win32 zip_win32_upgrade
 ly-linux: prepare compile_ly_ui_client build_gui_linux                        compile_server_linux copy_files_linux zip_linux zip_linux_upgrade
 ly-mac:   prepare compile_ly_ui_client build_gui_mac                          compile_server_mac   copy_files_mac   zip_mac zip_mac_upgrade
 
-prepare: update_version
+prepare: init_client_project update_version
+
+# 初始化客户端项目
+init_client_project:
+	@sh ./init.project.sh
 
 update_version: gen_version_file
 
@@ -85,7 +83,7 @@ compile_ui_demo:
 compile_ui_client:
 	@cd ui && yarn build --mode deeptest-client --dest ../client/ui && cd ..
 compile_ly_ui_client:
-	@cd ui && yarn build --mode ly-client --dest ../client/ui && cd ..
+	@cd ../leyanapi-frontend  && yarn build:client && cd ../leyanapi-backend
 
 # launcher
 compile_launcher_win64:
@@ -96,10 +94,28 @@ compile_launcher_win64:
 		-o ../../${BIN_DIR}win64/${PROJECT}.exe && \
 		cd ..
 
+# ly-launcher
+compile_ly_launcher_win64:
+	@echo 'start compile win64 launcher'
+	@cd cmd/ly-launcher && \
+        CC=x86_64-w64-mingw32-gcc CXX=x86_64-w64-mingw32-g++ GOOS=windows GOARCH=amd64 \
+		${BUILD_CMD_WIN} -x -v \
+		-o ../../${BIN_DIR}win64/${PROJECT}.exe && \
+		cd ..
 
+# launcher-win32
 compile_launcher_win32:
 	@echo 'start compile win32 launcher'
 	@cd cmd/launcher && \
+        CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
+		${BUILD_CMD_WIN} -x -v \
+		-o ../../${BIN_DIR}win32/${PROJECT}.exe && \
+        cd ..
+
+# ly-launcher-win32
+compile_ly_launcher_win32:
+	@echo 'start compile win32 launcher'
+	@cd cmd/ly-launcher && \
         CC=i686-w64-mingw32-gcc CXX=i686-w64-mingw32-g++ GOOS=windows GOARCH=386 \
 		${BUILD_CMD_WIN} -x -v \
 		-o ../../${BIN_DIR}win32/${PROJECT}.exe && \

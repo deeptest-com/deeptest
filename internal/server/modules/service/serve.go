@@ -280,7 +280,10 @@ func (s *ServeService) Components(serveId uint) (components schemaHelper.Compone
 func (s *ServeService) Schema2Yaml(data string) (res string) {
 	schema := openapi3.Schema{}
 	_commUtils.JsonDecode(data, &schema)
-	content, _ := encoder.NewEncoder(schema).Encode()
+	jsonStr := _commUtils.JsonEncode(schema)
+	var ret interface{}
+	_commUtils.JsonDecode(jsonStr, &ret)
+	content, _ := encoder.NewEncoder(ret).Encode()
 	return string(content)
 }
 

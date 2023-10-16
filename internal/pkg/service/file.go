@@ -65,3 +65,32 @@ func GetFileName(name string) (string, error) {
 	ext := fns[1]
 	return str.Join(base, "-", stringUtils.Uuid(), ".", ext), nil
 }
+
+// UploadFile 上传文件
+func (s *FileService) UploadFileByPath(ctx iris.Context, fh *multipart.FileHeader, path string) (ret string, err error) {
+	filename := _fileUtils.GetFileName(fh.Filename)
+	if err != nil {
+		logUtils.Errorf("获取文件名失败，错误%s", err.Error())
+		return
+	}
+
+	targetDir := filepath.Join(consts.DirUpload, path)
+	absDir := filepath.Join(dir.GetCurrentAbPath(), targetDir)
+
+	err = dir.InsureDir(targetDir)
+	if err != nil {
+		logUtils.Errorf("文件上传失败，错误%s", err.Error())
+		return
+	}
+
+	pth := filepath.Join(absDir, filename)
+	_, err = ctx.SaveFormFile(fh, pth)
+	if err != nil {
+		logUtils.Errorf("文件上传失败，错误%s", "保存文件到本地")
+		return
+	}
+
+	ret = filepath.Join(targetDir, filename)
+
+	return
+}

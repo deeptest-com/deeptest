@@ -25,21 +25,26 @@ func getEnumSample() (sample interface{}) {
 	return RandStr()
 }
 
-func getFormatSample(format OasFieldFormat, typ OasFieldType) (sample interface{}) {
+func getFormatSample(format OasFieldFormat, typ OasFieldType) (sample interface{}, ok bool) {
 	if typ == OasFieldTypeInteger {
 		if format == OasFieldFormatInt32 {
 			sample = RandInt64()
+			ok = true
 		} else if format == OasFieldFormatInt64 {
 			sample = RandStr()
+			ok = true
 		}
 	} else if typ == OasFieldTypeNumber {
 		if format == OasFieldFormatFloat {
 			sample = RandFloat64()
+			ok = true
 		} else if format == OasFieldFormatDouble {
 			sample = RandStr()
+			ok = true
 		}
 	} else if typ == OasFieldTypeString { // others
 		sample = RandStr()
+		ok = true
 	}
 
 	return
@@ -84,7 +89,12 @@ func getRuleSamples(schema *openapi3.Schema, name string) (ret [][]interface{}) 
 				if *schema.MaxLength <= 3 {
 					sample = 1
 				} else {
-					sample = 1/math.Pow(10, float64(*schema.MaxLength-1)) + 1
+					maxLen := *schema.MaxLength
+					if maxLen < 1 {
+						maxLen = 1
+					}
+
+					sample = 1/math.Pow(10, float64(maxLen-1)) + 1
 				}
 			}
 
@@ -97,9 +107,18 @@ func getRuleSamples(schema *openapi3.Schema, name string) (ret [][]interface{}) 
 			var sample interface{}
 
 			if typ == OasFieldTypeInteger {
-				sample = 1 * math.Pow(10, float64(schema.MinLength-2))
+				minLen := schema.MinLength
+				if minLen < 2 {
+					minLen = 2
+				}
+				sample = 1 * math.Pow(10, float64(minLen-2))
 			} else {
-				sample = 1/math.Pow(10, float64(schema.MinLength-3)) + 1
+				minLen := schema.MinLength
+				if minLen < 3 {
+					minLen = 3
+				}
+
+				sample = 1/math.Pow(10, float64(minLen-3)) + 1
 			}
 
 			tag := schema.MinLength
@@ -139,7 +158,12 @@ func getRuleSamples(schema *openapi3.Schema, name string) (ret [][]interface{}) 
 		}
 
 		if schema.MinLength > 0 {
-			sample := RandStrWithLen(int(schema.MinLength - 1))
+			minLen := schema.MinLength
+			if minLen < 1 {
+				minLen = 1
+			}
+
+			sample := RandStrWithLen(int(minLen - 1))
 
 			tag := schema.MinLength
 			item := []interface{}{name, sample, typ, tag, consts.AlternativeCaseRulesMinLength}

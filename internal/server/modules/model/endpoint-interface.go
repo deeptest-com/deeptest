@@ -39,6 +39,8 @@ type SchemaParam struct {
 	UniqueItems bool    `json:"uniqueItems"`
 	Ref         string  `json:"ref"`
 	Description string  `gorm:"type:text" json:"description"`
+	Minimum     float64 `json:"minimum"`
+	Maximum     float64 `json:"maximum"`
 }
 
 func (EndpointInterface) TableName() string {

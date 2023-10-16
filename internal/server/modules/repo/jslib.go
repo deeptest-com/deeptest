@@ -11,9 +11,13 @@ type JslibRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *JslibRepo) List(keywords string) (pos []model.SysJslib, err error) {
+func (r *JslibRepo) List(keywords string, projectId int, ignoreDisabled bool) (pos []model.SysJslib, err error) {
 	db := r.DB.Model(&model.SysJslib{}).
-		Where("NOT deleted")
+		Where("project_id = ? AND NOT deleted", projectId)
+
+	if ignoreDisabled {
+		db.Where("NOT disabled")
+	}
 
 	if keywords != "" {
 		db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", keywords))

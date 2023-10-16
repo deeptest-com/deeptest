@@ -150,8 +150,9 @@ func (s *serve2conv) pathParameters(params []model.EndpointPathParam) (parameter
 		parameterRef.Value.Name = param.Name
 		parameterRef.Value.Required = true
 		parameterRef.Value.Schema = new(openapi3.SchemaRef)
-		parameterRef.Value.Schema.Value = new(openapi3.Schema)
-		parameterRef.Value.Schema.Value.Type = param.Type
+		//parameterRef.Value.Schema.Value = new(openapi3.Schema)
+		//parameterRef.Value.Schema.Value.Type = param.Type
+		parameterRef.Value.Schema.Value = s.schemaPathValue(param)
 		parameters = append(parameters, parameterRef)
 	}
 	return
@@ -198,6 +199,26 @@ func (s *serve2conv) schemaValue(param model.EndpointInterfaceParam) (schema *op
 	schema.MaxItems = &param.MaxItems
 	schema.UniqueItems = param.UniqueItems
 	schema.Type = param.Type
+	schema.Max = &param.Maximum
+	schema.Min = &param.Minimum
+	schema.Format = param.Format
+	return
+}
+func (s *serve2conv) schemaPathValue(param model.EndpointPathParam) (schema *openapi3.Schema) {
+	schema = new(openapi3.Schema)
+	schema.Example = param.Example
+	schema.Pattern = param.Pattern
+	schema.MinLength = param.MinLength
+	schema.MaxLength = &param.MaxLength
+	schema.Default = param.Default
+	schema.MultipleOf = &param.MultipleOf
+	schema.MinItems = param.MinItems
+	schema.MaxItems = &param.MaxItems
+	schema.UniqueItems = param.UniqueItems
+	schema.Type = param.Type
+	schema.Max = &param.Maximum
+	schema.Min = &param.Minimum
+	schema.Format = param.Format
 	return
 }
 
@@ -217,16 +238,22 @@ func (s *serve2conv) requestBody(body model.EndpointInterfaceRequestBody) (reque
 
 func (s *serve2conv) requestBodySchema(item model.EndpointInterfaceRequestBodyItem) (schema *openapi3.Schema) {
 	schema = new(openapi3.Schema)
-	schema.Type = item.Type
-	if item.Type == openapi3.TypeObject {
-		var schemas openapi3.Schemas
-		_commUtils.JsonDecode(item.Content, &schemas)
-		schema.Properties = schemas
-	} else {
-		var items *openapi3.SchemaRef
-		_commUtils.JsonDecode(item.Content, &items)
-		schema.Items = items
-	}
+	//schema.Type = item.Type
+	//item.Content = "{\"type\":\"object\",\"properties\":{\"name1\":{\"type\":\"string\",\"enum\":[],\"format\":\"email\",\"behavior\":null,\"default\":\"\",\"example\":\"\",\"pattern\":\"\",\"minLength\":\"\",\"maxLength\":\"\",\"deprecated\":false}}}"
+	item.Content = strings.ReplaceAll(item.Content, "\n", "")
+	item.Content = strings.ReplaceAll(item.Content, "\"ref\":", "\"$ref\":")
+	_commUtils.JsonDecode(item.Content, &schema)
+	/*
+		if item.Type == openapi3.TypeObject {
+			var schemas openapi3.Schemas
+			_commUtils.JsonDecode(item.Content, &schemas)
+			schema.Properties = schemas
+		} else {
+			var items *openapi3.SchemaRef
+			_commUtils.JsonDecode(item.Content, &items)
+			schema.Items = items
+		}
+	*/
 	return
 }
 

@@ -36,8 +36,30 @@ func (c *SnippetCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: snippet})
 }
 
+func (c *SnippetCtrl) ListJslibNames(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	snippets, err := c.SnippetService.ListJslibNames(projectId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: snippets})
+}
+
 func (c *SnippetCtrl) GetJslibs(ctx iris.Context) {
-	snippets, err := c.SnippetService.GetJslibs()
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	snippets, err := c.SnippetService.GetJslibs(projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -47,14 +69,20 @@ func (c *SnippetCtrl) GetJslibs(ctx iris.Context) {
 }
 
 func (c *SnippetCtrl) GetJslibsForAgent(ctx iris.Context) {
-	agentLoadedLibs := map[uint]time.Time{}
-	err := ctx.ReadJSON(&agentLoadedLibs)
+	projectId, err := ctx.URLParamInt("projectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	snippets, err := c.SnippetService.GetJslibsForAgent(agentLoadedLibs)
+	agentLoadedLibs := map[uint]time.Time{}
+	err = ctx.ReadJSON(&agentLoadedLibs)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	snippets, err := c.SnippetService.GetJslibsForAgent(agentLoadedLibs, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

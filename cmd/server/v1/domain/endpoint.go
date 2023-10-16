@@ -30,20 +30,22 @@ type EndpointInterfaceReqPaginate struct {
 
 type OpenApiParam struct {
 	domain.Param
-	Format      string `json:"format"`
-	Example     string `json:"example"`
-	Pattern     string `json:"pattern"`
-	MinLength   int64  `json:"minLength"`
-	MaxLength   int64  `json:"maxLength"`
-	Default     string `json:"default"`
-	MultipleOf  int64  `json:"multipleOf"`
-	MinItems    int64  `json:"minItems"`
-	MaxItems    int64  `json:"maxItems"`
-	UniqueItems bool   `json:"uniqueItems"`
-	Ref         string `json:"ref"`
-	Required    bool   `json:"required"`
-	Type        string `json:"type"`
-	Description string `json:"description"`
+	Format      string  `json:"format"`
+	Example     string  `json:"example"`
+	Pattern     string  `json:"pattern"`
+	MinLength   int64   `json:"minLength"`
+	MaxLength   int64   `json:"maxLength"`
+	Default     string  `json:"default"`
+	MultipleOf  int64   `json:"multipleOf"`
+	MinItems    int64   `json:"minItems"`
+	MaxItems    int64   `json:"maxItems"`
+	UniqueItems bool    `json:"uniqueItems"`
+	Ref         string  `json:"ref"`
+	Required    bool    `json:"required"`
+	Type        string  `json:"type"`
+	Description string  `json:"description"`
+	Minimum     float64 `json:"minimum"`
+	Maximum     float64 `json:"maximum"`
 }
 
 type EndpointReq struct {

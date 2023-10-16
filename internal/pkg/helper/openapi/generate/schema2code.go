@@ -14,13 +14,14 @@ type Schema2Code struct {
 	langType template.LangType
 	nameRule string
 	sets     map[string]int64
+	varCount int
 }
 
 func NewSchema2Code(langType template.LangType, nameRule string) *Schema2Code {
 	obj := &Schema2Code{}
 	obj.langType = langType
 	obj.nameRule = nameRule
-
+	obj.sets = make(map[string]int64)
 	return obj
 }
 
@@ -28,6 +29,7 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 	ref := schema.Ref
 	if component, ok := s.Components[schema.Ref]; ok {
 		s.sets[ref]++
+		//name = ref
 		schema = *component
 	}
 
@@ -52,7 +54,7 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 			return field
 		}
 		field.FieldType = openapi3.TypeArray
-		field.SubField = s.schema2Fields(name, *schema.Value.Items)
+		field.SubField = s.schema2Fields(s.varName("var"), *schema.Value.Items)
 	default:
 		field.FieldType = fields.FieldType(schema.Value.Type)
 
@@ -65,4 +67,9 @@ func (s *Schema2Code) Convert(schema schemaHelper.SchemaRef) string {
 	fmt.Println(commonUtils.JsonEncode(field))
 	t := template.NewTemplate(s.langType, field.ToArray())
 	return t.CreateCode()
+}
+
+func (s *Schema2Code) varName(name string) string {
+	s.varCount++
+	return fmt.Sprintf("%s%d", name, s.varCount)
 }

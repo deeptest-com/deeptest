@@ -7,6 +7,7 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"strconv"
@@ -26,6 +27,12 @@ type EndpointCaseService struct {
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
 
+func (s *EndpointCaseService) Paginate(req serverDomain.EndpointCaseReqPaginate) (ret _domain.PageData, err error) {
+	ret, err = s.EndpointCaseRepo.Paginate(req)
+
+	return
+}
+
 func (s *EndpointCaseService) List(endpointId uint) (ret []model.EndpointCase, err error) {
 	ret, err = s.EndpointCaseRepo.List(endpointId)
 
@@ -40,7 +47,7 @@ func (s *EndpointCaseService) Get(id int) (ret model.EndpointCase, err error) {
 }
 
 func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (casePo model.EndpointCase, err error) {
-	debugInterfaceId, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, consts.HttpMethod(req.Method))
+	debugInterfaceId, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
 	if debugInterfaceId > 0 {
 		req.DebugData, err = s.DebugInterfaceService.GetDebugDataFromDebugInterface(debugInterfaceId)
 	} else if endpointInterfaceId > 0 {
@@ -72,6 +79,7 @@ func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po mod
 		CreateUserId:   userId,
 		CreateUserName: userName,
 
+		Method:    endpointCase.Method,
 		DebugData: debugData,
 	}
 

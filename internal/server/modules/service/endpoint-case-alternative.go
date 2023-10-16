@@ -99,13 +99,11 @@ func (s *EndpointCaseAlternativeService) SaveAlternativeCase(req serverDomain.En
 
 	typ := req.Type
 	if typ == "multi" {
-
 		err1 := s.GenMultiCases(req)
 		if err1 != nil {
 			err = err1
 			return
 		}
-
 	} else if typ == "single" {
 	}
 

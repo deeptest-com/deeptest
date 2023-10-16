@@ -91,6 +91,13 @@
     "parent":"project-setting"
   },
   {
+    "code":"project-setting-jslib",
+    "title":"自定义脚本库设置",
+    "path":"/:projectNameAbbr/project-setting/jslib",
+    "type":"menu",
+    "parent":"project-setting"
+  },
+  {
     "code":"project-setting-swaggerSync",
     "title":"自动同步",
     "path":"/:projectNameAbbr/project-setting/swaggerSync",

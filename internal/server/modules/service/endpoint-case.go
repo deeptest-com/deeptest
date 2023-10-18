@@ -66,12 +66,16 @@ func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (case
 	return
 }
 
-func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po model.EndpointCase, err error) {
+func (s *EndpointCaseService) Copy(id int, prefix string, userId uint, userName string) (po model.EndpointCase, err error) {
 	endpointCase, _ := s.EndpointCaseRepo.Get(uint(id))
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
 
+	if prefix == "" {
+		prefix = "copy-"
+	}
+
 	req := serverDomain.EndpointCaseSaveReq{
-		Name:       "copy-" + endpointCase.Name,
+		Name:       prefix + endpointCase.Name,
 		EndpointId: endpointCase.EndpointId,
 		ServeId:    endpointCase.ServeId,
 		ProjectId:  endpointCase.ProjectId,

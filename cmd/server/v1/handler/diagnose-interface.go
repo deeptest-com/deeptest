@@ -92,7 +92,7 @@ func (c *DiagnoseInterfaceCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	//data, err := c.DiagnoseInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
+	//data, err := c.DiagnoseInterfaceService.List(int(po.ProjectId), int(po.ServeId))
 	//if err != nil {
 	//	ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	//	return
@@ -165,7 +165,7 @@ func (c *DiagnoseInterfaceCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	//data, err := c.DiagnoseInterfaceService.Load(int(po.ProjectId), int(po.ServeId))
+	//data, err := c.DiagnoseInterfaceService.List(int(po.ProjectId), int(po.ServeId))
 	//if err != nil {
 	//	ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	//	return

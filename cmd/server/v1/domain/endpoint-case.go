@@ -7,6 +7,7 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"time"
 )
 
 type EndpointCaseReqPaginate struct {
@@ -147,4 +148,15 @@ type CategoryEndpointCase struct {
 	EndpointTitle        string `json:"endpointTitle"`
 	EndpointDescription  string `json:"endpointDescription"`
 	CategoryId           int64  `json:"categoryId"`
+}
+
+type EndpointCaseAlternativeAssertReq struct {
+	Id        uint       `json:"id"`
+	CreatedAt *time.Time `json:"createdAt"`
+	UpdatedAt *time.Time `json:"updatedAt"`
+
+	Deleted  bool `json:"-" gorm:"default:false"`
+	Disabled bool `json:"disabled,omitempty"`
+
+	domain.CheckpointBase
 }

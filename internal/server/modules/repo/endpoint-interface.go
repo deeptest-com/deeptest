@@ -11,6 +11,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type EndpointInterfaceRepo struct {
@@ -924,4 +925,74 @@ func (r *EndpointInterfaceRepo) GetByEndpointId(endpointId uint) (fields []model
 		Where("endpoint_id = ? AND NOT deleted", endpointId).
 		Find(&fields).Error
 	return
+}
+
+func (r *EndpointInterfaceRepo) GetResponseBody(interfaceId uint, code string) (result model.EndpointInterfaceResponseBody, err error) {
+	err = r.DB.Find(&result, "interface_id = ? AND code = ?  AND NOT deleted", interfaceId, code).Error
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetResponseBodyItem(responseBodyId uint) (result model.EndpointInterfaceResponseBodyItem, err error) {
+	err = r.DB.Find(&result, "response_body_id = ?  AND NOT deleted", responseBodyId).Error
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) SaveResponseBody(responseBody *model.EndpointInterfaceResponseBody) (err error) {
+
+	err = r.BaseRepo.Save(responseBody.ID, responseBody)
+	if err != nil {
+		return
+	}
+
+	err = r.removeResponseBodyItem(responseBody.ID)
+	if err != nil {
+		return
+	}
+
+	schemaItem := responseBody.SchemaItem
+	schemaItem.ResponseBodyId = responseBody.ID
+	err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
+	if err != nil {
+		return
+	}
+
+	err = r.AddResponseCode(responseBody.InterfaceId, responseBody.Code)
+
+	return
+
+}
+
+func (r *EndpointInterfaceRepo) AddResponseCode(interfaceId uint, code string) (err error) {
+	var endpointInterface model.EndpointInterface
+	endpointInterface, err = r.Get(interfaceId)
+	if err != nil {
+		return err
+	}
+
+	needAdd := true
+	if endpointInterface.ResponseCodes == "" {
+		endpointInterface.ResponseCodes = "200,301,302,401,402,500"
+	}
+	responseCodes := strings.Split(endpointInterface.ResponseCodes, ",")
+	for _, responseCode := range responseCodes {
+		if responseCode == code {
+			needAdd = false
+			break
+		}
+	}
+	if needAdd {
+		responseCodes = append(responseCodes, code)
+	}
+	err = r.DB.Model(endpointInterface).Update("response_codes", strings.Join(responseCodes, ",")).Where("id", interfaceId).Error
+
+	return
+
 }

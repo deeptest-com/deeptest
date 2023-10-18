@@ -18,6 +18,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 )
 
 func Base(pathStr string) string {
@@ -321,4 +322,28 @@ func GetEnvVar(name, def string) (ret string) {
 	}
 
 	return
+}
+
+// 驼峰式写法转为下划线写法
+func Camel2Case(name string) (ret string) {
+	var buffer []rune
+	for i, r := range name {
+		if unicode.IsUpper(r) {
+			if i != 0 {
+				buffer = append(buffer, '_')
+			}
+			buffer = append(buffer, unicode.ToLower(r))
+		} else {
+			buffer = append(buffer, r)
+		}
+	}
+	return string(buffer)
+
+}
+
+// 下划线写法转为驼峰写法
+func Case2Camel(name string) string {
+	name = strings.Replace(name, "_", " ", -1)
+	name = strings.Title(name)
+	return strings.Replace(name, " ", "", -1)
 }

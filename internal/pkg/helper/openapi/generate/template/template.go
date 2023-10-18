@@ -3,6 +3,7 @@ package template
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/fields"
+	"regexp"
 	"strings"
 )
 
@@ -16,6 +17,21 @@ type LangType string
 const (
 	Go LangType = "golang"
 	TS LangType = "typeScript"
+)
+
+type NameRule string
+
+const (
+	LowerCase NameRule = "lowerCase"
+	UpperCase NameRule = "upperCase"
+	Underline NameRule = "underline"
+)
+
+type Position string
+
+const (
+	Before Position = "before"
+	After  Position = "after"
 )
 
 type languages map[LangType]languageInter
@@ -57,7 +73,10 @@ func (t *template) CreateCode() (ret string) {
 	for _, field := range *t.fieldArray {
 		codes = append(codes, t.language.CreateCode(field))
 	}
-	return strings.Join(codes, "\n")
+	ret = strings.Join(codes, "\n")
+	re := regexp.MustCompile("\n+")
+	ret = re.ReplaceAllLiteralString(ret, "\n")
+	return
 }
 
 /*

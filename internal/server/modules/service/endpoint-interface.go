@@ -7,6 +7,7 @@ import (
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -92,4 +93,27 @@ func (s *EndpointInterfaceService) resetDriverType(driverType convert.DriverType
 	}
 	newDriverType = driverType
 	return
+}
+
+func (s *EndpointInterfaceService) GenerateFromResponse(req v1.GenerateFromResponseReq) (responseBody model.EndpointInterfaceResponseBody, err error) {
+	responseBody = model.EndpointInterfaceResponseBody{}
+	responseBodyItem := model.EndpointInterfaceResponseBodyItem{}
+	responseBody, err = s.EndpointInterfaceRepo.GetResponseBody(req.InterfaceId, req.Code)
+	if err == nil {
+		responseBodyItem, err = s.EndpointInterfaceRepo.GetResponseBodyItem(responseBody.ID)
+		if err != nil {
+			return
+		}
+	}
+	responseBody.Code = req.Code
+	responseBody.InterfaceId = req.InterfaceId
+	responseBody.Description = req.Description
+	responseBody.MediaType = req.ContentType
+	responseBodyItem.Content = req.Data
+	responseBody.SchemaItem = responseBodyItem
+
+	err = s.EndpointInterfaceRepo.SaveResponseBody(&responseBody)
+
+	return
+
 }

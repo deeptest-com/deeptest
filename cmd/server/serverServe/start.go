@@ -19,6 +19,7 @@ import (
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
+	"github.com/kataras/iris/v12/core/router"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/sirupsen/logrus"
 	"path/filepath"
@@ -167,7 +168,7 @@ func (webServer *WebServer) AddUpload() {
 	fileUtils.MkDirIfNeeded(pth)
 	logUtils.Infof("*** upload dir: %s", pth)
 
-	webServer.app.HandleDir("/upload", iris.Dir(pth))
+	webServer.app.HandleDir("/upload", iris.Dir(pth), router.DirOptions{Attachments: router.Attachments{Enable: true}})
 }
 
 // AddTest 添加测试文件访问

@@ -99,13 +99,14 @@ func (s *EndpointCaseAlternativeService) SaveAlternativeCase(req serverDomain.En
 
 	typ := req.Type
 	if typ == "multi" {
+
 		err1 := s.GenMultiCases(req)
 		if err1 != nil {
 			err = err1
 			return
 		}
-	} else if typ == "single" {
 
+	} else if typ == "single" {
 	}
 
 	return
@@ -127,7 +128,7 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 			continue
 		}
 
-		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, req.Prefix, req.CreateUserId, req.CreateUserName)
+		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, req.CreateUserId, req.CreateUserName)
 		if err1 != nil {
 			err = err1
 			return

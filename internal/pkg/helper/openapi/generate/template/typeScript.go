@@ -15,9 +15,11 @@ var typeScriptTypeMap map[fields.FieldType]string
 
 func init() {
 	typeScriptTypeMap = map[fields.FieldType]string{
-		"number": "number",
-		"string": "string",
-		"object": "object",
+		"number":  "number",
+		"string":  "string",
+		"object":  "object",
+		"integer": "number",
+		"":        "null",
 	}
 }
 
@@ -42,7 +44,6 @@ func (t *typeScript) CreateCode(field fields.Field) string {
 		return t.array(field)
 	case fields.Object:
 		return t.object(field)
-
 	}
 	return ""
 }
@@ -53,39 +54,43 @@ func (t *typeScript) array(field fields.Field) string {
 	if varName == "" {
 		varName = fields.FieldName(field.SubField.FieldType)
 	}
-	return fmt.Sprintf("type %s = %s[]", field.FieldName, t.typeConvert(fields.FieldType(varName)))
+	ret := fmt.Sprintf("type %s = %s[]", field.FieldName, t.typeConvert(fields.FieldType(varName)))
+	if field.IsProperty {
+		ret = fmt.Sprintf("	%s: %s[]", field.FieldName, t.typeConvert(fields.FieldType(varName)))
+	}
+	ret = t.addDescription(After, &field, ret)
+	return ret
 }
 
 func (t *typeScript) object(field fields.Field) string {
 	code := fmt.Sprintf("export interface %s {", field.FieldName)
 	var properties []string
 	for _, property := range field.Properties {
-		properties = append(properties, fmt.Sprintf("%s:%s", property.FieldName, t.typeConvert(property.FieldType)))
+		var propertyStr string
+		if property.FieldType == fields.Array {
+			propertyStr = t.array(*property)
+		} else {
+			if property.FieldRefName != "" {
+				propertyStr = fmt.Sprintf("	%s: %s", property.FieldName, property.FieldRefName)
+			} else {
+				propertyStr = fmt.Sprintf("	%s: %s", property.FieldName, t.typeConvert(property.FieldType))
+			}
+			propertyStr = t.addDescription(After, property, propertyStr)
+		}
+		properties = append(properties, propertyStr)
 	}
-
+	code = t.addDescription(Before, &field, code)
 	return fmt.Sprintf("%s \n %s \n }", code, strings.Join(properties, "\n"))
 }
 
-/*
+func (t *typeScript) addDescription(position Position, field *fields.Field, str string) string {
+	if field.Description != "" {
+		if position == After {
+			str += fmt.Sprintf("	//%s", field.Description)
+		} else {
+			str = fmt.Sprintf("	/*\n%s\n*/\n", field.Description) + str
+		}
 
-func (t *typeScript) fieldTypeConv(fieldType ieldType) (newType fieldType) {
-	return
+	}
+	return str
 }
-
-func (t *typeScript) fieldString(field field) (ret string) {
-	ret = strings.ReplaceAll("${_name_}: ${_type_},", "${_name_}", string(field.fieldName))
-	ret = strings.ReplaceAll(ret, "${_type_}", string(field.fieldType))
-	return
-}
-
-func (t *typeScript) classString(class class) (ret string) {
-	return strings.ReplaceAll("export interface ${_name_} { ${_content_} }", "${_name_}", string(class.name))
-}
-
-/*
-func (t *typeScript) AddField(fieldName fieldName, fieldType fieldType) {
-	field := field{fieldName: fieldName}
-	field.fieldType = t.fieldTypeConv(fieldType)
-	t.Base.AddField(field)
-}
-*/

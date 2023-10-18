@@ -3,9 +3,13 @@ package model
 type SysJslib struct {
 	BaseModel
 
-	Name       string `json:"name"`
+	Name string `json:"name"`
+
 	ScriptFile string `json:"scriptFile" gorm:"type:text" validate:"required"`
-	TypesFile  string `json:"typesFile" gorm:"type:text"`
+	scriptName string `json:"scriptName" gorm:"type:text" validate:"required"`
+
+	TypesFile string `json:"typesFile" gorm:"type:text"`
+	typesName string `json:"typesName" gorm:"type:text"`
 
 	ProjectId uint `json:"projectId"`
 

@@ -102,3 +102,11 @@ type EndpointTagReq struct {
 	Id       uint     `json:"id"`
 	TagNames []string `json:"tagNames"`
 }
+
+type GenerateFromResponseReq struct {
+	Code        string `json:"code"`
+	ContentType string `json:"contentType"`
+	Description string `json:"description"`
+	InterfaceId uint   `json:"interfaceId"`
+	Data        string `json:"data"`
+}

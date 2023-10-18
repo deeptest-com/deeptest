@@ -55,3 +55,20 @@ func (c *EndpointCaseAlternativeCtrl) SaveAlternativeCase(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
+
+// GenerateCases
+//func (c *EndpointCaseAlternativeCtrl) GenerateCases(ctx iris.Context) {
+//	req := serverDomain.EndpointCaseAlternativeGenerateReq{}
+//	err := ctx.ReadJSON(&req)
+//	if err != nil {
+//		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+//		return
+//	}
+//
+//	req.CreateUserName = multi.GetUsername(ctx)
+//	req.CreateUserId = multi.GetUserId(ctx)
+//
+//	err = c.EndpointCaseAlternativeService.GenerateFromSpec(req)
+//
+//	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+//}

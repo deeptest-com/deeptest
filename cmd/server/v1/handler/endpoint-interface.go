@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
@@ -47,6 +48,7 @@ func (c *EndpointInterfaceCtrl) ListForSelection(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoints/interfaces/importEndpointData	[post]
 func (c *EndpointInterfaceCtrl) ImportEndpointData(ctx iris.Context) {
+
 	var req serverDomain.ImportEndpointDataReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -71,6 +73,26 @@ func (c *EndpointInterfaceCtrl) ImportEndpointData(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+
+	return
+}
+
+func (c *EndpointInterfaceCtrl) GenerateFromResponse(ctx iris.Context) {
+
+	var req serverDomain.GenerateFromResponseReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+	var data model.EndpointInterfaceResponseBody
+	data, err = c.EndpointInterfaceService.GenerateFromResponse(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 
 	return
 }

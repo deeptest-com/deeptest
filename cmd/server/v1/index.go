@@ -30,10 +30,11 @@ type IndexModule struct {
 	DatapoolModule    *router.DatapoolModule    `inject:""`
 	SnippetModule     *router.SnippetModule     `inject:""`
 
-	MockModule               *router.MockModule               `inject:""`
-	EndpointMockScriptModule *router.EndpointMockScriptModule `inject:""`
-	EndpointMockExpectModule *router.EndpointMockExpectModule `inject:""`
-	MockJsModule             *router.MockJsModule             `inject:""`
+	EndpointCaseAlternativeModule *router.EndpointCaseAlternativeModule `inject:""`
+	MockModule                    *router.MockModule                    `inject:""`
+	EndpointMockScriptModule      *router.EndpointMockScriptModule      `inject:""`
+	EndpointMockExpectModule      *router.EndpointMockExpectModule      `inject:""`
+	MockJsModule                  *router.MockJsModule                  `inject:""`
 
 	ImportModule      *router.ImportModule      `inject:""`
 	AuthModule        *router.AuthModule        `inject:""`
@@ -55,12 +56,10 @@ type IndexModule struct {
 
 	ScenarioInterfaceModule *router.ScenarioInterfaceModule `inject:""`
 	//ReportModule             *router.ReportModule              `inject:""`
-	EndpointModule                      *router.EndpointModule                      `inject:""`
-	EndpointInterfaceModule             *router.EndpointInterfaceModule             `inject:""`
-	EndpointTagModule                   *router.EndpointTagModule                   `inject:""`
-	EndpointCaseModule                  *router.EndpointCaseModule                  `inject:""`
-	EndpointCaseAlternativeModule       *router.EndpointCaseAlternativeModule       `inject:""`
-	EndpointCaseAlternativeAssertModule *router.EndpointCaseAlternativeAssertModule `inject:""`
+	EndpointModule          *router.EndpointModule          `inject:""`
+	EndpointInterfaceModule *router.EndpointInterfaceModule `inject:""`
+	EndpointCaseModule      *router.EndpointCaseModule      `inject:""`
+	EndpointTagModule       *router.EndpointTagModule       `inject:""`
 
 	ServeModule          *router.ServeModule          `inject:""`
 	PlanModule           *router.PlanModule           `inject:""`
@@ -112,6 +111,7 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.DatapoolModule.Party(),
 		m.SnippetModule.Party(),
 
+		m.EndpointCaseAlternativeModule.Party(),
 		m.EndpointMockScriptModule.Party(),
 		m.EndpointMockExpectModule.Party(),
 		m.MockJsModule.Party(),
@@ -138,11 +138,9 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		//m.ReportModule.Party(),
 		m.EndpointModule.Party(),
 		m.EndpointInterfaceModule.Party(),
+		m.EndpointCaseModule.Party(),
 		m.EndpointTagModule.Party(),
 		m.ServeModule.Party(),
-		m.EndpointCaseModule.Party(),
-		m.EndpointCaseAlternativeModule.Party(),
-		m.EndpointCaseAlternativeAssertModule.Party(),
 
 		m.PlanModule.Party(),
 		m.PlanExecModule.Party(),

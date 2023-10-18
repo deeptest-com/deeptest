@@ -38,6 +38,7 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 	}
 	defer f.Close()
 
+	name := fh.Filename
 	pth, err := c.FileService.UploadFile(ctx, fh)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -58,7 +59,7 @@ func (c *FileCtrl) Upload(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,
-		Data: iris.Map{"path": pth, "format": format, "data": data}, Msg: _domain.NoErr.Msg})
+		Data: iris.Map{"path": pth, "name": name, "format": format, "data": data}, Msg: _domain.NoErr.Msg})
 }
 
 func (c *FileCtrl) Do(ctx iris.Context) {

@@ -47,12 +47,8 @@ func (s *EndpointCaseService) Get(id int) (ret model.EndpointCase, err error) {
 }
 
 func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (casePo model.EndpointCase, err error) {
-	debugInterfaceId, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
-	if debugInterfaceId > 0 {
-		req.DebugData, err = s.DebugInterfaceService.GetDebugDataFromDebugInterface(debugInterfaceId)
-	} else if endpointInterfaceId > 0 {
-		req.DebugData, err = s.DebugInterfaceService.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
-	}
+	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
+	req.DebugData, err = s.DebugInterfaceService.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
 
 	casePo, err = s.SaveFromDebugInterface(req)
 
@@ -66,16 +62,12 @@ func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (case
 	return
 }
 
-func (s *EndpointCaseService) Copy(id int, prefix string, userId uint, userName string) (po model.EndpointCase, err error) {
+func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po model.EndpointCase, err error) {
 	endpointCase, _ := s.EndpointCaseRepo.Get(uint(id))
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
 
-	if prefix == "" {
-		prefix = "copy-"
-	}
-
 	req := serverDomain.EndpointCaseSaveReq{
-		Name:       prefix + endpointCase.Name,
+		Name:       "copy-" + endpointCase.Name,
 		EndpointId: endpointCase.EndpointId,
 		ServeId:    endpointCase.ServeId,
 		ProjectId:  endpointCase.ProjectId,

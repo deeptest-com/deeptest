@@ -18,6 +18,7 @@ func (m *EndpointInterfaceModule) Party() module.WebModule {
 
 		public.Post("/listForSelection", m.EndpointInterfaceCtrl.ListForSelection).Name = "接口列表"
 		public.Post("/importEndpointData", m.EndpointInterfaceCtrl.ImportEndpointData).Name = "导入接口数据"
+		public.Post("/generateSchemaByResponse", m.EndpointInterfaceCtrl.GenerateFromResponse).Name = "导入接口数据"
 
 	}
 	return module.NewModule("/endpoints/interfaces", handler)

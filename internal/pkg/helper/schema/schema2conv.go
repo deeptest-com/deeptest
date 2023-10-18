@@ -2,6 +2,7 @@ package schemaHelper
 
 import (
 	"encoding/json"
+	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	mockjsHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mockjs"
 	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
@@ -31,6 +32,42 @@ type Schema struct {
 	Ref         string     `json:"ref,omitempty" yaml:"ref,omitempty"`
 	RefExt      string     `json:"$ref,omitempty" yaml:"ref,omitempty"`
 	Description string     `json:"description,omitempty" yaml:"description,omitempty"`
+	Format      string     `json:"format,omitempty" yaml:"format,omitempty"`
+
+	Enum    []interface{} `json:"enum,omitempty" yaml:"enum,omitempty"`
+	Default interface{}   `json:"default,omitempty" yaml:"default,omitempty"`
+	Example interface{}   `json:"example,omitempty" yaml:"example,omitempty"`
+
+	// Array-related, here for struct compactness
+	UniqueItems bool `json:"uniqueItems,omitempty" yaml:"uniqueItems,omitempty"`
+	// Number-related, here for struct compactness
+	ExclusiveMin bool `json:"exclusiveMinimum,omitempty" yaml:"exclusiveMinimum,omitempty"`
+	ExclusiveMax bool `json:"exclusiveMaximum,omitempty" yaml:"exclusiveMaximum,omitempty"`
+	// Properties
+	Nullable        bool `json:"nullable,omitempty" yaml:"nullable,omitempty"`
+	ReadOnly        bool `json:"readOnly,omitempty" yaml:"readOnly,omitempty"`
+	WriteOnly       bool `json:"writeOnly,omitempty" yaml:"writeOnly,omitempty"`
+	AllowEmptyValue bool `json:"allowEmptyValue,omitempty" yaml:"allowEmptyValue,omitempty"`
+	Deprecated      bool `json:"deprecated,omitempty" yaml:"deprecated,omitempty"`
+
+	// Number
+	Min        *float64 `json:"minimum,omitempty" yaml:"minimum,omitempty"`
+	Max        *float64 `json:"maximum,omitempty" yaml:"maximum,omitempty"`
+	MultipleOf *float64 `json:"multipleOf,omitempty" yaml:"multipleOf,omitempty"`
+
+	// String
+	MinLength uint64  `json:"minLength,omitempty" yaml:"minLength,omitempty"`
+	MaxLength *uint64 `json:"maxLength,omitempty" yaml:"maxLength,omitempty"`
+	Pattern   string  `json:"pattern,omitempty" yaml:"pattern,omitempty"`
+
+	// Array
+	MinItems uint64  `json:"minItems,omitempty" yaml:"minItems,omitempty"`
+	MaxItems *uint64 `json:"maxItems,omitempty" yaml:"maxItems,omitempty"`
+
+	// Object
+	Required []string `json:"required,omitempty" yaml:"required,omitempty"`
+	MinProps uint64   `json:"minProperties,omitempty" yaml:"minProperties,omitempty"`
+	MaxProps *uint64  `json:"maxProperties,omitempty" yaml:"maxProperties,omitempty"`
 }
 
 func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
@@ -233,7 +270,7 @@ func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 
 	if len(schema.Value.AllOf) >= 1 {
 		combineSchemas = schema.Value.AllOf
-		//	fmt.Println(combineSchemas)
+		fmt.Println(combineSchemas)
 	} else {
 		if len(schema.Value.AnyOf) >= 1 {
 			rand.Seed(time.Now().UnixNano())
@@ -245,7 +282,7 @@ func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 
 		}
 	}
-
+	//fmt.Println(combineSchemas)
 	for _, item := range combineSchemas {
 
 		if item.Ref != "" {
@@ -262,12 +299,15 @@ func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 		}
 
 		for key, property := range item.Value.Properties {
-			if property.Value == nil {
-				continue
-			}
-			if property.Value.Type == "" {
-				//continue
-			}
+			/*
+				if property.Value == nil {
+					//			continue
+				}
+
+				if property.Value.Type == "" {
+					//continue
+				}
+			*/
 
 			s.CombineSchemas(property)
 

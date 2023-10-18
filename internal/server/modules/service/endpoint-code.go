@@ -11,12 +11,12 @@ type EndpointCodeService struct {
 	ServeService *ServeService `inject:""`
 }
 
-func (s *EndpointCodeService) Generate(langType template.LangType, serveId uint, data string) (code string) {
+func (s *EndpointCodeService) Generate(langType template.LangType, nameRule template.NameRule, serveId uint, data string) (code string) {
 	if data == "" {
 		return
 	}
 
-	schema2Code := generate.NewSchema2Code(langType, "")
+	schema2Code := generate.NewSchema2Code(langType, nameRule)
 	schema2Code.Components = s.ServeService.Components(serveId)
 	//schema1 := openapi3.Schema{}
 	//_commUtils.JsonDecode(data, &schema)

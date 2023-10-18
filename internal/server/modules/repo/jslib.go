@@ -37,7 +37,7 @@ func (r *JslibRepo) Get(id uint) (po model.SysJslib, err error) {
 }
 func (r *JslibRepo) GetByName(id, projectId uint, name string) (po model.SysJslib, err error) {
 	err = r.DB.Model(&model.SysJslib{}).
-		Where("id != ? AND project_id = ? AND name = ?", id, projectId, name).First(&po).Error
+		Where("id != ? AND project_id = ? AND name = ? and not deleted", id, projectId, name).First(&po).Error
 
 	return
 }

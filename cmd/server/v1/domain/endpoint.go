@@ -110,3 +110,10 @@ type GenerateFromResponseReq struct {
 	InterfaceId uint   `json:"interfaceId"`
 	Data        string `json:"data"`
 }
+
+type GenerateFromRequestReq struct {
+	ContentType string `json:"contentType"`
+	Description string `json:"description"`
+	InterfaceId uint   `json:"interfaceId"`
+	Data        string `json:"data"`
+}

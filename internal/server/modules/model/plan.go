@@ -1,6 +1,9 @@
 package model
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"time"
+)
 
 type Plan struct {
 	BaseModel
@@ -24,6 +27,10 @@ type Plan struct {
 	UpdateUserName string            `gorm:"-" json:"updateUserName"` //最近更新人姓名
 	CurrEnvId      uint              `json:"currEnvId"`
 	CreateUserName string            `gorm:"-" json:"createUserName"` //创建人姓名
+	ExecTimes      int64             `gorm:"-" json:"execTimes"`      //执行次数
+	ExecutorName   string            `gorm:"-" json:"executorName"`   //执行人姓名
+	ExecTime       *time.Time        `gorm:"-" json:"execTime"`       //执行时间
+	ExecEnv        string            `gorm:"-" json:"execEnv"`        //执行环境
 
 }
 

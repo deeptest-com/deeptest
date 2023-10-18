@@ -12,6 +12,7 @@ import (
 type ProjectSettingsCtrl struct {
 	Cron                   *cron.ServerCron                `inject:""`
 	ProjectSettingsService *service.ProjectSettingsService `inject:""`
+	ThirdPartySyncService  *service.ThirdPartySyncService  `inject:""`
 }
 
 // SaveSwaggerSync
@@ -111,4 +112,8 @@ func (c *ProjectSettingsCtrl) SaveMock(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
+func (c *ProjectSettingsCtrl) InitThirdPartySyncCron() {
+	c.ThirdPartySyncService.AddThirdPartySyncCron()
 }

@@ -14,6 +14,7 @@ type Config struct {
 	Mysql   Mysql     `mapstructure:"mysql" json:"mysql" yaml:"mysql"`
 	Captcha Captcha   `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
 	Ldap    bool      `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
+	Lecang  Lecang    `mapstructure:"lecang" json:"lecang" yaml:"lecang"`
 }
 
 type System struct {
@@ -61,4 +62,10 @@ type Captcha struct {
 	KeyLong   int `mapstructure:"key-long" json:"keyLong" yaml:"key-long"`
 	ImgWidth  int `mapstructure:"img-width" json:"imgWidth" yaml:"img-width"`
 	ImgHeight int `mapstructure:"img-height" json:"imgHeight" yaml:"img-height"`
+}
+
+type Lecang struct {
+	Url      string `mapstructure:"url" json:"url" yaml:"url"`
+	Username string `mapstructure:"username" json:"username" yaml:"username"`
+	Password string `mapstructure:"password" json:"password" yaml:"password"`
 }

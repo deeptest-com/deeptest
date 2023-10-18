@@ -29,15 +29,15 @@ func (s *PlanService) Paginate(req v1.PlanReqPaginate, projectId int) (ret _doma
 	return
 }
 
-func (s *PlanService) GetById(id uint, detail bool) (ret v1.PlanAndReportDetail, err error) {
+func (s *PlanService) GetById(id uint, detail bool) (ret model.Plan, err error) {
 	userIds := make([]uint, 0)
-	plan, err := s.PlanRepo.Get(id)
+	ret, err = s.PlanRepo.Get(id)
 	if err != nil {
 		return
 	}
-	userIds = append(userIds, plan.AdminId)
-	userIds = append(userIds, plan.UpdateUserId)
-	userIds = append(userIds, plan.CreateUserId)
+	userIds = append(userIds, ret.AdminId)
+	userIds = append(userIds, ret.UpdateUserId)
+	userIds = append(userIds, ret.CreateUserId)
 
 	lastPlanReport, err := s.PlanReportRepo.GetLastByPlanId(id)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -64,20 +64,15 @@ func (s *PlanService) GetById(id uint, detail bool) (ret v1.PlanAndReportDetail,
 
 	userIdNameMap := s.UserRepo.GetUserIdNameMap(userIds)
 
-	if adminName, ok := userIdNameMap[plan.AdminId]; ok {
+	if adminName, ok := userIdNameMap[ret.AdminId]; ok {
 		ret.AdminName = adminName
 	}
-	if updateUserName, ok := userIdNameMap[plan.UpdateUserId]; ok {
+	if updateUserName, ok := userIdNameMap[ret.UpdateUserId]; ok {
 		ret.UpdateUserName = updateUserName
 	}
-	if createUserName, ok := userIdNameMap[plan.CreateUserId]; ok {
+	if createUserName, ok := userIdNameMap[ret.CreateUserId]; ok {
 		ret.CreateUserName = createUserName
 	}
-	ret.Id = plan.ID
-	ret.CreatedAt = plan.CreatedAt
-	ret.UpdatedAt = plan.UpdatedAt
-	ret.Status = plan.Status
-	ret.CurrEnvId = plan.CurrEnvId
 	ret.TestPassRate = testPassRate
 	ret.ExecTimes = planExecTimes
 	if lastPlanReport.ID != 0 {

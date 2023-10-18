@@ -726,6 +726,7 @@ type SourceType uint
 const (
 	SwaggerSync   SourceType = 1
 	SwaggerImport SourceType = 2
+	LecangSync    SourceType = 3
 )
 
 type MockPriority string

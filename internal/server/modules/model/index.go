@@ -129,5 +129,6 @@ var (
 		&SysJslib{},
 		&SysAgent{},
 		&ProjectUserServer{},
+		&ThirdPartySync{},
 	}
 )

@@ -3,10 +3,12 @@ package service
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/thirdPart"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -133,7 +135,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					endpointId = endpoint.ID
 				}
 
-				endpointId, err = s.SaveEndpoint(functionDetail, projectId, serveId, userId, endpointId, int64(categoryId), path)
+				endpointId, err = s.SaveEndpoint(class, functionDetail, projectId, serveId, userId, endpointId, int64(categoryId), path)
 				if err != nil {
 					continue
 				}
@@ -187,9 +189,9 @@ func (s *ThirdPartySyncService) SaveCategory(classCode string, projectId, serveI
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpoint(functionDetail v1.MetaGetMethodDetailResData, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path string) (endpointId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpoint(classCode string, functionDetail v1.MetaGetMethodDetailResData, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path string) (endpointId uint, err error) {
 	endpoint := model.Endpoint{
-		Title:      functionDetail.Code,
+		Title:      classCode + "-" + functionDetail.Code,
 		ProjectId:  projectId,
 		ServeId:    serveId,
 		Path:       path,
@@ -262,7 +264,26 @@ func (s *ThirdPartySyncService) getRequestBody(functionDetail v1.MetaGetMethodDe
 	return
 }
 
+func (s *ThirdPartySyncService) GetSchema(bodyString, requestType string) (schema thirdPart.Schemas) {
+	if bodyString == "" {
+		return
+	}
+
+	var body thirdPart.Schemas
+	_ = json.Unmarshal([]byte(bodyString), &body)
+
+	if requestType == "JSON" {
+		schema = body["root"].Properties
+	}
+
+	return
+}
+
 func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailResData, interfaceId uint) (err error) {
+	requestBodySchema := s.GetSchema(functionDetail.RequestBody, functionDetail.RequestType)
+	responseBodySchema := s.GetSchema(functionDetail.ResponseBody, functionDetail.RequestType)
+	fmt.Println(requestBodySchema, responseBodySchema)
+
 	requestSchema := s.ServeService.Example2Schema(s.getRequestBody(functionDetail))
 	requestSchemaString, _ := json.Marshal(requestSchema)
 

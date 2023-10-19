@@ -281,7 +281,7 @@ func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailRe
 
 	generateFromResponseReq := v1.GenerateFromResponseReq{
 		Code:        "200",
-		ContentType: s.getBodyType(functionDetail.RequestType).String(),
+		ContentType: s.getBodyType(functionDetail.ResponseType).String(),
 		Data:        string(responseSchemaString),
 		InterfaceId: interfaceId,
 	}

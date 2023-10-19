@@ -551,6 +551,15 @@ func (r *EndpointInterfaceRepo) ListResponseBodyHeaders(requestBodyId uint) (res
 	return
 }
 
+func (r *EndpointInterfaceRepo) GetRequestBody(interfaceId uint) (result model.EndpointInterfaceRequestBody, err error) {
+	err = r.DB.Find(&result, "interface_id = ? AND NOT deleted", interfaceId).Error
+	if err != nil {
+		return
+	}
+
+	return
+}
+
 func (r *EndpointInterfaceRepo) GetCountByRef(ref string) (count int64, err error) {
 
 	models := []interface{}{&model.EndpointPathParam{}, &model.EndpointInterfaceParam{}, &model.EndpointInterfaceHeader{}, &model.EndpointInterfaceCookie{}}
@@ -722,6 +731,15 @@ func (r *EndpointInterfaceRepo) GetRequestBodyItems(requestBodyIds []uint) (requ
 	for key, item := range result {
 		requestBodyItems[item.RequestBodyId] = result[key]
 	}
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetRequestBodyItem(requestBodyId uint) (result model.EndpointInterfaceRequestBodyItem, err error) {
+	err = r.DB.Find(&result, "request_body_id = ?  AND NOT deleted", requestBodyId).Error
+	if err != nil {
+		return
+	}
+
 	return
 }
 

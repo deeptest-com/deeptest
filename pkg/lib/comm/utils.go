@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"github.com/emirpasic/gods/maps"
@@ -346,4 +348,12 @@ func Case2Camel(name string) string {
 	name = strings.Replace(name, "_", " ", -1)
 	name = strings.Title(name)
 	return strings.Replace(name, " ", "", -1)
+}
+
+// Sha256 Sha256加密
+func Sha256(src string) string {
+	m := sha256.New()
+	m.Write([]byte(src))
+	res := hex.EncodeToString(m.Sum(nil))
+	return res
 }

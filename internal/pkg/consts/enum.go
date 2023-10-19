@@ -570,6 +570,7 @@ const (
 
 	ExecScenario ExecType = "execScenario"
 	ExecPlan     ExecType = "execPlan"
+	ExecCase     ExecType = "execCases"
 	ExecMessage  ExecType = "execMessage"
 )
 

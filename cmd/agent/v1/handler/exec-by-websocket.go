@@ -85,7 +85,12 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		}
 
 		agentExec.ForceStopExec = true
-		service.CancelAndSendMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
+
+		if req.ScenarioExecReq.ScenarioId > 0 {
+			service.CancelAndSendMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
+		} else if req.CasesExecReq.ExecUUid != "" {
+			//TODO:
+		}
 
 		return
 	}
@@ -106,19 +111,18 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 			}
 		}(wsMsg)
 
-		if act == consts.ExecScenario {
-			ch = make(chan int, 1)
+		ch = make(chan int, 1)
 
+		if act == consts.ExecScenario {
 			service.RunScenario(&req.ScenarioExecReq, &wsMsg)
 
 		} else if act == consts.ExecPlan {
-			ch = make(chan int, 1)
-
 			service.RunPlan(&req.PlanExecReq, &wsMsg)
 
-		} else if act == consts.ExecMessage {
-			ch = make(chan int, 1)
+		} else if act == consts.ExecCase {
+			service.RunCases(&req.CasesExecReq, &wsMsg)
 
+		} else if act == consts.ExecMessage {
 			service.RunMessage(&req.MessageReq, &wsMsg)
 		}
 	}()

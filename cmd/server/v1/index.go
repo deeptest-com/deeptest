@@ -137,7 +137,6 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.ScenarioExecModule.Party(),
 		m.ScenarioInterfaceModule.Party(),
 
-		//m.ReportModule.Party(),
 		m.EndpointModule.Party(),
 		m.EndpointInterfaceModule.Party(),
 		m.EndpointTagModule.Party(),

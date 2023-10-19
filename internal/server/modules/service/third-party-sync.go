@@ -69,7 +69,10 @@ func (s *ThirdPartySyncService) GetFunctionsByClass(serviceCode, classCode, toke
 	}
 	getFunctionsByClassResData := s.RemoteService.GetFunctionsByClass(getFunctionsByClassReq, token, baseUrl)
 	for _, v := range getFunctionsByClassResData {
-		functions = append(functions, v.Code)
+		//不同步内部方法
+		if v.MessageType == 1 {
+			functions = append(functions, v.Code)
+		}
 	}
 
 	return

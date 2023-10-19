@@ -55,7 +55,8 @@ type GetFunctionsByClassRes struct {
 }
 
 type GetFunctionsByClassResData struct {
-	Code string `json:"code"`
+	Code        string `json:"code"`
+	MessageType int    `json:"messageType"` // 0：内部方法，不能被前端调用 1：外部方法，可以被前端调用
 }
 
 type MetaGetMethodDetailReq struct {

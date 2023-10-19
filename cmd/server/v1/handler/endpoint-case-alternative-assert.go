@@ -24,6 +24,7 @@ func (c *EndpointCaseAlternativeAssertCtrl) List(ctx iris.Context) {
 	root, err := c.EndpointCaseAlternativeAssertService.List(uint(alternativeCaseId))
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: root})
+
 }
 
 // Save

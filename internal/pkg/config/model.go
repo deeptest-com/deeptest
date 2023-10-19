@@ -6,15 +6,15 @@ import (
 )
 
 type Config struct {
-	MaxSize int64     `mapstructure:"max-size" json:"burst" yaml:"max-size"`
-	System  System    `mapstructure:"system" json:"system" yaml:"system"`
-	Limit   Limit     `mapstructure:"limit" json:"limit" yaml:"limit"`
-	Zap     myZap.Zap `mapstructure:"zap" json:"zap" yaml:"zap"`
-	Redis   Redis     `mapstructure:"redis" json:"redis" yaml:"redis"`
-	Mysql   Mysql     `mapstructure:"mysql" json:"mysql" yaml:"mysql"`
-	Captcha Captcha   `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
-	Ldap    bool      `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
-	Lecang  Lecang    `mapstructure:"lecang" json:"lecang" yaml:"lecang"`
+	MaxSize    int64      `mapstructure:"max-size" json:"burst" yaml:"max-size"`
+	System     System     `mapstructure:"system" json:"system" yaml:"system"`
+	Limit      Limit      `mapstructure:"limit" json:"limit" yaml:"limit"`
+	Zap        myZap.Zap  `mapstructure:"zap" json:"zap" yaml:"zap"`
+	Redis      Redis      `mapstructure:"redis" json:"redis" yaml:"redis"`
+	Mysql      Mysql      `mapstructure:"mysql" json:"mysql" yaml:"mysql"`
+	Captcha    Captcha    `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
+	Ldap       bool       `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
+	ThirdParty ThirdParty `mapstructure:"third-party" json:"thirdParty" yaml:"third-party"`
 }
 
 type System struct {
@@ -64,8 +64,7 @@ type Captcha struct {
 	ImgHeight int `mapstructure:"img-height" json:"imgHeight" yaml:"img-height"`
 }
 
-type Lecang struct {
-	Url      string `mapstructure:"url" json:"url" yaml:"url"`
+type ThirdParty struct {
 	Username string `mapstructure:"username" json:"username" yaml:"username"`
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
 }

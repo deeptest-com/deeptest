@@ -30,8 +30,8 @@ type ThirdPartySyncService struct {
 
 func (s *ThirdPartySyncService) GetToken(baseUrl string) (token string, err error) {
 	loginByOauthReq := v1.LoginByOauthReq{
-		LoginName: config.CONFIG.Lecang.Username,
-		Password:  _commUtils.Sha256(config.CONFIG.Lecang.Password),
+		LoginName: config.CONFIG.ThirdParty.Username,
+		Password:  _commUtils.Sha256(config.CONFIG.ThirdParty.Password),
 	}
 
 	loginByOauthResData := s.RemoteService.LoginByOauth(loginByOauthReq, baseUrl)

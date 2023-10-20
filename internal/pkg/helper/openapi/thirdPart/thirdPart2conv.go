@@ -67,7 +67,7 @@ func (t *thirdPart2conv) schemaConvert(schema *Schema) (schemaRef *openapi3.Sche
 			schemaRef.Value.Properties[key] = t.schemaConvert(property)
 		}
 	} else if schema.Type == openapi3.TypeArray {
-		schemaRef.Value.Items = t.schemaConvert(schema.Properties["items"])
+		schemaRef.Value.Items = t.schemaConvert(schema.Items)
 	}
 
 	return

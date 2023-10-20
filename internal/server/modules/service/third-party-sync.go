@@ -17,6 +17,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	"gorm.io/gorm"
+	"time"
 )
 
 type ThirdPartySyncService struct {
@@ -93,7 +94,7 @@ func (s *ThirdPartySyncService) GetFunctionDetail(classCode, function, token str
 }
 
 func (s *ThirdPartySyncService) SaveData() (err error) {
-	cache.SetCache("thirdPartySyncStatus", "Start", -1)
+	_ = cache.SetCache("thirdPartySyncStatus", "Start", 4*time.Hour)
 	syncList, err := s.GetAllData()
 	if err != nil {
 		return
@@ -125,7 +126,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
-				endpoint, err := s.EndpointRepo.GetByItem(consts.LecangSync, projectId, path, serveId, functionDetail.Code)
+				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, functionDetail.Code)
 				if err != nil && err != gorm.ErrRecordNotFound {
 					continue
 				}
@@ -141,7 +142,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
-				interfaceId, err := s.SaveEndpointInterface(functionDetail, endpointId, projectId, path)
+				interfaceId, err := s.SaveEndpointInterface(class, functionDetail, endpointId, projectId, path)
 				if err != nil {
 					continue
 				}
@@ -168,7 +169,7 @@ func (s *ThirdPartySyncService) SaveCategory(classCode string, projectId, serveI
 		ProjectId:  projectId,
 		ServeId:    serveId,
 		Type:       serverConsts.EndpointCategory,
-		SourceType: consts.LecangSync,
+		SourceType: consts.ThirdPartySync,
 		ParentId:   int(rootNode.ID),
 	}
 
@@ -198,7 +199,7 @@ func (s *ThirdPartySyncService) SaveEndpoint(classCode string, functionDetail v1
 		Path:       path,
 		Status:     1,
 		CategoryId: categoryId,
-		SourceType: consts.LecangSync,
+		SourceType: consts.ThirdPartySync,
 	}
 
 	if userId != 0 {
@@ -223,10 +224,10 @@ func (s *ThirdPartySyncService) SaveEndpoint(classCode string, functionDetail v1
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpointInterface(functionDetail v1.MetaGetMethodDetailResData, endpointId, projectId uint, path string) (interfaceId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpointInterface(classCode string, functionDetail v1.MetaGetMethodDetailResData, endpointId, projectId uint, path string) (interfaceId uint, err error) {
 	endpointInterface := model.EndpointInterface{
 		InterfaceBase: model.InterfaceBase{
-			Name:      functionDetail.Code,
+			Name:      classCode + "-" + functionDetail.Code,
 			ProjectId: projectId,
 			InterfaceConfigBase: model.InterfaceConfigBase{
 				Url:      path,
@@ -236,7 +237,7 @@ func (s *ThirdPartySyncService) SaveEndpointInterface(functionDetail v1.MetaGetM
 			},
 		},
 		EndpointId:    endpointId,
-		SourceType:    consts.LecangSync,
+		SourceType:    consts.ThirdPartySync,
 		ResponseCodes: "200",
 	}
 	err = s.EndpointInterfaceRepo.Save(&endpointInterface)
@@ -282,7 +283,12 @@ func (s *ThirdPartySyncService) GetSchema(bodyString, requestType string) (schem
 }
 
 func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailResData, interfaceId uint) (err error) {
-	requestBodySchema := s.GetSchema(functionDetail.RequestBody, functionDetail.RequestType)
+	functionBody := functionDetail.RequestBody
+	if functionDetail.RequestType == "FORM" {
+		functionBody = functionDetail.RequestFormBody
+	}
+
+	requestBodySchema := s.GetSchema(functionBody, functionDetail.RequestType)
 	responseBodySchema := s.GetSchema(functionDetail.ResponseBody, functionDetail.RequestType)
 	fmt.Println(requestBodySchema, responseBodySchema)
 

@@ -94,6 +94,11 @@ func (s *ThirdPartySyncService) GetFunctionDetail(classCode, function, token str
 }
 
 func (s *ThirdPartySyncService) SaveData() (err error) {
+	thirdPartySyncStatus, _ := cache.GetCacheString("thirdPartySyncStatus")
+	if thirdPartySyncStatus == "Start" {
+		return
+	}
+
 	_ = cache.SetCache("thirdPartySyncStatus", "Start", 4*time.Hour)
 	syncList, err := s.GetAllData()
 	if err != nil {
@@ -325,11 +330,6 @@ func (s *ThirdPartySyncService) UpdateExecTimeById(id uint) (err error) {
 
 func (s *ThirdPartySyncService) AddThirdPartySyncCron() {
 	name := "ThirdPartySync"
-
-	thirdPartySyncStatus, _ := cache.GetCacheString("thirdPartySyncStatus")
-	if thirdPartySyncStatus == "Start" {
-		return
-	}
 
 	s.Cron.RemoveTask(name)
 

@@ -94,6 +94,11 @@ func (s *ThirdPartySyncService) GetFunctionDetail(classCode, function, token str
 }
 
 func (s *ThirdPartySyncService) SaveData() (err error) {
+	thirdPartySyncStatus, _ := cache.GetCacheString("thirdPartySyncStatus")
+	if thirdPartySyncStatus == "Start" {
+		return
+	}
+
 	_ = cache.SetCache("thirdPartySyncStatus", "Start", 4*time.Hour)
 	syncList, err := s.GetAllData()
 	if err != nil {
@@ -126,7 +131,8 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
-				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, functionDetail.Code)
+				title := class + "-" + functionDetail.Code
+				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, title)
 				if err != nil && err != gorm.ErrRecordNotFound {
 					continue
 				}
@@ -137,12 +143,12 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					endpointId = endpoint.ID
 				}
 
-				endpointId, err = s.SaveEndpoint(class, functionDetail, projectId, serveId, userId, endpointId, int64(categoryId), path)
+				endpointId, err = s.SaveEndpoint(title, projectId, serveId, userId, endpointId, int64(categoryId), path)
 				if err != nil {
 					continue
 				}
 
-				interfaceId, err := s.SaveEndpointInterface(class, functionDetail, endpointId, projectId, path)
+				interfaceId, err := s.SaveEndpointInterface(title, functionDetail, endpointId, projectId, path)
 				if err != nil {
 					continue
 				}
@@ -191,9 +197,9 @@ func (s *ThirdPartySyncService) SaveCategory(classCode string, projectId, serveI
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpoint(classCode string, functionDetail v1.MetaGetMethodDetailResData, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path string) (endpointId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path string) (endpointId uint, err error) {
 	endpoint := model.Endpoint{
-		Title:      classCode + "-" + functionDetail.Code,
+		Title:      title,
 		ProjectId:  projectId,
 		ServeId:    serveId,
 		Path:       path,
@@ -224,10 +230,10 @@ func (s *ThirdPartySyncService) SaveEndpoint(classCode string, functionDetail v1
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpointInterface(classCode string, functionDetail v1.MetaGetMethodDetailResData, endpointId, projectId uint, path string) (interfaceId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpointInterface(title string, functionDetail v1.MetaGetMethodDetailResData, endpointId, projectId uint, path string) (interfaceId uint, err error) {
 	endpointInterface := model.EndpointInterface{
 		InterfaceBase: model.InterfaceBase{
-			Name:      classCode + "-" + functionDetail.Code,
+			Name:      title,
 			ProjectId: projectId,
 			InterfaceConfigBase: model.InterfaceConfigBase{
 				Url:      path,
@@ -324,11 +330,6 @@ func (s *ThirdPartySyncService) UpdateExecTimeById(id uint) (err error) {
 
 func (s *ThirdPartySyncService) AddThirdPartySyncCron() {
 	name := "ThirdPartySync"
-
-	thirdPartySyncStatus, _ := cache.GetCacheString("thirdPartySyncStatus")
-	if thirdPartySyncStatus == "Start" {
-		return
-	}
 
 	s.Cron.RemoveTask(name)
 

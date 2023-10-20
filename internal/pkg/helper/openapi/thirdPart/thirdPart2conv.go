@@ -53,6 +53,9 @@ func (t *thirdPart2conv) Convert(schemas Schemas) (ret *openapi3.SchemaRef) {
 }
 
 func (t *thirdPart2conv) schemaConvert(schema *Schema) (schemaRef *openapi3.SchemaRef) {
+	if schema == nil {
+		return
+	}
 	schemaRef = new(openapi3.SchemaRef)
 	schemaRef.Value = new(openapi3.Schema)
 	schemaRef.Value.Type = t.typeConvert(schema.Type)

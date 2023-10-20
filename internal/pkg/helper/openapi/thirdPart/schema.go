@@ -6,6 +6,7 @@ type Schema struct {
 	Required    bool    `json:"required"`
 	Properties  Schemas `json:"properties"`
 	Description string  `json:"description"`
+	Items       *Schema `json:"items"`
 }
 
 type Schemas map[string]*Schema

@@ -48,6 +48,7 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 
 		resultResp, err1 := RequestInterface(&caseInterfaceExecObj.DebugData)
 		if err1 != nil {
+			execUtils.SendResult(err1, wsMsg)
 			return err1
 		}
 
@@ -61,8 +62,8 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 		}
 
 		result := iris.Map{
-			"caseInterface": caseInterfaceExecObj,
-			"response":      resultResp,
+			"request":  caseInterfaceExecObj,
+			"response": resultResp,
 		}
 
 		// send result

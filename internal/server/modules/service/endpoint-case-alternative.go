@@ -33,6 +33,9 @@ type EndpointCaseAlternativeService struct {
 	EndpointService          *EndpointService          `inject:""`
 	DebugInterfaceService    *DebugInterfaceService    `inject:""`
 	EndpointMockParamService *EndpointMockParamService `inject:""`
+
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+	SceneService    *SceneService         `inject:""`
 }
 
 func (s *EndpointCaseAlternativeService) LoadAlternative(baseId uint) (
@@ -334,7 +337,52 @@ func (s *EndpointCaseAlternativeService) getFieldProps(pth string) (fieldIn stri
 }
 
 func (s *EndpointCaseAlternativeService) LoadCaseForExec(req agentExec.CasesExecObj) (
-	ret *agentExec.CaseInterfaceExecObj, err error) {
+	ret agentExec.InterfaceExecObj, err error) {
+
+	ret.DebugData, _ = s.LoadDebugData(req)
+
+	// load default environment for user
+	env, _ := s.EnvironmentRepo.GetByUserAndProject(req.UserId, req.ProjectId)
+	if env.ID > 0 {
+		ret.DebugData.ServerId = env.ID
+	}
+
+	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
+	ret.PostConditions, _ = s.PostConditionRepo.ListTo(
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
+
+	ret.ExecScene.ShareVars = ret.DebugData.ShareVars // for execution
+	ret.DebugData.ShareVars = nil                     // for display on debug page only
+
+	// get environment and settings on project level
+	s.SceneService.LoadEnvVars(&ret.ExecScene, ret.DebugData)
+	s.SceneService.LoadProjectSettings(&ret.ExecScene, ret.DebugData.ProjectId)
+
+	return
+}
+
+func (s *EndpointCaseAlternativeService) LoadDebugData(req agentExec.CasesExecObj) (
+	ret domain.DebugData, err error) {
+
+	endpointCase, err := s.EndpointCaseService.Get(req.BaseCaseId)
+	if err != nil {
+		return
+	}
+
+	ret, err1 := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
+	if err1 != nil {
+		err = err1
+		return
+	}
+
+	fieldIn, fieldNameOrPath := s.getFieldProps(req.Path)
+	if fieldIn == "" {
+		logUtils.Info("failed to getFieldProps")
+		return
+	}
+
+	s.changeFieldProps(&ret, fieldIn, fieldNameOrPath, req.Sample, req.FieldType)
 
 	return
 }

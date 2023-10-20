@@ -1,11 +1,15 @@
 package agentExec
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/domain"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	casesHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/cases"
+)
 
 type CasesExecReq struct {
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 
+	ProjectId     uint           `json:"projectId"`
 	BaseCaseId    uint           `json:"baseCaseId"`
 	ExecUUid      string         `json:"execUuid"`
 	Cases         []CasesExecObj `json:"cases"`
@@ -13,14 +17,16 @@ type CasesExecReq struct {
 }
 
 type CasesExecObj struct {
+	ProjectId  uint `json:"projectId"`
 	BaseCaseId uint `json:"baseCaseId"`
+	UserId     uint `json:"userId"`
 
-	Path      interface{} `json:"path"`
-	Sample    interface{} `json:"sample"`
-	FieldType interface{} `json:"fieldType"`
-	Category  interface{} `json:"Category"`
-	Type      interface{} `json:"Type"`
-	Rule      interface{} `json:"Rule"`
+	Path      string                   `json:"path"`
+	Sample    interface{}              `json:"sample"`
+	FieldType casesHelper.OasFieldType `json:"fieldType"`
+	Category  interface{}              `json:"Category"`
+	Type      interface{}              `json:"Type"`
+	Rule      interface{}              `json:"Rule"`
 }
 
 type CaseInterfaceExecObj struct {

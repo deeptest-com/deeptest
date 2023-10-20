@@ -39,8 +39,8 @@ func (s *EndpointCaseService) List(endpointId uint) (ret []model.EndpointCase, e
 	return
 }
 
-func (s *EndpointCaseService) Get(id int) (ret model.EndpointCase, err error) {
-	ret, err = s.EndpointCaseRepo.Get(uint(id))
+func (s *EndpointCaseService) Get(id uint) (ret model.EndpointCase, err error) {
+	ret, err = s.EndpointCaseRepo.Get(id)
 	// its debug data will load in webpage
 
 	return

@@ -56,7 +56,7 @@ func (c *EndpointCaseCtrl) Paginate(ctx iris.Context) {
 func (c *EndpointCaseCtrl) Get(ctx iris.Context) {
 	id, _ := ctx.Params().GetInt("id")
 
-	data, err := c.EndpointCaseService.Get(id)
+	data, err := c.EndpointCaseService.Get(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

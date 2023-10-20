@@ -2,10 +2,11 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
-	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
 )
 
@@ -21,21 +22,51 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 
 	// run case one by one
 	for _, cs := range req.Cases {
-		caseInterfaceExecObj := GetCaseToExec(req.BaseCaseId, cs, req.ServerUrl, req.Token)
-		if caseInterfaceExecObj == nil {
-			execUtils.SendEndMsg(wsMsg)
-			return
+		caseInterfaceExecObj := GetCaseToExec(req.ProjectId, req.BaseCaseId, cs, req.ServerUrl, req.Token)
+
+		agentExec.CurrDebugInterfaceId = caseInterfaceExecObj.DebugData.DebugInterfaceId
+		agentExec.CurrScenarioProcessorId = 0 // not in a scenario
+
+		agentExec.CurrRequest = domain.BaseRequest{}
+		agentExec.CurrResponse = domain.DebugResponse{}
+		agentExec.ExecScene = caseInterfaceExecObj.ExecScene
+
+		// init context
+		agentExec.InitDebugExecContext()
+		agentExec.InitJsRuntime(req.ProjectId)
+
+		agentExec.ExecPreConditions(caseInterfaceExecObj) // must before PreRequest, since it will update the vari in script
+		originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData)
+
+		agentExec.SetReqValueToGoja(caseInterfaceExecObj.DebugData.BaseRequest)
+		agentExec.GetReqValueFromGoja()
+
+		// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
+		if agentExec.CurrRequest.Url != "" {
+			caseInterfaceExecObj.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
 		}
 
-		// execution
-		result, err1 := ExecCase(caseInterfaceExecObj, wsMsg)
-		if err1 == nil {
-			execUtils.SendErrorMsg(err1, consts.ProgressResult, wsMsg)
-			return
+		resultResp, err1 := RequestInterface(&caseInterfaceExecObj.DebugData)
+		if err1 != nil {
+			return err1
+		}
+
+		agentExec.SetRespValueToGoja(resultResp)
+		agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp)
+		agentExec.GetRespValueFromGoja()
+		PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
+
+		if agentExec.CurrResponse.Data != nil {
+			resultResp = agentExec.CurrResponse
+		}
+
+		result := iris.Map{
+			"caseInterface": caseInterfaceExecObj,
+			"response":      resultResp,
 		}
 
 		// send result
-		execUtils.SendExecMsg(*result, consts.ProgressResult, wsMsg)
+		execUtils.SendExecMsg(result, consts.ProgressResult, wsMsg)
 
 		// stop if needed
 		if agentExec.ForceStopExec {
@@ -45,12 +76,6 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 
 	// end msg
 	execUtils.SendEndMsg(wsMsg)
-
-	return
-}
-
-func ExecCase(execObj *agentExec.CaseInterfaceExecObj, wsMsg *websocket.Message) (
-	result *agentDomain.CaseExecResult, err error) {
 
 	return
 }

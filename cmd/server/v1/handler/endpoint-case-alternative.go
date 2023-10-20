@@ -66,6 +66,8 @@ func (c *EndpointCaseAlternativeCtrl) LoadCaseForExec(ctx iris.Context) {
 		return
 	}
 
+	req.UserId = multi.GetUserId(ctx)
+
 	ret, err := c.EndpointCaseAlternativeService.LoadCaseForExec(req)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})

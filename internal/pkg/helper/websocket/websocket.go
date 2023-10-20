@@ -17,9 +17,9 @@ var (
 	wsConn *neffos.Conn
 )
 
-func SendExecMsg(msg string, log interface{}, wsMsg *websocket.Message) {
+func SendExecMsg(msg string, log interface{}, category consts.WsMsgCategory, wsMsg *websocket.Message) {
 	msg = strings.TrimSpace(msg)
-	resp := _domain.WsResp{Msg: msg, Category: consts.Processor, Data: log}
+	resp := _domain.WsResp{Msg: msg, Category: category, Data: log}
 
 	bytes, _ := json.Marshal(resp)
 
@@ -27,7 +27,12 @@ func SendExecMsg(msg string, log interface{}, wsMsg *websocket.Message) {
 	if wsMsg != nil {
 		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, msg))
 
-		mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
+		mqData := _domain.MqMsg{Namespace: wsMsg.Namespace,
+			Room:    wsMsg.Room,
+			Event:   wsMsg.Event,
+			Content: string(bytes),
+		}
+
 		PubMsg(mqData)
 	} else {
 		logUtils.Infof(msg)

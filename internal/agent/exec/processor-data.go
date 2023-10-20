@@ -61,7 +61,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	processor.AddResultToParent()
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	entity.runDataItems(session, processor, processor.Result.Iterator)
 

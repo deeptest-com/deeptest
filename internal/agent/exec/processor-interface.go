@@ -89,7 +89,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		processor.Result.Summary = err.Error()
 		detail["result"] = entity.Response.Content
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
-		execUtils.SendErrorMsg(*processor.Result, session.WsMsg)
+		execUtils.SendErrorMsg(*processor.Result, consts.Processor, session.WsMsg)
 		processor.AddResultToParent()
 		return
 	}
@@ -102,7 +102,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		SetCookie(processor.ParentId, c.Name, c.Value, c.Domain, c.ExpireTime)
 	}
 
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

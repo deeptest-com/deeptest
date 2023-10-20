@@ -62,7 +62,7 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 
 	processor.AddResultToParent()
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

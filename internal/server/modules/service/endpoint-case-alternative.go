@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -328,6 +329,12 @@ func (s *EndpointCaseAlternativeService) getFieldProps(pth string) (fieldIn stri
 		fieldIn = strings.Join(arr[:2], "/")
 		fieldNameOrPath = strings.Join(arr[2:], "/")
 	}
+
+	return
+}
+
+func (s *EndpointCaseAlternativeService) LoadCaseForExec(req agentExec.CasesExecObj) (
+	ret *agentExec.CaseInterfaceExecObj, err error) {
 
 	return
 }

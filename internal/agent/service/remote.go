@@ -460,3 +460,65 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 
 	return
 }
+
+func GetCaseToExec(baseCaseId uint, cs agentExec.CasesExecObj, serverUrl string, serverToken string) (
+	ret *agentExec.CaseInterfaceExecObj) {
+
+	url := "endpoints/cases/alternatives/loadCaseForExec"
+
+	cs.BaseCaseId = baseCaseId
+	data := cs
+	body, err := json.Marshal(data)
+
+	httpReq := domain.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + url,
+		AuthorizationType: consts.BearerToken,
+		BearerToken: domain.BearerToken{
+			Token: serverToken,
+		},
+		BodyType: consts.ContentTypeJSON,
+		Body:     string(body),
+	}
+	request, err := json.Marshal(httpReq)
+	logUtils.Infof("get case exec obj request, request: %s", string(request))
+
+	resp, err := httpHelper.Post(httpReq)
+
+	logUtils.Infof("get exec obj response, response: %s", resp.Content)
+
+	if err != nil {
+		logUtils.Infof("get exec obj failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get exec obj failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof("get exec obj failed, err %v", err)
+	}
+
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	bytes, err := json.Marshal(respContent.Data)
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	err = json.Unmarshal(bytes, &ret)
+	if err != nil {
+		logUtils.Infof("get exec obj failed,err:%v", err)
+	}
+	response, _ := json.Marshal(ret)
+	logUtils.Infof("get exec obj ret: %v", string(response))
+
+	return
+}

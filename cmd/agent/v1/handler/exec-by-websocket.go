@@ -67,7 +67,9 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	req := agentDomain.WsReq{}
 	err = json.Unmarshal(wsMsg.Body, &req)
 	if err != nil {
-		sendErr(err, &wsMsg)
+		if req.ScenarioExecReq.ScenarioId > 0 {
+			sendScenarioErr(err, &wsMsg)
+		}
 		return
 	}
 
@@ -97,17 +99,22 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 
 	// already running
 	if execUtils.GetRunning() && (act == consts.ExecStart) {
-		execUtils.SendAlreadyRunningMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
+		if req.ScenarioExecReq.ScenarioId > 0 {
+			execUtils.SendAlreadyRunningMsg(req.ScenarioExecReq.ScenarioId, consts.Processor, wsMsg)
+		}
 		return
 	}
 
 	// exec task
 	go func() {
 		defer func(wsMsg websocket.Message) {
-			if wsMsgerr := recover(); wsMsgerr != nil {
+			if wsMsgErr := recover(); wsMsgErr != nil {
 				s := string(debug.Stack())
-				fmt.Printf("err=%v, stack=%s\n", wsMsgerr, s)
-				sendErr(fmt.Errorf("%+v", wsMsgerr), &wsMsg)
+				fmt.Printf("err=%v, stack=%s\n", wsMsgErr, s)
+
+				if req.ScenarioExecReq.ScenarioId > 0 {
+					sendScenarioErr(fmt.Errorf("%+v", wsMsgErr), &wsMsg)
+				}
 			}
 		}(wsMsg)
 
@@ -130,13 +137,13 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	return
 }
 
-func sendErr(err error, wsMsg *websocket.Message) {
+func sendScenarioErr(err error, wsMsg *websocket.Message) {
 	root := execDomain.ScenarioExecResult{
 		ID:      -1,
 		Name:    "执行失败",
 		Summary: fmt.Sprintf("错误：%s", err.Error()),
 	}
-	execUtils.SendExecMsg(root, wsMsg)
+	execUtils.SendExecMsg(root, consts.Processor, wsMsg)
 
 	result := execDomain.ScenarioExecResult{
 		ID:       -2,
@@ -144,5 +151,5 @@ func sendErr(err error, wsMsg *websocket.Message) {
 		Name:     "执行失败",
 		Summary:  fmt.Sprintf("错误：%s", err.Error()),
 	}
-	execUtils.SendExecMsg(result, wsMsg)
+	execUtils.SendExecMsg(result, consts.Processor, wsMsg)
 }

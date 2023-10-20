@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
@@ -56,19 +57,16 @@ func (c *EndpointCaseAlternativeCtrl) SaveAlternativeCase(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
 
-// GenerateCases
-//func (c *EndpointCaseAlternativeCtrl) GenerateCases(ctx iris.Context) {
-//	req := serverDomain.EndpointCaseAlternativeGenerateReq{}
-//	err := ctx.ReadJSON(&req)
-//	if err != nil {
-//		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-//		return
-//	}
-//
-//	req.CreateUserName = multi.GetUsername(ctx)
-//	req.CreateUserId = multi.GetUserId(ctx)
-//
-//	err = c.EndpointCaseAlternativeService.GenerateFromSpec(req)
-//
-//	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
-//}
+// LoadCaseForExec
+func (c *EndpointCaseAlternativeCtrl) LoadCaseForExec(ctx iris.Context) {
+	var req agentExec.CasesExecObj
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ret, err := c.EndpointCaseAlternativeService.LoadCaseForExec(req)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
+}

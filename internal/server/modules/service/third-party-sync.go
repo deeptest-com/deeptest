@@ -15,6 +15,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/getkin/kin-openapi/openapi3"
 	"gorm.io/gorm"
 )
 
@@ -264,19 +265,20 @@ func (s *ThirdPartySyncService) getRequestBody(functionDetail v1.MetaGetMethodDe
 	return
 }
 
-func (s *ThirdPartySyncService) GetSchema(bodyString, requestType string) (schema thirdPart.Schemas) {
+func (s *ThirdPartySyncService) GetSchema(bodyString, requestType string) (schema *openapi3.SchemaRef) {
 	if bodyString == "" {
 		return
 	}
 
-	var body thirdPart.Schemas
-	_ = json.Unmarshal([]byte(bodyString), &body)
+	var schemas thirdPart.Schemas
+	_ = json.Unmarshal([]byte(bodyString), &schemas)
 
 	if requestType == "JSON" {
-		schema = body["root"].Properties
+		schemas = schemas["root"].Properties
 	}
 
-	return
+	return thirdPart.NewThirdPart2conv().Convert(schemas)
+
 }
 
 func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailResData, interfaceId uint) (err error) {
@@ -284,8 +286,8 @@ func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailRe
 	responseBodySchema := s.GetSchema(functionDetail.ResponseBody, functionDetail.RequestType)
 	fmt.Println(requestBodySchema, responseBodySchema)
 
-	requestSchema := s.ServeService.Example2Schema(s.getRequestBody(functionDetail))
-	requestSchemaString, _ := json.Marshal(requestSchema)
+	//requestSchema := s.ServeService.Example2Schema(s.getRequestBody(functionDetail))
+	requestSchemaString, _ := json.Marshal(requestBodySchema)
 
 	generateFromRequestReq := v1.GenerateFromRequestReq{
 		ContentType: s.getBodyType(functionDetail.RequestType).String(),
@@ -297,8 +299,8 @@ func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailRe
 		return
 	}
 
-	responseSchema := s.ServeService.Example2Schema(functionDetail.ResponseBody)
-	responseSchemaString, _ := json.Marshal(responseSchema)
+	//responseSchema := s.ServeService.Example2Schema(functionDetail.ResponseBody)
+	responseSchemaString, _ := json.Marshal(responseBodySchema)
 
 	generateFromResponseReq := v1.GenerateFromResponseReq{
 		Code:        "200",

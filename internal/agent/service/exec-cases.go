@@ -62,6 +62,8 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 		}
 
 		result := iris.Map{
+			"execUuid": req.ExecUUid,
+			"caseUuid": cs.Key,
 			"request":  caseInterfaceExecObj,
 			"response": resultResp,
 		}

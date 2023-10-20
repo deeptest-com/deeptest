@@ -21,6 +21,7 @@ type CasesExecObj struct {
 	BaseCaseId uint `json:"baseCaseId"`
 	UserId     uint `json:"userId"`
 
+	Key       string                   `json:"key"`
 	Path      string                   `json:"path"`
 	Sample    interface{}              `json:"sample"`
 	FieldType casesHelper.OasFieldType `json:"fieldType"`

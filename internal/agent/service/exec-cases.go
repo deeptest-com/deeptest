@@ -35,7 +35,7 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 		agentExec.InitDebugExecContext()
 		agentExec.InitJsRuntime(req.ProjectId)
 
-		agentExec.ExecPreConditions(caseInterfaceExecObj) // must before PreRequest, since it will update the vari in script
+		statusPreCondition, _ := agentExec.ExecPreConditions(caseInterfaceExecObj) // must before PreRequest, since it will update the vari in script
 		originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData)
 
 		agentExec.SetReqValueToGoja(caseInterfaceExecObj.DebugData.BaseRequest)
@@ -53,7 +53,7 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 		}
 
 		agentExec.SetRespValueToGoja(resultResp)
-		agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp)
+		statusPostCondition, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp)
 		agentExec.GetRespValueFromGoja()
 		PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
 
@@ -61,11 +61,20 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 			resultResp = agentExec.CurrResponse
 		}
 
+		status := consts.Pass
+		if statusPreCondition == consts.Fail || statusPostCondition == consts.Fail {
+			status = consts.Fail
+		}
+
 		result := iris.Map{
+			"source": "execCases",
+
 			"execUuid": req.ExecUUid,
 			"caseUuid": cs.Key,
 			"request":  caseInterfaceExecObj,
 			"response": resultResp,
+
+			"status": status,
 		}
 
 		// send result

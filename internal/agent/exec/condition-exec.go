@@ -10,7 +10,9 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
-func ExecPreConditions(execObj InterfaceExecObj) (err error) {
+func ExecPreConditions(execObj InterfaceExecObj) (status consts.ResultStatus, err error) {
+	status = consts.Pass
+
 	for index, condition := range execObj.PreConditions {
 		if condition.Type == consts.ConditionTypeScript {
 			var scriptBase domain.ScriptBase
@@ -19,6 +21,7 @@ func ExecPreConditions(execObj InterfaceExecObj) (err error) {
 			err = ExecScript(&scriptBase, execObj.DebugData.ProjectId)
 			if err != nil {
 				logUtils.Info(err.Error())
+				status = consts.Fail
 				return
 			}
 			scriptHelper.GenResultMsg(&scriptBase)
@@ -31,7 +34,9 @@ func ExecPreConditions(execObj InterfaceExecObj) (err error) {
 	return
 }
 
-func ExecPostConditions(obj InterfaceExecObj, resp domain.DebugResponse) (err error) {
+func ExecPostConditions(obj InterfaceExecObj, resp domain.DebugResponse) (status consts.ResultStatus, err error) {
+	status = consts.Pass
+
 	for index, condition := range obj.PostConditions {
 		if condition.Type == consts.ConditionTypeExtractor {
 			var extractorBase domain.ExtractorBase
@@ -42,10 +47,16 @@ func ExecPostConditions(obj InterfaceExecObj, resp domain.DebugResponse) (err er
 			}
 
 			err = ExecExtract(&extractorBase, resp)
+			if err != nil {
+				status = consts.Fail
+			}
+
 			extractorHelper.GenResultMsg(&extractorBase)
 
 			if extractorBase.ResultStatus == consts.Pass {
 				SetVariable(0, extractorBase.Variable, extractorBase.Result, consts.Public)
+			} else {
+				status = consts.Fail
 			}
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(extractorBase)
@@ -58,6 +69,10 @@ func ExecPostConditions(obj InterfaceExecObj, resp domain.DebugResponse) (err er
 			}
 
 			err = ExecScript(&scriptBase, obj.DebugData.ProjectId)
+			if err != nil {
+				status = consts.Fail
+			}
+
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = VariableSettings
 
@@ -71,9 +86,14 @@ func ExecPostConditions(obj InterfaceExecObj, resp domain.DebugResponse) (err er
 			}
 
 			err = ExecCheckPoint(&checkpointBase, resp, 0)
+			if err != nil {
+				status = consts.Fail
+			}
+
 			checkpointHelper.GenResultMsg(&checkpointBase)
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(checkpointBase)
+
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			var responseDefineBase domain.ResponseDefineBase
 			json.Unmarshal(condition.Raw, &responseDefineBase)
@@ -82,6 +102,10 @@ func ExecPostConditions(obj InterfaceExecObj, resp domain.DebugResponse) (err er
 			}
 
 			err = ExecResponseDefine(&responseDefineBase, resp)
+			if err != nil {
+				status = consts.Fail
+			}
+
 			obj.PostConditions[index].Raw, _ = json.Marshal(responseDefineBase)
 			//openapi.GenResultMsg(&responseDefineBase)
 		}

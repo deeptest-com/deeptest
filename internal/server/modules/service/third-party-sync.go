@@ -3,17 +3,21 @@ package service
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/thirdPart"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/getkin/kin-openapi/openapi3"
 	"gorm.io/gorm"
+	"time"
 )
 
 type ThirdPartySyncService struct {
@@ -90,7 +94,7 @@ func (s *ThirdPartySyncService) GetFunctionDetail(classCode, function, token str
 }
 
 func (s *ThirdPartySyncService) SaveData() (err error) {
-	cache.SetCache("thirdPartySyncStatus", "Start", -1)
+	_ = cache.SetCache("thirdPartySyncStatus", "Start", 4*time.Hour)
 	syncList, err := s.GetAllData()
 	if err != nil {
 		return
@@ -122,7 +126,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
-				endpoint, err := s.EndpointRepo.GetByItem(consts.LecangSync, projectId, path, serveId, functionDetail.Code)
+				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, functionDetail.Code)
 				if err != nil && err != gorm.ErrRecordNotFound {
 					continue
 				}
@@ -133,12 +137,12 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					endpointId = endpoint.ID
 				}
 
-				endpointId, err = s.SaveEndpoint(functionDetail, projectId, serveId, userId, endpointId, int64(categoryId), path)
+				endpointId, err = s.SaveEndpoint(class, functionDetail, projectId, serveId, userId, endpointId, int64(categoryId), path)
 				if err != nil {
 					continue
 				}
 
-				interfaceId, err := s.SaveEndpointInterface(functionDetail, endpointId, projectId, path)
+				interfaceId, err := s.SaveEndpointInterface(class, functionDetail, endpointId, projectId, path)
 				if err != nil {
 					continue
 				}
@@ -165,7 +169,7 @@ func (s *ThirdPartySyncService) SaveCategory(classCode string, projectId, serveI
 		ProjectId:  projectId,
 		ServeId:    serveId,
 		Type:       serverConsts.EndpointCategory,
-		SourceType: consts.LecangSync,
+		SourceType: consts.ThirdPartySync,
 		ParentId:   int(rootNode.ID),
 	}
 
@@ -187,15 +191,15 @@ func (s *ThirdPartySyncService) SaveCategory(classCode string, projectId, serveI
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpoint(functionDetail v1.MetaGetMethodDetailResData, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path string) (endpointId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpoint(classCode string, functionDetail v1.MetaGetMethodDetailResData, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path string) (endpointId uint, err error) {
 	endpoint := model.Endpoint{
-		Title:      functionDetail.Code,
+		Title:      classCode + "-" + functionDetail.Code,
 		ProjectId:  projectId,
 		ServeId:    serveId,
 		Path:       path,
 		Status:     1,
 		CategoryId: categoryId,
-		SourceType: consts.LecangSync,
+		SourceType: consts.ThirdPartySync,
 	}
 
 	if userId != 0 {
@@ -220,10 +224,10 @@ func (s *ThirdPartySyncService) SaveEndpoint(functionDetail v1.MetaGetMethodDeta
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpointInterface(functionDetail v1.MetaGetMethodDetailResData, endpointId, projectId uint, path string) (interfaceId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpointInterface(classCode string, functionDetail v1.MetaGetMethodDetailResData, endpointId, projectId uint, path string) (interfaceId uint, err error) {
 	endpointInterface := model.EndpointInterface{
 		InterfaceBase: model.InterfaceBase{
-			Name:      functionDetail.Code,
+			Name:      classCode + "-" + functionDetail.Code,
 			ProjectId: projectId,
 			InterfaceConfigBase: model.InterfaceConfigBase{
 				Url:      path,
@@ -233,7 +237,7 @@ func (s *ThirdPartySyncService) SaveEndpointInterface(functionDetail v1.MetaGetM
 			},
 		},
 		EndpointId:    endpointId,
-		SourceType:    consts.LecangSync,
+		SourceType:    consts.ThirdPartySync,
 		ResponseCodes: "200",
 	}
 	err = s.EndpointInterfaceRepo.Save(&endpointInterface)
@@ -262,9 +266,34 @@ func (s *ThirdPartySyncService) getRequestBody(functionDetail v1.MetaGetMethodDe
 	return
 }
 
+func (s *ThirdPartySyncService) GetSchema(bodyString, requestType string) (schema *openapi3.SchemaRef) {
+	if bodyString == "" {
+		return
+	}
+
+	var schemas thirdPart.Schemas
+	_ = json.Unmarshal([]byte(bodyString), &schemas)
+
+	if requestType == "JSON" {
+		schemas = schemas["root"].Properties
+	}
+
+	return thirdPart.NewThirdPart2conv().Convert(schemas)
+
+}
+
 func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailResData, interfaceId uint) (err error) {
-	requestSchema := s.ServeService.Example2Schema(s.getRequestBody(functionDetail))
-	requestSchemaString, _ := json.Marshal(requestSchema)
+	functionBody := functionDetail.RequestBody
+	if functionDetail.RequestType == "FORM" {
+		functionBody = functionDetail.RequestFormBody
+	}
+
+	requestBodySchema := s.GetSchema(functionBody, functionDetail.RequestType)
+	responseBodySchema := s.GetSchema(functionDetail.ResponseBody, functionDetail.RequestType)
+	fmt.Println(requestBodySchema, responseBodySchema)
+
+	//requestSchema := s.ServeService.Example2Schema(s.getRequestBody(functionDetail))
+	requestSchemaString, _ := json.Marshal(requestBodySchema)
 
 	generateFromRequestReq := v1.GenerateFromRequestReq{
 		ContentType: s.getBodyType(functionDetail.RequestType).String(),
@@ -276,8 +305,8 @@ func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailRe
 		return
 	}
 
-	responseSchema := s.ServeService.Example2Schema(functionDetail.ResponseBody)
-	responseSchemaString, _ := json.Marshal(responseSchema)
+	//responseSchema := s.ServeService.Example2Schema(functionDetail.ResponseBody)
+	responseSchemaString, _ := json.Marshal(responseBodySchema)
 
 	generateFromResponseReq := v1.GenerateFromResponseReq{
 		Code:        "200",

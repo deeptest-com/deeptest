@@ -53,16 +53,6 @@ func (DebugConditionExtractor) TableName() string {
 	return "biz_debug_condition_extractor"
 }
 
-type DebugConditionCheckpoint struct {
-	BaseModel
-
-	domain.CheckpointBase
-}
-
-func (DebugConditionCheckpoint) TableName() string {
-	return "biz_debug_condition_checkpoint"
-}
-
 type DebugConditionScript struct {
 	BaseModel
 
@@ -71,6 +61,16 @@ type DebugConditionScript struct {
 
 func (DebugConditionScript) TableName() string {
 	return "biz_debug_condition_script"
+}
+
+type DebugConditionCheckpoint struct {
+	BaseModel
+
+	domain.CheckpointBase
+}
+
+func (DebugConditionCheckpoint) TableName() string {
+	return "biz_debug_condition_checkpoint"
 }
 
 type DebugConditionResponseDefine struct {

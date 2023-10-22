@@ -32,8 +32,8 @@ type InvocationBase struct {
 	ResultStatus     consts.ResultStatus `json:"resultStatus" gorm:"default:pass"`
 	CheckpointStatus consts.ResultStatus `json:"checkpointStatus"`
 
-	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId,omitempty"`
-	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId,omitempty"`
+	EndpointInterfaceId uint `gorm:"index:,default:0" json:"endpointInterfaceId,omitempty"`
+	DebugInterfaceId    uint `gorm:"index:,default:0" json:"debugInterfaceId,omitempty"`
 
 	ProjectId uint `json:"projectId,omitempty"`
 }

@@ -6,14 +6,15 @@ import (
 )
 
 type Config struct {
-	MaxSize int64     `mapstructure:"max-size" json:"burst" yaml:"max-size"`
-	System  System    `mapstructure:"system" json:"system" yaml:"system"`
-	Limit   Limit     `mapstructure:"limit" json:"limit" yaml:"limit"`
-	Zap     myZap.Zap `mapstructure:"zap" json:"zap" yaml:"zap"`
-	Redis   Redis     `mapstructure:"redis" json:"redis" yaml:"redis"`
-	Mysql   Mysql     `mapstructure:"mysql" json:"mysql" yaml:"mysql"`
-	Captcha Captcha   `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
-	Ldap    bool      `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
+	MaxSize    int64      `mapstructure:"max-size" json:"burst" yaml:"max-size"`
+	System     System     `mapstructure:"system" json:"system" yaml:"system"`
+	Limit      Limit      `mapstructure:"limit" json:"limit" yaml:"limit"`
+	Zap        myZap.Zap  `mapstructure:"zap" json:"zap" yaml:"zap"`
+	Redis      Redis      `mapstructure:"redis" json:"redis" yaml:"redis"`
+	Mysql      Mysql      `mapstructure:"mysql" json:"mysql" yaml:"mysql"`
+	Captcha    Captcha    `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
+	Ldap       bool       `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
+	ThirdParty ThirdParty `mapstructure:"third-party" json:"thirdParty" yaml:"third-party"`
 }
 
 type System struct {
@@ -61,4 +62,9 @@ type Captcha struct {
 	KeyLong   int `mapstructure:"key-long" json:"keyLong" yaml:"key-long"`
 	ImgWidth  int `mapstructure:"img-width" json:"imgWidth" yaml:"img-width"`
 	ImgHeight int `mapstructure:"img-height" json:"imgHeight" yaml:"img-height"`
+}
+
+type ThirdParty struct {
+	Username string `mapstructure:"username" json:"username" yaml:"username"`
+	Password string `mapstructure:"password" json:"password" yaml:"password"`
 }

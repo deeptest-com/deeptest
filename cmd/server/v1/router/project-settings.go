@@ -24,5 +24,6 @@ func (m *ProjectSettingsModule) Party() module.WebModule {
 	}
 
 	m.ProjectSettingsCtrl.InitSwaggerCron()
+	m.ProjectSettingsCtrl.InitThirdPartySyncCron()
 	return module.NewModule("/projectSettings", handler)
 }

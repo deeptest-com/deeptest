@@ -57,6 +57,8 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars, debugData.GlobalVars, debugData.GlobalParams =
 		s.DebugSceneService.LoadScene(&debugData, loadReq.UserId)
 
+	s.mergeGlobalParams(&debugData) //合并全局参数
+
 	debugData.ResponseDefine = s.PostConditionRepo.CreateDefaultResponseDefine(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, loadReq.UsedBy)
 
 	return
@@ -382,4 +384,54 @@ func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterfac
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return
+}
+
+func (s *DebugInterfaceService) mergeGlobalParams(debugData *domain.DebugData) {
+	for _, globalParam := range debugData.GlobalParams {
+		if globalParam.In == consts.ParamInQuery {
+			debugData.QueryParams = s.mergeParam(debugData.QueryParams, globalParam)
+		} else if globalParam.In == consts.ParamInHeader {
+			debugData.Headers = s.mergeHeader(debugData.Headers, globalParam)
+		}
+	}
+}
+
+func (s *DebugInterfaceService) mergeParam(params []domain.Param, globalParam domain.GlobalParam) []domain.Param {
+	b := true
+	for _, param := range params {
+		if param.Name == globalParam.Name {
+			b = false
+			break
+		}
+	}
+
+	if b {
+		params = append([]domain.Param{{
+			Name:    globalParam.Name,
+			ParamIn: globalParam.In,
+			Value:   globalParam.DefaultValue,
+			Type:    string(globalParam.Type),
+		}}, params...)
+	}
+
+	return params
+}
+
+func (s *DebugInterfaceService) mergeHeader(params []domain.Header, globalParam domain.GlobalParam) []domain.Header {
+	b := true
+	for _, param := range params {
+		if param.Name == globalParam.Name {
+			b = false
+			break
+		}
+	}
+
+	if b {
+		params = append([]domain.Header{{
+			Name:  globalParam.Name,
+			Value: globalParam.DefaultValue,
+		}}, params...)
+	}
+
+	return params
 }

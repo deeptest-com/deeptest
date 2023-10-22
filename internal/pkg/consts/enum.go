@@ -724,8 +724,9 @@ const (
 type SourceType uint
 
 const (
-	SwaggerSync   SourceType = 1
-	SwaggerImport SourceType = 2
+	SwaggerSync    SourceType = 1
+	SwaggerImport  SourceType = 2
+	ThirdPartySync SourceType = 3
 )
 
 type MockPriority string

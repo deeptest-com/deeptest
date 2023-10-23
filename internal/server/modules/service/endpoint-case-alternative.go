@@ -116,16 +116,6 @@ func (s *EndpointCaseAlternativeService) SaveAlternativeCase(req serverDomain.En
 	return
 }
 
-func (s *EndpointCaseAlternativeService) getBaseRequest(endpointInterface model.EndpointInterface) (debugData domain.DebugData, err error) {
-	info := domain.DebugInfo{
-		DebugInterfaceId:    endpointInterface.DebugInterfaceId,
-		EndpointInterfaceId: endpointInterface.ID,
-	}
-	debugData, err = s.DebugInterfaceService.Load(info)
-
-	return
-}
-
 func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.EndpointCaseAlternativeSaveReq) (err error) {
 	for _, val := range req.Values {
 		if val.Category != consts.AlternativeCaseCase {
@@ -339,7 +329,7 @@ func (s *EndpointCaseAlternativeService) getFieldProps(pth string) (fieldIn stri
 func (s *EndpointCaseAlternativeService) LoadCaseForExec(req agentExec.CasesExecObj) (
 	ret agentExec.InterfaceExecObj, err error) {
 
-	ret.DebugData, _ = s.LoadDebugData(req)
+	ret.DebugData, _ = s.LoadDebugDataForExec(req)
 
 	// load default environment for user
 	env, _ := s.EnvironmentRepo.GetByUserAndProject(req.UserId, req.ProjectId)
@@ -348,9 +338,9 @@ func (s *EndpointCaseAlternativeService) LoadCaseForExec(req agentExec.CasesExec
 	}
 
 	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, req.UsedBy)
 	ret.PostConditions, _ = s.PostConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId)
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, req.UsedBy)
 
 	ret.ExecScene.ShareVars = ret.DebugData.ShareVars // for execution
 	ret.DebugData.ShareVars = nil                     // for display on debug page only
@@ -362,7 +352,7 @@ func (s *EndpointCaseAlternativeService) LoadCaseForExec(req agentExec.CasesExec
 	return
 }
 
-func (s *EndpointCaseAlternativeService) LoadDebugData(req agentExec.CasesExecObj) (
+func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req agentExec.CasesExecObj) (
 	ret domain.DebugData, err error) {
 
 	endpointCase, err := s.EndpointCaseService.Get(req.BaseCaseId)

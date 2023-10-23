@@ -244,8 +244,8 @@ func (s *DebugInvokeService) GetAsInterface(id int) (debugData domain.DebugData,
 	postConditions := []domain.InterfaceExecCondition{}
 	json.Unmarshal([]byte(invocation.PreConditionsContent), &preConditions)
 	json.Unmarshal([]byte(invocation.PostConditionsContent), &postConditions)
-	s.PreConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, preConditions)
-	s.PostConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, postConditions)
+	s.PreConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, preConditions, debugData.UsedBy)
+	s.PostConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, postConditions, debugData.UsedBy)
 
 	// response data to show
 	resultReq = debugData

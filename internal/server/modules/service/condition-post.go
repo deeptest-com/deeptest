@@ -15,7 +15,7 @@ type PostConditionService struct {
 }
 
 func (s *PostConditionService) List(debugInterfaceId, endpointInterfaceId uint,
-	category consts.ConditionCategory, usedBy string) (conditions []model.DebugPostCondition, err error) {
+	category consts.ConditionCategory, usedBy consts.UsedBy) (conditions []model.DebugPostCondition, err error) {
 	conditions, err = s.PostConditionRepo.List(debugInterfaceId, endpointInterfaceId, category, usedBy)
 
 	return

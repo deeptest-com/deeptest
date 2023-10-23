@@ -1,6 +1,7 @@
 package agentExec
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	casesHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/cases"
 )
@@ -11,15 +12,17 @@ type CasesExecReq struct {
 
 	ProjectId     uint           `json:"projectId"`
 	BaseCaseId    uint           `json:"baseCaseId"`
+	UsedBy        consts.UsedBy  `json:"usedBy"`
 	ExecUUid      string         `json:"execUuid"`
 	Cases         []CasesExecObj `json:"cases"`
 	EnvironmentId int            `json:"environmentId"`
 }
 
 type CasesExecObj struct {
-	ProjectId  uint `json:"projectId"`
-	BaseCaseId uint `json:"baseCaseId"`
-	UserId     uint `json:"userId"`
+	ProjectId  uint          `json:"projectId"`
+	BaseCaseId uint          `json:"baseCaseId"`
+	UsedBy     consts.UsedBy `json:"usedBy"`
+	UserId     uint          `json:"userId"`
 
 	Key       string                   `json:"key"`
 	Path      string                   `json:"path"`

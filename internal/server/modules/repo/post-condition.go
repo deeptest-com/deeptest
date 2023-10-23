@@ -23,7 +23,7 @@ type PostConditionRepo struct {
 	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
 }
 
-func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory, usedBy string) (
+func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory, usedBy consts.UsedBy) (
 	pos []model.DebugPostCondition, err error) {
 	db := r.DB.Where("NOT deleted")
 
@@ -85,8 +85,8 @@ func (r *PostConditionRepo) Save(po *model.DebugPostCondition) (err error) {
 	return
 }
 
-func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint) (err error) {
-	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll, "")
+func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint, usedBy consts.UsedBy) (err error) {
+	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll, usedBy)
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
@@ -136,8 +136,9 @@ func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId
 	return
 }
 
-func (r *PostConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uint, postConditions []domain.InterfaceExecCondition) (err error) {
-	r.removeAll(debugInterfaceId, endpointInterfaceId)
+func (r *PostConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uint,
+	postConditions []domain.InterfaceExecCondition, usedBy consts.UsedBy) (err error) {
+	r.removeAll(debugInterfaceId, endpointInterfaceId, usedBy)
 
 	for _, item := range postConditions {
 		// clone condition po
@@ -250,8 +251,8 @@ func (r *PostConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 	return
 }
 
-func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.InterfaceExecCondition, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll, "")
+func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (ret []domain.InterfaceExecCondition, err error) {
+	pos, err := r.List(debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll, usedBy)
 
 	for _, po := range pos {
 		typ := po.EntityType
@@ -344,8 +345,8 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 	return
 }
 
-func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint) (err error) {
-	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "", "")
+func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (err error) {
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "", usedBy)
 
 	for _, po := range pos {
 		r.Delete(po.ID)
@@ -354,7 +355,7 @@ func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint
 	return
 }
 
-func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (condition domain.Condition) {
+func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (condition domain.Condition) {
 	if endpointInterfaceId == 0 {
 		return
 	}
@@ -364,9 +365,9 @@ func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpoi
 		return
 	}
 
-	po, err := r.GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId, by)
+	po, err := r.GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId, usedBy)
 	if err == gorm.ErrRecordNotFound {
-		po, err = r.saveDefault(debugInterfaceId, endpointInterfaceId, codes, by)
+		po, err = r.saveDefault(debugInterfaceId, endpointInterfaceId, codes, usedBy)
 		if err != nil {
 			return
 		}

@@ -22,7 +22,8 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 
 	// run case one by one
 	for _, cs := range req.Cases {
-		caseInterfaceExecObj := GetCaseToExec(req.ProjectId, req.BaseCaseId, cs, req.ServerUrl, req.Token)
+		caseInterfaceExecObj := GetCaseToExec(
+			req.ProjectId, req.BaseCaseId, cs, req.ServerUrl, req.Token, req.UsedBy)
 
 		agentExec.CurrDebugInterfaceId = caseInterfaceExecObj.DebugData.DebugInterfaceId
 		agentExec.CurrScenarioProcessorId = 0 // not in a scenario

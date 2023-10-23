@@ -235,6 +235,8 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 
 	// convert or clone a debug interface obj
 	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(uint(endpointInterfaceId))
+	debugData.UsedBy = "" // mark src usedBy for pre/post-condition loading, empty for no pre/post conditions
+
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
 	debugData.ServeId = parent.ServeId
 

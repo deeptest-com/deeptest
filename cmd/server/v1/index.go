@@ -59,9 +59,8 @@ type IndexModule struct {
 	EndpointInterfaceModule *router.EndpointInterfaceModule `inject:""`
 	EndpointTagModule       *router.EndpointTagModule       `inject:""`
 
-	EndpointCaseModule                  *router.EndpointCaseModule                  `inject:""`
-	EndpointCaseAlternativeModule       *router.EndpointCaseAlternativeModule       `inject:""`
-	EndpointCaseAlternativeAssertModule *router.EndpointCaseAlternativeAssertModule `inject:""`
+	EndpointCaseModule            *router.EndpointCaseModule            `inject:""`
+	EndpointCaseAlternativeModule *router.EndpointCaseAlternativeModule `inject:""`
 
 	ServeModule          *router.ServeModule          `inject:""`
 	PlanModule           *router.PlanModule           `inject:""`
@@ -142,7 +141,6 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.EndpointTagModule.Party(),
 		m.EndpointCaseModule.Party(),
 		m.EndpointCaseAlternativeModule.Party(),
-		m.EndpointCaseAlternativeAssertModule.Party(),
 
 		m.ServeModule.Party(),
 

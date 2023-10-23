@@ -17,7 +17,7 @@ type PreConditionRepo struct {
 	ScriptRepo *ScriptRepo `inject:""`
 }
 
-func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugPreCondition, err error) {
+func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (pos []model.DebugPreCondition, err error) {
 	db := r.DB.
 		Where("NOT deleted").
 		Order("ordr ASC")
@@ -26,6 +26,10 @@ func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos
 		db.Where("debug_interface_id=?", debugInterfaceId)
 	} else {
 		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
+	}
+
+	if usedBy != "" {
+		db.Where("used_by=?", usedBy)
 	}
 
 	err = db.Find(&pos).Error
@@ -47,7 +51,7 @@ func (r *PreConditionRepo) Save(condition *model.DebugPreCondition) (err error) 
 }
 
 func (r *PreConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint) (err error) {
-	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId)
+	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, "")
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
@@ -158,7 +162,7 @@ func (r *PreConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 }
 
 func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.InterfaceExecCondition, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId)
+	pos, err := r.List(debugInterfaceId, endpointInterfaceId, "")
 
 	for _, po := range pos {
 		typ := po.EntityType
@@ -186,7 +190,7 @@ func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (r
 }
 
 func (r *PreConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint) (err error) {
-	pos, _ := r.List(debugInterfaceId, endpointInterfaceId)
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "")
 
 	for _, po := range pos {
 		r.Delete(po.ID)

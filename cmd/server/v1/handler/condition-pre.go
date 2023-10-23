@@ -2,6 +2,7 @@ package handler
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -18,6 +19,8 @@ type PreConditionCtrl struct {
 func (c *PreConditionCtrl) GetScript(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
+	usedBy := ctx.URLParam("usedBy")
+
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
@@ -30,7 +33,7 @@ func (c *PreConditionCtrl) GetScript(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	data, err := c.PreConditionService.GetScript(uint(debugInterfaceId), uint(endpointInterfaceId))
+	data, err := c.PreConditionService.GetScript(uint(debugInterfaceId), uint(endpointInterfaceId), consts.UsedBy(usedBy))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

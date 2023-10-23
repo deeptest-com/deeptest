@@ -23,7 +23,8 @@ type PostConditionRepo struct {
 	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
 }
 
-func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory) (pos []model.DebugPostCondition, err error) {
+func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory, usedBy string) (
+	pos []model.DebugPostCondition, err error) {
 	db := r.DB.Where("NOT deleted")
 
 	if debugInterfaceId > 0 {
@@ -40,6 +41,10 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 		db.Where("entity_type = ?", consts.ConditionTypeResponseDefine)
 	} else if typ == consts.ConditionCategoryResult {
 		db.Where("entity_type = ? or entity_type = ?", consts.ConditionTypeResponseDefine, consts.ConditionTypeCheckpoint)
+	}
+
+	if usedBy != "" {
+		db.Where("used_by=?", usedBy)
 	}
 
 	db.Order("ordr ASC")
@@ -81,7 +86,7 @@ func (r *PostConditionRepo) Save(po *model.DebugPostCondition) (err error) {
 }
 
 func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint) (err error) {
-	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll)
+	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll, "")
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
@@ -246,7 +251,7 @@ func (r *PostConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 }
 
 func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (ret []domain.InterfaceExecCondition, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll)
+	pos, err := r.List(debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll, "")
 
 	for _, po := range pos {
 		typ := po.EntityType
@@ -340,7 +345,7 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint) (
 }
 
 func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint) (err error) {
-	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "")
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "", "")
 
 	for _, po := range pos {
 		r.Delete(po.ID)

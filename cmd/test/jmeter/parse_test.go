@@ -1,9 +1,9 @@
 package test
 
 import (
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	jmeterHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jmeter"
 	"github.com/beevik/etree"
-	"log"
 	"testing"
 )
 
@@ -12,22 +12,14 @@ const (
 )
 
 func TestParse(t *testing.T) {
-	//content := fileUtils.ReadFileBuf(jmx)
-	//
-	//testPlan := jmeterHelper.JmeterTestPlan{}
-	//xml.Unmarshal(content, &testPlan)
-	//
-	//log.Println(testPlan)
-
 	doc := etree.NewDocument()
 	if err := doc.ReadFromFile(jmx); err != nil {
 		panic(err)
 	}
 
-	root := &etree.Element{}
+	rootElement := &etree.Element{}
+	jmeterHelper.Arrange(doc.Root().ChildElements(), rootElement)
 
-	jmeterHelper.Arrange(doc.Root().ChildElements(), root)
-	jmeterHelper.Parse(root)
-
-	log.Println(1)
+	rootProcessor := &agentExec.Processor{}
+	jmeterHelper.Parse(rootElement, rootProcessor)
 }

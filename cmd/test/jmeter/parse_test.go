@@ -3,6 +3,7 @@ package test
 import (
 	jmeterHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jmeter"
 	"github.com/beevik/etree"
+	"log"
 	"testing"
 )
 
@@ -23,7 +24,10 @@ func TestParse(t *testing.T) {
 		panic(err)
 	}
 
-	root := doc.Root()
+	root := &etree.Element{}
 
+	jmeterHelper.Arrange(doc.Root().ChildElements(), root)
 	jmeterHelper.Parse(root)
+
+	log.Println(1)
 }

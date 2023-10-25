@@ -1,34 +1,23 @@
 package jmeterHelper
 
 import (
-	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/beevik/etree"
 	"log"
 )
 
-var (
-	ElementNames = getElemWithHashTree()
-)
-
 func Parse(elem *etree.Element) {
-	log.Println(elem.Tag)
+	parentTag := ""
+	if elem.Parent() != nil {
+		parentTag = elem.Parent().Tag
+	}
 
-	children := elem.ChildElements()
+	log.Println(elem.Tag, " @ ", parentTag)
 
-	for index, child := range children {
-		if isHashTree(child) && !isRoot(elem) {
-			continue
+	for _, child := range elem.ChildElements() {
+		log.Println(child.Tag, " @ ", child.Parent().Tag)
+
+		for _, son := range child.ChildElements() {
+			Parse(son)
 		}
-
-		if stringUtils.StrInArr(child.Tag, ElementNames) {
-			if index < len(children)-1 && children[index+1].Tag == "hashTree" {
-				next := children[index+1]
-				child.AddChild(next)
-
-				log.Println(1)
-			}
-		}
-
-		Parse(child)
 	}
 }

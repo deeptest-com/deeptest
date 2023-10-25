@@ -72,6 +72,13 @@ func PreRequest(req *domain.DebugData) (originalReqUri string, err error) {
 	req.BaseRequest.FullUrlToDisplay = req.BaseRequest.Url
 	logUtils.Info("requested url: " + req.BaseRequest.Url)
 
+	// download form file item
+	for index, item := range req.BodyFormData {
+		if item.Type == consts.FormDataTypeFile {
+			req.BodyFormData[index].Value, err = agentExec.DownloadUploadedFile(item.Value)
+		}
+	}
+
 	return
 }
 

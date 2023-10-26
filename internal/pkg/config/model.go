@@ -6,16 +6,17 @@ import (
 )
 
 type Config struct {
-	MaxSize    int64      `mapstructure:"max-size" json:"burst" yaml:"max-size"`
-	System     System     `mapstructure:"system" json:"system" yaml:"system"`
-	Limit      Limit      `mapstructure:"limit" json:"limit" yaml:"limit"`
-	Zap        myZap.Zap  `mapstructure:"zap" json:"zap" yaml:"zap"`
-	Redis      Redis      `mapstructure:"redis" json:"redis" yaml:"redis"`
-	Mysql      Mysql      `mapstructure:"mysql" json:"mysql" yaml:"mysql"`
-	Captcha    Captcha    `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
-	Ldap       bool       `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
-	ThirdParty ThirdParty `mapstructure:"third-party" json:"thirdParty" yaml:"third-party"`
-	Mcs        Mcs        `mapstructure:"mcs" json:"mcs" yaml:"mcs"`
+	MaxSize     int64       `mapstructure:"max-size" json:"burst" yaml:"max-size"`
+	System      System      `mapstructure:"system" json:"system" yaml:"system"`
+	Limit       Limit       `mapstructure:"limit" json:"limit" yaml:"limit"`
+	Zap         myZap.Zap   `mapstructure:"zap" json:"zap" yaml:"zap"`
+	Redis       Redis       `mapstructure:"redis" json:"redis" yaml:"redis"`
+	Mysql       Mysql       `mapstructure:"mysql" json:"mysql" yaml:"mysql"`
+	Captcha     Captcha     `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
+	Ldap        bool        `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
+	ThirdParty  ThirdParty  `mapstructure:"third-party" json:"thirdParty" yaml:"third-party"`
+	Mcs         Mcs         `mapstructure:"mcs" json:"mcs" yaml:"mcs"`
+	Environment Environment `mapstructure:"environment" json:"environment" yaml:"environment"`
 }
 
 type System struct {
@@ -74,4 +75,9 @@ type Mcs struct {
 	Url      string `json:"url"`
 	McsAppid string `json:"mcsAppid"`
 	ImAppid  int    `json:"imAppid"`
+	Switch   bool   `json:"switch"`
+}
+
+type Environment struct {
+	ServerHost string `json:"serverHost" yaml:"server-host"`
 }

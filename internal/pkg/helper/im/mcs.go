@@ -84,6 +84,10 @@ type EnterpriseWechatInfoContentArticles struct {
 }
 
 func (s *Mcs) SendMessage() (msgId string, err error) {
+	if !config.CONFIG.Mcs.Switch {
+		return
+	}
+
 	url := fmt.Sprintf("%s/api/v1/mcsCall/serviceRequest", config.CONFIG.Mcs.Url)
 	req := mcsReq{
 		McsAppid:    config.CONFIG.Mcs.McsAppid,

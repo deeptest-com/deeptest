@@ -154,7 +154,6 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId uint, roleNam
 		return
 	}
 	host, _ := cache.GetCacheString("host")
-	serverHost, _ := cache.GetCacheString("serverHost")
 
 	mcsData = im.EnterpriseWechatApprovalData{
 		CreatorId:    sender.Username,
@@ -165,7 +164,7 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId uint, roleNam
 			{Type: "Text", Id: "Text-1672888267140", Data: "乐研API通知-项目权限申请"},
 			{Type: "Textarea", Id: "Textarea-1672888279646", Data: fmt.Sprintf("您好！%s申请\"%s\"项目的【%s角色】，请审批！\n审批详情：%s", sender.Name, project.Name, roleName, host+"/sys-setting/user-manage")},
 		},
-		NotifyUrl: fmt.Sprintf("%s/api/v1/message/receiveMcsApprovalData", serverHost),
+		NotifyUrl: fmt.Sprintf("%s/api/v1/message/receiveMcsApprovalData", config.CONFIG.Environment.ServerHost),
 	}
 
 	return

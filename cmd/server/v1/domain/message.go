@@ -51,7 +51,7 @@ type MessageReadBase struct {
 
 type McsApprovalResData struct {
 	InstanceId  string   `json:"instanceId"`  //审批id
-	Status      int      `json:"status"`      //审批状态 1拒绝 2同意 3终止 4取消
+	Status      int      `json:"status"`      //审批状态 1拒绝 2同意 3终止 4取消 5进行中(企微审批创建成功会立即返回此状态)
 	ApplyTime   int      `json:"applyTime"`   //发起时间：时间戳
 	Comments    string   `json:"comments"`    //审批备注
 	ProcessTime string   `json:"processTime"` //处理时间

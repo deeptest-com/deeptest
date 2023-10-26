@@ -819,9 +819,12 @@ func (e AlternativeCaseType) String() string {
 type MessageSendStatus string
 
 const (
-	MessageCreated     MessageSendStatus = "created"
-	MessageSendSuccess MessageSendStatus = "send_success"
-	MessageSendFailed  MessageSendStatus = "send_failed"
+	MessageCreated            MessageSendStatus = "created"
+	MessageSendSuccess        MessageSendStatus = "send_success"
+	MessageSendFailed         MessageSendStatus = "send_failed"
+	MessageApprovalInProgress MessageSendStatus = "approval_in_progress"
+	MessageApprovalAgreed     MessageSendStatus = "approval_agreed"
+	MessageApprovalReject     MessageSendStatus = "approval_reject"
 )
 
 func (e MessageSendStatus) String() string {

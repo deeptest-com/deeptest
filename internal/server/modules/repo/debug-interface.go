@@ -106,6 +106,8 @@ func (r *DebugInterfaceRepo) GetDetail(interfId uint) (interf model.DebugInterfa
 	interf.OAuth20, _ = r.GetOAuth20(interfId)
 	interf.ApiKey, _ = r.GetApiKey(interfId)
 
+	interf.GlobalParams, _ = r.GetGlobalParams(interfId)
+
 	return
 }
 
@@ -152,6 +154,11 @@ func (r *DebugInterfaceRepo) Save(interf *model.DebugInterface) (err error) {
 		}
 
 		err = r.UpdateApiKey(interf.ID, interf.ApiKey)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateGlobalParams(interf.ID, interf.GlobalParams)
 		if err != nil {
 			return err
 		}
@@ -665,6 +672,38 @@ func (r *DebugInterfaceRepo) GetSourceNameById(id uint) (name string, err error)
 		}
 		name = diagnoseInterface.Title
 	}
+
+	return
+}
+
+func (r *DebugInterfaceRepo) UpdateGlobalParams(id uint, params []model.DebugInterfaceGlobalParam) (err error) {
+	err = r.RemoveGlobalParams(id)
+
+	if len(params) == 0 {
+		return
+	}
+
+	for key, _ := range params {
+		params[key].InterfaceId = id
+	}
+
+	err = r.DB.Create(&params).Error
+
+	return
+}
+
+func (r *DebugInterfaceRepo) RemoveGlobalParams(id uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		Delete(&model.DebugInterfaceGlobalParam{}, "").Error
+
+	return
+}
+
+func (r *DebugInterfaceRepo) GetGlobalParams(id uint) (po []model.DebugInterfaceGlobalParam, err error) {
+	err = r.DB.
+		Where("interface_id = ?", id).
+		Find(&po).Error
 
 	return
 }

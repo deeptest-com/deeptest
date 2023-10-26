@@ -130,5 +130,7 @@ var (
 		&SysAgent{},
 		&ProjectUserServer{},
 		&ThirdPartySync{},
+
+		&DebugInterfaceGlobalParam{},
 	}
 )

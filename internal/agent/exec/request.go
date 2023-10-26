@@ -103,6 +103,8 @@ func GetContentProps(resp *domain.DebugResponse) {
 }
 
 func ReplaceVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
+	//每个接口的局部参数覆盖全局参数
+	req.GlobalParams = MergeGlobalParams(ExecScene.GlobalParams, req.GlobalParams)
 	replaceUrl(req, usedBy)
 
 	replaceQueryParams(req, usedBy)
@@ -165,8 +167,8 @@ func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 
 func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	//if usedBy == consts.ScenarioDebug {
-	for _, p := range ExecScene.GlobalParams {
-		if p.In == consts.ParamInHeader {
+	for _, p := range req.GlobalParams {
+		if p.In == consts.ParamInHeader && !p.Disabled {
 			req.Headers = append(req.Headers, domain.Header{
 				Name:  p.Name,
 				Value: p.DefaultValue,
@@ -181,8 +183,8 @@ func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 }
 func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	//if usedBy == consts.ScenarioDebug {
-	for _, p := range ExecScene.GlobalParams {
-		if p.In == consts.ParamInCookie {
+	for _, p := range req.GlobalParams {
+		if p.In == consts.ParamInCookie && !p.Disabled {
 			req.Cookies = append(req.Cookies, domain.ExecCookie{
 				Name:  p.Name,
 				Value: p.DefaultValue,
@@ -196,8 +198,8 @@ func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	}
 }
 func replaceFormBodies(req *domain.BaseRequest, usedBy consts.UsedBy) {
-	for _, v := range ExecScene.GlobalParams {
-		if v.In == consts.ParamInBody {
+	for _, v := range req.GlobalParams {
+		if v.In == consts.ParamInBody && !v.Disabled {
 			req.BodyFormData = append(req.BodyFormData, domain.BodyFormDataItem{
 				Name:  v.Name,
 				Value: v.DefaultValue,
@@ -249,9 +251,9 @@ func mergeParams(req *domain.BaseRequest, paramIn consts.ParamIn) {
 		mQueryParams[param.Name] = param
 	}
 
-	for _, p := range ExecScene.GlobalParams {
+	for _, p := range req.GlobalParams {
 
-		if _, ok := mQueryParams[p.Name]; !ok && paramIn == p.In {
+		if _, ok := mQueryParams[p.Name]; !ok && paramIn == p.In && !p.Disabled {
 			req.QueryParams = append(req.QueryParams, domain.Param{
 				Name:  p.Name,
 				Value: p.DefaultValue,
@@ -260,4 +262,17 @@ func mergeParams(req *domain.BaseRequest, paramIn consts.ParamIn) {
 
 	}
 
+}
+
+func MergeGlobalParams(globalParams []domain.GlobalParam, selfGlobalParam []domain.GlobalParam) (ret []domain.GlobalParam) {
+	ret = globalParams
+	for key, globalParam := range ret {
+		for _, param := range selfGlobalParam {
+			if param.Name == globalParam.Name && param.In == globalParam.In {
+				ret[key].Disabled = param.Disabled
+			}
+		}
+	}
+
+	return
 }

@@ -1,6 +1,7 @@
 package service
 
 import (
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -64,6 +65,22 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userId uint) 
 	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
 	globalVars, _ = s.EnvironmentService.GetGlobalVars(environment.ProjectId)
 	globalParams, _ = s.EnvironmentService.GetGlobalParams(environment.ProjectId)
+
+	//合并全局参数
+	globalParams = agentExec.MergeGlobalParams(globalParams, debugData.GlobalParams)
+
+	return
+}
+
+func (s *DebugSceneService) MergeGlobalParams(globalParams []domain.GlobalParam, selfGlobalParam []domain.GlobalParam) (ret []domain.GlobalParam) {
+	ret = globalParams
+	for key, globalParam := range ret {
+		for _, param := range selfGlobalParam {
+			if param.Name == globalParam.Name && param.In == globalParam.In {
+				ret[key].Disabled = param.Disabled
+			}
+		}
+	}
 
 	return
 }

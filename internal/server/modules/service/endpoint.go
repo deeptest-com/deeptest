@@ -36,6 +36,7 @@ type EndpointService struct {
 	EndpointTagService       *EndpointTagService         `inject:""`
 	ServeService             *ServeService               `inject:""`
 	MessageService           *MessageService             `inject:""`
+	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -57,11 +58,14 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 		}
 	}
 
+	ret, _ := s.EndpointRepo.Get(endpoint.ID)
 	err = s.EndpointRepo.SaveAll(&endpoint)
 
 	//go func() {
 	//	_ = s.SendEndpointMessage(endpoint.ProjectId, endpoint.ID, userId)
 	//}()
+
+	s.DebugInterfaceRepo.SyncPath(ret.ID, endpoint.Path, ret.Path)
 
 	return endpoint.ID, err
 }

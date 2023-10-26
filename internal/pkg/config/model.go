@@ -79,5 +79,5 @@ type Mcs struct {
 }
 
 type Environment struct {
-	ServerHost string `json:"serverHost" yaml:"server-host"`
+	ServerHost string `mapstructure:"server-host" json:"serverHost" yaml:"server-host"`
 }

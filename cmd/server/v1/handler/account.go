@@ -44,6 +44,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 		return
 	}
 	cache.SetCache("host", ctx.Request().Header.Get("Origin"), -1)
+	cache.SetCache("serverHost", ctx.Request().Host, -1)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: resp, Msg: _domain.NoErr.Msg})
 }
 

@@ -15,6 +15,7 @@ type Config struct {
 	Captcha    Captcha    `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
 	Ldap       bool       `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
 	ThirdParty ThirdParty `mapstructure:"third-party" json:"thirdParty" yaml:"third-party"`
+	Mcs        Mcs        `mapstructure:"mcs" json:"mcs" yaml:"mcs"`
 }
 
 type System struct {
@@ -67,4 +68,10 @@ type Captcha struct {
 type ThirdParty struct {
 	Username string `mapstructure:"username" json:"username" yaml:"username"`
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
+}
+
+type Mcs struct {
+	Url      string `json:"url"`
+	McsAppid string `json:"mcsAppid"`
+	ImAppid  int    `json:"imAppid"`
 }

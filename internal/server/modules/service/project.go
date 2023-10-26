@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -10,10 +11,13 @@ import (
 )
 
 type ProjectService struct {
-	ProjectRepo  *repo.ProjectRepo    `inject:""`
-	ServeRepo    *repo.ServeRepo      `inject:""`
-	SampleSource *source.SampleSource `inject:""`
-	UserRepo     *repo.UserRepo       `inject:""`
+	ProjectRepo     *repo.ProjectRepo     `inject:""`
+	ServeRepo       *repo.ServeRepo       `inject:""`
+	SampleSource    *source.SampleSource  `inject:""`
+	UserRepo        *repo.UserRepo        `inject:""`
+	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
+	MessageRepo     *repo.MessageRepo     `inject:""`
+	MessageService  *MessageService       `inject:""`
 }
 
 func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _domain.PageData, err error) {
@@ -91,7 +95,43 @@ func (s *ProjectService) GetCurrProjectByUser(userId uint) (currProject model.Pr
 }
 
 func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
-	err = s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
+	auditId, err := s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
+
+	go func() {
+		_ = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
+	}()
+	return
+}
+
+func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleName consts.RoleType) (err error) {
+	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, roleName)
+	messageContentByte, _ := json.Marshal(messageContent)
+
+	adminRole, err := s.ProjectRoleRepo.FindByName(consts.Admin)
+	if err != nil {
+		return
+	}
+
+	messageReq := v1.MessageReq{
+		MessageBase: v1.MessageBase{
+			MessageSource: consts.MessageSourceJoinProject,
+			Content:       string(messageContentByte),
+			ReceiverRange: 3,
+			SenderId:      userId,
+			ReceiverId:    adminRole.ID,
+			SendStatus:    consts.MessageCreated,
+			ServiceType:   consts.ServiceTypeApproval,
+			BusinessId:    auditId,
+		},
+	}
+	messageId, _ := s.MessageService.Create(messageReq)
+	message, err := s.MessageRepo.Get(messageId)
+	if err != nil {
+		return
+	}
+
+	_, err = s.MessageService.SendMessageToMcs(message)
+
 	return
 }
 

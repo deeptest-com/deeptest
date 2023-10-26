@@ -4,6 +4,7 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	jmeterHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jmeter"
 	"github.com/beevik/etree"
+	"log"
 	"testing"
 )
 
@@ -21,5 +22,10 @@ func TestParse(t *testing.T) {
 	jmeterHelper.Arrange(doc.Root().ChildElements(), rootElement)
 
 	rootProcessor := &agentExec.Processor{}
-	jmeterHelper.Parse(rootElement, rootProcessor)
+
+	for _, child := range rootElement.ChildElements() {
+		jmeterHelper.Parse(child, rootProcessor) // child is test plan
+	}
+
+	log.Println(rootProcessor)
 }

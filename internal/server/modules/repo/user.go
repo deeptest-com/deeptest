@@ -700,6 +700,7 @@ func (r *UserRepo) UpdateByLdapInfo(ldapUserInfo v1.UserBase) (id uint, err erro
 	user.Username = ldapUserInfo.Username
 	user.Email = ldapUserInfo.Email
 	user.Name = ldapUserInfo.Name
+	user.ImAccount = ldapUserInfo.ImAccount
 
 	if err != nil && err.Error() == "record not found" {
 		id, err = r.Create(user)

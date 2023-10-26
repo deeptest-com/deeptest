@@ -64,7 +64,7 @@ func (s *MessageService) OperateRead(req v1.MessageReadReq) (uint, error) {
 }
 
 func (s *MessageService) GetEndpointMcsData(projectId, endpointId uint) (mcsData im.EnterpriseWechatInfoData, err error) {
-	userAccount, err := s.ProjectRepo.GetUserNamesByProjectAnRole(projectId, 0, "")
+	userAccount, err := s.ProjectRepo.GetImAccountsByProjectAndRole(projectId, 0, "")
 	if err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId uint, roleNam
 		return
 	}
 
-	userAccount, err := s.ProjectRepo.GetUserNamesByProjectAnRole(projectId, adminRole.ID, "admin")
+	userAccount, err := s.ProjectRepo.GetImAccountsByProjectAndRole(projectId, adminRole.ID, "admin")
 	if err != nil {
 		return
 	}

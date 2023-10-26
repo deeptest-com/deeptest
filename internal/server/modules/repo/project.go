@@ -1038,10 +1038,10 @@ func (r *ProjectRepo) GetUserIdsByProjectAnRole(projectId, roleId uint) (project
 	return
 }
 
-func (r *ProjectRepo) GetUserNamesByProjectAnRole(projectId, roleId uint, exceptUserName string) (userNames []string, err error) {
+func (r *ProjectRepo) GetImAccountsByProjectAndRole(projectId, roleId uint, exceptUserName string) (imAccounts []string, err error) {
 	conn := r.DB.Model(&model.ProjectMember{}).
 		Joins("left join sys_user u on biz_project_member.user_id=u.id").
-		Select("u.username")
+		Select("u.im_account")
 	if projectId != 0 {
 		conn = conn.Where("biz_project_member.project_id = ?", projectId)
 	}
@@ -1051,6 +1051,6 @@ func (r *ProjectRepo) GetUserNamesByProjectAnRole(projectId, roleId uint, except
 	if exceptUserName != "" {
 		conn = conn.Where("u.username != ?", exceptUserName)
 	}
-	err = conn.Where("not biz_project_member.deleted and not u.deleted").Find(&userNames).Error
+	err = conn.Where("not biz_project_member.deleted and not u.deleted").Find(&imAccounts).Error
 	return
 }

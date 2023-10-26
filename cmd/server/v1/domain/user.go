@@ -50,11 +50,12 @@ type InviteUserReq struct {
 }
 
 type UserBase struct {
-	Username string `gorm:"uniqueIndex;not null;type:varchar(60)" json:"username" validate:"required"`
-	Name     string `gorm:"index;not null; type:varchar(60)" json:"name"`
-	Email    string `gorm:"index;not null; type:varchar(60)" json:"email"`
-	Intro    string `gorm:"not null; type:varchar(512)" json:"intro"`
-	Avatar   string `gorm:"type:varchar(1024)" json:"avatar"`
+	Username  string `gorm:"uniqueIndex;not null;type:varchar(60)" json:"username" validate:"required"`
+	Name      string `gorm:"index;not null; type:varchar(60)" json:"name"`
+	Email     string `gorm:"index;not null; type:varchar(60)" json:"email"`
+	Intro     string `gorm:"not null; type:varchar(512)" json:"intro"`
+	Avatar    string `gorm:"type:varchar(1024)" json:"avatar"`
+	ImAccount string `json:"imAccount"`
 
 	Password string `json:"password"`
 	RoleIds  []uint `gorm:"-" json:"role_ids"`

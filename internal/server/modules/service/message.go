@@ -231,6 +231,15 @@ func (s *MessageService) ReceiveMcsApprovalResult(res v1.McsApprovalResData) (er
 		return
 	}
 
+	err = s.MessageRepo.UpdateSendStatusByMcsMessageId(res.InstanceId, s.TransferToSendStatus(res.Status))
+	if err != nil {
+		return
+	}
+
+	if res.Status == 5 {
+		return
+	}
+
 	approveUserName := res.ApproveUser[0]
 	approveUser, err := s.UserRepo.GetByUserName(approveUserName)
 	if err != nil {
@@ -248,15 +257,15 @@ func (s *MessageService) ReceiveMcsApprovalResult(res v1.McsApprovalResData) (er
 			return err
 		}
 
-		auditData, err := s.ProjectRepo.GetAudit(message.BusinessId)
+		_, err = s.ProjectRepo.GetAudit(message.BusinessId)
 		if err != nil {
 			return err
 		}
 
-		err = s.SendApplyProjectAuditResMessage(auditData)
-		if err != nil {
-			return err
-		}
+		//err = s.SendApplyProjectAuditResMessage(auditData)
+		//if err != nil {
+		//	return err
+		//}
 	}
 
 	return
@@ -285,6 +294,21 @@ func (s *MessageService) SendApplyProjectAuditResMessage(auditData model.Project
 	}
 
 	_, err = s.SendMessageToMcs(message)
+
+	return
+}
+
+func (s *MessageService) TransferToSendStatus(status int) (sendStatus consts.MessageSendStatus) {
+	switch status {
+	case 1:
+		sendStatus = consts.MessageApprovalReject
+	case 2:
+		sendStatus = consts.MessageApprovalAgreed
+	case 5:
+		sendStatus = consts.MessageApprovalInProgress
+	default:
+		sendStatus = consts.MessageApprovalReject
+	}
 
 	return
 }

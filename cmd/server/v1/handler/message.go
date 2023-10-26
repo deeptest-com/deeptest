@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -127,5 +128,9 @@ func (c *MessageCtrl) ReceiveMcsApprovalData(ctx iris.Context) {
 }
 
 func (c *MessageCtrl) InitThirdPartySyncCron() {
+	if !config.CONFIG.Mcs.Switch {
+		return
+	}
+
 	c.MessageService.SendMessageCron()
 }

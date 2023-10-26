@@ -57,7 +57,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars, debugData.GlobalVars, debugData.GlobalParams =
 		s.DebugSceneService.LoadScene(&debugData, loadReq.UserId)
 
-	s.mergeGlobalParams(&debugData) //合并全局参数
+	//s.mergeGlobalParams(&debugData) //合并全局参数
 
 	debugData.ResponseDefine = s.PostConditionRepo.CreateDefaultResponseDefine(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, loadReq.UsedBy)
 
@@ -84,6 +84,8 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agent
 	// get environment and settings on project level
 	s.SceneService.LoadEnvVars(&ret.ExecScene, ret.DebugData)
 	s.SceneService.LoadProjectSettings(&ret.ExecScene, ret.DebugData.ProjectId)
+
+	//ret.ExecScene.GlobalParams = s.DebugSceneService.MergeGlobalParams(ret.ExecScene.GlobalParams, ret.DebugData.GlobalParams)
 
 	return
 }
@@ -381,7 +383,7 @@ func (s *DebugInterfaceService) CreateDefault(src consts.ProcessorInterfaceSrc, 
 }
 
 func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterface, req domain.DebugData) (err error) {
-	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
+	copier.CopyWithOption(interf, &req, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 
 	return
 }

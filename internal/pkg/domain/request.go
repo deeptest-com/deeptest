@@ -28,12 +28,13 @@ type DebugResponse struct {
 type BaseRequest struct {
 	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 
-	Method      consts.HttpMethod `gorm:"default:GET" json:"method"`
-	Url         string            `json:"url"`
-	QueryParams []Param           ` json:"queryParams"`
-	PathParams  []Param           ` json:"pathParams"`
-	Headers     []Header          ` json:"headers"`
-	Cookies     []ExecCookie      ` json:"cookies"` // from cookie processor in scenario
+	Method       consts.HttpMethod `gorm:"default:GET" json:"method"`
+	Url          string            `json:"url"`
+	QueryParams  []Param           ` json:"queryParams"`
+	PathParams   []Param           ` json:"pathParams"`
+	Headers      []Header          ` json:"headers"`
+	Cookies      []ExecCookie      ` json:"cookies"` // from cookie processor in scenario
+	GlobalParams []GlobalParam     ` json:"globalParams"`
 
 	Body               string                   `json:"body"`
 	BodyFormData       []BodyFormDataItem       `json:"bodyFormData"`

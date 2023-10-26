@@ -396,6 +396,18 @@ func (r *UserRepo) GetByUserId(id uint) (user model.SysUser, err error) {
 
 	return
 }
+func (r *UserRepo) GetByUserName(userName string) (user model.SysUser, err error) {
+	err = r.DB.Model(&model.SysUser{}).
+		Where("NOT deleted").
+		Where("username = ?", userName).
+		First(&user).Error
+
+	if err != nil {
+		return
+	}
+
+	return
+}
 
 func (r *UserRepo) DeleteById(id uint) error {
 	err := r.DB.Unscoped().Delete(&model.SysUser{}, id).Error

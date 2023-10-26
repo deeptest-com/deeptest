@@ -815,3 +815,38 @@ const (
 func (e AlternativeCaseType) String() string {
 	return string(e)
 }
+
+type MessageSendStatus string
+
+const (
+	MessageCreated     MessageSendStatus = "created"
+	MessageSendSuccess MessageSendStatus = "send_success"
+	MessageSendFailed  MessageSendStatus = "send_failed"
+)
+
+func (e MessageSendStatus) String() string {
+	return string(e)
+}
+
+type MessageServiceType string
+
+const (
+	ServiceTypeApproval MessageServiceType = "approval"
+	ServiceTypeInfo     MessageServiceType = "info"
+)
+
+func (e MessageServiceType) String() string {
+	return string(e)
+}
+
+type MessageSource string
+
+const (
+	MessageSourceEndpoint        MessageSource = "endpoint"
+	MessageSourceJoinProject     MessageSource = "join_project"
+	MessageSourceAuditProjectRes MessageSource = "audit_project_res"
+)
+
+func (e MessageSource) String() string {
+	return string(e)
+}

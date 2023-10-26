@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -174,5 +175,80 @@ func (r *MessageRepo) GetUnreadCount(scope v1.MessageScope) (count int64, err er
 		logUtils.Errorf("count unread message error", zap.String("error:", err.Error()))
 		return
 	}
+	return
+}
+
+func (r *MessageRepo) Get(id uint) (message model.Message, err error) {
+	err = r.DB.Model(&model.Message{}).Where("id = ?", id).First(&message).Error
+
+	return
+}
+
+func (r *MessageRepo) GetCombinedMessage(businessId uint, messageSource consts.MessageSource) (message model.Message, err error) {
+	err = r.DB.Model(&model.Message{}).
+		Where("message_source = ?", messageSource).
+		Where("business_id = ?", businessId).
+		Last(&message).Error
+
+	return
+}
+
+// ListMsgNeedAsyncToMcs 列出需要异步同步给mcs的消息
+func (r *MessageRepo) ListMsgNeedAsyncToMcs() (messages []model.Message, err error) {
+	var infoMessages, approvalMessages, needCombineMessages []model.Message
+	err = r.DB.Model(&model.Message{}).
+		Where("service_type = ?", consts.ServiceTypeApproval).
+		Where("send_status != ?", consts.MessageSendSuccess).
+		Find(&approvalMessages).Error
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.Message{}).
+		Select("*, count(*) num").
+		Where("service_type = ?", consts.ServiceTypeInfo).
+		Where("send_status != ?", consts.MessageSendSuccess).
+		Group("message_source, business_id").
+		Having("num =1").
+		Find(&infoMessages).Error
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Model(&model.Message{}).
+		Select("*, count(*) num").
+		Where("service_type = ?", consts.ServiceTypeInfo).
+		Where("send_status != ?", consts.MessageSendSuccess).
+		Group("message_source, business_id").
+		Having("num >1").
+		Find(&needCombineMessages).Error
+	if err != nil {
+		return
+	}
+
+	for _, v := range needCombineMessages {
+		combinedMessage, err := r.GetCombinedMessage(v.BusinessId, v.MessageSource)
+		if err != nil {
+			continue
+		}
+		messages = append(messages, combinedMessage)
+	}
+
+	messages = append(messages, approvalMessages...)
+	messages = append(messages, infoMessages...)
+	return
+}
+
+func (r *MessageRepo) GetByMcsMessageId(McsMessageId string) (message model.Message, err error) {
+	err = r.DB.Model(&model.Message{}).Where("mcs_message_id = ?", McsMessageId).First(&message).Error
+
+	return
+}
+
+func (r *MessageRepo) UpdateCombinedSendStatus(messageSource consts.MessageSource, businessId uint, sendStatus consts.MessageSendStatus) (err error) {
+	err = r.DB.Model(&model.Message{}).
+		Where("message_source = ? and business_id = ?", messageSource, businessId).
+		Update("send_status", sendStatus).Error
+
 	return
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -102,4 +103,29 @@ func (c *MessageCtrl) OperateRead(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{"id": id}, Msg: _domain.NoErr.Msg})
+}
+
+func (c *MessageCtrl) ReceiveMcsApprovalData(ctx iris.Context) {
+	req := serverDomain.McsApprovalRes{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	reqData := serverDomain.McsApprovalResData{}
+	_ = json.Unmarshal([]byte(req.Data), &reqData)
+
+	err = c.MessageService.ReceiveMcsApprovalResult(reqData)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+
+}
+
+func (c *MessageCtrl) InitThirdPartySyncCron() {
+	c.MessageService.SendMessageCron()
 }

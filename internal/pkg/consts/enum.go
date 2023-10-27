@@ -314,6 +314,7 @@ type ExtractorType string
 
 const (
 	Boundary  ExtractorType = "boundary"
+	JsonPath  ExtractorType = "jsonpath"
 	JsonQuery ExtractorType = "jsonquery"
 	HtmlQuery ExtractorType = "htmlquery"
 	XmlQuery  ExtractorType = "xmlquery"

@@ -31,8 +31,12 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 	} else {
 		extractor.Expression = strings.TrimSpace(extractor.Expression)
 
-		if httpHelper.IsJsonContent(resp.ContentType.String()) && extractor.Type == consts.JsonQuery {
-			result = queryUtils.JsonQuery(resp.Content, extractor.Expression)
+		if httpHelper.IsJsonContent(resp.ContentType.String()) {
+			if extractor.Type == consts.JsonPath {
+				result = queryUtils.JsonPath(resp.Content, extractor.Expression)
+			} else if extractor.Type == consts.JsonQuery {
+				result = queryUtils.JsonQuery(resp.Content, extractor.Expression)
+			}
 
 		} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
 			result = queryUtils.HtmlQuery(resp.Content, extractor.Expression)
@@ -80,6 +84,10 @@ func GenDesc(varName string, src consts.ExtractorSrc, key string, typ consts.Ext
 	if typ == consts.Boundary {
 		name = fmt.Sprintf("边界选择器")
 		expr = fmt.Sprintf("%s ~ %s", getLimitStr(boundaryStart, 26), getLimitStr(boundaryEnd, 26))
+
+	} else if typ == consts.JsonPath {
+		name = fmt.Sprintf("JsonPath")
+		expr = fmt.Sprintf("%s", getLimitStr(expression, 50))
 
 	} else if typ == consts.JsonQuery {
 		name = fmt.Sprintf("JSON查询")

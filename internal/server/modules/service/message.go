@@ -253,14 +253,14 @@ func (s *MessageService) ReceiveMcsApprovalResult(res v1.McsApprovalResData) (er
 		}
 
 		err = s.ProjectService.Audit(message.BusinessId, approveUser.ID, status)
-		if err != nil {
-			return err
-		}
+		//if err != nil {
+		//	return err
+		//}
 
-		_, err = s.ProjectRepo.GetAudit(message.BusinessId)
-		if err != nil {
-			return err
-		}
+		//_, err = s.ProjectRepo.GetAudit(message.BusinessId)
+		//if err != nil {
+		//	return err
+		//}
 
 		//err = s.SendApplyProjectAuditResMessage(auditData)
 		//if err != nil {

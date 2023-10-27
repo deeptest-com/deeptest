@@ -103,10 +103,14 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 		//return fmt.Errorf("您已提交了申请，请联系审批人审批")
 	}
 	auditId, err := s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
+	if err != nil {
+		return
+	}
 
 	go func() {
 		_ = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
 	}()
+
 	return
 }
 
@@ -154,6 +158,11 @@ func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) 
 	record, err = s.ProjectRepo.GetAudit(id)
 	if err != nil {
 		return err
+	}
+
+	//防止重复审批
+	if record.Status != consts.Init {
+		return
 	}
 
 	err = s.ProjectRepo.UpdateAuditStatus(id, auditUserId, status)

@@ -9,6 +9,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 type ProjectService struct {
@@ -103,10 +104,17 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 		//return fmt.Errorf("您已提交了申请，请联系审批人审批")
 	}
 	auditId, err := s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
+	if err != nil {
+		return
+	}
 
 	go func() {
-		_ = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
+		err = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
+		if err != nil {
+			logUtils.Infof("申请加入项目发送消息失败，err:%+v", err)
+		}
 	}()
+
 	return
 }
 
@@ -154,6 +162,11 @@ func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) 
 	record, err = s.ProjectRepo.GetAudit(id)
 	if err != nil {
 		return err
+	}
+
+	//防止重复审批
+	if record.Status != consts.Init {
+		return
 	}
 
 	err = s.ProjectRepo.UpdateAuditStatus(id, auditUserId, status)

@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -110,6 +111,12 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 }
 
 func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleName consts.RoleType) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("发送消息异常")
+		}
+	}()
+
 	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, roleName)
 	messageContentByte, _ := json.Marshal(messageContent)
 

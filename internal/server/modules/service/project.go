@@ -9,6 +9,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 type ProjectService struct {
@@ -102,7 +103,10 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 	}
 
 	go func() {
-		_ = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
+		err = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
+		if err != nil {
+			logUtils.Infof("申请加入项目发送消息失败，err:%+v", err)
+		}
 	}()
 
 	return

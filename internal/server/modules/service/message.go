@@ -169,7 +169,7 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint
 		TemplateId:   "C4RcZvqJE8yABvgcSGDYiyidk2sXSV5bCBddJXpZM",
 		ButtonDetail: []im.ButtonDetail{
 			{Type: "Text", Id: "Text-1672888267140", Data: "乐研API通知-项目权限申请"},
-			{Type: "Textarea", Id: "Textarea-1672888279646", Data: fmt.Sprintf("您好！%s申请\"%s(%s)\"项目的【%s】角色，申请原因：%s。请审批！\n查看更多：%s", sender.Name, project.Name, projectHomePage, roleName, auditData.Description, host+"/notification")},
+			{Type: "Textarea", Id: "Textarea-1672888279646", Data: fmt.Sprintf("您好！%s申请\"[%s](%s)\"项目的【%s】角色，申请原因：%s。请审批！\n查看更多：%s", sender.Name, project.Name, projectHomePage, roleName, auditData.Description, host+"/notification")},
 		},
 		NotifyUrl: fmt.Sprintf("%s/api/v1/message/receiveMcsApprovalData", config.CONFIG.Environment.ServerHost),
 	}

@@ -198,7 +198,7 @@ func (r *MessageRepo) ListMsgNeedAsyncToMcs() (messages []model.Message, err err
 	var infoMessages, approvalMessages, needCombineMessages []model.Message
 	err = r.DB.Model(&model.Message{}).
 		Where("service_type = ?", consts.ServiceTypeApproval).
-		Where("send_status != ?", consts.MessageSendSuccess).
+		Where("send_status in ?", []consts.MessageSendStatus{consts.MessageCreated, consts.MessageSendFailed}).
 		Find(&approvalMessages).Error
 	if err != nil {
 		return
@@ -207,7 +207,7 @@ func (r *MessageRepo) ListMsgNeedAsyncToMcs() (messages []model.Message, err err
 	err = r.DB.Model(&model.Message{}).
 		Select("*, count(*) num").
 		Where("service_type = ?", consts.ServiceTypeInfo).
-		Where("send_status != ?", consts.MessageSendSuccess).
+		Where("send_status in ?", []consts.MessageSendStatus{consts.MessageCreated, consts.MessageSendFailed}).
 		Group("message_source, business_id").
 		Having("num =1").
 		Find(&infoMessages).Error
@@ -218,7 +218,7 @@ func (r *MessageRepo) ListMsgNeedAsyncToMcs() (messages []model.Message, err err
 	err = r.DB.Model(&model.Message{}).
 		Select("*, count(*) num").
 		Where("service_type = ?", consts.ServiceTypeInfo).
-		Where("send_status != ?", consts.MessageSendSuccess).
+		Where("send_status in ?", []consts.MessageSendStatus{consts.MessageCreated, consts.MessageSendFailed}).
 		Group("message_source, business_id").
 		Having("num >1").
 		Find(&needCombineMessages).Error

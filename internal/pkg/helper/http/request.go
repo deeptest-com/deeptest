@@ -250,8 +250,9 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
-	u, _ := url.Parse(req.Url)
-	ret.Cookies = getCookies(resp.Cookies(), jar.Cookies(u))
+	//u, _ := url.Parse(req.Url)
+	//ret.Cookies = getCookies(resp.Cookies(), jar.Cookies(u))
+	ret.Cookies = getCookies(resp.Cookies(), nil)
 
 	if !readRespData {
 		return

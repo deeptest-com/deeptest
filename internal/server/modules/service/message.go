@@ -133,7 +133,7 @@ func (s *MessageService) GetAuditProjectResultMcsData(auditId uint) (mcsData im.
 	return
 }
 
-func (s *MessageService) GetJoinProjectMcsData(senderId, projectId uint, roleName consts.RoleType) (mcsData im.EnterpriseWechatApprovalData, err error) {
+func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint, roleName consts.RoleType) (mcsData im.EnterpriseWechatApprovalData, err error) {
 	sender, err := s.UserRepo.GetByUserId(senderId)
 	if err != nil {
 		return
@@ -153,8 +153,15 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId uint, roleNam
 	if err != nil {
 		return
 	}
+
+	auditData, err := s.ProjectRepo.GetAudit(auditId)
+	if err != nil {
+		return
+	}
+
 	host, _ := cache.GetCacheString("host")
 
+	projectHomePage := fmt.Sprintf("%s/%s/workspace", host, project.ShortName)
 	mcsData = im.EnterpriseWechatApprovalData{
 		CreatorId:    sender.ImAccount,
 		ApproveIds:   userAccount,
@@ -162,7 +169,7 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId uint, roleNam
 		TemplateId:   "C4RcZvqJE8yABvgcSGDYiyidk2sXSV5bCBddJXpZM",
 		ButtonDetail: []im.ButtonDetail{
 			{Type: "Text", Id: "Text-1672888267140", Data: "乐研API通知-项目权限申请"},
-			{Type: "Textarea", Id: "Textarea-1672888279646", Data: fmt.Sprintf("您好！%s申请\"%s\"项目的【%s角色】，请审批！\n审批详情：%s", sender.Name, project.Name, roleName, host+"/notification")},
+			{Type: "Textarea", Id: "Textarea-1672888279646", Data: fmt.Sprintf("您好！%s申请\"%s(%s)\"项目的【%s】角色，申请原因：%s。请审批！\n查看更多：%s", sender.Name, project.Name, projectHomePage, roleName, auditData.Description, host+"/notification")},
 		},
 		NotifyUrl: fmt.Sprintf("%s/api/v1/message/receiveMcsApprovalData", config.CONFIG.Environment.ServerHost),
 	}

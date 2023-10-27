@@ -1058,6 +1058,6 @@ func (r *ProjectRepo) GetImAccountsByProjectAndRole(projectId, roleId uint, exce
 func (r *ProjectRepo) GetAuditByItem(projectId, ApplyUserId uint, auditStatus []consts.AuditStatus) (ret model.ProjectMemberAudit, err error) {
 	err = r.DB.Model(&model.ProjectMemberAudit{}).
 		Where("project_id = ? and apply_user_id = ? and status in ? ", projectId, ApplyUserId, auditStatus).
-		First(&ret).Error
+		Last(&ret).Error
 	return
 }

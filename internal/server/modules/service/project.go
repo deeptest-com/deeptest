@@ -98,7 +98,12 @@ func (s *ProjectService) GetCurrProjectByUser(userId uint) (currProject model.Pr
 
 func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 	//如果已经有审批记录，就不创建新的了
-	result, _ := s.ProjectRepo.GetAuditByItem(req.ProjectId, req.ApplyUserId, []consts.AuditStatus{consts.Init, consts.Agreed})
+	var b bool
+	b, err = s.ProjectRepo.IfProjectMember(req.ApplyUserId, req.ProjectId)
+	if err != nil || b {
+		return
+	}
+	result, _ := s.ProjectRepo.GetAuditByItem(req.ProjectId, req.ApplyUserId, []consts.AuditStatus{consts.Init})
 	if result.ID != 0 {
 		return
 		//return fmt.Errorf("您已提交了申请，请联系审批人审批")

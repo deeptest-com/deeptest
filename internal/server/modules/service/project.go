@@ -119,7 +119,7 @@ func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleN
 		}
 	}()
 
-	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, roleName)
+	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
 	messageContentByte, _ := json.Marshal(messageContent)
 
 	adminRole, err := s.ProjectRoleRepo.FindByName(consts.Admin)

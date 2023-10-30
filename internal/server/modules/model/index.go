@@ -112,6 +112,7 @@ var (
 		&ProjectMenu{},
 		&ProjectRecentlyVisited{},
 		&ProjectMemberAudit{},
+		&DatabaseConn{},
 
 		&SwaggerSync{},
 		&ProjectMockSetting{},

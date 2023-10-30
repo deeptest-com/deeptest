@@ -73,6 +73,16 @@ func (DebugConditionCheckpoint) TableName() string {
 	return "biz_debug_condition_checkpoint"
 }
 
+type DebugConditionDatabaseOpt struct {
+	BaseModel
+
+	domain.DatabaseOptBase
+}
+
+func (DebugConditionDatabaseOpt) TableName() string {
+	return "biz_debug_condition_database_opt"
+}
+
 type DebugConditionResponseDefine struct {
 	BaseModel
 	domain.ResponseDefineBase

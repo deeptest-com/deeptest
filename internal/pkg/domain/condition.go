@@ -59,6 +59,33 @@ type CheckpointBase struct {
 	Disabled bool `json:"disabled"`
 }
 
+type DatabaseConnBase struct {
+	Name string              `json:"name"`
+	Type consts.DatabaseType `json:"name"`
+
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	DbName   string `json:"dbName"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type DatabaseOptBase struct {
+	Sql string `json:"sql"`
+
+	DatabaseConnBase
+
+	ResultStatus consts.ResultStatus `json:"resultStatus"`
+	ResultMsg    string              `json:"resultMsg"`
+
+	ConditionId         uint                 `json:"conditionId"`
+	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to entity po id in domain object
+	ConditionEntityType consts.ConditionType `gorm:"-" json:"conditionEntityType"` // for log only
+	InvokeId            uint                 `json:"invokeId"`                     // for log only
+
+	Disabled bool `json:"disabled"`
+}
+
 func (condition CheckpointBase) GetType() consts.ConditionType {
 	return consts.ConditionTypeCheckpoint
 }

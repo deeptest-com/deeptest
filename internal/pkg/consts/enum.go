@@ -289,6 +289,7 @@ const (
 	ConditionTypeExtractor      ConditionType = "extractor"
 	ConditionTypeCheckpoint     ConditionType = "checkpoint"
 	ConditionTypeScript         ConditionType = "script"
+	ConditionTypeDatabase       ConditionType = "database"
 	ConditionTypeResponseDefine ConditionType = "responseDefine"
 )
 
@@ -815,5 +816,18 @@ const (
 )
 
 func (e AlternativeCaseType) String() string {
+	return string(e)
+}
+
+type DatabaseType string
+
+const (
+	DbTypeMySql      DatabaseType = "mysql"
+	DbTypeSqlServer  DatabaseType = "sqlserver"
+	DbTypePostgreSql DatabaseType = "postgreSql"
+	DbTypeOracle     DatabaseType = "oracle"
+)
+
+func (e DatabaseType) String() string {
 	return string(e)
 }

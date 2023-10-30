@@ -81,6 +81,7 @@ type IndexModule struct {
 	JslibModule          *router.JslibModule          `inject:""`
 
 	EndpointCodeModule *router.EndpointCodeModule `inject:""`
+	DatabaseConnModule *router.DatabaseConnModule `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -166,6 +167,7 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.JslibModule.Party(),
 
 		m.EndpointCodeModule.Party(),
+		m.DatabaseConnModule.Party(),
 	}
 
 	return module.NewModule(consts.ApiPathServer, handler, modules...)

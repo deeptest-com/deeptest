@@ -7,29 +7,28 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type CheckpointCtrl struct {
-	CheckpointService *service.CheckpointService `inject:""`
+type DatabaseOptCtrl struct {
+	DatabaseOptService *service.DatabaseOptService `inject:""`
 	BaseCtrl
 }
 
 // Get 详情
-// @Tags	检查点
-// @summary	检查点详情
+// @Tags	数据库操作
+// @summary	数据库操作详情
 // @accept 	application/json
 // @Produce application/json
 // @Param	Authorization		header	string	true	"Authentication header"
-// @Param 	currProjectId		query	int		true	"当前项目ID"
-// @Param 	id					path	int		true	"检查点ID"
-// @success	200	{object}	_domain.Response{data=model.DebugConditionCheckpoint}
-// @Router	/api/v1/checkpoints/{id}	[get]
-func (c *CheckpointCtrl) Get(ctx iris.Context) {
+// @Param 	id					path	int		true	"数据库操作ID"
+// @success	200	{object}		_domain.Response{data=model.DebugConditionDatabaseOpt}
+// @Router	/api/v1/databaseOpts/{id}	[get]
+func (c *DatabaseOptCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	checkpoint, err := c.CheckpointService.Get(uint(id))
+	checkpoint, err := c.DatabaseOptService.Get(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -38,24 +37,23 @@ func (c *CheckpointCtrl) Get(ctx iris.Context) {
 }
 
 // Update 更新
-// @Tags	检查点
-// @summary	更新检查点
+// @Tags	数据库连接
+// @summary	更新数据库连接
 // @accept 	application/json
 // @Produce application/json
 // @Param	Authorization				header	string								true	"Authentication header"
-// @Param 	currProjectId				query	int									true	"当前项目ID"
-// @Param 	DebugInterfaceCheckpoint	body	model.DebugConditionCheckpoint		true	"更新检查点的请求体"
-// @success	200	{object}	_domain.Response
+// @Param 	DebugInterfaceCheckpoint	body	model.DebugConditionDatabaseOpt		true	"更新数据库连接的请求体"
+// @success	200	{object}				_domain.Response
 // @Router	/api/v1/checkpoints	[put]
-func (c *CheckpointCtrl) Update(ctx iris.Context) {
-	var checkpoint model.DebugConditionCheckpoint
+func (c *DatabaseOptCtrl) Update(ctx iris.Context) {
+	var checkpoint model.DebugConditionDatabaseOpt
 	err := ctx.ReadJSON(&checkpoint)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.CheckpointService.Update(&checkpoint)
+	err = c.DatabaseOptService.Update(&checkpoint)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -64,23 +62,22 @@ func (c *CheckpointCtrl) Update(ctx iris.Context) {
 }
 
 // Delete 删除
-// @Tags	检查点
-// @summary	删除检查点
+// @Tags	数据库连接
+// @summary	删除数据库连接
 // @accept 	application/json
 // @Produce application/json
 // @Param	Authorization		header	string	true	"Authentication header"
-// @Param 	currProjectId		query	int		true	"当前项目ID"
-// @Param 	id					path	int		true	"检查点ID"
-// @success	200	{object}	_domain.Response
+// @Param 	id					path	int		true	"数据库连接ID"
+// @success	200	{object}		_domain.Response
 // @Router	/api/v1/checkpoints/{id}	[delete]
-func (c *CheckpointCtrl) Delete(ctx iris.Context) {
+func (c *DatabaseOptCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.CheckpointService.Delete(uint(id))
+	err = c.DatabaseOptService.Delete(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

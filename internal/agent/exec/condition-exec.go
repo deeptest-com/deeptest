@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	checkpointHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/checkpoint"
+	databaseOptHelpper "github.com/aaronchen2k/deeptest/internal/pkg/helper/database-opt"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -93,6 +94,22 @@ func ExecPostConditions(obj InterfaceExecObj, resp domain.DebugResponse) (status
 			checkpointHelper.GenResultMsg(&checkpointBase)
 
 			obj.PostConditions[index].Raw, _ = json.Marshal(checkpointBase)
+
+		} else if condition.Type == consts.ConditionTypeDatabase {
+			var databaseOptBase domain.DatabaseOptBase
+			json.Unmarshal(condition.Raw, &databaseOptBase)
+			if databaseOptBase.Disabled {
+				continue
+			}
+
+			err = ExecDbOpt(&databaseOptBase)
+			if err != nil {
+				status = consts.Fail
+			}
+
+			databaseOptHelpper.GenResultMsg(&databaseOptBase)
+
+			obj.PostConditions[index].Raw, _ = json.Marshal(databaseOptBase)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			var responseDefineBase domain.ResponseDefineBase

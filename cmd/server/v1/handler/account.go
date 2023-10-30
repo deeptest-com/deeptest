@@ -40,7 +40,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 	}
 	resp, err := c.AccountService.Login(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.LoginErr.Code})
+		ctx.JSON(_domain.Response{Code: _domain.LoginErr.Code, Msg: err.Error()})
 		return
 	}
 	cache.SetCache("host", ctx.Request().Header.Get("Origin"), -1)

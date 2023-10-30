@@ -79,6 +79,10 @@ func (r *ScenarioInterfaceRepo) SaveDebugData(interf *model.DebugInterface) (err
 			return err
 		}
 
+		err = r.UpdateGlobalParams(interf.ID, interf.GlobalParams)
+		if err != nil {
+			return err
+		}
 		return err
 	})
 

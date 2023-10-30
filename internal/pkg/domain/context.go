@@ -13,7 +13,8 @@ type GlobalParam struct {
 	Name         string           `json:"name"`
 	Type         consts.ParamType `json:"type"`
 	In           consts.ParamIn   `json:"in"`
-	Required     bool             `json:"Required"`
+	Disabled     bool             `json:"disabled"`
+	Required     bool             `json:"required"`
 	DefaultValue string           `gorm:"type:text" json:"defaultValue"`
 }
 

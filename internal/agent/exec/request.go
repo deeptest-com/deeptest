@@ -264,7 +264,8 @@ func mergeParams(req *domain.BaseRequest, paramIn consts.ParamIn) {
 
 }
 
-func MergeGlobalParams(globalParams []domain.GlobalParam, selfGlobalParam []domain.GlobalParam) (ret []domain.GlobalParam) {
+func MergeGlobalParams(globalParams, selfGlobalParam []domain.GlobalParam) (ret []domain.GlobalParam) {
+
 	ret = globalParams
 	for key, globalParam := range ret {
 		for _, param := range selfGlobalParam {

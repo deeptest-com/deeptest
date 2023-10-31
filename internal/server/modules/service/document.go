@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -62,6 +63,12 @@ func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[
 
 	if err != nil {
 		return
+	}
+
+	for key, endpoint := range endpoints {
+		for k, _ := range endpoint.Interfaces {
+			s.MergeGlobalParams(&endpoints[key].Interfaces[k])
+		}
 	}
 
 	res = s.GetEndpointsInfo(projectId, serveIds, endpoints)
@@ -328,6 +335,8 @@ func (s *DocumentService) GetDocumentDetail(documentId, endpointId, interfaceId 
 	}
 
 	s.EndpointService.SchemaConv(&interfaceDetail, serveId)
+	s.MergeGlobalParams(&interfaceDetail)
+
 	res = make(map[string]interface{})
 	res["interface"] = interfaceDetail
 	res["servers"] = serves
@@ -358,4 +367,19 @@ func (s *DocumentService) getMockEnvironment(serves []model.ServeServer) string 
 	}
 
 	return ""
+}
+
+func (s *DocumentService) MergeGlobalParams(endpointInterface *model.EndpointInterface) {
+	for _, globalParam := range endpointInterface.GlobalParams {
+
+		if globalParam.In == consts.ParamInQuery {
+			endpointInterface.Params = append(endpointInterface.Params, model.EndpointInterfaceParam{SchemaParam: model.SchemaParam{Name: globalParam.Name, Type: string(globalParam.Type), Example: globalParam.DefaultValue, Default: globalParam.DefaultValue, Value: globalParam.DefaultValue, IsGlobal: true}})
+		} else if globalParam.In == consts.ParamInCookie {
+			endpointInterface.Cookies = append(endpointInterface.Cookies, model.EndpointInterfaceCookie{SchemaParam: model.SchemaParam{Name: globalParam.Name, Type: string(globalParam.Type), Example: globalParam.DefaultValue, Default: globalParam.DefaultValue, Value: globalParam.DefaultValue, IsGlobal: true}})
+		} else if globalParam.In == consts.ParamInHeader {
+			endpointInterface.Headers = append(endpointInterface.Headers, model.EndpointInterfaceHeader{SchemaParam: model.SchemaParam{Name: globalParam.Name, Type: string(globalParam.Type), Example: globalParam.DefaultValue, Default: globalParam.DefaultValue, Value: globalParam.DefaultValue, IsGlobal: true}})
+		}
+
+	}
+
 }

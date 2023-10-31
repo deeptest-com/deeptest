@@ -93,6 +93,7 @@ var (
 		&EndpointSnapshot{},
 		&EndpointTag{},
 		&EndpointTagRel{},
+		&EndpointInterfaceGlobalParam{},
 
 		&Serve{},
 		&ServeServer{},

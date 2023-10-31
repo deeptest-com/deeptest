@@ -19,6 +19,7 @@ type EndpointRepo struct {
 	ServeRepo             *ServeRepo             `inject:""`
 	ProjectRepo           *ProjectRepo           `inject:""`
 	EndpointTagRepo       *EndpointTagRepo       `inject:""`
+	EnvironmentRepo       *EnvironmentRepo       `inject:""`
 }
 
 func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -293,7 +294,7 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
 	endpoint.PathParams, _ = r.GetEndpointPathParams(id)
 	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
-
+	
 	return
 }
 

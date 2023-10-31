@@ -1,6 +1,9 @@
 package model
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+)
 
 type EndpointInterface struct {
 	BaseModel
@@ -16,9 +19,10 @@ type EndpointInterface struct {
 	Tags           []string                        `gorm:"-" json:"tags"`
 	PathParams     []EndpointPathParam             `gorm:"-" json:"pathParams"`
 
-	DebugInterfaceId uint              `gorm:"default:0" json:"debugInterfaceId"`
-	SourceType       consts.SourceType `json:"sourceType" gorm:"default:0"`
-	Creator          string            `gorm:"-" json:"creator"`
+	DebugInterfaceId uint                           `gorm:"default:0" json:"debugInterfaceId"`
+	SourceType       consts.SourceType              `json:"sourceType" gorm:"default:0"`
+	Creator          string                         `gorm:"-" json:"creator"`
+	GlobalParams     []EndpointInterfaceGlobalParam `gorm:"-" json:"globalParams"`
 }
 type SchemaParam struct {
 	Name        string  `json:"name"`
@@ -41,6 +45,7 @@ type SchemaParam struct {
 	Description string  `gorm:"type:text" json:"description"`
 	Minimum     float64 `json:"minimum"`
 	Maximum     float64 `json:"maximum"`
+	IsGlobal    bool    `gorm:"-" json:"isGlobal"`
 }
 
 func (EndpointInterface) TableName() string {
@@ -116,4 +121,13 @@ type EndpointInterfaceResponseBody struct {
 
 func (EndpointInterfaceResponseBody) TableName() string {
 	return "biz_endpoint_interface_response_body"
+}
+
+type EndpointInterfaceGlobalParam struct {
+	domain.GlobalParam
+	InterfaceId uint `json:"InterfaceId"`
+}
+
+func (EndpointInterfaceGlobalParam) TableName() string {
+	return "biz_endpoint_interface_global_param"
 }

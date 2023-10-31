@@ -49,21 +49,22 @@ type OpenApiParam struct {
 }
 
 type EndpointReq struct {
-	ID          int64           `json:"id"`
-	ProjectId   uint            `json:"projectId" validate:"required"`
-	ServeId     uint            `json:"serveId" validate:"required"`
-	ServerId    uint            `json:"serverId"`
-	Status      int64           `json:"status"`
-	Title       string          `json:"title" validate:"required"`
-	Path        string          `json:"path"`
-	Version     string          `json:"version"`
-	CreateUser  string          `json:"CreateUser"`
-	UpdateUser  string          `json:"updateUser"`
-	CategoryId  int64           `json:"categoryId"`
-	PathParams  []OpenApiParam  `gorm:"-" json:"pathParams"`
-	Interfaces  []InterfaceResp `gorm:"-" json:"interfaces"`
-	Description string          `json:"description"`
-	Curl        string          `json:"curl"`
+	ID           int64                `json:"id"`
+	ProjectId    uint                 `json:"projectId" validate:"required"`
+	ServeId      uint                 `json:"serveId" validate:"required"`
+	ServerId     uint                 `json:"serverId"`
+	Status       int64                `json:"status"`
+	Title        string               `json:"title" validate:"required"`
+	Path         string               `json:"path"`
+	Version      string               `json:"version"`
+	CreateUser   string               `json:"CreateUser"`
+	UpdateUser   string               `json:"updateUser"`
+	CategoryId   int64                `json:"categoryId"`
+	PathParams   []OpenApiParam       `gorm:"-" json:"pathParams"`
+	Interfaces   []InterfaceResp      `gorm:"-" json:"interfaces"`
+	GlobalParams []domain.GlobalParam `gorm:"-" json:"globalParams"`
+	Description  string               `json:"description"`
+	Curl         string               `json:"curl"`
 }
 
 type EndpointRes struct {

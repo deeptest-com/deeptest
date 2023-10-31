@@ -80,6 +80,7 @@ type Param struct {
 	Disabled    bool           `json:"disabled,omitempty"`
 	Description string         `json:"Description,omitempty"`
 	Type        string         `json:"type,omitempty"`
+	IsGlobal    bool           `json:"isGlobal,omitempty"`
 }
 
 type BodyFormDataItem struct {

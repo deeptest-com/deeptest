@@ -132,7 +132,7 @@ func (s *serve2conv) operation(item model.EndpointInterface) (operation *openapi
 	operation.Summary = item.Description
 	operation.RequestBody = s.requestBody(item.RequestBody)
 	operation.Responses = s.responsesBody(item.ResponseBodies)
-	operation.Parameters = s.parameters(item.Cookies, item.Headers, item.Params)
+	operation.Parameters = s.parameters(item.Cookies, item.Headers, item.Params, item.GlobalParams)
 	if item.Security != "" {
 		securityRequirement := openapi3.NewSecurityRequirement()
 		securityRequirement[item.Security] = nil
@@ -158,7 +158,7 @@ func (s *serve2conv) pathParameters(params []model.EndpointPathParam) (parameter
 	return
 }
 
-func (s *serve2conv) parameters(cookies []model.EndpointInterfaceCookie, headers []model.EndpointInterfaceHeader, params []model.EndpointInterfaceParam) (parameters openapi3.Parameters) {
+func (s *serve2conv) parameters(cookies []model.EndpointInterfaceCookie, headers []model.EndpointInterfaceHeader, params []model.EndpointInterfaceParam, globalParams []model.EndpointInterfaceGlobalParam) (parameters openapi3.Parameters) {
 	parameters = openapi3.Parameters{}
 	for _, param := range params {
 		parameterRef := s.parameterRef("query", param)
@@ -170,6 +170,12 @@ func (s *serve2conv) parameters(cookies []model.EndpointInterfaceCookie, headers
 	}
 	for _, cookie := range cookies {
 		parameterRef := s.parameterRef("cookie", model.EndpointInterfaceParam(cookie))
+		parameters = append(parameters, parameterRef)
+	}
+
+	for _, globalParam := range globalParams {
+		item := model.EndpointInterfaceParam{SchemaParam: model.SchemaParam{Name: globalParam.Name, Type: string(globalParam.Type), Default: globalParam.DefaultValue, IsGlobal: true}}
+		parameterRef := s.parameterRef("cookie", item)
 		parameters = append(parameters, parameterRef)
 	}
 	return
@@ -202,6 +208,9 @@ func (s *serve2conv) schemaValue(param model.EndpointInterfaceParam) (schema *op
 	schema.Max = &param.Maximum
 	schema.Min = &param.Minimum
 	schema.Format = param.Format
+	if param.IsGlobal {
+		schema.Extensions = map[string]interface{}{"isGlobal": param.IsGlobal}
+	}
 	return
 }
 func (s *serve2conv) schemaPathValue(param model.EndpointPathParam) (schema *openapi3.Schema) {

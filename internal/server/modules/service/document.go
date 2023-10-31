@@ -371,7 +371,9 @@ func (s *DocumentService) getMockEnvironment(serves []model.ServeServer) string 
 
 func (s *DocumentService) MergeGlobalParams(endpointInterface *model.EndpointInterface) {
 	for _, globalParam := range endpointInterface.GlobalParams {
-
+		if globalParam.Disabled {
+			continue
+		}
 		if globalParam.In == consts.ParamInQuery {
 			endpointInterface.Params = append(endpointInterface.Params, model.EndpointInterfaceParam{SchemaParam: model.SchemaParam{Name: globalParam.Name, Type: string(globalParam.Type), Example: globalParam.DefaultValue, Default: globalParam.DefaultValue, Value: globalParam.DefaultValue, IsGlobal: true}})
 		} else if globalParam.In == consts.ParamInCookie {

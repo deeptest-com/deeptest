@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	gojaPlugin "github.com/aaronchen2k/deeptest/internal/pkg/goja/plugin"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
@@ -12,6 +13,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
+	"log"
 	"path/filepath"
 	"sync"
 	"time"
@@ -22,6 +24,25 @@ var (
 )
 
 func LoadAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, projectId uint, serverUrl, token string) {
+	loadEmbedAgentJslibs(runtime, require)
+
+	loadRemoteAgentJslibs(runtime, require, projectId, serverUrl, token)
+}
+
+func loadEmbedAgentJslibs(runtime *goja.Runtime, require *require.RequireModule) {
+	runtime.Set("require", func(call goja.FunctionCall) goja.Value { return goja.Undefined() })
+	runtime.Set("global", runtime.GlobalObject())
+
+	agentVu := gojaPlugin.AgentVU{
+		RuntimeField: runtime,
+	}
+	chaiModule := gojaPlugin.New()
+	inst := chaiModule.NewModuleInstance(&agentVu)
+
+	log.Println(inst)
+}
+
+func loadRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, projectId uint, serverUrl, token string) {
 	libs := getJslibsFromServer(projectId, serverUrl, token)
 
 	for _, lib := range libs {

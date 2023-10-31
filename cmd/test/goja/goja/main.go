@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	gojaPlugin "github.com/aaronchen2k/deeptest/internal/pkg/goja/plugin"
 	"github.com/dop251/goja"
 	"log"
@@ -29,22 +30,42 @@ func main() {
 
 	err := vm.Set("log", func(value interface{}) {
 		bytes, _ := json.Marshal(value)
-		log.Println(bytes)
+		log.Println("=== ", bytes)
+	})
+
+	err = vm.Set("check", func(ok bool, name, msg string) {
+		log.Println(fmt.Sprintf("%t, %s, %s", ok, name, msg)) // add to assert
 	})
 
 	script := `
-		//import { describe, expect } from "chai.js";
-		//log(expect);
+		function test(name, cb) {
+			try {
+				cb();
+			} catch(err){
+				check(false, name, err)
+				return
+			}
 
-	  	//describe('Fetch a list of public crocodiles', () => {
-			const response = {status: 2001};
-			var r = expect(response.status, 'response status').to.equal(200);
-			log(r);
-	  	//});
+			check(true, name, '')
+		}
+
+	  	test('get request', () => {
+			var r1 = expect(200, 'status').to.equal(200);
+			log(r1)
+			var r2 = expect(-1, 'code').to.equal(0);
+			log(r2)
+	  	});
+
+		test('post request', () => {
+			var r1 = expect(200, 'status').to.equal(200);
+			log(r1)
+			var r2 = expect(0, 'code').to.equal(0);
+			log(r2)
+	  	});
 	`
 	out, err := agentVu.Runtime().RunString(script)
 	if err != nil {
-		log.Println(err)
+		log.Println(err.Error())
 	}
 
 	log.Println(out)

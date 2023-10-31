@@ -23,26 +23,43 @@ var (
 	AgentLoadedLibs sync.Map
 )
 
-func LoadAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, projectId uint, serverUrl, token string) {
-	loadEmbedAgentJslibs(runtime, require)
+func LoadChaiJslibs(runtime *goja.Runtime) {
+	// check method
+	err := runtime.Set("check", func(ok bool, name, msg string) {
+		log.Println(fmt.Sprintf("%t, %s, %s", ok, name, msg)) // TODO: add to assert
+	})
 
-	loadRemoteAgentJslibs(runtime, require, projectId, serverUrl, token)
-}
+	// test method
+	script := `function test(name, cb) {
+		try {
+			cb();
+		} catch(err){
+			log('TestCase \'' + name + '\' failed, ' + err + '.')
+			check(false, name, err)
+			return
+		}
 
-func loadEmbedAgentJslibs(runtime *goja.Runtime, require *require.RequireModule) {
+		log('TestCase \'' + name + '\' success.')
+		check(true, name, '')
+	}`
+	_, err = runtime.RunString(script)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	// chai method
 	runtime.Set("require", func(call goja.FunctionCall) goja.Value { return goja.Undefined() })
 	runtime.Set("global", runtime.GlobalObject())
 
 	agentVu := gojaPlugin.AgentVU{
 		RuntimeField: runtime,
 	}
-	chaiModule := gojaPlugin.New()
-	inst := chaiModule.NewModuleInstance(&agentVu)
-
-	log.Println(inst)
+	chaiModule := gojaPlugin.NewChai()
+	chaiInst := chaiModule.NewModuleInstance(&agentVu)
+	runtime.Set("expect", chaiInst.Exports().Named["expect"])
 }
 
-func loadRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, projectId uint, serverUrl, token string) {
+func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, projectId uint, serverUrl, token string) {
 	libs := getJslibsFromServer(projectId, serverUrl, token)
 
 	for _, lib := range libs {

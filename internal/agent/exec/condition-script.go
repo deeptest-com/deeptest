@@ -65,7 +65,7 @@ func ExecScript(scriptObj *domain.ScriptBase, projectId uint) (err error) {
 
 func InitJsRuntime(projectId uint) {
 	if execVm.JsRuntime != nil {
-		jslibHelper.LoadAgentJslibs(execVm.JsRuntime, execRequire, projectId, ServerUrl, ServerToken)
+		jslibHelper.RefreshRemoteAgentJslibs(execVm.JsRuntime, execRequire, projectId, ServerUrl, ServerToken)
 		return
 	}
 
@@ -73,6 +73,8 @@ func InitJsRuntime(projectId uint) {
 
 	execVm.JsRuntime = goja.New()
 	execVm.JsRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
+
+	jslibHelper.LoadChaiJslibs(execVm.JsRuntime)
 
 	defineJsFuncs()
 	defineGoFuncs()
@@ -90,7 +92,7 @@ func InitJsRuntime(projectId uint) {
 	execVm.JsRuntime.Set("dt", dt)
 
 	// import other custom libs
-	jslibHelper.LoadAgentJslibs(execVm.JsRuntime, execRequire, 0, ServerUrl, ServerToken)
+	jslibHelper.RefreshRemoteAgentJslibs(execVm.JsRuntime, execRequire, 0, ServerUrl, ServerToken)
 }
 
 func GetReqValueFromGoja() (err error) {

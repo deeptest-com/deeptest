@@ -71,6 +71,9 @@ declare global {
 
         request: Request,
         response: Response,
+
+        test: (testcase: string, func: () => void) => void,
+        expect: (actual: any, checkpoint: string) => any,
     }
 
     const log : (obj: any) => {}

@@ -1,3 +1,5 @@
+/// <reference types="@types/Chai" />
+
 declare type Param = {
     name: string;
     value: string;
@@ -71,6 +73,9 @@ declare global {
 
         request: Request,
         response: Response,
+
+        test: (testcase: string, func: Function) => void,
+        expect: Chai.ExpectStatic,
     }
 
     const log : (obj: any) => {}

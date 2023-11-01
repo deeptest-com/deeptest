@@ -118,7 +118,7 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	endTime := time.Now().UnixMilli()
 	ret.Time = endTime - startTime
 
-	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
+	ret.StatusCode = resp.StatusCode
 	ret.StatusContent = resp.Status
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
@@ -243,7 +243,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 		return
 	}
 
-	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
+	ret.StatusCode = resp.StatusCode
 	ret.StatusContent = resp.Status
 
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
@@ -356,7 +356,7 @@ func UpdateUrl(url string) string {
 }
 
 func wrapperErrInResp(code consts.HttpRespCode, statusContent string, content string, resp *domain.DebugResponse) {
-	resp.StatusCode = code
+	resp.StatusCode = code.Int()
 	resp.StatusContent = fmt.Sprintf("%d %s", code, statusContent)
 	resp.Content, _ = url.QueryUnescape(content)
 }

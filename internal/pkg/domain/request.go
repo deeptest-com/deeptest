@@ -8,8 +8,8 @@ type DebugResponse struct {
 	Id       uint `json:"id"`
 	InvokeId uint `json:"invokeId"`
 
-	StatusCode    consts.HttpRespCode `json:"statusCode"`
-	StatusContent string              `json:"statusContent"`
+	StatusCode    int    `json:"statusCode"`
+	StatusContent string `json:"statusContent"`
 
 	Headers []Header     `gorm:"-" json:"headers"`
 	Cookies []ExecCookie `gorm:"-" json:"cookies"`

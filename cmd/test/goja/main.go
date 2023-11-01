@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
 	"log"
@@ -50,16 +49,32 @@ func main() {
 	//fmt.Println(out)
 
 	// test functions
+	//req := registry.Enable(vm)
+	//module, err := req.Require("./cmd/test/goja/lib/funcs.js")
+	//
+	//vm.Set("math", module)
+	//
+	//script := `math.add(1, 1)`
+	//out, err := vm.RunString(script)
+	//if err != nil {
+	//	log.Println(err)
+	//}
+	//
+	//fmt.Println(out)
+
 	req := registry.Enable(vm)
-	module, err := req.Require("./cmd/test/goja/lib/funcs.js")
 
-	vm.Set("math", module)
+	out, err := vm.RunString(`
+		var m = require("./cmd/test/goja/lib/funcs.js");
+		m.add(1,2);
+    `)
 
-	script := `math.add(1, 1)`
-	out, err := vm.RunString(script)
 	if err != nil {
-		log.Println(err)
+		log.Println(err.Error())
 	}
 
-	fmt.Println(out)
+	log.Println(out)
+
+	m, err := req.Require("./m.js")
+	_, _ = m, err
 }

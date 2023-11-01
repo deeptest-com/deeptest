@@ -1038,6 +1038,10 @@ func (r *EndpointInterfaceRepo) saveEndpointGlobalParams(interfaceId uint, param
 		params[key].InterfaceId = interfaceId
 	}
 
+	if len(params) == 0 {
+		return
+	}
+
 	err = r.DB.Create(params).Error
 	return
 }

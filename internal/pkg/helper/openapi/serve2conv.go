@@ -55,6 +55,26 @@ func (s *serve2conv) components() (components openapi3.Components) {
 	}
 
 	components.SecuritySchemes = s.security()
+	components.Parameters = s.componentParameters()
+	return
+}
+
+func (s *serve2conv) componentParameters() (parameters openapi3.ParametersMap) {
+	parameters = openapi3.ParametersMap{}
+	for _, globalParam := range s.serve.GlobalParams {
+		parameter := new(openapi3.ParameterRef)
+		parameter.Value = new(openapi3.Parameter)
+		parameter.Value.Name = globalParam.Name
+		parameter.Value.In = string(globalParam.In)
+		parameter.Value.Description = globalParam.Description
+		parameter.Value.Example = globalParam.DefaultValue
+		parameter.Value.Schema = new(openapi3.SchemaRef)
+		parameter.Value.Schema.Value = new(openapi3.Schema)
+		parameter.Value.Schema.Value.Type = string(globalParam.Type)
+		parameter.Value.Schema.Value.Example = globalParam.DefaultValue
+		parameter.Value.Schema.Value.Default = globalParam.DefaultValue
+		parameters[globalParam.Name] = parameter
+	}
 	return
 }
 

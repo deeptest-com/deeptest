@@ -37,6 +37,7 @@ type EndpointService struct {
 	ServeService             *ServeService               `inject:""`
 	MessageService           *MessageService             `inject:""`
 	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
+	EnvironmentRepo          *repo.EnvironmentRepo       `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -197,11 +198,17 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
 	}
 	serve.Servers = serveServer
 
-	Securities, err := s.ServeRepo.ListSecurity(serve.ID)
+	securities, err := s.ServeRepo.ListSecurity(serve.ID)
 	if err != nil {
 		return
 	}
-	serve.Securities = Securities
+	serve.Securities = securities
+
+	globalParams, err := s.EnvironmentRepo.ListParamModel(endpoint.ProjectId)
+	if err != nil {
+		return
+	}
+	serve.GlobalParams = globalParams
 
 	//s.SchemasConv(&endpoint)
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})

@@ -195,7 +195,7 @@ func (s *serve2conv) parameters(cookies []model.EndpointInterfaceCookie, headers
 
 	for _, globalParam := range globalParams {
 		item := model.EndpointInterfaceParam{SchemaParam: model.SchemaParam{Name: globalParam.Name, Type: string(globalParam.Type), Default: globalParam.DefaultValue, IsGlobal: true}}
-		parameterRef := s.parameterRef("cookie", item)
+		parameterRef := s.parameterRef(string(globalParam.In), item)
 		parameters = append(parameters, parameterRef)
 	}
 	return

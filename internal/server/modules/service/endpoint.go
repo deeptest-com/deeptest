@@ -203,12 +203,13 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
 		return
 	}
 	serve.Securities = securities
-
-	globalParams, err := s.EnvironmentRepo.ListParamModel(endpoint.ProjectId)
-	if err != nil {
-		return
-	}
-	serve.GlobalParams = globalParams
+	/*
+		globalParams, err := s.EnvironmentRepo.ListParamModel(endpoint.ProjectId)
+		if err != nil {
+			return
+		}
+		serve.GlobalParams = globalParams
+	*/
 
 	//s.SchemasConv(&endpoint)
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})

@@ -99,8 +99,8 @@ func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po mod
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
 	// clone conditions
-	s.PreConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy)
-	s.PostConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy)
+	s.PreConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy)
+	s.PostConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy)
 
 	// save case
 	po.ProjectId = endpoint.ProjectId
@@ -127,9 +127,10 @@ func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCa
 	}
 
 	// save debug data
-	req.DebugData.UsedBy = consts.InterfaceDebug // mark src usedBy for pre/post-condition loading
+	srcDebugUsedBy := req.DebugData.UsedBy
+	req.DebugData.UsedBy = consts.CaseDebug
 	srcDebugInterfaceId := req.DebugData.DebugInterfaceId
-	debugInterface, err := s.DebugInterfaceService.SaveAs(req.DebugData, srcDebugInterfaceId)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(req.DebugData, srcDebugInterfaceId, srcDebugUsedBy)
 
 	// save case
 	s.CopyValueFromRequest(&po, req)

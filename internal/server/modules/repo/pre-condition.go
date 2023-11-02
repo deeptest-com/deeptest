@@ -51,13 +51,14 @@ func (r *PreConditionRepo) Save(condition *model.DebugPreCondition) (err error) 
 }
 
 func (r *PreConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint,
-	usedBy consts.UsedBy) (err error) {
-	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, usedBy)
+	dictUsedBy, srcUsedBy consts.UsedBy) (err error) {
+	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, srcUsedBy)
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
 		srcCondition.ID = 0
 		srcCondition.DebugInterfaceId = distDebugInterfaceId
+		srcCondition.UsedBy = dictUsedBy
 
 		r.Save(&srcCondition)
 

@@ -40,7 +40,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	resultResp, err = RequestInterface(&req.DebugData)
 
 	agentExec.SetRespValueToGoja(resultResp)
-	agentExec.ExecPostConditions(req, resultResp)
+	agentExec.ExecPostConditions(&req, resultResp)
 	agentExec.GetRespValueFromGoja()
 	PostRequest(originalReqUri, &req.DebugData)
 

@@ -331,6 +331,8 @@ const (
 	ResponseBody   CheckpointType = "responseBody"
 	Extractor      CheckpointType = "extractor"
 	Judgement      CheckpointType = "judgement"
+
+	Script CheckpointType = "script"
 )
 
 type ExtractorScope string

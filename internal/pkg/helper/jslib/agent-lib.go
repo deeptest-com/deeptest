@@ -26,7 +26,7 @@ var (
 func LoadChaiJslibs(runtime *goja.Runtime) {
 	// check method
 	err := runtime.Set("check", func(ok bool, name, msg string) {
-		log.Println(fmt.Sprintf("%t, %s, %s", ok, name, msg)) // TODO: add to assert
+		log.Println(fmt.Sprintf("%t, %s, %s", ok, name, msg))
 	})
 
 	// test method
@@ -34,12 +34,12 @@ func LoadChaiJslibs(runtime *goja.Runtime) {
 		try {
 			cb();
 		} catch(err){
-			log('TestCase \'' + name + '\' failed, ' + err + '.')
+			log('Assertion Failed [' + name + '] ' + err + '.')
 			check(false, name, err)
 			return
 		}
 
-		log('TestCase \'' + name + '\' success.')
+		log('Assertion Pass [' + name + '].')
 		check(true, name, '')
 	}`
 	_, err = runtime.RunString(script)

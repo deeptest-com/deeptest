@@ -40,7 +40,12 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 	} else if typ == consts.ConditionCategoryResponse {
 		db.Where("entity_type = ?", consts.ConditionTypeResponseDefine)
 	} else if typ == consts.ConditionCategoryResult {
-		db.Where("entity_type = ? or entity_type = ?", consts.ConditionTypeResponseDefine, consts.ConditionTypeCheckpoint)
+		db.Where("entity_type IN (?) ",
+			[]consts.ConditionType{
+				consts.ConditionTypeResponseDefine,
+				consts.ConditionTypeCheckpoint,
+				consts.ConditionTypeScript,
+			})
 	}
 
 	if usedBy != "" {
@@ -85,13 +90,15 @@ func (r *PostConditionRepo) Save(po *model.DebugPostCondition) (err error) {
 	return
 }
 
-func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint, usedBy consts.UsedBy) (err error) {
-	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll, usedBy)
+func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint,
+	dictUsedBy, srcUsedBy consts.UsedBy) (err error) {
+	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll, srcUsedBy)
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
 		srcCondition.ID = 0
 		srcCondition.DebugInterfaceId = distDebugInterfaceId
+		srcCondition.UsedBy = dictUsedBy
 
 		r.Save(&srcCondition)
 

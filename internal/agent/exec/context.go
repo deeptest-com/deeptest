@@ -21,8 +21,6 @@ var (
 	CurrScenarioProcessorId = uint(0)
 	CurrDebugInterfaceId    = uint(0)
 
-	//CachedShareVarByProcessorForRead map[uint]domain.VarKeyValuePair
-
 	ScopedVariables = map[uint][]domain.ExecVariable{} // for scenario and debug
 	ScopedCookies   = map[uint][]domain.ExecCookie{}   // only for scenario
 	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario (processId -> ancestorProcessIds)

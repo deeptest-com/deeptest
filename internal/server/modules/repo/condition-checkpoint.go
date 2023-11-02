@@ -138,3 +138,16 @@ func (r *CheckpointRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogCh
 
 	return
 }
+
+func (r *CheckpointRepo) GetLogFromScriptAssert(conditionId, invokeId uint) (ret []model.ExecLogCheckpoint, err error) {
+	err = r.DB.
+		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
+		Where("NOT deleted").
+		Find(&ret).Error
+
+	for index, _ := range ret {
+		ret[index].ConditionEntityType = consts.ConditionTypeCheckpoint
+	}
+
+	return
+}

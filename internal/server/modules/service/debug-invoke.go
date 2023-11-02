@@ -160,20 +160,20 @@ func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err
 		typ := condition.EntityType
 		var log interface{}
 
-		if typ == consts.ConditionTypeExtractor {
-			log, _ = s.ExtractorRepo.GetLog(condition.ID, uint(invokeId))
-
-		} else if typ == consts.ConditionTypeCheckpoint {
+		if typ == consts.ConditionTypeCheckpoint {
 			log, _ = s.CheckpointRepo.GetLog(condition.ID, uint(invokeId))
-
-		} else if typ == consts.ConditionTypeScript {
-			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
+			results = append(results, log)
 
 		} else if typ == consts.ConditionTypeResponseDefine {
 			log, _ = s.ResponseDefineRepo.GetLog(condition.ID, uint(invokeId))
-		}
+			results = append(results, log)
 
-		results = append(results, log)
+		} else if typ == consts.ConditionTypeScript {
+			logs, _ := s.CheckpointRepo.GetLogFromScriptAssert(condition.ID, uint(invokeId))
+			for _, item := range logs {
+				results = append(results, item)
+			}
+		}
 	}
 
 	return

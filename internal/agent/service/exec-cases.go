@@ -54,7 +54,7 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 		}
 
 		agentExec.SetRespValueToGoja(resultResp)
-		statusPostCondition, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp)
+		statusPostCondition, _ := agentExec.ExecPostConditions(&caseInterfaceExecObj, resultResp)
 		agentExec.GetRespValueFromGoja()
 		PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
 

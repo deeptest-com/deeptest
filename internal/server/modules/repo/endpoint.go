@@ -294,7 +294,8 @@ func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint,
 	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
 	endpoint.PathParams, _ = r.GetEndpointPathParams(id)
 	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
-	
+	endpoint.GlobalParams, _ = r.EnvironmentRepo.ListParamModel(endpoint.ProjectId)
+
 	return
 }
 

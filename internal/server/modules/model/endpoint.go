@@ -30,6 +30,8 @@ type Endpoint struct {
 
 	AdvancedMockDisabled bool `json:"advancedMockDisabled"`
 	ScriptMockDisabled   bool `json:"scriptMockDisabled"`
+
+	GlobalParams []EnvironmentParam `gorm:"-" json:"globalParams"`
 }
 
 func (Endpoint) TableName() string {

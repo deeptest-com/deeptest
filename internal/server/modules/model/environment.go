@@ -22,7 +22,7 @@ type EnvironmentVar struct {
 type EnvironmentParam struct {
 	BaseModel
 	domain.GlobalParam
-
+	Disabled    bool   `json:"disabled"`
 	Description string `json:"description"`
 	ProjectId   uint   `json:"projectId"`
 }

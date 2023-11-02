@@ -3,6 +3,7 @@ package service
 import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
 
@@ -68,18 +69,27 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userId uint) 
 
 	//合并全局参数
 	globalParams = agentExec.MergeGlobalParams(globalParams, debugData.GlobalParams)
+	endpointInterfaceGlobalParams, _ := s.EndpointInterfaceRepo.GetGlobalParams(debugData.EndpointInterfaceId, debugData.ProjectId)
+	globalParams = s.MergeGlobalParams(endpointInterfaceGlobalParams, globalParams)
 
 	return
 }
 
-func (s *DebugSceneService) MergeGlobalParams(globalParams []domain.GlobalParam, selfGlobalParam []domain.GlobalParam) (ret []domain.GlobalParam) {
-	ret = globalParams
-	for key, globalParam := range ret {
-		for _, param := range selfGlobalParam {
-			if param.Name == globalParam.Name && param.In == globalParam.In {
-				ret[key].Disabled = param.Disabled
+func (s *DebugSceneService) MergeGlobalParams(endpointInterfaceGlobalParams []model.EndpointInterfaceGlobalParam, globalParams []domain.GlobalParam) (ret []domain.GlobalParam) {
+
+	for _, item := range globalParams {
+		b := true
+		for _, param := range endpointInterfaceGlobalParams {
+			if param.Name == item.Name && param.In == item.In && param.Disabled {
+				b = false
+				break
 			}
 		}
+
+		if b {
+			ret = append(ret, item)
+		}
+
 	}
 
 	return

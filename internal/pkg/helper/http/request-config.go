@@ -96,7 +96,7 @@ func dealwithQueryParams(req domain.BaseRequest, httpReq *http.Request) {
 	for _, p := range req.QueryParams {
 		name := p.Name
 
-		if name != "" && queryParams.Get(name) == "" {
+		if !p.Disabled && name != "" && queryParams.Get(name) == "" {
 			queryParams.Add(name, p.Value)
 		}
 	}
@@ -109,7 +109,7 @@ func dealwithHeader(req domain.BaseRequest, httpReq *http.Request) {
 	httpReq.Header.Set("Origin", "DEEPTEST")
 
 	for _, h := range req.Headers {
-		if h.Name != "" && httpReq.Header.Get(h.Name) == "" {
+		if !h.Disabled && h.Name != "" && httpReq.Header.Get(h.Name) == "" {
 			httpReq.Header.Set(h.Name, h.Value)
 		}
 	}
@@ -122,7 +122,7 @@ func dealwithCookie(req domain.BaseRequest, httpReq *http.Request) {
 	httpReq.Header.Set("Origin", "DEEPTEST")
 
 	for _, h := range req.Headers {
-		if h.Name != "" && httpReq.Header.Get(h.Name) == "" {
+		if !h.Disabled && h.Name != "" && httpReq.Header.Get(h.Name) == "" {
 			httpReq.Header.Set(h.Name, h.Value)
 		}
 	}

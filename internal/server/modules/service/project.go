@@ -1,19 +1,25 @@
 package service
 
 import (
+	"encoding/json"
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 type ProjectService struct {
-	ProjectRepo  *repo.ProjectRepo    `inject:""`
-	ServeRepo    *repo.ServeRepo      `inject:""`
-	SampleSource *source.SampleSource `inject:""`
-	UserRepo     *repo.UserRepo       `inject:""`
+	ProjectRepo     *repo.ProjectRepo     `inject:""`
+	ServeRepo       *repo.ServeRepo       `inject:""`
+	SampleSource    *source.SampleSource  `inject:""`
+	UserRepo        *repo.UserRepo        `inject:""`
+	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
+	MessageRepo     *repo.MessageRepo     `inject:""`
+	MessageService  *MessageService       `inject:""`
 }
 
 func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _domain.PageData, err error) {
@@ -91,7 +97,67 @@ func (s *ProjectService) GetCurrProjectByUser(userId uint) (currProject model.Pr
 }
 
 func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
-	err = s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
+	//如果已经有审批记录，就不创建新的了
+	var b bool
+	b, err = s.ProjectRepo.IfProjectMember(req.ApplyUserId, req.ProjectId)
+	if err != nil || b {
+		return
+	}
+	result, _ := s.ProjectRepo.GetAuditByItem(req.ProjectId, req.ApplyUserId, []consts.AuditStatus{consts.Init})
+	if result.ID != 0 {
+		return
+		//return fmt.Errorf("您已提交了申请，请联系审批人审批")
+	}
+	auditId, err := s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
+	if err != nil {
+		return
+	}
+
+	go func() {
+		err = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
+		if err != nil {
+			logUtils.Infof("申请加入项目发送消息失败，err:%+v", err)
+		}
+	}()
+
+	return
+}
+
+func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleName consts.RoleType) (err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			err = fmt.Errorf("发送消息异常")
+		}
+	}()
+
+	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
+	messageContentByte, _ := json.Marshal(messageContent)
+
+	adminRole, err := s.ProjectRoleRepo.FindByName(consts.Admin)
+	if err != nil {
+		return
+	}
+
+	messageReq := v1.MessageReq{
+		MessageBase: v1.MessageBase{
+			MessageSource: consts.MessageSourceJoinProject,
+			Content:       string(messageContentByte),
+			ReceiverRange: 3,
+			SenderId:      userId,
+			ReceiverId:    adminRole.ID,
+			SendStatus:    consts.MessageCreated,
+			ServiceType:   consts.ServiceTypeApproval,
+			BusinessId:    auditId,
+		},
+	}
+	messageId, _ := s.MessageService.Create(messageReq)
+	message, err := s.MessageRepo.Get(messageId)
+	if err != nil {
+		return
+	}
+
+	_, err = s.MessageService.SendMessageToMcs(message)
+
 	return
 }
 
@@ -101,6 +167,11 @@ func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) 
 	record, err = s.ProjectRepo.GetAudit(id)
 	if err != nil {
 		return err
+	}
+
+	//防止重复审批
+	if record.Status != consts.Init {
+		return
 	}
 
 	err = s.ProjectRepo.UpdateAuditStatus(id, auditUserId, status)

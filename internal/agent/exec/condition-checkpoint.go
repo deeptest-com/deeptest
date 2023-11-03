@@ -19,7 +19,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 		checkpoint.ActualResult = fmt.Sprintf("%d", resp.StatusCode)
 
-		if checkpoint.Operator == consts.Equal && resp.StatusCode == expectCode {
+		if checkpoint.Operator == consts.Equal && resp.StatusCode == consts.HttpRespCode(expectCode) {
 			checkpoint.ResultStatus = consts.Pass
 		} else {
 			checkpoint.ResultStatus = consts.Fail

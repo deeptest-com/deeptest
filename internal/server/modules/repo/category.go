@@ -229,6 +229,32 @@ func (r *CategoryRepo) GetByItem(parentId uint, typ serverConsts.CategoryDiscrim
 
 }
 
+func (r *CategoryRepo) GetDetail(req model.Category) (res model.Category, err error) {
+	coon := r.DB.Model(&model.Category{})
+	if req.Name != "" {
+		coon = coon.Where("name = ?", req.Name)
+	}
+	if req.ProjectId != 0 {
+		coon = coon.Where("project_id = ?", req.ProjectId)
+	}
+	if req.ServeId != 0 {
+		coon = coon.Where("serve_id = ?", req.ServeId)
+	}
+	if req.Type != "" {
+		coon = coon.Where("type = ?", req.Type)
+	}
+	if req.SourceType != 0 {
+		coon = coon.Where("source_type = ?", req.SourceType)
+	}
+	if req.ParentId != 0 {
+		coon = coon.Where("parent_id = ?", req.ParentId)
+	}
+
+	err = coon.Order("ordr DESC").First(&res).Error
+
+	return
+
+}
 func (r *CategoryRepo) GetChild(categories, result []*model.Category, parentId int) []*model.Category {
 	child := make([]*model.Category, 0)
 	for _, item := range categories {
@@ -253,5 +279,15 @@ func (r *CategoryRepo) GetAllChild(typ serverConsts.CategoryDiscriminator, proje
 	}
 
 	child = r.GetChild(pos, child, parentId)
+	return
+}
+
+func (r *CategoryRepo) GetRootNode(projectId uint, typ serverConsts.CategoryDiscriminator) (node model.Category, err error) {
+	err = r.DB.Model(&model.Category{}).
+		Where("project_id = ?", projectId).
+		Where("type = ?", typ).
+		Where("name = ? AND NOT deleted", "分类").
+		First(&node).Error
+
 	return
 }

@@ -123,7 +123,7 @@ func getJslibsFromServer(projectId uint, serverUrl, token string) (libs []Jslib)
 		return
 	}
 
-	if resp.StatusCode != consts.OK.Int() {
+	if resp.StatusCode != consts.OK {
 		logUtils.Infof("get Jslibs obj failed, response %v", resp)
 		return
 	}

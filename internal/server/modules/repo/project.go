@@ -686,8 +686,9 @@ func (r *ProjectRepo) UpdateAuditStatus(id, auditUserId uint, status consts.Audi
 	return
 }
 
-func (r *ProjectRepo) SaveAudit(audit model.ProjectMemberAudit) (err error) {
+func (r *ProjectRepo) SaveAudit(audit model.ProjectMemberAudit) (auditId uint, err error) {
 	err = r.DB.Save(&audit).Error
+	auditId = audit.ID
 	return
 }
 
@@ -1026,5 +1027,37 @@ func (r *ProjectRepo) GetByShortName(shortName string) (project model.Project, e
 		Where("short_name = ? and not deleted", shortName).
 		First(&project).Error
 
+	return
+}
+
+func (r *ProjectRepo) GetUserIdsByProjectAnRole(projectId, roleId uint) (projectMembers []model.ProjectMember, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).
+		Where("project_id = ?", projectId).
+		Where("project_role_id = ?", roleId).
+		Find(&projectMembers).Error
+	return
+}
+
+func (r *ProjectRepo) GetImAccountsByProjectAndRole(projectId, roleId uint, exceptUserName string) (imAccounts []string, err error) {
+	conn := r.DB.Model(&model.ProjectMember{}).
+		Joins("left join sys_user u on biz_project_member.user_id=u.id").
+		Select("u.im_account")
+	if projectId != 0 {
+		conn = conn.Where("biz_project_member.project_id = ?", projectId)
+	}
+	if roleId != 0 {
+		conn = conn.Where("biz_project_member.project_role_id = ?", roleId)
+	}
+	if exceptUserName != "" {
+		conn = conn.Where("u.username != ?", exceptUserName)
+	}
+	err = conn.Where("not biz_project_member.deleted and not u.deleted").Find(&imAccounts).Error
+	return
+}
+
+func (r *ProjectRepo) GetAuditByItem(projectId, ApplyUserId uint, auditStatus []consts.AuditStatus) (ret model.ProjectMemberAudit, err error) {
+	err = r.DB.Model(&model.ProjectMemberAudit{}).
+		Where("project_id = ? and apply_user_id = ? and status in ? ", projectId, ApplyUserId, auditStatus).
+		Last(&ret).Error
 	return
 }

@@ -83,6 +83,7 @@ func (s *LdapService) LdapUserInfo(req v1.LoginReq) (userBase v1.UserBase, err e
 			userBase.Name = entry.GetAttributeValue("displayName")
 			userBase.Username = entry.GetAttributeValue("uid")
 			userBase.Email = entry.GetAttributeValue("mail")
+			userBase.ImAccount =  entry.GetAttributeValue("title") //企业微信账号
 			for _, attribute := range entry.Attributes {
 				fmt.Printf("%s: %s\n", attribute.Name, attribute.Values)
 			}

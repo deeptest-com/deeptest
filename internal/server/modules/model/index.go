@@ -93,6 +93,7 @@ var (
 		&EndpointSnapshot{},
 		&EndpointTag{},
 		&EndpointTagRel{},
+		&EndpointInterfaceGlobalParam{},
 
 		&Serve{},
 		&ServeServer{},
@@ -130,5 +131,8 @@ var (
 		&SysJslib{},
 		&SysAgent{},
 		&ProjectUserServer{},
+		&ThirdPartySync{},
+
+		&DebugInterfaceGlobalParam{},
 	}
 )

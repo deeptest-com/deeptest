@@ -119,6 +119,7 @@ type EnvironmentParamsReq struct {
 	Cookie    []EnvironmentParam `json:"cookie"`
 	Query     []EnvironmentParam `json:"query"`
 	Body      []EnvironmentParam `json:"body"`
+	Path      []EnvironmentParam `json:"path"`
 }
 
 type EnvironmentIdsReq []uint

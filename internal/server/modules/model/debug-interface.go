@@ -1,6 +1,9 @@
 package model
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+)
 
 type DebugInterface struct {
 	BaseModel
@@ -34,6 +37,8 @@ type DebugInterface struct {
 
 	InterfaceExtractors  []DebugConditionExtractor  `gorm:"-" json:"interfaceExtractors"`
 	InterfaceCheckpoints []DebugConditionCheckpoint `gorm:"-" json:"interfaceCheckpoints"`
+
+	GlobalParams []DebugInterfaceGlobalParam `gorm:"-" json:"globalParams"`
 }
 
 func (DebugInterface) TableName() string {
@@ -120,4 +125,14 @@ type DebugInterfaceApiKey struct {
 
 func (DebugInterfaceApiKey) TableName() string {
 	return "biz_debug_interface_apikey"
+}
+
+type DebugInterfaceGlobalParam struct {
+	domain.GlobalParam
+	//BaseModel
+	InterfaceId uint `json:"interfaceId"`
+}
+
+func (DebugInterfaceGlobalParam) TableName() string {
+	return "biz_debug_interface_global_param"
 }

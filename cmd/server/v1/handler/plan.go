@@ -68,7 +68,7 @@ func (c *PlanCtrl) List(ctx iris.Context) {
 // @Param 	currProjectId	query	int		true	"当前项目ID"
 // @Param 	id				path	int		true	"计划ID"
 // @Param 	detail			query	bool	true	"是否需要详情"
-// @success	200	{object}	_domain.Response{data=serverDomain.PlanAndReportDetail}
+// @success	200	{object}	_domain.Response{data=model.Plan}
 // @Router	/api/v1/plans/{id}	[get]
 func (c *PlanCtrl) Get(ctx iris.Context) {
 	var req _domain.ReqId

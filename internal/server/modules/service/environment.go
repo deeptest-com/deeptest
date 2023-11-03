@@ -230,6 +230,9 @@ func (s *EnvironmentService) SaveParams(req v1.EnvironmentParamsReq) (err error)
 	if req.Body != nil {
 		params = append(params, s.getParams(req.ProjectId, "body", req.Body)...)
 	}
+	if req.Path != nil {
+		params = append(params, s.getParams(req.ProjectId, "path", req.Path)...)
+	}
 	err = s.EnvironmentRepo.SaveParams(req.ProjectId, params)
 	return
 }

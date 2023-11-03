@@ -1,6 +1,8 @@
 package model
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type Endpoint struct {
 	BaseModel
@@ -28,6 +30,8 @@ type Endpoint struct {
 
 	AdvancedMockDisabled bool `json:"advancedMockDisabled"`
 	ScriptMockDisabled   bool `json:"scriptMockDisabled"`
+
+	GlobalParams []EnvironmentParam `gorm:"-" json:"globalParams"`
 }
 
 func (Endpoint) TableName() string {

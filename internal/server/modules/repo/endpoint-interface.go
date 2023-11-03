@@ -9,6 +9,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 	"strings"
@@ -20,6 +21,7 @@ type EndpointInterfaceRepo struct {
 
 	EndpointRepo       *EndpointRepo       `inject:""`
 	DebugInterfaceRepo *DebugInterfaceRepo `inject:""`
+	EnvironmentRepo    *EnvironmentRepo    `inject:""`
 }
 
 func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (ret _domain.PageData, err error) {
@@ -152,6 +154,7 @@ func (r *EndpointInterfaceRepo) GetDetail(interfId uint) (interf model.EndpointI
 		interf.Cookies, _ = r.ListCookies(interfId)
 		interf.RequestBody, _ = r.ListRequestBody(interfId)
 		interf.ResponseBodies, _ = r.ListResponseBodies(interfId)
+		interf.GlobalParams, _ = r.GetGlobalParams(interfId, interf.ProjectId)
 	}
 	return
 }
@@ -359,6 +362,11 @@ func (r *EndpointInterfaceRepo) SaveInterfaces(interf *model.EndpointInterface) 
 			return err
 		}
 
+		err = r.saveEndpointGlobalParams(interf.ID, interf.GlobalParams)
+		if err != nil {
+			return err
+		}
+
 		return err
 	})
 
@@ -488,6 +496,7 @@ func (r *EndpointInterfaceRepo) ListByEndpointId(endpointId uint, version string
 		interfaces[key].Cookies, _ = r.ListCookies(interf.ID)
 		interfaces[key].RequestBody, _ = r.ListRequestBody(interf.ID)
 		interfaces[key].ResponseBodies, _ = r.ListResponseBodies(interf.ID)
+		interfaces[key].GlobalParams, _ = r.GetGlobalParams(interf.ID, interf.ProjectId)
 		//interfaces[key].ResponseCodes = strings.Split(interf.ResponseCodes.(string), ",")
 	}
 
@@ -650,12 +659,16 @@ func (r *EndpointInterfaceRepo) GetInterfaces(endpointIds []uint, needDetail boo
 	var responseBodies map[uint][]model.EndpointInterfaceResponseBody
 	responseBodies, err = r.GetResponseBodies(interfaceIds)
 
+	var globalParams map[uint][]model.EndpointInterfaceGlobalParam
+	globalParams, err = r.GetMapGlobalParams(interfaceIds)
+
 	for key, item := range result {
 		result[key].Params = params[item.ID]
 		result[key].Cookies = cookies[item.ID]
 		result[key].Headers = headers[item.ID]
 		result[key].RequestBody = requestBodies[item.ID]
 		result[key].ResponseBodies = responseBodies[item.ID]
+		result[key].GlobalParams = globalParams[item.ID]
 		interfaces[item.EndpointId] = append(interfaces[item.EndpointId], result[key])
 	}
 
@@ -1013,4 +1026,69 @@ func (r *EndpointInterfaceRepo) AddResponseCode(interfaceId uint, code string) (
 
 	return
 
+}
+
+//保存路径参数
+func (r *EndpointInterfaceRepo) saveEndpointGlobalParams(interfaceId uint, params []model.EndpointInterfaceGlobalParam) (err error) {
+	err = r.removeEndpointGlobalParams(interfaceId)
+	if err != nil {
+		return
+	}
+	for key, _ := range params {
+		params[key].InterfaceId = interfaceId
+	}
+
+	if len(params) == 0 {
+		return
+	}
+
+	err = r.DB.Create(params).Error
+	return
+}
+
+func (r *EndpointInterfaceRepo) removeEndpointGlobalParams(interfaceId uint) (err error) {
+	err = r.DB.
+		Where("interface_id = ?", interfaceId).
+		Delete(&model.EndpointInterfaceGlobalParam{}, "").Error
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) GetGlobalParams(id, projectId uint) (ret []model.EndpointInterfaceGlobalParam, err error) {
+	var po []model.EndpointInterfaceGlobalParam
+	err = r.DB.
+		Where("interface_id = ?", id).
+		Find(&po).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	if params, err := r.EnvironmentRepo.ListParamModel(projectId); err == nil {
+		for _, param := range params {
+			var temp model.EndpointInterfaceGlobalParam
+			copier.CopyWithOption(&temp, &param, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+			for _, item := range po {
+				if param.Name == item.Name && param.In == item.In {
+					temp.Disabled = item.Disabled
+				}
+			}
+			ret = append(ret, temp)
+		}
+	}
+
+	return
+
+}
+
+func (r *EndpointInterfaceRepo) GetMapGlobalParams(interfaceIds []uint) (params map[uint][]model.EndpointInterfaceGlobalParam, err error) {
+	var result []model.EndpointInterfaceGlobalParam
+	err = r.DB.Where("interface_id in ?", interfaceIds).Find(&result).Error
+
+	params = make(map[uint][]model.EndpointInterfaceGlobalParam)
+	for key, item := range result {
+		params[item.InterfaceId] = append(params[item.InterfaceId], result[key])
+	}
+
+	return
 }

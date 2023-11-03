@@ -65,6 +65,7 @@ type InterfaceResp struct {
 	//BearerToken domain.BearerToken `gorm:"-" json:"bearerToken"`
 	//OAuth20     domain.OAuth20     `gorm:"-" json:"oAuth20"`
 	//ApiKey      domain.ApiKey      `gorm:"-" json:"apiKey"`
+	GlobalParams []domain.GlobalParam `json:"globalParams"`
 }
 
 type InterfaceYapiReq struct {

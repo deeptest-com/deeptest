@@ -78,7 +78,7 @@ func genBodyFormUrlencoded(req domain.BaseRequest) (ret string) {
 		mp[key] = true
 	}
 
-	formData.Encode()
+	ret = formData.Encode()
 
 	return
 }

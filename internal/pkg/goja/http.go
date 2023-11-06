@@ -5,6 +5,7 @@ import (
 	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	"github.com/dop251/goja"
 	"log"
 	"reflect"
@@ -23,83 +24,121 @@ func GenRequest(data goja.Value, vm *goja.Runtime) (req domain.BaseRequest) {
 			Url:    dataObj.(string),
 		}
 
-	} else {
-		log.Println("url is ", data.ToObject(vm).Get("url"))
+		return
 
-		dataMap := dataObj.(map[string]interface{})
+	}
+	log.Println("url is ", data.ToObject(vm).Get("url"))
 
-		paramsObj := dataMap["params"]
-		if paramsObj == nil {
-			paramsObj = map[string]interface{}{}
-		}
-		paramsMap := paramsObj.(map[string]interface{})
+	dataMap := dataObj.(map[string]interface{})
 
-		headersObj := dataMap["headers"]
-		if headersObj == nil {
-			headersObj = map[string]interface{}{}
-		}
-		headersMap := headersObj.(map[string]interface{})
+	paramsObj := dataMap["params"]
+	if paramsObj == nil {
+		paramsObj = map[string]interface{}{}
+	}
+	paramsMap := paramsObj.(map[string]interface{})
 
-		var authType consts.AuthorType
-		basicAuthObj := dataMap["basicAuth"]
-		basicAuthMap := map[string]interface{}{}
-		if basicAuthObj != nil {
-			authType = consts.BasicAuth
-			basicAuthMap = basicAuthObj.(map[string]interface{})
-		}
+	headersObj := dataMap["headers"]
+	if headersObj == nil {
+		headersObj = map[string]interface{}{}
+	}
+	headersMap := headersObj.(map[string]interface{})
 
-		bearerTokenObj := dataMap["bearerToken"]
-		bearerTokenMap := map[string]interface{}{}
-		if bearerTokenObj != nil {
-			authType = consts.BearerToken
-			bearerTokenMap = bearerTokenObj.(map[string]interface{})
-		}
+	var authType consts.AuthorType
+	basicAuthObj := dataMap["basicAuth"]
+	basicAuthMap := map[string]interface{}{}
+	if basicAuthObj != nil {
+		authType = consts.BasicAuth
+		basicAuthMap = basicAuthObj.(map[string]interface{})
+	}
 
-		contentType := consts.HttpContentType(valueUtils.InterfaceToStr(headersMap["Content-Type"]))
-		if contentType == "" {
-			contentType = consts.ContentTypeJSON
-		}
+	bearerTokenObj := dataMap["bearerToken"]
+	bearerTokenMap := map[string]interface{}{}
+	if bearerTokenObj != nil {
+		authType = consts.BearerToken
+		bearerTokenMap = bearerTokenObj.(map[string]interface{})
+	}
 
-		bodyBytes, _ := json.Marshal(dataMap["body"])
+	contentType := consts.HttpContentType(valueUtils.InterfaceToStr(headersMap["Content-Type"]))
+	if contentType == "" {
+		contentType = consts.ContentTypeJSON
+	}
 
-		req = domain.BaseRequest{
-			Method:   consts.HttpMethod(strings.ToUpper(valueUtils.InterfaceToStr(dataMap["method"]))),
-			Url:      valueUtils.InterfaceToStr(dataMap["url"]),
-			Body:     string(bodyBytes),
-			BodyType: contentType,
-		}
+	var bodyBytes []byte
+	var bodyFormData []domain.BodyFormDataItem
+	var bodyFormUrlEncodedData []domain.BodyFormUrlEncodedItem
 
-		if paramsObj != nil {
-			for key, val := range paramsMap {
-				param := domain.Param{
-					Name:  key,
-					Value: valueUtils.InterfaceToStr(val),
+	if httpHelper.IsJsonBody(contentType) {
+		bodyBytes, _ = json.Marshal(dataMap["body"])
+
+	} else if httpHelper.IsFormBody(contentType) || httpHelper.IsFormUrlencodedBody(contentType) {
+		formItemsObject := dataMap["formItems"]
+		if formItemsObject != nil {
+			formItemsMap := formItemsObject.(map[string]interface{})
+
+			for key, val := range formItemsMap {
+				if httpHelper.IsFormBody(contentType) {
+					bodyFormData = append(bodyFormData, domain.BodyFormDataItem{
+						Name:  key,
+						Value: valueUtils.InterfaceToStr(val),
+						Type:  consts.FormDataTypeText,
+					})
+				} else if httpHelper.IsFormUrlencodedBody(contentType) {
+					bodyFormUrlEncodedData = append(bodyFormUrlEncodedData, domain.BodyFormUrlEncodedItem{
+						Name:  key,
+						Value: valueUtils.InterfaceToStr(val),
+					})
 				}
-				req.QueryParams = append(req.QueryParams, param)
 			}
 		}
+	}
 
-		if headersObj != nil {
-			for key, val := range headersMap {
-				header := domain.Header{
-					Name:  key,
-					Value: valueUtils.InterfaceToStr(val),
-				}
-				req.Headers = append(req.Headers, header)
-			}
-		}
+	// create request
+	req = domain.BaseRequest{
+		Method: consts.HttpMethod(strings.ToUpper(valueUtils.InterfaceToStr(dataMap["method"]))),
+		Url:    valueUtils.InterfaceToStr(dataMap["url"]),
 
-		req.AuthorizationType = authType
-		if basicAuthObj != nil {
-			req.BasicAuth = domain.BasicAuth{
-				Username: valueUtils.InterfaceToStr(basicAuthMap["username"]),
-				Password: valueUtils.InterfaceToStr(basicAuthMap["password"]),
+		BodyType: contentType,
+		Body:     string(bodyBytes),
+	}
+
+	if paramsObj != nil {
+		for key, val := range paramsMap {
+			param := domain.Param{
+				Name:  key,
+				Value: valueUtils.InterfaceToStr(val),
 			}
+			req.QueryParams = append(req.QueryParams, param)
 		}
-		if bearerTokenObj != nil {
-			req.BearerToken = domain.BearerToken{
-				Token: valueUtils.InterfaceToStr(bearerTokenMap["token"]),
+	}
+
+	if headersObj != nil {
+		for key, val := range headersMap {
+			header := domain.Header{
+				Name:  key,
+				Value: valueUtils.InterfaceToStr(val),
 			}
+			req.Headers = append(req.Headers, header)
+		}
+	}
+
+	req.AuthorizationType = authType
+	if basicAuthObj != nil {
+		req.BasicAuth = domain.BasicAuth{
+			Username: valueUtils.InterfaceToStr(basicAuthMap["username"]),
+			Password: valueUtils.InterfaceToStr(basicAuthMap["password"]),
+		}
+	}
+	if bearerTokenObj != nil {
+		req.BearerToken = domain.BearerToken{
+			Token: valueUtils.InterfaceToStr(bearerTokenMap["token"]),
+		}
+	}
+
+	if bodyFormData != nil || bodyFormUrlEncodedData != nil {
+		if httpHelper.IsFormBody(contentType) {
+			req.BodyFormData = bodyFormData
+		} else if httpHelper.IsFormUrlencodedBody(contentType) {
+			req.BodyFormUrlencoded = bodyFormUrlEncodedData
 		}
 	}
 

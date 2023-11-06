@@ -177,7 +177,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	var dataBytes []byte
 
 	formDataContentType := ""
-	if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
+	if IsFormBody(bodyType) {
 		bodyFormData := genBodyFormData(req)
 
 		formDataWriter, _ := MultipartEncoder(bodyFormData)
@@ -185,11 +185,11 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 		dataBytes = formDataWriter.Payload.Bytes()
 
-	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormUrlencoded.String()) {
+	} else if IsFormUrlencodedBody(bodyType) {
 		bodyFormUrlencoded := genBodyFormUrlencoded(req)
 		dataBytes = []byte(bodyFormUrlencoded)
 
-	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
+	} else if IsJsonBody(bodyType) {
 		// post json
 		dataBytes = []byte(reqBody)
 		if err != nil {

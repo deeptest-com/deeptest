@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
@@ -16,13 +17,14 @@ type EndpointCaseAlternativeCtrl struct {
 
 // LoadAlternative
 func (c *EndpointCaseAlternativeCtrl) LoadAlternative(ctx iris.Context) {
-	baseId, err := ctx.URLParamInt("baseId")
+	endpointId, err := ctx.URLParamInt("endpointId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
+	method := ctx.URLParam("method")
 
-	root, err := c.EndpointCaseAlternativeService.LoadAlternative(uint(baseId))
+	root, err := c.EndpointCaseAlternativeService.LoadAlternative(uint(endpointId), consts.HttpMethod(method))
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: root})
 }

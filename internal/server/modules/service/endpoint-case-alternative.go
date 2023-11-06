@@ -38,7 +38,7 @@ type EndpointCaseAlternativeService struct {
 	SceneService    *SceneService         `inject:""`
 }
 
-func (s *EndpointCaseAlternativeService) LoadAlternative(baseId uint) (
+func (s *EndpointCaseAlternativeService) LoadAlternative(endpointId uint, method consts.HttpMethod) (
 	root casesHelper.AlternativeCase, err error) {
 
 	root.Title = "备选用例"
@@ -47,9 +47,9 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(baseId uint) (
 	root.Slots = iris.Map{"icon": "icon"}
 	root.IsDir = true
 
-	casePo, _ := s.EndpointCaseRepo.Get(baseId)
+	//casePo, _ := s.EndpointCaseRepo.Get(baseId)
 
-	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(casePo.EndpointId, casePo.Method)
+	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(endpointId, method)
 	if endpointInterfaceId == 0 {
 		return
 	}
@@ -73,7 +73,7 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(baseId uint) (
 
 	apiPathItem, _ := casesHelper.GetApiPathItem(doc3)
 
-	apiOperation, err := casesHelper.GetApiOperation(casePo.Method, apiPathItem)
+	apiOperation, err := casesHelper.GetApiOperation(method, apiPathItem)
 	if err != nil || apiOperation == nil {
 		return
 	}

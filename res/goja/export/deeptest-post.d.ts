@@ -73,6 +73,7 @@ declare global {
 
         request: Request,
         response: Response,
+        sendRequest: (urlOrConfig: string | object, callback: (error, response) => void) => void,
 
         test: (testcase: string, func: Function) => void,
         expect: Chai.ExpectStatic,

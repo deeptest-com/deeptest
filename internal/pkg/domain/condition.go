@@ -41,8 +41,10 @@ func (condition ExtractorBase) GetType() consts.ConditionType {
 type CheckpointBase struct {
 	Type consts.CheckpointType `json:"type"`
 
-	Expression        string `json:"expression"`
-	ExtractorVariable string `json:"extractorVariable"`
+	Expression          string               `json:"expression"`
+	ExtractorVariable   string               `json:"extractorVariable"`
+	ExtractorType       consts.ExtractorType `json:"extractorType"`
+	ExtractorExpression string               `json:"extractorExpression"`
 
 	Operator     consts.ComparisonOperator `json:"operator"`
 	Value        string                    `json:"value"`

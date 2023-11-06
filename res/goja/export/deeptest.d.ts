@@ -71,6 +71,8 @@ declare global {
 
         request: Request,
         response: Response,
+
+        sendRequest: (urlOrConfig: string | object, callback: (error, response) => void) => void,
     }
 
     const log : (obj: any) => {}

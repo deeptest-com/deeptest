@@ -47,7 +47,8 @@ func (r *CheckpointRepo) Save(checkpoint *model.DebugConditionCheckpoint) (err e
 	return
 }
 func (r *CheckpointRepo) UpdateDesc(po *model.DebugConditionCheckpoint) (err error) {
-	desc := checkpointHelpper.GenDesc(po.Type, po.Operator, po.Value, po.Expression, po.ExtractorVariable)
+	desc := checkpointHelpper.GenDesc(po.Type, po.Operator, po.Value, po.Expression,
+		po.ExtractorVariable, po.ExtractorType, po.ExtractorExpression)
 	values := map[string]interface{}{
 		"desc": desc,
 	}

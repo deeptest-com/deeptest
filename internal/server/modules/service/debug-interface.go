@@ -236,6 +236,7 @@ func (s *DebugInterfaceService) CopyDebugDataPropsFromPo(debugData *domain.Debug
 	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
 	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
 	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+	debugData.Cookies = append(debugData.Cookies, domain.ExecCookie{Name: "", Value: ""})
 
 	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})

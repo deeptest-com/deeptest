@@ -32,10 +32,10 @@ type AccountService struct {
 func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 	var Id uint
 	var userBase v1.UserBase
-
-	if config.CONFIG.Ldap && req.Username != "admin" {
+	var user model.SysUser
+	user, _ = s.UserRepo.GetByUserName(req.Username)
+	if config.CONFIG.Ldap && req.Username != "admin" && !user.Type {
 		userBase, err = s.LdapService.LdapUserInfo(req)
-
 		if err != nil {
 			return
 		}

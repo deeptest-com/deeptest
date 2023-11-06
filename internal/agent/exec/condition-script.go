@@ -15,6 +15,7 @@ import (
 	"github.com/dop251/goja_nodejs/require"
 	"log"
 	"path/filepath"
+	"reflect"
 	"strings"
 )
 
@@ -183,8 +184,19 @@ func defineJsFuncs() (err error) {
 
 	// log
 	err = execVm.JsRuntime.Set("log", func(value interface{}) {
-		bytes, _ := json.Marshal(value)
-		logs = append(logs, string(bytes))
+		if value == nil {
+			logs = append(logs, "空")
+			return
+		}
+
+		typ := reflect.TypeOf(value).Name()
+
+		if typ == "string" {
+			logs = append(logs, value.(string))
+		} else {
+			bytes, _ := json.Marshal(value)
+			logs = append(logs, string(bytes))
+		}
 	})
 
 	return

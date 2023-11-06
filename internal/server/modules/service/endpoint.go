@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/474420502/requests"
@@ -34,6 +35,9 @@ type EndpointService struct {
 	EndpointTagRepo          *repo.EndpointTagRepo       `inject:""`
 	EndpointTagService       *EndpointTagService         `inject:""`
 	ServeService             *ServeService               `inject:""`
+	MessageService           *MessageService             `inject:""`
+	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
+	EnvironmentRepo          *repo.EnvironmentRepo       `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -55,9 +59,36 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 		}
 	}
 
+	ret, _ := s.EndpointRepo.Get(endpoint.ID)
 	err = s.EndpointRepo.SaveAll(&endpoint)
 
+	//go func() {
+	//	_ = s.SendEndpointMessage(endpoint.ProjectId, endpoint.ID, userId)
+	//}()
+
+	s.DebugInterfaceRepo.SyncPath(ret.ID, endpoint.Path, ret.Path)
+
 	return endpoint.ID, err
+}
+
+func (s *EndpointService) SendEndpointMessage(projectId, endpointId, userId uint) (err error) {
+	messageContent, err := s.MessageService.GetEndpointMcsData(projectId, endpointId)
+	messageContentByte, _ := json.Marshal(messageContent)
+	messageReq := v1.MessageReq{
+		MessageBase: v1.MessageBase{
+			MessageSource: consts.MessageSourceEndpoint,
+			Content:       string(messageContentByte),
+			ReceiverRange: 4,
+			SenderId:      userId,
+			ReceiverId:    projectId,
+			SendStatus:    consts.MessageCreated,
+			ServiceType:   consts.ServiceTypeInfo,
+			BusinessId:    endpointId,
+		},
+	}
+	_, _ = s.MessageService.Create(messageReq)
+
+	return
 }
 
 func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) {
@@ -167,11 +198,18 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
 	}
 	serve.Servers = serveServer
 
-	Securities, err := s.ServeRepo.ListSecurity(serve.ID)
+	securities, err := s.ServeRepo.ListSecurity(serve.ID)
 	if err != nil {
 		return
 	}
-	serve.Securities = Securities
+	serve.Securities = securities
+	/*
+		globalParams, err := s.EnvironmentRepo.ListParamModel(endpoint.ProjectId)
+		if err != nil {
+			return
+		}
+		serve.GlobalParams = globalParams
+	*/
 
 	//s.SchemasConv(&endpoint)
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})

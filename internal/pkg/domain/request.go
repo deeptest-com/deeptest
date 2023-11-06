@@ -8,8 +8,8 @@ type DebugResponse struct {
 	Id       uint `json:"id"`
 	InvokeId uint `json:"invokeId"`
 
-	StatusCode    int    `json:"statusCode"`
-	StatusContent string `json:"statusContent"`
+	StatusCode    consts.HttpRespCode `json:"statusCode"`
+	StatusContent string              `json:"statusContent"`
 
 	Headers []Header     `gorm:"-" json:"headers"`
 	Cookies []ExecCookie `gorm:"-" json:"cookies"`
@@ -28,12 +28,13 @@ type DebugResponse struct {
 type BaseRequest struct {
 	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 
-	Method      consts.HttpMethod `gorm:"default:GET" json:"method"`
-	Url         string            `json:"url"`
-	QueryParams []Param           ` json:"queryParams"`
-	PathParams  []Param           ` json:"pathParams"`
-	Headers     []Header          ` json:"headers"`
-	Cookies     []ExecCookie      ` json:"cookies"` // from cookie processor in scenario
+	Method       consts.HttpMethod `gorm:"default:GET" json:"method"`
+	Url          string            `json:"url"`
+	QueryParams  []Param           ` json:"queryParams"`
+	PathParams   []Param           ` json:"pathParams"`
+	Headers      []Header          ` json:"headers"`
+	Cookies      []ExecCookie      ` json:"cookies"` // from cookie processor in scenario
+	GlobalParams []GlobalParam     ` json:"globalParams"`
 
 	Body               string                   `json:"body"`
 	BodyFormData       []BodyFormDataItem       `json:"bodyFormData"`
@@ -79,6 +80,7 @@ type Param struct {
 	Disabled    bool           `json:"disabled,omitempty"`
 	Description string         `json:"Description,omitempty"`
 	Type        string         `json:"type,omitempty"`
+	IsGlobal    bool           `json:"isGlobal,omitempty"`
 }
 
 type BodyFormDataItem struct {

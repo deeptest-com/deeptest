@@ -118,14 +118,15 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	endTime := time.Now().UnixMilli()
 	ret.Time = endTime - startTime
 
-	ret.StatusCode = resp.StatusCode
+	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
 	ret.StatusContent = resp.Status
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
-	u, _ := url.Parse(req.Url)
-	ret.Cookies = getCookies(resp.Cookies(), jar.Cookies(u))
+	//u, _ := url.Parse(req.Url)
+	ret.Cookies = getCookies(resp.Cookies(), nil)
+	//ret.Cookies = getCookies(resp.Cookies(), jar.Cookies(u))
 
 	if !readRespData {
 		return
@@ -243,15 +244,16 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 		return
 	}
 
-	ret.StatusCode = resp.StatusCode
+	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
 	ret.StatusContent = resp.Status
 
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
 	ret.Headers = getHeaders(resp.Header)
 
-	u, _ := url.Parse(req.Url)
-	ret.Cookies = getCookies(resp.Cookies(), jar.Cookies(u))
+	//u, _ := url.Parse(req.Url)
+	//ret.Cookies = getCookies(resp.Cookies(), jar.Cookies(u))
+	ret.Cookies = getCookies(resp.Cookies(), nil)
 
 	if !readRespData {
 		return
@@ -356,7 +358,7 @@ func UpdateUrl(url string) string {
 }
 
 func wrapperErrInResp(code consts.HttpRespCode, statusContent string, content string, resp *domain.DebugResponse) {
-	resp.StatusCode = code.Int()
+	resp.StatusCode = code
 	resp.StatusContent = fmt.Sprintf("%d %s", code, statusContent)
 	resp.Content, _ = url.QueryUnescape(content)
 }

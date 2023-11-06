@@ -117,3 +117,25 @@ func (s *EndpointInterfaceService) GenerateFromResponse(req v1.GenerateFromRespo
 	return
 
 }
+
+func (s *EndpointInterfaceService) GenerateFromRequest(req v1.GenerateFromRequestReq) (requestBody model.EndpointInterfaceRequestBody, err error) {
+	requestBody = model.EndpointInterfaceRequestBody{}
+	requestBodyItem := model.EndpointInterfaceRequestBodyItem{}
+	requestBody, err = s.EndpointInterfaceRepo.GetRequestBody(req.InterfaceId)
+	if err == nil {
+		requestBodyItem, err = s.EndpointInterfaceRepo.GetRequestBodyItem(requestBody.ID)
+		if err != nil {
+			return
+		}
+	}
+	requestBody.InterfaceId = req.InterfaceId
+	requestBody.Description = req.Description
+	requestBody.MediaType = req.ContentType
+	requestBodyItem.Content = req.Data
+	requestBody.SchemaItem = requestBodyItem
+
+	err = s.EndpointInterfaceRepo.UpdateRequestBody(&requestBody)
+
+	return
+
+}

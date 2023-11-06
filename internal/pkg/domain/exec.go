@@ -16,13 +16,13 @@ type ExecVariable struct {
 }
 
 type ExecCookie struct {
-	Id    uint        `json:"id,omitempty"`
-	Name  string      `json:"name"`
-	Value interface{} `json:"value"`
-	Path  string      `json:"path,omitempty"`
-
-	Domain     string     `json:"domain,omitempty"`
-	ExpireTime *time.Time `json:"expireTime,omitempty"`
+	Id         uint        `json:"id,omitempty"`
+	Name       string      `json:"name"`
+	Value      interface{} `json:"value"`
+	Path       string      `json:"path,omitempty"`
+	Disabled   bool        `json:"disabled"`
+	Domain     string      `json:"domain,omitempty"`
+	ExpireTime *time.Time  `json:"expireTime,omitempty"`
 }
 
 type ExecLog struct {

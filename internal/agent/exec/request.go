@@ -211,9 +211,16 @@ func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	}
 	//}
 
+	var cookies []domain.ExecCookie
 	for idx, cookie := range req.Cookies {
+		if cookie.Disabled {
+			continue
+		}
 		req.Cookies[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(cookie.Value))
+		cookies = append(cookies, req.Cookies[idx])
 	}
+
+	req.Cookies = cookies
 }
 func replaceFormBodies(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	for _, v := range req.GlobalParams {
@@ -275,6 +282,12 @@ func mergeParams(req *domain.BaseRequest) {
 		} else if globalParam.In == consts.ParamInHeader {
 			for _, item := range req.Headers {
 				if item.Name == globalParam.Name && !item.Disabled {
+					req.GlobalParams[key].Disabled = true
+				}
+			}
+		} else if globalParam.In == consts.ParamInCookie {
+			for _, item := range req.Cookies {
+				if item.Name == globalParam.Name {
 					req.GlobalParams[key].Disabled = true
 				}
 			}

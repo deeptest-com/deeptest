@@ -287,7 +287,7 @@ func mergeParams(req *domain.BaseRequest) {
 			}
 		} else if globalParam.In == consts.ParamInCookie {
 			for _, item := range req.Cookies {
-				if item.Name == globalParam.Name {
+				if item.Name == globalParam.Name && !item.Disabled {
 					req.GlobalParams[key].Disabled = true
 				}
 			}

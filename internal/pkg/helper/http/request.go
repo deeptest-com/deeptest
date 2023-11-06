@@ -214,7 +214,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 	dealwithQueryParams(req, httpReq)
 	dealwithHeader(req, httpReq)
-	dealwithCookie(req, httpReq)
+	//dealwithCookie(req, httpReq)
 
 	// body type
 	if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {

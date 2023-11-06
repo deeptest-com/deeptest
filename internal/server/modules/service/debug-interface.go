@@ -311,6 +311,7 @@ func (s *DebugInterfaceService) GetDebugInterfaceByScenarioInterface(scenarioPro
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
 	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
 	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+	ret.Cookies = append(ret.Cookies, domain.ExecCookie{Name: "", Value: ""})
 
 	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
@@ -338,6 +339,7 @@ func (s *DebugInterfaceService) GetDebugInterfaceByDiagnoseInterface(diagnoseInt
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
 	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
 	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+	ret.Cookies = append(ret.Cookies, domain.ExecCookie{Name: "", Value: ""})
 
 	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
@@ -365,6 +367,7 @@ func (s *DebugInterfaceService) GetDebugInterfaceByEndpointCase(endpointCaseId u
 	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
 	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
 	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+	ret.Cookies = append(ret.Cookies, domain.ExecCookie{Name: "", Value: ""})
 
 	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})

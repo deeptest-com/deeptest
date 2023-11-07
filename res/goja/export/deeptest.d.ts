@@ -57,6 +57,19 @@ declare type Response = {
     contentCharset: string;
     contentLength: number;
 }
+declare type ResponseWithContent = {
+    statusCode: number;
+    statusContent: string;
+
+    headers: Header[];
+    cookies: ExecCookie[];
+
+    content: string;
+    contentType: string;
+
+    contentCharset: string;
+    contentLength: number;
+}
 
 declare global {
     const dt: {
@@ -72,7 +85,7 @@ declare global {
         request: Request,
         response: Response,
 
-        sendRequest: (urlOrConfig: string | object, callback: (error, response: Response) => void) => void,
+        sendRequest: (urlOrConfig: string | object, callback: (error, response: ResponseWithContent) => void) => void,
     }
 
     const log : (obj: any) => {}

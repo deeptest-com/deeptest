@@ -16,6 +16,9 @@ type EndpointCase struct {
 	DebugInterfaceId uint            `gorm:"default:0" json:"debugInterfaceId"`
 	DebugData        *DebugInterface `gorm:"-" json:"debugData"`
 
+	CaseType consts.CaseType `gorm:"default:'default'" json:"caseType"`
+	BaseCase uint            `gorm:"default:0" json:"baseCase"`
+
 	SrcId uint `json:"srcId"`
 
 	SerialNumber   string `json:"serialNumber"`

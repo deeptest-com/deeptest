@@ -266,6 +266,14 @@ const (
 	ScenarioDebug        UsedBy = "scenario_debug"
 )
 
+type CaseType string
+
+const (
+	CaseDefault     CaseType = "default"
+	CaseAlternative CaseType = "alternative"
+	CaseExtended    CaseType = "extended" // saved as
+)
+
 type ProcessorInterfaceSrc string
 
 const (

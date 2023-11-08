@@ -98,6 +98,40 @@ func (s *EndpointCaseAlternativeService) LoadAlternativeSaved(caseId uint) (
 	return
 }
 
+func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.EndpointCaseBenchmarkCreateReq) (
+	po model.EndpointCase, err error) {
+
+	if req.BaseCaseId > 0 {
+		// clone
+		po, _ = s.EndpointCaseService.Copy(req.BaseCaseId, "alter-", req.CreateUserId, req.CreateUserName)
+
+		po.CaseType = consts.CaseAlternative
+		po.BaseCase = uint(req.BaseCaseId)
+
+		s.EndpointCaseRepo.UpdateInfo(po.ID, map[string]interface{}{
+			"case_type": po.CaseType,
+			"base_case": po.BaseCase,
+		})
+
+	} else if req.EndpointInterfaceId > 0 {
+		// convert from endpoint interface define
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
+		debugData, _ := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(req.EndpointInterfaceId)
+
+		req := serverDomain.EndpointCaseSaveReq{
+			DebugData:  debugData,
+			EndpointId: endpointInterface.EndpointId,
+		}
+
+		po, err = s.EndpointCaseService.SaveFromDebugInterface(req)
+		err = s.DebugInterfaceRepo.UpdateDebugInfo(po.DebugInterfaceId, map[string]interface{}{
+			"case_interface_id": po.ID,
+		})
+	}
+
+	return
+}
+
 func (s *EndpointCaseAlternativeService) SaveAlternativeCase(req serverDomain.EndpointCaseAlternativeSaveReq) (
 	po model.EndpointCaseAlternative, err error) {
 
@@ -122,7 +156,7 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 			continue
 		}
 
-		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, req.CreateUserId, req.CreateUserName)
+		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, "extend-", req.CreateUserId, req.CreateUserName)
 		if err1 != nil {
 			err = err1
 			return

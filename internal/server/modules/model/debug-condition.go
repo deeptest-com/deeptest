@@ -15,6 +15,8 @@ type DebugPreCondition struct {
 	EntityId   uint                 `json:"entityId"`
 	UsedBy     consts.UsedBy        `json:"usedBy"`
 
+	IsForBenchmarkCase bool `json:"isForBenchmarkCase"`
+
 	Name string `json:"name"`
 	Desc string `json:"desc"`
 	Ordr int    `json:"ordr"`
@@ -33,6 +35,8 @@ type DebugPostCondition struct {
 	EntityType consts.ConditionType `json:"entityType"`
 	EntityId   uint                 `json:"entityId"`
 	UsedBy     consts.UsedBy        `json:"usedBy"`
+
+	IsForBenchmarkCase bool `json:"isForBenchmarkCase"`
 
 	Name string `json:"name"`
 	Desc string `json:"desc"`

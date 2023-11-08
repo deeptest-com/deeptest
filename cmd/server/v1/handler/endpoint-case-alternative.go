@@ -42,6 +42,23 @@ func (c *EndpointCaseAlternativeCtrl) LoadAlternativeSaved(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
 
+// CreateBenchmark
+func (c *EndpointCaseAlternativeCtrl) CreateBenchmark(ctx iris.Context) {
+	var req serverDomain.EndpointCaseBenchmarkCreateReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	req.CreateUserId = multi.GetUserId(ctx)
+	req.CreateUserName = multi.GetUsername(ctx)
+
+	ret, err := c.EndpointCaseAlternativeService.CreateBenchmarkCase(req)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
+}
+
 // SaveAlternativeCase
 func (c *EndpointCaseAlternativeCtrl) SaveAlternativeCase(ctx iris.Context) {
 	var req serverDomain.EndpointCaseAlternativeSaveReq

@@ -140,6 +140,15 @@ func (r *EndpointCaseRepo) UpdateDebugInfo(interf *model.EndpointCase) (err erro
 	return
 }
 
+func (r *EndpointCaseRepo) UpdateInfo(id uint, values map[string]interface{}) (err error) {
+	err = r.DB.Model(&model.EndpointCase{}).
+		Where("id=?", id).
+		Updates(values).
+		Error
+
+	return
+}
+
 func (r *EndpointCaseRepo) UpdateSerialNumber(id, projectId uint) (err error) {
 	var project model.Project
 	project, err = r.ProjectRepo.Get(projectId)

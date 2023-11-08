@@ -111,10 +111,12 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 		debugData, _ := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(req.EndpointInterfaceId)
 
 		saveReq := serverDomain.EndpointCaseSaveReq{
-			Name:       req.Name,
-			Method:     debugData.Method,
-			DebugData:  debugData,
-			EndpointId: endpointInterface.EndpointId,
+			Name:           req.Name,
+			Method:         debugData.Method,
+			DebugData:      debugData,
+			EndpointId:     endpointInterface.EndpointId,
+			CreateUserId:   req.CreateUserId,
+			CreateUserName: req.CreateUserName,
 		}
 
 		po, err = s.EndpointCaseService.SaveFromDebugInterface(saveReq)

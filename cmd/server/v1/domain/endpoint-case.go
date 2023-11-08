@@ -68,9 +68,9 @@ type EndpointCaseBenchmarkCreateReq struct {
 }
 
 type EndpointCaseFactorSaveReq struct {
-	Path        string `json:"path"`
-	Value       string `json:"value"`
-	BenchmarkId int    `json:"benchmarkId"`
+	Path   string `json:"path"`
+	Value  string `json:"value"`
+	CaseId int    `json:"caseId"`
 }
 
 type EndpointCaseAlternativeSaveReq struct {

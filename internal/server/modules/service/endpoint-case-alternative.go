@@ -170,6 +170,7 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 
 		s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
 			"case_type": consts.CaseAlternative,
+			"base_case": req.BaseId,
 		})
 
 		newDebugData, err1 := s.DebugInterfaceService.GetDebugDataFromDebugInterface(newEndpointCase.DebugInterfaceId)
@@ -200,6 +201,7 @@ func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.Endpoint
 
 	s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
 		"case_type": consts.CaseAlternative,
+		"base_case": req.BaseId,
 	})
 
 	// get new case's debug data

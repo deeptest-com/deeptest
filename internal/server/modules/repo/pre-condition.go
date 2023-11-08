@@ -60,6 +60,10 @@ func (r *PreConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId,
 		srcCondition.DebugInterfaceId = distDebugInterfaceId
 		srcCondition.UsedBy = dictUsedBy
 
+		if srcDebugInterfaceId == distDebugInterfaceId { // clone to benchmark
+			srcCondition.IsForBenchmarkCase = true
+		}
+
 		r.Save(&srcCondition)
 
 		// clone condition entity

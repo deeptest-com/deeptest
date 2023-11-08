@@ -103,7 +103,7 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 
 	if req.BaseCaseId > 0 {
 		// clone
-		po, _ = s.EndpointCaseService.Copy(req.BaseCaseId, "alter-", req.CreateUserId, req.CreateUserName)
+		po, _ = s.EndpointCaseService.Copy(req.BaseCaseId, "benchmark-", req.CreateUserId, req.CreateUserName)
 
 	} else if req.EndpointInterfaceId > 0 {
 		// convert from endpoint interface define
@@ -129,6 +129,9 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 		"case_type": po.CaseType,
 		"base_case": po.BaseCase,
 	})
+
+	s.PreConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug)
+	s.PostConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug)
 
 	return
 }

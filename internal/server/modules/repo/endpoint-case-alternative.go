@@ -26,6 +26,15 @@ func (r *EndpointCaseAlternativeRepo) List(caseId uint) (pos []model.EndpointCas
 	return
 }
 
+func (r *EndpointCaseAlternativeRepo) LoadFactor(caseId uint) (pos []model.EndpointCaseAlternativeFactor, err error) {
+	err = r.DB.
+		Where("case_id=?", caseId).
+		Where("NOT deleted").
+		Find(&pos).Error
+
+	return
+}
+
 func (r *EndpointCaseAlternativeRepo) Get(id uint) (po model.EndpointCase, err error) {
 	err = r.DB.Where("id = ?", id).First(&po).Error
 	return

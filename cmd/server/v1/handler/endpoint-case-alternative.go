@@ -29,15 +29,15 @@ func (c *EndpointCaseAlternativeCtrl) LoadAlternative(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: root})
 }
 
-// LoadAlternativeSaved
-func (c *EndpointCaseAlternativeCtrl) LoadAlternativeSaved(ctx iris.Context) {
-	baseId, err := ctx.URLParamInt("baseId")
+// LoadFactor
+func (c *EndpointCaseAlternativeCtrl) LoadFactor(ctx iris.Context) {
+	caseId, err := ctx.URLParamInt("caseId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ret, err := c.EndpointCaseAlternativeService.LoadAlternativeSaved(uint(baseId))
+	ret, err := c.EndpointCaseAlternativeService.LoadFactor(uint(caseId))
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
@@ -68,9 +68,9 @@ func (c *EndpointCaseAlternativeCtrl) SaveFactor(ctx iris.Context) {
 		return
 	}
 
-	ret, err := c.EndpointCaseAlternativeService.SaveFactor(req)
+	err = c.EndpointCaseAlternativeService.SaveFactor(req)
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
 // SaveCase

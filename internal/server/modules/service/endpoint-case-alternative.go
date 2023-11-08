@@ -86,10 +86,8 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(endpointId uint, method
 	return
 }
 
-func (s *EndpointCaseAlternativeService) LoadAlternativeSaved(caseId uint) (
-	ret map[string]model.EndpointCaseAlternative, err error) {
-
-	pos, err := s.EndpointCaseAlternativeRepo.List(caseId)
+func (s *EndpointCaseAlternativeService) LoadFactor(caseId uint) (ret map[string]model.EndpointCaseAlternativeFactor, err error) {
+	pos, err := s.EndpointCaseAlternativeRepo.LoadFactor(caseId)
 
 	for _, po := range pos {
 		ret[po.Path] = po

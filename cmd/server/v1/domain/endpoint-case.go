@@ -60,7 +60,7 @@ type EndpointCaseBenchmarkCreateReq struct {
 	Type string `json:"type"`
 	Name string `json:"name"`
 
-	EndpointInterfaceId uint `json:"endpointInterfaceId"` // from a method -> endpointInterfaceId
+	EndpointInterfaceId uint `json:"endpointInterfaceId"` // from a endpointInterface
 	BaseCaseId          int  `json:"baseCaseId"`          // from a exist case
 
 	CreateUserId   uint   `json:"createUserId"`

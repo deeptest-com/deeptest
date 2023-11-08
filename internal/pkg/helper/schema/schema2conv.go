@@ -171,6 +171,9 @@ func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 
 	s.CombineSchemas(&schema)
 
+	if schema.Value == nil {
+		return
+	}
 	switch schema.Value.Type {
 	case openapi3.TypeObject:
 		object = map[string]interface{}{}

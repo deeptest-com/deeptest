@@ -118,16 +118,19 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 		endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
 		debugData, _ := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(req.EndpointInterfaceId)
 
-		req := serverDomain.EndpointCaseSaveReq{
+		saveReq := serverDomain.EndpointCaseSaveReq{
+			Method:     debugData.Method,
 			DebugData:  debugData,
 			EndpointId: endpointInterface.EndpointId,
 		}
 
-		po, err = s.EndpointCaseService.SaveFromDebugInterface(req)
-		err = s.DebugInterfaceRepo.UpdateDebugInfo(po.DebugInterfaceId, map[string]interface{}{
-			"case_interface_id": po.ID,
-		})
+		po, err = s.EndpointCaseService.SaveFromDebugInterface(saveReq)
 	}
+
+	s.EndpointCaseRepo.UpdateInfo(po.ID, map[string]interface{}{
+		"case_type": po.CaseType,
+		"base_case": po.BaseCase,
+	})
 
 	return
 }

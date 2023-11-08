@@ -67,6 +67,12 @@ type EndpointCaseBenchmarkCreateReq struct {
 	CreateUserName string `json:"createUserName"`
 }
 
+type EndpointCaseFactorSaveReq struct {
+	Path        string `json:"path"`
+	Value       string `json:"value"`
+	BenchmarkId int    `json:"benchmarkId"`
+}
+
 type EndpointCaseAlternativeSaveReq struct {
 	Prefix string                        `json:"prefix"`
 	Type   string                        `json:"type"`

@@ -86,6 +86,7 @@ var (
 		&EndpointInterface{},
 		&EndpointCase{},
 		&EndpointCaseAlternative{},
+		&EndpointCaseAlternativeFactor{},
 		&EndpointInterfaceParam{},
 		&EndpointInterfaceCookie{},
 		&EndpointInterfaceHeader{},

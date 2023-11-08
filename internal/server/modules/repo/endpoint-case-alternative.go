@@ -141,3 +141,25 @@ func (r *EndpointCaseAlternativeRepo) UpdateDebugInterfaceId(debugInterfaceId, i
 
 	return
 }
+
+func (r *EndpointCaseAlternativeRepo) SaveFactor(req serverDomain.EndpointCaseFactorSaveReq) (err error) {
+	var po model.EndpointCaseAlternativeFactor
+	err = r.DB.Where("case_id = ? AND path = ?", req.CaseId, req.Path).First(&po).Error
+
+	if po.ID > 0 {
+		err = r.DB.Model(&model.EndpointCaseAlternativeFactor{}).
+			Where("case_id = ? AND path = ?", req.CaseId, req.Path).
+			Update("value", req.Value).Error
+
+	} else {
+		po = model.EndpointCaseAlternativeFactor{
+			CaseId: uint(req.CaseId),
+			Path:   req.Path,
+			Value:  req.Value,
+		}
+
+		err = r.DB.Save(po).Error
+	}
+
+	return
+}

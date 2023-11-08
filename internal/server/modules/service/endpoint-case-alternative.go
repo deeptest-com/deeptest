@@ -141,9 +141,8 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 	return
 }
 
-func (s *EndpointCaseAlternativeService) SaveFactor(req serverDomain.EndpointCaseFactorSaveReq) (
-	po model.EndpointCaseAlternative, err error) {
-	// TODO
+func (s *EndpointCaseAlternativeService) SaveFactor(req serverDomain.EndpointCaseFactorSaveReq) (err error) {
+	err = s.EndpointCaseAlternativeRepo.SaveFactor(req)
 
 	return
 }

@@ -42,3 +42,16 @@ type EndpointCaseAlternative struct {
 func (EndpointCaseAlternative) TableName() string {
 	return "biz_endpoint_case_alternative"
 }
+
+type EndpointCaseAlternativeFactor struct {
+	BaseModel
+
+	CaseId uint `json:"caseId"`
+
+	Value string `json:"value"`
+	Path  string `json:"path"`
+}
+
+func (EndpointCaseAlternativeFactor) TableName() string {
+	return "biz_endpoint_case_alternative_factor"
+}

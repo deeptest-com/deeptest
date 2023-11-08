@@ -105,20 +105,13 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 		// clone
 		po, _ = s.EndpointCaseService.Copy(req.BaseCaseId, "alter-", req.CreateUserId, req.CreateUserName)
 
-		po.CaseType = consts.CaseAlternative
-		po.BaseCase = uint(req.BaseCaseId)
-
-		s.EndpointCaseRepo.UpdateInfo(po.ID, map[string]interface{}{
-			"case_type": po.CaseType,
-			"base_case": po.BaseCase,
-		})
-
 	} else if req.EndpointInterfaceId > 0 {
 		// convert from endpoint interface define
 		endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
 		debugData, _ := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(req.EndpointInterfaceId)
 
 		saveReq := serverDomain.EndpointCaseSaveReq{
+			Name:       "alter-" + endpointInterface.Name,
 			Method:     debugData.Method,
 			DebugData:  debugData,
 			EndpointId: endpointInterface.EndpointId,
@@ -126,6 +119,9 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 
 		po, err = s.EndpointCaseService.SaveFromDebugInterface(saveReq)
 	}
+
+	po.CaseType = consts.CaseAlternative
+	po.BaseCase = uint(req.BaseCaseId)
 
 	s.EndpointCaseRepo.UpdateInfo(po.ID, map[string]interface{}{
 		"case_type": po.CaseType,

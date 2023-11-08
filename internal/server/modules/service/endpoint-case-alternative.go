@@ -145,24 +145,18 @@ func (s *EndpointCaseAlternativeService) SaveFactor(req serverDomain.EndpointCas
 	return
 }
 
-func (s *EndpointCaseAlternativeService) SaveCase(req serverDomain.EndpointCaseAlternativeSaveReq) (
-	po model.EndpointCaseAlternative, err error) {
-
+func (s *EndpointCaseAlternativeService) SaveCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	typ := req.Type
 	if typ == "multi" {
-		err1 := s.GenMultiCases(req)
-		if err1 != nil {
-			err = err1
-			return
-		}
-
+		count, err = s.GenMultiCases(req)
 	} else if typ == "single" {
+		count, err = s.GenSingleCase(req)
 	}
 
 	return
 }
 
-func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.EndpointCaseAlternativeSaveReq) (err error) {
+func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	for _, val := range req.Values {
 		if val.Category != consts.AlternativeCaseCase {
 			continue
@@ -192,7 +186,44 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 		s.changeFieldProps(&newDebugData, fieldIn, fieldNameOrPath, val.Sample, val.FieldType)
 
 		_, err = s.DebugInterfaceService.Update(newDebugData, newDebugData.DebugInterfaceId)
+
+		count += 1
 	}
+
+	return
+}
+
+func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
+	// copy new case
+	newEndpointCase, err := s.EndpointCaseService.Copy(req.BaseId, "extend-",
+		req.CreateUserId, req.CreateUserName)
+
+	s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
+		"case_type": consts.CaseAlternative,
+	})
+
+	// get new case's debug data
+	newDebugData, err := s.DebugInterfaceService.GetDebugDataFromDebugInterface(newEndpointCase.DebugInterfaceId)
+	if err != nil {
+		return
+	}
+
+	// change field value by path if exist
+	for _, val := range req.Values {
+		if val.Category != consts.AlternativeCaseCase {
+			continue
+		}
+
+		fieldIn, fieldNameOrPath := s.getFieldProps(val.Path)
+		if fieldIn == "" {
+			logUtils.Error("failed to getFieldProps")
+			continue
+		}
+		s.changeFieldProps(&newDebugData, fieldIn, fieldNameOrPath, val.Sample, val.FieldType)
+	}
+
+	// update to db
+	_, err = s.DebugInterfaceService.Update(newDebugData, newDebugData.DebugInterfaceId)
 
 	return
 }

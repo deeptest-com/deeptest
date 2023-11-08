@@ -20,7 +20,8 @@ func (m *EndpointCaseAlternativeModule) Party() module.WebModule {
 		public.Post("/loadSaved", m.EndpointCaseAlternativeCtrl.LoadAlternativeSaved).Name = "已保存备选用例列表"
 
 		public.Post("/createBenchmark", m.EndpointCaseAlternativeCtrl.CreateBenchmark).Name = "创建基准用例"
-		public.Post("/save", m.EndpointCaseAlternativeCtrl.SaveAlternativeCase).Name = "保存备选用例"
+		public.Post("/saveBenchmarkConfig", m.EndpointCaseAlternativeCtrl.SaveAlternative).Name = "保存备选为独立用例"
+		public.Post("/saveAlternative", m.EndpointCaseAlternativeCtrl.SaveAlternative).Name = "保存备选为独立用例"
 
 		public.Post("/loadCaseForExec", m.EndpointCaseAlternativeCtrl.LoadCaseForExec).Name = "获取用例执行数据"
 	}

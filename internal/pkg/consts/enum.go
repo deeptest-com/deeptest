@@ -270,8 +270,8 @@ type CaseType string
 
 const (
 	CaseDefault     CaseType = "default"
-	CaseAlternative CaseType = "alternative" // for alternative case design
-	CaseExtended    CaseType = "extended"    // saved as
+	CaseBenchmark   CaseType = "benchmark"   // for alternative cases design
+	CaseAlternative CaseType = "alternative" // saved as independent case
 )
 
 type ProcessorInterfaceSrc string

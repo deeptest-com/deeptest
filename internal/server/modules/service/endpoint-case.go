@@ -65,7 +65,7 @@ func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (case
 func (s *EndpointCaseService) Copy(id int, newNamePrefix string, userId uint, userName string) (po model.EndpointCase, err error) {
 	endpointCase, _ := s.EndpointCaseRepo.Get(uint(id))
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
-	debugData.UsedBy = consts.CaseDebug // mark src usedBy for pre/post-condition loading
+	debugData.UsedBy = consts.CaseDebug
 
 	if newNamePrefix == "" {
 		newNamePrefix = "copy-"

@@ -58,10 +58,6 @@ func (s *PostConditionService) Create(condition *model.DebugPostCondition) (err 
 	return
 }
 
-//func (s *PostConditionService) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint) (err error) {
-//	return s.PostConditionRepo.CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId)
-//}
-
 func (s *PostConditionService) Delete(reqId uint) (err error) {
 	err = s.PostConditionRepo.Delete(reqId)
 

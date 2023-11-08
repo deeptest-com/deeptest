@@ -122,7 +122,7 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 		po, err = s.EndpointCaseService.SaveFromDebugInterface(saveReq)
 	}
 
-	po.CaseType = consts.CaseAlternative
+	po.CaseType = consts.CaseBenchmark
 	po.BaseCase = uint(req.BaseCaseId)
 
 	s.EndpointCaseRepo.UpdateInfo(po.ID, map[string]interface{}{
@@ -133,12 +133,11 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 	return
 }
 
-func (s *EndpointCaseAlternativeService) SaveAlternativeCase(req serverDomain.EndpointCaseAlternativeSaveReq) (
+func (s *EndpointCaseAlternativeService) SaveAlternative(req serverDomain.EndpointCaseAlternativeSaveReq) (
 	po model.EndpointCaseAlternative, err error) {
 
 	typ := req.Type
 	if typ == "multi" {
-
 		err1 := s.GenMultiCases(req)
 		if err1 != nil {
 			err = err1
@@ -162,6 +161,10 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 			err = err1
 			return
 		}
+
+		s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
+			"case_type": consts.CaseAlternative,
+		})
 
 		newDebugData, err1 := s.DebugInterfaceService.GetDebugDataFromDebugInterface(newEndpointCase.DebugInterfaceId)
 		if err1 != nil {

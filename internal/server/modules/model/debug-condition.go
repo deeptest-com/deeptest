@@ -15,7 +15,7 @@ type DebugPreCondition struct {
 	EntityId   uint                 `json:"entityId"`
 	UsedBy     consts.UsedBy        `json:"usedBy"`
 
-	IsForBenchmarkCase bool `json:"isForBenchmarkCase"`
+	IsForBenchmarkCase bool `gorm:"default:0" json:"isForBenchmarkCase"`
 
 	Name string `json:"name"`
 	Desc string `json:"desc"`
@@ -36,7 +36,7 @@ type DebugPostCondition struct {
 	EntityId   uint                 `json:"entityId"`
 	UsedBy     consts.UsedBy        `json:"usedBy"`
 
-	IsForBenchmarkCase bool `json:"isForBenchmarkCase"`
+	IsForBenchmarkCase bool `gorm:"default:0" json:"isForBenchmarkCase"`
 
 	Name string `json:"name"`
 	Desc string `json:"desc"`

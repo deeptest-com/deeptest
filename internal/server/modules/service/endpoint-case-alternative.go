@@ -224,6 +224,11 @@ func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.Endpoint
 
 	// update to db
 	_, err = s.DebugInterfaceService.Update(newDebugData, newDebugData.DebugInterfaceId)
+	if err != nil {
+		return
+	}
+
+	count = 1
 
 	return
 }

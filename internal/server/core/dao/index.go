@@ -24,7 +24,7 @@ var (
 )
 
 // GetDB 数据库单例
-func GetDB() *gorm.DB {
+func GetDB(args ...interface{}) *gorm.DB {
 	once.Do(func() {
 		if consts.RunFrom == consts.FromServer && config.CONFIG.System.DbType == "mysql" {
 			db = GormMySQL()
@@ -32,6 +32,26 @@ func GetDB() *gorm.DB {
 			db = GormSQLLite()
 		}
 	})
+	/*
+		db.Use(dbresolver.Register(dbresolver.Config{
+			// use `db2` as sources, `db3`, `db4` as replicas
+			Sources:  []gorm.Dialector{mysql.Open("db2_dsn")},
+			Replicas: []gorm.Dialector{mysql.Open("db3_dsn"), mysql.Open("db4_dsn")},
+			// sources/replicas load balancing policy
+			Policy: dbresolver.RandomPolicy{},
+			// print sources/replicas mode in logger
+			TraceResolverMode: true,
+		}))
+	*/
+	/*
+		if len(args) > 0 {
+			//ctx := context.Background()
+			//x := context.WithValue(ctx, "dbName", "deeptest")
+			db.Statement.Table = "xxxxxxxxxx"
+			fmt.Println(db, "+++++")
+		}
+
+	*/
 
 	return db
 }

@@ -56,9 +56,9 @@ type UserBase struct {
 	Intro     string `gorm:"not null; type:varchar(512)" json:"intro"`
 	Avatar    string `gorm:"type:varchar(1024)" json:"avatar"`
 	ImAccount string `json:"imAccount"`
-
-	Password string `json:"password"`
-	RoleIds  []uint `gorm:"-" json:"role_ids"`
+	Password  string `json:"password"`
+	RoleIds   []uint `gorm:"-" json:"role_ids"`
+	Type      bool   `json:"type"`
 }
 
 func (res *UserResp) ToString() {

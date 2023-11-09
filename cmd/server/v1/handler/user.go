@@ -281,6 +281,8 @@ func (c *UserCtrl) CreateUser(ctx iris.Context) {
 			return
 		}
 	}
+	//区分手动手动添加的账号和域账号登录，true 为手动创建，非true 为域账号
+	req.Type = true
 	id, err := c.UserRepo.Create(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

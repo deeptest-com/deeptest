@@ -122,9 +122,9 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	ret.StatusContent = resp.Status
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
-	ret.Headers = getHeaders(resp.Header)
 
 	//u, _ := url.Parse(req.Url)
+	ret.Headers = getHeaders(resp.Header)
 	ret.Cookies = getCookies(resp.Cookies(), nil)
 	//ret.Cookies = getCookies(resp.Cookies(), jar.Cookies(u))
 
@@ -249,10 +249,10 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
-	ret.Headers = getHeaders(resp.Header)
 
 	//u, _ := url.Parse(req.Url)
 	//ret.Cookies = getCookies(resp.Cookies(), jar.Cookies(u))
+	ret.Headers = getHeaders(resp.Header)
 	ret.Cookies = getCookies(resp.Cookies(), nil)
 
 	if !readRespData {
@@ -309,7 +309,6 @@ func getHeaders(header http.Header) (headers []domain.Header) {
 		header := domain.Header{Name: key, Value: val[0]}
 		headers = append(headers, header)
 	}
-
 	return
 }
 func getCookies(cookies []*http.Cookie, jarCookies []*http.Cookie) (ret []domain.ExecCookie) {

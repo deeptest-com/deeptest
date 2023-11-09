@@ -298,8 +298,13 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 			}
 
 		} else if req.DataSyncType == consts.AutoAdd {
+			//只能合并，创建时间和更新时间不等，更新过了，则不覆盖
 			if err == nil {
-				continue
+				if res.CreatedAt != res.UpdatedAt {
+					continue
+				} else {
+					endpoint.ID = res.ID
+				}
 			}
 		}
 		_, err = s.Save(*endpoint)

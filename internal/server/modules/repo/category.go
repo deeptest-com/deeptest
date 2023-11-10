@@ -221,7 +221,7 @@ func (r *CategoryRepo) GetMaxOrder(parentId uint, typ serverConsts.CategoryDiscr
 func (r *CategoryRepo) GetByItem(parentId uint, typ serverConsts.CategoryDiscriminator, projectId uint, name string) (res model.Category, err error) {
 
 	err = r.DB.Model(&model.Category{}).
-		Where("parent_id=? AND type = ? AND project_id = ? AND name = ?", parentId, typ, projectId, name).
+		Where("parent_id=? AND type = ? AND project_id = ? AND name = ? and not deleted", parentId, typ, projectId, name).
 		Order("ordr DESC").
 		First(&res).Error
 

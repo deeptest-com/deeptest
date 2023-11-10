@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -246,6 +247,32 @@ func (c *EndpointCaseCtrl) LoadTree(ctx iris.Context) {
 	}
 
 	data, err := c.EndpointCaseService.LoadTree(uint(projectId), uint(serveId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}
+
+// ListForBenchmark
+// @Tags	设计器/接口用例
+// @summary	自动生成用例-选择已有用例-用例列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	endpointId		query	int		true	"endpointId"
+// @success	200	{object}	_domain.Response{data=[]serverDomain.EndpointCaseTree}
+// @Router	/api/v1/endpoints/cases/listForBenchmark	[get]
+func (c *EndpointCaseCtrl) ListForBenchmark(ctx iris.Context) {
+	endpointId, err := ctx.URLParamInt("endpointId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	data, err := c.EndpointCaseService.ListByCaseType(uint(endpointId), consts.CaseDefault)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -186,6 +187,16 @@ func (r *EndpointCaseRepo) UpdateDebugInterfaceId(debugInterfaceId, id uint) (er
 	err = r.DB.Model(&model.EndpointCase{}).
 		Where("id=?", id).
 		Update("debug_interface_id", debugInterfaceId).Error
+
+	return
+}
+
+func (r *EndpointCaseRepo) ListByCaseType(endpointId uint, caseType consts.CaseType) (pos []model.EndpointCase, err error) {
+	err = r.DB.
+		Where("endpoint_id=?", endpointId).
+		Where("case_type=?", caseType).
+		Where("NOT deleted").Order("created_at desc").
+		Find(&pos).Error
 
 	return
 }

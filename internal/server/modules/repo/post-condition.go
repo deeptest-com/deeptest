@@ -366,6 +366,18 @@ func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint
 	return
 }
 
+func (r *PostConditionRepo) RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, entityType consts.ConditionCategory, isForBenchmarkCase bool) (err error) {
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, entityType, usedBy)
+
+	for _, po := range pos {
+		if po.IsForBenchmarkCase == isForBenchmarkCase {
+			r.Delete(po.ID)
+		}
+	}
+
+	return
+}
+
 func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (condition domain.Condition) {
 	if endpointInterfaceId == 0 {
 		return

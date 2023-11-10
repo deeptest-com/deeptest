@@ -75,3 +75,15 @@ func (s *PostConditionService) Move(req serverDomain.ConditionMoveReq) (err erro
 
 	return
 }
+
+func (s *PostConditionService) ResetForCase(endpointInterfaceId, debugInterfaceId uint, entityType consts.ConditionCategory) (err error) {
+	usedBy := consts.CaseDebug
+	err = s.PostConditionRepo.RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId, usedBy, entityType, true)
+	if err != nil {
+		return
+	}
+
+	err = s.PostConditionRepo.CloneAll(debugInterfaceId, endpointInterfaceId, debugInterfaceId, usedBy, usedBy)
+
+	return
+}

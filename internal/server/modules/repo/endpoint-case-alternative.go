@@ -167,7 +167,7 @@ func (r *EndpointCaseAlternativeRepo) SaveFactor(req serverDomain.EndpointCaseFa
 			Value:  req.Value,
 		}
 
-		err = r.DB.Save(po).Error
+		err = r.DB.Save(&po).Error
 	}
 
 	return

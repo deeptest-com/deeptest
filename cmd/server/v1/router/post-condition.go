@@ -23,6 +23,8 @@ func (m *PostConditionModule) Party() module.WebModule {
 		index.Post("/{id:uint}/disable", m.PostConditionCtrl.Disable).Name = "禁用后置条件"
 		index.Post("/disable", m.PostConditionCtrl.Disable).Name = "移动后置条件"
 		index.Post("/move", m.PostConditionCtrl.Move).Name = "移动后置条件"
+		index.Get("/resetForCase", m.PostConditionCtrl.ResetForCase).Name = "重制用例的后置条件"
+
 	}
 
 	return module.NewModule("/postConditions", handler)

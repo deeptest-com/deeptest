@@ -301,3 +301,9 @@ func (s *EndpointCaseService) GetNodeCaseNum(res []*serverDomain.EndpointCaseTre
 	}
 	return
 }
+
+func (s *EndpointCaseService) ListByCaseType(endpointId uint, caseType consts.CaseType) (ret []model.EndpointCase, err error) {
+	ret, err = s.EndpointCaseRepo.ListByCaseType(endpointId, caseType)
+
+	return
+}

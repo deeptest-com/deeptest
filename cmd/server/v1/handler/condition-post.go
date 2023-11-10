@@ -114,3 +114,17 @@ func (c *PostConditionCtrl) Move(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+func (c *PostConditionCtrl) ResetForCase(ctx iris.Context) {
+	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
+	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
+	category := consts.ConditionCategory(ctx.URLParam("category"))
+
+	err = c.PostConditionService.ResetForCase(uint(endpointInterfaceId), uint(debugInterfaceId), category)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}

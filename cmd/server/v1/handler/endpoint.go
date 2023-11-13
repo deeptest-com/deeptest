@@ -56,6 +56,7 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
 	}
 
 	userName := multi.GetUsername(ctx)

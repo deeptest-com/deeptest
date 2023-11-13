@@ -269,14 +269,19 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 	defer func() {
 		wg.Done()
 	}()
-	user, _ := s.UserRepo.FindById(req.UserId)
+
+	userName := ""
+	if req.UserId != 0 {
+		user, _ := s.UserRepo.FindById(req.UserId)
+		userName = user.Username
+	}
 
 	for _, endpoint := range endpoints {
 		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId = req.ProjectId, req.ServeId, req.CategoryId
 		endpoint.Status = 1
 		endpoint.SourceType = req.SourceType
 		if endpoint.CreateUser == "" {
-			endpoint.CreateUser = user.Username
+			endpoint.CreateUser = userName
 		}
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
 
@@ -293,8 +298,13 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 			}
 
 		} else if req.DataSyncType == consts.AutoAdd {
+			//只能合并，创建时间和更新时间不等，更新过了，则不覆盖
 			if err == nil {
-				continue
+				if res.CreatedAt != res.UpdatedAt {
+					continue
+				} else {
+					endpoint.ID = res.ID
+				}
 			}
 		}
 		_, err = s.Save(*endpoint)
@@ -569,7 +579,7 @@ func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 		for k, response := range intef.ResponseBodies {
 			schema := new(schemaHelper.SchemaRef)
 			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
-			if endpoint.SourceType == 1 && len(schema.Value.AllOf) > 0 {
+			if endpoint.SourceType == 1 && schema.Value != nil && len(schema.Value.AllOf) > 0 {
 				schema2conv.CombineSchemas(schema)
 			}
 			endpoint.Interfaces[key].ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)

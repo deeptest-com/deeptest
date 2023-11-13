@@ -107,6 +107,7 @@ func (r *DebugInterfaceRepo) GetDetail(interfId uint) (interf model.DebugInterfa
 	interf.ApiKey, _ = r.GetApiKey(interfId)
 
 	interf.GlobalParams, _ = r.GetGlobalParams(interfId)
+	interf.Cookies, _ = r.ListCookies(interfId)
 
 	return
 }
@@ -159,6 +160,11 @@ func (r *DebugInterfaceRepo) Save(interf *model.DebugInterface) (err error) {
 		}
 
 		err = r.UpdateGlobalParams(interf.ID, interf.GlobalParams)
+		if err != nil {
+			return err
+		}
+
+		err = r.UpdateCookies(interf.ID, interf.Cookies)
 		if err != nil {
 			return err
 		}

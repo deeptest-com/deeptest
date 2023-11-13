@@ -45,7 +45,7 @@ func Invoke(req *domain.BaseRequest) (resp domain.DebugResponse, err error) {
 		resp, err = httpHelper.Trace(*req)
 	}
 
-	GetContentProps(&resp)
+	GetContentProps(req, &resp)
 
 	return
 }
@@ -66,7 +66,7 @@ func GetRequestProps(req *domain.BaseRequest) {
 	req.BodyLang = consts.HttpRespLangType(typeName)
 }
 
-func GetContentProps(resp *domain.DebugResponse) {
+func GetContentProps(req *domain.BaseRequest, resp *domain.DebugResponse) {
 	resp.ContentLang = consts.LangTEXT
 
 	if resp.ContentLang == "" {
@@ -98,6 +98,8 @@ func GetContentProps(resp *domain.DebugResponse) {
 	}
 
 	//resp.Content = mockHelper.FormatXml(resp.Content)
+
+	fillCookieInHeader(req)
 
 	return
 }
@@ -209,9 +211,16 @@ func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	}
 	//}
 
+	var cookies []domain.ExecCookie
 	for idx, cookie := range req.Cookies {
+		if cookie.Disabled {
+			continue
+		}
 		req.Cookies[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(cookie.Value))
+		cookies = append(cookies, req.Cookies[idx])
 	}
+
+	req.Cookies = cookies
 }
 func replaceFormBodies(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	for _, v := range req.GlobalParams {
@@ -276,6 +285,12 @@ func mergeParams(req *domain.BaseRequest) {
 					req.GlobalParams[key].Disabled = true
 				}
 			}
+		} else if globalParam.In == consts.ParamInCookie {
+			for _, item := range req.Cookies {
+				if item.Name == globalParam.Name && !item.Disabled {
+					req.GlobalParams[key].Disabled = true
+				}
+			}
 		}
 
 	}
@@ -294,4 +309,23 @@ func MergeGlobalParams(globalParams, selfGlobalParam []domain.GlobalParam) (ret 
 	}
 
 	return
+}
+
+func fillCookieInHeader(req *domain.BaseRequest) {
+	var cookies = ""
+	for _, cookie := range req.Cookies {
+		if cookie.Name == "" || cookie.Value == "" {
+			continue
+		}
+		if cookies == "" {
+			cookies += fmt.Sprintf("%s=%s", cookie.Name, cookie.Value)
+		} else {
+			cookies += fmt.Sprintf(";%s=%s", cookie.Name, cookie.Value)
+		}
+	}
+
+	if cookies != "" {
+		req.Headers = append(req.Headers, domain.Header{Name: "Cookie", Value: cookies})
+	}
+
 }

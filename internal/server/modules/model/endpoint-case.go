@@ -21,9 +21,10 @@ type EndpointCase struct {
 
 	SrcId uint `json:"srcId"`
 
-	SerialNumber   string `json:"serialNumber"`
-	CreateUserId   uint   `json:"createUserId"`
-	CreateUserName string `json:"createUserName"`
+	SerialNumber   string         `json:"serialNumber"`
+	CreateUserId   uint           `json:"createUserId"`
+	CreateUserName string         `json:"createUserName"`
+	Children       []EndpointCase `gorm:"-" json:"children"`
 }
 
 func (EndpointCase) TableName() string {

@@ -27,7 +27,9 @@ type EndpointCaseRepo struct {
 func (r *EndpointCaseRepo) Paginate(req serverDomain.EndpointCaseReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.EndpointCase{}).Where("endpoint_id = ? AND NOT deleted", req.EndpointId)
+	db := r.DB.Model(&model.EndpointCase{}).
+		Where("endpoint_id = ? AND NOT deleted", req.EndpointId).
+		Where("case_type != ?", consts.CaseAlternative)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
@@ -42,7 +44,7 @@ func (r *EndpointCaseRepo) Paginate(req serverDomain.EndpointCaseReqPaginate) (d
 		return
 	}
 
-	cases := make([]model.EndpointCase, 0)
+	cases := make([]*model.EndpointCase, 0)
 
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
@@ -52,11 +54,33 @@ func (r *EndpointCaseRepo) Paginate(req serverDomain.EndpointCaseReqPaginate) (d
 		return
 	}
 
+	r.MountChildrenForBenchmark(cases)
 	data.Populate(cases, count, req.Page, req.PageSize)
 
 	return
 }
 
+func (r *EndpointCaseRepo) MountChildrenForBenchmark(cases []*model.EndpointCase) {
+	for _, v := range cases {
+		children, err := r.ListByCaseTypeAndBaseCase(consts.CaseAlternative, v.ID)
+		if err != nil {
+			continue
+		}
+
+		v.Children = children
+	}
+}
+
+func (r *EndpointCaseRepo) ListByCaseTypeAndBaseCase(caseType consts.CaseType, baseCase uint) (cases []model.EndpointCase, err error) {
+	err = r.DB.
+		Where("case_type=?", caseType).
+		Where("base_case=?", baseCase).
+		Where("NOT deleted").Order("created_at desc").
+		Find(&cases).Error
+
+	return
+
+}
 func (r *EndpointCaseRepo) List(endpointId uint) (pos []model.EndpointCase, err error) {
 	err = r.DB.
 		Where("endpoint_id=?", endpointId).

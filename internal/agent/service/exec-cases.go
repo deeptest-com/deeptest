@@ -21,9 +21,43 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 	execUtils.SendStartMsg(wsMsg)
 
 	// run case one by one
-	for _, cs := range req.Cases {
+	doExecCase(req, wsMsg, "")
+
+	// end msg
+	execUtils.SendEndMsg(wsMsg)
+
+	return
+}
+
+func doExecCase(req *agentExec.CasesExecReq, wsMsg *websocket.Message, parentUuid string) (err error) {
+	for _, cs := range req.Cases.Children {
+		if !cs.NeedExec {
+			continue
+		}
+
+		if cs.Category != "case" {
+			startMsg := iris.Map{
+				"source":     "execCases",
+				"execUuid":   req.ExecUUid,
+				"caseUuid":   cs.Key,
+				"category":   cs.Category,
+				"title":      cs.Title,
+				"parentUuid": parentUuid,
+			}
+			execUtils.SendExecMsg(startMsg, consts.ProgressResult, wsMsg)
+		}
+
+		if len(cs.Children) > 0 {
+			req.Cases = cs
+			doExecCase(req, wsMsg, cs.Key)
+		}
+
+		if cs.Category != "case" {
+			continue
+		}
+
 		caseInterfaceExecObj := GetCaseToExec(
-			req.ProjectId, req.BaseCaseId, cs, req.ServerUrl, req.Token, req.UsedBy)
+			req.ProjectId, req.BaseCaseId, *cs, req.ServerUrl, req.Token, req.UsedBy)
 
 		agentExec.CurrDebugInterfaceId = caseInterfaceExecObj.DebugData.DebugInterfaceId
 		agentExec.CurrScenarioProcessorId = 0 // not in a scenario
@@ -76,6 +110,10 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 			"response": resultResp,
 
 			"status": status,
+
+			"category":   cs.Category,
+			"title":      cs.Title,
+			"parentUuid": parentUuid,
 		}
 
 		// send result
@@ -86,9 +124,5 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 			break
 		}
 	}
-
-	// end msg
-	execUtils.SendEndMsg(wsMsg)
-
 	return
 }

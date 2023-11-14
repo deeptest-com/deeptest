@@ -15,7 +15,6 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 )
 
 var (
@@ -23,10 +22,8 @@ var (
 )
 
 type DataService struct {
-	DB              *gorm.DB
-	SysConfigSource *source.SysConfigSource `inject:""`
-	SysAgentSource  *source.SysAgentSource  `inject:""`
-
+	SysConfigSource        *source.SysConfigSource        `inject:""`
+	SysAgentSource         *source.SysAgentSource         `inject:""`
 	DataRepo               *repo.DataRepo                 `inject:""`
 	UserRepo               *repo.UserRepo                 `inject:""`
 	UserSource             *source.UserSource             `inject:""`
@@ -38,10 +35,6 @@ type DataService struct {
 	ProjectMenuSource      *source.ProjectMenuSource      `inject:""`
 	ProjectRoleMenuSource  *source.ProjectRoleMenuSource  `inject:""`
 	MockJsExpressionSource *source.MockJsExpressionSource `inject:""`
-}
- 
-func NewDataService(db *gorm.DB) *DataService {
-	return &DataService{DB: db}
 }
 
 // writeConfig 写入配置文件
@@ -83,7 +76,7 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 			return err
 		}
 	}
-	s.DataRepo = repo.NewDataRepo(s.DB)
+
 	if config.CONFIG.System.DbType == "mysql" {
 		if err := s.DataRepo.CreateMySqlDb(); err != nil {
 			return err

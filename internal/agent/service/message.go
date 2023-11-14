@@ -10,6 +10,7 @@ import (
 
 func RunMessage(req *agentExec.MessageExecReq, wsMsg *websocket.Message) (err error) {
 	// start msg
+	agentExec.SetIsRunning(req.ExecUuid, true)
 	err = execUtils.SendStartMsg(wsMsg)
 	if err != nil {
 		return err
@@ -23,12 +24,13 @@ func RunMessage(req *agentExec.MessageExecReq, wsMsg *websocket.Message) (err er
 		return err
 	}
 
-	err = sendSubmitResult(req.UserId, wsMsg)
+	err = sendSubmitResult(req.ExecUuid, wsMsg)
 	if err != nil {
 		return err
 	}
 
 	// end msg
+	agentExec.SetIsRunning(req.ExecUuid, false)
 	err = execUtils.SendEndMsg(wsMsg)
 	if err != nil {
 		return err
@@ -37,10 +39,10 @@ func RunMessage(req *agentExec.MessageExecReq, wsMsg *websocket.Message) (err er
 	return
 }
 
-func sendSubmitResult(userId uint, wsMsg *websocket.Message) (err error) {
+func sendSubmitResult(execUuid string, wsMsg *websocket.Message) (err error) {
 	result := agentDomain.MessageExecResult{
-		UserId: userId,
-		Name:   "提交执行结果成功",
+		ExecUuid: execUuid,
+		Name:     "提交执行结果成功",
 	}
 	execUtils.SendExecMsg(result, consts.Processor, wsMsg)
 

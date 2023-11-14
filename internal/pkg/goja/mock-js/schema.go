@@ -1,4 +1,4 @@
-package mockjsHelper
+package mockjs
 
 import (
 	"encoding/json"

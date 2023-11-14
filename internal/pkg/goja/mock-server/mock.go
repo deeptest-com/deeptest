@@ -1,4 +1,4 @@
-package mockHelper
+package mockServer
 
 import (
 	"encoding/json"

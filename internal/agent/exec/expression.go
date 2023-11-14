@@ -32,9 +32,9 @@ var (
 )
 
 // called by checkpoint
-func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret interface{}, err error) {
+func EvaluateGovaluateExpressionWithDebugVariables(expression string, execUuid string) (ret interface{}, err error) {
 	// 1
-	params, err := generateGovaluateParamsWithVariables(expression)
+	params, err := generateGovaluateParamsWithVariables(expression, execUuid)
 	if err != nil {
 		return
 	}
@@ -53,9 +53,9 @@ func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret inter
 }
 
 // called by agent processor interface
-func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint) (ret interface{}, err error) {
+func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint, execUuid string) (ret interface{}, err error) {
 	// 1
-	params, err := generateGovaluateParamsByScope(expression, scopeId)
+	params, err := generateGovaluateParamsByScope(expression, scopeId, execUuid)
 	if err != nil {
 		return
 	}
@@ -97,7 +97,7 @@ func convertGovaluateParamAndExpressionForProcessor(params domain.VarKeyValuePai
 }
 
 // a.1
-func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain.VarKeyValuePair, err error) {
+func generateGovaluateParamsByScope(expression string, scopeId uint, execUuid string) (ret domain.VarKeyValuePair, err error) {
 	ret = domain.VarKeyValuePair{}
 
 	variables := commUtils.GetVariablesInExpressionPlaceholder(expression)
@@ -106,7 +106,7 @@ func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain
 		varNameWithoutPlus := strings.TrimLeft(varName, "+")
 
 		var vari domain.ExecVariable
-		vari, err = GetVariable(scopeId, varNameWithoutPlus)
+		vari, err = GetVariable(scopeId, varNameWithoutPlus, execUuid)
 		variValueStr := valueUtils.InterfaceToStr(vari.Value)
 
 		if err == nil {
@@ -125,7 +125,7 @@ func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain
 }
 
 // a.2
-func generateGovaluateParamsWithVariables(expression string) (ret domain.VarKeyValuePair, err error) {
+func generateGovaluateParamsWithVariables(expression string, execUuid string) (ret domain.VarKeyValuePair, err error) {
 	ret = domain.VarKeyValuePair{}
 
 	variables := commUtils.GetVariablesInExpressionPlaceholder(expression)
@@ -133,7 +133,7 @@ func generateGovaluateParamsWithVariables(expression string) (ret domain.VarKeyV
 	for _, varName := range variables {
 		varNameWithoutPlus := strings.TrimLeft(varName, "+")
 
-		vari, _ := GetVariable(CurrScenarioProcessorId, varNameWithoutPlus)
+		vari, _ := GetVariable(GetCurrScenarioProcessorId(execUuid), varNameWithoutPlus, execUuid)
 		variValueStr := valueUtils.InterfaceToStr(vari.Value)
 
 		var val interface{}
@@ -149,7 +149,7 @@ func generateGovaluateParamsWithVariables(expression string) (ret domain.VarKeyV
 	return
 }
 
-func ReplaceDatapoolVariInGovaluateExpress(expression string) (ret string) {
+func ReplaceDatapoolVariInGovaluateExpress(expression string, execUuid string) (ret string) {
 	ret = expression
 	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(expression)
 
@@ -161,7 +161,7 @@ func ReplaceDatapoolVariInGovaluateExpress(expression string) (ret string) {
 		oldVal := fmt.Sprintf("${%s}", placeholder)
 
 		placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
-		newVal := getPlaceholderVariableValue(placeholderWithoutPlus)
+		newVal := getPlaceholderVariableValue(placeholderWithoutPlus, execUuid)
 		if strings.Index(placeholder, "+") != 0 {
 			newVal = "'" + newVal + "'"
 		}

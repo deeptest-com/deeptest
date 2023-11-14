@@ -15,9 +15,10 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 
 	// reset exec
 	agentExec.ResetStat()
-	agentExec.ForceStopExec = false
+	agentExec.SetForceStopExec(req.ExecUuid, false)
 
 	// start msg
+	agentExec.SetIsRunning(req.ExecUuid, true)
 	execUtils.SendStartMsg(wsMsg)
 
 	// run case one by one
@@ -25,26 +26,26 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 		caseInterfaceExecObj := GetCaseToExec(
 			req.ProjectId, req.BaseCaseId, cs, req.ServerUrl, req.Token, req.UsedBy)
 
-		agentExec.CurrDebugInterfaceId = caseInterfaceExecObj.DebugData.DebugInterfaceId
-		agentExec.CurrScenarioProcessorId = 0 // not in a scenario
+		agentExec.SetCurrDebugInterfaceId(req.ExecUuid, caseInterfaceExecObj.DebugData.DebugInterfaceId)
+		agentExec.SetCurrScenarioProcessorId(req.ExecUuid, 0) // not in a scenario
 
-		agentExec.CurrRequest = domain.BaseRequest{}
-		agentExec.CurrResponse = domain.DebugResponse{}
-		agentExec.ExecScene = caseInterfaceExecObj.ExecScene
+		agentExec.SetCurrRequest(req.ExecUuid, domain.BaseRequest{})
+		agentExec.SetCurrResponse(req.ExecUuid, domain.DebugResponse{})
+		agentExec.SetExecScene(req.ExecUuid, caseInterfaceExecObj.ExecScene)
 
 		// init context
-		agentExec.InitDebugExecContext()
-		agentExec.InitJsRuntime(req.ProjectId)
+		agentExec.InitDebugExecContext(req.ExecUuid)
+		agentExec.InitJsRuntime(req.ProjectId, req.ExecUuid)
 
-		statusPreCondition, _ := agentExec.ExecPreConditions(caseInterfaceExecObj) // must before PreRequest, since it will update the vari in script
-		originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData)
+		statusPreCondition, _ := agentExec.ExecPreConditions(caseInterfaceExecObj, req.ExecUuid) // must before PreRequest, since it will update the vari in script
+		originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData, req.ExecUuid)
 
 		agentExec.SetReqValueToGoja(caseInterfaceExecObj.DebugData.BaseRequest)
-		agentExec.GetReqValueFromGoja()
+		agentExec.GetReqValueFromGoja(req.ExecUuid)
 
 		// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
-		if agentExec.CurrRequest.Url != "" {
-			caseInterfaceExecObj.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
+		if agentExec.GetCurrRequest(req.ExecUuid).Url != "" {
+			caseInterfaceExecObj.DebugData.BaseRequest = agentExec.GetCurrRequest(req.ExecUuid) // update to the value changed in goja
 		}
 
 		resultResp, err1 := RequestInterface(&caseInterfaceExecObj.DebugData)
@@ -54,12 +55,12 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 		}
 
 		agentExec.SetRespValueToGoja(resultResp)
-		statusPostCondition, _ := agentExec.ExecPostConditions(&caseInterfaceExecObj, resultResp)
-		agentExec.GetRespValueFromGoja()
+		statusPostCondition, _ := agentExec.ExecPostConditions(&caseInterfaceExecObj, resultResp, req.ExecUuid)
+		agentExec.GetRespValueFromGoja(req.ExecUuid)
 		PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
 
-		if agentExec.CurrResponse.Data != nil {
-			resultResp = agentExec.CurrResponse
+		if agentExec.GetCurrResponse(req.ExecUuid).Data != nil {
+			resultResp = agentExec.GetCurrResponse(req.ExecUuid)
 		}
 
 		status := consts.Pass
@@ -82,12 +83,13 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 		execUtils.SendExecMsg(result, consts.ProgressResult, wsMsg)
 
 		// stop if needed
-		if agentExec.ForceStopExec {
+		if agentExec.GetForceStopExec(req.ExecUuid) {
 			break
 		}
 	}
 
 	// end msg
+	agentExec.SetIsRunning(req.ExecUuid, false)
 	execUtils.SendEndMsg(wsMsg)
 
 	return

@@ -102,32 +102,31 @@ func GetContentProps(resp *domain.DebugResponse) {
 	return
 }
 
-func ReplaceVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
+func ReplaceVariables(req *domain.BaseRequest, usedBy consts.UsedBy, execUuid string) {
 	//每个接口的局部参数覆盖全局参数
 	//req.GlobalParams = MergeGlobalParams(ExecScene.GlobalParams, req.GlobalParams)
 	mergeParams(req)
-	replaceUrl(req, usedBy)
+	replaceUrl(req, usedBy, execUuid)
 
-	replaceQueryParams(req, usedBy)
-	replacePathParams(req, usedBy)
-	replaceHeaders(req, usedBy)
-	replaceCookies(req, usedBy)
-	replaceFormBodies(req, usedBy)
+	replaceQueryParams(req, usedBy, execUuid)
+	replacePathParams(req, usedBy, execUuid)
+	replaceHeaders(req, usedBy, execUuid)
+	replaceCookies(req, usedBy, execUuid)
+	replaceFormBodies(req, usedBy, execUuid)
 
-	replaceBody(req)
-	replaceAuthor(req)
+	replaceBody(req, execUuid)
+	replaceAuthor(req, execUuid)
 }
 
-func DealwithCookies(req *domain.BaseRequest, processorId uint) {
-	req.Cookies = ListScopeCookie(processorId)
+func DealwithCookies(req *domain.BaseRequest, processorId uint, execUuid string) {
+	req.Cookies = ListScopeCookie(processorId, execUuid)
 }
 
-func replaceUrl(req *domain.BaseRequest, usedBy consts.UsedBy) {
+func replaceUrl(req *domain.BaseRequest, usedBy consts.UsedBy, execUuid string) {
 	// project's global params already be added
-	req.Url = ReplaceVariableValue(req.Url)
+	req.Url = ReplaceVariableValue(req.Url, execUuid)
 }
-func replaceQueryParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
-
+func replaceQueryParams(req *domain.BaseRequest, usedBy consts.UsedBy, execUuid string) {
 	for _, p := range req.GlobalParams {
 		if !p.Disabled && p.In == consts.ParamInQuery {
 			req.QueryParams = append(req.QueryParams, domain.Param{
@@ -142,14 +141,14 @@ func replaceQueryParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 		if param.Disabled {
 			continue
 		}
-		req.QueryParams[idx].Value = ReplaceVariableValue(param.Value)
+		req.QueryParams[idx].Value = ReplaceVariableValue(param.Value, execUuid)
 		queryParams = append(queryParams, req.QueryParams[idx])
 	}
 
 	req.QueryParams = queryParams
 }
 
-func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
+func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy, execUuid string) {
 	/*
 		for _, p := range ExecScene.GlobalParams {
 			if p.In == consts.ParamInQuery {
@@ -166,7 +165,7 @@ func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 		if param.Disabled {
 			continue
 		}
-		req.PathParams[idx].Value = ReplaceVariableValue(param.Value)
+		req.PathParams[idx].Value = ReplaceVariableValue(param.Value, execUuid)
 		pathParams = append(pathParams, req.PathParams[idx])
 	}
 
@@ -175,8 +174,7 @@ func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	return
 }
 
-func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
-
+func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy, execUuid string) {
 	for _, p := range req.GlobalParams {
 		if p.In == consts.ParamInHeader && !p.Disabled {
 			req.Headers = append(req.Headers, domain.Header{
@@ -191,13 +189,13 @@ func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 		if header.Disabled {
 			continue
 		}
-		req.Headers[idx].Value = ReplaceVariableValue(header.Value)
+		req.Headers[idx].Value = ReplaceVariableValue(header.Value, execUuid)
 		headers = append(headers, req.Headers[idx])
 	}
 
 	req.Headers = headers
 }
-func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy) {
+func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy, execUuid string) {
 	//if usedBy == consts.ScenarioDebug {
 	for _, p := range req.GlobalParams {
 		if p.In == consts.ParamInCookie && !p.Disabled {
@@ -210,10 +208,10 @@ func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	//}
 
 	for idx, cookie := range req.Cookies {
-		req.Cookies[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(cookie.Value))
+		req.Cookies[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(cookie.Value), execUuid)
 	}
 }
-func replaceFormBodies(req *domain.BaseRequest, usedBy consts.UsedBy) {
+func replaceFormBodies(req *domain.BaseRequest, usedBy consts.UsedBy, execUuid string) {
 	for _, v := range req.GlobalParams {
 		if v.In == consts.ParamInBody && !v.Disabled {
 			req.BodyFormData = append(req.BodyFormData, domain.BodyFormDataItem{
@@ -229,40 +227,39 @@ func replaceFormBodies(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	}
 
 	for idx, item := range req.BodyFormData {
-		req.BodyFormData[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(item.Value))
+		req.BodyFormData[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(item.Value), execUuid)
 	}
 	for idx, item := range req.BodyFormUrlencoded {
-		req.BodyFormUrlencoded[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(item.Value))
+		req.BodyFormUrlencoded[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(item.Value), execUuid)
 	}
 }
-func replaceBody(req *domain.BaseRequest) {
-	req.Body = ReplaceVariableValueInBody(req.Body)
+func replaceBody(req *domain.BaseRequest, execUuid string) {
+	req.Body = ReplaceVariableValueInBody(req.Body, execUuid)
 }
-func replaceAuthor(req *domain.BaseRequest) {
+func replaceAuthor(req *domain.BaseRequest, execUuid string) {
 	if req.AuthorizationType == consts.BasicAuth {
-		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username)
-		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password)
+		req.BasicAuth.Username = ReplaceVariableValue(req.BasicAuth.Username, execUuid)
+		req.BasicAuth.Password = ReplaceVariableValue(req.BasicAuth.Password, execUuid)
 
 	} else if req.AuthorizationType == consts.BearerToken {
-		req.BearerToken.Token = ReplaceVariableValue(req.BearerToken.Token)
+		req.BearerToken.Token = ReplaceVariableValue(req.BearerToken.Token, execUuid)
 
 	} else if req.AuthorizationType == consts.OAuth2 {
-		req.OAuth20.Name = ReplaceVariableValue(req.OAuth20.Name)
-		req.OAuth20.CallbackUrl = ReplaceVariableValue(req.OAuth20.CallbackUrl)
-		req.OAuth20.AuthURL = ReplaceVariableValue(req.OAuth20.AuthURL)
-		req.OAuth20.AccessTokenURL = ReplaceVariableValue(req.OAuth20.AccessTokenURL)
-		req.OAuth20.ClientID = ReplaceVariableValue(req.OAuth20.ClientID)
-		req.OAuth20.Scope = ReplaceVariableValue(req.OAuth20.Scope)
+		req.OAuth20.Name = ReplaceVariableValue(req.OAuth20.Name, execUuid)
+		req.OAuth20.CallbackUrl = ReplaceVariableValue(req.OAuth20.CallbackUrl, execUuid)
+		req.OAuth20.AuthURL = ReplaceVariableValue(req.OAuth20.AuthURL, execUuid)
+		req.OAuth20.AccessTokenURL = ReplaceVariableValue(req.OAuth20.AccessTokenURL, execUuid)
+		req.OAuth20.ClientID = ReplaceVariableValue(req.OAuth20.ClientID, execUuid)
+		req.OAuth20.Scope = ReplaceVariableValue(req.OAuth20.Scope, execUuid)
 
 	} else if req.AuthorizationType == consts.ApiKey {
-		req.ApiKey.Key = ReplaceVariableValue(req.ApiKey.Key)
-		req.ApiKey.Value = ReplaceVariableValue(req.ApiKey.Value)
-		req.ApiKey.TransferMode = ReplaceVariableValue(req.ApiKey.TransferMode)
+		req.ApiKey.Key = ReplaceVariableValue(req.ApiKey.Key, execUuid)
+		req.ApiKey.Value = ReplaceVariableValue(req.ApiKey.Value, execUuid)
+		req.ApiKey.TransferMode = ReplaceVariableValue(req.ApiKey.TransferMode, execUuid)
 	}
 }
 
 func mergeParams(req *domain.BaseRequest) {
-
 	for key, globalParam := range req.GlobalParams {
 		if globalParam.In == consts.ParamInQuery {
 			for _, item := range req.QueryParams {
@@ -283,7 +280,6 @@ func mergeParams(req *domain.BaseRequest) {
 }
 
 func MergeGlobalParams(globalParams, selfGlobalParam []domain.GlobalParam) (ret []domain.GlobalParam) {
-
 	ret = globalParams
 	for key, globalParam := range ret {
 		for _, param := range selfGlobalParam {

@@ -45,7 +45,7 @@ func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err er
 
 	for _, child := range processor.Children {
 
-		if ForceStopExec {
+		if GetForceStopExec(session.ExecUuid) {
 			break
 		}
 		if child.Disable {

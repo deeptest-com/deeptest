@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	mockServer "github.com/aaronchen2k/deeptest/internal/pkg/goja/mock-server"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
-	mockHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mock"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -115,14 +115,14 @@ func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, req mockGenerator
 		return
 	}
 
-	mockHelper.InitJsRuntime()
-	mockHelper.SetReqValueToGoja(req)
-	mockHelper.SetRespValueToGoja(*resp)
-	mockHelper.ExecScript(script.Content)
-	mockHelper.GetRespValueFromGoja()
+	mockServer.InitJsRuntime()
+	mockServer.SetReqValueToGoja(req)
+	mockServer.SetRespValueToGoja(*resp)
+	mockServer.ExecScript(script.Content)
+	mockServer.GetRespValueFromGoja()
 
-	if mockHelper.CurrResponse.Data != nil {
-		*resp = mockHelper.CurrResponse
+	if mockServer.CurrResponse.Data != nil {
+		*resp = mockServer.CurrResponse
 	}
 	return
 }

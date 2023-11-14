@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	mockjsHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mockjs"
+	mockjs "github.com/aaronchen2k/deeptest/internal/pkg/goja/mock-js"
 	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
 	"github.com/getkin/kin-openapi/openapi3"
 	"math/rand"
@@ -256,12 +256,12 @@ func (s *Schema2conv) mock(expr string, typ string) interface{} {
 		Expression: expr,
 	}
 
-	ret, err := mockjsHelper.EvaluateExpression(req)
+	ret, err := mockjs.EvaluateExpression(req)
 	if err != nil {
 		return nil
 	}
 
-	return mockjsHelper.ConvertData(ret.Result, typ)
+	return mockjs.ConvertData(ret.Result, typ)
 }
 
 func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {

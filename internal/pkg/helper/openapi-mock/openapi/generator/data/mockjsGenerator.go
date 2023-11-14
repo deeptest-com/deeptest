@@ -3,7 +3,7 @@ package mockData
 import (
 	"context"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	mockjsHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/mockjs"
+	mockjs "github.com/aaronchen2k/deeptest/internal/pkg/goja/mock-js"
 	"github.com/getkin/kin-openapi/openapi3"
 )
 
@@ -13,14 +13,14 @@ type MockjsGenerator struct {
 }
 
 func (g *MockjsGenerator) GenerateDataBySchema(ctx context.Context, schema *openapi3.Schema) (value Data, err error) {
-	expr := mockjsHelper.GetMockJsSchemaExpression(schema)
+	expr := mockjs.GetMockJsSchemaExpression(schema)
 	req := serverDomain.MockJsExpression{
 		Expression: expr,
 	}
 
-	ret, err := mockjsHelper.EvaluateExpression(req)
+	ret, err := mockjs.EvaluateExpression(req)
 
-	value = mockjsHelper.ConvertData(ret.Result, schema.Type)
+	value = mockjs.ConvertData(ret.Result, schema.Type)
 
 	return
 }

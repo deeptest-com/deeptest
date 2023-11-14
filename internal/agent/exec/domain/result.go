@@ -77,8 +77,8 @@ type PlanExecResult struct {
 }
 
 type MessageExecResult struct {
-	UserId uint   `json:"userId"`
-	Name   string `json:"name"`
+	ExecUuid string `json:"execUuid"`
+	Name     string `json:"name"`
 }
 
 type CaseExecResult struct {

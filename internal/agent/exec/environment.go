@@ -9,10 +9,12 @@ import (
 	"strings"
 )
 
-func GenRequestUrlWithBaseUrlAndPathParam(req *domain.BaseRequest, debugInterfaceId uint, baseUrl string) {
+func GenRequestUrlWithBaseUrlAndPathParam(req *domain.BaseRequest, debugInterfaceId uint, baseUrl string, execUuid string) {
+	execScene := GetExecScene(execUuid)
+
 	// get base url by key consts.KEY_BASE_URL in Environment Variables from server
-	envId := ExecScene.DebugInterfaceToEnvMap[debugInterfaceId]
-	vars := ExecScene.EnvToVariables[envId]
+	envId := execScene.DebugInterfaceToEnvMap[debugInterfaceId]
+	vars := execScene.EnvToVariables[envId]
 	if baseUrl == "" {
 		vari, _ := getVariableFromList(consts.KEY_BASE_URL, vars)
 		baseUrl = fmt.Sprintf("%v", vari.Value)

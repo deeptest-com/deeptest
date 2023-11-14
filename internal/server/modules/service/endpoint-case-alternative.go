@@ -420,7 +420,7 @@ func (s *EndpointCaseAlternativeService) LoadCaseForExec(req agentExec.CasesExec
 	ret.DebugData, _ = s.LoadDebugDataForExec(req)
 
 	// load default environment for user
-	env, _ := s.EnvironmentRepo.GetByUserAndProject(req.UserId, req.ProjectId)
+	env, _ := s.EnvironmentRepo.GetByUserAndProject(req.ExecUuid, req.ProjectId)
 	if env.ID > 0 {
 		ret.DebugData.ServerId = env.ID
 	}

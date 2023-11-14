@@ -1,4 +1,4 @@
-package mockjsHelper
+package mockjs
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"

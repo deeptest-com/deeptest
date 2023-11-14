@@ -5,22 +5,27 @@ import (
 	"time"
 )
 
-func ListScopeCookie(processorId uint) (cookies []domain.ExecCookie) {
-	allValidIds := ScopeHierarchy[processorId]
+func ListScopeCookie(processorId uint, execUuid string) (cookies []domain.ExecCookie) {
+	scopeHierarchy := GetScopeHierarchy(execUuid)
+
+	allValidIds := scopeHierarchy[processorId]
 	if allValidIds != nil {
-		for _, id := range *ScopeHierarchy[processorId] {
-			cookies = append(cookies, ScopedCookies[id]...)
+		for _, id := range *scopeHierarchy[processorId] {
+			cookies = append(cookies, GetScopedCookies(execUuid)[id]...)
 		}
 	}
 
 	return
 }
 
-func GetCookie(processorId uint, cookieName, domain string) (cookie domain.ExecCookie) {
-	allValidIds := ScopeHierarchy[processorId]
+func GetCookie(processorId uint, cookieName, domain string, execUuid string) (cookie domain.ExecCookie) {
+	scopeHierarchy := GetScopeHierarchy(execUuid)
+	scopedCookies := GetScopedCookies(execUuid)
+
+	allValidIds := scopeHierarchy[processorId]
 	if allValidIds != nil {
-		for _, id := range *ScopeHierarchy[processorId] {
-			for _, item := range ScopedCookies[id] {
+		for _, id := range *scopeHierarchy[processorId] {
+			for _, item := range scopedCookies[id] {
 				if item.Name == cookieName && (item.Domain == "" || domain == "" || item.Domain == domain) &&
 					(item.ExpireTime == nil || item.ExpireTime.Unix() > time.Now().Unix()) {
 					cookie = item
@@ -36,7 +41,9 @@ LABEL:
 	return
 }
 
-func SetCookie(processorId uint, cookieName string, cookieValue interface{}, domainName string, expireTime *time.Time) (err error) {
+func SetCookie(processorId uint, cookieName string, cookieValue interface{}, domainName string, expireTime *time.Time, execUuid string) (err error) {
+	scopedCookies := GetScopedCookies(execUuid)
+
 	found := false
 
 	newCookie := domain.ExecCookie{
@@ -48,9 +55,9 @@ func SetCookie(processorId uint, cookieName string, cookieValue interface{}, dom
 		ExpireTime: expireTime,
 	}
 
-	for i := 0; i < len(ScopedCookies[processorId]); i++ {
-		if ScopedCookies[processorId][i].Name == cookieName {
-			ScopedCookies[processorId][i] = newCookie
+	for i := 0; i < len(scopedCookies[processorId]); i++ {
+		if scopedCookies[processorId][i].Name == cookieName {
+			scopedCookies[processorId][i] = newCookie
 
 			found = true
 			break
@@ -58,15 +65,19 @@ func SetCookie(processorId uint, cookieName string, cookieValue interface{}, dom
 	}
 
 	if !found {
-		ScopedCookies[processorId] = append(ScopedCookies[processorId], newCookie)
+		scopedCookies[processorId] = append(scopedCookies[processorId], newCookie)
 	}
+
+	SetScopedCookies(execUuid, scopedCookies)
 
 	return
 }
 
-func ClearCookie(processorId uint, cookieName string) (err error) {
+func ClearCookie(processorId uint, cookieName string, execUuid string) (err error) {
+	scopedCookies := GetScopedCookies(execUuid)
+
 	deleteIndex := -1
-	for index, item := range ScopedCookies[processorId] {
+	for index, item := range scopedCookies[processorId] {
 		if item.Name == cookieName {
 			deleteIndex = index
 			break
@@ -74,8 +85,10 @@ func ClearCookie(processorId uint, cookieName string) (err error) {
 	}
 
 	if deleteIndex > -1 {
-		ScopedCookies[processorId] = append(
-			ScopedCookies[processorId][:deleteIndex], ScopedCookies[processorId][(deleteIndex+1):]...)
+		scopedCookies[processorId] = append(
+			scopedCookies[processorId][:deleteIndex], scopedCookies[processorId][(deleteIndex+1):]...)
+
+		SetScopedCookies(execUuid, scopedCookies)
 	}
 
 	return

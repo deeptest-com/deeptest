@@ -1,7 +1,7 @@
 package agentExec
 
 type MessageExecReq struct {
-	UserId    uint   `json:"userId"`
+	ExecUuid  string `json:"execUuid"`
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 }

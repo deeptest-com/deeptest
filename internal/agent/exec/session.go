@@ -10,6 +10,7 @@ import (
 )
 
 type Session struct {
+	ExecUuid   string
 	ScenarioId uint
 	Name       string
 
@@ -27,6 +28,7 @@ func NewSession(req *ScenarioExecObj, failfast bool, wsMsg *websocket.Message) (
 	root := req.RootProcessor
 
 	session := Session{
+		ExecUuid:      req.ExecUuid,
 		ScenarioId:    root.ScenarioId,
 		Name:          req.Name,
 		RootProcessor: root,

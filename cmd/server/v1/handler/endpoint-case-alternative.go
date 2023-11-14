@@ -99,7 +99,7 @@ func (c *EndpointCaseAlternativeCtrl) LoadCaseForExec(ctx iris.Context) {
 		return
 	}
 
-	req.UserId = multi.GetUserId(ctx)
+	req.ExecUuid = multi.GetUserId(ctx)
 
 	ret, err := c.EndpointCaseAlternativeService.LoadCaseForExec(req)
 

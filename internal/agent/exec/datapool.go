@@ -11,7 +11,8 @@ import (
 	"time"
 )
 
-func getDatapoolValue(placeholder string) (ret string) {
+func getDatapoolValue(placeholder string, execUuid string) (ret string) {
+	execScene := GetExecScene(execUuid)
 	// _dp(name, col, 1 | seq | rand >)
 
 	regex := regexp.MustCompile(fmt.Sprintf("(?Ui)%s\\((.+),(.+),(.+)\\)", consts.PlaceholderPrefixDatapool))
@@ -25,20 +26,20 @@ func getDatapoolValue(placeholder string) (ret string) {
 	dpCol := strings.TrimSpace(arrs[0][2])
 	dpSeq := strings.TrimSpace(arrs[0][3])
 
-	dp := ExecScene.Datapools[dpName]
+	dp := execScene.Datapools[dpName]
 	if dp == nil {
 		ret = fmt.Sprintf("${%s}", placeholder)
 		return
 	}
 
-	rowIndex := getDatapoolRow(dpName, dpSeq, ExecScene.Datapools)
+	rowIndex := getDatapoolRow(dpName, dpSeq, GetExecScene(execUuid).Datapools, execUuid)
 
-	if rowIndex > len(ExecScene.Datapools[dpName])-1 {
+	if rowIndex > len(execScene.Datapools[dpName])-1 {
 		ret = "OUT_OF_RANGE"
 		return
 	}
 
-	val := ExecScene.Datapools[dpName][rowIndex][dpCol]
+	val := execScene.Datapools[dpName][rowIndex][dpCol]
 	if val == nil {
 		val = "NOT_FOUND"
 	}
@@ -48,7 +49,9 @@ func getDatapoolValue(placeholder string) (ret string) {
 	return
 }
 
-func getDatapoolRow(dpName, seq string, datapools domain.Datapools) (ret int) {
+func getDatapoolRow(dpName, seq string, datapools domain.Datapools, execUuid string) (ret int) {
+	datapoolCursor := GetDatapoolCursor(execUuid)
+
 	dp := datapools[dpName]
 	if dp == nil {
 		return
@@ -57,8 +60,8 @@ func getDatapoolRow(dpName, seq string, datapools domain.Datapools) (ret int) {
 	total := len(dp)
 
 	if seq == "seq" {
-		ret = DatapoolCursor[dpName] % total
-		DatapoolCursor[dpName]++
+		ret = datapoolCursor[dpName] % total
+		datapoolCursor[dpName]++
 
 	} else if seq == "rand" {
 		rand.Seed(time.Now().Unix())

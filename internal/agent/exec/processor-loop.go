@@ -57,9 +57,9 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
 
 	if entity.ProcessorType == consts.ProcessorLoopUntil {
-		entity.runLoopUntil(session, processor, processor.Result.Iterator)
+		entity.runLoopUntil(session, processor, processor.Result.Iterator, session.ExecUuid)
 	} else {
-		entity.runLoopItems(session, processor, processor.Result.Iterator)
+		entity.runLoopItems(session, processor, processor.Result.Iterator, session.ExecUuid)
 	}
 
 	processor.AddResultToParent()
@@ -70,11 +70,11 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 	return
 }
 
-func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
+func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator, execUuid string) (err error) {
 	executedProcessorIds := map[uint]bool{}
 
 	for index, item := range iterator.Items {
-		if ForceStopExec {
+		if GetForceStopExec(session.ExecUuid) {
 			break
 		}
 		if DemoTestSite != "" && index > 2 {
@@ -90,11 +90,11 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 			execUtils.SendExecMsg(msg, session.WsMsg)
 		*/
 
-		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
+		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public, execUuid)
 
 		round := ""
 		for _, child := range processor.Children {
-			if ForceStopExec {
+			if GetForceStopExec(session.ExecUuid) {
 				break
 			}
 			if child.Disable {
@@ -119,7 +119,7 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 
 		// check break
 		result := agentDomain.ScenarioExecResult{}
-		result.WillBreak, result.Summary, result.Detail = entity.getBeak()
+		result.WillBreak, result.Summary, result.Detail = entity.getBreak(session.ExecUuid)
 		if result.WillBreak {
 			execUtils.SendExecMsg(result, consts.Processor, session.WsMsg)
 			break
@@ -132,13 +132,14 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 	return
 }
 
-func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
+func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor, iterator agentDomain.ExecIterator,
+	execUuid string) (err error) {
 	expression := iterator.UntilExpression
 
 	executedProcessorIds := map[uint]bool{}
 	index := 0
 	for {
-		if ForceStopExec {
+		if GetForceStopExec(session.ExecUuid) {
 			break
 		}
 		if DemoTestSite != "" && index > 2 {
@@ -146,7 +147,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		}
 		index += 1
 
-		result, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID)
+		result, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID, execUuid)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {
 			result := agentDomain.ScenarioExecResult{
@@ -160,7 +161,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 
 		round := ""
 		for _, child := range processor.Children {
-			if ForceStopExec {
+			if GetForceStopExec(session.ExecUuid) {
 				break
 			}
 			if child.Disable {
@@ -196,15 +197,15 @@ LABEL:
 	return
 }
 
-func (entity *ProcessorLoop) getBeak() (ret bool, msg string, detailStr string) {
+func (entity *ProcessorLoop) getBreak(execUuid string) (ret bool, msg string, detailStr string) {
 	breakIfExpress := strings.TrimSpace(entity.BreakIfExpression)
 
 	if breakIfExpress == "" {
 		return
 	}
 
-	expr := ReplaceDatapoolVariInGovaluateExpress(breakIfExpress)
-	result, _ := EvaluateGovaluateExpressionByProcessorScope(expr, entity.ProcessorID)
+	expr := ReplaceDatapoolVariInGovaluateExpress(breakIfExpress, execUuid)
+	result, _ := EvaluateGovaluateExpressionByProcessorScope(expr, entity.ProcessorID, execUuid)
 
 	ret, ok := result.(bool)
 	pass := false

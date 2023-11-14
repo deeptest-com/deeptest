@@ -33,6 +33,7 @@ type Endpoint struct {
 
 	GlobalParams  []EnvironmentParam `gorm:"-" json:"globalParams"`
 	BodyIsChanged bool               `json:"bodyIsChanged"`
+	Snapshot      string             `gorm:"type:longtext" json:"snapshot"`
 }
 
 func (Endpoint) TableName() string {

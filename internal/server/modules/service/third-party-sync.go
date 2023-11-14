@@ -346,3 +346,24 @@ func (s *ThirdPartySyncService) AddThirdPartySyncCron() {
 func (s *ThirdPartySyncService) GetAllData() (res []model.ThirdPartySync, err error) {
 	return s.ThirdPartySyncRepo.AllData()
 }
+
+func (s *ThirdPartySyncService) SyncFunctionBody(projectId, serveId, interfaceId uint, classCode, functionCode string) (err error) {
+	syncConfig, err := s.ThirdPartySyncRepo.GetByProjectAndServe(projectId, serveId)
+	if err != nil {
+		return
+	}
+
+	token, err := s.GetToken(syncConfig.Url)
+	if err != nil {
+		return
+	}
+
+	functionDetail := s.GetFunctionDetail(classCode, functionCode, token, syncConfig.Url)
+	if functionDetail.Code == "" {
+		return
+	}
+
+	err = s.SaveBody(functionDetail, interfaceId)
+
+	return
+}

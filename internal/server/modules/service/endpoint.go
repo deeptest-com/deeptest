@@ -36,6 +36,7 @@ type EndpointService struct {
 	EndpointTagService       *EndpointTagService         `inject:""`
 	ServeService             *ServeService               `inject:""`
 	MessageService           *MessageService             `inject:""`
+	ThirdPartySyncService    *ThirdPartySyncService      `inject:""`
 	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
 	EnvironmentRepo          *repo.EnvironmentRepo       `inject:""`
 }
@@ -629,4 +630,27 @@ func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{
 
 	return
 
+}
+
+func (s *EndpointService) SyncFromThirdParty(endpointId uint) (err error) {
+	endpoint, err := s.EndpointRepo.Get(endpointId)
+	endpoint.Interfaces, _ = s.EndpointInterfaceRepo.ListByEndpointId(endpoint.ID, "v0.1.0")
+	if err != nil {
+		return
+	}
+
+	if !endpoint.BodyIsChanged || endpoint.SourceType != consts.ThirdPartySync || endpoint.CategoryId == -1 || len(endpoint.Interfaces) == 0 {
+		return
+	}
+
+	pathArr := strings.Split(endpoint.Path, "/")
+
+	err = s.ThirdPartySyncService.SyncFunctionBody(endpoint.ProjectId, endpoint.ServeId, endpoint.Interfaces[0].ID, pathArr[2], pathArr[3])
+	if err != nil {
+		return
+	}
+
+	err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, false)
+
+	return
 }

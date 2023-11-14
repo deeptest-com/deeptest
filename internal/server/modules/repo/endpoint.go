@@ -500,3 +500,11 @@ func (r *EndpointRepo) GetByNameAndProject(name string, projectId uint) (res mod
 		First(&res).Error
 	return
 }
+
+func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, bodyIsChanged bool) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		Update("body_is_changed", bodyIsChanged).Error
+
+	return
+}

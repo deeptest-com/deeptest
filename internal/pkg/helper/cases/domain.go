@@ -26,4 +26,5 @@ type AlternativeCase struct {
 	Ordr     int                `json:"ordr"`
 	Children []*AlternativeCase `json:"children"`
 	Slots    iris.Map           `json:"slots"`
+	NeedExec bool               `json:"needExec"`
 }

@@ -68,11 +68,15 @@ func (s *EndpointCaseService) Copy(id int, newNamePrefix string, userId uint, us
 	debugData.UsedBy = consts.CaseDebug
 
 	if newNamePrefix == "" {
-		newNamePrefix = "copy-"
+		newNamePrefix = "copy-" + endpointCase.Name
 	}
 
+	caseType := endpointCase.CaseType
+	if caseType == consts.CaseBenchmark {
+		caseType = consts.CaseDefault
+	}
 	req := serverDomain.EndpointCaseSaveReq{
-		Name:       newNamePrefix + endpointCase.Name,
+		Name:       newNamePrefix,
 		EndpointId: endpointCase.EndpointId,
 		ServeId:    endpointCase.ServeId,
 		ProjectId:  endpointCase.ProjectId,
@@ -82,6 +86,8 @@ func (s *EndpointCaseService) Copy(id int, newNamePrefix string, userId uint, us
 
 		Method:    endpointCase.Method,
 		DebugData: debugData,
+		CaseType:  caseType,
+		BaseCase:  endpointCase.BaseCase,
 	}
 
 	s.CopyValueFromRequest(&po, req)

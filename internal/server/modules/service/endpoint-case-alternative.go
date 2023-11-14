@@ -149,6 +149,7 @@ func (s *EndpointCaseAlternativeService) SaveFactor(req serverDomain.EndpointCas
 func (s *EndpointCaseAlternativeService) SaveCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	typ := req.Type
 	if typ == "multi" {
+		req.Prefix = ""
 		count, err = s.GenMultiCases(req)
 	} else if typ == "single" {
 		count, err = s.GenSingleCase(req)
@@ -158,12 +159,25 @@ func (s *EndpointCaseAlternativeService) SaveCase(req serverDomain.EndpointCaseA
 }
 
 func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
-	for _, val := range req.Values {
-		if val.Category != consts.AlternativeCaseCase {
+	for _, val := range req.Values.Children {
+		if !val.NeedExec {
 			continue
 		}
 
-		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, "extend-", req.CreateUserId, req.CreateUserName)
+		if req.Prefix == "" {
+			req.Prefix = val.Title + "异常-"
+		} else if val.Category != consts.AlternativeCaseCase {
+			req.Prefix = req.Prefix + val.Title + "-"
+		}
+
+		if val.Category != consts.AlternativeCaseCase {
+			req.Values = *val
+			s.GenMultiCases(req)
+
+			continue
+		}
+
+		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, req.Prefix+val.Title, req.CreateUserId, req.CreateUserName)
 		if err1 != nil {
 			err = err1
 			return
@@ -197,7 +211,7 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 
 func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	// copy new case
-	newEndpointCase, err := s.EndpointCaseService.Copy(req.BaseId, "extend-",
+	newEndpointCase, err := s.EndpointCaseService.Copy(req.BaseId, "多参数异常",
 		req.CreateUserId, req.CreateUserName)
 
 	s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
@@ -212,8 +226,8 @@ func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.Endpoint
 	}
 
 	// change field value by path if exist
-	for _, val := range req.Values {
-		if val.Category != consts.AlternativeCaseCase {
+	for _, val := range req.Values.Children {
+		if val.Category != consts.AlternativeCaseCase || !val.NeedExec {
 			continue
 		}
 

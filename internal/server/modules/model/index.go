@@ -134,5 +134,6 @@ var (
 		&ThirdPartySync{},
 
 		&DebugInterfaceGlobalParam{},
+		&DebugInterfaceCookie{},
 	}
 )

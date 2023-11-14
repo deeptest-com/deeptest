@@ -128,22 +128,22 @@ func (s *ServeService) ListServer(req v1.ServeServer, projectId, userId uint) (r
 		return
 	}
 
-	currServer, err = s.ServeRepo.GetCurrServerByUser(projectId, userId)
+	currServer, err = s.ServeRepo.GetCurrServerByUser(projectId, req.ServeId, userId)
 	if currServer.ServeId != req.ServeId {
 		if len(res) != 0 {
-			currServer, err = s.ChangeServer(projectId, userId, res[0].EnvironmentId)
+			currServer, err = s.ChangeServer(projectId, userId, req.ServeId, res[0].EnvironmentId)
 		}
 	}
 
 	return
 }
 
-func (s *ServeService) ChangeServer(projectId, userId, serverId uint) (currServer model.ServeServer, err error) {
+func (s *ServeService) ChangeServer(projectId, userId, serveId, serverId uint) (currServer model.ServeServer, err error) {
 	if err = s.EnvironmentRepo.SetProjectUserServer(projectId, userId, serverId); err != nil {
 		return
 	}
 
-	currServer, err = s.ServeRepo.GetCurrServerByUser(projectId, userId)
+	currServer, err = s.ServeRepo.GetCurrServerByUser(projectId, serveId, userId)
 	return
 }
 

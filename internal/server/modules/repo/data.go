@@ -11,6 +11,10 @@ type DataRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
+func NewDataRepo(db *gorm.DB) *DataRepo {
+	return &DataRepo{DB: db}
+}
+
 // CreateMySqlDb 创建数据库(mysql)
 func (s *DataRepo) CreateMySqlDb() error {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/",

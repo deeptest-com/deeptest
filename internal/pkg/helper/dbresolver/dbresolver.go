@@ -1,22 +1,36 @@
 package dbresolver
 
 import (
-	"github.com/kataras/iris/v12/context"
+	"fmt"
 	"gorm.io/gorm"
+	"sync"
 )
 
 type DBResolver struct {
-	*gorm.DB
-	Context *context.Context
+	connPools sync.Map
 }
 
-func (dr *DBResolver) Name() string {
-	return "gorm:db_resolver"
+func NewDBResolver() *DBResolver {
+	return &DBResolver{connPools: sync.Map{}}
 }
 
-func (dr *DBResolver) Initialize(db *gorm.DB) error {
-	dr.DB = db
-	dr.registerCallbacks(db)
-	//return dr.compile()
-	return nil
+func (dr *DBResolver) Apply(poolName string, handler func() (*gorm.DB, error)) *DBResolver {
+	_, ok := dr.connPools.Load(poolName)
+	if !ok {
+		connPool, err := handler()
+		if err != nil {
+			panic(err)
+		}
+		dr.connPools.Store(poolName, connPool)
+	}
+	return dr
+}
+
+func (dr *DBResolver) GetConnPool(poolName string) *gorm.DB {
+	ret, ok := dr.connPools.Load(poolName)
+	if !ok {
+		panic(fmt.Errorf("connPool %s is not initialize", poolName))
+	}
+	db := ret.(*gorm.DB)
+	return db
 }

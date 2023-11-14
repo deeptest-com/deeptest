@@ -3,56 +3,36 @@ package dao
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	SaasDBresolver "github.com/aaronchen2k/deeptest/internal/pkg/helper/dbresolver"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"go.uber.org/zap"
+	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"gorm.io/plugin/dbresolver"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
-
-	"go.uber.org/zap"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 var (
-	once sync.Once
-	db   *gorm.DB
+	once       sync.Once
+	db         *gorm.DB
+	dbResolver *SaasDBresolver.DBResolver
 )
 
 // GetDB 数据库单例
-func GetDB(args ...interface{}) *gorm.DB {
+func GetDB() *gorm.DB {
 	once.Do(func() {
 		if consts.RunFrom == consts.FromServer && config.CONFIG.System.DbType == "mysql" {
-			db = GormMySQL()
+			db = GormMySQL(config.CONFIG.Mysql)
 		} else {
 			db = GormSQLLite()
 		}
 	})
-	/*
-		db.Use(dbresolver.Register(dbresolver.Config{
-			// use `db2` as sources, `db3`, `db4` as replicas
-			Sources:  []gorm.Dialector{mysql.Open("db2_dsn")},
-			Replicas: []gorm.Dialector{mysql.Open("db3_dsn"), mysql.Open("db4_dsn")},
-			// sources/replicas load balancing policy
-			Policy: dbresolver.RandomPolicy{},
-			// print sources/replicas mode in logger
-			TraceResolverMode: true,
-		}))
-	*/
-	/*
-		if len(args) > 0 {
-			//ctx := context.Background()
-			//x := context.WithValue(ctx, "dbName", "deeptest")
-			db.Statement.Table = "xxxxxxxxxx"
-			fmt.Println(db, "+++++")
-		}
-
-	*/
-
 	return db
 }
 
@@ -110,8 +90,7 @@ func DBFile() string {
 }
 
 // GormMySQL 初始化Mysql数据库
-func GormMySQL() *gorm.DB {
-	m := config.CONFIG.Mysql
+func GormMySQL(m config.Mysql) *gorm.DB {
 	if m.Dbname == "" {
 		return nil
 	}
@@ -155,4 +134,29 @@ func gormConfig(mod bool) *gorm.Config {
 		gormConf.Logger = Default.LogMode(logger.Silent)
 	}
 	return gormConf
+}
+
+func GetDBResolver() *SaasDBresolver.DBResolver {
+	if dbResolver == nil {
+		dbResolver = SaasDBresolver.NewDBResolver()
+	}
+
+	return dbResolver
+}
+
+func InitSaasDBHandler(dbName string) (db *gorm.DB, err error) {
+	var m config.Mysql
+	if dbName == "leyanapi" {
+		m = config.Mysql{}
+		m.Url = "127.0.0.1:3306"
+		m.Username = "root"
+		m.Password = "root"
+		m.Dbname = "leyanapi"
+		m.Config = "charset=utf8mb4&parseTime=True&loc=Local"
+		return GormMySQL(m), nil
+	} else {
+		return GetDB(), nil
+	}
+
+	return
 }

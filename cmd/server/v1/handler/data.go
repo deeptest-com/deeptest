@@ -15,6 +15,7 @@ import (
 )
 
 type DataCtrl struct {
+	BaseCtrl
 	DataService *service.DataService `inject:""`
 }
 
@@ -37,7 +38,7 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 		}
 	}
 
-	err := c.DataService.InitDB(req)
+	err := service.NewDataService(c.GetDB(ctx)).InitDB(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

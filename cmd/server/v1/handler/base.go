@@ -6,6 +6,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"google.golang.org/protobuf/proto"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -66,4 +67,13 @@ func (c *BaseCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 
 	default:
 	}
+}
+
+func (c *BaseCtrl) GetDB(ctx iris.Context) *gorm.DB {
+	value := ctx.Values().Get("db")
+	db, ok := value.(*gorm.DB)
+	if !ok {
+		panic(fmt.Sprintf("db is not set"))
+	}
+	return db
 }

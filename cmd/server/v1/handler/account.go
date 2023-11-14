@@ -8,15 +8,15 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"strings"
-
 	"github.com/kataras/iris/v12"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type AccountCtrl struct {
-	AccountService *service.AccountService `inject:""`
-	UserRepo       *repo.UserRepo          `inject:""`
+	BaseCtrl
+	AccountService *service.AccountService
+	UserRepo       *repo.UserRepo `inject:""`
 }
 
 // Login

@@ -33,6 +33,10 @@ type UserRepo struct {
 	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 }
 
+func NewUserRepo(db *gorm.DB) *UserRepo {
+	return &UserRepo{DB: db}
+}
+
 func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 

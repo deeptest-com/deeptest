@@ -62,13 +62,17 @@ func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (case
 	return
 }
 
-func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po model.EndpointCase, err error) {
+func (s *EndpointCaseService) Copy(id int, newNamePrefix string, userId uint, userName string) (po model.EndpointCase, err error) {
 	endpointCase, _ := s.EndpointCaseRepo.Get(uint(id))
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
-	debugData.UsedBy = consts.CaseDebug // mark src usedBy for pre/post-condition loading
+	debugData.UsedBy = consts.CaseDebug
+
+	if newNamePrefix == "" {
+		newNamePrefix = "copy-"
+	}
 
 	req := serverDomain.EndpointCaseSaveReq{
-		Name:       "copy-" + endpointCase.Name,
+		Name:       newNamePrefix + endpointCase.Name,
 		EndpointId: endpointCase.EndpointId,
 		ServeId:    endpointCase.ServeId,
 		ProjectId:  endpointCase.ProjectId,
@@ -295,5 +299,11 @@ func (s *EndpointCaseService) GetNodeCaseNum(res []*serverDomain.EndpointCaseTre
 			v.Count += num
 		}
 	}
+	return
+}
+
+func (s *EndpointCaseService) ListByCaseType(endpointId uint, caseType consts.CaseType) (ret []model.EndpointCase, err error) {
+	ret, err = s.EndpointCaseRepo.ListByCaseType(endpointId, caseType)
+
 	return
 }

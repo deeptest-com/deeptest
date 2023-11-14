@@ -24,4 +24,5 @@ module.exports = { // under dt.
 
     test: test,
     expect: expect,
+    sendRequest: sendRequest,
 }

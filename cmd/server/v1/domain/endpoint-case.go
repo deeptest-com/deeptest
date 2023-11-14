@@ -56,6 +56,23 @@ type EndpointCaseSaveReq struct {
 	DebugData domain.DebugData `json:"debugData"`
 }
 
+type EndpointCaseBenchmarkCreateReq struct {
+	Type string `json:"type"`
+	Name string `json:"name"`
+
+	EndpointInterfaceId uint `json:"endpointInterfaceId"` // from a endpointInterface
+	BaseCaseId          int  `json:"baseCaseId"`          // from a exist case
+
+	CreateUserId   uint   `json:"createUserId"`
+	CreateUserName string `json:"createUserName"`
+}
+
+type EndpointCaseFactorSaveReq struct {
+	Path   string `json:"path"`
+	Value  string `json:"value"`
+	CaseId int    `json:"caseId"`
+}
+
 type EndpointCaseAlternativeSaveReq struct {
 	Prefix string                        `json:"prefix"`
 	Type   string                        `json:"type"`

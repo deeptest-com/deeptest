@@ -10,12 +10,12 @@ type CasesExecReq struct {
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 
-	ProjectId     uint           `json:"projectId"`
-	BaseCaseId    uint           `json:"baseCaseId"`
-	UsedBy        consts.UsedBy  `json:"usedBy"`
-	ExecUUid      string         `json:"execUuid"`
-	Cases         []CasesExecObj `json:"cases"`
-	EnvironmentId int            `json:"environmentId"`
+	ProjectId     uint          `json:"projectId"`
+	BaseCaseId    uint          `json:"baseCaseId"`
+	UsedBy        consts.UsedBy `json:"usedBy"`
+	ExecUUid      string        `json:"execUuid"`
+	Cases         *CasesExecObj `json:"cases"`
+	EnvironmentId int           `json:"environmentId"`
 }
 
 type CasesExecObj struct {
@@ -31,6 +31,9 @@ type CasesExecObj struct {
 	Category  interface{}              `json:"Category"`
 	Type      interface{}              `json:"Type"`
 	Rule      interface{}              `json:"Rule"`
+	Title     string                   `json:"title"`
+	NeedExec  bool                     `json:"needExec"`
+	Children  []*CasesExecObj          `json:"children"`
 }
 
 type CaseInterfaceExecObj struct {

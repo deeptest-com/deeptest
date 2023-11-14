@@ -37,6 +37,28 @@ func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, used
 	return
 }
 
+func (r *PreConditionRepo) ListForBenchmarkCase(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, isForBenchmarkCase bool) (pos []model.DebugPreCondition, err error) {
+	db := r.DB.
+		Where("NOT deleted").
+		Order("ordr ASC")
+
+	if debugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", debugInterfaceId)
+	} else {
+		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
+	}
+
+	if usedBy != "" {
+		db.Where("used_by=?", usedBy)
+	}
+
+	db.Where("is_for_benchmark_case=?", isForBenchmarkCase)
+
+	err = db.Find(&pos).Error
+
+	return
+}
+
 func (r *PreConditionRepo) Get(id uint) (condition model.DebugPreCondition, err error) {
 	err = r.DB.
 		Where("id=?", id).
@@ -59,6 +81,10 @@ func (r *PreConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId,
 		srcCondition.ID = 0
 		srcCondition.DebugInterfaceId = distDebugInterfaceId
 		srcCondition.UsedBy = dictUsedBy
+
+		if srcDebugInterfaceId == distDebugInterfaceId { // clone to benchmark
+			srcCondition.IsForBenchmarkCase = true
+		}
 
 		r.Save(&srcCondition)
 
@@ -194,6 +220,16 @@ func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, us
 
 func (r *PreConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (err error) {
 	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, usedBy)
+
+	for _, po := range pos {
+		r.Delete(po.ID)
+	}
+
+	return
+}
+
+func (r *PreConditionRepo) RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, isForBenchmarkCase bool) (err error) {
+	pos, _ := r.ListForBenchmarkCase(debugInterfaceId, endpointInterfaceId, usedBy, isForBenchmarkCase)
 
 	for _, po := range pos {
 		r.Delete(po.ID)

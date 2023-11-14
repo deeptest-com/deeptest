@@ -58,10 +58,6 @@ func (s *PostConditionService) Create(condition *model.DebugPostCondition) (err 
 	return
 }
 
-//func (s *PostConditionService) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint) (err error) {
-//	return s.PostConditionRepo.CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId)
-//}
-
 func (s *PostConditionService) Delete(reqId uint) (err error) {
 	err = s.PostConditionRepo.Delete(reqId)
 
@@ -76,6 +72,18 @@ func (s *PostConditionService) Disable(reqId uint) (err error) {
 
 func (s *PostConditionService) Move(req serverDomain.ConditionMoveReq) (err error) {
 	err = s.PostConditionRepo.UpdateOrders(req)
+
+	return
+}
+
+func (s *PostConditionService) ResetForCase(endpointInterfaceId, debugInterfaceId uint, entityType consts.ConditionCategory) (err error) {
+	usedBy := consts.CaseDebug
+	err = s.PostConditionRepo.RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId, usedBy, entityType, true)
+	if err != nil {
+		return
+	}
+
+	err = s.PostConditionRepo.CloneAll(debugInterfaceId, endpointInterfaceId, debugInterfaceId, usedBy, usedBy)
 
 	return
 }

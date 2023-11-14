@@ -38,7 +38,7 @@ type EndpointCaseAlternativeService struct {
 	SceneService    *SceneService         `inject:""`
 }
 
-func (s *EndpointCaseAlternativeService) LoadAlternative(baseId uint) (
+func (s *EndpointCaseAlternativeService) LoadAlternative(endpointId uint, method consts.HttpMethod) (
 	root casesHelper.AlternativeCase, err error) {
 
 	root.Title = "备选用例"
@@ -47,9 +47,9 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(baseId uint) (
 	root.Slots = iris.Map{"icon": "icon"}
 	root.IsDir = true
 
-	casePo, _ := s.EndpointCaseRepo.Get(baseId)
+	//casePo, _ := s.EndpointCaseRepo.Get(baseId)
 
-	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(casePo.EndpointId, casePo.Method)
+	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(endpointId, method)
 	if endpointInterfaceId == 0 {
 		return
 	}
@@ -73,7 +73,7 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(baseId uint) (
 
 	apiPathItem, _ := casesHelper.GetApiPathItem(doc3)
 
-	apiOperation, err := casesHelper.GetApiOperation(casePo.Method, apiPathItem)
+	apiOperation, err := casesHelper.GetApiOperation(method, apiPathItem)
 	if err != nil || apiOperation == nil {
 		return
 	}
@@ -86,11 +86,10 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(baseId uint) (
 	return
 }
 
-func (s *EndpointCaseAlternativeService) LoadAlternativeSaved(caseId uint) (
-	ret map[string]model.EndpointCaseAlternative, err error) {
+func (s *EndpointCaseAlternativeService) LoadFactor(caseId uint) (ret map[string]model.EndpointCaseAlternativeFactor, err error) {
+	pos, err := s.EndpointCaseAlternativeRepo.LoadFactor(caseId)
 
-	pos, err := s.EndpointCaseAlternativeRepo.List(caseId)
-
+	ret = make(map[string]model.EndpointCaseAlternativeFactor)
 	for _, po := range pos {
 		ret[po.Path] = po
 	}
@@ -98,35 +97,82 @@ func (s *EndpointCaseAlternativeService) LoadAlternativeSaved(caseId uint) (
 	return
 }
 
-func (s *EndpointCaseAlternativeService) SaveAlternativeCase(req serverDomain.EndpointCaseAlternativeSaveReq) (
-	po model.EndpointCaseAlternative, err error) {
+func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.EndpointCaseBenchmarkCreateReq) (
+	po model.EndpointCase, err error) {
 
-	typ := req.Type
-	if typ == "multi" {
+	if req.BaseCaseId > 0 {
+		// clone
+		//po, _ = s.EndpointCaseService.Copy(req.BaseCaseId, "alter-", req.CreateUserId, req.CreateUserName)
+		po, err = s.EndpointCaseService.Get(uint(req.BaseCaseId))
+	} else if req.EndpointInterfaceId > 0 {
+		// convert from endpoint interface define
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
+		debugData, _ := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(req.EndpointInterfaceId)
 
-		err1 := s.GenMultiCases(req)
-		if err1 != nil {
-			err = err1
-			return
+		saveReq := serverDomain.EndpointCaseSaveReq{
+			Name:           req.Name,
+			Method:         debugData.Method,
+			DebugData:      debugData,
+			EndpointId:     endpointInterface.EndpointId,
+			CreateUserId:   req.CreateUserId,
+			CreateUserName: req.CreateUserName,
 		}
 
-	} else if typ == "single" {
+		po, err = s.EndpointCaseService.SaveFromDebugInterface(saveReq)
+	}
+	if err != nil {
+		return
+	}
+
+	po.CaseType = consts.CaseBenchmark
+	po.BaseCase = uint(req.BaseCaseId)
+
+	s.EndpointCaseRepo.UpdateInfo(po.ID, map[string]interface{}{
+		"case_type": po.CaseType,
+		"base_case": po.BaseCase,
+	})
+
+	if req.BaseCaseId > 0 {
+		s.PreConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug)
+		s.PostConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug)
 	}
 
 	return
 }
 
-func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.EndpointCaseAlternativeSaveReq) (err error) {
+func (s *EndpointCaseAlternativeService) SaveFactor(req serverDomain.EndpointCaseFactorSaveReq) (err error) {
+	err = s.EndpointCaseAlternativeRepo.SaveFactor(req)
+
+	return
+}
+
+func (s *EndpointCaseAlternativeService) SaveCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
+	typ := req.Type
+	if typ == "multi" {
+		count, err = s.GenMultiCases(req)
+	} else if typ == "single" {
+		count, err = s.GenSingleCase(req)
+	}
+
+	return
+}
+
+func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	for _, val := range req.Values {
 		if val.Category != consts.AlternativeCaseCase {
 			continue
 		}
 
-		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, req.CreateUserId, req.CreateUserName)
+		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, "extend-", req.CreateUserId, req.CreateUserName)
 		if err1 != nil {
 			err = err1
 			return
 		}
+
+		s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
+			"case_type": consts.CaseAlternative,
+			"base_case": req.BaseId,
+		})
 
 		newDebugData, err1 := s.DebugInterfaceService.GetDebugDataFromDebugInterface(newEndpointCase.DebugInterfaceId)
 		if err1 != nil {
@@ -142,7 +188,50 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 		s.changeFieldProps(&newDebugData, fieldIn, fieldNameOrPath, val.Sample, val.FieldType)
 
 		_, err = s.DebugInterfaceService.Update(newDebugData, newDebugData.DebugInterfaceId)
+
+		count += 1
 	}
+
+	return
+}
+
+func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
+	// copy new case
+	newEndpointCase, err := s.EndpointCaseService.Copy(req.BaseId, "extend-",
+		req.CreateUserId, req.CreateUserName)
+
+	s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
+		"case_type": consts.CaseAlternative,
+		"base_case": req.BaseId,
+	})
+
+	// get new case's debug data
+	newDebugData, err := s.DebugInterfaceService.GetDebugDataFromDebugInterface(newEndpointCase.DebugInterfaceId)
+	if err != nil {
+		return
+	}
+
+	// change field value by path if exist
+	for _, val := range req.Values {
+		if val.Category != consts.AlternativeCaseCase {
+			continue
+		}
+
+		fieldIn, fieldNameOrPath := s.getFieldProps(val.Path)
+		if fieldIn == "" {
+			logUtils.Error("failed to getFieldProps")
+			continue
+		}
+		s.changeFieldProps(&newDebugData, fieldIn, fieldNameOrPath, val.Sample, val.FieldType)
+	}
+
+	// update to db
+	_, err = s.DebugInterfaceService.Update(newDebugData, newDebugData.DebugInterfaceId)
+	if err != nil {
+		return
+	}
+
+	count = 1
 
 	return
 }

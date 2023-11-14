@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 )
 
-func GenDesc(typ consts.CheckpointType, operator consts.ComparisonOperator, value, expression, extractorVariable string) (ret string) {
+func GenDesc(typ consts.CheckpointType, operator consts.ComparisonOperator, value, expression,
+	extractorVariable string, extractorType consts.ExtractorType, extractorExpression string) (ret string) {
 	nameDesc := ""
 
 	opt := fmt.Sprintf("%v", operator)
@@ -19,8 +21,11 @@ func GenDesc(typ consts.CheckpointType, operator consts.ComparisonOperator, valu
 		nameDesc = fmt.Sprintf("响应头%s%s\"%s\"", expression, optName, value)
 	} else if typ == consts.ResponseBody {
 		nameDesc = fmt.Sprintf("响应体%s\"%s\"", optName, value)
+	} else if typ == consts.ExtractorVari {
+		nameDesc = fmt.Sprintf("提取变量%s%s\"%s\"", extractorVariable, optName, value)
 	} else if typ == consts.Extractor {
-		nameDesc = fmt.Sprintf("提取器%s%s\"%s\"", extractorVariable, optName, value)
+		extractorDesc := extractorHelper.GenDescForCheckpoint(extractorType, extractorExpression)
+		nameDesc = fmt.Sprintf("提取%s%s\"%s\"", extractorDesc, optName, value)
 	} else if typ == consts.Judgement {
 		nameDesc = fmt.Sprintf("表达式\"%s\"", expression)
 	}
@@ -31,7 +36,7 @@ func GenDesc(typ consts.CheckpointType, operator consts.ComparisonOperator, valu
 }
 
 func GenResultMsg(po *domain.CheckpointBase) {
-	desc := GenDesc(po.Type, po.Operator, po.Value, po.Expression, po.ExtractorVariable)
+	desc := GenDesc(po.Type, po.Operator, po.Value, po.Expression, po.ExtractorVariable, po.ExtractorType, po.ExtractorExpression)
 
 	po.ResultMsg = fmt.Sprintf("%s", desc)
 

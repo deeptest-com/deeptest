@@ -266,6 +266,14 @@ const (
 	ScenarioDebug        UsedBy = "scenario_debug"
 )
 
+type CaseType string
+
+const (
+	CaseDefault     CaseType = "default"
+	CaseBenchmark   CaseType = "benchmark"   // for alternative cases design
+	CaseAlternative CaseType = "alternative" // saved as independent case
+)
+
 type ProcessorInterfaceSrc string
 
 const (
@@ -329,8 +337,9 @@ const (
 	ResponseStatus CheckpointType = "responseStatus"
 	ResponseHeader CheckpointType = "responseHeader"
 	ResponseBody   CheckpointType = "responseBody"
-	Extractor      CheckpointType = "extractor"
 	Judgement      CheckpointType = "judgement"
+	ExtractorVari  CheckpointType = "extractorVari"
+	Extractor      CheckpointType = "extractor"
 
 	Script CheckpointType = "script"
 )

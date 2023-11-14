@@ -20,6 +20,7 @@ func (c *PreConditionCtrl) GetScript(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 	usedBy := ctx.URLParam("usedBy")
+	isForBenchmarkCase, err := ctx.URLParamBool("isForBenchmarkCase")
 
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -33,7 +34,7 @@ func (c *PreConditionCtrl) GetScript(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	data, err := c.PreConditionService.GetScript(uint(debugInterfaceId), uint(endpointInterfaceId), consts.UsedBy(usedBy))
+	data, err := c.PreConditionService.GetScript(uint(debugInterfaceId), uint(endpointInterfaceId), consts.UsedBy(usedBy), isForBenchmarkCase)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -106,6 +107,19 @@ func (c *PreConditionCtrl) Move(ctx iris.Context) {
 	}
 
 	err = c.PreConditionService.Move(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *PreConditionCtrl) ResetForCase(ctx iris.Context) {
+	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
+	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
+
+	err = c.PreConditionService.ResetForCase(uint(endpointInterfaceId), uint(debugInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

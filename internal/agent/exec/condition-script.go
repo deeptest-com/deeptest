@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	gojaUtils "github.com/aaronchen2k/deeptest/internal/pkg/goja"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
@@ -12,7 +13,9 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
+	"log"
 	"path/filepath"
+	"reflect"
 	"strings"
 )
 
@@ -169,9 +172,31 @@ func defineJsFuncs() (err error) {
 		}
 	})
 
+	// http request
+	err = execVm.JsRuntime.Set("sendRequest", func(data goja.Value, cb func(interface{}, interface{})) {
+		req := gojaUtils.GenRequest(data, execVm.JsRuntime)
+
+		resp, err2 := Invoke(&req)
+		cb(err2, resp)
+
+		log.Println("result")
+	})
+
+	// log
 	err = execVm.JsRuntime.Set("log", func(value interface{}) {
-		bytes, _ := json.Marshal(value)
-		logs = append(logs, string(bytes))
+		if value == nil {
+			logs = append(logs, "空")
+			return
+		}
+
+		typ := reflect.TypeOf(value).Name()
+
+		if typ == "string" {
+			logs = append(logs, value.(string))
+		} else {
+			bytes, _ := json.Marshal(value)
+			logs = append(logs, string(bytes))
+		}
 	})
 
 	return

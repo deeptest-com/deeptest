@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"time"
 )
 
 type Endpoint struct {
@@ -34,6 +35,7 @@ type Endpoint struct {
 	GlobalParams []EnvironmentParam `gorm:"-" json:"globalParams"`
 	IsChanged    bool               `json:"isChanged"`
 	Snapshot     string             `gorm:"type:longtext" json:"snapshot"`
+	ChangedTime  *time.Time         `json:"changedTime,omitempty"`
 }
 
 func (Endpoint) TableName() string {

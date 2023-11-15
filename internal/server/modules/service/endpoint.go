@@ -17,6 +17,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
+	encoder "github.com/zwgblue/yaml-encoder"
 	"gorm.io/gorm"
 	"net/http"
 	"net/url"
@@ -657,5 +658,66 @@ func (s *EndpointService) SyncFromThirdParty(endpointId uint) (err error) {
 
 	err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, false)
 
+	return
+}
+
+func (s *EndpointService) GetDiff(endpointId uint) (res v1.EndpointDiffRes, err error) {
+	var endpoint model.Endpoint
+	var resYaml []byte
+	endpoint, err = s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	if err != nil {
+		return
+	}
+
+	var sourceName string
+	if endpoint.SourceType == consts.SwaggerSync {
+		sourceName = "Swagger"
+	} else if endpoint.SourceType == consts.SwaggerImport {
+		sourceName = "接口定义"
+	} else if endpoint.SourceType == consts.ThirdPartySync {
+		sourceName = "乐仓智能体厂"
+	}
+
+	res.CurrentDesc = fmt.Sprintf("%s于%s在系统中手动更新", endpoint.CreateUser, endpoint.UpdatedAt.Format("2006-01-02 15:04:05"))
+	res.LatestDesc = fmt.Sprintf("%s从%s自动同步", endpoint.ChangedTime.Format("2006-01-02 15:04:05"), sourceName)
+
+	var ret interface{}
+	endpoint.ServeId = 0
+	_commUtils.JsonDecode(_commUtils.JsonEncode(s.Yaml(endpoint)), &ret)
+	resYaml, err = encoder.NewEncoder(ret).Encode()
+	if err != nil {
+		return
+	}
+	res.Current = string(resYaml)
+
+	_commUtils.JsonDecode(endpoint.Snapshot, &ret)
+	resYaml, err = encoder.NewEncoder(ret).Encode()
+	if err != nil {
+		return
+	}
+
+	res.Latest = string(resYaml)
+	return
+}
+
+func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool) (err error) {
+	endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	if err != nil {
+		return
+	}
+	if isChanged {
+		var doc openapi3.T
+		_commUtils.JsonDecode(endpoint.Snapshot, &doc)
+		endpoints, _, _ := openapi.NewOpenapi2endpoint(&doc, endpoint.CategoryId).Convert()
+		endpoints[0].ID = endpoint.ID
+		endpoints[0].Title = endpoint.Title
+		endpoints[0].ServeId = endpoint.ServeId
+		endpoints[0].IsChanged = false
+		endpoints[0].ProjectId = endpoint.ProjectId
+		endpoints[0].GlobalParams = endpoint.GlobalParams
+		err = s.EndpointRepo.SaveAll(endpoints[0])
+	} else {
+		err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, false)
+	}
 	return
 }

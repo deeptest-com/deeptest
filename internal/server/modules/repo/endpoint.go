@@ -11,6 +11,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"strconv"
+	"time"
 )
 
 type EndpointRepo struct {
@@ -512,7 +513,7 @@ func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, isChanged bool) (err
 func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err error) {
 	err = r.DB.Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
-		Updates(map[string]interface{}{"is_changed": true, "snapshot": snapshot}).Error
+		Updates(map[string]interface{}{"is_changed": true, "snapshot": snapshot, "changed_time": time.Now()}).Error
 
 	return
 }

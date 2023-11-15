@@ -456,3 +456,35 @@ func (c *EndpointCtrl) Index() {
 	c.EndpointService.GetVersionsByEndpointId(1)
 }
 */
+
+func (c *EndpointCtrl) GetDiff(ctx iris.Context) {
+
+	endpointId, err := ctx.URLParamInt("endpointId")
+	if err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	if data, err := c.EndpointService.GetDiff(uint(endpointId)); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	}
+}
+
+func (c *EndpointCtrl) SaveDiff(ctx iris.Context) {
+	var req serverDomain.EndpointDiffReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	if err := c.EndpointService.SaveDiff(req.EndpointId, req.IsChanged); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}

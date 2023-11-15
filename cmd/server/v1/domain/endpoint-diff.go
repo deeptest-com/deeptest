@@ -1,0 +1,13 @@
+package serverDomain
+
+type EndpointDiffReq struct {
+	EndpointId uint `json:"endpointId"`
+	IsChanged  bool `json:"isChanged"`
+}
+
+type EndpointDiffRes struct {
+	Current     string `json:"current"`
+	Latest      string `json:"latest"`
+	CurrentDesc string `json:"currentDesc"`
+	LatestDesc  string `json:"latestDesc"`
+}

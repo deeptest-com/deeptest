@@ -33,6 +33,8 @@ func (m *EndpointModule) Party() module.WebModule {
 		public.Put("/updateTag", m.EndpointCtrl.UpdateTag).Name = "更新标签"
 		public.Post("/updateMockStatus", m.EndpointCtrl.UpdateAdvancedMockDisabled).Name = "启用/禁用接口所有期望"
 		public.Post("/{id:uint}/syncFromThirdParty", m.EndpointCtrl.SyncFromThirdParty).Name = "从第三方同步数据"
+		public.Get("/diff", m.EndpointCtrl.GetDiff).Name = "导入差异"
+		public.Post("/diff", m.EndpointCtrl.SaveDiff).Name = "导入差异"
 
 	}
 	return module.NewModule("/endpoint", handler)

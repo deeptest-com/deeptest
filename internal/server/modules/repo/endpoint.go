@@ -501,10 +501,18 @@ func (r *EndpointRepo) GetByNameAndProject(name string, projectId uint) (res mod
 	return
 }
 
-func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, bodyIsChanged bool) (err error) {
+func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, isChanged bool) (err error) {
 	err = r.DB.Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
-		Update("body_is_changed", bodyIsChanged).Error
+		Update("is_changed", isChanged).Error
+
+	return
+}
+
+func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		Updates(map[string]interface{}{"is_changed": true, "snapshot": snapshot}).Error
 
 	return
 }

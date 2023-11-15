@@ -20,6 +20,7 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"sync"
 )
@@ -182,37 +183,33 @@ func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
 }
 
 func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
-	serve, err := s.ServeRepo.Get(endpoint.ServeId)
-	if err != nil {
-		return
-	}
-
-	serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
-	if err != nil {
-		return
-	}
-	serve.Components = serveComponent
-
-	serveServer, err := s.ServeRepo.ListServer(serve.ID)
-	if err != nil {
-		return
-	}
-	serve.Servers = serveServer
-
-	securities, err := s.ServeRepo.ListSecurity(serve.ID)
-	if err != nil {
-		return
-	}
-	serve.Securities = securities
-	/*
-		globalParams, err := s.EnvironmentRepo.ListParamModel(endpoint.ProjectId)
+	var serve model.Serve
+	if endpoint.ServeId != 0 {
+		var err error
+		serve, err = s.ServeRepo.Get(endpoint.ServeId)
 		if err != nil {
 			return
 		}
-		serve.GlobalParams = globalParams
-	*/
 
-	//s.SchemasConv(&endpoint)
+		serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
+		if err != nil {
+			return
+		}
+		serve.Components = serveComponent
+
+		serveServer, err := s.ServeRepo.ListServer(serve.ID)
+		if err != nil {
+			return
+		}
+		serve.Servers = serveServer
+
+		securities, err := s.ServeRepo.ListSecurity(serve.ID)
+		if err != nil {
+			return
+		}
+		serve.Securities = securities
+	}
+
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
 	return
@@ -301,7 +298,15 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		} else if req.DataSyncType == consts.AutoAdd {
 			//只能合并，创建时间和更新时间不等，更新过了，则不覆盖
 			if err == nil {
+				//TODO 判断更新
 				if res.CreatedAt != res.UpdatedAt {
+					//对比endpoint的时候不需要对比组件，所以服务ID设置为0
+					endpoint.ServeId, res.ServeId = 0, 0
+					openAPIDoc := s.Yaml(*endpoint)
+					oldOpenAPIDoc := s.Yaml(res)
+					if !reflect.DeepEqual(openAPIDoc, oldOpenAPIDoc) {
+						s.EndpointRepo.UpdateSnapshot(res.ID, _commUtils.JsonEncode(openAPIDoc))
+					}
 					continue
 				} else {
 					endpoint.ID = res.ID
@@ -639,7 +644,7 @@ func (s *EndpointService) SyncFromThirdParty(endpointId uint) (err error) {
 		return
 	}
 
-	if !endpoint.BodyIsChanged || endpoint.SourceType != consts.ThirdPartySync || endpoint.CategoryId == -1 || len(endpoint.Interfaces) == 0 {
+	if !endpoint.IsChanged || endpoint.SourceType != consts.ThirdPartySync || endpoint.CategoryId == -1 || len(endpoint.Interfaces) == 0 {
 		return
 	}
 

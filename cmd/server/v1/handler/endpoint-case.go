@@ -122,7 +122,7 @@ func (c *EndpointCaseCtrl) Copy(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
 
-	po, err := c.EndpointCaseService.Copy(id, "", userId, userName)
+	po, err := c.EndpointCaseService.Copy(id, "", userId, userName, false)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

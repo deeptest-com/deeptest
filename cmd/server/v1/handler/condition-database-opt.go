@@ -28,12 +28,12 @@ func (c *DatabaseOptCtrl) Get(ctx iris.Context) {
 		return
 	}
 
-	checkpoint, err := c.DatabaseOptService.Get(uint(id))
+	opt, err := c.DatabaseOptService.Get(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: checkpoint})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: opt})
 }
 
 // Update 更新

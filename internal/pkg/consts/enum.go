@@ -297,7 +297,7 @@ const (
 	ConditionTypeExtractor      ConditionType = "extractor"
 	ConditionTypeCheckpoint     ConditionType = "checkpoint"
 	ConditionTypeScript         ConditionType = "script"
-	ConditionTypeDatabase       ConditionType = "database"
+	ConditionTypeDatabase       ConditionType = "databaseOpt"
 	ConditionTypeResponseDefine ConditionType = "responseDefine"
 )
 

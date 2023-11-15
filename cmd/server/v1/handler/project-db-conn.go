@@ -1,10 +1,12 @@
 package handler
 
 import (
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"github.com/snowlyg/multi"
 )
 
 type DatabaseConnCtrl struct {
@@ -20,7 +22,7 @@ type DatabaseConnCtrl struct {
 // @Param	Authorization			header	string								true	"Authentication header"
 // @Param 	envId			        query	int									true	"当前环境ID"
 // @success	200	{object}	        _domain.Response{data=[]model.DatabaseConn}
-// @Router	/api/v1/databaseConns/list	[get]
+// @Router	/api/v1/dbconns	[get]
 func (c *DatabaseConnCtrl) List(ctx iris.Context) {
 	envId, _ := ctx.URLParamInt("envId")
 
@@ -36,7 +38,7 @@ func (c *DatabaseConnCtrl) List(ctx iris.Context) {
 // @Param	Authorization		header	string	true	"Authentication header"
 // @Param 	id					path	int		true	"数据库连接ID"
 // @success	200	{object}	_domain.Response{data=model.DatabaseConn}
-// @Router	/api/v1/databaseConns/{id}	[get]
+// @Router	/api/v1/dbconns/{id}	[get]
 func (c *DatabaseConnCtrl) Get(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -61,7 +63,7 @@ func (c *DatabaseConnCtrl) Get(ctx iris.Context) {
 // @Param	Authorization	header	string								true	"Authentication header"
 // @Param 	DatabaseConn    body	model.DatabaseConn 					true	"更新数据库连接的请求体"
 // @success	200	{object}	_domain.Response
-// @Router	/api/v1/databaseConns	[post]
+// @Router	/api/v1/dbconns	[post]
 func (c *DatabaseConnCtrl) Save(ctx iris.Context) {
 	req := model.DatabaseConn{}
 	err := ctx.ReadJSON(&req)
@@ -79,6 +81,25 @@ func (c *DatabaseConnCtrl) Save(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
+func (c *DatabaseConnCtrl) UpdateName(ctx iris.Context) {
+	req := v1.DbConnReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	req.UpdateUser = multi.GetUsername(ctx)
+
+	err = c.DatabaseConnService.UpdateName(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}
+
 // Delete 	删除
 // @Tags	数据库连接
 // @summary	删除数据库连接
@@ -87,7 +108,7 @@ func (c *DatabaseConnCtrl) Save(ctx iris.Context) {
 // @Param	Authorization		header	string	true	"Authentication header"
 // @Param 	id					path	int		true	"数据库连接ID"
 // @success	200	{object}	    _domain.Response
-// @Router	/api/v1/databaseConns/{id}	[delete]
+// @Router	/api/v1/dbconns/{id}	[delete]
 func (c *DatabaseConnCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
@@ -113,7 +134,7 @@ func (c *DatabaseConnCtrl) Delete(ctx iris.Context) {
 // @Param 	currProjectId		query	int		true	"当前项目ID"
 // @Param 	id					path	int		true	"数据库连接ID"
 // @success	200	{object}	    _domain.Response
-// @Router	/api/v1/databaseConns/{id}/disable	[put]
+// @Router	/api/v1/dbconns/{id}/disable	[put]
 func (c *DatabaseConnCtrl) Disable(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {

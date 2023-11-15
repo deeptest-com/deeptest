@@ -17,7 +17,7 @@ type PostConditionService struct {
 
 func (s *PostConditionService) List(debugInterfaceId, endpointInterfaceId uint,
 	category consts.ConditionCategory, usedBy consts.UsedBy) (conditions []model.DebugPostCondition, err error) {
-	conditions, err = s.PostConditionRepo.List(debugInterfaceId, endpointInterfaceId, category, usedBy)
+	conditions, err = s.PostConditionRepo.List(debugInterfaceId, endpointInterfaceId, category, usedBy, false)
 
 	return
 }
@@ -83,7 +83,7 @@ func (s *PostConditionService) ResetForCase(endpointInterfaceId, debugInterfaceI
 		return
 	}
 
-	err = s.PostConditionRepo.CloneAll(debugInterfaceId, endpointInterfaceId, debugInterfaceId, usedBy, usedBy)
+	err = s.PostConditionRepo.CloneAll(debugInterfaceId, endpointInterfaceId, debugInterfaceId, usedBy, usedBy, false)
 
 	return
 }

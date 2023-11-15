@@ -11,20 +11,20 @@ type DatabaseOptService struct {
 	EnvironmentRepo   *repo.EnvironmentRepo   `inject:""`
 }
 
-func (s *DatabaseOptService) Get(id uint) (checkpoint model.DebugConditionDatabaseOpt, err error) {
-	checkpoint, err = s.DatabaseOptRepo.Get(id)
+func (s *DatabaseOptService) Get(id uint) (opt model.DebugConditionDatabaseOpt, err error) {
+	opt, err = s.DatabaseOptRepo.Get(id)
 
 	return
 }
 
-func (s *DatabaseOptService) Create(checkpoint *model.DebugConditionDatabaseOpt) (err error) {
-	err = s.DatabaseOptRepo.Save(checkpoint)
+func (s *DatabaseOptService) Create(opt *model.DebugConditionDatabaseOpt) (err error) {
+	err = s.DatabaseOptRepo.Save(opt)
 
 	return
 }
 
-func (s *DatabaseOptService) Update(checkpoint *model.DebugConditionDatabaseOpt) (err error) {
-	err = s.DatabaseOptRepo.Save(checkpoint)
+func (s *DatabaseOptService) Update(opt *model.DebugConditionDatabaseOpt) (err error) {
+	err = s.DatabaseOptRepo.Save(opt)
 
 	return
 }

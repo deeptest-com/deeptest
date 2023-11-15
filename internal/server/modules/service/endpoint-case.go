@@ -62,7 +62,9 @@ func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (case
 	return
 }
 
-func (s *EndpointCaseService) Copy(id int, newNamePrefix string, userId uint, userName string) (po model.EndpointCase, err error) {
+func (s *EndpointCaseService) Copy(id int, newNamePrefix string, userId uint, userName string,
+	forAlternativeCase bool) (po model.EndpointCase, err error) {
+
 	endpointCase, _ := s.EndpointCaseRepo.Get(uint(id))
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
 	debugData.UsedBy = consts.CaseDebug
@@ -109,8 +111,8 @@ func (s *EndpointCaseService) Copy(id int, newNamePrefix string, userId uint, us
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
 	// clone conditions
-	s.PreConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy)
-	s.PostConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy)
+	s.PreConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy, forAlternativeCase)
+	s.PostConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy, forAlternativeCase)
 
 	// save case
 	po.ProjectId = endpoint.ProjectId

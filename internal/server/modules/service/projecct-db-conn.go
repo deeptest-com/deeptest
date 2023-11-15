@@ -1,6 +1,7 @@
 package service
 
 import (
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -28,4 +29,10 @@ func (s *DatabaseConnService) Delete(id uint) (err error) {
 
 func (s *DatabaseConnService) Disable(id uint) (err error) {
 	return s.DatabaseConnRepo.Disable(id)
+}
+
+func (s *DatabaseConnService) UpdateName(req v1.DbConnReq) (err error) {
+	err = s.DatabaseConnRepo.UpdateName(req)
+
+	return
 }

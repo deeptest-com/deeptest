@@ -1,6 +1,7 @@
 package repo
 
 import (
+	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
@@ -42,6 +43,14 @@ func (r *DatabaseConnRepo) Disable(id uint) (err error) {
 	err = r.DB.Model(&model.DatabaseConn{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"disabled": gorm.Expr("NOT disabled")}).Error
+
+	return
+}
+
+func (r *DatabaseConnRepo) UpdateName(req v1.DbConnReq) (err error) {
+	err = r.DB.Model(&model.DatabaseConn{}).
+		Where("id = ?", req.Id).
+		Updates(map[string]interface{}{"name": req.Name, "update_user": req.UpdateUser}).Error
 
 	return
 }

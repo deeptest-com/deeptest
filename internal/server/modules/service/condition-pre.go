@@ -91,6 +91,6 @@ func (s *PreConditionService) ResetForCase(endpointInterfaceId, debugInterfaceId
 		return
 	}
 
-	err = s.PreConditionRepo.CloneAll(debugInterfaceId, endpointInterfaceId, debugInterfaceId, usedBy, usedBy)
+	err = s.PreConditionRepo.CloneAll(debugInterfaceId, endpointInterfaceId, debugInterfaceId, usedBy, usedBy, false)
 	return
 }

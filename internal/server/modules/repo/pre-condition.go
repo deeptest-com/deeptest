@@ -17,7 +17,7 @@ type PreConditionRepo struct {
 	ScriptRepo *ScriptRepo `inject:""`
 }
 
-func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, forAlternativeCase bool) (pos []model.DebugPreCondition, err error) {
+func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, forAlternativeCase string) (pos []model.DebugPreCondition, err error) {
 	db := r.DB.
 		Where("NOT deleted").
 		Order("ordr ASC")
@@ -32,8 +32,10 @@ func (r *PreConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, used
 		db.Where("used_by=?", usedBy)
 	}
 
-	if forAlternativeCase {
-		db.Where("is_for_benchmark_case=?", forAlternativeCase)
+	if forAlternativeCase == "true" {
+		db.Where("is_for_benchmark_case")
+	} else if forAlternativeCase == "false" {
+		db.Where("NOT is_for_benchmark_case")
 	}
 
 	err = db.Find(&pos).Error
@@ -78,7 +80,8 @@ func (r *PreConditionRepo) Save(condition *model.DebugPreCondition) (err error) 
 
 func (r *PreConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint,
 	dictUsedBy, srcUsedBy consts.UsedBy, forAlternativeCase bool) (err error) {
-	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, srcUsedBy, forAlternativeCase)
+
+	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, srcUsedBy, fmt.Sprintf("%t", forAlternativeCase))
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
@@ -196,7 +199,7 @@ func (r *PreConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 }
 
 func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (ret []domain.InterfaceExecCondition, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId, usedBy, false)
+	pos, err := r.List(debugInterfaceId, endpointInterfaceId, usedBy, "false")
 
 	for _, po := range pos {
 		typ := po.EntityType
@@ -224,7 +227,7 @@ func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, us
 }
 
 func (r *PreConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (err error) {
-	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, usedBy, false)
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, usedBy, "false")
 
 	for _, po := range pos {
 		r.Delete(po.ID)

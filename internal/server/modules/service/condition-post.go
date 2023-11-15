@@ -17,7 +17,7 @@ type PostConditionService struct {
 
 func (s *PostConditionService) List(debugInterfaceId, endpointInterfaceId uint,
 	category consts.ConditionCategory, usedBy consts.UsedBy) (conditions []model.DebugPostCondition, err error) {
-	conditions, err = s.PostConditionRepo.List(debugInterfaceId, endpointInterfaceId, category, usedBy, false)
+	conditions, err = s.PostConditionRepo.List(debugInterfaceId, endpointInterfaceId, category, usedBy, "")
 
 	return
 }
@@ -78,7 +78,7 @@ func (s *PostConditionService) Move(req serverDomain.ConditionMoveReq) (err erro
 
 func (s *PostConditionService) ResetForCase(endpointInterfaceId, debugInterfaceId uint, entityType consts.ConditionCategory) (err error) {
 	usedBy := consts.CaseDebug
-	err = s.PostConditionRepo.RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId, usedBy, "", true)
+	err = s.PostConditionRepo.RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId, usedBy, "")
 	if err != nil {
 		return
 	}

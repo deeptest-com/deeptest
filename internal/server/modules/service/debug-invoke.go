@@ -154,7 +154,7 @@ func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId u
 func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err error) {
 	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
 
-	conditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryResult, "", false)
+	conditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryResult, "", "false")
 
 	for _, condition := range conditions {
 		typ := condition.EntityType
@@ -182,7 +182,7 @@ func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err
 func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err error) {
 	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
 
-	preConditions, err := s.PreConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, "", false)
+	preConditions, err := s.PreConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, "", "false")
 	for _, condition := range preConditions {
 		typ := condition.EntityType
 		var log interface{}
@@ -194,7 +194,7 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 		results = append(results, log)
 	}
 
-	postConditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryConsole, "", false)
+	postConditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryConsole, "", "false")
 	for _, condition := range postConditions {
 		typ := condition.EntityType
 		var log interface{}

@@ -53,15 +53,11 @@ func (s *ThirdPartySyncService) GetToken(baseUrl string) (token string, err erro
 	return
 }
 
-func (s *ThirdPartySyncService) GetClasses(serviceCode, token string, baseUrl string) (classes []string) {
+func (s *ThirdPartySyncService) GetClasses(serviceCode, token string, baseUrl string) (classes []v1.FindClassByServiceCodeResData) {
 	findClassByServiceCodeReq := v1.FindClassByServiceCodeReq{
 		ServiceCode: serviceCode,
 	}
-	findClassByServiceCodeResData := s.RemoteService.FindClassByServiceCode(findClassByServiceCodeReq, token, baseUrl)
-
-	for _, v := range findClassByServiceCodeResData {
-		classes = append(classes, v.Code)
-	}
+	classes = s.RemoteService.FindClassByServiceCode(findClassByServiceCodeReq, token, baseUrl)
 
 	return
 }
@@ -118,43 +114,65 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 
 		classes := s.GetClasses(syncConfig.ServiceCode, token, baseUrl)
 		for _, class := range classes {
+			classCode := class.Code
 			categoryId, err := s.SaveCategory(class, projectId, syncConfig.ServeId)
 			if err != nil {
 				continue
 			}
 
-			functionList := s.GetFunctionsByClass(syncConfig.ServiceCode, class, token, baseUrl)
+			functionList := s.GetFunctionsByClass(syncConfig.ServiceCode, classCode, token, baseUrl)
 			for _, function := range functionList {
-				path := "/" + syncConfig.ServiceCode + "/" + class + "/" + function
-				functionDetail := s.GetFunctionDetail(class, function, token, baseUrl)
+				path := "/" + syncConfig.ServiceCode + "/" + classCode + "/" + function
+				functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)
 				if functionDetail.Code == "" {
 					continue
 				}
 
-				title := class + "-" + functionDetail.Code
+				title := classCode + "-" + functionDetail.Code
 				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, title)
 				if err != nil && err != gorm.ErrRecordNotFound {
 					continue
 				}
 
-				var endpointId uint
-				//if endpoint.ID != 0 && syncType != consts.Add {
 				if endpoint.ID != 0 {
-					endpointId = endpoint.ID
-				}
+					oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
+					if err != nil {
+						continue
+					}
 
-				endpointId, err = s.SaveEndpoint(title, projectId, serveId, userId, endpointId, int64(categoryId), path)
-				if err != nil {
-					continue
-				}
+					newEndpointDetail, err := s.GenerateEndpoint(oldEndpointDetail, functionDetail)
+					if err != nil {
+						continue
+					}
 
-				interfaceId, err := s.SaveEndpointInterface(title, functionDetail, endpointId, projectId, path)
-				if err != nil {
-					continue
-				}
+					oldEndpointDetailByte, _ := json.Marshal(oldEndpointDetail)
+					oldEndpointDetailStr := string(oldEndpointDetailByte)
 
-				if err = s.SaveBody(functionDetail, interfaceId); err != nil {
-					continue
+					newEndpointDetailByte, _ := json.Marshal(newEndpointDetail)
+					newEndpointDetailStr := string(newEndpointDetailByte)
+
+					if oldEndpointDetailStr != newEndpointDetailStr {
+						_ = s.EndpointRepo.UpdateBodyIsChanged(endpoint.ID, true)
+					}
+
+					err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, newEndpointDetailStr)
+					if err != nil {
+						continue
+					}
+				} else {
+					endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, 0, int64(categoryId), path)
+					if err != nil {
+						continue
+					}
+
+					interfaceId, err := s.SaveEndpointInterface(title, functionDetail, endpointId, projectId, path)
+					if err != nil {
+						continue
+					}
+
+					if err = s.SaveBody(functionDetail, interfaceId); err != nil {
+						continue
+					}
 				}
 			}
 		}
@@ -164,14 +182,14 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 	return
 }
 
-func (s *ThirdPartySyncService) SaveCategory(classCode string, projectId, serveId uint) (categoryId uint, err error) {
+func (s *ThirdPartySyncService) SaveCategory(class v1.FindClassByServiceCodeResData, projectId, serveId uint) (categoryId uint, err error) {
 	rootNode, err := s.CategoryRepo.GetRootNode(projectId, serverConsts.EndpointCategory)
 	if err != nil {
 		return
 	}
 
 	categoryReq := model.Category{
-		Name:       classCode,
+		Name:       class.Code + "(" + class.Name + ")",
 		ProjectId:  projectId,
 		ServeId:    serveId,
 		Type:       serverConsts.EndpointCategory,
@@ -286,6 +304,49 @@ func (s *ThirdPartySyncService) GetSchema(bodyString, requestType string) (schem
 
 	return thirdPart.NewThirdPart2conv().Convert(schemas)
 
+}
+
+func (s *ThirdPartySyncService) GenerateEndpoint(endpoint model.Endpoint, functionDetail v1.MetaGetMethodDetailResData) (res model.Endpoint, err error) {
+	functionBody := functionDetail.RequestBody
+	if functionDetail.RequestType == "FORM" {
+		functionBody = functionDetail.RequestFormBody
+	}
+
+	res = endpoint
+
+	requestBody := res.Interfaces[0].RequestBody
+
+	requestBodySchema := s.GetSchema(functionBody, functionDetail.RequestType)
+	requestSchemaString, _ := json.Marshal(requestBodySchema)
+
+	requestBodyItem, err := s.EndpointInterfaceRepo.GetRequestBodyItem(requestBody.ID)
+	if err != nil {
+		return
+	}
+
+	requestBodyItem.Content = string(requestSchemaString)
+	requestBody.MediaType = s.getBodyType(functionDetail.RequestType).String()
+	requestBody.SchemaItem = requestBodyItem
+
+	responseBody := res.Interfaces[0].ResponseBodies[0]
+
+	responseBodySchema := s.GetSchema(functionDetail.ResponseBody, functionDetail.RequestType)
+	responseSchemaString, _ := json.Marshal(responseBodySchema)
+
+	responseBodyItem, err := s.EndpointInterfaceRepo.GetResponseBodyItem(responseBody.ID)
+	if err != nil {
+		return
+	}
+
+	responseBodyItem.Content = string(responseSchemaString)
+	responseBody.MediaType = s.getBodyType(functionDetail.RequestType).String()
+	responseBody.SchemaItem = responseBodyItem
+
+	res.Interfaces[0].BodyType = s.getBodyType(functionDetail.RequestType)
+	res.Interfaces[0].RequestBody = requestBody
+	res.Interfaces[0].ResponseBodies[0] = responseBody
+
+	return
 }
 
 func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailResData, interfaceId uint) (err error) {

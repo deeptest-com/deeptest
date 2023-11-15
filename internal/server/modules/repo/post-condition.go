@@ -374,7 +374,7 @@ func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint
 }
 
 func (r *PostConditionRepo) RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, entityType consts.ConditionCategory, isForBenchmarkCase bool) (err error) {
-	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, entityType, usedBy, false)
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, entityType, usedBy, isForBenchmarkCase)
 
 	for _, po := range pos {
 		if po.IsForBenchmarkCase == isForBenchmarkCase {

@@ -152,13 +152,12 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					newEndpointDetailStr := string(newEndpointDetailByte)
 
 					if oldEndpointDetailStr != newEndpointDetailStr {
-						_ = s.EndpointRepo.UpdateBodyIsChanged(endpoint.ID, true)
+						err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, newEndpointDetailStr)
+						if err != nil {
+							continue
+						}
 					}
 
-					err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, newEndpointDetailStr)
-					if err != nil {
-						continue
-					}
 				} else {
 					endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, 0, int64(categoryId), path)
 					if err != nil {
@@ -188,8 +187,12 @@ func (s *ThirdPartySyncService) SaveCategory(class v1.FindClassByServiceCodeResD
 		return
 	}
 
+	name := class.Code
+	if class.Code != class.Name {
+		name = name + "(" + class.Name + ")"
+	}
 	categoryReq := model.Category{
-		Name:       class.Code + "(" + class.Name + ")",
+		Name:       name,
 		ProjectId:  projectId,
 		ServeId:    serveId,
 		Type:       serverConsts.EndpointCategory,

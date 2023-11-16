@@ -28,6 +28,7 @@ type ThirdPartySyncService struct {
 	UserRepo                 *repo.UserRepo              `inject:""`
 	RemoteService            *RemoteService              `inject:""`
 	ServeService             *ServeService               `inject:""`
+	EndpointService          *EndpointService            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
 	Cron                     *cron.ServerCron            `inject:""`
 }
@@ -140,7 +141,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 						continue
 					}
 
-					newEndpointDetail, err := s.GenerateEndpoint(oldEndpointDetail, functionDetail)
+					newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
 					if err != nil {
 						continue
 					}
@@ -152,7 +153,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					newEndpointDetailStr := string(newEndpointDetailByte)
 
 					if oldEndpointDetailStr != newEndpointDetailStr {
-						err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, newEndpointDetailStr)
+						err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail)))
 						if err != nil {
 							continue
 						}
@@ -309,13 +310,16 @@ func (s *ThirdPartySyncService) GetSchema(bodyString, requestType string) (schem
 
 }
 
-func (s *ThirdPartySyncService) GenerateEndpoint(endpoint model.Endpoint, functionDetail v1.MetaGetMethodDetailResData) (res model.Endpoint, err error) {
+func (s *ThirdPartySyncService) GenerateEndpoint(endpointId uint, functionDetail v1.MetaGetMethodDetailResData) (res model.Endpoint, err error) {
+	res, err = s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	if err != nil {
+		return
+	}
+
 	functionBody := functionDetail.RequestBody
 	if functionDetail.RequestType == "FORM" {
 		functionBody = functionDetail.RequestFormBody
 	}
-
-	res = endpoint
 
 	requestBody := res.Interfaces[0].RequestBody
 
@@ -397,7 +401,7 @@ func (s *ThirdPartySyncService) AddThirdPartySyncCron() {
 
 	s.Cron.RemoveTask(name)
 
-	s.Cron.AddCommonTask(name, "* */12 * * *", func() {
+	s.Cron.AddCommonTask(name, "*/5 * * * *", func() {
 		err := s.SaveData()
 		if err != nil {
 			logUtils.Error("third party 定时导入任务失败，错误原因：" + err.Error())

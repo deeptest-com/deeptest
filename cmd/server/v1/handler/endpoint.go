@@ -480,8 +480,8 @@ func (c *EndpointCtrl) SaveDiff(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-
-	if err := c.EndpointService.SaveDiff(req.EndpointId, req.IsChanged); err != nil {
+	userName := multi.GetUsername(ctx)
+	if err := c.EndpointService.SaveDiff(req.EndpointId, req.IsChanged, userName); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}

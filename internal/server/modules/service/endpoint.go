@@ -700,7 +700,7 @@ func (s *EndpointService) GetDiff(endpointId uint) (res v1.EndpointDiffRes, err 
 	return
 }
 
-func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool) (err error) {
+func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool, userName string) (err error) {
 	endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
 	if err != nil {
 		return
@@ -715,6 +715,7 @@ func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool) (err error) 
 		endpoints[0].IsChanged = false
 		endpoints[0].ProjectId = endpoint.ProjectId
 		endpoints[0].GlobalParams = endpoint.GlobalParams
+		endpoints[0].UpdateUser = userName
 		err = s.EndpointRepo.SaveAll(endpoints[0])
 	}
 	err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, false)

@@ -21,7 +21,6 @@ import (
 	"gorm.io/gorm"
 	"net/http"
 	"net/url"
-	"reflect"
 	"strings"
 	"sync"
 )
@@ -291,6 +290,8 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 			continue
 		}
 
+		res, _ = s.EndpointRepo.GetAll(res.ID, "v0.1.0")
+
 		if req.DataSyncType == consts.FullCover {
 			if err == nil {
 				endpoint.ID = res.ID
@@ -304,8 +305,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 					//对比endpoint的时候不需要对比组件，所以服务ID设置为0
 					endpoint.ServeId, res.ServeId = 0, 0
 					openAPIDoc := s.Yaml(*endpoint)
-					oldOpenAPIDoc := s.Yaml(res)
-					if !reflect.DeepEqual(openAPIDoc, oldOpenAPIDoc) {
+					if !s.isEqualEndpoint(res, *endpoint) {
 						s.EndpointRepo.UpdateSnapshot(res.ID, _commUtils.JsonEncode(openAPIDoc))
 					}
 					continue
@@ -716,8 +716,22 @@ func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool) (err error) 
 		endpoints[0].ProjectId = endpoint.ProjectId
 		endpoints[0].GlobalParams = endpoint.GlobalParams
 		err = s.EndpointRepo.SaveAll(endpoints[0])
-	} else {
-		err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, false)
 	}
+	err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, false)
 	return
+}
+
+func (s *EndpointService) isEqualEndpoint(old, new model.Endpoint) bool {
+	var ret interface{}
+	oldYaml := s.Yaml(old)
+	_commUtils.JsonDecode(_commUtils.JsonEncode(oldYaml), &ret)
+	oldYamlByte, _ := encoder.NewEncoder(ret).Encode()
+
+	newYaml := s.Yaml(new)
+	_commUtils.JsonDecode(_commUtils.JsonEncode(newYaml), &ret)
+	newYamlByte, _ := encoder.NewEncoder(ret).Encode()
+	res1, res2 := string(oldYamlByte), string(newYamlByte)
+
+	return res1 == res2
+
 }

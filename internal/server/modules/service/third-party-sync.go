@@ -153,6 +153,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					newEndpointDetailStr := string(newEndpointDetailByte)
 
 					if oldEndpointDetailStr != newEndpointDetailStr {
+						newEndpointDetail.ServeId = 0
 						err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail)))
 						if err != nil {
 							continue
@@ -401,7 +402,7 @@ func (s *ThirdPartySyncService) AddThirdPartySyncCron() {
 
 	s.Cron.RemoveTask(name)
 
-	s.Cron.AddCommonTask(name, "*/5 * * * *", func() {
+	s.Cron.AddCommonTask(name, "* * * * *", func() {
 		err := s.SaveData()
 		if err != nil {
 			logUtils.Error("third party 定时导入任务失败，错误原因：" + err.Error())

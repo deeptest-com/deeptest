@@ -190,7 +190,7 @@ func (s *ThirdPartySyncService) SaveCategory(class v1.FindClassByServiceCodeResD
 
 	name := class.Code
 	if class.Code != class.Name {
-		name = name + "(" + class.Name + ")"
+		name = class.Name + "(" + name + ")"
 	}
 	categoryReq := model.Category{
 		Name:       name,

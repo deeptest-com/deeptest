@@ -135,17 +135,25 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
-				if endpoint.ID != 0 {
-					oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
-					if err != nil {
-						continue
-					}
+				oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
+				if err != nil {
+					continue
+				}
 
-					newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
-					if err != nil {
-						continue
-					}
+				newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
+				if err != nil {
+					continue
+				}
 
+				oldEndpointDetail.ServeId = 0
+				newEndpointDetail.ServeId = 0
+				newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
+				if oldEndpointDetail.Snapshot == newSnapshot {
+					continue
+				}
+
+				oldEndpointId := endpoint.ID
+				if oldEndpointId != 0 && endpoint.UpdateUser != "" {
 					oldEndpointDetailByte, _ := json.Marshal(oldEndpointDetail)
 					oldEndpointDetailStr := string(oldEndpointDetailByte)
 
@@ -161,7 +169,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					}
 
 				} else {
-					endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, 0, int64(categoryId), path)
+					endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path)
 					if err != nil {
 						continue
 					}

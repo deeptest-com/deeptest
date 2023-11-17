@@ -28,6 +28,7 @@ type ThirdPartySyncService struct {
 	UserRepo                 *repo.UserRepo              `inject:""`
 	RemoteService            *RemoteService              `inject:""`
 	ServeService             *ServeService               `inject:""`
+	EndpointService          *EndpointService            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
 	Cron                     *cron.ServerCron            `inject:""`
 }
@@ -134,17 +135,25 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
-				if endpoint.ID != 0 {
-					oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
-					if err != nil {
-						continue
-					}
+				oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
+				if err != nil {
+					continue
+				}
 
-					newEndpointDetail, err := s.GenerateEndpoint(oldEndpointDetail, functionDetail)
-					if err != nil {
-						continue
-					}
+				newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
+				if err != nil {
+					continue
+				}
 
+				oldEndpointDetail.ServeId = 0
+				newEndpointDetail.ServeId = 0
+				newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
+				if oldEndpointDetail.Snapshot == newSnapshot {
+					continue
+				}
+
+				oldEndpointId := endpoint.ID
+				if oldEndpointId != 0 && endpoint.UpdateUser != "" {
 					oldEndpointDetailByte, _ := json.Marshal(oldEndpointDetail)
 					oldEndpointDetailStr := string(oldEndpointDetailByte)
 
@@ -152,14 +161,15 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					newEndpointDetailStr := string(newEndpointDetailByte)
 
 					if oldEndpointDetailStr != newEndpointDetailStr {
-						err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, newEndpointDetailStr)
+						newEndpointDetail.ServeId = 0
+						err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail)))
 						if err != nil {
 							continue
 						}
 					}
 
 				} else {
-					endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, 0, int64(categoryId), path)
+					endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path)
 					if err != nil {
 						continue
 					}
@@ -189,7 +199,7 @@ func (s *ThirdPartySyncService) SaveCategory(class v1.FindClassByServiceCodeResD
 
 	name := class.Code
 	if class.Code != class.Name {
-		name = name + "(" + class.Name + ")"
+		name = class.Name + "(" + name + ")"
 	}
 	categoryReq := model.Category{
 		Name:       name,
@@ -309,13 +319,16 @@ func (s *ThirdPartySyncService) GetSchema(bodyString, requestType string) (schem
 
 }
 
-func (s *ThirdPartySyncService) GenerateEndpoint(endpoint model.Endpoint, functionDetail v1.MetaGetMethodDetailResData) (res model.Endpoint, err error) {
+func (s *ThirdPartySyncService) GenerateEndpoint(endpointId uint, functionDetail v1.MetaGetMethodDetailResData) (res model.Endpoint, err error) {
+	res, err = s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	if err != nil {
+		return
+	}
+
 	functionBody := functionDetail.RequestBody
 	if functionDetail.RequestType == "FORM" {
 		functionBody = functionDetail.RequestFormBody
 	}
-
-	res = endpoint
 
 	requestBody := res.Interfaces[0].RequestBody
 
@@ -397,7 +410,7 @@ func (s *ThirdPartySyncService) AddThirdPartySyncCron() {
 
 	s.Cron.RemoveTask(name)
 
-	s.Cron.AddCommonTask(name, "* */12 * * *", func() {
+	s.Cron.AddCommonTask(name, "* * * * *", func() {
 		err := s.SaveData()
 		if err != nil {
 			logUtils.Error("third party 定时导入任务失败，错误原因：" + err.Error())

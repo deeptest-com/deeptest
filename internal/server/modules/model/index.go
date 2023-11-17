@@ -72,6 +72,7 @@ var (
 		&ExecLogExtractor{},
 		&ExecLogCheckpoint{},
 		&ExecLogScript{},
+		&ExecLogDatabaseOpt{},
 
 		&ComponentSchema{},
 		&ComponentSchemaSecurity{},
@@ -115,6 +116,7 @@ var (
 		&ProjectRecentlyVisited{},
 		&ProjectMemberAudit{},
 		&DatabaseConn{},
+		&DebugConditionDatabaseOpt{},
 
 		&SwaggerSync{},
 		&ProjectMockSetting{},

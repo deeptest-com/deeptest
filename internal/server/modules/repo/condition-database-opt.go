@@ -10,7 +10,8 @@ import (
 )
 
 type DatabaseOptRepo struct {
-	DB *gorm.DB `inject:""`
+	DB               *gorm.DB          `inject:""`
+	DatabaseConnRepo *DatabaseConnRepo `inject:""`
 }
 
 func (r *DatabaseOptRepo) Get(id uint) (databaseOpt model.DebugConditionDatabaseOpt, err error) {
@@ -22,9 +23,22 @@ func (r *DatabaseOptRepo) Get(id uint) (databaseOpt model.DebugConditionDatabase
 }
 
 func (r *DatabaseOptRepo) Save(databaseOpt *model.DebugConditionDatabaseOpt) (err error) {
-	r.UpdateDesc(databaseOpt)
+	conn, err := r.DatabaseConnRepo.Get(databaseOpt.DbConnId)
+	if err != nil {
+		return
+	}
+
+	databaseOpt.Type = conn.Type
+	databaseOpt.Host = conn.Host
+	databaseOpt.Port = conn.Port
+	databaseOpt.Username = conn.Username
+	databaseOpt.Password = conn.Password
+	databaseOpt.DbName = conn.DbName
 
 	err = r.DB.Save(databaseOpt).Error
+
+	r.UpdateDesc(databaseOpt)
+
 	return
 }
 func (r *DatabaseOptRepo) UpdateDesc(po *model.DebugConditionDatabaseOpt) (err error) {

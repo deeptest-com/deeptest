@@ -63,19 +63,24 @@ type CheckpointBase struct {
 
 type DatabaseConnBase struct {
 	Name string              `json:"name"`
-	Type consts.DatabaseType `json:"name"`
+	Type consts.DatabaseType `json:"type"`
 
 	Host     string `json:"host"`
-	Port     int    `json:"port"`
+	Port     string `json:"port"`
 	DbName   string `json:"dbName"`
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 type DatabaseOptBase struct {
-	Sql string `json:"sql"`
-
+	DbConnId uint `json:"dbConnId"`
 	DatabaseConnBase
+
+	Sql      string                `json:"sql"`
+	Variable string                `json:"variable"`
+	Scope    consts.ExtractorScope `json:"scope" gorm:"default:public"`
+	JsonPath string                `json:"jsonPath"`
+	Result   string                `json:"result"`
 
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg"`

@@ -24,10 +24,21 @@ type DatabaseConnCtrl struct {
 // @success	200	{object}	        _domain.Response{data=[]model.DatabaseConn}
 // @Router	/api/v1/dbconns	[get]
 func (c *DatabaseConnCtrl) List(ctx iris.Context) {
-	envId, _ := ctx.URLParamInt("envId")
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
 
-	pos, _ := c.DatabaseConnService.List(uint(envId))
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: pos})
+	keywords := ctx.URLParam("keywords")
+
+	res, err := c.DatabaseConnService.List(keywords, projectId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 }
 
 // Get 详情
@@ -65,16 +76,27 @@ func (c *DatabaseConnCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/dbconns	[post]
 func (c *DatabaseConnCtrl) Save(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+
 	req := model.DatabaseConn{}
-	err := ctx.ReadJSON(&req)
+	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
+	req.ProjectId = uint(projectId)
+
+	userName := multi.GetUsername(ctx)
+	if req.ID > 0 {
+		req.UpdateUser = userName
+	} else {
+		req.CreateUser = userName
+	}
+
 	err = c.DatabaseConnService.Save(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Msg: err.Error()})
 		return
 	}
 
@@ -82,18 +104,21 @@ func (c *DatabaseConnCtrl) Save(ctx iris.Context) {
 }
 
 func (c *DatabaseConnCtrl) UpdateName(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+
 	req := v1.DbConnReq{}
-	err := ctx.ReadJSON(&req)
+	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
+	req.ProjectId = uint(projectId)
 	req.UpdateUser = multi.GetUsername(ctx)
 
 	err = c.DatabaseConnService.UpdateName(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Data: err.Error()})
 		return
 	}
 

@@ -9,10 +9,12 @@ import (
 )
 
 type ExecConditionService struct {
-	PreConditionRepo   *repo.PreConditionRepo   `inject:""`
-	PostConditionRepo  *repo.PostConditionRepo  `inject:""`
-	ExtractorRepo      *repo.ExtractorRepo      `inject:""`
-	CheckpointRepo     *repo.CheckpointRepo     `inject:""`
+	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
+	PostConditionRepo *repo.PostConditionRepo `inject:""`
+	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
+	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
+	DatabaseOptRepo   *repo.DatabaseOptRepo   `inject:""`
+
 	ScriptRepo         *repo.ScriptRepo         `inject:""`
 	ResponseDefineRepo *repo.ResponseDefineRepo `inject:""`
 	ShareVarService    *ShareVarService         `inject:""`
@@ -98,6 +100,24 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 					consts.Public, usedBy)
 			}
+		} else if condition.Type == consts.ConditionTypeDatabase {
+			var databaseOptBase domain.DatabaseOptBase
+			json.Unmarshal(condition.Raw, &databaseOptBase)
+			if databaseOptBase.Disabled {
+				continue
+			}
+
+			databaseOptBase.InvokeId = invokeId
+
+			s.DatabaseOptRepo.UpdateResult(databaseOptBase)
+			s.DatabaseOptRepo.CreateLog(databaseOptBase)
+
+			if databaseOptBase.ResultStatus == consts.Pass {
+				s.ShareVarService.Save(databaseOptBase.Variable, databaseOptBase.Result,
+					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
+					databaseOptBase.Scope, usedBy)
+			}
+
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			var responseDefineBase domain.ResponseDefineBase
 			json.Unmarshal(condition.Raw, &responseDefineBase)

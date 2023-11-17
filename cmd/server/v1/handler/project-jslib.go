@@ -81,18 +81,21 @@ func (c *JslibCtrl) Save(ctx iris.Context) {
 }
 
 func (c *JslibCtrl) UpdateName(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("currProjectId")
+
 	req := v1.JslibReq{}
-	err := ctx.ReadJSON(&req)
+	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
+	req.ProjectId = uint(projectId)
 	req.UpdateUser = multi.GetUsername(ctx)
 
 	err = c.JslibService.UpdateName(req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Data: err.Error()})
 		return
 	}
 

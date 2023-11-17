@@ -6,7 +6,8 @@ type DatabaseConn struct {
 	BaseModel
 
 	Name string              `json:"name"`
-	Type consts.DatabaseType `json:"name"`
+	Type consts.DatabaseType `json:"type"`
+	Desc string              `json:"desc"`
 
 	Host     string `json:"host"`
 	Port     string `json:"port"`
@@ -16,6 +17,9 @@ type DatabaseConn struct {
 
 	EnvironmentId uint `json:"environmentId"`
 	ProjectId     uint `json:"projectId"`
+
+	CreateUser string `json:"createUser"`
+	UpdateUser string `json:"updateUser"`
 }
 
 func (DatabaseConn) TableName() string {

@@ -28,6 +28,7 @@ type DebugInvokeService struct {
 	ExtractorRepo      *repo.ExtractorRepo      `inject:""`
 	CheckpointRepo     *repo.CheckpointRepo     `inject:""`
 	ScriptRepo         *repo.ScriptRepo         `inject:""`
+	DatabaseOptRepo    *repo.DatabaseOptRepo    `inject:""`
 	ResponseDefineRepo *repo.ResponseDefineRepo `inject:""`
 
 	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
@@ -207,6 +208,9 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 
 		} else if typ == consts.ConditionTypeScript {
 			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
+
+		} else if typ == consts.ConditionTypeDatabase {
+			log, _ = s.DatabaseOptRepo.GetLog(condition.ID, uint(invokeId))
 
 		}
 

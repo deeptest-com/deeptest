@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	queryUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"gorm.io/driver/mysql"
@@ -13,6 +14,10 @@ import (
 )
 
 func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
+	if opt.Type == "" {
+		return
+	}
+
 	opt.ResultStatus = consts.Pass
 
 	if opt.Type == consts.DbTypeOracle {
@@ -44,7 +49,8 @@ func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
 		return
 	}
 
-	err = query(db, opt)
+	queryResult, err := query(db, opt)
+	opt.Result = queryUtils.JsonPath(string(queryResult), opt.JsonPath)
 
 	return
 }
@@ -52,7 +58,7 @@ func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
 func OpenMySqlDb(opt *domain.DatabaseOptBase) (db *gorm.DB, err error) {
 	params := "charset=utf8mb4&parseTime=True&loc=Local"
 
-	connStr := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?%s", opt.Username, opt.Password,
+	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?%s", opt.Username, opt.Password,
 		opt.Host, opt.Port, opt.DbName, params)
 
 	config := mysql.Config{
@@ -65,7 +71,7 @@ func OpenMySqlDb(opt *domain.DatabaseOptBase) (db *gorm.DB, err error) {
 }
 
 func OpenSqlServer(opt *domain.DatabaseOptBase) (db *gorm.DB, err error) {
-	connStr := fmt.Sprintf("sqlserver://%s:%s@%s:%d?database=%s",
+	connStr := fmt.Sprintf("sqlserver://%s:%s@%s:%s?database=%s",
 		opt.Username, opt.Password,
 		opt.Host, opt.Port, opt.DbName)
 
@@ -77,7 +83,7 @@ func OpenSqlServer(opt *domain.DatabaseOptBase) (db *gorm.DB, err error) {
 func OpenPostgreSQL(opt *domain.DatabaseOptBase) (db *gorm.DB, err error) {
 	params := "sslmode=disable TimeZone=Asia/Shanghai"
 
-	connStr := fmt.Sprintf("user=%s password=%s host=%s port=%d dbname=%s %s",
+	connStr := fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=%s %s",
 		opt.Username, opt.Password,
 		opt.Host, opt.Port, opt.DbName, params)
 
@@ -87,7 +93,7 @@ func OpenPostgreSQL(opt *domain.DatabaseOptBase) (db *gorm.DB, err error) {
 }
 
 func OpenOracle(opt *domain.DatabaseOptBase) (db *sql.DB, err error) {
-	connStr := fmt.Sprintf("%s/%s@%s:%d/%s",
+	connStr := fmt.Sprintf("%s/%s@%s:%s/%s",
 		opt.Username, opt.Password,
 		opt.Host, opt.Port, opt.DbName)
 
@@ -96,14 +102,13 @@ func OpenOracle(opt *domain.DatabaseOptBase) (db *sql.DB, err error) {
 	return
 }
 
-func query(db *gorm.DB, opt *domain.DatabaseOptBase) (err error) {
+func query(db *gorm.DB, opt *domain.DatabaseOptBase) (result []byte, err error) {
 	data := []map[string]interface{}{}
 
 	err = db.Raw(opt.Sql).
 		Scan(&data).Error
 
-	bytes, err := json.Marshal(data)
-	opt.ResultMsg = string(bytes)
+	result, err = json.Marshal(data)
 
 	return
 }

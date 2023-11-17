@@ -46,14 +46,14 @@ func (c *DatabaseOptCtrl) Get(ctx iris.Context) {
 // @success	200	{object}				_domain.Response
 // @Router	/api/v1/checkpoints	[put]
 func (c *DatabaseOptCtrl) Update(ctx iris.Context) {
-	var checkpoint model.DebugConditionDatabaseOpt
-	err := ctx.ReadJSON(&checkpoint)
+	var opt model.DebugConditionDatabaseOpt
+	err := ctx.ReadJSON(&opt)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.DatabaseOptService.Update(&checkpoint)
+	err = c.DatabaseOptService.Update(&opt)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

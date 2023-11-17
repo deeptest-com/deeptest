@@ -16,9 +16,12 @@ import (
 type PostConditionRepo struct {
 	DB *gorm.DB `inject:""`
 
-	ExtractorRepo         *ExtractorRepo         `inject:""`
-	CheckpointRepo        *CheckpointRepo        `inject:""`
-	ScriptRepo            *ScriptRepo            `inject:""`
+	ExtractorRepo    *ExtractorRepo    `inject:""`
+	CheckpointRepo   *CheckpointRepo   `inject:""`
+	ScriptRepo       *ScriptRepo       `inject:""`
+	DatabaseOptRepo  *DatabaseOptRepo  `inject:""`
+	DatabaseConnRepo *DatabaseConnRepo `inject:""`
+
 	ResponseDefineRepo    *ResponseDefineRepo    `inject:""`
 	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
 }
@@ -38,7 +41,12 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 	if typ == consts.ConditionCategoryAssert {
 		db.Where("entity_type = ?", consts.ConditionTypeCheckpoint)
 	} else if typ == consts.ConditionCategoryConsole {
-		db.Where("entity_type =? or entity_type=?", consts.ConditionTypeExtractor, consts.ConditionTypeScript)
+		db.Where("entity_type IN (?)", []consts.ConditionType{
+			consts.ConditionTypeExtractor,
+			consts.ConditionTypeScript,
+			consts.ConditionTypeExtractor,
+			consts.ConditionTypeDatabase,
+		})
 	} else if typ == consts.ConditionCategoryResponse {
 		db.Where("entity_type = ?", consts.ConditionTypeResponseDefine)
 	} else if typ == consts.ConditionCategoryResult {
@@ -323,6 +331,23 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, u
 			script.ConditionEntityId = po.EntityId
 
 			raw, _ := json.Marshal(script)
+			condition := domain.InterfaceExecCondition{
+				Type: typ,
+				Raw:  raw,
+			}
+
+			ret = append(ret, condition)
+
+		} else if typ == consts.ConditionTypeDatabase {
+			opt := domain.DatabaseOptBase{}
+
+			entity, _ := r.DatabaseOptRepo.Get(po.EntityId)
+			copier.CopyWithOption(&opt, entity, copier.Option{DeepCopy: true})
+
+			opt.ConditionId = po.ID
+			opt.ConditionEntityId = po.EntityId
+
+			raw, _ := json.Marshal(opt)
 			condition := domain.InterfaceExecCondition{
 				Type: typ,
 				Raw:  raw,

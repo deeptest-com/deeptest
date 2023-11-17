@@ -10,8 +10,8 @@ type DatabaseConnService struct {
 	DatabaseConnRepo *repo.DatabaseConnRepo `inject:""`
 }
 
-func (s *DatabaseConnService) List(envId uint) (ret []model.DatabaseConn, err error) {
-	ret, err = s.DatabaseConnRepo.List(envId)
+func (s *DatabaseConnService) List(keywords string, projectId int) (ret []model.DatabaseConn, err error) {
+	ret, err = s.DatabaseConnRepo.List(keywords, projectId, false)
 	return
 }
 

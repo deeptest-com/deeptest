@@ -298,7 +298,6 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 			}
 
 		} else if req.DataSyncType == consts.AutoAdd {
-			//只能合并，创建时间和更新时间不等，更新过了，则不覆盖
 			if err == nil {
 				//判断更新 如果用户更新过，那么提示更新，保存快照
 				if res.UpdateUser != "" {

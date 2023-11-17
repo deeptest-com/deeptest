@@ -307,7 +307,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 					openAPIDoc := s.Yaml(*endpoint)
 					openAPIDocJson := _commUtils.JsonEncode(openAPIDoc)
 					//如果用户有更新且快照和最新导入数据都一样，则不更新
-					if res.Snapshot != "" && openAPIDocJson != res.Snapshot {
+					if res.Snapshot != "" && openAPIDocJson == res.Snapshot {
 						continue
 					}
 					if !s.isEqualEndpoint(res, *endpoint) {

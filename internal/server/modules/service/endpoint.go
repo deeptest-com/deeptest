@@ -300,13 +300,18 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		} else if req.DataSyncType == consts.AutoAdd {
 			//只能合并，创建时间和更新时间不等，更新过了，则不覆盖
 			if err == nil {
-				//TODO 判断更新
-				if res.CreatedAt != res.UpdatedAt {
+				//判断更新 如果用户更新过，那么提示更新，保存快照
+				if res.UpdateUser != "" {
 					//对比endpoint的时候不需要对比组件，所以服务ID设置为0
 					endpoint.ServeId, res.ServeId = 0, 0
 					openAPIDoc := s.Yaml(*endpoint)
+					openAPIDocJson := _commUtils.JsonEncode(openAPIDoc)
+					//如果用户有更新且快照和最新导入数据都一样，则不更新
+					if res.Snapshot != "" && openAPIDocJson != res.Snapshot {
+						continue
+					}
 					if !s.isEqualEndpoint(res, *endpoint) {
-						s.EndpointRepo.UpdateSnapshot(res.ID, _commUtils.JsonEncode(openAPIDoc))
+						s.EndpointRepo.UpdateSnapshot(res.ID, openAPIDocJson)
 					}
 					continue
 				} else {

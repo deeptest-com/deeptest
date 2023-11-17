@@ -135,25 +135,25 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
-				oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
-				if err != nil {
-					continue
-				}
-
-				newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
-				if err != nil {
-					continue
-				}
-
-				oldEndpointDetail.ServeId = 0
-				newEndpointDetail.ServeId = 0
-				newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
-				if oldEndpointDetail.Snapshot == newSnapshot {
-					continue
-				}
-
 				oldEndpointId := endpoint.ID
 				if oldEndpointId != 0 && endpoint.UpdateUser != "" {
+					oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
+					if err != nil {
+						continue
+					}
+
+					newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
+					if err != nil {
+						continue
+					}
+
+					oldEndpointDetail.ServeId = 0
+					newEndpointDetail.ServeId = 0
+					newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
+					if oldEndpointDetail.Snapshot == newSnapshot {
+						continue
+					}
+
 					oldEndpointDetailByte, _ := json.Marshal(oldEndpointDetail)
 					oldEndpointDetailStr := string(oldEndpointDetailByte)
 

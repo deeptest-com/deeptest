@@ -135,8 +135,25 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
+				oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
+				if err != nil {
+					continue
+				}
+
+				newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
+				if err != nil && err != gorm.ErrRecordNotFound {
+					continue
+				}
+
+				oldEndpointDetail.ServeId = 0
+				newEndpointDetail.ServeId = 0
+				newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
+				if oldEndpointDetail.Snapshot == newSnapshot {
+					continue
+				}
 				oldEndpointId := endpoint.ID
-				if oldEndpointId != 0 && endpoint.ChangedStatus != consts.NoChanged {
+				//if oldEndpointId != 0 {
+				/*
 					oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
 					if err != nil {
 						continue
@@ -146,20 +163,25 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					if err != nil {
 						continue
 					}
+				*/
 
-					oldEndpointDetail.ServeId = 0
-					newEndpointDetail.ServeId = 0
-					newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
-					if oldEndpointDetail.Snapshot == newSnapshot {
-						continue
-					}
+				//newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
+				//if oldEndpointDetail.Snapshot == newSnapshot {
+				//	continue
+				//}
 
-					oldEndpointDetailByte, _ := json.Marshal(oldEndpointDetail)
-					oldEndpointDetailStr := string(oldEndpointDetailByte)
+				//oldEndpointDetailByte, _ := json.Marshal(oldEndpointDetail)
+				//oldEndpointDetailStr := string(oldEndpointDetailByte)
 
-					newEndpointDetailByte, _ := json.Marshal(newEndpointDetail)
-					newEndpointDetailStr := string(newEndpointDetailByte)
+				//newEndpointDetailByte, _ := json.Marshal(newEndpointDetail)
+				//newEndpointDetailStr := string(newEndpointDetailByte)
 
+				oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
+				if oldEndpointDetail.Snapshot != oldEndpointDetailJson {
+					s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
+					continue
+				}
+				/*
 					if oldEndpointDetailStr != newEndpointDetailStr {
 						newEndpointDetail.ServeId = 0
 						err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail)))
@@ -167,22 +189,24 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 							continue
 						}
 					}
+				*/
 
-				} else {
-					endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path)
-					if err != nil {
-						continue
-					}
+				//}
 
-					interfaceId, err := s.SaveEndpointInterface(title, functionDetail, endpointId, projectId, path)
-					if err != nil {
-						continue
-					}
-
-					if err = s.SaveBody(functionDetail, interfaceId); err != nil {
-						continue
-					}
+				endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path, newSnapshot)
+				if err != nil {
+					continue
 				}
+
+				interfaceId, err := s.SaveEndpointInterface(title, functionDetail, endpointId, projectId, path)
+				if err != nil {
+					continue
+				}
+
+				if err = s.SaveBody(functionDetail, interfaceId); err != nil {
+					continue
+				}
+
 			}
 		}
 	}
@@ -228,7 +252,7 @@ func (s *ThirdPartySyncService) SaveCategory(class v1.FindClassByServiceCodeResD
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path string) (endpointId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path, snapshot string) (endpointId uint, err error) {
 	endpoint := model.Endpoint{
 		Title:      title,
 		ProjectId:  projectId,
@@ -237,6 +261,7 @@ func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, u
 		Status:     1,
 		CategoryId: categoryId,
 		SourceType: consts.ThirdPartySync,
+		Snapshot:   snapshot,
 	}
 
 	if userId != 0 {

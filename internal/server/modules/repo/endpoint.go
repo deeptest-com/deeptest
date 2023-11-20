@@ -505,7 +505,7 @@ func (r *EndpointRepo) GetByNameAndProject(name string, projectId uint) (res mod
 func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, changedStatus consts.ChangedStatus) (err error) {
 	err = r.DB.Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
-		Update("changed_status", changedStatus).Error
+		Updates(map[string]interface{}{"changed_status": changedStatus, "Updated_at": time.Now()}).Error
 
 	return
 }

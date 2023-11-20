@@ -23,6 +23,7 @@ import (
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 )
 
 type EndpointService struct {
@@ -62,6 +63,7 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 	}
 
 	ret, _ := s.EndpointRepo.Get(endpoint.ID)
+
 	err = s.EndpointRepo.SaveAll(&endpoint)
 
 	//go func() {
@@ -292,32 +294,40 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 
 		res, _ = s.EndpointRepo.GetAll(res.ID, "v0.1.0")
 
+		//对比endpoint的时候不需要对比组件，所以服务ID设置为0
+		endpoint.ServeId, res.ServeId = 0, 0
+		openAPIDoc := s.Yaml(*endpoint)
+		endpoint.Snapshot = _commUtils.JsonEncode(openAPIDoc)
+
 		if req.DataSyncType == consts.FullCover {
 			if err == nil {
 				endpoint.ID = res.ID
 			}
 
 		} else if req.DataSyncType == consts.AutoAdd {
+
 			if err == nil {
-				//判断更新 如果用户更新过，那么提示更新，保存快照
-				if res.UpdateUser != "" {
-					//对比endpoint的时候不需要对比组件，所以服务ID设置为0
-					endpoint.ServeId, res.ServeId = 0, 0
-					openAPIDoc := s.Yaml(*endpoint)
-					openAPIDocJson := _commUtils.JsonEncode(openAPIDoc)
-					//如果用户有更新且快照和最新导入数据都一样，则不更新
-					if res.Snapshot != "" && openAPIDocJson == res.Snapshot {
-						continue
-					}
-					if !s.isEqualEndpoint(res, *endpoint) {
-						s.EndpointRepo.UpdateSnapshot(res.ID, openAPIDocJson)
-					}
+
+				//远端无更新，则不做任何修改
+				if endpoint.Snapshot == res.Snapshot {
 					continue
-				} else {
-					endpoint.ID = res.ID
 				}
+
+				//本地快照和本地数据不一致,更新快照,说明有修改，更新快照
+				localEndpoint := s.Yaml(res)
+				localEndpointJson := _commUtils.JsonEncode(localEndpoint)
+				if res.Snapshot != localEndpointJson {
+					s.EndpointRepo.UpdateSnapshot(res.ID, endpoint.Snapshot)
+					continue
+				} else { //一致覆盖数据
+					endpoint.ID = res.ID
+					now := time.Now()
+					endpoint.ChangedTime = &now
+				}
+
 			}
 		}
+		endpoint.ServeId = req.ServeId //前面销毁了ID，现在补充上
 		_, err = s.Save(*endpoint)
 		if err != nil {
 			return err

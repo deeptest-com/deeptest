@@ -81,15 +81,15 @@ func (s *SceneService) GetExecServer(debugInterfaceId, endpointInterfaceId, envi
 	return
 }
 
-func (s *SceneService) LoadEnvVars(scene *domain.ExecScene, debugData domain.DebugData) (projectId uint, err error) {
+func (s *SceneService) LoadEnvVars(scene *domain.ExecScene, serverId, debugInterfaceId uint) (projectId uint, err error) {
 
 	scene.EnvToVariables = domain.EnvToVariables{}
 	scene.DebugInterfaceToEnvMap = domain.InterfaceToEnvMap{}
 
 	//serveServer, _ := s.ServeServerRepo.Get(debugData.ServerId)
-	envId := debugData.ServerId
+	envId := serverId
 
-	scene.DebugInterfaceToEnvMap[debugData.DebugInterfaceId] = envId
+	scene.DebugInterfaceToEnvMap[debugInterfaceId] = envId
 
 	vars, _ := s.EnvironmentRepo.GetVars(envId)
 	for _, v := range vars {

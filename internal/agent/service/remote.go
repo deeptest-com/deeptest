@@ -462,23 +462,16 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 	return
 }
 
-func GetCaseToExec(
-	projectId, baseCaseId uint, cs agentExec.CasesExecObj, serverUrl string, serverToken string, usedBy consts.UsedBy) (
-	ret agentExec.InterfaceExecObj) {
+func GetCasesToExec(req *agentExec.CasesExecReq) (ret agentExec.CaseExecProcessor) {
+	url := "endpoints/cases/alternatives/loadCasesForExec"
 
-	url := "endpoints/cases/alternatives/loadCaseForExec"
-
-	cs.ProjectId = projectId
-	cs.BaseCaseId = baseCaseId
-	cs.UsedBy = usedBy
-	data := cs
-	body, err := json.Marshal(data)
+	body, err := json.Marshal(req)
 
 	httpReq := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(serverUrl) + url,
+		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
 		AuthorizationType: consts.BearerToken,
 		BearerToken: domain.BearerToken{
-			Token: serverToken,
+			Token: req.Token,
 		},
 		BodyType: consts.ContentTypeJSON,
 		Body:     string(body),

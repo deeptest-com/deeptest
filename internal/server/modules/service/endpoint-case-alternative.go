@@ -430,28 +430,141 @@ func (s *EndpointCaseAlternativeService) getFieldProps(pth string) (fieldIn stri
 	return
 }
 
-func (s *EndpointCaseAlternativeService) LoadCaseForExec(req agentExec.CasesExecObj) (
-	ret agentExec.InterfaceExecObj, err error) {
+func (s *EndpointCaseAlternativeService) LoadCasesForExec(req agentExec.CasesExecReq) (
+	ret agentExec.CaseExecProcessor, err error) {
 
-	ret.DebugData, _ = s.LoadDebugDataForExec(req)
+	if req.ExecType == "multi" {
+		s.loadMultiCasesData(*req.ExecObj, &ret, req.BaseCaseId, req.UserId, req.ProjectId)
 
-	// load default environment for user
-	env, _ := s.EnvironmentRepo.GetByUserAndProject(req.UserId, req.ProjectId)
-	if env.ID > 0 {
-		ret.DebugData.ServerId = env.ID
+	} else if req.ExecType == "single" {
+		ret, _ = s.loadSingleCasesData(req, req.BaseCaseId, req.UserId, req.ProjectId)
 	}
 
-	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, req.UsedBy)
-	ret.PostConditions, _ = s.PostConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, req.UsedBy)
+	ret.Key = "root"
 
-	ret.ExecScene.ShareVars = ret.DebugData.ShareVars // for execution
-	ret.DebugData.ShareVars = nil                     // for display on debug page only
+	return
+}
 
-	// get environment and settings on project level
-	s.SceneService.LoadEnvVars(&ret.ExecScene, ret.DebugData)
-	s.SceneService.LoadProjectSettings(&ret.ExecScene, ret.DebugData.ProjectId)
+func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs agentExec.CasesExecObj, parent *agentExec.CaseExecProcessor,
+	baseCaseId, userId, projectId uint) (err error) {
+
+	if !cs.NeedExec {
+		return
+	}
+
+	if cs.Category != "case" {
+		processor := agentExec.CaseExecProcessor{
+			Title:    cs.Title,
+			Category: fmt.Sprintf("%v", cs.Category),
+			Key:      cs.Key,
+		}
+
+		for _, son := range cs.Children {
+			s.loadMultiCasesData(*son, &processor, baseCaseId, userId, projectId)
+		}
+
+		parent.Children = append(parent.Children, &processor)
+
+		return
+	}
+
+	execObj := agentExec.InterfaceExecObj{}
+
+	cs.BaseCaseId = baseCaseId
+	execObj.DebugData, _ = s.LoadDebugDataForExec(cs)
+
+	s.loadScene(&execObj, userId, projectId)
+
+	child := agentExec.CaseExecProcessor{
+		Title:    cs.Title,
+		Category: fmt.Sprintf("%v", cs.Category),
+		Key:      cs.Key,
+
+		Data: &execObj,
+	}
+	parent.Children = append(parent.Children, &child)
+
+	return
+}
+
+func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.CasesExecReq, baseCaseId, userId, projectId uint) (
+	ret agentExec.CaseExecProcessor, err error) {
+
+	execObj := agentExec.InterfaceExecObj{}
+
+	endpointCase, err := s.EndpointCaseService.Get(baseCaseId)
+	if err != nil {
+		return
+	}
+
+	execObj.DebugData, err = s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
+	if err != nil {
+		return
+	}
+
+	// change field value by path if exist
+	var validPaths []casesHelper.AlternativeCase
+	s.getValidPaths(*req.ExecObj, &validPaths)
+
+	for _, val := range validPaths {
+		if val.Category != consts.AlternativeCaseCase || !val.NeedExec {
+			continue
+		}
+
+		fieldIn, fieldNameOrPath := s.getFieldProps(val.Path)
+		if fieldIn == "" {
+			logUtils.Error("failed to getFieldProps")
+			continue
+		}
+		s.changeFieldProps(&execObj.DebugData, fieldIn, fieldNameOrPath, val.Sample, val.FieldType)
+	}
+
+	s.loadScene(&execObj, userId, projectId)
+
+	root := agentExec.CaseExecProcessor{
+		Title:    req.ExecObj.Title,
+		Category: "root",
+		Key:      "root",
+
+		Children: []*agentExec.CaseExecProcessor{
+			&agentExec.CaseExecProcessor{
+				Title:    "case",
+				Category: "case",
+				Key:      req.ExecObj.Key,
+
+				Data: &execObj,
+			},
+		},
+	}
+
+	ret.Children = append(ret.Children, &root)
+
+	return
+}
+
+func (s *EndpointCaseAlternativeService) getValidPaths(execObj agentExec.CasesExecObj, validPaths *[]casesHelper.AlternativeCase) {
+	if !execObj.NeedExec {
+		return
+	}
+
+	if execObj.Category != "case" {
+		for _, child := range execObj.Children {
+			s.getValidPaths(*child, validPaths)
+		}
+
+		return
+	}
+
+	validPath := casesHelper.AlternativeCase{
+		NeedExec:  execObj.NeedExec,
+		Category:  consts.AlternativeCaseCategories(execObj.Category.(string)),
+		Key:       execObj.Key,
+		Path:      execObj.Path,
+		Sample:    execObj.Sample,
+		FieldType: execObj.FieldType,
+	}
+
+	*validPaths = append(*validPaths, validPath)
 
 	return
 }
@@ -479,4 +592,24 @@ func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req agentExec.Case
 	s.changeFieldProps(&ret, fieldIn, fieldNameOrPath, req.Sample, req.FieldType)
 
 	return
+}
+
+func (s *EndpointCaseAlternativeService) loadScene(execObj *agentExec.InterfaceExecObj, userId, projectId uint) {
+	// load default environment for user
+	env, _ := s.EnvironmentRepo.GetByUserAndProject(userId, projectId)
+	if env.ID > 0 {
+		execObj.DebugData.ServerId = env.ID
+	}
+
+	execObj.PreConditions, _ = s.PreConditionRepo.ListTo(
+		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy)
+	execObj.PostConditions, _ = s.PostConditionRepo.ListTo(
+		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy)
+
+	execObj.ExecScene.ShareVars = execObj.DebugData.ShareVars // for execution
+	execObj.DebugData.ShareVars = nil                         // for display on debug page only
+
+	// get environment and settings on project level
+	s.SceneService.LoadEnvVars(&execObj.ExecScene, execObj.DebugData.ServerId, execObj.DebugData.DebugInterfaceId)
+	s.SceneService.LoadProjectSettings(&execObj.ExecScene, execObj.DebugData.ProjectId)
 }

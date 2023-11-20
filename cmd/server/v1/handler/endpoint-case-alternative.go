@@ -90,9 +90,10 @@ func (c *EndpointCaseAlternativeCtrl) SaveCase(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
 
-// LoadCaseForExec
-func (c *EndpointCaseAlternativeCtrl) LoadCaseForExec(ctx iris.Context) {
-	var req agentExec.CasesExecObj
+// LoadCasesForExec
+func (c *EndpointCaseAlternativeCtrl) LoadCasesForExec(ctx iris.Context) {
+	var req agentExec.CasesExecReq
+
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -101,7 +102,7 @@ func (c *EndpointCaseAlternativeCtrl) LoadCaseForExec(ctx iris.Context) {
 
 	req.UserId = multi.GetUserId(ctx)
 
-	ret, err := c.EndpointCaseAlternativeService.LoadCaseForExec(req)
+	ret, err := c.EndpointCaseAlternativeService.LoadCasesForExec(req)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }

@@ -24,7 +24,7 @@ func (m *EndpointCaseAlternativeModule) Party() module.WebModule {
 		public.Post("/saveFactor", m.EndpointCaseAlternativeCtrl.SaveFactor).Name = "保存备选路径因子取值"
 		public.Post("/saveCase", m.EndpointCaseAlternativeCtrl.SaveCase).Name = "保存备选路径为独立用例"
 
-		public.Post("/loadCaseForExec", m.EndpointCaseAlternativeCtrl.LoadCaseForExec).Name = "获取用例执行数据"
+		public.Post("/loadCasesForExec", m.EndpointCaseAlternativeCtrl.LoadCasesForExec).Name = "获取用例执行数据"
 	}
 
 	return module.NewModule("/endpoints/cases/alternatives", handler)

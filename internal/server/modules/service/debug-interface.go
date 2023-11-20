@@ -80,7 +80,7 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agent
 	ret.DebugData.ShareVars = nil                     // for display on debug page only
 
 	// get environment and settings on project level
-	s.SceneService.LoadEnvVars(&ret.ExecScene, ret.DebugData)
+	s.SceneService.LoadEnvVars(&ret.ExecScene, ret.DebugData.ServerId, ret.DebugData.DebugInterfaceId)
 	s.SceneService.LoadProjectSettings(&ret.ExecScene, ret.DebugData.ProjectId)
 
 	//ret.ExecScene.GlobalParams = s.DebugSceneService.MergeGlobalParams(ret.ExecScene.GlobalParams, ret.DebugData.GlobalParams)

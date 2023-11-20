@@ -21,7 +21,7 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 	execUtils.SendStartMsg(wsMsg)
 
 	// run case one by one
-	doExecCase(req, wsMsg, "")
+	doExecCases(req, wsMsg, "")
 
 	// end msg
 	execUtils.SendEndMsg(wsMsg)
@@ -29,100 +29,103 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 	return
 }
 
-func doExecCase(req *agentExec.CasesExecReq, wsMsg *websocket.Message, parentUuid string) (err error) {
-	for _, cs := range req.Cases.Children {
-		if !cs.NeedExec {
-			continue
-		}
+func doExecCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message, parentUuid string) (err error) {
+	casesExecObj := GetCasesToExec(req)
 
-		if cs.Category != "case" {
-			startMsg := iris.Map{
-				"source":     "execCases",
-				"execUuid":   req.ExecUUid,
-				"caseUuid":   cs.Key,
-				"category":   cs.Category,
-				"title":      cs.Title,
-				"parentUuid": parentUuid,
-			}
-			execUtils.SendExecMsg(startMsg, consts.ProgressResult, wsMsg)
-		}
-
-		if len(cs.Children) > 0 {
-			req.Cases = cs
-			doExecCase(req, wsMsg, cs.Key)
-		}
-
-		if cs.Category != "case" {
-			continue
-		}
-
-		caseInterfaceExecObj := GetCaseToExec(
-			req.ProjectId, req.BaseCaseId, *cs, req.ServerUrl, req.Token, req.UsedBy)
-
-		agentExec.CurrDebugInterfaceId = caseInterfaceExecObj.DebugData.DebugInterfaceId
-		agentExec.CurrScenarioProcessorId = 0 // not in a scenario
-
-		agentExec.CurrRequest = domain.BaseRequest{}
-		agentExec.CurrResponse = domain.DebugResponse{}
-		agentExec.ExecScene = caseInterfaceExecObj.ExecScene
-
-		// init context
-		agentExec.InitDebugExecContext()
-		agentExec.InitJsRuntime(req.ProjectId)
-
-		statusPreCondition, _ := agentExec.ExecPreConditions(caseInterfaceExecObj) // must before PreRequest, since it will update the vari in script
-		originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData)
-
-		agentExec.SetReqValueToGoja(caseInterfaceExecObj.DebugData.BaseRequest)
-		agentExec.GetReqValueFromGoja()
-
-		// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
-		if agentExec.CurrRequest.Url != "" {
-			caseInterfaceExecObj.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
-		}
-
-		resultResp, err1 := RequestInterface(&caseInterfaceExecObj.DebugData)
-		if err1 != nil {
-			execUtils.SendResult(err1, wsMsg)
-			return err1
-		}
-
-		agentExec.SetRespValueToGoja(resultResp)
-		statusPostCondition, _ := agentExec.ExecPostConditions(&caseInterfaceExecObj, resultResp)
-		agentExec.GetRespValueFromGoja()
-		PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
-
-		if agentExec.CurrResponse.Data != nil {
-			resultResp = agentExec.CurrResponse
-		}
-
-		status := consts.Pass
-		if statusPreCondition == consts.Fail || statusPostCondition == consts.Fail {
-			status = consts.Fail
-		}
-
-		result := iris.Map{
-			"source": "execCases",
-
-			"execUuid": req.ExecUUid,
-			"caseUuid": cs.Key,
-			"request":  caseInterfaceExecObj,
-			"response": resultResp,
-
-			"status": status,
-
-			"category":   cs.Category,
-			"title":      cs.Title,
-			"parentUuid": parentUuid,
-		}
-
-		// send result
-		execUtils.SendExecMsg(result, consts.ProgressResult, wsMsg)
+	for _, cs := range casesExecObj.Children {
+		doExecCase(cs, wsMsg, req.ExecUUid, parentUuid, req.ProjectId)
 
 		// stop if needed
 		if agentExec.ForceStopExec {
 			break
 		}
 	}
+
+	return
+}
+
+func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execUUid, parentUuid string, projectId uint) (err error) {
+	if cs.Category != "case" {
+		startMsg := iris.Map{
+			"source":     "execCases",
+			"execUuid":   execUUid,
+			"caseUuid":   cs.Key,
+			"category":   cs.Category,
+			"title":      cs.Title,
+			"parentUuid": parentUuid,
+		}
+		execUtils.SendExecMsg(startMsg, consts.ProgressResult, wsMsg)
+	}
+
+	for _, child := range cs.Children {
+		doExecCase(child, wsMsg, execUUid, cs.Key, projectId)
+	}
+
+	if cs.Category != "case" {
+		return
+	}
+
+	caseInterfaceExecObj := cs.Data
+
+	agentExec.CurrDebugInterfaceId = caseInterfaceExecObj.DebugData.DebugInterfaceId
+	agentExec.CurrScenarioProcessorId = 0 // not in a scenario
+
+	agentExec.CurrRequest = domain.BaseRequest{}
+	agentExec.CurrResponse = domain.DebugResponse{}
+	agentExec.ExecScene = caseInterfaceExecObj.ExecScene
+
+	// init context
+	agentExec.InitDebugExecContext()
+	agentExec.InitJsRuntime(projectId)
+
+	statusPreCondition, _ := agentExec.ExecPreConditions(*caseInterfaceExecObj) // must before PreRequest, since it will update the vari in script
+	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData)
+
+	agentExec.SetReqValueToGoja(caseInterfaceExecObj.DebugData.BaseRequest)
+	agentExec.GetReqValueFromGoja()
+
+	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
+	if agentExec.CurrRequest.Url != "" {
+		caseInterfaceExecObj.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
+	}
+
+	resultResp, err1 := RequestInterface(&caseInterfaceExecObj.DebugData)
+	if err1 != nil {
+		execUtils.SendResult(err1, wsMsg)
+		return err1
+	}
+
+	agentExec.SetRespValueToGoja(resultResp)
+	statusPostCondition, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp)
+	agentExec.GetRespValueFromGoja()
+	PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
+
+	if agentExec.CurrResponse.Data != nil {
+		resultResp = agentExec.CurrResponse
+	}
+
+	status := consts.Pass
+	if statusPreCondition == consts.Fail || statusPostCondition == consts.Fail {
+		status = consts.Fail
+	}
+
+	result := iris.Map{
+		"source": "execCases",
+
+		"execUuid": execUUid,
+		"caseUuid": cs.Key,
+		"request":  caseInterfaceExecObj,
+		"response": resultResp,
+
+		"status": status,
+
+		"category":   cs.Category,
+		"title":      cs.Title,
+		"parentUuid": parentUuid,
+	}
+
+	// send result
+	execUtils.SendExecMsg(result, consts.ProgressResult, wsMsg)
+
 	return
 }

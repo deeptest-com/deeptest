@@ -136,7 +136,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 				}
 
 				oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
-				if err != nil {
+				if err != nil && err != gorm.ErrRecordNotFound {
 					continue
 				}
 
@@ -177,7 +177,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 				//newEndpointDetailStr := string(newEndpointDetailByte)
 
 				oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
-				if oldEndpointDetail.Snapshot != oldEndpointDetailJson {
+				if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson {
 					s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
 					continue
 				}
@@ -207,6 +207,19 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
+				if endpoint.ID == 0 {
+					createEndpointDetail, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+					if err != nil {
+						continue
+					}
+
+					createEndpointDetail.ServeId = 0
+					createEndpointDetail.Snapshot = _commUtils.JsonEncode(s.EndpointService.Yaml(createEndpointDetail))
+					err = s.EndpointRepo.Save(endpointId, &createEndpointDetail)
+					if err != nil {
+						continue
+					}
+				}
 			}
 		}
 	}
@@ -261,7 +274,9 @@ func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, u
 		Status:     1,
 		CategoryId: categoryId,
 		SourceType: consts.ThirdPartySync,
-		Snapshot:   snapshot,
+	}
+	if oldEndpointId != 0 {
+		endpoint.Snapshot = snapshot
 	}
 
 	if userId != 0 {

@@ -35,7 +35,7 @@ type Endpoint struct {
 	GlobalParams  []EnvironmentParam   `gorm:"-" json:"globalParams"`
 	Snapshot      string               `gorm:"type:longtext" json:"snapshot"`
 	ChangedTime   *time.Time           `json:"changedTime,omitempty"`
-	ChangedStatus consts.ChangedStatus `json:"changedStatus,omitempty"`
+	ChangedStatus consts.ChangedStatus `gorm:"default:1" json:"changedStatus,omitempty"`
 }
 
 func (Endpoint) TableName() string {

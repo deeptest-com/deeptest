@@ -136,7 +136,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 				}
 
 				oldEndpointId := endpoint.ID
-				if oldEndpointId != 0 && endpoint.UpdateUser != "" {
+				if oldEndpointId != 0 && endpoint.ChangedStatus != consts.NoChanged {
 					oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
 					if err != nil {
 						continue

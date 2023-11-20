@@ -649,7 +649,7 @@ func (s *EndpointService) SyncFromThirdParty(endpointId uint) (err error) {
 		return
 	}
 
-	if !endpoint.IsChanged || endpoint.SourceType != consts.ThirdPartySync || endpoint.CategoryId == -1 || len(endpoint.Interfaces) == 0 {
+	if endpoint.SourceType != consts.ThirdPartySync || endpoint.CategoryId == -1 || len(endpoint.Interfaces) == 0 {
 		return
 	}
 
@@ -660,7 +660,7 @@ func (s *EndpointService) SyncFromThirdParty(endpointId uint) (err error) {
 		return
 	}
 
-	err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, false)
+	err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, consts.Changed)
 
 	return
 }
@@ -709,6 +709,7 @@ func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool, userName str
 	if err != nil {
 		return
 	}
+
 	if isChanged {
 		var doc openapi3.T
 		_commUtils.JsonDecode(endpoint.Snapshot, &doc)
@@ -716,13 +717,15 @@ func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool, userName str
 		endpoints[0].ID = endpoint.ID
 		endpoints[0].Title = endpoint.Title
 		endpoints[0].ServeId = endpoint.ServeId
-		endpoints[0].IsChanged = false
+		endpoints[0].ChangedStatus = consts.NoChanged
 		endpoints[0].ProjectId = endpoint.ProjectId
 		endpoints[0].GlobalParams = endpoint.GlobalParams
 		endpoints[0].UpdateUser = userName
 		err = s.EndpointRepo.SaveAll(endpoints[0])
+	} else {
+		err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, consts.IgnoreChanged)
 	}
-	err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, false)
+
 	return
 }
 

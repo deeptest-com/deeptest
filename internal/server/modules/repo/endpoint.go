@@ -502,10 +502,10 @@ func (r *EndpointRepo) GetByNameAndProject(name string, projectId uint) (res mod
 	return
 }
 
-func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, isChanged bool) (err error) {
+func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, changedStatus consts.ChangedStatus) (err error) {
 	err = r.DB.Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
-		Update("is_changed", isChanged).Error
+		Update("changed_status", changedStatus).Error
 
 	return
 }
@@ -513,7 +513,7 @@ func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, isChanged bool) (err
 func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err error) {
 	err = r.DB.Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
-		Updates(map[string]interface{}{"is_changed": true, "snapshot": snapshot, "changed_time": time.Now()}).Error
+		Updates(map[string]interface{}{"changed_status": consts.Changed, "snapshot": snapshot, "changed_time": time.Now()}).Error
 
 	return
 }

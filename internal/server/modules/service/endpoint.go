@@ -692,6 +692,8 @@ func (s *EndpointService) GetDiff(endpointId uint) (res v1.EndpointDiffRes, err 
 		sourceName = "乐仓智能体厂"
 	}
 
+	res.ChangedStatus = endpoint.ChangedStatus
+
 	res.CurrentDesc = fmt.Sprintf("%s于%s在系统中手动更新", endpoint.CreateUser, endpoint.UpdatedAt.Format("2006-01-02 15:04:05"))
 	res.LatestDesc = fmt.Sprintf("%s从%s自动同步", endpoint.ChangedTime.Format("2006-01-02 15:04:05"), sourceName)
 
@@ -709,7 +711,6 @@ func (s *EndpointService) GetDiff(endpointId uint) (res v1.EndpointDiffRes, err 
 	if err != nil {
 		return
 	}
-
 	res.Latest = string(resYaml)
 	return
 }

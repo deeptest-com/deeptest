@@ -25,8 +25,7 @@ type EndpointCaseAlternativeService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
-	PreConditionRepo      *repo.PreConditionRepo      `inject:""`
-	PostConditionRepo     *repo.PostConditionRepo     `inject:""`
+	ConditionRepo         *repo.ConditionRepo         `inject:""`
 	CategoryRepo          *repo.CategoryRepo          `inject:""`
 
 	EndpointCaseService      *EndpointCaseService      `inject:""`
@@ -133,8 +132,8 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 	})
 
 	if req.BaseCaseId > 0 {
-		s.PreConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, false)
-		s.PostConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, false)
+		s.ConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, false, consts.ConditionSrcPre)
+		s.ConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, false, consts.ConditionSrcPre)
 	}
 
 	return
@@ -601,10 +600,10 @@ func (s *EndpointCaseAlternativeService) loadScene(execObj *agentExec.InterfaceE
 		execObj.DebugData.ServerId = env.ID
 	}
 
-	execObj.PreConditions, _ = s.PreConditionRepo.ListTo(
-		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy)
-	execObj.PostConditions, _ = s.PostConditionRepo.ListTo(
-		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy)
+	execObj.PreConditions, _ = s.ConditionRepo.ListTo(
+		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy, consts.ConditionSrcPre)
+	execObj.PostConditions, _ = s.ConditionRepo.ListTo(
+		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy, consts.ConditionSrcPost)
 
 	execObj.ExecScene.ShareVars = execObj.DebugData.ShareVars // for execution
 	execObj.DebugData.ShareVars = nil                         // for display on debug page only

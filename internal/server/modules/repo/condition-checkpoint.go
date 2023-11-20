@@ -53,7 +53,7 @@ func (r *CheckpointRepo) UpdateDesc(po *model.DebugConditionCheckpoint) (err err
 		"desc": desc,
 	}
 
-	err = r.DB.Model(&model.DebugPostCondition{}).
+	err = r.DB.Model(&model.DebugCondition{}).
 		Where("id=?", po.ConditionId).
 		Updates(values).Error
 

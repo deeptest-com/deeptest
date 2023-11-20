@@ -47,7 +47,7 @@ func (r *DatabaseOptRepo) UpdateDesc(po *model.DebugConditionDatabaseOpt) (err e
 		"desc": desc,
 	}
 
-	err = r.DB.Model(&model.DebugPostCondition{}).
+	err = r.DB.Model(&model.DebugCondition{}).
 		Where("id=?", po.ConditionId).
 		Updates(values).Error
 

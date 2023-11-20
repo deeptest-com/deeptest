@@ -6,9 +6,9 @@ import (
 )
 
 type DatabaseOptService struct {
-	PostConditionRepo *repo.PostConditionRepo `inject:""`
-	DatabaseOptRepo   *repo.DatabaseOptRepo   `inject:""`
-	EnvironmentRepo   *repo.EnvironmentRepo   `inject:""`
+	ConditionRepo   *repo.ConditionRepo   `inject:""`
+	DatabaseOptRepo *repo.DatabaseOptRepo `inject:""`
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 }
 
 func (s *DatabaseOptService) Get(id uint) (opt model.DebugConditionDatabaseOpt, err error) {

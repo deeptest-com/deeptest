@@ -5,8 +5,10 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
-type DebugPreCondition struct {
+type DebugCondition struct {
 	BaseModel
+
+	ConditionSrc consts.ConditionSrc `json:"conditionSrc"`
 
 	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
 	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
@@ -22,29 +24,8 @@ type DebugPreCondition struct {
 	Ordr int    `json:"ordr"`
 }
 
-func (DebugPreCondition) TableName() string {
-	return "biz_debug_condition_pre"
-}
-
-type DebugPostCondition struct {
-	BaseModel
-
-	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
-	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
-
-	EntityType consts.ConditionType `json:"entityType"`
-	EntityId   uint                 `json:"entityId"`
-	UsedBy     consts.UsedBy        `json:"usedBy"`
-
-	IsForBenchmarkCase bool `gorm:"default:0" json:"isForBenchmarkCase"`
-
-	Name string `json:"name"`
-	Desc string `json:"desc"`
-	Ordr int    `json:"ordr"`
-}
-
-func (DebugPostCondition) TableName() string {
-	return "biz_debug_condition_post"
+func (DebugCondition) TableName() string {
+	return "biz_debug_condition"
 }
 
 type DebugConditionExtractor struct {

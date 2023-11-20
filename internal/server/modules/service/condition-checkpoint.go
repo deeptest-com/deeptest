@@ -6,12 +6,12 @@ import (
 )
 
 type CheckpointService struct {
-	PostConditionRepo *repo.PostConditionRepo `inject:""`
-	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
-	EnvironmentRepo   *repo.EnvironmentRepo   `inject:""`
-	ProjectRepo       *repo.ProjectRepo       `inject:""`
-	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
-	VariableService   *VariableService        `inject:""`
+	ConditionRepo   *repo.ConditionRepo   `inject:""`
+	CheckpointRepo  *repo.CheckpointRepo  `inject:""`
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
+	ProjectRepo     *repo.ProjectRepo     `inject:""`
+	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
+	VariableService *VariableService      `inject:""`
 }
 
 func (s *CheckpointService) Get(id uint) (checkpoint model.DebugConditionCheckpoint, err error) {
@@ -58,7 +58,7 @@ func (s *CheckpointService) Delete(reqId uint) (err error) {
 //func (s *CheckpointService) Check(checkpoint model.DebugConditionCheckpoint, invokeId, caseInterfaceId, scenarioProcessorId uint, resp domain.DebugResponse,
 //	usedBy consts.UsedBy) (logCheckpoint model.ExecLogCheckpoint, err error) {
 //
-//	postCondition, _ := s.PostConditionRepo.Get(checkpoint.ConditionId)
+//	postCondition, _ := s.ConditionRepo.Get(checkpoint.ConditionId)
 //
 //	if checkpoint.BaseModel.Disabled {
 //		checkpoint.ResultStatus = "Disabled"

@@ -9,11 +9,10 @@ import (
 )
 
 type ExecConditionService struct {
-	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
-	PostConditionRepo *repo.PostConditionRepo `inject:""`
-	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
-	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
-	DatabaseOptRepo   *repo.DatabaseOptRepo   `inject:""`
+	ConditionRepo   *repo.ConditionRepo   `inject:""`
+	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
+	CheckpointRepo  *repo.CheckpointRepo  `inject:""`
+	DatabaseOptRepo *repo.DatabaseOptRepo `inject:""`
 
 	ScriptRepo         *repo.ScriptRepo         `inject:""`
 	ResponseDefineRepo *repo.ResponseDefineRepo `inject:""`

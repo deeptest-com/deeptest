@@ -13,9 +13,9 @@ import (
 type ExtractorService struct {
 	ExtractorRepo *repo.ExtractorRepo `inject:""`
 
-	PostConditionRepo    *repo.PostConditionRepo `inject:""`
-	PostConditionService *PostConditionService   `inject:""`
-	ShareVarService      *ShareVarService        `inject:""`
+	ConditionRepo    *repo.ConditionRepo `inject:""`
+	ConditionService *ConditionService   `inject:""`
+	ShareVarService  *ShareVarService    `inject:""`
 }
 
 func (s *ExtractorService) Get(id uint) (extractor model.DebugConditionExtractor, err error) {
@@ -34,7 +34,7 @@ func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickC
 	config := req.Config
 
 	// create post-condition
-	condition := model.DebugPostCondition{}
+	condition := model.DebugCondition{}
 	copier.CopyWithOption(&condition, debugInfo, copier.Option{DeepCopy: true})
 
 	condition.EntityId = 0 // update later
@@ -42,7 +42,7 @@ func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickC
 	condition.UsedBy = debugInfo.UsedBy
 	condition.Desc = extractorHelper.GenDesc(config.Variable, config.Src, config.Key, config.Type, config.Expression, "", "")
 
-	err = s.PostConditionRepo.Save(&condition)
+	err = s.ConditionRepo.Save(&condition)
 
 	// create extractor
 	var extractor model.DebugConditionExtractor
@@ -51,7 +51,7 @@ func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickC
 
 	_, err = s.ExtractorRepo.Save(&extractor)
 
-	s.PostConditionRepo.UpdateEntityId(condition.ID, extractor.ID)
+	s.ConditionRepo.UpdateEntityId(condition.ID, extractor.ID)
 
 	return
 }
@@ -69,7 +69,7 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 }
 
 func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugInfo) (variables []domain.Variable, err error) {
-	extractorConditions, err := s.PostConditionRepo.ListExtractor(req.DebugInterfaceId, req.EndpointInterfaceId)
+	extractorConditions, err := s.ConditionRepo.ListExtractor(req.DebugInterfaceId, req.EndpointInterfaceId)
 
 	var conditionIds []uint
 	for _, item := range extractorConditions {

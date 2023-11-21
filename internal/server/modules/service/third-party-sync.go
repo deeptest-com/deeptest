@@ -266,14 +266,16 @@ func (s *ThirdPartySyncService) SaveCategory(class v1.FindClassByServiceCodeResD
 }
 
 func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path, snapshot string) (endpointId uint, err error) {
+	timeNow := time.Now()
 	endpoint := model.Endpoint{
-		Title:      title,
-		ProjectId:  projectId,
-		ServeId:    serveId,
-		Path:       path,
-		Status:     1,
-		CategoryId: categoryId,
-		SourceType: consts.ThirdPartySync,
+		Title:       title,
+		ProjectId:   projectId,
+		ServeId:     serveId,
+		Path:        path,
+		Status:      1,
+		CategoryId:  categoryId,
+		SourceType:  consts.ThirdPartySync,
+		ChangedTime: &timeNow,
 	}
 	if oldEndpointId != 0 {
 		endpoint.Snapshot = snapshot

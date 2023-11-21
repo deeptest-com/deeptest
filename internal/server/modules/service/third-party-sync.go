@@ -453,7 +453,7 @@ func (s *ThirdPartySyncService) AddThirdPartySyncCron() {
 
 	s.Cron.RemoveTask(name)
 
-	s.Cron.AddCommonTask(name, "* * * * *", func() {
+	s.Cron.AddCommonTask(name, "* */12 * * *", func() {
 		err := s.SaveData()
 		if err != nil {
 			logUtils.Error("third party 定时导入任务失败，错误原因：" + err.Error())

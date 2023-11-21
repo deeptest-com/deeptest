@@ -513,7 +513,7 @@ func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, changedStatus consts
 func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err error) {
 	err = r.DB.Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
-		Updates(map[string]interface{}{"changed_status": consts.Changed, "snapshot": snapshot, "changed_time": time.Now()}).Error
+		UpdateColumns(map[string]interface{}{"changed_status": consts.Changed, "snapshot": snapshot, "changed_time": time.Now()}).Error
 
 	return
 }

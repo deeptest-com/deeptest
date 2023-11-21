@@ -277,6 +277,7 @@ func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, u
 		SourceType:  consts.ThirdPartySync,
 		ChangedTime: &timeNow,
 	}
+
 	if oldEndpointId != 0 {
 		endpoint.Snapshot = snapshot
 	}

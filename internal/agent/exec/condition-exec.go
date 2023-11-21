@@ -8,7 +8,6 @@ import (
 	databaseOptHelpper "github.com/aaronchen2k/deeptest/internal/pkg/helper/database-opt"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"log"
 	"regexp"
 	"strings"
@@ -16,24 +15,19 @@ import (
 
 func ExecPreConditions(execObj InterfaceExecObj) (status consts.ResultStatus, err error) {
 	status = consts.Pass
+	preConditions := make([]domain.InterfaceExecCondition, 0) // will be changed and append items to it
 
-	for index, condition := range execObj.PreConditions {
+	for _, condition := range execObj.PreConditions {
 		if condition.Type == consts.ConditionTypeScript {
-			var scriptBase domain.ScriptBase
-			json.Unmarshal(condition.Raw, &scriptBase)
+			DealwithDealwithScriptCondition(condition, &status, execObj.DebugData.ProjectId, &preConditions)
 
-			err = ExecScript(&scriptBase, execObj.DebugData.ProjectId)
-			if err != nil {
-				logUtils.Info(err.Error())
-				status = consts.Fail
-				return
-			}
-			scriptHelper.GenResultMsg(&scriptBase)
-			scriptBase.VariableSettings = VariableSettings
+		} else if condition.Type == consts.ConditionTypeDatabase {
+			DealwithDatabaseCondition(condition, &status, &preConditions)
 
-			execObj.PreConditions[index].Raw, _ = json.Marshal(scriptBase)
 		}
 	}
+
+	execObj.PreConditions = preConditions
 
 	return
 }

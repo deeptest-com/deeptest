@@ -28,8 +28,8 @@ type ConditionRepo struct {
 
 func (r *ConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, category consts.ConditionCategory,
 	usedBy consts.UsedBy, forAlternativeCase string, src consts.ConditionSrc) (
-
 	pos []model.DebugCondition, err error) {
+
 	db := r.DB.Where("NOT deleted")
 
 	if debugInterfaceId > 0 {
@@ -60,6 +60,9 @@ func (r *ConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, categor
 
 	if usedBy != "" {
 		db.Where("used_by=?", usedBy)
+	}
+	if src != "" {
+		db.Where("condition_src=?", src)
 	}
 
 	if forAlternativeCase == "true" {

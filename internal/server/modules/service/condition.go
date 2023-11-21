@@ -16,7 +16,9 @@ type ConditionService struct {
 }
 
 func (s *ConditionService) List(debugInterfaceId, endpointInterfaceId uint,
-	category consts.ConditionCategory, src consts.ConditionSrc, usedBy consts.UsedBy) (conditions []model.DebugCondition, err error) {
+	category consts.ConditionCategory, src consts.ConditionSrc, usedBy consts.UsedBy) (
+	conditions []model.DebugCondition, err error) {
+
 	conditions, err = s.ConditionRepo.List(debugInterfaceId, endpointInterfaceId, category, usedBy, "", src)
 
 	return

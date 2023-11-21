@@ -853,3 +853,11 @@ const (
 func (e MessageSource) String() string {
 	return string(e)
 }
+
+type ChangedStatus uint
+
+const (
+	NoChanged     ChangedStatus = 1
+	Changed       ChangedStatus = 2
+	IgnoreChanged ChangedStatus = 3
+)

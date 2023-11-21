@@ -11,6 +11,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"strconv"
+	"time"
 )
 
 type EndpointRepo struct {
@@ -467,7 +468,7 @@ func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
 
 func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, title string) (res model.Endpoint, err error) {
 
-	err = r.DB.First(&res, "source_type=? and project_id=? AND path = ? AND serve_id = ? AND title = ?", sourceType, projectId, path, serveId, title).Error
+	err = r.DB.First(&res, "source_type=? and project_id=? AND path = ? AND serve_id = ? AND title = ? AND NOT deleted", sourceType, projectId, path, serveId, title).Error
 
 	return
 
@@ -498,5 +499,21 @@ func (r *EndpointRepo) GetByNameAndProject(name string, projectId uint) (res mod
 	err = r.DB.Where("title = ?", name).
 		Where("project_id = ?", projectId).
 		First(&res).Error
+	return
+}
+
+func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, changedStatus consts.ChangedStatus) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		Updates(map[string]interface{}{"changed_status": changedStatus, "Updated_at": time.Now()}).Error
+
+	return
+}
+
+func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		UpdateColumns(map[string]interface{}{"changed_status": consts.Changed, "snapshot": snapshot, "changed_time": time.Now()}).Error
+
 	return
 }

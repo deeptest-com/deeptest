@@ -230,7 +230,7 @@ func (r *CategoryRepo) GetByItem(parentId uint, typ serverConsts.CategoryDiscrim
 }
 
 func (r *CategoryRepo) GetDetail(req model.Category) (res model.Category, err error) {
-	coon := r.DB.Model(&model.Category{})
+	coon := r.DB.Model(&model.Category{}).Where("not deleted")
 	if req.Name != "" {
 		coon = coon.Where("name = ?", req.Name)
 	}

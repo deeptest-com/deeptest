@@ -67,6 +67,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 
 	caseInterfaceExecObj := cs.Data
 
+	// execution
 	agentExec.CurrDebugInterfaceId = caseInterfaceExecObj.DebugData.DebugInterfaceId
 	agentExec.CurrScenarioProcessorId = 0 // not in a scenario
 

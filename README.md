@@ -35,8 +35,4 @@ sudo make mac
 
 # 打包客户端 windows
 sudo make win64
-<<<<<<< HEAD
 ```
-=======
-```
->>>>>>> origin

@@ -27,6 +27,14 @@ func (r *DatabaseOptRepo) Get(id uint) (databaseOpt model.DebugConditionDatabase
 	if err != nil || dbConn.Disabled {
 		databaseOpt.DatabaseConnIsDisabled = true
 		err = nil
+	} else {
+		databaseOpt.Type = dbConn.Type
+
+		databaseOpt.Host = dbConn.Host
+		databaseOpt.Port = dbConn.Port
+		databaseOpt.DbName = dbConn.DbName
+		databaseOpt.Username = dbConn.Username
+		databaseOpt.Password = dbConn.Password
 	}
 
 	return

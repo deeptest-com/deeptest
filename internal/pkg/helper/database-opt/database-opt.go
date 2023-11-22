@@ -17,7 +17,7 @@ func GenDesc(typ consts.DatabaseType, sql string) (ret string) {
 func GenResultMsg(po *domain.DatabaseOptBase) {
 	desc := GenDesc(po.Type, po.Sql)
 
-	if po.DatabaseConnIsDisabled {
+	if po.DatabaseConnIsDisabled || po.ResultStatus == consts.Fail {
 		po.ResultMsg = fmt.Sprintf("%s，返回\"%s\"。", desc, po.Result)
 		return
 	}

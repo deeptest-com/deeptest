@@ -191,7 +191,7 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition, status *
 
 	databaseOptHelpper.GenResultMsg(&databaseOptBase)
 
-	if databaseOptBase.ResultStatus == consts.Pass {
+	if *status == consts.Pass {
 		SetVariable(0, databaseOptBase.Variable, databaseOptBase.Result, consts.Public)
 	} else {
 		*status = consts.Fail

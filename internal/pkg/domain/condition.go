@@ -75,6 +75,7 @@ type DatabaseConnBase struct {
 type DatabaseOptBase struct {
 	DbConnId uint `json:"dbConnId"`
 	DatabaseConnBase
+	DatabaseConnIsDisabled bool `json:"databaseConnIsDisabled" gorm:"-"`
 
 	Sql      string                `json:"sql"`
 	Variable string                `json:"variable"`

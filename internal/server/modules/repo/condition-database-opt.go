@@ -19,6 +19,16 @@ func (r *DatabaseOptRepo) Get(id uint) (databaseOpt model.DebugConditionDatabase
 		Where("id=?", id).
 		Where("NOT deleted").
 		First(&databaseOpt).Error
+	if err != nil {
+		return
+	}
+
+	dbConn, err := r.DatabaseConnRepo.Get(databaseOpt.DbConnId)
+	if err != nil || dbConn.Disabled {
+		databaseOpt.DatabaseConnIsDisabled = true
+		err = nil
+	}
+
 	return
 }
 

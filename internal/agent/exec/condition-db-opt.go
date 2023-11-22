@@ -18,6 +18,12 @@ func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
 		return
 	}
 
+	if opt.DatabaseConnIsDisabled {
+		opt.ResultStatus = consts.Fail
+		opt.Result = "Database Connection Is Disabled"
+		return
+	}
+
 	opt.ResultStatus = consts.Pass
 
 	if opt.Type == consts.DbTypeOracle {

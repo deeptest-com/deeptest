@@ -17,11 +17,13 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
+	encoder "github.com/zwgblue/yaml-encoder"
 	"gorm.io/gorm"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 )
 
 type EndpointService struct {
@@ -36,6 +38,7 @@ type EndpointService struct {
 	EndpointTagService       *EndpointTagService         `inject:""`
 	ServeService             *ServeService               `inject:""`
 	MessageService           *MessageService             `inject:""`
+	ThirdPartySyncService    *ThirdPartySyncService      `inject:""`
 	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
 	EnvironmentRepo          *repo.EnvironmentRepo       `inject:""`
 }
@@ -60,6 +63,7 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 	}
 
 	ret, _ := s.EndpointRepo.Get(endpoint.ID)
+
 	err = s.EndpointRepo.SaveAll(&endpoint)
 
 	//go func() {
@@ -181,37 +185,33 @@ func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
 }
 
 func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
-	serve, err := s.ServeRepo.Get(endpoint.ServeId)
-	if err != nil {
-		return
-	}
-
-	serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
-	if err != nil {
-		return
-	}
-	serve.Components = serveComponent
-
-	serveServer, err := s.ServeRepo.ListServer(serve.ID)
-	if err != nil {
-		return
-	}
-	serve.Servers = serveServer
-
-	securities, err := s.ServeRepo.ListSecurity(serve.ID)
-	if err != nil {
-		return
-	}
-	serve.Securities = securities
-	/*
-		globalParams, err := s.EnvironmentRepo.ListParamModel(endpoint.ProjectId)
+	var serve model.Serve
+	if endpoint.ServeId != 0 {
+		var err error
+		serve, err = s.ServeRepo.Get(endpoint.ServeId)
 		if err != nil {
 			return
 		}
-		serve.GlobalParams = globalParams
-	*/
 
-	//s.SchemasConv(&endpoint)
+		serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
+		if err != nil {
+			return
+		}
+		serve.Components = serveComponent
+
+		serveServer, err := s.ServeRepo.ListServer(serve.ID)
+		if err != nil {
+			return
+		}
+		serve.Servers = serveServer
+
+		securities, err := s.ServeRepo.ListSecurity(serve.ID)
+		if err != nil {
+			return
+		}
+		serve.Securities = securities
+	}
+
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
 	return
@@ -292,21 +292,42 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 			continue
 		}
 
+		res, _ = s.EndpointRepo.GetAll(res.ID, "v0.1.0")
+
+		//对比endpoint的时候不需要对比组件，所以服务ID设置为0
+		endpoint.ServeId, res.ServeId = 0, 0
+		openAPIDoc := s.Yaml(*endpoint)
+		endpoint.Snapshot = _commUtils.JsonEncode(openAPIDoc)
+
 		if req.DataSyncType == consts.FullCover {
 			if err == nil {
 				endpoint.ID = res.ID
 			}
 
 		} else if req.DataSyncType == consts.AutoAdd {
-			//只能合并，创建时间和更新时间不等，更新过了，则不覆盖
+
 			if err == nil {
-				if res.CreatedAt != res.UpdatedAt {
+
+				//远端无更新，则不做任何修改
+				if endpoint.Snapshot == res.Snapshot {
 					continue
-				} else {
-					endpoint.ID = res.ID
 				}
+
+				//本地快照和本地数据不一致,更新快照,说明有修改，更新快照
+				localEndpoint := s.Yaml(res)
+				localEndpointJson := _commUtils.JsonEncode(localEndpoint)
+				if res.Snapshot != localEndpointJson {
+					s.EndpointRepo.UpdateSnapshot(res.ID, endpoint.Snapshot)
+					continue
+				} else { //一致覆盖数据
+					endpoint.ID = res.ID
+					now := time.Now()
+					endpoint.ChangedTime = &now
+				}
+
 			}
 		}
+		endpoint.ServeId = req.ServeId //前面销毁了ID，现在补充上
 		_, err = s.Save(*endpoint)
 		if err != nil {
 			return err
@@ -628,5 +649,108 @@ func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{
 	ret = schema2conv.Schema2Example(schema)
 
 	return
+
+}
+
+func (s *EndpointService) SyncFromThirdParty(endpointId uint) (err error) {
+	endpoint, err := s.EndpointRepo.Get(endpointId)
+	endpoint.Interfaces, _ = s.EndpointInterfaceRepo.ListByEndpointId(endpoint.ID, "v0.1.0")
+	if err != nil {
+		return
+	}
+
+	if endpoint.SourceType != consts.ThirdPartySync || endpoint.CategoryId == -1 || len(endpoint.Interfaces) == 0 {
+		return
+	}
+
+	pathArr := strings.Split(endpoint.Path, "/")
+
+	err = s.ThirdPartySyncService.SyncFunctionBody(endpoint.ProjectId, endpoint.ServeId, endpoint.Interfaces[0].ID, pathArr[2], pathArr[3])
+	if err != nil {
+		return
+	}
+
+	err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, consts.Changed)
+
+	return
+}
+
+func (s *EndpointService) GetDiff(endpointId uint) (res v1.EndpointDiffRes, err error) {
+	var endpoint model.Endpoint
+	var resYaml []byte
+	endpoint, err = s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	if err != nil {
+		return
+	}
+
+	var sourceName string
+	if endpoint.SourceType == consts.SwaggerSync {
+		sourceName = "Swagger"
+	} else if endpoint.SourceType == consts.SwaggerImport {
+		sourceName = "接口定义"
+	} else if endpoint.SourceType == consts.ThirdPartySync {
+		sourceName = "乐仓智能体厂"
+	}
+
+	res.ChangedStatus = endpoint.ChangedStatus
+
+	res.CurrentDesc = fmt.Sprintf("%s于%s在系统中手动更新", endpoint.CreateUser, endpoint.UpdatedAt.Format("2006-01-02 15:04:05"))
+	res.LatestDesc = fmt.Sprintf("%s从%s自动同步", endpoint.ChangedTime.Format("2006-01-02 15:04:05"), sourceName)
+
+	var ret interface{}
+	endpoint.ServeId = 0
+	_commUtils.JsonDecode(_commUtils.JsonEncode(s.Yaml(endpoint)), &ret)
+	resYaml, err = encoder.NewEncoder(ret).Encode()
+	if err != nil {
+		return
+	}
+	res.Current = string(resYaml)
+
+	_commUtils.JsonDecode(endpoint.Snapshot, &ret)
+	resYaml, err = encoder.NewEncoder(ret).Encode()
+	if err != nil {
+		return
+	}
+	res.Latest = string(resYaml)
+	return
+}
+
+func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool, userName string) (err error) {
+	endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	if err != nil {
+		return
+	}
+
+	if isChanged {
+		var doc openapi3.T
+		_commUtils.JsonDecode(endpoint.Snapshot, &doc)
+		endpoints, _, _ := openapi.NewOpenapi2endpoint(&doc, endpoint.CategoryId).Convert()
+		endpoints[0].ID = endpoint.ID
+		endpoints[0].Title = endpoint.Title
+		endpoints[0].ServeId = endpoint.ServeId
+		endpoints[0].ChangedStatus = consts.NoChanged
+		endpoints[0].ProjectId = endpoint.ProjectId
+		endpoints[0].GlobalParams = endpoint.GlobalParams
+		endpoints[0].UpdateUser = userName
+		err = s.EndpointRepo.SaveAll(endpoints[0])
+	} else {
+		err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, consts.IgnoreChanged)
+	}
+
+	return
+}
+
+func (s *EndpointService) isEqualEndpoint(old, new model.Endpoint) bool {
+	var ret interface{}
+	oldYaml := s.Yaml(old)
+	_commUtils.JsonDecode(_commUtils.JsonEncode(oldYaml), &ret)
+	oldYamlByte, _ := encoder.NewEncoder(ret).Encode()
+
+	newYaml := s.Yaml(new)
+	_commUtils.JsonDecode(_commUtils.JsonEncode(newYaml), &ret)
+	newYamlByte, _ := encoder.NewEncoder(ret).Encode()
+	res1, res2 := string(oldYamlByte), string(newYamlByte)
+
+	return res1 == res2
 
 }

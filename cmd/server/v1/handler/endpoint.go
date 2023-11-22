@@ -6,10 +6,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	encoder "github.com/zwgblue/yaml-encoder"
+	"go.uber.org/zap"
 )
 
 type EndpointCtrl struct {
@@ -433,8 +435,56 @@ func (c *EndpointCtrl) UpdateAdvancedMockDisabled(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+func (c *EndpointCtrl) SyncFromThirdParty(ctx iris.Context) {
+	var req _domain.ReqId
+	if err := ctx.ReadParams(&req); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	if err := c.EndpointService.SyncFromThirdParty(req.Id); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
 /*
 func (c *EndpointCtrl) Index() {
 	c.EndpointService.GetVersionsByEndpointId(1)
 }
 */
+
+func (c *EndpointCtrl) GetDiff(ctx iris.Context) {
+
+	endpointId, err := ctx.URLParamInt("endpointId")
+	if err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	if data, err := c.EndpointService.GetDiff(uint(endpointId)); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	}
+}
+
+func (c *EndpointCtrl) SaveDiff(ctx iris.Context) {
+	var req serverDomain.EndpointDiffReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+	userName := multi.GetUsername(ctx)
+	if err := c.EndpointService.SaveDiff(req.EndpointId, req.IsChanged, userName); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}

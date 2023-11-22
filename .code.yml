@@ -1,0 +1,61 @@
+code-style:
+  # 开启全量扫描
+  patch-mode: true
+  line-scan: true
+  ccn-level: 5
+  max-report-count: -1
+  debug: true
+  #项目的代码规范文件
+  go:
+    code-style-file: .golangci.yml
+  js:
+    code-style-file: .eslintrc.js
+  java:
+    code-style-file: .checkstyle.xml
+hookman:
+  debug: false
+  # 是否关注此仓库，只有关注的仓库会触发特性链
+  focus: true
+  # 声明仓库的自定义钩子目录
+  hooks-path: githooks
+  # 开启的特性
+  features: []
+  # 关闭的特性，如果同时在开启和关闭特性中设定了某个特性，则最终会使用关闭策略
+  close-features: []
+branch:
+  trunk_name: "master"
+  branch_type_C:
+    release:
+      pattern: "release/${environment}_${version}_${yyMMdd}_${description}"
+      releasetype: [rc,release]
+      version: "${Major-version}.${Feature-version}.${Fix-version}"
+    team:
+      # 格式： team/迭代ID_日期_英文描述
+      pattern: "team/${IterateId}_${yyMMdd}_${description}"
+    features:
+      pattern: "feature/${UserId}_${WorkItemId}_${description}"
+    personal:
+      pattern: "personal/${UserId}_${yyMMdd}_${description}"
+    #补丁发布分支 可以是此次补丁发布的主要问题标识
+    hotfix:
+      pattern: "hotfix/${UserId}_${WorkItemId}_${yyMMdd}_${description}"
+    bugfix:
+      pattern: "bugfix/${UserId}_${WorkItemId}_${description}"
+source:
+  test_source:
+    filepath_regex: [ ".*_test.go" ]
+  third_party_source:
+    filepath_regex: [ "/.*/testdata/.*" ]
+
+code_review:
+  restrict_labels: [ "CR-编程规范", "CR-业务逻辑","CR-边界逻辑","CR-代码架构","CR-性能影响","CR-安全性","CR-可测试性","CR-可读性" ]
+  reviewers: [ "xxx" ]
+  necessary_reviewers: [ "xxx" ]
+
+file:
+  - path: ".*"
+    owners: [ "wangdf","xxx" ]
+    owner_rule: 1
+  - path: ".*.go"
+    owners: [ "xxx","xxx" ]
+    owner_rule: 1

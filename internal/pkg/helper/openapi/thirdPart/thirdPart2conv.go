@@ -60,7 +60,6 @@ func (t *thirdPart2conv) schemaConvert(schema *Schema) (schemaRef *openapi3.Sche
 	schemaRef.Value = new(openapi3.Schema)
 	schemaRef.Value.Type = t.typeConvert(schema.Type)
 	schemaRef.Value.Description = schema.Description
-	schemaRef.Value.Title = schema.FiledName
 	if schema.Type == openapi3.TypeObject {
 		schemaRef.Value.Properties = openapi3.Schemas{}
 		for key, property := range schema.Properties {

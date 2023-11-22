@@ -254,7 +254,6 @@ func (o *openapi2endpoint) responseBodies(responses openapi3.Responses) (bodies 
 		}
 		body.Code = key
 		bodies = append(bodies, body)
-		return
 	}
 	return
 }

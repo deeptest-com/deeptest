@@ -15,29 +15,11 @@ type CasesExecReq struct {
 	BaseCaseId uint          `json:"baseCaseId"`
 	UsedBy     consts.UsedBy `json:"usedBy"`
 
-	ExecUUid string        `json:"execUuid"`
-	ExecObj  *CasesExecObj `json:"cases"`
-	ExecType string        `json:"type"`
+	ExecUUid string                      `json:"execUuid"`
+	ExecObj  casesHelper.AlternativeCase `json:"cases"`
+	ExecType string                      `json:"type"`
 
 	EnvironmentId int `json:"environmentId"`
-}
-
-type CasesExecObj struct {
-	ProjectId  uint          `json:"projectId"`
-	BaseCaseId uint          `json:"baseCaseId"`
-	UsedBy     consts.UsedBy `json:"usedBy"`
-	UserId     uint          `json:"userId"`
-
-	Key       string                   `json:"key"`
-	Path      string                   `json:"path"`
-	Sample    interface{}              `json:"sample"`
-	FieldType casesHelper.OasFieldType `json:"fieldType"`
-	Category  interface{}              `json:"Category"`
-	Type      interface{}              `json:"Type"`
-	Rule      interface{}              `json:"Rule"`
-	Title     string                   `json:"title"`
-	NeedExec  bool                     `json:"needExec"`
-	Children  []*CasesExecObj          `json:"children"`
 }
 
 type CaseInterfaceExecObj struct {

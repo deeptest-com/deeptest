@@ -228,7 +228,7 @@ func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.Endpoint
 
 	var validPaths []casesHelper.AlternativeCase
 	for _, val := range req.Values.Children {
-		s.getValidPathsFromSaveAsObj(*val, &validPaths)
+		s.getValidPaths(*val, &validPaths)
 	}
 	s.updateDebugData(&newDebugData, validPaths)
 
@@ -426,7 +426,7 @@ func (s *EndpointCaseAlternativeService) LoadCasesForExec(req agentExec.CasesExe
 	ret agentExec.CaseExecProcessor, err error) {
 
 	if req.ExecType == "multi" {
-		s.loadMultiCasesData(*req.ExecObj, &ret, req.BaseCaseId, req.UserId, req.ProjectId)
+		s.loadMultiCasesData(req.ExecObj, &ret, req.BaseCaseId, req.UserId, req.ProjectId)
 
 	} else if req.ExecType == "single" {
 		ret, _ = s.loadSingleCasesData(req, req.BaseCaseId, req.UserId, req.ProjectId)
@@ -437,7 +437,7 @@ func (s *EndpointCaseAlternativeService) LoadCasesForExec(req agentExec.CasesExe
 	return
 }
 
-func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs agentExec.CasesExecObj, parent *agentExec.CaseExecProcessor,
+func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.AlternativeCase, parent *agentExec.CaseExecProcessor,
 	baseCaseId, userId, projectId uint) (err error) {
 
 	if !cs.NeedExec {
@@ -495,7 +495,7 @@ func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.Cases
 	}
 
 	var validPaths []casesHelper.AlternativeCase
-	s.getValidPathsFromExecObj(*req.ExecObj, &validPaths)
+	s.getValidPaths(req.ExecObj, &validPaths)
 	s.updateDebugData(&execObj.DebugData, validPaths)
 
 	s.loadScene(&execObj, userId, projectId)
@@ -521,61 +521,7 @@ func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.Cases
 	return
 }
 
-func (s *EndpointCaseAlternativeService) getValidPathsFromSaveAsObj(alternativeCase casesHelper.AlternativeCase,
-	validPaths *[]casesHelper.AlternativeCase) {
-
-	if !alternativeCase.NeedExec {
-		return
-	}
-
-	if alternativeCase.Category != "case" {
-		for _, child := range alternativeCase.Children {
-			s.getValidPathsFromSaveAsObj(*child, validPaths)
-		}
-
-		return
-	}
-
-	validPath := casesHelper.AlternativeCase{
-		NeedExec:  alternativeCase.NeedExec,
-		Category:  alternativeCase.Category,
-		Key:       alternativeCase.Key,
-		Path:      alternativeCase.Path,
-		Sample:    alternativeCase.Sample,
-		FieldType: alternativeCase.FieldType,
-	}
-
-	*validPaths = append(*validPaths, validPath)
-}
-
-func (s *EndpointCaseAlternativeService) getValidPathsFromExecObj(execObj agentExec.CasesExecObj,
-	validPaths *[]casesHelper.AlternativeCase) {
-
-	if !execObj.NeedExec {
-		return
-	}
-
-	if execObj.Category != "case" {
-		for _, child := range execObj.Children {
-			s.getValidPathsFromExecObj(*child, validPaths)
-		}
-
-		return
-	}
-
-	validPath := casesHelper.AlternativeCase{
-		NeedExec:  execObj.NeedExec,
-		Category:  consts.AlternativeCaseCategories(execObj.Category.(string)),
-		Key:       execObj.Key,
-		Path:      execObj.Path,
-		Sample:    execObj.Sample,
-		FieldType: execObj.FieldType,
-	}
-
-	*validPaths = append(*validPaths, validPath)
-}
-
-func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req agentExec.CasesExecObj) (
+func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req casesHelper.AlternativeCase) (
 	ret domain.DebugData, err error) {
 
 	endpointCase, err := s.EndpointCaseService.Get(req.BaseCaseId)
@@ -618,6 +564,33 @@ func (s *EndpointCaseAlternativeService) loadScene(execObj *agentExec.InterfaceE
 	// get environment and settings on project level
 	s.SceneService.LoadEnvVars(&execObj.ExecScene, execObj.DebugData.ServerId, execObj.DebugData.DebugInterfaceId)
 	s.SceneService.LoadProjectSettings(&execObj.ExecScene, execObj.DebugData.ProjectId)
+}
+
+func (s *EndpointCaseAlternativeService) getValidPaths(alternativeCase casesHelper.AlternativeCase,
+	validPaths *[]casesHelper.AlternativeCase) {
+
+	if !alternativeCase.NeedExec {
+		return
+	}
+
+	if alternativeCase.Category != "case" {
+		for _, child := range alternativeCase.Children {
+			s.getValidPaths(*child, validPaths)
+		}
+
+		return
+	}
+
+	validPath := casesHelper.AlternativeCase{
+		NeedExec:  alternativeCase.NeedExec,
+		Category:  alternativeCase.Category,
+		Key:       alternativeCase.Key,
+		Path:      alternativeCase.Path,
+		Sample:    alternativeCase.Sample,
+		FieldType: alternativeCase.FieldType,
+	}
+
+	*validPaths = append(*validPaths, validPath)
 }
 
 func (s *EndpointCaseAlternativeService) updateDebugData(debugData *domain.DebugData, validPaths []casesHelper.AlternativeCase) {

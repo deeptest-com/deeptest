@@ -18,10 +18,11 @@ type AlternativeCase struct {
 
 	Sample interface{} `json:"sample"`
 
-	Category consts.AlternativeCaseCategories `json:"category"`
-	Type     consts.AlternativeCaseTypes      `json:"type"`
-	Rule     consts.AlternativeCaseRules      `json:"rule"`
-	ParentId int                              `json:"parentId"`
+	Category   consts.AlternativeCaseCategories `json:"category"`
+	Type       consts.AlternativeCaseTypes      `json:"type"`
+	Rule       consts.AlternativeCaseRules      `json:"rule"`
+	ParentId   int                              `json:"parentId"`
+	BaseCaseId uint                             `json:"baseCaseId"`
 
 	Ordr     int                `json:"ordr"`
 	Children []*AlternativeCase `json:"children"`

@@ -23,10 +23,7 @@ func (r *DatabaseOptRepo) Get(id uint) (databaseOpt model.DebugConditionDatabase
 }
 
 func (r *DatabaseOptRepo) Save(databaseOpt *model.DebugConditionDatabaseOpt) (err error) {
-	conn, err := r.DatabaseConnRepo.Get(databaseOpt.DbConnId)
-	if err != nil {
-		return
-	}
+	conn, _ := r.DatabaseConnRepo.Get(databaseOpt.DbConnId)
 
 	databaseOpt.Type = conn.Type
 	databaseOpt.Host = conn.Host

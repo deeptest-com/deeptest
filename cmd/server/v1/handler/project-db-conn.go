@@ -31,8 +31,9 @@ func (c *DatabaseConnCtrl) List(ctx iris.Context) {
 	}
 
 	keywords := ctx.URLParam("keywords")
+	ignoreDisabled, err := ctx.URLParamBool("ignoreDisabled")
 
-	res, err := c.DatabaseConnService.List(keywords, projectId)
+	res, err := c.DatabaseConnService.List(keywords, projectId, ignoreDisabled)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return

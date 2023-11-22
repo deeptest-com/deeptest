@@ -85,32 +85,6 @@ type EndpointCaseAlternativeSaveReq struct {
 	CreateUserName string `json:"createUserName"`
 }
 
-//type EndpointCaseAlternativeLoadReq struct {
-//	EndpointId uint              `json:"endpointId"`
-//	Method     consts.HttpMethod `json:"method"`
-//
-//	CreateUserId   uint   `json:"createUserId"`
-//	CreateUserName string `json:"createUserName"`
-//}
-
-//type EndpointCaseAlternativeGenerateReq struct {
-//	ID     uint   `json:"id"`
-//	Name   string `json:"name"`
-//	Method string `json:"method"`
-//	Desc   string `json:"desc"`
-//
-//	EndpointId uint `json:"endpointId"`
-//	ServeId    uint `json:"serveId"`
-//	ProjectId  uint `json:"projectId"`
-//
-//	CreateUserId   uint   `json:"createUserId"`
-//	CreateUserName string `json:"createUserName"`
-//
-//	DebugInterfaceId    int    `json:"debugInterfaceId"`
-//	EndpointInterfaceId int    `json:"endpointInterfaceId"`
-//	UsedBy              string `json:"usedBy"`
-//}
-
 type EndpointCaseTree struct {
 	Key int64  `json:"key"`
 	Id  string `json:"id"`

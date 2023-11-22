@@ -226,19 +226,11 @@ func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.Endpoint
 		return
 	}
 
-	// change field value by path if exist
+	var validPaths []casesHelper.AlternativeCase
 	for _, val := range req.Values.Children {
-		if val.Category != consts.AlternativeCaseCase || !val.NeedExec {
-			continue
-		}
-
-		fieldIn, fieldNameOrPath := s.getFieldProps(val.Path)
-		if fieldIn == "" {
-			logUtils.Error("failed to getFieldProps")
-			continue
-		}
-		s.changeFieldProps(&newDebugData, fieldIn, fieldNameOrPath, val.Sample, val.FieldType)
+		s.getValidPathsFromSaveAsObj(*val, &validPaths)
 	}
+	s.updateDebugData(&newDebugData, validPaths)
 
 	// update to db
 	_, err = s.DebugInterfaceService.Update(newDebugData, newDebugData.DebugInterfaceId)
@@ -502,22 +494,9 @@ func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.Cases
 		return
 	}
 
-	// change field value by path if exist
 	var validPaths []casesHelper.AlternativeCase
-	s.getValidPaths(*req.ExecObj, &validPaths)
-
-	for _, val := range validPaths {
-		if val.Category != consts.AlternativeCaseCase || !val.NeedExec {
-			continue
-		}
-
-		fieldIn, fieldNameOrPath := s.getFieldProps(val.Path)
-		if fieldIn == "" {
-			logUtils.Error("failed to getFieldProps")
-			continue
-		}
-		s.changeFieldProps(&execObj.DebugData, fieldIn, fieldNameOrPath, val.Sample, val.FieldType)
-	}
+	s.getValidPathsFromExecObj(*req.ExecObj, &validPaths)
+	s.updateDebugData(&execObj.DebugData, validPaths)
 
 	s.loadScene(&execObj, userId, projectId)
 
@@ -542,14 +521,43 @@ func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.Cases
 	return
 }
 
-func (s *EndpointCaseAlternativeService) getValidPaths(execObj agentExec.CasesExecObj, validPaths *[]casesHelper.AlternativeCase) {
+func (s *EndpointCaseAlternativeService) getValidPathsFromSaveAsObj(alternativeCase casesHelper.AlternativeCase,
+	validPaths *[]casesHelper.AlternativeCase) {
+
+	if !alternativeCase.NeedExec {
+		return
+	}
+
+	if alternativeCase.Category != "case" {
+		for _, child := range alternativeCase.Children {
+			s.getValidPathsFromSaveAsObj(*child, validPaths)
+		}
+
+		return
+	}
+
+	validPath := casesHelper.AlternativeCase{
+		NeedExec:  alternativeCase.NeedExec,
+		Category:  alternativeCase.Category,
+		Key:       alternativeCase.Key,
+		Path:      alternativeCase.Path,
+		Sample:    alternativeCase.Sample,
+		FieldType: alternativeCase.FieldType,
+	}
+
+	*validPaths = append(*validPaths, validPath)
+}
+
+func (s *EndpointCaseAlternativeService) getValidPathsFromExecObj(execObj agentExec.CasesExecObj,
+	validPaths *[]casesHelper.AlternativeCase) {
+
 	if !execObj.NeedExec {
 		return
 	}
 
 	if execObj.Category != "case" {
 		for _, child := range execObj.Children {
-			s.getValidPaths(*child, validPaths)
+			s.getValidPathsFromExecObj(*child, validPaths)
 		}
 
 		return
@@ -565,8 +573,6 @@ func (s *EndpointCaseAlternativeService) getValidPaths(execObj agentExec.CasesEx
 	}
 
 	*validPaths = append(*validPaths, validPath)
-
-	return
 }
 
 func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req agentExec.CasesExecObj) (
@@ -612,4 +618,19 @@ func (s *EndpointCaseAlternativeService) loadScene(execObj *agentExec.InterfaceE
 	// get environment and settings on project level
 	s.SceneService.LoadEnvVars(&execObj.ExecScene, execObj.DebugData.ServerId, execObj.DebugData.DebugInterfaceId)
 	s.SceneService.LoadProjectSettings(&execObj.ExecScene, execObj.DebugData.ProjectId)
+}
+
+func (s *EndpointCaseAlternativeService) updateDebugData(debugData *domain.DebugData, validPaths []casesHelper.AlternativeCase) {
+	for _, val := range validPaths {
+		if val.Category != consts.AlternativeCaseCase || !val.NeedExec {
+			continue
+		}
+
+		fieldIn, fieldNameOrPath := s.getFieldProps(val.Path)
+		if fieldIn == "" {
+			logUtils.Error("failed to getFieldProps")
+			continue
+		}
+		s.changeFieldProps(debugData, fieldIn, fieldNameOrPath, val.Sample, val.FieldType)
+	}
 }

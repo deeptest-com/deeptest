@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/lib/pq"
 )
 
 type EndpointReqPaginate struct {
@@ -30,22 +31,23 @@ type EndpointInterfaceReqPaginate struct {
 
 type OpenApiParam struct {
 	domain.Param
-	Format      string  `json:"format"`
-	Example     string  `json:"example"`
-	Pattern     string  `json:"pattern"`
-	MinLength   int64   `json:"minLength"`
-	MaxLength   int64   `json:"maxLength"`
-	Default     string  `json:"default"`
-	MultipleOf  int64   `json:"multipleOf"`
-	MinItems    int64   `json:"minItems"`
-	MaxItems    int64   `json:"maxItems"`
-	UniqueItems bool    `json:"uniqueItems"`
-	Ref         string  `json:"ref"`
-	Required    bool    `json:"required"`
-	Type        string  `json:"type"`
-	Description string  `json:"description"`
-	Minimum     float64 `json:"minimum"`
-	Maximum     float64 `json:"maximum"`
+	Format      string         `json:"format"`
+	Example     string         `json:"example"`
+	Pattern     string         `json:"pattern"`
+	MinLength   int64          `json:"minLength"`
+	MaxLength   int64          `json:"maxLength"`
+	Default     string         `json:"default"`
+	MultipleOf  int64          `json:"multipleOf"`
+	MinItems    int64          `json:"minItems"`
+	MaxItems    int64          `json:"maxItems"`
+	UniqueItems bool           `json:"uniqueItems"`
+	Ref         string         `json:"ref"`
+	Required    bool           `json:"required"`
+	Type        string         `json:"type"`
+	Description string         `json:"description"`
+	Minimum     float64        `json:"minimum"`
+	Maximum     float64        `json:"maximum"`
+	Enum        pq.StringArray `json:"enum"`
 }
 
 type EndpointReq struct {

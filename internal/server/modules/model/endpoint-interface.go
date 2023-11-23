@@ -3,6 +3,7 @@ package model
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/lib/pq"
 )
 
 type EndpointInterface struct {
@@ -25,27 +26,28 @@ type EndpointInterface struct {
 	GlobalParams     []EndpointInterfaceGlobalParam `gorm:"-" json:"globalParams"`
 }
 type SchemaParam struct {
-	Name        string  `json:"name"`
-	Value       string  `gorm:"type:text" json:"value"`
-	Type        string  `json:"type"`
-	Desc        string  `json:"desc"`
-	InterfaceId uint    `json:"interfaceId" gorm:"index"`
-	Format      string  `json:"format"`
-	Example     string  `gorm:"type:text" json:"example"`
-	Pattern     string  `json:"pattern"`
-	MinLength   uint64  `json:"minLength"`
-	MaxLength   uint64  `json:"maxLength"`
-	Default     string  `gorm:"type:text" json:"default"`
-	Required    bool    `json:"required"`
-	MultipleOf  float64 `json:"multipleOf"`
-	MinItems    uint64  `json:"minItems"`
-	MaxItems    uint64  `json:"maxItems"`
-	UniqueItems bool    `json:"uniqueItems"`
-	Ref         string  `json:"ref"`
-	Description string  `gorm:"type:text" json:"description"`
-	Minimum     float64 `json:"minimum"`
-	Maximum     float64 `json:"maximum"`
-	IsGlobal    bool    `gorm:"-" json:"isGlobal"`
+	Name        string         `json:"name"`
+	Value       string         `gorm:"type:text" json:"value"`
+	Type        string         `json:"type"`
+	Desc        string         `json:"desc"`
+	InterfaceId uint           `json:"interfaceId" gorm:"index"`
+	Format      string         `json:"format"`
+	Example     string         `gorm:"type:text" json:"example"`
+	Pattern     string         `json:"pattern"`
+	MinLength   uint64         `json:"minLength"`
+	MaxLength   uint64         `json:"maxLength"`
+	Default     string         `gorm:"type:text" json:"default"`
+	Required    bool           `json:"required"`
+	MultipleOf  float64        `json:"multipleOf"`
+	MinItems    uint64         `json:"minItems"`
+	MaxItems    uint64         `json:"maxItems"`
+	UniqueItems bool           `json:"uniqueItems"`
+	Ref         string         `json:"ref"`
+	Description string         `gorm:"type:text" json:"description"`
+	Minimum     float64        `json:"minimum"`
+	Maximum     float64        `json:"maximum"`
+	IsGlobal    bool           `gorm:"-" json:"isGlobal"`
+	Enum        pq.StringArray `gorm:"type:text" json:"enum"`
 }
 
 func (EndpointInterface) TableName() string {

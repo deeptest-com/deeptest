@@ -129,6 +129,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
+				fmt.Println(functionDetail)
 				title := classCode + "-" + functionDetail.Code
 				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, title)
 				if err != nil && err != gorm.ErrRecordNotFound {

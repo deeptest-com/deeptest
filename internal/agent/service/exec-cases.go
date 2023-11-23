@@ -143,6 +143,21 @@ func GenConditionLogsForCase(obj *agentExec.InterfaceExecObj) (ret []interface{}
 	}
 
 	for _, post := range obj.PostConditions {
+		if post.Type == consts.ConditionTypeCheckpoint {
+			continue
+		}
+
+		mp := map[string]interface{}{}
+		json.Unmarshal(post.Raw, &mp)
+
+		ret = append(ret, mp)
+	}
+
+	for _, post := range obj.PostConditions {
+		if post.Type != consts.ConditionTypeCheckpoint {
+			continue
+		}
+
 		mp := map[string]interface{}{}
 		json.Unmarshal(post.Raw, &mp)
 

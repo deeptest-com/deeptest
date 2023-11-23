@@ -27,7 +27,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.InitDebugExecContext()
 	agentExec.InitJsRuntime(call.Data.ProjectId)
 
-	agentExec.ExecPreConditions(req) // must before PreRequest, since it will update the vari in script
+	agentExec.ExecPreConditions(&req) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(&req.DebugData)
 
 	agentExec.SetReqValueToGoja(req.DebugData.BaseRequest)
@@ -84,7 +84,8 @@ func PreRequest(req *domain.DebugData) (originalReqUri string, err error) {
 }
 
 func PostRequest(originalReqUri string, req *domain.DebugData) (err error) {
-	req.BaseRequest.Url = originalReqUri // rollback for saved to db
+	// rollback for saved to db
+	req.BaseRequest.Url = originalReqUri
 
 	return
 }

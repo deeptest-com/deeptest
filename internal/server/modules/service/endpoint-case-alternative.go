@@ -465,7 +465,7 @@ func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.Alter
 	cs.BaseCaseId = baseCaseId
 	execObj.DebugData, _ = s.LoadDebugDataForExec(cs)
 
-	s.loadScene(&execObj, userId, projectId)
+	s.loadConditionsAndScene(&execObj, userId, projectId)
 
 	child := agentExec.CaseExecProcessor{
 		Title:    cs.Title,
@@ -498,7 +498,7 @@ func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.Cases
 	s.getValidPaths(req.ExecObj, &validPaths)
 	s.updateDebugData(&execObj.DebugData, validPaths)
 
-	s.loadScene(&execObj, userId, projectId)
+	s.loadConditionsAndScene(&execObj, userId, projectId)
 
 	root := agentExec.CaseExecProcessor{
 		Title:    req.ExecObj.Title,
@@ -546,7 +546,7 @@ func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req casesHelper.Al
 	return
 }
 
-func (s *EndpointCaseAlternativeService) loadScene(execObj *agentExec.InterfaceExecObj, userId, projectId uint) {
+func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentExec.InterfaceExecObj, userId, projectId uint) {
 	// load default environment for user
 	env, _ := s.EnvironmentRepo.GetByUserAndProject(userId, projectId)
 	if env.ID > 0 {
@@ -554,9 +554,9 @@ func (s *EndpointCaseAlternativeService) loadScene(execObj *agentExec.InterfaceE
 	}
 
 	execObj.PreConditions, _ = s.PreConditionRepo.ListTo(
-		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy)
+		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy, "true")
 	execObj.PostConditions, _ = s.PostConditionRepo.ListTo(
-		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy)
+		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy, "true")
 
 	execObj.ExecScene.ShareVars = execObj.DebugData.ShareVars // for execution
 	execObj.DebugData.ShareVars = nil                         // for display on debug page only

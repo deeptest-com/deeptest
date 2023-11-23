@@ -297,8 +297,8 @@ func (r *PostConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 	return
 }
 
-func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (ret []domain.InterfaceExecCondition, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll, usedBy, "false")
+func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, forAlternativeCase string) (ret []domain.InterfaceExecCondition, err error) {
+	pos, err := r.List(debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll, usedBy, forAlternativeCase)
 
 	for _, po := range pos {
 		typ := po.EntityType

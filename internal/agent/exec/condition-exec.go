@@ -14,7 +14,7 @@ import (
 	"strings"
 )
 
-func ExecPreConditions(execObj InterfaceExecObj) (status consts.ResultStatus, err error) {
+func ExecPreConditions(execObj *InterfaceExecObj) (status consts.ResultStatus, err error) {
 	status = consts.Pass
 
 	for index, condition := range execObj.PreConditions {

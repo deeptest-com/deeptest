@@ -23,6 +23,8 @@ type DebugResponse struct {
 	ContentLength  int                     `json:"contentLength"`
 
 	Time int64 `json:"time"`
+
+	ConsoleLogs []interface{} `json:"consoleLogs"`
 }
 
 type BaseRequest struct {

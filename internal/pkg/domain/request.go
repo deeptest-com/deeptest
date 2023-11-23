@@ -24,7 +24,7 @@ type DebugResponse struct {
 
 	Time int64 `json:"time"`
 
-	ConsoleLogs []interface{} `json:"consoleLogs"`
+	ConsoleLogs []interface{} `json:"consoleLogs,omitempty"`
 }
 
 type BaseRequest struct {

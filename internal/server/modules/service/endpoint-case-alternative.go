@@ -507,7 +507,7 @@ func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.Cases
 
 		Children: []*agentExec.CaseExecProcessor{
 			&agentExec.CaseExecProcessor{
-				Title:    "case",
+				Title:    "多参数异常",
 				Category: "case",
 				Key:      req.ExecObj.Key,
 

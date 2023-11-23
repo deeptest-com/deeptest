@@ -191,6 +191,12 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition, status *
 
 	databaseOptHelpper.GenResultMsg(&databaseOptBase)
 
+	if *status == consts.Pass {
+		SetVariable(0, databaseOptBase.Variable, databaseOptBase.Result, consts.Public)
+	} else {
+		*status = consts.Fail
+	}
+
 	condition.Raw, _ = json.Marshal(databaseOptBase)
 	*postConditions = append(*postConditions, condition)
 }

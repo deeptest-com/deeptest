@@ -18,17 +18,28 @@ func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
 		return
 	}
 
+	if opt.DatabaseConnIsDisabled {
+		opt.ResultStatus = consts.Fail
+		opt.Result = "Database Connection Is Disabled"
+		return
+	}
+
 	opt.ResultStatus = consts.Pass
 
 	if opt.Type == consts.DbTypeOracle {
 		orclDb, err1 := OpenOracle(opt)
 		if err1 != nil {
 			err = err1
+			opt.ResultStatus = consts.Fail
 			return
 		}
 
 		err1 = queryOracle(orclDb, opt)
-		err = err1
+		if err1 != nil {
+			err = err1
+			opt.ResultStatus = consts.Fail
+			return
+		}
 
 		return
 	}
@@ -46,10 +57,18 @@ func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
 	}
 
 	if err != nil {
+		opt.Result = err.Error()
+		opt.ResultStatus = consts.Fail
 		return
 	}
 
 	queryResult, err := query(db, opt)
+	if err != nil {
+		opt.Result = err.Error()
+		opt.ResultStatus = consts.Fail
+		return
+	}
+
 	opt.Result = queryUtils.JsonPath(string(queryResult), opt.JsonPath)
 
 	return

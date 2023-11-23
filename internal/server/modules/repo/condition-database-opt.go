@@ -19,6 +19,28 @@ func (r *DatabaseOptRepo) Get(id uint) (databaseOpt model.DebugConditionDatabase
 		Where("id=?", id).
 		Where("NOT deleted").
 		First(&databaseOpt).Error
+	if err != nil {
+		return
+	}
+
+	dbConn, err := r.DatabaseConnRepo.Get(databaseOpt.DbConnId)
+	if err != nil || dbConn.Disabled {
+		databaseOpt.DatabaseConnIsDisabled = true
+		err = nil
+
+		databaseOpt.DbConnId = 0
+		databaseOpt.DatabaseConnBase = domain.DatabaseConnBase{} // clear
+
+	} else {
+		databaseOpt.Type = dbConn.Type
+
+		databaseOpt.Host = dbConn.Host
+		databaseOpt.Port = dbConn.Port
+		databaseOpt.DbName = dbConn.DbName
+		databaseOpt.Username = dbConn.Username
+		databaseOpt.Password = dbConn.Password
+	}
+
 	return
 }
 

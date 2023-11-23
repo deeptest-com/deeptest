@@ -139,40 +139,23 @@ func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase) (
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariableByInterface(conditionIds []uint) (variables []domain.Variable, err error) {
+func (r *ExtractorRepo) ListExtractorVariableByInterface(conditionIds []uint) (ret []domain.Variable, err error) {
 	err = r.DB.Model(&model.DebugConditionExtractor{}).
 		Select("id, variable AS name, result AS value").
 		Where("condition_id IN (?)", conditionIds).
 		Where("NOT deleted AND NOT disabled").
 		Order("created_at ASC").
-		Find(&variables).Error
+		Find(&ret).Error
 
 	return
 }
-
-func (r *ExtractorRepo) ListValidExtractorVariableForInterface(interfaceId, projectId uint, usedBy consts.UsedBy) (
-	variables []domain.Variable, err error) {
-
-	q := r.DB.Model(&model.DebugConditionExtractor{}).
-		Select("id, variable AS name, result AS value, " +
-			"endpoint_interface_id AS endpointInterfaceId, scope AS scope").
-		Where("NOT deleted AND NOT disabled")
-
-	//if usedBy == consts.InterfaceDebug {
-	//	q.Where("project_id=?", projectId)
-	//
-	//} else {
-	//	processorInterface, _ := r.ProcessorInterfaceRepo.Get(interfaceId)
-	//
-	//	var parentIds []uint
-	//	r.GetParentIds(processorInterface.ProcessorId, &parentIds)
-	//
-	//	q.Where("scenario_id=?", processorInterface.ScenarioId).
-	//		Where("scope = ? OR scenario_processor_id IN(?)", consts.Public, parentIds)
-	//}
-
-	err = q.Order("created_at ASC").
-		Find(&variables).Error
+func (r *ExtractorRepo) ListDbOptVariableByInterface(conditionIds []uint) (ret []domain.Variable, err error) {
+	err = r.DB.Model(&model.DebugConditionDatabaseOpt{}).
+		Select("id, variable AS name, result AS value").
+		Where("condition_id IN (?)", conditionIds).
+		Where("NOT deleted AND NOT disabled").
+		Order("created_at ASC").
+		Find(&ret).Error
 
 	return
 }

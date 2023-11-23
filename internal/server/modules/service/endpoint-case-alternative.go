@@ -611,7 +611,7 @@ func (s *EndpointCaseAlternativeService) updateDebugData(debugData *domain.Debug
 
 func (s *EndpointCaseAlternativeService) getName(val *casesHelper.AlternativeCase) (ret string) {
 	arr := strings.Split(val.Path, "/")
-	category := category[strings.Trim(arr[0], "[]")]
+	category := casesHelper.Category[strings.Trim(arr[0], "[]")]
 
 	index := 0
 	for i := len(arr) - 1; i >= 0; i -= 1 {
@@ -625,12 +625,3 @@ func (s *EndpointCaseAlternativeService) getName(val *casesHelper.AlternativeCas
 
 	return
 }
-
-var (
-	category = iris.Map{
-		"query":  "查询参数",
-		"path":   "路径参数",
-		"header": "请求头",
-		"body":   "请求体",
-	}
-)

@@ -426,10 +426,10 @@ func (s *EndpointCaseAlternativeService) LoadCasesForExec(req agentExec.CasesExe
 	ret agentExec.CaseExecProcessor, err error) {
 
 	if req.ExecType == "multi" {
-		s.loadMultiCasesData(req.ExecObj, &ret, req.BaseCaseId, req.UserId, req.ProjectId)
+		s.loadMultiCasesData(req.ExecObj, &ret, req.BaseCaseId, req.EnvironmentId)
 
 	} else if req.ExecType == "single" {
-		ret, _ = s.loadSingleCasesData(req, req.BaseCaseId, req.UserId, req.ProjectId)
+		ret, _ = s.loadSingleCasesData(req, req.BaseCaseId, req.EnvironmentId)
 	}
 
 	ret.Key = "root"
@@ -438,7 +438,7 @@ func (s *EndpointCaseAlternativeService) LoadCasesForExec(req agentExec.CasesExe
 }
 
 func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.AlternativeCase, parent *agentExec.CaseExecProcessor,
-	baseCaseId, userId, projectId uint) (err error) {
+	baseCaseId, envId uint) (err error) {
 
 	if !cs.NeedExec {
 		return
@@ -452,7 +452,7 @@ func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.Alter
 		}
 
 		for _, son := range cs.Children {
-			s.loadMultiCasesData(*son, &processor, baseCaseId, userId, projectId)
+			s.loadMultiCasesData(*son, &processor, baseCaseId, envId)
 		}
 
 		parent.Children = append(parent.Children, &processor)
@@ -463,9 +463,9 @@ func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.Alter
 	execObj := agentExec.InterfaceExecObj{}
 
 	cs.BaseCaseId = baseCaseId
-	execObj.DebugData, _ = s.LoadDebugDataForExec(cs)
+	execObj.DebugData, _ = s.LoadDebugDataForExec(cs, envId)
 
-	s.loadConditionsAndScene(&execObj, userId, projectId)
+	s.loadConditionsAndScene(&execObj, envId)
 
 	child := agentExec.CaseExecProcessor{
 		Title:    cs.Title,
@@ -479,7 +479,7 @@ func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.Alter
 	return
 }
 
-func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.CasesExecReq, baseCaseId, userId, projectId uint) (
+func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.CasesExecReq, baseCaseId, envId uint) (
 	ret agentExec.CaseExecProcessor, err error) {
 
 	execObj := agentExec.InterfaceExecObj{}
@@ -498,7 +498,7 @@ func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.Cases
 	s.getValidPaths(req.ExecObj, &validPaths)
 	s.updateDebugData(&execObj.DebugData, validPaths)
 
-	s.loadConditionsAndScene(&execObj, userId, projectId)
+	s.loadConditionsAndScene(&execObj, envId)
 
 	root := agentExec.CaseExecProcessor{
 		Title:    req.ExecObj.Title,
@@ -521,7 +521,7 @@ func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.Cases
 	return
 }
 
-func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req casesHelper.AlternativeCase) (
+func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req casesHelper.AlternativeCase, envId uint) (
 	ret domain.DebugData, err error) {
 
 	endpointCase, err := s.EndpointCaseService.Get(req.BaseCaseId)
@@ -535,6 +535,13 @@ func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req casesHelper.Al
 		return
 	}
 
+	// update base url by selected environment
+	server, err := s.ServeServerRepo.FindByServeAndExecEnv(ret.ServeId, envId)
+	if err == nil {
+		ret.BaseUrl = server.Url
+	}
+
+	// update debugData
 	fieldIn, fieldNameOrPath := s.getFieldProps(req.Path)
 	if fieldIn == "" {
 		logUtils.Info("failed to getFieldProps")
@@ -546,9 +553,9 @@ func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req casesHelper.Al
 	return
 }
 
-func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentExec.InterfaceExecObj, userId, projectId uint) {
+func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentExec.InterfaceExecObj, envId uint) {
 	// load default environment for user
-	env, _ := s.EnvironmentRepo.GetByUserAndProject(userId, projectId)
+	env, _ := s.EnvironmentRepo.Get(envId)
 	if env.ID > 0 {
 		execObj.DebugData.ServerId = env.ID
 	}

@@ -19,7 +19,7 @@ type CasesExecReq struct {
 	ExecObj  casesHelper.AlternativeCase `json:"cases"`
 	ExecType string                      `json:"type"`
 
-	EnvironmentId int `json:"environmentId"`
+	EnvironmentId uint `json:"environmentId"`
 }
 
 type CaseInterfaceExecObj struct {

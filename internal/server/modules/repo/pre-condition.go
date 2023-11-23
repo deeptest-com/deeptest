@@ -198,8 +198,8 @@ func (r *PreConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 	return
 }
 
-func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (ret []domain.InterfaceExecCondition, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId, usedBy, "false")
+func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, forAlternativeCase string) (ret []domain.InterfaceExecCondition, err error) {
+	pos, err := r.List(debugInterfaceId, endpointInterfaceId, usedBy, forAlternativeCase)
 
 	for _, po := range pos {
 		typ := po.EntityType

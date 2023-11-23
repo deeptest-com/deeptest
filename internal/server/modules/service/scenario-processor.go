@@ -142,8 +142,8 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		interfaceEntity.ProcessorType = consts.ProcessorInterfaceDefault
 		interfaceEntity.ProcessorInterfaceSrc = debugData.ProcessorInterfaceSrc
 
-		interfaceEntity.PreConditions, _ = s.PreConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug)
-		interfaceEntity.PostConditions, _ = s.PostConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug)
+		interfaceEntity.PreConditions, _ = s.PreConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug, "false")
+		interfaceEntity.PostConditions, _ = s.PostConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug, "false")
 
 		ret = &interfaceEntity
 

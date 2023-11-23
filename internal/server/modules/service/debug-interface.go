@@ -72,9 +72,9 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agent
 	}
 
 	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy)
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false")
 	ret.PostConditions, _ = s.PostConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy)
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false")
 
 	ret.ExecScene.ShareVars = ret.DebugData.ShareVars // for execution
 	ret.DebugData.ShareVars = nil                     // for display on debug page only

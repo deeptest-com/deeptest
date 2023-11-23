@@ -1,6 +1,7 @@
 package service
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -79,7 +80,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	agentExec.InitDebugExecContext()
 	agentExec.InitJsRuntime(projectId)
 
-	statusPreCondition, _ := agentExec.ExecPreConditions(*caseInterfaceExecObj) // must before PreRequest, since it will update the vari in script
+	statusPreCondition, _ := agentExec.ExecPreConditions(caseInterfaceExecObj) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData)
 
 	agentExec.SetReqValueToGoja(caseInterfaceExecObj.DebugData.BaseRequest)
@@ -103,6 +104,8 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 
 	if agentExec.CurrResponse.Data != nil {
 		resultResp = agentExec.CurrResponse
+
+		resultResp.ConsoleLogs = GenConditionLogsForCase(caseInterfaceExecObj) // only for cases
 	}
 
 	status := consts.Pass
@@ -127,6 +130,24 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 
 	// send result
 	execUtils.SendExecMsg(result, consts.ProgressResult, wsMsg)
+
+	return
+}
+
+func GenConditionLogsForCase(obj *agentExec.InterfaceExecObj) (ret []interface{}) {
+	for _, pre := range obj.PreConditions {
+		mp := map[string]interface{}{}
+		json.Unmarshal(pre.Raw, &mp)
+
+		ret = append(ret, mp)
+	}
+
+	for _, post := range obj.PostConditions {
+		mp := map[string]interface{}{}
+		json.Unmarshal(post.Raw, &mp)
+
+		ret = append(ret, mp)
+	}
 
 	return
 }

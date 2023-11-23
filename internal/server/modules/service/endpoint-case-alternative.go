@@ -149,7 +149,6 @@ func (s *EndpointCaseAlternativeService) SaveFactor(req serverDomain.EndpointCas
 func (s *EndpointCaseAlternativeService) SaveCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	typ := req.Type
 	if typ == "multi" {
-		req.Prefix = ""
 		count, err = s.GenMultiCases(req)
 	} else if typ == "single" {
 		count, err = s.GenSingleCase(req)
@@ -164,12 +163,6 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 			continue
 		}
 
-		if req.Prefix == "" {
-			req.Prefix = val.Title + "异常-"
-		} else if val.Category != consts.AlternativeCaseCase {
-			req.Prefix = req.Prefix + val.Title + "-"
-		}
-
 		if val.Category != consts.AlternativeCaseCase {
 			req.Values = *val
 			s.GenMultiCases(req)
@@ -177,8 +170,9 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 			continue
 		}
 
-		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, req.Prefix+val.Title,
-			req.CreateUserId, req.CreateUserName, true)
+		name := s.getName(val)
+
+		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, name, req.CreateUserId, req.CreateUserName, true)
 		if err1 != nil {
 			err = err1
 			return
@@ -614,3 +608,29 @@ func (s *EndpointCaseAlternativeService) updateDebugData(debugData *domain.Debug
 		s.changeFieldProps(debugData, fieldIn, fieldNameOrPath, val.Sample, val.FieldType)
 	}
 }
+
+func (s *EndpointCaseAlternativeService) getName(val *casesHelper.AlternativeCase) (ret string) {
+	arr := strings.Split(val.Path, "/")
+	category := category[strings.Trim(arr[0], "[]")]
+
+	index := 0
+	for i := len(arr) - 1; i >= 0; i -= 1 {
+		if strings.Index(arr[i], "[") < 0 {
+			index = i
+			break
+		}
+	}
+
+	ret = fmt.Sprintf("%s-%s-%s", category, arr[index], val.Title)
+
+	return
+}
+
+var (
+	category = iris.Map{
+		"query":  "查询参数",
+		"path":   "路径参数",
+		"header": "请求头",
+		"body":   "请求体",
+	}
+)

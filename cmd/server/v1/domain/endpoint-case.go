@@ -76,7 +76,6 @@ type EndpointCaseFactorSaveReq struct {
 }
 
 type EndpointCaseAlternativeSaveReq struct {
-	Prefix string                      `json:"prefix"`
 	Type   string                      `json:"type"`
 	BaseId int                         `json:"baseId"`
 	Values casesHelper.AlternativeCase `json:"values"`

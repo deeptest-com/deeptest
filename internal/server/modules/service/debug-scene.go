@@ -21,7 +21,7 @@ type DebugSceneService struct {
 	EnvironmentService *EnvironmentService `inject:""`
 }
 
-func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userId uint) (
+func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userIdForDisplay, environmentIdForExec uint) (
 	baseUrl string, shareVars []domain.GlobalVar, envVars []domain.GlobalVar,
 	globalVars []domain.GlobalVar, globalParams []domain.GlobalParam) {
 
@@ -48,9 +48,12 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userId uint) 
 		baseUrl = serveServer.Url
 	}
 
+	// get environment
 	envId := serveServer.EnvironmentId
-	if userId != 0 {
-		projectUserServer, _ := s.EnvironmentRepo.GetProjectUserServer(debugData.ProjectId, userId)
+	if environmentIdForExec > 0 { // exec loading
+		envId = environmentIdForExec
+	} else if userIdForDisplay != 0 { // display loading
+		projectUserServer, _ := s.EnvironmentRepo.GetProjectUserServer(debugData.ProjectId, userIdForDisplay)
 		if projectUserServer.ServerId != 0 {
 			envId = projectUserServer.ServerId
 		}
@@ -62,15 +65,20 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userId uint) 
 		debugData.ProjectId = environment.ProjectId
 	}
 
-	shareVars, _ = s.ShareVarService.ListForDebug(debugServeId, debugData.ScenarioProcessorId, debugData.UsedBy)
-	envVars, _ = s.EnvironmentService.GetVarsByEnv(envId)
-	globalVars, _ = s.EnvironmentService.GetGlobalVars(environment.ProjectId)
+	if userIdForDisplay > 0 {
+		shareVars, _ = s.ShareVarService.ListForDebug(debugServeId, debugData.ScenarioProcessorId, debugData.UsedBy)
+		envVars, _ = s.EnvironmentService.GetVarsByEnv(environmentIdForExec)
+		globalVars, _ = s.EnvironmentService.GetGlobalVars(environment.ProjectId)
+	}
+
+	// dealwith global params
 	globalParams, _ = s.EnvironmentService.GetGlobalParams(environment.ProjectId)
 
-	//合并全局参数
-	globalParams = agentExec.MergeGlobalParams(globalParams, debugData.GlobalParams)
-	endpointInterfaceGlobalParams, _ := s.EndpointInterfaceRepo.GetGlobalParams(debugData.EndpointInterfaceId, debugData.ProjectId)
-	globalParams = s.MergeGlobalParams(endpointInterfaceGlobalParams, globalParams)
+	if environmentIdForExec > 0 { // merge global params
+		globalParams = agentExec.MergeGlobalParams(globalParams, debugData.GlobalParams)
+		endpointInterfaceGlobalParams, _ := s.EndpointInterfaceRepo.GetGlobalParams(debugData.EndpointInterfaceId, debugData.ProjectId)
+		globalParams = s.MergeGlobalParams(endpointInterfaceGlobalParams, globalParams)
+	}
 
 	return
 }

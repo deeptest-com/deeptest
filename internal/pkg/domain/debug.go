@@ -12,9 +12,11 @@ type DebugInfo struct {
 	ScenarioProcessorId uint `json:"scenarioProcessorId"` // used to load vars by scenario processor
 	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"` // load by interface diagnose
 
-	UsedBy    consts.UsedBy `json:"usedBy"`
-	UserId    uint          `json:"userId"`
-	ProjectId int           `json:"projectId"`
+	UsedBy        consts.UsedBy `json:"usedBy"`
+	UserId        uint          `json:"userId"`        // used by loading debugData for display
+	EnvironmentId uint          `json:"environmentId"` // used by loading debugData for exec
+
+	ProjectId int `json:"projectId"`
 }
 
 type SubmitDebugResultRequest struct {
@@ -36,6 +38,7 @@ type DebugData struct {
 	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"`
 
 	ScenarioProcessorId uint `json:"scenarioProcessorId"`
+	EnvironmentId       uint `json:"environmentId"`
 
 	UsedBy consts.UsedBy `json:"usedBy"`
 

@@ -33,6 +33,7 @@ type EndpointCaseAlternativeService struct {
 	EndpointService          *EndpointService          `inject:""`
 	DebugInterfaceService    *DebugInterfaceService    `inject:""`
 	EndpointMockParamService *EndpointMockParamService `inject:""`
+	DebugSceneService        *DebugSceneService        `inject:""`
 
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 	SceneService    *SceneService         `inject:""`
@@ -562,7 +563,11 @@ func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentEx
 	execObj.PostConditions, _ = s.PostConditionRepo.ListTo(
 		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy, "true")
 
-	execObj.ExecScene.ShareVars = execObj.DebugData.EnvDataToView.ShareVars // for execution
+	execObj.DebugData.EnvDataToView = &domain.EnvDataToView{}
+
+	//
+	_, execObj.ExecScene.ShareVars, _, _, execObj.DebugData.GlobalParams =
+		s.DebugSceneService.LoadScene(&execObj.DebugData, 0, envId)
 	execObj.DebugData.EnvDataToView = nil
 
 	// get environment and settings on project level

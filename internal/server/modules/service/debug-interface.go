@@ -58,7 +58,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 	debugData.BaseUrl, debugData.EnvDataToView.ShareVars,
 		debugData.EnvDataToView.EnvVars, debugData.EnvDataToView.GlobalVars,
 		debugData.GlobalParams =
-		s.DebugSceneService.LoadScene(&debugData, loadReq.UserId)
+		s.DebugSceneService.LoadScene(&debugData, loadReq.UserId, loadReq.EnvironmentId)
 
 	debugData.ResponseDefine = s.PostConditionRepo.CreateDefaultResponseDefine(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, loadReq.UsedBy)
 

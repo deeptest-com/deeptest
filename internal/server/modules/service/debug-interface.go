@@ -54,7 +54,9 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 
 	debugData.UsedBy = loadReq.UsedBy
 
-	debugData.BaseUrl, debugData.ShareVars, debugData.EnvVars, debugData.GlobalVars, debugData.GlobalParams =
+	debugData.BaseUrl, debugData.EnvDataToView.ShareVars,
+		debugData.EnvDataToView.EnvVars, debugData.EnvDataToView.GlobalVars,
+		debugData.GlobalParams =
 		s.DebugSceneService.LoadScene(&debugData, loadReq.UserId)
 
 	debugData.ResponseDefine = s.PostConditionRepo.CreateDefaultResponseDefine(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, loadReq.UsedBy)
@@ -79,8 +81,8 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agent
 	ret.PostConditions, _ = s.PostConditionRepo.ListTo(
 		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false")
 
-	ret.ExecScene.ShareVars = ret.DebugData.ShareVars // for execution
-	ret.DebugData.ShareVars = nil                     // for display on debug page only
+	ret.ExecScene.ShareVars = ret.DebugData.EnvDataToView.ShareVars // for execution
+	ret.DebugData.EnvDataToView = nil                               // for display on debug page only
 
 	// get environment and settings on project level
 	s.SceneService.LoadEnvVars(&ret.ExecScene, ret.DebugData.ServerId, ret.DebugData.DebugInterfaceId)

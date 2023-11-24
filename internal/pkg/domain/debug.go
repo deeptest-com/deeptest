@@ -46,13 +46,17 @@ type DebugData struct {
 	BaseUrl string `json:"baseUrl"`
 
 	// used for selection and show in right environment tab
+	EnvDataToView *EnvDataToView `json:"envDataToView"`
+
+	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
+	ResponseDefine        Condition                    `json:"responseDefine"`
+}
+
+type EnvDataToView struct {
 	ShareVars    []GlobalVar   `json:"shareVars"`
 	EnvVars      []GlobalVar   `json:"envVars"`
 	GlobalVars   []GlobalVar   `json:"globalVars"`
 	GlobalParams []GlobalParam `json:"globalParams"`
-
-	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
-	ResponseDefine        Condition                    `json:"responseDefine"`
 }
 
 type Condition struct {

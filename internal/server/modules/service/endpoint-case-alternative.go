@@ -562,8 +562,8 @@ func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentEx
 	execObj.PostConditions, _ = s.PostConditionRepo.ListTo(
 		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy, "true")
 
-	execObj.ExecScene.ShareVars = execObj.DebugData.ShareVars // for execution
-	execObj.DebugData.ShareVars = nil                         // for display on debug page only
+	execObj.ExecScene.ShareVars = execObj.DebugData.EnvDataToView.ShareVars // for execution
+	execObj.DebugData.EnvDataToView = nil                                   // for display on debug page only
 
 	// get environment and settings on project level
 	s.SceneService.LoadEnvVars(&execObj.ExecScene, execObj.DebugData.ServerId, execObj.DebugData.DebugInterfaceId)

@@ -88,3 +88,11 @@ type ThirdPartyCommonRes struct {
 	Msg    string      `json:"msg"`
 	Errors interface{} `json:"errors"`
 }
+
+type UserInfo struct {
+	username string
+	WxName   string
+	RealName string
+	Mail     string
+	Password string
+}

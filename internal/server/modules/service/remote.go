@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
@@ -235,6 +236,47 @@ func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token
 	}
 
 	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo) {
+	baseUrl := ""
+	url := fmt.Sprintf("%s/levault/meta/metaClassMethod/metaGetMethodDetail", baseUrl)
+
+	headers := make([]domain.Header, 0)
+	headers = append(headers, domain.Header{
+		Name:  "X-Token",
+		Value: token,
+	})
+
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  headers,
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("meta get method detail failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("meta get method detail failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{Data: v1.UserInfo{}}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	var ok bool
+	if user, ok = respContent.Data.(v1.UserInfo); ok {
+		return
+	}
 
 	return
 }

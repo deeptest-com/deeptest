@@ -65,7 +65,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	entity.ExecPreConditions(processor, session)
 
 	// dealwith variables
-	ReplaceVariables(&baseRequest, consts.ScenarioDebug)
+	ReplaceVariables(&baseRequest)
 
 	// add cookies
 	DealwithCookies(&baseRequest, entity.ProcessorID)

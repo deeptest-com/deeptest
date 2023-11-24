@@ -551,7 +551,10 @@ func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentEx
 	// load default environment for user
 	env, _ := s.EnvironmentRepo.Get(envId)
 	if env.ID > 0 {
-		execObj.DebugData.ServerId = env.ID
+		server, _ := s.ServeServerRepo.FindByServeAndExecEnv(execObj.DebugData.ServeId, env.ID)
+		if server.ID > 0 {
+			execObj.DebugData.ServerId = server.ID
+		}
 	}
 
 	execObj.PreConditions, _ = s.PreConditionRepo.ListTo(

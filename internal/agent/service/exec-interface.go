@@ -59,7 +59,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 
 func PreRequest(req *domain.DebugData) (originalReqUri string, err error) {
 	// replace variables
-	agentExec.ReplaceVariables(&req.BaseRequest, consts.InterfaceDebug)
+	agentExec.ReplaceVariables(&req.BaseRequest)
 
 	// gen url
 	originalReqUri = agentExec.ReplacePathParams(req.Url, req.PathParams)

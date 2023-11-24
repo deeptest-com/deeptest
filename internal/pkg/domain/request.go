@@ -36,8 +36,8 @@ type BaseRequest struct {
 	QueryParams  []Param           ` json:"queryParams"`
 	PathParams   []Param           ` json:"pathParams"`
 	Headers      []Header          ` json:"headers"`
-	Cookies      []ExecCookie      ` json:"cookies"` // from cookie processor in scenario
-	GlobalParams []GlobalParam     ` json:"globalParams"`
+	Cookies      []ExecCookie      ` json:"cookies"`      // from cookie processor in scenario
+	GlobalParams []GlobalParam     ` json:"globalParams"` // for retrieve data from webpage, not used in exec
 
 	Body               string                   `json:"body"`
 	BodyFormData       []BodyFormDataItem       `json:"bodyFormData"`

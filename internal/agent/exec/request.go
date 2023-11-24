@@ -104,17 +104,17 @@ func GetContentProps(req *domain.BaseRequest, resp *domain.DebugResponse) {
 	return
 }
 
-func ReplaceVariables(req *domain.BaseRequest, usedBy consts.UsedBy) {
-	//每个接口的局部参数覆盖全局参数
-	//req.GlobalParams = MergeGlobalParams(ExecScene.GlobalParams, req.GlobalParams)
+func ReplaceVariables(req *domain.BaseRequest) {
+	// 每个接口的局部参数覆盖全局参数
 	mergeParams(req)
-	replaceUrl(req, usedBy)
 
-	replaceQueryParams(req, usedBy)
-	replacePathParams(req, usedBy)
-	replaceHeaders(req, usedBy)
-	replaceCookies(req, usedBy)
-	replaceFormBodies(req, usedBy)
+	replaceUrl(req)
+
+	replaceQueryParams(req)
+	replacePathParams(req)
+	replaceHeaders(req)
+	replaceCookies(req)
+	replaceFormBodies(req)
 
 	replaceBody(req)
 	replaceAuthor(req)
@@ -124,12 +124,11 @@ func DealwithCookies(req *domain.BaseRequest, processorId uint) {
 	req.Cookies = ListScopeCookie(processorId)
 }
 
-func replaceUrl(req *domain.BaseRequest, usedBy consts.UsedBy) {
+func replaceUrl(req *domain.BaseRequest) {
 	// project's global params already be added
 	req.Url = ReplaceVariableValue(req.Url)
 }
-func replaceQueryParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
-
+func replaceQueryParams(req *domain.BaseRequest) {
 	for _, p := range req.GlobalParams {
 		if !p.Disabled && p.In == consts.ParamInQuery {
 			req.QueryParams = append(req.QueryParams, domain.Param{
@@ -151,18 +150,7 @@ func replaceQueryParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	req.QueryParams = queryParams
 }
 
-func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
-	/*
-		for _, p := range ExecScene.GlobalParams {
-			if p.In == consts.ParamInQuery {
-				req.QueryParams = append(req.QueryParams, domain.Param{
-					Name:  p.Name,
-					Sample: p.DefaultValue,
-				})
-			}
-		}
-	*/
-
+func replacePathParams(req *domain.BaseRequest) {
 	var pathParams []domain.Param
 	for idx, param := range req.PathParams {
 		if param.Disabled {
@@ -177,7 +165,7 @@ func replacePathParams(req *domain.BaseRequest, usedBy consts.UsedBy) {
 	return
 }
 
-func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
+func replaceHeaders(req *domain.BaseRequest) {
 
 	for _, p := range req.GlobalParams {
 		if p.In == consts.ParamInHeader && !p.Disabled {
@@ -199,7 +187,7 @@ func replaceHeaders(req *domain.BaseRequest, usedBy consts.UsedBy) {
 
 	req.Headers = headers
 }
-func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy) {
+func replaceCookies(req *domain.BaseRequest) {
 	//if usedBy == consts.ScenarioDebug {
 	for _, p := range req.GlobalParams {
 		if p.In == consts.ParamInCookie && !p.Disabled {
@@ -222,7 +210,7 @@ func replaceCookies(req *domain.BaseRequest, usedBy consts.UsedBy) {
 
 	req.Cookies = cookies
 }
-func replaceFormBodies(req *domain.BaseRequest, usedBy consts.UsedBy) {
+func replaceFormBodies(req *domain.BaseRequest) {
 	for _, v := range req.GlobalParams {
 		if v.In == consts.ParamInBody && !v.Disabled {
 			req.BodyFormData = append(req.BodyFormData, domain.BodyFormDataItem{

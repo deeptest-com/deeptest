@@ -46,7 +46,7 @@ type DebugData struct {
 	BaseUrl string `json:"baseUrl"`
 
 	// used for selection and show in right environment tab
-	EnvDataToView *EnvDataToView `json:"envDataToView"`
+	EnvDataToView *EnvDataToView `json:"envDataToView,omitempty"`
 
 	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 	ResponseDefine        Condition                    `json:"responseDefine"`

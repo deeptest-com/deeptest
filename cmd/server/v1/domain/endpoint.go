@@ -118,3 +118,14 @@ type GenerateFromRequestReq struct {
 	InterfaceId uint   `json:"interfaceId"`
 	Data        string `json:"data"`
 }
+
+type ImportThirdPartyEndpointReq struct {
+	CategoryId    int64               `json:"categoryId"`    //所属分类
+	DataSyncType  consts.DataSyncType `json:"dataSyncType"`  //数据合并策略
+	BaseUrl       string              `json:"baseUrl"`       //数据源的环境url
+	ClassCode     string              `json:"classCode"`     //模型类名
+	FunctionCodes []string            `json:"functionCodes"` //要导入的方法
+	ProjectId     uint                `json:"projectId"`
+	ServeId       uint                `json:"serveId"`
+	UserId        uint                `json:"userId"`
+}

@@ -517,3 +517,11 @@ func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err err
 
 	return
 }
+
+func (r *EndpointRepo) ChangeSnapShot(endpointId uint, snapshot string) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		UpdateColumn("snapshot", snapshot).Error
+
+	return
+}

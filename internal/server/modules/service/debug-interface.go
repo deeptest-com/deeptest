@@ -53,6 +53,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 	}
 
 	debugData.UsedBy = loadReq.UsedBy
+	debugData.EnvDataToView = &domain.EnvDataToView{}
 
 	debugData.BaseUrl, debugData.EnvDataToView.ShareVars,
 		debugData.EnvDataToView.EnvVars, debugData.EnvDataToView.GlobalVars,

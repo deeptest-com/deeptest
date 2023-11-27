@@ -90,9 +90,9 @@ type ThirdPartyCommonRes struct {
 }
 
 type UserInfo struct {
-	username string
-	WxName   string
-	RealName string
-	Mail     string
-	Password string
+	Username string `json:"userName"`
+	WxName   string `json:"wxName"`
+	RealName string `json:"realName"`
+	Mail     string `json:"mail"`
+	Password string `json:"password"`
 }

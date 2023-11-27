@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
-	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
@@ -240,9 +240,8 @@ func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token
 	return
 }
 
-func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo) {
-	baseUrl := ""
-	url := fmt.Sprintf("%s/levault/meta/metaClassMethod/metaGetMethodDetail", baseUrl)
+func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo, err error) {
+	url := fmt.Sprintf("%s/api/v1/user/getUserInfo", config.CONFIG.ThirdParty.Url)
 
 	headers := make([]domain.Header, 0)
 	headers = append(headers, domain.Header{
@@ -256,7 +255,8 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo) {
 		Headers:  headers,
 	}
 
-	resp, err := httpHelper.Get(httpReq)
+	var resp domain.DebugResponse
+	resp, err = httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("meta get method detail failed, error, %s", err.Error())
 		return
@@ -264,19 +264,21 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo) {
 
 	if resp.StatusCode != consts.OK {
 		logUtils.Infof("meta get method detail failed, response %v", resp)
+		err = fmt.Errorf("meta get method detail failed, response %v", resp)
 		return
 	}
 
-	respContent := _domain.Response{Data: v1.UserInfo{}}
+	respContent := struct {
+		Code int
+		Data struct{ UserInfo v1.UserInfo }
+		Msg  string
+	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
 	}
 
-	var ok bool
-	if user, ok = respContent.Data.(v1.UserInfo); ok {
-		return
-	}
+	user = respContent.Data.UserInfo
 
 	return
 }

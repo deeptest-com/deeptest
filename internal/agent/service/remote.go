@@ -67,7 +67,6 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 	// use the data from page if exist
 	if req.Data.Method != "" {
 		ret.DebugData = req.Data
-		ret.DebugData.BaseRequest.GlobalParams = ret.DebugData.GlobalParams
 	}
 
 	return

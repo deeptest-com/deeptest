@@ -340,6 +340,10 @@ func (s *DiagnoseInterfaceService) ImportRecordData(req serverDomain.RecordReq) 
 
 	for _, item := range req.Items {
 		contentType := s.getContentTypeFromRecordData(item.Request.Headers)
+		if contentType == "" {
+			continue
+		}
+
 		method := consts.HttpMethod(item.Request.Method)
 		url, queryParams := s.getUrlAndQueryParamsFromRecordData(item.Request.Url)
 		headers := s.getHeadersFromRecordData(item.Request.Headers)
@@ -361,10 +365,10 @@ func (s *DiagnoseInterfaceService) ImportRecordData(req serverDomain.RecordReq) 
 			ServerId: server.ID,
 		}
 
-		debugInterface.Body, debugInterface.BodyFormData, debugInterface.BodyFormUrlencoded =
+		debugInterface.BodyType, debugInterface.Body, debugInterface.BodyFormData, debugInterface.BodyFormUrlencoded =
 			s.getPostData(item.Request.PostData, contentType)
 
-		s.DebugInterfaceRepo.SaveInterfaces(&debugInterface)
+		s.DebugInterfaceRepo.Save(&debugInterface)
 
 		diagnoseInterface := model.DiagnoseInterface{
 			Title:  fmt.Sprintf("%s %s", debugInterface.Method, debugInterface.Url),
@@ -463,10 +467,12 @@ func (s *DiagnoseInterfaceService) getCookiesFromRecordData(cookies map[string]m
 }
 
 func (s *DiagnoseInterfaceService) getPostData(postData string, contentType consts.HttpContentType) (
-	body string, formDataItems []model.DebugInterfaceBodyFormDataItem, formEncodedItems []model.DebugInterfaceBodyFormUrlEncodedItem) {
+	bodyType consts.HttpContentType, body string,
+	formDataItems []model.DebugInterfaceBodyFormDataItem, formEncodedItems []model.DebugInterfaceBodyFormUrlEncodedItem) {
 
 	if httpHelper.IsJsonBody(contentType) {
 		body = postData
+		bodyType = consts.ContentTypeJSON
 
 	} else if httpHelper.IsFormBody(contentType) || httpHelper.IsFormUrlencodedBody(contentType) {
 		if postData != "" {
@@ -482,6 +488,8 @@ func (s *DiagnoseInterfaceService) getPostData(postData string, contentType cons
 				value := strings.TrimSpace(sections[1])
 
 				if httpHelper.IsFormBody(contentType) {
+					bodyType = consts.ContentTypeFormData
+
 					formDataItems = append(formDataItems, model.DebugInterfaceBodyFormDataItem{
 						InterfaceBodyFormDataItemBase: model.InterfaceBodyFormDataItemBase{
 							Name:  name,
@@ -491,6 +499,8 @@ func (s *DiagnoseInterfaceService) getPostData(postData string, contentType cons
 					})
 
 				} else if httpHelper.IsFormUrlencodedBody(contentType) {
+					bodyType = consts.ContentTypeFormUrlencoded
+
 					formEncodedItems = append(formEncodedItems, model.DebugInterfaceBodyFormUrlEncodedItem{
 						InterfaceBodyFormUrlEncodedItemBase: model.InterfaceBodyFormUrlEncodedItemBase{
 							Name:  name,

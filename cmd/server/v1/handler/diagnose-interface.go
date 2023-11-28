@@ -287,3 +287,31 @@ func (c *DiagnoseInterfaceCtrl) ImportCurl(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: newNode})
 }
+
+// Index
+// @Tags	请求录制
+// @summary	录制的请求转调试接口
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization			header	string					true	"Authentication header"
+// @Param 	RecordReq		body	serverDomain.RecordReq	true	"录制的请求列表"
+// @success	200	{object}	_domain.Response{}}
+// @Router	/api/v1/records/importRecordData	[post]
+func (c *DiagnoseInterfaceCtrl) ImportRecordData(ctx iris.Context) {
+	var req serverDomain.RecordReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	req.UserId = multi.GetUserId(ctx)
+
+	err = c.DiagnoseInterfaceService.ImportRecordData(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+}

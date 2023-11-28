@@ -463,6 +463,9 @@ func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.Alter
 	execObj := agentExec.InterfaceExecObj{}
 
 	cs.BaseCaseId = baseCaseId
+	if cs.Title == "required" {
+		cs.Title += ": 空"
+	}
 	execObj.DebugData, _ = s.LoadDebugDataForExec(cs)
 
 	s.loadScene(&execObj, userId, projectId)

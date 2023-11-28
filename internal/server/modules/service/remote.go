@@ -282,3 +282,50 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo, err 
 
 	return
 }
+
+func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectInfo, err error) {
+	url := fmt.Sprintf("%s/api/v1/project/info/%s", config.CONFIG.ThirdParty.Url, spaceCode)
+
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers: []domain.Header{
+			{
+				Name:  "X-Token",
+				Value: token,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get project info failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get project info failed failed, response %v", resp)
+		err = fmt.Errorf("get project info failed failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data struct{ v1.ProjectInfo }
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("get project info failed failed, response %v", resp)
+		err = fmt.Errorf("get project info failed failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data.ProjectInfo
+
+	return
+}

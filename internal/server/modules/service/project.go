@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -9,7 +10,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"gorm.io/gorm"
 )
 
 type ProjectService struct {
@@ -19,7 +22,9 @@ type ProjectService struct {
 	UserRepo        *repo.UserRepo        `inject:""`
 	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
 	MessageRepo     *repo.MessageRepo     `inject:""`
+	RemoteService   *RemoteService        `inject:""`
 	MessageService  *MessageService       `inject:""`
+	UserService     *UserService          `inject:""`
 }
 
 func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _domain.PageData, err error) {
@@ -208,10 +213,27 @@ func (s *ProjectService) AuditUsers(projectId uint) (data []model.SysUser, err e
 	return s.ProjectRepo.GetAuditUsers(projectId)
 }
 
-func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (project model.Project, userInProject bool, err error) {
+func (s *ProjectService) CheckProjectAndUser(shortName, xToken string, userId uint) (project model.Project, userInProject bool, err error) {
 	project, err = s.ProjectRepo.GetByShortName(shortName)
 	if err != nil {
-		return
+		if err != gorm.ErrRecordNotFound || xToken == "" {
+			return project, userInProject, err
+		}
+
+		thirdPartyProject, err := s.RemoteService.GetProjectInfo(xToken, shortName)
+		if err != nil {
+			return project, userInProject, err
+		}
+
+		_, err = s.CreateProjectForThirdParty(thirdPartyProject)
+		if err != nil {
+			return project, userInProject, err
+		}
+
+		project, err = s.ProjectRepo.GetByShortName(shortName)
+		if err != nil {
+			return project, userInProject, err
+		}
 	}
 
 	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
@@ -225,6 +247,64 @@ func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (pro
 	userInProject, err = s.ProjectRepo.IfProjectMember(userId, project.ID)
 	if err != nil {
 		return
+	}
+
+	if !userInProject && xToken != "" {
+		err = s.ProjectRepo.AddProjectMember(project.ID, userId, consts.User)
+	}
+
+	return
+}
+
+func (s *ProjectService) CreateProjectForThirdParty(project v1.ProjectInfo) (projectId uint, err error) {
+	adminName := "admin"
+	adminUser, err := s.UserRepo.GetByUserName(adminName)
+	if err != nil {
+		return
+	}
+
+	//建项目
+	createReq := v1.ProjectReq{
+		ProjectBase: v1.ProjectBase{
+			Name:      project.Name,
+			ShortName: project.NameEngAbbr,
+			AdminId:   adminUser.ID,
+			AdminName: adminName,
+		},
+	}
+	projectId, createErr := s.Create(createReq, adminUser.ID)
+	if projectId == 0 {
+		err = errors.New(createErr.Error())
+		return
+	}
+
+	//创建项目管理员
+	for _, spaceAdmin := range project.SpaceAdmins {
+		spaceAdminUser, err := s.UserRepo.GetByUserName(spaceAdmin.Username)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			continue
+		}
+
+		var spaceAdminId uint
+		if spaceAdminUser.ID != 0 {
+			spaceAdminId = spaceAdminUser.ID
+		} else {
+			createUserReq := v1.UserReq{
+				UserBase: v1.UserBase{
+					Username:  spaceAdmin.Username,
+					Name:      spaceAdmin.RealName,
+					Email:     spaceAdmin.Mail,
+					ImAccount: spaceAdmin.WxName,
+					Password:  commonUtils.RandStr(8),
+				},
+			}
+			spaceAdminId, err = s.UserService.Create(createUserReq)
+			if err != nil {
+				continue
+			}
+		}
+
+		err = s.ProjectRepo.AddProjectMember(projectId, spaceAdminId, consts.Admin)
 	}
 
 	return

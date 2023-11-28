@@ -130,7 +130,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 				}
 
 				title := classCode + "-" + functionDetail.Code
-				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, title)
+				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, title, int64(categoryId))
 				if err != nil && err != gorm.ErrRecordNotFound {
 					continue
 				}
@@ -488,14 +488,14 @@ func (s *ThirdPartySyncService) SyncFunctionBody(projectId, serveId, interfaceId
 	return
 }
 
-func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportThirdPartyEndpointReq) (err error) {
-	token, err := s.GetToken(req.BaseUrl)
+func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointDataReq) (err error) {
+	token, err := s.GetToken(req.FilePath)
 	if err != nil {
 		return
 	}
 
 	for _, function := range req.FunctionCodes {
-		functionDetail := s.GetFunctionDetail(req.ClassCode, function, token, req.BaseUrl)
+		functionDetail := s.GetFunctionDetail(req.ClassCode, function, token, req.FilePath)
 		if functionDetail.Code == "" {
 			continue
 		}
@@ -503,7 +503,7 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportThirdPart
 		path := "/" + functionDetail.ServiceCode + "/" + req.ClassCode + "/" + function
 		title := req.ClassCode + "-" + functionDetail.Code
 
-		endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, req.ProjectId, path, req.ServeId, title)
+		endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, req.ProjectId, path, req.ServeId, title, req.CategoryId)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			continue
 		}

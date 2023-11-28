@@ -91,6 +91,8 @@ type ImportEndpointDataReq struct {
 	ProjectId     uint                `json:"projectId"`
 	UserId        uint                `json:"userId"`
 	SourceType    consts.SourceType   `json:"sourceType"`
+	ClassCode     string              `json:"classCode"`     //模型类名
+	FunctionCodes []string            `json:"functionCodes"` //要导入的方法
 }
 
 type BatchUpdateReq struct {
@@ -120,11 +122,11 @@ type GenerateFromRequestReq struct {
 }
 
 type ImportThirdPartyEndpointReq struct {
-	CategoryId    int64               `json:"categoryId"`    //所属分类
-	DataSyncType  consts.DataSyncType `json:"dataSyncType"`  //数据合并策略
-	BaseUrl       string              `json:"baseUrl"`       //数据源的环境url
-	ClassCode     string              `json:"classCode"`     //模型类名
-	FunctionCodes []string            `json:"functionCodes"` //要导入的方法
+	CategoryId    int64               `json:"categoryId"`                   //所属分类
+	DataSyncType  consts.DataSyncType `json:"dataSyncType"`                 //数据合并策略
+	FilePath      string              `json:"filePath" validate:"required"` //数据源的环境url
+	ClassCode     string              `json:"classCode"`                    //模型类名
+	FunctionCodes []string            `json:"functionCodes"`                //要导入的方法
 	ProjectId     uint                `json:"projectId"`
 	ServeId       uint                `json:"serveId"`
 	UserId        uint                `json:"userId"`

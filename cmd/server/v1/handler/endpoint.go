@@ -498,32 +498,11 @@ func (c *EndpointCtrl) ListFunctionsByThirdPartyClass(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.ThirdPartySyncService.ListFunctionsByClass(req.BaseUrl, req.ClassCode)
+	data, err := c.ThirdPartySyncService.ListFunctionsByClass(req.FilePath, req.ClassCode)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: data})
-}
-
-func (c *EndpointCtrl) ImportThirdPartyFunctions(ctx iris.Context) {
-	var req serverDomain.ImportThirdPartyEndpointReq
-	if err := ctx.ReadJSON(&req); err != nil {
-		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	projectId, _ := ctx.URLParamInt("currProjectId")
-	req.ProjectId = uint(projectId)
-	req.UserId = multi.GetUserId(ctx)
-
-	err := c.ThirdPartySyncService.ImportThirdPartyFunctions(req)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }

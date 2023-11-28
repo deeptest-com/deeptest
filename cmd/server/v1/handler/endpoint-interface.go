@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -11,6 +12,7 @@ import (
 
 type EndpointInterfaceCtrl struct {
 	EndpointInterfaceService *service.EndpointInterfaceService `inject:""`
+	ThirdPartySyncService    *service.ThirdPartySyncService    `inject:""`
 }
 
 // ListForSelection
@@ -66,7 +68,12 @@ func (c *EndpointInterfaceCtrl) ImportEndpointData(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	req.UserId = userId
 
-	err = c.EndpointInterfaceService.ImportEndpointData(req)
+	if req.DriverType == convert.LZOS {
+		err = c.ThirdPartySyncService.ImportThirdPartyFunctions(req)
+	} else {
+		err = c.EndpointInterfaceService.ImportEndpointData(req)
+	}
+
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -9,6 +9,7 @@ import (
 )
 
 type CategoryRepo struct {
+	*BaseRepo   `inject:""`
 	DB          *gorm.DB     `inject:""`
 	ProjectRepo *ProjectRepo `inject:""`
 }

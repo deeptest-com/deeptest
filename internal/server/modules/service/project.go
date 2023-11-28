@@ -251,6 +251,11 @@ func (s *ProjectService) CheckProjectAndUser(shortName, xToken string, userId ui
 
 	if !userInProject && xToken != "" {
 		err = s.ProjectRepo.AddProjectMember(project.ID, userId, consts.User)
+		if err != nil {
+			return
+		}
+
+		userInProject = true
 	}
 
 	return

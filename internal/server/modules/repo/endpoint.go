@@ -91,7 +91,6 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	serveNames := map[uint]string{}
 
 	for key, result := range results {
-		git
 		var versions []model.EndpointVersion
 		r.DB.Find(&versions, "endpoint_id=?", result.ID).Order("version desc")
 		results[key].Versions = versions
@@ -521,4 +520,8 @@ func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err err
 		UpdateColumns(map[string]interface{}{"changed_status": consts.Changed, "snapshot": snapshot, "changed_time": time.Now()}).Error
 
 	return
+}
+
+func (r *EndpointRepo) UpdateName(id uint, name string) (err error) {
+	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("title", name).Error
 }

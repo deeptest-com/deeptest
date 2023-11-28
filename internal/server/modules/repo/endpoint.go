@@ -41,6 +41,10 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	if req.ServeId != 0 {
 		db = db.Where("serve_id = ?", req.ServeId)
 	}
+	if len(req.ServeIds) > 0 {
+		db = db.Where("serve_id in ?", req.ServeIds)
+	}
+
 	if req.ServeVersion != "" {
 		if ids, err := r.ServeRepo.GetBindEndpointIds(req.ServeId, req.ServeVersion); err != nil {
 			db = db.Where("id in ?", ids)
@@ -87,6 +91,7 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	serveNames := map[uint]string{}
 
 	for key, result := range results {
+		git
 		var versions []model.EndpointVersion
 		r.DB.Find(&versions, "endpoint_id=?", result.ID).Order("version desc")
 		results[key].Versions = versions

@@ -408,7 +408,7 @@ func (s *DiagnoseInterfaceService) getUrlAndQueryParamsFromRecordData(urlStr str
 
 	obj, _ := url.ParseRequestURI(urlStr)
 
-	urlWithoutParams = fmt.Sprintf("%s://%s/", obj.Scheme, obj.Host)
+	urlWithoutParams = fmt.Sprintf("%s://%s%s", obj.Scheme, obj.Host, obj.Path)
 
 	arr := strings.Split(obj.RawQuery, "&")
 	for _, item := range arr {

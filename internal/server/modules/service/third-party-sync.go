@@ -130,7 +130,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 				}
 
 				title := classCode + "-" + functionDetail.Code
-				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, title)
+				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, title, int64(categoryId))
 				if err != nil && err != gorm.ErrRecordNotFound {
 					continue
 				}
@@ -484,6 +484,116 @@ func (s *ThirdPartySyncService) SyncFunctionBody(projectId, serveId, interfaceId
 	}
 
 	err = s.SaveBody(functionDetail, interfaceId)
+
+	return
+}
+
+func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointDataReq) (err error) {
+	token, err := s.GetToken(req.FilePath)
+	if err != nil {
+		return
+	}
+
+	for _, function := range req.FunctionCodes {
+		functionDetail := s.GetFunctionDetail(req.ClassCode, function, token, req.FilePath)
+		if functionDetail.Code == "" {
+			continue
+		}
+
+		path := "/" + functionDetail.ServiceCode + "/" + req.ClassCode + "/" + function
+		title := req.ClassCode + "-" + functionDetail.Code
+
+		endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, req.ProjectId, path, req.ServeId, title, req.CategoryId)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			continue
+		}
+
+		newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
+		if err != nil && err != gorm.ErrRecordNotFound {
+			continue
+		}
+
+		newEndpointDetail.ServeId = 0
+		newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
+
+		if req.DataSyncType == consts.AutoAdd && endpoint.ID != 0 {
+			oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
+			if err != nil && err != gorm.ErrRecordNotFound {
+				continue
+			}
+			oldEndpointDetail.ServeId = 0
+
+			if oldEndpointDetail.Snapshot == newSnapshot {
+				continue
+			}
+
+			oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
+			if oldEndpointDetail.Snapshot != oldEndpointDetailJson {
+				err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
+				continue
+			}
+		}
+
+		var oldEndpointId uint
+		if req.DataSyncType != consts.Add && endpoint.ID != 0 {
+			oldEndpointId = endpoint.ID
+		}
+
+		endpointId, err := s.SaveEndpoint(title, req.ProjectId, req.ServeId, req.UserId, oldEndpointId, req.CategoryId, path, newSnapshot)
+		if err != nil {
+			continue
+		}
+
+		interfaceId, err := s.SaveEndpointInterface(title, functionDetail, endpointId, req.ProjectId, path)
+		if err != nil {
+			continue
+		}
+
+		if err = s.SaveBody(functionDetail, interfaceId); err != nil {
+			continue
+		}
+
+		if endpoint.ID == 0 {
+			createEndpointDetail, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+			if err != nil {
+				continue
+			}
+
+			createEndpointDetail.ServeId = 0
+			snapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(createEndpointDetail))
+			err = s.EndpointRepo.ChangeSnapShot(endpointId, snapshot)
+			if err != nil {
+				continue
+			}
+		}
+	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) ListFunctionsByClass(baseUrl, classCode string) (res []v1.GetFunctionDetailsByClassResData, err error) {
+	token, err := s.GetToken(baseUrl)
+	if err != nil {
+		err = errors.New("url地址错误")
+		return
+	}
+
+	functionList, err := s.RemoteService.GetFunctionDetailsByClass(classCode, token, baseUrl)
+	if err != nil {
+		err = errors.New("url地址错误")
+		return
+	}
+
+	if len(functionList) == 0 {
+		err = errors.New("模型输入错误")
+		return
+	}
+
+	for _, function := range functionList {
+		if function.MessageType == 1 {
+			res = append(res, function)
+		}
+	}
 
 	return
 }

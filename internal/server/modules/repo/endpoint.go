@@ -470,9 +470,27 @@ func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
 	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
 }
 
-func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, title string) (res model.Endpoint, err error) {
+func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, title string, categoryId int64) (res model.Endpoint, err error) {
+	db := r.DB.Model(&model.Endpoint{}).
+		Where("source_type = ?", sourceType).
+		Where("project_id = ?", projectId).
+		Where("path = ?", path).
+		Where("serve_id = ?", serveId).
+		Where("title = ? AND NOT deleted", title)
 
-	err = r.DB.First(&res, "source_type=? and project_id=? AND path = ? AND serve_id = ? AND title = ? AND NOT deleted", sourceType, projectId, path, serveId, title).Error
+	if categoryId > 0 {
+		categoryIds, err := r.BaseRepo.GetDescendantIds(uint(categoryId), model.Category{}.TableName(), serverConsts.EndpointCategory, int(projectId))
+		if err != nil {
+			return res, err
+		}
+		if len(categoryIds) > 0 {
+			db.Where("category_id IN (?)", categoryIds)
+		}
+	} else if categoryId == -1 {
+		db.Where("category_id = -1?")
+	}
+
+	err = db.First(&res).Error
 
 	return
 
@@ -524,4 +542,12 @@ func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err err
 
 func (r *EndpointRepo) UpdateName(id uint, name string) (err error) {
 	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("title", name).Error
+}
+
+func (r *EndpointRepo) ChangeSnapShot(endpointId uint, snapshot string) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		UpdateColumn("snapshot", snapshot).Error
+
+	return
 }

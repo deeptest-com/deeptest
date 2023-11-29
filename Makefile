@@ -1,9 +1,7 @@
-#VERSION=1.1.1
-#PROJECT=deeptest
-
-# ly 打包配置，开源版可以删除
-VERSION=0.0.15
-PROJECT=LeyanAPI
+ENV    ?= ly
+include env.$(ENV)
+print_env:
+	@echo $(PROJECT)@$(VERSION)
 
 ifeq ($(OS),Windows_NT)
     PLATFORM="windows"

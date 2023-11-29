@@ -1,5 +1,5 @@
-ENV    ?= ly
-include env.$(ENV)
+ENV        ?= ly
+include    env.$(ENV)
 print_env:
 	@echo $(PROJECT)@$(VERSION)
 

@@ -79,7 +79,7 @@ gen_version_file:
 compile_ui:
 	@cd ui && yarn build --mode deeptest-local --dest ../client/ui && cd ..
 compile_ui_demo:
-	@cd ui && yarn build --mode deeptest-demo --dest ../client/ui && cd ..
+	@cd ../deeptest-ui && yarn build --mode deeptest-demo --dest ../deeptest/client/ui && cd ../deeptest
 compile_ui_client:
 	@cd ui && yarn build --mode deeptest-client --dest ../client/ui && cd ..
 compile_ly_ui_client:

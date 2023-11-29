@@ -47,12 +47,14 @@ func (r *DatabaseOptRepo) Get(id uint) (databaseOpt model.DebugConditionDatabase
 func (r *DatabaseOptRepo) Save(databaseOpt *model.DebugConditionDatabaseOpt) (err error) {
 	conn, _ := r.DatabaseConnRepo.Get(databaseOpt.DbConnId)
 
-	databaseOpt.Type = conn.Type
-	databaseOpt.Host = conn.Host
-	databaseOpt.Port = conn.Port
-	databaseOpt.Username = conn.Username
-	databaseOpt.Password = conn.Password
-	databaseOpt.DbName = conn.DbName
+	if conn.ID > 0 {
+		databaseOpt.Type = conn.Type
+		databaseOpt.Host = conn.Host
+		databaseOpt.Port = conn.Port
+		databaseOpt.Username = conn.Username
+		databaseOpt.Password = conn.Password
+		databaseOpt.DbName = conn.DbName
+	}
 
 	err = r.DB.Save(databaseOpt).Error
 

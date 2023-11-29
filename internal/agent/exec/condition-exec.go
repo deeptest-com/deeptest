@@ -165,7 +165,7 @@ func DealwithDealwithCheckPointCondition(condition domain.InterfaceExecCondition
 	}
 
 	err := ExecCheckPoint(&checkpointBase, resp, 0)
-	if err != nil {
+	if err != nil || checkpointBase.ResultStatus == consts.Fail {
 		*status = consts.Fail
 	}
 
@@ -185,13 +185,13 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition, status *
 	}
 
 	err := ExecDbOpt(&databaseOptBase)
-	if err != nil {
+	if err != nil || databaseOptBase.ResultStatus == consts.Fail {
 		*status = consts.Fail
 	}
 
 	databaseOptHelpper.GenResultMsg(&databaseOptBase)
 
-	if *status == consts.Pass {
+	if databaseOptBase.JsonPath != "" && databaseOptBase.Variable != "" && *status == consts.Pass {
 		SetVariable(0, databaseOptBase.Variable, databaseOptBase.Result, consts.Public)
 	} else {
 		*status = consts.Fail
@@ -211,7 +211,7 @@ func DealwithResponseDefineCondition(condition domain.InterfaceExecCondition, re
 	}
 
 	err := ExecResponseDefine(&responseDefineBase, resp)
-	if err != nil {
+	if err != nil || responseDefineBase.ResultStatus == consts.Fail {
 		*status = consts.Fail
 	}
 

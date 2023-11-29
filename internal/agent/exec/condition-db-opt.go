@@ -69,7 +69,9 @@ func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
 		return
 	}
 
-	opt.Result = queryUtils.JsonPath(string(queryResult), opt.JsonPath)
+	if opt.JsonPath != "" {
+		opt.Result = queryUtils.JsonPath(string(queryResult), opt.JsonPath)
+	}
 
 	return
 }

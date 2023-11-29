@@ -79,10 +79,25 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(endpointId uint, method
 		return
 	}
 
-	root.Children = append(root.Children, casesHelper.LoadForPathParams(apiPathItem.Parameters))
-	root.Children = append(root.Children, casesHelper.LoadForQueryParams(apiOperation.Parameters))
-	root.Children = append(root.Children, casesHelper.LoadForHeaders(apiOperation.Parameters))
-	root.Children = append(root.Children, casesHelper.LoadForBody(apiOperation.RequestBody, doc3))
+	pathParamsDir := casesHelper.LoadForPathParams(apiPathItem.Parameters)
+	if len(pathParamsDir.Children) > 0 {
+		root.Children = append(root.Children, pathParamsDir)
+	}
+
+	queryParamsDir := casesHelper.LoadForQueryParams(apiOperation.Parameters)
+	if len(queryParamsDir.Children) > 0 {
+		root.Children = append(root.Children, queryParamsDir)
+	}
+
+	headerDir := casesHelper.LoadForHeaders(apiOperation.Parameters)
+	if len(headerDir.Children) > 0 {
+		root.Children = append(root.Children, headerDir)
+	}
+
+	bodyDir := casesHelper.LoadForBody(apiOperation.RequestBody, doc3)
+	if len(bodyDir.Children) > 0 {
+		root.Children = append(root.Children, bodyDir)
+	}
 
 	return
 }

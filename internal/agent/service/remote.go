@@ -40,7 +40,7 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get interface obj failed, response %v", resp)
 		return
 	}
@@ -99,7 +99,7 @@ func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.De
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("submit result failed, response %v", resp)
 		return
 	}
@@ -148,7 +148,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get exec obj failed, response %v", resp)
 		return
 	}
@@ -210,7 +210,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get exec obj failed, response %v", resp)
 		return
 	}
@@ -254,7 +254,7 @@ func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("submit result failed, response %v", resp)
 		return
 	}
@@ -303,7 +303,7 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get exec obj failed, response %v", resp)
 		return
 	}
@@ -349,7 +349,7 @@ func SubmitPlanResult(result agentDomain.PlanExecResult, planId int, serverUrl, 
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("submit result failed, response %v", resp)
 		return
 	}
@@ -386,7 +386,7 @@ func GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExec
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get exec obj failed, response %v", resp)
 		return
 	}
@@ -437,7 +437,7 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get exec obj failed, response %v", resp)
 		return
 	}
@@ -484,7 +484,7 @@ func GetCasesToExec(req *agentExec.CasesExecReq) (ret agentExec.CaseExecProcesso
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get interface obj failed, response %v", resp)
 		return
 	}

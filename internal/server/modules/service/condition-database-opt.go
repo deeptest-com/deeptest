@@ -17,12 +17,6 @@ func (s *DatabaseOptService) Get(id uint) (opt model.DebugConditionDatabaseOpt, 
 	return
 }
 
-func (s *DatabaseOptService) Create(opt *model.DebugConditionDatabaseOpt) (err error) {
-	err = s.DatabaseOptRepo.Save(opt)
-
-	return
-}
-
 func (s *DatabaseOptService) Update(opt *model.DebugConditionDatabaseOpt) (err error) {
 	err = s.DatabaseOptRepo.Save(opt)
 

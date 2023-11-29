@@ -86,13 +86,19 @@ func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugInfo
 	// combine
 	mp := map[string]bool{}
 	for _, item := range variables1 {
+		if item.Name == "" || mp[item.Name] {
+			continue
+		}
+
 		mp[item.Name] = true
 		variables = append(variables, item)
 	}
 	for _, item := range variables2 {
-		if mp[item.Name] {
+		if item.Name == "" || mp[item.Name] {
 			continue
 		}
+
+		mp[item.Name] = true
 		variables = append(variables, item)
 	}
 

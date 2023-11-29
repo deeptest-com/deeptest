@@ -66,3 +66,5 @@ npm config set ELECTRON_MIRROR=https://npm.taobao.org/mirrors/electron/
 
 scp -r ~/work/qiniu/deeptest/* lighthouse@111.231.16.35:~/work/qiniu/deeptest
 nohup light-server -s ~/work/qiniu/deeptest > ~/light-server.log 2>&1 &
+
+git push -f github master:main

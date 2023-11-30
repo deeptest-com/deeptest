@@ -334,8 +334,9 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		endpoint.ServeId = req.ServeId //前面销毁了ID，现在补充上
 		_, err = s.Save(*endpoint)
 		if err != nil {
+			//遇到错误跳过
 			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
-			return err
+			//return err
 		}
 	}
 

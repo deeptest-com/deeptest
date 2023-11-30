@@ -75,11 +75,11 @@ gen_version_file:
 	@echo '{"version": "${VERSION}"}' > ${QINIU_DIR}/${PROJECT}/version.json
 
 compile_ui:
-	@cd ui && yarn build --mode deeptest-local --dest ../client/ui && cd ..
+	@cd ui && yarn build --dest ../client/ui && cd ..
 compile_ui_demo:
-	@cd ../deeptest-ui && yarn build:demo --mode deeptest-demo --dest ../deeptest/client/ui && cd ../deeptest
+	@cd ../deeptest-ui && yarn build:demo --dest ../deeptest/client/ui && cd ../deeptest
 compile_ui_client:
-	@cd ui && yarn build --mode deeptest-client --dest ../client/ui && cd ..
+	@cd ui && yarn build --dest ../client/ui && cd ..
 compile_ly_ui_client:
 	@cd ../leyanapi-frontend  && yarn build:client && cd ../leyanapi-backend
 

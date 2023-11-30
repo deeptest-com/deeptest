@@ -152,46 +152,12 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 				oldEndpointId := endpoint.ID
-				//if oldEndpointId != 0 {
-				/*
-					oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
-					if err != nil {
-						continue
-					}
-
-					newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
-					if err != nil {
-						continue
-					}
-				*/
-
-				//newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
-				//if oldEndpointDetail.Snapshot == newSnapshot {
-				//	continue
-				//}
-
-				//oldEndpointDetailByte, _ := json.Marshal(oldEndpointDetail)
-				//oldEndpointDetailStr := string(oldEndpointDetailByte)
-
-				//newEndpointDetailByte, _ := json.Marshal(newEndpointDetail)
-				//newEndpointDetailStr := string(newEndpointDetailByte)
 
 				oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
 				if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson {
 					s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
 					continue
 				}
-				/*
-					if oldEndpointDetailStr != newEndpointDetailStr {
-						newEndpointDetail.ServeId = 0
-						err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail)))
-						if err != nil {
-							continue
-						}
-					}
-				*/
-
-				//}
 
 				endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path, newSnapshot, consts.AutoAdd)
 				if err != nil {
@@ -410,7 +376,6 @@ func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailRe
 	responseBodySchema := s.GetSchema(functionDetail.ResponseBody, functionDetail.RequestType)
 	fmt.Println(requestBodySchema, responseBodySchema)
 
-	//requestSchema := s.ServeService.Example2Schema(s.getRequestBody(functionDetail))
 	requestSchemaString, _ := json.Marshal(requestBodySchema)
 
 	generateFromRequestReq := v1.GenerateFromRequestReq{
@@ -423,7 +388,6 @@ func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailRe
 		return
 	}
 
-	//responseSchema := s.ServeService.Example2Schema(functionDetail.ResponseBody)
 	responseSchemaString, _ := json.Marshal(responseBodySchema)
 
 	generateFromResponseReq := v1.GenerateFromResponseReq{

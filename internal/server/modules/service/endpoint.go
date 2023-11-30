@@ -16,6 +16,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	encoder "github.com/zwgblue/yaml-encoder"
 	"gorm.io/gorm"
@@ -289,6 +290,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 
 		//非Notfound
 		if err != nil && err != gorm.ErrRecordNotFound {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			continue
 		}
 
@@ -332,6 +334,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		endpoint.ServeId = req.ServeId //前面销毁了ID，现在补充上
 		_, err = s.Save(*endpoint)
 		if err != nil {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			return err
 		}
 	}
@@ -379,6 +382,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 		//全覆盖更新目录
 		res, err := s.CategoryRepo.GetByItem(uint(category.ParentId), category.Type, category.ProjectId, category.Name)
 		if err != nil && err != gorm.ErrRecordNotFound {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			continue
 		}
 
@@ -389,6 +393,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 
 		err = s.CategoryRepo.Save(&category)
 		if err != nil {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			return err
 		}
 
@@ -396,6 +401,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 		dirs.Id = int64(category.ID)
 		err = s.createDirs(dirs, req)
 		if err != nil {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			return err
 		}
 	}

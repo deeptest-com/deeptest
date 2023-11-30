@@ -49,14 +49,18 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse) (s
 		} else if condition.Type == consts.ConditionTypeScript {
 			DealwithDealwithScriptCondition(condition, &status, execObj.DebugData.ProjectId, &postConditions)
 
-		} else if condition.Type == consts.ConditionTypeCheckpoint {
-			DealwithDealwithCheckPointCondition(condition, resp, &status, &postConditions)
-
 		} else if condition.Type == consts.ConditionTypeDatabase {
 			DealwithDatabaseCondition(condition, &status, &postConditions)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			DealwithResponseDefineCondition(condition, resp, &status, &postConditions)
+		}
+	}
+
+	for _, condition := range execObj.PostConditions {
+		if condition.Type == consts.ConditionTypeCheckpoint {
+			DealwithDealwithCheckPointCondition(condition, resp, &status, &postConditions)
+
 		}
 	}
 

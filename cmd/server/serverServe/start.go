@@ -151,7 +151,7 @@ func (webServer *WebServer) AddModule(module ...module.WebModule) {
 
 // AddWebUi 添加前端页面访问
 func (webServer *WebServer) AddWebUi() {
-	pth := filepath.Join(dir.GetCurrentAbPath(), "ui", "dist")
+	pth := filepath.Join(dir.GetCurrentAbPath(), "deeptest-ui")
 	fileUtils.MkDirIfNeeded(pth)
 	logUtils.Infof("*** ui dir: %s", pth)
 

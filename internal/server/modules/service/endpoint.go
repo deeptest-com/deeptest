@@ -277,8 +277,12 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		userName = user.Username
 	}
 
-	if req.CategoryId == -1 && len(dirs.Dirs) > 0 {
-		req.CategoryId = dirs.Id
+	if req.CategoryId == -1 {
+		if len(dirs.Dirs) > 0 {
+			req.CategoryId = dirs.Id
+		} else {
+			dirs.Id = -1
+		}
 	}
 
 	for _, endpoint := range endpoints {

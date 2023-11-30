@@ -175,7 +175,30 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			}
 			interfaceExecCondition.Raw, _ = json.Marshal(scriptBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
-		} else if condition.Type == consts.ConditionTypeCheckpoint {
+		} else if condition.Type == consts.ConditionTypeResponseDefine {
+			var responseDefineBase domain.ResponseDefineBase
+			json.Unmarshal(condition.Raw, &responseDefineBase)
+			if responseDefineBase.Disabled {
+				continue
+			}
+
+			resp := entity.Response
+
+			err = ExecResponseDefine(&responseDefineBase, resp)
+
+			interfaceExecCondition := domain.InterfaceExecCondition{
+				Type: condition.Type,
+			}
+
+			interfaceExecCondition.Raw, _ = json.Marshal(responseDefineBase)
+			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
+
+			detail["responseDefine"] = map[string]interface{}{"resultStatus": responseDefineBase.ResultStatus, "resultMsg": responseDefineBase.ResultMsg}
+		}
+	}
+
+	for _, condition := range entity.PostConditions {
+		if condition.Type == consts.ConditionTypeCheckpoint {
 
 			var checkpointBase domain.CheckpointBase
 			json.Unmarshal(condition.Raw, &checkpointBase)
@@ -200,25 +223,6 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			detail["checkpoint"] = append(detail["checkpoint"].([]map[string]interface{}), map[string]interface{}{
 				"resultStatus": checkpointBase.ResultStatus, "resultMsg": checkpointBase.ResultMsg,
 			})
-		} else if condition.Type == consts.ConditionTypeResponseDefine {
-			var responseDefineBase domain.ResponseDefineBase
-			json.Unmarshal(condition.Raw, &responseDefineBase)
-			if responseDefineBase.Disabled {
-				continue
-			}
-
-			resp := entity.Response
-
-			err = ExecResponseDefine(&responseDefineBase, resp)
-
-			interfaceExecCondition := domain.InterfaceExecCondition{
-				Type: condition.Type,
-			}
-
-			interfaceExecCondition.Raw, _ = json.Marshal(responseDefineBase)
-			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
-
-			detail["responseDefine"] = map[string]interface{}{"resultStatus": responseDefineBase.ResultStatus, "resultMsg": responseDefineBase.ResultMsg}
 		}
 	}
 

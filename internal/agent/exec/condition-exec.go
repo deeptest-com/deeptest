@@ -87,7 +87,7 @@ func DealwithExtractorCondition(condition domain.InterfaceExecCondition, resp do
 	extractorHelper.GenResultMsg(&extractorBase)
 
 	if extractorBase.ResultStatus == consts.Pass {
-		SetVariable(0, extractorBase.Variable, extractorBase.Result, consts.Public)
+		SetVariable(0, extractorBase.Variable, extractorBase.Result, extractorBase.Scope)
 	} else {
 		*status = consts.Fail
 	}

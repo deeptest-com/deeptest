@@ -150,7 +150,12 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			extractorHelper.GenResultMsg(&extractorBase)
 
 			if extractorBase.ResultStatus == consts.Pass {
-				SetVariable(processor.ParentId, extractorBase.Variable, extractorBase.Result, consts.Public)
+				scopeId := processor.ParentId
+				if extractorBase.Scope == consts.Private { // put vari in its own scope if Private
+					scopeId = processor.ID
+				}
+
+				SetVariable(scopeId, extractorBase.Variable, extractorBase.Result, extractorBase.Scope)
 			}
 
 			interfaceExecCondition := domain.InterfaceExecCondition{

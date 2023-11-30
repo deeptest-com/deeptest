@@ -3,6 +3,7 @@ package agentExec
 import (
 	"errors"
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
@@ -11,8 +12,14 @@ func getDynamicVariableFromScope(processorId uint, propExpression string) (ret d
 
 	for _, id := range *allValidIds {
 		for _, item := range ScopedVariables[id] {
+			if !(item.Scope == consts.Public || (item.Scope == consts.Private && id == processorId)) {
+				continue
+			}
+
 			var ok bool
-			if ret, ok = EvaluateVariablePropExpressionValue(item, propExpression); ok {
+			ret, ok = EvaluateVariablePropExpressionValue(item, propExpression)
+
+			if ok {
 				goto LABEL
 			}
 		}

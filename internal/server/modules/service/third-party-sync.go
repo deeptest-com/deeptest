@@ -140,7 +140,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
-				newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
+				newEndpointDetail, err := s.GenerateEndpoint(functionDetail)
 				if err != nil && err != gorm.ErrRecordNotFound {
 					continue
 				}
@@ -152,48 +152,14 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 				oldEndpointId := endpoint.ID
-				//if oldEndpointId != 0 {
-				/*
-					oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
-					if err != nil {
-						continue
-					}
-
-					newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
-					if err != nil {
-						continue
-					}
-				*/
-
-				//newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
-				//if oldEndpointDetail.Snapshot == newSnapshot {
-				//	continue
-				//}
-
-				//oldEndpointDetailByte, _ := json.Marshal(oldEndpointDetail)
-				//oldEndpointDetailStr := string(oldEndpointDetailByte)
-
-				//newEndpointDetailByte, _ := json.Marshal(newEndpointDetail)
-				//newEndpointDetailStr := string(newEndpointDetailByte)
 
 				oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
 				if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson {
 					s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
 					continue
 				}
-				/*
-					if oldEndpointDetailStr != newEndpointDetailStr {
-						newEndpointDetail.ServeId = 0
-						err = s.EndpointRepo.UpdateSnapshot(endpoint.ID, _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail)))
-						if err != nil {
-							continue
-						}
-					}
-				*/
 
-				//}
-
-				endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path, newSnapshot, consts.FullCover)
+				endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path, newSnapshot, consts.AutoAdd)
 				if err != nil {
 					continue
 				}
@@ -359,52 +325,34 @@ func (s *ThirdPartySyncService) GetSchema(bodyString, requestType string) (schem
 
 }
 
-func (s *ThirdPartySyncService) GenerateEndpoint(endpointId uint, functionDetail v1.MetaGetMethodDetailResData) (res model.Endpoint, err error) {
-
-	//res, err = s.EndpointRepo.GetAll(endpointId, "v0.1.0")
-	//if err != nil {
-	//	return
-	//}
-	endpointInterface := model.EndpointInterface{}
-
+func (s *ThirdPartySyncService) GenerateEndpoint(functionDetail v1.MetaGetMethodDetailResData) (res model.Endpoint, err error) {
 	functionBody := functionDetail.RequestBody
 	if functionDetail.RequestType == "FORM" {
 		functionBody = functionDetail.RequestFormBody
 	}
 
-	requestBody := model.EndpointInterfaceRequestBody{}
-	//requestBody := res.Interfaces[0].RequestBody
-
 	requestBodySchema := s.GetSchema(functionBody, functionDetail.RequestType)
 	requestSchemaString, _ := json.Marshal(requestBodySchema)
 
 	requestBodyItem := model.EndpointInterfaceRequestBodyItem{}
-	//requestBodyItem, err := s.EndpointInterfaceRepo.GetRequestBodyItem(requestBody.ID)
-	//if err != nil {
-	//	return
-	//}
-
 	requestBodyItem.Content = string(requestSchemaString)
+
+	requestBody := model.EndpointInterfaceRequestBody{}
 	requestBody.MediaType = s.getBodyType(functionDetail.RequestType).String()
 	requestBody.SchemaItem = requestBodyItem
-
-	responseBody := model.EndpointInterfaceResponseBody{}
-	//responseBody := res.Interfaces[0].ResponseBodies[0]
 
 	responseBodySchema := s.GetSchema(functionDetail.ResponseBody, functionDetail.RequestType)
 	responseSchemaString, _ := json.Marshal(responseBodySchema)
 
 	responseBodyItem := model.EndpointInterfaceResponseBodyItem{}
-	//responseBodyItem, err := s.EndpointInterfaceRepo.GetResponseBodyItem(responseBody.ID)
-	//if err != nil {
-	//	return
-	//}
-
 	responseBodyItem.Content = string(responseSchemaString)
+
+	responseBody := model.EndpointInterfaceResponseBody{}
 	responseBody.MediaType = s.getBodyType(functionDetail.RequestType).String()
 	responseBody.SchemaItem = responseBodyItem
 	responseBody.Code = "200"
 
+	endpointInterface := model.EndpointInterface{}
 	endpointInterface.BodyType = s.getBodyType(functionDetail.RequestType)
 	endpointInterface.Method = consts.POST
 	endpointInterface.RequestBody = requestBody
@@ -414,9 +362,6 @@ func (s *ThirdPartySyncService) GenerateEndpoint(endpointId uint, functionDetail
 	res.Title = functionDetail.ClassCode + "-" + functionDetail.Code
 	res.Path = "/" + functionDetail.ServiceCode + "/" + functionDetail.ClassCode + "/" + functionDetail.Code
 	res.Interfaces = []model.EndpointInterface{endpointInterface}
-	//res.Interfaces[0].BodyType = s.getBodyType(functionDetail.RequestType)
-	//res.Interfaces[0].RequestBody = requestBody
-	//res.Interfaces[0].ResponseBodies[0] = responseBody
 
 	return
 }
@@ -431,7 +376,6 @@ func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailRe
 	responseBodySchema := s.GetSchema(functionDetail.ResponseBody, functionDetail.RequestType)
 	fmt.Println(requestBodySchema, responseBodySchema)
 
-	//requestSchema := s.ServeService.Example2Schema(s.getRequestBody(functionDetail))
 	requestSchemaString, _ := json.Marshal(requestBodySchema)
 
 	generateFromRequestReq := v1.GenerateFromRequestReq{
@@ -444,7 +388,6 @@ func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailRe
 		return
 	}
 
-	//responseSchema := s.ServeService.Example2Schema(functionDetail.ResponseBody)
 	responseSchemaString, _ := json.Marshal(responseBodySchema)
 
 	generateFromResponseReq := v1.GenerateFromResponseReq{
@@ -521,12 +464,11 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointD
 			continue
 		}
 
-		newEndpointDetail, err := s.GenerateEndpoint(endpoint.ID, functionDetail)
+		newEndpointDetail, err := s.GenerateEndpoint(functionDetail)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			continue
 		}
 
-		//newEndpointDetail.ServeId = 0
 		newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
 
 		if req.DataSyncType == consts.AutoAdd && endpoint.ID != 0 {
@@ -571,13 +513,6 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointD
 		}
 
 		if endpoint.ID == 0 {
-			//createEndpointDetail, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
-			//if err != nil {
-			//	continue
-			//}
-			//
-			//createEndpointDetail.ServeId = 0
-			//snapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(createEndpointDetail))
 			err = s.EndpointRepo.ChangeSnapShot(endpointId, newSnapshot)
 			if err != nil {
 				continue

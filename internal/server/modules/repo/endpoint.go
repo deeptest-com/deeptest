@@ -486,7 +486,7 @@ func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, p
 			db.Where("category_id IN (?)", categoryIds)
 		}
 	} else if categoryId == -1 {
-		db.Where("category_id = -1?")
+		db.Where("category_id = -1")
 	}
 
 	err = db.First(&res).Error

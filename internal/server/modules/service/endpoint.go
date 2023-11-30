@@ -302,6 +302,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		if req.DataSyncType == consts.FullCover {
 			if err == nil {
 				endpoint.ID = res.ID
+				endpoint.CategoryId = res.CategoryId
 			}
 
 		} else if req.DataSyncType == consts.AutoAdd {
@@ -321,6 +322,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 					continue
 				} else { //一致覆盖数据
 					endpoint.ID = res.ID
+					endpoint.CategoryId = res.CategoryId
 					now := time.Now()
 					endpoint.ChangedTime = &now
 				}

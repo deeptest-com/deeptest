@@ -137,6 +137,7 @@ func Parse(scurl string) (cURL *CURL) {
 	scurl = strings.TrimLeft(scurl, "curl")
 
 	scurl = strings.ReplaceAll(scurl, "\n", "")
+	scurl = strings.ReplaceAll(scurl, "\t", "")
 
 	if strings.HasPrefix(scurl, "http") {
 		var parseurl []rune

@@ -193,7 +193,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 
 				//}
 
-				endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path, newSnapshot)
+				endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path, newSnapshot, consts.FullCover)
 				if err != nil {
 					continue
 				}
@@ -208,14 +208,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 				}
 
 				if endpoint.ID == 0 {
-					createEndpointDetail, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
-					if err != nil {
-						continue
-					}
-
-					createEndpointDetail.ServeId = 0
-					createEndpointDetail.Snapshot = _commUtils.JsonEncode(s.EndpointService.Yaml(createEndpointDetail))
-					err = s.EndpointRepo.Save(endpointId, &createEndpointDetail)
+					err = s.EndpointRepo.ChangeSnapShot(endpointId, newSnapshot)
 					if err != nil {
 						continue
 					}
@@ -265,21 +258,25 @@ func (s *ThirdPartySyncService) SaveCategory(class v1.FindClassByServiceCodeResD
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path, snapshot string) (endpointId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path, snapshot string, dataSyncType consts.DataSyncType) (endpointId uint, err error) {
 	timeNow := time.Now()
 	endpoint := model.Endpoint{
-		Title:       title,
-		ProjectId:   projectId,
-		ServeId:     serveId,
-		Path:        path,
-		Status:      1,
-		CategoryId:  categoryId,
+		Title:     title,
+		ProjectId: projectId,
+		ServeId:   serveId,
+		Path:      path,
+		Status:    1,
+		//CategoryId:  categoryId,
 		SourceType:  consts.ThirdPartySync,
 		ChangedTime: &timeNow,
 	}
 
 	if oldEndpointId != 0 {
 		endpoint.Snapshot = snapshot
+	}
+
+	if oldEndpointId == 0 || dataSyncType == consts.Add {
+		endpoint.CategoryId = categoryId
 	}
 
 	if userId != 0 {
@@ -555,7 +552,7 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointD
 			oldEndpointId = endpoint.ID
 		}
 
-		endpointId, err := s.SaveEndpoint(title, req.ProjectId, req.ServeId, req.UserId, oldEndpointId, req.CategoryId, path, newSnapshot)
+		endpointId, err := s.SaveEndpoint(title, req.ProjectId, req.ServeId, req.UserId, oldEndpointId, req.CategoryId, path, newSnapshot, req.DataSyncType)
 		if err != nil {
 			continue
 		}

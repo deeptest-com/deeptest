@@ -130,7 +130,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 				}
 
 				title := classCode + "-" + functionDetail.Code
-				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, title, int64(categoryId))
+				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, int64(categoryId))
 				if err != nil && err != gorm.ErrRecordNotFound {
 					continue
 				}
@@ -519,7 +519,7 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointD
 		path := "/" + functionDetail.ServiceCode + "/" + req.ClassCode + "/" + function
 		title := req.ClassCode + "-" + functionDetail.Code
 
-		endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, req.ProjectId, path, req.ServeId, title, req.CategoryId)
+		endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, req.ProjectId, path, req.ServeId, req.CategoryId)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			continue
 		}

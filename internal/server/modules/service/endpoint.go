@@ -285,7 +285,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		}
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
 
-		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title, req.CategoryId)
+		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, req.CategoryId)
 
 		//非Notfound
 		if err != nil && err != gorm.ErrRecordNotFound {

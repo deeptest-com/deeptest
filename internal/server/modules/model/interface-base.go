@@ -119,7 +119,7 @@ type InterfaceRequestBodyBase struct {
 	MediaType   string `json:"mediaType"`
 	Description string `json:"description"`
 	SchemaRefId int64  `json:"schemaRefId"`
-	Examples    string `gorm:"type:text" json:"examples"`
+	Examples    string `gorm:"type:longtext" json:"examples"`
 }
 
 type InterfaceResponseBodyBase struct {
@@ -128,7 +128,7 @@ type InterfaceResponseBodyBase struct {
 	MediaType   string `json:"mediaType"`
 	Description string `json:"description"`
 	SchemaRefId int64  `json:"schemaRefId"`
-	Examples    string `gorm:"type:text" json:"examples"`
+	Examples    string `gorm:"type:longtext" json:"examples"`
 }
 
 type InterfaceRequestBodyItemBase struct {

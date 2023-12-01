@@ -102,10 +102,13 @@ func (r *ProjectRepo) GetByName(projectName string, id uint) (project model.Proj
 	return
 }
 
-func (r *ProjectRepo) GetByCode(shortName string) (ret model.Project, err error) {
+func (r *ProjectRepo) GetByCode(shortName string, id uint) (ret model.Project, err error) {
 	db := r.DB.Model(&ret).
 		Where("short_name = ? AND NOT deleted", shortName)
 
+	if id > 0 {
+		db.Where("id != ?", id)
+	}
 	err = db.First(&ret).Error
 
 	return
@@ -132,7 +135,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 		return
 	}
 
-	po, err = r.GetByCode(req.ShortName)
+	po, err = r.GetByCode(req.ShortName, 0)
 	if po.ShortName != "" {
 		bizErr = _domain.ErrShortNameExist
 		return
@@ -226,6 +229,16 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 }
 
 func (r *ProjectRepo) Update(req v1.ProjectReq) error {
+	po, _ := r.GetByName(req.Name, req.Id)
+	if po.Name != "" {
+		return errors.New("同名记录已存在")
+	}
+
+	po, _ = r.GetByCode(req.ShortName, req.Id)
+	if po.ShortName != "" {
+		return errors.New("英文缩写已存在")
+	}
+
 	project := model.Project{ProjectBase: req.ProjectBase}
 	err := r.DB.Model(&model.Project{}).Where("id = ?", req.Id).Updates(&project).Error
 	if err != nil {

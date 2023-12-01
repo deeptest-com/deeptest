@@ -31,8 +31,8 @@ type DiagnoseInterfaceService struct {
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
 
-func (s *DiagnoseInterfaceService) Load(projectId, serveId int) (ret []*serverDomain.DiagnoseInterface, err error) {
-	root, err := s.DiagnoseInterfaceRepo.GetTree(uint(projectId), uint(serveId))
+func (s *DiagnoseInterfaceService) Load(projectId int) (ret []*serverDomain.DiagnoseInterface, err error) {
+	root, err := s.DiagnoseInterfaceRepo.GetTree(uint(projectId))
 
 	if root != nil {
 		ret = root.Children
@@ -61,19 +61,19 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 
 	if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
 		if req.ID == 0 {
-			server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
+			//server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
 			debugInterface := model.DebugInterface{
 				InterfaceBase: model.InterfaceBase{
 					Name: req.Title,
 					InterfaceConfigBase: model.InterfaceConfigBase{
-						Url:    server.Url,
+						//			Url:    server.Url,
 						Method: consts.GET,
 					},
 					ProjectId: req.ProjectId,
 				},
-				ServeId:  diagnoseInterface.ServeId,
-				ServerId: server.ID,
-				BaseUrl:  "",
+				//	ServeId:  diagnoseInterface.ServeId,
+				//	ServerId: server.ID,
+				BaseUrl: "",
 			}
 			err = s.DebugInterfaceRepo.Save(&debugInterface)
 			diagnoseInterface.DebugInterfaceId = debugInterface.ID

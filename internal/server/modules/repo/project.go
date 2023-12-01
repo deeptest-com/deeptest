@@ -186,7 +186,14 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	}
 
 	// create project endpoint category
-	categoryId, err := r.AddProjectRootEndpointCategory(serve.ID, projectId)
+	categoryId, err := r.AddProjectRootEndpointCategory(projectId)
+	if err != nil {
+		logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	// create project test category
+	err = r.ServeRepo.AddDefaultTestCategory(serve.ProjectId)
 	if err != nil {
 		logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
 		return
@@ -420,11 +427,10 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role consts.RoleT
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (id uint, err error) {
+func (r *ProjectRepo) AddProjectRootEndpointCategory(projectId uint) (id uint, err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.EndpointCategory,
-		ServeId:   serveId,
 		ProjectId: projectId,
 		IsDir:     true,
 	}
@@ -560,7 +566,8 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 
 	r.ServeRepo.AddDefaultServer(serve.ProjectId, serve.ID)
 
-	r.ServeRepo.AddDefaultTestCategory(serve.ProjectId, serve.ID)
+	//调试目录不挂在目录下面
+	//	r.ServeRepo.AddDefaultTestCategory(serve.ProjectId, serve.ID)
 
 	return
 }

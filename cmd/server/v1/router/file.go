@@ -15,12 +15,18 @@ type FileModule struct {
 // Party 上传文件模块
 func (m *FileModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
+		index.PartyFunc("/upload", func(party iris.Party) {
+			party.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin())
 
-		index.Post("/", iris.LimitRequestBodySize(config.CONFIG.MaxSize*iris.MB),
-			m.FileCtrl.Upload).Name = "上传文件"
-		index.Post("/do", iris.LimitRequestBodySize(config.CONFIG.MaxSize*iris.MB),
-			m.FileCtrl.Do).Name = "上传文件"
+			party.Post("/", iris.LimitRequestBodySize(config.CONFIG.MaxSize*iris.MB),
+				m.FileCtrl.Upload).Name = "上传文件"
+			party.Post("/do", iris.LimitRequestBodySize(config.CONFIG.MaxSize*iris.MB),
+				m.FileCtrl.Do).Name = "上传文件"
+		})
+
+		index.PartyFunc("/download", func(party iris.Party) {
+			party.Get("/{path:path}", m.FileCtrl.Download).Name = "下载打包的资源文件"
+		})
 	}
-	return module.NewModule("/upload", handler)
+	return module.NewModule("/", handler)
 }

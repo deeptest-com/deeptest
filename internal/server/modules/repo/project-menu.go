@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/aaronchen2k/deeptest"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"io/ioutil"
+	"path/filepath"
 )
 
 type ProjectMenuRepo struct {
@@ -79,7 +80,7 @@ func (r *ProjectMenuRepo) GetAllMenuList() (menus []model.ProjectMenu, err error
 }
 
 func (r *ProjectMenuRepo) GetMenuConfig() (menuConfigs []v1.ProjectMenuConfig, err error) {
-	data, err := ioutil.ReadFile("config/sample/menu.json")
+	data, err := deeptest.ReadResData(filepath.Join("res", "sample", "menu.json"))
 	if err != nil {
 		logUtils.Errorf("load menu config err ", zap.String("错误:", err.Error()))
 		return

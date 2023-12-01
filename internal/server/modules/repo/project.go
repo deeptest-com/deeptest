@@ -3,6 +3,7 @@ package repo
 import (
 	"errors"
 	"fmt"
+	"github.com/aaronchen2k/deeptest"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -11,10 +12,10 @@ import (
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"path/filepath"
 )
 
 type ProjectRepo struct {
@@ -705,45 +706,45 @@ func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err err
 func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) (err error) {
 	//创建目录
 	var category model.Category
-	categoryJson := _fileUtils.ReadFile("./config/sample/category.json")
-	_commUtils.JsonDecode(categoryJson, &category)
+	categoryJson, err := deeptest.ReadResData(filepath.Join("res", "sample", "category.json"))
+	_commUtils.JsonDecode(string(categoryJson), &category)
 
 	var components []*model.ComponentSchema
-	componentJson := _fileUtils.ReadFile("./config/sample/component.json")
-	_commUtils.JsonDecode(componentJson, &components)
+	componentJson, err := deeptest.ReadResData(filepath.Join("res", "sample", "component.json"))
+	_commUtils.JsonDecode(string(componentJson), &components)
 
 	//获取接口配置
 	var endpoints []model.Endpoint
-	endpointJson := _fileUtils.ReadFile("./config/sample/endpoint.json")
-	_commUtils.JsonDecode(endpointJson, &endpoints)
+	endpointJson, err := deeptest.ReadResData(filepath.Join("res", "sample", "endpoint.json"))
+	_commUtils.JsonDecode(string(endpointJson), &endpoints)
 
 	endpointMockExpectsMap := make(map[string][]model.EndpointMockExpect)
-	endpointMockExpectsJson := _fileUtils.ReadFile("./config/sample/endpoint-mock-expect.json")
-	_commUtils.JsonDecode(endpointMockExpectsJson, &endpointMockExpectsMap)
+	endpointMockExpectsJson, err := deeptest.ReadResData(filepath.Join("res", "sample", "endpoint-mock-expect.json"))
+	_commUtils.JsonDecode(string(endpointMockExpectsJson), &endpointMockExpectsMap)
 
 	endpointCaseMap := make(map[string][]map[string]model.DebugInterface)
-	endpointCaseJson := _fileUtils.ReadFile("./config/sample/endpoint-case.json")
-	_commUtils.JsonDecode(endpointCaseJson, &endpointCaseMap)
+	endpointCaseJson, err := deeptest.ReadResData(filepath.Join("res", "sample", "endpoint-case.json"))
+	_commUtils.JsonDecode(string(endpointCaseJson), &endpointCaseMap)
 
 	user, _ := r.UserRepo.FindById(userId)
 
 	//获取场景配置
 	var scenario model.Scenario
-	scenarioJson := _fileUtils.ReadFile("./config/sample/scenario.json")
-	_commUtils.JsonDecode(scenarioJson, &scenario)
+	scenarioJson, err := deeptest.ReadResData(filepath.Join("res", "sample", "scenario.json"))
+	_commUtils.JsonDecode(string(scenarioJson), &scenario)
 
 	//获取执行器
 	var root agentExec.Processor
-	processorJson := _fileUtils.ReadFile("./config/sample/processor.json")
-	_commUtils.JsonDecode(processorJson, &root)
+	processorJson, err := deeptest.ReadResData(filepath.Join("res", "sample", "processor.json"))
+	_commUtils.JsonDecode(string(processorJson), &root)
 
 	var processorEntity map[string]interface{}
-	processorEntityJson := _fileUtils.ReadFile("./config/sample/processor-entity.json")
-	_commUtils.JsonDecode(processorEntityJson, &processorEntity)
+	processorEntityJson, err := deeptest.ReadResData(filepath.Join("res", "sample", "processor-entity.json"))
+	_commUtils.JsonDecode(string(processorEntityJson), &processorEntity)
 
 	var plan model.Plan
-	planJson := _fileUtils.ReadFile("./config/sample/plan.json")
-	_commUtils.JsonDecode(planJson, &plan)
+	planJson, err := deeptest.ReadResData(filepath.Join("res", "sample", "plan.json"))
+	_commUtils.JsonDecode(string(planJson), &plan)
 
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 

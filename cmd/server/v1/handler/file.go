@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/aaronchen2k/deeptest"
 	"github.com/aaronchen2k/deeptest/internal/pkg/service"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -13,6 +14,8 @@ import (
 )
 
 type FileCtrl struct {
+	BaseCtrl
+
 	FileService     *commService.FileService `inject:""`
 	DatapoolService *service.DatapoolService `inject:""`
 }
@@ -83,4 +86,16 @@ func (c *FileCtrl) Do(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,
 		Data: iris.Map{"path": pth, "format": format}, Msg: _domain.NoErr.Msg})
+}
+
+func (c *FileCtrl) Download(ctx iris.Context) {
+	pth := ctx.Params().Get("path")
+	pth = filepath.Join("res", pth)
+
+	data, err := deeptest.ReadResData(pth)
+	if err != nil {
+		data = []byte("NOT FOUND")
+	}
+
+	ctx.Binary(data)
 }

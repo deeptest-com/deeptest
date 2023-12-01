@@ -4,12 +4,13 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/aaronchen2k/deeptest"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
-	"io/ioutil"
+	"path/filepath"
 )
 
 type ProjectRoleMenuRepo struct {
@@ -56,12 +57,12 @@ func (r *ProjectRoleMenuRepo) DeleteById(id uint) error {
 }
 
 func (r *ProjectRoleMenuRepo) GetRoleMenuConfig() (roleMenuConfigs []v1.ProjectRoleMenuConfig, err error) {
-
-	data, err := ioutil.ReadFile("config/sample/role-menu.json")
+	data, err := deeptest.ReadResData(filepath.Join("res", "sample", "role-menu.json"))
 	if err != nil {
 		logUtils.Errorf("load role menu config err ", zap.String("错误:", err.Error()))
 		return
 	}
+
 	roleMenuConfigs = make([]v1.ProjectRoleMenuConfig, 0)
 	err = json.Unmarshal(data, &roleMenuConfigs)
 	if err != nil {

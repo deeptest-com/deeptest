@@ -196,11 +196,13 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	}
 
 	// create project test category
-	err = r.ServeRepo.AddDefaultTestCategory(serve.ProjectId)
-	if err != nil {
-		logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
-		return
-	}
+	/*
+		err = r.ServeRepo.AddDefaultTestCategory(serve.ProjectId)
+		if err != nil {
+			logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
+			return
+		}
+	*/
 
 	// create project scenario category
 	err = r.AddProjectRootScenarioCategory(projectId)

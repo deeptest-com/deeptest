@@ -236,7 +236,7 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 	// convert or clone a debug interface obj
 	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(uint(endpointInterfaceId))
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
-	debugData.ServeId = parent.ServeId
+	//debugData.ServeId = parent.ServeId
 
 	if debugData.ServerId == 0 {
 		server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)

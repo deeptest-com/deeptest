@@ -172,13 +172,6 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 				if err = s.SaveBody(functionDetail, interfaceId); err != nil {
 					continue
 				}
-
-				if endpoint.ID == 0 {
-					err = s.EndpointRepo.ChangeSnapShot(endpointId, newSnapshot)
-					if err != nil {
-						continue
-					}
-				}
 			}
 		}
 	}
@@ -227,18 +220,17 @@ func (s *ThirdPartySyncService) SaveCategory(class v1.FindClassByServiceCodeResD
 func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path, snapshot string, dataSyncType consts.DataSyncType) (endpointId uint, err error) {
 	timeNow := time.Now()
 	endpoint := model.Endpoint{
-		Title:     title,
-		ProjectId: projectId,
-		ServeId:   serveId,
-		Path:      path,
-		Status:    1,
-		//CategoryId:  categoryId,
+		Title:       title,
+		ProjectId:   projectId,
+		ServeId:     serveId,
+		Path:        path,
+		Status:      1,
+		Snapshot:    snapshot,
 		SourceType:  consts.ThirdPartySync,
 		ChangedTime: &timeNow,
 	}
-
-	if oldEndpointId != 0 {
-		endpoint.Snapshot = snapshot
+	if dataSyncType == consts.FullCover {
+		endpoint.ChangedStatus = consts.NoChanged
 	}
 
 	if oldEndpointId == 0 || dataSyncType == consts.Add {
@@ -506,17 +498,6 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointD
 
 		if err = s.SaveBody(functionDetail, interfaceId); err != nil {
 			continue
-		}
-
-		if req.DataSyncType == consts.FullCover {
-			err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, consts.NoChanged)
-		}
-
-		if endpoint.ID == 0 {
-			err = s.EndpointRepo.ChangeSnapShot(endpointId, newSnapshot)
-			if err != nil {
-				continue
-			}
 		}
 	}
 

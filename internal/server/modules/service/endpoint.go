@@ -16,6 +16,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
 	encoder "github.com/zwgblue/yaml-encoder"
 	"gorm.io/gorm"
@@ -276,6 +277,14 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		userName = user.Username
 	}
 
+	if req.CategoryId == -1 {
+		if len(dirs.Dirs) > 0 {
+			req.CategoryId = dirs.Id
+		} else {
+			dirs.Id = -1
+		}
+	}
+
 	for _, endpoint := range endpoints {
 		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId = req.ProjectId, req.ServeId, req.CategoryId
 		endpoint.Status = 1
@@ -285,10 +294,11 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		}
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
 
-		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
+		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, req.CategoryId)
 
 		//非Notfound
 		if err != nil && err != gorm.ErrRecordNotFound {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			continue
 		}
 
@@ -302,6 +312,8 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		if req.DataSyncType == consts.FullCover {
 			if err == nil {
 				endpoint.ID = res.ID
+				endpoint.CategoryId = res.CategoryId
+				endpoint.ChangedStatus = consts.NoChanged
 			}
 
 		} else if req.DataSyncType == consts.AutoAdd {
@@ -321,6 +333,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 					continue
 				} else { //一致覆盖数据
 					endpoint.ID = res.ID
+					endpoint.CategoryId = res.CategoryId
 					now := time.Now()
 					endpoint.ChangedTime = &now
 				}
@@ -330,7 +343,9 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		endpoint.ServeId = req.ServeId //前面销毁了ID，现在补充上
 		_, err = s.Save(*endpoint)
 		if err != nil {
-			return err
+			//遇到错误跳过
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
+			//return err
 		}
 	}
 
@@ -377,6 +392,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 		//全覆盖更新目录
 		res, err := s.CategoryRepo.GetByItem(uint(category.ParentId), category.Type, category.ProjectId, category.Name)
 		if err != nil && err != gorm.ErrRecordNotFound {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			continue
 		}
 
@@ -387,6 +403,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 
 		err = s.CategoryRepo.Save(&category)
 		if err != nil {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			return err
 		}
 
@@ -394,6 +411,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 		dirs.Id = int64(category.ID)
 		err = s.createDirs(dirs, req)
 		if err != nil {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			return err
 		}
 	}
@@ -753,4 +771,9 @@ func (s *EndpointService) isEqualEndpoint(old, new model.Endpoint) bool {
 
 	return res1 == res2
 
+}
+
+func (s *EndpointService) UpdateName(id uint, name string) (err error) {
+	err = s.EndpointRepo.UpdateName(id, name)
+	return
 }

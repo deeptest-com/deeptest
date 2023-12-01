@@ -88,3 +88,18 @@ type ThirdPartyCommonRes struct {
 	Msg    string      `json:"msg"`
 	Errors interface{} `json:"errors"`
 }
+
+type GetFunctionDetailsByClassReq struct {
+	ClassCode string `json:"classCode"`
+}
+
+type GetFunctionDetailsByClassRes struct {
+	ThirdPartyCommonRes
+	Data []GetFunctionDetailsByClassResData `json:"data"`
+}
+
+type GetFunctionDetailsByClassResData struct {
+	Code        string `json:"code"`
+	Name        string `json:"name"`
+	MessageType int    `json:"messageType"` // 0：内部方法，不能被前端调用 1：外部方法，可以被前端调用
+}

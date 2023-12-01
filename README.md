@@ -8,7 +8,7 @@ DeepTest is Continue Testing Platform written in Go with Iris, Gorm, MySQL and V
 https://deeptest.com
 
 ### Demo Site
-http://124.221.203.74:8085  admin / P2ssw0rd
+http://demo.deeptest.com  admin / P2ssw0rd
 
 ### Licenses
 All source code is licensed under the [Apache License 2.0](LICENSE.md).

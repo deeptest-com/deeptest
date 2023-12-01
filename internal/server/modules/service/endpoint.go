@@ -313,6 +313,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 			if err == nil {
 				endpoint.ID = res.ID
 				endpoint.CategoryId = res.CategoryId
+				endpoint.ChangedStatus = consts.NoChanged
 			}
 
 		} else if req.DataSyncType == consts.AutoAdd {

@@ -61,19 +61,19 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 
 	if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
 		if req.ID == 0 {
-			server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
+			//server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
 			debugInterface := model.DebugInterface{
 				InterfaceBase: model.InterfaceBase{
 					Name: req.Title,
 					InterfaceConfigBase: model.InterfaceConfigBase{
-						Url:    server.Url,
+						//			Url:    server.Url,
 						Method: consts.GET,
 					},
 					ProjectId: req.ProjectId,
 				},
-				ServeId:  diagnoseInterface.ServeId,
-				ServerId: server.ID,
-				BaseUrl:  "",
+				//	ServeId:  diagnoseInterface.ServeId,
+				//	ServerId: server.ID,
+				BaseUrl: "",
 			}
 			err = s.DebugInterfaceRepo.Save(&debugInterface)
 			diagnoseInterface.DebugInterfaceId = debugInterface.ID
@@ -238,7 +238,7 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 	debugData.UsedBy = "" // mark src usedBy for pre/post-condition loading, empty for no pre/post conditions
 
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
-	debugData.ServeId = parent.ServeId
+	//debugData.ServeId = parent.ServeId
 
 	if debugData.ServerId == 0 {
 		server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)

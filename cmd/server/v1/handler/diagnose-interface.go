@@ -29,7 +29,6 @@ type DiagnoseInterfaceCtrl struct {
 // @Param	Authorization	header	string	true	"Authentication header"
 // @Param 	currProjectId	query	int		true	"当前项目ID"
 // @Param 	projectId		query	int		true	"项目ID"
-// @Param 	serveId			query	int		true	"服务ID"
 // @success	200	{object}	_domain.Response{data=[]serverDomain.DiagnoseInterface}
 // @Router	/api/v1/diagnoseInterfaces	[get]
 func (c *DiagnoseInterfaceCtrl) Load(ctx iris.Context) {

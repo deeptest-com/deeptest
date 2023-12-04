@@ -41,6 +41,10 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	if req.ServeId != 0 {
 		db = db.Where("serve_id = ?", req.ServeId)
 	}
+	if len(req.ServeIds) > 0 {
+		db = db.Where("serve_id in ?", req.ServeIds)
+	}
+
 	if req.ServeVersion != "" {
 		if ids, err := r.ServeRepo.GetBindEndpointIds(req.ServeId, req.ServeVersion); err != nil {
 			db = db.Where("id in ?", ids)
@@ -466,9 +470,26 @@ func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
 	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
 }
 
-func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, title string) (res model.Endpoint, err error) {
+func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, categoryId int64) (res model.Endpoint, err error) {
+	db := r.DB.Model(&model.Endpoint{}).
+		Where("source_type = ?", sourceType).
+		Where("project_id = ?", projectId).
+		Where("path = ?", path).
+		Where("serve_id = ? AND NOT deleted", serveId)
 
-	err = r.DB.First(&res, "source_type=? and project_id=? AND path = ? AND serve_id = ? AND title = ? AND NOT deleted", sourceType, projectId, path, serveId, title).Error
+	if categoryId > 0 {
+		categoryIds, err := r.BaseRepo.GetDescendantIds(uint(categoryId), model.Category{}.TableName(), serverConsts.EndpointCategory, int(projectId))
+		if err != nil {
+			return res, err
+		}
+		if len(categoryIds) > 0 {
+			db.Where("category_id IN (?)", categoryIds)
+		}
+	} else if categoryId == -1 {
+		db.Where("category_id = -1")
+	}
+
+	err = db.First(&res).Error
 
 	return
 
@@ -514,6 +535,18 @@ func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err err
 	err = r.DB.Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
 		UpdateColumns(map[string]interface{}{"changed_status": consts.Changed, "snapshot": snapshot, "changed_time": time.Now()}).Error
+
+	return
+}
+
+func (r *EndpointRepo) UpdateName(id uint, name string) (err error) {
+	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("title", name).Error
+}
+
+func (r *EndpointRepo) ChangeSnapShot(endpointId uint, snapshot string) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		UpdateColumn("snapshot", snapshot).Error
 
 	return
 }

@@ -14,8 +14,8 @@ type CategoryRepo struct {
 	ProjectRepo *ProjectRepo `inject:""`
 }
 
-func (r *CategoryRepo) GetTree(typ serverConsts.CategoryDiscriminator, projectId, serveId uint) (root *v1.Category, err error) {
-	pos, err := r.ListByProject(typ, projectId, serveId)
+func (r *CategoryRepo) GetTree(typ serverConsts.CategoryDiscriminator, projectId uint) (root *v1.Category, err error) {
+	pos, err := r.ListByProject(typ, projectId)
 	if err != nil {
 		return
 	}
@@ -33,15 +33,11 @@ func (r *CategoryRepo) GetTree(typ serverConsts.CategoryDiscriminator, projectId
 	return
 }
 
-func (r *CategoryRepo) ListByProject(typ serverConsts.CategoryDiscriminator, projectId, serveId uint) (pos []*model.Category, err error) {
+func (r *CategoryRepo) ListByProject(typ serverConsts.CategoryDiscriminator, projectId uint) (pos []*model.Category, err error) {
 	db := r.DB.
 		Where("project_id=?", projectId).
 		Where("type=?", typ).
 		Where("NOT deleted")
-
-	if serveId > 0 {
-		db.Where("serve_id=?", serveId)
-	}
 
 	err = db.
 		Order("parent_id ASC, ordr ASC").
@@ -274,7 +270,7 @@ func (r *CategoryRepo) GetChild(categories, result []*model.Category, parentId i
 }
 
 func (r *CategoryRepo) GetAllChild(typ serverConsts.CategoryDiscriminator, projectId uint, parentId int) (child []*model.Category, err error) {
-	pos, err := r.ListByProject(typ, projectId, 0)
+	pos, err := r.ListByProject(typ, projectId)
 	if err != nil || len(pos) == 0 {
 		return
 	}

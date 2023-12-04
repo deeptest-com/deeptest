@@ -250,7 +250,7 @@ func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDo
 		}
 	}
 
-	categories, err := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, projectId, 0)
+	categories, err := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, projectId)
 	for _, v := range categories {
 		uniqueId := "category_" + strconv.FormatInt(int64(v.ID), 10)
 		entityMap[uniqueId] = &serverDomain.EndpointCaseTree{

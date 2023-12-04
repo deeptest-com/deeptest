@@ -266,7 +266,7 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get functionDetails by class failed, response %v", resp)
 		return
 	}

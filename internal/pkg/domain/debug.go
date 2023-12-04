@@ -56,10 +56,10 @@ type DebugData struct {
 }
 
 type EnvDataToView struct {
-	ShareVars    []GlobalVar   `json:"shareVars"`
-	EnvVars      []GlobalVar   `json:"envVars"`
-	GlobalVars   []GlobalVar   `json:"globalVars"`
-	GlobalParams []GlobalParam `json:"globalParams"`
+	ShareVars  []GlobalVar `json:"shareVars"`
+	EnvVars    []GlobalVar `json:"envVars"`
+	GlobalVars []GlobalVar `json:"globalVars"`
+	//GlobalParams []GlobalParam `json:"globalParams"`
 }
 
 type Condition struct {

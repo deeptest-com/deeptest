@@ -31,8 +31,8 @@ type DiagnoseInterfaceService struct {
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
 
-func (s *DiagnoseInterfaceService) Load(projectId, serveId int) (ret []*serverDomain.DiagnoseInterface, err error) {
-	root, err := s.DiagnoseInterfaceRepo.GetTree(uint(projectId), uint(serveId))
+func (s *DiagnoseInterfaceService) Load(projectId int) (ret []*serverDomain.DiagnoseInterface, err error) {
+	root, err := s.DiagnoseInterfaceRepo.GetTree(uint(projectId))
 
 	if root != nil {
 		ret = root.Children

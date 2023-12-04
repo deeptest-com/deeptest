@@ -34,9 +34,8 @@ type DiagnoseInterfaceCtrl struct {
 // @Router	/api/v1/diagnoseInterfaces	[get]
 func (c *DiagnoseInterfaceCtrl) Load(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("projectId")
-	serveId, _ := ctx.URLParamInt("serveId")
 
-	data, err := c.DiagnoseInterfaceService.Load(projectId, serveId)
+	data, err := c.DiagnoseInterfaceService.Load(projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

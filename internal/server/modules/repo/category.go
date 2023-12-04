@@ -139,7 +139,7 @@ func (r *CategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId int, typ s
 
 		r.DB.Model(&model.Category{}).
 			Where("NOT deleted AND parent_id=? AND type = ? AND project_id = ? AND ordr > ?",
-				parentId, parentId, typ, brother.Ordr).
+				parentId, typ, projectId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
 		ordr = brother.Ordr + 1

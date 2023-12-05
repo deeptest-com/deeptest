@@ -149,6 +149,7 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	}
 
 	ret.Content = string(utf8Content)
+	ret.Content = strings.ReplaceAll(ret.Content, "\u0000", "")
 
 	return
 }

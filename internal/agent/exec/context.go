@@ -84,7 +84,7 @@ func EvaluateVariablePropExpressionValue(variable domain.ExecVariable, propExpre
 		ok = pass
 
 		if !ok {
-			ret.Value = ""
+			ret.Value = "extractor_err"
 		}
 	}
 

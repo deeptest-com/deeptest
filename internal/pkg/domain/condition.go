@@ -22,9 +22,9 @@ type ExtractorBase struct {
 
 	Default string `gorm:"default:''" json:"default"` // for cookie
 
-	Result       string              `json:"result"`
+	Result       string              `json:"result" gorm:"type:text"`
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
-	ResultMsg    string              `json:"resultMsg"`
+	ResultMsg    string              `json:"resultMsg" gorm:"type:text"`
 
 	ConditionId         uint                 `json:"conditionId"`
 	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to po id in domain object
@@ -48,10 +48,10 @@ type CheckpointBase struct {
 
 	Operator     consts.ComparisonOperator `json:"operator"`
 	Value        string                    `json:"value"`
-	ActualResult string                    `json:"actualResult"`
+	ActualResult string                    `json:"actualResult" gorm:"type:text"`
 
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
-	ResultMsg    string              `json:"resultMsg"`
+	ResultMsg    string              `json:"resultMsg" gorm:"type:text"`
 
 	ConditionId         uint                 `json:"conditionId"`
 	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to entity po id in domain object
@@ -81,10 +81,10 @@ type DatabaseOptBase struct {
 	Variable string                `json:"variable"`
 	Scope    consts.ExtractorScope `json:"scope" gorm:"default:public"`
 	JsonPath string                `json:"jsonPath"`
-	Result   string                `json:"result"`
+	Result   string                `json:"result" gorm:"type:text"`
 
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
-	ResultMsg    string              `json:"resultMsg"`
+	ResultMsg    string              `json:"resultMsg" gorm:"type:text"`
 
 	ConditionId         uint                 `json:"conditionId"`
 	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to entity po id in domain object

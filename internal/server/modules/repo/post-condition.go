@@ -28,8 +28,8 @@ type PostConditionRepo struct {
 
 func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory,
 	usedBy consts.UsedBy, forAlternativeCase string) (
-
 	pos []model.DebugPostCondition, err error) {
+
 	db := r.DB.Where("NOT deleted")
 
 	if debugInterfaceId > 0 {
@@ -64,6 +64,8 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 
 	if forAlternativeCase == "true" {
 		db.Where("is_for_benchmark_case")
+		db.Where("entity_type != ?", consts.ConditionTypeResponseDefine)
+
 	} else if forAlternativeCase == "false" {
 		db.Where("NOT is_for_benchmark_case")
 	}

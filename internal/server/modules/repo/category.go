@@ -101,6 +101,9 @@ func (r *CategoryRepo) hasChild(categories []*v1.Category, parent *v1.Category) 
 }
 
 func (r *CategoryRepo) Save(category *model.Category) (err error) {
+	if category != nil && category.ID == 0 && category.ParentId != 0 && category.Ordr == 0 {
+		category.Ordr = r.GetMaxOrder(uint(category.ParentId), category.Type, category.ProjectId)
+	}
 	err = r.DB.Save(category).Error
 
 	return
@@ -120,6 +123,7 @@ func (r *CategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId int, typ s
 
 	} else if pos == serverConsts.Before {
 		brother, _ := r.Get(targetId)
+		ordr = brother.Ordr
 		parentId = brother.ParentId
 
 		r.DB.Model(&model.Category{}).
@@ -127,15 +131,13 @@ func (r *CategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId int, typ s
 				parentId, typ, projectId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
-		ordr = brother.Ordr
-
 	} else if pos == serverConsts.After {
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
 		r.DB.Model(&model.Category{}).
 			Where("NOT deleted AND parent_id=? AND type = ? AND project_id = ? AND ordr > ?",
-				parentId, parentId, typ, brother.Ordr).
+				parentId, typ, projectId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
 		ordr = brother.Ordr + 1

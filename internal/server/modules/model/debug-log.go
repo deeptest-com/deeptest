@@ -79,6 +79,15 @@ func (ExecLogScript) TableName() string {
 	return "biz_exec_log_script"
 }
 
+type ExecLogDatabaseOpt struct {
+	DebugConditionDatabaseOpt
+	InvokeId uint `json:"invokeId"`
+}
+
+func (ExecLogDatabaseOpt) TableName() string {
+	return "biz_exec_log_database_opt"
+}
+
 type ExecLogResponseDefine struct {
 	DebugConditionResponseDefine
 	InvokeId uint `json:"invokeId"`

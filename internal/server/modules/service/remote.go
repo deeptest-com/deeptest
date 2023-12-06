@@ -33,7 +33,7 @@ func (s *RemoteService) LoginByOauth(req v1.LoginByOauthReq, baseUrl string) (re
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("login by oauth failed, response %v", resp)
 		return
 	}
@@ -74,7 +74,7 @@ func (s *RemoteService) GetTokenFromCode(req v1.GetTokenFromCodeReq, baseUrl str
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get token from code failed, response %v", resp)
 		return
 	}
@@ -122,7 +122,7 @@ func (s *RemoteService) FindClassByServiceCode(req v1.FindClassByServiceCodeReq,
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("find class by serviceCode failed, response %v", resp)
 		return
 	}
@@ -170,7 +170,7 @@ func (s *RemoteService) GetFunctionsByClass(req v1.GetFunctionsByClassReq, token
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get functions by class failed, response %v", resp)
 		return
 	}
@@ -218,7 +218,7 @@ func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("meta get method detail failed, response %v", resp)
 		return
 	}
@@ -266,7 +266,7 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get functionDetails by class failed, response %v", resp)
 		return
 	}

@@ -17,9 +17,10 @@ func (m *ExtractorModule) Party() module.WebModule {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		index.Get("/{id:uint}", m.ExtractorCtrl.Get).Name = "提取器详情"
-		index.Post("/quickCreate", m.ExtractorCtrl.QuickCreate).Name = "新建提取器"
 		index.Put("/", m.ExtractorCtrl.Update).Name = "更新提取器"
 		index.Delete("/{id:uint}", m.ExtractorCtrl.Delete).Name = "删除提取器"
+
+		index.Post("/quickCreate", m.ExtractorCtrl.QuickCreate).Name = "从代码编辑器快速创建提取器"
 
 		index.Post("/listExtractorVariableForCheckpoint", m.ExtractorCtrl.ListExtractorVariableForCheckpoint).Name = "提取器变量列表"
 	}

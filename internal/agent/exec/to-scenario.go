@@ -5,10 +5,12 @@ import (
 )
 
 type ScenarioExecReq struct {
-	ServerUrl     string `json:"serverUrl"`
-	Token         string `json:"token"`
-	ScenarioId    int    `json:"scenarioId"`
-	EnvironmentId int    `json:"environmentId"`
+	ServerUrl string `json:"serverUrl"`
+	Token     string `json:"token"`
+
+	ScenarioId int `json:"scenarioId"`
+
+	EnvironmentId int `json:"environmentId"`
 }
 
 type ScenarioExecObj struct {

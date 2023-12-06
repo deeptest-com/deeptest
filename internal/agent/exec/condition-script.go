@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	gojaUtils "github.com/aaronchen2k/deeptest/internal/pkg/goja"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
@@ -12,7 +13,9 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
+	"log"
 	"path/filepath"
+	"reflect"
 	"strings"
 )
 
@@ -65,7 +68,7 @@ func ExecScript(scriptObj *domain.ScriptBase, projectId uint) (err error) {
 
 func InitJsRuntime(projectId uint) {
 	if execVm.JsRuntime != nil {
-		jslibHelper.LoadAgentJslibs(execVm.JsRuntime, execRequire, projectId, ServerUrl, ServerToken)
+		jslibHelper.RefreshRemoteAgentJslibs(execVm.JsRuntime, execRequire, projectId, ServerUrl, ServerToken)
 		return
 	}
 
@@ -73,6 +76,8 @@ func InitJsRuntime(projectId uint) {
 
 	execVm.JsRuntime = goja.New()
 	execVm.JsRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
+
+	jslibHelper.LoadChaiJslibs(execVm.JsRuntime)
 
 	defineJsFuncs()
 	defineGoFuncs()
@@ -90,7 +95,7 @@ func InitJsRuntime(projectId uint) {
 	execVm.JsRuntime.Set("dt", dt)
 
 	// import other custom libs
-	jslibHelper.LoadAgentJslibs(execVm.JsRuntime, execRequire, 0, ServerUrl, ServerToken)
+	jslibHelper.RefreshRemoteAgentJslibs(execVm.JsRuntime, execRequire, 0, ServerUrl, ServerToken)
 }
 
 func GetReqValueFromGoja() (err error) {
@@ -167,9 +172,31 @@ func defineJsFuncs() (err error) {
 		}
 	})
 
+	// http request
+	err = execVm.JsRuntime.Set("sendRequest", func(data goja.Value, cb func(interface{}, interface{})) {
+		req := gojaUtils.GenRequest(data, execVm.JsRuntime)
+
+		resp, err2 := Invoke(&req)
+		cb(err2, resp)
+
+		log.Println("result")
+	})
+
+	// log
 	err = execVm.JsRuntime.Set("log", func(value interface{}) {
-		bytes, _ := json.Marshal(value)
-		logs = append(logs, string(bytes))
+		if value == nil {
+			logs = append(logs, "空")
+			return
+		}
+
+		typ := reflect.TypeOf(value).Name()
+
+		if typ == "string" {
+			logs = append(logs, value.(string))
+		} else {
+			bytes, _ := json.Marshal(value)
+			logs = append(logs, string(bytes))
+		}
 	})
 
 	return

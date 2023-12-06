@@ -86,7 +86,7 @@ func (p *Processor) Error(s *Session, err interface{}) {
 	p.Result.Detail = commonUtils.JsonEncode(detail)
 
 	p.AddResultToParent()
-	execUtils.SendExecMsg(p.Result, s.WsMsg)
+	execUtils.SendExecMsg(p.Result, consts.Processor, s.WsMsg)
 
 	//execUtils.SendExceptionMsg(s.WsMsg)
 }

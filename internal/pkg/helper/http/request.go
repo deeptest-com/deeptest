@@ -102,7 +102,7 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 
 	resp, err := client.Do(httpReq)
 	if err != nil {
-		wrapperErrInResp(consts.ServiceUnavailable, "请求错误", err.Error(), &ret)
+		wrapperErrInResp(consts.ServiceUnavailable.Int(), "请求错误", err.Error(), &ret)
 		_logUtils.Error(err.Error())
 		return
 	}
@@ -118,7 +118,7 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	endTime := time.Now().UnixMilli()
 	ret.Time = endTime - startTime
 
-	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
+	ret.StatusCode = resp.StatusCode
 	ret.StatusContent = resp.Status
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
 	ret.ContentLength = _stringUtils.ParseInt(resp.Header.Get(consts.ContentLength))
@@ -149,6 +149,7 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	}
 
 	ret.Content = string(utf8Content)
+	ret.Content = strings.ReplaceAll(ret.Content, "\u0000", "")
 
 	return
 }
@@ -177,7 +178,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	var dataBytes []byte
 
 	formDataContentType := ""
-	if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String()) {
+	if IsFormBody(bodyType) {
 		bodyFormData := genBodyFormData(req)
 
 		formDataWriter, _ := MultipartEncoder(bodyFormData)
@@ -185,11 +186,11 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 		dataBytes = formDataWriter.Payload.Bytes()
 
-	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeFormUrlencoded.String()) {
+	} else if IsFormUrlencodedBody(bodyType) {
 		bodyFormUrlencoded := genBodyFormUrlencoded(req)
 		dataBytes = []byte(bodyFormUrlencoded)
 
-	} else if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
+	} else if IsJsonBody(bodyType) {
 		// post json
 		dataBytes = []byte(reqBody)
 		if err != nil {
@@ -214,7 +215,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 	dealwithQueryParams(req, httpReq)
 	dealwithHeader(req, httpReq)
-	dealwithCookie(req, httpReq)
+	//dealwithCookie(req, httpReq)
 
 	// body type
 	if strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String()) {
@@ -229,7 +230,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 	resp, err := client.Do(httpReq)
 	if err != nil {
-		wrapperErrInResp(consts.ServiceUnavailable, "请求错误", err.Error(), &ret)
+		wrapperErrInResp(consts.ServiceUnavailable.Int(), "请求错误", err.Error(), &ret)
 		_logUtils.Error(err.Error())
 		return
 	}
@@ -244,7 +245,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 		return
 	}
 
-	ret.StatusCode = consts.HttpRespCode(resp.StatusCode)
+	ret.StatusCode = resp.StatusCode
 	ret.StatusContent = resp.Status
 
 	ret.ContentType = consts.HttpContentType(resp.Header.Get(consts.ContentType))
@@ -356,7 +357,7 @@ func UpdateUrl(url string) string {
 	return url
 }
 
-func wrapperErrInResp(code consts.HttpRespCode, statusContent string, content string, resp *domain.DebugResponse) {
+func wrapperErrInResp(code int, statusContent string, content string, resp *domain.DebugResponse) {
 	resp.StatusCode = code
 	resp.StatusContent = fmt.Sprintf("%d %s", code, statusContent)
 	resp.Content, _ = url.QueryUnescape(content)

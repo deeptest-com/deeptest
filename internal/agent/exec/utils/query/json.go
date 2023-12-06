@@ -1,13 +1,36 @@
 package queryUtils
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/antchfx/jsonquery"
 	"github.com/antchfx/xpath"
+	"github.com/oliveagle/jsonpath"
 	"strings"
 )
+
+func JsonPath(content string, expression string) (result string) {
+	var jsonData interface{}
+	json.Unmarshal([]byte(content), &jsonData)
+
+	obj, err := jsonpath.JsonPathLookup(jsonData, expression)
+
+	if err != nil || obj == nil {
+		result = consts.ExtractorErr
+		return
+	}
+
+	switch obj.(type) {
+	case string:
+		result = obj.(string)
+	default:
+		result = _stringUtils.JsonWithoutHtmlEscaped(obj)
+	}
+
+	return
+}
 
 func JsonQuery(content string, expression string) (result string) {
 	doc, err := jsonquery.Parse(strings.NewReader(content))

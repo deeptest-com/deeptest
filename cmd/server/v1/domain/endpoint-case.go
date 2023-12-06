@@ -54,43 +54,35 @@ type EndpointCaseSaveReq struct {
 	UsedBy              string `json:"usedBy"`
 
 	DebugData domain.DebugData `json:"debugData"`
+	CaseType  consts.CaseType  `json:"caseType"`
+	BaseCase  uint             `json:"baseCase"`
 }
 
-type EndpointCaseAlternativeSaveReq struct {
-	Prefix string                        `json:"prefix"`
-	Type   string                        `json:"type"`
-	BaseId int                           `json:"baseId"`
-	Values []casesHelper.AlternativeCase `json:"values"`
+type EndpointCaseBenchmarkCreateReq struct {
+	Type string `json:"type"`
+	Name string `json:"name"`
+
+	EndpointInterfaceId uint `json:"endpointInterfaceId"` // from a endpointInterface
+	BaseCaseId          int  `json:"baseCaseId"`          // from a exist case
 
 	CreateUserId   uint   `json:"createUserId"`
 	CreateUserName string `json:"createUserName"`
 }
 
-//type EndpointCaseAlternativeLoadReq struct {
-//	EndpointId uint              `json:"endpointId"`
-//	Method     consts.HttpMethod `json:"method"`
-//
-//	CreateUserId   uint   `json:"createUserId"`
-//	CreateUserName string `json:"createUserName"`
-//}
+type EndpointCaseFactorSaveReq struct {
+	Path   string `json:"path"`
+	Value  string `json:"value"`
+	CaseId int    `json:"caseId"`
+}
 
-//type EndpointCaseAlternativeGenerateReq struct {
-//	ID     uint   `json:"id"`
-//	Name   string `json:"name"`
-//	Method string `json:"method"`
-//	Desc   string `json:"desc"`
-//
-//	EndpointId uint `json:"endpointId"`
-//	ServeId    uint `json:"serveId"`
-//	ProjectId  uint `json:"projectId"`
-//
-//	CreateUserId   uint   `json:"createUserId"`
-//	CreateUserName string `json:"createUserName"`
-//
-//	DebugInterfaceId    int    `json:"debugInterfaceId"`
-//	EndpointInterfaceId int    `json:"endpointInterfaceId"`
-//	UsedBy              string `json:"usedBy"`
-//}
+type EndpointCaseAlternativeSaveReq struct {
+	Type   string                      `json:"type"`
+	BaseId int                         `json:"baseId"`
+	Values casesHelper.AlternativeCase `json:"values"`
+
+	CreateUserId   uint   `json:"createUserId"`
+	CreateUserName string `json:"createUserName"`
+}
 
 type EndpointCaseTree struct {
 	Key int64  `json:"key"`

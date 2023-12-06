@@ -80,3 +80,11 @@ type MessageExecResult struct {
 	UserId uint   `json:"userId"`
 	Name   string `json:"name"`
 }
+
+type CaseExecResult struct {
+	ID int `json:"id" yaml:"id"`
+
+	Name          string `json:"name"`
+	Desc          string `json:"desc,omitempty"`
+	EnvironmentId int    `json:"environmentId"`
+}

@@ -261,8 +261,17 @@ type UsedBy string
 const (
 	InterfaceDebug UsedBy = "interface_debug"
 	CaseDebug      UsedBy = "case_debug"
-	DiagnoseDebug  UsedBy = "diagnose_debug"
-	ScenarioDebug  UsedBy = "scenario_debug"
+	//AlternativeCaseDebug UsedBy = "alternative_case_debug"
+	DiagnoseDebug UsedBy = "diagnose_debug"
+	ScenarioDebug UsedBy = "scenario_debug"
+)
+
+type CaseType string
+
+const (
+	CaseDefault     CaseType = "default"
+	CaseBenchmark   CaseType = "benchmark"   // for alternative cases design
+	CaseAlternative CaseType = "alternative" // saved as independent case
 )
 
 type ProcessorInterfaceSrc string
@@ -288,6 +297,7 @@ const (
 	ConditionTypeExtractor      ConditionType = "extractor"
 	ConditionTypeCheckpoint     ConditionType = "checkpoint"
 	ConditionTypeScript         ConditionType = "script"
+	ConditionTypeDatabase       ConditionType = "databaseOpt"
 	ConditionTypeResponseDefine ConditionType = "responseDefine"
 )
 
@@ -313,6 +323,7 @@ type ExtractorType string
 
 const (
 	Boundary  ExtractorType = "boundary"
+	JSONPath  ExtractorType = "jsonpath"
 	JsonQuery ExtractorType = "jsonquery"
 	HtmlQuery ExtractorType = "htmlquery"
 	XmlQuery  ExtractorType = "xmlquery"
@@ -326,8 +337,11 @@ const (
 	ResponseStatus CheckpointType = "responseStatus"
 	ResponseHeader CheckpointType = "responseHeader"
 	ResponseBody   CheckpointType = "responseBody"
-	Extractor      CheckpointType = "extractor"
 	Judgement      CheckpointType = "judgement"
+	ExtractorVari  CheckpointType = "extractorVari"
+	Extractor      CheckpointType = "extractor"
+
+	Script CheckpointType = "script"
 )
 
 type ExtractorScope string
@@ -570,6 +584,7 @@ const (
 
 	ExecScenario ExecType = "execScenario"
 	ExecPlan     ExecType = "execPlan"
+	ExecCase     ExecType = "execCases"
 	ExecMessage  ExecType = "execMessage"
 )
 
@@ -813,6 +828,19 @@ const (
 )
 
 func (e AlternativeCaseType) String() string {
+	return string(e)
+}
+
+type DatabaseType string
+
+const (
+	DbTypeMySql      DatabaseType = "mysql"
+	DbTypeSqlServer  DatabaseType = "sqlserver"
+	DbTypePostgreSql DatabaseType = "postgreSql"
+	DbTypeOracle     DatabaseType = "oracle"
+)
+
+func (e DatabaseType) String() string {
 	return string(e)
 }
 

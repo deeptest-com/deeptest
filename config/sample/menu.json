@@ -98,6 +98,13 @@
     "parent":"project-setting"
   },
   {
+    "code":"project-setting-dbconn",
+    "title":"数据库连接设置",
+    "path":"/:projectNameAbbr/project-setting/dbconn",
+    "type":"menu",
+    "parent":"project-setting"
+  },
+  {
     "code":"project-setting-swaggerSync",
     "title":"自动同步",
     "path":"/:projectNameAbbr/project-setting/swaggerSync",

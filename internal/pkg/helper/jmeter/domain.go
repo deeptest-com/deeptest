@@ -1,5 +1,6 @@
 package jmeterHelper
 
+/*
 import (
 	"encoding/xml"
 )
@@ -80,3 +81,4 @@ type BoolProp struct {
 	Name  string `xml:"name,attr"`
 	Value string `xml:",chardata"`
 }
+*/

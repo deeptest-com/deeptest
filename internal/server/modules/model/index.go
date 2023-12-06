@@ -72,6 +72,7 @@ var (
 		&ExecLogExtractor{},
 		&ExecLogCheckpoint{},
 		&ExecLogScript{},
+		&ExecLogDatabaseOpt{},
 
 		&ComponentSchema{},
 		&ComponentSchemaSecurity{},
@@ -86,6 +87,7 @@ var (
 		&EndpointInterface{},
 		&EndpointCase{},
 		&EndpointCaseAlternative{},
+		&EndpointCaseAlternativeFactor{},
 		&EndpointInterfaceParam{},
 		&EndpointInterfaceCookie{},
 		&EndpointInterfaceHeader{},
@@ -113,6 +115,8 @@ var (
 		&ProjectMenu{},
 		&ProjectRecentlyVisited{},
 		&ProjectMemberAudit{},
+		&DatabaseConn{},
+		&DebugConditionDatabaseOpt{},
 
 		&SwaggerSync{},
 		&ProjectMockSetting{},

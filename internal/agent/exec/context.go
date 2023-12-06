@@ -21,8 +21,6 @@ var (
 	CurrScenarioProcessorId = uint(0)
 	CurrDebugInterfaceId    = uint(0)
 
-	//CachedShareVarByProcessorForRead map[uint]domain.VarKeyValuePair
-
 	ScopedVariables = map[uint][]domain.ExecVariable{} // for scenario and debug
 	ScopedCookies   = map[uint][]domain.ExecCookie{}   // only for scenario
 	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario (processId -> ancestorProcessIds)
@@ -72,12 +70,22 @@ func EvaluateVariablePropExpressionValue(variable domain.ExecVariable, propExpre
 		ret = variable
 		ret.Name = propExpression // set name from item to item.a
 
+		pass := true
 		if len(arr) > 1 {
 			variableProp := arr[1]
-			ret.Value = variable.Value.(domain.VarKeyValuePair)[variableProp]
+			obj, p := variable.Value.(domain.VarKeyValuePair)
+			if p {
+				ret.Value = obj[variableProp]
+			} else {
+				pass = false
+			}
 		}
 
-		ok = true
+		ok = pass
+
+		if !ok {
+			ret.Value = "extractor_err"
+		}
 	}
 
 	return

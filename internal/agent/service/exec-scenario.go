@@ -2,7 +2,6 @@ package service
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
@@ -88,19 +87,6 @@ func RestoreEntityFromRawAndSetParent(root *agentExec.Processor) (err error) {
 	for _, obj := range processorMap {
 		obj.Parent = processorMap[obj.ParentId]
 	}
-
-	return
-}
-
-func sendScenarioSubmitResult(rootId uint, wsMsg *websocket.Message) (err error) {
-	result := agentDomain.ScenarioExecResult{
-		ID:       -3,
-		ParentId: int(rootId),
-		Name:     "提交执行结果成功",
-		//Summary:  fmt.Sprintf("错误：%s", err.Error()),
-	}
-
-	execUtils.SendExecMsg(result, wsMsg)
 
 	return
 }

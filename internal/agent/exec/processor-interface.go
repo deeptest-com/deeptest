@@ -65,7 +65,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	entity.ExecPreConditions(processor, session)
 
 	// dealwith variables
-	ReplaceVariables(&baseRequest, consts.ScenarioDebug)
+	ReplaceVariables(&baseRequest)
 
 	// add cookies
 	DealwithCookies(&baseRequest, entity.ProcessorID)
@@ -89,7 +89,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		processor.Result.Summary = err.Error()
 		detail["result"] = entity.Response.Content
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
-		execUtils.SendErrorMsg(*processor.Result, session.WsMsg)
+		execUtils.SendErrorMsg(*processor.Result, consts.Processor, session.WsMsg)
 		processor.AddResultToParent()
 		return
 	}
@@ -102,7 +102,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		SetCookie(processor.ParentId, c.Name, c.Value, c.Domain, c.ExpireTime)
 	}
 
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
@@ -150,7 +150,12 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			extractorHelper.GenResultMsg(&extractorBase)
 
 			if extractorBase.ResultStatus == consts.Pass {
-				SetVariable(processor.ParentId, extractorBase.Variable, extractorBase.Result, consts.Public)
+				scopeId := processor.ParentId
+				if extractorBase.Scope == consts.Private { // put vari in its own scope if Private
+					scopeId = processor.ID
+				}
+
+				SetVariable(scopeId, extractorBase.Variable, extractorBase.Result, extractorBase.Scope)
 			}
 
 			interfaceExecCondition := domain.InterfaceExecCondition{
@@ -175,7 +180,30 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			}
 			interfaceExecCondition.Raw, _ = json.Marshal(scriptBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
-		} else if condition.Type == consts.ConditionTypeCheckpoint {
+		} else if condition.Type == consts.ConditionTypeResponseDefine {
+			var responseDefineBase domain.ResponseDefineBase
+			json.Unmarshal(condition.Raw, &responseDefineBase)
+			if responseDefineBase.Disabled {
+				continue
+			}
+
+			resp := entity.Response
+
+			err = ExecResponseDefine(&responseDefineBase, resp)
+
+			interfaceExecCondition := domain.InterfaceExecCondition{
+				Type: condition.Type,
+			}
+
+			interfaceExecCondition.Raw, _ = json.Marshal(responseDefineBase)
+			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
+
+			detail["responseDefine"] = map[string]interface{}{"resultStatus": responseDefineBase.ResultStatus, "resultMsg": responseDefineBase.ResultMsg}
+		}
+	}
+
+	for _, condition := range entity.PostConditions {
+		if condition.Type == consts.ConditionTypeCheckpoint {
 
 			var checkpointBase domain.CheckpointBase
 			json.Unmarshal(condition.Raw, &checkpointBase)
@@ -200,25 +228,6 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			detail["checkpoint"] = append(detail["checkpoint"].([]map[string]interface{}), map[string]interface{}{
 				"resultStatus": checkpointBase.ResultStatus, "resultMsg": checkpointBase.ResultMsg,
 			})
-		} else if condition.Type == consts.ConditionTypeResponseDefine {
-			var responseDefineBase domain.ResponseDefineBase
-			json.Unmarshal(condition.Raw, &responseDefineBase)
-			if responseDefineBase.Disabled {
-				continue
-			}
-
-			resp := entity.Response
-
-			err = ExecResponseDefine(&responseDefineBase, resp)
-
-			interfaceExecCondition := domain.InterfaceExecCondition{
-				Type: condition.Type,
-			}
-
-			interfaceExecCondition.Raw, _ = json.Marshal(responseDefineBase)
-			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
-
-			detail["responseDefine"] = map[string]interface{}{"resultStatus": responseDefineBase.ResultStatus, "resultMsg": responseDefineBase.ResultMsg}
 		}
 	}
 

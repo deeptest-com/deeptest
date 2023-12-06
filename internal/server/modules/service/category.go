@@ -17,8 +17,8 @@ type CategoryService struct {
 	ScenarioRepo    *repo.ScenarioRepo `inject:""`
 }
 
-func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projectId, serveId int) (root *v1.Category, err error) {
-	root, err = s.CategoryRepo.GetTree(typ, uint(projectId), uint(serveId))
+func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projectId int) (root *v1.Category, err error) {
+	root, err = s.CategoryRepo.GetTree(typ, uint(projectId))
 	root.Children = append(root.Children, &v1.Category{Id: -1, Name: "未分类", ParentId: root.Id, Slots: iris.Map{"icon": "icon"}})
 	s.mountCount(root, typ, uint(projectId))
 	return

@@ -59,14 +59,3 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 
 	return
 }
-
-func sendPlanSubmitResult(planId int, wsMsg *websocket.Message) (err error) {
-	result := agentDomain.PlanExecResult{
-		ID:   planId,
-		Name: "提交计划执行结果成功",
-		//Summary:  fmt.Sprintf("错误：%s", err.Error()),
-	}
-	execUtils.SendExecMsg(result, wsMsg)
-
-	return
-}

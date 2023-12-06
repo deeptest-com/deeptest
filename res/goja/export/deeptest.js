@@ -18,7 +18,11 @@ variables.set.prototype = {};
 variables.clear = clearVariable;
 variables.clear.prototype = {};
 
-module.exports = {
+module.exports = { // under dt.
     datapool,
     variables,
+
+    test: test,
+    expect: expect,
+    sendRequest: sendRequest,
 }

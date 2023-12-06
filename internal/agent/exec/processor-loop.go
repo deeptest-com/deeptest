@@ -52,7 +52,7 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 	}
 
 	processor.Result.Detail = commonUtils.JsonEncode(entity)
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
 
@@ -121,7 +121,7 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 		result := agentDomain.ScenarioExecResult{}
 		result.WillBreak, result.Summary, result.Detail = entity.getBeak()
 		if result.WillBreak {
-			execUtils.SendExecMsg(result, session.WsMsg)
+			execUtils.SendExecMsg(result, consts.Processor, session.WsMsg)
 			break
 		}
 	}
@@ -153,7 +153,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 				WillBreak: true,
 				Summary:   fmt.Sprintf("条件%s满足，跳出循环。", expression),
 			}
-			execUtils.SendExecMsg(result, session.WsMsg)
+			execUtils.SendExecMsg(result, consts.Processor, session.WsMsg)
 
 			break
 		}

@@ -64,7 +64,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 	}
 	detail := map[string]interface{}{"name": entity.Name, "content": entity.Content, "result": result, "output": scriptBase.Output}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

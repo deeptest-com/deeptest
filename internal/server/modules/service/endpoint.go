@@ -254,7 +254,7 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *openapi.Dirs, components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) (err error) {
 
 	if dirs.Id == 0 || dirs.Id == -1 {
-		root, _ := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, req.ProjectId, 0)
+		root, _ := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, req.ProjectId)
 		dirs.Id = int64(root[0].ID)
 	}
 	s.createDirs(dirs, req)

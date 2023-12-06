@@ -55,6 +55,12 @@ func (r *JslibRepo) Save(po *model.SysJslib) (err error) {
 }
 
 func (r *JslibRepo) UpdateName(to v1.JslibReq) (err error) {
+	exist, _ := r.GetByName(to.Id, to.ProjectId, to.Name)
+	if exist.ID > 0 {
+		err = errors.New("名称不能和已存在的记录相同")
+		return
+	}
+
 	err = r.DB.Model(&model.SysJslib{}).
 		Where("id = ?", to.Id).
 		Updates(map[string]interface{}{"name": to.Name, "update_user": to.UpdateUser}).Error

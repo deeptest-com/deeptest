@@ -15,6 +15,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.ServerToken = call.Token
 	req := GetInterfaceToExec(call)
 
+	// execution
 	agentExec.CurrDebugInterfaceId = req.DebugData.DebugInterfaceId
 	agentExec.CurrScenarioProcessorId = 0 // not in a scenario
 
@@ -26,7 +27,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.InitDebugExecContext()
 	agentExec.InitJsRuntime(call.Data.ProjectId)
 
-	agentExec.ExecPreConditions(req) // must before PreRequest, since it will update the vari in script
+	agentExec.ExecPreConditions(&req) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(&req.DebugData)
 
 	agentExec.SetReqValueToGoja(req.DebugData.BaseRequest)
@@ -40,7 +41,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	resultResp, err = RequestInterface(&req.DebugData)
 
 	agentExec.SetRespValueToGoja(resultResp)
-	agentExec.ExecPostConditions(req, resultResp)
+	agentExec.ExecPostConditions(&req, resultResp)
 	agentExec.GetRespValueFromGoja()
 	PostRequest(originalReqUri, &req.DebugData)
 
@@ -58,7 +59,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 
 func PreRequest(req *domain.DebugData) (originalReqUri string, err error) {
 	// replace variables
-	agentExec.ReplaceVariables(&req.BaseRequest, consts.InterfaceDebug)
+	agentExec.ReplaceVariables(&req.BaseRequest)
 
 	// gen url
 	originalReqUri = agentExec.ReplacePathParams(req.Url, req.PathParams)
@@ -72,11 +73,19 @@ func PreRequest(req *domain.DebugData) (originalReqUri string, err error) {
 	req.BaseRequest.FullUrlToDisplay = req.BaseRequest.Url
 	logUtils.Info("requested url: " + req.BaseRequest.Url)
 
+	// download form file item
+	for index, item := range req.BodyFormData {
+		if item.Type == consts.FormDataTypeFile {
+			req.BodyFormData[index].Value, err = agentExec.DownloadUploadedFile(item.Value)
+		}
+	}
+
 	return
 }
 
 func PostRequest(originalReqUri string, req *domain.DebugData) (err error) {
-	req.BaseRequest.Url = originalReqUri // rollback for saved to db
+	// rollback for saved to db
+	req.BaseRequest.Url = originalReqUri
 
 	return
 }

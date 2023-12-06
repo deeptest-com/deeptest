@@ -78,7 +78,7 @@ func genBodyFormUrlencoded(req domain.BaseRequest) (ret string) {
 		mp[key] = true
 	}
 
-	formData.Encode()
+	ret = formData.Encode()
 
 	return
 }
@@ -117,13 +117,13 @@ func dealwithHeader(req domain.BaseRequest, httpReq *http.Request) {
 	addAuthorInfo(req, httpReq)
 }
 
-func dealwithCookie(req domain.BaseRequest, httpReq *http.Request) {
-	httpReq.Header.Set("User-Agent", consts.UserAgentChrome)
-	httpReq.Header.Set("Origin", "DEEPTEST")
-
-	for _, h := range req.Headers {
-		if !h.Disabled && h.Name != "" && httpReq.Header.Get(h.Name) == "" {
-			httpReq.Header.Set(h.Name, h.Value)
-		}
-	}
-}
+//func dealwithCookie(req domain.BaseRequest, httpReq *http.Request) {
+//	httpReq.Header.Set("User-Agent", consts.UserAgentChrome)
+//	httpReq.Header.Set("Origin", "DEEPTEST")
+//
+//	for _, h := range req.Headers {
+//		if !h.Disabled && h.Name != "" && httpReq.Header.Get(h.Name) == "" {
+//			httpReq.Header.Set(h.Name, h.Value)
+//		}
+//	}
+//}

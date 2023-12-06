@@ -70,7 +70,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 	}
 
 	processor.AddResultToParent()
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

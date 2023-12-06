@@ -15,7 +15,7 @@ type ExtractorCtrl struct {
 	BaseCtrl
 }
 
-// Get 详情
+// Get 		详情
 // @Tags	提取器
 // @summary	提取器详情
 // @accept 	application/json

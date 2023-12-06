@@ -304,8 +304,8 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectI
 	}
 
 	if resp.StatusCode != consts.OK {
-		logUtils.Infof("get project info failed failed, response %v", resp)
-		err = fmt.Errorf("get project info failed failed, response %v", resp)
+		logUtils.Infof("get project info failed, response %v", resp)
+		err = fmt.Errorf("get project info failed, response %v", resp)
 		return
 	}
 
@@ -320,12 +320,70 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectI
 	}
 
 	if respContent.Code != 200 {
-		logUtils.Infof("get project info failed failed, response %v", resp)
-		err = fmt.Errorf("get project info failed failed, response %v", resp)
+		logUtils.Infof("get project info failed, response %v", resp)
+		err = fmt.Errorf("get project info failed, response %v", resp)
 		return
 	}
 
 	ret = respContent.Data.ProjectInfo
+
+	return
+}
+
+// GetUserButtonPermissions TODO 临时参数，要改
+func (s *RemoteService) GetUserButtonPermissions(token, spaceCode string) (ret []string, err error) {
+	url := fmt.Sprintf("%s/api/v1/sysMenus/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
+
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers: []domain.Header{
+			{
+				Name:  "X-Token",
+				Value: token,
+			},
+		},
+		QueryParams: []domain.Param{
+			{
+				Name:  "typeStr",
+				Value: "[30]",
+			},
+			{
+				Name:  "projectId",
+				Value: "25",
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get UserButtonPermissions failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get UserButtonPermissions failed, response %v", resp)
+		err = fmt.Errorf("get UserButtonPermissions failed failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []string
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("getUserButtonPermissions failed, response %v", resp)
+		err = fmt.Errorf("get UserButtonPermissions failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
 
 	return
 }

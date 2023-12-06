@@ -38,3 +38,17 @@ func (c *ProjectMenuCtrl) UserMenuList(ctx iris.Context) {
 	ret := iris.Map{"result": data}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
 }
+
+func (c *ProjectMenuCtrl) UserButtonList(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+	projectId, err := ctx.URLParamInt("currProjectId")
+	xToken := ctx.GetHeader("X-Token")
+
+	data, err := c.ProjectMenuService.GetUserButtonList(uint(projectId), userId, xToken)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}

@@ -16,6 +16,8 @@ func (m *ProjectMenuModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 		index.Get("/userMenuList", m.ProjectMenuCtrl.UserMenuList).Name = "项目中用户的左侧菜单栏列表"
+		index.Get("/userButtonList", m.ProjectMenuCtrl.UserButtonList).Name = "项目中用户的按钮列表"
+
 	}
 	return module.NewModule("/projects/menus", handler)
 }

@@ -22,7 +22,9 @@ type ExtractorBase struct {
 
 	Default string `gorm:"default:''" json:"default"` // for cookie
 
-	Result       string              `json:"result" gorm:"type:text"`
+	Result     string                     `json:"result" gorm:"type:text"`
+	ResultType consts.ExtractorResultType `json:"resultType"`
+
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg" gorm:"type:text"`
 

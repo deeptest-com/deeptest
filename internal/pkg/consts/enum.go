@@ -351,6 +351,14 @@ const (
 	Public  ExtractorScope = "public"  // shared by other interfaces in serve OR scenario
 )
 
+type ExtractorResultType string
+
+const (
+	ExtractorResultTypeString ExtractorResultType = "string"
+	ExtractorResultTypeNumber ExtractorResultType = "number"
+	ExtractorResultTypeObject ExtractorResultType = "object"
+)
+
 type ComparisonOperator string
 
 const (

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/474420502/requests"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
@@ -430,25 +429,8 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 }
 
 func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) {
-	valueType := builtin.InterfaceType(req.Value)
-	if _commUtils.InSlice(req.FieldName, []string{"status", "categoryId"}) {
-		if !_commUtils.InSlice(valueType, []string{"int", "float64"}) {
-			err = errors.New("数据类型错误")
-		}
-
-		var value int64
-		switch valueType {
-		case "int":
-			value = int64(req.Value.(int))
-		case "float64":
-			value = int64(req.Value.(float64))
-		}
-
-		if req.FieldName == "status" {
-			err = s.EndpointRepo.BatchUpdateStatus(req.EndpointIds, value)
-		} else if req.FieldName == "categoryId" {
-			err = s.EndpointRepo.BatchUpdateCategory(req.EndpointIds, value)
-		}
+	if _commUtils.InSlice(req.FieldName, []string{"status", "categoryId", "serveId"}) {
+		err = s.EndpointRepo.BatchUpdate(req.EndpointIds, map[string]interface{}{_commUtils.Camel2Case(req.FieldName): req.Value})
 	} else {
 		err = errors.New("字段错误")
 	}

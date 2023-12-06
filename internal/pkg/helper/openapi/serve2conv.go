@@ -237,6 +237,9 @@ func (s *serve2conv) schemaValue(param model.EndpointInterfaceParam) (schema *op
 	if param.IsGlobal {
 		schema.Extensions = map[string]interface{}{"isGlobal": param.IsGlobal}
 	}
+	for _, item := range param.Enum {
+		schema.Enum = append(schema.Enum, item)
+	}
 	return
 }
 func (s *serve2conv) schemaPathValue(param model.EndpointPathParam) (schema *openapi3.Schema) {

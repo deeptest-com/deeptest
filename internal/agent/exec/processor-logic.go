@@ -66,7 +66,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	processor.Result.ResultStatus, processor.Result.Summary = getResultStatus(pass)
 	detail["result"] = pass
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 	processor.AddResultToParent()
 
 	executedProcessorIds := map[uint]bool{}

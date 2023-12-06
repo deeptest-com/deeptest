@@ -24,6 +24,20 @@ func GetScript(name ScriptType) string {
 		}
 		return DeepTestDeclare
 
+	} else if name == DeclareDeepTestPost {
+		if DeepTestDeclarePost == "" {
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest-post.d.ts"))
+			DeepTestDeclarePost = string(bytes)
+		}
+		return DeepTestDeclarePost
+
+	} else if name == DeclareChai {
+		if DeepTestDeclareChai == "" {
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "chai.d.ts"))
+			DeepTestDeclareChai = string(bytes)
+		}
+		return DeepTestDeclareChai
+
 	} else if name == ScriptMock {
 		if MockScript == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "mock.js"))
@@ -94,8 +108,10 @@ func GenResultMsg(po *domain.ScriptBase) {
 }
 
 var (
-	DeepTestScript  = ""
-	DeepTestDeclare = ""
+	DeepTestScript      = ""
+	DeepTestDeclare     = ""
+	DeepTestDeclarePost = ""
+	DeepTestDeclareChai = ""
 
 	MockScript  = ""
 	MockDeclare = ""
@@ -111,8 +127,10 @@ var (
 type ScriptType string
 
 const (
-	ScriptDeepTest  = "deeptest"
-	DeclareDeepTest = "deeptest.d"
+	ScriptDeepTest      = "deeptest"
+	DeclareDeepTest     = "deeptest.d"
+	DeclareDeepTestPost = "deeptest-post.d"
+	DeclareChai         = "chai.d"
 
 	ScriptMock  = "mock"
 	DeclareMock = "mock.d"

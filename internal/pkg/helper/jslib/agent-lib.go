@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	gojaPlugin "github.com/aaronchen2k/deeptest/internal/pkg/goja/plugin"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
@@ -12,6 +13,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
+	"log"
 	"path/filepath"
 	"sync"
 	"time"
@@ -21,7 +23,43 @@ var (
 	AgentLoadedLibs sync.Map
 )
 
-func LoadAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, projectId uint, serverUrl, token string) {
+func LoadChaiJslibs(runtime *goja.Runtime) {
+	// check method
+	err := runtime.Set("check", func(ok bool, name, msg string) {
+		log.Println(fmt.Sprintf("%t, %s, %s", ok, name, msg))
+	})
+
+	// test method
+	script := `function test(name, cb) {
+		try {
+			cb();
+		} catch(err){
+			log('Assertion Failed [' + name + '] ' + err + '.')
+			check(false, name, err)
+			return
+		}
+
+		log('Assertion Pass [' + name + '].')
+		check(true, name, '')
+	}`
+	_, err = runtime.RunString(script)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	// chai method
+	runtime.Set("require", func(call goja.FunctionCall) goja.Value { return goja.Undefined() })
+	runtime.Set("global", runtime.GlobalObject())
+
+	agentVu := gojaPlugin.AgentVU{
+		RuntimeField: runtime,
+	}
+	chaiModule := gojaPlugin.NewChai()
+	chaiInst := chaiModule.NewModuleInstance(&agentVu)
+	runtime.Set("expect", chaiInst.Exports().Named["expect"])
+}
+
+func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, projectId uint, serverUrl, token string) {
 	libs := getJslibsFromServer(projectId, serverUrl, token)
 
 	for _, lib := range libs {
@@ -85,7 +123,7 @@ func getJslibsFromServer(projectId uint, serverUrl, token string) (libs []Jslib)
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get Jslibs obj failed, response %v", resp)
 		return
 	}

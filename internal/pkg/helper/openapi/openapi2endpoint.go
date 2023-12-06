@@ -366,6 +366,10 @@ func (o *openapi2endpoint) parameterValue(schema *openapi3.Schema, param *model.
 	param.MinItems = schema.MinItems
 	param.UniqueItems = schema.UniqueItems
 	param.Type = schema.Type
+	for _, item := range schema.Enum {
+		param.Enum = append(param.Enum, fmt.Sprintf("%v", item))
+	}
+
 }
 
 func (o *openapi2endpoint) schemaRefAddType(schema *openapi3.SchemaRef) {

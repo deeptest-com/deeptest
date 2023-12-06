@@ -47,7 +47,8 @@ func (r *CheckpointRepo) Save(checkpoint *model.DebugConditionCheckpoint) (err e
 	return
 }
 func (r *CheckpointRepo) UpdateDesc(po *model.DebugConditionCheckpoint) (err error) {
-	desc := checkpointHelpper.GenDesc(po.Type, po.Operator, po.Value, po.Expression, po.ExtractorVariable)
+	desc := checkpointHelpper.GenDesc(po.Type, po.Operator, po.Value, po.Expression,
+		po.ExtractorVariable, po.ExtractorType, po.ExtractorExpression)
 	values := map[string]interface{}{
 		"desc": desc,
 	}
@@ -135,6 +136,19 @@ func (r *CheckpointRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogCh
 		First(&ret).Error
 
 	ret.ConditionEntityType = consts.ConditionTypeCheckpoint
+
+	return
+}
+
+func (r *CheckpointRepo) GetLogFromScriptAssert(conditionId, invokeId uint) (ret []model.ExecLogCheckpoint, err error) {
+	err = r.DB.
+		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
+		Where("NOT deleted").
+		Find(&ret).Error
+
+	for index, _ := range ret {
+		ret[index].ConditionEntityType = consts.ConditionTypeCheckpoint
+	}
 
 	return
 }

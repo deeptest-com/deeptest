@@ -80,21 +80,6 @@ func Init() *AgentServer {
 	}
 }
 
-// GetStaticPath 获取静态路径
-func (s *AgentServer) GetStaticPath() string {
-	return s.staticPath
-}
-
-// GetWebPath 获取前端路径
-func (s *AgentServer) GetWebPath() string {
-	return s.webPath
-}
-
-// GetAddr 获取web服务地址
-func (s *AgentServer) GetAddr() string {
-	return s.addr
-}
-
 // AddModule 添加模块
 func (s *AgentServer) AddModule(module ...module.WebModule) {
 	s.modules = append(s.modules, module...)

@@ -69,14 +69,38 @@ func (s *ExtractorService) Delete(reqId uint) (err error) {
 }
 
 func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugInfo) (variables []domain.Variable, err error) {
-	extractorConditions, err := s.PostConditionRepo.ListExtractor(req.DebugInterfaceId, req.EndpointInterfaceId)
-
-	var conditionIds []uint
+	extractorConditions, err := s.PostConditionRepo.ListExtractor(req)
+	var conditionIds1 []uint
 	for _, item := range extractorConditions {
-		conditionIds = append(conditionIds, item.ID)
+		conditionIds1 = append(conditionIds1, item.ID)
 	}
+	variables1, err := s.ExtractorRepo.ListExtractorVariableByConditions(conditionIds1)
 
-	variables, err = s.ExtractorRepo.ListExtractorVariableByInterface(conditionIds)
+	var conditionIds2 []uint
+	dbOptConditions, err := s.PostConditionRepo.ListDbOpt(req)
+	for _, item := range dbOptConditions {
+		conditionIds2 = append(conditionIds2, item.ID)
+	}
+	variables2, err := s.ExtractorRepo.ListDbOptVariableByConditions(conditionIds2)
+
+	// combine
+	mp := map[string]bool{}
+	for _, item := range variables1 {
+		if item.Name == "" || mp[item.Name] {
+			continue
+		}
+
+		mp[item.Name] = true
+		variables = append(variables, item)
+	}
+	for _, item := range variables2 {
+		if item.Name == "" || mp[item.Name] {
+			continue
+		}
+
+		mp[item.Name] = true
+		variables = append(variables, item)
+	}
 
 	return
 }

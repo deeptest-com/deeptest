@@ -95,6 +95,23 @@
     {
       "id": "notContain",
       "translation": "不包含"
+    },
+
+    {
+      "id": "mysql",
+      "translation": "MySQL"
+    },
+    {
+      "id": "sqlserver",
+      "translation": "SQLServer"
+    },
+    {
+      "id": "postgreSql",
+      "translation": "PostgreSQL"
+    },
+    {
+      "id": "oracle",
+      "translation": "Oracle"
     }
   ]
 }

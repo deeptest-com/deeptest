@@ -8,8 +8,8 @@ type DebugResponse struct {
 	Id       uint `json:"id"`
 	InvokeId uint `json:"invokeId"`
 
-	StatusCode    consts.HttpRespCode `json:"statusCode"`
-	StatusContent string              `json:"statusContent"`
+	StatusCode    int    `json:"statusCode"`
+	StatusContent string `json:"statusContent"`
 
 	Headers []Header     `gorm:"-" json:"headers"`
 	Cookies []ExecCookie `gorm:"-" json:"cookies"`
@@ -23,6 +23,9 @@ type DebugResponse struct {
 	ContentLength  int                     `json:"contentLength"`
 
 	Time int64 `json:"time"`
+
+	ConsoleLogs   []interface{} `json:"consoleLogs,omitempty"`
+	AssertionLogs []interface{} `json:"assertionLogs,omitempty"`
 }
 
 type BaseRequest struct {
@@ -33,8 +36,8 @@ type BaseRequest struct {
 	QueryParams  []Param           ` json:"queryParams"`
 	PathParams   []Param           ` json:"pathParams"`
 	Headers      []Header          ` json:"headers"`
-	Cookies      []ExecCookie      ` json:"cookies"` // from cookie processor in scenario
-	GlobalParams []GlobalParam     ` json:"globalParams"`
+	Cookies      []ExecCookie      ` json:"cookies"`      // from cookie processor in scenario
+	GlobalParams []GlobalParam     ` json:"globalParams"` // for retrieve data from webpage, not used in exec
 
 	Body               string                   `json:"body"`
 	BodyFormData       []BodyFormDataItem       `json:"bodyFormData"`

@@ -10,7 +10,7 @@ import (
 
 func LoadForQueryParams(params openapi3.Parameters) (category *AlternativeCase) {
 	category = &AlternativeCase{
-		Title:    "查询参数",
+		Title:    Category["query"],
 		Path:     AddFix(consts.ParamInQuery.String()),
 		Category: consts.AlternativeCaseCategory,
 		IsDir:    true,

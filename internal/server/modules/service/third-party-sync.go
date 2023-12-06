@@ -129,6 +129,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 					continue
 				}
 
+				fmt.Println(functionDetail)
 				title := classCode + "-" + functionDetail.Code
 				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, int64(categoryId))
 				if err != nil && err != gorm.ErrRecordNotFound {
@@ -401,7 +402,7 @@ func (s *ThirdPartySyncService) AddThirdPartySyncCron() {
 
 	s.Cron.RemoveTask(name)
 
-	s.Cron.AddCommonTask(name, "* */12 * * *", func() {
+	s.Cron.AddCommonTask(name, "* * * * *", func() {
 		err := s.SaveData()
 		if err != nil {
 			logUtils.Error("third party 定时导入任务失败，错误原因：" + err.Error())

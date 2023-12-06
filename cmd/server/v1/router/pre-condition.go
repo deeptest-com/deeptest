@@ -21,6 +21,7 @@ func (m *PreConditionModule) Party() module.WebModule {
 		index.Delete("/{id:uint}", m.PreConditionCtrl.Delete).Name = "删除前置条件"
 		index.Post("/{id:uint}/disable", m.PreConditionCtrl.Disable).Name = "禁用前置条件"
 		index.Post("/move", m.PreConditionCtrl.Move).Name = "移动后置条件"
+		index.Get("/resetForCase", m.PreConditionCtrl.ResetForCase).Name = "重制用例的前置条件"
 	}
 
 	return module.NewModule("/preConditions", handler)

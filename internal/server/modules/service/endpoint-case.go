@@ -39,8 +39,8 @@ func (s *EndpointCaseService) List(endpointId uint) (ret []model.EndpointCase, e
 	return
 }
 
-func (s *EndpointCaseService) Get(id int) (ret model.EndpointCase, err error) {
-	ret, err = s.EndpointCaseRepo.Get(uint(id))
+func (s *EndpointCaseService) Get(id uint) (ret model.EndpointCase, err error) {
+	ret, err = s.EndpointCaseRepo.Get(id)
 	// its debug data will load in webpage
 
 	return
@@ -62,12 +62,23 @@ func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (case
 	return
 }
 
-func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po model.EndpointCase, err error) {
+func (s *EndpointCaseService) Copy(id int, newNamePrefix string, userId uint, userName string,
+	forAlternativeCase bool) (po model.EndpointCase, err error) {
+
 	endpointCase, _ := s.EndpointCaseRepo.Get(uint(id))
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
+	debugData.UsedBy = consts.CaseDebug
 
+	if newNamePrefix == "" {
+		newNamePrefix = "copy-" + endpointCase.Name
+	}
+
+	caseType := endpointCase.CaseType
+	if caseType == consts.CaseBenchmark {
+		caseType = consts.CaseDefault
+	}
 	req := serverDomain.EndpointCaseSaveReq{
-		Name:       "copy-" + endpointCase.Name,
+		Name:       newNamePrefix,
 		EndpointId: endpointCase.EndpointId,
 		ServeId:    endpointCase.ServeId,
 		ProjectId:  endpointCase.ProjectId,
@@ -77,6 +88,8 @@ func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po mod
 
 		Method:    endpointCase.Method,
 		DebugData: debugData,
+		CaseType:  caseType,
+		BaseCase:  endpointCase.BaseCase,
 	}
 
 	s.CopyValueFromRequest(&po, req)
@@ -98,8 +111,8 @@ func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po mod
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
 	// clone conditions
-	s.PreConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID)
-	s.PostConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID)
+	s.PreConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy, forAlternativeCase)
+	s.PostConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy, forAlternativeCase)
 
 	// save case
 	po.ProjectId = endpoint.ProjectId
@@ -126,9 +139,10 @@ func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCa
 	}
 
 	// save debug data
+	srcDebugUsedBy := req.DebugData.UsedBy
 	req.DebugData.UsedBy = consts.CaseDebug
 	srcDebugInterfaceId := req.DebugData.DebugInterfaceId
-	debugInterface, err := s.DebugInterfaceService.SaveAs(req.DebugData, srcDebugInterfaceId)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(req.DebugData, srcDebugInterfaceId, srcDebugUsedBy)
 
 	// save case
 	s.CopyValueFromRequest(&po, req)
@@ -236,7 +250,7 @@ func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDo
 		}
 	}
 
-	categories, err := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, projectId, 0)
+	categories, err := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, projectId)
 	for _, v := range categories {
 		uniqueId := "category_" + strconv.FormatInt(int64(v.ID), 10)
 		entityMap[uniqueId] = &serverDomain.EndpointCaseTree{
@@ -293,5 +307,11 @@ func (s *EndpointCaseService) GetNodeCaseNum(res []*serverDomain.EndpointCaseTre
 			v.Count += num
 		}
 	}
+	return
+}
+
+func (s *EndpointCaseService) ListByCaseType(endpointId uint, caseType consts.CaseType) (ret []model.EndpointCase, err error) {
+	ret, err = s.EndpointCaseRepo.ListByCaseType(endpointId, caseType)
+
 	return
 }

@@ -214,23 +214,25 @@ func (s *ServeService) Example2Schema(data string) (schema schemaHelper.Schema) 
 }
 
 func (s *ServeService) DeleteSchemaById(id uint) (err error) {
-	//TODO
-	var schema model.ComponentSchema
-	schema, err = s.ServeRepo.GetSchema(id)
-	if err != nil {
-		return err
-	}
+	/*
+		var schema model.ComponentSchema
+		schema, err = s.ServeRepo.GetSchema(id)
+		if err != nil {
+			return err
+		}
 
-	var count int64
-	count, err = s.EndpointInterfaceRepo.GetCountByRef(schema.Ref)
-	if err != nil {
-		return
-	}
 
-	if count > 0 {
-		err = fmt.Errorf("the schema has been referenced and cannot be deleted")
-		return
-	}
+		var count int64
+		count, err = s.EndpointInterfaceRepo.GetCountByRef(schema.Ref)
+		if err != nil {
+			return
+		}
+
+		if count > 0 {
+			err = fmt.Errorf("the schema has been referenced and cannot be deleted")
+			return
+		}
+	*/
 
 	err = s.ServeRepo.DeleteSchemaById(id)
 	return

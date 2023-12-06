@@ -139,7 +139,7 @@ func (r *ExtractorRepo) CreateLog(extractor domain.ExtractorBase) (
 	return
 }
 
-func (r *ExtractorRepo) ListExtractorVariableByInterface(conditionIds []uint) (ret []domain.Variable, err error) {
+func (r *ExtractorRepo) ListExtractorVariableByConditions(conditionIds []uint) (ret []domain.Variable, err error) {
 	err = r.DB.Model(&model.DebugConditionExtractor{}).
 		Select("id, variable AS name, result AS value").
 		Where("condition_id IN (?)", conditionIds).
@@ -149,7 +149,7 @@ func (r *ExtractorRepo) ListExtractorVariableByInterface(conditionIds []uint) (r
 
 	return
 }
-func (r *ExtractorRepo) ListDbOptVariableByInterface(conditionIds []uint) (ret []domain.Variable, err error) {
+func (r *ExtractorRepo) ListDbOptVariableByConditions(conditionIds []uint) (ret []domain.Variable, err error) {
 	err = r.DB.Model(&model.DebugConditionDatabaseOpt{}).
 		Select("id, variable AS name, result AS value").
 		Where("condition_id IN (?)", conditionIds).

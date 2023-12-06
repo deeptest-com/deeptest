@@ -8,9 +8,11 @@ import (
 type DebugInfo struct {
 	DebugInterfaceId    uint `json:"debugInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"` // EndpointInterface without DebugInterface init
-	CaseInterfaceId     uint `json:"caseInterfaceId"`     // load by endpoint case
 	ScenarioProcessorId uint `json:"scenarioProcessorId"` // used to load vars by scenario processor
 	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"` // load by interface diagnose
+
+	CaseInterfaceId    uint `json:"caseInterfaceId"`    // load by endpoint case
+	IsForBenchmarkCase bool `json:"isForBenchmarkCase"` // load by endpoint case
 
 	UsedBy        consts.UsedBy `json:"usedBy"`
 	UserId        uint          `json:"userId"`        // used by loading debugData for display

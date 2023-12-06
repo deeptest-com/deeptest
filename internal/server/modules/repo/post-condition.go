@@ -77,15 +77,21 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 	return
 }
 
-func (r *PostConditionRepo) ListExtractor(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugPostCondition, err error) {
+func (r *PostConditionRepo) ListExtractor(req domain.DebugInfo) (
+	pos []model.DebugPostCondition, err error) {
+
 	db := r.DB.
 		Where("NOT deleted").
 		Order("ordr ASC")
 
-	if debugInterfaceId > 0 {
-		db.Where("debug_interface_id=?", debugInterfaceId)
+	if req.DebugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", req.DebugInterfaceId)
 	} else {
-		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
+		db.Where("endpoint_interface_id=? AND debug_interface_id=?", req.EndpointInterfaceId, 0)
+	}
+
+	if req.UsedBy == consts.CaseDebug {
+		db.Where("is_for_benchmark_case = ?", req.IsForBenchmarkCase)
 	}
 
 	db.Where("entity_type = ?", consts.ConditionTypeExtractor)
@@ -95,15 +101,19 @@ func (r *PostConditionRepo) ListExtractor(debugInterfaceId, endpointInterfaceId 
 	return
 }
 
-func (r *PostConditionRepo) ListDbOpt(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugPostCondition, err error) {
+func (r *PostConditionRepo) ListDbOpt(req domain.DebugInfo) (pos []model.DebugPostCondition, err error) {
 	db := r.DB.
 		Where("NOT deleted").
 		Order("ordr ASC")
 
-	if debugInterfaceId > 0 {
-		db.Where("debug_interface_id=?", debugInterfaceId)
+	if req.DebugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", req.DebugInterfaceId)
 	} else {
-		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
+		db.Where("endpoint_interface_id=? AND debug_interface_id=?", req.EndpointInterfaceId, 0)
+	}
+
+	if req.UsedBy == consts.CaseDebug {
+		db.Where("is_for_benchmark_case = ?", req.IsForBenchmarkCase)
 	}
 
 	db.Where("entity_type = ?", consts.ConditionTypeDatabase)

@@ -480,8 +480,13 @@ func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.Alter
 
 	s.loadConditionsAndScene(&execObj, envId)
 
+	title := cs.Title
+	if cs.Sample != "" {
+		title += fmt.Sprintf(": %v", cs.Sample)
+	}
+
 	child := agentExec.CaseExecProcessor{
-		Title:    fmt.Sprintf("%s: %v", cs.Title, cs.Sample),
+		Title:    title,
 		Category: fmt.Sprintf("%v", cs.Category),
 		Key:      cs.Key,
 

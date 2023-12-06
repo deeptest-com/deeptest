@@ -79,11 +79,12 @@ type DatabaseOptBase struct {
 	DatabaseConnBase
 	DatabaseConnIsDisabled bool `json:"databaseConnIsDisabled" gorm:"-"`
 
-	Sql      string                `json:"sql"`
-	Variable string                `json:"variable"`
-	Scope    consts.ExtractorScope `json:"scope" gorm:"default:public"`
-	JsonPath string                `json:"jsonPath"`
-	Result   string                `json:"result" gorm:"type:text"`
+	Sql        string                     `json:"sql"`
+	Variable   string                     `json:"variable"`
+	Scope      consts.ExtractorScope      `json:"scope" gorm:"default:public"`
+	JsonPath   string                     `json:"jsonPath"`
+	Result     string                     `json:"result" gorm:"type:text"`
+	ResultType consts.ExtractorResultType `json:"resultType"`
 
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg" gorm:"type:text"`

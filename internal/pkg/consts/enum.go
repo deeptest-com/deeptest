@@ -356,6 +356,7 @@ type ExtractorResultType string
 const (
 	ExtractorResultTypeString ExtractorResultType = "string"
 	ExtractorResultTypeNumber ExtractorResultType = "number"
+	ExtractorResultTypeBool   ExtractorResultType = "bool"
 	ExtractorResultTypeObject ExtractorResultType = "object"
 )
 

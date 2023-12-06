@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func JsonPath(content string, expression string) (result string) {
+func JsonPath(content string, expression string) (result string, resultType consts.ExtractorResultType) {
 	var jsonData interface{}
 	json.Unmarshal([]byte(content), &jsonData)
 
@@ -25,14 +25,25 @@ func JsonPath(content string, expression string) (result string) {
 	switch obj.(type) {
 	case string:
 		result = obj.(string)
+		resultType = consts.ExtractorResultTypeString
+
+	case float64:
+		result = fmt.Sprintf("%d", obj)
+		resultType = consts.ExtractorResultTypeNumber
+
+	case bool:
+		result = fmt.Sprintf("%t", obj)
+		resultType = consts.ExtractorResultTypeBool
+
 	default:
 		result = _stringUtils.JsonWithoutHtmlEscaped(obj)
+		resultType = consts.ExtractorResultTypeObject
 	}
 
 	return
 }
 
-func JsonQuery(content string, expression string) (result string) {
+func JsonQuery(content string, expression string) (result string, resultType consts.ExtractorResultType) {
 	doc, err := jsonquery.Parse(strings.NewReader(content))
 	if err != nil {
 		result = consts.ContentErr
@@ -59,8 +70,19 @@ func JsonQuery(content string, expression string) (result string) {
 	switch obj.(type) {
 	case string:
 		result = obj.(string)
+		resultType = consts.ExtractorResultTypeString
+
+	case float64:
+		result = fmt.Sprintf("%d", obj)
+		resultType = consts.ExtractorResultTypeNumber
+
+	case bool:
+		result = fmt.Sprintf("%t", obj)
+		resultType = consts.ExtractorResultTypeBool
+
 	default:
 		result = _stringUtils.JsonWithoutHtmlEscaped(obj)
+		resultType = consts.ExtractorResultTypeObject
 	}
 
 	return

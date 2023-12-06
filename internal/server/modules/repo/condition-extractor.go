@@ -105,6 +105,7 @@ func (r *ExtractorRepo) UpdateResult(extractor domain.ExtractorBase) (err error)
 	values := map[string]interface{}{}
 	if extractor.Result != "" {
 		values["result"] = extractor.Result
+		values["result_type"] = extractor.ResultType
 	}
 	if extractor.Scope != "" {
 		values["scope"] = extractor.Scope

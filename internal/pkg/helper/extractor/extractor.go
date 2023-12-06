@@ -12,6 +12,7 @@ import (
 
 func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err error) {
 	result := ""
+	resultType := consts.ExtractorResultTypeString
 
 	if extractor.Src == consts.Header {
 		for _, h := range resp.Headers {
@@ -31,27 +32,30 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 	} else {
 		extractor.Expression = strings.TrimSpace(extractor.Expression)
 
-		if httpHelper.IsJsonContent(resp.ContentType.String()) {
+		if httpHelper.IsJsonContent(resp.ContentType.String()) { // json path
 			if extractor.Type == consts.JSONPath {
-				result = queryUtils.JsonPath(resp.Content, extractor.Expression)
+				result, resultType = queryUtils.JsonPath(resp.Content, extractor.Expression)
 			} else if extractor.Type == consts.JsonQuery {
-				result = queryUtils.JsonQuery(resp.Content, extractor.Expression)
+				result, resultType = queryUtils.JsonQuery(resp.Content, extractor.Expression)
 			}
 
-		} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
+		} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery { // html query
 			result = queryUtils.HtmlQuery(resp.Content, extractor.Expression)
 
-		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
+		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery { // html query
 			result = queryUtils.XmlQuery(resp.Content, extractor.Expression)
 
-		} else if extractor.Type == consts.Boundary && (extractor.BoundaryStart != "" || extractor.BoundaryEnd != "") {
+		} else if extractor.Type == consts.Boundary && (extractor.BoundaryStart != "" || extractor.BoundaryEnd != "") { // boundary
 			result = queryUtils.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
 				extractor.BoundaryIndex, extractor.BoundaryIncluded)
-		} else if extractor.Type == consts.Regx {
+
+		} else if extractor.Type == consts.Regx { // regx
 			result = queryUtils.RegxQuery(resp.Content, extractor.Expression)
+
 		}
 	}
 
+	extractor.ResultType = resultType
 	extractor.Result = strings.TrimSpace(result)
 	extractor.ResultStatus = consts.Pass
 	if extractor.Result == "" {

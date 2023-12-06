@@ -30,8 +30,8 @@ func (s *ParserJsonService) ParseJson(req *v1.ParserRequest) (ret v1.ParserRespo
 
 	expr = strings.Replace(expr, consts.DeepestKey, req.SelectContent, 1)
 
-	result := queryHelper.JsonQuery(req.DocContent, expr)
-	fmt.Printf("%s: %v", expr, result)
+	result, resultType := queryHelper.JsonQuery(req.DocContent, expr)
+	fmt.Printf("%s: %v, %v", expr, result, resultType)
 
 	ret = v1.ParserResponse{
 		SelectionType: consts.NodeProp,

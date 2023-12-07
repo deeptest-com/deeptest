@@ -20,6 +20,7 @@ func init() {
 		"object":  "object",
 		"integer": "number",
 		"":        "null",
+		"any":     "any",
 	}
 }
 

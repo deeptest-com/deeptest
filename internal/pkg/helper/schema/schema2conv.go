@@ -225,6 +225,10 @@ func (s *Schema2conv) SchemaComponents(schema SchemaRef, components Components) 
 		components[ref] = component
 	}
 
+	if schema.Value == nil {
+		return
+	}
+
 	for _, item := range schema.Value.AnyOf {
 		s.SchemaComponents(*item, components)
 	}

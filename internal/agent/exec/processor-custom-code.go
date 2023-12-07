@@ -52,7 +52,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 	//scriptBase.VariableSettings = VariableSettings
 
 	for _, item := range VariableSettings {
-		SetVariable(processor.ParentId, item.Name, item.Value, consts.Public)
+		SetVariable(processor.ParentId, item.Name, item.Value, consts.ExtractorResultTypeObject, consts.Public)
 	}
 
 	processor.Result.Summary = scriptBase.ResultStatus.String()

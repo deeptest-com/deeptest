@@ -88,7 +88,7 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 				break
 			}
 
-			SetVariable(processor.ID, iterator.VariableName, item, consts.Public)
+			SetVariable(processor.ID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public)
 
 			round := ""
 

@@ -5,8 +5,9 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 type ShareVariable struct {
 	BaseModel
 
-	Name  string `json:"name"`
-	Value string `gorm:"type:text" json:"value"`
+	Name      string                     `json:"name"`
+	Value     string                     `gorm:"type:text" json:"value"`
+	ValueType consts.ExtractorResultType `json:"valueType"`
 
 	InvokeId            uint `gorm:"default:0" json:"invokeId"`
 	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`

@@ -3,6 +3,7 @@ package extractorHelper
 import (
 	"fmt"
 	queryUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
+	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
@@ -11,7 +12,7 @@ import (
 )
 
 func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err error) {
-	result := ""
+	var result interface{}
 	resultType := consts.ExtractorResultTypeString
 
 	if extractor.Src == consts.Header {
@@ -34,7 +35,7 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 
 		if httpHelper.IsJsonContent(resp.ContentType.String()) { // json path
 			if extractor.Type == consts.JSONPath {
-				result, resultType = queryUtils.JsonPath(resp.Content, extractor.Expression)
+				result, resultType, err = queryUtils.JsonPath(resp.Content, extractor.Expression)
 			} else if extractor.Type == consts.JsonQuery {
 				result, resultType = queryUtils.JsonQuery(resp.Content, extractor.Expression)
 			}
@@ -56,7 +57,7 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 	}
 
 	extractor.ResultType = resultType
-	extractor.Result = strings.TrimSpace(result)
+	extractor.Result = strings.TrimSpace(valueUtils.InterfaceToStr(result))
 	extractor.ResultStatus = consts.Pass
 	if extractor.Result == "" {
 		extractor.ResultStatus = consts.Fail

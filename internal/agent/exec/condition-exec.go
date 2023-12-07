@@ -87,7 +87,7 @@ func DealwithExtractorCondition(condition domain.InterfaceExecCondition, resp do
 	extractorHelper.GenResultMsg(&extractorBase)
 
 	if extractorBase.ResultStatus == consts.Pass {
-		SetVariable(0, extractorBase.Variable, extractorBase.Result, extractorBase.Scope)
+		SetVariable(0, extractorBase.Variable, extractorBase.Result, extractorBase.ResultType, extractorBase.Scope)
 	} else {
 		*status = consts.Fail
 	}
@@ -196,7 +196,7 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition, status *
 	databaseOptHelpper.GenResultMsg(&databaseOptBase)
 
 	if databaseOptBase.JsonPath != "" && databaseOptBase.Variable != "" && *status == consts.Pass {
-		SetVariable(0, databaseOptBase.Variable, databaseOptBase.Result, consts.Public)
+		SetVariable(0, databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType, consts.Public)
 	} else {
 		*status = consts.Fail
 	}

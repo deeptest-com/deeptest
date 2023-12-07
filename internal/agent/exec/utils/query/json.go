@@ -4,16 +4,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/antchfx/jsonquery"
 	"github.com/antchfx/xpath"
 	"github.com/oliveagle/jsonpath"
 	"strings"
 )
 
-func JsonPath(content string, expression string) (result string, resultType consts.ExtractorResultType) {
+func JsonPath(content string, expression string) (result interface{}, resultType consts.ExtractorResultType, err error) {
+	if content == "" || expression == "" {
+		result = consts.ExtractorErr
+		return
+	}
+
 	var jsonData interface{}
-	json.Unmarshal([]byte(content), &jsonData)
+	err = json.Unmarshal([]byte(content), &jsonData)
+	if err != nil {
+		result = consts.ExtractorErr
+		return
+	}
 
 	obj, err := jsonpath.JsonPathLookup(jsonData, expression)
 
@@ -22,28 +31,12 @@ func JsonPath(content string, expression string) (result string, resultType cons
 		return
 	}
 
-	switch obj.(type) {
-	case string:
-		result = obj.(string)
-		resultType = consts.ExtractorResultTypeString
-
-	case float64:
-		result = fmt.Sprintf("%d", obj)
-		resultType = consts.ExtractorResultTypeNumber
-
-	case bool:
-		result = fmt.Sprintf("%t", obj)
-		resultType = consts.ExtractorResultTypeBool
-
-	default:
-		result = _stringUtils.JsonWithoutHtmlEscaped(obj)
-		resultType = consts.ExtractorResultTypeObject
-	}
+	result, resultType = commUtils.GetValueInfo(obj)
 
 	return
 }
 
-func JsonQuery(content string, expression string) (result string, resultType consts.ExtractorResultType) {
+func JsonQuery(content string, expression string) (result interface{}, resultType consts.ExtractorResultType) {
 	doc, err := jsonquery.Parse(strings.NewReader(content))
 	if err != nil {
 		result = consts.ContentErr
@@ -67,23 +60,7 @@ func JsonQuery(content string, expression string) (result string, resultType con
 
 	obj := elem.Value()
 
-	switch obj.(type) {
-	case string:
-		result = obj.(string)
-		resultType = consts.ExtractorResultTypeString
-
-	case float64:
-		result = fmt.Sprintf("%d", obj)
-		resultType = consts.ExtractorResultTypeNumber
-
-	case bool:
-		result = fmt.Sprintf("%t", obj)
-		resultType = consts.ExtractorResultTypeBool
-
-	default:
-		result = _stringUtils.JsonWithoutHtmlEscaped(obj)
-		resultType = consts.ExtractorResultTypeObject
-	}
+	result, resultType = commUtils.GetValueInfo(obj)
 
 	return
 }

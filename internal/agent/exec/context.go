@@ -1,9 +1,10 @@
 package agentExec
 
 import (
+	queryUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
-	"strings"
 )
 
 var (
@@ -63,28 +64,25 @@ func GetValidScopeIds(id uint) (ret *[]uint) {
 // like {name.prop}
 func EvaluateVariablePropExpressionValue(variable domain.ExecVariable, propExpression string) (
 	ret domain.ExecVariable, ok bool) {
-	arr := strings.Split(propExpression, ".")
-	variableName := arr[0]
+
+	variableName, jsonPathExpression, isJsonPath := commUtils.IsJsonPathExpression(propExpression)
 
 	if variable.Name == variableName {
 		ret = variable
 		ret.Name = propExpression // set name from item to item.a
 
-		pass := true
-		if len(arr) > 1 {
-			variableProp := arr[1]
-			obj, p := variable.Value.(domain.VarKeyValuePair)
-			if p {
-				ret.Value = obj[variableProp]
-			} else {
-				pass = false
+		ok = true
+
+		if isJsonPath {
+			jsn := commUtils.ObjectToStrAsVariValue(variable.Value)
+
+			var err error
+			ret.Value, ret.ValueType, err =
+				queryUtils.JsonPath(jsn, jsonPathExpression)
+
+			if err != nil {
+				ok = false
 			}
-		}
-
-		ok = pass
-
-		if !ok {
-			ret.Value = "extractor_err"
 		}
 	}
 

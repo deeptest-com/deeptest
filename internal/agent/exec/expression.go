@@ -80,17 +80,15 @@ func convertGovaluateParamAndExpressionForProcessor(params domain.VarKeyValuePai
 	convertParams = map[string]interface{}{}
 	convertExpr = expr
 
+	paramIndex := 0
+
 	for key, val := range params {
-		newKey := key
-
-		arr := strings.Split(key, ".")
-		if len(arr) > 1 { // like item.prop1
-			newKey = strings.Join(arr, "_")
-
-			convertExpr = strings.ReplaceAll(convertExpr, key, newKey)
-		}
+		newKey := fmt.Sprintf("p___%d", paramIndex)
 
 		convertParams[newKey] = val
+		convertExpr = strings.ReplaceAll(convertExpr, key, newKey)
+
+		paramIndex += 1
 	}
 
 	return
@@ -128,13 +126,13 @@ func generateGovaluateParamsByScope(expression string, scopeId uint) (ret domain
 func generateGovaluateParamsWithVariables(expression string) (ret domain.VarKeyValuePair, err error) {
 	ret = domain.VarKeyValuePair{}
 
-	variables := commUtils.GetVariablesInExpressionPlaceholder(expression)
+	variNames := commUtils.GetVariablesInExpressionPlaceholder(expression)
 
-	for _, varName := range variables {
-		varNameWithoutPlus := strings.TrimLeft(varName, "+")
+	for _, varName := range variNames {
+		variNameWithoutPlus := strings.TrimLeft(varName, "+")
 
-		vari, _ := GetVariable(CurrScenarioProcessorId, varNameWithoutPlus)
-		variValueStr := valueUtils.InterfaceToStr(vari.Value)
+		vari, _ := GetVariable(CurrScenarioProcessorId, variNameWithoutPlus)
+		variValueStr := commUtils.ObjectToStrAsVariValue(vari.Value)
 
 		var val interface{}
 		if strings.Index(varName, "+") == 0 { // is a number like ${+id}
@@ -143,7 +141,7 @@ func generateGovaluateParamsWithVariables(expression string) (ret domain.VarKeyV
 			val = variValueStr
 		}
 
-		ret[varNameWithoutPlus] = val
+		ret[variNameWithoutPlus] = val
 	}
 
 	return

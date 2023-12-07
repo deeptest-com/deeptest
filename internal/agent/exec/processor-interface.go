@@ -155,7 +155,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 					scopeId = processor.ID
 				}
 
-				SetVariable(scopeId, extractorBase.Variable, extractorBase.Result, extractorBase.Scope)
+				SetVariable(scopeId, extractorBase.Variable, extractorBase.Result, extractorBase.ResultType, extractorBase.Scope)
 			}
 
 			interfaceExecCondition := domain.InterfaceExecCondition{

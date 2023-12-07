@@ -137,12 +137,12 @@ func defineJsFuncs() (err error) {
 		vari, _ := GetVariable(scopeId, name)
 		return vari.Value
 	})
-	err = execVm.JsRuntime.Set("setVariable", func(name, val string) {
+	err = execVm.JsRuntime.Set("setVariable", func(name string, val interface{}) {
 		var scopeId uint
 		if CurrScenarioProcessor != nil {
 			scopeId = CurrScenarioProcessor.ParentId
 		}
-		ret, err := SetVariable(scopeId, name, val, consts.Public)
+		ret, err := SetVariable(scopeId, name, val, consts.ExtractorResultTypeObject, consts.Public)
 
 		if err == nil {
 			VariableSettings = append(VariableSettings, ret)

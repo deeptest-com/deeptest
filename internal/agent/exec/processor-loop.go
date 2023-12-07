@@ -90,7 +90,7 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 			execUtils.SendExecMsg(msg, session.WsMsg)
 		*/
 
-		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
+		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public)
 
 		round := ""
 		for _, child := range processor.Children {

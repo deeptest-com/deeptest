@@ -50,15 +50,18 @@ func GetVariable(processorId uint, nameOrExpr string) (ret domain.ExecVariable, 
 
 // SetVariable
 // @Param	processorId	int			true	"Processor Id, 0 if NOT executed by a scenario processor"
-func SetVariable(processorId uint, variableName string, variableValue interface{}, scope consts.ExtractorScope) (
+func SetVariable(processorId uint, variableName string, variableValue interface{}, variableType consts.ExtractorResultType, scope consts.ExtractorScope) (
 	newVariable domain.ExecVariable, err error) {
 
 	found := false
 
+	//value, valueType := commUtils.GetValueInfo(variableValue)
+
 	newVariable = domain.ExecVariable{
-		Name:  variableName,
-		Value: variableValue,
-		Scope: scope,
+		Name:      variableName,
+		Value:     variableValue,
+		ValueType: variableType,
+		Scope:     scope,
 	}
 
 	allValidIds := &[]uint{uint(0)}

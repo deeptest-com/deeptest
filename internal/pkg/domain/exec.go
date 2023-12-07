@@ -6,10 +6,11 @@ import (
 )
 
 type ExecVariable struct {
-	Id         uint        `json:"id"`
-	Name       string      `json:"name"`
-	Value      interface{} `json:"value"`
-	Expression string      `json:"expression"`
+	Id         uint                       `json:"id"`
+	Name       string                     `json:"name"`
+	Value      interface{}                `json:"value"`
+	ValueType  consts.ExtractorResultType `json:"valueType"`
+	Expression string                     `json:"expression"`
 
 	InterfaceId uint                  `json:"interfaceId"`
 	Scope       consts.ExtractorScope `json:"isShare"`

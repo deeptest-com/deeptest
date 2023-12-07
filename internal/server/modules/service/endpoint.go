@@ -70,7 +70,7 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 	//	_ = s.SendEndpointMessage(endpoint.ProjectId, endpoint.ID, userId)
 	//}()
 
-	s.DebugInterfaceRepo.SyncPath(ret.ID, endpoint.Path, ret.Path)
+	s.DebugInterfaceRepo.SyncPath(ret.ID, ret.ServeId, endpoint.Path, ret.Path)
 
 	return endpoint.ID, err
 }

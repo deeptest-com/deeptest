@@ -103,7 +103,7 @@ func Init() {
 		}
 	})
 
-	if err := v.Unmarshal(&CONFIG); err != nil {
+	if err := VIPER.Unmarshal(&CONFIG); err != nil {
 		fmt.Println(err)
 	}
 

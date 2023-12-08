@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/emirpasic/gods/maps"
+	"math/rand"
 	"net"
 	"os"
 	"os/user"
@@ -356,4 +357,13 @@ func Sha256(src string) string {
 	m.Write([]byte(src))
 	res := hex.EncodeToString(m.Sum(nil))
 	return res
+}
+
+func RandStr(n int) string {
+	var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	b := make([]rune, n)
+	for i := range b {
+		b[i] = letters[rand.Intn(len(letters))]
+	}
+	return string(b)
 }

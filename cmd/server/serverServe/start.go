@@ -64,7 +64,7 @@ func Start() {
 		staticPath:        config.CONFIG.System.StaticPath,
 		webPath:           config.CONFIG.System.WebPath,
 		idleConnClosed:    idleConnClosed,
-		globalMiddlewares: []context.Handler{middleware.Error()},
+		globalMiddlewares: []context.Handler{middleware.Error(), middleware.UserAuth()},
 	}
 
 	server.InjectModule()

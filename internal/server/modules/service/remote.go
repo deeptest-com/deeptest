@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
@@ -239,6 +240,55 @@ func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token
 	return
 }
 
+func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string, baseUrl string) (ret []v1.GetFunctionDetailsByClassResData, err error) {
+	url := fmt.Sprintf("%s/levault/meta/metaClassMethod/metaGetClassMessages", baseUrl)
+
+	headers := make([]domain.Header, 0)
+	headers = append(headers, domain.Header{
+		Name:  "Token",
+		Value: token,
+	})
+
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  headers,
+		QueryParams: []domain.Param{
+			{
+				Name:  "className",
+				Value: classCode,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("get functionDetails by class failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get functionDetails by class failed, response %v", resp)
+		return
+	}
+
+	respContent := v1.GetFunctionDetailsByClassRes{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+		return
+	}
+
+	if respContent.Mfail != "0" {
+		logUtils.Infof("get functions by class failed, response %v", resp.Content)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
 func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo, err error) {
 	url := fmt.Sprintf("%s/api/v1/user/getUserInfo", config.CONFIG.ThirdParty.Url)
 
@@ -261,7 +311,7 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo, err 
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("meta get method detail failed, response %v", resp)
 		err = fmt.Errorf("meta get method detail failed, response %v", resp)
 		return
@@ -302,7 +352,7 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectI
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get project info failed failed, response %v", resp)
 		err = fmt.Errorf("get project info failed failed, response %v", resp)
 		return

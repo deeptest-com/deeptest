@@ -713,16 +713,18 @@ func (r *DebugInterfaceRepo) GetGlobalParams(id uint) (po []model.DebugInterface
 	return
 }
 
-func (r *DebugInterfaceRepo) SyncPath(endpointId uint, newPath, oldPath string) {
+func (r *DebugInterfaceRepo) SyncPath(endpointId, serveId uint, newPath, oldPath string) {
 	if endpointId == 0 {
 		return
 	}
+
 	interfaceIds, err := r.EndpointInterfaceRepo.ListIdByEndpoint(endpointId)
 	if err != nil {
 		return
 	}
 	if len(interfaceIds) > 0 {
 		r.UpdateDefinePath(interfaceIds, newPath, oldPath)
+		r.UpdateServeId(interfaceIds, serveId)
 	}
 }
 
@@ -732,5 +734,29 @@ func (r *DebugInterfaceRepo) UpdateDefinePath(ids []uint, newPath, oldPath strin
 		Where("endpoint_interface_id in ? and url = ? and scenario_processor_id = 0 and diagnose_interface_id = 0", ids, oldPath).
 		Update("url", newPath).
 		Error
+	return
+}
+
+func (r *DebugInterfaceRepo) UpdateServeId(ids []uint, serveId uint) (err error) {
+	err = r.DB.Model(&model.DebugInterface{}).
+		Where("endpoint_interface_id in ?", ids).
+		Update("serve_id", serveId).
+		Error
+	return
+}
+
+func (r *DebugInterfaceRepo) SyncServeId(endpointIds []uint, serveId uint) (err error) {
+	if len(endpointIds) == 0 {
+		return
+	}
+
+	interfaceIds, err := r.EndpointInterfaceRepo.ListIdByEndpoints(endpointIds)
+	if err != nil {
+		return
+	}
+	if len(interfaceIds) > 0 {
+		err = r.UpdateServeId(interfaceIds, serveId)
+	}
+
 	return
 }

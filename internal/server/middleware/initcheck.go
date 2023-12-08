@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"net/http"
@@ -16,6 +17,7 @@ func InitCheck() iris.Handler {
 		if dao.GetDB() == nil || (config.CONFIG.System.CacheType == "redis" && config.CACHE == nil) {
 			ctx.StopWithJSON(http.StatusOK, _domain.Response{Code: _domain.NeedInitErr.Code, Data: nil, Msg: _domain.NeedInitErr.Msg})
 		} else {
+			cache.SetCache("host", ctx.Request().Header.Get("Origin"), -1)
 			ctx.Next()
 		}
 

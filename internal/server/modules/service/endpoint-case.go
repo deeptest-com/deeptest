@@ -280,7 +280,7 @@ func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDo
 	}
 
 	ret = s.MapToTree(entityMap, "category_"+strconv.FormatInt(int64(categories[0].ID), 10))
-	s.GetNodeCaseNum(ret)
+	s.GetNodeCaseNum(ret, 0)
 	return
 }
 
@@ -294,19 +294,28 @@ func (s *EndpointCaseService) MapToTree(mapData map[string]*serverDomain.Endpoin
 	return
 }
 
-func (s *EndpointCaseService) GetNodeCaseNum(res []*serverDomain.EndpointCaseTree) (num int64) {
-	for _, v := range res {
+func (s *EndpointCaseService) doGetNodeCaseNum(req []*serverDomain.EndpointCaseTree, oldNum int64) (num int64) {
+	num = oldNum
+	for k, v := range req {
 		if v.Type == serverConsts.EndpointCaseTreeTypeCase {
-			num = 1
-			v.Count = 0
+			num += 1
+			req[k].Count = 0
 		} else if v.Type == serverConsts.EndpointCaseTreeTypeEndpoint {
 			num += int64(len(v.Children))
-			v.Count = int64(len(v.Children))
+			req[k].Count = int64(len(v.Children))
 		} else {
-			num = s.GetNodeCaseNum(v.Children)
-			v.Count += num
+			num += s.doGetNodeCaseNum(v.Children, v.Count)
+			req[k].Count = num
 		}
 	}
+	return
+}
+
+func (s *EndpointCaseService) GetNodeCaseNum(res []*serverDomain.EndpointCaseTree, oldNum int64) (num int64) {
+	for k, v := range res {
+		res[k].Count = s.doGetNodeCaseNum(v.Children, oldNum)
+	}
+
 	return
 }
 

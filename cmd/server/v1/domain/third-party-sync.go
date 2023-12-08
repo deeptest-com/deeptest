@@ -103,3 +103,11 @@ type GetFunctionDetailsByClassResData struct {
 	Name        string `json:"name"`
 	MessageType int    `json:"messageType"` // 0：内部方法，不能被前端调用 1：外部方法，可以被前端调用
 }
+
+type UserInfo struct {
+	username string
+	WxName   string
+	RealName string
+	Mail     string
+	Password string
+}

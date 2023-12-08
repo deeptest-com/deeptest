@@ -164,7 +164,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 	jar := genCookies(req)
 
-	reqBody := req.Body
+	reqBody := commUtils.CompressedJson(req.Body)
 	bodyType := req.BodyType
 
 	client := &http.Client{

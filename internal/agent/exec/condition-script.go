@@ -202,23 +202,6 @@ func defineJsFuncs() (err error) {
 	return
 }
 
-var (
-	_setValueFunc func(name string, value interface{})
-)
-
-func defineGoFuncs() {
-	// set data
-	script := `function _setData(name, val) {
-					dt[name] = val
-				}`
-	_, err := execVm.JsRuntime.RunString(script)
-	if err != nil {
-		logUtils.Infof(err.Error())
-	}
-
-	err = execVm.JsRuntime.ExportTo(execVm.JsRuntime.Get("_setData"), &_setValueFunc)
-}
-
 func SetReqValueToGoja(req domain.BaseRequest) {
 	SetValueToGoja("request", req)
 }
@@ -238,6 +221,24 @@ func SetRespValueToGoja(resp domain.DebugResponse) {
 
 	SetValueToGoja("response", resp)
 }
+
+// call go SetValueToGoja = call js _setData
+var (
+	_setValueFunc func(name string, value interface{})
+)
+
 func SetValueToGoja(name string, value interface{}) {
 	_setValueFunc(name, value)
+}
+func defineGoFuncs() {
+	// set data
+	script := `function _setData(name, val) {
+					dt[name] = val
+				}`
+	_, err := execVm.JsRuntime.RunString(script)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	err = execVm.JsRuntime.ExportTo(execVm.JsRuntime.Get("_setData"), &_setValueFunc)
 }

@@ -27,10 +27,11 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.InitDebugExecContext()
 	agentExec.InitJsRuntime(call.Data.ProjectId)
 
+	agentExec.SetReqValueToGoja(req.DebugData.BaseRequest)
+
 	agentExec.ExecPreConditions(&req) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(&req.DebugData)
 
-	agentExec.SetReqValueToGoja(req.DebugData.BaseRequest)
 	agentExec.GetReqValueFromGoja()
 
 	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
@@ -62,7 +63,7 @@ func PreRequest(req *domain.DebugData) (originalReqUri string, err error) {
 	agentExec.ReplaceVariables(&req.BaseRequest)
 
 	// gen url
-	originalReqUri = agentExec.ReplacePathParams(req.Url, req.PathParams)
+	originalReqUri = agentExec.ReplacePathParams(req.Url, *req.PathParams)
 
 	notUseBaseUrl := execUtils.IsUseBaseUrl(req.UsedBy, req.ProcessorInterfaceSrc)
 	if notUseBaseUrl {
@@ -74,9 +75,11 @@ func PreRequest(req *domain.DebugData) (originalReqUri string, err error) {
 	logUtils.Info("requested url: " + req.BaseRequest.Url)
 
 	// download form file item
-	for index, item := range req.BodyFormData {
-		if item.Type == consts.FormDataTypeFile {
-			req.BodyFormData[index].Value, err = agentExec.DownloadUploadedFile(item.Value)
+	if req.BodyFormData != nil {
+		for index, item := range *req.BodyFormData {
+			if item.Type == consts.FormDataTypeFile {
+				(*req.BodyFormData)[index].Value, err = agentExec.DownloadUploadedFile(item.Value)
+			}
 		}
 	}
 

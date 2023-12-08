@@ -6,9 +6,11 @@ import (
 	agentUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -17,9 +19,10 @@ type ProcessorLoop struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntityBase
 
-	Times        int    `json:"times" yaml:"times"` // time
-	Range        string `json:"range" yaml:"range"` // range
-	List         string `json:"list" yaml:"list"`   // in
+	Times        int    `json:"times" yaml:"times"`       // time
+	Range        string `json:"range" yaml:"range"`       // range
+	Variable     string `json:"variable" yaml:"variable"` // range
+	List         string `json:"list" yaml:"list"`         // in
 	Step         string `json:"step" yaml:"step"`
 	IsRand       bool   `json:"isRand" yaml:"isRand"`
 	VariableName string `json:"variableName" yaml:"variableName"`
@@ -108,7 +111,8 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 				if entity.ProcessorType == consts.ProcessorLoopTime {
 					round = fmt.Sprintf("第 %v 轮", index+1)
 				} else {
-					round = fmt.Sprintf("第 %v 轮，%v = %v", index+1, iterator.VariableName, item)
+					desc, _ := commUtils.ConvertValueForStore(item)
+					round = fmt.Sprintf("第 %v 轮，%v = %v", index+1, iterator.VariableName, desc)
 				}
 
 				child.Round = round
@@ -230,12 +234,19 @@ func (entity *ProcessorLoop) getIterator() (iterator agentDomain.ExecIterator, m
 	if entity.ProcessorType == consts.ProcessorLoopTime {
 		iterator, _ = entity.GenerateLoopTimes()
 		msg = fmt.Sprintf("迭代\"%d\"次。", entity.Times)
+
 	} else if entity.ProcessorType == consts.ProcessorLoopIn {
 		iterator, _ = entity.GenerateLoopList()
 		msg = fmt.Sprintf("\"%s\"。", entity.List)
+
 	} else if entity.ProcessorType == consts.ProcessorLoopRange {
 		iterator, _ = entity.GenerateLoopRange()
 		msg = fmt.Sprintf("\"%s\"。", entity.Range)
+
+	} else if entity.ProcessorType == consts.ProcessorLoopVariable {
+		iterator, _ = entity.GenerateLoopVariable()
+		msg = fmt.Sprintf("\"%s\"。", entity.Variable)
+
 	} else if entity.ProcessorType == consts.ProcessorLoopUntil {
 		iterator.UntilExpression = entity.UntilExpression
 		msg = fmt.Sprintf("\"%s\"。", entity.UntilExpression)
@@ -262,6 +273,28 @@ func (entity *ProcessorLoop) GenerateLoopRange() (ret agentDomain.ExecIterator, 
 	if err == nil {
 		ret.DataType = typ
 		ret.Items, _ = agentUtils.GenerateRangeItems(start, end, step, precision, entity.IsRand, typ)
+	}
+
+	return
+}
+func (entity *ProcessorLoop) GenerateLoopVariable() (ret agentDomain.ExecIterator, err error) {
+	variableObj, err := GetVariable(entity.ProcessorID, entity.Variable)
+	if err != nil {
+		return
+	}
+
+	if variableObj.ValueType == consts.ExtractorResultTypeObject {
+		val, err1 := commUtils.ConvertValueForUse(variableObj.Value, variableObj.ValueType)
+		if err1 != nil || val == nil {
+			return
+		}
+
+		typ := reflect.TypeOf(val)
+		if typ.Kind() == reflect.Array || typ.Kind() == reflect.Slice {
+			for _, item := range val.([]interface{}) {
+				ret.Items = append(ret.Items, item)
+			}
+		}
 	}
 
 	return

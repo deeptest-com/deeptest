@@ -2,7 +2,6 @@ package agentExec
 
 import (
 	"fmt"
-	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"strings"
@@ -51,7 +50,7 @@ func getPlaceholderVariableValue(name string) (ret string) {
 
 	if typ == consts.PlaceholderTypeVariable {
 		variable, _ := GetVariable(CurrScenarioProcessorId, name)
-		ret = valueUtils.InterfaceToStr(variable.Value)
+		ret, _ = commUtils.ConvertValueForStore(variable.Value)
 
 	} else if typ == consts.PlaceholderTypeDatapool {
 		ret = getDatapoolValue(name)

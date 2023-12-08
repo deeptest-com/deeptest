@@ -7,7 +7,7 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 )
 
-func GetValueInfo(obj interface{}) (value interface{}, valueType consts.ExtractorResultType) {
+func ConvertValueForStore(obj interface{}) (value string, valueType consts.ExtractorResultType) {
 	value = ""
 	valueType = consts.ExtractorResultTypeString
 
@@ -25,19 +25,14 @@ func GetValueInfo(obj interface{}) (value interface{}, valueType consts.Extracto
 		valueType = consts.ExtractorResultTypeBool
 
 	default:
-		var err error
 		value = _stringUtils.JsonWithoutHtmlEscaped(obj)
-		if err != nil {
-			value = err.Error()
-		}
-
 		valueType = consts.ExtractorResultTypeObject
 	}
 
 	return
 }
 
-func GetValueObj(value interface{}, valueType consts.ExtractorResultType) (obj interface{}, err error) {
+func ConvertValueForUse(value interface{}, valueType consts.ExtractorResultType) (obj interface{}, err error) {
 	switch value.(type) {
 	case string:
 		if valueType == consts.ExtractorResultTypeObject {
@@ -62,25 +57,6 @@ func GetValueObj(value interface{}, valueType consts.ExtractorResultType) (obj i
 
 	default:
 		obj = value
-	}
-
-	return
-}
-
-func ObjectToStrAsVariValue(obj interface{}) (ret string) {
-	switch obj.(type) {
-
-	case string:
-		ret = obj.(string)
-
-	case float64:
-		ret = fmt.Sprintf("%d", obj)
-
-	case bool:
-		ret = fmt.Sprintf("%t", obj)
-
-	default:
-		ret = _stringUtils.JsonWithoutHtmlEscaped(obj)
 	}
 
 	return

@@ -112,7 +112,7 @@ func (s *RemoteService) FindClassByServiceCode(req v1.FindClassByServiceCodeReq,
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
-		Headers:  headers,
+		Headers:  &headers,
 		Body:     string(body),
 	}
 
@@ -160,7 +160,7 @@ func (s *RemoteService) GetFunctionsByClass(req v1.GetFunctionsByClassReq, token
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
-		Headers:  headers,
+		Headers:  &headers,
 		Body:     string(body),
 	}
 
@@ -208,7 +208,7 @@ func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
-		Headers:  headers,
+		Headers:  &headers,
 		Body:     string(body),
 	}
 
@@ -251,8 +251,8 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
-		Headers:  headers,
-		QueryParams: []domain.Param{
+		Headers:  &headers,
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "className",
 				Value: classCode,

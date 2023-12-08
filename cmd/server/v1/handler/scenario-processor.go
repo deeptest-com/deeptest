@@ -42,25 +42,6 @@ func (c *ScenarioProcessorCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: processorEntity})
 }
 
-// UpdateName 更新
-//func (c *ScenarioProcessorCtrl) UpdateName(ctx iris.Context) {
-//	var req agentExec.ProcessorEntityBase
-//	err := ctx.ReadJSON(&req)
-//	if err != nil {
-//		logUtils.Errorf("参数验证失败", err.Error())
-//		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-//		return
-//	}
-//
-//	err = c.ScenarioProcessorService.UpdateName(req)
-//	if err != nil {
-//		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-//		return
-//	}
-//
-//	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-//}
-
 // SaveBasicInfo 更新
 // @Tags	场景模块/处理器
 // @summary	保存基本信息

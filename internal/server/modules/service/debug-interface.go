@@ -57,7 +57,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 
 	debugData.BaseUrl, debugData.EnvDataToView.ShareVars,
 		debugData.EnvDataToView.EnvVars, debugData.EnvDataToView.GlobalVars,
-		debugData.GlobalParams =
+		*debugData.GlobalParams =
 		s.DebugSceneService.LoadScene(&debugData, loadReq.UserId, loadReq.EnvironmentId)
 
 	debugData.ResponseDefine = s.PostConditionRepo.CreateDefaultResponseDefine(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, loadReq.UsedBy)
@@ -229,14 +229,36 @@ func (s *DebugInterfaceService) CopyDebugDataPropsFromPo(debugData *domain.Debug
 	debugData.DebugInterfaceId = debugInterfacePo.ID
 	debugData.ServeId = debugInterfacePo.ServeId
 
-	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
-	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
-	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
-	debugData.Cookies = append(debugData.Cookies, domain.ExecCookie{Name: "", Value: ""})
+	if debugData.Headers == nil {
+		debugData.Headers = &[]domain.Header{}
+	}
+	*debugData.Headers = append(*debugData.Headers, domain.Header{Name: "", Value: ""})
 
-	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
+	if debugData.QueryParams == nil {
+		debugData.QueryParams = &[]domain.Param{}
+	}
+	*debugData.QueryParams = append(*debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+
+	if debugData.PathParams == nil {
+		debugData.PathParams = &[]domain.Param{}
+	}
+	*debugData.PathParams = append(*debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+
+	if debugData.Cookies == nil {
+		debugData.Cookies = &[]domain.ExecCookie{}
+	}
+	*debugData.Cookies = append(*debugData.Cookies, domain.ExecCookie{Name: "", Value: ""})
+
+	if debugData.BodyFormData == nil {
+		debugData.BodyFormData = &[]domain.BodyFormDataItem{}
+	}
+	*debugData.BodyFormData = append(*debugData.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
-	debugData.BodyFormUrlencoded = append(debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
+
+	if debugData.BodyFormUrlencoded == nil {
+		debugData.BodyFormUrlencoded = &[]domain.BodyFormUrlEncodedItem{}
+	}
+	*debugData.BodyFormUrlencoded = append(*debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
 		Name: "", Value: "",
 	})
 
@@ -304,14 +326,36 @@ func (s *DebugInterfaceService) GetDebugInterfaceByScenarioInterface(scenarioPro
 	ret.ScenarioProcessorId = scenarioProcessorId
 	ret.ProcessorInterfaceSrc = debugData.ProcessorInterfaceSrc
 
-	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
-	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
-	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
-	ret.Cookies = append(ret.Cookies, domain.ExecCookie{Name: "", Value: ""})
+	if ret.Headers == nil {
+		ret.Headers = &[]domain.Header{}
+	}
+	*ret.Headers = append(*ret.Headers, domain.Header{Name: "", Value: ""})
 
-	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
+	if ret.QueryParams == nil {
+		ret.QueryParams = &[]domain.Param{}
+	}
+	*ret.QueryParams = append(*ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+
+	if ret.PathParams == nil {
+		ret.PathParams = &[]domain.Param{}
+	}
+	*ret.PathParams = append(*ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+
+	if ret.Cookies == nil {
+		ret.Cookies = &[]domain.ExecCookie{}
+	}
+	*ret.Cookies = append(*ret.Cookies, domain.ExecCookie{Name: "", Value: ""})
+
+	if ret.BodyFormData == nil {
+		ret.BodyFormData = &[]domain.BodyFormDataItem{}
+	}
+	*ret.BodyFormData = append(*ret.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
-	ret.BodyFormUrlencoded = append(ret.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
+
+	if ret.BodyFormUrlencoded == nil {
+		ret.BodyFormUrlencoded = &[]domain.BodyFormUrlEncodedItem{}
+	}
+	*ret.BodyFormUrlencoded = append(*ret.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
 		Name: "", Value: "",
 	})
 
@@ -332,14 +376,36 @@ func (s *DebugInterfaceService) GetDebugInterfaceByDiagnoseInterface(diagnoseInt
 	ret.DebugInterfaceId = diagnoseInterface.DebugInterfaceId
 	ret.DiagnoseInterfaceId = diagnoseInterfaceId
 
-	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
-	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
-	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
-	ret.Cookies = append(ret.Cookies, domain.ExecCookie{Name: "", Value: ""})
+	if ret.Headers == nil {
+		ret.Headers = &[]domain.Header{}
+	}
+	*ret.Headers = append(*ret.Headers, domain.Header{Name: "", Value: ""})
 
-	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
+	if ret.QueryParams == nil {
+		ret.QueryParams = &[]domain.Param{}
+	}
+	*ret.QueryParams = append(*ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+
+	if ret.PathParams == nil {
+		ret.PathParams = &[]domain.Param{}
+	}
+	*ret.PathParams = append(*ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+
+	if ret.Cookies == nil {
+		ret.Cookies = &[]domain.ExecCookie{}
+	}
+	*ret.Cookies = append(*ret.Cookies, domain.ExecCookie{Name: "", Value: ""})
+
+	if ret.BodyFormData == nil {
+		ret.BodyFormData = &[]domain.BodyFormDataItem{}
+	}
+	*ret.BodyFormData = append(*ret.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
-	ret.BodyFormUrlencoded = append(ret.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
+
+	if ret.BodyFormUrlencoded == nil {
+		ret.BodyFormUrlencoded = &[]domain.BodyFormUrlEncodedItem{}
+	}
+	*ret.BodyFormUrlencoded = append(*ret.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
 		Name: "", Value: "",
 	})
 
@@ -360,14 +426,36 @@ func (s *DebugInterfaceService) GetDebugInterfaceByEndpointCase(endpointCaseId u
 	ret.DebugInterfaceId = endpointCase.DebugInterfaceId
 	ret.CaseInterfaceId = endpointCaseId
 
-	ret.Headers = append(ret.Headers, domain.Header{Name: "", Value: ""})
-	ret.QueryParams = append(ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
-	ret.PathParams = append(ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
-	ret.Cookies = append(ret.Cookies, domain.ExecCookie{Name: "", Value: ""})
+	if ret.Headers == nil {
+		ret.Headers = &[]domain.Header{}
+	}
+	*ret.Headers = append(*ret.Headers, domain.Header{Name: "", Value: ""})
 
-	ret.BodyFormData = append(ret.BodyFormData, domain.BodyFormDataItem{
+	if ret.QueryParams == nil {
+		ret.QueryParams = &[]domain.Param{}
+	}
+	*ret.QueryParams = append(*ret.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+
+	if ret.PathParams == nil {
+		ret.PathParams = &[]domain.Param{}
+	}
+	*ret.PathParams = append(*ret.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+
+	if ret.Cookies == nil {
+		ret.Cookies = &[]domain.ExecCookie{}
+	}
+	*ret.Cookies = append(*ret.Cookies, domain.ExecCookie{Name: "", Value: ""})
+
+	if ret.BodyFormData == nil {
+		ret.BodyFormData = &[]domain.BodyFormDataItem{}
+	}
+	*ret.BodyFormData = append(*ret.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
-	ret.BodyFormUrlencoded = append(ret.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
+
+	if ret.BodyFormUrlencoded == nil {
+		ret.BodyFormUrlencoded = &[]domain.BodyFormUrlEncodedItem{}
+	}
+	*ret.BodyFormUrlencoded = append(*ret.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
 		Name: "", Value: "",
 	})
 
@@ -387,11 +475,13 @@ func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterfac
 }
 
 func (s *DebugInterfaceService) mergeGlobalParams(debugData *domain.DebugData) {
-	for _, globalParam := range debugData.GlobalParams {
-		if globalParam.In == consts.ParamInQuery {
-			debugData.QueryParams = s.mergeParam(debugData.QueryParams, globalParam)
-		} else if globalParam.In == consts.ParamInHeader {
-			debugData.Headers = s.mergeHeader(debugData.Headers, globalParam)
+	if debugData.GlobalParams != nil {
+		for _, globalParam := range *debugData.GlobalParams {
+			if globalParam.In == consts.ParamInQuery {
+				*debugData.QueryParams = s.mergeParam(*debugData.QueryParams, globalParam)
+			} else if globalParam.In == consts.ParamInHeader {
+				*debugData.Headers = s.mergeHeader(*debugData.Headers, globalParam)
+			}
 		}
 	}
 }

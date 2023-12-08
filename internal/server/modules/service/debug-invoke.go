@@ -228,12 +228,15 @@ func (s *DebugInvokeService) GetAsInterface(id int) (debugData domain.DebugData,
 	// deal with query params
 	json.Unmarshal([]byte(invocation.ReqContent), &debugData)
 	queryParams := []domain.Param{}
-	for _, param := range debugData.QueryParams {
-		if param.ParamIn == consts.ParamInQuery { // ignore params from project settings
-			queryParams = append(queryParams, param)
+
+	if debugData.QueryParams != nil {
+		for _, param := range *debugData.QueryParams {
+			if param.ParamIn == consts.ParamInQuery { // ignore params from project settings
+				queryParams = append(queryParams, param)
+			}
 		}
 	}
-	debugData.QueryParams = queryParams
+	debugData.QueryParams = &queryParams
 
 	// update request data
 	debugPo := model.DebugInterface{}

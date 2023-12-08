@@ -107,7 +107,11 @@ func GenRequest(data goja.Value, vm *goja.Runtime) (req domain.BaseRequest) {
 				Name:  key,
 				Value: valueUtils.InterfaceToStr(val),
 			}
-			req.QueryParams = append(req.QueryParams, param)
+
+			if req.QueryParams == nil {
+				req.QueryParams = &[]domain.Param{}
+			}
+			*req.QueryParams = append(*req.QueryParams, param)
 		}
 	}
 
@@ -117,7 +121,11 @@ func GenRequest(data goja.Value, vm *goja.Runtime) (req domain.BaseRequest) {
 				Name:  key,
 				Value: valueUtils.InterfaceToStr(val),
 			}
-			req.Headers = append(req.Headers, header)
+
+			if req.Headers == nil {
+				req.Headers = &[]domain.Header{}
+			}
+			*req.Headers = append(*req.Headers, header)
 		}
 	}
 
@@ -136,9 +144,9 @@ func GenRequest(data goja.Value, vm *goja.Runtime) (req domain.BaseRequest) {
 
 	if bodyFormData != nil || bodyFormUrlEncodedData != nil {
 		if httpHelper.IsFormBody(contentType) {
-			req.BodyFormData = bodyFormData
+			req.BodyFormData = &bodyFormData
 		} else if httpHelper.IsFormUrlencodedBody(contentType) {
-			req.BodyFormUrlencoded = bodyFormUrlEncodedData
+			req.BodyFormUrlencoded = &bodyFormUrlEncodedData
 		}
 	}
 

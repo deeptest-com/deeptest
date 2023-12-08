@@ -8,8 +8,10 @@ import (
 func ListScopeCookie(processorId uint) (cookies []domain.ExecCookie) {
 	allValidIds := ScopeHierarchy[processorId]
 	if allValidIds != nil {
-		for _, id := range *ScopeHierarchy[processorId] {
-			cookies = append(cookies, ScopedCookies[id]...)
+		if ScopeHierarchy[processorId] != nil {
+			for _, id := range *ScopeHierarchy[processorId] {
+				cookies = append(cookies, ScopedCookies[id]...)
+			}
 		}
 	}
 
@@ -19,13 +21,15 @@ func ListScopeCookie(processorId uint) (cookies []domain.ExecCookie) {
 func GetCookie(processorId uint, cookieName, domain string) (cookie domain.ExecCookie) {
 	allValidIds := ScopeHierarchy[processorId]
 	if allValidIds != nil {
-		for _, id := range *ScopeHierarchy[processorId] {
-			for _, item := range ScopedCookies[id] {
-				if item.Name == cookieName && (item.Domain == "" || domain == "" || item.Domain == domain) &&
-					(item.ExpireTime == nil || item.ExpireTime.Unix() > time.Now().Unix()) {
-					cookie = item
+		if ScopeHierarchy[processorId] != nil {
+			for _, id := range *ScopeHierarchy[processorId] {
+				for _, item := range ScopedCookies[id] {
+					if item.Name == cookieName && (item.Domain == "" || domain == "" || item.Domain == domain) &&
+						(item.ExpireTime == nil || item.ExpireTime.Unix() > time.Now().Unix()) {
+						cookie = item
 
-					goto LABEL
+						goto LABEL
+					}
 				}
 			}
 		}
@@ -36,7 +40,7 @@ LABEL:
 	return
 }
 
-func SetCookie(processorId uint, cookieName string, cookieValue interface{}, domainName string, expireTime *time.Time) (err error) {
+func SetCookie(processorId uint, cookieName string, cookieValue string, domainName string, expireTime *time.Time) (err error) {
 	found := false
 
 	newCookie := domain.ExecCookie{

@@ -74,7 +74,7 @@ func EvaluateVariablePropExpressionValue(variable domain.ExecVariable, propExpre
 		ok = true
 
 		if isJsonPath {
-			jsn := commUtils.ObjectToStrAsVariValue(variable.Value)
+			jsn, _ := commUtils.ConvertValueForStore(variable.Value)
 
 			var err error
 			ret.Value, ret.ValueType, err =

@@ -534,9 +534,9 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 		BaseUrl: "",
 		BaseRequest: domain.BaseRequest{
 			Method:      s.DiagnoseInterfaceService.getMethod(bodyType, curlObj.Method),
-			QueryParams: queryParams,
-			Headers:     headers,
-			Cookies:     cookies,
+			QueryParams: &queryParams,
+			Headers:     &headers,
+			Cookies:     &cookies,
 			Body:        wf.Body.String(),
 			BodyType:    consts.HttpContentType(bodyType),
 			Url:         url,

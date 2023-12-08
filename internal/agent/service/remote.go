@@ -125,7 +125,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.ScenarioId),
@@ -192,7 +192,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.ScenarioId),
@@ -285,7 +285,7 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.PlanId),
@@ -419,7 +419,7 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.PlanId),

@@ -33,21 +33,19 @@ type BaseRequest struct {
 
 	Method       consts.HttpMethod `gorm:"default:GET" json:"method"`
 	Url          string            `json:"url"`
-	QueryParams  []Param           ` json:"queryParams"`
-	PathParams   []Param           ` json:"pathParams"`
-	Headers      []Header          ` json:"headers"`
-	Cookies      []ExecCookie      ` json:"cookies"`      // from cookie processor in scenario
-	GlobalParams []GlobalParam     ` json:"globalParams"` // for retrieve data from webpage, not used in exec
+	QueryParams  *[]Param          ` json:"queryParams"`
+	PathParams   *[]Param          ` json:"pathParams"`
+	Headers      *[]Header         ` json:"headers"`
+	Cookies      *[]ExecCookie     ` json:"cookies"`      // from cookie processor in scenario
+	GlobalParams *[]GlobalParam    ` json:"globalParams"` // for retrieve data from webpage, not used in exec
 
-	Body               string                   `json:"body"`
-	BodyFormData       []BodyFormDataItem       `json:"bodyFormData"`
-	BodyFormUrlencoded []BodyFormUrlEncodedItem `json:"bodyFormUrlencoded"`
-	BodyType           consts.HttpContentType   `json:"bodyType"`
-	BodyLang           consts.HttpRespLangType  `json:"bodyLang"`
+	Body               string                    `json:"body"`
+	BodyFormData       *[]BodyFormDataItem       `json:"bodyFormData"`
+	BodyFormUrlencoded *[]BodyFormUrlEncodedItem `json:"bodyFormUrlencoded"`
+	BodyType           consts.HttpContentType    `json:"bodyType"`
+	BodyLang           consts.HttpRespLangType   `json:"bodyLang"`
 
 	AuthorizationType consts.AuthorType `json:"authorizationType"`
-	//PreRequestScript  string            `json:"preRequestScript"`
-	//ValidationScript  string            `json:"validationScript"`
 
 	BasicAuth   BasicAuth   `json:"basicAuth"`
 	BearerToken BearerToken `json:"bearerToken"`

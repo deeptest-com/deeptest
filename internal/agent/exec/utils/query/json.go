@@ -31,7 +31,7 @@ func JsonPath(content string, expression string) (result interface{}, resultType
 		return
 	}
 
-	result, resultType = commUtils.GetValueInfo(obj)
+	result, resultType = commUtils.ConvertValueForStore(obj)
 
 	return
 }
@@ -60,7 +60,7 @@ func JsonQuery(content string, expression string) (result interface{}, resultTyp
 
 	obj := elem.Value()
 
-	result, resultType = commUtils.GetValueInfo(obj)
+	result, resultType = commUtils.ConvertValueForStore(obj)
 
 	return
 }

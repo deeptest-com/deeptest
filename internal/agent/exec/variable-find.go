@@ -10,17 +10,19 @@ import (
 func getDynamicVariableFromScope(processorId uint, propExpression string) (ret domain.ExecVariable, err error) {
 	allValidIds := GetValidScopeIds(processorId)
 
-	for _, id := range *allValidIds {
-		for _, item := range ScopedVariables[id] {
-			if !(item.Scope == consts.Public || (item.Scope == consts.Private && id == processorId)) {
-				continue
-			}
+	if allValidIds != nil {
+		for _, id := range *allValidIds {
+			for _, item := range ScopedVariables[id] {
+				if !(item.Scope == consts.Public || (item.Scope == consts.Private && id == processorId)) {
+					continue
+				}
 
-			var ok bool
-			ret, ok = EvaluateVariablePropExpressionValue(item, propExpression)
+				var ok bool
+				ret, ok = EvaluateVariablePropExpressionValue(item, propExpression)
 
-			if ok {
-				goto LABEL
+				if ok {
+					goto LABEL
+				}
 			}
 		}
 	}

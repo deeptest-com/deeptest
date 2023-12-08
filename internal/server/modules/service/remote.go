@@ -238,3 +238,93 @@ func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token
 
 	return
 }
+
+func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo, err error) {
+	url := fmt.Sprintf("%s/api/v1/user/getUserInfo", config.CONFIG.ThirdParty.Url)
+
+	headers := make([]domain.Header, 0)
+	headers = append(headers, domain.Header{
+		Name:  "X-Token",
+		Value: token,
+	})
+
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  headers,
+	}
+
+	var resp domain.DebugResponse
+	resp, err = httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("meta get method detail failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("meta get method detail failed, response %v", resp)
+		err = fmt.Errorf("meta get method detail failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data struct{ UserInfo v1.UserInfo }
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	user = respContent.Data.UserInfo
+
+	return
+}
+
+func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectInfo, err error) {
+	url := fmt.Sprintf("%s/api/v1/project/info/%s", config.CONFIG.ThirdParty.Url, spaceCode)
+
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers: []domain.Header{
+			{
+				Name:  "X-Token",
+				Value: token,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get project info failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get project info failed failed, response %v", resp)
+		err = fmt.Errorf("get project info failed failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data struct{ v1.ProjectInfo }
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("get project info failed failed, response %v", resp)
+		err = fmt.Errorf("get project info failed failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data.ProjectInfo
+
+	return
+}

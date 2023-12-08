@@ -435,8 +435,9 @@ func (c *ProjectCtrl) AuditUsers(ctx iris.Context) {
 func (c *ProjectCtrl) CheckProjectAndUser(ctx iris.Context) {
 	projectCode := ctx.URLParam("project_code")
 	userId := multi.GetUserId(ctx)
+	xToken := ctx.GetHeader("X-Token")
 
-	project, userInProject, err := c.ProjectService.CheckProjectAndUser(projectCode, userId)
+	project, userInProject, err := c.ProjectService.CheckProjectAndUser(projectCode, xToken, userId)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	} else if project.ID == 0 {

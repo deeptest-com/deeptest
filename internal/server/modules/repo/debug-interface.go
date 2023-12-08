@@ -744,3 +744,19 @@ func (r *DebugInterfaceRepo) UpdateServeId(ids []uint, serveId uint) (err error)
 		Error
 	return
 }
+
+func (r *DebugInterfaceRepo) SyncServeId(endpointIds []uint, serveId uint) (err error) {
+	if len(endpointIds) == 0 {
+		return
+	}
+
+	interfaceIds, err := r.EndpointInterfaceRepo.ListIdByEndpoints(endpointIds)
+	if err != nil {
+		return
+	}
+	if len(interfaceIds) > 0 {
+		err = r.UpdateServeId(interfaceIds, serveId)
+	}
+
+	return
+}

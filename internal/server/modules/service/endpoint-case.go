@@ -294,28 +294,21 @@ func (s *EndpointCaseService) MapToTree(mapData map[string]*serverDomain.Endpoin
 	return
 }
 
-func (s *EndpointCaseService) doGetNodeCaseNum(req []*serverDomain.EndpointCaseTree, oldNum int64) (num int64) {
+func (s *EndpointCaseService) GetNodeCaseNum(req []*serverDomain.EndpointCaseTree, oldNum int64) (num int64) {
 	num = oldNum
-	for k, v := range req {
+	for _, v := range req {
 		if v.Type == serverConsts.EndpointCaseTreeTypeCase {
 			num += 1
-			req[k].Count = 0
+			v.Count = 0
 		} else if v.Type == serverConsts.EndpointCaseTreeTypeEndpoint {
-			num += int64(len(v.Children))
-			req[k].Count = int64(len(v.Children))
+			num += s.GetNodeCaseNum(v.Children, 0)
+			v.Count = int64(len(v.Children))
 		} else {
-			num += s.doGetNodeCaseNum(v.Children, v.Count)
-			req[k].Count = num
+			childrenNum := s.GetNodeCaseNum(v.Children, 0)
+			num += childrenNum
+			v.Count = childrenNum
 		}
 	}
-	return
-}
-
-func (s *EndpointCaseService) GetNodeCaseNum(res []*serverDomain.EndpointCaseTree, oldNum int64) (num int64) {
-	for k, v := range res {
-		res[k].Count = s.doGetNodeCaseNum(v.Children, oldNum)
-	}
-
 	return
 }
 

@@ -81,7 +81,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		expr := ReplaceDatapoolVariInGovaluateExpress(checkpoint.Expression)
 
 		if processorId > 0 { // exec interface processor in scenario
-			result, _ = EvaluateGovaluateExpressionByProcessorScope(expr, processorId)
+			result, _, _ = EvaluateGovaluateExpressionByProcessorScope(expr, processorId)
 		} else { // exec by interface invocation
 			result, _ = EvaluateGovaluateExpressionWithDebugVariables(expr)
 		}

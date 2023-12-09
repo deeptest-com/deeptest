@@ -53,9 +53,9 @@ func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret inter
 }
 
 // called by agent processor interface
-func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint) (ret interface{}, err error) {
+func EvaluateGovaluateExpressionByProcessorScope(expression string, scopeId uint) (ret interface{}, params domain.VarKeyValuePair, err error) {
 	// 1
-	params, err := generateGovaluateParamsByScope(expression, scopeId)
+	params, err = generateGovaluateParamsByScope(expression, scopeId)
 	if err != nil {
 		return
 	}

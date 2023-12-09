@@ -19,10 +19,13 @@ type ProcessorLoop struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntityBase
 
-	Times        int    `json:"times" yaml:"times"`       // time
-	Range        string `json:"range" yaml:"range"`       // range
-	Variable     string `json:"variable" yaml:"variable"` // range
-	List         string `json:"list" yaml:"list"`         // in
+	Times int    `json:"times" yaml:"times"` // time
+	Range string `json:"range" yaml:"range"` // range
+
+	InType   string `json:"inType" yaml:"inType"`     // in
+	Variable string `json:"variable" yaml:"variable"` // array
+	List     string `json:"list" yaml:"list"`         // list
+
 	Step         string `json:"step" yaml:"step"`
 	IsRand       bool   `json:"isRand" yaml:"isRand"`
 	VariableName string `json:"variableName" yaml:"variableName"`
@@ -150,7 +153,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		}
 		index += 1
 
-		result, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID)
+		result, _, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {
 			result := agentDomain.ScenarioExecResult{
@@ -208,7 +211,7 @@ func (entity *ProcessorLoop) getBeak() (ret bool, msg string, detailStr string) 
 	}
 
 	expr := ReplaceDatapoolVariInGovaluateExpress(breakIfExpress)
-	result, _ := EvaluateGovaluateExpressionByProcessorScope(expr, entity.ProcessorID)
+	result, _, _ := EvaluateGovaluateExpressionByProcessorScope(expr, entity.ProcessorID)
 
 	ret, ok := result.(bool)
 	pass := false
@@ -236,16 +239,18 @@ func (entity *ProcessorLoop) getIterator() (iterator agentDomain.ExecIterator, m
 		msg = fmt.Sprintf("迭代\"%d\"次。", entity.Times)
 
 	} else if entity.ProcessorType == consts.ProcessorLoopIn {
-		iterator, _ = entity.GenerateLoopList()
-		msg = fmt.Sprintf("\"%s\"。", entity.List)
+		if entity.InType == "variable" {
+			iterator, _ = entity.GenerateLoopVariable()
+			msg = fmt.Sprintf("\"%s\"。", entity.Variable)
+
+		} else if entity.InType == "list" {
+			iterator, _ = entity.GenerateLoopList()
+			msg = fmt.Sprintf("\"%s\"。", entity.List)
+		}
 
 	} else if entity.ProcessorType == consts.ProcessorLoopRange {
 		iterator, _ = entity.GenerateLoopRange()
 		msg = fmt.Sprintf("\"%s\"。", entity.Range)
-
-	} else if entity.ProcessorType == consts.ProcessorLoopVariable {
-		iterator, _ = entity.GenerateLoopVariable()
-		msg = fmt.Sprintf("\"%s\"。", entity.Variable)
 
 	} else if entity.ProcessorType == consts.ProcessorLoopUntil {
 		iterator.UntilExpression = entity.UntilExpression

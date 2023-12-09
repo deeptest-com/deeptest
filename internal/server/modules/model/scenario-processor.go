@@ -77,12 +77,13 @@ type ProcessorLoop struct {
 	BaseModel
 	agentExec.ProcessorEntityBase
 
-	Times    int    `json:"times" yaml:"times"`       // time
-	Range    string `json:"range" yaml:"range"`       // range
-	Variable string `json:"variable" yaml:"variable"` // variable
+	Times int    `json:"times" yaml:"times"` // time
+	Range string `json:"range" yaml:"range"` // range
 
-	List string `json:"list" yaml:"list"` // in
-	Step string `json:"step" yaml:"step"`
+	InType   string `json:"inType" yaml:"inType"`     // in
+	Variable string `json:"variable" yaml:"variable"` // variable
+	List     string `json:"list" yaml:"list"`         // list
+	Step     string `json:"step" yaml:"step"`
 
 	IsRand       bool   `json:"isRand" yaml:"isRand"`
 	VariableName string `json:"variableName" yaml:"variableName"`

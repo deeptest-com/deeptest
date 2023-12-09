@@ -44,7 +44,7 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 	detail := map[string]interface{}{"name": entity.Name, "variableName": entity.VariableName}
 	if entity.ProcessorType == consts.ProcessorVariableSet {
 		var variableValue interface{}
-		variableValue, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID)
+		variableValue, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID)
 
 		if err != nil {
 			panic(err)

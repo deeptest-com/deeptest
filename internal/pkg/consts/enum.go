@@ -484,11 +484,10 @@ const (
 	ProcessorLogicIf   ProcessorType = "processor_logic_if"
 	ProcessorLogicElse ProcessorType = "processor_logic_else"
 
-	ProcessorLoopTime     ProcessorType = "processor_loop_time"
-	ProcessorLoopIn       ProcessorType = "processor_loop_in"
-	ProcessorLoopRange    ProcessorType = "processor_loop_range"
-	ProcessorLoopVariable ProcessorType = "processor_loop_variable"
-	ProcessorLoopUntil    ProcessorType = "processor_loop_until"
+	ProcessorLoopTime  ProcessorType = "processor_loop_time"
+	ProcessorLoopIn    ProcessorType = "processor_loop_in"
+	ProcessorLoopRange ProcessorType = "processor_loop_range"
+	ProcessorLoopUntil ProcessorType = "processor_loop_until"
 
 	ProcessorVariableSet   ProcessorType = "processor_variable_set"
 	ProcessorVariableClear ProcessorType = "processor_variable_clear"

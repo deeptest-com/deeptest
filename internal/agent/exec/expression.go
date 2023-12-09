@@ -32,9 +32,9 @@ var (
 )
 
 // called by checkpoint
-func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret interface{}, err error) {
+func EvaluateGovaluateExpressionWithDebugVariables(expression string) (ret interface{}, params domain.VarKeyValuePair, err error) {
 	// 1
-	params, err := generateGovaluateParamsWithVariables(expression)
+	params, err = generateGovaluateParamsWithVariables(expression)
 	if err != nil {
 		return
 	}

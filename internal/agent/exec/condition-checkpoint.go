@@ -77,16 +77,19 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
 		var result interface{}
+		var variablesArr domain.VarKeyValuePair
 
 		expr := ReplaceDatapoolVariInGovaluateExpress(checkpoint.Expression)
 
 		if processorId > 0 { // exec interface processor in scenario
-			result, _, _ = EvaluateGovaluateExpressionByProcessorScope(expr, processorId)
+			result, variablesArr, _ = EvaluateGovaluateExpressionByProcessorScope(expr, processorId)
 		} else { // exec by interface invocation
-			result, _ = EvaluateGovaluateExpressionWithDebugVariables(expr)
+			result, variablesArr, _ = EvaluateGovaluateExpressionWithDebugVariables(expr)
 		}
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", result)
+		variablesBytes, _ := json.Marshal(variablesArr)
+		checkpoint.Variables = string(variablesBytes)
 
 		ret, ok := result.(bool)
 		if ok && ret {

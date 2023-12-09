@@ -54,6 +54,7 @@ type CheckpointBase struct {
 
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg" gorm:"type:text"`
+	Variables    string              `json:"variables" gorm:"type:text"` // for checkpoint log only
 
 	ConditionId         uint                 `json:"conditionId"`
 	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to entity po id in domain object

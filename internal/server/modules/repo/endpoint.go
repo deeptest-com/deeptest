@@ -470,6 +470,10 @@ func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
 	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
 }
 
+func (r *EndpointRepo) BatchUpdate(ids []uint, data map[string]interface{}) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Updates(data).Error
+}
+
 func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, categoryId int64) (res model.Endpoint, err error) {
 	db := r.DB.Model(&model.Endpoint{}).
 		Where("source_type = ?", sourceType).

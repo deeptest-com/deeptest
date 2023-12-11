@@ -225,6 +225,10 @@ func (s *Schema2conv) SchemaComponents(schema SchemaRef, components Components) 
 		components[ref] = component
 	}
 
+	if schema.Value == nil {
+		return
+	}
+
 	for _, item := range schema.Value.AnyOf {
 		s.SchemaComponents(*item, components)
 	}
@@ -291,6 +295,9 @@ func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 		if item.Ref != "" {
 			if component, ok := s.Components[item.Ref]; ok {
 				item = component
+			}
+			if item.Value == nil {
+				continue
 			}
 		}
 		schema.Value.Type = item.Value.Type
@@ -360,6 +367,10 @@ func (s *Schema2conv) Equal(schema1, schema2 *SchemaRef) (ret bool) {
 	if component, ok := s.Components[schema1.Ref]; ok {
 		//s.sets[ref1]++
 		schema1 = component
+	}
+
+	if schema1.Value == nil {
+		return false
 	}
 
 	s.CombineSchemas(schema1)

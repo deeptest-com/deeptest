@@ -68,6 +68,10 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		return
 	}
 
+	if req.Act == "init" {
+		return
+	}
+
 	err = service.StartExec(req, &wsMsg)
 
 	return

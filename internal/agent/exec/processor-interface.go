@@ -214,6 +214,9 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			resp := entity.Response
 			err = ExecCheckPoint(&checkpointBase, resp, 0, session.ExecUuid)
 			checkpointHelper.GenResultMsg(&checkpointBase)
+			if checkpointBase.ResultStatus == consts.Fail {
+				processor.Result.ResultStatus = consts.Fail
+			}
 
 			interfaceExecCondition := domain.InterfaceExecCondition{
 				Type: condition.Type,

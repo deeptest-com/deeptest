@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, processorId uint) (err error) {
+func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, processorId uint, execUuid string) (err error) {
 	checkpoint.ResultStatus = consts.Pass
 
 	// Response ResultStatus
@@ -79,12 +79,12 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		var result interface{}
 		var variablesArr domain.VarKeyValuePair
 
-		expr := ReplaceDatapoolVariInGovaluateExpress(checkpoint.Expression)
+		expr := ReplaceDatapoolVariInGovaluateExpress(checkpoint.Expression, execUuid)
 
 		if processorId > 0 { // exec interface processor in scenario
-			result, variablesArr, _ = EvaluateGovaluateExpressionByProcessorScope(expr, processorId)
+			result, variablesArr, _ = EvaluateGovaluateExpressionByProcessorScope(expr, processorId, execUuid)
 		} else { // exec by interface invocation
-			result, variablesArr, _ = EvaluateGovaluateExpressionWithDebugVariables(expr)
+			result, variablesArr, _ = EvaluateGovaluateExpressionWithDebugVariables(expr, execUuid)
 		}
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", result)
@@ -103,7 +103,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 	// ExtractorVari
 	if checkpoint.Type == consts.ExtractorVari {
-		variable, _ := GetVariable(CurrScenarioProcessorId, checkpoint.ExtractorVariable)
+		variable, _ := GetVariable(GetCurrScenarioProcessorId(execUuid), checkpoint.ExtractorVariable, execUuid)
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", variable.Value)
 

@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func ReplaceVariableValueInBody(value string) (ret string) {
+func ReplaceVariableValueInBody(value string, execUuid string) (ret string) {
 	// add a plus to set field vale as a number
 	// {"id": "${+dev_env_var1}"} => {"id": 2}
 
@@ -21,7 +21,7 @@ func ReplaceVariableValueInBody(value string) (ret string) {
 		}
 
 		placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
-		newVal := getPlaceholderVariableValue(placeholderWithoutPlus)
+		newVal := getPlaceholderVariableValue(placeholderWithoutPlus, execUuid)
 
 		ret = strings.ReplaceAll(ret, oldVal, newVal)
 	}
@@ -29,7 +29,7 @@ func ReplaceVariableValueInBody(value string) (ret string) {
 	return
 }
 
-func ReplaceVariableValue(value string) (ret string) {
+func ReplaceVariableValue(value string, execUuid string) (ret string) {
 	ret = value
 	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value)
 
@@ -37,7 +37,7 @@ func ReplaceVariableValue(value string) (ret string) {
 		oldVal := fmt.Sprintf("${%s}", placeholder)
 
 		placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
-		newVal := getPlaceholderVariableValue(placeholderWithoutPlus)
+		newVal := getPlaceholderVariableValue(placeholderWithoutPlus, execUuid)
 
 		ret = strings.ReplaceAll(ret, oldVal, newVal)
 	}
@@ -45,15 +45,15 @@ func ReplaceVariableValue(value string) (ret string) {
 	return
 }
 
-func getPlaceholderVariableValue(name string) (ret string) {
+func getPlaceholderVariableValue(name string, execUuid string) (ret string) {
 	typ := getPlaceholderType(name)
 
 	if typ == consts.PlaceholderTypeVariable {
-		variable, _ := GetVariable(CurrScenarioProcessorId, name)
+		variable, _ := GetVariable(GetCurrScenarioProcessorId(execUuid), name, execUuid)
 		ret, _ = commUtils.ConvertValueForStore(variable.Value)
 
 	} else if typ == consts.PlaceholderTypeDatapool {
-		ret = getDatapoolValue(name)
+		ret = getDatapoolValue(name, execUuid)
 	}
 	//else if typ == consts.PlaceholderTypeFunction {
 	//}

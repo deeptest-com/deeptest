@@ -55,16 +55,16 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 
 	detail := map[string]interface{}{"name": entity.Name, "cookieName": cookieName}
 	if typ == consts.ProcessorCookieSet {
-		variableValue := ReplaceVariableValue(rightValue)
+		variableValue := ReplaceVariableValue(rightValue, session.ExecUuid)
 
-		SetCookie(processor.ParentId, cookieName, variableValue, domain, expireTime) // set in parent scope
+		SetCookie(processor.ParentId, cookieName, variableValue, domain, expireTime, session.ExecUuid) // set in parent scope
 
 		processor.Result.Summary = fmt.Sprintf("%s为%v。", cookieName, variableValue)
 		detail["variableValue"] = variableValue
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	} else if typ == consts.ProcessorCookieClear {
-		ClearCookie(processor.ParentId, cookieName) // set in parent scope
+		ClearCookie(processor.ParentId, cookieName, session.ExecUuid) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("%s。", cookieName)
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
 	}

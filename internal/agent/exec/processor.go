@@ -56,8 +56,9 @@ type ProcessorBase struct {
 
 func (p *Processor) Run(s *Session) (err error) {
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
-	CurrScenarioProcessorId = p.ID
-	CurrScenarioProcessor = p
+	SetCurrScenarioProcessorId(s.ExecUuid, p.ID)
+	SetCurrScenarioProcessor(s.ExecUuid, p)
+
 	/*
 		defer func() {
 			if errX := recover(); errX != nil {
@@ -65,9 +66,10 @@ func (p *Processor) Run(s *Session) (err error) {
 			}
 		}()
 	*/
+
 	//每个执行器延迟0.1秒，防止发送ws消息过快，导致前端消息错误
 	time.Sleep(100 * time.Microsecond)
-	if !p.Disable && p.Entity != nil && !ForceStopExec {
+	if !p.Disable && p.Entity != nil && !GetForceStopExec(s.ExecUuid) {
 		p.Entity.Run(p, s)
 	}
 

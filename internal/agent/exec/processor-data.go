@@ -55,7 +55,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 		Round:             processor.Round,
 	}
 
-	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
+	processor.Result.Iterator, processor.Result.Summary = entity.getIterator(session)
 
 	detail := map[string]interface{}{"variableName": entity.VariableName, "url": entity.Url, "separator": entity.Separator, "repeatTimes": entity.RepeatTimes}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
@@ -88,12 +88,12 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 				break
 			}
 
-			SetVariable(processor.ID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public)
+			SetVariable(processor.ID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public, session.ExecUuid)
 
 			round := ""
 
 			for _, child := range processor.Children {
-				if ForceStopExec {
+				if GetForceStopExec(session.ExecUuid) {
 					break
 				}
 				if child.Disable {
@@ -118,13 +118,13 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 	return
 }
 
-func (entity *ProcessorData) getIterator() (iterator agentDomain.ExecIterator, msg string) {
+func (entity *ProcessorData) getIterator(session *Session) (iterator agentDomain.ExecIterator, msg string) {
 	if entity.ID == 0 {
 		msg = "执行前请先配置处理器。"
 		return
 	}
 
-	iterator, _ = entity.GenerateLoopList()
+	iterator, _ = entity.GenerateLoopList(session)
 	msg = fmt.Sprintf("迭代数据\"%s\"。", entity.Url)
 
 	iterator.VariableName = entity.VariableName
@@ -132,9 +132,9 @@ func (entity *ProcessorData) getIterator() (iterator agentDomain.ExecIterator, m
 	return
 }
 
-func (entity *ProcessorData) GenerateLoopList() (ret agentDomain.ExecIterator, err error) {
+func (entity *ProcessorData) GenerateLoopList(session *Session) (ret agentDomain.ExecIterator, err error) {
 	if entity.Src == consts.SrcDatapool {
-		for name, dp := range ExecScene.Datapools {
+		for name, dp := range GetExecScene(session.ExecUuid).Datapools {
 			if name == entity.DatapoolName {
 				ret.Data = dp
 				break
@@ -142,7 +142,7 @@ func (entity *ProcessorData) GenerateLoopList() (ret agentDomain.ExecIterator, e
 		}
 
 	} else {
-		pth, _ := DownloadUploadedFile(entity.Url)
+		pth, _ := DownloadUploadedFile(entity.Url, session.ExecUuid)
 		if err != nil {
 			logUtils.Infof("Download file %s failed", pth)
 		}

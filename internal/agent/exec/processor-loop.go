@@ -60,7 +60,7 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 	processor.Result.Detail = commonUtils.JsonEncode(entity)
 	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
-	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
+	processor.Result.Iterator, processor.Result.Summary = entity.getIterator(session)
 
 	if entity.ProcessorType == consts.ProcessorLoopUntil {
 		entity.runLoopUntil(session, processor, processor.Result.Iterator)
@@ -80,7 +80,7 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 	executedProcessorIds := map[uint]bool{}
 
 	for index, item := range iterator.Items {
-		if ForceStopExec {
+		if GetForceStopExec(session.ExecUuid) {
 			break
 		}
 		if DemoTestSite != "" && index > 2 {
@@ -96,11 +96,11 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 			execUtils.SendExecMsg(msg, session.WsMsg)
 		*/
 
-		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public)
+		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public, session.ExecUuid)
 
 		round := ""
 		for _, child := range processor.Children {
-			if ForceStopExec {
+			if GetForceStopExec(session.ExecUuid) {
 				break
 			}
 			if child.Disable {
@@ -126,7 +126,7 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 
 		// check break
 		result := agentDomain.ScenarioExecResult{}
-		result.WillBreak, result.Summary, result.Detail = entity.getBeak()
+		result.WillBreak, result.Summary, result.Detail = entity.getBeak(session.ExecUuid)
 		if result.WillBreak {
 			execUtils.SendExecMsg(result, consts.Processor, session.WsMsg)
 			break
@@ -145,7 +145,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 	executedProcessorIds := map[uint]bool{}
 	index := 0
 	for {
-		if ForceStopExec {
+		if GetForceStopExec(session.ExecUuid) {
 			break
 		}
 		if DemoTestSite != "" && index > 2 {
@@ -153,7 +153,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		}
 		index += 1
 
-		result, _, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID)
+		result, _, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID, session.ExecUuid)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {
 			result := agentDomain.ScenarioExecResult{
@@ -167,7 +167,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 
 		round := ""
 		for _, child := range processor.Children {
-			if ForceStopExec {
+			if GetForceStopExec(session.ExecUuid) {
 				break
 			}
 			if child.Disable {
@@ -203,15 +203,15 @@ LABEL:
 	return
 }
 
-func (entity *ProcessorLoop) getBeak() (ret bool, msg string, detailStr string) {
+func (entity *ProcessorLoop) getBeak(execUuid string) (ret bool, msg string, detailStr string) {
 	breakIfExpress := strings.TrimSpace(entity.BreakIfExpression)
 
 	if breakIfExpress == "" {
 		return
 	}
 
-	expr := ReplaceDatapoolVariInGovaluateExpress(breakIfExpress)
-	result, _, _ := EvaluateGovaluateExpressionByProcessorScope(expr, entity.ProcessorID)
+	expr := ReplaceDatapoolVariInGovaluateExpress(breakIfExpress, execUuid)
+	result, _, _ := EvaluateGovaluateExpressionByProcessorScope(expr, entity.ProcessorID, execUuid)
 
 	ret, ok := result.(bool)
 	pass := false
@@ -228,7 +228,7 @@ func (entity *ProcessorLoop) getBeak() (ret bool, msg string, detailStr string) 
 	return
 }
 
-func (entity *ProcessorLoop) getIterator() (iterator agentDomain.ExecIterator, msg string) {
+func (entity *ProcessorLoop) getIterator(session *Session) (iterator agentDomain.ExecIterator, msg string) {
 	if entity.ID == 0 {
 		msg = "执行前请先配置处理器。"
 		return
@@ -240,7 +240,7 @@ func (entity *ProcessorLoop) getIterator() (iterator agentDomain.ExecIterator, m
 
 	} else if entity.ProcessorType == consts.ProcessorLoopIn {
 		if entity.InType == "variable" {
-			iterator, _ = entity.GenerateLoopVariable()
+			iterator, _ = entity.GenerateLoopVariable(session.ExecUuid)
 			msg = fmt.Sprintf("\"%s\"。", entity.Variable)
 
 		} else if entity.InType == "list" {
@@ -282,8 +282,8 @@ func (entity *ProcessorLoop) GenerateLoopRange() (ret agentDomain.ExecIterator, 
 
 	return
 }
-func (entity *ProcessorLoop) GenerateLoopVariable() (ret agentDomain.ExecIterator, err error) {
-	variableObj, err := GetVariable(entity.ProcessorID, entity.Variable)
+func (entity *ProcessorLoop) GenerateLoopVariable(execUuid string) (ret agentDomain.ExecIterator, err error) {
+	variableObj, err := GetVariable(entity.ProcessorID, entity.Variable, execUuid)
 	if err != nil {
 		return
 	}

@@ -39,10 +39,10 @@ func SendResult(data interface{}, wsMsg *websocket.Message) (err error) {
 	return
 }
 
-func SendCancelMsg(wsMsg websocket.Message) (err error) {
+func SendCancelMsg(wsMsg *websocket.Message) (err error) {
 	SetRunning(false)
 
-	websocketHelper.SendExecStatus(consts.ProgressEnd, &wsMsg)
+	websocketHelper.SendExecStatus(consts.ProgressEnd, wsMsg)
 
 	return
 }
@@ -55,16 +55,16 @@ func SendExecMsg(log interface{}, category consts.WsMsgCategory, wsMsg *websocke
 	return
 }
 
-func SendErrorMsg(log interface{}, processor consts.WsMsgCategory, wsMsg *websocket.Message) (err error) {
+func SendErrorMsg(log interface{}, category consts.WsMsgCategory, wsMsg *websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("exec_fail")
-	websocketHelper.SendExecMsg(msg, log, processor, wsMsg)
+	websocketHelper.SendExecMsg(msg, log, category, wsMsg)
 
 	return
 }
 
-func SendAlreadyRunningMsg(scenarioId int, processor consts.WsMsgCategory, wsMsg websocket.Message) (err error) {
+func SendAlreadyRunningMsg(scenarioId int, processor consts.WsMsgCategory, wsMsg *websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("pls_stop_previous")
-	websocketHelper.SendExecMsg(msg, agentDomain.ScenarioExecResult{ProgressStatus: consts.InProgress}, processor, &wsMsg)
+	websocketHelper.SendExecMsg(msg, agentDomain.ScenarioExecResult{ProgressStatus: consts.InProgress}, processor, wsMsg)
 	_logUtils.Infof(msg)
 
 	return

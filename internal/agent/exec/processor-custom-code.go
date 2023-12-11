@@ -47,12 +47,12 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 		Content: entity.Content,
 	}
 
-	err = ExecScript(&scriptBase, processor.ProjectId)
+	err = ExecScript(&scriptBase, processor.ProjectId, session.ExecUuid)
 	scriptHelper.GenResultMsg(&scriptBase)
 	//scriptBase.VariableSettings = VariableSettings
 
-	for _, item := range VariableSettings {
-		SetVariable(processor.ParentId, item.Name, item.Value, consts.ExtractorResultTypeObject, consts.Public)
+	for _, item := range GetGojaVariables(session.ExecUuid) {
+		SetVariable(processor.ParentId, item.Name, item.Value, consts.ExtractorResultTypeObject, consts.Public, session.ExecUuid)
 	}
 
 	processor.Result.Summary = scriptBase.ResultStatus.String()

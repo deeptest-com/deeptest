@@ -2,11 +2,8 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
@@ -14,7 +11,6 @@ import (
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
-	"runtime/debug"
 )
 
 var (
@@ -67,89 +63,12 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	req := agentDomain.WsReq{}
 	err = json.Unmarshal(wsMsg.Body, &req)
 	if err != nil {
-		if req.ScenarioExecReq.ScenarioId > 0 {
-			sendScenarioErr(err, &wsMsg)
-		}
-		return
-	}
-
-	act := req.Act
-
-	// stop exec
-	if act == consts.ExecStop {
-		if ch != nil {
-			if !execUtils.GetRunning() {
-				ch = nil
-			} else {
-				ch <- 1
-				ch = nil
-			}
-		}
-
-		agentExec.ForceStopExec = true
-
-		if req.ScenarioExecReq.ScenarioId > 0 {
-			service.CancelAndSendMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
-		} else if req.CasesExecReq.ExecUUid != "" {
-			//TODO:
-		}
+		execUtils.SendErrorMsg(err, consts.Processor, &wsMsg)
 
 		return
 	}
 
-	// already running
-	if execUtils.GetRunning() && (act == consts.ExecStart) {
-		if req.ScenarioExecReq.ScenarioId > 0 {
-			execUtils.SendAlreadyRunningMsg(req.ScenarioExecReq.ScenarioId, consts.Processor, wsMsg)
-		}
-		return
-	}
-
-	// exec task
-	go func() {
-		defer func(wsMsg websocket.Message) {
-			if wsMsgErr := recover(); wsMsgErr != nil {
-				s := string(debug.Stack())
-				fmt.Printf("err=%v, stack=%s\n", wsMsgErr, s)
-
-				if req.ScenarioExecReq.ScenarioId > 0 {
-					sendScenarioErr(fmt.Errorf("%+v", wsMsgErr), &wsMsg)
-				}
-			}
-		}(wsMsg)
-
-		ch = make(chan int, 1)
-
-		if act == consts.ExecScenario {
-			service.RunScenario(&req.ScenarioExecReq, &wsMsg)
-
-		} else if act == consts.ExecPlan {
-			service.RunPlan(&req.PlanExecReq, &wsMsg)
-
-		} else if act == consts.ExecCase {
-			service.RunCases(&req.CasesExecReq, &wsMsg)
-
-		} else if act == consts.ExecMessage {
-			service.RunMessage(&req.MessageReq, &wsMsg)
-		}
-	}()
+	err = service.StartExec(req, &wsMsg)
 
 	return
-}
-
-func sendScenarioErr(err error, wsMsg *websocket.Message) {
-	root := execDomain.ScenarioExecResult{
-		ID:      -1,
-		Name:    "执行失败",
-		Summary: fmt.Sprintf("错误：%s", err.Error()),
-	}
-	execUtils.SendExecMsg(root, consts.Processor, wsMsg)
-
-	result := execDomain.ScenarioExecResult{
-		ID:       -2,
-		ParentId: -1,
-		Name:     "执行失败",
-		Summary:  fmt.Sprintf("错误：%s", err.Error()),
-	}
-	execUtils.SendExecMsg(result, consts.Processor, wsMsg)
 }

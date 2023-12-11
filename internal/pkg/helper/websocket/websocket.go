@@ -27,10 +27,11 @@ func SendExecMsg(msg string, log interface{}, category consts.WsMsgCategory, wsM
 	if wsMsg != nil {
 		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, msg))
 
-		mqData := _domain.MqMsg{Namespace: wsMsg.Namespace,
-			Room:    wsMsg.Room,
-			Event:   wsMsg.Event,
-			Content: string(bytes),
+		mqData := _domain.MqMsg{
+			Namespace: wsMsg.Namespace,
+			Room:      wsMsg.Room,
+			Event:     wsMsg.Event,
+			Content:   string(bytes),
 		}
 
 		PubMsg(mqData)

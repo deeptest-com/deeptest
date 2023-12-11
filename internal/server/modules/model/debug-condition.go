@@ -18,7 +18,7 @@ type DebugPreCondition struct {
 	IsForBenchmarkCase bool `gorm:"default:0" json:"isForBenchmarkCase"`
 
 	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Desc string `gorm:"type:text" json:"desc"`
 	Ordr int    `json:"ordr"`
 }
 
@@ -39,7 +39,7 @@ type DebugPostCondition struct {
 	IsForBenchmarkCase bool `gorm:"default:0" json:"isForBenchmarkCase"`
 
 	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Desc string `gorm:"type:text" json:"desc"`
 	Ordr int    `json:"ordr"`
 }
 

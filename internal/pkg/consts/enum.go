@@ -588,8 +588,7 @@ func (e TimeUnit) ToString() string {
 type ExecType string
 
 const (
-	ExecStart ExecType = "start"
-	ExecStop  ExecType = "stop"
+	ExecStop ExecType = "stop"
 
 	ExecScenario ExecType = "execScenario"
 	ExecPlan     ExecType = "execPlan"

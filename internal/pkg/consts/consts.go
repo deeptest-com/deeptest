@@ -21,7 +21,7 @@ const (
 	ApiPathMock   = "/mocks"
 	WsPath        = ApiPathAgent + "/ws"
 
-	WsDefaultNameSpace = "default"
+	WsDefaultNamespace = "default"
 	WsDefaultRoom      = "default"
 	WsChatEvent        = "OnChat"
 

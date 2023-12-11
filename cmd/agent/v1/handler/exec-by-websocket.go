@@ -23,7 +23,7 @@ type ExecByWebSocketCtrl struct {
 }
 
 func NewWebsocketCtrl() *ExecByWebSocketCtrl {
-	inst := &ExecByWebSocketCtrl{Namespace: consts.WsDefaultNameSpace}
+	inst := &ExecByWebSocketCtrl{Namespace: consts.WsDefaultNamespace}
 	return inst
 }
 

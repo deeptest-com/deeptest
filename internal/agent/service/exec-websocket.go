@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
+	"github.com/savsgio/gotils/strings"
 	"runtime/debug"
 )
 
@@ -30,10 +31,12 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 	}
 
 	// already running
-	if isRunning && (act == consts.ExecStart) {
-		if req.ScenarioExecReq.ScenarioId > 0 {
-			execUtils.SendAlreadyRunningMsg(req.ScenarioExecReq.ScenarioId, consts.Processor, wsMsg)
-		}
+	if isRunning && (strings.Include([]string{
+		consts.ExecScenario.String(),
+		consts.ExecPlan.String(),
+		consts.ExecCase.String(),
+	}, act.String())) {
+		execUtils.SendAlreadyRunningMsg(consts.Processor, wsMsg)
 		return
 	}
 

@@ -136,6 +136,10 @@ func (r *PostConditionRepo) Get(id uint) (po model.DebugPostCondition, err error
 }
 
 func (r *PostConditionRepo) Save(po *model.DebugPostCondition) (err error) {
+	if po.Ordr == 0 {
+		po.Ordr = r.GetMaxOrder(po.DebugInterfaceId, po.EndpointInterfaceId, po.IsForBenchmarkCase)
+	}
+
 	err = r.DB.Save(po).Error
 	return
 }
@@ -482,7 +486,8 @@ func (r *PostConditionRepo) GetByDebugInterfaceId(debugInterfaceId, endpointInte
 	return
 }
 
-func (r *PostConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId uint, codes []string, by consts.UsedBy) (po model.DebugPostCondition, err error) {
+func (r *PostConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId uint, codes []string, by consts.UsedBy) (
+	po model.DebugPostCondition, err error) {
 
 	responseDefine := model.DebugConditionResponseDefine{}
 	responseDefine.Code = "200"
@@ -501,6 +506,28 @@ func (r *PostConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId ui
 	po.UsedBy = by
 	po.EntityId = responseDefine.ID
 	err = r.Save(&po)
+
+	return
+}
+
+func (r *PostConditionRepo) GetMaxOrder(debugInterfaceId, endpointInterfaceId uint, isForBenchmarkCase bool) (order int) {
+	postCondition := model.DebugPostCondition{}
+
+	db := r.DB.Model(&postCondition).
+		Where("is_for_benchmark_case", isForBenchmarkCase)
+
+	if debugInterfaceId > 0 {
+		db.Where("debug_interface_id=?", debugInterfaceId)
+	} else {
+		db.Where("endpoint_interface_id=? AND debug_interface_id=?", endpointInterfaceId, 0)
+	}
+
+	err := db.Order("ordr DESC").
+		First(&postCondition).Error
+
+	if err == nil {
+		order = postCondition.Ordr + 1
+	}
 
 	return
 }

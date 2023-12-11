@@ -6,6 +6,7 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
 	"runtime/debug"
 )
@@ -14,6 +15,8 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 	act := req.Act
 	execUuid := getExecUuid(req)
 	if execUuid == "" {
+		logUtils.Info("****** execUuid is empty")
+		logUtils.Infof("%v", req)
 		return
 	}
 

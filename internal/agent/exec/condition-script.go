@@ -198,9 +198,9 @@ func defineJsFuncs(execUuid string) (err error) {
 func SetReqValueToGoja(req *domain.BaseRequest) {
 	SetValueToGoja("request", req)
 }
-func SetRespValueToGoja(resp domain.DebugResponse) {
+func SetRespValueToGoja(resp *domain.DebugResponse) {
 	// set resp.Data to json object for goja edit
-	if httpHelper.IsJsonResp(resp) {
+	if httpHelper.IsJsonResp(*resp) {
 		var data interface{}
 		err := json.Unmarshal([]byte(resp.Content), &data)
 		if err == nil {

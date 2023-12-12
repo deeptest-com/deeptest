@@ -17,7 +17,7 @@ func ConvertValueForPersistence(obj interface{}) (value string, valueType consts
 		valueType = consts.ExtractorResultTypeString
 
 	case float64:
-		value = fmt.Sprintf("%d", obj)
+		value = fmt.Sprintf("%v", obj)
 		valueType = consts.ExtractorResultTypeNumber
 
 	case bool:

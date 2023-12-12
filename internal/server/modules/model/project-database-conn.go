@@ -7,7 +7,7 @@ type DatabaseConn struct {
 
 	Name string              `json:"name"`
 	Type consts.DatabaseType `json:"type"`
-	Desc string              `json:"desc"`
+	Desc string              `gorm:"type:text" json:"desc"`
 
 	Host     string `json:"host"`
 	Port     string `json:"port"`

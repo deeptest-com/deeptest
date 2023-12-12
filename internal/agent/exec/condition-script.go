@@ -195,7 +195,7 @@ func defineJsFuncs(execUuid string) (err error) {
 	return
 }
 
-func SetReqValueToGoja(req domain.BaseRequest) {
+func SetReqValueToGoja(req *domain.BaseRequest) {
 	SetValueToGoja("request", req)
 }
 func SetRespValueToGoja(resp domain.DebugResponse) {

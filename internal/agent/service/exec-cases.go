@@ -83,7 +83,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	statusPreCondition, _ := agentExec.ExecPreConditions(caseInterfaceExecObj, execUuid) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData, execUuid)
 
-	agentExec.SetReqValueToGoja(caseInterfaceExecObj.DebugData.BaseRequest)
+	agentExec.SetReqValueToGoja(&caseInterfaceExecObj.DebugData.BaseRequest)
 	agentExec.GetReqValueFromGoja(execUuid)
 
 	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip

@@ -9,6 +9,7 @@ import (
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
@@ -128,6 +129,9 @@ func defineJsFuncs(execUuid string) (err error) {
 			scopeId = GetCurrScenarioProcessor(execUuid).ParentId
 		}
 		vari, _ := GetVariable(scopeId, name, execUuid)
+
+		vari.Value, _ = commUtils.ConvertValueForUse(vari.Value, vari.ValueType)
+
 		return vari.Value
 	})
 	err = execRuntime.Set("setVariable", func(name string, val interface{}) {

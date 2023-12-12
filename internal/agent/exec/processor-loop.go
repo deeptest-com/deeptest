@@ -114,7 +114,7 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 				if entity.ProcessorType == consts.ProcessorLoopTime {
 					round = fmt.Sprintf("第 %v 轮", index+1)
 				} else {
-					desc, _ := commUtils.ConvertValueForStore(item)
+					desc, _ := commUtils.ConvertValueForPersistence(item)
 					round = fmt.Sprintf("第 %v 轮，%v = %v", index+1, iterator.VariableName, desc)
 				}
 

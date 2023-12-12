@@ -97,7 +97,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 		return err1
 	}
 
-	agentExec.SetRespValueToGoja(resultResp)
+	agentExec.SetRespValueToGoja(&resultResp)
 	statusPostCondition, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp, execUuid)
 	agentExec.GetRespValueFromGoja(execUuid)
 	PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)

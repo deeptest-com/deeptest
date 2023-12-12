@@ -57,7 +57,7 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 	}
 
 	extractor.ResultType = resultType
-	extractor.Result = strings.TrimSpace(valueUtils.InterfaceToStr(result))
+	extractor.Result = valueUtils.InterfaceToStr(result)
 	extractor.ResultStatus = consts.Pass
 	if extractor.Result == "" {
 		extractor.ResultStatus = consts.Fail

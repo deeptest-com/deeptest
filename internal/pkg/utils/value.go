@@ -7,7 +7,7 @@ import (
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 )
 
-func ConvertValueForStore(obj interface{}) (value string, valueType consts.ExtractorResultType) {
+func ConvertValueForPersistence(obj interface{}) (value string, valueType consts.ExtractorResultType) {
 	value = ""
 	valueType = consts.ExtractorResultTypeString
 

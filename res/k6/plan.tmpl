@@ -1,0 +1,22 @@
+import http from "k6/http";
+
+{% macro user_scenario_option(scenario) %}
+    {{scenario.name}}: {
+      executor: '{{scenario.executor}}',
+      exec: '{{scenario.func}}',
+      vus: {{scenario.vues}},
+      duration: '{{scenario.duration}}s'
+    },
+{% endmacro %}
+
+export const options = {
+  scenarios: {
+    {% for scenario in scenarios %}
+        {{ user_scenario_option(scenario) }}
+    {% endfor %}
+  },
+};
+
+export default function () {
+  ${codes}
+}

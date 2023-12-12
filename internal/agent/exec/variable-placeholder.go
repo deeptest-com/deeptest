@@ -50,7 +50,7 @@ func getPlaceholderVariableValue(name string, execUuid string) (ret string) {
 
 	if typ == consts.PlaceholderTypeVariable {
 		variable, _ := GetVariable(GetCurrScenarioProcessorId(execUuid), name, execUuid)
-		ret, _ = commUtils.ConvertValueForStore(variable.Value)
+		ret, _ = commUtils.ConvertValueForPersistence(variable.Value)
 
 	} else if typ == consts.PlaceholderTypeDatapool {
 		ret = getDatapoolValue(name, execUuid)

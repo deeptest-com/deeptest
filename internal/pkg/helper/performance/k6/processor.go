@@ -4,6 +4,6 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 )
 
-func LoopToCode(loop agentExec.Processor) (script string, jslibs []string, err error) {
+func genChildrenContent(children []*agentExec.Processor) (content string, err error) {
 	return
 }

@@ -132,7 +132,7 @@ func generateGovaluateParamsWithVariables(expression string, execUuid string) (r
 		variNameWithoutPlus := strings.TrimLeft(varName, "+")
 
 		vari, _ := GetVariable(GetCurrScenarioProcessorId(execUuid), variNameWithoutPlus, execUuid)
-		variValueStr, _ := commUtils.ConvertValueForStore(vari.Value)
+		variValueStr, _ := commUtils.ConvertValueForPersistence(vari.Value)
 
 		var val interface{}
 		if strings.Index(varName, "+") == 0 { // is a number like ${+id}

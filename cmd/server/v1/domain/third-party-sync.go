@@ -102,3 +102,8 @@ type ProjectInfo struct {
 	NameEngAbbr string     `json:"nameEngAbbr"` // 英文名称缩写
 	SpaceAdmins []UserInfo `json:"spaceAdmins"` // 空间管理员
 }
+
+type UserMenuPermission struct {
+	Permission string               `json:"permission"`
+	Children   []UserMenuPermission `json:"children"`
+}

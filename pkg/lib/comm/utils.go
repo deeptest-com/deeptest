@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"crypto/aes"
 	"crypto/cipher"
+	"crypto/hmac"
+	"crypto/md5"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
@@ -366,4 +368,16 @@ func RandStr(n int) string {
 		b[i] = letters[rand.Intn(len(letters))]
 	}
 	return string(b)
+}
+
+func EncryptHmacMd5(key, data string) string {
+	hash := hmac.New(md5.New, []byte(key))
+	hash.Write([]byte(data))
+	return hex.EncodeToString(hash.Sum([]byte("")))
+}
+
+func GetSign(appKey, appSecret, nonce, timestamp, body string) (sign string) {
+	preSignStr := strings.Join([]string{appKey, timestamp, nonce, body}, "")
+	sign = EncryptHmacMd5(appSecret, preSignStr)
+	return
 }

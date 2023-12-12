@@ -67,9 +67,15 @@ type Captcha struct {
 }
 
 type ThirdParty struct {
-	Username string `mapstructure:"username" json:"username" yaml:"username"`
-	Password string `mapstructure:"password" json:"password" yaml:"password"`
-	Url      string `mapstructure:"url" json:"url" yaml:"url"`
+	Username string  `mapstructure:"username" json:"username" yaml:"username"`
+	Password string  `mapstructure:"password" json:"password" yaml:"password"`
+	Url      string  `mapstructure:"url" json:"url" yaml:"url"`
+	ApiSign  ApiSign `mapstructure:"apiSign" json:"apiSign" yaml:"apiSign"`
+}
+
+type ApiSign struct {
+	AppKey    string `mapstructure:"appKey" json:"appKey" yaml:"appKey"`
+	AppSecret string `mapstructure:"appSecret" json:"appSecret" yaml:"appSecret"`
 }
 
 type Mcs struct {

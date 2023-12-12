@@ -8,7 +8,10 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"strconv"
+	"time"
 )
 
 type RemoteService struct {
@@ -330,27 +333,44 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectI
 	return
 }
 
-// GetUserButtonPermissions TODO 临时参数，要改
-func (s *RemoteService) GetUserButtonPermissions(token, spaceCode string) (ret []string, err error) {
-	url := fmt.Sprintf("%s/api/v1/sysMenus/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
+func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (ret []string, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
 
+	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
+	xNancalNonceStr := _commUtils.RandStr(8)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
 		Headers: []domain.Header{
 			{
-				Name:  "X-Token",
-				Value: token,
+				Name:  "x-nancal-appkey",
+				Value: config.CONFIG.ThirdParty.ApiSign.AppKey,
+			},
+			{
+				Name:  "x-nancal-timestamp",
+				Value: xNancalTimestamp,
+			},
+			{
+				Name:  "x-nancal-nonce-str",
+				Value: xNancalNonceStr,
+			},
+			{
+				Name:  "x-nancal-sign",
+				Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, ""),
 			},
 		},
 		QueryParams: []domain.Param{
 			{
 				Name:  "typeStr",
-				Value: "[30]",
+				Value: "[20,30]",
 			},
 			{
-				Name:  "projectId",
-				Value: "25",
+				Name:  "nameEng",
+				Value: spaceCode,
+			},
+			{
+				Name:  "username",
+				Value: username,
 			},
 		},
 	}
@@ -363,13 +383,88 @@ func (s *RemoteService) GetUserButtonPermissions(token, spaceCode string) (ret [
 
 	if resp.StatusCode != consts.OK {
 		logUtils.Infof("get UserButtonPermissions failed, response %v", resp)
-		err = fmt.Errorf("get UserButtonPermissions failed failed, response %v", resp)
+		err = fmt.Errorf("get UserButtonPermissions failed, response %v", resp)
 		return
 	}
 
 	respContent := struct {
 		Code int
 		Data []string
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("getUserButtonPermissions failed, response %v", resp)
+		err = fmt.Errorf("get UserButtonPermissions failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret []v1.UserMenuPermission, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenu", config.CONFIG.ThirdParty.Url)
+
+	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
+	xNancalNonceStr := _commUtils.RandStr(8)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers: []domain.Header{
+			{
+				Name:  "x-nancal-appkey",
+				Value: config.CONFIG.ThirdParty.ApiSign.AppKey,
+			},
+			{
+				Name:  "x-nancal-timestamp",
+				Value: xNancalTimestamp,
+			},
+			{
+				Name:  "x-nancal-nonce-str",
+				Value: xNancalNonceStr,
+			},
+			{
+				Name:  "x-nancal-sign",
+				Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, ""),
+			},
+		},
+		QueryParams: []domain.Param{
+			{
+				Name:  "typeStr",
+				Value: "[10,20]",
+			},
+			{
+				Name:  "nameEng",
+				Value: spaceCode,
+			},
+			{
+				Name:  "username",
+				Value: username,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get GetUserMenuPermissions failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK {
+		logUtils.Infof("get GetUserMenuPermissions failed, response %v", resp)
+		err = fmt.Errorf("get GetUserMenuPermissions failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []v1.UserMenuPermission
 		Msg  string
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)

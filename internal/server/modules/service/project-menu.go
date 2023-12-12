@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -38,34 +39,21 @@ func (s *ProjectMenuService) GetUserMenuList(projectId, userId uint) (ret []mode
 	return
 }
 
-func (s *ProjectMenuService) GetUserButtonList(projectId, userId uint, xToken string) (ret []string, err error) {
-	//var roleId uint
-	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
-	if err != nil {
-		return
-	}
-
-	if isAdminUser {
-		// TODO 需要用角色名去乐研获取权限列表
-		//adminProjectRole, err := s.ProjectRoleRepo.GetAdminRecord()
-		//if err != nil {
-		//	return ret, err
-		//}
-		//roleId = adminProjectRole.ID
-	} else {
-		//projectMemberRole, err := s.ProjectRepo.FindRolesByProjectAndUser(projectId, userId)
-		//if err != nil {
-		//	return ret, err
-		//}
-		//roleId = projectMemberRole.ProjectRoleId
-
+func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint, userName string) (ret []string, err error) {
+	if config.CONFIG.System.SysEnv == "ly" {
 		project, err := s.ProjectRepo.Get(projectId)
 		if err != nil {
-			return
+			return ret, err
 		}
-		ret, err = s.RemoteService.GetUserButtonPermissions(xToken, project.ShortName)
+		ret, err = s.RemoteService.GetUserButtonPermissions(userName, project.ShortName)
+	} else {
+		projectMemberRole, err := s.ProjectRepo.FindRolesByProjectAndUser(projectId, userId)
+		if err != nil {
+			return ret, err
+		}
+		roleId := projectMemberRole.ProjectRoleId
+		ret, err = s.ProjectMenuRepo.GetRoleMenuCodeList(roleId)
 	}
 
-	//ret, err = s.ProjectMenuRepo.GetRoleMenuList(roleId)
 	return
 }

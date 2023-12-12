@@ -39,12 +39,12 @@ func (c *ProjectMenuCtrl) UserMenuList(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret, Msg: _domain.NoErr.Msg})
 }
 
-func (c *ProjectMenuCtrl) UserButtonList(ctx iris.Context) {
+func (c *ProjectMenuCtrl) UserMenuListNew(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
+	userName := multi.GetUsername(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
-	xToken := ctx.GetHeader("X-Token")
 
-	data, err := c.ProjectMenuService.GetUserButtonList(uint(projectId), userId, xToken)
+	data, err := c.ProjectMenuService.GetUserMenuListNew(uint(projectId), userId, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

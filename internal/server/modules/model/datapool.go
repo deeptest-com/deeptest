@@ -4,7 +4,7 @@ type Datapool struct {
 	BaseModel
 
 	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Desc string `gorm:"type:text" json:"desc"`
 
 	Path string `json:"path"`
 	Data string `gorm:"type:longtext" json:"data"`

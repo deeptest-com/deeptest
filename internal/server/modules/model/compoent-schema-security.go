@@ -6,7 +6,7 @@ type ComponentSchemaSecurity struct {
 	Type             string `json:"type"`
 	ProjectId        int64  `json:"project_id"`
 	ServeId          int64  `json:"serve_id"`
-	Description      string `json:"description"`
+	Description      string `gorm:"type:text" json:"description"`
 	In               string `json:"in"`
 	Scheme           string `json:"scheme"`
 	BearerFormat     string `json:"bearerFormat"`

@@ -206,7 +206,7 @@ func (r *EndpointCaseRepo) GetCategoryEndpointCase(projectId, serveId uint) (res
 
 	sql := fmt.Sprintf("select concat('case_',ec.id) as case_unique_id,concat('endpoint_',e.id) as endpoint_unique_id,ec.id as case_id,ec.name as case_name,i.method,ec.`desc` as case_desc,ec.endpoint_id as case_endpoint_id,ec.debug_interface_id as case_debug_interface_id,ec.project_id,ec.serve_id,e.id as endpoint_id,e.title as endpoint_title,e.description as endpoint_description,e.category_id as category_id from biz_endpoint_case ec left join biz_endpoint e on ec.endpoint_id=e.id left join biz_debug_interface i on ec.debug_interface_id=i.id Where ec.project_id= %d and not e.deleted and not ec.deleted", projectId)
 	if serveId != 0 {
-		sql = fmt.Sprintf("%s and ec.serve_id=%d", sql, serveId)
+		sql = fmt.Sprintf("%s and i.serve_id=%d", sql, serveId)
 	}
 	err = r.DB.Raw(sql).Scan(&result).Error
 	return

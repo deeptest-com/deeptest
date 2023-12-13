@@ -4,6 +4,6 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 )
 
-func genChildrenContent(children []*agentExec.Processor) (content string, err error) {
+func genProcessorChildrenContent(children []*agentExec.Processor) (content string, err error) {
 	return
 }

@@ -1,4 +1,10 @@
-import http from "k6/http";
+{# ====== MACRO ====== #}
+
+{% macro user_scenario_func(scenario) %}
+    export function {{scenario.name}}() {
+      {{scenario.codesGenerated}}
+    }
+{% endmacro %}
 
 {% macro user_scenario_option(scenario) %}
     {{scenario.name}}: {
@@ -9,14 +15,21 @@ import http from "k6/http";
     },
 {% endmacro %}
 
+
+{# ====== CODES ====== #}
+
+import http from "k6/http";
+
 export const options = {
   scenarios: {
-    {% for scenario in scenarios %}
+    {% for scenario in plan.scenarios %}
         {{ user_scenario_option(scenario) }}
     {% endfor %}
   },
 };
 
 export default function () {
-  ${codes}
+  {% for scenario in plan.scenarios %}
+      {{ user_scenario_func(scenario) }}
+  {% endfor %}
 }

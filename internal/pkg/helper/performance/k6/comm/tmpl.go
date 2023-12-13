@@ -6,7 +6,7 @@ import (
 )
 
 func GetTmpl(name string) (content string) {
-	tmplFile := filepath.Join("res", "k6", name+".ftl")
+	tmplFile := filepath.Join("res", "k6", name+".tmpl")
 	bytes, _ := deeptest.ReadResData(tmplFile)
 
 	content = string(bytes)

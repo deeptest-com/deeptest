@@ -6,8 +6,8 @@ import (
 	"os"
 )
 
-func GroupToCode(group agentExec.Processor) (script string, jslibs []string, err error) {
-	childrenContent, err := genChildrenContent(group.Children)
+func GroupCode(group agentExec.Processor) (script string, jslibs []string, err error) {
+	childrenContent, err := genProcessorChildrenContent(group.Children)
 
 	data := map[string]string{
 		"name": group.Name,

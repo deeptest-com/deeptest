@@ -17,5 +17,7 @@ type PerfScenario struct {
 	Vues     int                  `json:"vues"`
 	Duration int                  `json:"duration"`
 
+	CodesGenerated string `json:"codesGenerated"`
+
 	RootProcessor agentExec.Processor `json:"rootProcessor"`
 }

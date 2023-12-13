@@ -3,21 +3,21 @@ package k6Converter
 import (
 	k6Comm "github.com/aaronchen2k/deeptest/internal/pkg/helper/performance/k6/comm"
 	keDomain "github.com/aaronchen2k/deeptest/internal/pkg/helper/performance/k6/domain"
-	"os"
+	"github.com/flosch/pongo2/v4"
 )
 
 func PlanCode(plan keDomain.PerfPlan) (script string, err error) {
-	scenarios, err := ScenarioOptions(plan.Scenarios)
+	content := k6Comm.GetTmpl("plan")
 
-	codes, err := ScenarioCodes(plan.Scenarios)
-
-	data := map[string]string{
-		"scenarios": scenarios,
-		"codes":     codes,
+	tpl, err := pongo2.FromString(content)
+	if err != nil {
+		return
 	}
 
-	content := k6Comm.GetTmpl("plan")
-	script = os.Expand(content, func(k string) string { return data[k] })
+	script, err = tpl.Execute(pongo2.Context{"plan": plan})
+	if err != nil {
+		return
+	}
 
 	return
 }

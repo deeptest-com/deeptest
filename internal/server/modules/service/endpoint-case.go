@@ -210,8 +210,8 @@ func (s *EndpointCaseService) EndpointCaseToTo(po *serverDomain.InterfaceCase) (
 	return
 }
 
-func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDomain.EndpointCaseTree, err error) {
-	list, err := s.EndpointCaseRepo.GetCategoryEndpointCase(projectId, serveId)
+func (s *EndpointCaseService) LoadTree(projectId uint, serveIds consts.Integers) (ret []*serverDomain.EndpointCaseTree, err error) {
+	list, err := s.EndpointCaseRepo.GetCategoryEndpointCase(projectId, serveIds)
 	if err != nil {
 		return
 	}
@@ -275,7 +275,6 @@ func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDo
 		IsDir:     true,
 		ParentId:  "category_" + strconv.FormatInt(int64(categories[0].ID), 10),
 		ProjectId: projectId,
-		ServeId:   serveId,
 		Slots:     iris.Map{"icon": "icon"},
 	}
 

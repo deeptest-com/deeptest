@@ -23,7 +23,7 @@ func (m *EndpointCaseModule) Party() module.WebModule {
 		public.Put("/updateName", m.EndpointCaseCtrl.UpdateName).Name = "保存用例名称"
 		public.Post("/saveDebugData", m.EndpointCaseCtrl.SaveDebugData).Name = "保存调试数据"
 		public.Delete("/{id:uint}", m.EndpointCaseCtrl.Remove).Name = "删除用例"
-		public.Get("/loadTree", m.EndpointCaseCtrl.LoadTree).Name = "分类接口用例树"
+		public.Post("/loadTree", m.EndpointCaseCtrl.LoadTree).Name = "分类接口用例树"
 		public.Get("/listForBenchmark", m.EndpointCaseCtrl.ListForBenchmark).Name = "分类接口用例树"
 
 	}

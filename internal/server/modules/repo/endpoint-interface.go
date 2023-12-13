@@ -34,8 +34,8 @@ func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (r
 	if req.Keywords != "" {
 		db = db.Where("biz_endpoint_interface.name LIKE ? or biz_endpoint_interface.url LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords), fmt.Sprintf("%%%s%%", req.Keywords))
 	}
-	if req.ServeId != 0 {
-		db = db.Where("e.serve_id = ?", req.ServeId)
+	if len(req.ServeIds) != 0 {
+		db = db.Where("e.serve_id in ?", req.ServeIds)
 	}
 
 	if req.CategoryId > 0 {

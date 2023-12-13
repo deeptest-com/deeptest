@@ -24,10 +24,10 @@ type EndpointReqPaginate struct {
 type EndpointInterfaceReqPaginate struct {
 	_domain.PaginateReq
 
-	ServeId    uint   `json:"serveId"`
-	Keywords   string `json:"Keywords"`
-	CategoryId int64  `json:"categoryId"`
-	ProjectId  uint   `json:"projectId"`
+	ServeIds   consts.Integers `json:"serveIds"`
+	Keywords   string          `json:"Keywords"`
+	CategoryId int64           `json:"categoryId"`
+	ProjectId  uint            `json:"projectId"`
 }
 
 type OpenApiParam struct {

@@ -429,7 +429,7 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 }
 
 func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) {
-	if _commUtils.InSlice(req.FieldName, []string{"status", "categoryId", "serveId"}) {
+	if _commUtils.InSlice(req.FieldName, []string{"status", "categoryId", "serveId", "description"}) {
 		err = s.EndpointRepo.BatchUpdate(req.EndpointIds, map[string]interface{}{_commUtils.Camel2Case(req.FieldName): req.Value})
 		if req.FieldName == "serveId" { //修改debug表serveId
 			if serveId, ok := req.Value.(float64); ok {

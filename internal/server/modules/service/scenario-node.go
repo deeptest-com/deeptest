@@ -99,13 +99,13 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		EntityCategory:        req.ProcessorCategory,
 		EntityType:            req.ProcessorType,
 		ProcessorInterfaceSrc: req.ProcessorInterfaceSrc,
-
-		ScenarioId: targetProcessor.ScenarioId,
-		ProjectId:  req.ProjectId,
-		CreatedBy:  req.CreateBy,
-		BaseModel:  model.BaseModel{Disabled: targetProcessor.Disabled},
-		Comments:   req.Comments,
-		Method:     req.Method,
+		EndpointInterfaceId:   targetProcessor.EndpointInterfaceId,
+		ScenarioId:            targetProcessor.ScenarioId,
+		ProjectId:             req.ProjectId,
+		CreatedBy:             req.CreateBy,
+		BaseModel:             model.BaseModel{Disabled: targetProcessor.Disabled},
+		Comments:              req.Comments,
+		Method:                req.Method,
 	}
 
 	if req.Mode == "child" {

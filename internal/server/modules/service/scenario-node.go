@@ -171,6 +171,7 @@ func (s *ScenarioNodeService) CopyInterfaceEntity(srcProcessorId, distProcessorI
 	}
 
 	debugData.ScenarioProcessorId = distProcessorId
+	debugData.UsedBy = consts.ScenarioDebug
 	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, debugData.DebugInterfaceId, debugData.UsedBy)
 	if err != nil {
 		return

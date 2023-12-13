@@ -197,16 +197,16 @@ func (r *EndpointCaseRepo) ListByProjectIdAndServeId(projectId, serveId uint) (e
 	return
 }
 
-func (r *EndpointCaseRepo) GetEndpointCount(projectId, serveId uint) (result []serverDomain.EndpointCount, err error) {
-	err = r.DB.Raw("select count(id) count,endpoint_id from "+model.EndpointCase{}.TableName()+" where not deleted and not disabled and project_id=? and serve_id =? group by endpoint_id", projectId, serveId).Scan(&result).Error
+func (r *EndpointCaseRepo) GetEndpointCount(projectId uint, serveIds consts.Integers) (result []serverDomain.EndpointCount, err error) {
+	err = r.DB.Raw("select count(id) count,endpoint_id from "+model.EndpointCase{}.TableName()+" where not deleted and not disabled and project_id=? and serve_id in ? group by endpoint_id", projectId, serveIds).Scan(&result).Error
 	return
 }
 
-func (r *EndpointCaseRepo) GetCategoryEndpointCase(projectId, serveId uint) (result []serverDomain.CategoryEndpointCase, err error) {
+func (r *EndpointCaseRepo) GetCategoryEndpointCase(projectId uint, serveIds consts.Integers) (result []serverDomain.CategoryEndpointCase, err error) {
 
 	sql := fmt.Sprintf("select concat('case_',ec.id) as case_unique_id,concat('endpoint_',e.id) as endpoint_unique_id,ec.id as case_id,ec.name as case_name,i.method,ec.`desc` as case_desc,ec.endpoint_id as case_endpoint_id,ec.debug_interface_id as case_debug_interface_id,ec.project_id,ec.serve_id,e.id as endpoint_id,e.title as endpoint_title,e.description as endpoint_description,e.category_id as category_id from biz_endpoint_case ec left join biz_endpoint e on ec.endpoint_id=e.id left join biz_debug_interface i on ec.debug_interface_id=i.id Where ec.project_id= %d and not e.deleted and not ec.deleted", projectId)
-	if serveId != 0 {
-		sql = fmt.Sprintf("%s and i.serve_id=%d", sql, serveId)
+	if len(serveIds) != 0 {
+		sql = fmt.Sprintf("%s and i.serve_id in (%s)", sql, serveIds.ToString())
 	}
 	err = r.DB.Raw(sql).Scan(&result).Error
 	return

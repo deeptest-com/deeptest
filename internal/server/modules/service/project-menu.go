@@ -40,6 +40,11 @@ func (s *ProjectMenuService) GetUserMenuList(projectId, userId uint) (ret []mode
 }
 
 func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint, userName string) (ret []string, err error) {
+	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
+	if err != nil || isAdminUser {
+		return
+	}
+
 	if config.CONFIG.System.SysEnv == "ly" {
 		project, err := s.ProjectRepo.Get(projectId)
 		if err != nil {

@@ -1,48 +1,48 @@
 [
   {
-    "code":"workspace",
+    "code":"p-api-workspace",
     "title":"工作台",
     "path":"/:projectNameAbbr/workspace",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"im",
+    "code":"p-api",
     "title":"接口定义",
     "path":"/:projectNameAbbr/IM",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"docs",
+    "code":"p-api-docs",
     "title":"接口文档",
     "path":"/:projectNameAbbr/docs",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"debug",
+    "code":"p-api-debug",
     "title":"快捷调试",
     "path":"/:projectNameAbbr/debug",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"ts",
+    "code":"p-api-ts",
     "title":"测试开发",
     "path":"/:projectNameAbbr/TS",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"tp",
+    "code":"p-api-tp",
     "title":"测试计划",
     "path":"/:projectNameAbbr/TP",
     "type":"menu",
     "parent":""
   },
   {
-    "code":"tr",
+    "code":"p-api-tr",
     "title":"测试报告",
     "path":"/:projectNameAbbr/TR",
     "type":"menu",
@@ -56,56 +56,56 @@
     "parent":""
   },
   {
-    "code":"project-setting-environment",
+    "code":"p-setting-api-env",
     "title":"环境管理",
     "path":"/:projectNameAbbr/project-setting/environment",
     "type":"menu",
     "parent":"project-setting"
   },
   {
-    "code":"project-setting-data-pool",
+    "code":"p-setting-api-datapool",
     "title":"数据池",
     "path":"/:projectNameAbbr/project-setting/data-pool",
     "type":"menu",
     "parent":"project-setting"
   },
   {
-    "code":"project-setting-service-setting",
+    "code":"p-setting-api-service",
     "title":"服务管理",
     "path":"/:projectNameAbbr/project-setting/service-setting",
     "type":"menu",
     "parent":"project-setting"
   },
   {
-    "code":"project-setting-members",
+    "code":"p-setting-api-members",
     "title":"成员管理",
     "path":"/:projectNameAbbr/project-setting/members",
     "type":"menu",
     "parent":"project-setting"
   },
   {
-    "code":"project-setting-mock",
+    "code":"p-setting-api-mock",
     "title":"Mock设置",
     "path":"/:projectNameAbbr/project-setting/mock",
     "type":"menu",
     "parent":"project-setting"
   },
   {
-    "code":"project-setting-jslib",
+    "code":"p-setting-api-jslib",
     "title":"自定义脚本库设置",
     "path":"/:projectNameAbbr/project-setting/jslib",
     "type":"menu",
     "parent":"project-setting"
   },
   {
-    "code":"project-setting-dbconn",
+    "code":"p-setting-api-dbconn",
     "title":"数据库连接设置",
     "path":"/:projectNameAbbr/project-setting/dbconn",
     "type":"menu",
     "parent":"project-setting"
   },
   {
-    "code":"project-setting-swaggerSync",
+    "code":"p-setting-api-autosync",
     "title":"自动同步",
     "path":"/:projectNameAbbr/project-setting/swaggerSync",
     "type":"menu",
@@ -116,287 +116,301 @@
     "title":"新建接口",
     "path":"",
     "type":"button",
-    "parent":"im"
+    "parent":"p-api"
   },
   {
     "code":"endpoint-copy-interface",
     "title":"复制",
     "path":"",
     "type":"button",
-    "parent":"im"
+    "parent":"p-api"
   },
   {
-    "code":"endpoint-delete-interface",
+    "code":"p-api-endpoint-del",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"im"
+    "parent":"p-api"
   },
   {
     "code":"endpoint-outdated-interface",
     "title":"过时",
     "path":"",
     "type":"button",
-    "parent":"im"
+    "parent":"p-api"
+  },
+  {
+    "code":"p-api-debug-del",
+    "title":"删除",
+    "path":"",
+    "type":"button",
+    "parent":"p-api-debug"
   },
   {
     "code":"scenario-create",
     "title":"新建",
     "path":"",
     "type":"button",
-    "parent":"ts"
+    "parent":"p-api-ts"
   },
   {
     "code":"scenario-execute",
     "title":"执行",
     "path":"",
     "type":"button",
-    "parent":"ts"
+    "parent":"p-api-ts"
   },
   {
     "code":"scenario-design",
     "title":"设计",
     "path":"",
     "type":"button",
-    "parent":"ts"
+    "parent":"p-api-ts"
   },
   {
     "code":"scenario-edit",
     "title":"编辑",
     "path":"",
     "type":"button",
-    "parent":"ts"
+    "parent":"p-api-ts"
   },
   {
-    "code":"scenario-delete",
+    "code":"p-api-ts-del",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"ts"
+    "parent":"p-api-ts"
   },
   {
     "code":"scenario-start-execute",
     "title":"开始执行",
     "path":"",
     "type":"button",
-    "parent":"ts"
+    "parent":"p-api-ts"
   },
   {
     "code":"plan-create",
     "title":"新建",
     "path":"",
     "type":"button",
-    "parent":"tp"
+    "parent":"p-api-tp"
   },
   {
     "code":"plan-execute",
     "title":"执行",
     "path":"",
     "type":"button",
-    "parent":"tp"
+    "parent":"p-api-tp"
   },
   {
-    "code":"plan-delete",
+    "code":"p-api-tp-del",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"tp"
+    "parent":"p-api-tp"
   },
   {
     "code":"report-export",
     "title":"导出报告",
     "path":"",
     "type":"button",
-    "parent":"tr"
+    "parent":"p-api-tr"
+  },
+  {
+    "code":"p-api-tr-del",
+    "title":"删除",
+    "path":"",
+    "type":"button",
+    "parent":"p-api-tr"
   },
   {
     "code":"project-setting-environment-add-global-variable",
     "title":"添加",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-environment-save-global-variable",
     "title":"保存",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-environment-delete-global-variable",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-environment-add-global-param",
     "title":"添加",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-environment-save-global-param",
     "title":"保存",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-environment-delete-global-param",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-environment-link-service",
     "title":"关联服务",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-environment-unlink-service",
     "title":"解除关联",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-environment-add-environment-variable",
     "title":"添加",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-environment-delete-environment-variable",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-environment-save-environment",
     "title":"保存",
     "path":"",
     "type":"button",
-    "parent":"project-setting-environment"
+    "parent":"p-setting-api-env"
   },
   {
     "code":"project-setting-service-setting-service-component",
     "title":"服务组件",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-service-version",
     "title":"服务版本",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-security",
     "title":"security",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-disable",
     "title":"禁用",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-copy",
     "title":"复制",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-delete",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-add-version",
     "title":"新加版本",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-expire-version",
     "title":"过期",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-delete-version",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-add-component",
     "title":"新建组件",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-copy-component",
     "title":"复制",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-delete-component",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-add-security",
     "title":"添加Security",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-service-setting-delete-security",
     "title":"删除",
     "path":"",
     "type":"button",
-    "parent":"project-setting-service-setting"
+    "parent":"p-setting-api-service"
   },
   {
     "code":"project-setting-members-invite",
     "title":"邀请",
     "path":"",
     "type":"button",
-    "parent":"project-setting-members"
+    "parent":"p-setting-api-members"
   },
   {
     "code":"project-setting-members-delete",
     "title":"移除",
     "path":"",
     "type":"button",
-    "parent":"project-setting-members"
+    "parent":"p-setting-api-members"
   },
   {
     "code":"user-manage-list",
@@ -429,6 +443,41 @@
   {
     "code":"user-manage-delete",
     "title":"删除",
+    "path":"",
+    "type":"button",
+    "parent":""
+  },
+  {
+    "code":"p-project-create",
+    "title":"新建项目",
+    "path":"",
+    "type":"button",
+    "parent":""
+  },
+  {
+    "code":"p-project-exit",
+    "title":"退出项目",
+    "path":"",
+    "type":"button",
+    "parent":""
+  },
+  {
+    "code":"p-project-edit",
+    "title":"编辑",
+    "path":"",
+    "type":"button",
+    "parent":""
+  },
+  {
+    "code":"p-project-del",
+    "title":"删除",
+    "path":"",
+    "type":"button",
+    "parent":""
+  },
+  {
+    "code":"p-project-apply",
+    "title":"申请加入",
     "path":"",
     "type":"button",
     "parent":""

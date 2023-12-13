@@ -305,6 +305,7 @@ type ConditionCategory string
 
 const (
 	ConditionCategoryResult   ConditionCategory = "result"
+	PostCondition             ConditionCategory = "postCondition"
 	ConditionCategoryConsole  ConditionCategory = "console"
 	ConditionCategoryAssert   ConditionCategory = "assert"
 	ConditionCategoryAll      ConditionCategory = "all"

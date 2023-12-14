@@ -125,7 +125,9 @@ func ReplaceVariables(req *domain.BaseRequest, execUuid string) {
 }
 
 func DealwithCookies(req *domain.BaseRequest, processorId uint, execUuid string) {
-	*req.Cookies = ListScopeCookie(processorId, execUuid)
+	if req.Cookies != nil {
+		*req.Cookies = ListScopeCookie(processorId, execUuid)
+	}
 }
 
 func replaceUrl(req *domain.BaseRequest, execUuid string) {
@@ -158,9 +160,9 @@ func replaceQueryParams(req *domain.BaseRequest, execUuid string) {
 			(*req.QueryParams)[idx].Value = ReplaceVariableValue(param.Value, execUuid)
 			queryParams = append(queryParams, (*req.QueryParams)[idx])
 		}
+		req.QueryParams = &queryParams
 	}
 
-	req.QueryParams = &queryParams
 }
 
 func replacePathParams(req *domain.BaseRequest, execUuid string) {
@@ -174,9 +176,8 @@ func replacePathParams(req *domain.BaseRequest, execUuid string) {
 			(*req.PathParams)[idx].Value = ReplaceVariableValue(param.Value, execUuid)
 			pathParams = append(pathParams, (*req.PathParams)[idx])
 		}
+		req.PathParams = &pathParams
 	}
-
-	req.PathParams = &pathParams
 
 	return
 }
@@ -205,9 +206,9 @@ func replaceHeaders(req *domain.BaseRequest, execUuid string) {
 			(*req.Headers)[idx].Value = ReplaceVariableValue(header.Value, execUuid)
 			headers = append(headers, (*req.Headers)[idx])
 		}
+		req.Headers = &headers
 	}
 
-	req.Headers = &headers
 }
 func replaceCookies(req *domain.BaseRequest, execUuid string) {
 	if req.GlobalParams != nil {
@@ -234,9 +235,9 @@ func replaceCookies(req *domain.BaseRequest, execUuid string) {
 			(*req.Cookies)[idx].Value = ReplaceVariableValue(_stringUtils.InterfToStr(cookie.Value), execUuid)
 			cookies = append(cookies, (*req.Cookies)[idx])
 		}
+		*req.Cookies = cookies
 	}
 
-	*req.Cookies = cookies
 }
 func replaceFormBodies(req *domain.BaseRequest, execUuid string) {
 	if req.GlobalParams != nil {

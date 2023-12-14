@@ -9,6 +9,7 @@ import (
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
+	"runtime/debug"
 	"time"
 )
 
@@ -86,7 +87,7 @@ func (p *Processor) Error(s *Session, err interface{}) {
 
 	detail["exception"] = fmt.Sprintf("错误：%v", err)
 	p.Result.Detail = commonUtils.JsonEncode(detail)
-
+	fmt.Printf("err=%v, stack=%s\n", err, string(debug.Stack()))
 	p.AddResultToParent()
 	execUtils.SendExecMsg(p.Result, consts.Processor, s.WsMsg)
 

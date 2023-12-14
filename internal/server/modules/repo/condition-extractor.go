@@ -194,7 +194,10 @@ func (r *ExtractorRepo) CreateDefault(conditionId uint) (po model.DebugCondition
 		},
 	}
 
-	r.Save(&po)
+	_, err := r.Save(&po)
+	if err != nil {
+		return
+	}
 
 	return
 }

@@ -172,7 +172,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 
 	err = json.Unmarshal(bytes, &ret)
 	if err != nil {
-		logUtils.Infof("get exec obj failed,err:%v", err)
+		logUtils.Infof("get exec obj failed,err:%v", err.Error())
 	}
 	response, _ := json.Marshal(ret)
 	logUtils.Infof("get exec obj ret: %v", string(response))

@@ -26,3 +26,8 @@ type RoleBase struct {
 
 	Perms [][]string `gorm:"-" json:"perms"`
 }
+
+type RoleMenuConfig struct {
+	RoleName string   `json:"role_name"`
+	Menus    []string `json:"menus"`
+}

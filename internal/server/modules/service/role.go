@@ -1,13 +1,20 @@
 package service
 
 import (
+	"encoding/json"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"go.uber.org/zap"
+	"io/ioutil"
 )
 
 type RoleService struct {
 	RoleRepo *repo.RoleRepo `inject:""`
+	UserRepo *repo.UserRepo `inject:""`
 }
 
 // Paginate
@@ -55,4 +62,43 @@ func (s *RoleService) GetRoleIds() ([]uint, error) {
 
 func (s *RoleService) AllRoleList() ([]v1.RoleResp, error) {
 	return s.RoleRepo.GetAllRoles()
+}
+
+func (s *RoleService) GetAuthByEnv(userId uint) (res []string, err error) {
+	if config.CONFIG.System.SysEnv != "ly" {
+		user, err := s.UserRepo.FindDetailById(userId)
+		if err != nil {
+			return res, err
+		}
+		res, err = s.GetRoleMenuConfig(user.SysRoles)
+	}
+
+	return
+}
+
+func (s *RoleService) GetRoleMenuConfig(roles []string) (menus []string, err error) {
+
+	data, err := ioutil.ReadFile("config/sample/sys-role-menu.json")
+	if err != nil {
+		logUtils.Errorf("load sys role menu config err ", zap.String("错误:", err.Error()))
+		return
+	}
+	roleMenuConfigs := make([]v1.RoleMenuConfig, 0)
+	err = json.Unmarshal(data, &roleMenuConfigs)
+	if err != nil {
+		logUtils.Errorf("unmarshall sys role menu config err ", zap.String("错误:", err.Error()))
+		return
+	}
+
+	roleMenuConfigMap := make(map[string][]string)
+	for _, v := range roleMenuConfigs {
+		roleMenuConfigMap[v.RoleName] = v.Menus
+	}
+
+	for _, v := range roles {
+		menus = append(menus, roleMenuConfigMap[v]...)
+	}
+
+	menus = _commUtils.ArrayRemoveDuplication(menus)
+	return
 }

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
@@ -275,6 +276,7 @@ func (s *ProjectService) CreateProjectForThirdParty(project v1.ProjectInfo) (pro
 			ShortName: project.NameEngAbbr,
 			AdminId:   adminUser.ID,
 			AdminName: adminName,
+			Source:    serverConsts.ProjectSourceLY,
 		},
 	}
 	projectId, createErr := s.Create(createReq, adminUser.ID)

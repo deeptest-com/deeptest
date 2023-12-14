@@ -240,13 +240,10 @@ func (c *EndpointCaseCtrl) Remove(ctx iris.Context) {
 // @Router	/api/v1/endpoints/cases/loadTree	[get]
 func (c *EndpointCaseCtrl) LoadTree(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")
-	serveId, err := ctx.URLParamInt("serveId")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "serveId can't be empty"})
-		return
-	}
+	var serveIds consts.Integers
+	ctx.ReadJSON(&serveIds)
 
-	data, err := c.EndpointCaseService.LoadTree(uint(projectId), uint(serveId))
+	data, err := c.EndpointCaseService.LoadTree(uint(projectId), serveIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

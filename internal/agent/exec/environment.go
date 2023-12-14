@@ -20,8 +20,10 @@ func GenRequestUrlWithBaseUrlAndPathParam(req *domain.BaseRequest, debugInterfac
 		baseUrl = fmt.Sprintf("%v", vari.Value)
 	}
 
-	req.Url = ReplacePathParams(req.Url, *req.PathParams)
-
+	if req.PathParams != nil {
+		req.Url = ReplacePathParams(req.Url, *req.PathParams)
+	}
+	
 	notUseBaseUrl := execUtils.IsUseBaseUrl(consts.ScenarioDebug, req.ProcessorInterfaceSrc)
 	if !notUseBaseUrl {
 		req.Url = _httpUtils.CombineUrls(baseUrl, req.Url)

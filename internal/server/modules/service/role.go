@@ -68,12 +68,12 @@ func (s *RoleService) GetAuthByEnv(userId uint) (res []string, err error) {
 	if config.CONFIG.System.SysEnv != "ly" {
 		user, err := s.UserRepo.FindDetailById(userId)
 		if err != nil {
-			return res, err
+			return []string{}, err
 		}
-		res, err = s.GetRoleMenuConfig(user.SysRoles)
+		return s.GetRoleMenuConfig(user.SysRoles)
 	}
 
-	return
+	return []string{}, nil
 }
 
 func (s *RoleService) GetRoleMenuConfig(roles []string) (menus []string, err error) {

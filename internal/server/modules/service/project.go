@@ -237,6 +237,13 @@ func (s *ProjectService) CheckProjectAndUser(shortName, xToken string, userId ui
 		}
 	}
 
+	if xToken != "" && project.Source != serverConsts.ProjectSourceLY {
+		err = s.ProjectRepo.UpdateProjectSource(project.ID, serverConsts.ProjectSourceLY)
+		if err != nil {
+			return project, userInProject, err
+		}
+	}
+
 	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
 	if err != nil {
 		return

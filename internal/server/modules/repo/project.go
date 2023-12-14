@@ -1083,3 +1083,9 @@ func (r *ProjectRepo) GetAuditByItem(projectId, ApplyUserId uint, auditStatus []
 		Last(&ret).Error
 	return
 }
+
+func (r *ProjectRepo) UpdateProjectSource(projectId uint, source serverConsts.ProjectSource) (err error) {
+	err = r.DB.Model(&model.Project{}).
+		Where("id = ?", projectId).Update("source", source).Error
+	return
+}

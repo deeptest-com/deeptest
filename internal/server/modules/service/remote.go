@@ -25,7 +25,7 @@ func (s *RemoteService) LoginByOauth(req v1.LoginByOauthReq, baseUrl string) (re
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
 		Body:     string(body),
-		Headers: []domain.Header{
+		Headers: &[]domain.Header{
 			{
 				Name:  "Tenant-Id",
 				Value: "0",

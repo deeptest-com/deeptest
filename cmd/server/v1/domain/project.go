@@ -29,7 +29,7 @@ type ProjectMemberRemoveReq struct {
 
 type ProjectBase struct {
 	Name string                   `json:"name"`
-	Desc string                   `json:"desc" gorm:"column:descr"`
+	Desc string                   `json:"desc" gorm:"column:descr;type:text"`
 	Type serverConsts.ProjectType `json:"type"`
 
 	SchemaId       uint                       `json:"schemaId"`

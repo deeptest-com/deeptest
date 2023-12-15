@@ -25,5 +25,6 @@ type TestExprRequest struct {
 }
 
 type TestExprResponse struct {
-	Result string `json:"result"`
+	Result     string                     `json:"result"`
+	ResultType consts.ExtractorResultType `json:"resultType"`
 }

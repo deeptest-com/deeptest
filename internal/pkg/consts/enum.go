@@ -305,6 +305,7 @@ type ConditionCategory string
 
 const (
 	ConditionCategoryResult   ConditionCategory = "result"
+	PostCondition             ConditionCategory = "postCondition"
 	ConditionCategoryConsole  ConditionCategory = "console"
 	ConditionCategoryAssert   ConditionCategory = "assert"
 	ConditionCategoryAll      ConditionCategory = "all"
@@ -349,6 +350,15 @@ type ExtractorScope string
 const (
 	Private ExtractorScope = "private" // in current interface
 	Public  ExtractorScope = "public"  // shared by other interfaces in serve OR scenario
+)
+
+type ExtractorResultType string
+
+const (
+	ExtractorResultTypeString ExtractorResultType = "string"
+	ExtractorResultTypeNumber ExtractorResultType = "number"
+	ExtractorResultTypeBool   ExtractorResultType = "bool"
+	ExtractorResultTypeObject ExtractorResultType = "object"
 )
 
 type ComparisonOperator string
@@ -579,8 +589,7 @@ func (e TimeUnit) ToString() string {
 type ExecType string
 
 const (
-	ExecStart ExecType = "start"
-	ExecStop  ExecType = "stop"
+	ExecStop ExecType = "stop"
 
 	ExecScenario ExecType = "execScenario"
 	ExecPlan     ExecType = "execPlan"

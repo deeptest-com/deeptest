@@ -18,7 +18,23 @@ func (c *TestsCtrl) Gets(ctx iris.Context) {
 	resp := mockGenerator.Response{
 		StatusCode:  respStatusCode,
 		ContentType: respContentType,
-		Data:        iris.Map{"key": "key", "value": "value", "params": ctx.URLParams()},
+		Data: iris.Map{
+			"key":    "key",
+			"value":  "value",
+			"params": ctx.URLParams(),
+
+			"int":   1,
+			"float": 6.6,
+			"bool":  true,
+			"obj": iris.Map{
+				"name":  "aaron",
+				"email": "462826@qq.com",
+			},
+			"arr": []interface{}{
+				iris.Map{"name": "foo"},
+				iris.Map{"name": "bar"},
+			},
+		},
 	}
 
 	username, password, ok := ctx.Request().BasicAuth()

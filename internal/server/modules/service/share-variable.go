@@ -19,13 +19,14 @@ type ShareVarService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
-func (s *ShareVarService) Save(name, value string,
+func (s *ShareVarService) Save(name, value string, resultType consts.ExtractorResultType,
 	invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint,
 	scope consts.ExtractorScope, usedBy consts.UsedBy) (err error) {
 
 	po := model.ShareVariable{
 		Name:                name,
 		Value:               value,
+		ValueType:           resultType,
 		InvokeId:            invokeId,
 		DebugInterfaceId:    debugInterfaceId,
 		CaseInterfaceId:     caseInterfaceId,
@@ -118,6 +119,7 @@ func (s *ShareVarService) ListForDebug(serveId, scenarioProcessorId uint, usedBy
 			VarId:      po.ID,
 			Name:       po.Name,
 			LocalValue: po.Value,
+			ValueType:  po.ValueType,
 		})
 	}
 

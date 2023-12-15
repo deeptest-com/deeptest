@@ -28,7 +28,7 @@ type WebSocketCtrl struct {
 }
 
 func NewWebsocketCtrl() *WebSocketCtrl {
-	inst := &WebSocketCtrl{Namespace: consts.WsDefaultNameSpace}
+	inst := &WebSocketCtrl{Namespace: consts.WsDefaultNamespace}
 	return inst
 }
 

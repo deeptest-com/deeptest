@@ -7,6 +7,7 @@ import (
 )
 
 type CasesExecReq struct {
+	ExecUuid  string `json:"execUuid"`
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 
@@ -15,7 +16,6 @@ type CasesExecReq struct {
 	BaseCaseId uint          `json:"baseCaseId"`
 	UsedBy     consts.UsedBy `json:"usedBy"`
 
-	ExecUUid string                      `json:"execUuid"`
 	ExecObj  casesHelper.AlternativeCase `json:"cases"`
 	ExecType string                      `json:"type"`
 

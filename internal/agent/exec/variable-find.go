@@ -7,20 +7,22 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
-func getDynamicVariableFromScope(processorId uint, propExpression string) (ret domain.ExecVariable, err error) {
-	allValidIds := GetValidScopeIds(processorId)
+func getDynamicVariableFromScope(processorId uint, propExpression string, execUuid string) (ret domain.ExecVariable, err error) {
+	allValidIds := GetValidScopeIds(processorId, execUuid)
 
-	for _, id := range *allValidIds {
-		for _, item := range ScopedVariables[id] {
-			if !(item.Scope == consts.Public || (item.Scope == consts.Private && id == processorId)) {
-				continue
-			}
+	if allValidIds != nil {
+		for _, id := range *allValidIds {
+			for _, item := range GetScopedVariables(execUuid)[id] {
+				if !(item.Scope == consts.Public || (item.Scope == consts.Private && id == processorId)) {
+					continue
+				}
 
-			var ok bool
-			ret, ok = EvaluateVariablePropExpressionValue(item, propExpression)
+				var ok bool
+				ret, ok = EvaluateVariablePropExpressionValue(item, propExpression)
 
-			if ok {
-				goto LABEL
+				if ok {
+					goto LABEL
+				}
 			}
 		}
 	}
@@ -33,23 +35,29 @@ LABEL:
 	return
 }
 
-func getVariableFromShareVar(name string) (ret domain.ExecVariable, err error) {
-	ret, err = getVariableFromList(name, ExecScene.ShareVars)
+func getVariableFromShareVar(name string, execUuid string) (ret domain.ExecVariable, err error) {
+	execScene := GetExecScene(execUuid)
+
+	ret, err = getVariableFromList(name, execScene.ShareVars)
 
 	return
 }
 
-func getVariableFromEnvVar(name string) (ret domain.ExecVariable, err error) {
-	envId := ExecScene.DebugInterfaceToEnvMap[CurrDebugInterfaceId]
+func getVariableFromEnvVar(name string, execUuid string) (ret domain.ExecVariable, err error) {
+	execScene := GetExecScene(execUuid)
 
-	vars := ExecScene.EnvToVariables[envId]
+	envId := execScene.DebugInterfaceToEnvMap[GetCurrDebugInterfaceId(execUuid)]
+
+	vars := execScene.EnvToVariables[envId]
 
 	ret, err = getVariableFromList(name, vars)
 
 	return
 }
-func getVariableFromGlobalVar(name string) (ret domain.ExecVariable, err error) {
-	ret, err = getVariableFromList(name, ExecScene.GlobalVars)
+func getVariableFromGlobalVar(name, execUuid string) (ret domain.ExecVariable, err error) {
+	execScene := GetExecScene(execUuid)
+
+	ret, err = getVariableFromList(name, execScene.GlobalVars)
 
 	return
 }

@@ -8,11 +8,13 @@ import (
 )
 
 func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
-	agentExec.ResetStat()
-	agentExec.ForceStopExec = false
+	execUuid := req.ExecUuid
 
-	agentExec.ServerUrl = req.ServerUrl
-	agentExec.ServerToken = req.Token
+	agentExec.ResetStat()
+	agentExec.SetForceStopExec(execUuid, false)
+
+	agentExec.SetServerUrl(execUuid, req.ServerUrl)
+	agentExec.SetServerToken(execUuid, req.Token)
 
 	planExecObj := GetPlanToExec(req)
 
@@ -38,9 +40,11 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	}
 
 	for _, scenario := range planExecObj.Scenarios {
+		scenario.ExecUuid = execUuid
 		session, _ := ExecScenario(&scenario, wsMsg)
+
 		scenarioReport, _ := SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,
-			agentExec.ServerUrl, agentExec.ServerToken)
+			agentExec.GetServerUrl(execUuid), agentExec.GetServerToken(execUuid))
 		session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 
 		session.RootProcessor.Result.ScenarioReportId = uint(scenarioReport.ID)

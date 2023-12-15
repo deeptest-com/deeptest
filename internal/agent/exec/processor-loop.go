@@ -6,9 +6,11 @@ import (
 	agentUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -17,9 +19,13 @@ type ProcessorLoop struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntityBase
 
-	Times        int    `json:"times" yaml:"times"` // time
-	Range        string `json:"range" yaml:"range"` // range
-	List         string `json:"list" yaml:"list"`   // in
+	Times int    `json:"times" yaml:"times"` // time
+	Range string `json:"range" yaml:"range"` // range
+
+	InType   string `json:"inType" yaml:"inType"`     // in
+	Variable string `json:"variable" yaml:"variable"` // array
+	List     string `json:"list" yaml:"list"`         // list
+
 	Step         string `json:"step" yaml:"step"`
 	IsRand       bool   `json:"isRand" yaml:"isRand"`
 	VariableName string `json:"variableName" yaml:"variableName"`
@@ -54,7 +60,7 @@ func (entity ProcessorLoop) Run(processor *Processor, session *Session) (err err
 	processor.Result.Detail = commonUtils.JsonEncode(entity)
 	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
-	processor.Result.Iterator, processor.Result.Summary = entity.getIterator()
+	processor.Result.Iterator, processor.Result.Summary = entity.getIterator(session)
 
 	if entity.ProcessorType == consts.ProcessorLoopUntil {
 		entity.runLoopUntil(session, processor, processor.Result.Iterator)
@@ -74,7 +80,7 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 	executedProcessorIds := map[uint]bool{}
 
 	for index, item := range iterator.Items {
-		if ForceStopExec {
+		if GetForceStopExec(session.ExecUuid) {
 			break
 		}
 		if DemoTestSite != "" && index > 2 {
@@ -90,11 +96,11 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 			execUtils.SendExecMsg(msg, session.WsMsg)
 		*/
 
-		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.Public)
+		SetVariable(entity.ProcessorID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public, session.ExecUuid)
 
 		round := ""
 		for _, child := range processor.Children {
-			if ForceStopExec {
+			if GetForceStopExec(session.ExecUuid) {
 				break
 			}
 			if child.Disable {
@@ -108,7 +114,8 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 				if entity.ProcessorType == consts.ProcessorLoopTime {
 					round = fmt.Sprintf("第 %v 轮", index+1)
 				} else {
-					round = fmt.Sprintf("第 %v 轮，%v = %v", index+1, iterator.VariableName, item)
+					desc, _ := commUtils.ConvertValueForPersistence(item)
+					round = fmt.Sprintf("第 %v 轮，%v = %v", index+1, iterator.VariableName, desc)
 				}
 
 				child.Round = round
@@ -119,7 +126,7 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 
 		// check break
 		result := agentDomain.ScenarioExecResult{}
-		result.WillBreak, result.Summary, result.Detail = entity.getBeak()
+		result.WillBreak, result.Summary, result.Detail = entity.getBeak(session.ExecUuid)
 		if result.WillBreak {
 			execUtils.SendExecMsg(result, consts.Processor, session.WsMsg)
 			break
@@ -138,7 +145,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 	executedProcessorIds := map[uint]bool{}
 	index := 0
 	for {
-		if ForceStopExec {
+		if GetForceStopExec(session.ExecUuid) {
 			break
 		}
 		if DemoTestSite != "" && index > 2 {
@@ -146,7 +153,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 		}
 		index += 1
 
-		result, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID)
+		result, _, err := EvaluateGovaluateExpressionByProcessorScope(expression, entity.ProcessorID, session.ExecUuid)
 		pass, ok := result.(bool)
 		if err != nil || !ok || pass {
 			result := agentDomain.ScenarioExecResult{
@@ -160,7 +167,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 
 		round := ""
 		for _, child := range processor.Children {
-			if ForceStopExec {
+			if GetForceStopExec(session.ExecUuid) {
 				break
 			}
 			if child.Disable {
@@ -196,15 +203,15 @@ LABEL:
 	return
 }
 
-func (entity *ProcessorLoop) getBeak() (ret bool, msg string, detailStr string) {
+func (entity *ProcessorLoop) getBeak(execUuid string) (ret bool, msg string, detailStr string) {
 	breakIfExpress := strings.TrimSpace(entity.BreakIfExpression)
 
 	if breakIfExpress == "" {
 		return
 	}
 
-	expr := ReplaceDatapoolVariInGovaluateExpress(breakIfExpress)
-	result, _ := EvaluateGovaluateExpressionByProcessorScope(expr, entity.ProcessorID)
+	expr := ReplaceDatapoolVariInGovaluateExpress(breakIfExpress, execUuid)
+	result, _, _ := EvaluateGovaluateExpressionByProcessorScope(expr, entity.ProcessorID, execUuid)
 
 	ret, ok := result.(bool)
 	pass := false
@@ -221,7 +228,7 @@ func (entity *ProcessorLoop) getBeak() (ret bool, msg string, detailStr string) 
 	return
 }
 
-func (entity *ProcessorLoop) getIterator() (iterator agentDomain.ExecIterator, msg string) {
+func (entity *ProcessorLoop) getIterator(session *Session) (iterator agentDomain.ExecIterator, msg string) {
 	if entity.ID == 0 {
 		msg = "执行前请先配置处理器。"
 		return
@@ -230,12 +237,21 @@ func (entity *ProcessorLoop) getIterator() (iterator agentDomain.ExecIterator, m
 	if entity.ProcessorType == consts.ProcessorLoopTime {
 		iterator, _ = entity.GenerateLoopTimes()
 		msg = fmt.Sprintf("迭代\"%d\"次。", entity.Times)
+
 	} else if entity.ProcessorType == consts.ProcessorLoopIn {
-		iterator, _ = entity.GenerateLoopList()
-		msg = fmt.Sprintf("\"%s\"。", entity.List)
+		if entity.InType == "variable" {
+			iterator, _ = entity.GenerateLoopVariable(session.ExecUuid)
+			msg = fmt.Sprintf("\"%s\"。", entity.Variable)
+
+		} else if entity.InType == "list" {
+			iterator, _ = entity.GenerateLoopList()
+			msg = fmt.Sprintf("\"%s\"。", entity.List)
+		}
+
 	} else if entity.ProcessorType == consts.ProcessorLoopRange {
 		iterator, _ = entity.GenerateLoopRange()
 		msg = fmt.Sprintf("\"%s\"。", entity.Range)
+
 	} else if entity.ProcessorType == consts.ProcessorLoopUntil {
 		iterator.UntilExpression = entity.UntilExpression
 		msg = fmt.Sprintf("\"%s\"。", entity.UntilExpression)
@@ -262,6 +278,28 @@ func (entity *ProcessorLoop) GenerateLoopRange() (ret agentDomain.ExecIterator, 
 	if err == nil {
 		ret.DataType = typ
 		ret.Items, _ = agentUtils.GenerateRangeItems(start, end, step, precision, entity.IsRand, typ)
+	}
+
+	return
+}
+func (entity *ProcessorLoop) GenerateLoopVariable(execUuid string) (ret agentDomain.ExecIterator, err error) {
+	variableObj, err := GetVariable(entity.ProcessorID, entity.Variable, execUuid)
+	if err != nil {
+		return
+	}
+
+	if variableObj.ValueType == consts.ExtractorResultTypeObject {
+		val, err1 := commUtils.ConvertValueForUse(variableObj.Value, variableObj.ValueType)
+		if err1 != nil || val == nil {
+			return
+		}
+
+		typ := reflect.TypeOf(val)
+		if typ.Kind() == reflect.Array || typ.Kind() == reflect.Slice {
+			for _, item := range val.([]interface{}) {
+				ret.Items = append(ret.Items, item)
+			}
+		}
 	}
 
 	return

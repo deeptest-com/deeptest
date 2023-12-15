@@ -3,6 +3,7 @@ package extractorHelper
 import (
 	"fmt"
 	queryUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
+	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
@@ -11,7 +12,8 @@ import (
 )
 
 func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err error) {
-	result := ""
+	var result interface{}
+	resultType := consts.ExtractorResultTypeString
 
 	if extractor.Src == consts.Header {
 		for _, h := range resp.Headers {
@@ -31,28 +33,31 @@ func Extract(extractor *domain.ExtractorBase, resp domain.DebugResponse) (err er
 	} else {
 		extractor.Expression = strings.TrimSpace(extractor.Expression)
 
-		if httpHelper.IsJsonContent(resp.ContentType.String()) {
+		if httpHelper.IsJsonContent(resp.ContentType.String()) { // json path
 			if extractor.Type == consts.JSONPath {
-				result = queryUtils.JsonPath(resp.Content, extractor.Expression)
+				result, resultType, err = queryUtils.JsonPath(resp.Content, extractor.Expression)
 			} else if extractor.Type == consts.JsonQuery {
-				result = queryUtils.JsonQuery(resp.Content, extractor.Expression)
+				result, resultType = queryUtils.JsonQuery(resp.Content, extractor.Expression)
 			}
 
-		} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery {
+		} else if httpHelper.IsHtmlContent(resp.ContentType.String()) && extractor.Type == consts.HtmlQuery { // html query
 			result = queryUtils.HtmlQuery(resp.Content, extractor.Expression)
 
-		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery {
+		} else if httpHelper.IsXmlContent(resp.ContentType.String()) && extractor.Type == consts.XmlQuery { // html query
 			result = queryUtils.XmlQuery(resp.Content, extractor.Expression)
 
-		} else if extractor.Type == consts.Boundary && (extractor.BoundaryStart != "" || extractor.BoundaryEnd != "") {
+		} else if extractor.Type == consts.Boundary && (extractor.BoundaryStart != "" || extractor.BoundaryEnd != "") { // boundary
 			result = queryUtils.BoundaryQuery(resp.Content, extractor.BoundaryStart, extractor.BoundaryEnd,
 				extractor.BoundaryIndex, extractor.BoundaryIncluded)
-		} else if extractor.Type == consts.Regx {
+
+		} else if extractor.Type == consts.Regx { // regx
 			result = queryUtils.RegxQuery(resp.Content, extractor.Expression)
+
 		}
 	}
 
-	extractor.Result = strings.TrimSpace(result)
+	extractor.ResultType = resultType
+	extractor.Result = valueUtils.InterfaceToStr(result)
 	extractor.ResultStatus = consts.Pass
 	if extractor.Result == "" {
 		extractor.ResultStatus = consts.Fail

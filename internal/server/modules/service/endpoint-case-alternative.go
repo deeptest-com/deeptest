@@ -257,11 +257,11 @@ func (s *EndpointCaseAlternativeService) changeFieldProps(debugData *domain.Debu
 	fieldIn, fieldNameOrPath string, sample interface{}, fieldType casesHelper.OasFieldType) {
 
 	if fieldIn == "[query]" {
-		s.changeParams(&debugData.QueryParams, fieldNameOrPath, sample)
+		s.changeParams(debugData.QueryParams, fieldNameOrPath, sample)
 	} else if fieldIn == "[path]" {
-		s.changeParams(&debugData.PathParams, fieldNameOrPath, sample)
+		s.changeParams(debugData.PathParams, fieldNameOrPath, sample)
 	} else if fieldIn == "[header]" {
-		s.changeHeaders(&debugData.Headers, fieldNameOrPath, sample)
+		s.changeHeaders(debugData.Headers, fieldNameOrPath, sample)
 	} else if fieldIn == "[body]/[application-json]" {
 		s.changeBody(debugData, fieldNameOrPath, sample, fieldType)
 	} else if fieldIn == "[body]/[multipart-form-data]" {
@@ -277,16 +277,22 @@ func (s *EndpointCaseAlternativeService) changeParams(params *[]domain.Param,
 	fieldNameOrPath string, sample interface{}) {
 
 	found := false
-	for index, param := range *params {
-		if param.Name == fieldNameOrPath {
-			(*params)[index].Value = fmt.Sprintf("%v", sample)
 
-			found = true
-			break
+	if params != nil {
+		for index, param := range *params {
+			if param.Name == fieldNameOrPath {
+				(*params)[index].Value = fmt.Sprintf("%v", sample)
+
+				found = true
+				break
+			}
 		}
 	}
 
 	if !found {
+		if params == nil {
+			params = &[]domain.Param{}
+		}
 		*params = append(*params, domain.Param{
 			Name:  fieldNameOrPath,
 			Value: fmt.Sprintf("%v", sample),
@@ -297,16 +303,21 @@ func (s *EndpointCaseAlternativeService) changeHeaders(headers *[]domain.Header,
 	fieldNameOrPath string, sample interface{}) {
 
 	found := false
-	for index, header := range *headers {
-		if header.Name == fieldNameOrPath {
-			(*headers)[index].Value = fmt.Sprintf("%v", sample)
+	if headers != nil {
+		for index, header := range *headers {
+			if header.Name == fieldNameOrPath {
+				(*headers)[index].Value = fmt.Sprintf("%v", sample)
 
-			found = true
-			break
+				found = true
+				break
+			}
 		}
 	}
 
 	if !found {
+		if headers == nil {
+			headers = &[]domain.Header{}
+		}
 		*headers = append(*headers, domain.Header{
 			Name:  fieldNameOrPath,
 			Value: fmt.Sprintf("%v", sample),
@@ -320,15 +331,20 @@ func (s *EndpointCaseAlternativeService) changeForm(debugData *domain.DebugData,
 	fieldPath := s.getFieldPath(fieldNameOrPath)
 
 	found := false
-	for index, item := range debugData.BodyFormData {
-		if item.Name == fieldPath {
-			debugData.BodyFormData[index].Value = valueUtils.InterfaceToStr(sample)
-			found = true
+	if debugData.BodyFormData != nil {
+		for index, item := range *debugData.BodyFormData {
+			if item.Name == fieldPath {
+				(*debugData.BodyFormData)[index].Value = valueUtils.InterfaceToStr(sample)
+				found = true
+			}
 		}
 	}
 
 	if !found {
-		debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
+		if debugData.BodyFormData == nil {
+			debugData.BodyFormData = &[]domain.BodyFormDataItem{}
+		}
+		*debugData.BodyFormData = append(*debugData.BodyFormData, domain.BodyFormDataItem{
 			Name:  fieldPath,
 			Value: valueUtils.InterfaceToStr(sample),
 		})
@@ -340,15 +356,21 @@ func (s *EndpointCaseAlternativeService) changeFormUrlencoded(debugData *domain.
 	fieldPath := s.getFieldPath(fieldNameOrPath)
 
 	found := false
-	for index, item := range debugData.BodyFormUrlencoded {
-		if item.Name == fieldPath {
-			debugData.BodyFormUrlencoded[index].Value = valueUtils.InterfaceToStr(sample)
-			found = true
+
+	if debugData.BodyFormUrlencoded != nil {
+		for index, item := range *debugData.BodyFormUrlencoded {
+			if item.Name == fieldPath {
+				(*debugData.BodyFormUrlencoded)[index].Value = valueUtils.InterfaceToStr(sample)
+				found = true
+			}
 		}
 	}
 
 	if !found {
-		debugData.BodyFormUrlencoded = append(debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
+		if debugData.BodyFormUrlencoded == nil {
+			debugData.BodyFormUrlencoded = &[]domain.BodyFormUrlEncodedItem{}
+		}
+		*debugData.BodyFormUrlencoded = append(*debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
 			Name:  fieldPath,
 			Value: valueUtils.InterfaceToStr(sample),
 		})
@@ -589,7 +611,7 @@ func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentEx
 	execObj.DebugData.EnvDataToView = &domain.EnvDataToView{}
 
 	//
-	_, execObj.ExecScene.ShareVars, _, _, execObj.DebugData.GlobalParams =
+	_, execObj.ExecScene.ShareVars, _, _, *execObj.DebugData.GlobalParams =
 		s.DebugSceneService.LoadScene(&execObj.DebugData, 0, envId)
 	execObj.DebugData.EnvDataToView = nil
 

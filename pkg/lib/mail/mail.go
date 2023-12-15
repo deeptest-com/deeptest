@@ -15,7 +15,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
-	"path"
+	"path/filepath"
 	"regexp"
 	"strings"
 )
@@ -42,7 +42,7 @@ func Send(to, subject, tmpl string, mp map[string]string) (err error) {
 	m.SetAddressHeader("To", to, mp["name"])
 	m.SetHeader("Subject", subject)
 
-	tmplFile := path.Join("res", "tmpl", tmpl+".ftl")
+	tmplFile := filepath.Join("res", "tmpl", tmpl+".ftl")
 	content, _ := deeptest.ReadResData(tmplFile)
 
 	body := os.Expand(string(content), func(k string) string { return mp[k] })

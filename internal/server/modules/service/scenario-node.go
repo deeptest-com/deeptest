@@ -99,13 +99,13 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		EntityCategory:        req.ProcessorCategory,
 		EntityType:            req.ProcessorType,
 		ProcessorInterfaceSrc: req.ProcessorInterfaceSrc,
-
-		ScenarioId: targetProcessor.ScenarioId,
-		ProjectId:  req.ProjectId,
-		CreatedBy:  req.CreateBy,
-		BaseModel:  model.BaseModel{Disabled: targetProcessor.Disabled},
-		Comments:   req.Comments,
-		Method:     req.Method,
+		EndpointInterfaceId:   targetProcessor.EndpointInterfaceId,
+		ScenarioId:            targetProcessor.ScenarioId,
+		ProjectId:             req.ProjectId,
+		CreatedBy:             req.CreateBy,
+		BaseModel:             model.BaseModel{Disabled: targetProcessor.Disabled},
+		Comments:              req.Comments,
+		Method:                req.Method,
 	}
 
 	if req.Mode == "child" {
@@ -171,6 +171,7 @@ func (s *ScenarioNodeService) CopyInterfaceEntity(srcProcessorId, distProcessorI
 	}
 
 	debugData.ScenarioProcessorId = distProcessorId
+	debugData.UsedBy = consts.ScenarioDebug
 	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, debugData.DebugInterfaceId, debugData.UsedBy)
 	if err != nil {
 		return
@@ -534,9 +535,9 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 		BaseUrl: "",
 		BaseRequest: domain.BaseRequest{
 			Method:      s.DiagnoseInterfaceService.getMethod(bodyType, curlObj.Method),
-			QueryParams: queryParams,
-			Headers:     headers,
-			Cookies:     cookies,
+			QueryParams: &queryParams,
+			Headers:     &headers,
+			Cookies:     &cookies,
 			Body:        wf.Body.String(),
 			BodyType:    consts.HttpContentType(bodyType),
 			Url:         url,

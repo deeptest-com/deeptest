@@ -40,19 +40,21 @@ func (loader *processingLoader) processServers(servers *openapi3.Servers) {
 		return
 	}
 
-	for i := range *servers {
-		serverURL, err := url.Parse((*servers)[i].URL)
-		if err != nil {
-			continue
-		}
+	if servers != nil {
+		for i := range *servers {
+			serverURL, err := url.Parse((*servers)[i].URL)
+			if err != nil {
+				continue
+			}
 
-		// server urls need to be cleaned for proper routing
-		path := serverURL.Path
-		if path == "" {
-			path = "/"
-		}
+			// server urls need to be cleaned for proper routing
+			path := serverURL.Path
+			if path == "" {
+				path = "/"
+			}
 
-		(*servers)[i].URL = path
+			(*servers)[i].URL = path
+		}
 	}
 }
 

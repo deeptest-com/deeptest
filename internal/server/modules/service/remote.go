@@ -310,7 +310,7 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo, err 
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
-		Headers:  headers,
+		Headers:  &headers,
 	}
 
 	var resp domain.DebugResponse
@@ -347,7 +347,7 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectI
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
-		Headers: []domain.Header{
+		Headers: &[]domain.Header{
 			{
 				Name:  "X-Token",
 				Value: token,
@@ -396,7 +396,7 @@ func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (re
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
-		Headers: []domain.Header{
+		Headers: &[]domain.Header{
 			{
 				Name:  "x-nancal-appkey",
 				Value: config.CONFIG.ThirdParty.ApiSign.AppKey,
@@ -414,7 +414,7 @@ func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (re
 				Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, ""),
 			},
 		},
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "typeStr",
 				Value: "[20,30]",
@@ -471,7 +471,7 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
-		Headers: []domain.Header{
+		Headers: &[]domain.Header{
 			{
 				Name:  "x-nancal-appkey",
 				Value: config.CONFIG.ThirdParty.ApiSign.AppKey,
@@ -489,7 +489,7 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 				Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, ""),
 			},
 		},
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "typeStr",
 				Value: "[10,20]",

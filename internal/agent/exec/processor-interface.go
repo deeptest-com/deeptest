@@ -84,6 +84,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	entity.Response, err = Invoke(&baseRequest)
 	requestEndTime := time.Now()
 
+	// dealwith response
 	processor.Result.Cost = requestEndTime.UnixMilli() - requestStartTime.UnixMilli()
 	reqContent, _ := json.Marshal(baseRequest)
 	processor.Result.ReqContent = string(reqContent)

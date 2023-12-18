@@ -85,20 +85,8 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	requestEndTime := time.Now()
 
 	// dealwith response
-	processor.Result.Cost = requestEndTime.UnixMilli() - requestStartTime.UnixMilli()
-	reqContent, _ := json.Marshal(baseRequest)
-	processor.Result.ReqContent = string(reqContent)
-	respContent, _ := json.Marshal(entity.Response)
-	processor.Result.RespContent = string(respContent)
-	processor.Result.ResultStatus = consts.Pass
-
-	if err != nil {
-		processor.Result.ResultStatus = consts.Fail
-		processor.Result.Summary = err.Error()
-		detail["result"] = entity.Response.Content
-		processor.Result.Detail = commonUtils.JsonEncode(detail)
-		execUtils.SendErrorMsg(*processor.Result, consts.Processor, session.WsMsg)
-		processor.AddResultToParent()
+	ok := entity.DealwithResponse(processor, baseRequest, requestEndTime, requestStartTime, &detail, session, err)
+	if !ok {
 		return
 	}
 
@@ -243,5 +231,32 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 		}
 	}
 
+	return
+}
+
+func (entity *ProcessorInterface) DealwithResponse(
+	processor *Processor, baseRequest domain.BaseRequest, requestEndTime, requestStartTime time.Time,
+	detail *map[string]interface{}, session *Session, err error) (ok bool) {
+
+	processor.Result.Cost = requestEndTime.UnixMilli() - requestStartTime.UnixMilli()
+	reqContent, _ := json.Marshal(baseRequest)
+	processor.Result.ReqContent = string(reqContent)
+	respContent, _ := json.Marshal(entity.Response)
+	processor.Result.RespContent = string(respContent)
+	processor.Result.ResultStatus = consts.Pass
+
+	if err != nil {
+		processor.Result.ResultStatus = consts.Fail
+		processor.Result.Summary = err.Error()
+
+		(*detail)["result"] = entity.Response.Content
+		processor.Result.Detail = commonUtils.JsonEncode(*detail)
+		execUtils.SendErrorMsg(*processor.Result, consts.Processor, session.WsMsg)
+		processor.AddResultToParent()
+
+		return
+	}
+
+	ok = true
 	return
 }

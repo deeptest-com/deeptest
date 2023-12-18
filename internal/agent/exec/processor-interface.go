@@ -63,7 +63,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 
 	// init context
 	InitJsRuntime(processor.ProjectId, session.ExecUuid)
-	SetReqValueToGoja(&entity.BaseRequest)
+	SetReqValueToGoja(&baseRequest)
 
 	// exec pre-condition
 	entity.ExecPreConditions(processor, session)

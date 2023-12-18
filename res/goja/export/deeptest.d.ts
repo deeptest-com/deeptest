@@ -2,14 +2,14 @@ declare type Param = {
     name: string;
     value: string;
     paramIn?: string;
-    disabled?: boolean;
-    type?: string;
+    // disabled?: boolean;
+    // type?: string;
 }
 declare type Header = {
     name: string;
     value: string;
-    disabled?:    boolean;
-    type?: string;
+    // disabled?:    boolean;
+    // type?: string;
 }
 declare type ExecCookie = {
     name: string;

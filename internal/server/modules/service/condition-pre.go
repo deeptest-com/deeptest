@@ -25,13 +25,6 @@ func (s *PreConditionService) GetScript(debugInterfaceId, endpointInterfaceId ui
 		}
 		err = s.Create(&condition)
 
-		script, _ = s.ScriptRepo.GetByCondition(condition.ID)
-		if script.ID == 0 {
-			script = s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)
-		}
-
-		s.PreConditionRepo.UpdateEntityId(condition.ID, script.ID)
-
 		conditions, err = s.PreConditionRepo.ListForBenchmarkCase(debugInterfaceId, endpointInterfaceId, usedBy, isForBenchmarkCase)
 	}
 

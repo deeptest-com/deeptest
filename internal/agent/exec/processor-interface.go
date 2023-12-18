@@ -61,11 +61,17 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	var baseRequest domain.BaseRequest
 	copier.CopyWithOption(&baseRequest, &entity.BaseRequest, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 
+	// init context
+	InitJsRuntime(processor.ProjectId, session.ExecUuid)
+	SetReqValueToGoja(&entity.BaseRequest)
+
 	// exec pre-condition
 	entity.ExecPreConditions(processor, session)
 
 	// dealwith variables
 	ReplaceVariables(&baseRequest, session.ExecUuid)
+
+	GetReqValueFromGoja(session.ExecUuid)
 
 	// add cookies
 	DealwithCookies(&baseRequest, entity.ProcessorID, session.ExecUuid)
@@ -84,6 +90,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	respContent, _ := json.Marshal(entity.Response)
 	processor.Result.RespContent = string(respContent)
 	processor.Result.ResultStatus = consts.Pass
+
 	if err != nil {
 		processor.Result.ResultStatus = consts.Fail
 		processor.Result.Summary = err.Error()
@@ -95,6 +102,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	}
 
 	// exec post-condition
+	SetRespValueToGoja(&entity.Response)
 	entity.ExecPostConditions(processor, detail, session)
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 

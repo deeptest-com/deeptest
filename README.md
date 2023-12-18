@@ -28,15 +28,13 @@ sh ./init.project.sh
 
 
 ### 打包客户端
-
 ```bash
+# 打包客户端 win64
+sudo make win64
+
 # 打包客户端 mac
 sudo make mac
 
-# 打包客户端 windows
-sudo make win64
-<<<<<<< HEAD
+# 打包客户端 linux
+sudo make linux
 ```
-=======
-```
->>>>>>> origin

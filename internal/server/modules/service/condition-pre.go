@@ -25,13 +25,6 @@ func (s *PreConditionService) GetScript(debugInterfaceId, endpointInterfaceId ui
 		}
 		err = s.Create(&condition)
 
-		script, _ = s.ScriptRepo.GetByCondition(condition.ID)
-		if script.ID == 0 {
-			script = s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)
-		}
-
-		s.PreConditionRepo.UpdateEntityId(condition.ID, script.ID)
-
 		conditions, err = s.PreConditionRepo.ListForBenchmarkCase(debugInterfaceId, endpointInterfaceId, usedBy, isForBenchmarkCase)
 	}
 
@@ -50,14 +43,12 @@ func (s *PreConditionService) Get(id uint) (checkpoint model.DebugPreCondition, 
 func (s *PreConditionService) Create(condition *model.DebugPreCondition) (err error) {
 	err = s.PreConditionRepo.Save(condition)
 
-	var entityId uint
-
 	if condition.EntityType == consts.ConditionTypeScript {
 		po := s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)
-		entityId = po.ID
+		condition.EntityId = po.ID
 	}
 
-	err = s.PreConditionRepo.UpdateEntityId(condition.ID, entityId)
+	err = s.PreConditionRepo.UpdateEntityId(condition.ID, condition.EntityId)
 
 	return
 }

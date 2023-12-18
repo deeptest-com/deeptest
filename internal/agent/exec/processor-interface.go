@@ -84,16 +84,22 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	entity.Response, err = Invoke(&baseRequest)
 	requestEndTime := time.Now()
 
+	// exec post-condition
+	SetRespValueToGoja(&entity.Response)
+	entity.ExecPostConditions(processor, detail, session)
+	GetRespValueFromGoja(session.ExecUuid)
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
+
+	// get the response data updated by script post-condition
+	if GetCurrResponse(session.ExecUuid).Data != nil {
+		entity.Response = GetCurrResponse(session.ExecUuid)
+	}
+
 	// dealwith response
 	ok := entity.DealwithResponse(processor, baseRequest, requestEndTime, requestStartTime, &detail, session, err)
 	if !ok {
 		return
 	}
-
-	// exec post-condition
-	SetRespValueToGoja(&entity.Response)
-	entity.ExecPostConditions(processor, detail, session)
-	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	for _, c := range entity.Response.Cookies {
 		SetCookie(processor.ParentId, c.Name, c.Value, c.Domain, c.ExpireTime, session.ExecUuid)
@@ -177,6 +183,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			}
 			interfaceExecCondition.Raw, _ = json.Marshal(scriptBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
+
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			var responseDefineBase domain.ResponseDefineBase
 			json.Unmarshal(condition.Raw, &responseDefineBase)

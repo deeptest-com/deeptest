@@ -102,9 +102,9 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	agentExec.GetRespValueFromGoja(execUuid)
 	PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
 
+	// get the response data updated by script post-condition
 	if agentExec.GetCurrResponse(execUuid).Data != nil {
 		resultResp = agentExec.GetCurrResponse(execUuid)
-
 		resultResp.ConsoleLogs = GenConditionLogsForCase(caseInterfaceExecObj) // only for cases
 	}
 

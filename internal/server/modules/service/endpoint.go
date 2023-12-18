@@ -763,5 +763,10 @@ func (s *EndpointService) isEqualEndpoint(old, new model.Endpoint) bool {
 
 func (s *EndpointService) UpdateName(id uint, name string) (err error) {
 	err = s.EndpointRepo.UpdateName(id, name)
+	if err != nil {
+		return
+	}
+
+	err = s.EndpointInterfaceRepo.UpdateNameByEndpointId(id, name)
 	return
 }

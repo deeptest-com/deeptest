@@ -1,7 +1,7 @@
 declare type Param = {
     name: string;
     value: string;
-    paramIn?: string;
+    // paramIn?: string;
     // disabled?: boolean;
     // type?: string;
 }

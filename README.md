@@ -13,28 +13,5 @@ All source code is licensed under the [Apache License 2.0](LICENSE.md).
 ## Thanks
 Thank you [JetBrains](https://www.jetbrains.com) for providing free open source licenses.
 
-
-## 软件测试平台
-
-### 快速开始
-
-```bash
-# 拉取后端的配置项目
-git clone git@gitlab.nancalcloud.com:leyanapi/backend-config.git
-
-# 执行命令，初始化项目
-sh ./init.project.sh
-```
-
-
-### 打包客户端
-```bash
-# 打包客户端 win64
-sudo make win64
-
-# 打包客户端 mac
-sudo make mac
-
-# 打包客户端 linux
-sudo make linux
-```
+### Quick Start
+https://deeptest.com/server.html

@@ -420,7 +420,7 @@ func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (re
 				Value: "[20,30]",
 			},
 			{
-				Name:  "nameEng",
+				Name:  "nameEngAbbr",
 				Value: spaceCode,
 			},
 			{
@@ -495,7 +495,7 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 				Value: "[10,20]",
 			},
 			{
-				Name:  "nameEng",
+				Name:  "nameEngAbbr",
 				Value: spaceCode,
 			},
 			{

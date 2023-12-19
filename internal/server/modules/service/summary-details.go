@@ -34,15 +34,15 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 	copier.CopyWithOption(&res, summaryCardTotal, copier.Option{DeepCopy: true})
 
 	if oldSummaryCardTotal.Coverage != 0 {
-		res.CoverageHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Coverage-oldSummaryCardTotal.Coverage), 64)
+		res.CoverageHb, err = strconv.ParseFloat(fmt.Sprintf("%.2f", res.Coverage-oldSummaryCardTotal.Coverage), 64)
 	}
 
 	if oldSummaryCardTotal.InterfaceTotal != 0 {
-		res.InterfaceHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(float64(res.InterfaceTotal), float64(oldSummaryCardTotal.InterfaceTotal))), 64)
+		res.InterfaceHb, err = strconv.ParseFloat(fmt.Sprintf("%.2f", DecimalHB(float64(res.InterfaceTotal), float64(oldSummaryCardTotal.InterfaceTotal))), 64)
 	}
 
 	if oldSummaryCardTotal.ScenarioTotal != 0 {
-		res.ScenarioHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(float64(res.ScenarioTotal), float64(oldSummaryCardTotal.ScenarioTotal))), 64)
+		res.ScenarioHb, err = strconv.ParseFloat(fmt.Sprintf("%.2f", DecimalHB(float64(res.ScenarioTotal), float64(oldSummaryCardTotal.ScenarioTotal))), 64)
 	}
 
 	return
@@ -154,7 +154,7 @@ func (s *SummaryDetailsService) HandleDetail(projectId int64, ScenariosTotal int
 	ret.ScenarioTotal = ScenariosTotal
 	ret.InterfaceTotal = interfacesTotal
 	ret.ExecTotal = execsTotal
-	ret.PassRate, err = strconv.ParseFloat(fmt.Sprintf("%.1f", passRates), 64)
+	ret.PassRate, err = strconv.ParseFloat(fmt.Sprintf("%.2f", passRates), 64)
 
 	//通过processorInterface、biz_scenario_report、biz_exec_log_processor联合查询，取出来所有被测试过的接口数量，根据project_id分组（跳过0值）
 	//然后除以通过processorInterface中对应项目的接口总数
@@ -164,7 +164,7 @@ func (s *SummaryDetailsService) HandleDetail(projectId int64, ScenariosTotal int
 	} else {
 		coverage = 0
 	}
-	ret.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
+	ret.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.2f", coverage), 64)
 	return
 }
 
@@ -289,7 +289,7 @@ func (s *SummaryDetailsService) SummaryCard() (summaryCardTotal model.SummaryCar
 	} else {
 		coverage = 0
 	}
-	summaryCardTotal.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
+	summaryCardTotal.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.2f", coverage), 64)
 
 	return
 }
@@ -312,7 +312,7 @@ func (s *SummaryDetailsService) SummaryCardByProjectId(projectId int64) (summary
 	} else {
 		coverage = 0
 	}
-	summaryCardTotal.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
+	summaryCardTotal.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.2f", coverage), 64)
 
 	return
 }

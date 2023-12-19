@@ -33,20 +33,24 @@ func ConvertValueForPersistence(obj interface{}) (value string, valueType consts
 }
 
 func ConvertValueForUse(value interface{}, valueType consts.ExtractorResultType) (obj interface{}, err error) {
+	ok := true
 	switch value.(type) {
 	case string:
 		if valueType == consts.ExtractorResultTypeObject {
 			err = json.Unmarshal([]byte(value.(string)), &obj)
-			return
+			if err != nil {
+				ok = false
+			}
 		} else if valueType == consts.ExtractorResultTypeString {
-			obj = value.(string)
-			return
+			obj, ok = value.(string)
 		} else if valueType == consts.ExtractorResultTypeNumber {
-			obj = value.(float64)
-			return
+			obj, ok = value.(float64)
 		} else if valueType == consts.ExtractorResultTypeBool {
-			obj = value.(bool)
-			return
+			obj, ok = value.(bool)
+		}
+		//类型转换失败返回默认数据
+		if !ok {
+			return value, err
 		}
 
 	case float64:

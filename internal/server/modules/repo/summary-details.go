@@ -23,6 +23,8 @@ func (r *SummaryDetailsRepo) Create(summaryDetails model.SummaryDetails) (err er
 }
 
 func (r *SummaryDetailsRepo) UpdateColumnsByDate(id int64, summaryDetails model.SummaryDetails) (err error) {
+	now := time.Now()
+	summaryDetails.UpdatedAt = &now
 	err = r.DB.Model(&model.SummaryDetails{}).Where("id = ? and not deleted", id).UpdateColumns(&summaryDetails).Error
 	return
 }
@@ -143,7 +145,7 @@ func (r *SummaryDetailsRepo) FindAllAssertionCount() (result model.SimplePassRat
 }
 
 func (r *SummaryDetailsRepo) FindAllAssertionCountGroupByProjectId() (result []model.SimplePassRateByProjectId, err error) {
-	err = r.DB.Model(&model.ScenarioReport{}).Raw("select biz_scenario_report.project_id,SUM(total_assertion_num) as totalAssertionNum as totalAssertionNum ,SUM(pass_assertion_num) as passAssertionNum ,SUM(JSON_EXTRACT(stat_raw, '$.checkpointPass')) AS checkpointPass,  SUM(JSON_EXTRACT(stat_raw, '$.checkpointFail')) AS checkpointFail  from biz_scenario_report where  not deleted group by project_id;").Find(&result).Error
+	err = r.DB.Model(&model.ScenarioReport{}).Raw("select biz_scenario_report.project_id,SUM(total_assertion_num) as totalAssertionNum ,SUM(pass_assertion_num) as passAssertionNum ,SUM(JSON_EXTRACT(stat_raw, '$.checkpointPass')) AS checkpointPass,  SUM(JSON_EXTRACT(stat_raw, '$.checkpointFail')) AS checkpointFail  from biz_scenario_report where  not deleted group by project_id;").Find(&result).Error
 	return
 }
 

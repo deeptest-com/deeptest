@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -135,6 +136,10 @@ func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleN
 			err = fmt.Errorf("发送消息异常")
 		}
 	}()
+
+	if config.CONFIG.System.SysEnv == "ly" {
+		return
+	}
 
 	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
 	messageContentByte, _ := json.Marshal(messageContent)

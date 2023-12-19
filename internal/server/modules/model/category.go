@@ -25,6 +25,7 @@ type Category struct {
 	Type serverConsts.CategoryDiscriminator `json:"type"`
 
 	SourceType consts.SourceType `json:"sourceType" gorm:"default:0"`
+	EntityId   uint              `json:"entityId"`
 }
 
 func (Category) TableName() string {

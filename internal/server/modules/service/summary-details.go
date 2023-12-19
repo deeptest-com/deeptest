@@ -398,20 +398,51 @@ func (s *SummaryDetailsService) CountAllExecTotalProjectId() (counts map[int64]i
 }
 
 func (s *SummaryDetailsService) FindPassRateByProjectId(projectId int64) (passRate float64, err error) {
-	return s.HandlerSummaryDetailsRepo().FindPassRateByProjectId(projectId)
+	result, err := s.HandlerSummaryDetailsRepo().FindAssertionCountByProjectId(projectId)
+
+	totalCount := result.TotalAssertionNum + result.CheckpointPass + result.CheckpointFail
+	passCount := result.PassAssertionNum + result.CheckpointPass
+
+	if totalCount > 0 {
+		passRate = float64(passCount) / float64(totalCount) * 100.0
+	} else {
+		passRate = 0.0
+	}
+	return
 }
 
 func (s *SummaryDetailsService) FindAllPassRate() (passRate float64, err error) {
-	return s.HandlerSummaryDetailsRepo().FindAllPassRate()
+	result, err := s.HandlerSummaryDetailsRepo().FindAllAssertionCount()
+
+	totalCount := result.TotalAssertionNum + result.CheckpointPass + result.CheckpointFail
+	passCount := result.PassAssertionNum + result.CheckpointPass
+
+	if totalCount > 0 {
+		passRate = float64(passCount) / float64(totalCount) * 100.0
+	} else {
+		passRate = 0.0
+	}
+	return
+
 }
 
-func (s *SummaryDetailsService) FindAllPassRateByProjectId() (passRate map[int64]float64, err error) {
-	passRates, err := s.HandlerSummaryDetailsRepo().FindAllPassRateByProjectId()
+func (s *SummaryDetailsService) FindAllPassRateByProjectId() (ret map[int64]float64, err error) {
+	result, err := s.HandlerSummaryDetailsRepo().FindAllAssertionCountGroupByProjectId()
 
-	passRate = make(map[int64]float64, len(passRates))
+	ret = make(map[int64]float64, len(result))
 
-	for _, rate := range passRates {
-		passRate[rate.ProjectId] = rate.Coverage
+	for _, value := range result {
+		var passRate float64
+
+		totalCount := value.TotalAssertionNum + value.CheckpointPass + value.CheckpointFail
+		passCount := value.PassAssertionNum + value.CheckpointPass
+
+		if totalCount > 0 {
+			passRate = float64(passCount) / float64(totalCount) * 100.0
+		} else {
+			passRate = 0.0
+		}
+		ret[value.ProjectId] = passRate
 	}
 	return
 }

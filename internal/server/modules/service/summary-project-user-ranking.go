@@ -221,43 +221,72 @@ func (s *SummaryProjectUserRankingService) ForMap(userTotal []model.UserTotal) (
 	return
 }
 
-func (s *SummaryProjectUserRankingService) SortRanking(data []model.SummaryProjectUserRanking) (ret []model.SummaryProjectUserRanking, err error) {
+type elseif struct {
+}
+
+func (s *SummaryProjectUserRankingService) SortRanking(data []model.SummaryProjectUserRanking) []model.SummaryProjectUserRanking {
 
 	sort.Slice(data, func(i, j int) bool {
-		if data[i].TestCaseTotal != data[j].TestCaseTotal {
-			// 根据 value 值从大到小排序
-			return data[i].TestCaseTotal > data[j].TestCaseTotal
-		} else {
-			// 如果 value 值相等，根据 desc 值从大到小排序
+		// 1. 当data[i].ScenarioTotal 和 data[j].ScenarioTotal 不相等时候，最大的排前边
+		if data[i].ScenarioTotal != data[j].ScenarioTotal {
 			return data[i].ScenarioTotal > data[j].ScenarioTotal
+		}
+
+		// 2. 当data[i].ScenarioTotal 和 data[j].ScenarioTotal 相等，判断data[i].TestCaseTotal 和 data[j].TestCaseTotal，最大的放最前边
+		if data[i].TestCaseTotal != data[j].TestCaseTotal {
+			return data[i].TestCaseTotal > data[j].TestCaseTotal
+		}
+
+		// 3. 当data[i].TestCaseTotal 和 data[j].TestCaseTotal相等，判断data[i].UpdatedAt 和 data[j].UpdatedAt
+		// 注意：UpdatedAt是*time.Time，要判断空情况
+		if data[i].UpdatedAt != nil && data[j].UpdatedAt != nil {
+			return data[i].UpdatedAt.Before(*data[j].UpdatedAt)
+		} else if data[i].UpdatedAt == nil {
+			return false // 当data[i]的UpdatedAt为nil时，将data[j]排在前面
+		} else {
+			return true // 当data[j]的UpdatedAt为nil时，将data[i]排在前面
 		}
 	})
 
 	for i, value := range data {
-		value.Sort = int64(i + 1) // 按照排序后的位置重新赋值 index
+		value.Sort = int64(i + 1)
 		data[i] = value
 	}
 
-	ret = data
-
-	return
+	return data
 }
 
 func (s *SummaryProjectUserRankingService) SortRankingList(req v1.ResRankingList) (ret v1.ResRankingList, err error) {
 	data := req.UserRankingList
 
 	sort.Slice(data, func(i, j int) bool {
-		if data[i].TestCaseTotal != data[j].TestCaseTotal {
-			// 根据 value 值从大到小排序
-			return data[i].TestCaseTotal > data[j].TestCaseTotal
-		} else {
-			// 如果 value 值相等，根据 desc 值从大到小排序
+		// 1. 当data[i].ScenarioTotal 和 data[j].ScenarioTotal 不相等时候，最大的排前边
+		if data[i].ScenarioTotal != data[j].ScenarioTotal {
 			return data[i].ScenarioTotal > data[j].ScenarioTotal
+		}
+
+		// 2. 当data[i].ScenarioTotal 和 data[j].ScenarioTotal 相等，判断data[i].TestCaseTotal 和 data[j].TestCaseTotal，最大的放最前边
+		if data[i].TestCaseTotal != data[j].TestCaseTotal {
+			return data[i].TestCaseTotal > data[j].TestCaseTotal
+		}
+
+		// 3. 当data[i].TestCaseTotal 和 data[j].TestCaseTotal相等，判断data[i].UpdatedAt 和 data[j].UpdatedAt
+		// 注意：UpdatedAt是string类型，需要解析为时间对象进行比较
+		timeFormat := "2006-01-02 15:04:05"
+		timeI, errI := time.Parse(timeFormat, data[i].UpdatedAt)
+		timeJ, errJ := time.Parse(timeFormat, data[j].UpdatedAt)
+
+		if errI == nil && errJ == nil {
+			return timeI.Before(timeJ)
+		} else if errI != nil {
+			return false // 当data[i]的UpdatedAt解析失败时，将data[j]排在前面
+		} else {
+			return true // 当data[j]的UpdatedAt解析失败时，将data[i]排在前面
 		}
 	})
 
 	for i, value := range data {
-		value.Sort = int64(i + 1) // 按照排序后的位置重新赋值 index
+		value.Sort = int64(i + 1)
 		data[i] = value
 	}
 
@@ -284,8 +313,7 @@ func (s *SummaryProjectUserRankingService) GetRanking(projectId int64) (rankings
 		rankings = append(rankings, ranking)
 	}
 	if len(rankings) != 0 {
-
-		rankings, err = s.SortRanking(rankings)
+		rankings = s.SortRanking(rankings)
 	}
 
 	return

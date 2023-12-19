@@ -95,6 +95,18 @@ type SummaryProjectInfo struct {
 	AdminName      string `json:"adminName"`
 }
 
+type SimplePassRate struct {
+	TotalAssertionNum int64 `gorm:"column:totalAssertionNum"`
+	PassAssertionNum  int64 `gorm:"column:passAssertionNum"`
+	CheckpointPass    int64 `gorm:"column:checkpointPass"`
+	CheckpointFail    int64 `gorm:"column:checkpointFail"`
+}
+
+type SimplePassRateByProjectId struct {
+	ProjectId int64 `json:"projectId"`
+	SimplePassRate
+}
+
 func (SummaryDetails) TableName() string {
 	return "biz_summary_details"
 }

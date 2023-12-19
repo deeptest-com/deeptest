@@ -1,10 +1,10 @@
 [
   {
     "role_name":"admin",
-    "menus":["p-project-create", "p-project-exit", "p-project-edit", "p-project-del", "p-project-apply", "p-api-setting-usermanage"]
+    "menus":["p-project-create", "p-project-exit", "p-project-edit", "p-project-del", "p-project-apply", "p-api-setting-usermanage", "p-api-notification"]
   },
   {
     "role_name":"user",
-    "menus":["p-project-create", "p-project-exit", "p-project-edit", "p-project-del", "p-project-apply", "p-api-setting-usermanage"]
+    "menus":["p-project-create", "p-project-exit", "p-project-edit", "p-project-del", "p-project-apply", "p-api-setting-usermanage", "p-api-notification"]
   }
 ]

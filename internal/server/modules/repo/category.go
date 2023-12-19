@@ -167,6 +167,11 @@ func (r *CategoryRepo) Update(req v1.CategoryReq) (err error) {
 	po.Name = req.Name
 	po.Desc = req.Desc
 
+	if req.Type == serverConsts.SchemaCategory && int(req.Parent) != po.ParentId {
+		po.ParentId = int(req.Parent)
+		po.Ordr = r.GetMaxOrder(req.Parent, req.Type, po.ProjectId)
+	}
+
 	err = r.DB.Save(&po).Error
 
 	return

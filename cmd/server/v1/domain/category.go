@@ -27,10 +27,11 @@ type CategoryCreateReq struct {
 }
 
 type CategoryReq struct {
-	Id     int    `json:"id"`
-	Name   string `json:"name"`
-	Desc   string `json:"desc"`
-	Parent uint
+	Id     int                                `json:"id"`
+	Name   string                             `json:"name"`
+	Desc   string                             `json:"desc"`
+	Parent uint                               `json:"parent"`
+	Type   serverConsts.CategoryDiscriminator `json:"type"`
 }
 
 type CategoryMoveReq struct {

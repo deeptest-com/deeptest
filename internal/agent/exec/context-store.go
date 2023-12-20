@@ -1,6 +1,7 @@
 package agentExec
 
 import (
+	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"
@@ -226,6 +227,17 @@ func GetCurrDebugInterfaceId(execUuid string) (ret uint) {
 	return
 }
 
+func SetStat(execUuid string, val *agentDomain.InterfaceStat) {
+	entity := GetUserExecContext(execUuid)
+	entity.Stat = val
+}
+func GetStat(execUuid string) (ret *agentDomain.InterfaceStat) {
+	userContext := GetUserExecContext(execUuid)
+	ret = userContext.Stat
+
+	return
+}
+
 func InitGojaRuntime(execUuid string) (execRuntime *goja.Runtime, execRequire *require.RequireModule) {
 	userContext := GetUserExecContext(execUuid)
 	execRuntime = userContext.GojaRuntime
@@ -320,6 +332,9 @@ type UserContext struct {
 
 	ExecScene      domain.ExecScene // for scenario and debug, from server
 	DatapoolCursor map[string]int   // only for scenario
+
+	// for report data
+	Stat *agentDomain.InterfaceStat
 
 	// for goja js engine
 	GojaRuntime   *goja.Runtime

@@ -10,7 +10,7 @@ import (
 func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	execUuid := req.ExecUuid
 
-	agentExec.ResetStat()
+	agentExec.ResetStat(req.ExecUuid)
 	agentExec.SetForceStopExec(execUuid, false)
 
 	agentExec.SetServerUrl(execUuid, req.ServerUrl)
@@ -53,7 +53,7 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	}
 
 	// submit result
-	result.Stat = agentExec.Stat
+	result.Stat = *agentExec.GetStat(execUuid)
 	report, _ := SubmitPlanResult(result, req.PlanId, req.ServerUrl, req.Token)
 	execUtils.SendResultMsg(report, wsMsg)
 	//sendPlanSubmitResult(req.PlanId, wsMsg)

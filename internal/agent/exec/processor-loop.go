@@ -133,7 +133,7 @@ func (entity *ProcessorLoop) runLoopItems(session *Session, processor *Processor
 		}
 	}
 
-	stat := CountSkip(executedProcessorIds, processor.Children)
+	stat := CountSkip(session.ExecUuid, executedProcessorIds, processor.Children)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 
 	return
@@ -197,7 +197,7 @@ func (entity *ProcessorLoop) runLoopUntil(session *Session, processor *Processor
 	}
 
 LABEL:
-	stat := CountSkip(executedProcessorIds, processor.Children)
+	stat := CountSkip(session.ExecUuid, executedProcessorIds, processor.Children)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 
 	return

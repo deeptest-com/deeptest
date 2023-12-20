@@ -53,10 +53,10 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		LogId:               uuid.NewV4(),
 		ParentLogId:         processor.Parent.Result.LogId,
 		Round:               processor.Round,
+		ResultStatus:        consts.Pass,
 	}
 
 	detail := map[string]interface{}{}
-
 	//在循环过程中，processor 被执行多次，变量替换会受到影响，第一次跌替换之后，就不能根据实际情况替换了
 	var baseRequest domain.BaseRequest
 	copier.CopyWithOption(&baseRequest, &entity.BaseRequest, copier.Option{IgnoreEmpty: true, DeepCopy: true})
@@ -110,7 +110,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
-	stat := CountStat(processor.Result)
+	stat := CountStat(session.ExecUuid, processor.Result)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 	processor.AddResultToParent()
 
@@ -250,7 +250,6 @@ func (entity *ProcessorInterface) DealwithResponse(
 	processor.Result.ReqContent = string(reqContent)
 	respContent, _ := json.Marshal(entity.Response)
 	processor.Result.RespContent = string(respContent)
-	processor.Result.ResultStatus = consts.Pass
 
 	if err != nil {
 		processor.Result.ResultStatus = consts.Fail

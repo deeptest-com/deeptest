@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"strconv"
 )
 
 func ConvertValueForPersistence(obj interface{}) (value string, valueType consts.ExtractorResultType) {
@@ -33,24 +34,16 @@ func ConvertValueForPersistence(obj interface{}) (value string, valueType consts
 }
 
 func ConvertValueForUse(value interface{}, valueType consts.ExtractorResultType) (obj interface{}, err error) {
-	ok := true
 	switch value.(type) {
 	case string:
 		if valueType == consts.ExtractorResultTypeObject {
 			err = json.Unmarshal([]byte(value.(string)), &obj)
-			if err != nil {
-				ok = false
-			}
 		} else if valueType == consts.ExtractorResultTypeString {
-			obj, ok = value.(string)
+			obj = value.(string)
 		} else if valueType == consts.ExtractorResultTypeNumber {
-			obj, ok = value.(float64)
+			obj, err = strconv.ParseFloat(value.(string), 64)
 		} else if valueType == consts.ExtractorResultTypeBool {
-			obj, ok = value.(bool)
-		}
-		//类型转换失败返回默认数据
-		if !ok {
-			return value, err
+			obj, err = strconv.ParseBool(value.(string))
 		}
 
 	case float64:

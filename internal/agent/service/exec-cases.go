@@ -15,7 +15,7 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 	logUtils.Infof("run cases %s on env %d", req.ExecUuid, req.EnvironmentId)
 
 	// reset exec
-	agentExec.ResetStat()
+	agentExec.ResetStat(req.ExecUuid)
 	agentExec.SetForceStopExec(req.ExecUuid, false)
 
 	// start msg

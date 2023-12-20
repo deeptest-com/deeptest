@@ -11,11 +11,11 @@ import (
 func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err error) {
 	logUtils.Infof("run scenario", zap.Int("ScenarioId", req.ScenarioId), zap.Int("environmentId", req.EnvironmentId))
 
-	agentExec.ResetStat()
-	agentExec.ForceStopExec = false
+	agentExec.ResetStat(req.ExecUuid)
+	agentExec.SetForceStopExec(req.ExecUuid, false)
 
-	agentExec.ServerUrl = req.ServerUrl
-	agentExec.ServerToken = req.Token
+	agentExec.SetServerUrl(req.ExecUuid, req.ServerUrl)
+	agentExec.SetServerToken(req.ExecUuid, req.Token)
 
 	// start msg
 	execUtils.SendStartMsg(wsMsg)
@@ -30,14 +30,16 @@ func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err 
 		return
 	}
 
+	scenarioExecObj.ExecUuid = req.ExecUuid
+
 	session, err := ExecScenario(scenarioExecObj, wsMsg)
-	session.RootProcessor.Result.Stat = agentExec.Stat
+	session.RootProcessor.Result.Stat = *agentExec.GetStat(req.ExecUuid)
 	session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 	session.RootProcessor.Result.ScenarioId = uint(req.ScenarioId)
 
 	// submit result
 	report, _ := SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecObj.RootProcessor.ScenarioId,
-		agentExec.ServerUrl, agentExec.ServerToken)
+		agentExec.GetServerUrl(req.ExecUuid), agentExec.GetServerToken(req.ExecUuid))
 
 	execUtils.SendResultMsg(report, session.WsMsg)
 	//sendScenarioSubmitResult(session.RootProcessor.ID, session.WsMsg)
@@ -51,25 +53,26 @@ func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err 
 func ExecScenario(execObj *agentExec.ScenarioExecObj, wsMsg *websocket.Message) (
 	session *agentExec.Session, err error) {
 	// variables etc.
-	agentExec.ExecScene = execObj.ExecScene
+	agentExec.SetExecScene(execObj.ExecUuid, execObj.ExecScene)
 
 	RestoreEntityFromRawAndSetParent(execObj.RootProcessor)
 
 	agentExec.InitScenarioExecContext(execObj)
-	agentExec.InitJsRuntime(execObj.RootProcessor.ProjectId)
+	agentExec.InitJsRuntime(execObj.RootProcessor.ProjectId, execObj.ExecUuid)
 
 	// start msg
 	//execUtils.SendStartMsg(wsMsg)
 
 	// execution
 	session = agentExec.NewSession(execObj, false, wsMsg)
-	session.Run()
-	session.RootProcessor.Result.ScenarioId = execObj.ScenarioId
-	return
-}
+	session.ExecUuid = execObj.ExecUuid
 
-func CancelAndSendMsg(scenarioId int, wsMsg websocket.Message) (err error) {
-	execUtils.SendCancelMsg(wsMsg)
+	session.Run()
+
+	if session.RootProcessor.Result != nil {
+		session.RootProcessor.Result.ScenarioId = execObj.ScenarioId
+	}
+
 	return
 }
 

@@ -80,15 +80,15 @@ func ReadDataFromExcel(url string) (ret []domain.VarKeyValuePair, err error) {
 	return
 }
 
-func DownloadUploadedFile(uri string) (ret string, err error) {
-	serverBaseUrl := strings.TrimSuffix(ServerUrl, ServerApiPath)
+func DownloadUploadedFile(uri string, execUuid string) (ret string, err error) {
+	serverBaseUrl := strings.TrimSuffix(GetServerUrl(execUuid), ServerApiPath)
 
 	url := _httpUtils.AddSepIfNeeded(serverBaseUrl) + uri
 
 	_, name := path.Split(uri)
 
 	dist := filepath.Join(consts.TmpDir, "download", name)
-	
+
 	_fileUtils.Download(url, dist)
 
 	ret = dist

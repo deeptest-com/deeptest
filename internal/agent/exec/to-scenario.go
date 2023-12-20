@@ -5,6 +5,7 @@ import (
 )
 
 type ScenarioExecReq struct {
+	ExecUuid  string `json:"execUuid"`
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 
@@ -31,6 +32,7 @@ type ScenarioExecObjBase struct {
 
 	ExecScene domain.ExecScene `json:"execScene"`
 
+	ExecUuid  string `json:"execUuid"`
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 }

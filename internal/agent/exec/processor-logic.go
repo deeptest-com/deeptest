@@ -45,7 +45,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	detail := map[string]interface{}{"name": entity.Name, "expression": entity.Expression}
 	if typ == consts.ProcessorLogicIf {
 		var result interface{}
-		result, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, entity.ProcessorID)
+		result, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, entity.ProcessorID, session.ExecUuid)
 		if err != nil {
 			pass = false
 		} else {
@@ -72,7 +72,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	executedProcessorIds := map[uint]bool{}
 	if pass {
 		for _, child := range processor.Children {
-			if ForceStopExec {
+			if GetForceStopExec(session.ExecUuid) {
 				break
 			}
 			if child.Disable {
@@ -88,7 +88,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
-	stat := CountSkip(executedProcessorIds, processor.Children)
+	stat := CountSkip(session.ExecUuid, executedProcessorIds, processor.Children)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 
 	return

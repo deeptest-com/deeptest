@@ -5,6 +5,7 @@ import (
 )
 
 type InterfaceCall struct {
+	ExecUuid  string `json:"execUuid"`
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 

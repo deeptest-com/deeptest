@@ -12,11 +12,11 @@ import (
 )
 
 func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error) {
-	logUtils.Infof("run cases %s on env %d", req.ExecUUid, req.EnvironmentId)
+	logUtils.Infof("run cases %s on env %d", req.ExecUuid, req.EnvironmentId)
 
 	// reset exec
-	agentExec.ResetStat()
-	agentExec.ForceStopExec = false
+	agentExec.ResetStat(req.ExecUuid)
+	agentExec.SetForceStopExec(req.ExecUuid, false)
 
 	// start msg
 	execUtils.SendStartMsg(wsMsg)
@@ -34,10 +34,10 @@ func doExecCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message, parentUu
 	casesExecObj := GetCasesToExec(req)
 
 	for _, cs := range casesExecObj.Children {
-		doExecCase(cs, wsMsg, req.ExecUUid, parentUuid, req.ProjectId)
+		doExecCase(cs, wsMsg, req.ExecUuid, parentUuid, req.ProjectId)
 
 		// stop if needed
-		if agentExec.ForceStopExec {
+		if agentExec.GetForceStopExec(parentUuid) {
 			break
 		}
 	}
@@ -45,11 +45,11 @@ func doExecCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message, parentUu
 	return
 }
 
-func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execUUid, parentUuid string, projectId uint) (err error) {
+func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execUuid, parentUuid string, projectId uint) (err error) {
 	if cs.Category != "case" {
 		startMsg := iris.Map{
 			"source":     "execCases",
-			"execUuid":   execUUid,
+			"execUuid":   execUuid,
 			"caseUuid":   cs.Key,
 			"category":   cs.Category,
 			"title":      cs.Title,
@@ -59,7 +59,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	}
 
 	for _, child := range cs.Children {
-		doExecCase(child, wsMsg, execUUid, cs.Key, projectId)
+		doExecCase(child, wsMsg, execUuid, cs.Key, projectId)
 	}
 
 	if cs.Category != "case" {
@@ -69,26 +69,26 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	caseInterfaceExecObj := cs.Data
 
 	// execution
-	agentExec.CurrDebugInterfaceId = caseInterfaceExecObj.DebugData.DebugInterfaceId
-	agentExec.CurrScenarioProcessorId = 0 // not in a scenario
+	agentExec.SetCurrDebugInterfaceId(parentUuid, caseInterfaceExecObj.DebugData.DebugInterfaceId)
+	agentExec.SetCurrScenarioProcessorId(parentUuid, 0) // not in a scenario
 
-	agentExec.CurrRequest = domain.BaseRequest{}
-	agentExec.CurrResponse = domain.DebugResponse{}
-	agentExec.ExecScene = caseInterfaceExecObj.ExecScene
+	agentExec.SetCurrRequest(parentUuid, domain.BaseRequest{})
+	agentExec.SetCurrResponse(parentUuid, domain.DebugResponse{})
+	agentExec.SetExecScene(parentUuid, caseInterfaceExecObj.ExecScene)
 
 	// init context
-	agentExec.InitDebugExecContext()
-	agentExec.InitJsRuntime(projectId)
+	agentExec.InitDebugExecContext(execUuid)
+	agentExec.InitJsRuntime(projectId, execUuid)
 
-	statusPreCondition, _ := agentExec.ExecPreConditions(caseInterfaceExecObj) // must before PreRequest, since it will update the vari in script
-	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData)
+	statusPreCondition, _ := agentExec.ExecPreConditions(caseInterfaceExecObj, execUuid) // must before PreRequest, since it will update the vari in script
+	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData, execUuid)
 
-	agentExec.SetReqValueToGoja(caseInterfaceExecObj.DebugData.BaseRequest)
-	agentExec.GetReqValueFromGoja()
+	agentExec.SetReqValueToGoja(&caseInterfaceExecObj.DebugData.BaseRequest)
+	agentExec.GetReqValueFromGoja(execUuid)
 
 	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
-	if agentExec.CurrRequest.Url != "" {
-		caseInterfaceExecObj.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
+	if agentExec.GetCurrRequest(execUuid).Url != "" {
+		caseInterfaceExecObj.DebugData.BaseRequest = agentExec.GetCurrRequest(execUuid) // update to the value changed in goja
 	}
 
 	resultResp, err1 := RequestInterface(&caseInterfaceExecObj.DebugData)
@@ -97,14 +97,14 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 		return err1
 	}
 
-	agentExec.SetRespValueToGoja(resultResp)
-	statusPostCondition, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp)
-	agentExec.GetRespValueFromGoja()
+	agentExec.SetRespValueToGoja(&resultResp)
+	statusPostCondition, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp, execUuid)
+	agentExec.GetRespValueFromGoja(execUuid)
 	PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
 
-	if agentExec.CurrResponse.Data != nil {
-		resultResp = agentExec.CurrResponse
-
+	// get the response data updated by script post-condition
+	if agentExec.GetCurrResponse(execUuid).Data != nil {
+		resultResp = agentExec.GetCurrResponse(execUuid)
 		resultResp.ConsoleLogs = GenConditionLogsForCase(caseInterfaceExecObj) // only for cases
 	}
 
@@ -116,7 +116,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	result := iris.Map{
 		"source": "execCases",
 
-		"execUuid": execUUid,
+		"execUuid": execUuid,
 		"caseUuid": cs.Key,
 		"request":  caseInterfaceExecObj,
 		"response": resultResp,

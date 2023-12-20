@@ -170,9 +170,9 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 		BaseUrl: "",
 		BaseRequest: domain.BaseRequest{
 			Method:      s.getMethod(bodyType, curlObj.Method),
-			QueryParams: queryParams,
-			Headers:     headers,
-			Cookies:     cookies,
+			QueryParams: &queryParams,
+			Headers:     &headers,
+			Cookies:     &cookies,
 			Body:        wf.Body.String(),
 			BodyType:    consts.HttpContentType(bodyType),
 			Url:         url,

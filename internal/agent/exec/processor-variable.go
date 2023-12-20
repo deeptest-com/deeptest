@@ -44,19 +44,20 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 	detail := map[string]interface{}{"name": entity.Name, "variableName": entity.VariableName}
 	if entity.ProcessorType == consts.ProcessorVariableSet {
 		var variableValue interface{}
-		variableValue, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID)
+		variableValue, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID, session.ExecUuid)
 
 		if err != nil {
 			panic(err)
 			//variableValue = err.Error()
 		}
 
-		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.Public) // set in parent scope
+		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.ExtractorResultTypeString,
+			consts.Public, session.ExecUuid) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("\"%s\"为\"%v\"。", entity.VariableName, variableValue)
 		detail["variableValue"] = variableValue
 
 	} else if entity.ProcessorType == consts.ProcessorVariableClear {
-		ClearVariable(processor.ParentId, entity.VariableName)
+		ClearVariable(processor.ParentId, entity.VariableName, session.ExecUuid)
 		processor.Result.Summary = fmt.Sprintf("\"%s\"成功。", entity.VariableName)
 	}
 

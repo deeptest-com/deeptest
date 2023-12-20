@@ -9,6 +9,7 @@ import (
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
+	"runtime/debug"
 	"time"
 )
 
@@ -56,18 +57,12 @@ type ProcessorBase struct {
 
 func (p *Processor) Run(s *Session) (err error) {
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
-	CurrScenarioProcessorId = p.ID
-	CurrScenarioProcessor = p
-	/*
-		defer func() {
-			if errX := recover(); errX != nil {
-				p.Error(s, errX)
-			}
-		}()
-	*/
+	SetCurrScenarioProcessorId(s.ExecUuid, p.ID)
+	SetCurrScenarioProcessor(s.ExecUuid, p)
+
 	//每个执行器延迟0.1秒，防止发送ws消息过快，导致前端消息错误
 	time.Sleep(100 * time.Microsecond)
-	if !p.Disable && p.Entity != nil && !ForceStopExec {
+	if !p.Disable && p.Entity != nil && !GetForceStopExec(s.ExecUuid) {
 		p.Entity.Run(p, s)
 	}
 
@@ -84,7 +79,7 @@ func (p *Processor) Error(s *Session, err interface{}) {
 
 	detail["exception"] = fmt.Sprintf("错误：%v", err)
 	p.Result.Detail = commonUtils.JsonEncode(detail)
-
+	fmt.Printf("err=%v, stack=%s\n", err, string(debug.Stack()))
 	p.AddResultToParent()
 	execUtils.SendExecMsg(p.Result, consts.Processor, s.WsMsg)
 

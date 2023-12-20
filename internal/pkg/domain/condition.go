@@ -22,7 +22,9 @@ type ExtractorBase struct {
 
 	Default string `gorm:"default:''" json:"default"` // for cookie
 
-	Result       string              `json:"result" gorm:"type:text"`
+	Result     string                     `json:"result" gorm:"type:text"`
+	ResultType consts.ExtractorResultType `json:"resultType"`
+
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg" gorm:"type:text"`
 
@@ -52,6 +54,7 @@ type CheckpointBase struct {
 
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg" gorm:"type:text"`
+	Variables    string              `json:"variables" gorm:"type:text"` // for checkpoint log only
 
 	ConditionId         uint                 `json:"conditionId"`
 	ConditionEntityId   uint                 `gorm:"-" json:"conditionEntityId"`   // refer to entity po id in domain object
@@ -77,11 +80,12 @@ type DatabaseOptBase struct {
 	DatabaseConnBase
 	DatabaseConnIsDisabled bool `json:"databaseConnIsDisabled" gorm:"-"`
 
-	Sql      string                `json:"sql"`
-	Variable string                `json:"variable"`
-	Scope    consts.ExtractorScope `json:"scope" gorm:"default:public"`
-	JsonPath string                `json:"jsonPath"`
-	Result   string                `json:"result" gorm:"type:text"`
+	Sql        string                     `json:"sql"`
+	Variable   string                     `json:"variable"`
+	Scope      consts.ExtractorScope      `json:"scope" gorm:"default:public"`
+	JsonPath   string                     `json:"jsonPath"`
+	Result     string                     `json:"result" gorm:"type:text"`
+	ResultType consts.ExtractorResultType `json:"resultType"`
 
 	ResultStatus consts.ResultStatus `json:"resultStatus"`
 	ResultMsg    string              `json:"resultMsg" gorm:"type:text"`

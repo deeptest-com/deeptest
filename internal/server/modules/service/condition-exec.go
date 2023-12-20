@@ -38,7 +38,9 @@ func (s *ExecConditionService) SavePreConditionResult(invokeId,
 			s.ScriptRepo.CreateLog(scriptBase)
 
 			for _, settings := range scriptBase.VariableSettings {
-				s.ShareVarService.Save(settings.Name, valueUtils.InterfaceToStr(settings.Value),
+				value := valueUtils.InterfaceToStr(settings.Value)
+
+				s.ShareVarService.Save(settings.Name, value, settings.ValueType,
 					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 					consts.Public, usedBy)
 			}
@@ -66,7 +68,7 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 			s.ExtractorRepo.CreateLog(extractorBase)
 
 			if extractorBase.ResultStatus == consts.Pass {
-				s.ShareVarService.Save(extractorBase.Variable, extractorBase.Result,
+				s.ShareVarService.Save(extractorBase.Variable, extractorBase.Result, extractorBase.ResultType,
 					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 					extractorBase.Scope, usedBy)
 			}
@@ -96,7 +98,9 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 			s.ScriptRepo.CreateLog(scriptBase)
 
 			for _, settings := range scriptBase.VariableSettings {
-				s.ShareVarService.Save(settings.Name, valueUtils.InterfaceToStr(settings.Value),
+				value := valueUtils.InterfaceToStr(settings.Value)
+
+				s.ShareVarService.Save(settings.Name, value, settings.ValueType,
 					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 					consts.Public, usedBy)
 			}
@@ -113,7 +117,7 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 			s.DatabaseOptRepo.CreateLog(databaseOptBase)
 
 			if databaseOptBase.ResultStatus == consts.Pass {
-				s.ShareVarService.Save(databaseOptBase.Variable, databaseOptBase.Result,
+				s.ShareVarService.Save(databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
 					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 					databaseOptBase.Scope, usedBy)
 			}

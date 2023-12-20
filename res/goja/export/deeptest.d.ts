@@ -1,23 +1,23 @@
 declare type Param = {
     name: string;
     value: string;
-    paramIn: string;
-    disabled: boolean;
-    type: string;
+    // paramIn?: string | undefined;
+    // disabled?: boolean | undefined;
+    // type?: string | undefined;
 }
 declare type Header = {
     name: string;
     value: string;
-    disabled:    boolean;
-    type: string;
+    // disabled?:    boolean | undefined;
+    // type?: string | undefined;
 }
 declare type ExecCookie = {
     name: string;
     value: any;
-    path: string;
+    path?: string | undefined;
 
-    domain: string;
-    expireTime: Date;
+    domain?: string | undefined;
+    expireTime?: Date | undefined;
 }
 declare type BodyFormDataItem = {
     name: string;
@@ -42,7 +42,6 @@ declare type Request = {
     bodyFormData:       BodyFormDataItem[];
     bodyFormUrlencoded: BodyFormUrlEncodedItem[];
     bodyType: string;
-    bodyLang: string;
 };
 declare type Response = {
     statusCode: number;

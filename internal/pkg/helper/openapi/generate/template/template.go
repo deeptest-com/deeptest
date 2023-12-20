@@ -70,8 +70,10 @@ func (t *template) setLanguage(langType LangType) {
 
 func (t *template) CreateCode() (ret string) {
 	var codes []string
-	for _, field := range *t.fieldArray {
-		codes = append(codes, t.language.CreateCode(field))
+	if t.fieldArray != nil {
+		for _, field := range *t.fieldArray {
+			codes = append(codes, t.language.CreateCode(field))
+		}
 	}
 	ret = strings.Join(codes, "\n")
 	re := regexp.MustCompile("\n+")

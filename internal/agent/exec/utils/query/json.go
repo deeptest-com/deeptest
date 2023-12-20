@@ -4,16 +4,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"github.com/antchfx/jsonquery"
 	"github.com/antchfx/xpath"
 	"github.com/oliveagle/jsonpath"
 	"strings"
 )
 
-func JsonPath(content string, expression string) (result string) {
+func JsonPath(content string, expression string) (result interface{}, resultType consts.ExtractorResultType, err error) {
+	if content == "" || expression == "" {
+		result = consts.ExtractorErr
+		return
+	}
+
 	var jsonData interface{}
-	json.Unmarshal([]byte(content), &jsonData)
+	err = json.Unmarshal([]byte(content), &jsonData)
+	if err != nil {
+		result = consts.ExtractorErr
+		return
+	}
 
 	obj, err := jsonpath.JsonPathLookup(jsonData, expression)
 
@@ -22,17 +31,12 @@ func JsonPath(content string, expression string) (result string) {
 		return
 	}
 
-	switch obj.(type) {
-	case string:
-		result = obj.(string)
-	default:
-		result = _stringUtils.JsonWithoutHtmlEscaped(obj)
-	}
+	result, resultType = commUtils.ConvertValueForPersistence(obj)
 
 	return
 }
 
-func JsonQuery(content string, expression string) (result string) {
+func JsonQuery(content string, expression string) (result interface{}, resultType consts.ExtractorResultType) {
 	doc, err := jsonquery.Parse(strings.NewReader(content))
 	if err != nil {
 		result = consts.ContentErr
@@ -56,12 +60,7 @@ func JsonQuery(content string, expression string) (result string) {
 
 	obj := elem.Value()
 
-	switch obj.(type) {
-	case string:
-		result = obj.(string)
-	default:
-		result = _stringUtils.JsonWithoutHtmlEscaped(obj)
-	}
+	result, resultType = commUtils.ConvertValueForPersistence(obj)
 
 	return
 }

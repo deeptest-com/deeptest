@@ -5,12 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	queryUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
+	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	_netUtils "github.com/aaronchen2k/deeptest/pkg/lib/net"
+	driverMysql "github.com/go-sql-driver/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
+	"time"
 )
 
 func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
@@ -21,6 +25,13 @@ func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
 	if opt.DatabaseConnIsDisabled {
 		opt.ResultStatus = consts.Fail
 		opt.Result = "Database Connection Is Disabled"
+		return
+	}
+
+	ok := _netUtils.Ping(opt.Host, opt.Port)
+	if !ok {
+		opt.ResultStatus = consts.Fail
+		opt.Result = "Database Connection Timeout"
 		return
 	}
 
@@ -70,7 +81,9 @@ func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
 	}
 
 	if opt.JsonPath != "" {
-		opt.Result = queryUtils.JsonPath(string(queryResult), opt.JsonPath)
+		var result interface{}
+		result, opt.ResultType, err = queryUtils.JsonPath(string(queryResult), opt.JsonPath)
+		opt.Result = valueUtils.InterfaceToStr(result)
 	}
 
 	return
@@ -82,8 +95,12 @@ func OpenMySqlDb(opt *domain.DatabaseOptBase) (db *gorm.DB, err error) {
 	connStr := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?%s", opt.Username, opt.Password,
 		opt.Host, opt.Port, opt.DbName, params)
 
+	dsnConfig := driverMysql.Config{
+		Timeout: 1 * time.Second,
+	}
 	config := mysql.Config{
-		DSN: connStr,
+		DSN:       connStr,
+		DSNConfig: &dsnConfig,
 	}
 
 	db, err = gorm.Open(mysql.New(config), &gorm.Config{})
@@ -96,7 +113,11 @@ func OpenSqlServer(opt *domain.DatabaseOptBase) (db *gorm.DB, err error) {
 		opt.Username, opt.Password,
 		opt.Host, opt.Port, opt.DbName)
 
-	db, err = gorm.Open(sqlserver.Open(connStr), &gorm.Config{})
+	config := sqlserver.Config{
+		DSN: connStr,
+	}
+
+	db, err = gorm.Open(sqlserver.New(config), &gorm.Config{})
 
 	return
 }
@@ -108,7 +129,11 @@ func OpenPostgreSQL(opt *domain.DatabaseOptBase) (db *gorm.DB, err error) {
 		opt.Username, opt.Password,
 		opt.Host, opt.Port, opt.DbName, params)
 
-	db, err = gorm.Open(postgres.Open(connStr), &gorm.Config{})
+	config := postgres.Config{
+		DSN: connStr,
+	}
+
+	db, err = gorm.Open(postgres.New(config), &gorm.Config{})
 
 	return
 }

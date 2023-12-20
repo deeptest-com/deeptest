@@ -112,7 +112,7 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 		}
 	}
 
-	stat := CountSkip(executedProcessorIds, processor.Children)
+	stat := CountSkip(session.ExecUuid, executedProcessorIds, processor.Children)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 
 	return

@@ -58,6 +58,7 @@ func (r *CategoryRepo) toTos(pos []*model.Category) (tos []*v1.Category) {
 			Name:     po.Name,
 			Desc:     po.Desc,
 			ParentId: int64(po.ParentId),
+			EntityId: po.EntityId,
 		}
 
 		tos = append(tos, &to)
@@ -292,6 +293,32 @@ func (r *CategoryRepo) GetRootNode(projectId uint, typ serverConsts.CategoryDisc
 		Where("type = ?", typ).
 		Where("name = ? AND NOT deleted", "分类").
 		First(&node).Error
+
+	return
+}
+
+func (r *CategoryRepo) GetEntityIdsByIds(ids []uint) (entityIds []uint, err error) {
+	err = r.DB.Model(&model.Category{}).
+		Select("entity_id").
+		Where("id IN (?)", ids).
+		Find(&entityIds).Error
+
+	return
+}
+
+func (r *CategoryRepo) GetByEntityId(entityId uint) (category model.Category, err error) {
+	err = r.DB.Model(&model.Category{}).
+		Where("entity_id = ? AND NOT deleted", entityId).
+		First(&category).Error
+
+	return
+}
+
+func (r *CategoryRepo) DeleteByEntityId(entityId uint) (err error) {
+	err = r.DB.Model(&model.Category{}).
+		Where("entity_id = ?", entityId).
+		Update("deleted", true).
+		Error
 
 	return
 }

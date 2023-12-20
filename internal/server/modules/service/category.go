@@ -7,19 +7,25 @@ import (
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
+	"gorm.io/gorm"
+	"strings"
 )
 
 type CategoryService struct {
-	EndpointService *EndpointService   `inject:""`
-	CategoryRepo    *repo.CategoryRepo `inject:""`
-	EndpointRepo    *repo.EndpointRepo `inject:""`
-	PlanRepo        *repo.PlanRepo     `inject:""`
-	ScenarioRepo    *repo.ScenarioRepo `inject:""`
+	EndpointService     *EndpointService          `inject:""`
+	CategoryRepo        *repo.CategoryRepo        `inject:""`
+	EndpointRepo        *repo.EndpointRepo        `inject:""`
+	PlanRepo            *repo.PlanRepo            `inject:""`
+	ScenarioRepo        *repo.ScenarioRepo        `inject:""`
+	ComponentSchemaRepo *repo.ComponentSchemaRepo `inject:""`
+	ProjectRepo         *repo.ProjectRepo         `inject:""`
 }
 
 func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projectId int) (root *v1.Category, err error) {
 	root, err = s.CategoryRepo.GetTree(typ, uint(projectId))
-	root.Children = append(root.Children, &v1.Category{Id: -1, Name: "未分类", ParentId: root.Id, Slots: iris.Map{"icon": "icon"}})
+	if typ != serverConsts.SchemaCategory {
+		root.Children = append(root.Children, &v1.Category{Id: -1, Name: "未分类", ParentId: root.Id, Slots: iris.Map{"icon": "icon"}})
+	}
 	s.mountCount(root, typ, uint(projectId))
 	return
 }
@@ -41,6 +47,7 @@ func (s *CategoryService) Create(req v1.CategoryCreateReq) (ret model.Category, 
 		ParentId:  req.TargetId,
 		ProjectId: req.ProjectId,
 		Type:      req.Type,
+		EntityId:  req.EntityId,
 	}
 
 	if req.Mode == "child" {
@@ -124,6 +131,13 @@ func (s *CategoryService) deleteNodeAndChildren(typ serverConsts.CategoryDiscrim
 		err = s.ScenarioRepo.DeleteByCategoryIds(categoryIds)
 	case serverConsts.PlanCategory:
 		err = s.PlanRepo.DeleteByCategoryIds(categoryIds)
+	case serverConsts.SchemaCategory:
+		entityIds, err := s.CategoryRepo.GetEntityIdsByIds(categoryIds)
+		if err != nil {
+			return err
+		}
+
+		err = s.ComponentSchemaRepo.DeleteByIds(entityIds)
 	}
 
 	return
@@ -152,6 +166,7 @@ func (s *CategoryService) getRepo(typ serverConsts.CategoryDiscriminator) repo.I
 		serverConsts.EndpointCategory: s.EndpointRepo,
 		serverConsts.PlanCategory:     s.PlanRepo,
 		serverConsts.ScenarioCategory: s.ScenarioRepo,
+		serverConsts.SchemaCategory:   s.ComponentSchemaRepo,
 	}
 
 	return repos[typ]
@@ -170,4 +185,77 @@ func (s *CategoryService) mountCountOnNode(root *v1.Category, data map[int64]int
 		root.Count += s.mountCountOnNode(children, data)
 	}
 	return root.Count
+}
+
+func (s *CategoryService) GetJoinedPath(typ serverConsts.CategoryDiscriminator, projectId, categoryId uint) (path string, err error) {
+	categories, err := s.CategoryRepo.ListByProject(typ, projectId)
+	if err != nil {
+		return
+	}
+
+	categoryIdParentMap := make(map[uint]uint)
+	categoryIdNameMap := make(map[uint]string)
+	for _, v := range categories {
+		categoryIdParentMap[v.ID] = uint(v.ParentId)
+		categoryIdNameMap[v.ID] = v.Name
+	}
+
+	if name, ok := categoryIdNameMap[categoryId]; ok {
+		path = "/" + name
+	}
+
+	s.doGetJoinedPath(categoryIdParentMap, categoryIdNameMap, categoryId, &path)
+
+	index := strings.Index(path, "/")
+
+	if index != -1 {
+		path = path[index+1:]
+	}
+
+	return
+}
+
+func (s *CategoryService) doGetJoinedPath(categoryIdParentMap map[uint]uint, categoryIdNameMap map[uint]string, categoryId uint, path *string) {
+	if parentId, ok := categoryIdParentMap[categoryId]; ok {
+		if parentName, ok1 := categoryIdNameMap[parentId]; ok1 {
+			*path = "/" + parentName
+
+			s.doGetJoinedPath(categoryIdParentMap, categoryIdNameMap, parentId, path)
+		}
+	}
+
+	return
+}
+
+func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) interface{} {
+	type Res struct {
+		SuccessItems []uint
+		FailedItems  []uint
+	}
+
+	var successItems, failedItems []uint
+	for _, projectId := range projectIds {
+		category, err := s.CategoryRepo.GetByItem(0, serverConsts.SchemaCategory, projectId, "分类")
+		if err != nil && err != gorm.ErrRecordNotFound {
+			failedItems = append(failedItems, projectId)
+			continue
+		}
+
+		if category.ID != 0 {
+			successItems = append(successItems, projectId)
+			continue
+		}
+
+		err = s.ProjectRepo.AddProjectRootSchemaCategory(projectId)
+		if err != nil {
+			failedItems = append(failedItems, projectId)
+		} else {
+			successItems = append(successItems, projectId)
+		}
+	}
+
+	res := Res{successItems, failedItems}
+
+	return res
+
 }

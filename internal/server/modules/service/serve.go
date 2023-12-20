@@ -5,6 +5,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -24,8 +25,10 @@ type ServeService struct {
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
 	ProjectRepo              *repo.ProjectRepo           `inject:""`
 	EnvironmentRepo          *repo.EnvironmentRepo       `inject:""`
+	CategoryRepo             *repo.CategoryRepo          `inject:""`
 	Cron                     *cron.ServerCron            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
+	CategoryService          *CategoryService            `inject:""`
 }
 
 func (s *ServeService) ListByProject(projectId int, userId uint) (ret []model.Serve, currServe model.Serve, err error) {
@@ -165,13 +168,32 @@ func (s *ServeService) Copy(id uint) (err error) {
 
 func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 	var serveSchema model.ComponentSchema
-	if req.ID == 0 && s.ServeRepo.SchemaExist(uint(req.ID), uint(req.ServeId), req.Name) {
-		err = fmt.Errorf("schema name already exist")
+	//if req.ID == 0 && s.ServeRepo.SchemaExist(uint(req.ID), uint(req.ServeId), req.Name) {
+	//	err = fmt.Errorf("schema name already exist")
+	//	return
+	//}
+	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
+	joinedPath, err := s.CategoryService.GetJoinedPath(serverConsts.SchemaCategory, req.ProjectId, uint(req.TargetId))
+	if err != nil {
 		return
 	}
-	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
-	serveSchema.Ref = "#/components/schemas/" + serveSchema.Name
+
+	serveSchema.Ref = "#/components/schemas/" + joinedPath + "/" + serveSchema.Name
 	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
+
+	if req.ID == 0 {
+		createCategoryReq := v1.CategoryCreateReq{Name: req.Name, TargetId: req.TargetId, ProjectId: req.ProjectId, Type: serverConsts.SchemaCategory, Mode: "child", EntityId: serveSchema.ID}
+		_, _ = s.CategoryService.Create(createCategoryReq)
+	} else {
+		category, err := s.CategoryRepo.GetByEntityId(serveSchema.ID)
+		if err != nil {
+			return res, err
+		}
+
+		category.Name = serveSchema.Name
+		err = s.CategoryRepo.Save(&category)
+	}
+
 	return serveSchema.ID, err
 }
 
@@ -235,6 +257,11 @@ func (s *ServeService) DeleteSchemaById(id uint) (err error) {
 	*/
 
 	err = s.ServeRepo.DeleteSchemaById(id)
+	if err != nil {
+		return
+	}
+
+	err = s.CategoryRepo.DeleteByEntityId(id)
 	return
 }
 
@@ -294,10 +321,28 @@ func (s *ServeService) CopySchema(id uint) (schema model.ComponentSchema, err er
 	if err != nil {
 		return
 	}
+
+	category, err := s.CategoryRepo.GetByEntityId(schema.ID)
+	if err != nil {
+		return
+	}
+
 	schema.ID = 0
 	schema.CreatedAt = nil
 	schema.UpdatedAt = nil
+	schema.Name = "CopyOf" + schema.Name
 	err = s.ServeRepo.Save(0, &schema)
+	if err != nil {
+		return
+	}
+
+	category.ID = 0
+	category.CreatedAt = nil
+	category.UpdatedAt = nil
+	category.Name = schema.Name
+	category.EntityId = schema.ID
+
+	err = s.CategoryRepo.Save(&category)
 	return
 }
 

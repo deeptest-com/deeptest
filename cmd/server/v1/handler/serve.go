@@ -274,6 +274,9 @@ func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+	projectId, _ := ctx.URLParamInt("currProjectId")
+	req.ProjectId = uint(projectId)
+
 	res, err := c.ServeService.SaveSchema(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

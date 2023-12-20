@@ -38,7 +38,7 @@ type ServeVersionPaginate struct {
 
 type ServeSchemaReq struct {
 	ID          uint   `json:"id"`
-	ServeId     int64  `json:"serveId" validate:"required"`
+	ServeId     int64  `json:"serveId"`
 	Name        string `json:"name" validate:"required"`
 	Tag         string `json:"tag"`
 	Content     string `json:"content"`
@@ -47,6 +47,8 @@ type ServeSchemaReq struct {
 	Tags        string `json:"tags"`
 	Description string `json:"description"`
 	Ref         string `json:"ref"`
+	ProjectId   uint   `json:"projectId"`
+	TargetId    int    `json:"targetId"`
 }
 
 type ServeSchemaRefReq struct {

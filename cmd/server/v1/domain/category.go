@@ -14,6 +14,7 @@ type Category struct {
 	Children []*Category `json:"children"`
 	Slots    iris.Map    `json:"slots"`
 	Count    int64       `json:"count"`
+	EntityId uint        `json:"entityId"`
 }
 
 type CategoryCreateReq struct {
@@ -24,6 +25,7 @@ type CategoryCreateReq struct {
 	ModuleId  string                             `json:"moduleId"`
 	TargetId  int                                `json:"targetId"`
 	ProjectId uint                               `json:"projectId"`
+	EntityId  uint                               `json:"entityId"`
 }
 
 type CategoryReq struct {
@@ -44,4 +46,8 @@ type CategoryMoveReq struct {
 type CategoryCount struct {
 	Count      int64
 	CategoryId int64
+}
+
+type BatchAddSchemaRootReq struct {
+	ProjectIds []uint `json:"projectIds"`
 }

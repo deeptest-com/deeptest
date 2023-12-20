@@ -14,7 +14,6 @@ type ComponentSchema struct {
 	Ref         string            `json:"ref"`
 	SourceType  consts.SourceType `json:"sourceType" gorm:"default:0"`
 	ProjectId   uint              `json:"projectId"`
-	CategoryId  int64             `json:"categoryId"`
 }
 
 func (ComponentSchema) TableName() string {

@@ -209,7 +209,7 @@ func (s *CategoryService) GetJoinedPath(typ serverConsts.CategoryDiscriminator, 
 	index := strings.Index(path, "/")
 
 	if index != -1 {
-		path = path[index+1:]
+		path = path[index:]
 	}
 
 	return

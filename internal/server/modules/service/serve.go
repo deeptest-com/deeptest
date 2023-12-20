@@ -178,7 +178,7 @@ func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 		return
 	}
 
-	serveSchema.Ref = "#/components/schemas/" + joinedPath + "/" + serveSchema.Name
+	serveSchema.Ref = "#/components/schemas" + joinedPath + "/" + serveSchema.Name
 	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
 
 	if req.ID == 0 {

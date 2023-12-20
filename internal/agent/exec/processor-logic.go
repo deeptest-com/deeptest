@@ -88,7 +88,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
-	stat := CountSkip(executedProcessorIds, processor.Children)
+	stat := CountSkip(session.ExecUuid, executedProcessorIds, processor.Children)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 
 	return

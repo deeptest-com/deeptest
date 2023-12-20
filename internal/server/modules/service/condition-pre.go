@@ -43,14 +43,12 @@ func (s *PreConditionService) Get(id uint) (checkpoint model.DebugPreCondition, 
 func (s *PreConditionService) Create(condition *model.DebugPreCondition) (err error) {
 	err = s.PreConditionRepo.Save(condition)
 
-	var entityId uint
-
 	if condition.EntityType == consts.ConditionTypeScript {
 		po := s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)
-		entityId = po.ID
+		condition.EntityId = po.ID
 	}
 
-	err = s.PreConditionRepo.UpdateEntityId(condition.ID, entityId)
+	err = s.PreConditionRepo.UpdateEntityId(condition.ID, condition.EntityId)
 
 	return
 }

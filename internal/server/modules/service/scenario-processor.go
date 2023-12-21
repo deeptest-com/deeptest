@@ -4,6 +4,7 @@ import (
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	v1 "github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -24,6 +25,8 @@ type ScenarioProcessorService struct {
 	CheckpointService        *CheckpointService        `inject:""`
 	DebugInterfaceService    *DebugInterfaceService    `inject:""`
 	ScenarioInterfaceService *ScenarioInterfaceService `inject:""`
+	EnvironmentService       *EnvironmentService       `inject:""`
+	DebugSceneService        *DebugSceneService        `inject:""`
 }
 
 func (s *ScenarioProcessorService) GetEntity(id int) (ret interface{}, err error) {
@@ -128,6 +131,12 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 	switch processor.EntityCategory {
 	case consts.ProcessorInterface:
 		debugData, _ := s.DebugInterfaceService.GetDetail(processor.EntityId)
+
+		//合并全局参数到debugdata 到 GlobalParams，在场景执行中全局参数使用的是 debugData.GlobalParams，所以要提取合并
+		globalParams, _ := s.EnvironmentService.GetGlobalParams(debugData.ProjectId)
+		globalParams = s.DebugInterfaceService.MergeGlobalParams(globalParams, debugData.GlobalParams)
+		endpointInterfaceGlobalParams, _ := s.EndpointInterfaceRepo.GetGlobalParams(debugData.EndpointInterfaceId, debugData.ProjectId)
+		debugData.GlobalParams = s.MergeGlobalParams(endpointInterfaceGlobalParams, globalParams)
 
 		interfaceEntity := agentExec.ProcessorInterface{}
 		copier.CopyWithOption(&interfaceEntity, debugData, copier.Option{DeepCopy: true})
@@ -270,3 +279,24 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 //
 //	return
 //}
+
+func (s *ScenarioProcessorService) MergeGlobalParams(endpointInterfaceGlobalParams []model.EndpointInterfaceGlobalParam, globalParams []v1.GlobalParam) (ret []model.DebugInterfaceGlobalParam) {
+
+	for _, item := range globalParams {
+		b := true
+		for _, param := range endpointInterfaceGlobalParams {
+			if param.Name == item.Name && param.In == item.In && param.Disabled {
+				b = false
+				break
+			}
+		}
+
+		if b {
+			param := model.DebugInterfaceGlobalParam{GlobalParam: v1.GlobalParam{Name: item.Name, DefaultValue: item.DefaultValue, In: item.In, Type: item.Type}}
+			ret = append(ret, param)
+		}
+
+	}
+
+	return
+}

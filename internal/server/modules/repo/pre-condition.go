@@ -212,6 +212,7 @@ func (r *PreConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, us
 			script.ConditionEntityType = typ
 			script.ConditionId = po.ID
 			script.ConditionEntityId = po.EntityId
+			script.Output = ""
 
 			raw, _ := json.Marshal(script)
 			condition := domain.InterfaceExecCondition{

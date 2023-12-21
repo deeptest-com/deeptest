@@ -64,20 +64,30 @@ func (o *openapi2endpoint) convertEndpoints() {
 		o.addMethod(url, path.ExtensionProps)
 		interfaces := o.interfaces(url, o.doc.Paths[url])
 		pathParams := o.pathParams(o.doc.Paths[url].Parameters)
+		endpoint := new(model.Endpoint)
+		endpoint.Path = url
 		for _, interf := range interfaces {
-			endpoint := new(model.Endpoint)
-			endpoint.Path = url
 			if len(pathParams) == 0 {
 				pathParams = interf.PathParams
 			}
 			endpoint.PathParams = pathParams
-			endpoint.Title = interf.Name
+			if endpoint.Title != "" {
+				endpoint.Title += "&" + interf.Name
+			} else {
+				endpoint.Title = interf.Name
+			}
 			endpoint.Interfaces = append(endpoint.Interfaces, interf)
 			endpoint.Tags = interf.Tags
 			endpoint.CreateUser = interf.Creator
-			endpoint.Description = interf.Description
-			o.endpoints = append(o.endpoints, endpoint)
+			if interf.Description != "" {
+				if endpoint.Description != "" {
+					endpoint.Description += "," + interf.Description
+				} else {
+					endpoint.Description = interf.Description
+				}
+			}
 		}
+		o.endpoints = append(o.endpoints, endpoint)
 
 	}
 

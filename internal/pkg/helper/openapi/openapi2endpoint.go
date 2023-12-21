@@ -75,6 +75,7 @@ func (o *openapi2endpoint) convertEndpoints() {
 			endpoint.Interfaces = append(endpoint.Interfaces, interf)
 			endpoint.Tags = interf.Tags
 			endpoint.CreateUser = interf.Creator
+			endpoint.Description = interf.Description
 			o.endpoints = append(o.endpoints, endpoint)
 		}
 
@@ -161,6 +162,7 @@ func (o *openapi2endpoint) interf(method consts.HttpMethod, url string, operatio
 			interf.RequestBody.SchemaItem = requestBodyItem[0]
 		}
 	}
+	interf.Description = operation.Description
 	interf.ResponseBodies = o.responseBodies(operation.Responses)
 	interf.Tags = o.makeDirs(operation.Tags)
 	interf.Creator = o.creator(operation.Extensions)

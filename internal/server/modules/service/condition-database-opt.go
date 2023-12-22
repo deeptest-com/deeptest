@@ -22,9 +22,3 @@ func (s *DatabaseOptService) Update(opt *model.DebugConditionDatabaseOpt) (err e
 
 	return
 }
-
-func (s *DatabaseOptService) Delete(reqId uint) (err error) {
-	err = s.DatabaseOptRepo.Delete(reqId)
-
-	return
-}

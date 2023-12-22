@@ -20,7 +20,7 @@ func (c *ConditionCtrl) List(ctx iris.Context) {
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 	category := consts.ConditionCategory(ctx.URLParam("category"))
 	usedBy := ctx.URLParam("usedBy")
-	src := consts.ConditionSrc(ctx.URLParam("src"))
+	src := consts.ConditionSrc(ctx.URLParam("conditionSrc"))
 
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})

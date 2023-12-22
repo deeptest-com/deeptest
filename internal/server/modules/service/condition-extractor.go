@@ -62,12 +62,6 @@ func (s *ExtractorService) Update(extractor *model.DebugConditionExtractor) (err
 	return
 }
 
-func (s *ExtractorService) Delete(reqId uint) (err error) {
-	err = s.ExtractorRepo.Delete(reqId)
-
-	return
-}
-
 func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugInfo) (variables []domain.Variable, err error) {
 	extractorConditions, err := s.ConditionRepo.ListExtractor(req)
 	var conditionIds1 []uint

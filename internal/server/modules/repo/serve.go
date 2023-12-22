@@ -35,6 +35,14 @@ func (r *ServeRepo) ListByProject(projectId uint) (pos []model.Serve, err error)
 	return
 }
 
+func (r *ServeRepo) ListByProjects(projectIds []uint) (pos []model.Serve, err error) {
+	err = r.DB.
+		Where("project_id IN (?)", projectIds).
+		Where("NOT deleted").
+		Find(&pos).Error
+	return
+}
+
 func (r *ServeRepo) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, err error) {
 	var count int64
 	db := r.DB.Model(&model.Serve{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
@@ -499,8 +507,8 @@ func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 	})
 }
 
-func (r *ServeRepo) GetSchemaByRef(serveId uint, ref string) (res model.ComponentSchema, err error) {
-	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled and ref = ?", serveId, ref).Find(&res).Error
+func (r *ServeRepo) GetSchemaByRef(projectId uint, ref string) (res model.ComponentSchema, err error) {
+	err = r.DB.Where("project_id = ? AND NOT deleted AND not disabled and ref = ?", projectId, ref).Find(&res).Error
 	return
 }
 
@@ -633,4 +641,16 @@ func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
 
 func (r *ServeRepo) UpdateSwaggerSyncExecTimeById(id uint) (err error) {
 	return r.DB.Model(&model.SwaggerSync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
+}
+
+func (r *ServeRepo) ListAll() (res []model.Serve, err error) {
+	err = r.DB.Model(&model.Serve{}).
+		Where("not disabled and not deleted").
+		Find(&res).Error
+	return
+}
+
+func (r *ServeRepo) BatchUpdateSchemaProjectByServeId(serveIds []uint, projectId uint) (err error) {
+	err = r.DB.Model(&model.ComponentSchema{}).Where("serve_id IN (?)", serveIds).Update("project_id", projectId).Error
+	return
 }

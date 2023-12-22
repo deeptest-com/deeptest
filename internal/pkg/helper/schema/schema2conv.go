@@ -32,6 +32,7 @@ type Schema struct {
 	AnyOf       SchemaRefs `json:"anyOf,omitempty" yaml:"allOf,omitempty"`
 	Ref         string     `json:"ref,omitempty" yaml:"ref,omitempty"`
 	RefExt      string     `json:"$ref,omitempty" yaml:"ref,omitempty"`
+	RefId       uint       `json:"refId,omitempty" yaml:"$refId,omitempty"`
 	Description string     `json:"description,omitempty" yaml:"description,omitempty"`
 	Format      string     `json:"format,omitempty" yaml:"format,omitempty"`
 
@@ -79,6 +80,7 @@ func (schemaRef *SchemaRef) MarshalJSON() (res []byte, err error) {
 	}
 	if schemaRef.Ref != "" {
 		schema.Ref = schemaRef.Ref
+		schema.RefId = schemaRef.RefId
 	} else {
 		if schemaRef.Value != nil {
 			schema = *schemaRef.Value
@@ -106,6 +108,7 @@ func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
 		schema.Ref = schema.RefExt
 	}
 	schemaRef.Ref = schema.Ref
+	schemaRef.RefId = schema.RefId
 	if schemaRef.Ref == "" {
 		schemaRef.Value = &schema
 	}
@@ -481,6 +484,11 @@ func (s *Schema2conv) FillRefId(schema *SchemaRef) {
 		if res, ok := s.Components[schema.Ref]; ok {
 			schema.RefId = res.RefId
 		}
+		return
+	}
+
+	if schema.Value == nil {
+		return
 	}
 
 	if len(schema.Value.AllOf) > 0 {

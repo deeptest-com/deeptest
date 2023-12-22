@@ -150,7 +150,7 @@ func (s *CategoryService) mountCount(root *v1.Category, typ serverConsts.Categor
 
 	var data []v1.CategoryCount
 	err := repo.GetCategoryCount(&data, projectId)
-	if err != nil {
+	if err != nil || len(data) == 0 {
 		return
 	}
 

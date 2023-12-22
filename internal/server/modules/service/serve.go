@@ -213,7 +213,11 @@ func (s *ServeService) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.P
 }
 
 func (s *ServeService) GetSchema(id uint) (schema model.ComponentSchema, err error) {
-	return s.ServeRepo.GetSchema(id)
+	schema, err = s.ServeRepo.GetSchema(id)
+	if err != nil {
+		schema.Content = s.FillSchemaRefId(schema.ProjectId, schema.Content)
+	}
+	return
 }
 
 func (s *ServeService) PaginateSecurity(req v1.ServeSecurityPaginate) (ret _domain.PageData, err error) {
@@ -500,3 +504,12 @@ func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
 }
 
 */
+
+func (s *ServeService) FillSchemaRefId(projectId uint, schemaStr string) string {
+	schema2conv := schemaHelper.NewSchema2conv()
+	schema2conv.Components = s.Components(projectId, schemaStr)
+	schema := new(schemaHelper.SchemaRef)
+	_commUtils.JsonDecode(schemaStr, schema)
+	schema2conv.FillRefId(schema)
+	return _commUtils.JsonEncode(schema)
+}

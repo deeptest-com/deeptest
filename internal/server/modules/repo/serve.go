@@ -111,7 +111,7 @@ func (r *ServeRepo) PaginateVersion(req v1.ServeVersionPaginate) (ret _domain.Pa
 
 func (r *ServeRepo) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.PageData, err error) {
 	var count int64
-	db := r.DB.Model(&model.ComponentSchema{}).Where("serve_id = ? AND NOT deleted AND NOT disabled", req.ServeId)
+	db := r.DB.Model(&model.ComponentSchema{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 
 	if req.Type != "" {
 		db.Where("type=?", req.Type)
@@ -187,8 +187,8 @@ func (r *ServeRepo) GetSchema(id uint) (res model.ComponentSchema, err error) {
 
 func (r *ServeRepo) GetSchemasByProjectId(projectId uint, options ...[]interface{}) (res []model.ComponentSchema, err error) {
 	db := r.DB.Where("NOT deleted AND not disabled AND project_id = ?", projectId)
-	if len(options) > 0 {
-		db = db.Where("ref_id in ?", options[0])
+	if len(options) > 0 && len(options[0]) > 0 {
+		db = db.Where("id in ?", options[0])
 	}
 	err = db.Find(&res).Error
 	return

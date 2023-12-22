@@ -81,10 +81,10 @@ type EnvironmentVariable struct {
 
 type ServeSchemaPaginate struct {
 	_domain.PaginateReq
-	ServeId int64  `json:"serveId"`
-	Tag     string `json:"tag"`
-	Type    string `json:"type"`
-	Name    string `json:"name"`
+	ProjectId int64  `json:"projectId"`
+	Tag       string `json:"tag"`
+	Type      string `json:"type"`
+	Name      string `json:"name"`
 }
 
 type JsonContent struct {

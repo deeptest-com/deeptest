@@ -23,8 +23,7 @@ type DebugInvokeService struct {
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 	ExecConditionService  *ExecConditionService  `inject:""`
 
-	PreConditionRepo   *repo.PreConditionRepo   `inject:""`
-	PostConditionRepo  *repo.PostConditionRepo  `inject:""`
+	ConditionRepo      *repo.ConditionRepo      `inject:""`
 	ExtractorRepo      *repo.ExtractorRepo      `inject:""`
 	CheckpointRepo     *repo.CheckpointRepo     `inject:""`
 	ScriptRepo         *repo.ScriptRepo         `inject:""`
@@ -155,7 +154,7 @@ func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId u
 func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err error) {
 	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
 
-	conditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryResult, "", "false")
+	conditions, err := s.ConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryResult, "", "false", "")
 
 	for _, condition := range conditions {
 		typ := condition.EntityType
@@ -183,19 +182,23 @@ func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err
 func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err error) {
 	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
 
-	preConditions, err := s.PreConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, "", "false")
+	preConditions, err := s.ConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId,
+		consts.ConditionCategoryConsole, "", "false", consts.ConditionSrcPre)
 	for _, condition := range preConditions {
 		typ := condition.EntityType
 		var log interface{}
 
 		if typ == consts.ConditionTypeScript {
 			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
+		} else if typ == consts.ConditionTypeDatabase {
+			log, _ = s.DatabaseOptRepo.GetLog(condition.ID, uint(invokeId))
 		}
 
 		results = append(results, log)
 	}
 
-	postConditions, err := s.PostConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryConsole, "", "false")
+	postConditions, err := s.ConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId,
+		consts.ConditionCategoryConsole, "", "false", consts.ConditionSrcPost)
 	for _, condition := range postConditions {
 		typ := condition.EntityType
 		var log interface{}
@@ -251,8 +254,8 @@ func (s *DebugInvokeService) GetAsInterface(id int) (debugData domain.DebugData,
 	postConditions := []domain.InterfaceExecCondition{}
 	json.Unmarshal([]byte(invocation.PreConditionsContent), &preConditions)
 	json.Unmarshal([]byte(invocation.PostConditionsContent), &postConditions)
-	s.PreConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, preConditions, debugData.UsedBy)
-	s.PostConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, postConditions, debugData.UsedBy)
+	s.ConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, preConditions, debugData.UsedBy, consts.ConditionSrcPre)
+	s.ConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, postConditions, debugData.UsedBy, consts.ConditionSrcPre)
 
 	// response data to show
 	resultReq = debugData

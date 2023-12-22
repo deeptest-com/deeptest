@@ -6,12 +6,12 @@ import (
 )
 
 type CheckpointService struct {
-	PostConditionRepo *repo.PostConditionRepo `inject:""`
-	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
-	EnvironmentRepo   *repo.EnvironmentRepo   `inject:""`
-	ProjectRepo       *repo.ProjectRepo       `inject:""`
-	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
-	VariableService   *VariableService        `inject:""`
+	PostConditionRepo *repo.ConditionRepo   `inject:""`
+	CheckpointRepo    *repo.CheckpointRepo  `inject:""`
+	EnvironmentRepo   *repo.EnvironmentRepo `inject:""`
+	ProjectRepo       *repo.ProjectRepo     `inject:""`
+	ExtractorRepo     *repo.ExtractorRepo   `inject:""`
+	VariableService   *VariableService      `inject:""`
 }
 
 func (s *CheckpointService) Get(id uint) (checkpoint model.DebugConditionCheckpoint, err error) {

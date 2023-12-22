@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 )
 
-type PostConditionRepo struct {
+type ConditionRepo struct {
 	DB *gorm.DB `inject:""`
 
 	ExtractorRepo    *ExtractorRepo    `inject:""`
@@ -26,9 +26,9 @@ type PostConditionRepo struct {
 	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
 }
 
-func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory,
-	usedBy consts.UsedBy, forAlternativeCase string) (
-	pos []model.DebugPostCondition, err error) {
+func (r *ConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory,
+	usedBy consts.UsedBy, forAlternativeCase string, src consts.ConditionSrc) (
+	pos []model.DebugCondition, err error) {
 
 	db := r.DB.Where("NOT deleted")
 
@@ -73,6 +73,9 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 	if usedBy != "" {
 		db.Where("used_by=?", usedBy)
 	}
+	if src != "" {
+		db.Where("condition_src=?", src)
+	}
 
 	if forAlternativeCase == "true" {
 		db.Where("is_for_benchmark_case")
@@ -89,8 +92,8 @@ func (r *PostConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ
 	return
 }
 
-func (r *PostConditionRepo) ListExtractor(req domain.DebugInfo) (
-	pos []model.DebugPostCondition, err error) {
+func (r *ConditionRepo) ListExtractor(req domain.DebugInfo) (
+	pos []model.DebugCondition, err error) {
 
 	db := r.DB.
 		Where("NOT deleted").
@@ -113,7 +116,7 @@ func (r *PostConditionRepo) ListExtractor(req domain.DebugInfo) (
 	return
 }
 
-func (r *PostConditionRepo) ListDbOpt(req domain.DebugInfo) (pos []model.DebugPostCondition, err error) {
+func (r *ConditionRepo) ListDbOpt(req domain.DebugInfo) (pos []model.DebugCondition, err error) {
 	db := r.DB.
 		Where("NOT deleted").
 		Order("ordr ASC")
@@ -135,7 +138,7 @@ func (r *PostConditionRepo) ListDbOpt(req domain.DebugInfo) (pos []model.DebugPo
 	return
 }
 
-func (r *PostConditionRepo) Get(id uint) (po model.DebugPostCondition, err error) {
+func (r *ConditionRepo) Get(id uint) (po model.DebugCondition, err error) {
 	err = r.DB.
 		Where("id=?", id).
 		Where("NOT deleted").
@@ -143,7 +146,7 @@ func (r *PostConditionRepo) Get(id uint) (po model.DebugPostCondition, err error
 	return
 }
 
-func (r *PostConditionRepo) Save(po *model.DebugPostCondition) (err error) {
+func (r *ConditionRepo) Save(po *model.DebugCondition) (err error) {
 	if po.Ordr == 0 {
 		po.Ordr = r.GetMaxOrder(po.DebugInterfaceId, po.EndpointInterfaceId, po.IsForBenchmarkCase)
 	}
@@ -152,9 +155,10 @@ func (r *PostConditionRepo) Save(po *model.DebugPostCondition) (err error) {
 	return
 }
 
-func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint,
+func (r *ConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint,
 	dictUsedBy, srcUsedBy consts.UsedBy, forAlternativeCase bool) (err error) {
-	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll, srcUsedBy, fmt.Sprintf("%t", forAlternativeCase))
+	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll,
+		srcUsedBy, fmt.Sprintf("%t", forAlternativeCase), "")
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
@@ -210,17 +214,19 @@ func (r *PostConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId
 	return
 }
 
-func (r *PostConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uint,
-	postConditions []domain.InterfaceExecCondition, usedBy consts.UsedBy) (err error) {
-	r.removeAll(debugInterfaceId, endpointInterfaceId, usedBy)
+func (r *ConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uint, conditions []domain.InterfaceExecCondition,
+	usedBy consts.UsedBy, src consts.ConditionSrc) (err error) {
 
-	for _, item := range postConditions {
+	r.removeAll(debugInterfaceId, endpointInterfaceId, usedBy, src)
+
+	for _, item := range conditions {
 		// clone condition po
-		condition := model.DebugPostCondition{
+		condition := model.DebugCondition{
 			EntityType:          item.Type,
 			DebugInterfaceId:    debugInterfaceId,
 			EndpointInterfaceId: endpointInterfaceId,
 			Desc:                item.Desc,
+			ConditionSrc:        src,
 		}
 		r.Save(&condition)
 
@@ -272,10 +278,10 @@ func (r *PostConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uin
 	return
 }
 
-func (r *PostConditionRepo) Delete(id uint) (err error) {
+func (r *ConditionRepo) Delete(id uint) (err error) {
 	po, _ := r.Get(id)
 
-	err = r.DB.Model(&model.DebugPostCondition{}).
+	err = r.DB.Model(&model.DebugCondition{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -291,8 +297,8 @@ func (r *PostConditionRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *PostConditionRepo) Disable(id uint) (err error) {
-	err = r.DB.Model(&model.DebugPostCondition{}).
+func (r *ConditionRepo) Disable(id uint) (err error) {
+	err = r.DB.Model(&model.DebugCondition{}).
 		Where("id=?", id).
 		Update("disabled", gorm.Expr("NOT disabled")).
 		Error
@@ -300,11 +306,11 @@ func (r *PostConditionRepo) Disable(id uint) (err error) {
 	return
 }
 
-func (r *PostConditionRepo) UpdateOrders(req serverDomain.ConditionMoveReq) (err error) {
+func (r *ConditionRepo) UpdateOrders(req serverDomain.ConditionMoveReq) (err error) {
 	return r.DB.Transaction(func(tx *gorm.DB) error {
 		for index, id := range req.Data {
 			sql := fmt.Sprintf("UPDATE %s SET ordr = %d WHERE id = %d",
-				model.DebugPostCondition{}.TableName(), index+1, id)
+				model.DebugCondition{}.TableName(), index+1, id)
 
 			err = r.DB.Exec(sql).Error
 			if err != nil {
@@ -316,8 +322,8 @@ func (r *PostConditionRepo) UpdateOrders(req serverDomain.ConditionMoveReq) (err
 	})
 }
 
-func (r *PostConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
-	err = r.DB.Model(&model.DebugPostCondition{}).
+func (r *ConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
+	err = r.DB.Model(&model.DebugCondition{}).
 		Where("id=?", id).
 		Update("entity_id", entityId).
 		Error
@@ -325,8 +331,9 @@ func (r *PostConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 	return
 }
 
-func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, forAlternativeCase string) (ret []domain.InterfaceExecCondition, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll, usedBy, forAlternativeCase)
+func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
+	usedBy consts.UsedBy, forAlternativeCase string, src consts.ConditionSrc) (ret []domain.InterfaceExecCondition, err error) {
+	pos, err := r.List(debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll, usedBy, forAlternativeCase, src)
 
 	for _, po := range pos {
 		typ := po.EntityType
@@ -436,8 +443,8 @@ func (r *PostConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint, u
 	return
 }
 
-func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (err error) {
-	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "", usedBy, "false")
+func (r *ConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, src consts.ConditionSrc) (err error) {
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "", usedBy, "false", src)
 
 	for _, po := range pos {
 		r.Delete(po.ID)
@@ -446,8 +453,8 @@ func (r *PostConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint
 	return
 }
 
-func (r *PostConditionRepo) RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, entityType consts.ConditionCategory) (err error) {
-	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, entityType, usedBy, "true")
+func (r *ConditionRepo) RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, entityType consts.ConditionCategory) (err error) {
+	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, entityType, usedBy, "true", "")
 
 	for _, po := range pos {
 		if po.IsForBenchmarkCase {
@@ -458,7 +465,7 @@ func (r *PostConditionRepo) RemoveAllForBenchmarkCase(debugInterfaceId, endpoint
 	return
 }
 
-func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (condition domain.Condition) {
+func (r *ConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (condition domain.Condition) {
 	if endpointInterfaceId == 0 {
 		return
 	}
@@ -486,7 +493,7 @@ func (r *PostConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpoi
 	return
 }
 
-func (r *PostConditionRepo) GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (po model.DebugPostCondition, err error) {
+func (r *ConditionRepo) GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (po model.DebugCondition, err error) {
 	err = r.DB.
 		Where("debug_interface_id=? and endpoint_interface_id=? and entity_type=?", debugInterfaceId, endpointInterfaceId, consts.ConditionTypeResponseDefine).
 		Where("NOT deleted").
@@ -494,8 +501,8 @@ func (r *PostConditionRepo) GetByDebugInterfaceId(debugInterfaceId, endpointInte
 	return
 }
 
-func (r *PostConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId uint, codes []string, by consts.UsedBy) (
-	po model.DebugPostCondition, err error) {
+func (r *ConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId uint, codes []string, by consts.UsedBy) (
+	po model.DebugCondition, err error) {
 
 	responseDefine := model.DebugConditionResponseDefine{}
 	responseDefine.Code = "200"
@@ -518,8 +525,8 @@ func (r *PostConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId ui
 	return
 }
 
-func (r *PostConditionRepo) GetMaxOrder(debugInterfaceId, endpointInterfaceId uint, isForBenchmarkCase bool) (order int) {
-	postCondition := model.DebugPostCondition{}
+func (r *ConditionRepo) GetMaxOrder(debugInterfaceId, endpointInterfaceId uint, isForBenchmarkCase bool) (order int) {
+	postCondition := model.DebugCondition{}
 
 	db := r.DB.Model(&postCondition).
 		Where("is_for_benchmark_case", isForBenchmarkCase)

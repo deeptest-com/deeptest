@@ -31,8 +31,6 @@ type ScenarioNodeService struct {
 	ExtractorRepo            *repo.ExtractorRepo         `inject:""`
 	CheckpointRepo           *repo.CheckpointRepo        `inject:""`
 	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
-	PreConditionRepo         *repo.PreConditionRepo      `inject:""`
-	PostConditionRepo        *repo.PostConditionRepo     `inject:""`
 
 	DebugInterfaceService    *DebugInterfaceService    `inject:""`
 	DiagnoseInterfaceService *DiagnoseInterfaceService `inject:""`

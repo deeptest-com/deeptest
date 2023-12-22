@@ -166,7 +166,7 @@ func (s *ServeService) Copy(id uint) (err error) {
 	return s.ServeRepo.Save(0, &serve)
 }
 
-func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
+func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res v1.SaveSchemaRes, err error) {
 	var serveSchema model.ComponentSchema
 	//if req.ID == 0 && s.ServeRepo.SchemaExist(uint(req.ID), uint(req.ServeId), req.Name) {
 	//	err = fmt.Errorf("schema name already exist")
@@ -181,11 +181,12 @@ func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 	serveSchema.Ref = "#/components/schemas" + joinedPath + "/" + serveSchema.Name
 	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
 
+	var category model.Category
 	if req.ID == 0 {
 		createCategoryReq := v1.CategoryCreateReq{Name: req.Name, TargetId: req.TargetId, ProjectId: req.ProjectId, Type: serverConsts.SchemaCategory, Mode: "child", EntityId: serveSchema.ID}
-		_, _ = s.CategoryService.Create(createCategoryReq)
+		category, _ = s.CategoryService.Create(createCategoryReq)
 	} else {
-		category, err := s.CategoryRepo.GetByEntityId(serveSchema.ID)
+		category, err = s.CategoryRepo.GetByEntityId(serveSchema.ID)
 		if err != nil {
 			return res, err
 		}
@@ -194,7 +195,10 @@ func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 		err = s.CategoryRepo.Save(&category)
 	}
 
-	return serveSchema.ID, err
+	res.CategoryId = category.ID
+	res.EntityId = category.EntityId
+
+	return
 }
 
 func (s *ServeService) SaveSecurity(req v1.ServeSecurityReq) (res uint, err error) {

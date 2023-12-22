@@ -172,3 +172,8 @@ type HistoryServeAddServesReq struct {
 	ServerName string `json:"serverName"`
 	Url        string `json:"url"`
 }
+
+type SaveSchemaRes struct {
+	EntityId   uint `json:"entityId"`
+	CategoryId uint `json:"categoryId"`
+}

@@ -139,7 +139,7 @@ func defineJsFuncs(execUuid string) (err error) {
 		if GetCurrScenarioProcessor(execUuid) != nil {
 			scopeId = GetCurrScenarioProcessor(execUuid).ParentId
 		}
-		ret, err := SetVariable(scopeId, name, val, consts.ExtractorResultTypeObject, consts.Public, execUuid)
+		ret, err := SetVariable(scopeId, name, val, commUtils.ValueType(val), consts.Public, execUuid)
 
 		if err == nil {
 			AppendGojaVariables(execUuid, ret)

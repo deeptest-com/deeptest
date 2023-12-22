@@ -58,3 +58,19 @@ func ConvertValueForUse(value interface{}, valueType consts.ExtractorResultType)
 
 	return
 }
+
+func ValueType(value interface{}) consts.ExtractorResultType {
+	switch value.(type) {
+	case string:
+		return consts.ExtractorResultTypeString
+
+	case float64:
+		return consts.ExtractorResultTypeNumber
+
+	case bool:
+		return consts.ExtractorResultTypeBool
+
+	default:
+		return consts.ExtractorResultTypeObject
+	}
+}

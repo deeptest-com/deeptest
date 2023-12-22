@@ -254,17 +254,15 @@ func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) (err error) {
 
 	for _, projectId := range projectIds {
 		category, err := s.CategoryRepo.GetByItem(0, serverConsts.SchemaCategory, projectId, "分类")
-		if err != nil && err != gorm.ErrRecordNotFound {
+		if err != gorm.ErrRecordNotFound {
 			continue
 		}
 
-		if category.ID == 0 {
-			err = s.ProjectRepo.AddProjectRootSchemaCategory(projectId)
-			if err != nil {
-			}
-
-			category, _ = s.CategoryRepo.GetByItem(0, serverConsts.SchemaCategory, projectId, "分类")
+		err = s.ProjectRepo.AddProjectRootSchemaCategory(projectId)
+		if err != nil {
 		}
+
+		category, _ = s.CategoryRepo.GetByItem(0, serverConsts.SchemaCategory, projectId, "分类")
 
 		rootId := category.ID
 
@@ -287,12 +285,8 @@ func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) (err error) {
 
 			for _, schema := range schemas {
 				//先查后创建，避免重复增加分类数据
-				category, err := s.CategoryRepo.GetByEntityId(schema.ID)
-				if err != nil && err != gorm.ErrRecordNotFound {
-					continue
-				}
-
-				if category.ID != 0 {
+				_, err = s.CategoryRepo.GetByEntityId(schema.ID)
+				if err != gorm.ErrRecordNotFound {
 					continue
 				}
 

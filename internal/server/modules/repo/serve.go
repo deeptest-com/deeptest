@@ -177,8 +177,12 @@ func (r *ServeRepo) GetSchema(id uint) (res model.ComponentSchema, err error) {
 	return
 }
 
-func (r *ServeRepo) GetSchemasByServeId(serveId uint) (res []model.ComponentSchema, err error) {
-	err = r.DB.Where("NOT deleted AND not disabled AND serve_id = ?", serveId).Find(&res).Error
+func (r *ServeRepo) GetSchemasByProjectId(projectId uint, options ...[]interface{}) (res []model.ComponentSchema, err error) {
+	db := r.DB.Where("NOT deleted AND not disabled AND project_id = ?", projectId)
+	if len(options) > 0 {
+		db = db.Where("ref_id in ?", options[0])
+	}
+	err = db.Find(&res).Error
 	return
 }
 

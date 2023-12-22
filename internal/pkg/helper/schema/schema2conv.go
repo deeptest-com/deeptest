@@ -15,6 +15,7 @@ import (
 type SchemaRef struct {
 	Ref    string  `json:"ref,omitempty" yaml:"ref,omitempty"`
 	RefExt string  `json:"$ref,omitempty" yaml:"$ref,omitempty"`
+	RefId  uint    `json:"refId,omitempty" yaml:"$refId,omitempty"`
 	Value  *Schema `json:"value,omitempty" yaml:"value,omitempty"`
 }
 type SchemaRefs []*SchemaRef
@@ -422,5 +423,92 @@ func (s *Schema2conv) objectEqual(schema1 *Schema, schema2 *Schema) (ret bool) {
 
 func (s *Schema2conv) arrayEqual(schema1 *Schema, schema2 *Schema) (ret bool) {
 	return s.Equal(schema1.Items, schema2.Items)
+
+}
+
+func (s *Schema2conv) GetRefIds(schema *SchemaRef) (ret []interface{}) {
+	if schema.RefId != 0 {
+		return append(ret, schema.RefId)
+	}
+
+	if schema.Value == nil {
+		return nil
+	}
+
+	if schema.Value.Type == openapi3.TypeArray {
+		ret = s.GetRefIds(schema.Value.Items)
+	}
+
+	if schema.Value.Type == openapi3.TypeObject {
+		for _, schemaRef := range schema.Value.Properties {
+			ret = append(ret, s.GetRefIds(schemaRef)...)
+		}
+	}
+
+	return ret
+
+}
+
+func (s *Schema2conv) GetRefs(schema *SchemaRef) (ret []interface{}) {
+	if schema.Ref != "" {
+		return append(ret, schema.Ref)
+	}
+
+	if schema.Value == nil {
+		return nil
+	}
+
+	if schema.Value.Type == openapi3.TypeArray {
+		ret = s.GetRefs(schema.Value.Items)
+	}
+
+	if schema.Value.Type == openapi3.TypeObject {
+		for _, schemaRef := range schema.Value.Properties {
+			ret = append(ret, s.GetRefs(schemaRef)...)
+		}
+	}
+
+	return ret
+
+}
+
+func (s *Schema2conv) FillRefId(schema *SchemaRef) {
+	if schema.RefId != 0 {
+		return
+	}
+
+	if schema.Ref != "" {
+		if res, ok := s.Components[schema.Ref]; ok {
+			schema.RefId = res.RefId
+		}
+	}
+
+	if len(schema.Value.AllOf) > 0 {
+		for _, item := range schema.Value.AllOf {
+			s.FillRefId(item)
+		}
+	}
+
+	if len(schema.Value.AnyOf) > 0 {
+		for _, item := range schema.Value.AllOf {
+			s.FillRefId(item)
+		}
+	}
+
+	if len(schema.Value.OneOf) > 0 {
+		for _, item := range schema.Value.AllOf {
+			s.FillRefId(item)
+		}
+	}
+
+	if schema.Value.Type == openapi3.TypeArray {
+		s.FillRefId(schema.Value.Items)
+	}
+
+	if schema.Value.Type == openapi3.TypeObject {
+		for _, schemaRef := range schema.Value.Properties {
+			s.FillRefId(schemaRef)
+		}
+	}
 
 }

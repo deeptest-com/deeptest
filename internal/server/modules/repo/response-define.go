@@ -88,7 +88,7 @@ func (r *ResponseDefineRepo) Components(endpointInterfaceId uint) responseDefine
 	endpoint, _ := r.EndpointRepo.Get(endpointInterface.EndpointId)
 
 	components := responseDefineHelper.Components{}
-	result, err := r.ServeRepo.GetSchemasByServeId(endpoint.ServeId)
+	result, err := r.ServeRepo.GetSchemasByProjectId(endpoint.ProjectId)
 	if err != nil {
 		return nil
 	}

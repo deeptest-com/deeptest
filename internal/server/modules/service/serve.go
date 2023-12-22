@@ -270,11 +270,11 @@ func (s *ServeService) DeleteSecurityId(id uint) (err error) {
 	return
 }
 
-func (s *ServeService) Schema2Example(serveId uint, data string) (obj interface{}) {
+func (s *ServeService) Schema2Example(projectId uint, data string) (obj interface{}) {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.Components(serveId)
+	schema2conv.Components = s.Components(projectId, data)
 	//schema1 := openapi3.Schema{}
-	//_commUtils.JsonDecode(data, &schema)
+	//_commUtils.JsonDecode(data, &schema),
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema)
 	//_commUtils.JsonDecode("{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}", &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}}", &schema)
@@ -289,9 +289,18 @@ func (s *ServeService) Schema2Example(serveId uint, data string) (obj interface{
 	return
 }
 
-func (s *ServeService) Components(serveId uint) (components schemaHelper.Components) {
+func (s *ServeService) Components(projectId uint, options ...string) (components schemaHelper.Components) {
 	components = schemaHelper.Components{}
-	result, err := s.ServeRepo.GetSchemasByServeId(serveId)
+
+	var refIds []interface{}
+	if len(options) > 0 {
+		schema2conv := schemaHelper.NewSchema2conv()
+		var schemaRef schemaHelper.SchemaRef
+		_commUtils.JsonDecode(options[0], &schemaRef)
+		refIds = schema2conv.GetRefIds(&schemaRef)
+	}
+
+	result, err := s.ServeRepo.GetSchemasByProjectId(projectId, refIds)
 	if err != nil {
 		return
 	}
@@ -299,6 +308,7 @@ func (s *ServeService) Components(serveId uint) (components schemaHelper.Compone
 	for _, item := range result {
 		var schema schemaHelper.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
+		schema.RefId = item.ID
 		components[item.Ref] = &schema
 	}
 

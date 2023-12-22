@@ -193,7 +193,7 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
 			return
 		}
 
-		serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
+		serveComponent, err := s.ServeRepo.GetSchemasByProjectId(endpoint.ProjectId)
 		if err != nil {
 			return
 		}
@@ -601,11 +601,12 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 
 func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
 	for key, intef := range endpoint.Interfaces {
 		for k, response := range intef.ResponseBodies {
+			schema2conv.Components = s.ServeService.Components(endpoint.ProjectId, response.SchemaItem.Content)
 			schema := new(schemaHelper.SchemaRef)
 			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
+			schema2conv.FillRefId(schema)
 			if endpoint.SourceType == 1 && schema.Value != nil && len(schema.Value.AllOf) > 0 {
 				schema2conv.CombineSchemas(schema)
 			}

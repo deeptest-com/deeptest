@@ -212,8 +212,8 @@ func (s *ServeService) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.P
 	return s.ServeRepo.PaginateSchema(req)
 }
 
-func (s *ServeService) GetSchema(serverId uint, ref string) (schema model.ComponentSchema, err error) {
-	return s.ServeRepo.GetSchemaByRef(serverId, ref)
+func (s *ServeService) GetSchema(id uint) (schema model.ComponentSchema, err error) {
+	return s.ServeRepo.GetSchema(id)
 }
 
 func (s *ServeService) PaginateSecurity(req v1.ServeSecurityPaginate) (ret _domain.PageData, err error) {

@@ -19,6 +19,7 @@ type CategoryService struct {
 	ScenarioRepo        *repo.ScenarioRepo        `inject:""`
 	ComponentSchemaRepo *repo.ComponentSchemaRepo `inject:""`
 	ProjectRepo         *repo.ProjectRepo         `inject:""`
+	ServeRepo           *repo.ServeRepo           `inject:""`
 }
 
 func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projectId int) (root *v1.Category, err error) {
@@ -227,35 +228,81 @@ func (s *CategoryService) doGetJoinedPath(categoryIdParentMap map[uint]uint, cat
 	return
 }
 
-func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) interface{} {
-	type Res struct {
-		SuccessItems []uint
-		FailedItems  []uint
+func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) (err error) {
+	if len(projectIds) == 0 {
+		projects, err := s.ProjectRepo.ListAll()
+		if err != nil {
+			return err
+		}
+
+		for _, v := range projects {
+			projectIds = append(projectIds, v.ID)
+		}
 	}
 
-	var successItems, failedItems []uint
+	projectServeMap := make(map[uint][]uint)
+	serves, err := s.ServeRepo.ListByProjects(projectIds)
+	if err != nil {
+		return
+	}
+
+	for _, v := range serves {
+		projectServeMap[v.ProjectId] = append(projectServeMap[v.ProjectId], v.ID)
+	}
+
+	var serveIds []uint
+
 	for _, projectId := range projectIds {
 		category, err := s.CategoryRepo.GetByItem(0, serverConsts.SchemaCategory, projectId, "分类")
 		if err != nil && err != gorm.ErrRecordNotFound {
-			failedItems = append(failedItems, projectId)
 			continue
 		}
 
-		if category.ID != 0 {
-			successItems = append(successItems, projectId)
-			continue
+		if category.ID == 0 {
+			err = s.ProjectRepo.AddProjectRootSchemaCategory(projectId)
+			if err != nil {
+			}
+
+			category, _ = s.CategoryRepo.GetByItem(0, serverConsts.SchemaCategory, projectId, "分类")
 		}
 
-		err = s.ProjectRepo.AddProjectRootSchemaCategory(projectId)
-		if err != nil {
-			failedItems = append(failedItems, projectId)
-		} else {
-			successItems = append(successItems, projectId)
+		rootId := category.ID
+
+		//开始处理历史schema数据
+		if v, ok := projectServeMap[projectId]; ok {
+			serveIds = v
 		}
+
+		if len(serveIds) > 0 {
+			//schema表给project_id赋值
+			err = s.ServeRepo.BatchUpdateSchemaProjectByServeId(serveIds, projectId)
+			if err != nil {
+				continue
+			}
+
+			schemas, err := s.ServeRepo.GetSchemas(serveIds)
+			if err != nil {
+				continue
+			}
+
+			for _, schema := range schemas {
+				//先查后创建，避免重复增加分类数据
+				category, err := s.CategoryRepo.GetByEntityId(schema.ID)
+				if err != nil && err != gorm.ErrRecordNotFound {
+					continue
+				}
+
+				if category.ID != 0 {
+					continue
+				}
+
+				createCategoryReq := v1.CategoryCreateReq{Name: schema.Name, TargetId: int(rootId), ProjectId: projectId, Type: serverConsts.SchemaCategory, Mode: "child", EntityId: schema.ID}
+				_, _ = s.Create(createCategoryReq)
+			}
+		}
+
 	}
 
-	res := Res{successItems, failedItems}
-
-	return res
+	return
 
 }

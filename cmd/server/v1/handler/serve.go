@@ -334,15 +334,17 @@ func (c *ServeCtrl) ListSchema(ctx iris.Context) {
 // @Param 	currProjectId		query	int								true	"当前项目ID"
 // @Param 	ServeSchemaRefReq	body	serverDomain.ServeSchemaRefReq	true	"获取Schema的请求参数"
 // @success	200	{object}	_domain.Response{data=model.ComponentSchema}
-// @Router	/api/v1/serves/schema/detail	[post]
+// @Router	/api/v1/serves/schema/detail	[get]
 func (c *ServeCtrl) GetSchemaByRef(ctx iris.Context) {
-	var req serverDomain.ServeSchemaRefReq
-	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.GetSchema(uint(req.ServeId), req.Ref)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
-	} else {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	id := ctx.URLParamUint64("id")
+	if id == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
 	}
+
+	res, _ := c.ServeService.GetSchema(uint(id))
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+
 }
 
 // DeleteSchema

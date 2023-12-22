@@ -33,7 +33,7 @@ func (m *ServeModule) Party() module.WebModule {
 
 		public.Post("/schema/save", m.ServeCtrl.SaveSchema).Name = "保存Schema"
 		public.Post("/schema/list", m.ServeCtrl.ListSchema).Name = "Schema列表"
-		public.Post("/schema/detail", m.ServeCtrl.GetSchemaByRef).Name = "获取Schema"
+		public.Get("/schema/detail", m.ServeCtrl.GetSchemaByRef).Name = "获取Schema"
 		public.Delete("/schema/delete", m.ServeCtrl.DeleteSchema).Name = "删除Schema"
 		public.Post("/security/save", m.ServeCtrl.SaveSecurity).Name = "保存授权"
 		public.Post("/security/list", m.ServeCtrl.ListSecurity).Name = "授权列表"

@@ -23,3 +23,8 @@ func (r *ComponentSchemaRepo) GetCategoryCount(result interface{}, projectId uin
 	err = r.DB.Raw("select count(id) count, parent_id category_id from "+model.Category{}.TableName()+" where not deleted and not disabled and project_id=? and type = ? and entity_id != 0 group by category_id", projectId, serverConsts.SchemaCategory).Scan(result).Error
 	return
 }
+
+func (r *ComponentSchemaRepo) ListAll() (res []model.ComponentSchema, err error) {
+	err = r.DB.Where("NOT deleted AND not disabled ").Find(&res).Error
+	return
+}

@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -65,15 +64,15 @@ func (s *RoleService) AllRoleList() ([]v1.RoleResp, error) {
 }
 
 func (s *RoleService) GetAuthByEnv(userId uint) (res []string, err error) {
-	if config.CONFIG.System.SysEnv != "ly" {
-		user, err := s.UserRepo.FindDetailById(userId)
-		if err != nil {
-			return []string{}, err
-		}
-		return s.GetRoleMenuConfig(user.SysRoles)
+	//if config.CONFIG.System.SysEnv != "ly" {
+	user, err := s.UserRepo.FindDetailById(userId)
+	if err != nil {
+		return []string{}, err
 	}
+	return s.GetRoleMenuConfig(user.SysRoles)
+	//}
 
-	return []string{}, nil
+	//return []string{}, nil
 }
 
 func (s *RoleService) GetRoleMenuConfig(roles []string) (menus []string, err error) {

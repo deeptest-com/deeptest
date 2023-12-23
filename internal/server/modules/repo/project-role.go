@@ -39,6 +39,11 @@ func (r *ProjectRoleRepo) FindByName(name consts.RoleType) (projectRole model.Pr
 	return
 }
 
+func (r *ProjectRoleRepo) FindByNames(names []consts.RoleType) (projectRoles []model.ProjectRole, err error) {
+	err = r.DB.Model(&model.ProjectRole{}).Where("name IN (?)", names).Find(&projectRoles).Error
+	return
+}
+
 func (r *ProjectRoleRepo) Create(projectRole model.ProjectRole) (err error) {
 	role, err := r.FindByName(projectRole.Name)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
@@ -54,6 +59,15 @@ func (r *ProjectRoleRepo) Create(projectRole model.ProjectRole) (err error) {
 	if err != nil {
 		logUtils.Errorf("创建项目角色失败%s", err.Error())
 		return
+	}
+
+	return
+}
+
+func (r *ProjectRoleRepo) BatchCreate(projectRoles []model.ProjectRole) (err error) {
+	err = r.DB.Create(&projectRoles).Error
+	if err != nil {
+		logUtils.Errorf("批量创建项目角色%s失败%s", projectRoles, err.Error())
 	}
 
 	return
@@ -107,5 +121,15 @@ func (r *ProjectRoleRepo) GetRoleIdNameMap(roleIds []uint) (data map[uint]consts
 	for _, v := range projectRoles {
 		data[v.ID] = v.Name
 	}
+	return
+}
+
+func (r *ProjectRoleRepo) GetRoleByProjectAndUser(projectId, userId uint) (projectRole model.ProjectRole, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).
+		Joins("left join biz_project_role r on biz_project_member.project_role_id=r.id").
+		Select("r.*").
+		Where("biz_project_member.project_id = ?", projectId).
+		Where("biz_project_member.user_id = ?", userId).
+		Find(&projectRole).Error
 	return
 }

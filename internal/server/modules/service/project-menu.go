@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -39,36 +40,59 @@ func (s *ProjectMenuService) GetUserMenuList(projectId, userId uint) (ret []mode
 	return
 }
 
-func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint, userName string) (ret []string, err error) {
-	if config.CONFIG.System.SysEnv == "ly" {
-		project, err := s.ProjectRepo.Get(projectId)
-		if err != nil {
-			return ret, err
-		}
-		ret, err = s.RemoteService.GetUserButtonPermissions(userName, project.ShortName)
-	} else {
-		var roleId uint
-		isAdminUser, err := s.UserRepo.IsAdminUser(userId)
-		if err != nil {
-			return ret, err
-		}
-
-		if isAdminUser {
-			adminProjectRole, err := s.ProjectRoleRepo.GetAdminRecord()
-			if err != nil {
-				return ret, err
-			}
-			roleId = adminProjectRole.ID
-		} else {
-			projectMemberRole, err := s.ProjectRepo.FindRolesByProjectAndUser(projectId, userId)
-			if err != nil {
-				return ret, err
-			}
-			roleId = projectMemberRole.ProjectRoleId
-		}
-
-		ret, err = s.ProjectMenuRepo.GetRoleMenuCodeList(roleId)
+func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint) (ret []string, err error) {
+	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
+	if err != nil {
+		return
 	}
+
+	var projectRole model.ProjectRole
+	if isAdminUser {
+		projectRole, err = s.ProjectRoleRepo.GetAdminRecord()
+	} else {
+		projectRole, err = s.ProjectRoleRepo.GetRoleByProjectAndUser(projectId, userId)
+	}
+	if err != nil {
+		return
+	}
+
+	if config.CONFIG.System.SysEnv == "ly" {
+		// TODO 用roleName去ly接口取数据
+		fmt.Println(projectRole.Name)
+		ret, err = s.ProjectMenuRepo.GetRoleMenuCodeList(projectRole.ID)
+	} else {
+		ret, err = s.ProjectMenuRepo.GetRoleMenuCodeList(projectRole.ID)
+	}
+
+	//if config.CONFIG.System.SysEnv == "ly" {
+	//	project, err := s.ProjectRepo.Get(projectId)
+	//	if err != nil {
+	//		return ret, err
+	//	}
+	//	ret, err = s.RemoteService.GetUserButtonPermissions(userName, project.ShortName)
+	//} else {
+	//	var roleId uint
+	//	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
+	//	if err != nil {
+	//		return ret, err
+	//	}
+	//
+	//	if isAdminUser {
+	//		adminProjectRole, err := s.ProjectRoleRepo.GetAdminRecord()
+	//		if err != nil {
+	//			return ret, err
+	//		}
+	//		roleId = adminProjectRole.ID
+	//	} else {
+	//		projectMemberRole, err := s.ProjectRepo.FindRolesByProjectAndUser(projectId, userId)
+	//		if err != nil {
+	//			return ret, err
+	//		}
+	//		roleId = projectMemberRole.ProjectRoleId
+	//	}
+	//
+	//	ret, err = s.ProjectMenuRepo.GetRoleMenuCodeList(roleId)
+	//}
 
 	return
 }

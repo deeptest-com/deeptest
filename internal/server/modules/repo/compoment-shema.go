@@ -28,3 +28,13 @@ func (r *ComponentSchemaRepo) ListAll() (res []model.ComponentSchema, err error)
 	err = r.DB.Where("NOT deleted AND not disabled ").Find(&res).Error
 	return
 }
+
+func (r *ComponentSchemaRepo) GetSchemasNotExistedInCategory(projectIds []uint) (res []model.ComponentSchema, err error) {
+	err = r.DB.Model(&model.ComponentSchema{}).
+		Joins("left join biz_category c on biz_project_serve_component_schema.id=c.entity_id").
+		Select("biz_project_serve_component_schema.*").
+		Where("biz_project_serve_component_schema.project_id IN (?) and c.id is null", projectIds).
+		Find(&res).Error
+
+	return
+}

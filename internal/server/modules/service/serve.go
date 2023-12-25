@@ -219,7 +219,7 @@ func (s *ServeService) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.P
 
 func (s *ServeService) GetSchema(id uint) (schema model.ComponentSchema, err error) {
 	schema, err = s.ServeRepo.GetSchema(id)
-	if err != nil {
+	if err == nil {
 		schema.Content = s.FillSchemaRefId(schema.ProjectId, schema.Content)
 	}
 	return

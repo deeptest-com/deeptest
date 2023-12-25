@@ -29,7 +29,7 @@ func NewSchema2Code(langType template.LangType, nameRule template.NameRule) *Sch
 func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) *fields.Field {
 	ref := schema.Ref
 	refName := ""
-	if component, _ := s.Component(&schema); component != nil {
+	if component, _ := s.Components.Component(&schema); component != nil {
 		s.sets[ref]++
 		schema = *component
 		refName = s.getRefName(ref)

@@ -298,8 +298,8 @@ func (s *ServeService) Schema2Example(projectId uint, data string) (obj interfac
 	return
 }
 
-func (s *ServeService) Components(projectId uint, options ...string) (components schemaHelper.Components) {
-	components = schemaHelper.Components{}
+func (s *ServeService) Components(projectId uint, options ...string) (components *schemaHelper.Components) {
+	components = schemaHelper.NewComponents()
 
 	var refIds []interface{}
 	if len(options) > 0 {
@@ -317,7 +317,7 @@ func (s *ServeService) Components(projectId uint, options ...string) (components
 	for _, item := range result {
 		var schema schemaHelper.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
-		components[item.ID] = &schema
+		components.Add(item.ID, item.Ref, &schema)
 	}
 
 	return
@@ -518,7 +518,7 @@ func (s *ServeService) FillSchemaRefId(projectId uint, schemaStr string) string 
 	return _commUtils.JsonEncode(schema)
 }
 
-func (s *ServeService) dependComponents(schemaStr string, components, dependComponents schemaHelper.Components) {
+func (s *ServeService) dependComponents(schemaStr string, components, dependComponents *schemaHelper.Components) {
 	schema := new(schemaHelper.SchemaRef)
 	schemaStr = strings.ReplaceAll(schemaStr, "\\u0026", "&")
 	schemaStr = strings.ReplaceAll(schemaStr, "\n", "")
@@ -526,5 +526,5 @@ func (s *ServeService) dependComponents(schemaStr string, components, dependComp
 	_commUtils.JsonDecode(schemaStr, schema)
 	schema2conv := schemaHelper.NewSchema2conv()
 	schema2conv.Components = components
-	schema2conv.SchemaComponents(*schema, dependComponents)
+	schema2conv.SchemaComponents(schema, dependComponents)
 }

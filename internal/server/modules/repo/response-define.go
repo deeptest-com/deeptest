@@ -100,7 +100,7 @@ func (r *ResponseDefineRepo) Components(endpointInterfaceId uint) responseDefine
 	for _, item := range result {
 		var schema responseDefineHelper.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
-		components[item.Ref] = &schema
+		components[item.ID] = &schema
 	}
 
 	return r.requiredComponents(responseBodies, components)

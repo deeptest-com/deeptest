@@ -16,6 +16,7 @@ import (
 	encoder "github.com/zwgblue/yaml-encoder"
 	"gorm.io/gorm"
 	"strconv"
+	"strings"
 )
 
 type ServeService struct {
@@ -312,8 +313,7 @@ func (s *ServeService) Components(projectId uint, options ...string) (components
 	for _, item := range result {
 		var schema schemaHelper.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
-		schema.RefId = item.ID
-		components[item.Ref] = &schema
+		components[item.ID] = &schema
 	}
 
 	return
@@ -507,9 +507,20 @@ func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
 
 func (s *ServeService) FillSchemaRefId(projectId uint, schemaStr string) string {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.Components(projectId, schemaStr)
+	schema2conv.Components = s.Components(projectId)
 	schema := new(schemaHelper.SchemaRef)
 	_commUtils.JsonDecode(schemaStr, schema)
 	schema2conv.FillRefId(schema)
 	return _commUtils.JsonEncode(schema)
+}
+
+func (s *ServeService) dependComponents(schemaStr string, components, dependComponents schemaHelper.Components) {
+	schema := new(schemaHelper.SchemaRef)
+	schemaStr = strings.ReplaceAll(schemaStr, "\\u0026", "&")
+	schemaStr = strings.ReplaceAll(schemaStr, "\n", "")
+	schemaStr = strings.ReplaceAll(schemaStr, "\"ref\":", "\"$ref\":")
+	_commUtils.JsonDecode(schemaStr, schema)
+	schema2conv := schemaHelper.NewSchema2conv()
+	schema2conv.Components = components
+	schema2conv.SchemaComponents(*schema, dependComponents)
 }

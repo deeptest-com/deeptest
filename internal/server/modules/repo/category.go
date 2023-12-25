@@ -322,3 +322,44 @@ func (r *CategoryRepo) DeleteByEntityId(entityId uint) (err error) {
 
 	return
 }
+
+func (r *CategoryRepo) BatchAddProjectRootSchemaCategory(projectIds []uint) (err error) {
+	roots := make([]model.Category, 0)
+	for _, projectId := range projectIds {
+		root := model.Category{
+			Name:      "分类",
+			Type:      serverConsts.SchemaCategory,
+			ProjectId: projectId,
+			IsDir:     true,
+		}
+
+		roots = append(roots, root)
+	}
+
+	err = r.DB.Create(&roots).Error
+
+	return
+}
+
+func (r *CategoryRepo) BatchGetRootNodeProjectIds(projectIds []uint, typ serverConsts.CategoryDiscriminator) (res []uint, err error) {
+	err = r.DB.Model(&model.Category{}).
+		Select("project_id").
+		Where("project_id IN (?)", projectIds).
+		Where("type = ?", typ).
+		Where("parent_id = ?", 0).
+		Where("name = ? AND NOT deleted", "分类").
+		Find(&res).Error
+
+	return
+}
+
+func (r *CategoryRepo) BatchGetRootNodes(projectIds []uint, typ serverConsts.CategoryDiscriminator) (res []model.Category, err error) {
+	err = r.DB.Model(&model.Category{}).
+		Where("project_id IN (?)", projectIds).
+		Where("type = ?", typ).
+		Where("parent_id = ?", 0).
+		Where("name = ? AND NOT deleted", "分类").
+		Find(&res).Error
+
+	return
+}

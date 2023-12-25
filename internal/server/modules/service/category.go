@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 	"strings"
@@ -228,7 +229,7 @@ func (s *CategoryService) doGetJoinedPath(categoryIdParentMap map[uint]uint, cat
 	return
 }
 
-func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) (err error) {
+func (s *CategoryService) BatchAddSchemaRoot1(projectIds []uint) (err error) {
 	if len(projectIds) == 0 {
 		projects, err := s.ProjectRepo.ListAll()
 		if err != nil {
@@ -297,6 +298,86 @@ func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) (err error) {
 
 	}
 
+	return
+
+}
+
+func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) (err error) {
+	if len(projectIds) == 0 {
+		projects, err := s.ProjectRepo.ListAll()
+		if err != nil {
+			return err
+		}
+
+		for _, v := range projects {
+			projectIds = append(projectIds, v.ID)
+		}
+	}
+
+	//已经有根结点的项目
+	existedRootProjects, err := s.CategoryRepo.BatchGetRootNodeProjectIds(projectIds, serverConsts.SchemaCategory)
+	if err != nil {
+		return
+	}
+
+	//需要创建根结点的项目
+	needCreateRootProjects := _commUtils.DifferenceUint(projectIds, existedRootProjects)
+	if len(needCreateRootProjects) > 0 {
+		if err = s.CategoryRepo.BatchAddProjectRootSchemaCategory(needCreateRootProjects); err != nil {
+			return err
+		}
+	}
+
+	rootNodes, err := s.CategoryRepo.BatchGetRootNodes(projectIds, serverConsts.SchemaCategory)
+	if err != nil {
+		return
+	}
+
+	projectRootNodesMap := make(map[uint]model.Category)
+	for _, v := range rootNodes {
+		projectRootNodesMap[v.ProjectId] = v
+	}
+
+	projectServeMap := make(map[uint][]uint)
+	serves, err := s.ServeRepo.ListByProjects(projectIds)
+	if err != nil {
+		return
+	}
+
+	for _, v := range serves {
+		projectServeMap[v.ProjectId] = append(projectServeMap[v.ProjectId], v.ID)
+	}
+
+	var serveIds []uint
+	for _, projectId := range projectIds {
+		//开始处理历史schema数据
+		if v, ok := projectServeMap[projectId]; ok {
+			serveIds = v
+		}
+
+		if len(serveIds) > 0 {
+			//schema表给project_id赋值
+			err = s.ServeRepo.BatchUpdateSchemaProjectByServeId(serveIds, projectId)
+			if err != nil {
+				continue
+			}
+		}
+
+	}
+
+	schemas, err := s.ComponentSchemaRepo.GetSchemasNotExistedInCategory(projectIds)
+	if err != nil {
+		return
+	}
+
+	var rootId uint
+	for _, schema := range schemas {
+		if v, ok := projectRootNodesMap[schema.ProjectId]; ok {
+			rootId = v.ID
+		}
+		createCategoryReq := v1.CategoryCreateReq{Name: schema.Name, TargetId: int(rootId), ProjectId: schema.ProjectId, Type: serverConsts.SchemaCategory, Mode: "child", EntityId: schema.ID}
+		_, _ = s.Create(createCategoryReq)
+	}
 	return
 
 }

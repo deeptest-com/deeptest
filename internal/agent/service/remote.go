@@ -71,12 +71,12 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 
 	return
 }
-func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.DebugResponse, serverUrl, token string) (err error) {
+func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj *domain.DebugResponse, serverUrl, token string) (err error) {
 	url := fmt.Sprintf("debugs/invoke/submitResult")
 
 	data := domain.SubmitDebugResultRequest{
 		Request:        execObj.DebugData,
-		Response:       respObj,
+		Response:       *respObj,
 		PreConditions:  execObj.PreConditions,
 		PostConditions: execObj.PostConditions,
 	}
@@ -111,7 +111,7 @@ func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.De
 		logUtils.Infof("submit result failed, response %v", resp.Content)
 		return
 	}
-
+	respObj.InvokeId = uint(ret.Data.(float64))
 	return
 }
 

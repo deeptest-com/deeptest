@@ -8,7 +8,6 @@ import (
 	databaseOptHelpper "github.com/aaronchen2k/deeptest/internal/pkg/helper/database-opt"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"log"
 	"regexp"
 	"strings"
@@ -17,23 +16,20 @@ import (
 func ExecPreConditions(execObj *InterfaceExecObj, execUuid string) (status consts.ResultStatus, err error) {
 	status = consts.Pass
 
-	for index, condition := range execObj.PreConditions {
+	preConditions := make([]domain.InterfaceExecCondition, 0) // will be changed and append items to it
+
+	for _, condition := range execObj.PreConditions {
 		if condition.Type == consts.ConditionTypeScript {
-			var scriptBase domain.ScriptBase
-			json.Unmarshal(condition.Raw, &scriptBase)
+			DealwithDealwithScriptCondition(condition, &status, execObj.DebugData.ProjectId, &preConditions,
+				execUuid, true)
 
-			err = ExecScript(&scriptBase, execObj.DebugData.ProjectId, execUuid)
-			if err != nil {
-				logUtils.Info(err.Error())
-				status = consts.Fail
+		} else if condition.Type == consts.ConditionTypeDatabase {
+			DealwithDatabaseCondition(condition, &status, &preConditions, execUuid)
 
-			}
-			scriptHelper.GenResultMsg(&scriptBase)
-			scriptBase.VariableSettings = GetGojaVariables(execUuid)
-
-			execObj.PreConditions[index].Raw, _ = json.Marshal(scriptBase)
 		}
 	}
+
+	execObj.PreConditions = preConditions
 
 	return
 }
@@ -47,7 +43,8 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, ex
 			DealwithExtractorCondition(condition, resp, &status, &postConditions, execUuid)
 
 		} else if condition.Type == consts.ConditionTypeScript {
-			DealwithDealwithScriptCondition(condition, &status, execObj.DebugData.ProjectId, &postConditions, execUuid)
+			DealwithDealwithScriptCondition(condition, &status, execObj.DebugData.ProjectId, &postConditions,
+				execUuid, true)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
 			DealwithDatabaseCondition(condition, &status, &postConditions, execUuid)
@@ -97,7 +94,7 @@ func DealwithExtractorCondition(condition domain.InterfaceExecCondition, resp do
 }
 
 func DealwithDealwithScriptCondition(condition domain.InterfaceExecCondition, status *consts.ResultStatus,
-	projectId uint, postConditions *[]domain.InterfaceExecCondition, execUuid string) {
+	projectId uint, conditions *[]domain.InterfaceExecCondition, execUuid string, isPostCondition bool) {
 
 	var scriptBase domain.ScriptBase
 	json.Unmarshal(condition.Raw, &scriptBase)
@@ -114,48 +111,49 @@ func DealwithDealwithScriptCondition(condition domain.InterfaceExecCondition, st
 	scriptBase.VariableSettings = GetGojaVariables(execUuid)
 
 	condition.Raw, _ = json.Marshal(scriptBase)
-	*postConditions = append(*postConditions, condition)
+	*conditions = append(*conditions, condition)
 
-	// add
-	for _, item := range GetGojaLogs(execUuid) {
-		// Assertion Failed: [NAME] ERROR.
-		// Assertion Pass: [NAME].
+	if isPostCondition {
+		for _, item := range GetGojaLogs(execUuid) {
+			// Assertion Failed: [NAME] ERROR.
+			// Assertion Pass: [NAME].
 
-		regx := regexp.MustCompile(`Assertion (Failed|Pass) \[(.+)\](.*)\.`)
-		arr := regx.FindAllStringSubmatch(item, -1)
-		log.Println(arr)
+			regx := regexp.MustCompile(`Assertion (Failed|Pass) \[(.+)\](.*)\.`)
+			arr := regx.FindAllStringSubmatch(item, -1)
+			log.Println(arr)
 
-		if len(arr) == 0 {
-			continue
+			if len(arr) == 0 {
+				continue
+			}
+
+			statusStr := strings.ToLower(arr[0][1])
+			name := arr[0][2]
+			//err := arr[0][3]
+
+			checkpoint := domain.CheckpointBase{
+				Type:      consts.Script,
+				ResultMsg: strings.Replace(strings.Trim(item, "\""), "AssertionError", "", -1),
+
+				ConditionId:         scriptBase.ConditionId,
+				ConditionEntityId:   scriptBase.ConditionEntityId,
+				ConditionEntityType: consts.ConditionTypeCheckpoint,
+			}
+
+			if statusStr == "failed" {
+				*status = consts.Fail
+				checkpoint.ResultStatus = consts.Fail
+			} else {
+				checkpoint.ResultStatus = consts.Pass
+			}
+
+			newCheckPointCondition := domain.InterfaceExecCondition{
+				Type: consts.ConditionTypeCheckpoint,
+				Desc: name,
+			}
+			newCheckPointCondition.Raw, _ = json.Marshal(checkpoint)
+
+			*conditions = append(*conditions, newCheckPointCondition)
 		}
-
-		statusStr := strings.ToLower(arr[0][1])
-		name := arr[0][2]
-		//err := arr[0][3]
-
-		checkpoint := domain.CheckpointBase{
-			Type:      consts.Script,
-			ResultMsg: strings.Replace(strings.Trim(item, "\""), "AssertionError", "", -1),
-
-			ConditionId:         scriptBase.ConditionId,
-			ConditionEntityId:   scriptBase.ConditionEntityId,
-			ConditionEntityType: consts.ConditionTypeCheckpoint,
-		}
-
-		if statusStr == "failed" {
-			*status = consts.Fail
-			checkpoint.ResultStatus = consts.Fail
-		} else {
-			checkpoint.ResultStatus = consts.Pass
-		}
-
-		newCheckPointCondition := domain.InterfaceExecCondition{
-			Type: consts.ConditionTypeCheckpoint,
-			Desc: name,
-		}
-		newCheckPointCondition.Raw, _ = json.Marshal(checkpoint)
-
-		*postConditions = append(*postConditions, newCheckPointCondition)
 	}
 }
 

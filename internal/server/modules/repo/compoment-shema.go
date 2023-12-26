@@ -40,13 +40,13 @@ func (r *ComponentSchemaRepo) GetSchemasNotExistedInCategory(projectIds []uint) 
 	return
 }
 
-func (r *ComponentSchemaRepo) SaveEntity(projectId, categoryId uint, name string) (err error) {
+func (r *ComponentSchemaRepo) SaveEntity(category *model.Category) (err error) {
 	schema := model.ComponentSchema{
-		ProjectId: projectId,
-		Name:      name,
+		ProjectId: category.ProjectId,
+		Name:      category.Name,
 	}
 
-	joinedPath, err := r.CategoryRepo.GetJoinedPath(categoryId)
+	joinedPath, err := r.CategoryRepo.GetJoinedPath(category.ID)
 	if err != nil {
 		return
 	}
@@ -58,7 +58,9 @@ func (r *ComponentSchemaRepo) SaveEntity(projectId, categoryId uint, name string
 		return
 	}
 
-	err = r.CategoryRepo.UpdateEntityId(categoryId, schema.ID)
+	category.EntityId = schema.ID
+	err = r.Save(category.ID, &category)
+
 	return
 }
 

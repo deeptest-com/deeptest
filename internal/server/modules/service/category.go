@@ -69,7 +69,7 @@ func (s *CategoryService) Create(req v1.CategoryCreateReq) (ret model.Category, 
 
 	if req.IsEntity {
 		repo := s.getRepo(req.Type)
-		repo.SaveEntity(req.ProjectId, ret.ID, req.Name)
+		repo.SaveEntity(&ret)
 	}
 
 	return

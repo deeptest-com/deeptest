@@ -5,7 +5,6 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -174,24 +173,13 @@ func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res v1.SaveSchemaRes, 
 	//	return
 	//}
 	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
-	joinedPath, err := s.CategoryService.GetJoinedPath(serverConsts.SchemaCategory, req.ProjectId, uint(req.TargetId))
+	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
+
+	category, err := s.CategoryRepo.GetByEntityId(serveSchema.ID)
 	if err != nil {
 		return
 	}
-
-	serveSchema.Ref = "#/components/schemas" + joinedPath + "/" + serveSchema.Name
-	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
-
-	var category model.Category
-	if req.ID == 0 {
-		createCategoryReq := v1.CategoryCreateReq{Name: req.Name, TargetId: req.TargetId, ProjectId: req.ProjectId, Type: serverConsts.SchemaCategory, Mode: "child", EntityId: serveSchema.ID}
-		category, _ = s.CategoryService.Create(createCategoryReq)
-	} else {
-		category, err = s.CategoryRepo.GetByEntityId(serveSchema.ID)
-		if err != nil {
-			return res, err
-		}
-
+	if req.ID != 0 {
 		category.Name = serveSchema.Name
 		err = s.CategoryRepo.Save(&category)
 	}

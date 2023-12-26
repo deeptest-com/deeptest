@@ -26,6 +26,7 @@ type CategoryCreateReq struct {
 	TargetId  int                                `json:"targetId"`
 	ProjectId uint                               `json:"projectId"`
 	EntityId  uint                               `json:"entityId"`
+	IsEntity  bool                               `json:"isEntity"`
 }
 
 type CategoryReq struct {

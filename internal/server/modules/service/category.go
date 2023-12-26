@@ -67,6 +67,11 @@ func (s *CategoryService) Create(req v1.CategoryCreateReq) (ret model.Category, 
 		s.CategoryRepo.Save(&target)
 	}
 
+	if req.IsEntity {
+		repo := s.getRepo(req.Type)
+		repo.SaveEntity(req.ProjectId, ret.ID, req.Name)
+	}
+
 	return
 }
 
@@ -91,7 +96,13 @@ func (s *CategoryService) Move(srcId, targetId uint, pos serverConsts.DropPos, t
 
 	srcScenarioNode.ParentId, srcScenarioNode.Ordr = s.CategoryRepo.UpdateOrder(pos, int(targetId), typ, projectId)
 	err = s.CategoryRepo.UpdateOrdAndParent(srcScenarioNode)
+	if err != nil {
+		return
+	}
 
+	if typ == serverConsts.SchemaCategory && srcScenarioNode.EntityId != 0 {
+		s.ComponentSchemaRepo.ChangeRef(srcScenarioNode.EntityId, srcScenarioNode.ID)
+	}
 	return
 }
 

@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -317,8 +318,15 @@ func (r *CategoryRepo) GetByEntityId(entityId uint) (category model.Category, er
 func (r *CategoryRepo) DeleteByEntityId(entityId uint) (err error) {
 	err = r.DB.Model(&model.Category{}).
 		Where("entity_id = ?", entityId).
-		Update("deleted", true).
-		Error
+		Update("deleted", true).Error
+
+	return
+}
+
+func (r *CategoryRepo) UpdateEntityId(id, entityId uint) (err error) {
+	err = r.DB.Model(&model.Category{}).
+		Where("id = ?", id).
+		Update("entity_id", entityId).Error
 
 	return
 }
@@ -360,6 +368,27 @@ func (r *CategoryRepo) BatchGetRootNodes(projectIds []uint, typ serverConsts.Cat
 		Where("parent_id = ?", 0).
 		Where("name = ? AND NOT deleted", "分类").
 		Find(&res).Error
+
+	return
+}
+
+func (r *CategoryRepo) GetJoinedPath(categoryId uint) (path string, err error) {
+	var names []string
+	sql := `
+		WITH RECURSIVE temp(id,parent_id,name) AS
+		(
+			SELECT id,parent_id,name from biz_category where id = %d
+		  UNION ALL
+		  SELECT b.id,b.parent_id,b.name from biz_category b, temp c where c.parent_id = b.id and  b.parent_id > 0
+		) 
+		select name from temp ORDER BY id asc
+`
+	sql = fmt.Sprintf(sql, categoryId)
+	err = r.DB.Raw(sql).Scan(&names).Error
+
+	for _, name := range names {
+		path = path + "/" + name
+	}
 
 	return
 }

@@ -9,6 +9,7 @@ import (
 type IRepo interface {
 	Save(id uint, entity interface{}) error
 	GetCategoryCount(result interface{}, projectId uint) (err error)
+	SaveEntity(projectId, categoryId uint, name string) (err error)
 }
 
 type BaseRepo struct {
@@ -110,5 +111,9 @@ func (r *BaseRepo) Save(id uint, entity interface{}) (err error) {
 	} else {
 		err = r.DB.Updates(entity).Error
 	}
+	return
+}
+
+func (r *BaseRepo) SaveEntity(projectId, categoryId uint, name string) (err error) {
 	return
 }

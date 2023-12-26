@@ -212,6 +212,13 @@ func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 		schema = *component
 	}
 
+	if schema.Ref != "" {
+		if s.sets[ref] > 1 {
+			return
+		}
+		return s.Schema2Example(schema)
+	}
+
 	s.CombineSchemas(&schema)
 
 	if schema.Value == nil {
@@ -247,7 +254,10 @@ func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 	case openapi3.TypeNumber:
 		schema.Value.XMockType = "@float(1, 10, 2, 5)"
 		object = s.mock(schema.Value.XMockType, schema.Value.Type)
-
+	default:
+		if s.sets[ref] > 1 {
+			return
+		}
 	}
 	return
 }

@@ -481,7 +481,7 @@ func (c *ServeCtrl) ExampleToSchema(ctx iris.Context) {
 func (c *ServeCtrl) SchemaToExample(ctx iris.Context) {
 	var req serverDomain.JsonContent
 	if err := ctx.ReadJSON(&req); err == nil {
-		res := c.ServeService.Schema2Example(req.ServeId, req.Data)
+		res := c.ServeService.Schema2Example(req.ProjectId, req.Data)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})

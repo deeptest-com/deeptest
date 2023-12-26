@@ -269,7 +269,7 @@ func (s *ServeService) DeleteSecurityId(id uint) (err error) {
 
 func (s *ServeService) Schema2Example(projectId uint, data string) (obj interface{}) {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.Components(projectId, data)
+	schema2conv.Components = s.Components(projectId)
 	//schema1 := openapi3.Schema{}
 	//_commUtils.JsonDecode(data, &schema),
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema)
@@ -286,18 +286,10 @@ func (s *ServeService) Schema2Example(projectId uint, data string) (obj interfac
 	return
 }
 
-func (s *ServeService) Components(projectId uint, options ...string) (components *schemaHelper.Components) {
+func (s *ServeService) Components(projectId uint) (components *schemaHelper.Components) {
 	components = schemaHelper.NewComponents()
 
-	var refIds []interface{}
-	if len(options) > 0 {
-		schema2conv := schemaHelper.NewSchema2conv()
-		var schemaRef schemaHelper.SchemaRef
-		_commUtils.JsonDecode(options[0], &schemaRef)
-		refIds = schema2conv.GetRefIds(&schemaRef)
-	}
-
-	result, err := s.ServeRepo.GetSchemasByProjectId(projectId, refIds)
+	result, err := s.ServeRepo.GetSchemasByProjectId(projectId)
 	if err != nil {
 		return
 	}

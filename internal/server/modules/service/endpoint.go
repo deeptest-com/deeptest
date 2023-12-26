@@ -603,7 +603,7 @@ func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 	schema2conv := schemaHelper.NewSchema2conv()
 	for key, intef := range endpoint.Interfaces {
 		for k, response := range intef.ResponseBodies {
-			schema2conv.Components = s.ServeService.Components(endpoint.ProjectId, response.SchemaItem.Content)
+			schema2conv.Components = s.ServeService.Components(endpoint.ProjectId)
 			schema := new(schemaHelper.SchemaRef)
 			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
 			//if endpoint.SourceType == 1 && schema.Value != nil && len(schema.Value.AllOf) > 0 {

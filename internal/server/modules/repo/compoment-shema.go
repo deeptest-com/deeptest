@@ -44,6 +44,7 @@ func (r *ComponentSchemaRepo) SaveEntity(category *model.Category) (err error) {
 	schema := model.ComponentSchema{
 		ProjectId: category.ProjectId,
 		Name:      category.Name,
+		Content:   "{\"type\":\"object\"}",
 	}
 
 	joinedPath, err := r.CategoryRepo.GetJoinedPath(category.ID)

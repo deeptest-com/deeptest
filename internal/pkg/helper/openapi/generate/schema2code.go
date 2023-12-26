@@ -36,6 +36,13 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 		name = refName
 	}
 
+	if schema.Ref != "" {
+		if s.sets[ref] > 1 {
+			return nil
+		}
+		return s.schema2Fields(name, schema)
+	}
+
 	s.CombineSchemas(&schema)
 
 	if schema.Value == nil {
@@ -77,7 +84,7 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 
 func (s *Schema2Code) Convert(schema schemaHelper.SchemaRef) string {
 	field := s.schema2Fields(s.format("response"), schema)
-	fmt.Println(commonUtils.JsonEncode(field))
+	//fmt.Println(commonUtils.JsonEncode(field))
 	t := template.NewTemplate(s.langType, field.ToArray())
 	return t.CreateCode()
 }

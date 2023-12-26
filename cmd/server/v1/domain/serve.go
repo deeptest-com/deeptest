@@ -88,8 +88,8 @@ type ServeSchemaPaginate struct {
 }
 
 type JsonContent struct {
-	ServeId uint   `json:"serveId"`
-	Data    string `json:"data"`
+	ProjectId uint   `json:"projectId"`
+	Data      string `json:"data"`
 }
 
 type SchemaContent struct {

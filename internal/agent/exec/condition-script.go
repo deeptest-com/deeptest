@@ -83,7 +83,7 @@ func InitJsRuntime(projectId uint, execUuid string) {
 	execRuntime.Set("dt", dt)
 
 	// import other custom libs
-	jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, 0, GetServerUrl(execUuid), GetServerToken(execUuid))
+	jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, projectId, GetServerUrl(execUuid), GetServerToken(execUuid))
 }
 
 func GetReqValueFromGoja(execUuid string) (err error) {

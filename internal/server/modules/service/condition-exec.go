@@ -42,6 +42,24 @@ func (s *ExecConditionService) SavePreConditionResult(invokeId,
 					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 					consts.Public, usedBy)
 			}
+		} else if condition.Type == consts.ConditionTypeDatabase {
+			var databaseOptBase domain.DatabaseOptBase
+			json.Unmarshal(condition.Raw, &databaseOptBase)
+			if databaseOptBase.Disabled {
+				continue
+			}
+
+			databaseOptBase.InvokeId = invokeId
+
+			s.DatabaseOptRepo.UpdateResult(databaseOptBase)
+			s.DatabaseOptRepo.CreateLog(databaseOptBase)
+
+			if databaseOptBase.ResultStatus == consts.Pass {
+				s.ShareVarService.Save(databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
+					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
+					databaseOptBase.Scope, usedBy)
+			}
+
 		}
 	}
 

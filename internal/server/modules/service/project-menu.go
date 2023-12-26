@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -57,9 +56,7 @@ func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint) (ret []s
 	}
 
 	if config.CONFIG.System.SysEnv == "ly" {
-		// TODO 用roleName去ly接口取数据
-		fmt.Println(projectRole.Name)
-		ret, err = s.ProjectMenuRepo.GetRoleMenuCodeList(projectRole.ID)
+		ret, err = s.RemoteService.GetRoleMenus(string(projectRole.Name))
 	} else {
 		ret, err = s.ProjectMenuRepo.GetRoleMenuCodeList(projectRole.ID)
 	}

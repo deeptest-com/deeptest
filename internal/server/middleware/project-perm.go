@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -103,6 +104,10 @@ func (SysRole) TableName() string {
 // ProjectPerm  项目权限权鉴中间件
 func ProjectPerm() iris.Handler {
 	return func(ctx *context.Context) {
+		if config.CONFIG.System.SysEnv == "ly" {
+			ctx.Next()
+		}
+
 		userId := multi.GetUserId(ctx)
 
 		isAdminUser, err := IsAdminUser(userId)

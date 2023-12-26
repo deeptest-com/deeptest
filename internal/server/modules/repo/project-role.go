@@ -133,3 +133,12 @@ func (r *ProjectRoleRepo) GetRoleByProjectAndUser(projectId, userId uint) (proje
 		Find(&projectRole).Error
 	return
 }
+
+func (r *ProjectRoleRepo) GetRoleNamesByNames(names []string) (res []string, err error) {
+	err = r.DB.Model(&model.ProjectRole{}).
+		Select("name").
+		Where("name IN (?) AND NOT deleted AND NOT disabled", names).
+		Find(&res).Error
+
+	return
+}

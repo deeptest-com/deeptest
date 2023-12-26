@@ -388,32 +388,40 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectI
 	return
 }
 
+func (s *RemoteService) getHeaders() (headers []domain.Header) {
+	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
+	xNancalNonceStr := _commUtils.RandStr(8)
+
+	headers = []domain.Header{
+		{
+			Name:  "x-nancal-appkey",
+			Value: config.CONFIG.ThirdParty.ApiSign.AppKey,
+		},
+		{
+			Name:  "x-nancal-timestamp",
+			Value: xNancalTimestamp,
+		},
+		{
+			Name:  "x-nancal-nonce-str",
+			Value: xNancalNonceStr,
+		},
+		{
+			Name:  "x-nancal-sign",
+			Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, ""),
+		},
+	}
+
+	return
+}
+
 func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (ret []string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
 
-	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
-	xNancalNonceStr := _commUtils.RandStr(8)
+	headers := s.getHeaders()
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
-		Headers: &[]domain.Header{
-			{
-				Name:  "x-nancal-appkey",
-				Value: config.CONFIG.ThirdParty.ApiSign.AppKey,
-			},
-			{
-				Name:  "x-nancal-timestamp",
-				Value: xNancalTimestamp,
-			},
-			{
-				Name:  "x-nancal-nonce-str",
-				Value: xNancalNonceStr,
-			},
-			{
-				Name:  "x-nancal-sign",
-				Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, ""),
-			},
-		},
+		Headers:  &headers,
 		QueryParams: &[]domain.Param{
 			{
 				Name:  "typeStr",
@@ -466,29 +474,11 @@ func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (re
 func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret []v1.UserMenuPermission, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenu", config.CONFIG.ThirdParty.Url)
 
-	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
-	xNancalNonceStr := _commUtils.RandStr(8)
+	headers := s.getHeaders()
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
-		Headers: &[]domain.Header{
-			{
-				Name:  "x-nancal-appkey",
-				Value: config.CONFIG.ThirdParty.ApiSign.AppKey,
-			},
-			{
-				Name:  "x-nancal-timestamp",
-				Value: xNancalTimestamp,
-			},
-			{
-				Name:  "x-nancal-nonce-str",
-				Value: xNancalNonceStr,
-			},
-			{
-				Name:  "x-nancal-sign",
-				Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, ""),
-			},
-		},
+		Headers:  &headers,
 		QueryParams: &[]domain.Param{
 			{
 				Name:  "typeStr",
@@ -530,6 +520,98 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 	if respContent.Code != 200 {
 		logUtils.Infof("getUserButtonPermissions failed, response %v", resp)
 		err = fmt.Errorf("get UserButtonPermissions failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetSpaceRoles() (ret []v1.SpaceRole, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/getSpaceInitRole", config.CONFIG.ThirdParty.Url)
+
+	headers := s.getHeaders()
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get SpaceRoles failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get SpaceRoles failed, response %v", resp)
+		err = fmt.Errorf("get SpaceRoles failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []v1.SpaceRole
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("get SpaceRoles failed, response %v", resp)
+		err = fmt.Errorf("get SpaceRoles failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/getRoleMenus", config.CONFIG.ThirdParty.Url)
+
+	headers := s.getHeaders()
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		QueryParams: &[]domain.Param{
+			{
+				Name:  "roleValue",
+				Value: role,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get RoleMenus failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get RoleMenus failed, response %v", resp)
+		err = fmt.Errorf("get RoleMenus failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []string
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("get RoleMenus failed, response %v", resp)
+		err = fmt.Errorf("get RoleMenus failed, response %v", resp)
 		return
 	}
 

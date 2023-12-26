@@ -122,3 +122,9 @@ type UserMenuPermission struct {
 	Permission string               `json:"permission"`
 	Children   []UserMenuPermission `json:"children"`
 }
+
+type SpaceRole struct {
+	Id        uint   `json:"id"`
+	RoleName  string `json:"roleName"`
+	RoleValue string `json:"roleValue"`
+}

@@ -34,15 +34,15 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 	copier.CopyWithOption(&res, summaryCardTotal, copier.Option{DeepCopy: true})
 
 	if oldSummaryCardTotal.Coverage != 0 {
-		res.CoverageHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Coverage-oldSummaryCardTotal.Coverage), 64)
+		res.CoverageHb, err = strconv.ParseFloat(fmt.Sprintf("%.2f", res.Coverage-oldSummaryCardTotal.Coverage), 64)
 	}
 
 	if oldSummaryCardTotal.InterfaceTotal != 0 {
-		res.InterfaceHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(float64(res.InterfaceTotal), float64(oldSummaryCardTotal.InterfaceTotal))), 64)
+		res.InterfaceHb, err = strconv.ParseFloat(fmt.Sprintf("%.2f", DecimalHB(float64(res.InterfaceTotal), float64(oldSummaryCardTotal.InterfaceTotal))), 64)
 	}
 
 	if oldSummaryCardTotal.ScenarioTotal != 0 {
-		res.ScenarioHb, err = strconv.ParseFloat(fmt.Sprintf("%.1f", DecimalHB(float64(res.ScenarioTotal), float64(oldSummaryCardTotal.ScenarioTotal))), 64)
+		res.ScenarioHb, err = strconv.ParseFloat(fmt.Sprintf("%.2f", DecimalHB(float64(res.ScenarioTotal), float64(oldSummaryCardTotal.ScenarioTotal))), 64)
 	}
 
 	return
@@ -154,7 +154,7 @@ func (s *SummaryDetailsService) HandleDetail(projectId int64, ScenariosTotal int
 	ret.ScenarioTotal = ScenariosTotal
 	ret.InterfaceTotal = interfacesTotal
 	ret.ExecTotal = execsTotal
-	ret.PassRate, err = strconv.ParseFloat(fmt.Sprintf("%.1f", passRates), 64)
+	ret.PassRate, err = strconv.ParseFloat(fmt.Sprintf("%.2f", passRates), 64)
 
 	//通过processorInterface、biz_scenario_report、biz_exec_log_processor联合查询，取出来所有被测试过的接口数量，根据project_id分组（跳过0值）
 	//然后除以通过processorInterface中对应项目的接口总数
@@ -164,7 +164,7 @@ func (s *SummaryDetailsService) HandleDetail(projectId int64, ScenariosTotal int
 	} else {
 		coverage = 0
 	}
-	ret.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
+	ret.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.2f", coverage), 64)
 	return
 }
 
@@ -289,7 +289,7 @@ func (s *SummaryDetailsService) SummaryCard() (summaryCardTotal model.SummaryCar
 	} else {
 		coverage = 0
 	}
-	summaryCardTotal.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
+	summaryCardTotal.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.2f", coverage), 64)
 
 	return
 }
@@ -312,7 +312,7 @@ func (s *SummaryDetailsService) SummaryCardByProjectId(projectId int64) (summary
 	} else {
 		coverage = 0
 	}
-	summaryCardTotal.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.1f", coverage), 64)
+	summaryCardTotal.Coverage, err = strconv.ParseFloat(fmt.Sprintf("%.2f", coverage), 64)
 
 	return
 }
@@ -398,20 +398,51 @@ func (s *SummaryDetailsService) CountAllExecTotalProjectId() (counts map[int64]i
 }
 
 func (s *SummaryDetailsService) FindPassRateByProjectId(projectId int64) (passRate float64, err error) {
-	return s.HandlerSummaryDetailsRepo().FindPassRateByProjectId(projectId)
+	result, err := s.HandlerSummaryDetailsRepo().FindAssertionCountByProjectId(projectId)
+
+	totalCount := result.TotalAssertionNum + result.CheckpointPass + result.CheckpointFail
+	passCount := result.PassAssertionNum + result.CheckpointPass
+
+	if totalCount > 0 {
+		passRate = float64(passCount) / float64(totalCount) * 100.0
+	} else {
+		passRate = 0.0
+	}
+	return
 }
 
 func (s *SummaryDetailsService) FindAllPassRate() (passRate float64, err error) {
-	return s.HandlerSummaryDetailsRepo().FindAllPassRate()
+	result, err := s.HandlerSummaryDetailsRepo().FindAllAssertionCount()
+
+	totalCount := result.TotalAssertionNum + result.CheckpointPass + result.CheckpointFail
+	passCount := result.PassAssertionNum + result.CheckpointPass
+
+	if totalCount > 0 {
+		passRate = float64(passCount) / float64(totalCount) * 100.0
+	} else {
+		passRate = 0.0
+	}
+	return
+
 }
 
-func (s *SummaryDetailsService) FindAllPassRateByProjectId() (passRate map[int64]float64, err error) {
-	passRates, err := s.HandlerSummaryDetailsRepo().FindAllPassRateByProjectId()
+func (s *SummaryDetailsService) FindAllPassRateByProjectId() (ret map[int64]float64, err error) {
+	result, err := s.HandlerSummaryDetailsRepo().FindAllAssertionCountGroupByProjectId()
 
-	passRate = make(map[int64]float64, len(passRates))
+	ret = make(map[int64]float64, len(result))
 
-	for _, rate := range passRates {
-		passRate[rate.ProjectId] = rate.Coverage
+	for _, value := range result {
+		var passRate float64
+
+		totalCount := value.TotalAssertionNum + value.CheckpointPass + value.CheckpointFail
+		passCount := value.PassAssertionNum + value.CheckpointPass
+
+		if totalCount > 0 {
+			passRate = float64(passCount) / float64(totalCount) * 100.0
+		} else {
+			passRate = 0.0
+		}
+		ret[value.ProjectId] = passRate
 	}
 	return
 }

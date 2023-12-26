@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"strconv"
 )
 
 func ConvertValueForPersistence(obj interface{}) (value string, valueType consts.ExtractorResultType) {
@@ -37,16 +38,12 @@ func ConvertValueForUse(value interface{}, valueType consts.ExtractorResultType)
 	case string:
 		if valueType == consts.ExtractorResultTypeObject {
 			err = json.Unmarshal([]byte(value.(string)), &obj)
-			return
 		} else if valueType == consts.ExtractorResultTypeString {
 			obj = value.(string)
-			return
 		} else if valueType == consts.ExtractorResultTypeNumber {
-			obj = value.(float64)
-			return
+			obj, err = strconv.ParseFloat(value.(string), 64)
 		} else if valueType == consts.ExtractorResultTypeBool {
-			obj = value.(bool)
-			return
+			obj, err = strconv.ParseBool(value.(string))
 		}
 
 	case float64:
@@ -60,4 +57,20 @@ func ConvertValueForUse(value interface{}, valueType consts.ExtractorResultType)
 	}
 
 	return
+}
+
+func ValueType(value interface{}) consts.ExtractorResultType {
+	switch value.(type) {
+	case string:
+		return consts.ExtractorResultTypeString
+
+	case float64:
+		return consts.ExtractorResultTypeNumber
+
+	case bool:
+		return consts.ExtractorResultTypeBool
+
+	default:
+		return consts.ExtractorResultTypeObject
+	}
 }

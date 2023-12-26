@@ -26,7 +26,7 @@ func ExecPreConditions(execObj *InterfaceExecObj, execUuid string) (status const
 			if err != nil {
 				logUtils.Info(err.Error())
 				status = consts.Fail
-				return
+
 			}
 			scriptHelper.GenResultMsg(&scriptBase)
 			scriptBase.VariableSettings = GetGojaVariables(execUuid)

@@ -473,54 +473,16 @@ func (s *DebugInterfaceService) CopyValueFromRequest(interf *model.DebugInterfac
 	return
 }
 
-func (s *DebugInterfaceService) mergeGlobalParams(debugData *domain.DebugData) {
-	if debugData.GlobalParams != nil {
-		for _, globalParam := range *debugData.GlobalParams {
-			if globalParam.In == consts.ParamInQuery {
-				*debugData.QueryParams = s.mergeParam(*debugData.QueryParams, globalParam)
-			} else if globalParam.In == consts.ParamInHeader {
-				*debugData.Headers = s.mergeHeader(*debugData.Headers, globalParam)
+func (s *DebugInterfaceService) MergeGlobalParams(globalParams []domain.GlobalParam, selfGlobalParam []model.DebugInterfaceGlobalParam) (ret []domain.GlobalParam) {
+
+	ret = globalParams
+	for key, globalParam := range ret {
+		for _, param := range selfGlobalParam {
+			if param.Name == globalParam.Name && param.In == globalParam.In {
+				ret[key].Disabled = param.Disabled
 			}
 		}
 	}
-}
 
-func (s *DebugInterfaceService) mergeParam(params []domain.Param, globalParam domain.GlobalParam) []domain.Param {
-	b := true
-	for _, param := range params {
-		if param.Name == globalParam.Name {
-			b = false
-			break
-		}
-	}
-
-	if b {
-		params = append([]domain.Param{{
-			Name:    globalParam.Name,
-			ParamIn: globalParam.In,
-			Value:   globalParam.DefaultValue,
-			Type:    string(globalParam.Type),
-		}}, params...)
-	}
-
-	return params
-}
-
-func (s *DebugInterfaceService) mergeHeader(params []domain.Header, globalParam domain.GlobalParam) []domain.Header {
-	b := true
-	for _, param := range params {
-		if param.Name == globalParam.Name {
-			b = false
-			break
-		}
-	}
-
-	if b {
-		params = append([]domain.Header{{
-			Name:  globalParam.Name,
-			Value: globalParam.DefaultValue,
-		}}, params...)
-	}
-
-	return params
+	return
 }

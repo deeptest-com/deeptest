@@ -51,7 +51,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	}
 
 	// submit result
-	err = SubmitInterfaceResult(req, &resultResp, call.ServerUrl, call.Token)
+	err = SubmitInterfaceResult(req, resultResp, call.ServerUrl, call.Token)
 
 	resultReq = req.DebugData
 

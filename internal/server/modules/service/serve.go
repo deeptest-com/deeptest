@@ -166,7 +166,7 @@ func (s *ServeService) Copy(id uint) (err error) {
 	return s.ServeRepo.Save(0, &serve)
 }
 
-func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res v1.SaveSchemaRes, err error) {
+func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 	var serveSchema model.ComponentSchema
 	//if req.ID == 0 && s.ServeRepo.SchemaExist(uint(req.ID), uint(req.ServeId), req.Name) {
 	//	err = fmt.Errorf("schema name already exist")
@@ -174,19 +174,15 @@ func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res v1.SaveSchemaRes, 
 	//}
 	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
 	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
-
-	category, err := s.CategoryRepo.GetByEntityId(serveSchema.ID)
 	if err != nil {
 		return
 	}
+
 	if req.ID != 0 {
-		category.Name = serveSchema.Name
-		err = s.CategoryRepo.Save(&category)
+		err = s.CategoryRepo.UpdateNameByEntityId(serveSchema.ID, serveSchema.Name)
 	}
 
-	res.CategoryId = category.ID
-	res.EntityId = category.EntityId
-
+	res = serveSchema.ID
 	return
 }
 

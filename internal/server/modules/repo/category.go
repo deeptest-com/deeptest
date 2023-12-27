@@ -331,6 +331,14 @@ func (r *CategoryRepo) UpdateEntityId(id, entityId uint) (err error) {
 	return
 }
 
+func (r *CategoryRepo) UpdateNameByEntityId(entityId uint, name string) (err error) {
+	err = r.DB.Model(&model.Category{}).
+		Where("entity_id = ?", entityId).
+		Update("name", name).Error
+
+	return
+}
+
 func (r *CategoryRepo) BatchAddProjectRootSchemaCategory(projectIds []uint) (err error) {
 	roots := make([]model.Category, 0)
 	for _, projectId := range projectIds {

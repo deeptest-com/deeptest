@@ -53,19 +53,25 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 		LogId:               uuid.NewV4(),
 		ParentLogId:         processor.Parent.Result.LogId,
 		Round:               processor.Round,
+		ResultStatus:        consts.Pass,
 	}
 
 	detail := map[string]interface{}{}
-
 	//在循环过程中，processor 被执行多次，变量替换会受到影响，第一次跌替换之后，就不能根据实际情况替换了
 	var baseRequest domain.BaseRequest
 	copier.CopyWithOption(&baseRequest, &entity.BaseRequest, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+
+	// init context
+	InitJsRuntime(processor.ProjectId, session.ExecUuid)
+	SetReqValueToGoja(&baseRequest)
 
 	// exec pre-condition
 	entity.ExecPreConditions(processor, session)
 
 	// dealwith variables
 	ReplaceVariables(&baseRequest, session.ExecUuid)
+
+	GetReqValueFromGoja(session.ExecUuid)
 
 	// add cookies
 	DealwithCookies(&baseRequest, entity.ProcessorID, session.ExecUuid)
@@ -78,25 +84,22 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	entity.Response, err = Invoke(&baseRequest)
 	requestEndTime := time.Now()
 
-	processor.Result.Cost = requestEndTime.UnixMilli() - requestStartTime.UnixMilli()
-	reqContent, _ := json.Marshal(baseRequest)
-	processor.Result.ReqContent = string(reqContent)
-	respContent, _ := json.Marshal(entity.Response)
-	processor.Result.RespContent = string(respContent)
-	processor.Result.ResultStatus = consts.Pass
-	if err != nil {
-		processor.Result.ResultStatus = consts.Fail
-		processor.Result.Summary = err.Error()
-		detail["result"] = entity.Response.Content
-		processor.Result.Detail = commonUtils.JsonEncode(detail)
-		execUtils.SendErrorMsg(*processor.Result, consts.Processor, session.WsMsg)
-		processor.AddResultToParent()
-		return
+	// exec post-condition
+	SetRespValueToGoja(&entity.Response)
+	entity.ExecPostConditions(processor, detail, session)
+	GetRespValueFromGoja(session.ExecUuid)
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
+
+	// get the response data updated by script post-condition
+	if GetCurrResponse(session.ExecUuid).Data != nil {
+		entity.Response = GetCurrResponse(session.ExecUuid)
 	}
 
-	// exec post-condition
-	entity.ExecPostConditions(processor, detail, session)
-	processor.Result.Detail = commonUtils.JsonEncode(detail)
+	// dealwith response
+	ok := entity.DealwithResponse(processor, baseRequest, requestEndTime, requestStartTime, &detail, session, err)
+	if !ok {
+		return
+	}
 
 	for _, c := range entity.Response.Cookies {
 		SetCookie(processor.ParentId, c.Name, c.Value, c.Domain, c.ExpireTime, session.ExecUuid)
@@ -107,7 +110,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
-	stat := CountStat(processor.Result)
+	stat := CountStat(session.ExecUuid, processor.Result)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 	processor.AddResultToParent()
 
@@ -180,6 +183,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 			}
 			interfaceExecCondition.Raw, _ = json.Marshal(scriptBase)
 			processor.Result.PostConditions = append(processor.Result.PostConditions, interfaceExecCondition)
+
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			var responseDefineBase domain.ResponseDefineBase
 			json.Unmarshal(condition.Raw, &responseDefineBase)
@@ -234,5 +238,31 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 		}
 	}
 
+	return
+}
+
+func (entity *ProcessorInterface) DealwithResponse(
+	processor *Processor, baseRequest domain.BaseRequest, requestEndTime, requestStartTime time.Time,
+	detail *map[string]interface{}, session *Session, err error) (ok bool) {
+
+	processor.Result.Cost = requestEndTime.UnixMilli() - requestStartTime.UnixMilli()
+	reqContent, _ := json.Marshal(baseRequest)
+	processor.Result.ReqContent = string(reqContent)
+	respContent, _ := json.Marshal(entity.Response)
+	processor.Result.RespContent = string(respContent)
+
+	if err != nil {
+		processor.Result.ResultStatus = consts.Fail
+		processor.Result.Summary = err.Error()
+
+		(*detail)["result"] = entity.Response.Content
+		processor.Result.Detail = commonUtils.JsonEncode(*detail)
+		execUtils.SendErrorMsg(*processor.Result, consts.Processor, session.WsMsg)
+		processor.AddResultToParent()
+
+		return
+	}
+
+	ok = true
 	return
 }

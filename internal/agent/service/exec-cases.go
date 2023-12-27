@@ -15,7 +15,7 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 	logUtils.Infof("run cases %s on env %d", req.ExecUuid, req.EnvironmentId)
 
 	// reset exec
-	agentExec.ResetStat()
+	agentExec.ResetStat(req.ExecUuid)
 	agentExec.SetForceStopExec(req.ExecUuid, false)
 
 	// start msg
@@ -102,9 +102,9 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	agentExec.GetRespValueFromGoja(execUuid)
 	PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
 
+	// get the response data updated by script post-condition
 	if agentExec.GetCurrResponse(execUuid).Data != nil {
 		resultResp = agentExec.GetCurrResponse(execUuid)
-
 		resultResp.ConsoleLogs = GenConditionLogsForCase(caseInterfaceExecObj) // only for cases
 	}
 

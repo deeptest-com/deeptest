@@ -74,11 +74,11 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userIdForDisp
 	// dealwith global params
 	globalParams, _ = s.EnvironmentService.GetGlobalParams(environment.ProjectId)
 
-	if environmentIdForExec > 0 { // merge global params
-		globalParams = agentExec.MergeGlobalParams(globalParams, *debugData.GlobalParams)
-		endpointInterfaceGlobalParams, _ := s.EndpointInterfaceRepo.GetGlobalParams(debugData.EndpointInterfaceId, debugData.ProjectId)
-		globalParams = s.MergeGlobalParams(endpointInterfaceGlobalParams, globalParams)
-	}
+	//	if git s > 0 { // merge global params
+	globalParams = agentExec.MergeGlobalParams(globalParams, *debugData.GlobalParams)
+	endpointInterfaceGlobalParams, _ := s.EndpointInterfaceRepo.GetGlobalParams(debugData.EndpointInterfaceId, debugData.ProjectId)
+	globalParams = s.MergeGlobalParams(endpointInterfaceGlobalParams, globalParams)
+	//	}
 
 	return
 }

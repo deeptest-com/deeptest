@@ -45,6 +45,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.GetRespValueFromGoja(call.ExecUuid)
 	PostRequest(originalReqUri, &req.DebugData)
 
+	// get the response data updated by script post-condition
 	if agentExec.GetCurrResponse(call.ExecUuid).Data != nil {
 		resultResp = agentExec.GetCurrResponse(call.ExecUuid)
 	}

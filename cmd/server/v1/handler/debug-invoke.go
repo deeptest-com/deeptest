@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	service "github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/kataras/iris/v12"
@@ -31,14 +32,14 @@ func (c *DebugInvokeCtrl) SubmitResult(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-
-	_, err = c.DebugInvokeService.SubmitResult(req)
+	var invoke model.DebugInvoke
+	invoke, err = c.DebugInvokeService.SubmitResult(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: invoke.ID})
 }
 
 // List

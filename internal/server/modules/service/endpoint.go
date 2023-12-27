@@ -357,10 +357,10 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 	}()
 	var newComponents []*model.ComponentSchema
 	for _, component := range components {
-		component.ServeId = int64(req.ServeId)
+		component.ProjectId = req.ProjectId
 		component.SourceType = req.SourceType
 
-		res, err := s.ServeRepo.GetComponentByItem(component.SourceType, uint(component.ServeId), component.Ref)
+		res, err := s.ServeRepo.GetComponentByItem(component.SourceType, component.ProjectId, component.Ref)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			continue
 		}

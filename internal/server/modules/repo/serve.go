@@ -630,13 +630,39 @@ func (r *ServeRepo) GetDefault(projectId uint) (res model.Serve, err error) {
 	return
 }
 
-func (r *ServeRepo) GetComponentByItem(sourceType consts.SourceType, serveId uint, ref string) (res model.ComponentSchema, err error) {
-	err = r.DB.First(&res, "source_type=? AND serve_id=? AND ref=? AND NOT deleted", sourceType, serveId, ref).Error
+func (r *ServeRepo) GetComponentByItem(sourceType consts.SourceType, projectId uint, ref string) (res model.ComponentSchema, err error) {
+	err = r.DB.First(&res, "source_type=? AND project_id=? AND ref=? AND NOT deleted", sourceType, projectId, ref).Error
 	return
 }
 
 func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
-	return r.DB.Save(schemas).Error
+	err = r.DB.Save(schemas).Error
+	if err == nil {
+		var categories []*model.Category
+		if len(schemas) == 0 {
+			return err
+		}
+
+		var rootCategory model.Category
+		rootCategory, err = r.CategoryRepo.GetRoot(serverConsts.SchemaCategory, schemas[0].ProjectId)
+		if err != nil {
+			return err
+		}
+		for _, schema := range schemas {
+			category, _ := r.CategoryRepo.GetByEntityId(schema.ID, serverConsts.SchemaCategory)
+			category.Name = schema.Name
+			category.EntityId = schema.ID
+			category.ParentId = int(rootCategory.ID)
+			category.Type = serverConsts.SchemaCategory
+			category.ProjectId = schema.ProjectId
+			categories = append(categories, &category)
+		}
+
+		err = r.DB.Save(categories).Error
+
+	}
+
+	return err
 }
 
 func (r *ServeRepo) UpdateSwaggerSyncExecTimeById(id uint) (err error) {

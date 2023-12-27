@@ -297,7 +297,7 @@ func (s *CategoryService) BatchAddSchemaRoot1(projectIds []uint) (err error) {
 
 			for _, schema := range schemas {
 				//先查后创建，避免重复增加分类数据
-				_, err = s.CategoryRepo.GetByEntityId(schema.ID)
+				_, err = s.CategoryRepo.GetByEntityId(schema.ID, serverConsts.SchemaCategory)
 				if err != gorm.ErrRecordNotFound {
 					continue
 				}

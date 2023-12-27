@@ -5,6 +5,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -175,7 +176,7 @@ func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res v1.SaveSchemaRes, 
 	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
 	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
 
-	category, err := s.CategoryRepo.GetByEntityId(serveSchema.ID)
+	category, err := s.CategoryRepo.GetByEntityId(serveSchema.ID, serverConsts.SchemaCategory)
 	if err != nil {
 		return
 	}
@@ -320,7 +321,7 @@ func (s *ServeService) CopySchema(id uint) (schema model.ComponentSchema, err er
 		return
 	}
 
-	category, err := s.CategoryRepo.GetByEntityId(schema.ID)
+	category, err := s.CategoryRepo.GetByEntityId(schema.ID, serverConsts.SchemaCategory)
 	if err != nil {
 		return
 	}

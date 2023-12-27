@@ -307,9 +307,9 @@ func (r *CategoryRepo) GetEntityIdsByIds(ids []uint) (entityIds []uint, err erro
 	return
 }
 
-func (r *CategoryRepo) GetByEntityId(entityId uint) (category model.Category, err error) {
+func (r *CategoryRepo) GetByEntityId(entityId uint, _type serverConsts.CategoryDiscriminator) (category model.Category, err error) {
 	err = r.DB.Model(&model.Category{}).
-		Where("entity_id = ? AND NOT deleted", entityId).
+		Where("entity_id = ? AND type = ? AND NOT deleted", entityId, _type).
 		First(&category).Error
 
 	return
@@ -391,4 +391,14 @@ func (r *CategoryRepo) GetJoinedPath(categoryId uint) (path string, err error) {
 	}
 
 	return
+}
+
+func (r *CategoryRepo) GetRoot(typ serverConsts.CategoryDiscriminator, projectId uint) (res model.Category, err error) {
+
+	err = r.DB.Model(&model.Category{}).
+		Where("parent_id = 0 AND type = ? AND project_id = ? and not deleted", typ, projectId).
+		First(&res).Error
+
+	return
+
 }

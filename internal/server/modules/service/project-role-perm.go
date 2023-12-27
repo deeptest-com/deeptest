@@ -44,7 +44,7 @@ func (s *ProjectRolePermService) ComplementRole() (err error) {
 	}
 
 	notExistedRoles, err := s.GetRolesNotExisted(allRoleArr)
-	if err != nil {
+	if err != nil || len(notExistedRoles) == 0 {
 		return
 	}
 

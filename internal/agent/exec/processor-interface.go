@@ -128,7 +128,7 @@ func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, sessio
 				processor.ProjectId, &processor.Result.PreConditions, session.ExecUuid, false)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
-			entity.DealwithDatabaseOptCondition(condition, &processor.Result.PreConditions, session.ExecUuid)
+			entity.DealwithDatabaseOptCondition(condition, processor.ID, processor.ParentId, &processor.Result.PreConditions, session.ExecUuid)
 		}
 	}
 
@@ -144,7 +144,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 				session.ExecUuid, true)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
-			entity.DealwithDatabaseOptCondition(condition, &processor.Result.PostConditions, session.ExecUuid)
+			entity.DealwithDatabaseOptCondition(condition, processor.ID, processor.ParentId, &processor.Result.PostConditions, session.ExecUuid)
 
 		} else if condition.Type == consts.ConditionTypeExtractor {
 			entity.DealwithExtractorCondition(condition,
@@ -176,7 +176,7 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 		return
 	}
 
-	err := ExecScript(&scriptBase, projectId, execUuid)
+	err := ExecScript(&scriptBase, projectId, execUuid) // will set vari
 	if err != nil {
 	}
 
@@ -234,7 +234,7 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 }
 
 func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.InterfaceExecCondition,
-	conditions *[]domain.InterfaceExecCondition, execUuid string) {
+	processorId, parentId uint, conditions *[]domain.InterfaceExecCondition, execUuid string) {
 
 	var databaseOptBase domain.DatabaseOptBase
 	json.Unmarshal(condition.Raw, &databaseOptBase)
@@ -250,8 +250,13 @@ func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.
 
 	databaseOptHelpper.GenResultMsg(&databaseOptBase)
 
-	if databaseOptBase.JsonPath != "" && databaseOptBase.Variable != "" && conditionStatus {
-		SetVariable(0, databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
+	if databaseOptBase.JsonPath != "" && databaseOptBase.Variable != "" && conditionStatus { // will set vari
+		scopeId := parentId
+		if databaseOptBase.Scope == consts.Private { // put vari in its own scope if Private
+			scopeId = processorId
+		}
+
+		SetVariable(scopeId, databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
 			consts.Public, execUuid)
 	}
 

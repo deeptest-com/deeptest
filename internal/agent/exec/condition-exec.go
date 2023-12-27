@@ -20,7 +20,7 @@ func ExecPreConditions(execObj *InterfaceExecObj, execUuid string) (status const
 
 	for _, condition := range execObj.PreConditions {
 		if condition.Type == consts.ConditionTypeScript {
-			DealwithDealwithScriptCondition(condition, &status, execObj.DebugData.ProjectId, &preConditions,
+			DealwithScriptCondition(condition, &status, execObj.DebugData.ProjectId, &preConditions,
 				execUuid, true)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
@@ -39,15 +39,15 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, ex
 	postConditions := make([]domain.InterfaceExecCondition, 0) // will be changed and append items to it
 
 	for _, condition := range execObj.PostConditions {
-		if condition.Type == consts.ConditionTypeExtractor {
-			DealwithExtractorCondition(condition, resp, &status, &postConditions, execUuid)
-
-		} else if condition.Type == consts.ConditionTypeScript {
-			DealwithDealwithScriptCondition(condition, &status, execObj.DebugData.ProjectId, &postConditions,
+		if condition.Type == consts.ConditionTypeScript {
+			DealwithScriptCondition(condition, &status, execObj.DebugData.ProjectId, &postConditions,
 				execUuid, true)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
 			DealwithDatabaseCondition(condition, &status, &postConditions, execUuid)
+
+		} else if condition.Type == consts.ConditionTypeExtractor {
+			DealwithExtractorCondition(condition, resp, &status, &postConditions, execUuid)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			DealwithResponseDefineCondition(condition, resp, &status, &postConditions)
@@ -66,34 +66,7 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, ex
 	return
 }
 
-func DealwithExtractorCondition(condition domain.InterfaceExecCondition, resp domain.DebugResponse,
-	status *consts.ResultStatus, postConditions *[]domain.InterfaceExecCondition, execUuid string) {
-
-	var extractorBase domain.ExtractorBase
-	json.Unmarshal(condition.Raw, &extractorBase)
-
-	if extractorBase.Disabled || extractorBase.Variable == "" {
-		return
-	}
-
-	err := ExecExtract(&extractorBase, resp)
-	if err != nil {
-		*status = consts.Fail
-	}
-
-	extractorHelper.GenResultMsg(&extractorBase)
-
-	if extractorBase.ResultStatus == consts.Pass {
-		SetVariable(0, extractorBase.Variable, extractorBase.Result, extractorBase.ResultType, extractorBase.Scope, execUuid)
-	} else {
-		*status = consts.Fail
-	}
-
-	condition.Raw, _ = json.Marshal(extractorBase)
-	*postConditions = append(*postConditions, condition)
-}
-
-func DealwithDealwithScriptCondition(condition domain.InterfaceExecCondition, status *consts.ResultStatus,
+func DealwithScriptCondition(condition domain.InterfaceExecCondition, status *consts.ResultStatus,
 	projectId uint, conditions *[]domain.InterfaceExecCondition, execUuid string, isPostCondition bool) {
 
 	var scriptBase domain.ScriptBase
@@ -157,26 +130,6 @@ func DealwithDealwithScriptCondition(condition domain.InterfaceExecCondition, st
 	}
 }
 
-func DealwithDealwithCheckPointCondition(condition domain.InterfaceExecCondition, resp domain.DebugResponse,
-	status *consts.ResultStatus, postConditions *[]domain.InterfaceExecCondition, execUuid string) {
-
-	var checkpointBase domain.CheckpointBase
-	json.Unmarshal(condition.Raw, &checkpointBase)
-	if checkpointBase.Disabled {
-		return
-	}
-
-	err := ExecCheckPoint(&checkpointBase, resp, 0, execUuid)
-	if err != nil || checkpointBase.ResultStatus == consts.Fail {
-		*status = consts.Fail
-	}
-
-	checkpointHelper.GenResultMsg(&checkpointBase)
-
-	condition.Raw, _ = json.Marshal(checkpointBase)
-	*postConditions = append(*postConditions, condition)
-}
-
 func DealwithDatabaseCondition(condition domain.InterfaceExecCondition, status *consts.ResultStatus,
 	postConditions *[]domain.InterfaceExecCondition, execUuid string) {
 
@@ -201,6 +154,53 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition, status *
 	}
 
 	condition.Raw, _ = json.Marshal(databaseOptBase)
+	*postConditions = append(*postConditions, condition)
+}
+
+func DealwithExtractorCondition(condition domain.InterfaceExecCondition, resp domain.DebugResponse,
+	status *consts.ResultStatus, postConditions *[]domain.InterfaceExecCondition, execUuid string) {
+
+	var extractorBase domain.ExtractorBase
+	json.Unmarshal(condition.Raw, &extractorBase)
+
+	if extractorBase.Disabled || extractorBase.Variable == "" {
+		return
+	}
+
+	err := ExecExtract(&extractorBase, resp)
+	if err != nil {
+		*status = consts.Fail
+	}
+
+	extractorHelper.GenResultMsg(&extractorBase)
+
+	if extractorBase.ResultStatus == consts.Pass {
+		SetVariable(0, extractorBase.Variable, extractorBase.Result, extractorBase.ResultType, extractorBase.Scope, execUuid)
+	} else {
+		*status = consts.Fail
+	}
+
+	condition.Raw, _ = json.Marshal(extractorBase)
+	*postConditions = append(*postConditions, condition)
+}
+
+func DealwithDealwithCheckPointCondition(condition domain.InterfaceExecCondition, resp domain.DebugResponse,
+	status *consts.ResultStatus, postConditions *[]domain.InterfaceExecCondition, execUuid string) {
+
+	var checkpointBase domain.CheckpointBase
+	json.Unmarshal(condition.Raw, &checkpointBase)
+	if checkpointBase.Disabled {
+		return
+	}
+
+	err := ExecCheckPoint(&checkpointBase, resp, 0, execUuid)
+	if err != nil || checkpointBase.ResultStatus == consts.Fail {
+		*status = consts.Fail
+	}
+
+	checkpointHelper.GenResultMsg(&checkpointBase)
+
+	condition.Raw, _ = json.Marshal(checkpointBase)
 	*postConditions = append(*postConditions, condition)
 }
 

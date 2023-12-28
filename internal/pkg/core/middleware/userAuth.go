@@ -12,6 +12,7 @@ import (
 	"github.com/kataras/iris/v12/context"
 	"github.com/snowlyg/multi"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -36,12 +37,31 @@ func VerifyAuth() iris.Handler {
 }
 */
 
+var whitelist []string
+
+func init() {
+	whitelist = []string{
+		"/api/v1/account/login",
+		"/swagger",
+		"/upload",
+		"/mocks",
+	}
+}
+
+func isIgnore(path string) bool {
+	for _, item := range whitelist {
+		if strings.HasPrefix(path, item) {
+			return true
+		}
+	}
+	return false
+}
+
 func UserAuth() iris.Handler {
 	verifier := multi.NewVerifier()
 	verifier.Extractors = []multi.TokenExtractor{multi.FromHeader}
 	verifier.ErrorHandler = func(ctx *context.Context, err error) {
-		path := ctx.Path()
-		if path == "/api/v1/account/login" {
+		if isIgnore(ctx.Path()) {
 			ctx.Next()
 			return
 		}

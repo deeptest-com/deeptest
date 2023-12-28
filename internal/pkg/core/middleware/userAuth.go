@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
+	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
@@ -14,7 +15,8 @@ import (
 	"time"
 )
 
-func UserAuth() iris.Handler {
+/*
+func VerifyAuth() iris.Handler {
 	return func(ctx *context.Context) {
 		authorization := ctx.GetHeader("Authorization")
 		xToken := ctx.GetHeader("X-Token")
@@ -31,6 +33,32 @@ func UserAuth() iris.Handler {
 
 		ctx.Next()
 	}
+}
+*/
+
+func UserAuth() iris.Handler {
+	verifier := multi.NewVerifier()
+	verifier.Extractors = []multi.TokenExtractor{multi.FromHeader}
+	verifier.ErrorHandler = func(ctx *context.Context, err error) {
+		xToken := ctx.GetHeader("X-Token")
+		if xToken != "" {
+			userInfo, err := new(service.RemoteService).GetUserInfoByToken(xToken)
+			if err == nil && userInfo.Username != "" {
+				token, err := creatSession(userInfo)
+				if err == nil && token != "" {
+					ctx.Request().Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
+					ctx.Header("Authorization", token)
+					return
+				}
+			}
+		}
+
+		ctx.JSON(_domain.Response{
+			Code: _domain.AuthErr.Code,
+		})
+
+	}
+	return verifier.Verify()
 }
 
 func creatSession(userInfo v1.UserInfo) (token string, err error) {

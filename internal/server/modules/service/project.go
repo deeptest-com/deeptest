@@ -121,9 +121,11 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 	}
 
 	go func() {
-		err = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
-		if err != nil {
-			logUtils.Infof("申请加入项目发送消息失败，err:%+v", err)
+		if config.CONFIG.System.SysEnv == "ly" {
+			err = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
+			if err != nil {
+				logUtils.Infof("申请加入项目发送消息失败，err:%+v", err)
+			}
 		}
 	}()
 
@@ -136,10 +138,6 @@ func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleN
 			err = fmt.Errorf("发送消息异常")
 		}
 	}()
-
-	if config.CONFIG.System.SysEnv == "ly" {
-		return
-	}
 
 	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
 	messageContentByte, _ := json.Marshal(messageContent)

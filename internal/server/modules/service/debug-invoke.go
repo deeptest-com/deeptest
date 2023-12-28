@@ -186,7 +186,12 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 
 	preConditions, err := s.ConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId,
 		consts.ConditionCategoryConsole, "", "false", consts.ConditionSrcPre)
+
 	for _, condition := range preConditions {
+		if condition.Disabled {
+			continue
+		}
+
 		typ := condition.EntityType
 		var log interface{}
 
@@ -201,7 +206,12 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 
 	postConditions, err := s.ConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId,
 		consts.ConditionCategoryConsole, "", "false", consts.ConditionSrcPost)
+
 	for _, condition := range postConditions {
+		if condition.Disabled {
+			continue
+		}
+
 		typ := condition.EntityType
 		var log interface{}
 

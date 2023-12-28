@@ -175,7 +175,22 @@ func (r *ConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, di
 
 		// clone condition entity
 		var entityId uint
-		if srcCondition.EntityType == consts.ConditionTypeExtractor {
+		if srcCondition.EntityType == consts.ConditionTypeScript {
+			srcEntity, _ := r.ScriptRepo.Get(srcCondition.EntityId)
+			srcEntity.ID = 0
+			srcEntity.ConditionId = srcCondition.ID
+
+			r.ScriptRepo.Save(&srcEntity)
+			entityId = srcEntity.ID
+		} else if srcCondition.EntityType == consts.ConditionTypeDatabase {
+			srcEntity, _ := r.DatabaseOptRepo.Get(srcCondition.EntityId)
+			srcEntity.ID = 0
+			srcEntity.ConditionId = srcCondition.ID
+
+			r.DatabaseOptRepo.Save(&srcEntity)
+			entityId = srcEntity.ID
+
+		} else if srcCondition.EntityType == consts.ConditionTypeExtractor {
 			srcEntity, _ := r.ExtractorRepo.Get(srcCondition.EntityId)
 			srcEntity.ID = 0
 			srcEntity.ConditionId = srcCondition.ID
@@ -191,13 +206,6 @@ func (r *ConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, di
 			r.CheckpointRepo.Save(&srcEntity)
 			entityId = srcEntity.ID
 
-		} else if srcCondition.EntityType == consts.ConditionTypeScript {
-			srcEntity, _ := r.ScriptRepo.Get(srcCondition.EntityId)
-			srcEntity.ID = 0
-			srcEntity.ConditionId = srcCondition.ID
-
-			r.ScriptRepo.Save(&srcEntity)
-			entityId = srcEntity.ID
 		} else if srcCondition.EntityType == consts.ConditionTypeResponseDefine {
 			srcEntity, _ := r.ResponseDefineRepo.Get(srcCondition.EntityId)
 			srcEntity.ID = 0
@@ -346,6 +354,7 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 			extractor.ConditionEntityType = typ
 			extractor.ConditionId = po.ID
 			extractor.ConditionEntityId = po.EntityId
+			extractor.Disabled = po.Disabled
 
 			raw, _ := json.Marshal(extractor)
 			condition := domain.InterfaceExecCondition{
@@ -364,6 +373,7 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 			checkpoint.ConditionEntityType = typ
 			checkpoint.ConditionId = po.ID
 			checkpoint.ConditionEntityId = po.EntityId
+			checkpoint.Disabled = po.Disabled
 
 			raw, _ := json.Marshal(checkpoint)
 			condition := domain.InterfaceExecCondition{
@@ -382,6 +392,7 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 			script.Output = ""
 			script.ConditionId = po.ID
 			script.ConditionEntityId = po.EntityId
+			script.Disabled = po.Disabled
 
 			raw, _ := json.Marshal(script)
 			condition := domain.InterfaceExecCondition{
@@ -399,6 +410,7 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 
 			opt.ConditionId = po.ID
 			opt.ConditionEntityId = po.EntityId
+			opt.Disabled = po.Disabled
 
 			raw, _ := json.Marshal(opt)
 			condition := domain.InterfaceExecCondition{
@@ -419,6 +431,8 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 			copier.CopyWithOption(&responseDefine, entity, copier.Option{DeepCopy: true})
 			responseDefine.ConditionId = po.ID
 			responseDefine.ConditionEntityId = po.EntityId
+			responseDefine.Disabled = po.Disabled
+
 			responseBody := r.EndpointInterfaceRepo.GetResponse(endpointInterfaceId, entity.Code)
 			if responseBody.ID == 0 {
 				logUtils.Infof("响应体拿不到数据 %v", po.EntityId)

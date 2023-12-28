@@ -34,7 +34,9 @@ func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickC
 	config := req.Config
 
 	// create post-condition
-	condition := model.DebugCondition{}
+	condition := model.DebugCondition{
+		ConditionSrc: req.ConditionSrc,
+	}
 	copier.CopyWithOption(&condition, debugInfo, copier.Option{DeepCopy: true})
 
 	condition.EntityId = 0 // update later
@@ -45,7 +47,11 @@ func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickC
 	err = s.ConditionRepo.Save(&condition)
 
 	// create extractor
-	var extractor model.DebugConditionExtractor
+	extractor := model.DebugConditionExtractor{
+		ExtractorBase: domain.ExtractorBase{
+			Src: consts.Body,
+		},
+	}
 	copier.CopyWithOption(&extractor, config, copier.Option{DeepCopy: true})
 	extractor.ConditionId = condition.ID
 

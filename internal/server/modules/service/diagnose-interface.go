@@ -31,8 +31,8 @@ type DiagnoseInterfaceService struct {
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
 
-func (s *DiagnoseInterfaceService) Load(projectId, serveId int) (ret []*serverDomain.DiagnoseInterface, err error) {
-	root, err := s.DiagnoseInterfaceRepo.GetTree(uint(projectId), uint(serveId))
+func (s *DiagnoseInterfaceService) Load(projectId int) (ret []*serverDomain.DiagnoseInterface, err error) {
+	root, err := s.DiagnoseInterfaceRepo.GetTree(uint(projectId))
 
 	if root != nil {
 		ret = root.Children
@@ -61,19 +61,19 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 
 	if diagnoseInterface.Type == serverConsts.DiagnoseInterfaceTypeInterface {
 		if req.ID == 0 {
-			server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
+			//server, _ := s.ServeServerRepo.GetDefaultByServe(diagnoseInterface.ServeId)
 			debugInterface := model.DebugInterface{
 				InterfaceBase: model.InterfaceBase{
 					Name: req.Title,
 					InterfaceConfigBase: model.InterfaceConfigBase{
-						Url:    server.Url,
+						//			Url:    server.Url,
 						Method: consts.GET,
 					},
 					ProjectId: req.ProjectId,
 				},
-				ServeId:  diagnoseInterface.ServeId,
-				ServerId: server.ID,
-				BaseUrl:  "",
+				//	ServeId:  diagnoseInterface.ServeId,
+				//	ServerId: server.ID,
+				BaseUrl: "",
 			}
 			err = s.DebugInterfaceRepo.Save(&debugInterface)
 			diagnoseInterface.DebugInterfaceId = debugInterface.ID
@@ -170,9 +170,9 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 		BaseUrl: "",
 		BaseRequest: domain.BaseRequest{
 			Method:      s.getMethod(bodyType, curlObj.Method),
-			QueryParams: queryParams,
-			Headers:     headers,
-			Cookies:     cookies,
+			QueryParams: &queryParams,
+			Headers:     &headers,
+			Cookies:     &cookies,
 			Body:        wf.Body.String(),
 			BodyType:    consts.HttpContentType(bodyType),
 			Url:         url,
@@ -184,7 +184,7 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 		UsedBy: consts.DiagnoseDebug,
 	}
 
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, 0)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, 0, "")
 
 	// save test interface
 	diagnoseInterface := model.DiagnoseInterface{
@@ -235,8 +235,10 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 
 	// convert or clone a debug interface obj
 	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(uint(endpointInterfaceId))
+	debugData.UsedBy = "" // mark src usedBy for pre/post-condition loading, empty for no pre/post conditions
+
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
-	debugData.ServeId = parent.ServeId
+	//debugData.ServeId = parent.ServeId
 
 	if debugData.ServerId == 0 {
 		server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
@@ -249,7 +251,7 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 
 	debugData.UsedBy = consts.DiagnoseDebug
 	srcDebugInterfaceId := debugData.DebugInterfaceId
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId, "")
 
 	// save test interface
 	diagnoseInterface := model.DiagnoseInterface{

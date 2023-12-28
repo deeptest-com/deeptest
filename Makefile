@@ -1,9 +1,7 @@
-#VERSION=1.1.1
-#PROJECT=deeptest
-
-# ly 打包配置，开源版可以删除
-VERSION=0.0.15
-PROJECT=LeyanAPI
+ENV        ?= ly
+include    env.$(ENV)
+print_env:
+	@echo $(PROJECT)@$(VERSION)
 
 ifeq ($(OS),Windows_NT)
     PLATFORM="windows"
@@ -77,11 +75,11 @@ gen_version_file:
 	@echo '{"version": "${VERSION}"}' > ${QINIU_DIR}/${PROJECT}/version.json
 
 compile_ui:
-	@cd ui && yarn build --mode deeptest-local --dest ../client/ui && cd ..
+	@cd ui && yarn build --dest ../client/ui && cd ..
 compile_ui_demo:
-	@cd ui && yarn build --mode deeptest-demo --dest ../client/ui && cd ..
+	@cd ../deeptest-ui && yarn build:demo --dest ../deeptest/client/ui && cd ../deeptest
 compile_ui_client:
-	@cd ui && yarn build --mode deeptest-client --dest ../client/ui && cd ..
+	@cd ui && yarn build --dest ../client/ui && cd ..
 compile_ly_ui_client:
 	@cd ../leyanapi-frontend  && yarn build:client && cd ../leyanapi-backend
 

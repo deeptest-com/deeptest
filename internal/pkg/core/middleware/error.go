@@ -12,7 +12,6 @@ import (
 func Error() iris.Handler {
 
 	return func(ctx *context.Context) {
-
 		defer func(ctx *context.Context) {
 			if err := recover(); err != nil {
 				logUtils.Info(fmt.Sprintf("%v", err))

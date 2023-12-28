@@ -114,7 +114,7 @@ func (s *Mcs) SendMessage() (msgId string, err error) {
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("send message by mcs failed, response %v", resp)
 		return
 	}

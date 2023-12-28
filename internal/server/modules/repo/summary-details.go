@@ -23,6 +23,8 @@ func (r *SummaryDetailsRepo) Create(summaryDetails model.SummaryDetails) (err er
 }
 
 func (r *SummaryDetailsRepo) UpdateColumnsByDate(id int64, summaryDetails model.SummaryDetails) (err error) {
+	now := time.Now()
+	summaryDetails.UpdatedAt = &now
 	err = r.DB.Model(&model.SummaryDetails{}).Where("id = ? and not deleted", id).UpdateColumns(&summaryDetails).Error
 	return
 }
@@ -132,20 +134,18 @@ func (r *SummaryDetailsRepo) FindByProjectIdAndDate(startTime string, endTime st
 	return
 }
 
-func (r *SummaryDetailsRepo) FindPassRateByProjectId(projectId int64) (float64, error) {
-	var passRate sql.NullFloat64
-	err := r.DB.Model(&model.ScenarioReport{}).Raw("select (SUM(pass_assertion_num)/SUM(total_assertion_num))*100 from biz_scenario_report where project_id = ? and not deleted;", projectId).Find(&passRate).Error
-	return passRate.Float64, err
+func (r *SummaryDetailsRepo) FindAssertionCountByProjectId(projectId int64) (result model.SimplePassRate, err error) {
+	err = r.DB.Model(&model.ScenarioReport{}).Raw("select sum(total_assertion_num)as totalAssertionNum,sum(pass_assertion_num) as passAssertionNum,SUM(JSON_EXTRACT(stat_raw, '$.checkpointPass')) AS checkpointPass,  SUM(JSON_EXTRACT(stat_raw, '$.checkpointFail')) AS checkpointFail  from biz_scenario_report where project_id = ? and not deleted;", projectId).Find(&result).Error
+	return
 }
 
-func (r *SummaryDetailsRepo) FindAllPassRate() (float64, error) {
-	var passRate sql.NullFloat64
-	err := r.DB.Model(&model.ScenarioReport{}).Raw("select (SUM(pass_assertion_num)/SUM(total_assertion_num))*100 from biz_scenario_report where not deleted;").Find(&passRate).Error
-	return passRate.Float64, err
+func (r *SummaryDetailsRepo) FindAllAssertionCount() (result model.SimplePassRate, err error) {
+	err = r.DB.Model(&model.ScenarioReport{}).Raw("select sum(total_assertion_num) as totalAssertionNum,sum(pass_assertion_num) as passAssertionNum,SUM(JSON_EXTRACT(stat_raw, '$.checkpointPass')) AS checkpointPass,  SUM(JSON_EXTRACT(stat_raw, '$.checkpointFail')) AS checkpointFail  from biz_scenario_report where not deleted;").Find(&result).Error
+	return
 }
 
-func (r *SummaryDetailsRepo) FindAllPassRateByProjectId() (passRate []model.ProjectIdAndFloat, err error) {
-	err = r.DB.Model(&model.ScenarioReport{}).Raw("select biz_scenario_report.project_id,(SUM(biz_scenario_report.pass_assertion_num)/SUM(biz_scenario_report.total_assertion_num))*100 as coverage from biz_scenario_report where  not deleted group by project_id;").Find(&passRate).Error
+func (r *SummaryDetailsRepo) FindAllAssertionCountGroupByProjectId() (result []model.SimplePassRateByProjectId, err error) {
+	err = r.DB.Model(&model.ScenarioReport{}).Raw("select biz_scenario_report.project_id,SUM(total_assertion_num) as totalAssertionNum ,SUM(pass_assertion_num) as passAssertionNum ,SUM(JSON_EXTRACT(stat_raw, '$.checkpointPass')) AS checkpointPass,  SUM(JSON_EXTRACT(stat_raw, '$.checkpointFail')) AS checkpointFail  from biz_scenario_report where  not deleted group by project_id;").Find(&result).Error
 	return
 }
 

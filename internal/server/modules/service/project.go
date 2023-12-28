@@ -5,7 +5,9 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
@@ -135,6 +137,10 @@ func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleN
 		}
 	}()
 
+	if config.CONFIG.System.SysEnv == "ly" {
+		return
+	}
+
 	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
 	messageContentByte, _ := json.Marshal(messageContent)
 
@@ -213,28 +219,39 @@ func (s *ProjectService) AuditUsers(projectId uint) (data []model.SysUser, err e
 	return s.ProjectRepo.GetAuditUsers(projectId)
 }
 
-func (s *ProjectService) CheckProjectAndUser(shortName, xToken string, userId uint) (project model.Project, userInProject bool, err error) {
+func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (project model.Project, userInProject bool, err error) {
 	project, err = s.ProjectRepo.GetByShortName(shortName)
 	if err != nil {
-		if err != gorm.ErrRecordNotFound || xToken == "" {
-			return project, userInProject, err
-		}
-
-		thirdPartyProject, err := s.RemoteService.GetProjectInfo(xToken, shortName)
-		if err != nil {
-			return project, userInProject, err
-		}
-
-		_, err = s.CreateProjectForThirdParty(thirdPartyProject)
-		if err != nil {
-			return project, userInProject, err
-		}
-
-		project, err = s.ProjectRepo.GetByShortName(shortName)
-		if err != nil {
-			return project, userInProject, err
-		}
+		return
 	}
+
+	//if err != nil {
+	//	if err != gorm.ErrRecordNotFound || xToken == "" {
+	//		return project, userInProject, err
+	//	}
+	//
+	//	thirdPartyProject, err := s.RemoteService.GetProjectInfo(xToken, shortName)
+	//	if err != nil {
+	//		return project, userInProject, err
+	//	}
+	//
+	//	_, err = s.CreateProjectForThirdParty(thirdPartyProject)
+	//	if err != nil {
+	//		return project, userInProject, err
+	//	}
+	//
+	//	project, err = s.ProjectRepo.GetByShortName(shortName)
+	//	if err != nil {
+	//		return project, userInProject, err
+	//	}
+	//}
+	//
+	//if xToken != "" && project.Source != serverConsts.ProjectSourceLY {
+	//	err = s.ProjectRepo.UpdateProjectSource(project.ID, serverConsts.ProjectSourceLY)
+	//	if err != nil {
+	//		return project, userInProject, err
+	//	}
+	//}
 
 	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
 	if err != nil {
@@ -249,14 +266,14 @@ func (s *ProjectService) CheckProjectAndUser(shortName, xToken string, userId ui
 		return
 	}
 
-	if !userInProject && xToken != "" {
-		err = s.ProjectRepo.AddProjectMember(project.ID, userId, consts.User)
-		if err != nil {
-			return
-		}
-
-		userInProject = true
-	}
+	//if !userInProject && xToken != "" {
+	//	err = s.ProjectRepo.AddProjectMember(project.ID, userId, consts.User)
+	//	if err != nil {
+	//		return
+	//	}
+	//
+	//	userInProject = true
+	//}
 
 	return
 }
@@ -275,6 +292,7 @@ func (s *ProjectService) CreateProjectForThirdParty(project v1.ProjectInfo) (pro
 			ShortName: project.NameEngAbbr,
 			AdminId:   adminUser.ID,
 			AdminName: adminName,
+			Source:    serverConsts.ProjectSourceLY,
 		},
 	}
 	projectId, createErr := s.Create(createReq, adminUser.ID)

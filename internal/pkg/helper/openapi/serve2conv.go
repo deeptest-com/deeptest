@@ -193,14 +193,17 @@ func (s *serve2conv) parameters(cookies []model.EndpointInterfaceCookie, headers
 		parameters = append(parameters, parameterRef)
 	}
 
-	for _, globalParam := range globalParams {
-		if globalParam.Disabled {
-			continue
+	if s.serve.ID != 0 {
+		for _, globalParam := range globalParams {
+			if globalParam.Disabled {
+				continue
+			}
+			item := model.EndpointInterfaceParam{SchemaParam: model.SchemaParam{Name: globalParam.Name, Type: string(globalParam.Type), Default: globalParam.DefaultValue, IsGlobal: true}}
+			parameterRef := s.parameterRef(string(globalParam.In), item)
+			parameters = append(parameters, parameterRef)
 		}
-		item := model.EndpointInterfaceParam{SchemaParam: model.SchemaParam{Name: globalParam.Name, Type: string(globalParam.Type), Default: globalParam.DefaultValue, IsGlobal: true}}
-		parameterRef := s.parameterRef(string(globalParam.In), item)
-		parameters = append(parameters, parameterRef)
 	}
+
 	return
 }
 
@@ -233,6 +236,9 @@ func (s *serve2conv) schemaValue(param model.EndpointInterfaceParam) (schema *op
 	schema.Format = param.Format
 	if param.IsGlobal {
 		schema.Extensions = map[string]interface{}{"isGlobal": param.IsGlobal}
+	}
+	for _, item := range param.Enum {
+		schema.Enum = append(schema.Enum, item)
 	}
 	return
 }

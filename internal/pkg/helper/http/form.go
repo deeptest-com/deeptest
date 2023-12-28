@@ -148,3 +148,16 @@ func MultipartContentType(w *TFormDataWriter) string {
 	}
 	return w.Writer.FormDataContentType()
 }
+
+func IsJsonBody(bodyType consts.HttpContentType) bool {
+	return strings.HasPrefix(bodyType.String(), consts.ContentTypeJSON.String())
+}
+
+func IsFormBody(bodyType consts.HttpContentType) bool {
+	return strings.HasPrefix(bodyType.String(), consts.ContentTypeFormData.String())
+
+}
+
+func IsFormUrlencodedBody(bodyType consts.HttpContentType) bool {
+	return strings.HasPrefix(bodyType.String(), consts.ContentTypeFormUrlencoded.String())
+}

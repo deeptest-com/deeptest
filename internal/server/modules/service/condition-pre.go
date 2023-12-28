@@ -12,25 +12,20 @@ type PreConditionService struct {
 	ScriptRepo       *repo.ScriptRepo       `inject:""`
 }
 
-func (s *PreConditionService) GetScript(debugInterfaceId, endpointInterfaceId uint) (script model.DebugConditionScript, err error) {
-	conditions, err := s.PreConditionRepo.List(debugInterfaceId, endpointInterfaceId)
+func (s *PreConditionService) GetScript(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, isForBenchmarkCase bool) (script model.DebugConditionScript, err error) {
+	conditions, err := s.PreConditionRepo.ListForBenchmarkCase(debugInterfaceId, endpointInterfaceId, usedBy, isForBenchmarkCase)
 
 	if len(conditions) == 0 {
 		condition := model.DebugPreCondition{
 			DebugInterfaceId:    debugInterfaceId,
 			EndpointInterfaceId: endpointInterfaceId,
 			EntityType:          consts.ConditionTypeScript,
+			UsedBy:              usedBy,
+			IsForBenchmarkCase:  isForBenchmarkCase,
 		}
 		err = s.Create(&condition)
 
-		script, _ = s.ScriptRepo.GetByCondition(condition.ID)
-		if script.ID == 0 {
-			script = s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)
-		}
-
-		s.PreConditionRepo.UpdateEntityId(condition.ID, script.ID)
-
-		conditions, err = s.PreConditionRepo.List(debugInterfaceId, endpointInterfaceId)
+		conditions, err = s.PreConditionRepo.ListForBenchmarkCase(debugInterfaceId, endpointInterfaceId, usedBy, isForBenchmarkCase)
 	}
 
 	script, err = s.ScriptRepo.Get(conditions[0].EntityId)
@@ -48,14 +43,12 @@ func (s *PreConditionService) Get(id uint) (checkpoint model.DebugPreCondition, 
 func (s *PreConditionService) Create(condition *model.DebugPreCondition) (err error) {
 	err = s.PreConditionRepo.Save(condition)
 
-	var entityId uint
-
 	if condition.EntityType == consts.ConditionTypeScript {
 		po := s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPre)
-		entityId = po.ID
+		condition.EntityId = po.ID
 	}
 
-	err = s.PreConditionRepo.UpdateEntityId(condition.ID, entityId)
+	err = s.PreConditionRepo.UpdateEntityId(condition.ID, condition.EntityId)
 
 	return
 }
@@ -79,5 +72,16 @@ func (s *PreConditionService) Disable(reqId uint) (err error) {
 func (s *PreConditionService) Move(req serverDomain.ConditionMoveReq) (err error) {
 	err = s.PreConditionRepo.UpdateOrders(req)
 
+	return
+}
+
+func (s *PreConditionService) ResetForCase(endpointInterfaceId, debugInterfaceId uint) (err error) {
+	usedBy := consts.CaseDebug
+	err = s.PreConditionRepo.RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId, usedBy, true)
+	if err != nil {
+		return
+	}
+
+	err = s.PreConditionRepo.CloneAll(debugInterfaceId, endpointInterfaceId, debugInterfaceId, usedBy, usedBy, false)
 	return
 }

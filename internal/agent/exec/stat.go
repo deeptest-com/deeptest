@@ -7,18 +7,16 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
-var (
-	Stat = agentDomain.InterfaceStat{}
-)
-
-func ResetStat() {
-	Stat = agentDomain.InterfaceStat{}
+func ResetStat(execUuid string) {
+	SetStat(execUuid, &agentDomain.InterfaceStat{})
 }
 
-func CountStat(result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat {
-	Stat.InterfaceCount += 1
-	Stat.InterfaceDurationTotal += result.Cost
-	Stat.InterfaceDurationAverage = Stat.InterfaceDurationTotal / Stat.InterfaceCount
+func CountStat(execUuid string, result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat {
+	stat := GetStat(execUuid)
+
+	stat.InterfaceCount += 1
+	stat.InterfaceDurationTotal += result.Cost
+	stat.InterfaceDurationAverage = stat.InterfaceDurationTotal / stat.InterfaceCount
 
 	result.ResultStatus = consts.Pass
 
@@ -34,9 +32,9 @@ func CountStat(result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat
 		}
 
 		if checkpointBase.ResultStatus == consts.Pass {
-			Stat.CheckpointPass += 1
+			stat.CheckpointPass += 1
 		} else if checkpointBase.ResultStatus == consts.Fail {
-			Stat.CheckpointFail += 1
+			stat.CheckpointFail += 1
 			result.ResultStatus = consts.Fail
 		}
 
@@ -50,22 +48,26 @@ func CountStat(result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat
 	}
 
 	if result.ResultStatus == consts.Pass {
-		Stat.InterfacePass += 1
+		stat.InterfacePass += 1
 	} else if result.ResultStatus == consts.Fail {
-		Stat.InterfaceFail += 1
+		stat.InterfaceFail += 1
 	}
 
-	return Stat
+	SetStat(execUuid, stat)
+
+	return *stat
 }
 
-func CountSkip(executedProcessorIds map[uint]bool, skippedChildren []*Processor) agentDomain.InterfaceStat {
+func CountSkip(execUuid string, executedProcessorIds map[uint]bool, skippedChildren []*Processor) agentDomain.InterfaceStat {
 	countedProcessorIds := map[uint]bool{}
-	countSkipInterface(executedProcessorIds, skippedChildren, &countedProcessorIds)
+	countSkipInterface(execUuid, executedProcessorIds, skippedChildren, &countedProcessorIds)
 
-	return Stat
+	return *GetStat(execUuid)
 }
 
-func countSkipInterface(executedProcessorIds map[uint]bool, skippedChildren []*Processor, countedProcessorIds *map[uint]bool) agentDomain.InterfaceStat {
+func countSkipInterface(execUuid string, executedProcessorIds map[uint]bool, skippedChildren []*Processor, countedProcessorIds *map[uint]bool) agentDomain.InterfaceStat {
+	stat := GetStat(execUuid)
+
 	for _, child := range skippedChildren {
 		if child.Disable {
 			continue
@@ -74,14 +76,14 @@ func countSkipInterface(executedProcessorIds map[uint]bool, skippedChildren []*P
 		_, executed := executedProcessorIds[child.ID]
 		_, counted := (*countedProcessorIds)[child.ID]
 		if child.EntityType == consts.ProcessorInterfaceDefault && !executed && !counted {
-			Stat.InterfaceSkip += 1
+			stat.InterfaceSkip += 1
 			(*countedProcessorIds)[child.ID] = true
 		}
 
 		if len(child.Children) > 0 {
-			countSkipInterface(map[uint]bool{}, child.Children, countedProcessorIds)
+			countSkipInterface(execUuid, map[uint]bool{}, child.Children, countedProcessorIds)
 		}
 	}
 
-	return Stat
+	return *stat
 }

@@ -16,11 +16,15 @@ type EndpointCase struct {
 	DebugInterfaceId uint            `gorm:"default:0" json:"debugInterfaceId"`
 	DebugData        *DebugInterface `gorm:"-" json:"debugData"`
 
+	CaseType consts.CaseType `gorm:"default:'default'" json:"caseType"`
+	BaseCase uint            `gorm:"default:0" json:"baseCase"`
+
 	SrcId uint `json:"srcId"`
 
-	SerialNumber   string `json:"serialNumber"`
-	CreateUserId   uint   `json:"createUserId"`
-	CreateUserName string `json:"createUserName"`
+	SerialNumber   string         `json:"serialNumber"`
+	CreateUserId   uint           `json:"createUserId"`
+	CreateUserName string         `json:"createUserName"`
+	Children       []EndpointCase `gorm:"-" json:"children"`
 }
 
 func (EndpointCase) TableName() string {
@@ -38,4 +42,17 @@ type EndpointCaseAlternative struct {
 
 func (EndpointCaseAlternative) TableName() string {
 	return "biz_endpoint_case_alternative"
+}
+
+type EndpointCaseAlternativeFactor struct {
+	BaseModel
+
+	CaseId uint `json:"caseId"`
+
+	Value string `json:"value"`
+	Path  string `json:"path"`
+}
+
+func (EndpointCaseAlternativeFactor) TableName() string {
+	return "biz_endpoint_case_alternative_factor"
 }

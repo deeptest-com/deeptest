@@ -54,7 +54,10 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 	req.UseExamples = settings.UseExamples
 
 	// init and cache endpoint router if needed
-	s.generateEndpointRouter(endpointInterface.EndpointId)
+	err = s.generateEndpointRouter(endpointInterface.EndpointId)
+	if err != nil {
+		return
+	}
 
 	// simulate an API request
 	apiRequest := http.Request{
@@ -153,6 +156,9 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 	x := commonUtils.JsonEncode(doc3)
 	//logUtils.Info(x)
 	doc3, err = loader.LoadFromData([]byte(x))
+	if err != nil {
+		return
+	}
 	doc3.Servers = nil
 	//pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/test1.json"
 	//ctx := context.Background()

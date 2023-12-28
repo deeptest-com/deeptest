@@ -15,8 +15,10 @@ type DebugPreCondition struct {
 	EntityId   uint                 `json:"entityId"`
 	UsedBy     consts.UsedBy        `json:"usedBy"`
 
+	IsForBenchmarkCase bool `gorm:"default:0" json:"isForBenchmarkCase"`
+
 	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Desc string `gorm:"type:text" json:"desc"`
 	Ordr int    `json:"ordr"`
 }
 
@@ -34,8 +36,10 @@ type DebugPostCondition struct {
 	EntityId   uint                 `json:"entityId"`
 	UsedBy     consts.UsedBy        `json:"usedBy"`
 
+	IsForBenchmarkCase bool `gorm:"default:0" json:"isForBenchmarkCase"`
+
 	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Desc string `gorm:"type:text" json:"desc"`
 	Ordr int    `json:"ordr"`
 }
 
@@ -53,6 +57,16 @@ func (DebugConditionExtractor) TableName() string {
 	return "biz_debug_condition_extractor"
 }
 
+type DebugConditionScript struct {
+	BaseModel
+
+	domain.ScriptBase
+}
+
+func (DebugConditionScript) TableName() string {
+	return "biz_debug_condition_script"
+}
+
 type DebugConditionCheckpoint struct {
 	BaseModel
 
@@ -63,14 +77,14 @@ func (DebugConditionCheckpoint) TableName() string {
 	return "biz_debug_condition_checkpoint"
 }
 
-type DebugConditionScript struct {
+type DebugConditionDatabaseOpt struct {
 	BaseModel
 
-	domain.ScriptBase
+	domain.DatabaseOptBase
 }
 
-func (DebugConditionScript) TableName() string {
-	return "biz_debug_condition_script"
+func (DebugConditionDatabaseOpt) TableName() string {
+	return "biz_debug_condition_database_opt"
 }
 
 type DebugConditionResponseDefine struct {

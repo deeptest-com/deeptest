@@ -58,7 +58,7 @@ func postSpecToServer(doc3 *openapi3.T, req v1.ParseSpecReq) (err error) {
 
 	httpReq := domain.BaseRequest{
 		Url: _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{Name: "targetId", Value: fmt.Sprintf("%d", req.TargetId)},
 		},
 		BodyType:          consts.ContentTypeJSON,
@@ -74,7 +74,7 @@ func postSpecToServer(doc3 *openapi3.T, req v1.ParseSpecReq) (err error) {
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		err = errors.New(fmt.Sprintf("get interface obj failed, response %v", resp))
 		return
 	}

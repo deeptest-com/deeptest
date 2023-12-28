@@ -10,7 +10,7 @@ type ComponentSchema struct {
 	ServeId     int64             `json:"serveId"`
 	Examples    string            `json:"examples" gorm:"type:longtext"`
 	Tags        string            `json:"tags"`
-	Description string            `json:"description"`
+	Description string            `gorm:"type:text" json:"description"`
 	Ref         string            `json:"ref"`
 	SourceType  consts.SourceType `json:"sourceType" gorm:"default:0"`
 }

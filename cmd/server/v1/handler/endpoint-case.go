@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -56,7 +57,7 @@ func (c *EndpointCaseCtrl) Paginate(ctx iris.Context) {
 func (c *EndpointCaseCtrl) Get(ctx iris.Context) {
 	id, _ := ctx.Params().GetInt("id")
 
-	data, err := c.EndpointCaseService.Get(id)
+	data, err := c.EndpointCaseService.Get(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -121,7 +122,7 @@ func (c *EndpointCaseCtrl) Copy(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
 
-	po, err := c.EndpointCaseService.Copy(id, userId, userName)
+	po, err := c.EndpointCaseService.Copy(id, "", userId, userName, false)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -239,13 +240,36 @@ func (c *EndpointCaseCtrl) Remove(ctx iris.Context) {
 // @Router	/api/v1/endpoints/cases/loadTree	[get]
 func (c *EndpointCaseCtrl) LoadTree(ctx iris.Context) {
 	projectId, _ := ctx.URLParamInt("currProjectId")
-	serveId, err := ctx.URLParamInt("serveId")
+	var serveIds consts.Integers
+	ctx.ReadJSON(&serveIds)
+
+	data, err := c.EndpointCaseService.LoadTree(uint(projectId), serveIds)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "serveId can't be empty"})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.EndpointCaseService.LoadTree(uint(projectId), uint(serveId))
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}
+
+// ListForBenchmark
+// @Tags	设计器/接口用例
+// @summary	自动生成用例-选择已有用例-用例列表
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	endpointId		query	int		true	"endpointId"
+// @success	200	{object}	_domain.Response{data=[]serverDomain.EndpointCaseTree}
+// @Router	/api/v1/endpoints/cases/listForBenchmark	[get]
+func (c *EndpointCaseCtrl) ListForBenchmark(ctx iris.Context) {
+	endpointId, err := ctx.URLParamInt("endpointId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	data, err := c.EndpointCaseService.ListByCaseType(uint(endpointId), consts.CaseDefault)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

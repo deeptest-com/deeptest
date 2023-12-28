@@ -6,23 +6,24 @@ import (
 )
 
 type ExecVariable struct {
-	Id         uint        `json:"id"`
-	Name       string      `json:"name"`
-	Value      interface{} `json:"value"`
-	Expression string      `json:"expression"`
+	Id         uint                       `json:"id"`
+	Name       string                     `json:"name"`
+	Value      interface{}                `json:"value"`
+	ValueType  consts.ExtractorResultType `json:"valueType"`
+	Expression string                     `json:"expression"`
 
 	InterfaceId uint                  `json:"interfaceId"`
 	Scope       consts.ExtractorScope `json:"isShare"`
 }
 
 type ExecCookie struct {
-	Id         uint        `json:"id,omitempty"`
-	Name       string      `json:"name"`
-	Value      interface{} `json:"value"`
-	Path       string      `json:"path,omitempty"`
-	Disabled   bool        `json:"disabled"`
-	Domain     string      `json:"domain,omitempty"`
-	ExpireTime *time.Time  `json:"expireTime,omitempty"`
+	Id         uint       `json:"id,omitempty"`
+	Name       string     `json:"name"`
+	Value      string     `json:"value"`
+	Path       string     `json:"path,omitempty"`
+	Disabled   bool       `json:"disabled"`
+	Domain     string     `json:"domain,omitempty"`
+	ExpireTime *time.Time `json:"expireTime,omitempty"`
 }
 
 type ExecLog struct {

@@ -47,12 +47,12 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 		Content: entity.Content,
 	}
 
-	err = ExecScript(&scriptBase, processor.ProjectId)
+	err = ExecScript(&scriptBase, processor.ProjectId, session.ExecUuid)
 	scriptHelper.GenResultMsg(&scriptBase)
 	//scriptBase.VariableSettings = VariableSettings
 
-	for _, item := range VariableSettings {
-		SetVariable(processor.ParentId, item.Name, item.Value, consts.Public)
+	for _, item := range GetGojaVariables(session.ExecUuid) {
+		SetVariable(processor.ParentId, item.Name, item.Value, item.ValueType, consts.Public, session.ExecUuid)
 	}
 
 	processor.Result.Summary = scriptBase.ResultStatus.String()
@@ -64,7 +64,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 	}
 	detail := map[string]interface{}{"name": entity.Name, "content": entity.Content, "result": result, "output": scriptBase.Output}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

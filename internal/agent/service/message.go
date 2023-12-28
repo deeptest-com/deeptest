@@ -4,6 +4,7 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12/websocket"
 )
 
@@ -41,7 +42,7 @@ func sendSubmitResult(userId uint, wsMsg *websocket.Message) (err error) {
 		UserId: userId,
 		Name:   "提交执行结果成功",
 	}
-	execUtils.SendExecMsg(result, wsMsg)
+	execUtils.SendExecMsg(result, consts.Processor, wsMsg)
 
 	return
 }

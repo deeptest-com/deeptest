@@ -16,6 +16,10 @@ func SendStartMsg(wsMsg *websocket.Message) (err error) {
 	return
 }
 
+func SendInitializeMsg(data interface{}, wsMsg *websocket.Message) {
+	websocketHelper.SendInitializeMsg(data, wsMsg)
+}
+
 func SendEndMsg(wsMsg *websocket.Message) (err error) {
 	SetRunning(false)
 	websocketHelper.SendExecStatus(consts.ProgressEnd, wsMsg)
@@ -35,50 +39,39 @@ func SendResult(data interface{}, wsMsg *websocket.Message) (err error) {
 	return
 }
 
-func SendCancelMsg(wsMsg websocket.Message) (err error) {
+func SendCancelMsg(wsMsg *websocket.Message) (err error) {
 	SetRunning(false)
 
-	websocketHelper.SendExecStatus(consts.ProgressEnd, &wsMsg)
+	websocketHelper.SendExecStatus(consts.ProgressEnd, wsMsg)
 
 	return
 }
 
-func SendAlreadyRunningMsg(scenarioId int, wsMsg websocket.Message) (err error) {
-	msg := _i118Utils.Sprintf("pls_stop_previous")
-	websocketHelper.SendExecMsg(msg, agentDomain.ScenarioExecResult{ProgressStatus: consts.InProgress}, &wsMsg)
-	_logUtils.Infof(msg)
-
-	return
-}
-
-func SendExecMsg(log interface{}, wsMsg *websocket.Message) (err error) {
+func SendExecMsg(log interface{}, category consts.WsMsgCategory, wsMsg *websocket.Message) (err error) {
 	SetRunning(true)
 	msg := _i118Utils.Sprintf("exec")
-	websocketHelper.SendExecMsg(msg, log, wsMsg)
+	websocketHelper.SendExecMsg(msg, log, category, wsMsg)
+
+	return
+}
+
+func SendErrorMsg(log interface{}, category consts.WsMsgCategory, wsMsg *websocket.Message) (err error) {
+	msg := _i118Utils.Sprintf("exec_fail")
+	websocketHelper.SendExecMsg(msg, log, category, wsMsg)
+
+	return
+}
+
+func SendAlreadyRunningMsg(processor consts.WsMsgCategory, wsMsg *websocket.Message) (err error) {
+	msg := _i118Utils.Sprintf("pls_stop_previous")
+	websocketHelper.SendExecMsg(msg, agentDomain.ScenarioExecResult{ProgressStatus: consts.InProgress}, processor, wsMsg)
+	_logUtils.Infof(msg)
 
 	return
 }
 
 func SendStatMsg(data agentDomain.InterfaceStat, wsMsg *websocket.Message) (err error) {
 	websocketHelper.SendStatInfo(data, wsMsg)
-
-	return
-}
-
-func SendErrorMsg(log agentDomain.ScenarioExecResult, wsMsg *websocket.Message) (err error) {
-	msg := _i118Utils.Sprintf("exec_fail")
-	websocketHelper.SendExecMsg(msg, log, wsMsg)
-
-	return
-}
-
-func SendInitializeMsg(data interface{}, wsMsg *websocket.Message) {
-	websocketHelper.SendInitializeMsg(data, wsMsg)
-}
-
-func SendExceptionMsg(wsMsg *websocket.Message) (err error) {
-	SetRunning(false)
-	websocketHelper.SendExecStatus(consts.Exception, wsMsg)
 
 	return
 }

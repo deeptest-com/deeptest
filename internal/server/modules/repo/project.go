@@ -102,10 +102,13 @@ func (r *ProjectRepo) GetByName(projectName string, id uint) (project model.Proj
 	return
 }
 
-func (r *ProjectRepo) GetByCode(shortName string) (ret model.Project, err error) {
+func (r *ProjectRepo) GetByCode(shortName string, id uint) (ret model.Project, err error) {
 	db := r.DB.Model(&ret).
 		Where("short_name = ? AND NOT deleted", shortName)
 
+	if id > 0 {
+		db.Where("id != ?", id)
+	}
 	err = db.First(&ret).Error
 
 	return
@@ -132,7 +135,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 		return
 	}
 
-	po, err = r.GetByCode(req.ShortName)
+	po, err = r.GetByCode(req.ShortName, 0)
 	if po.ShortName != "" {
 		bizErr = _domain.ErrShortNameExist
 		return
@@ -186,11 +189,20 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	}
 
 	// create project endpoint category
-	categoryId, err := r.AddProjectRootEndpointCategory(serve.ID, projectId)
+	categoryId, err := r.AddProjectRootEndpointCategory(projectId)
 	if err != nil {
 		logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
 		return
 	}
+
+	// create project test category
+	/*
+		err = r.ServeRepo.AddDefaultTestCategory(serve.ProjectId)
+		if err != nil {
+			logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
+			return
+		}
+	*/
 
 	// create project scenario category
 	err = r.AddProjectRootScenarioCategory(projectId)
@@ -219,6 +231,16 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 }
 
 func (r *ProjectRepo) Update(req v1.ProjectReq) error {
+	po, _ := r.GetByName(req.Name, req.Id)
+	if po.Name != "" {
+		return errors.New("同名记录已存在")
+	}
+
+	po, _ = r.GetByCode(req.ShortName, req.Id)
+	if po.ShortName != "" {
+		return errors.New("英文缩写已存在")
+	}
+
 	project := model.Project{ProjectBase: req.ProjectBase}
 	err := r.DB.Model(&model.Project{}).Where("id = ?", req.Id).Updates(&project).Error
 	if err != nil {
@@ -420,11 +442,10 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role consts.RoleT
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (id uint, err error) {
+func (r *ProjectRepo) AddProjectRootEndpointCategory(projectId uint) (id uint, err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.EndpointCategory,
-		ServeId:   serveId,
 		ProjectId: projectId,
 		IsDir:     true,
 	}
@@ -560,7 +581,8 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 
 	r.ServeRepo.AddDefaultServer(serve.ProjectId, serve.ID)
 
-	r.ServeRepo.AddDefaultTestCategory(serve.ProjectId, serve.ID)
+	//调试目录不挂在目录下面
+	//	r.ServeRepo.AddDefaultTestCategory(serve.ProjectId, serve.ID)
 
 	return
 }
@@ -1059,5 +1081,11 @@ func (r *ProjectRepo) GetAuditByItem(projectId, ApplyUserId uint, auditStatus []
 	err = r.DB.Model(&model.ProjectMemberAudit{}).
 		Where("project_id = ? and apply_user_id = ? and status in ? ", projectId, ApplyUserId, auditStatus).
 		Last(&ret).Error
+	return
+}
+
+func (r *ProjectRepo) UpdateProjectSource(projectId uint, source serverConsts.ProjectSource) (err error) {
+	err = r.DB.Model(&model.Project{}).
+		Where("id = ?", projectId).Update("source", source).Error
 	return
 }

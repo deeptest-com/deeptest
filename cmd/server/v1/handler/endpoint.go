@@ -15,8 +15,9 @@ import (
 )
 
 type EndpointCtrl struct {
-	EndpointService *service.EndpointService `inject:""`
-	ServeService    *service.ServeService    `inject:""`
+	EndpointService       *service.EndpointService       `inject:""`
+	ServeService          *service.ServeService          `inject:""`
+	ThirdPartySyncService *service.ThirdPartySyncService `inject:""`
 }
 
 // Index
@@ -487,4 +488,43 @@ func (c *EndpointCtrl) SaveDiff(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// UpdateName
+// @Tags	设计器
+// @summary	更新设计器名称
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id 				query 	int	true 	"设计器id"
+// @Param 	name 			query 	string	true 	"设计器状态"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/updateName	[put]
+func (c *EndpointCtrl) UpdateName(ctx iris.Context) {
+	id := ctx.URLParamUint64("id")
+	name := ctx.URLParam("name")
+	err := c.EndpointService.UpdateName(uint(id), name)
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *EndpointCtrl) ListFunctionsByThirdPartyClass(ctx iris.Context) {
+	var req serverDomain.ImportThirdPartyEndpointReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	data, err := c.ThirdPartySyncService.ListFunctionsByClass(req.FilePath, req.ClassCode)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: data})
 }

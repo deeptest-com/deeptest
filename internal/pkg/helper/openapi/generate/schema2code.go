@@ -38,6 +38,10 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 
 	s.CombineSchemas(&schema)
 
+	if schema.Value == nil {
+		return &fields.Field{FieldName: fields.FieldName(name), FieldRefName: fields.FieldName(refName), FieldType: "any"}
+	}
+
 	field := &fields.Field{FieldName: fields.FieldName(name), FieldRefName: fields.FieldName(refName), Description: schema.Value.Description}
 
 	switch schema.Value.Type {

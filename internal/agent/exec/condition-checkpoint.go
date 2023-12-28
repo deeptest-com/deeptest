@@ -6,20 +6,21 @@ import (
 	agentUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
 	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"strings"
 )
 
-func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, processorId uint) (err error) {
+func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, processorId uint, execUuid string) (err error) {
 	checkpoint.ResultStatus = consts.Pass
 
 	// Response ResultStatus
 	if checkpoint.Type == consts.ResponseStatus {
 		expectCode := stringUtils.ParseInt(checkpoint.Value)
 
-		checkpoint.ActualResult = fmt.Sprintf("%d", resp.StatusCode.Int())
+		checkpoint.ActualResult = fmt.Sprintf("%d", resp.StatusCode)
 
-		if checkpoint.Operator == consts.Equal && resp.StatusCode.Int() == expectCode {
+		if checkpoint.Operator == consts.Equal && resp.StatusCode == expectCode {
 			checkpoint.ResultStatus = consts.Pass
 		} else {
 			checkpoint.ResultStatus = consts.Fail
@@ -76,16 +77,19 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 	// Judgement
 	if checkpoint.Type == consts.Judgement {
 		var result interface{}
+		var variablesArr domain.VarKeyValuePair
 
-		expr := ReplaceDatapoolVariInGovaluateExpress(checkpoint.Expression)
+		expr := ReplaceDatapoolVariInGovaluateExpress(checkpoint.Expression, execUuid)
 
 		if processorId > 0 { // exec interface processor in scenario
-			result, _ = EvaluateGovaluateExpressionByProcessorScope(expr, processorId)
+			result, variablesArr, _ = EvaluateGovaluateExpressionByProcessorScope(expr, processorId, execUuid)
 		} else { // exec by interface invocation
-			result, _ = EvaluateGovaluateExpressionWithDebugVariables(expr)
+			result, variablesArr, _ = EvaluateGovaluateExpressionWithDebugVariables(expr, execUuid)
 		}
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", result)
+		variablesBytes, _ := json.Marshal(variablesArr)
+		checkpoint.Variables = string(variablesBytes)
 
 		ret, ok := result.(bool)
 		if ok && ret {
@@ -97,11 +101,26 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		return
 	}
 
-	// Extractor
-	if checkpoint.Type == consts.Extractor {
-		variable, _ := GetVariable(CurrScenarioProcessorId, checkpoint.ExtractorVariable)
+	// ExtractorVari
+	if checkpoint.Type == consts.ExtractorVari {
+		variable, _ := GetVariable(GetCurrScenarioProcessorId(execUuid), checkpoint.ExtractorVariable, execUuid)
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", variable.Value)
+
+		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
+
+		return
+	}
+
+	// Extractor
+	if checkpoint.Type == consts.Extractor {
+		extractor := domain.ExtractorBase{
+			Type:       checkpoint.ExtractorType,
+			Expression: checkpoint.ExtractorExpression,
+		}
+		extractorHelper.Extract(&extractor, resp)
+
+		checkpoint.ActualResult = fmt.Sprintf("%v", extractor.Result)
 
 		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
 

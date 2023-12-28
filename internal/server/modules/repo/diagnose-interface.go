@@ -16,8 +16,8 @@ type DiagnoseInterfaceRepo struct {
 	DB                     *gorm.DB `inject:""`
 }
 
-func (r *DiagnoseInterfaceRepo) GetTree(projectId, serveId uint) (root *serverDomain.DiagnoseInterface, err error) {
-	pos, err := r.ListByProject(projectId, serveId)
+func (r *DiagnoseInterfaceRepo) GetTree(projectId uint) (root *serverDomain.DiagnoseInterface, err error) {
+	pos, err := r.ListByProject(projectId)
 	if err != nil {
 		return
 	}
@@ -42,14 +42,10 @@ func (r *DiagnoseInterfaceRepo) mountCount(root *serverDomain.DiagnoseInterface)
 
 }
 
-func (r *DiagnoseInterfaceRepo) ListByProject(projectId, serveId uint) (pos []*model.DiagnoseInterface, err error) {
+func (r *DiagnoseInterfaceRepo) ListByProject(projectId uint) (pos []*model.DiagnoseInterface, err error) {
 	db := r.DB.
 		Where("project_id=?", projectId).
 		Where("NOT deleted")
-
-	if serveId > 0 {
-		db.Where("serve_id=?", serveId)
-	}
 
 	err = db.
 		Order("parent_id ASC, ordr ASC").

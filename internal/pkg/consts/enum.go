@@ -261,8 +261,17 @@ type UsedBy string
 const (
 	InterfaceDebug UsedBy = "interface_debug"
 	CaseDebug      UsedBy = "case_debug"
-	DiagnoseDebug  UsedBy = "diagnose_debug"
-	ScenarioDebug  UsedBy = "scenario_debug"
+	//AlternativeCaseDebug UsedBy = "alternative_case_debug"
+	DiagnoseDebug UsedBy = "diagnose_debug"
+	ScenarioDebug UsedBy = "scenario_debug"
+)
+
+type CaseType string
+
+const (
+	CaseDefault     CaseType = "default"
+	CaseBenchmark   CaseType = "benchmark"   // for alternative cases design
+	CaseAlternative CaseType = "alternative" // saved as independent case
 )
 
 type ProcessorInterfaceSrc string
@@ -288,6 +297,7 @@ const (
 	ConditionTypeExtractor      ConditionType = "extractor"
 	ConditionTypeCheckpoint     ConditionType = "checkpoint"
 	ConditionTypeScript         ConditionType = "script"
+	ConditionTypeDatabase       ConditionType = "databaseOpt"
 	ConditionTypeResponseDefine ConditionType = "responseDefine"
 )
 
@@ -295,6 +305,7 @@ type ConditionCategory string
 
 const (
 	ConditionCategoryResult   ConditionCategory = "result"
+	PostCondition             ConditionCategory = "postCondition"
 	ConditionCategoryConsole  ConditionCategory = "console"
 	ConditionCategoryAssert   ConditionCategory = "assert"
 	ConditionCategoryAll      ConditionCategory = "all"
@@ -313,6 +324,7 @@ type ExtractorType string
 
 const (
 	Boundary  ExtractorType = "boundary"
+	JSONPath  ExtractorType = "jsonpath"
 	JsonQuery ExtractorType = "jsonquery"
 	HtmlQuery ExtractorType = "htmlquery"
 	XmlQuery  ExtractorType = "xmlquery"
@@ -326,8 +338,11 @@ const (
 	ResponseStatus CheckpointType = "responseStatus"
 	ResponseHeader CheckpointType = "responseHeader"
 	ResponseBody   CheckpointType = "responseBody"
-	Extractor      CheckpointType = "extractor"
 	Judgement      CheckpointType = "judgement"
+	ExtractorVari  CheckpointType = "extractorVari"
+	Extractor      CheckpointType = "extractor"
+
+	Script CheckpointType = "script"
 )
 
 type ExtractorScope string
@@ -335,6 +350,15 @@ type ExtractorScope string
 const (
 	Private ExtractorScope = "private" // in current interface
 	Public  ExtractorScope = "public"  // shared by other interfaces in serve OR scenario
+)
+
+type ExtractorResultType string
+
+const (
+	ExtractorResultTypeString ExtractorResultType = "string"
+	ExtractorResultTypeNumber ExtractorResultType = "number"
+	ExtractorResultTypeBool   ExtractorResultType = "bool"
+	ExtractorResultTypeObject ExtractorResultType = "object"
 )
 
 type ComparisonOperator string
@@ -565,11 +589,11 @@ func (e TimeUnit) ToString() string {
 type ExecType string
 
 const (
-	ExecStart ExecType = "start"
-	ExecStop  ExecType = "stop"
+	ExecStop ExecType = "stop"
 
 	ExecScenario ExecType = "execScenario"
 	ExecPlan     ExecType = "execPlan"
+	ExecCase     ExecType = "execCases"
 	ExecMessage  ExecType = "execMessage"
 )
 
@@ -592,11 +616,11 @@ func (e DataType) String() string {
 type RoleType string
 
 const (
-	Admin          RoleType = "admin"
-	User           RoleType = "user"
-	Tester         RoleType = "tester"
-	Developer      RoleType = "developer"
-	ProductManager RoleType = "product_manager"
+	Admin          RoleType = "space-admin"
+	User           RoleType = "general"
+	Tester         RoleType = "space-test-engineer"
+	Developer      RoleType = "space-server-engineer"
+	ProductManager RoleType = "space-product-manager"
 )
 
 func (e RoleType) String() string {
@@ -813,6 +837,19 @@ const (
 )
 
 func (e AlternativeCaseType) String() string {
+	return string(e)
+}
+
+type DatabaseType string
+
+const (
+	DbTypeMySql      DatabaseType = "mysql"
+	DbTypeSqlServer  DatabaseType = "sqlserver"
+	DbTypePostgreSql DatabaseType = "postgreSql"
+	DbTypeOracle     DatabaseType = "oracle"
+)
+
+func (e DatabaseType) String() string {
 	return string(e)
 }
 

@@ -11,41 +11,43 @@ import (
 )
 
 func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
-	agentExec.ServerUrl = call.ServerUrl
-	agentExec.ServerToken = call.Token
+	agentExec.SetServerUrl(call.ExecUuid, call.ServerUrl)
+	agentExec.SetServerToken(call.ExecUuid, call.Token)
 	req := GetInterfaceToExec(call)
 
-	agentExec.CurrDebugInterfaceId = req.DebugData.DebugInterfaceId
-	agentExec.CurrScenarioProcessorId = 0 // not in a scenario
+	agentExec.SetCurrDebugInterfaceId(call.ExecUuid, req.DebugData.DebugInterfaceId)
+	agentExec.SetCurrScenarioProcessorId(call.ExecUuid, 0) // not in a scenario
 
-	agentExec.CurrRequest = domain.BaseRequest{}
-	agentExec.CurrResponse = domain.DebugResponse{}
-	agentExec.ExecScene = req.ExecScene
+	agentExec.SetCurrRequest(call.ExecUuid, domain.BaseRequest{})
+	agentExec.SetCurrResponse(call.ExecUuid, domain.DebugResponse{})
+	agentExec.SetExecScene(call.ExecUuid, req.ExecScene)
 
 	// init context
-	agentExec.InitDebugExecContext()
-	agentExec.InitJsRuntime(call.Data.ProjectId)
+	agentExec.InitDebugExecContext(call.ExecUuid)
+	agentExec.InitJsRuntime(call.Data.ProjectId, call.ExecUuid)
 
-	agentExec.ExecPreConditions(req) // must before PreRequest, since it will update the vari in script
-	originalReqUri, _ := PreRequest(&req.DebugData)
+	agentExec.SetReqValueToGoja(&req.DebugData.BaseRequest)
 
-	agentExec.SetReqValueToGoja(req.DebugData.BaseRequest)
-	agentExec.GetReqValueFromGoja()
+	agentExec.ExecPreConditions(&req, call.ExecUuid) // must before PreRequest, since it will update the vari in script
+	originalReqUri, _ := PreRequest(&req.DebugData, call.ExecUuid)
 
-	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
-	if agentExec.CurrRequest.Url != "" {
-		req.DebugData.BaseRequest = agentExec.CurrRequest // update to the value changed in goja
+	agentExec.GetReqValueFromGoja(call.ExecUuid)
+
+	// TODO: a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
+	if agentExec.GetCurrRequest(call.ExecUuid).Url != "" {
+		req.DebugData.BaseRequest = agentExec.GetCurrRequest(call.ExecUuid) // update to the value changed in goja
 	}
 
 	resultResp, err = RequestInterface(&req.DebugData)
 
-	agentExec.SetRespValueToGoja(resultResp)
-	agentExec.ExecPostConditions(req, resultResp)
-	agentExec.GetRespValueFromGoja()
+	agentExec.SetRespValueToGoja(&resultResp)
+	agentExec.ExecPostConditions(&req, resultResp, call.ExecUuid)
+	agentExec.GetRespValueFromGoja(call.ExecUuid)
 	PostRequest(originalReqUri, &req.DebugData)
 
-	if agentExec.CurrResponse.Data != nil {
-		resultResp = agentExec.CurrResponse
+	// get the response data updated by script post-condition
+	if agentExec.GetCurrResponse(call.ExecUuid).Data != nil {
+		resultResp = agentExec.GetCurrResponse(call.ExecUuid)
 	}
 
 	// submit result
@@ -56,12 +58,12 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	return
 }
 
-func PreRequest(req *domain.DebugData) (originalReqUri string, err error) {
+func PreRequest(req *domain.DebugData, execUuid string) (originalReqUri string, err error) {
 	// replace variables
-	agentExec.ReplaceVariables(&req.BaseRequest, consts.InterfaceDebug)
+	agentExec.ReplaceVariables(&req.BaseRequest, execUuid)
 
 	// gen url
-	originalReqUri = agentExec.ReplacePathParams(req.Url, req.PathParams)
+	originalReqUri = agentExec.ReplacePathParams(req.Url, *req.PathParams)
 
 	notUseBaseUrl := execUtils.IsUseBaseUrl(req.UsedBy, req.ProcessorInterfaceSrc)
 	if notUseBaseUrl {
@@ -72,11 +74,21 @@ func PreRequest(req *domain.DebugData) (originalReqUri string, err error) {
 	req.BaseRequest.FullUrlToDisplay = req.BaseRequest.Url
 	logUtils.Info("requested url: " + req.BaseRequest.Url)
 
+	// download form file item
+	if req.BodyFormData != nil {
+		for index, item := range *req.BodyFormData {
+			if item.Type == consts.FormDataTypeFile {
+				(*req.BodyFormData)[index].Value, err = agentExec.DownloadUploadedFile(item.Value, execUuid)
+			}
+		}
+	}
+
 	return
 }
 
 func PostRequest(originalReqUri string, req *domain.DebugData) (err error) {
-	req.BaseRequest.Url = originalReqUri // rollback for saved to db
+	// rollback for saved to db
+	req.BaseRequest.Url = originalReqUri
 
 	return
 }

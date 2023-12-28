@@ -27,25 +27,32 @@ func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (
 
 	SetGojaVariables(execUuid, []domain.ExecVariable{})
 
+	var logs []string
+
 	if scriptObj.Content == "" {
-		return
-	}
-
-	SetGojaLogs(execUuid, nil)
-	resultVal, err := execRuntime.RunString(scriptObj.Content)
-
-	result := fmt.Sprintf("%v", resultVal)
-	if result == "undefined" {
-		result = "空"
-	}
-
-	logs := GetGojaLogs(execUuid)
-
-	if err != nil {
-		scriptObj.ResultStatus = consts.Fail
-		logs = append(logs, err.Error())
-	} else {
 		scriptObj.ResultStatus = consts.Pass
+		scriptObj.ResultMsg = ""
+		logs = append(logs, "")
+
+		return
+
+	} else {
+		SetGojaLogs(execUuid, nil)
+		resultVal, err := execRuntime.RunString(scriptObj.Content)
+
+		result := fmt.Sprintf("%v", resultVal)
+		if result == "undefined" {
+			result = "空"
+		}
+
+		logs = GetGojaLogs(execUuid)
+
+		if err != nil {
+			scriptObj.ResultStatus = consts.Fail
+			logs = append(logs, err.Error())
+		} else {
+			scriptObj.ResultStatus = consts.Pass
+		}
 	}
 
 	if logs != nil {

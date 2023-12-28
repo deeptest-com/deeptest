@@ -644,10 +644,13 @@ func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
 		}
 
 		var rootCategory model.Category
+		projectId := schemas[0].ProjectId
 		rootCategory, err = r.CategoryRepo.GetRoot(serverConsts.SchemaCategory, schemas[0].ProjectId)
 		if err != nil {
 			return err
 		}
+
+		ordr := r.CategoryRepo.GetMaxOrder(rootCategory.ID, serverConsts.SchemaCategory, projectId)
 		for _, schema := range schemas {
 			category, _ := r.CategoryRepo.GetByEntityId(schema.ID, serverConsts.SchemaCategory)
 			category.Name = schema.Name
@@ -655,7 +658,9 @@ func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
 			category.ParentId = int(rootCategory.ID)
 			category.Type = serverConsts.SchemaCategory
 			category.ProjectId = schema.ProjectId
+			category.Ordr = ordr
 			categories = append(categories, &category)
+			ordr += 1
 		}
 
 		err = r.DB.Save(categories).Error

@@ -14,9 +14,6 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	uuid "github.com/satori/go.uuid"
-	"log"
-	"regexp"
-	"strings"
 	"time"
 )
 
@@ -90,7 +87,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 
 	// exec post-condition
 	SetRespValueToGoja(&entity.Response)
-	entity.ExecPostConditions(processor, &detail, session)
+	processor.Result.ResultStatus, _ = entity.ExecPostConditions(processor, &detail, session)
 	GetRespValueFromGoja(session.ExecUuid)
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
@@ -121,14 +118,15 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	return
 }
 
-func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, session *Session) (interfaceStatus consts.ResultStatus, err error) {
+func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, session *Session) (err error) {
 	for _, condition := range entity.PreConditions {
 		if condition.Type == consts.ConditionTypeScript {
-			entity.DealwithScriptCondition(condition, &interfaceStatus,
-				processor.ProjectId, &processor.Result.PreConditions, session.ExecUuid, false)
+			entity.DealwithScriptCondition(condition, nil, processor.ProjectId, &processor.Result.PreConditions,
+				session.ExecUuid, false)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
-			entity.DealwithDatabaseOptCondition(condition, processor.ID, processor.ParentId, &processor.Result.PreConditions, session.ExecUuid)
+			entity.DealwithDatabaseOptCondition(condition, processor.ID, processor.ParentId, &processor.Result.PreConditions,
+				session.ExecUuid)
 		}
 	}
 
@@ -148,7 +146,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 
 		} else if condition.Type == consts.ConditionTypeExtractor {
 			entity.DealwithExtractorCondition(condition,
-				processor.ID, processor.ParentId, &interfaceStatus, &processor.Result.PostConditions, session.ExecUuid)
+				processor.ID, processor.ParentId, &processor.Result.PostConditions, session.ExecUuid)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			entity.DealwithResponseDefineCondition(condition, &interfaceStatus, &processor.Result.PostConditions, detail, session.ExecUuid)
@@ -191,44 +189,8 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 
 	if isPostCondition {
 		for _, item := range GetGojaLogs(execUuid) {
-			// Assertion Failed: [NAME] ERROR.
-			// Assertion Pass: [NAME].
-
-			regx := regexp.MustCompile(`Assertion (Failed|Pass) \[(.+)\](.*)\.`)
-			arr := regx.FindAllStringSubmatch(item, -1)
-			log.Println(arr)
-
-			if len(arr) == 0 {
-				continue
-			}
-
-			statusStr := strings.ToLower(arr[0][1])
-			name := arr[0][2]
-			//err := arr[0][3]
-
-			checkpoint := domain.CheckpointBase{
-				Type:      consts.Script,
-				ResultMsg: strings.Replace(strings.Trim(item, "\""), "AssertionError", "", -1),
-
-				ConditionId:         scriptBase.ConditionId,
-				ConditionEntityId:   scriptBase.ConditionEntityId,
-				ConditionEntityType: consts.ConditionTypeCheckpoint,
-			}
-
-			if statusStr == "failed" {
-				*interfaceStatus = consts.Fail
-				checkpoint.ResultStatus = consts.Fail
-			} else {
-				checkpoint.ResultStatus = consts.Pass
-			}
-
-			newCheckPointCondition := domain.InterfaceExecCondition{
-				Type: consts.ConditionTypeCheckpoint,
-				Desc: name,
-			}
-			newCheckPointCondition.Raw, _ = json.Marshal(checkpoint)
-
-			*conditions = append(*conditions, newCheckPointCondition)
+			createAssertFromScriptResult(item, conditions, interfaceStatus,
+				scriptBase.ConditionId, scriptBase.ConditionEntityId)
 		}
 	}
 }
@@ -265,8 +227,7 @@ func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.
 }
 
 func (entity *ProcessorInterface) DealwithExtractorCondition(condition domain.InterfaceExecCondition,
-	processorId, parentId uint, status *consts.ResultStatus,
-	conditions *[]domain.InterfaceExecCondition, execUuid string) {
+	processorId, parentId uint, conditions *[]domain.InterfaceExecCondition, execUuid string) {
 
 	var extractorBase domain.ExtractorBase
 	json.Unmarshal(condition.Raw, &extractorBase)
@@ -279,7 +240,7 @@ func (entity *ProcessorInterface) DealwithExtractorCondition(condition domain.In
 
 	err := ExecExtract(&extractorBase, resp)
 	if err != nil || extractorBase.ResultStatus == consts.Fail {
-		*status = consts.Fail
+		logUtils.Infof("extract failed")
 	}
 
 	extractorHelper.GenResultMsg(&extractorBase)

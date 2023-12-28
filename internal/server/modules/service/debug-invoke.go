@@ -95,6 +95,8 @@ func (s *DebugInvokeService) Create(req domain.SubmitDebugResultRequest,
 		ScenarioId:          scenarioId,
 
 		InvocationBase: model.InvocationBase{
+			ResultStatus: req.ResultStatus,
+
 			Name:                time.Now().Format("01-02 15:04:05"),
 			EndpointInterfaceId: req.Request.EndpointInterfaceId,
 			DebugInterfaceId:    debugInterface.ID, // may be 0

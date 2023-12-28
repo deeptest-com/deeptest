@@ -150,7 +150,7 @@ func (c *EndpointCtrl) BatchDelete(ctx iris.Context) {
 	}
 }
 
-//构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
+// 构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
 func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint model.Endpoint) {
 
 	for key, item := range req.Interfaces {
@@ -502,9 +502,13 @@ func (c *EndpointCtrl) SaveDiff(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/updateName	[put]
 func (c *EndpointCtrl) UpdateName(ctx iris.Context) {
-	id := ctx.URLParamUint64("id")
-	name := ctx.URLParam("name")
-	err := c.EndpointService.UpdateName(uint(id), name)
+	var req serverDomain.UpdateNameReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+	err := c.EndpointService.UpdateName(req.Id, req.Name)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {

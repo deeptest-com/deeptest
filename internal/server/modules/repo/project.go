@@ -151,7 +151,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 		return
 	}
 	if req.AdminId != userId {
-		err = r.AddProjectMember(project.ID, req.AdminId, "admin")
+		err = r.AddProjectMember(project.ID, req.AdminId, consts.Admin)
 		if err != nil {
 			logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 			bizErr = _domain.SystemErr
@@ -168,7 +168,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bool) (err error) {
 
 	// create project member
-	err = r.AddProjectMember(projectId, userId, "admin")
+	err = r.AddProjectMember(projectId, userId, consts.Admin)
 	if err != nil {
 		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 		return

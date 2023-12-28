@@ -40,6 +40,12 @@ func UserAuth() iris.Handler {
 	verifier := multi.NewVerifier()
 	verifier.Extractors = []multi.TokenExtractor{multi.FromHeader}
 	verifier.ErrorHandler = func(ctx *context.Context, err error) {
+		path := ctx.Path()
+		if path == "/api/v1/account/login" {
+			ctx.Next()
+			return
+		}
+
 		xToken := ctx.GetHeader("X-Token")
 		if xToken != "" {
 			userInfo, err := new(service.RemoteService).GetUserInfoByToken(xToken)
@@ -48,6 +54,7 @@ func UserAuth() iris.Handler {
 				if err == nil && token != "" {
 					ctx.Request().Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 					ctx.Header("Authorization", token)
+					ctx.Next()
 					return
 				}
 			}

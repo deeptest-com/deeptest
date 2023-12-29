@@ -765,3 +765,19 @@ func (s *EndpointService) UpdateName(id uint, name string) (err error) {
 	err = s.EndpointRepo.UpdateName(id, name)
 	return
 }
+
+func (s *EndpointService) CopyDataByCategoryId(categoryId uint) (err error) {
+	endpoints, err := s.EndpointRepo.GetByCategoryId(categoryId)
+	if err != nil {
+		return
+	}
+
+	for _, endpoint := range endpoints {
+		_, err = s.Copy(endpoint.ID, "v0.1.0")
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}

@@ -171,3 +171,43 @@ func (s *CategoryService) mountCountOnNode(root *v1.Category, data map[int64]int
 	}
 	return root.Count
 }
+
+func (s *CategoryService) Copy(targetId int) (err error) {
+
+	category, err := s.CategoryRepo.CopySelf(targetId)
+	if err != nil {
+		return err
+	}
+
+	err = s.CopyDataByCategoryId(category.Type, category.ID)
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *CategoryService) CopyChildren(parentId uint) (err error) {
+	children, err := s.CategoryRepo.GetChildren(parentId)
+	if err != nil {
+		return err
+	}
+
+	for _, child := range children {
+		err = s.Copy(int(child.ID))
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (s *CategoryService) CopyDataByCategoryId(typ serverConsts.CategoryDiscriminator, categoryId uint) (err error) {
+	switch typ {
+	case serverConsts.EndpointCategory:
+		err = s.EndpointService.CopyDataByCategoryId(categoryId)
+	}
+
+	return err
+}

@@ -290,3 +290,11 @@ func (r *CategoryRepo) GetRootNode(projectId uint, typ serverConsts.CategoryDisc
 
 	return
 }
+
+func (r *CategoryRepo) CopySelf(id int) (category model.Category, err error) {
+	category, err = r.Get(id)
+	category.ID = 0
+	err = r.Save(&category)
+
+	return category, err
+}

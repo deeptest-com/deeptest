@@ -346,7 +346,45 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 	for _, po := range pos {
 		typ := po.EntityType
 
-		if typ == consts.ConditionTypeExtractor {
+		if typ == consts.ConditionTypeScript {
+			script := domain.ScriptBase{}
+
+			entity, _ := r.ScriptRepo.Get(po.EntityId)
+			copier.CopyWithOption(&script, entity, copier.Option{DeepCopy: true})
+			script.Output = ""
+			script.ConditionId = po.ID
+			script.ConditionEntityId = po.EntityId
+			script.ConditionEntityType = typ
+			script.Disabled = po.Disabled
+
+			raw, _ := json.Marshal(script)
+			condition := domain.InterfaceExecCondition{
+				Type: typ,
+				Raw:  raw,
+			}
+
+			ret = append(ret, condition)
+
+		} else if typ == consts.ConditionTypeDatabase {
+			opt := domain.DatabaseOptBase{}
+
+			entity, _ := r.DatabaseOptRepo.Get(po.EntityId)
+			copier.CopyWithOption(&opt, entity, copier.Option{DeepCopy: true})
+
+			opt.ConditionId = po.ID
+			opt.ConditionEntityId = po.EntityId
+			opt.ConditionEntityType = typ
+			opt.Disabled = po.Disabled
+
+			raw, _ := json.Marshal(opt)
+			condition := domain.InterfaceExecCondition{
+				Type: typ,
+				Raw:  raw,
+			}
+
+			ret = append(ret, condition)
+
+		} else if typ == consts.ConditionTypeExtractor {
 			extractor := domain.ExtractorBase{}
 
 			entity, _ := r.ExtractorRepo.Get(po.EntityId)
@@ -384,42 +422,6 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 
 			ret = append(ret, condition)
 
-		} else if typ == consts.ConditionTypeScript {
-			script := domain.ScriptBase{}
-
-			entity, _ := r.ScriptRepo.Get(po.EntityId)
-			copier.CopyWithOption(&script, entity, copier.Option{DeepCopy: true})
-			script.Output = ""
-			script.ConditionId = po.ID
-			script.ConditionEntityId = po.EntityId
-			script.Disabled = po.Disabled
-
-			raw, _ := json.Marshal(script)
-			condition := domain.InterfaceExecCondition{
-				Type: typ,
-				Raw:  raw,
-			}
-
-			ret = append(ret, condition)
-
-		} else if typ == consts.ConditionTypeDatabase {
-			opt := domain.DatabaseOptBase{}
-
-			entity, _ := r.DatabaseOptRepo.Get(po.EntityId)
-			copier.CopyWithOption(&opt, entity, copier.Option{DeepCopy: true})
-
-			opt.ConditionId = po.ID
-			opt.ConditionEntityId = po.EntityId
-			opt.Disabled = po.Disabled
-
-			raw, _ := json.Marshal(opt)
-			condition := domain.InterfaceExecCondition{
-				Type: typ,
-				Raw:  raw,
-			}
-
-			ret = append(ret, condition)
-
 		} else if typ == consts.ConditionTypeResponseDefine {
 			responseDefine := domain.ResponseDefineBase{}
 
@@ -431,6 +433,7 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 			copier.CopyWithOption(&responseDefine, entity, copier.Option{DeepCopy: true})
 			responseDefine.ConditionId = po.ID
 			responseDefine.ConditionEntityId = po.EntityId
+			responseDefine.ConditionEntityType = typ
 			responseDefine.Disabled = po.Disabled
 
 			responseBody := r.EndpointInterfaceRepo.GetResponse(endpointInterfaceId, entity.Code)

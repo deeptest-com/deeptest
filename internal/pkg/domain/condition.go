@@ -80,6 +80,8 @@ type DatabaseOptBase struct {
 	DatabaseConnBase
 	DatabaseConnIsDisabled bool `json:"databaseConnIsDisabled" gorm:"-"`
 
+	ConditionSrc consts.ConditionSrc `json:"conditionSrc"`
+
 	Sql        string                     `json:"sql"`
 	Variable   string                     `json:"variable"`
 	Scope      consts.ExtractorScope      `json:"scope" gorm:"default:public"`

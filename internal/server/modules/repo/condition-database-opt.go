@@ -124,7 +124,7 @@ func (r *DatabaseOptRepo) CreateLog(databaseOpt domain.DatabaseOptBase) (
 	return
 }
 
-func (r *DatabaseOptRepo) CreateDefault(conditionId uint) (po model.DebugConditionDatabaseOpt) {
+func (r *DatabaseOptRepo) CreateDefault(conditionId uint, src consts.ConditionSrc) (po model.DebugConditionDatabaseOpt) {
 	po.ConditionId = conditionId
 
 	po = model.DebugConditionDatabaseOpt{
@@ -134,6 +134,7 @@ func (r *DatabaseOptRepo) CreateDefault(conditionId uint) (po model.DebugConditi
 			DatabaseConnBase: domain.DatabaseConnBase{
 				Type: consts.DbTypeMySql,
 			},
+			ConditionSrc: src,
 		},
 	}
 

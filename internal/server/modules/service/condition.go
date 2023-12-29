@@ -33,20 +33,20 @@ func (s *ConditionService) Create(condition *model.DebugCondition) (err error) {
 
 	var entityId uint
 
-	if condition.EntityType == consts.ConditionTypeExtractor {
+	if condition.EntityType == consts.ConditionTypeScript {
+		po := s.ScriptRepo.CreateDefault(condition.ID, condition.ConditionSrc)
+		entityId = po.ID
+
+	} else if condition.EntityType == consts.ConditionTypeDatabase {
+		po := s.DatabaseOptRepo.CreateDefault(condition.ID, condition.ConditionSrc)
+		entityId = po.ID
+
+	} else if condition.EntityType == consts.ConditionTypeExtractor {
 		po := s.ExtractorRepo.CreateDefault(condition.ID)
 		entityId = po.ID
 
 	} else if condition.EntityType == consts.ConditionTypeCheckpoint {
 		po := s.CheckpointRepo.CreateDefault(condition.ID)
-		entityId = po.ID
-
-	} else if condition.EntityType == consts.ConditionTypeScript {
-		po := s.ScriptRepo.CreateDefault(condition.ID, consts.ConditionSrcPost)
-		entityId = po.ID
-
-	} else if condition.EntityType == consts.ConditionTypeDatabase {
-		po := s.DatabaseOptRepo.CreateDefault(condition.ID)
 		entityId = po.ID
 
 	} else if condition.EntityType == consts.ConditionTypeResponseDefine {

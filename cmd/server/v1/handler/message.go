@@ -117,6 +117,7 @@ func (c *MessageCtrl) ReceiveMcsApprovalData(ctx iris.Context) {
 	reqData := serverDomain.McsApprovalResData{}
 	_ = json.Unmarshal([]byte(req.Data), &reqData)
 
+	logUtils.Infof("ReceiveMcsApprovalData Req:%+v", req)
 	err = c.MessageService.ReceiveMcsApprovalResult(reqData)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil})

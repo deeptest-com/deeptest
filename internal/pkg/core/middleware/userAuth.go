@@ -45,6 +45,7 @@ func init() {
 		"/swagger",
 		"/upload",
 		"/mocks",
+		"/api/v1/message/receiveMcsApprovalData",
 	}
 }
 

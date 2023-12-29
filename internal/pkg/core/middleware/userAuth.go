@@ -41,7 +41,7 @@ var whitelist []string
 
 func init() {
 	whitelist = []string{
-		"/api/v1/account/login",
+		"/api/v1/account",
 		"/swagger",
 		"/upload",
 		"/mocks",

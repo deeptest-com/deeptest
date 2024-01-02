@@ -35,30 +35,44 @@ func (s *ProjectRolePermService) GetRoleFromOther() (data []model.ProjectRole, e
 		return
 	}
 
-	allRoleArr, roleValueMap, err := s.GetAllRoleValueMap(spaceRoles)
+	allRoleArr, spaceRoleValueMap, err := s.GetAllRoleValueMap(spaceRoles)
 	if err != nil {
 		return
 	}
 
-	err = s.ComplementRoleFromOther(allRoleArr, roleValueMap)
+	err = s.ComplementRoleFromOther(allRoleArr, spaceRoleValueMap)
 	if err != nil {
 		return
 	}
 
-	data = s.GetRoleListFromOther(spaceRoles, roleValueMap)
+	data = s.GetRoleListFromOther(spaceRoles)
 
 	return
 }
 
-func (s *ProjectRolePermService) GetRoleListFromOther(spaceRoles []v1.SpaceRole, roleValueMap map[string]v1.SpaceRole) (data []model.ProjectRole) {
+func (s *ProjectRolePermService) GetRoleListMap() (res map[consts.RoleType]model.ProjectRole, err error) {
+	res = make(map[consts.RoleType]model.ProjectRole)
+	roleList, err := s.ProjectRoleRepo.AllRoleList()
+	if err != nil {
+		return
+	}
+
+	for _, v := range roleList {
+		res[v.Name] = v
+	}
+
+	return
+}
+func (s *ProjectRolePermService) GetRoleListFromOther(spaceRoles []v1.SpaceRole) (data []model.ProjectRole) {
+	roleMap, _ := s.GetRoleListMap()
 	for _, spaceRole := range spaceRoles {
 		projectRoleTmp := model.ProjectRole{
 			Name:        consts.RoleType(spaceRole.RoleValue),
 			DisplayName: spaceRole.RoleName,
 			Description: spaceRole.Remark,
 		}
-		if role, ok := roleValueMap[spaceRole.RoleValue]; ok {
-			projectRoleTmp.ID = role.Id
+		if role, ok := roleMap[consts.RoleType(spaceRole.RoleValue)]; ok {
+			projectRoleTmp.ID = role.ID
 		}
 		data = append(data, projectRoleTmp)
 	}

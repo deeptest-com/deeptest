@@ -179,7 +179,7 @@ func (s *CategoryService) Copy(targetId int) (err error) {
 		return err
 	}
 
-	err = s.CopyDataByCategoryId(category.Type, category.ID)
+	err = s.CopyDataByCategoryId(category.Type, uint(targetId), category.ID)
 	if err != nil {
 		return
 	}
@@ -203,10 +203,10 @@ func (s *CategoryService) CopyChildren(parentId uint) (err error) {
 	return err
 }
 
-func (s *CategoryService) CopyDataByCategoryId(typ serverConsts.CategoryDiscriminator, categoryId uint) (err error) {
+func (s *CategoryService) CopyDataByCategoryId(typ serverConsts.CategoryDiscriminator, targetId, categoryId uint) (err error) {
 	switch typ {
 	case serverConsts.EndpointCategory:
-		err = s.EndpointService.CopyDataByCategoryId(categoryId)
+		err = s.EndpointService.CopyDataByCategoryId(targetId, categoryId)
 	}
 
 	return err

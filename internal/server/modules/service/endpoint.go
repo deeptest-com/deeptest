@@ -143,11 +143,14 @@ func (s *EndpointService) Develop(id uint) (err error) {
 	return
 }
 
-func (s *EndpointService) Copy(id uint, version string) (res uint, err error) {
+func (s *EndpointService) Copy(id, categoryId uint, version string) (res uint, err error) {
 
 	endpoint, _ := s.EndpointRepo.GetAll(id, version)
 	s.removeIds(&endpoint)
 	endpoint.Title += "_copy"
+	if categoryId == 0 {
+		endpoint.CategoryId = int64(categoryId)
+	}
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err
 }
@@ -766,14 +769,14 @@ func (s *EndpointService) UpdateName(id uint, name string) (err error) {
 	return
 }
 
-func (s *EndpointService) CopyDataByCategoryId(categoryId uint) (err error) {
-	endpoints, err := s.EndpointRepo.GetByCategoryId(categoryId)
+func (s *EndpointService) CopyDataByCategoryId(targetId, categoryId uint) (err error) {
+	endpoints, err := s.EndpointRepo.GetByCategoryId(targetId)
 	if err != nil {
 		return
 	}
 
 	for _, endpoint := range endpoints {
-		_, err = s.Copy(endpoint.ID, "v0.1.0")
+		_, err = s.Copy(endpoint.ID, categoryId, "v0.1.0")
 		if err != nil {
 			return
 		}

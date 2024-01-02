@@ -49,7 +49,7 @@
     "parent":""
   },
   {
-    "code":"project-setting",
+    "code":"p-setting-api",
     "title":"项目设置",
     "path":"/project-setting",
     "type":"menu",

@@ -127,4 +127,5 @@ type SpaceRole struct {
 	Id        uint   `json:"id"`
 	RoleName  string `json:"roleName"`
 	RoleValue string `json:"roleValue"`
+	Remark    string `json:"remark"`
 }

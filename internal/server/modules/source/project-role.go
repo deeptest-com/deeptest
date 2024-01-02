@@ -16,19 +16,19 @@ func (s *ProjectRoleSource) GetSources() (sources []model.ProjectRole, err error
 	sources = []model.ProjectRole{
 		{
 			Name:        consts.Admin,
-			DisplayName: "项目空间管理员",
+			DisplayName: "项目负责人",
 		},
 		{
 			Name:        consts.User,
-			DisplayName: "普通用户",
+			DisplayName: "用户",
 		},
 		{
 			Name:        consts.Tester,
-			DisplayName: "测试工程师",
+			DisplayName: "测试人员",
 		},
 		{
 			Name:        consts.Developer,
-			DisplayName: "开发工程师",
+			DisplayName: "开发人员",
 		},
 		{
 			Name:        consts.ProductManager,

@@ -21,34 +21,58 @@ type ProjectRolePermService struct {
 
 func (s *ProjectRolePermService) AllRoleList() (data []model.ProjectRole, err error) {
 	if config.CONFIG.System.SysEnv == "ly" {
-		err = s.ComplementRole()
-		if err != nil {
-			return
-		}
+		data, err = s.GetRoleFromOther()
+	} else {
+		data, err = s.ProjectRoleRepo.AllRoleList()
 	}
 
-	return s.ProjectRoleRepo.AllRoleList()
+	return
 }
 
-func (s *ProjectRolePermService) ComplementRole() (err error) {
+func (s *ProjectRolePermService) GetRoleFromOther() (data []model.ProjectRole, err error) {
 	spaceRoles, err := s.RemoteService.GetSpaceRoles()
 	if err != nil {
 		return
 	}
 
-	var allRoleArr []string
-	roleValueMap := make(map[string]v1.SpaceRole)
+	allRoleArr, roleValueMap, err := s.GetAllRoleValueMap(spaceRoles)
+	if err != nil {
+		return
+	}
+
+	err = s.ComplementRoleFromOther(allRoleArr, roleValueMap)
+	if err != nil {
+		return
+	}
+
+	data = s.GetRoleListFromOther(spaceRoles, roleValueMap)
+
+	return
+}
+
+func (s *ProjectRolePermService) GetRoleListFromOther(spaceRoles []v1.SpaceRole, roleValueMap map[string]v1.SpaceRole) (data []model.ProjectRole) {
+	for _, spaceRole := range spaceRoles {
+		projectRoleTmp := model.ProjectRole{
+			Name:        consts.RoleType(spaceRole.RoleValue),
+			DisplayName: spaceRole.RoleName,
+			Description: spaceRole.Remark,
+		}
+		if role, ok := roleValueMap[spaceRole.RoleValue]; ok {
+			projectRoleTmp.ID = role.Id
+		}
+		data = append(data, projectRoleTmp)
+	}
+
+	return
+}
+
+func (s *ProjectRolePermService) GetAllRoleValueMap(spaceRoles []v1.SpaceRole) (allRoleArr []string, roleValueMap map[string]v1.SpaceRole, err error) {
+	roleValueMap = make(map[string]v1.SpaceRole)
 	for _, v := range spaceRoles {
 		allRoleArr = append(allRoleArr, v.RoleValue)
 		roleValueMap[v.RoleValue] = v
 	}
 
-	notExistedRoles, err := s.GetRolesNotExisted(allRoleArr)
-	if err != nil || len(notExistedRoles) == 0 {
-		return
-	}
-
-	err = s.BatchCreateSpaceRole(roleValueMap, notExistedRoles)
 	return
 }
 
@@ -63,6 +87,17 @@ func (s *ProjectRolePermService) GetRolesNotExisted(allRoleArr []string) (notExi
 	return
 }
 
+func (s *ProjectRolePermService) ComplementRoleFromOther(allRoleArr []string, roleValueMap map[string]v1.SpaceRole) (err error) {
+	notExistedRoles, err := s.GetRolesNotExisted(allRoleArr)
+	if err != nil || len(notExistedRoles) == 0 {
+		return
+	}
+
+	err = s.BatchCreateSpaceRole(roleValueMap, notExistedRoles)
+
+	return
+}
+
 func (s *ProjectRolePermService) BatchCreateSpaceRole(roleValueMap map[string]v1.SpaceRole, notExistedRoles []string) (err error) {
 	var roleNeedCreate []model.ProjectRole
 	for _, v := range notExistedRoles {
@@ -70,6 +105,8 @@ func (s *ProjectRolePermService) BatchCreateSpaceRole(roleValueMap map[string]v1
 			projectRole := model.ProjectRole{
 				Name:        consts.RoleType(roleValue.RoleValue),
 				DisplayName: roleValue.RoleName,
+				Description: roleValue.Remark,
+				Source:      consts.RoleSourceLy,
 			}
 			roleNeedCreate = append(roleNeedCreate, projectRole)
 		}

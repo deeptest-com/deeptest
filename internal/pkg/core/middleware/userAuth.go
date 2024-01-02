@@ -46,6 +46,7 @@ func init() {
 		"/upload",
 		"/mocks",
 		"/api/v1/message/receiveMcsApprovalData",
+		"/api/v1/init/initdb",
 	}
 }
 

@@ -55,7 +55,7 @@ func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint) (ret []s
 		return
 	}
 
-	if config.CONFIG.System.SysEnv == "ly" {
+	if config.CONFIG.System.SysEnv == "ly" && !isAdminUser {
 		ret, err = s.RemoteService.GetRoleMenus(string(projectRole.Name))
 	} else {
 		ret, err = s.ProjectMenuRepo.GetRoleMenuCodeList(projectRole.ID)

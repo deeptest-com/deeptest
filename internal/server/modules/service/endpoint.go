@@ -147,9 +147,11 @@ func (s *EndpointService) Copy(id, categoryId uint, version string) (res uint, e
 
 	endpoint, _ := s.EndpointRepo.GetAll(id, version)
 	s.removeIds(&endpoint)
-	endpoint.Title += "_copy"
-	if categoryId == 0 {
+
+	if categoryId != 0 {
 		endpoint.CategoryId = int64(categoryId)
+	} else { //复制目录而复制的接口不重命名
+		endpoint.Title += "_copy"
 	}
 	err = s.EndpointRepo.SaveAll(&endpoint)
 	return endpoint.ID, err

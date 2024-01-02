@@ -240,13 +240,13 @@ func (c *CategoryCtrl) Move(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{}
 // @Router	/api/v1/categories/copy/{id}	[get]
 func (c *CategoryCtrl) Copy(ctx iris.Context) {
-	targetId, err := ctx.Params().GetInt("targetId")
+	targetId, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.CategoryService.Copy(targetId)
+	err = c.CategoryService.Copy(uint(targetId), 0)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}

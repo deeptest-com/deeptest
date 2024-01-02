@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -291,9 +292,15 @@ func (r *CategoryRepo) GetRootNode(projectId uint, typ serverConsts.CategoryDisc
 	return
 }
 
-func (r *CategoryRepo) CopySelf(id int) (category model.Category, err error) {
+func (r *CategoryRepo) CopySelf(id, newParentId int) (category model.Category, err error) {
 	category, err = r.Get(id)
 	category.ID = 0
+	if newParentId != 0 {
+		category.ParentId = newParentId
+	} else { // 复制的第一个节点重命名
+		category.Name = fmt.Sprintf("%s_copy", category.Name)
+	}
+	_, category.Ordr = r.UpdateOrder(serverConsts.After, id, category.Type, category.ProjectId)
 	err = r.Save(&category)
 
 	return category, err

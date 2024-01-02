@@ -172,31 +172,31 @@ func (s *CategoryService) mountCountOnNode(root *v1.Category, data map[int64]int
 	return root.Count
 }
 
-func (s *CategoryService) Copy(targetId, newParentId uint) (err error) {
+func (s *CategoryService) Copy(targetId, newParentId, userId uint, username string) (err error) {
 
 	category, err := s.CategoryRepo.CopySelf(int(targetId), int(newParentId))
 	if err != nil {
 		return err
 	}
 
-	err = s.copyDataByCategoryId(category.Type, targetId, category.ID)
+	err = s.copyDataByCategoryId(category.Type, targetId, category.ID, userId, username)
 	if err != nil {
 		return
 	}
 
-	go s.copyChildren(targetId, category.ID)
+	go s.copyChildren(targetId, category.ID, userId, username)
 
 	return
 }
 
-func (s *CategoryService) copyChildren(parentId, newParentId uint) (err error) {
+func (s *CategoryService) copyChildren(parentId, newParentId, userId uint, username string) (err error) {
 	children, err := s.CategoryRepo.GetChildren(parentId)
 	if err != nil {
 		return err
 	}
 
 	for _, child := range children {
-		err = s.Copy(child.ID, newParentId)
+		err = s.Copy(child.ID, newParentId, userId, username)
 		if err != nil {
 			return err
 		}
@@ -205,10 +205,10 @@ func (s *CategoryService) copyChildren(parentId, newParentId uint) (err error) {
 	return err
 }
 
-func (s *CategoryService) copyDataByCategoryId(typ serverConsts.CategoryDiscriminator, targetId, categoryId uint) (err error) {
+func (s *CategoryService) copyDataByCategoryId(typ serverConsts.CategoryDiscriminator, targetId, categoryId, userId uint, username string) (err error) {
 	switch typ {
 	case serverConsts.EndpointCategory:
-		err = s.EndpointService.CopyDataByCategoryId(targetId, categoryId)
+		err = s.EndpointService.CopyDataByCategoryId(targetId, categoryId, userId, username)
 	}
 
 	return err

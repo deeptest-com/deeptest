@@ -257,7 +257,10 @@ func (c *EndpointCtrl) Develop(ctx iris.Context) {
 func (c *EndpointCtrl) Copy(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(uint(id)))
-	res, err := c.EndpointService.Copy(uint(id), 0, version)
+
+	userId := multi.GetUserId(ctx)
+	userName := multi.GetUsername(ctx)
+	res, err := c.EndpointService.Copy(uint(id), 0, userId, userName, version)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 	} else {

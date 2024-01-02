@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/snowlyg/multi"
 
 	"github.com/kataras/iris/v12"
 )
@@ -246,7 +247,10 @@ func (c *CategoryCtrl) Copy(ctx iris.Context) {
 		return
 	}
 
-	err = c.CategoryService.Copy(uint(targetId), 0)
+	userId := multi.GetUserId(ctx)
+	userName := multi.GetUsername(ctx)
+
+	err = c.CategoryService.Copy(uint(targetId), 0, userId, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	}

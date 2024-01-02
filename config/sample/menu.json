@@ -60,56 +60,56 @@
     "title":"环境管理",
     "path":"/:projectNameAbbr/project-setting/environment",
     "type":"menu",
-    "parent":"project-setting"
+    "parent":"p-setting-api"
   },
   {
     "code":"p-setting-api-datapool",
     "title":"数据池",
     "path":"/:projectNameAbbr/project-setting/data-pool",
     "type":"menu",
-    "parent":"project-setting"
+    "parent":"p-setting-api"
   },
   {
     "code":"p-setting-api-service",
     "title":"服务管理",
     "path":"/:projectNameAbbr/project-setting/service-setting",
     "type":"menu",
-    "parent":"project-setting"
+    "parent":"p-setting-api"
   },
   {
     "code":"p-setting-api-members",
     "title":"成员管理",
     "path":"/:projectNameAbbr/project-setting/members",
     "type":"menu",
-    "parent":"project-setting"
+    "parent":"p-setting-api"
   },
   {
     "code":"p-setting-api-mock",
     "title":"Mock设置",
     "path":"/:projectNameAbbr/project-setting/mock",
     "type":"menu",
-    "parent":"project-setting"
+    "parent":"p-setting-api"
   },
   {
     "code":"p-setting-api-jslib",
     "title":"自定义脚本库设置",
     "path":"/:projectNameAbbr/project-setting/jslib",
     "type":"menu",
-    "parent":"project-setting"
+    "parent":"p-setting-api"
   },
   {
     "code":"p-setting-api-dbconn",
     "title":"数据库连接设置",
     "path":"/:projectNameAbbr/project-setting/dbconn",
     "type":"menu",
-    "parent":"project-setting"
+    "parent":"p-setting-api"
   },
   {
     "code":"p-setting-api-autosync",
     "title":"自动同步",
     "path":"/:projectNameAbbr/project-setting/swaggerSync",
     "type":"menu",
-    "parent":"project-setting"
+    "parent":"p-setting-api"
   },
   {
     "code":"endpoint-add-interface",

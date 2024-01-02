@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
@@ -649,9 +650,12 @@ func (r *UserRepo) GetUsersNotExistedInProject(projectId uint) (ret []serverDoma
 		userIdsExisted = append(userIdsExisted, v.UserId)
 	}
 
-	err = r.DB.Model(&model.SysUser{}).
-		Where("id NOT IN (?)", userIdsExisted).
-		Find(&ret).Error
+	db := r.DB.Model(&model.SysUser{}).
+		Where("id NOT IN (?)", userIdsExisted)
+	if config.CONFIG.System.SysEnv == "ly" {
+		db = db.Where("username != ?", serverConsts.AdminUserName)
+	}
+	err = db.Find(&ret).Error
 	return
 }
 

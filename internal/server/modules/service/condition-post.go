@@ -83,7 +83,7 @@ func (s *PostConditionService) ResetForCase(endpointInterfaceId, debugInterfaceI
 		return
 	}
 
-	err = s.PostConditionRepo.CloneAll(debugInterfaceId, endpointInterfaceId, debugInterfaceId, usedBy, usedBy, false)
+	err = s.PostConditionRepo.CloneAll(debugInterfaceId, endpointInterfaceId, debugInterfaceId, usedBy, usedBy, "false")
 
 	return
 }

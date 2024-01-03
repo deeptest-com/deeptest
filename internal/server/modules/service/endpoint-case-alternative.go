@@ -149,8 +149,8 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 	})
 
 	if req.BaseCaseId > 0 {
-		s.PreConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, false)
-		s.PostConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, false)
+		s.PreConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, "false")
+		s.PostConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, "false")
 	}
 
 	return
@@ -188,7 +188,7 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 
 		name := s.getName(val)
 
-		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, name, req.CreateUserId, req.CreateUserName, true)
+		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, name, 0, 0, req.CreateUserId, req.CreateUserName, "true")
 		if err1 != nil {
 			err = err1
 			return
@@ -222,8 +222,8 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 
 func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	// copy new case
-	newEndpointCase, err := s.EndpointCaseService.Copy(req.BaseId, "多参数异常",
-		req.CreateUserId, req.CreateUserName, true)
+	newEndpointCase, err := s.EndpointCaseService.Copy(req.BaseId, "多参数异常", 0, 0,
+		req.CreateUserId, req.CreateUserName, "true")
 
 	s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
 		"case_type": consts.CaseAlternative,

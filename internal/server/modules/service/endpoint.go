@@ -163,7 +163,7 @@ func (s *EndpointService) Copy(id, categoryId, userId uint, username string, ver
 	}
 
 	//TODO 复制备选用例
-	//err = s.copyCases(id, endpoint.ID)
+	err = s.copyCases(id, endpoint.ID, userId, username)
 
 	return endpoint.ID, err
 }
@@ -798,15 +798,23 @@ func (s *EndpointService) CopyDataByCategoryId(targetId, categoryId, userId uint
 	return
 }
 
-func (s *EndpointService) copyCases(endpointId, newEndpointId uint) (err error) {
-	cases, err := s.EndpointCaseRepo.List(endpointId)
+func (s *EndpointService) copyCases(endpointId, newEndpointId uint, userId uint, username string) (err error) {
+	cases, err := s.EndpointCaseRepo.ListByCaseType(endpointId, []consts.CaseType{consts.CaseBenchmark, consts.CaseDefault})
 	if err != nil {
 		return err
 	}
 
 	for _, item := range cases {
 		endpointCase, _ := s.EndpointCaseRepo.Get(item.ID)
-		s.EndpointCaseService.Copy(int(item.ID), endpointCase.Name, 0, "", true)
+		newEndpointCase, err := s.EndpointCaseService.Copy(int(item.ID), endpointCase.Name, newEndpointId, 0, userId, username, "all")
+		if err != nil {
+			return err
+		}
+
+		err = s.EndpointCaseService.CopyChildrenCases(item.ID, newEndpointCase.ID, newEndpointId, userId, username)
+		if err != nil {
+			return err
+		}
 	}
 
 	return

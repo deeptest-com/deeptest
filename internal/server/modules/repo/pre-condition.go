@@ -79,19 +79,21 @@ func (r *PreConditionRepo) Save(condition *model.DebugPreCondition) (err error) 
 }
 
 func (r *PreConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint,
-	dictUsedBy, srcUsedBy consts.UsedBy, forAlternativeCase bool) (err error) {
+	dictUsedBy, srcUsedBy consts.UsedBy, forAlternativeCase string) (err error) {
 
-	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, srcUsedBy, fmt.Sprintf("%t", forAlternativeCase))
+	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, srcUsedBy, forAlternativeCase)
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
 		srcCondition.ID = 0
 		srcCondition.DebugInterfaceId = distDebugInterfaceId
 		srcCondition.UsedBy = dictUsedBy
-		srcCondition.IsForBenchmarkCase = false
 
-		if srcDebugInterfaceId == distDebugInterfaceId { // clone to benchmark
-			srcCondition.IsForBenchmarkCase = true
+		if forAlternativeCase != "all" { //从接口定义导致的复制用例，默认按照之前的类型
+			srcCondition.IsForBenchmarkCase = false
+			if srcDebugInterfaceId == distDebugInterfaceId { // clone to benchmark
+				srcCondition.IsForBenchmarkCase = true
+			}
 		}
 
 		r.Save(&srcCondition)

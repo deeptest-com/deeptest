@@ -170,7 +170,7 @@ func (s *EndpointService) Copy(id, categoryId, userId uint, username string, ver
 		return
 	}
 
-	err = s.copyMockExpect(id, endpoint.ID)
+	err = s.copyMockExpect(id, endpoint.ID, username)
 	if err != nil {
 		return
 	}
@@ -830,14 +830,14 @@ func (s *EndpointService) copyCases(endpointId, newEndpointId uint, userId uint,
 	return
 }
 
-func (s *EndpointService) copyMockExpect(endpointId, newEndpointId uint) (err error) {
+func (s *EndpointService) copyMockExpect(endpointId, newEndpointId uint, username string) (err error) {
 	mockExpects, err := s.EndpointMockExpectRepo.ListByEndpointId(endpointId)
 	if err != nil {
 		return
 	}
 
 	for _, item := range mockExpects {
-		_, err = s.EndpointMockExpectService.Copy(item.ID, newEndpointId)
+		_, err = s.EndpointMockExpectService.Copy(item.ID, newEndpointId, username)
 		if err != nil {
 			return
 		}

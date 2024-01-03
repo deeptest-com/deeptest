@@ -30,13 +30,15 @@ func (s *EndpointMockExpectService) Save(req model.EndpointMockExpect) (expectId
 	return
 }
 
-func (s *EndpointMockExpectService) Copy(expectId, endpointId uint) (id uint, err error) {
+func (s *EndpointMockExpectService) Copy(expectId, endpointId uint, username string) (id uint, err error) {
 	expectDetail, err := s.GetDetail(expectId)
 	if err != nil {
 		return
 	}
 
 	s.InitExpectId(&expectDetail, endpointId)
+	expectDetail.CreateUser = username
+	expectDetail.UpdateUser = ""
 
 	id, err = s.Save(expectDetail)
 

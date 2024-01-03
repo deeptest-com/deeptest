@@ -5,6 +5,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -500,6 +501,10 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 		Where("m.project_id = ?", projectId)
 	if req.Keywords != "" {
 		db = db.Where("sys_user.username LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+
+	if config.CONFIG.System.SysEnv == "ly" {
+		db = db.Where("sys_user.username != ?", serverConsts.AdminUserName)
 	}
 
 	var count int64

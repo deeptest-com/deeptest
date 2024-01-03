@@ -85,17 +85,18 @@ type EndpointVersionReq struct {
 }
 
 type ImportEndpointDataReq struct {
-	ServeId       uint                `json:"serveId" validate:"required"`    //服务ID
-	DriverType    convert.DriverType  `json:"driverType" validate:"required"` //接口数据来源
-	CategoryId    int64               `json:"categoryId"`                     //所属分类
-	DataSyncType  consts.DataSyncType `json:"dataSyncType"`                   //数据同步方式
-	OpenUrlImport bool                `json:"openUrlImport"`                  //开启url导入
-	FilePath      string              `json:"filePath" validate:"required"`
-	ProjectId     uint                `json:"projectId"`
-	UserId        uint                `json:"userId"`
-	SourceType    consts.SourceType   `json:"sourceType"`
-	ClassCode     string              `json:"classCode"`     //模型类名
-	FunctionCodes []string            `json:"functionCodes"` //要导入的方法
+	ServeId          uint                `json:"serveId" validate:"required"`    //服务ID
+	DriverType       convert.DriverType  `json:"driverType" validate:"required"` //接口数据来源
+	CategoryId       int64               `json:"categoryId"`                     //所属分类
+	DataSyncType     consts.DataSyncType `json:"dataSyncType"`                   //数据同步方式
+	OpenUrlImport    bool                `json:"openUrlImport"`                  //开启url导入
+	FilePath         string              `json:"filePath" validate:"required"`
+	ProjectId        uint                `json:"projectId"`
+	UserId           uint                `json:"userId"`
+	SourceType       consts.SourceType   `json:"sourceType"`
+	ClassCode        string              `json:"classCode"`     //模型类名
+	FunctionCodes    []string            `json:"functionCodes"` //要导入的方法
+	AddServicePrefix bool                `json:"addServicePrefix"`
 }
 
 type BatchUpdateReq struct {

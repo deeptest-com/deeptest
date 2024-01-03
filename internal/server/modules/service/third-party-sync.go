@@ -449,7 +449,11 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointD
 			continue
 		}
 
-		path := "/" + functionDetail.ServiceCode + "/" + req.ClassCode + "/" + function
+		//path := "/" + functionDetail.ServiceCode + "/" + req.ClassCode + "/" + function
+		path := "/" + req.ClassCode + "/" + function
+		if req.AddServicePrefix {
+			path = "/" + functionDetail.ServiceCode + path
+		}
 		title := req.ClassCode + "-" + functionDetail.Code
 
 		endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, req.ProjectId, path, req.ServeId, req.CategoryId)

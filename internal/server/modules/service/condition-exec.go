@@ -9,11 +9,9 @@ import (
 )
 
 type ExecConditionService struct {
-	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
-	PostConditionRepo *repo.PostConditionRepo `inject:""`
-	ExtractorRepo     *repo.ExtractorRepo     `inject:""`
-	CheckpointRepo    *repo.CheckpointRepo    `inject:""`
-	DatabaseOptRepo   *repo.DatabaseOptRepo   `inject:""`
+	ExtractorRepo   *repo.ExtractorRepo   `inject:""`
+	CheckpointRepo  *repo.CheckpointRepo  `inject:""`
+	DatabaseOptRepo *repo.DatabaseOptRepo `inject:""`
 
 	ScriptRepo         *repo.ScriptRepo         `inject:""`
 	ResponseDefineRepo *repo.ResponseDefineRepo `inject:""`
@@ -32,18 +30,18 @@ func (s *ExecConditionService) SavePreConditionResult(invokeId,
 				continue
 			}
 
-			scriptBase.InvokeId = invokeId
+			s.dealwithScriptResult(scriptBase, invokeId,
+				debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, usedBy)
 
-			s.ScriptRepo.UpdateResult(scriptBase)
-			s.ScriptRepo.CreateLog(scriptBase)
-
-			for _, settings := range scriptBase.VariableSettings {
-				value := valueUtils.InterfaceToStr(settings.Value)
-
-				s.ShareVarService.Save(settings.Name, value, settings.ValueType,
-					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
-					consts.Public, usedBy)
+		} else if condition.Type == consts.ConditionTypeDatabase {
+			var databaseOptBase domain.DatabaseOptBase
+			json.Unmarshal(condition.Raw, &databaseOptBase)
+			if databaseOptBase.Disabled {
+				continue
 			}
+
+			s.dealwithDbOptResult(databaseOptBase, invokeId,
+				debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, usedBy)
 		}
 	}
 
@@ -55,23 +53,35 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 	postConditions []domain.InterfaceExecCondition) (err error) {
 
 	for _, condition := range postConditions {
-		if condition.Type == consts.ConditionTypeExtractor {
+		if condition.Type == consts.ConditionTypeScript {
+			var scriptBase domain.ScriptBase
+			json.Unmarshal(condition.Raw, &scriptBase)
+			if scriptBase.Disabled {
+				continue
+			}
+
+			s.dealwithScriptResult(scriptBase, invokeId,
+				debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, usedBy)
+
+		} else if condition.Type == consts.ConditionTypeDatabase {
+			var databaseOptBase domain.DatabaseOptBase
+			json.Unmarshal(condition.Raw, &databaseOptBase)
+			if databaseOptBase.Disabled {
+				continue
+			}
+
+			s.dealwithDbOptResult(databaseOptBase, invokeId,
+				debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, usedBy)
+
+		} else if condition.Type == consts.ConditionTypeExtractor {
 			var extractorBase domain.ExtractorBase
 			json.Unmarshal(condition.Raw, &extractorBase)
 			if extractorBase.Disabled {
 				continue
 			}
 
-			extractorBase.InvokeId = invokeId
-
-			s.ExtractorRepo.UpdateResult(extractorBase)
-			s.ExtractorRepo.CreateLog(extractorBase)
-
-			if extractorBase.ResultStatus == consts.Pass {
-				s.ShareVarService.Save(extractorBase.Variable, extractorBase.Result, extractorBase.ResultType,
-					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
-					extractorBase.Scope, usedBy)
-			}
+			s.dealwithExtractorResult(extractorBase, invokeId,
+				debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, usedBy)
 
 		} else if condition.Type == consts.ConditionTypeCheckpoint {
 			var checkpointBase domain.CheckpointBase
@@ -80,47 +90,7 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 				continue
 			}
 
-			checkpointBase.InvokeId = invokeId
-
-			s.CheckpointRepo.UpdateResult(checkpointBase)
-			s.CheckpointRepo.CreateLog(checkpointBase)
-
-		} else if condition.Type == consts.ConditionTypeScript {
-			var scriptBase domain.ScriptBase
-			json.Unmarshal(condition.Raw, &scriptBase)
-			if scriptBase.Disabled {
-				continue
-			}
-
-			scriptBase.InvokeId = invokeId
-
-			s.ScriptRepo.UpdateResult(scriptBase)
-			s.ScriptRepo.CreateLog(scriptBase)
-
-			for _, settings := range scriptBase.VariableSettings {
-				value := valueUtils.InterfaceToStr(settings.Value)
-
-				s.ShareVarService.Save(settings.Name, value, settings.ValueType,
-					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
-					consts.Public, usedBy)
-			}
-		} else if condition.Type == consts.ConditionTypeDatabase {
-			var databaseOptBase domain.DatabaseOptBase
-			json.Unmarshal(condition.Raw, &databaseOptBase)
-			if databaseOptBase.Disabled {
-				continue
-			}
-
-			databaseOptBase.InvokeId = invokeId
-
-			s.DatabaseOptRepo.UpdateResult(databaseOptBase)
-			s.DatabaseOptRepo.CreateLog(databaseOptBase)
-
-			if databaseOptBase.ResultStatus == consts.Pass {
-				s.ShareVarService.Save(databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
-					invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
-					databaseOptBase.Scope, usedBy)
-			}
+			s.dealwithCheckoutResult(checkpointBase, invokeId)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			var responseDefineBase domain.ResponseDefineBase
@@ -129,12 +99,80 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 				continue
 			}
 
-			responseDefineBase.InvokeId = invokeId
-
-			s.ResponseDefineRepo.UpdateResult(responseDefineBase)
-			s.ResponseDefineRepo.CreateLog(responseDefineBase)
+			s.dealwithResponseDefineResult(responseDefineBase, invokeId)
 		}
 	}
+
+	return
+}
+
+func (s *ExecConditionService) dealwithScriptResult(scriptBase domain.ScriptBase, invokeId,
+	debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, usedBy consts.UsedBy) (err error) {
+	scriptBase.InvokeId = invokeId
+
+	s.ScriptRepo.UpdateResult(scriptBase)
+	s.ScriptRepo.CreateLog(scriptBase)
+
+	for _, settings := range scriptBase.VariableSettings {
+		value := valueUtils.InterfaceToStr(settings.Value)
+
+		s.ShareVarService.Save(settings.Name, value, settings.ValueType,
+			invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
+			consts.Public, usedBy)
+	}
+
+	return
+}
+
+func (s *ExecConditionService) dealwithDbOptResult(databaseOptBase domain.DatabaseOptBase, invokeId,
+	debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, usedBy consts.UsedBy) (err error) {
+
+	databaseOptBase.InvokeId = invokeId
+
+	s.DatabaseOptRepo.UpdateResult(databaseOptBase)
+	s.DatabaseOptRepo.CreateLog(databaseOptBase)
+
+	if databaseOptBase.ResultStatus == consts.Pass {
+		s.ShareVarService.Save(databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
+			invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
+			databaseOptBase.Scope, usedBy)
+	}
+
+	return
+}
+
+func (s *ExecConditionService) dealwithExtractorResult(extractorBase domain.ExtractorBase, invokeId,
+	debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, usedBy consts.UsedBy) (err error) {
+
+	extractorBase.InvokeId = invokeId
+
+	s.ExtractorRepo.UpdateResult(extractorBase)
+	s.ExtractorRepo.CreateLog(extractorBase)
+
+	if extractorBase.ResultStatus == consts.Pass {
+		s.ShareVarService.Save(extractorBase.Variable, extractorBase.Result, extractorBase.ResultType,
+			invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
+			extractorBase.Scope, usedBy)
+	}
+
+	return
+}
+
+func (s *ExecConditionService) dealwithCheckoutResult(checkpointBase domain.CheckpointBase, invokeId uint) (err error) {
+	checkpointBase.InvokeId = invokeId
+
+	s.CheckpointRepo.UpdateResult(checkpointBase)
+	s.CheckpointRepo.CreateLog(checkpointBase)
+
+	return
+}
+
+func (s *ExecConditionService) dealwithResponseDefineResult(responseDefineBase domain.ResponseDefineBase, invokeId uint) (err error) {
+
+	responseDefineBase.InvokeId = invokeId
+
+	s.ResponseDefineRepo.UpdateResult(responseDefineBase)
+	s.ResponseDefineRepo.CreateLog(responseDefineBase)
 
 	return
 }

@@ -103,7 +103,7 @@ func gets(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) (
 	resp, err := client.Do(httpReq)
 	if err != nil {
 		wrapperErrInResp(consts.ServiceUnavailable.Int(), "请求错误", err.Error(), &ret)
-		_logUtils.Error(err.Error())
+		//_logUtils.Error(err.Error())
 		return
 	}
 
@@ -231,7 +231,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 	resp, err := client.Do(httpReq)
 	if err != nil {
 		wrapperErrInResp(consts.ServiceUnavailable.Int(), "请求错误", err.Error(), &ret)
-		_logUtils.Error(err.Error())
+		//_logUtils.Error(err.Error())
 		return
 	}
 

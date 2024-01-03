@@ -19,8 +19,7 @@ type EndpointCaseService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
-	PreConditionRepo      *repo.PreConditionRepo      `inject:""`
-	PostConditionRepo     *repo.PostConditionRepo     `inject:""`
+	ConditionRepo         *repo.ConditionRepo         `inject:""`
 	CategoryRepo          *repo.CategoryRepo          `inject:""`
 
 	EndpointService       *EndpointService       `inject:""`
@@ -111,8 +110,7 @@ func (s *EndpointCaseService) Copy(id int, newNamePrefix string, userId uint, us
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
 	// clone conditions
-	s.PreConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy, forAlternativeCase)
-	s.PostConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy, forAlternativeCase)
+	s.ConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy, forAlternativeCase)
 
 	// save case
 	po.ProjectId = endpoint.ProjectId

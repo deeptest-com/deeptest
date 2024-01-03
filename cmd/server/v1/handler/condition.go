@@ -9,18 +9,18 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type PreConditionCtrl struct {
-	PreConditionService *service.PreConditionService `inject:""`
-	ScriptService       *service.ScriptService       `inject:""`
+type ConditionCtrl struct {
+	ConditionService *service.ConditionService `inject:""`
 	BaseCtrl
 }
 
-// GetScript
-func (c *PreConditionCtrl) GetScript(ctx iris.Context) {
+// List
+func (c *ConditionCtrl) List(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
+	category := consts.ConditionCategory(ctx.URLParam("category"))
 	usedBy := ctx.URLParam("usedBy")
-	isForBenchmarkCase, err := ctx.URLParamBool("isForBenchmarkCase")
+	src := consts.ConditionSrc(ctx.URLParam("conditionSrc"))
 
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -34,7 +34,8 @@ func (c *PreConditionCtrl) GetScript(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	data, err := c.PreConditionService.GetScript(uint(debugInterfaceId), uint(endpointInterfaceId), consts.UsedBy(usedBy), isForBenchmarkCase)
+	data, err := c.ConditionService.List(uint(debugInterfaceId), uint(endpointInterfaceId),
+		category, consts.UsedBy(usedBy), src)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -44,15 +45,15 @@ func (c *PreConditionCtrl) GetScript(ctx iris.Context) {
 }
 
 // Create 添加
-func (c *PreConditionCtrl) Create(ctx iris.Context) {
-	condition := model.DebugPreCondition{}
+func (c *ConditionCtrl) Create(ctx iris.Context) {
+	condition := model.DebugCondition{}
 	err := ctx.ReadJSON(&condition)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.PreConditionService.Create(&condition)
+	err = c.ConditionService.Create(&condition)
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -64,14 +65,14 @@ func (c *PreConditionCtrl) Create(ctx iris.Context) {
 }
 
 // Delete 删除
-func (c *PreConditionCtrl) Delete(ctx iris.Context) {
+func (c *ConditionCtrl) Delete(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.PreConditionService.Delete(uint(id))
+	err = c.ConditionService.Delete(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -81,14 +82,14 @@ func (c *PreConditionCtrl) Delete(ctx iris.Context) {
 }
 
 // Disable 禁用
-func (c *PreConditionCtrl) Disable(ctx iris.Context) {
+func (c *ConditionCtrl) Disable(ctx iris.Context) {
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.PreConditionService.Disable(uint(id))
+	err = c.ConditionService.Disable(uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -98,7 +99,7 @@ func (c *PreConditionCtrl) Disable(ctx iris.Context) {
 }
 
 // Move 移动
-func (c *PreConditionCtrl) Move(ctx iris.Context) {
+func (c *ConditionCtrl) Move(ctx iris.Context) {
 	var req serverDomain.ConditionMoveReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -106,7 +107,7 @@ func (c *PreConditionCtrl) Move(ctx iris.Context) {
 		return
 	}
 
-	err = c.PreConditionService.Move(req)
+	err = c.ConditionService.Move(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -115,11 +116,11 @@ func (c *PreConditionCtrl) Move(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
-func (c *PreConditionCtrl) ResetForCase(ctx iris.Context) {
+func (c *ConditionCtrl) ResetForCase(ctx iris.Context) {
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 
-	err = c.PreConditionService.ResetForCase(uint(endpointInterfaceId), uint(debugInterfaceId))
+	err = c.ConditionService.ResetForCase(uint(endpointInterfaceId), uint(debugInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

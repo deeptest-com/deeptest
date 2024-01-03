@@ -200,12 +200,15 @@ func defineJsFuncs(execUuid string) (err error) {
 	err = execRuntime.Set("sendRequest", func(data goja.Value, cb func(interface{}, interface{})) {
 		req := gojaUtils.GenRequest(data, execRuntime)
 
+		errOfCallbackParam := ""
+
 		resp, err2 := Invoke(&req)
 		if err2 != nil {
-			AppendGojaLogs(execUuid, jsErrMsg(err2.Error(), "sendRequest", false))
+			// AppendGojaLogs(execUuid, jsErrMsg(err2.Error(), "sendRequest", false))
+			errOfCallbackParam = jsErrMsg(err2.Error(), "sendRequest", false)
 		}
 
-		cb(err2, resp)
+		cb(errOfCallbackParam, resp)
 	})
 
 	// log

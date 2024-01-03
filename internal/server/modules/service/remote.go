@@ -21,16 +21,12 @@ func (s *RemoteService) LoginByOauth(req v1.LoginByOauthReq, baseUrl string) (re
 		return
 	}
 
+	headers := s.getLcHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
 		Body:     string(body),
-		Headers: &[]domain.Header{
-			{
-				Name:  "Tenant-Id",
-				Value: "0",
-			},
-		},
+		Headers:  &headers,
 	}
 
 	resp, err := httpHelper.Post(httpReq)
@@ -68,10 +64,12 @@ func (s *RemoteService) GetTokenFromCode(req v1.GetTokenFromCodeReq, baseUrl str
 		return
 	}
 
+	headers := s.getLcHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
 		Body:     string(body),
+		Headers:  &headers,
 	}
 
 	resp, err := httpHelper.Post(httpReq)
@@ -109,11 +107,7 @@ func (s *RemoteService) FindClassByServiceCode(req v1.FindClassByServiceCodeReq,
 		return
 	}
 
-	headers := make([]domain.Header, 0)
-	headers = append(headers, domain.Header{
-		Name:  "Token",
-		Value: token,
-	})
+	headers := s.getLcHeaders(token)
 
 	httpReq := domain.BaseRequest{
 		Url:      url,
@@ -157,7 +151,7 @@ func (s *RemoteService) GetFunctionsByClass(req v1.GetFunctionsByClassReq, token
 		return
 	}
 
-	headers := make([]domain.Header, 0)
+	headers := s.getLcHeaders(token)
 	headers = append(headers, domain.Header{
 		Name:  "Token",
 		Value: token,
@@ -205,7 +199,7 @@ func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token
 		return
 	}
 
-	headers := make([]domain.Header, 0)
+	headers := s.getLcHeaders(token)
 	headers = append(headers, domain.Header{
 		Name:  "Token",
 		Value: token,
@@ -248,12 +242,7 @@ func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token
 func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string, baseUrl string) (ret []v1.GetFunctionDetailsByClassResData, err error) {
 	url := fmt.Sprintf("%s/levault/meta/metaClassMethod/metaGetClassMessages", baseUrl)
 
-	headers := make([]domain.Header, 0)
-	headers = append(headers, domain.Header{
-		Name:  "Token",
-		Value: token,
-	})
-
+	headers := s.getLcHeaders(token)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -290,6 +279,25 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 	}
 
 	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) getLcHeaders(token string) (headers []domain.Header) {
+	headers = []domain.Header{
+		{
+			Name:  "Tenant-Id",
+			Value: "1632931640315338752", //TODO 做saas后可以考虑提到配置文件里
+		},
+		{
+			Name:  "Ds-Tenant-Id",
+			Value: "0",
+		},
+		{
+			Name:  "Token",
+			Value: token,
+		},
+	}
 
 	return
 }

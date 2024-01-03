@@ -27,22 +27,25 @@ import (
 )
 
 type EndpointService struct {
-	EndpointRepo             *repo.EndpointRepo          `inject:""`
-	ServeRepo                *repo.ServeRepo             `inject:""`
-	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
-	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
-	UserRepo                 *repo.UserRepo              `inject:""`
-	CategoryRepo             *repo.CategoryRepo          `inject:""`
-	DiagnoseInterfaceService *DiagnoseInterfaceService   `inject:""`
-	EndpointTagRepo          *repo.EndpointTagRepo       `inject:""`
-	EndpointTagService       *EndpointTagService         `inject:""`
-	ServeService             *ServeService               `inject:""`
-	MessageService           *MessageService             `inject:""`
-	ThirdPartySyncService    *ThirdPartySyncService      `inject:""`
-	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
-	EnvironmentRepo          *repo.EnvironmentRepo       `inject:""`
-	EndpointCaseService      *EndpointCaseService        `inject:""`
-	EndpointCaseRepo         *repo.EndpointCaseRepo      `inject:""`
+	EndpointRepo              *repo.EndpointRepo           `inject:""`
+	ServeRepo                 *repo.ServeRepo              `inject:""`
+	EndpointInterfaceRepo     *repo.EndpointInterfaceRepo  `inject:""`
+	ServeServerRepo           *repo.ServeServerRepo        `inject:""`
+	UserRepo                  *repo.UserRepo               `inject:""`
+	CategoryRepo              *repo.CategoryRepo           `inject:""`
+	DiagnoseInterfaceService  *DiagnoseInterfaceService    `inject:""`
+	EndpointTagRepo           *repo.EndpointTagRepo        `inject:""`
+	EndpointTagService        *EndpointTagService          `inject:""`
+	ServeService              *ServeService                `inject:""`
+	MessageService            *MessageService              `inject:""`
+	ThirdPartySyncService     *ThirdPartySyncService       `inject:""`
+	DebugInterfaceRepo        *repo.DebugInterfaceRepo     `inject:""`
+	EnvironmentRepo           *repo.EnvironmentRepo        `inject:""`
+	EndpointCaseService       *EndpointCaseService         `inject:""`
+	EndpointCaseRepo          *repo.EndpointCaseRepo       `inject:""`
+	EndpointMockExpectRepo    *repo.EndpointMockExpectRepo `inject:""`
+	EndpointMockExpectService *EndpointMockExpectService   `inject:""`
+	EndpointMockScriptService *EndpointMockScriptService   `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -162,8 +165,15 @@ func (s *EndpointService) Copy(id, categoryId, userId uint, username string, ver
 		return
 	}
 
-	//TODO 复制备选用例
 	err = s.copyCases(id, endpoint.ID, userId, username)
+	if err != nil {
+		return
+	}
+
+	err = s.copyMockExpect(id, endpoint.ID)
+	if err != nil {
+		return
+	}
 
 	return endpoint.ID, err
 }
@@ -815,6 +825,27 @@ func (s *EndpointService) copyCases(endpointId, newEndpointId uint, userId uint,
 		if err != nil {
 			return err
 		}
+	}
+
+	return
+}
+
+func (s *EndpointService) copyMockExpect(endpointId, newEndpointId uint) (err error) {
+	mockExpects, err := s.EndpointMockExpectRepo.ListByEndpointId(endpointId)
+	if err != nil {
+		return
+	}
+
+	for _, item := range mockExpects {
+		_, err = s.EndpointMockExpectService.Copy(item.ID, newEndpointId)
+		if err != nil {
+			return
+		}
+	}
+
+	err = s.EndpointMockScriptService.Copy(endpointId, newEndpointId)
+	if err != nil {
+		return
 	}
 
 	return

@@ -45,6 +45,10 @@ func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data _domain.Page
 		db = db.Where("username LIKE ?", fmt.Sprintf("%s%%", req.UserName))
 	}
 
+	if config.CONFIG.System.SysEnv == "ly" {
+		db = db.Where("username != ?", serverConsts.AdminUserName)
+	}
+
 	err = db.Count(&count).Error
 	if err != nil {
 		logUtils.Errorf("获取用户总数错误", zap.String("错误:", err.Error()))

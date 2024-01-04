@@ -35,6 +35,8 @@ func (s *ProjectRolePermService) GetRoleFromOther() (data []model.ProjectRole, e
 		return
 	}
 
+	spaceRoles = s.DealSpaceRoles(spaceRoles)
+
 	allRoleArr, spaceRoleValueMap, err := s.GetAllRoleValueMap(spaceRoles)
 	if err != nil {
 		return
@@ -46,6 +48,16 @@ func (s *ProjectRolePermService) GetRoleFromOther() (data []model.ProjectRole, e
 	}
 
 	data = s.GetRoleListFromOther(spaceRoles)
+
+	return
+}
+
+func (s *ProjectRolePermService) DealSpaceRoles(spaceRoles []v1.SpaceRole) (res []v1.SpaceRole) {
+	for _, v := range spaceRoles {
+		if v.RoleValue != "space-visitor" {
+			res = append(res, v)
+		}
+	}
 
 	return
 }

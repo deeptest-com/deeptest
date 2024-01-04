@@ -38,6 +38,7 @@ type ProjectRepo struct {
 	ScenarioInterfaceRepo      *ScenarioInterfaceRepo      `inject:""`
 	EndpointCaseRepo           *EndpointCaseRepo           `inject:""`
 	DebugInterfaceRepo         *DebugInterfaceRepo         `inject:""`
+	BaseRepo                   *BaseRepo                   `inject:""`
 }
 
 func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
@@ -152,7 +153,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 		return
 	}
 	if req.AdminId != userId {
-		err = r.AddProjectMember(project.ID, req.AdminId, consts.Admin)
+		err = r.AddProjectMember(project.ID, req.AdminId, r.BaseRepo.GetAdminRoleName())
 		if err != nil {
 			logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 			bizErr = _domain.SystemErr
@@ -169,7 +170,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bool) (err error) {
 
 	// create project member
-	err = r.AddProjectMember(projectId, userId, consts.Admin)
+	err = r.AddProjectMember(projectId, userId, r.BaseRepo.GetAdminRoleName())
 	if err != nil {
 		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 		return
@@ -638,7 +639,7 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	var count int64
 	db := r.DB.Model(&model.ProjectMemberAudit{})
 	if req.Type == 0 {
-		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, consts.Admin)
+		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, r.BaseRepo.GetAdminRoleName())
 		db = db.Where("project_id in ? and status = 0", projectIds)
 	} else {
 		db = db.Where("apply_user_id = ?", req.ApplyUserId)
@@ -1036,7 +1037,7 @@ func (r *ProjectRepo) GetAuditUsers(projectId uint) (users []model.SysUser, err 
 	err = r.DB.Model(model.SysUser{}).
 		Joins("LEFT JOIN biz_project_member m ON m.user_id=sys_user.id").
 		Joins("LEFT JOIN biz_project_role r ON m.project_role_id=r.id").
-		Where("m.project_id=? and r.name=? and not m.deleted and not m.disabled", projectId, consts.Admin).
+		Where("m.project_id=? and r.name=? and not m.deleted and not m.disabled", projectId, r.BaseRepo.GetAdminRoleName()).
 		Find(&users).Error
 
 	return

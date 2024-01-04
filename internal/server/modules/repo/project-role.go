@@ -12,13 +12,15 @@ import (
 type ProjectRoleRepo struct {
 	DB          *gorm.DB     `inject:""`
 	ProjectRepo *ProjectRepo `inject:""`
+	BaseRepo    *BaseRepo    `inject:""`
 }
 
 func (r *ProjectRoleRepo) GetAdminRecord() (projectRole model.ProjectRole, err error) {
-	db := r.DB.Model(&model.ProjectRole{}).Where("name= ?", consts.Admin).Order("id ASC")
+	db := r.DB.Model(&model.ProjectRole{}).Where("name= ?", r.BaseRepo.GetAdminRoleName()).Order("id ASC")
 	err = db.First(&projectRole).Error
 	return
 }
+
 func (r *ProjectRoleRepo) GetUserRecord() (projectRole model.ProjectRole, err error) {
 	db := r.DB.Model(&model.ProjectRole{}).Where("name='user'").Order("id ASC")
 	err = db.First(&projectRole).Error

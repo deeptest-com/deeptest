@@ -621,6 +621,7 @@ const (
 	Tester         RoleType = "tester"
 	Developer      RoleType = "developer"
 	ProductManager RoleType = "product_manager"
+	SpaceAdmin     RoleType = "space-admin"
 )
 
 func (e RoleType) String() string {

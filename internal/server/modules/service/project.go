@@ -24,6 +24,7 @@ type ProjectService struct {
 	UserRepo        *repo.UserRepo        `inject:""`
 	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
 	MessageRepo     *repo.MessageRepo     `inject:""`
+	BaseRepo        *repo.BaseRepo        `inject:""`
 	RemoteService   *RemoteService        `inject:""`
 	MessageService  *MessageService       `inject:""`
 	UserService     *UserService          `inject:""`
@@ -142,7 +143,7 @@ func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleN
 	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
 	messageContentByte, _ := json.Marshal(messageContent)
 
-	adminRole, err := s.ProjectRoleRepo.FindByName(consts.Admin)
+	adminRole, err := s.ProjectRoleRepo.FindByName(s.BaseRepo.GetAdminRoleName())
 	if err != nil {
 		return
 	}
@@ -325,7 +326,7 @@ func (s *ProjectService) CreateProjectForThirdParty(project v1.ProjectInfo) (pro
 			}
 		}
 
-		err = s.ProjectRepo.AddProjectMember(projectId, spaceAdminId, consts.Admin)
+		err = s.ProjectRepo.AddProjectMember(projectId, spaceAdminId, s.BaseRepo.GetAdminRoleName())
 	}
 
 	return

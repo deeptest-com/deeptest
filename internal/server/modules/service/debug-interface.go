@@ -1,14 +1,20 @@
 package service
 
 import (
+	"fmt"
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
+	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/jinzhu/copier"
+	"net/url"
 )
 
 type DebugInterfaceService struct {
@@ -65,6 +71,12 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 }
 
 func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agentExec.InterfaceExecObj, err error) {
+	ret, err = s.loadDetail(loadReq, true)
+
+	return
+}
+
+func (s *DebugInterfaceService) loadDetail(loadReq domain.DebugInfo, withConditions bool) (ret agentExec.InterfaceExecObj, err error) {
 	ret.DebugData, _ = s.Load(loadReq)
 
 	// load default environment for user
@@ -76,10 +88,12 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agent
 		}
 	}
 
-	ret.PreConditions, _ = s.ConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPre)
-	ret.PostConditions, _ = s.ConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPost)
+	if withConditions {
+		ret.PreConditions, _ = s.ConditionRepo.ListTo(
+			ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPre)
+		ret.PostConditions, _ = s.ConditionRepo.ListTo(
+			ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPost)
+	}
 
 	ret.ExecScene.ShareVars = ret.DebugData.EnvDataToView.ShareVars // for execution
 	ret.DebugData.EnvDataToView = nil
@@ -481,6 +495,46 @@ func (s *DebugInterfaceService) MergeGlobalParams(globalParams []domain.GlobalPa
 			}
 		}
 	}
+
+	return
+}
+
+func (s *DebugInterfaceService) LoadCurl(req serverDomain.DiagnoseCurlLoadReq) (ret string, err error) {
+	loadReq := domain.DebugInfo{
+		EndpointInterfaceId: req.EndpointInterfaceId,
+		CaseInterfaceId:     req.CaseId,
+		DiagnoseInterfaceId: req.DiagnoseId,
+
+		EnvironmentId: req.EnvironmentId,
+		ProjectId:     req.ProjectId,
+		UserId:        req.UserId,
+		UsedBy:        req.UsedBy,
+	}
+
+	execObj, err := s.loadDetail(loadReq, false)
+
+	curlObj := curlHelper.New()
+
+	// replace variables
+	uuid := fmt.Sprintf("load_curl_on_server_side_user%d_%s", req.UserId, stringUtils.Uuid())
+	agentExec.SetExecScene(uuid, execObj.ExecScene)
+	agentExec.ReplaceVariables(&execObj.DebugData.BaseRequest, uuid)
+
+	// gen url
+	reqUrl := execObj.DebugData.Url
+	if loadReq.DiagnoseInterfaceId == 0 {
+		reqUrl = _httpUtils.CombineUrls(execObj.DebugData.BaseUrl, reqUrl)
+	}
+	curlObj.ParsedURL, err = url.Parse(reqUrl)
+
+	// gen bytes for form file item
+	//if execObj.DebugData.BodyFormData != nil {
+	//	for index, item := range *execObj.DebugData.BodyFormData {
+	//		if item.Type == consts.FormDataTypeFile {
+	//			(*execObj.DebugData.BodyFormData)[index].Value = filepath.Join(consts.WorkDir, item.Value)
+	//		}
+	//	}
+	//}
 
 	return
 }

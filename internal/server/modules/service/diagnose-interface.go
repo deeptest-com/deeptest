@@ -142,6 +142,73 @@ func (s *DiagnoseInterfaceService) CopyDebugDataValueFromRequest(interf *model.D
 	return
 }
 
+func (s *DiagnoseInterfaceService) ImportInterfaces(req serverDomain.DiagnoseInterfaceImportReq) (ret model.DiagnoseInterface, err error) {
+	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
+
+	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
+		parent, _ = s.DiagnoseInterfaceRepo.Get(parent.ParentId)
+	}
+
+	for _, interfaceId := range req.InterfaceIds {
+		ret, err = s.createInterfaceFromDefine(interfaceId, req.CreateBy, parent)
+	}
+
+	return
+}
+
+func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId int, createBy uint, parent model.DiagnoseInterface) (
+	ret model.DiagnoseInterface, err error) {
+
+	endpointInterface, err := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
+	if err != nil {
+		return
+	}
+
+	// convert or clone a debug interface obj
+	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(uint(endpointInterfaceId))
+	debugData.UsedBy = "" // mark src usedBy for pre/post-condition loading, empty for no pre/post conditions
+
+	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
+	//debugData.ServeId = parent.ServeId
+
+	if debugData.ServerId == 0 {
+		server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+		debugData.ServerId = server.ID
+	}
+
+	server, _ := s.ServeServerRepo.Get(debugData.ServerId)
+	debugData.BaseUrl = "" // no need to bind to env in debug page
+	debugData.Url = _httpUtils.CombineUrls(server.Url, debugData.Url)
+
+	debugData.UsedBy = consts.DiagnoseDebug
+	srcDebugInterfaceId := debugData.DebugInterfaceId
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId, "")
+
+	// save test interface
+	diagnoseInterface := model.DiagnoseInterface{
+		Title:            endpointInterface.Name,
+		Type:             serverConsts.DiagnoseInterfaceTypeInterface,
+		Ordr:             s.DiagnoseInterfaceRepo.GetMaxOrder(parent.ID),
+		Method:           debugData.Method,
+		DebugInterfaceId: debugInterface.ID,
+		ParentId:         parent.ID,
+		ServeId:          parent.ServeId,
+		ProjectId:        parent.ProjectId,
+		CreatedBy:        createBy,
+	}
+	s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
+
+	// update diagnose_interface_id
+	values := map[string]interface{}{
+		"diagnose_interface_id": diagnoseInterface.ID,
+	}
+	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
+
+	ret = diagnoseInterface
+
+	return
+}
+
 func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImportReq) (ret model.DiagnoseInterface, err error) {
 	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
 	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
@@ -197,73 +264,6 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 		ServeId:          parent.ServeId,
 		ProjectId:        parent.ProjectId,
 		CreatedBy:        req.CreateBy,
-	}
-	s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
-
-	// update diagnose_interface_id
-	values := map[string]interface{}{
-		"diagnose_interface_id": diagnoseInterface.ID,
-	}
-	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
-
-	ret = diagnoseInterface
-
-	return
-}
-
-func (s *DiagnoseInterfaceService) ImportInterfaces(req serverDomain.DiagnoseInterfaceImportReq) (ret model.DiagnoseInterface, err error) {
-	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
-
-	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
-		parent, _ = s.DiagnoseInterfaceRepo.Get(parent.ParentId)
-	}
-
-	for _, interfaceId := range req.InterfaceIds {
-		ret, err = s.createInterfaceFromDefine(interfaceId, req.CreateBy, parent)
-	}
-
-	return
-}
-
-func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId int, createBy uint, parent model.DiagnoseInterface) (
-	ret model.DiagnoseInterface, err error) {
-
-	endpointInterface, err := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
-	if err != nil {
-		return
-	}
-
-	// convert or clone a debug interface obj
-	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(uint(endpointInterfaceId))
-	debugData.UsedBy = "" // mark src usedBy for pre/post-condition loading, empty for no pre/post conditions
-
-	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
-	//debugData.ServeId = parent.ServeId
-
-	if debugData.ServerId == 0 {
-		server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
-		debugData.ServerId = server.ID
-	}
-
-	server, _ := s.ServeServerRepo.Get(debugData.ServerId)
-	debugData.BaseUrl = "" // no need to bind to env in debug page
-	debugData.Url = _httpUtils.CombineUrls(server.Url, debugData.Url)
-
-	debugData.UsedBy = consts.DiagnoseDebug
-	srcDebugInterfaceId := debugData.DebugInterfaceId
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId, "")
-
-	// save test interface
-	diagnoseInterface := model.DiagnoseInterface{
-		Title:            endpointInterface.Name,
-		Type:             serverConsts.DiagnoseInterfaceTypeInterface,
-		Ordr:             s.DiagnoseInterfaceRepo.GetMaxOrder(parent.ID),
-		Method:           debugData.Method,
-		DebugInterfaceId: debugInterface.ID,
-		ParentId:         parent.ID,
-		ServeId:          parent.ServeId,
-		ProjectId:        parent.ProjectId,
-		CreatedBy:        createBy,
 	}
 	s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
 

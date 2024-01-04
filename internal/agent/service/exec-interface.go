@@ -66,7 +66,7 @@ func PreRequest(req *domain.DebugData, execUuid string) (originalReqUri string, 
 	// gen url
 	originalReqUri = agentExec.ReplacePathParams(req.Url, *req.PathParams)
 
-	notUseBaseUrl := execUtils.IsUseBaseUrl(req.UsedBy, req.ProcessorInterfaceSrc)
+	notUseBaseUrl := execUtils.IsNotUseBaseUrl(req.UsedBy, req.ProcessorInterfaceSrc)
 	if notUseBaseUrl {
 		req.BaseRequest.Url = originalReqUri
 	} else {

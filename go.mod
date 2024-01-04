@@ -1,6 +1,6 @@
 module github.com/aaronchen2k/deeptest
 
-go 1.17
+go 1.19
 
 require (
 	github.com/474420502/requests v1.35.0

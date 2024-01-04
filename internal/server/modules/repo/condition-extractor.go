@@ -13,8 +13,8 @@ import (
 )
 
 type ExtractorRepo struct {
-	DB                *gorm.DB           `inject:""`
-	PostConditionRepo *PostConditionRepo `inject:""`
+	DB            *gorm.DB       `inject:""`
+	ConditionRepo *ConditionRepo `inject:""`
 }
 
 func (r *ExtractorRepo) Get(id uint) (extractor model.DebugConditionExtractor, err error) {
@@ -67,7 +67,7 @@ func (r *ExtractorRepo) UpdateDesc(po *model.DebugConditionExtractor) (err error
 		"desc": desc,
 	}
 
-	err = r.DB.Model(&model.DebugPostCondition{}).
+	err = r.DB.Model(&model.DebugCondition{}).
 		Where("id=?", po.ConditionId).
 		Updates(values).Error
 

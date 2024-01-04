@@ -257,7 +257,10 @@ func (c *EndpointCtrl) Develop(ctx iris.Context) {
 func (c *EndpointCtrl) Copy(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(uint(id)))
-	res, err := c.EndpointService.Copy(uint(id), version)
+
+	userId := multi.GetUserId(ctx)
+	userName := multi.GetUsername(ctx)
+	res, err := c.EndpointService.Copy(uint(id), 0, userId, userName, version)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 	} else {
@@ -526,7 +529,7 @@ func (c *EndpointCtrl) ListFunctionsByThirdPartyClass(ctx iris.Context) {
 
 	data, err := c.ThirdPartySyncService.ListFunctionsByClass(req.FilePath, req.ClassCode)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ErrThirdPartyFunctions.Code, Msg: err.Error()})
 		return
 	}
 

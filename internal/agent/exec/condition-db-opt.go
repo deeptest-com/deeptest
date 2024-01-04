@@ -18,20 +18,23 @@ import (
 )
 
 func ExecDbOpt(opt *domain.DatabaseOptBase) (err error) {
-	if opt.Type == "" {
+	if opt.Type == "" || opt.DbConnId == 0 || opt.Sql == "" {
+		opt.ResultStatus = consts.Fail
+		opt.Result = "数据库操作未初始化"
+
 		return
 	}
 
 	if opt.DatabaseConnIsDisabled {
 		opt.ResultStatus = consts.Fail
-		opt.Result = "Database Connection Is Disabled"
+		opt.Result = "数据库操作已禁用"
 		return
 	}
 
 	ok := _netUtils.Ping(opt.Host, opt.Port)
 	if !ok {
 		opt.ResultStatus = consts.Fail
-		opt.Result = "Database Connection Timeout"
+		opt.Result = "数据库连接超时"
 		return
 	}
 

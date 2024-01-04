@@ -62,29 +62,3 @@ func (c *CheckpointCtrl) Update(ctx iris.Context) {
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
-
-// Delete 删除
-// @Tags	检查点
-// @summary	删除检查点
-// @accept 	application/json
-// @Produce application/json
-// @Param	Authorization		header	string	true	"Authentication header"
-// @Param 	currProjectId		query	int		true	"当前项目ID"
-// @Param 	id					path	int		true	"检查点ID"
-// @success	200	{object}	_domain.Response
-// @Router	/api/v1/checkpoints/{id}	[delete]
-func (c *CheckpointCtrl) Delete(ctx iris.Context) {
-	id, err := ctx.Params().GetInt("id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	err = c.CheckpointService.Delete(uint(id))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-}

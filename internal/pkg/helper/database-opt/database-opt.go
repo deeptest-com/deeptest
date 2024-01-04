@@ -21,7 +21,7 @@ func GenResultMsg(po *domain.DatabaseOptBase) {
 		return
 	}
 
-	po.ResultMsg = fmt.Sprintf("%s", desc)
+	po.ResultMsg = fmt.Sprintf("%s成功", desc)
 
 	if po.JsonPath != "" && po.Variable != "" {
 		po.ResultMsg += fmt.Sprintf("，表达式%s提取变量%s为\"%s\"。", po.JsonPath, po.Variable, po.Result)

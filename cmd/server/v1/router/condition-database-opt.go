@@ -18,7 +18,6 @@ func (m *DatabaseOptModule) Party() module.WebModule {
 
 		index.Get("/{id:uint}", m.DatabaseOptCtrl.Get).Name = "数据库操作后置条件详情"
 		index.Put("/", m.DatabaseOptCtrl.Update).Name = "更新数据库操作后置条件"
-		index.Delete("/{id:uint}", m.DatabaseOptCtrl.Delete).Name = "删除数据库操作后置条件"
 	}
 
 	return module.NewModule("/databaseOpts", handler)

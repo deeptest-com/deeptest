@@ -18,7 +18,6 @@ func (m *ExtractorModule) Party() module.WebModule {
 
 		index.Get("/{id:uint}", m.ExtractorCtrl.Get).Name = "提取器详情"
 		index.Put("/", m.ExtractorCtrl.Update).Name = "更新提取器"
-		index.Delete("/{id:uint}", m.ExtractorCtrl.Delete).Name = "删除提取器"
 
 		index.Post("/quickCreate", m.ExtractorCtrl.QuickCreate).Name = "从代码编辑器快速创建提取器"
 

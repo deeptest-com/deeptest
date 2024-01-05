@@ -135,7 +135,7 @@ func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, sessio
 
 func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detail *map[string]interface{}, session *Session) (
 	interfaceStatus consts.ResultStatus, err error) {
-
+	interfaceStatus = processor.Result.ResultStatus
 	for _, condition := range entity.PostConditions {
 		if condition.Type == consts.ConditionTypeScript {
 			entity.DealwithScriptCondition(condition, &interfaceStatus, processor.ProjectId, &processor.Result.PostConditions,

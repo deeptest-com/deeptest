@@ -499,7 +499,12 @@ func (s *DebugInterfaceService) MergeGlobalParams(globalParams []domain.GlobalPa
 }
 
 func (s *DebugInterfaceService) LoadCurl(req serverDomain.DiagnoseCurlLoadReq) (ret string, err error) {
+	if req.EndpointId > 0 {
+		_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.InterfaceMethod)
+	}
+
 	loadReq := domain.DebugInfo{
+		DebugInterfaceId:    req.DebugInterfaceId,
 		EndpointInterfaceId: req.EndpointInterfaceId,
 		CaseInterfaceId:     req.CaseId,
 		DiagnoseInterfaceId: req.DiagnoseId,
@@ -604,7 +609,12 @@ func (s *DebugInterfaceService) genCurlCommand(execObj agentExec.InterfaceExecOb
 
 		command += fmt.Sprintf("%s", strings.Join(arr, " "))
 
-	} else {
+	} else if debugData.Method != consts.GET &&
+		debugData.Method != consts.DELETE &&
+		debugData.Method != consts.TRACE &&
+		debugData.Method != consts.OPTIONS &&
+		debugData.Method != consts.HEAD {
+
 		body := strings.ReplaceAll(debugData.Body, "\n", "")
 		command += fmt.Sprintf("-H 'Content-Type: %s' -d '%s' ", debugData.BodyType, body)
 

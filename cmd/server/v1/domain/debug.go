@@ -3,6 +3,12 @@ package serverDomain
 import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 
 type DiagnoseCurlLoadReq struct {
+	// from endpoint interface list
+	EndpointId      uint              `json:"endpointId"`
+	InterfaceMethod consts.HttpMethod `json:"interfaceMethod"`
+
+	// from debug page
+	DebugInterfaceId    uint `json:"debugInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"`
 	CaseId              uint `json:"caseId"`
 	DiagnoseId          uint `json:"diagnoseId"`

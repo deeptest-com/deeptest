@@ -6,15 +6,14 @@ import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
-	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
-	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/jinzhu/copier"
-	"net/url"
+	"strings"
 )
 
 type DebugInterfaceService struct {
@@ -513,19 +512,15 @@ func (s *DebugInterfaceService) LoadCurl(req serverDomain.DiagnoseCurlLoadReq) (
 
 	execObj, err := s.loadDetail(loadReq, false)
 
-	curlObj := curlHelper.New()
-
 	// replace variables
-	uuid := fmt.Sprintf("load_curl_on_server_side_user%d_%s", req.UserId, stringUtils.Uuid())
+	uuid := fmt.Sprintf("load_curl_on_server_side_user%d_%s", req.UserId, _stringUtils.Uuid())
 	agentExec.SetExecScene(uuid, execObj.ExecScene)
 	agentExec.ReplaceVariables(&execObj.DebugData.BaseRequest, uuid)
 
 	// gen url
-	reqUrl := execObj.DebugData.Url
 	if loadReq.DiagnoseInterfaceId == 0 {
-		reqUrl = _httpUtils.CombineUrls(execObj.DebugData.BaseUrl, reqUrl)
+		execObj.DebugData.Url = _httpUtils.CombineUrls(execObj.DebugData.BaseUrl, execObj.DebugData.Url)
 	}
-	curlObj.ParsedURL, err = url.Parse(reqUrl)
 
 	// gen bytes for form file item
 	//if execObj.DebugData.BodyFormData != nil {
@@ -536,5 +531,85 @@ func (s *DebugInterfaceService) LoadCurl(req serverDomain.DiagnoseCurlLoadReq) (
 	//	}
 	//}
 
+	// generate curl command
+	ret = s.genCurlCommand(execObj, uuid)
+
+	return
+}
+
+func (s *DebugInterfaceService) genCurlCommand(execObj agentExec.InterfaceExecObj, execUuid string) (ret string) {
+	debugData := execObj.DebugData
+
+	command := "curl -i -A '' "
+
+	// basic auth
+	if debugData.BasicAuth.Username != "" {
+		command += fmt.Sprintf("-u '%s:%s'",
+			debugData.BasicAuth.Username, debugData.BasicAuth.Password)
+	}
+
+	// method
+	command += fmt.Sprintf("-X %s ", debugData.Method)
+
+	// url param
+	arr := []string{}
+	for _, param := range *debugData.QueryParams {
+		if param.Name == "" {
+			continue
+		}
+		str := fmt.Sprintf("%s=%s", param.Name, param.Value)
+		//str = url.QueryEscape(str)
+		arr = append(arr, str)
+	}
+	command += fmt.Sprintf("'%s?%s' ", debugData.Url, strings.Join(arr, "&"))
+
+	// header
+	for _, header := range *debugData.Headers {
+		if header.Name == "" {
+			continue
+		}
+		command += fmt.Sprintf("-H '%s: %s' ", header.Name, header.Value)
+	}
+
+	// cookie
+	for _, cookie := range *debugData.Cookies {
+		if cookie.Name == "" {
+			continue
+		}
+		command += fmt.Sprintf("-b '%s=%s' ", cookie.Name, cookie.Value)
+	}
+
+	// body
+	if debugData.BodyType == consts.ContentTypeFormData {
+		arr := []string{}
+		for _, item := range *debugData.BodyFormData {
+			if item.Name == "" || item.Value == "" {
+				continue
+			}
+			str := fmt.Sprintf("-F %s=%s", item.Name, item.Value)
+			arr = append(arr, str)
+		}
+
+		command += fmt.Sprintf("%s", strings.Join(arr, " "))
+
+	} else if debugData.BodyType == consts.ContentTypeFormUrlencoded {
+		arr := []string{}
+		for _, item := range *debugData.BodyFormUrlencoded {
+			if item.Name == "" || item.Value == "" {
+				continue
+			}
+			str := fmt.Sprintf("--data-urlencode %s=%s", item.Name, item.Value)
+			arr = append(arr, str)
+		}
+
+		command += fmt.Sprintf("%s", strings.Join(arr, " "))
+
+	} else {
+		body := strings.ReplaceAll(debugData.Body, "\n", "")
+		command += fmt.Sprintf("-H 'Content-Type: %s' -d '%s' ", debugData.BodyType, body)
+
+	}
+
+	ret = command
 	return
 }

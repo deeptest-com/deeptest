@@ -164,7 +164,6 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 	jar := genCookies(req)
 
-	reqBody := commUtils.CompressedJson(req.Body)
 	bodyType := req.BodyType
 
 	client := &http.Client{
@@ -179,7 +178,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 
 	formDataContentType := ""
 	if IsFormBody(bodyType) {
-		bodyFormData := genBodyFormData(req)
+		bodyFormData := GenBodyFormData(req)
 
 		formDataWriter, _ := MultipartEncoder(bodyFormData)
 		formDataContentType = MultipartContentType(formDataWriter)
@@ -187,12 +186,19 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 		dataBytes = formDataWriter.Payload.Bytes()
 
 	} else if IsFormUrlencodedBody(bodyType) {
-		bodyFormUrlencoded := genBodyFormUrlencoded(req)
+		bodyFormUrlencoded := GenBodyFormUrlencoded(req)
 		dataBytes = []byte(bodyFormUrlencoded)
 
 	} else if IsJsonBody(bodyType) {
 		// post json
+		reqBody := commUtils.CompressedJson(req.Body)
 		dataBytes = []byte(reqBody)
+		if err != nil {
+			return
+		}
+	} else {
+		// post string
+		dataBytes = []byte(req.Body)
 		if err != nil {
 			return
 		}

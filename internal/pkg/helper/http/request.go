@@ -197,7 +197,7 @@ func posts(req domain.BaseRequest, method consts.HttpMethod, readRespData bool) 
 			return
 		}
 	} else {
-		// post string
+		// post text
 		dataBytes = []byte(req.Body)
 		if err != nil {
 			return

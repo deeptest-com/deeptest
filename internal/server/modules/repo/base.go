@@ -2,6 +2,8 @@ package repo
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"gorm.io/gorm"
 )
@@ -110,5 +112,14 @@ func (r *BaseRepo) Save(id uint, entity interface{}) (err error) {
 	} else {
 		err = r.DB.Updates(entity).Error
 	}
+	return
+}
+
+func (r *BaseRepo) GetAdminRoleName() (roleName consts.RoleType) {
+	roleName = consts.Admin
+	if config.CONFIG.System.SysEnv == "ly" {
+		roleName = consts.SpaceAdmin
+	}
+
 	return
 }

@@ -21,6 +21,8 @@ func (m *RoleModule) Party() module.WebModule {
 		index.Post("/{id:uint}", m.RoleCtrl.UpdateRole).Name = "编辑角色"
 		index.Delete("/{id:uint}", m.RoleCtrl.DeleteRole).Name = "删除角色"
 		index.Get("/all", m.RoleCtrl.AllRoleList).Name = "无分页的角色列表"
+		index.Get("/getAuth", m.RoleCtrl.GetAuthByEnv).Name = "获取系统级别权限"
+
 	}
 	return module.NewModule("/roles", handler)
 }

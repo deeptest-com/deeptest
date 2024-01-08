@@ -25,6 +25,7 @@ type ProjectService struct {
 	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
 	MessageRepo     *repo.MessageRepo     `inject:""`
 	BaseRepo        *repo.BaseRepo        `inject:""`
+	IntegrationRepo *repo.IntegrationRepo `inject:""`
 	RemoteService   *RemoteService        `inject:""`
 	MessageService  *MessageService       `inject:""`
 	UserService     *UserService          `inject:""`
@@ -343,3 +344,38 @@ func (s *ProjectService) createSample(projectId uint) (err error) {
 	return err
 }
 */
+
+func (s *ProjectService) GetListWithRoleBySpace(spaceCode string) (res []v1.ProjectListWithRole, err error) {
+	return s.IntegrationRepo.GetProjectListWithRoleBySpace(spaceCode)
+}
+
+func (s *ProjectService) SaveSpaceRelatedProjects(spaceCode string, shortNames []string) (err error) {
+	err = s.IntegrationRepo.DeleteBySpaceCode(spaceCode)
+	if err != nil {
+		return
+	}
+
+	relations := make([]model.ProjectSpaceRel, 0)
+	for _, shortName := range shortNames {
+		relations = append(relations, model.ProjectSpaceRel{
+			SpaceCode:        spaceCode,
+			ProjectShortName: shortName,
+		})
+	}
+
+	err = s.IntegrationRepo.BatchCreateProjectSpaceRel(relations)
+	return
+}
+
+func (s *ProjectService) CheckProjectAndUserByName(shortName, username string) (project model.Project, userInProject bool, err error) {
+	user, err := s.UserRepo.GetByUserName(username)
+	if err != nil {
+		return
+	}
+
+	return s.CheckProjectAndUser(shortName, user.ID)
+}
+
+func (s *ProjectService) AllProjectList() (res []model.Project, err error) {
+	return s.ProjectRepo.ListAll()
+}

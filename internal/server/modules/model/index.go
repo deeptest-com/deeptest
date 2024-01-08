@@ -137,5 +137,8 @@ var (
 
 		&DebugInterfaceGlobalParam{},
 		&DebugInterfaceCookie{},
+
+		&ProjectProductRel{},
+		&ProjectSpaceRel{},
 	}
 )

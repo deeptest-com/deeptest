@@ -54,7 +54,7 @@ func (s *ProjectRolePermService) GetRoleFromOther() (data []model.ProjectRole, e
 
 func (s *ProjectRolePermService) DealSpaceRoles(spaceRoles []v1.SpaceRole) (res []v1.SpaceRole) {
 	//TODO 临时角色，后期要改
-	tmpSpaceRoleArr := []string{"space-admin", "general", "space-test-engineer", "space-server-engineer", "space-product-manager"}
+	tmpSpaceRoleArr := []string{"space-admin", "general", "space-test-engineer", "space-server-engineer", "space-web-engineer", "space-product-manager"}
 	for _, v := range spaceRoles {
 		if _commUtils.InArray(v.RoleValue, tmpSpaceRoleArr) {
 			res = append(res, v)

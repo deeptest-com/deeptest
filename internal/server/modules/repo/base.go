@@ -118,7 +118,7 @@ func (r *BaseRepo) Save(id uint, entity interface{}) (err error) {
 func (r *BaseRepo) GetAdminRoleName() (roleName consts.RoleType) {
 	roleName = consts.Admin
 	if config.CONFIG.System.SysEnv == "ly" {
-		roleName = consts.SpaceAdmin
+		roleName = consts.IntegrationAdmin
 	}
 
 	return

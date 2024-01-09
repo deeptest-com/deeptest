@@ -9,7 +9,7 @@ import (
 
 func OpenCheck() iris.Handler {
 	return func(ctx *context.Context) {
-		if ctx.Request().Header.Get("secret") != config.CONFIG.OpenApi.Secret {
+		if ctx.Request().Header.Get("appsecret") != config.CONFIG.OpenApi.AppSecret {
 			ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "非法请求"})
 			ctx.StopExecution()
 			return

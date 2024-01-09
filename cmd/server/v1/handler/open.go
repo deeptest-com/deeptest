@@ -14,7 +14,9 @@ type OpenCtrl struct {
 }
 
 func (c *OpenCtrl) AllProjectList(ctx iris.Context) {
-	data, err := c.ProjectService.AllProjectList()
+	username := ctx.URLParam("username")
+
+	data, err := c.ProjectService.AllProjectList(username)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

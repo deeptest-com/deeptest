@@ -17,7 +17,7 @@ type Config struct {
 	ThirdParty  ThirdParty  `mapstructure:"third-party" json:"third-party" yaml:"third-party"`
 	Mcs         Mcs         `mapstructure:"mcs" json:"mcs" yaml:"mcs"`
 	Environment Environment `mapstructure:"environment" json:"environment" yaml:"environment"`
-	OpenApi     OpenApi     `mapstructure:"open-api" json:"open-api" yaml:"open-api"`
+	OpenApi     OpenApi     `mapstructure:"openapi" json:"openapi" yaml:"openapi"`
 }
 
 type System struct {
@@ -91,5 +91,5 @@ type Environment struct {
 }
 
 type OpenApi struct {
-	Secret string `mapstructure:"secret" json:"secret" yaml:"secret"`
+	AppSecret string `mapstructure:"appsecret" json:"appsecret" yaml:"appsecret"`
 }

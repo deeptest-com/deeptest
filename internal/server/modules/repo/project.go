@@ -1095,3 +1095,13 @@ func (r *ProjectRepo) UpdateProjectSource(projectId uint, source serverConsts.Pr
 		Where("id = ?", projectId).Update("source", source).Error
 	return
 }
+
+func (r *ProjectRepo) ListByUsername(username string) (res []model.Project, err error) {
+	err = r.DB.Model(model.Project{}).
+		Joins("LEFT JOIN biz_project_member m ON biz_project.id=m.project_id").
+		Joins("LEFT JOIN sys_user u ON m.user_id=u.id").
+		Where("u.username = ?", username).
+		Where("not biz_project.disabled and not biz_project.deleted and not m.disabled and not m.deleted").
+		Find(&res).Error
+	return
+}

@@ -376,6 +376,6 @@ func (s *ProjectService) CheckProjectAndUserByName(shortName, username string) (
 	return s.CheckProjectAndUser(shortName, user.ID)
 }
 
-func (s *ProjectService) AllProjectList() (res []model.Project, err error) {
-	return s.ProjectRepo.ListAll()
+func (s *ProjectService) AllProjectList(username string) (res []model.Project, err error) {
+	return s.ProjectRepo.ListByUsername(username)
 }

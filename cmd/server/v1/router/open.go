@@ -13,12 +13,12 @@ type OpenModule struct {
 
 func (m *OpenModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
-		index.Use(middleware.OperationRecord(), middleware.OpenCheck())
+		index.Use(middleware.OpenCheck())
 		index.Get("/allProjectList", m.OpenCtrl.AllProjectList).Name = "所有项目列表"
 		index.Get("/getProjectsBySpace", m.OpenCtrl.GetProjectsBySpace).Name = "获取空间关联的项目列表"
 		index.Post("/saveSpaceRelatedProjects", m.OpenCtrl.SaveSpaceRelatedProjects).Name = "保存空间和项目的关系"
 
 	}
 
-	return module.NewModule("/open", handler)
+	return module.NewModule("/openApi", handler)
 }

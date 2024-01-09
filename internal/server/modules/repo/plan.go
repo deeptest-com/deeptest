@@ -17,11 +17,12 @@ import (
 )
 
 type PlanRepo struct {
-	DB             *gorm.DB `inject:""`
-	*BaseRepo      `inject:""`
-	ProjectRepo    *ProjectRepo    `inject:""`
-	UserRepo       *UserRepo       `inject:""`
-	PlanReportRepo *PlanReportRepo `inject:""`
+	DB                   *gorm.DB `inject:""`
+	*BaseRepo            `inject:""`
+	ProjectRepo          *ProjectRepo          `inject:""`
+	UserRepo             *UserRepo             `inject:""`
+	PlanReportRepo       *PlanReportRepo       `inject:""`
+	RelaPlanScenarioRepo *RelaPlanScenarioRepo `inject:""`
 }
 
 func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain.PageData, err error) {
@@ -361,7 +362,7 @@ func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId
 	}
 
 	scenarios := make([]*model.ScenarioDetail, 0)
-
+	req.Field, req.Order = "r.ordr", "asc"
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
 		Find(&scenarios).Error
@@ -454,4 +455,20 @@ func (r *PlanRepo) DeleteByCategoryIds(categoryIds []uint) (err error) {
 
 func (r *PlanRepo) UpdateCurrEnvId(id, currEnvId uint) error {
 	return r.DB.Model(&model.Plan{}).Where("id = ?", id).UpdateColumn("curr_env_id", currEnvId).Error
+}
+
+func (r *PlanRepo) MoveScenario(req v1.MoveReq) (err error) {
+	destination, err := r.RelaPlanScenarioRepo.Get(req.DestinationId)
+	if err != nil {
+		return
+	}
+
+	err = r.RelaPlanScenarioRepo.UpdateOrdrById(req.SourceId, destination.Ordr)
+	if err != nil {
+		return
+	}
+
+	err = r.RelaPlanScenarioRepo.IncreaseOrderAfter(req.DestinationId, req.PlanId)
+
+	return
 }

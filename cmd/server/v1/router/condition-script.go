@@ -18,7 +18,6 @@ func (m *ScriptModule) Party() module.WebModule {
 
 		index.Get("/{id:uint}", m.ScriptCtrl.Get).Name = "脚本详情"
 		index.Put("/", m.ScriptCtrl.Update).Name = "更新脚本"
-		index.Delete("/{id:uint}", m.ScriptCtrl.Delete).Name = "删除脚本"
 	}
 
 	return module.NewModule("/scripts", handler)

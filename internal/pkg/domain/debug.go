@@ -22,8 +22,9 @@ type DebugInfo struct {
 }
 
 type SubmitDebugResultRequest struct {
-	Request  DebugData     `json:"request"`
-	Response DebugResponse `json:"response"`
+	ResultStatus consts.ResultStatus
+	Request      DebugData     `json:"request"`
+	Response     DebugResponse `json:"response"`
 
 	PreConditions  []InterfaceExecCondition `json:"preConditions"`
 	PostConditions []InterfaceExecCondition `json:"postConditions"`

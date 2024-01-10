@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/snowlyg/multi"
 
 	"github.com/kataras/iris/v12"
 )
@@ -237,11 +238,38 @@ func (c *CategoryCtrl) BatchAddSchemaRoot(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-
 	err = c.CategoryService.BatchAddSchemaRoot(req.ProjectIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
+	}
+
+}
+
+// Copy 详情
+// @Tags	分类管理
+// @summary	复制分类
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization	header	string							true	"Authentication header"
+// @Param 	id				path	int								true	"分类ID"
+// @success	200	{object}	_domain.Response{}
+// @Router	/api/v1/categories/copy/{id}	[get]
+func (c *CategoryCtrl) Copy(ctx iris.Context) {
+	targetId, err := ctx.Params().GetInt("id")
+
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	userId := multi.GetUserId(ctx)
+	userName := multi.GetUsername(ctx)
+
+	err = c.CategoryService.Copy(uint(targetId), 0, userId, userName)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})

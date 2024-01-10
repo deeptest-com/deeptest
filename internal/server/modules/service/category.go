@@ -202,10 +202,6 @@ func (s *CategoryService) mountCountOnNode(root *v1.Category, data map[int64]int
 
 func (s *CategoryService) GetJoinedPath(typ serverConsts.CategoryDiscriminator, projectId, categoryId uint) (path string, err error) {
 	categories, err := s.CategoryRepo.ListByProject(typ, projectId)
-	if err != nil {
-		return
-	}
-
 	categoryIdParentMap := make(map[uint]uint)
 	categoryIdNameMap := make(map[uint]string)
 	for _, v := range categories {
@@ -224,7 +220,6 @@ func (s *CategoryService) GetJoinedPath(typ serverConsts.CategoryDiscriminator, 
 	if index != -1 {
 		path = path[index:]
 	}
-
 	return
 }
 
@@ -390,5 +385,49 @@ func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) (err error) {
 		_, _ = s.Create(createCategoryReq)
 	}
 	return
+
+}
+
+func (s *CategoryService) Copy(targetId, newParentId, userId uint, username string) (err error) {
+
+	category, err := s.CategoryRepo.CopySelf(int(targetId), int(newParentId))
+	if err != nil {
+		return err
+	}
+
+	err = s.copyDataByCategoryId(category.Type, targetId, category.ID, userId, username)
+
+	if err != nil {
+		return
+	}
+
+	go s.copyChildren(targetId, category.ID, userId, username)
+
+	return
+}
+
+func (s *CategoryService) copyChildren(parentId, newParentId, userId uint, username string) (err error) {
+	children, err := s.CategoryRepo.GetChildren(parentId)
+	if err != nil {
+		return err
+	}
+
+	for _, child := range children {
+		err = s.Copy(child.ID, newParentId, userId, username)
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (s *CategoryService) copyDataByCategoryId(typ serverConsts.CategoryDiscriminator, targetId, categoryId, userId uint, username string) (err error) {
+	switch typ {
+	case serverConsts.EndpointCategory:
+		err = s.EndpointService.CopyDataByCategoryId(targetId, categoryId, userId, username)
+	}
+
+	return err
 
 }

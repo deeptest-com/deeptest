@@ -176,7 +176,7 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 	return
 }
 
-//保存终端信息
+// 保存终端信息
 func (r *EndpointRepo) saveEndpoint(endpoint *model.Endpoint) (err error) {
 	err = r.Save(endpoint.ID, endpoint)
 	if err != nil {
@@ -216,7 +216,7 @@ func (r *EndpointRepo) saveEndpointVersion(endpoint *model.Endpoint) (err error)
 	return
 }
 
-//保存路径参数
+// 保存路径参数
 func (r *EndpointRepo) saveEndpointParams(endpointId uint, params []model.EndpointPathParam) (err error) {
 	err = r.removeEndpointParams(endpointId)
 	if err != nil {
@@ -240,7 +240,7 @@ func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
 	return
 }
 
-//保存接口信息
+// 保存接口信息
 func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version string, interfaces []model.EndpointInterface) (err error) {
 	interfaceIds := make([]uint, 0)
 	for _, v := range interfaces {
@@ -273,7 +273,7 @@ func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version 
 	return
 }
 
-//保存调试接口Url
+// 保存调试接口Url
 func (r *EndpointRepo) updateDebugInterfaceUrl(endpointId uint, url string) (err error) {
 	err = r.DB.Model(&model.DebugInterface{}).
 		Where("endpoint_id = ?", endpointId).
@@ -553,4 +553,9 @@ func (r *EndpointRepo) ChangeSnapShot(endpointId uint, snapshot string) (err err
 		UpdateColumn("snapshot", snapshot).Error
 
 	return
+}
+
+func (r *EndpointRepo) GetByCategoryId(categoryId uint) (endpoints []model.Endpoint, err error) {
+	err = r.DB.Where("category_id = ?", categoryId).Find(&endpoints).Error
+	return endpoints, err
 }

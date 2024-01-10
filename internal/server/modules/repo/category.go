@@ -410,3 +410,17 @@ func (r *CategoryRepo) GetRoot(typ serverConsts.CategoryDiscriminator, projectId
 	return
 
 }
+
+func (r *CategoryRepo) CopySelf(id, newParentId int) (category model.Category, err error) {
+	category, err = r.Get(id)
+	category.ID = 0
+	if newParentId != 0 {
+		category.ParentId = newParentId
+	} else { // 复制的第一个节点重命名
+		category.Name = fmt.Sprintf("%s_copy", category.Name)
+	}
+	_, category.Ordr = r.UpdateOrder(serverConsts.After, id, category.Type, category.ProjectId)
+	err = r.Save(&category)
+
+	return category, err
+}

@@ -41,6 +41,8 @@ type EndpointService struct {
 	ThirdPartySyncService    *ThirdPartySyncService      `inject:""`
 	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
 	EnvironmentRepo          *repo.EnvironmentRepo       `inject:""`
+	EndpointCaseService      *EndpointCaseService        `inject:""`
+	EndpointCaseRepo         *repo.EndpointCaseRepo      `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -143,12 +145,26 @@ func (s *EndpointService) Develop(id uint) (err error) {
 	return
 }
 
-func (s *EndpointService) Copy(id uint, version string) (res uint, err error) {
+func (s *EndpointService) Copy(id, categoryId, userId uint, username string, version string) (res uint, err error) {
 
 	endpoint, _ := s.EndpointRepo.GetAll(id, version)
 	s.removeIds(&endpoint)
-	endpoint.Title += "_copy"
+
+	if categoryId != 0 {
+		endpoint.CategoryId = int64(categoryId)
+	} else { //复制目录而复制的接口不重命名
+		endpoint.Title += "_copy"
+	}
+	endpoint.CreateUser = username
+	endpoint.UpdateUser = ""
 	err = s.EndpointRepo.SaveAll(&endpoint)
+	if err != nil {
+		return
+	}
+
+	//TODO 复制备选用例
+	//err = s.copyCases(id, endpoint.ID)
+
 	return endpoint.ID, err
 }
 
@@ -766,5 +782,35 @@ func (s *EndpointService) isEqualEndpoint(old, new model.Endpoint) bool {
 
 func (s *EndpointService) UpdateName(id uint, name string) (err error) {
 	err = s.EndpointRepo.UpdateName(id, name)
+	return
+}
+
+func (s *EndpointService) CopyDataByCategoryId(targetId, categoryId, userId uint, username string) (err error) {
+	endpoints, err := s.EndpointRepo.GetByCategoryId(targetId)
+	if err != nil {
+		return
+	}
+
+	for _, endpoint := range endpoints {
+		_, err = s.Copy(endpoint.ID, categoryId, userId, username, "v0.1.0")
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (s *EndpointService) copyCases(endpointId, newEndpointId uint) (err error) {
+	cases, err := s.EndpointCaseRepo.List(endpointId)
+	if err != nil {
+		return err
+	}
+
+	for _, item := range cases {
+		endpointCase, _ := s.EndpointCaseRepo.Get(item.ID)
+		s.EndpointCaseService.Copy(int(item.ID), endpointCase.Name, 0, "", true)
+	}
+
 	return
 }

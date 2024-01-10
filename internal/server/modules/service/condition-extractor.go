@@ -12,10 +12,10 @@ import (
 
 type ExtractorService struct {
 	ExtractorRepo *repo.ExtractorRepo `inject:""`
+	ConditionRepo *repo.ConditionRepo `inject:""`
 
-	PostConditionRepo    *repo.PostConditionRepo `inject:""`
-	PostConditionService *PostConditionService   `inject:""`
-	ShareVarService      *ShareVarService        `inject:""`
+	ConditionService *ConditionService `inject:""`
+	ShareVarService  *ShareVarService  `inject:""`
 }
 
 func (s *ExtractorService) Get(id uint) (extractor model.DebugConditionExtractor, err error) {
@@ -34,7 +34,9 @@ func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickC
 	config := req.Config
 
 	// create post-condition
-	condition := model.DebugPostCondition{}
+	condition := model.DebugCondition{
+		ConditionSrc: req.ConditionSrc,
+	}
 	copier.CopyWithOption(&condition, debugInfo, copier.Option{DeepCopy: true})
 
 	condition.EntityId = 0 // update later
@@ -42,16 +44,20 @@ func (s *ExtractorService) QuickCreate(req serverDomain.ExtractorConditionQuickC
 	condition.UsedBy = debugInfo.UsedBy
 	condition.Desc = extractorHelper.GenDesc(config.Variable, config.Src, config.Key, config.Type, config.Expression, "", "")
 
-	err = s.PostConditionRepo.Save(&condition)
+	err = s.ConditionRepo.Save(&condition)
 
 	// create extractor
-	var extractor model.DebugConditionExtractor
+	extractor := model.DebugConditionExtractor{
+		ExtractorBase: domain.ExtractorBase{
+			Src: consts.Body,
+		},
+	}
 	copier.CopyWithOption(&extractor, config, copier.Option{DeepCopy: true})
 	extractor.ConditionId = condition.ID
 
 	_, err = s.ExtractorRepo.Save(&extractor)
 
-	s.PostConditionRepo.UpdateEntityId(condition.ID, extractor.ID)
+	s.ConditionRepo.UpdateEntityId(condition.ID, extractor.ID)
 
 	return
 }
@@ -62,14 +68,8 @@ func (s *ExtractorService) Update(extractor *model.DebugConditionExtractor) (err
 	return
 }
 
-func (s *ExtractorService) Delete(reqId uint) (err error) {
-	err = s.ExtractorRepo.Delete(reqId)
-
-	return
-}
-
 func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugInfo) (variables []domain.Variable, err error) {
-	extractorConditions, err := s.PostConditionRepo.ListExtractor(req)
+	extractorConditions, err := s.ConditionRepo.ListExtractor(req)
 	var conditionIds1 []uint
 	for _, item := range extractorConditions {
 		conditionIds1 = append(conditionIds1, item.ID)
@@ -77,7 +77,7 @@ func (s *ExtractorService) ListExtractorVariableByInterface(req domain.DebugInfo
 	variables1, err := s.ExtractorRepo.ListExtractorVariableByConditions(conditionIds1)
 
 	var conditionIds2 []uint
-	dbOptConditions, err := s.PostConditionRepo.ListDbOpt(req)
+	dbOptConditions, err := s.ConditionRepo.ListDbOpt(req)
 	for _, item := range dbOptConditions {
 		conditionIds2 = append(conditionIds2, item.ID)
 	}

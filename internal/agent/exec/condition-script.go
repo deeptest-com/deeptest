@@ -13,10 +13,9 @@ import (
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
-	"log"
+	"github.com/kataras/iris/v12"
 	"path/filepath"
 	"reflect"
-	"strings"
 )
 
 func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (err error) {
@@ -28,28 +27,39 @@ func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (
 
 	SetGojaVariables(execUuid, []domain.ExecVariable{})
 
+	var logs []string
+
 	if scriptObj.Content == "" {
+		scriptObj.ResultStatus = consts.Pass
+		scriptObj.ResultMsg = ""
+		logs = append(logs, "")
+
 		return
-	}
-
-	SetGojaLogs(execUuid, nil)
-	resultVal, err := execRuntime.RunString(scriptObj.Content)
-
-	result := fmt.Sprintf("%v", resultVal)
-	if result == "undefined" {
-		result = "空"
-	}
-
-	output := strings.Join(GetGojaLogs(execUuid), "; ")
-
-	if err != nil {
-		scriptObj.ResultStatus = consts.Fail
-		scriptObj.Output = fmt.Sprintf("RESULT: %v; OUTPUT: %s; ERROR: %s", result, output, err.Error())
-		logUtils.Error(scriptObj.Output)
 
 	} else {
-		scriptObj.ResultStatus = consts.Pass
-		scriptObj.Output = fmt.Sprintf("%s", output)
+		SetGojaLogs(execUuid, nil)
+		resultVal, err := execRuntime.RunString(scriptObj.Content)
+
+		result := fmt.Sprintf("%v", resultVal)
+		if result == "undefined" {
+			result = "空"
+		}
+
+		logs = GetGojaLogs(execUuid)
+
+		if err != nil {
+			scriptObj.ResultStatus = consts.Fail
+			logs = append(logs, err.Error())
+		} else {
+			scriptObj.ResultStatus = consts.Pass
+		}
+	}
+
+	if logs != nil {
+		bytes, _ := json.Marshal(logs)
+		scriptObj.Output = string(bytes)
+	} else {
+		scriptObj.Output = ""
 	}
 
 	return
@@ -83,7 +93,7 @@ func InitJsRuntime(projectId uint, execUuid string) {
 	execRuntime.Set("dt", dt)
 
 	// import other custom libs
-	jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, 0, GetServerUrl(execUuid), GetServerToken(execUuid))
+	jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, projectId, GetServerUrl(execUuid), GetServerToken(execUuid))
 }
 
 func GetReqValueFromGoja(execUuid string) (err error) {
@@ -100,24 +110,33 @@ func GetRespValueFromGoja(execUuid string) (err error) {
 func defineJsFuncs(execUuid string) (err error) {
 	execRuntime, _ := GetGojaRuntime(execUuid)
 
+	/* START: called by js */
 	err = execRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
 		execScene := GetExecScene(execUuid)
 
 		rowIndex := getDatapoolRow(dpName, seq, execScene.Datapools, execUuid)
 
 		if execScene.Datapools[dpName] == nil {
-			ret = "DATAPOOL_NOT_FOUND: " + dpName
+			ret = consts.INVALID_VALUE
+			AppendGojaLogs(execUuid,
+				jsErrMsg("DATAPOOL_NOT_FOUND:"+dpName, "getDatapoolVariable", false))
 			return
 		}
 
 		if rowIndex > len(execScene.Datapools[dpName])-1 {
-			ret = "DATAPOOL_INDEX_OUT_OF_RANGE"
+			ret = consts.INVALID_VALUE
+			AppendGojaLogs(execUuid,
+				jsErrMsg("DATAPOOL_INDEX_OUT_OF_RANGE:"+dpName, "getDatapoolVariable", false))
 			return
 		}
 
 		ret = execScene.Datapools[dpName][rowIndex][field]
 		if ret == nil {
-			ret = "DATAPOOL_VARIABLE_NOT_FOUND: " + field
+			ret = consts.INVALID_VALUE
+
+			AppendGojaLogs(execUuid,
+				jsErrMsg("DATAPOOL_VARIABLE_NOT_FOUND:"+field+"@"+dpName, "getDatapoolVariable", false))
+			return
 		}
 
 		return
@@ -128,9 +147,24 @@ func defineJsFuncs(execUuid string) (err error) {
 		if GetCurrScenarioProcessor(execUuid) != nil {
 			scopeId = GetCurrScenarioProcessor(execUuid).ParentId
 		}
-		vari, _ := GetVariable(scopeId, name, execUuid)
+		vari, err := GetVariable(scopeId, name, execUuid)
+		if err != nil {
+			vari.Value = consts.INVALID_VALUE
 
-		vari.Value, _ = commUtils.ConvertValueForUse(vari.Value, vari.ValueType)
+			AppendGojaLogs(execUuid,
+				jsErrMsg(err.Error(), "getVariable", false))
+
+			return vari.Value
+		}
+
+		vari.Value, err = commUtils.ConvertValueForUse(vari.Value, vari.ValueType)
+		if err != nil {
+			vari.Value = consts.INVALID_VALUE
+			AppendGojaLogs(execUuid,
+				jsErrMsg(err.Error(), "getVariable", false))
+
+			return vari.Value
+		}
 
 		return vari.Value
 	})
@@ -143,6 +177,9 @@ func defineJsFuncs(execUuid string) (err error) {
 
 		if err == nil {
 			AppendGojaVariables(execUuid, ret)
+		} else {
+			AppendGojaLogs(execUuid,
+				jsErrMsg(err.Error(), "setVariable", false))
 		}
 
 		return
@@ -152,20 +189,10 @@ func defineJsFuncs(execUuid string) (err error) {
 		if GetCurrScenarioProcessor(execUuid) != nil {
 			scopeId = GetCurrScenarioProcessor(execUuid).ParentId
 		}
-		ClearVariable(scopeId, name, execUuid)
-	})
 
-	err = execRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
-		SetCurrRequest(execUuid, value)
-	})
-	err = execRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
-		if httpHelper.IsJsonResp(value) {
-			bytes, _ := json.Marshal(value.Data)
-			value.Content = string(bytes)
-			SetCurrResponse(execUuid, value)
-		} else {
-			value.Content = value.Data.(string)
-			SetCurrResponse(execUuid, value)
+		err := ClearVariable(scopeId, name, execUuid)
+		if err != nil {
+			AppendGojaLogs(execUuid, jsErrMsg(err.Error(), "clearVariable", false))
 		}
 	})
 
@@ -173,10 +200,15 @@ func defineJsFuncs(execUuid string) (err error) {
 	err = execRuntime.Set("sendRequest", func(data goja.Value, cb func(interface{}, interface{})) {
 		req := gojaUtils.GenRequest(data, execRuntime)
 
-		resp, err2 := Invoke(&req)
-		cb(err2, resp)
+		errOfCallbackParam := ""
 
-		log.Println("result")
+		resp, err2 := Invoke(&req)
+		if err2 != nil {
+			// AppendGojaLogs(execUuid, jsErrMsg(err2.Error(), "sendRequest", false))
+			errOfCallbackParam = jsErrMsg(err2.Error(), "sendRequest", false)
+		}
+
+		cb(errOfCallbackParam, resp)
 	})
 
 	// log
@@ -195,6 +227,23 @@ func defineJsFuncs(execUuid string) (err error) {
 			AppendGojaLogs(execUuid, string(bytes))
 		}
 	})
+	/* END: called by js */
+
+	/* START: called by go */
+	err = execRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
+		SetCurrRequest(execUuid, value)
+	})
+	err = execRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
+		if httpHelper.IsJsonResp(value) {
+			bytes, _ := json.Marshal(value.Data)
+			value.Content = string(bytes)
+			SetCurrResponse(execUuid, value)
+		} else {
+			value.Content = value.Data.(string)
+			SetCurrResponse(execUuid, value)
+		}
+	})
+	/* END: called by go */
 
 	return
 }
@@ -240,4 +289,22 @@ func defineGoFuncs(execUuid string) {
 	}
 
 	err = execRuntime.ExportTo(execRuntime.Get("_setData"), &_setValueFunc)
+}
+
+func jsErrMsg(msg string, category string, success bool) (ret string) {
+	mp := iris.Map{
+		"success":  success,
+		"category": category,
+		"msg":      msg,
+	}
+
+	bytes, err := json.Marshal(mp)
+
+	if err != nil {
+		return err.Error()
+	}
+
+	ret = string(bytes)
+
+	return
 }

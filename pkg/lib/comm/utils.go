@@ -357,3 +357,14 @@ func Sha256(src string) string {
 	res := hex.EncodeToString(m.Sum(nil))
 	return res
 }
+
+func UintArrToStr(arr []uint) (res string) {
+	for _, item := range arr {
+		if res != "" {
+			res += fmt.Sprintf(",%v", item)
+		} else {
+			res += fmt.Sprintf("%v", item)
+		}
+	}
+	return
+}

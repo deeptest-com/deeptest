@@ -77,6 +77,7 @@ var (
 	ErrUserNotInProject    = BizErr{10600, "不是该项目的成员"}
 	ErrProjectNotExist     = BizErr{10700, "项目不存在"}
 	ErrImportSourceDeleted = BizErr{10800, "导入来源已删除"}
+	ErrThirdPartyFunctions = BizErr{10900, "获取消息体失败"}
 )
 
 func (e BizErr) Error() string {

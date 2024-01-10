@@ -525,7 +525,7 @@ func (c *EndpointCtrl) ListFunctionsByThirdPartyClass(ctx iris.Context) {
 
 	data, err := c.ThirdPartySyncService.ListFunctionsByClass(req.FilePath, req.ClassCode)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ErrThirdPartyFunctions.Code, Msg: err.Error()})
 		return
 	}
 

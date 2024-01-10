@@ -287,8 +287,8 @@ const (
 type ConditionSrc string
 
 const (
-	ConditionSrcPre  ConditionSrc = "pre"
-	ConditionSrcPost ConditionSrc = "post"
+	ConditionSrcPre  ConditionSrc = "pre_condition"
+	ConditionSrcPost ConditionSrc = "post_condition"
 )
 
 type ConditionType string
@@ -436,11 +436,11 @@ func (e ProgressStatus) String() string {
 type ResultStatus string
 
 const (
-	Pass    ResultStatus = "pass"
-	Fail    ResultStatus = "fail"
-	Skip    ResultStatus = "skip"
-	Block   ResultStatus = "block"
-	Unknown ResultStatus = "unknown"
+	Pass  ResultStatus = "pass"
+	Fail  ResultStatus = "fail"
+	Err   ResultStatus = "err"
+	Skip  ResultStatus = "skip"
+	Block ResultStatus = "block"
 )
 
 func (e ResultStatus) String() string {

@@ -6,9 +6,9 @@ import (
 )
 
 type DatabaseOptService struct {
-	PostConditionRepo *repo.PostConditionRepo `inject:""`
-	DatabaseOptRepo   *repo.DatabaseOptRepo   `inject:""`
-	EnvironmentRepo   *repo.EnvironmentRepo   `inject:""`
+	ConditionRepo   *repo.ConditionRepo   `inject:""`
+	DatabaseOptRepo *repo.DatabaseOptRepo `inject:""`
+	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 }
 
 func (s *DatabaseOptService) Get(id uint) (opt model.DebugConditionDatabaseOpt, err error) {
@@ -19,12 +19,6 @@ func (s *DatabaseOptService) Get(id uint) (opt model.DebugConditionDatabaseOpt, 
 
 func (s *DatabaseOptService) Update(opt *model.DebugConditionDatabaseOpt) (err error) {
 	err = s.DatabaseOptRepo.Save(opt)
-
-	return
-}
-
-func (s *DatabaseOptService) Delete(reqId uint) (err error) {
-	err = s.DatabaseOptRepo.Delete(reqId)
 
 	return
 }

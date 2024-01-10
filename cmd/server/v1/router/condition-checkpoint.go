@@ -18,7 +18,6 @@ func (m *CheckpointModule) Party() module.WebModule {
 
 		index.Get("/{id:uint}", m.CheckpointCtrl.Get).Name = "检查点详情"
 		index.Put("/", m.CheckpointCtrl.Update).Name = "更新检查点"
-		index.Delete("/{id:uint}", m.CheckpointCtrl.Delete).Name = "删除检查点"
 	}
 
 	return module.NewModule("/checkpoints", handler)

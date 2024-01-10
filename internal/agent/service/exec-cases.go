@@ -80,7 +80,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	agentExec.InitDebugExecContext(execUuid)
 	agentExec.InitJsRuntime(projectId, execUuid)
 
-	statusPreCondition, _ := agentExec.ExecPreConditions(caseInterfaceExecObj, execUuid) // must before PreRequest, since it will update the vari in script
+	agentExec.ExecPreConditions(caseInterfaceExecObj, execUuid) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData, execUuid)
 
 	agentExec.SetReqValueToGoja(&caseInterfaceExecObj.DebugData.BaseRequest)
@@ -98,7 +98,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	}
 
 	agentExec.SetRespValueToGoja(&resultResp)
-	statusPostCondition, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp, execUuid)
+	assertResultStatus, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp, execUuid)
 	agentExec.GetRespValueFromGoja(execUuid)
 	PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
 
@@ -109,7 +109,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	}
 
 	status := consts.Pass
-	if statusPreCondition == consts.Fail || statusPostCondition == consts.Fail {
+	if assertResultStatus == consts.Fail {
 		status = consts.Fail
 	}
 

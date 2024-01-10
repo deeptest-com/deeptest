@@ -25,9 +25,8 @@ type EndpointCaseAlternativeService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
-	PreConditionRepo      *repo.PreConditionRepo      `inject:""`
-	PostConditionRepo     *repo.PostConditionRepo     `inject:""`
 	CategoryRepo          *repo.CategoryRepo          `inject:""`
+	ConditionRepo         *repo.ConditionRepo         `inject:""`
 
 	EndpointCaseService      *EndpointCaseService      `inject:""`
 	EndpointService          *EndpointService          `inject:""`
@@ -149,8 +148,8 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 	})
 
 	if req.BaseCaseId > 0 {
-		s.PreConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, "false")
-		s.PostConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, "false")
+		s.ConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, "false")
+
 	}
 
 	return
@@ -603,10 +602,12 @@ func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentEx
 		}
 	}
 
-	execObj.PreConditions, _ = s.PreConditionRepo.ListTo(
-		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy, "true")
-	execObj.PostConditions, _ = s.PostConditionRepo.ListTo(
-		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy, "true")
+	execObj.PreConditions, _ = s.ConditionRepo.ListTo(
+		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId,
+		execObj.DebugData.UsedBy, "true", consts.ConditionSrcPre)
+	execObj.PostConditions, _ = s.ConditionRepo.ListTo(
+		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId,
+		execObj.DebugData.UsedBy, "true", consts.ConditionSrcPost)
 
 	execObj.DebugData.EnvDataToView = &domain.EnvDataToView{}
 

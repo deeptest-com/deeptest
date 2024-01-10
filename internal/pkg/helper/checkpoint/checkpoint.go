@@ -41,7 +41,7 @@ func GenResultMsg(po *domain.CheckpointBase) {
 	po.ResultMsg = fmt.Sprintf("%s", desc)
 
 	if po.ResultStatus != consts.Pass {
-		po.ResultMsg += fmt.Sprintf("，实际结果\"%s\"。", po.ActualResult)
+		po.ResultMsg += fmt.Sprintf("，实际结果\"%s\"", po.ActualResult)
 	}
 
 	return

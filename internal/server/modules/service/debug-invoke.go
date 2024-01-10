@@ -201,7 +201,9 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 			log, _ = s.DatabaseOptRepo.GetLog(condition.ID, uint(invokeId))
 		}
 
-		results = append(results, log)
+		if log != nil {
+			results = append(results, log)
+		}
 	}
 
 	postConditions, err := s.ConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId,
@@ -218,9 +220,6 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 		if typ == consts.ConditionTypeExtractor {
 			log, _ = s.ExtractorRepo.GetLog(condition.ID, uint(invokeId))
 
-		} else if typ == consts.ConditionTypeCheckpoint {
-			log, _ = s.CheckpointRepo.GetLog(condition.ID, uint(invokeId))
-
 		} else if typ == consts.ConditionTypeScript {
 			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
 
@@ -229,7 +228,27 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 
 		}
 
-		results = append(results, log)
+		if log != nil {
+			results = append(results, log)
+		}
+	}
+
+	for _, condition := range postConditions {
+		if condition.Disabled {
+			continue
+		}
+
+		typ := condition.EntityType
+		var log interface{}
+
+		if typ == consts.ConditionTypeCheckpoint {
+			log, _ = s.CheckpointRepo.GetLog(condition.ID, uint(invokeId))
+
+		}
+
+		if log != nil {
+			results = append(results, log)
+		}
 	}
 
 	return

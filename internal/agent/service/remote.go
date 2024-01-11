@@ -41,7 +41,7 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 	}
 
 	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Infof("get interface obj failed, response %v", resp)
+		logUtils.Errorf("get interface obj failed,request %v, response %v", httpReq, resp)
 		return
 	}
 

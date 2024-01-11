@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/snowlyg/multi"
 	"strings"
 
 	"github.com/kataras/iris/v12"
@@ -175,4 +176,15 @@ func (c *RoleCtrl) AllRoleList(ctx iris.Context) {
 	}
 	data := iris.Map{"result": roles}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}
+
+func (c *RoleCtrl) GetAuthByEnv(ctx iris.Context) {
+	userId := multi.GetUserId(ctx)
+	res, err := c.RoleService.GetAuthByEnv(userId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 }

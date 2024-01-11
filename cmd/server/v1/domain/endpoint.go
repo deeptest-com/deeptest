@@ -134,3 +134,8 @@ type ImportThirdPartyEndpointReq struct {
 	ServeId       uint                `json:"serveId"`
 	UserId        uint                `json:"userId"`
 }
+
+type UpdateNameReq struct {
+	Id   uint   `json:"id"`
+	Name string `json:"name"`
+}

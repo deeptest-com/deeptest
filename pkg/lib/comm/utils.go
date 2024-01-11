@@ -381,3 +381,14 @@ func GetSign(appKey, appSecret, nonce, timestamp, body string) (sign string) {
 	sign = EncryptHmacMd5(appSecret, preSignStr)
 	return
 }
+
+func UintArrToStr(arr []uint) (res string) {
+	for _, item := range arr {
+		if res != "" {
+			res += fmt.Sprintf(",%v", item)
+		} else {
+			res += fmt.Sprintf("%v", item)
+		}
+	}
+	return
+}

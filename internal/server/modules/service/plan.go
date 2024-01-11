@@ -177,3 +177,8 @@ func (s *PlanService) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, pla
 func (s *PlanService) NotRelationScenarioList(req v1.NotRelationScenarioReqPaginate, projectId int) (ret _domain.PageData, err error) {
 	return s.PlanRepo.NotRelationScenarioList(req, projectId)
 }
+
+func (s *PlanService) MoveScenario(req v1.MoveReq) (err error) {
+	err = s.PlanRepo.MoveScenario(req)
+	return
+}

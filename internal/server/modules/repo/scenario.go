@@ -17,10 +17,11 @@ import (
 )
 
 type ScenarioRepo struct {
-	DB          *gorm.DB `inject:""`
-	*BaseRepo   `inject:""`
-	ProjectRepo *ProjectRepo `inject:""`
-	PlanRepo    *PlanRepo    `inject:""`
+	DB                   *gorm.DB `inject:""`
+	*BaseRepo            `inject:""`
+	ProjectRepo          *ProjectRepo          `inject:""`
+	PlanRepo             *PlanRepo             `inject:""`
+	RelaPlanScenarioRepo *RelaPlanScenarioRepo `inject:""`
 }
 
 func (r *ScenarioRepo) ListByProject(projectId int) (pos []model.Scenario, err error) {
@@ -240,7 +241,13 @@ func (r *ScenarioRepo) AddPlans(scenarioId uint, planIds []int) (err error) {
 		pos = append(pos, po)
 	}
 
-	err = r.DB.Create(&pos).Error
+	for _, po := range pos {
+		po.Ordr = r.RelaPlanScenarioRepo.GetMaxOrder(po.PlanId)
+		err = r.DB.Create(&po).Error
+		if err != nil {
+			return
+		}
+	}
 
 	return
 }

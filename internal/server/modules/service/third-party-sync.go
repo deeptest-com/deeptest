@@ -55,20 +55,35 @@ func (s *ThirdPartySyncService) GetToken(baseUrl string) (token string, err erro
 }
 
 func (s *ThirdPartySyncService) GetClasses(serviceCode, token string, baseUrl string) (classes []v1.FindClassByServiceCodeResData) {
-	findClassByServiceCodeReq := v1.FindClassByServiceCodeReq{
-		ServiceCode: serviceCode,
-	}
-	classes = s.RemoteService.FindClassByServiceCode(findClassByServiceCodeReq, token, baseUrl)
-
+	classes = s.RemoteService.LcQueryAgent(serviceCode, token, baseUrl)
 	return
 }
 
+// GetFunctionsByClass 已废弃
 func (s *ThirdPartySyncService) GetFunctionsByClass(serviceCode, classCode, token string, baseUrl string) (functions []string) {
 	getFunctionsByClassReq := v1.GetFunctionsByClassReq{
 		ServiceCode: serviceCode,
 		ClassCode:   classCode,
 	}
 	getFunctionsByClassResData := s.RemoteService.GetFunctionsByClass(getFunctionsByClassReq, token, baseUrl)
+	for _, v := range getFunctionsByClassResData {
+		//不同步内部方法
+		if v.MessageType == 1 {
+			functions = append(functions, v.Code)
+		}
+	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) GetFunctionsByClassNew(serviceId, classCode, parentCodes, objId, token string, baseUrl string) (functions []string) {
+	getFunctionsByClassReq := v1.QueryMsgReq{}
+	getFunctionsByClassReq.ClassInfo.ParentCodes = parentCodes
+	getFunctionsByClassReq.ClassInfo.ObjId = objId
+	getFunctionsByClassReq.ClassInfo.Code = classCode
+	getFunctionsByClassReq.ClassInfo.ServiceId = serviceId
+
+	getFunctionsByClassResData := s.RemoteService.LcQueryMsg(getFunctionsByClassReq, token, baseUrl)
 	for _, v := range getFunctionsByClassResData {
 		//不同步内部方法
 		if v.MessageType == 1 {
@@ -121,7 +136,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 				continue
 			}
 
-			functionList := s.GetFunctionsByClass(syncConfig.ServiceCode, classCode, token, baseUrl)
+			functionList := s.GetFunctionsByClassNew(class.ServiceId, classCode, class.ParentCodes, class.ObjId, token, baseUrl)
 			for _, function := range functionList {
 				path := "/" + syncConfig.ServiceCode + "/" + classCode + "/" + function
 				functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)

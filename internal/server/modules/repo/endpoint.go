@@ -160,7 +160,7 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 		}
 
 		//保存接口
-		err = r.saveInterfaces(endpoint.ID, endpoint.ProjectId, endpoint.Path, endpoint.Version, endpoint.Interfaces)
+		err = r.saveInterfaces(endpoint.ID, endpoint.ProjectId, endpoint.Path, endpoint.Version, endpoint.Title, endpoint.Interfaces)
 		if err != nil {
 			return err
 		}
@@ -241,7 +241,8 @@ func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
 }
 
 // 保存接口信息
-func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version string, interfaces []model.EndpointInterface) (err error) {
+func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version, title string, interfaces []model.EndpointInterface) (err error) {
+
 	interfaceIds := make([]uint, 0)
 	for _, v := range interfaces {
 		if v.ID != 0 {
@@ -264,6 +265,7 @@ func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version 
 		interfaces[key].Version = version
 		interfaces[key].Url = path
 		interfaces[key].ProjectId = projectId
+		interfaces[key].Name = title
 
 		err = r.EndpointInterfaceRepo.SaveInterfaces(&interfaces[key])
 		if err != nil {

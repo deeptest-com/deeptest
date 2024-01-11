@@ -5,6 +5,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -37,6 +38,7 @@ type ProjectRepo struct {
 	ScenarioInterfaceRepo      *ScenarioInterfaceRepo      `inject:""`
 	EndpointCaseRepo           *EndpointCaseRepo           `inject:""`
 	DebugInterfaceRepo         *DebugInterfaceRepo         `inject:""`
+	BaseRepo                   *BaseRepo                   `inject:""`
 }
 
 func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
@@ -151,7 +153,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 		return
 	}
 	if req.AdminId != userId {
-		err = r.AddProjectMember(project.ID, req.AdminId, "admin")
+		err = r.AddProjectMember(project.ID, req.AdminId, r.BaseRepo.GetAdminRoleName())
 		if err != nil {
 			logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 			bizErr = _domain.SystemErr
@@ -168,7 +170,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bool) (err error) {
 
 	// create project member
-	err = r.AddProjectMember(projectId, userId, "admin")
+	err = r.AddProjectMember(projectId, userId, r.BaseRepo.GetAdminRoleName())
 	if err != nil {
 		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 		return
@@ -502,6 +504,10 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 		db = db.Where("sys_user.username LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
 	}
 
+	if config.CONFIG.System.SysEnv == "ly" {
+		db = db.Where("sys_user.username != ?", serverConsts.AdminUserName)
+	}
+
 	var count int64
 	err = db.Count(&count).Error
 	if err != nil {
@@ -633,7 +639,7 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	var count int64
 	db := r.DB.Model(&model.ProjectMemberAudit{})
 	if req.Type == 0 {
-		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, consts.Admin)
+		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, r.BaseRepo.GetAdminRoleName())
 		db = db.Where("project_id in ? and status = 0", projectIds)
 	} else {
 		db = db.Where("apply_user_id = ?", req.ApplyUserId)
@@ -1031,7 +1037,7 @@ func (r *ProjectRepo) GetAuditUsers(projectId uint) (users []model.SysUser, err 
 	err = r.DB.Model(model.SysUser{}).
 		Joins("LEFT JOIN biz_project_member m ON m.user_id=sys_user.id").
 		Joins("LEFT JOIN biz_project_role r ON m.project_role_id=r.id").
-		Where("m.project_id=? and r.name=? and not m.deleted and not m.disabled", projectId, consts.Admin).
+		Where("m.project_id=? and r.name=? and not m.deleted and not m.disabled", projectId, r.BaseRepo.GetAdminRoleName()).
 		Find(&users).Error
 
 	return
@@ -1081,5 +1087,11 @@ func (r *ProjectRepo) GetAuditByItem(projectId, ApplyUserId uint, auditStatus []
 	err = r.DB.Model(&model.ProjectMemberAudit{}).
 		Where("project_id = ? and apply_user_id = ? and status in ? ", projectId, ApplyUserId, auditStatus).
 		Last(&ret).Error
+	return
+}
+
+func (r *ProjectRepo) UpdateProjectSource(projectId uint, source serverConsts.ProjectSource) (err error) {
+	err = r.DB.Model(&model.Project{}).
+		Where("id = ?", projectId).Update("source", source).Error
 	return
 }

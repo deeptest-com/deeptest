@@ -4,10 +4,14 @@ import (
 	"encoding/json"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"strconv"
+	"time"
 )
 
 type RemoteService struct {
@@ -279,6 +283,121 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 	return
 }
 
+func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo, err error) {
+	url := fmt.Sprintf("%s/api/v1/user/getUserInfo", config.CONFIG.ThirdParty.Url)
+
+	headers := make([]domain.Header, 0)
+	headers = append(headers, domain.Header{
+		Name:  "X-Token",
+		Value: token,
+	})
+
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+	}
+
+	var resp domain.DebugResponse
+	resp, err = httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("meta get method detail failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("meta get method detail failed, response %v", resp)
+		err = fmt.Errorf("meta get method detail failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data struct{ UserInfo v1.UserInfo }
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	user = respContent.Data.UserInfo
+
+	return
+}
+
+func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectInfo, err error) {
+	url := fmt.Sprintf("%s/api/v1/project/info/%s", config.CONFIG.ThirdParty.Url, spaceCode)
+
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers: &[]domain.Header{
+			{
+				Name:  "X-Token",
+				Value: token,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get project info failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get project info failed, response %v", resp)
+		err = fmt.Errorf("get project info failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data struct{ v1.ProjectInfo }
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("get project info failed, response %v", resp)
+		err = fmt.Errorf("get project info failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data.ProjectInfo
+
+	return
+}
+
+func (s *RemoteService) getHeaders() (headers []domain.Header) {
+	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
+	xNancalNonceStr := _commUtils.RandStr(8)
+
+	headers = []domain.Header{
+		{
+			Name:  "x-nancal-appkey",
+			Value: config.CONFIG.ThirdParty.ApiSign.AppKey,
+		},
+		{
+			Name:  "x-nancal-timestamp",
+			Value: xNancalTimestamp,
+		},
+		{
+			Name:  "x-nancal-nonce-str",
+			Value: xNancalNonceStr,
+		},
+		{
+			Name:  "x-nancal-sign",
+			Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, ""),
+		},
+	}
+
+	return
+}
 func (s *RemoteService) getLcHeaders(token string) (headers []domain.Header) {
 	headers = []domain.Header{
 		{
@@ -344,7 +463,6 @@ func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []
 	}
 
 	headers := s.getLcHeaders(token)
-
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -375,6 +493,63 @@ func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []
 	}
 
 	ret = respContent.Data.Data
+
+	return
+}
+
+func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (ret []string, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
+
+	headers := s.getHeaders()
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		QueryParams: &[]domain.Param{
+			{
+				Name:  "typeStr",
+				Value: "[20,30]",
+			},
+			{
+				Name:  "nameEngAbbr",
+				Value: spaceCode,
+			},
+			{
+				Name:  "username",
+				Value: username,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get UserButtonPermissions failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get UserButtonPermissions failed, response %v", resp)
+		err = fmt.Errorf("get UserButtonPermissions failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []string
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("getUserButtonPermissions failed, response %v", resp)
+		err = fmt.Errorf("get UserButtonPermissions failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
 
 	return
 }
@@ -415,6 +590,155 @@ func (s *RemoteService) LcQueryMsg(req v1.QueryMsgReq, token string, baseUrl str
 
 	if respContent.Mfail != "0" {
 		logUtils.Infof("LcQueryMsg failed, response %v", resp.Content)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret []v1.UserMenuPermission, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenu", config.CONFIG.ThirdParty.Url)
+
+	headers := s.getHeaders()
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		QueryParams: &[]domain.Param{
+			{
+				Name:  "typeStr",
+				Value: "[10,20]",
+			},
+			{
+				Name:  "nameEngAbbr",
+				Value: spaceCode,
+			},
+			{
+				Name:  "username",
+				Value: username,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get GetUserMenuPermissions failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get GetUserMenuPermissions failed, response %v", resp)
+		err = fmt.Errorf("get GetUserMenuPermissions failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []v1.UserMenuPermission
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("getUserButtonPermissions failed, response %v", resp)
+		err = fmt.Errorf("get UserButtonPermissions failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetSpaceRoles() (ret []v1.SpaceRole, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/getSpaceInitRole", config.CONFIG.ThirdParty.Url)
+
+	headers := s.getHeaders()
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get SpaceRoles failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get SpaceRoles failed, response %v", resp)
+		err = fmt.Errorf("get SpaceRoles failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []v1.SpaceRole
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("get SpaceRoles failed, response %v", resp)
+		err = fmt.Errorf("get SpaceRoles failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/getRoleMenus", config.CONFIG.ThirdParty.Url)
+
+	headers := s.getHeaders()
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		QueryParams: &[]domain.Param{
+			{
+				Name:  "roleValue",
+				Value: role,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get RoleMenus failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get RoleMenus failed, response %v", resp)
+		err = fmt.Errorf("get RoleMenus failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []string
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("get RoleMenus failed, response %v", resp)
+		err = fmt.Errorf("get RoleMenus failed, response %v", resp)
 		return
 	}
 

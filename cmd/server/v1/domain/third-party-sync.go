@@ -129,3 +129,29 @@ type QueryMsgReq struct {
 		ServiceId   string `json:"serviceId"`
 	} `json:"classInfo"`
 }
+
+type UserInfo struct {
+	Username string `json:"username"`
+	WxName   string `json:"wxName"`
+	RealName string `json:"realName"`
+	Mail     string `json:"mail"`
+	Password string `json:"password"`
+}
+
+type ProjectInfo struct {
+	Name        string     `json:"name"`        // 名称
+	NameEngAbbr string     `json:"nameEngAbbr"` // 英文名称缩写
+	SpaceAdmins []UserInfo `json:"spaceAdmins"` // 空间管理员
+}
+
+type UserMenuPermission struct {
+	Permission string               `json:"permission"`
+	Children   []UserMenuPermission `json:"children"`
+}
+
+type SpaceRole struct {
+	Id        uint   `json:"id"`
+	RoleName  string `json:"roleName"`
+	RoleValue string `json:"roleValue"`
+	Remark    string `json:"remark"`
+}

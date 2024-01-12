@@ -156,10 +156,6 @@ func (s *RemoteService) GetFunctionsByClass(req v1.GetFunctionsByClassReq, token
 	}
 
 	headers := s.getLcHeaders(token)
-	headers = append(headers, domain.Header{
-		Name:  "Token",
-		Value: token,
-	})
 
 	httpReq := domain.BaseRequest{
 		Url:      url,
@@ -416,7 +412,87 @@ func (s *RemoteService) getLcHeaders(token string) (headers []domain.Header) {
 			Name:  "Token",
 			Value: token,
 		},
+		{
+			Name:  "lang",
+			Value: "zh_cn",
+		},
 	}
+
+	return
+}
+
+func (s *RemoteService) getQueryAgentRequest(serviceCode string) interface{} {
+	res := struct {
+		ClassName string      `json:"className"`
+		QueryArgs interface{} `json:"queryArgs"`
+	}{}
+
+	attrSet := []string{"objId", "code", "parentCode", "parentCodes", "businessClassType", "container", "lastUpdate", "remark", "rightClassCode", "rightClassName", "rightRelationShip", "rightRelationShipName", "leftClassCode", "leftClassName", "leftRelationShip", "leftRelationShipName", "serviceId", "type", "dialogSource", "className", "classIcon", "serviceCode", "name", "displayName", "displayClassName", "displayCreator", "displayModifier"}
+	conditionParam := v1.QueryAgentConditionParam{
+		Key:     "serviceCode",
+		Compare: "EQ",
+		Value:   serviceCode,
+	}
+
+	queryArgs := struct {
+		AttrSet   []string                      `json:"attrSet"`
+		Condition []v1.QueryAgentConditionParam `json:"condition"`
+		Sort      struct {
+			SortBy    string `json:"sortBy"`
+			SortOrder string `json:"sortOrder"`
+		} `json:"sort"`
+	}{}
+	queryArgs.AttrSet = attrSet
+	queryArgs.Condition = []v1.QueryAgentConditionParam{conditionParam}
+	queryArgs.Sort.SortBy = "code"
+	queryArgs.Sort.SortOrder = "asc"
+
+	res.ClassName = "MlClass"
+	res.QueryArgs = queryArgs
+
+	return res
+}
+
+func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []v1.FindClassByServiceCodeResData) {
+	url := fmt.Sprintf("%s/levault/mdlsvr/MlClass/QueryAgent", baseUrl)
+	req := s.getQueryAgentRequest(serviceCode)
+	body, err := json.Marshal(req)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	headers := s.getLcHeaders(token)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     string(body),
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("LcQueryAgent failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("LcQueryAgent failed, response %v", resp)
+		return
+	}
+
+	respContent := v1.QueryAgentRes{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Mfail != "0" {
+		logUtils.Infof("LcQueryAgent failed, response %v", resp.Content)
+		return
+	}
+
+	ret = respContent.Data.Data
 
 	return
 }
@@ -470,6 +546,50 @@ func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (re
 	if respContent.Code != 200 {
 		logUtils.Infof("getUserButtonPermissions failed, response %v", resp)
 		err = fmt.Errorf("get UserButtonPermissions failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) LcQueryMsg(req v1.QueryMsgReq, token string, baseUrl string) (ret []v1.GetFunctionsByClassResData) {
+	url := fmt.Sprintf("%s/levault/mdlsvr/ClsMsg/QueryMsg", baseUrl)
+	body, err := json.Marshal(req)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	headers := s.getLcHeaders(token)
+
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     string(body),
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("LcQueryMsg failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("LcQueryMsg failed, response %v", resp)
+		return
+	}
+
+	respContent := v1.GetFunctionsByClassRes{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Mfail != "0" {
+		logUtils.Infof("LcQueryMsg failed, response %v", resp.Content)
 		return
 	}
 

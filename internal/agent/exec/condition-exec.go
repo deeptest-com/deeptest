@@ -192,9 +192,7 @@ func createAssertFromScriptResult(output string, conditions *[]domain.InterfaceE
 		return
 	}
 
-	statusStr := strings.ToLower(arr[0][1])
-	name := arr[0][2]
-	//err := arr[0][3]
+	statusStr, name, _ := ParseChaiAssertion(output)
 
 	checkpoint := domain.CheckpointBase{
 		Type:      consts.Script,

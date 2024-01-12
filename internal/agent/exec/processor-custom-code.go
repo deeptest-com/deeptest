@@ -66,6 +66,9 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
+	stat := CountScriptAssertionStat(session.ExecUuid, scriptBase.Output, processor.Result)
+	execUtils.SendStatMsg(stat, session.WsMsg)
+
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 

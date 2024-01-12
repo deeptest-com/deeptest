@@ -128,7 +128,7 @@ func dealwithHeader(req domain.BaseRequest, httpReq *http.Request) {
 
 	addAuthorInfo(req, httpReq)
 
-	logUtils.Debugf("httpReq-header:%s", commonUtils.JsonEncode(httpReq.Header))
+	logUtils.Errorf("httpReq-header:%s", commonUtils.JsonEncode(httpReq.Header))
 }
 
 //func dealwithCookie(req domain.BaseRequest, httpReq *http.Request) {

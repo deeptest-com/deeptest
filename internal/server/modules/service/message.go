@@ -22,6 +22,7 @@ type MessageService struct {
 	ProjectRepo     *repo.ProjectRepo     `inject:""`
 	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
 	EndpointRepo    *repo.EndpointRepo    `inject:""`
+	BaseRepo        *repo.BaseRepo        `inject:""`
 	ProjectService  *ProjectService       `inject:""`
 	Cron            *cron.ServerCron      `inject:""`
 }
@@ -144,7 +145,7 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint
 		return
 	}
 
-	adminRole, err := s.ProjectRoleRepo.FindByName(consts.Admin)
+	adminRole, err := s.ProjectRoleRepo.FindByName(s.BaseRepo.GetAdminRoleName())
 	if err != nil {
 		return
 	}

@@ -139,7 +139,9 @@ func (r *DiagnoseInterfaceRepo) hasChild(categories []*serverDomain.DiagnoseInte
 }
 
 func (r *DiagnoseInterfaceRepo) Save(po *model.DiagnoseInterface) (err error) {
-	po.Ordr = r.GetMaxOrder(po.ParentId)
+	if po.ID == 0 {
+		po.Ordr = r.GetMaxOrder(po.ParentId)
+	}
 
 	err = r.DB.Save(po).Error
 

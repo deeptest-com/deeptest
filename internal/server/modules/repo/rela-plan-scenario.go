@@ -24,6 +24,11 @@ func (r *RelaPlanScenarioRepo) IncreaseOrderAfter(ordr int, planId uint) (err er
 	return
 }
 
+func (r *RelaPlanScenarioRepo) DecreaseOrderBefore(ordr int, planId uint) (err error) {
+	err = r.DB.Model(model.RelaPlanScenario{}).Where("ordr <= ? and plan_id = ?  and not deleted", ordr, planId).UpdateColumn("ordr", gorm.Expr("ordr - ?", 1)).Error
+	return
+}
+
 func (r *RelaPlanScenarioRepo) GetMaxOrder(planId uint) (order int) {
 	res := model.RelaPlanScenario{}
 

@@ -3,9 +3,10 @@ package middleware
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	service2 "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/kataras/iris/v12"
@@ -71,7 +72,7 @@ func UserAuth() iris.Handler {
 
 		xToken := ctx.GetHeader("X-Token")
 		if xToken != "" {
-			userInfo, err := new(service.RemoteService).GetUserInfoByToken(xToken)
+			userInfo, err := new(service2.RemoteService).GetUserInfoByToken(xToken)
 			if err == nil && userInfo.Username != "" {
 				token, err := creatSession(userInfo)
 				if err == nil && token != "" {
@@ -91,7 +92,7 @@ func UserAuth() iris.Handler {
 	return verifier.Verify()
 }
 
-func creatSession(userInfo v1.UserInfo) (token string, err error) {
+func creatSession(userInfo integrationDomain.UserInfo) (token string, err error) {
 
 	req := v1.UserReq{UserBase: v1.UserBase{
 		Username:  userInfo.Username,

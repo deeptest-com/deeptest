@@ -4,7 +4,7 @@ type ProjectProductRel struct {
 	BaseModel
 
 	ProjectShortName string `json:"projectShortName"`
-	ProductCode      string `json:"productCode"`
+	ProductId        uint   `json:"productId"`
 }
 
 func (ProjectProductRel) TableName() string {

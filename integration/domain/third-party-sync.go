@@ -1,4 +1,4 @@
-package serverDomain
+package integrationDomain
 
 type LoginByOauthReq struct {
 	LoginName string `json:"loginName"`
@@ -154,4 +154,10 @@ type SpaceRole struct {
 	RoleName  string `json:"roleName"`
 	RoleValue string `json:"roleValue"`
 	Remark    string `json:"remark"`
+}
+
+type ProductItem struct {
+	Id       uint           `json:"id"`
+	Name     string         `json:"name"`
+	Children []*ProductItem `json:"children"`
 }

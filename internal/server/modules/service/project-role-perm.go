@@ -2,6 +2,8 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	"github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -16,7 +18,7 @@ type ProjectRolePermService struct {
 	ProjectRoleRepo     *repo.ProjectRoleRepo     `inject:""`
 	ProjectRoleMenuRepo *repo.ProjectRoleMenuRepo `inject:""`
 	ProfileRepo         *repo.ProfileRepo         `inject:""`
-	RemoteService       *RemoteService            `inject:""`
+	RemoteService       *service.RemoteService    `inject:""`
 }
 
 func (s *ProjectRolePermService) AllRoleList() (data []model.ProjectRole, err error) {
@@ -52,7 +54,7 @@ func (s *ProjectRolePermService) GetRoleFromOther() (data []model.ProjectRole, e
 	return
 }
 
-func (s *ProjectRolePermService) DealSpaceRoles(spaceRoles []v1.SpaceRole) (res []v1.SpaceRole) {
+func (s *ProjectRolePermService) DealSpaceRoles(spaceRoles []integrationDomain.SpaceRole) (res []integrationDomain.SpaceRole) {
 	//TODO 临时角色，后期要改
 	tmpSpaceRoleArr := []string{"api-admin", "general", "space-test-engineer", "space-server-engineer", "space-web-engineer", "space-product-manager"}
 	for _, v := range spaceRoles {
@@ -80,7 +82,7 @@ func (s *ProjectRolePermService) GetRoleListMap() (res map[consts.RoleType]model
 
 	return
 }
-func (s *ProjectRolePermService) GetRoleListFromOther(spaceRoles []v1.SpaceRole) (data []model.ProjectRole) {
+func (s *ProjectRolePermService) GetRoleListFromOther(spaceRoles []integrationDomain.SpaceRole) (data []model.ProjectRole) {
 	roleMap, _ := s.GetRoleListMap()
 	for _, spaceRole := range spaceRoles {
 		projectRoleTmp := model.ProjectRole{
@@ -97,8 +99,8 @@ func (s *ProjectRolePermService) GetRoleListFromOther(spaceRoles []v1.SpaceRole)
 	return
 }
 
-func (s *ProjectRolePermService) GetAllRoleValueMap(spaceRoles []v1.SpaceRole) (allRoleArr []string, roleValueMap map[string]v1.SpaceRole, err error) {
-	roleValueMap = make(map[string]v1.SpaceRole)
+func (s *ProjectRolePermService) GetAllRoleValueMap(spaceRoles []integrationDomain.SpaceRole) (allRoleArr []string, roleValueMap map[string]integrationDomain.SpaceRole, err error) {
+	roleValueMap = make(map[string]integrationDomain.SpaceRole)
 	for _, v := range spaceRoles {
 		allRoleArr = append(allRoleArr, v.RoleValue)
 		roleValueMap[v.RoleValue] = v
@@ -118,7 +120,7 @@ func (s *ProjectRolePermService) GetRolesNotExisted(allRoleArr []string) (notExi
 	return
 }
 
-func (s *ProjectRolePermService) ComplementRoleFromOther(allRoleArr []string, roleValueMap map[string]v1.SpaceRole) (err error) {
+func (s *ProjectRolePermService) ComplementRoleFromOther(allRoleArr []string, roleValueMap map[string]integrationDomain.SpaceRole) (err error) {
 	notExistedRoles, err := s.GetRolesNotExisted(allRoleArr)
 	if err != nil || len(notExistedRoles) == 0 {
 		return
@@ -129,7 +131,7 @@ func (s *ProjectRolePermService) ComplementRoleFromOther(allRoleArr []string, ro
 	return
 }
 
-func (s *ProjectRolePermService) BatchCreateSpaceRole(roleValueMap map[string]v1.SpaceRole, notExistedRoles []string) (err error) {
+func (s *ProjectRolePermService) BatchCreateSpaceRole(roleValueMap map[string]integrationDomain.SpaceRole, notExistedRoles []string) (err error) {
 	var roleNeedCreate []model.ProjectRole
 	for _, v := range notExistedRoles {
 		if roleValue, ok := roleValueMap[v]; ok {

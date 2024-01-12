@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	"github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
@@ -18,17 +20,17 @@ import (
 )
 
 type ProjectService struct {
-	ProjectRepo     *repo.ProjectRepo     `inject:""`
-	ServeRepo       *repo.ServeRepo       `inject:""`
-	SampleSource    *source.SampleSource  `inject:""`
-	UserRepo        *repo.UserRepo        `inject:""`
-	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
-	MessageRepo     *repo.MessageRepo     `inject:""`
-	BaseRepo        *repo.BaseRepo        `inject:""`
-	IntegrationRepo *repo.IntegrationRepo `inject:""`
-	RemoteService   *RemoteService        `inject:""`
-	MessageService  *MessageService       `inject:""`
-	UserService     *UserService          `inject:""`
+	ProjectRepo     *repo.ProjectRepo      `inject:""`
+	ServeRepo       *repo.ServeRepo        `inject:""`
+	SampleSource    *source.SampleSource   `inject:""`
+	UserRepo        *repo.UserRepo         `inject:""`
+	ProjectRoleRepo *repo.ProjectRoleRepo  `inject:""`
+	MessageRepo     *repo.MessageRepo      `inject:""`
+	BaseRepo        *repo.BaseRepo         `inject:""`
+	IntegrationRepo *repo.IntegrationRepo  `inject:""`
+	RemoteService   *service.RemoteService `inject:""`
+	MessageService  *MessageService        `inject:""`
+	UserService     *UserService           `inject:""`
 }
 
 func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _domain.PageData, err error) {
@@ -278,7 +280,7 @@ func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (pro
 	return
 }
 
-func (s *ProjectService) CreateProjectForThirdParty(project v1.ProjectInfo) (projectId uint, err error) {
+func (s *ProjectService) CreateProjectForThirdParty(project integrationDomain.ProjectInfo) (projectId uint, err error) {
 	adminName := "admin"
 	adminUser, err := s.UserRepo.GetByUserName(adminName)
 	if err != nil {

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"net/http"
 	"net/http/cookiejar"
@@ -125,6 +127,8 @@ func dealwithHeader(req domain.BaseRequest, httpReq *http.Request) {
 	}
 
 	addAuthorInfo(req, httpReq)
+
+	logUtils.Debugf("httpReq-header:%s", commonUtils.JsonEncode(httpReq.Header))
 }
 
 //func dealwithCookie(req domain.BaseRequest, httpReq *http.Request) {

@@ -37,7 +37,7 @@ func (s *ProjectRolePermService) GetRoleFromOther() (data []model.ProjectRole, e
 		return
 	}
 
-	spaceRoles = s.DealSpaceRoles(spaceRoles)
+	//spaceRoles = s.DealSpaceRoles(spaceRoles)
 
 	allRoleArr, spaceRoleValueMap, err := s.GetAllRoleValueMap(spaceRoles)
 	if err != nil {

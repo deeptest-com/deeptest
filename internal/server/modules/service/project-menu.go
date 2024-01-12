@@ -8,11 +8,12 @@ import (
 )
 
 type ProjectMenuService struct {
-	ProjectRepo     *repo.ProjectRepo      `inject:""`
-	ProjectMenuRepo *repo.ProjectMenuRepo  `inject:""`
-	ProjectRoleRepo *repo.ProjectRoleRepo  `inject:""`
-	UserRepo        *repo.UserRepo         `inject:""`
-	RemoteService   *service.RemoteService `inject:""`
+	ProjectRepo      *repo.ProjectRepo         `inject:""`
+	ProjectMenuRepo  *repo.ProjectMenuRepo     `inject:""`
+	ProjectRoleRepo  *repo.ProjectRoleRepo     `inject:""`
+	UserRepo         *repo.UserRepo            `inject:""`
+	RemoteService    *service.RemoteService    `inject:""`
+	PrivilegeService *service.PrivilegeService `inject:""`
 }
 
 func (s *ProjectMenuService) GetUserMenuList(projectId, userId uint) (ret []model.ProjectMenu, err error) {
@@ -40,7 +41,7 @@ func (s *ProjectMenuService) GetUserMenuList(projectId, userId uint) (ret []mode
 	return
 }
 
-func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint) (ret []string, err error) {
+func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint, userName string) (ret []string, err error) {
 	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
 	if err != nil {
 		return
@@ -57,7 +58,7 @@ func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint) (ret []s
 	}
 
 	if config.CONFIG.System.SysEnv == "ly" && !isAdminUser {
-		ret, err = s.RemoteService.GetRoleMenus(string(projectRole.Name))
+		ret, err = s.PrivilegeService.GetAll(userName, string(projectRole.Name))
 	} else {
 		ret, err = s.ProjectMenuRepo.GetRoleMenuCodeList(projectRole.ID)
 	}

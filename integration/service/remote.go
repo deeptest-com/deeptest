@@ -497,7 +497,7 @@ func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []
 	return
 }
 
-func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (ret []string, err error) {
+func (s *RemoteService) GetUserButtonPermissions(username string) (ret []string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
 
 	headers := s.getHeaders()
@@ -509,10 +509,6 @@ func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (re
 			{
 				Name:  "typeStr",
 				Value: "[20,30]",
-			},
-			{
-				Name:  "nameEngAbbr",
-				Value: spaceCode,
 			},
 			{
 				Name:  "username",

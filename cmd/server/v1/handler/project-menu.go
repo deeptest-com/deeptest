@@ -41,10 +41,10 @@ func (c *ProjectMenuCtrl) UserMenuList(ctx iris.Context) {
 
 func (c *ProjectMenuCtrl) UserMenuListNew(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
-	//userName := multi.GetUsername(ctx)
+	userName := multi.GetUsername(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 
-	data, err := c.ProjectMenuService.GetUserMenuListNew(uint(projectId), userId)
+	data, err := c.ProjectMenuService.GetUserMenuListNew(uint(projectId), userId, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -381,3 +381,14 @@ func GetSign(appKey, appSecret, nonce, timestamp, body string) (sign string) {
 	sign = EncryptHmacMd5(appSecret, preSignStr)
 	return
 }
+
+func ArrayUnique(arr []string) (ret []string) {
+	temp := map[string]bool{}
+	for _, x := range arr {
+		if _, ok := temp[x]; !ok {
+			ret = append(ret, x)
+		}
+	}
+
+	return
+}

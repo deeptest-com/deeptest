@@ -19,8 +19,8 @@ func (r *RelaPlanScenarioRepo) UpdateOrdrById(id uint, ordr int) (err error) {
 	return
 }
 
-func (r *RelaPlanScenarioRepo) IncreaseOrderAfter(id, planId uint) (err error) {
-	err = r.DB.Model(model.RelaPlanScenario{}).Where("id >= ? and plan_id = ?  and not deleted", id, planId).UpdateColumn("ordr", gorm.Expr("ordr + ?", 1)).Error
+func (r *RelaPlanScenarioRepo) IncreaseOrderAfter(ordr int, planId uint) (err error) {
+	err = r.DB.Model(model.RelaPlanScenario{}).Where("ordr >= ? and plan_id = ?  and not deleted", ordr, planId).UpdateColumn("ordr", gorm.Expr("ordr + ?", 1)).Error
 	return
 }
 

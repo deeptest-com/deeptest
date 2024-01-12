@@ -474,7 +474,7 @@ func (r *PlanRepo) MoveScenario(req v1.MoveReq) (err error) {
 		return
 	}
 
-	err = r.RelaPlanScenarioRepo.IncreaseOrderAfter(req.DestinationId, req.PlanId)
+	err = r.RelaPlanScenarioRepo.IncreaseOrderAfter(destination.Ordr, req.PlanId)
 
 	if err != nil {
 		return

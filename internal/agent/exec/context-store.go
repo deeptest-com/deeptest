@@ -227,13 +227,13 @@ func GetCurrDebugInterfaceId(execUuid string) (ret uint) {
 	return
 }
 
-func SetStat(execUuid string, val *agentDomain.InterfaceStat) {
+func SetInterfaceStat(execUuid string, val *agentDomain.InterfaceStat) {
 	entity := GetUserExecContext(execUuid)
-	entity.Stat = val
+	entity.InterfaceStat = val
 }
-func GetStat(execUuid string) (ret *agentDomain.InterfaceStat) {
+func GetInterfaceStat(execUuid string) (ret *agentDomain.InterfaceStat) {
 	userContext := GetUserExecContext(execUuid)
-	ret = userContext.Stat
+	ret = userContext.InterfaceStat
 
 	return
 }
@@ -334,7 +334,7 @@ type UserContext struct {
 	DatapoolCursor map[string]int   // only for scenario
 
 	// for report data
-	Stat *agentDomain.InterfaceStat
+	InterfaceStat *agentDomain.InterfaceStat
 
 	// for goja js engine
 	GojaRuntime   *goja.Runtime

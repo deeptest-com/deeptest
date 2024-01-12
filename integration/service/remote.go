@@ -743,7 +743,7 @@ func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
 	return
 }
 
-func (s *RemoteService) GetProductList(page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
+func (s *RemoteService) GetUserProductList(page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/listProductManageOptionSecrets", config.CONFIG.ThirdParty.Url)
 
 	headers := s.getHeaders()
@@ -769,13 +769,13 @@ func (s *RemoteService) GetProductList(page, pageSize int, username string) (ret
 
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
-		logUtils.Infof("GetProductList failed, error, %s", err.Error())
+		logUtils.Infof("GetUserProductList failed, error, %s", err.Error())
 		return
 	}
 
 	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Infof("GetProductList failed, response %v", resp)
-		err = fmt.Errorf("GetProductList failed, response %v", resp)
+		logUtils.Infof("GetUserProductList failed, response %v", resp)
+		err = fmt.Errorf("GetUserProductList failed, response %v", resp)
 		return
 	}
 
@@ -790,8 +790,216 @@ func (s *RemoteService) GetProductList(page, pageSize int, username string) (ret
 	}
 
 	if respContent.Code != 200 {
-		logUtils.Infof("GetProductList, response %v", resp)
-		err = fmt.Errorf("GetProductList, response %v", resp)
+		logUtils.Infof("GetUserProductList failed, response %v", resp)
+		err = fmt.Errorf("GetUserProductList failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetProductListById(productIds []int) (ret []integrationDomain.ProductBaseItem, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/listProductManage", config.CONFIG.ThirdParty.Url)
+
+	queryParams := make([]domain.Param, 0)
+	for _, v := range productIds {
+		paramTmp := domain.Param{
+			Name:  "productIds[]",
+			Value: strconv.Itoa(v),
+		}
+		queryParams = append(queryParams, paramTmp)
+	}
+
+	headers := s.getHeaders()
+	httpReq := domain.BaseRequest{
+		Url:         url,
+		BodyType:    consts.ContentTypeJSON,
+		Headers:     &headers,
+		QueryParams: &queryParams,
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("GetProductListById failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("GetProductListById failed, response %v", resp)
+		err = fmt.Errorf("GetProductListById failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []integrationDomain.ProductBaseItem
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("GetProductListById failed, response %v", resp)
+		err = fmt.Errorf("GetProductListById failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetSpacesByUsername(username string) (ret []integrationDomain.SpaceItem, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/project/user", config.CONFIG.ThirdParty.Url)
+
+	headers := s.getHeaders()
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		QueryParams: &[]domain.Param{
+			{
+				Name:  "userName",
+				Value: username,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("GetSpacesByUsername failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("GetSpacesByUsername failed, response %v", resp)
+		err = fmt.Errorf("GetSpacesByUsername failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []integrationDomain.SpaceItem
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("GetSpacesByUsername failed, response %v", resp)
+		err = fmt.Errorf("GetSpacesByUsername failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) BatchGetSpacesByCode(spaceCodes []string) (ret []integrationDomain.SpaceItem, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/project/abbr", config.CONFIG.ThirdParty.Url)
+
+	queryParams := make([]domain.Param, 0)
+	for _, v := range spaceCodes {
+		paramTmp := domain.Param{
+			Name:  "nameEngAbbrs",
+			Value: v,
+		}
+		queryParams = append(queryParams, paramTmp)
+	}
+
+	headers := s.getHeaders()
+	httpReq := domain.BaseRequest{
+		Url:         url,
+		BodyType:    consts.ContentTypeJSON,
+		Headers:     &headers,
+		QueryParams: &queryParams,
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("BatchGetSpacesByCode failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("BatchGetSpacesByCode failed, response %v", resp)
+		err = fmt.Errorf("BatchGetSpacesByCode failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []integrationDomain.SpaceItem
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("BatchGetSpacesByCode failed, response %v", resp)
+		err = fmt.Errorf("BatchGetSpacesByCode failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []integrationDomain.UserInfo, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/project/member/abbrs", config.CONFIG.ThirdParty.Url)
+
+	queryParams := make([]domain.Param, 0)
+	for _, v := range spaceCodes {
+		paramTmp := domain.Param{
+			Name:  "projectEngAbbrs",
+			Value: v,
+		}
+		queryParams = append(queryParams, paramTmp)
+	}
+
+	headers := s.getHeaders()
+	httpReq := domain.BaseRequest{
+		Url:         url,
+		BodyType:    consts.ContentTypeJSON,
+		Headers:     &headers,
+		QueryParams: &queryParams,
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("BatchGetMembersBySpaces failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("BatchGetMembersBySpaces failed, response %v", resp)
+		err = fmt.Errorf("BatchGetMembersBySpaces failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []integrationDomain.UserInfo
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("BatchGetMembersBySpaces failed, response %v", resp)
+		err = fmt.Errorf("BatchGetMembersBySpaces failed, response %v", resp)
 		return
 	}
 

@@ -157,7 +157,16 @@ type SpaceRole struct {
 }
 
 type ProductItem struct {
-	Id       uint           `json:"id"`
-	Name     string         `json:"name"`
+	ProductBaseItem
 	Children []*ProductItem `json:"children"`
+}
+
+type ProductBaseItem struct {
+	Id   uint   `json:"id"`
+	Name string `json:"name"`
+}
+
+type SpaceItem struct {
+	Name        string `json:"name"`
+	NameEngAbbr string `json:"nameEngAbbr"`
 }

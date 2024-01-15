@@ -36,12 +36,12 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 
 	resp, err := httpHelper.Post(httpReq)
 	if err != nil {
-		logUtils.Infof("get interface obj failed, error, %s", err.Error())
+		logUtils.Errorf("get interface obj failed, error, %s", err.Error())
 		return
 	}
 
 	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Errorf("get interface obj failed,request %v, response %v", httpReq, resp)
+		logUtils.Infof("get interface obj failed,request %v, response %v", httpReq, resp)
 		return
 	}
 
@@ -52,13 +52,13 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 	}
 
 	if respContent.Code != 0 {
-		logUtils.Errorf("get interface obj failed,request %v, response %v", httpReq, resp.Content)
+		logUtils.Infof("get interface obj failed,request %v, response %v", httpReq, resp.Content)
 		return
 	}
 
 	bytes, err := json.Marshal(respContent.Data)
 	if respContent.Code != 0 {
-		logUtils.Errorf("get interface obj failed,request %v, response %v", httpReq, resp.Content)
+		logUtils.Infof("get interface obj failed,request %v, response %v", httpReq, resp.Content)
 		return
 	}
 

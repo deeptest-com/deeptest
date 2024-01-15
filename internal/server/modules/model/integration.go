@@ -3,8 +3,8 @@ package model
 type ProjectProductRel struct {
 	BaseModel
 
-	ProjectShortName string `json:"projectShortName"`
-	ProductId        uint   `json:"productId"`
+	ProjectId uint `json:"projectId"`
+	ProductId uint `json:"productId"`
 }
 
 func (ProjectProductRel) TableName() string {
@@ -14,8 +14,8 @@ func (ProjectProductRel) TableName() string {
 type ProjectSpaceRel struct {
 	BaseModel
 
-	ProjectShortName string `json:"projectShortName"`
-	SpaceCode        string `json:"spaceCode"`
+	ProjectId uint   `json:"projectId"`
+	SpaceCode string `json:"spaceCode"`
 }
 
 func (ProjectSpaceRel) TableName() string {

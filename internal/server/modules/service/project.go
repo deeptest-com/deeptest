@@ -7,6 +7,7 @@ import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/integration/service"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
@@ -20,17 +21,18 @@ import (
 )
 
 type ProjectService struct {
-	ProjectRepo     *repo.ProjectRepo      `inject:""`
-	ServeRepo       *repo.ServeRepo        `inject:""`
-	SampleSource    *source.SampleSource   `inject:""`
-	UserRepo        *repo.UserRepo         `inject:""`
-	ProjectRoleRepo *repo.ProjectRoleRepo  `inject:""`
-	MessageRepo     *repo.MessageRepo      `inject:""`
-	BaseRepo        *repo.BaseRepo         `inject:""`
-	IntegrationRepo *repo.IntegrationRepo  `inject:""`
-	RemoteService   *service.RemoteService `inject:""`
-	MessageService  *MessageService        `inject:""`
-	UserService     *UserService           `inject:""`
+	ProjectRepo               *repo.ProjectRepo                  `inject:""`
+	ServeRepo                 *repo.ServeRepo                    `inject:""`
+	SampleSource              *source.SampleSource               `inject:""`
+	UserRepo                  *repo.UserRepo                     `inject:""`
+	ProjectRoleRepo           *repo.ProjectRoleRepo              `inject:""`
+	MessageRepo               *repo.MessageRepo                  `inject:""`
+	BaseRepo                  *repo.BaseRepo                     `inject:""`
+	IntegrationRepo           *repo.IntegrationRepo              `inject:""`
+	RemoteService             *service.RemoteService             `inject:""`
+	MessageService            *MessageService                    `inject:""`
+	UserService               *UserService                       `inject:""`
+	IntegrationProjectService *integrationService.ProjectService `inject:""`
 }
 
 func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _domain.PageData, err error) {
@@ -49,11 +51,27 @@ func (s *ProjectService) Get(id uint) (model.Project, error) {
 
 func (s *ProjectService) Create(req v1.ProjectReq, userId uint) (id uint, err _domain.BizErr) {
 	id, err = s.ProjectRepo.Create(req, userId)
+	if err.Code != 0 {
+		return
+	}
+
+	integrationErr := s.IntegrationProjectService.Save(req.ProjectReq, id)
+	if integrationErr != nil {
+		err = _domain.SystemErr
+	}
+
 	return
 }
 
-func (s *ProjectService) Update(req v1.ProjectReq) error {
-	return s.ProjectRepo.Update(req)
+func (s *ProjectService) Update(req v1.ProjectReq) (err error) {
+	err = s.ProjectRepo.Update(req)
+	if err != nil {
+		return
+	}
+
+	err = s.IntegrationProjectService.Save(req.ProjectReq, req.Id)
+
+	return
 }
 
 func (s *ProjectService) DeleteById(id uint) error {
@@ -346,37 +364,6 @@ func (s *ProjectService) createSample(projectId uint) (err error) {
 	return err
 }
 */
-
-func (s *ProjectService) GetListWithRoleBySpace(spaceCode string) (res []v1.ProjectListWithRole, err error) {
-	return s.IntegrationRepo.GetProjectListWithRoleBySpace(spaceCode)
-}
-
-func (s *ProjectService) SaveSpaceRelatedProjects(spaceCode string, shortNames []string) (err error) {
-	err = s.IntegrationRepo.DeleteBySpaceCode(spaceCode)
-	if err != nil {
-		return
-	}
-
-	relations := make([]model.ProjectSpaceRel, 0)
-	for _, shortName := range shortNames {
-		relations = append(relations, model.ProjectSpaceRel{
-			SpaceCode:        spaceCode,
-			ProjectShortName: shortName,
-		})
-	}
-
-	err = s.IntegrationRepo.BatchCreateProjectSpaceRel(relations)
-	return
-}
-
-func (s *ProjectService) CheckProjectAndUserByName(shortName, username string) (project model.Project, userInProject bool, err error) {
-	user, err := s.UserRepo.GetByUserName(username)
-	if err != nil {
-		return
-	}
-
-	return s.CheckProjectAndUser(shortName, user.ID)
-}
 
 func (s *ProjectService) AllProjectList(username string) (res []model.Project, err error) {
 	return s.ProjectRepo.ListByUsername(username)

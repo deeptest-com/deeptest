@@ -71,3 +71,13 @@ func (c *OpenCtrl) CheckProjectAndUser(ctx iris.Context) {
 
 	return
 }
+
+func (c *OpenCtrl) GetProjectRole(ctx iris.Context) {
+	username := ctx.URLParam("username")
+	projectCode := ctx.URLParam("project_code")
+	if role, err := c.ProjectService.GetProjectRole(username, projectCode); err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: role})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.ErrUserNotInProject.Code, Msg: err.Error()})
+	}
+}

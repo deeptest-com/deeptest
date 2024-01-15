@@ -381,3 +381,21 @@ func (s *ProjectService) CheckProjectAndUserByName(shortName, username string) (
 func (s *ProjectService) AllProjectList(username string) (res []model.Project, err error) {
 	return s.ProjectRepo.ListByUsername(username)
 }
+
+func (s *ProjectService) GetProjectRole(username, projectCode string) (role string, err error) {
+	var user model.SysUser
+	user, err = s.UserRepo.GetByUserName(username)
+	if err != nil {
+		return
+	}
+	var project model.Project
+	project, err = s.ProjectRepo.GetByShortName(projectCode)
+
+	var projectRole model.ProjectRole
+	projectRole, err = s.ProjectRoleRepo.ProjectUserRoleList(user.ID, project.ID)
+	if err != nil {
+		return
+	}
+
+	return string(projectRole.Name), err
+}

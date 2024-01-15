@@ -1105,3 +1105,11 @@ func (r *ProjectRepo) ListByUsername(username string) (res []model.Project, err 
 		Find(&res).Error
 	return
 }
+
+func (r *ProjectRepo) BatchGetByShortNames(shortNames []string) (ret []model.Project, err error) {
+	err = r.DB.Model(&ret).
+		Where("short_name IN (?) AND NOT deleted", shortNames).
+		Find(&ret).Error
+
+	return
+}

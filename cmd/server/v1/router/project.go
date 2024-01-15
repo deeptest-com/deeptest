@@ -35,6 +35,9 @@ func (m *ProjectModule) Party() module.WebModule {
 		index.Get("/auditUsers", m.ProjectCtrl.AuditUsers).Name = "审批人"
 
 		index.Get("/checkProjectAndUser", m.ProjectCtrl.CheckProjectAndUser).Name = "校验项目和成员是否存在"
+		index.Get("/integrationDetail", m.ProjectCtrl.GetIntegrationDetail).Name = "集成详情"
+		index.Get("/userProducts", m.ProjectCtrl.GetUserProducts).Name = "获取用户的产品列表"
+		index.Get("/userSpaces", m.ProjectCtrl.GetUserSpaces).Name = "获取用户的空间列表"
 
 	}
 	return module.NewModule("/projects", handler)

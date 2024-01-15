@@ -148,25 +148,3 @@ type UserMenuPermission struct {
 	Permission string               `json:"permission"`
 	Children   []UserMenuPermission `json:"children"`
 }
-
-type SpaceRole struct {
-	Id        uint   `json:"id"`
-	RoleName  string `json:"roleName"`
-	RoleValue string `json:"roleValue"`
-	Remark    string `json:"remark"`
-}
-
-type ProductItem struct {
-	ProductBaseItem
-	Children []*ProductItem `json:"children"`
-}
-
-type ProductBaseItem struct {
-	Id   uint   `json:"id"`
-	Name string `json:"name"`
-}
-
-type SpaceItem struct {
-	Name        string `json:"name"`
-	NameEngAbbr string `json:"nameEngAbbr"`
-}

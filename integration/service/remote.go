@@ -800,14 +800,14 @@ func (s *RemoteService) GetUserProductList(page, pageSize int, username string) 
 	return
 }
 
-func (s *RemoteService) GetProductListById(productIds []int) (ret []integrationDomain.ProductBaseItem, err error) {
+func (s *RemoteService) GetProductListById(productIds []uint) (ret []integrationDomain.ProductBaseItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/listProductManage", config.CONFIG.ThirdParty.Url)
 
 	queryParams := make([]domain.Param, 0)
 	for _, v := range productIds {
 		paramTmp := domain.Param{
 			Name:  "productIds[]",
-			Value: strconv.Itoa(v),
+			Value: strconv.Itoa(int(v)),
 		}
 		queryParams = append(queryParams, paramTmp)
 	}
@@ -834,8 +834,10 @@ func (s *RemoteService) GetProductListById(productIds []int) (ret []integrationD
 
 	respContent := struct {
 		Code int
-		Data []integrationDomain.ProductBaseItem
-		Msg  string
+		Data struct {
+			List []integrationDomain.ProductBaseItem `json:"list"`
+		} `json:"data"`
+		Msg string
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
@@ -848,7 +850,7 @@ func (s *RemoteService) GetProductListById(productIds []int) (ret []integrationD
 		return
 	}
 
-	ret = respContent.Data
+	ret = respContent.Data.List
 
 	return
 }
@@ -863,7 +865,7 @@ func (s *RemoteService) GetSpacesByUsername(username string) (ret []integrationD
 		Headers:  &headers,
 		QueryParams: &[]domain.Param{
 			{
-				Name:  "userName",
+				Name:  "username",
 				Value: username,
 			},
 		},

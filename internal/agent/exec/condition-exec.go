@@ -203,7 +203,7 @@ func createAssertFromScriptResult(output string, conditions *[]domain.InterfaceE
 		ConditionEntityType: consts.ConditionTypeCheckpoint,
 	}
 
-	if statusStr == "failed" {
+	if statusStr == "fail" {
 		*status = consts.Fail
 		checkpoint.ResultStatus = consts.Fail
 	} else {

@@ -384,16 +384,22 @@ func (s *ProjectService) AllProjectList(username string) (res []model.Project, e
 
 func (s *ProjectService) GetProjectRole(username, projectCode string) (role string, err error) {
 	var user model.SysUser
-	user, err = s.UserRepo.GetByUserName(username)
-	if err != nil {
+	user, _ = s.UserRepo.GetByUserName(username)
+	if user.ID == 0 {
+		err = fmt.Errorf("用户名不存在")
 		return
 	}
 	var project model.Project
-	project, err = s.ProjectRepo.GetByShortName(projectCode)
+	project, _ = s.ProjectRepo.GetByShortName(projectCode)
+	if project.ID == 0 {
+		err = fmt.Errorf("项目不存在")
+		return
+	}
 
 	var projectRole model.ProjectRole
-	projectRole, err = s.ProjectRoleRepo.ProjectUserRoleList(user.ID, project.ID)
-	if err != nil {
+	projectRole, _ = s.ProjectRoleRepo.ProjectUserRoleList(user.ID, project.ID)
+	if projectRole.Name == "" {
+		err = fmt.Errorf("用户角色不存在")
 		return
 	}
 

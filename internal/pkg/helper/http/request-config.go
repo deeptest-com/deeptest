@@ -95,7 +95,8 @@ func dealwithQueryParams(req domain.BaseRequest, httpReq *http.Request) {
 	for _, pair := range strings.Split(httpReq.URL.RawQuery, "&") {
 		arr := strings.Split(pair, "=")
 		if len(arr) > 1 {
-			queryParams.Add(arr[0], arr[1])
+			queryParams = queryParamsAdd(queryParams, arr[0], arr[1])
+			//queryParams.Add(arr[0], arr[1])
 		}
 	}
 
@@ -103,13 +104,22 @@ func dealwithQueryParams(req domain.BaseRequest, httpReq *http.Request) {
 		for _, p := range *req.QueryParams {
 			name := p.Name
 
-			if !p.Disabled && name != "" && queryParams.Get(name) == "" {
-				queryParams.Add(name, p.Value)
+			//if !p.Disabled && name != "" && queryParams.Get(name) == "" {
+			if !p.Disabled && name != "" {
+				queryParams = queryParamsAdd(queryParams, name, p.Value)
+				//queryParams.Add(name, p.Value)
 			}
 		}
 	}
 
 	httpReq.URL.RawQuery = queryParams.Encode()
+	fmt.Println(111)
+}
+
+func queryParamsAdd(params url.Values, key, value string) url.Values {
+	params[key] = append(params[key], value)
+
+	return params
 }
 
 func dealwithHeader(req domain.BaseRequest, httpReq *http.Request) {

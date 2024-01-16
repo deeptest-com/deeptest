@@ -1113,3 +1113,13 @@ func (r *ProjectRepo) BatchGetByShortNames(shortNames []string) (ret []model.Pro
 
 	return
 }
+
+func (r *ProjectRepo) AddMemberIfNotExisted(projectId, userId uint, role consts.RoleType) (err error) {
+	isMember, err := r.IfProjectMember(userId, projectId)
+	if err != nil || isMember {
+		return
+	}
+
+	err = r.AddProjectMember(projectId, userId, role)
+	return
+}

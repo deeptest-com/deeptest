@@ -32,3 +32,37 @@ type ProjectDetail struct {
 	Products []ProductBaseItem `json:"products"`
 	Spaces   []SpaceItem       `json:"spaces"`
 }
+
+type UserInfo struct {
+	Username string `json:"username"`
+	WxName   string `json:"wxName"`
+	RealName string `json:"realName"`
+	Mail     string `json:"mail"`
+	Password string `json:"password"`
+}
+
+type ProjectInfo struct {
+	Name        string     `json:"name"`        // 名称
+	NameEngAbbr string     `json:"nameEngAbbr"` // 英文名称缩写
+	SpaceAdmins []UserInfo `json:"spaceAdmins"` // 空间管理员
+}
+
+type UserMenuPermission struct {
+	Permission string               `json:"permission"`
+	Children   []UserMenuPermission `json:"children"`
+}
+
+type SpaceMembersAndRolesItem struct {
+	ProjectEngAbbr string         `json:"ProjectEngAbbr"`
+	UserBaseInfo   []UserRoleInfo `json:"UserBaseInfo"`
+}
+
+type UserRoleInfo struct {
+	UserInfo
+	Role []struct {
+		Id    uint   `json:"Id"`
+		Name  string `json:"name"`
+		Value string `json:"value"`
+	} `json:"role"`
+	RoleValues []string `json:"roleValues"`
+}

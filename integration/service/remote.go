@@ -806,6 +806,7 @@ func (s *RemoteService) GetProductListById(productIds []uint) (ret []integration
 	queryParams := make([]domain.Param, 0)
 	for _, v := range productIds {
 		paramTmp := domain.Param{
+			//Name: fmt.Sprintf("productIds[%d]", k),
 			Name:  "productIds[]",
 			Value: strconv.Itoa(int(v)),
 		}
@@ -957,13 +958,13 @@ func (s *RemoteService) BatchGetSpacesByCode(spaceCodes []string) (ret []integra
 	return
 }
 
-func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []integrationDomain.UserInfo, err error) {
+func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []integrationDomain.SpaceMembersAndRolesItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/project/member/abbrs", config.CONFIG.ThirdParty.Url)
 
 	queryParams := make([]domain.Param, 0)
 	for _, v := range spaceCodes {
 		paramTmp := domain.Param{
-			Name:  "projectEngAbbrs",
+			Name:  "projectEngAbbrs[]",
 			Value: v,
 		}
 		queryParams = append(queryParams, paramTmp)
@@ -991,7 +992,7 @@ func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []inte
 
 	respContent := struct {
 		Code int
-		Data []integrationDomain.UserInfo
+		Data []integrationDomain.SpaceMembersAndRolesItem
 		Msg  string
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)

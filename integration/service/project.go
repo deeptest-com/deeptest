@@ -3,14 +3,19 @@ package service
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 )
 
 type ProjectService struct {
 	RemoteService   *RemoteService        `inject:""`
 	IntegrationRepo *repo.IntegrationRepo `inject:""`
 	ProjectRepo     *repo.ProjectRepo     `inject:""`
+	UserRepo        *repo.UserRepo        `inject:""`
+	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
 }
 
 func (s *ProjectService) GetUserProductList(page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
@@ -21,21 +26,7 @@ func (s *ProjectService) GetSpacesByUsername(username string) (ret []integration
 	return s.RemoteService.GetSpacesByUsername(username)
 }
 
-func (s *ProjectService) Create(req integrationDomain.ProjectReq, projectId uint) (err error) {
-	if err = s.SaveProjectRelatedProducts(projectId, req.Products); err != nil {
-		return
-	}
-
-	if err = s.SaveProjectRelatedSpaces(projectId, req.Spaces); err != nil {
-		return
-	}
-
-	err = s.SyncSpaceMembers(projectId, req.Spaces)
-
-	return
-}
-
-func (s *ProjectService) SaveProjectRelatedProducts(projectId uint, products []uint) (err error) {
+func (s *ProjectService) AddProjectRelatedProducts(projectId uint, products []uint) (err error) {
 	relations := make([]model.ProjectProductRel, 0)
 	for _, product := range products {
 		relations = append(relations, model.ProjectProductRel{
@@ -51,7 +42,7 @@ func (s *ProjectService) SaveProjectRelatedProducts(projectId uint, products []u
 	return
 }
 
-func (s *ProjectService) SaveProjectRelatedSpaces(projectId uint, spaces []string) (err error) {
+func (s *ProjectService) AddProjectRelatedSpaces(projectId uint, spaces []string) (err error) {
 	relations := make([]model.ProjectSpaceRel, 0)
 	for _, space := range spaces {
 		relations = append(relations, model.ProjectSpaceRel{
@@ -67,30 +58,53 @@ func (s *ProjectService) SaveProjectRelatedSpaces(projectId uint, spaces []strin
 	return
 }
 
-// SyncSpaceMembers TODO 存疑
 func (s *ProjectService) SyncSpaceMembers(projectId uint, spaces []string) (err error) {
+	members, memberRoles, err := s.GetUserInfoMap(spaces)
+	if err != nil {
+		return
+	}
+
+	err = s.AddMembers(projectId, members, memberRoles)
 
 	return
 }
 
 func (s *ProjectService) Save(req integrationDomain.ProjectReq, projectId uint) (err error) {
+	if config.CONFIG.System.SysEnv != "ly" {
+		return
+	}
+
+	if err = s.SaveProducts(projectId, req.Products); err != nil {
+		return
+	}
+
+	if err = s.SaveSpaces(projectId, req.Spaces); err != nil {
+		return
+	}
+
+	if req.SyncMembers {
+		err = s.SyncSpaceMembers(projectId, req.Spaces)
+	}
+
+	return
+}
+
+func (s *ProjectService) SaveProducts(projectId uint, products []uint) (err error) {
 	if err = s.IntegrationRepo.DeleteProductByProject(projectId); err != nil {
 		return
 	}
 
-	if err = s.SaveProjectRelatedProducts(projectId, req.Products); err != nil {
-		return
-	}
+	err = s.AddProjectRelatedProducts(projectId, products)
 
+	return
+}
+
+func (s *ProjectService) SaveSpaces(projectId uint, spaces []string) (err error) {
 	if err = s.IntegrationRepo.DeleteSpaceByProject(projectId); err != nil {
 		return
 	}
 
-	if err = s.SaveProjectRelatedSpaces(projectId, req.Spaces); err != nil {
-		return
-	}
-
-	err = s.SyncSpaceMembers(projectId, req.Spaces)
+	err = s.AddProjectRelatedSpaces(projectId, spaces)
 
 	return
 }
@@ -174,6 +188,77 @@ func (s *ProjectService) GetProjectShortNameAndIdMap(shortNames []string) (res m
 	res = make(map[string]uint)
 	for _, project := range projects {
 		res[project.ShortName] = project.ID
+	}
+
+	return
+}
+
+func (s *ProjectService) GetUserInfoMap(spaceCodes []string) (res map[string]integrationDomain.UserRoleInfo, userRoles map[string][]string, err error) {
+	spaceMemberRoles, err := s.RemoteService.BatchGetMembersBySpaces(spaceCodes)
+	if err != nil {
+		return
+	}
+
+	res = make(map[string]integrationDomain.UserRoleInfo)
+	userRoles = make(map[string][]string)
+
+	for _, memberRoles := range spaceMemberRoles {
+		for _, memberRole := range memberRoles.UserBaseInfo {
+			res[memberRole.Username] = memberRole
+			for _, role := range memberRole.Role {
+				userRoles[memberRole.Username] = append(userRoles[memberRole.Username], role.Value)
+			}
+		}
+	}
+
+	roleBased, err := s.GetSpaceRoleArrays()
+	if err != nil {
+		return
+	}
+
+	for k, v := range userRoles {
+		roles := _commUtils.ArrayRemoveDuplication(v)
+		userRoles[k] = _commUtils.Intersect(roles, roleBased)
+	}
+
+	return
+}
+
+func (s *ProjectService) GetSpaceRoleArrays() (res []string, err error) {
+	spaceRoles, err := s.RemoteService.GetSpaceRoles()
+	if err != nil {
+		return
+	}
+
+	for _, v := range spaceRoles {
+		res = append(res, v.RoleValue)
+	}
+
+	return
+}
+
+func (s *ProjectService) AddMembers(projectId uint, members map[string]integrationDomain.UserRoleInfo, memberRoles map[string][]string) (err error) {
+	for _, member := range members {
+		createUserReq := v1.UserReq{
+			UserBase: v1.UserBase{
+				Username:  member.Username,
+				Name:      member.RealName,
+				Email:     member.Mail,
+				ImAccount: member.WxName,
+				Password:  _commUtils.RandStr(8),
+			},
+		}
+		userId, err := s.UserRepo.CreateIfNotExisted(createUserReq)
+		if err != nil {
+			continue
+		}
+
+		role := consts.IntegrationGeneral
+		if roles, ok := memberRoles[member.Username]; ok && len(roles) > 0 {
+			role = consts.RoleType(roles[0])
+		}
+
+		err = s.ProjectRepo.AddMemberIfNotExisted(projectId, userId, role)
 	}
 
 	return

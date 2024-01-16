@@ -32,4 +32,5 @@ func (Scenario) TableName() string {
 type ScenarioDetail struct {
 	Scenario
 	CategoryName string `json:"categoryName"`
+	RefId        uint   `json:"refId"`
 }

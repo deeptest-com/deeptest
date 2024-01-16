@@ -389,6 +389,16 @@ func ArrayUnique(arr []string) (ret []string) {
 			ret = append(ret, x)
 		}
 	}
+	return
+}
 
+func UintArrToStr(arr []uint) (res string) {
+	for _, item := range arr {
+		if res != "" {
+			res += fmt.Sprintf(",%v", item)
+		} else {
+			res += fmt.Sprintf("%v", item)
+		}
+	}
 	return
 }

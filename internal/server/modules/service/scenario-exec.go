@@ -212,6 +212,15 @@ func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult,
 
 		default:
 		}
+	} else if result.ProcessorType == consts.ProcessorCustomCodeDefault {
+		report.TotalAssertionNum += result.Stat.CheckpointPass + result.Stat.CheckpointFail
+
+		report.PassAssertionNum += result.Stat.CheckpointPass
+		report.FailAssertionNum += result.Stat.CheckpointFail
+
+		if result.Stat.CheckpointFail > 0 {
+			report.ResultStatus = consts.Fail
+		}
 	}
 
 	if result.Children == nil {

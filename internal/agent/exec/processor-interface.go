@@ -111,7 +111,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
 
-	stat := CountStat(session.ExecUuid, processor.Result)
+	stat := CountInterfaceStat(session.ExecUuid, processor.Result)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 	processor.AddResultToParent()
 

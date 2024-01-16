@@ -33,7 +33,7 @@ func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err 
 	scenarioExecObj.ExecUuid = req.ExecUuid
 
 	session, err := ExecScenario(scenarioExecObj, wsMsg)
-	session.RootProcessor.Result.Stat = *agentExec.GetStat(req.ExecUuid)
+	session.RootProcessor.Result.Stat = *agentExec.GetInterfaceStat(req.ExecUuid)
 	session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 	session.RootProcessor.Result.ScenarioId = uint(req.ScenarioId)
 

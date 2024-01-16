@@ -293,9 +293,10 @@ func defineGoFuncs(execUuid string) {
 
 func jsErrMsg(msg string, category string, success bool) (ret string) {
 	mp := iris.Map{
-		"success":  success,
-		"category": category,
-		"msg":      msg,
+		"isCustomObj": true,
+		"success":     success,
+		"category":    category,
+		"msg":         msg,
 	}
 
 	bytes, err := json.Marshal(mp)

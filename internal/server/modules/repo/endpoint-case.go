@@ -45,7 +45,6 @@ func (r *EndpointCaseRepo) Paginate(req serverDomain.EndpointCaseReqPaginate) (d
 	}
 
 	cases := make([]*model.EndpointCase, 0)
-
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
 		Find(&cases).Error
@@ -220,10 +219,10 @@ func (r *EndpointCaseRepo) UpdateDebugInterfaceId(debugInterfaceId, id uint) (er
 	return
 }
 
-func (r *EndpointCaseRepo) ListByCaseType(endpointId uint, caseType consts.CaseType) (pos []model.EndpointCase, err error) {
+func (r *EndpointCaseRepo) ListByCaseType(endpointId uint, caseTypes []consts.CaseType) (pos []model.EndpointCase, err error) {
 	err = r.DB.
 		Where("endpoint_id=?", endpointId).
-		Where("case_type=?", caseType).
+		Where("case_type in ?", caseTypes).
 		Where("NOT deleted").Order("created_at desc").
 		Find(&pos).Error
 

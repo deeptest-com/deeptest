@@ -148,8 +148,35 @@ func (s *ProjectService) Detail(projectId uint) (res integrationDomain.ProjectDe
 	return
 }
 
-func (s *ProjectService) GetListWithRoleBySpace(spaceCode string) (res []v1.ProjectListWithRole, err error) {
-	return s.IntegrationRepo.GetProjectListWithRoleBySpace(spaceCode)
+func (s *ProjectService) GetListWithRoleBySpace(spaceCode, username string) (res []v1.ProjectListWithRole, err error) {
+	res, err = s.IntegrationRepo.GetProjectListWithRoleBySpace(spaceCode)
+	if err != nil {
+		return
+	}
+
+	s.AddMemberRoleForProject(&res, username)
+
+	return
+}
+
+func (s *ProjectService) AddMemberRoleForProject(projects *[]v1.ProjectListWithRole, username string) {
+	projectIds := make([]uint, 0)
+	for _, v := range *projects {
+		projectIds = append(projectIds, v.ID)
+	}
+
+	projectRoleMap, err := s.ProjectRepo.GetUserProjectRoleMap(username, projectIds)
+	if err != nil {
+		return
+	}
+
+	for _, v := range *projects {
+		if roleName, ok := projectRoleMap[v.ID]; ok {
+			v.RoleName = roleName
+		}
+	}
+
+	return
 }
 
 func (s *ProjectService) SaveSpaceRelatedProjects(spaceCode string, shortNames []string) (err error) {

@@ -28,8 +28,9 @@ func (c *OpenCtrl) AllProjectList(ctx iris.Context) {
 
 func (c *OpenCtrl) GetProjectsBySpace(ctx iris.Context) {
 	spaceCode := ctx.URLParam("spaceCode")
+	username := ctx.URLParam("username")
 
-	data, err := c.IntegrationProjectService.GetListWithRoleBySpace(spaceCode)
+	data, err := c.IntegrationProjectService.GetListWithRoleBySpace(spaceCode, username)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

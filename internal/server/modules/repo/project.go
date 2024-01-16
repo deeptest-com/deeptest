@@ -1123,3 +1123,29 @@ func (r *ProjectRepo) AddMemberIfNotExisted(projectId, userId uint, role consts.
 	err = r.AddProjectMember(projectId, userId, role)
 	return
 }
+
+func (r *ProjectRepo) FindRolesByProjectsAndUsername(username string, projectIds []uint) (members []model.ProjectMember, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).
+		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
+		Joins("LEFT JOIN sys_user u ON biz_project_member.user_id=u.id").
+		Select("biz_project_member.*, r.name project_role_name").
+		Where("u.username = ?", username).
+		Where("biz_project_member.project_id IN (?)", projectIds).
+		Find(&members).Error
+
+	return
+}
+
+func (r *ProjectRepo) GetUserProjectRoleMap(username string, projectIds []uint) (res map[uint]consts.RoleType, err error) {
+	projectRoles, err := r.FindRolesByProjectsAndUsername(username, projectIds)
+	if err != nil {
+		return
+	}
+
+	res = make(map[uint]consts.RoleType)
+	for _, v := range projectRoles {
+		res[v.ProjectId] = v.ProjectRoleName
+	}
+
+	return
+}

@@ -14,9 +14,7 @@ type IntegrationRepo struct {
 func (r *IntegrationRepo) GetProjectListWithRoleBySpace(spaceCode string) (res []v1.ProjectListWithRole, err error) {
 	err = r.DB.Model(&model.Project{}).
 		Joins("LEFT JOIN biz_integration_project_space_rel rel ON biz_project.id=rel.project_id").
-		Joins("LEFT JOIN biz_project_member m ON biz_project.id=m.project_id").
-		Joins("LEFT JOIN biz_project_role r ON m.project_role_id=r.id").
-		Select("biz_project.id, biz_project.name, biz_project.short_name, r.name as role_name").
+		Select("biz_project.id, biz_project.name, biz_project.short_name").
 		Where("rel.space_code = ? AND not biz_project.deleted AND not biz_project.disabled", spaceCode).
 		Find(&res).Error
 

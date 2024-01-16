@@ -15,12 +15,7 @@ import (
 	"github.com/dop251/goja_nodejs/require"
 	"log"
 	"path/filepath"
-	"sync"
 	"time"
-)
-
-var (
-	AgentLoadedLibs sync.Map
 )
 
 func LoadChaiJslibs(runtime *goja.Runtime) {
@@ -65,7 +60,7 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 	for _, lib := range libs {
 		id := lib.Id
 
-		updateTime, ok := GetAgentCache(id)
+		updateTime, ok := GetAgentCache(projectId, id)
 
 		if !ok || updateTime.Before(lib.UpdatedAt) {
 			pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d.js", id))
@@ -77,33 +72,28 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 
 			runtime.Set(lib.Name, module)
 
-			SetAgentCache(id, lib.UpdatedAt)
+			SetAgentCache(projectId, id, lib.UpdatedAt)
 		}
 	}
 }
 
-func GetAgentCache(id uint) (val time.Time, ok bool) {
-	inf, ok := AgentLoadedLibs.Load(id)
-
-	if ok {
-		val = inf.(time.Time)
-	}
+func GetAgentCache(projectId, id uint) (val time.Time, ok bool) {
+	mp := GetAgentLoadedLibs(projectId)
+	val = (*mp)[id]
 
 	return
 }
 
-func SetAgentCache(id uint, val time.Time) {
-	AgentLoadedLibs.Store(id, val)
+func SetAgentCache(projectId, id uint, val time.Time) {
+	mp := GetAgentLoadedLibs(projectId)
+	(*mp)[id] = val
 }
 
 func getJslibsFromServer(projectId uint, serverUrl, token string) (libs []Jslib) {
 	url := fmt.Sprintf("snippets/getJslibsForAgent?projectId=%d", projectId)
 
-	loadedLibs := map[uint]time.Time{}
-	AgentLoadedLibs.Range(func(key, value interface{}) bool {
-		loadedLibs[key.(uint)] = value.(time.Time)
-		return true
-	})
+	loadedLibs := &map[uint]time.Time{} // GetAgentLoadedLibs(projectId)
+
 	body, err := json.Marshal(loadedLibs)
 
 	httpReq := domain.BaseRequest{

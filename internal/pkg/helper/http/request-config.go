@@ -113,7 +113,6 @@ func dealwithQueryParams(req domain.BaseRequest, httpReq *http.Request) {
 	}
 
 	httpReq.URL.RawQuery = queryParams.Encode()
-	fmt.Println(111)
 }
 
 func queryParamsAdd(params url.Values, key, value string) url.Values {

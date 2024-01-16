@@ -73,6 +73,16 @@ func (r *ProjectMenuRepo) GetRoleMenuList(roleId uint) (roleMenus []model.Projec
 	return
 }
 
+func (r *ProjectMenuRepo) GetRoleMenuCodeList(roleId uint) (roleMenuCodes []string, err error) {
+	err = r.DB.Model(&model.ProjectMenu{}).
+		Joins("left join biz_project_role_menu m on biz_project_menu.id = m.menu_id").
+		Select("biz_project_menu.code").
+		Where("m.role_id = ?", roleId).
+		Scan(&roleMenuCodes).Error
+
+	return
+}
+
 func (r *ProjectMenuRepo) GetAllMenuList() (menus []model.ProjectMenu, err error) {
 	err = r.DB.Model(&model.ProjectMenu{}).Scan(&menus).Error
 	return

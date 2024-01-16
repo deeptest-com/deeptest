@@ -32,13 +32,14 @@ type ProjectBase struct {
 	Desc string                   `json:"desc" gorm:"column:descr;type:text"`
 	Type serverConsts.ProjectType `json:"type"`
 
-	SchemaId       uint   `json:"schemaId"`
-	OrgId          uint   `json:"orgId"`
-	Logo           string `json:"logo"`
-	ShortName      string `json:"shortName"`
-	IncludeExample bool   `json:"includeExample"`
-	AdminId        uint   `json:"adminId"`
-	AdminName      string `gorm:"-" json:"adminName"`
+	SchemaId       uint                       `json:"schemaId"`
+	OrgId          uint                       `json:"orgId"`
+	Logo           string                     `json:"logo"`
+	ShortName      string                     `json:"shortName"`
+	IncludeExample bool                       `json:"includeExample"`
+	AdminId        uint                       `json:"adminId"`
+	AdminName      string                     `gorm:"-" json:"adminName"`
+	Source         serverConsts.ProjectSource `json:"source"`
 }
 
 type ProjectUserPermsPaginate struct {

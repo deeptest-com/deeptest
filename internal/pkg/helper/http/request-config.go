@@ -134,6 +134,7 @@ func dealwithHeader(req domain.BaseRequest, httpReq *http.Request) {
 	}
 
 	addAuthorInfo(req, httpReq)
+
 }
 
 //func dealwithCookie(req domain.BaseRequest, httpReq *http.Request) {

@@ -15,7 +15,9 @@ type ProjectMenuModule struct {
 func (m *ProjectMenuModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
-		index.Get("/userMenuList", m.ProjectMenuCtrl.UserMenuList).Name = "项目中用户的左侧菜单栏列表"
+		index.Get("/userMenuList", m.ProjectMenuCtrl.UserMenuList).Name = "项目中用户的左侧菜单栏列表(已弃用)"
+		index.Get("/userMenuListNew", m.ProjectMenuCtrl.UserMenuListNew).Name = "项目中用户的菜单/按钮列表"
+
 	}
 	return module.NewModule("/projects/menus", handler)
 }

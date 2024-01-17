@@ -558,6 +558,6 @@ func (r *EndpointRepo) ChangeSnapShot(endpointId uint, snapshot string) (err err
 }
 
 func (r *EndpointRepo) GetByCategoryId(categoryId uint) (endpoints []model.Endpoint, err error) {
-	err = r.DB.Where("category_id = ?", categoryId).Find(&endpoints).Error
+	err = r.DB.Where("category_id = ?", categoryId).Order("created_at desc").Find(&endpoints).Error
 	return endpoints, err
 }

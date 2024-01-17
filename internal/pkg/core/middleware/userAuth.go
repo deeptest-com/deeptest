@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/snowlyg/multi"
@@ -81,6 +82,9 @@ func UserAuth() iris.Handler {
 				}
 			}
 		}
+
+		token := []byte(verifier.RequestToken(ctx))
+		logUtils.Errorf("authorization failed, token:%s,xToken:%", string(token), xToken)
 
 		ctx.JSON(_domain.Response{
 			Code: _domain.AuthErr.Code,

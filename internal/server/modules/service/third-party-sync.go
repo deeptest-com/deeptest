@@ -133,12 +133,17 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 		classes := s.GetClasses(syncConfig.ServiceCode, token, baseUrl)
 		for _, class := range classes {
 			classCode := class.Code
+
+			functionList := s.GetFunctionsByClassNew(class.ServiceId, classCode, class.ParentCodes, class.ObjId, token, baseUrl)
+			if len(functionList) == 0 {
+				continue
+			}
+
 			categoryId, err := s.SaveCategory(class, projectId, syncConfig.ServeId)
 			if err != nil {
 				continue
 			}
 
-			functionList := s.GetFunctionsByClassNew(class.ServiceId, classCode, class.ParentCodes, class.ObjId, token, baseUrl)
 			for _, function := range functionList {
 				path := "/" + syncConfig.ServiceCode + "/" + classCode + "/" + function
 				functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)

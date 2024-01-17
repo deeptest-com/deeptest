@@ -1,7 +1,6 @@
 package service
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
@@ -155,39 +154,39 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 }
 
 func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleName consts.RoleType) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = fmt.Errorf("发送消息异常")
-		}
-	}()
-
-	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
-	messageContentByte, _ := json.Marshal(messageContent)
-
-	adminRole, err := s.ProjectRoleRepo.FindByName(s.BaseRepo.GetAdminRoleName())
-	if err != nil {
-		return
-	}
-
-	messageReq := v1.MessageReq{
-		MessageBase: v1.MessageBase{
-			MessageSource: consts.MessageSourceJoinProject,
-			Content:       string(messageContentByte),
-			ReceiverRange: 3,
-			SenderId:      userId,
-			ReceiverId:    adminRole.ID,
-			SendStatus:    consts.MessageCreated,
-			ServiceType:   consts.ServiceTypeApproval,
-			BusinessId:    auditId,
-		},
-	}
-	messageId, _ := s.MessageService.Create(messageReq)
-	message, err := s.MessageRepo.Get(messageId)
-	if err != nil {
-		return
-	}
-
-	_, err = s.MessageService.SendMessageToMcs(message)
+	//defer func() {
+	//	if r := recover(); r != nil {
+	//		err = fmt.Errorf("发送消息异常")
+	//	}
+	//}()
+	//
+	//messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
+	//messageContentByte, _ := json.Marshal(messageContent)
+	//
+	//adminRole, err := s.ProjectRoleRepo.FindByName(s.BaseRepo.GetAdminRoleName())
+	//if err != nil {
+	//	return
+	//}
+	//
+	//messageReq := v1.MessageReq{
+	//	MessageBase: v1.MessageBase{
+	//		MessageSource: consts.MessageSourceJoinProject,
+	//		Content:       string(messageContentByte),
+	//		ReceiverRange: 3,
+	//		SenderId:      userId,
+	//		ReceiverId:    adminRole.ID,
+	//		SendStatus:    consts.MessageCreated,
+	//		ServiceType:   consts.ServiceTypeApproval,
+	//		BusinessId:    auditId,
+	//	},
+	//}
+	//messageId, _ := s.MessageService.Create(messageReq)
+	//message, err := s.MessageRepo.Get(messageId)
+	//if err != nil {
+	//	return
+	//}
+	//
+	//_, err = s.MessageService.SendMessageToMcs(message)
 
 	return
 }

@@ -65,7 +65,7 @@ func (s *MessageService) OperateRead(req v1.MessageReadReq) (uint, error) {
 }
 
 func (s *MessageService) GetEndpointMcsData(projectId, endpointId uint) (mcsData im.EnterpriseWechatInfoData, err error) {
-	userAccount, err := s.ProjectRepo.GetImAccountsByProjectAndRole(projectId, 0, "")
+	userAccount, err := s.ProjectRepo.GetUsernamesByProjectAndRole(projectId, 0, "")
 	if err != nil {
 		return
 	}
@@ -129,52 +129,6 @@ func (s *MessageService) GetAuditProjectResultMcsData(auditId uint) (mcsData im.
 		UserAccount: []string{applyUser.Username},
 		ImAppid:     config.CONFIG.Mcs.ImAppid,
 		MsgType:     1,
-	}
-
-	return
-}
-
-func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint, roleName consts.RoleType) (mcsData im.EnterpriseWechatApprovalData, err error) {
-	sender, err := s.UserRepo.GetByUserId(senderId)
-	if err != nil {
-		return
-	}
-
-	project, err := s.ProjectRepo.Get(projectId)
-	if err != nil {
-		return
-	}
-
-	adminRole, err := s.ProjectRoleRepo.FindByName(s.BaseRepo.GetAdminRoleName())
-	if err != nil {
-		return
-	}
-
-	userAccount, err := s.ProjectRepo.GetImAccountsByProjectAndRole(projectId, adminRole.ID, "admin")
-	if err != nil {
-		return
-	}
-
-	auditData, err := s.ProjectRepo.GetAudit(auditId)
-	if err != nil {
-		return
-	}
-
-	host, _ := cache.GetCacheString("host")
-
-	projectHomePage := fmt.Sprintf("%s/%s/workspace", host, project.ShortName)
-	mcsData = im.EnterpriseWechatApprovalData{
-		CreatorId:    sender.ImAccount,
-		ApproveIds:   userAccount,
-		ApprovalType: 1,
-		TemplateId:   "C4RcZvqJE8yABvgcSGDYiyidk2sXSV5bCBddJXpZM",
-		ButtonDetail: []im.ButtonDetail{
-			{Type: "Text", Id: "Text-1672888267140", Data: "乐研API通知-项目权限申请"},
-			{Type: "Textarea", Id: "Textarea-1672888279646", Data: fmt.Sprintf("您好！%s申请\"%s\"项目的【%s】角色。请审批！\n项目链接：%s \n查看更多：%s", sender.Name, project.Name, roleName, projectHomePage, host+"/notification")},
-			{Type: "Textarea", Id: "Textarea-1672888323057", Data: auditData.Description},
-		},
-		SummaryList: []string{fmt.Sprintf("您好！%s申请\"%s\"项目的【%s】角色，申请原因：%s。请审批！", sender.Name, project.Name, roleName, auditData.Description)},
-		NotifyUrl:   fmt.Sprintf("%s/api/v1/message/receiveMcsApprovalData", config.CONFIG.Environment.ServerHost),
 	}
 
 	return

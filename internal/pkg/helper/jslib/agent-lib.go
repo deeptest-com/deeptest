@@ -67,10 +67,13 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 			fileUtils.WriteFile(pth, lib.Script)
 			module, err := require.Require(pth)
 			if err != nil {
-				logUtils.Info(err.Error())
+				logUtils.Errorf(err.Error())
 			}
 
-			runtime.Set(lib.Name, module)
+			err = runtime.Set(lib.Name, module)
+			if err != nil {
+				logUtils.Errorf(err.Error())
+			}
 
 			SetAgentCache(projectId, id, lib.UpdatedAt)
 			logUtils.Infof("更新第三方库，projectId：%v,id:%v,lib.Name:%v", projectId, id, lib.Name)

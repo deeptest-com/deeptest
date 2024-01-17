@@ -217,8 +217,12 @@ func defineJsFuncs(execUuid string, projectId uint) (err error) {
 			value.Content = string(bytes)
 			SetCurrResponse(execUuid, value)
 		} else {
-			value.Content = value.Data.(string)
+			var ok bool
+			if value.Content, ok = value.Data.(string); ok {
+
+			}
 			SetCurrResponse(execUuid, value)
+
 		}
 	})
 	/* END: called by go */

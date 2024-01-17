@@ -85,10 +85,12 @@ func (s *ThirdPartySyncService) GetFunctionsByClassNew(serviceId, classCode, par
 
 	getFunctionsByClassResData := s.RemoteService.LcQueryMsg(getFunctionsByClassReq, token, baseUrl)
 	for _, v := range getFunctionsByClassResData {
-		//不同步内部方法
-		if v.MessageType == 1 {
-			functions = append(functions, v.Code)
+		//不同步继承方法和不允许被重写的内部方法
+		if v.IsExtend == consts.IntegrationFuncIsExtend || (v.MessageType == 0 && v.Overridable == consts.IntegrationFuncCanNotOverridable) {
+			continue
 		}
+
+		functions = append(functions, v.Code)
 	}
 
 	return
@@ -111,7 +113,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 		return
 	}
 
-	_ = cache.SetCache("thirdPartySyncStatus", "Start", 4*time.Hour)
+	_ = cache.SetCache("thirdPartySyncStatus", "Start", 1*time.Hour)
 	syncList, err := s.GetAllData()
 	if err != nil {
 		return

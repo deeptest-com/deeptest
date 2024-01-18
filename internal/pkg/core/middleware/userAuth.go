@@ -3,8 +3,10 @@ package middleware
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	service2 "github.com/aaronchen2k/deeptest/integration/service"
+	"github.com/aaronchen2k/deeptest/integration/enum"
+	"github.com/aaronchen2k/deeptest/integration/service/user"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -17,27 +19,6 @@ import (
 	"strings"
 	"time"
 )
-
-/*
-func VerifyAuth() iris.Handler {
-	return func(ctx *context.Context) {
-		authorization := ctx.GetHeader("Authorization")
-		xToken := ctx.GetHeader("X-Token")
-		if xToken != "" && authorization == "" {
-			userInfo, err := new(service.RemoteService).GetUserInfoByToken(xToken)
-			if err == nil && userInfo.Username != "" {
-				token, err := creatSession(userInfo)
-				if err == nil && token != "" {
-					ctx.Request().Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
-					ctx.Header("Authorization", token)
-				}
-			}
-		}
-
-		ctx.Next()
-	}
-}
-*/
 
 var whitelist []string
 
@@ -71,9 +52,11 @@ func UserAuth() iris.Handler {
 			return
 		}
 
-		xToken := ctx.GetHeader("X-Token")
-		if xToken != "" {
-			userInfo, err := new(service2.RemoteService).GetUserInfoByToken(xToken)
+		appName, token, origin := getAppName(ctx)
+		user := user.NewUser(appName)
+
+		if appName != "" {
+			userInfo, err := user.GetUserInfoByToken(token, origin)
 			if err == nil && userInfo.Username != "" {
 				token, err := creatSession(userInfo)
 				if err == nil && token != "" {
@@ -85,8 +68,8 @@ func UserAuth() iris.Handler {
 			}
 		}
 
-		token := []byte(verifier.RequestToken(ctx))
-		logUtils.Errorf("authorization failed, token:%s,xToken:%", string(token), xToken)
+		atoken := []byte(verifier.RequestToken(ctx))
+		logUtils.Errorf("authorization failed, token:%s,xToken:%", string(atoken), token)
 
 		ctx.JSON(_domain.Response{
 			Code: _domain.AuthErr.Code,
@@ -130,5 +113,26 @@ func creatSession(userInfo integrationDomain.UserInfo) (token string, err error)
 	if err != nil {
 		return
 	}
+	return
+}
+
+func getAppName(ctx *context.Context) (appName enum.AppName, token, origin string) {
+
+	origin = ctx.GetHeader("Origin")
+	//origin = "http://192.168.5.60:804"
+
+	token = ctx.GetHeader("X-Token")
+	if token != "" {
+		appName = enum.Leyan
+		return
+	}
+
+	token = ctx.GetHeader("Token")
+	//token = "61m3uc60xbeo"
+	if token != "" {
+		appName = enum.Lecang
+		return
+	}
+
 	return
 }

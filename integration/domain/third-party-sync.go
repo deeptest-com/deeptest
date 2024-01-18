@@ -1,5 +1,7 @@
 package integrationDomain
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+
 type LoginByOauthReq struct {
 	LoginName string `json:"loginName"`
 	Password  string `json:"password"`
@@ -59,8 +61,10 @@ type GetFunctionsByClassRes struct {
 }
 
 type GetFunctionsByClassResData struct {
-	Code        string `json:"code"`
-	MessageType int    `json:"messageType"` // 0：内部方法，不能被前端调用 1：外部方法，可以被前端调用
+	Code        string                             `json:"code"`
+	MessageType int                                `json:"messageType"` // 0：内部方法，不能被前端调用 1：外部方法，可以被前端调用
+	IsExtend    consts.IntegrationFuncExtendStatus `json:"isExtend"`    // 是否是继承的消息 YES：是 NO：否
+	Overridable consts.IntegrationFuncOverridable  `json:"overridable"` // 是否允许重写 YES：是 NO：否
 }
 
 type MetaGetMethodDetailReq struct {
@@ -128,4 +132,10 @@ type QueryMsgReq struct {
 		Code        string `json:"code"`
 		ServiceId   string `json:"serviceId"`
 	} `json:"classInfo"`
+}
+
+type OtherUserInfo struct {
+	Username string `json:"loginName"`
+	RealName string `json:"name"`
+	Mail     string `json:"email"`
 }

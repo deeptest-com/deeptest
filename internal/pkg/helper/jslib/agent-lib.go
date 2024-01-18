@@ -83,7 +83,7 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 
 func GetAgentCache(projectId, id uint) (val time.Time, ok bool) {
 	mp := GetAgentLoadedLibs(projectId)
-	val = (*mp)[id]
+	val, ok = (*mp)[id]
 
 	return
 }

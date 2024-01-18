@@ -70,7 +70,7 @@ func UserAuth() iris.Handler {
 		}
 
 		atoken := []byte(verifier.RequestToken(ctx))
-		logUtils.Errorf("authorization failed, token:%s,xToken:%", string(atoken), token)
+		logUtils.Errorf("authorization failed, path:%s,token:%s,xToken:%", ctx.Path(), string(atoken), token)
 
 		ctx.JSON(_domain.Response{
 			Code: _domain.AuthErr.Code,

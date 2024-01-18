@@ -9,10 +9,8 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/im"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 type MessageService struct {
@@ -134,61 +132,6 @@ func (s *MessageService) GetAuditProjectResultMcsData(auditId uint) (mcsData im.
 	return
 }
 
-func (s *MessageService) SendMessageToMcs(message model.Message) (mcsMessageId string, err error) {
-	mcs := im.Mcs{
-		ServiceType: message.ServiceType,
-		Data:        message.Content,
-	}
-
-	mcsMessageId, err = mcs.SendMessage()
-	if err != nil {
-		return
-	}
-	message.McsMessageId = mcsMessageId
-	if mcsMessageId != "" {
-		if message.ServiceType == consts.ServiceTypeInfo {
-			err = s.MessageRepo.UpdateCombinedSendStatus(message.MessageSource, message.BusinessId, consts.MessageSendSuccess)
-			if err != nil {
-				return "", err
-			}
-		} else {
-			message.SendStatus = consts.MessageSendSuccess
-			s.MessageRepo.DB.Save(&message)
-
-		}
-	}
-
-	return
-}
-
-func (s *MessageService) SendMessageToMcsAsync() (err error) {
-	messages, err := s.MessageRepo.ListMsgNeedAsyncToMcs()
-	if err != nil {
-		return
-	}
-
-	for _, message := range messages {
-		_, err = s.SendMessageToMcs(message)
-	}
-
-	return
-}
-
-func (s *MessageService) SendMessageCron() {
-	name := "SendMessageSync"
-
-	s.Cron.RemoveTask(name)
-
-	s.Cron.AddCommonTask(name, "*/5 * * * *", func() {
-		err := s.SendMessageToMcsAsync()
-		if err != nil {
-			logUtils.Error("send message 定时导入任务失败，错误原因：" + err.Error())
-		}
-
-		logUtils.Info("send message 定时任务结束")
-	})
-}
-
 func (s *MessageService) ReceiveMcsApprovalResult(res v1.McsApprovalResData) (err error) {
 	message, err := s.MessageRepo.GetByMcsMessageId(res.InstanceId)
 	if err != nil {
@@ -217,47 +160,7 @@ func (s *MessageService) ReceiveMcsApprovalResult(res v1.McsApprovalResData) (er
 		}
 
 		err = s.ProjectService.Audit(message.BusinessId, approveUser.ID, status)
-		//if err != nil {
-		//	return err
-		//}
-
-		//_, err = s.ProjectRepo.GetAudit(message.BusinessId)
-		//if err != nil {
-		//	return err
-		//}
-
-		//err = s.SendApplyProjectAuditResMessage(auditData)
-		//if err != nil {
-		//	return err
-		//}
 	}
-
-	return
-}
-
-func (s *MessageService) SendApplyProjectAuditResMessage(auditData model.ProjectMemberAudit) (err error) {
-	messageContent, err := s.GetAuditProjectResultMcsData(auditData.ID)
-	messageContentByte, _ := json.Marshal(messageContent)
-
-	messageReq := v1.MessageReq{
-		MessageBase: v1.MessageBase{
-			MessageSource: consts.MessageSourceAuditProjectRes,
-			Content:       string(messageContentByte),
-			ReceiverRange: 2,
-			SenderId:      auditData.AuditUserId,
-			ReceiverId:    auditData.ApplyUserId,
-			SendStatus:    consts.MessageCreated,
-			ServiceType:   consts.ServiceTypeInfo,
-			BusinessId:    auditData.ID,
-		},
-	}
-	messageId, _ := s.Create(messageReq)
-	message, err := s.MessageRepo.Get(messageId)
-	if err != nil {
-		return
-	}
-
-	_, err = s.SendMessageToMcs(message)
 
 	return
 }

@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -15,8 +16,9 @@ import (
 )
 
 type MessageCtrl struct {
-	MessageService   *service.MessageService   `inject:""`
-	WebSocketService *service.WebSocketService `inject:""`
+	MessageService            *service.MessageService            `inject:""`
+	WebSocketService          *service.WebSocketService          `inject:""`
+	IntegrationMessageService *integrationService.MessageService `inject:""`
 	BaseCtrl
 }
 
@@ -133,5 +135,5 @@ func (c *MessageCtrl) InitThirdPartySyncCron() {
 		return
 	}
 
-	c.MessageService.SendMessageCron()
+	c.IntegrationMessageService.SendMessageCron()
 }

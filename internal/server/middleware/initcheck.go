@@ -17,13 +17,15 @@ func InitCheck() iris.Handler {
 		if dao.GetDB() == nil || (config.CONFIG.System.CacheType == "redis" && config.CACHE == nil) {
 			ctx.StopWithJSON(http.StatusOK, _domain.Response{Code: _domain.NeedInitErr.Code, Data: nil, Msg: _domain.NeedInitErr.Msg})
 		} else {
-			var host string
+			host := ctx.Request().Header.Get("Origin")
+			thirdPartyHost := ctx.Request().Header.Get("Origin")
+
 			if ctx.GetHeader("X-Token") != "" {
 				host = ctx.Request().Header.Get("X-API-Origin")
-			} else {
-				host = ctx.Request().Header.Get("Origin")
+				thirdPartyHost = ctx.Request().Header.Get("Origin")
 			}
 			cache.SetCache("host", host, -1)
+			cache.SetCache("thirdPartyHost", thirdPartyHost, -1)
 			ctx.Next()
 		}
 

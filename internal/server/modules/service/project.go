@@ -7,7 +7,6 @@ import (
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/integration/service"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -142,51 +141,11 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 	}
 
 	go func() {
-		if config.CONFIG.System.SysEnv == "ly" {
-			err = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
-			if err != nil {
-				logUtils.Infof("申请加入项目发送消息失败，err:%+v", err)
-			}
+		err = s.IntegrationProjectService.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
+		if err != nil {
+			logUtils.Infof("申请加入项目发送消息失败，err:%+v", err)
 		}
 	}()
-
-	return
-}
-
-func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleName consts.RoleType) (err error) {
-	//defer func() {
-	//	if r := recover(); r != nil {
-	//		err = fmt.Errorf("发送消息异常")
-	//	}
-	//}()
-	//
-	//messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
-	//messageContentByte, _ := json.Marshal(messageContent)
-	//
-	//adminRole, err := s.ProjectRoleRepo.FindByName(s.BaseRepo.GetAdminRoleName())
-	//if err != nil {
-	//	return
-	//}
-	//
-	//messageReq := v1.MessageReq{
-	//	MessageBase: v1.MessageBase{
-	//		MessageSource: consts.MessageSourceJoinProject,
-	//		Content:       string(messageContentByte),
-	//		ReceiverRange: 3,
-	//		SenderId:      userId,
-	//		ReceiverId:    adminRole.ID,
-	//		SendStatus:    consts.MessageCreated,
-	//		ServiceType:   consts.ServiceTypeApproval,
-	//		BusinessId:    auditId,
-	//	},
-	//}
-	//messageId, _ := s.MessageService.Create(messageReq)
-	//message, err := s.MessageRepo.Get(messageId)
-	//if err != nil {
-	//	return
-	//}
-	//
-	//_, err = s.MessageService.SendMessageToMcs(message)
 
 	return
 }

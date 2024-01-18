@@ -7,9 +7,11 @@ type PrivilegeService struct {
 }
 
 func (s *PrivilegeService) GetAll(username, roleCode string) (ret []string, err error) {
-	ret, err = s.RemoteService.GetRoleMenus(roleCode)
-	if err != nil {
-		return
+	if roleCode != "" {
+		ret, err = s.RemoteService.GetRoleMenus(roleCode)
+		if err != nil {
+			return
+		}
 	}
 	var points []string
 	points, err = s.RemoteService.GetUserButtonPermissions(username)

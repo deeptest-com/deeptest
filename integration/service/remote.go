@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strconv"
@@ -376,6 +377,10 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret integration
 func (s *RemoteService) getHeaders(body string) (headers []domain.Header) {
 	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
 	xNancalNonceStr := _commUtils.RandStr(8)
+
+	if body != "" {
+		body = commUtils.CompressedJson(body)
+	}
 
 	headers = []domain.Header{
 		{
@@ -1037,7 +1042,7 @@ func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
 	respContent := struct {
 		Code int
 		Data struct {
-			MsgId string `json:"msgId"`
+			InstanceId string `json:"instance_id"`
 		} `json:"data"`
 		Msg string
 	}{}
@@ -1052,7 +1057,7 @@ func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
 		return
 	}
 
-	ret = respContent.Data.MsgId
+	ret = respContent.Data.InstanceId
 
 	return
 }

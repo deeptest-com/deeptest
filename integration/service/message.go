@@ -84,7 +84,8 @@ func (s *MessageService) SendMessageToMcs(message model.Message) (mcsMessageId s
 		if message.ServiceType == consts.ServiceTypeInfo {
 			err = s.MessageRepo.UpdateCombinedSendStatus(message.MessageSource, message.BusinessId, consts.MessageSendSuccess)
 		} else {
-			err = s.MessageRepo.UpdateSendStatusById(message.ID, consts.MessageSendSuccess)
+			message.SendStatus = consts.MessageSendSuccess
+			s.MessageRepo.DB.Save(&message)
 		}
 	}
 

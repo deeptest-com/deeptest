@@ -75,6 +75,7 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint
 func (s *MessageService) SendMessageToMcs(message model.Message) (mcsMessageId string, err error) {
 	mcsMessageId, err = s.RemoteService.ApprovalAndMsg(message.Content)
 	if err != nil {
+		_ = s.MessageRepo.UpdateSendStatusById(message.ID, consts.MessageSendFailed)
 		return
 	}
 
@@ -82,13 +83,8 @@ func (s *MessageService) SendMessageToMcs(message model.Message) (mcsMessageId s
 	if mcsMessageId != "" {
 		if message.ServiceType == consts.ServiceTypeInfo {
 			err = s.MessageRepo.UpdateCombinedSendStatus(message.MessageSource, message.BusinessId, consts.MessageSendSuccess)
-			if err != nil {
-				return "", err
-			}
 		} else {
-			message.SendStatus = consts.MessageSendSuccess
-			s.MessageRepo.DB.Save(&message)
-
+			err = s.MessageRepo.UpdateSendStatusById(message.ID, consts.MessageSendSuccess)
 		}
 	}
 

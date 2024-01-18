@@ -262,3 +262,11 @@ func (r *MessageRepo) UpdateSendStatusByMcsMessageId(mcsMessageId string, sendSt
 
 	return
 }
+
+func (r *MessageRepo) UpdateSendStatusById(id uint, sendStatus consts.MessageSendStatus) (err error) {
+	err = r.DB.Model(&model.Message{}).
+		Where("id = ? ", id).
+		Update("send_status", sendStatus).Error
+
+	return
+}

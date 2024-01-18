@@ -18,8 +18,8 @@ func NewUser(appName enum.AppName) *user {
 	return ret
 }
 
-func (s *user) GetUserInfoByToken(token string) (v1.UserInfo, error) {
-	return s.u.GetUserInfoByToken(token)
+func (s *user) GetUserInfoByToken(token, origin string) (v1.UserInfo, error) {
+	return s.u.GetUserInfoByToken(token, origin)
 }
 
 func (s *user) getEntity(appName enum.AppName) (u IUser) {

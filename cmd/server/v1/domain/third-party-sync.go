@@ -159,3 +159,9 @@ type SpaceRole struct {
 	RoleValue string `json:"roleValue"`
 	Remark    string `json:"remark"`
 }
+
+type OtherUserInfo struct {
+	Username string `json:"loginName"`
+	RealName string `json:"name"`
+	Mail     string `json:"email"`
+}

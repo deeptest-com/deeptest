@@ -49,11 +49,11 @@ func UserAuth() iris.Handler {
 			return
 		}
 
-		appName, token := getAppName(ctx)
+		appName, token, origin := getAppName(ctx)
 		user := user.NewUser(appName)
 
 		if appName != "" {
-			userInfo, err := user.GetUserInfoByToken(token)
+			userInfo, err := user.GetUserInfoByToken(token, origin)
 			if err == nil && userInfo.Username != "" {
 				token, err := creatSession(userInfo)
 				if err == nil && token != "" {
@@ -113,7 +113,10 @@ func creatSession(userInfo v1.UserInfo) (token string, err error) {
 	return
 }
 
-func getAppName(ctx *context.Context) (appName enum.AppName, token string) {
+func getAppName(ctx *context.Context) (appName enum.AppName, token, origin string) {
+
+	origin = ctx.GetHeader("Origin")
+	//origin = "http://192.168.5.60:804"
 
 	token = ctx.GetHeader("X-Token")
 	if token != "" {
@@ -122,6 +125,7 @@ func getAppName(ctx *context.Context) (appName enum.AppName, token string) {
 	}
 
 	token = ctx.GetHeader("Token")
+	//token = "61m3uc60xbeo"
 	if token != "" {
 		appName = enum.Lecang
 		return

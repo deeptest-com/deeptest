@@ -7,7 +7,7 @@ import (
 type User struct {
 }
 
-func (s *User) GetUserInfoByToken(token string) (user v1.UserInfo, err error) {
-	user, err = new(remote).GetUserInfoByToken(token)
+func (s *User) GetUserInfoByToken(token, origin string) (user v1.UserInfo, err error) {
+	user, err = new(remote).GetUserInfoByToken(token, origin)
 	return
 }

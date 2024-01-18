@@ -8,13 +8,14 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/jinzhu/copier"
 )
 
 type remote struct {
 }
 
-func (s *remote) GetUserInfoByToken(token string) (user v1.UserInfo, err error) {
-	url := fmt.Sprintf("%s/levault/usrsvr/Usr/GetUserInfoByToken", "https://lzos-dev.cloud.rysaas.cn")
+func (s *remote) GetUserInfoByToken(token, origin string) (user v1.UserInfo, err error) {
+	url := fmt.Sprintf("%s/levault/usrsvr/Usr/GetUserInfoByToken", origin)
 	body, _ := json.Marshal(map[string]string{"token": token})
 	headers := make([]domain.Header, 0)
 	headers = append(headers, []domain.Header{
@@ -57,7 +58,7 @@ func (s *remote) GetUserInfoByToken(token string) (user v1.UserInfo, err error) 
 
 	respContent := struct {
 		Code int
-		Data struct{ UserInfo v1.UserInfo }
+		Data v1.OtherUserInfo
 		Msg  string
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
@@ -65,7 +66,7 @@ func (s *remote) GetUserInfoByToken(token string) (user v1.UserInfo, err error) 
 		logUtils.Infof(err.Error())
 	}
 
-	user = respContent.Data.UserInfo
+	copier.CopyWithOption(&user, respContent.Data, copier.Option{DeepCopy: true})
 
 	return
 }

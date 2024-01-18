@@ -8,7 +8,7 @@ import (
 type User struct {
 }
 
-func (s *User) GetUserInfoByToken(token string) (user v1.UserInfo, err error) {
+func (s *User) GetUserInfoByToken(token, origin string) (user v1.UserInfo, err error) {
 	user, err = new(service.RemoteService).GetUserInfoByToken(token)
 	return
 }

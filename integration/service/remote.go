@@ -772,6 +772,7 @@ func (s *RemoteService) GetUserProductList(page, pageSize int, username string) 
 		},
 	}
 
+	logUtils.Infof("GetUserProductList httpReq:%+v", httpReq)
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("GetUserProductList failed, error, %s", err.Error())
@@ -877,6 +878,7 @@ func (s *RemoteService) GetSpacesByUsername(username string) (ret []integrationD
 		},
 	}
 
+	logUtils.Infof("GetSpacesByUsername httpReq: +%v", httpReq)
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("GetSpacesByUsername failed, error, %s", err.Error())

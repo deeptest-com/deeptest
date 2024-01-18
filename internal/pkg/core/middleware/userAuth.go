@@ -31,7 +31,7 @@ func init() {
 		"/api/v1/message/receiveMcsApprovalData",
 		"/api/v1/init/initdb",
 		"/api/v1/openApi",
-		"/healthz",
+		"/api/v1/healthz",
 	}
 }
 

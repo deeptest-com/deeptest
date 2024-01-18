@@ -41,10 +41,10 @@ func InitGojaRuntime(projectId uint) (execRuntime *goja.Runtime, execRequire *re
 	projectContext := GetProjectContext(projectId)
 
 	projectContext.GojaRuntime = goja.New()
-	execRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
+	projectContext.GojaRuntime.SetFieldNameMapper(goja.TagFieldNameMapper("json", true))
 	registry := new(require.Registry) // registry 能夠被多个goja.Runtime共用
 	execRequire = registry.Enable(projectContext.GojaRuntime)
-	
+
 	projectContext.GojaRequire = execRequire
 
 	execRuntime = projectContext.GojaRuntime

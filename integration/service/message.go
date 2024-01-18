@@ -46,6 +46,7 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint
 	}
 
 	userAccount, err := s.ProjectRepo.GetUsernamesByProjectAndRole(projectId, adminRole.ID, serverConsts.AdminUserName)
+	userAccount = []string{"zhourui"}
 	if err != nil {
 		return
 	}
@@ -59,7 +60,8 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint
 
 	projectHomePage := fmt.Sprintf("%s/lyapi/%s/workspace", host, project.ShortName)
 	mcsData = integrationDomain.ApprovalReq{
-		CreatorId:    sender.Username,
+		//CreatorId:    sender.Username,
+		CreatorId:    "wangzhen",
 		ApproveIds:   userAccount,
 		ApprovalType: 1,
 		Title:        "乐研API通知-项目权限申请",

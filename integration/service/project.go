@@ -207,7 +207,10 @@ func (s *ProjectService) SaveSpaceRelatedProjects(spaceCode string, shortNames [
 		relations = append(relations, relTmp)
 	}
 
-	err = s.IntegrationRepo.BatchCreateProjectSpaceRel(relations)
+	if len(relations) > 0 {
+		err = s.IntegrationRepo.BatchCreateProjectSpaceRel(relations)
+	}
+	
 	return
 }
 

@@ -59,25 +59,23 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 
 	for _, lib := range libs {
 		id := lib.Id
-
-		updateTime, ok := GetAgentCache(projectId, id)
-		logUtils.Infof("更新第三方库，projectId：%v,ok:%v,updateTime:%v,UpdatedAt:%v", projectId, ok, updateTime, lib.UpdatedAt)
-		if !ok || updateTime.Before(lib.UpdatedAt) {
-			pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d.js", id))
-			fileUtils.WriteFile(pth, lib.Script)
-			module, err := require.Require(pth)
-			if err != nil {
-				logUtils.Errorf(err.Error())
-			}
-
-			err = runtime.Set(lib.Name, module)
-			if err != nil {
-				logUtils.Errorf(err.Error())
-			}
-
-			SetAgentCache(projectId, id, lib.UpdatedAt)
-			logUtils.Infof("更新第三方库，projectId：%v,id:%v,lib.Name:%v", projectId, id, lib.Name)
+		//updateTime, ok := GetAgentCache(projectId, id)
+		//if  !ok || updateTime.Before(lib.UpdatedAt) {
+		pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d.js", id))
+		fileUtils.WriteFile(pth, lib.Script)
+		module, err := require.Require(pth)
+		if err != nil {
+			logUtils.Errorf(err.Error())
 		}
+
+		err = runtime.Set(lib.Name, module)
+		if err != nil {
+			logUtils.Errorf(err.Error())
+		}
+
+		//SetAgentCache(projectId, id, lib.UpdatedAt)
+		logUtils.Infof("更新第三方库，projectId：%v,id:%v,lib.Name:%v", projectId, id, lib.Name)
+		//}
 	}
 }
 

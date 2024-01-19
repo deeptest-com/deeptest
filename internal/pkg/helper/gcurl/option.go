@@ -173,7 +173,7 @@ func parseBodyASCII(u *CURL, data string) {
 
 	u.ContentType = requests.TypeURLENCODED
 
-	if data[0] != '@' {
+	if data != "" && data[0] != '@' {
 		u.Body = bytes.NewBufferString(data)
 	} else {
 		f, err := os.Open(data[1:])

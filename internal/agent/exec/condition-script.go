@@ -19,13 +19,10 @@ import (
 )
 
 func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (err error) {
-	execRuntime, _ := GetGojaRuntime(execUuid)
-
-	if execRuntime == nil {
-		InitJsRuntime(projectId, execUuid)
-	}
-
-	SetGojaVariables(execUuid, []domain.ExecVariable{})
+	InitJsRuntime(projectId, execUuid)
+	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
+	ResetGojaVariables(execUuid)
+	ResetGojaLogs(execUuid)
 
 	var logs []string
 
@@ -37,7 +34,6 @@ func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (
 		return
 
 	} else {
-		SetGojaLogs(execUuid, nil)
 		resultVal, err := execRuntime.RunString(scriptObj.Content)
 
 		result := fmt.Sprintf("%v", resultVal)
@@ -45,7 +41,7 @@ func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (
 			result = "空"
 		}
 
-		logs = GetGojaLogs(execUuid)
+		logs = *GetGojaLogs(execUuid)
 
 		if err != nil {
 			scriptObj.ResultStatus = consts.Fail
@@ -66,20 +62,13 @@ func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (
 }
 
 func InitJsRuntime(projectId uint, execUuid string) {
-	execRuntime, execRequire := GetGojaRuntime(execUuid)
-
-	if execRuntime != nil { // just load new project's Jslibs if needed
-		jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, projectId, GetServerUrl(execUuid), GetServerToken(execUuid))
-		return
-	}
-
-	InitGojaRuntime(execUuid)
-	execRuntime, execRequire = GetGojaRuntime(execUuid)
+	jslibHelper.InitGojaRuntime(projectId)
+	execRuntime, execRequire := jslibHelper.GetGojaRuntime(projectId)
 
 	jslibHelper.LoadChaiJslibs(execRuntime)
 
-	defineJsFuncs(execUuid)
-	defineGoFuncs(execUuid)
+	defineJsFuncs(execUuid, projectId)
+	defineGoFuncs(projectId)
 
 	// load global script
 	pth := filepath.Join(consts.TmpDir, "deeptest.js")
@@ -96,19 +85,8 @@ func InitJsRuntime(projectId uint, execUuid string) {
 	jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, projectId, GetServerUrl(execUuid), GetServerToken(execUuid))
 }
 
-func GetReqValueFromGoja(execUuid string) (err error) {
-	execRuntime, _ := GetGojaRuntime(execUuid)
-	_, err = execRuntime.RunString("getReqValueFromGoja(dt.request);")
-	return
-}
-func GetRespValueFromGoja(execUuid string) (err error) {
-	execRuntime, _ := GetGojaRuntime(execUuid)
-	_, err = execRuntime.RunString("getRespValueFromGoja(dt.response);")
-	return
-}
-
-func defineJsFuncs(execUuid string) (err error) {
-	execRuntime, _ := GetGojaRuntime(execUuid)
+func defineJsFuncs(execUuid string, projectId uint) (err error) {
+	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
 
 	/* START: called by js */
 	err = execRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
@@ -230,21 +208,36 @@ func defineJsFuncs(execUuid string) (err error) {
 	/* END: called by js */
 
 	/* START: called by go */
-	err = execRuntime.Set("getReqValueFromGoja", func(value domain.BaseRequest) {
+	err = execRuntime.Set("getReqValueFromGoja", func(execUuid string, value domain.BaseRequest) {
 		SetCurrRequest(execUuid, value)
 	})
-	err = execRuntime.Set("getRespValueFromGoja", func(value domain.DebugResponse) {
+	err = execRuntime.Set("getRespValueFromGoja", func(execUuid string, value domain.DebugResponse) {
 		if httpHelper.IsJsonResp(value) {
 			bytes, _ := json.Marshal(value.Data)
 			value.Content = string(bytes)
 			SetCurrResponse(execUuid, value)
 		} else {
-			value.Content = value.Data.(string)
+			var ok bool
+			if value.Content, ok = value.Data.(string); ok {
+
+			}
 			SetCurrResponse(execUuid, value)
+
 		}
 	})
 	/* END: called by go */
 
+	return
+}
+
+func GetReqValueFromGoja(execUuid string, projectId uint) (err error) {
+	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
+	_, err = execRuntime.RunString(fmt.Sprintf("getReqValueFromGoja('%s', dt.request);", execUuid))
+	return
+}
+func GetRespValueFromGoja(execUuid string, projectId uint) (err error) {
+	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
+	_, err = execRuntime.RunString(fmt.Sprintf("getRespValueFromGoja('%s', dt.response);", execUuid))
 	return
 }
 
@@ -276,8 +269,8 @@ var (
 func SetValueToGoja(name string, value interface{}) {
 	_setValueFunc(name, value)
 }
-func defineGoFuncs(execUuid string) {
-	execRuntime, _ := GetGojaRuntime(execUuid)
+func defineGoFuncs(projectId uint) {
+	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
 
 	// set data
 	script := `function _setData(name, val) {

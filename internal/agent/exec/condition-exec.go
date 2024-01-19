@@ -79,12 +79,12 @@ func DealwithScriptCondition(condition domain.InterfaceExecCondition, resultStat
 	}
 
 	scriptHelper.GenResultMsg(&scriptBase)
-	scriptBase.VariableSettings = GetGojaVariables(execUuid)
+	scriptBase.VariableSettings = *GetGojaVariables(execUuid)
 
 	condition.Raw, _ = json.Marshal(scriptBase)
 	*conditions = append(*conditions, condition)
 
-	for _, item := range GetGojaLogs(execUuid) {
+	for _, item := range *GetGojaLogs(execUuid) {
 		if isPostCondition {
 			createAssertFromScriptResult(item, conditions, resultStatus, scriptBase.ConditionId, scriptBase.ConditionEntityId)
 		}

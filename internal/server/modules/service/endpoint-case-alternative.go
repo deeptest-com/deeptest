@@ -25,9 +25,8 @@ type EndpointCaseAlternativeService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
-	PreConditionRepo      *repo.PreConditionRepo      `inject:""`
-	PostConditionRepo     *repo.PostConditionRepo     `inject:""`
 	CategoryRepo          *repo.CategoryRepo          `inject:""`
+	ConditionRepo         *repo.ConditionRepo         `inject:""`
 
 	EndpointCaseService      *EndpointCaseService      `inject:""`
 	EndpointService          *EndpointService          `inject:""`
@@ -149,8 +148,8 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 	})
 
 	if req.BaseCaseId > 0 {
-		s.PreConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, false)
-		s.PostConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, false)
+		s.ConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, "false")
+
 	}
 
 	return
@@ -188,7 +187,7 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 
 		name := s.getName(val)
 
-		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, name, req.CreateUserId, req.CreateUserName, true)
+		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, name, 0, 0, req.CreateUserId, req.CreateUserName, "true")
 		if err1 != nil {
 			err = err1
 			return
@@ -222,8 +221,8 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 
 func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	// copy new case
-	newEndpointCase, err := s.EndpointCaseService.Copy(req.BaseId, "多参数异常",
-		req.CreateUserId, req.CreateUserName, true)
+	newEndpointCase, err := s.EndpointCaseService.Copy(req.BaseId, "多参数异常", 0, 0,
+		req.CreateUserId, req.CreateUserName, "true")
 
 	s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
 		"case_type": consts.CaseAlternative,
@@ -603,10 +602,12 @@ func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentEx
 		}
 	}
 
-	execObj.PreConditions, _ = s.PreConditionRepo.ListTo(
-		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy, "true")
-	execObj.PostConditions, _ = s.PostConditionRepo.ListTo(
-		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId, execObj.DebugData.UsedBy, "true")
+	execObj.PreConditions, _ = s.ConditionRepo.ListTo(
+		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId,
+		execObj.DebugData.UsedBy, "true", consts.ConditionSrcPre)
+	execObj.PostConditions, _ = s.ConditionRepo.ListTo(
+		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId,
+		execObj.DebugData.UsedBy, "true", consts.ConditionSrcPost)
 
 	execObj.DebugData.EnvDataToView = &domain.EnvDataToView{}
 

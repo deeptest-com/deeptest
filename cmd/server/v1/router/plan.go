@@ -31,6 +31,7 @@ func (m *PlanModule) Party() module.WebModule {
 
 		index.Get("/statusDropDownOptions", m.PlanCtrl.StatusDropDownOptions).Name = "计划状态下拉选项"
 		index.Get("/testStageDropDownOptions", m.PlanCtrl.TestStageDropDownOptions).Name = "计划测试阶段下拉选项"
+		index.Put("/moveScenario", m.PlanCtrl.Move).Name = "移动场景"
 	}
 
 	return module.NewModule("/plans", handler)

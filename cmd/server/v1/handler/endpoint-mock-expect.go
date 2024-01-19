@@ -118,7 +118,8 @@ func (c *EndpointMockExpectCtrl) Copy(ctx iris.Context) {
 		return
 	}
 
-	id, err := c.EndpointMockExpectService.Copy(uint(expectId))
+	userName := multi.GetUsername(ctx)
+	id, err := c.EndpointMockExpectService.Copy(uint(expectId), 0, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

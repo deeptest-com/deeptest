@@ -60,28 +60,3 @@ func (c *DatabaseOptCtrl) Update(ctx iris.Context) {
 	}
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
-
-// Delete 删除
-// @Tags	数据库连接
-// @summary	删除数据库连接
-// @accept 	application/json
-// @Produce application/json
-// @Param	Authorization		header	string	true	"Authentication header"
-// @Param 	id					path	int		true	"数据库连接ID"
-// @success	200	{object}		_domain.Response
-// @Router	/api/v1/checkpoints/{id}	[delete]
-func (c *DatabaseOptCtrl) Delete(ctx iris.Context) {
-	id, err := ctx.Params().GetInt("id")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
-
-	err = c.DatabaseOptService.Delete(uint(id))
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
-
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
-}

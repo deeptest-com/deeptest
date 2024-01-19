@@ -55,14 +55,11 @@ func (s *ThirdPartySyncService) GetToken(baseUrl string) (token string, err erro
 }
 
 func (s *ThirdPartySyncService) GetClasses(serviceCode, token string, baseUrl string) (classes []v1.FindClassByServiceCodeResData) {
-	findClassByServiceCodeReq := v1.FindClassByServiceCodeReq{
-		ServiceCode: serviceCode,
-	}
-	classes = s.RemoteService.FindClassByServiceCode(findClassByServiceCodeReq, token, baseUrl)
-
+	classes = s.RemoteService.LcQueryAgent(serviceCode, token, baseUrl)
 	return
 }
 
+// GetFunctionsByClass 已废弃
 func (s *ThirdPartySyncService) GetFunctionsByClass(serviceCode, classCode, token string, baseUrl string) (functions []string) {
 	getFunctionsByClassReq := v1.GetFunctionsByClassReq{
 		ServiceCode: serviceCode,
@@ -74,6 +71,26 @@ func (s *ThirdPartySyncService) GetFunctionsByClass(serviceCode, classCode, toke
 		if v.MessageType == 1 {
 			functions = append(functions, v.Code)
 		}
+	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) GetFunctionsByClassNew(serviceId, classCode, parentCodes, objId, token string, baseUrl string) (functions []string) {
+	getFunctionsByClassReq := v1.QueryMsgReq{}
+	getFunctionsByClassReq.ClassInfo.ParentCodes = parentCodes
+	getFunctionsByClassReq.ClassInfo.ObjId = objId
+	getFunctionsByClassReq.ClassInfo.Code = classCode
+	getFunctionsByClassReq.ClassInfo.ServiceId = serviceId
+
+	getFunctionsByClassResData := s.RemoteService.LcQueryMsg(getFunctionsByClassReq, token, baseUrl)
+	for _, v := range getFunctionsByClassResData {
+		//不同步继承方法和不允许被重写的内部方法
+		if v.IsExtend == consts.IntegrationFuncIsExtend || (v.MessageType == 0 && v.Overridable == consts.IntegrationFuncCanNotOverridable) {
+			continue
+		}
+
+		functions = append(functions, v.Code)
 	}
 
 	return
@@ -96,7 +113,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 		return
 	}
 
-	_ = cache.SetCache("thirdPartySyncStatus", "Start", 4*time.Hour)
+	_ = cache.SetCache("thirdPartySyncStatus", "Start", 1*time.Hour)
 	syncList, err := s.GetAllData()
 	if err != nil {
 		return
@@ -116,12 +133,17 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 		classes := s.GetClasses(syncConfig.ServiceCode, token, baseUrl)
 		for _, class := range classes {
 			classCode := class.Code
+
+			functionList := s.GetFunctionsByClassNew(class.ServiceId, classCode, class.ParentCodes, class.ObjId, token, baseUrl)
+			if len(functionList) == 0 {
+				continue
+			}
+
 			categoryId, err := s.SaveCategory(class, projectId, syncConfig.ServeId)
 			if err != nil {
 				continue
 			}
 
-			functionList := s.GetFunctionsByClass(syncConfig.ServiceCode, classCode, token, baseUrl)
 			for _, function := range functionList {
 				path := "/" + syncConfig.ServiceCode + "/" + classCode + "/" + function
 				functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)

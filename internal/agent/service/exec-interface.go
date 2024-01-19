@@ -31,7 +31,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.ExecPreConditions(&req, call.ExecUuid) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(&req.DebugData, call.ExecUuid)
 
-	agentExec.GetReqValueFromGoja(call.ExecUuid)
+	agentExec.GetReqValueFromGoja(call.ExecUuid, call.Data.ProjectId)
 
 	// TODO: a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
 	if agentExec.GetCurrRequest(call.ExecUuid).Url != "" {
@@ -41,8 +41,9 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	resultResp, err = RequestInterface(&req.DebugData)
 
 	agentExec.SetRespValueToGoja(&resultResp)
-	agentExec.ExecPostConditions(&req, resultResp, call.ExecUuid)
-	agentExec.GetRespValueFromGoja(call.ExecUuid)
+	assertResultStatusPost, _ := agentExec.ExecPostConditions(&req, resultResp, call.ExecUuid)
+
+	agentExec.GetRespValueFromGoja(call.ExecUuid, call.Data.ProjectId)
 	PostRequest(originalReqUri, &req.DebugData)
 
 	// get the response data updated by script post-condition
@@ -51,7 +52,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	}
 
 	// submit result
-	err = SubmitInterfaceResult(req, resultResp, call.ServerUrl, call.Token)
+	err = SubmitInterfaceResult(req, resultResp, assertResultStatusPost, call.ServerUrl, call.Token)
 
 	resultReq = req.DebugData
 
@@ -63,7 +64,9 @@ func PreRequest(req *domain.DebugData, execUuid string) (originalReqUri string, 
 	agentExec.ReplaceVariables(&req.BaseRequest, execUuid)
 
 	// gen url
-	originalReqUri = agentExec.ReplacePathParams(req.Url, *req.PathParams)
+	if req.PathParams != nil {
+		originalReqUri = agentExec.ReplacePathParams(req.Url, *req.PathParams)
+	}
 
 	notUseBaseUrl := execUtils.IsUseBaseUrl(req.UsedBy, req.ProcessorInterfaceSrc)
 	if notUseBaseUrl {

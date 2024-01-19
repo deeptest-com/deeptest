@@ -80,11 +80,11 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	agentExec.InitDebugExecContext(execUuid)
 	agentExec.InitJsRuntime(projectId, execUuid)
 
-	statusPreCondition, _ := agentExec.ExecPreConditions(caseInterfaceExecObj, execUuid) // must before PreRequest, since it will update the vari in script
+	agentExec.ExecPreConditions(caseInterfaceExecObj, execUuid) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData, execUuid)
 
 	agentExec.SetReqValueToGoja(&caseInterfaceExecObj.DebugData.BaseRequest)
-	agentExec.GetReqValueFromGoja(execUuid)
+	agentExec.GetReqValueFromGoja(execUuid, projectId)
 
 	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
 	if agentExec.GetCurrRequest(execUuid).Url != "" {
@@ -98,8 +98,8 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	}
 
 	agentExec.SetRespValueToGoja(&resultResp)
-	statusPostCondition, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp, execUuid)
-	agentExec.GetRespValueFromGoja(execUuid)
+	assertResultStatus, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp, execUuid)
+	agentExec.GetRespValueFromGoja(execUuid, projectId)
 	PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
 
 	// get the response data updated by script post-condition
@@ -109,7 +109,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	}
 
 	status := consts.Pass
-	if statusPreCondition == consts.Fail || statusPostCondition == consts.Fail {
+	if assertResultStatus == consts.Fail {
 		status = consts.Fail
 	}
 

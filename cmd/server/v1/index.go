@@ -41,11 +41,10 @@ type IndexModule struct {
 	ShareVarModule    *router.ShareVarModule    `inject:""`
 	ParserModule      *router.ParserModule      `inject:""`
 
-	PreConditionModule  *router.PreConditionModule  `inject:""`
-	PostConditionModule *router.PostConditionModule `inject:""`
-	ExtractorModule     *router.ExtractorModule     `inject:""`
-	CheckpointModule    *router.CheckpointModule    `inject:""`
-	ScriptModule        *router.ScriptModule        `inject:""`
+	ConditionModule  *router.ConditionModule  `inject:""`
+	ExtractorModule  *router.ExtractorModule  `inject:""`
+	CheckpointModule *router.CheckpointModule `inject:""`
+	ScriptModule     *router.ScriptModule     `inject:""`
 
 	CategoryModule          *router.CategoryModule          `inject:""`
 	ScenarioModule          *router.ScenarioModule          `inject:""`
@@ -125,8 +124,7 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.ShareVarModule.Party(),
 		m.ParserModule.Party(),
 
-		m.PreConditionModule.Party(),
-		m.PostConditionModule.Party(),
+		m.ConditionModule.Party(),
 		m.ExtractorModule.Party(),
 		m.CheckpointModule.Party(),
 		m.ScriptModule.Party(),

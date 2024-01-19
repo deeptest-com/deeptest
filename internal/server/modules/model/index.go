@@ -32,8 +32,7 @@ var (
 		&DebugInterfaceOAuth20{},
 		&DebugInterfaceApiKey{},
 
-		&DebugPreCondition{},
-		&DebugPostCondition{},
+		&DebugCondition{},
 		&DebugConditionExtractor{},
 		&DebugConditionCheckpoint{},
 		&DebugConditionScript{},

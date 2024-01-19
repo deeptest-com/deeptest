@@ -33,8 +33,7 @@ type DebugInterfaceService struct {
 	DatapoolService          *DatapoolService          `inject:""`
 	ServeService             *ServeService             `inject:""`
 
-	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
-	PostConditionRepo *repo.PostConditionRepo `inject:""`
+	ConditionRepo *repo.ConditionRepo `inject:""`
 }
 
 func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain.DebugData, err error) {
@@ -60,7 +59,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 		*debugData.GlobalParams =
 		s.DebugSceneService.LoadScene(&debugData, loadReq.UserId, loadReq.EnvironmentId)
 
-	debugData.ResponseDefine = s.PostConditionRepo.CreateDefaultResponseDefine(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, loadReq.UsedBy)
+	debugData.ResponseDefine = s.ConditionRepo.CreateDefaultResponseDefine(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, loadReq.UsedBy)
 
 	return
 }
@@ -77,10 +76,10 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agent
 		}
 	}
 
-	ret.PreConditions, _ = s.PreConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false")
-	ret.PostConditions, _ = s.PostConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false")
+	ret.PreConditions, _ = s.ConditionRepo.ListTo(
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPre)
+	ret.PostConditions, _ = s.ConditionRepo.ListTo(
+		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPost)
 
 	ret.ExecScene.ShareVars = ret.DebugData.EnvDataToView.ShareVars // for execution
 	ret.DebugData.EnvDataToView = nil
@@ -119,8 +118,8 @@ func (s *DebugInterfaceService) Create(req domain.DebugData) (debugInterface mod
 
 	// first time to save a debug interface that convert from endpoint interface, clone conditions
 	// it's different from cloning data between two debug interfaces when do importing
-	s.PreConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID, req.UsedBy, "", false)
-	s.PostConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID, req.UsedBy, "", false)
+
+	s.ConditionRepo.CloneAll(0, req.EndpointInterfaceId, debugInterface.ID, req.UsedBy, "", "false")
 
 	s.EndpointInterfaceRepo.SetDebugInterfaceId(req.EndpointInterfaceId, debugInterface.ID)
 
@@ -147,8 +146,7 @@ func (s *DebugInterfaceService) SaveAs(debugData domain.DebugData, srcDebugInter
 
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
-	s.PreConditionRepo.CloneAll(srcDebugInterfaceId, debugData.EndpointInterfaceId, debugInterface.ID, debugData.UsedBy, srcUsedBy, false)
-	s.PostConditionRepo.CloneAll(srcDebugInterfaceId, debugData.EndpointInterfaceId, debugInterface.ID, debugData.UsedBy, srcUsedBy, false)
+	s.ConditionRepo.CloneAll(srcDebugInterfaceId, debugData.EndpointInterfaceId, debugInterface.ID, debugData.UsedBy, srcUsedBy, "false")
 
 	return
 }

@@ -22,7 +22,7 @@ func (m *DebugInvokeModule) Party() module.WebModule {
 			party.Get("/{id:uint}", m.DebugInvokeCtrl.GetAsInterface).Name = "调试记录详情"
 			party.Get("/getLastResp", m.DebugInvokeCtrl.GetLastResp).Name = "获取调试结果"
 			party.Get("/getResult", m.DebugInvokeCtrl.GetResult).Name = "获取调试结果"
-			party.Get("/getLog", m.DebugInvokeCtrl.GetLog).Name = "获取调试日志"
+			party.Get("/getConsoleLog", m.DebugInvokeCtrl.GetLog).Name = "获取调试日志"
 			party.Delete("/{id:uint}", m.DebugInvokeCtrl.Delete).Name = "删除调试记录"
 
 			party.Post("/submitResult", m.DebugInvokeCtrl.SubmitResult).Name = "Agent提交接口执行结果"

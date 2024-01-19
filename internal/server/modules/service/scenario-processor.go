@@ -14,8 +14,7 @@ type ScenarioProcessorService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 
-	PreConditionRepo  *repo.PreConditionRepo  `inject:""`
-	PostConditionRepo *repo.PostConditionRepo `inject:""`
+	ConditionRepo *repo.ConditionRepo `inject:""`
 
 	DebugInterfaceRepo *repo.DebugInterfaceRepo `inject:""`
 	ServeServerRepo    *repo.ServeServerRepo    `inject:""`
@@ -151,8 +150,8 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		interfaceEntity.ProcessorType = consts.ProcessorInterfaceDefault
 		interfaceEntity.ProcessorInterfaceSrc = debugData.ProcessorInterfaceSrc
 
-		interfaceEntity.PreConditions, _ = s.PreConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug, "false")
-		interfaceEntity.PostConditions, _ = s.PostConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug, "false")
+		interfaceEntity.PreConditions, _ = s.ConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug, "false", consts.ConditionSrcPre)
+		interfaceEntity.PostConditions, _ = s.ConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug, "false", consts.ConditionSrcPost)
 
 		ret = &interfaceEntity
 

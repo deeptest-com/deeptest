@@ -192,7 +192,7 @@ func (s *RemoteService) GetFunctionsByClass(req v1.GetFunctionsByClassReq, token
 }
 
 func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token string, baseUrl string) (ret v1.MetaGetMethodDetailResData) {
-	url := fmt.Sprintf("%s/levault/meta/metaClassMethod/metaGetMethodDetail", baseUrl)
+	url := fmt.Sprintf("%s/levault/meta/metaClassMethod/metaGetClassMethodDetail", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
 		logUtils.Infof("marshal request data failed, error, %s", err.Error())

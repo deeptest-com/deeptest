@@ -63,7 +63,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	copier.CopyWithOption(&baseRequest, &entity.BaseRequest, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 
 	// init context
-	InitJsRuntime(processor.ProjectId, session.ExecUuid)
+	//InitJsRuntime(processor.ProjectId, session.ExecUuid)
 	SetReqValueToGoja(&baseRequest)
 
 	// exec pre-condition
@@ -72,7 +72,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	// dealwith variables
 	ReplaceVariables(&baseRequest, session.ExecUuid)
 
-	GetReqValueFromGoja(session.ExecUuid)
+	GetReqValueFromGoja(session.ExecUuid, processor.ProjectId)
 
 	// add cookies
 	DealwithCookies(&baseRequest, entity.ProcessorID, session.ExecUuid)
@@ -88,7 +88,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	// exec post-condition
 	SetRespValueToGoja(&entity.Response)
 	processor.Result.ResultStatus, _ = entity.ExecPostConditions(processor, &detail, session)
-	GetRespValueFromGoja(session.ExecUuid)
+	GetRespValueFromGoja(session.ExecUuid, processor.ProjectId)
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	// get the response data updated by script post-condition
@@ -179,7 +179,7 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 	}
 
 	scriptHelper.GenResultMsg(&scriptBase)
-	scriptBase.VariableSettings = GetGojaVariables(execUuid)
+	scriptBase.VariableSettings = *GetGojaVariables(execUuid)
 
 	interfaceExecCondition := domain.InterfaceExecCondition{
 		Type: condition.Type,
@@ -188,7 +188,7 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 	*conditions = append(*conditions, interfaceExecCondition)
 
 	if isPostCondition {
-		for _, item := range GetGojaLogs(execUuid) {
+		for _, item := range *GetGojaLogs(execUuid) {
 			createAssertFromScriptResult(item, conditions, interfaceStatus,
 				scriptBase.ConditionId, scriptBase.ConditionEntityId)
 		}

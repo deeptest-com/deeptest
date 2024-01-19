@@ -28,6 +28,7 @@ func init() {
 		"/mocks",
 		"/api/v1/message/receiveMcsApprovalData",
 		"/api/v1/init/initdb",
+		"/api/v1/healthz",
 	}
 }
 
@@ -64,7 +65,7 @@ func UserAuth() iris.Handler {
 				}
 			}
 		}
-
+		
 		atoken := []byte(verifier.RequestToken(ctx))
 		logUtils.Errorf("authorization failed, token:%s,xToken:%", string(atoken), token)
 

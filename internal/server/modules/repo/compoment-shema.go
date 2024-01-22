@@ -66,7 +66,7 @@ func (r *ComponentSchemaRepo) SaveEntity(category *model.Category) (err error) {
 }
 
 func (r *ComponentSchemaRepo) UpdateRefById(id uint, ref string) (err error) {
-	err = r.DB.Model(&model.Category{}).
+	err = r.DB.Model(&model.ComponentSchema{}).
 		Where("id = ?", id).
 		Update("ref", ref).Error
 

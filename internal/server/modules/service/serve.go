@@ -30,6 +30,7 @@ type ServeService struct {
 	Cron                     *cron.ServerCron            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
 	CategoryService          *CategoryService            `inject:""`
+	ComponentService         *ComponentService           `inject:""`
 }
 
 func (s *ServeService) ListByProject(projectId int, userId uint) (ret []model.Serve, currServe model.Serve, err error) {
@@ -179,11 +180,12 @@ func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 	if err != nil {
 		return
 	}
+
 	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
 	if err != nil {
 		return
-	}
 
+	}
 	res = serveSchema.ID
 	return
 }

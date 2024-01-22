@@ -4,14 +4,13 @@ import (
 	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	agentService "github.com/aaronchen2k/deeptest/internal/agent/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/jinzhu/copier"
 	"strings"
@@ -548,16 +547,7 @@ func (s *DebugInterfaceService) LoadCurl(req serverDomain.DiagnoseCurlLoadReq) (
 	agentExec.ReplaceVariables(&execObj.DebugData.BaseRequest, uuid)
 
 	// gen url
-	originalReqUri := ""
-	if execObj.DebugData.PathParams != nil {
-		originalReqUri = agentExec.ReplacePathParams(execObj.DebugData.Url, *execObj.DebugData.PathParams)
-	}
-	notUseBaseUrl := execUtils.IsNotUseBaseUrl(req.UsedBy, execObj.DebugData.ProcessorInterfaceSrc)
-	if notUseBaseUrl {
-		execObj.DebugData.BaseRequest.Url = originalReqUri
-	} else {
-		execObj.DebugData.BaseRequest.Url = _httpUtils.CombineUrls(execObj.DebugData.BaseUrl, originalReqUri)
-	}
+	execObj.DebugData.BaseRequest.Url, _ = agentService.UpdateUrl(execObj.DebugData)
 
 	// gen bytes for form file item
 	//if execObj.DebugData.BodyFormData != nil {

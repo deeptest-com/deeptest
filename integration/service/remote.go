@@ -1030,7 +1030,7 @@ func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
 	}
 
 	resp, err := httpHelper.Post(httpReq)
-	logUtils.Infof("ApprovalAndMsg body:%+v,Headers:%+v , response %+v", req, headers, resp)
+	logUtils.Infof("ApprovalAndMsg url:%s, body:%+v,Headers:%+v , response %+v", url, req, headers, resp)
 	if err != nil {
 		logUtils.Infof("ApprovalAndMsg failed, error, %s", err.Error())
 		return

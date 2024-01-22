@@ -30,6 +30,7 @@ type ServeService struct {
 	Cron                     *cron.ServerCron            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
 	CategoryService          *CategoryService            `inject:""`
+	ComponentService         *ComponentService           `inject:""`
 }
 
 func (s *ServeService) ListByProject(projectId int, userId uint) (ret []model.Serve, currServe model.Serve, err error) {
@@ -182,6 +183,11 @@ func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 
 	if req.ID != 0 {
 		err = s.CategoryRepo.UpdateNameByEntityId(serveSchema.ID, serveSchema.Name, serverConsts.SchemaCategory)
+		if err != nil {
+			return res, err
+		}
+
+		err = s.ComponentService.UpdateRefById(serveSchema.ID)
 	}
 
 	res = serveSchema.ID

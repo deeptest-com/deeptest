@@ -4,6 +4,7 @@ import (
 	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
@@ -54,6 +55,29 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 		} else if loadReq.EndpointInterfaceId > 0 {
 			debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId)
 		}
+	}
+
+	if debugData.QueryParams == nil {
+		debugData.QueryParams = &[]domain.Param{}
+	}
+	if debugData.PathParams == nil {
+		debugData.PathParams = &[]domain.Param{}
+	}
+	if debugData.Headers == nil {
+		debugData.Headers = &[]domain.Header{}
+	}
+	if debugData.Cookies == nil {
+		debugData.Cookies = &[]domain.ExecCookie{}
+	}
+	if debugData.GlobalParams == nil {
+		debugData.GlobalParams = &[]domain.GlobalParam{}
+	}
+
+	if debugData.BodyFormData == nil {
+		debugData.BodyFormData = &[]domain.BodyFormDataItem{}
+	}
+	if debugData.BodyFormUrlencoded == nil {
+		debugData.BodyFormUrlencoded = &[]domain.BodyFormUrlEncodedItem{}
 	}
 
 	debugData.UsedBy = loadReq.UsedBy
@@ -524,8 +548,15 @@ func (s *DebugInterfaceService) LoadCurl(req serverDomain.DiagnoseCurlLoadReq) (
 	agentExec.ReplaceVariables(&execObj.DebugData.BaseRequest, uuid)
 
 	// gen url
-	if loadReq.DiagnoseInterfaceId == 0 {
-		execObj.DebugData.Url = _httpUtils.CombineUrls(execObj.DebugData.BaseUrl, execObj.DebugData.Url)
+	originalReqUri := ""
+	if execObj.DebugData.PathParams != nil {
+		originalReqUri = agentExec.ReplacePathParams(execObj.DebugData.Url, *execObj.DebugData.PathParams)
+	}
+	notUseBaseUrl := execUtils.IsNotUseBaseUrl(req.UsedBy, execObj.DebugData.ProcessorInterfaceSrc)
+	if notUseBaseUrl {
+		execObj.DebugData.BaseRequest.Url = originalReqUri
+	} else {
+		execObj.DebugData.BaseRequest.Url = _httpUtils.CombineUrls(execObj.DebugData.BaseUrl, originalReqUri)
 	}
 
 	// gen bytes for form file item

@@ -80,6 +80,10 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userIdForDisp
 	globalParams = s.MergeGlobalParams(endpointInterfaceGlobalParams, globalParams)
 	//	}
 
+	if globalParams == nil {
+		globalParams = []domain.GlobalParam{}
+	}
+
 	return
 }
 

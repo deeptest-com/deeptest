@@ -109,6 +109,10 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 		//}
 
 	} else {
+		if req.ID != 0 {
+			diagnoseInterface, _ = s.DiagnoseInterfaceRepo.Get(req.ID)
+			diagnoseInterface.Title = req.Title
+		}
 		err = s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
 	}
 

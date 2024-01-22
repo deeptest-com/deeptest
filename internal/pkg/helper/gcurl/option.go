@@ -173,7 +173,7 @@ func parseBodyASCII(u *CURL, data string) {
 
 	u.ContentType = requests.TypeURLENCODED
 
-	if data[0] != '@' {
+	if data != "" && data[0] != '@' {
 		u.Body = bytes.NewBufferString(data)
 	} else {
 		f, err := os.Open(data[1:])
@@ -260,8 +260,13 @@ func parseURL(u *CURL, soption string) {
 		return
 	}
 	matches := res[0]
+
 	purl, err := url.Parse(matches[1])
-	if err == nil {
-		u.ParsedURL = purl
+	if err != nil {
+		matches[1] = "http://" + matches[1]
+		purl, err = url.Parse(matches[1])
 	}
+
+	u.ParsedURL = purl
+
 }

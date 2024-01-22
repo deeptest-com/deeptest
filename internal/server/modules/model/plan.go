@@ -46,7 +46,7 @@ type RelaPlanScenario struct {
 
 	ServiceId uint `json:"serviceId"`
 	ProjectId uint `json:"projectId"`
-	SortId    uint `json:"sortId"` //排序ID
+	Ordr      int  `gorm:"default:0" json:"ordr"`
 }
 
 func (RelaPlanScenario) TableName() string {

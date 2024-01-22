@@ -51,7 +51,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 	scriptHelper.GenResultMsg(&scriptBase)
 	//scriptBase.VariableSettings = VariableSettings
 
-	for _, item := range GetGojaVariables(session.ExecUuid) {
+	for _, item := range *GetGojaVariables(session.ExecUuid) {
 		SetVariable(processor.ParentId, item.Name, item.Value, item.ValueType, consts.Public, session.ExecUuid)
 	}
 
@@ -65,6 +65,9 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 	detail := map[string]interface{}{"name": entity.Name, "content": entity.Content, "result": result, "output": scriptBase.Output}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
+
+	stat := CountScriptAssertionStat(session.ExecUuid, scriptBase.Output, processor.Result)
+	execUtils.SendStatMsg(stat, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

@@ -6,7 +6,9 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 	"strings"
@@ -395,13 +397,16 @@ func (s *CategoryService) Copy(targetId, newParentId, userId uint, username stri
 		return err
 	}
 
-	err = s.copyDataByCategoryId(category.Type, targetId, category.ID, userId, username)
-
-	if err != nil {
-		return
-	}
-
-	go s.copyChildren(targetId, category.ID, userId, username)
+	go func() {
+		err = s.copyDataByCategoryId(category.Type, targetId, category.ID, userId, username)
+		if err != nil {
+			logUtils.Error(err.Error())
+		}
+		err = s.copyChildren(targetId, category.ID, userId, username)
+		if err != nil {
+			logUtils.Error(err.Error())
+		}
+	}()
 
 	return
 }

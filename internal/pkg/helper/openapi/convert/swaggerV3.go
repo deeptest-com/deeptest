@@ -20,6 +20,8 @@ func (d *SwaggerV3) toOpenapi() (doc *openapi3.T, err error) {
 }
 
 func (d *SwaggerV3) Doc(data []byte) {
+	//x := string(data)
+	//fmt.Println(x)
 	err := json.Unmarshal(data, &d.doc)
 	if err != err {
 		panic(err)

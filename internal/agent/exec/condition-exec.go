@@ -79,12 +79,12 @@ func DealwithScriptCondition(condition domain.InterfaceExecCondition, resultStat
 	}
 
 	scriptHelper.GenResultMsg(&scriptBase)
-	scriptBase.VariableSettings = GetGojaVariables(execUuid)
+	scriptBase.VariableSettings = *GetGojaVariables(execUuid)
 
 	condition.Raw, _ = json.Marshal(scriptBase)
 	*conditions = append(*conditions, condition)
 
-	for _, item := range GetGojaLogs(execUuid) {
+	for _, item := range *GetGojaLogs(execUuid) {
 		if isPostCondition {
 			createAssertFromScriptResult(item, conditions, resultStatus, scriptBase.ConditionId, scriptBase.ConditionEntityId)
 		}
@@ -192,9 +192,7 @@ func createAssertFromScriptResult(output string, conditions *[]domain.InterfaceE
 		return
 	}
 
-	statusStr := strings.ToLower(arr[0][1])
-	name := arr[0][2]
-	//err := arr[0][3]
+	statusStr, name, _ := ParseChaiAssertion(output)
 
 	checkpoint := domain.CheckpointBase{
 		Type:      consts.Script,
@@ -205,7 +203,7 @@ func createAssertFromScriptResult(output string, conditions *[]domain.InterfaceE
 		ConditionEntityType: consts.ConditionTypeCheckpoint,
 	}
 
-	if statusStr == "failed" {
+	if statusStr == "fail" {
 		*status = consts.Fail
 		checkpoint.ResultStatus = consts.Fail
 	} else {

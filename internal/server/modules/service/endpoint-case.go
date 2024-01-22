@@ -61,19 +61,27 @@ func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (case
 	return
 }
 
-func (s *EndpointCaseService) Copy(id int, newNamePrefix string, userId uint, userName string,
-	forAlternativeCase bool) (po model.EndpointCase, err error) {
+func (s *EndpointCaseService) Copy(id int, newNamePrefix string, newEndpointId, baseCaseId, userId uint, userName,
+	forAlternativeCase string) (po model.EndpointCase, err error) {
 
 	endpointCase, _ := s.EndpointCaseRepo.Get(uint(id))
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
 	debugData.UsedBy = consts.CaseDebug
+
+	if newEndpointId != 0 {
+		endpointCase.EndpointId = newEndpointId
+	}
+
+	if baseCaseId != 0 {
+		endpointCase.BaseCase = baseCaseId
+	}
 
 	if newNamePrefix == "" {
 		newNamePrefix = "copy-" + endpointCase.Name
 	}
 
 	caseType := endpointCase.CaseType
-	if caseType == consts.CaseBenchmark {
+	if caseType == consts.CaseBenchmark && newEndpointId == 0 { //复制接口定义导致的复制用例不改变，用例类型
 		caseType = consts.CaseDefault
 	}
 	req := serverDomain.EndpointCaseSaveReq{
@@ -319,7 +327,24 @@ func (s *EndpointCaseService) GetNodeCaseNumNew(node *serverDomain.EndpointCaseT
 }
 
 func (s *EndpointCaseService) ListByCaseType(endpointId uint, caseType consts.CaseType) (ret []model.EndpointCase, err error) {
-	ret, err = s.EndpointCaseRepo.ListByCaseType(endpointId, caseType)
+	ret, err = s.EndpointCaseRepo.ListByCaseType(endpointId, []consts.CaseType{caseType})
+
+	return
+}
+
+func (s *EndpointCaseService) CopyChildrenCases(caseId, newCaseId, endpointId, userId uint, username string) (err error) {
+	childrenCases, err := s.EndpointCaseRepo.ListByCaseTypeAndBaseCase(consts.CaseAlternative, caseId)
+	if err != nil {
+		return err
+	}
+
+	for _, item := range childrenCases {
+
+		_, err = s.Copy(int(item.ID), item.Name, endpointId, newCaseId, userId, username, "false")
+		if err != nil {
+			return err
+		}
+	}
 
 	return
 }

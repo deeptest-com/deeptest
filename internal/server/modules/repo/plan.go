@@ -17,11 +17,12 @@ import (
 )
 
 type PlanRepo struct {
-	DB             *gorm.DB `inject:""`
-	*BaseRepo      `inject:""`
-	ProjectRepo    *ProjectRepo    `inject:""`
-	UserRepo       *UserRepo       `inject:""`
-	PlanReportRepo *PlanReportRepo `inject:""`
+	DB                   *gorm.DB `inject:""`
+	*BaseRepo            `inject:""`
+	ProjectRepo          *ProjectRepo          `inject:""`
+	UserRepo             *UserRepo             `inject:""`
+	PlanReportRepo       *PlanReportRepo       `inject:""`
+	RelaPlanScenarioRepo *RelaPlanScenarioRepo `inject:""`
 }
 
 func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain.PageData, err error) {
@@ -263,7 +264,14 @@ func (r *PlanRepo) AddScenarios(planId uint, scenarioIds []uint) (err error) {
 	if len(pos) == 0 {
 		return
 	}
-	err = r.DB.Create(&pos).Error
+
+	for _, po := range pos {
+		po.Ordr = r.RelaPlanScenarioRepo.GetMaxOrder(planId)
+		err = r.DB.Create(&po).Error
+		if err != nil {
+			return
+		}
+	}
 
 	return
 }
@@ -275,9 +283,13 @@ func (r *PlanRepo) ListScenario(id uint) (pos []model.Scenario, err error) {
 		scenarioIds = append(scenarioIds, item.ScenarioId)
 	}
 
+	if len(scenarioIds) == 0 {
+		return
+	}
+
 	err = r.DB.Model(model.Scenario{}).
 		Where("id IN (?)", scenarioIds).
-		Where("NOT deleted").
+		Where("NOT deleted").Order(fmt.Sprintf("field(id,%s)", commonUtils.UintArrToStr(scenarioIds))).
 		Find(&pos).Error
 
 	return
@@ -286,7 +298,7 @@ func (r *PlanRepo) ListScenario(id uint) (pos []model.Scenario, err error) {
 func (r *PlanRepo) ListScenarioRelation(id uint) (pos []model.RelaPlanScenario, err error) {
 	err = r.DB.Model(model.RelaPlanScenario{}).
 		Where("plan_id=?", id).
-		Where("NOT deleted").
+		Where("NOT deleted").Order("ordr asc").
 		Find(&pos).Error
 	return
 }
@@ -336,7 +348,7 @@ func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId
 	var count int64
 
 	db := r.DB.Model(&model.Scenario{}).
-		Select("biz_scenario.*, c.name category_name").
+		Select("biz_scenario.*, c.name category_name,r.id ref_id").
 		Joins("LEFT JOIN biz_plan_scenario_r r ON biz_scenario.id=r.scenario_id").
 		Joins("LEFT JOIN biz_category c ON biz_scenario.category_id=c.id").
 		Where("r.plan_id = ? AND NOT biz_scenario.deleted AND NOT r.deleted", planId)
@@ -361,7 +373,7 @@ func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId
 	}
 
 	scenarios := make([]*model.ScenarioDetail, 0)
-
+	req.Field, req.Order = "r.ordr", "asc"
 	err = db.
 		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
 		Find(&scenarios).Error
@@ -454,4 +466,30 @@ func (r *PlanRepo) DeleteByCategoryIds(categoryIds []uint) (err error) {
 
 func (r *PlanRepo) UpdateCurrEnvId(id, currEnvId uint) error {
 	return r.DB.Model(&model.Plan{}).Where("id = ?", id).UpdateColumn("curr_env_id", currEnvId).Error
+}
+
+func (r *PlanRepo) MoveScenario(req v1.MoveReq) (err error) {
+	destination, err := r.RelaPlanScenarioRepo.Get(req.DestinationId)
+	if err != nil {
+		return
+	}
+
+	souurce, err := r.RelaPlanScenarioRepo.Get(req.SourceId)
+	if err != nil {
+		return
+	}
+
+	if destination.Ordr < souurce.Ordr {
+		err = r.RelaPlanScenarioRepo.IncreaseOrderAfter(destination.Ordr, req.PlanId)
+	} else {
+		err = r.RelaPlanScenarioRepo.DecreaseOrderBefore(destination.Ordr, req.PlanId)
+	}
+
+	if err != nil {
+		return
+	}
+
+	err = r.RelaPlanScenarioRepo.UpdateOrdrById(req.SourceId, destination.Ordr)
+
+	return
 }

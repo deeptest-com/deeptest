@@ -616,14 +616,25 @@ func (e DataType) String() string {
 type RoleType string
 
 const (
-	Admin          RoleType = "admin"
-	User           RoleType = "user"
-	Tester         RoleType = "tester"
-	Developer      RoleType = "developer"
-	ProductManager RoleType = "product_manager"
+	Admin            RoleType = "admin"
+	User             RoleType = "user"
+	Tester           RoleType = "tester"
+	Developer        RoleType = "developer"
+	ProductManager   RoleType = "product_manager"
+	IntegrationAdmin RoleType = "api-admin"
 )
 
 func (e RoleType) String() string {
+	return string(e)
+}
+
+type RoleSource string
+
+const (
+	RoleSourceLy RoleSource = "ly"
+)
+
+func (e RoleSource) String() string {
 	return string(e)
 }
 
@@ -898,3 +909,25 @@ const (
 	Changed       ChangedStatus = 2
 	IgnoreChanged ChangedStatus = 3
 )
+
+type IntegrationFuncExtendStatus string
+
+const (
+	IntegrationFuncIsExtend    IntegrationFuncExtendStatus = "YES"
+	IntegrationFuncIsNotExtend IntegrationFuncExtendStatus = "NO"
+)
+
+func (e IntegrationFuncExtendStatus) String() string {
+	return string(e)
+}
+
+type IntegrationFuncOverridable string
+
+const (
+	IntegrationFuncCanOverridable    IntegrationFuncOverridable = "YES"
+	IntegrationFuncCanNotOverridable IntegrationFuncOverridable = "NO"
+)
+
+func (e IntegrationFuncOverridable) String() string {
+	return string(e)
+}

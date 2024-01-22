@@ -201,6 +201,10 @@ func (r *EndpointInterfaceRepo) UpdateName(id int, name string) (err error) {
 	return
 }
 
+func (r *EndpointInterfaceRepo) UpdateNameByEndpointId(endpointId uint, name string) (err error) {
+	return r.DB.Model(&model.EndpointInterface{}).Where("endpoint_id = ?", endpointId).Update("name", name).Error
+}
+
 func (r *EndpointInterfaceRepo) UpdateHeaders(id uint, headers []model.EndpointInterfaceHeader) (err error) {
 	err = r.RemoveHeaders(id)
 

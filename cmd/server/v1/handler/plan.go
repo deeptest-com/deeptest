@@ -399,3 +399,22 @@ func (c *PlanCtrl) NotRelationScenarioList(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }
+
+func (c *PlanCtrl) Move(ctx iris.Context) {
+	req := serverDomain.MoveReq{}
+	err := ctx.ReadJSON(&req)
+
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	err = c.PlanService.MoveScenario(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
+	return
+}

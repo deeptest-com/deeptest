@@ -84,7 +84,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData, execUuid)
 
 	agentExec.SetReqValueToGoja(&caseInterfaceExecObj.DebugData.BaseRequest)
-	agentExec.GetReqValueFromGoja(execUuid)
+	agentExec.GetReqValueFromGoja(execUuid, projectId)
 
 	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
 	if agentExec.GetCurrRequest(execUuid).Url != "" {
@@ -99,7 +99,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 
 	agentExec.SetRespValueToGoja(&resultResp)
 	assertResultStatus, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp, execUuid)
-	agentExec.GetRespValueFromGoja(execUuid)
+	agentExec.GetRespValueFromGoja(execUuid, projectId)
 	PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
 
 	// get the response data updated by script post-condition

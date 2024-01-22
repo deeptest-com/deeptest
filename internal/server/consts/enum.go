@@ -92,3 +92,13 @@ const (
 func (e EndpointCaseTreeType) String() string {
 	return string(e)
 }
+
+type ProjectSource string
+
+const (
+	ProjectSourceLY ProjectSource = "ly"
+)
+
+func (e ProjectSource) String() string {
+	return string(e)
+}

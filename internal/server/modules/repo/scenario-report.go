@@ -206,8 +206,9 @@ func (r *ScenarioReportRepo) getLogTree(report model.ScenarioReport) (root model
 
 	for _, log := range logs {
 		if log.ProcessorType == consts.ProcessorInterfaceDefault {
-			log.InterfaceExtractorsResult, _ = r.listLogExtractors(log.ID)
-			log.InterfaceCheckpointsResult, _ = r.listLogCheckpoints(log.ID)
+			log.InterfaceExtractorsResult, _ = r.listLogExtractors(log.InvokeId)
+			log.InterfaceCheckpointsResult, _ = r.listLogCheckpoints(log.InvokeId)
+
 		}
 	}
 
@@ -248,17 +249,17 @@ func (r *ScenarioReportRepo) haveChild(Data []*model.ExecLogProcessor, node *mod
 	return
 }
 
-func (r *ScenarioReportRepo) listLogExtractors(logId uint) (extractors []model.ExecLogExtractor, err error) {
+func (r *ScenarioReportRepo) listLogExtractors(invokeId uint) (extractors []model.ExecLogExtractor, err error) {
 	err = r.DB.
-		Where("log_id =? AND not deleted", logId).
+		Where("invoke_id =? AND not deleted", invokeId).
 		Find(&extractors).Error
 
 	return
 }
 
-func (r *ScenarioReportRepo) listLogCheckpoints(logId uint) (checkpoints []model.ExecLogCheckpoint, err error) {
+func (r *ScenarioReportRepo) listLogCheckpoints(invokeId uint) (checkpoints []model.ExecLogCheckpoint, err error) {
 	err = r.DB.
-		Where("log_id =? AND not deleted", logId).
+		Where("invoke_id =? AND not deleted", invokeId).
 		Find(&checkpoints).Error
 
 	return

@@ -169,19 +169,19 @@ func (s *ServeService) Copy(id uint) (err error) {
 
 func (s *ServeService) SaveSchema(req v1.ServeSchemaReq) (res uint, err error) {
 	var serveSchema model.ComponentSchema
-	//if req.ID == 0 && s.ServeRepo.SchemaExist(uint(req.ID), uint(req.ServeId), req.Name) {
-	//	err = fmt.Errorf("schema name already exist")
-	//	return
-	//}
-	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
-	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
 
+	if req.ID != 0 {
+		err = s.CategoryRepo.UpdateNameByEntityId(req.ID, req.Name, serverConsts.SchemaCategory)
+	}
+
+	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
+	serveSchema.Ref, err = s.ServeRepo.GetSchemaRef(serveSchema.ID)
 	if err != nil {
 		return
 	}
-
-	if req.ID != 0 {
-		err = s.CategoryRepo.UpdateNameByEntityId(serveSchema.ID, serveSchema.Name, serverConsts.SchemaCategory)
+	err = s.ServeRepo.Save(serveSchema.ID, &serveSchema)
+	if err != nil {
+		return
 	}
 
 	res = serveSchema.ID
@@ -295,6 +295,7 @@ func (s *ServeService) Components(projectId uint) (components *schemaHelper.Comp
 	for _, item := range result {
 		var schema schemaHelper.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
+		item.Ref, _ = s.ServeRepo.GetSchemaRef(item.ID)
 		components.Add(item.ID, item.Ref, &schema)
 	}
 

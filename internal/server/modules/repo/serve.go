@@ -134,6 +134,11 @@ func (r *ServeRepo) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.Page
 		logUtils.Errorf("query report error %s", err.Error())
 		return
 	}
+
+	//事实计算schema组件引用信息
+	for key, item := range results {
+		results[key].Ref, err = r.GetSchemaRef(item.ID)
+	}
 	ret.Populate(results, count, req.Page, req.PageSize)
 
 	return
@@ -191,6 +196,7 @@ func (r *ServeRepo) GetSchemasByProjectId(projectId uint, options ...[]interface
 		db = db.Where("id in ?", options[0])
 	}
 	err = db.Find(&res).Error
+
 	return
 }
 
@@ -683,5 +689,19 @@ func (r *ServeRepo) ListAll() (res []model.Serve, err error) {
 
 func (r *ServeRepo) BatchUpdateSchemaProjectByServeId(serveIds []uint, projectId uint) (err error) {
 	err = r.DB.Model(&model.ComponentSchema{}).Where("serve_id IN (?)", serveIds).Update("project_id", projectId).Error
+	return
+}
+
+func (r *ServeRepo) GetSchemaRef(schemaId uint) (ref string, err error) {
+	category, err := r.CategoryRepo.GetByEntityId(schemaId, serverConsts.SchemaCategory)
+	if err != nil {
+		return
+	}
+	joinedPath, err := r.CategoryRepo.GetJoinedPath(category.ID)
+	if err != nil {
+		return
+	}
+
+	ref = "#/components/schemas" + joinedPath
 	return
 }

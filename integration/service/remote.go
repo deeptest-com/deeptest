@@ -1030,13 +1030,14 @@ func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
 	}
 
 	resp, err := httpHelper.Post(httpReq)
+	logUtils.Infof("ApprovalAndMsg body:%+v,Headers:%+v , response %+v", req, headers, resp)
 	if err != nil {
 		logUtils.Infof("ApprovalAndMsg failed, error, %s", err.Error())
 		return
 	}
 
 	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Infof("ApprovalAndMsg failed, response %v", resp)
+		logUtils.Infof("ApprovalAndMsg failed, response %+v", resp)
 		err = fmt.Errorf("ApprovalAndMsg failed, response %v", resp)
 		return
 	}
@@ -1054,7 +1055,7 @@ func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
 	}
 
 	if respContent.Code != 200 {
-		logUtils.Infof("ApprovalAndMsg failed, response %v", resp)
+		logUtils.Infof("ApprovalAndMsg failed, response %+v", resp)
 		err = fmt.Errorf("ApprovalAndMsg failed, response %v", resp)
 		return
 	}

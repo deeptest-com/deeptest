@@ -567,7 +567,7 @@ func (s *DebugInterfaceService) LoadCurl(req serverDomain.DiagnoseCurlLoadReq) (
 func (s *DebugInterfaceService) genCurlCommand(execObj agentExec.InterfaceExecObj, execUuid string) (ret string) {
 	debugData := execObj.DebugData
 
-	command := "curl -i -A '' "
+	command := "curl -i "
 
 	// basic auth
 	if debugData.BasicAuth.Username != "" {

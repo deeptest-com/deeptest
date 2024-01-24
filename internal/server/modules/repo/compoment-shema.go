@@ -4,6 +4,7 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
+	"strings"
 )
 
 type ComponentSchemaRepo struct {
@@ -47,12 +48,12 @@ func (r *ComponentSchemaRepo) SaveEntity(category *model.Category) (err error) {
 		Content:   "{\"type\":\"object\"}",
 	}
 
-	joinedPath, err := r.CategoryRepo.GetJoinedPath(category.ID)
+	path, err := r.CategoryRepo.GetJoinedPath(category.ID)
 	if err != nil {
 		return
 	}
 
-	schema.Ref = "#/components/schemas" + joinedPath
+	schema.Ref = "#/components/schemas/" + strings.Join(path, ".")
 
 	err = r.Save(0, &schema)
 	if err != nil {
@@ -79,7 +80,7 @@ func (r *ComponentSchemaRepo) ChangeRef(id, categoryId uint) (err error) {
 		return
 	}
 
-	ref := "#/components/schemas" + path
+	ref := "#/components/schemas/" + strings.Join(path, ".")
 	err = r.UpdateRefById(id, ref)
 
 	return

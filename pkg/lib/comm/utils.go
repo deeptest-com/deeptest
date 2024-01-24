@@ -131,7 +131,10 @@ func JsonEncode(data interface{}) (res string) {
 
 	if resByte, err := json.Marshal(data); err == nil {
 		res = string(resByte)
+	} else {
+		panic(err)
 	}
+
 	return
 
 }

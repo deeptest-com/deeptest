@@ -117,8 +117,9 @@ func (schemaRef *SchemaRef) UnmarshalJSON(data []byte) error {
 }
 
 type Components struct {
-	s map[uint]*component
-	m map[string]*component
+	s       map[uint]*component
+	m       map[string]*component
+	handler func(refId uint) string
 }
 
 type component struct {
@@ -134,6 +135,10 @@ func NewComponents() (c *Components) {
 	return c
 }
 
+func (c *Components) SetHandler(handler func(refId uint) string) {
+	c.handler = handler
+}
+
 func (c *Components) Add(refId uint, ref string, schema *SchemaRef) {
 	data := &component{refId: refId, ref: ref, schema: schema}
 	if refId != 0 {
@@ -145,16 +150,20 @@ func (c *Components) Add(refId uint, ref string, schema *SchemaRef) {
 
 }
 
-func (c *Components) Component(schema *SchemaRef) (*SchemaRef, uint) {
+func (c *Components) Component(schema *SchemaRef) (*SchemaRef, uint, string) {
 	var ok bool
 	var ret *component
 	if ret, ok = c.s[schema.RefId]; ok {
-		return ret.schema, ret.refId
+		schema.Ref = ret.ref
+		if c.handler != nil {
+			schema.Ref = c.handler(schema.RefId)
+		}
+		return ret.schema, ret.refId, ret.ref
 	} else if ret, ok = c.m[schema.Ref]; ok {
-		return ret.schema, ret.refId
+		return ret.schema, ret.refId, ret.ref
 	}
 
-	return nil, 0
+	return nil, 0, ""
 }
 
 func (c *Components) GetComponents() map[uint]*component {
@@ -211,7 +220,7 @@ func (s *Schema2conv) Example2Schema(object interface{}, schema *Schema) (err er
 
 func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 	ref := schema.Ref
-	if component, _ := s.Components.Component(&schema); component != nil {
+	if component, _, _ := s.Components.Component(&schema); component != nil {
 		s.sets[ref]++
 		schema = *component
 	}
@@ -268,8 +277,8 @@ func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 
 func (s *Schema2conv) SchemaComponents(schema *SchemaRef, components *Components) {
 
-	if component, refId := s.Components.Component(schema); refId != 0 {
-		components.Add(refId, "", component)
+	if component, refId, ref := s.Components.Component(schema); refId != 0 {
+		components.Add(refId, ref, component)
 	} else {
 		return
 	}
@@ -342,7 +351,7 @@ func (s *Schema2conv) CombineSchemas(schema *SchemaRef) {
 	for _, item := range combineSchemas {
 
 		if item.Ref != "" {
-			if component, _ := s.Components.Component(item); component != nil {
+			if component, _, _ := s.Components.Component(item); component != nil {
 				item = component
 			}
 			if item.Value == nil {
@@ -413,7 +422,7 @@ func (s *Schema2conv) AssertDataForSchema(schema *SchemaRef, data interface{}) b
 
 func (s *Schema2conv) Equal(schema1, schema2 *SchemaRef) (ret bool) {
 
-	if component, _ := s.Components.Component(schema1); component != nil {
+	if component, _, _ := s.Components.Component(schema1); component != nil {
 		//s.sets[ref1]++
 		schema1 = component
 	}
@@ -521,15 +530,9 @@ func (s *Schema2conv) GetRefs(schema *SchemaRef) (ret []interface{}) {
 }
 
 func (s *Schema2conv) FillRefId(schema *SchemaRef) {
-	if schema.RefId != 0 {
-		return
-	}
 
-	if schema.Ref != "" {
-		if res, refId := s.Components.Component(schema); res != nil {
-			schema.RefId = refId
-		}
-		return
+	if res, refId, _ := s.Components.Component(schema); res != nil {
+		schema.RefId = refId
 	}
 
 	if schema.Value == nil {

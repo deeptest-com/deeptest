@@ -297,7 +297,6 @@ func (s *ServeService) Components(projectId uint) (components *schemaHelper.Comp
 	for _, item := range result {
 		var schema schemaHelper.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
-		//item.Ref, _ = s.ServeRepo.GetSchemaRef(item.ID)
 		components.Add(item.ID, item.Ref, &schema)
 	}
 

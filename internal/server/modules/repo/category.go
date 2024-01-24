@@ -380,8 +380,8 @@ func (r *CategoryRepo) BatchGetRootNodes(projectIds []uint, typ serverConsts.Cat
 	return
 }
 
-func (r *CategoryRepo) GetJoinedPath(categoryId uint) (path string, err error) {
-	var names []string
+func (r *CategoryRepo) GetJoinedPath(categoryId uint) (path []string, err error) {
+
 	sql := `
 		WITH RECURSIVE temp(id,parent_id,name) AS
 		(
@@ -392,11 +392,7 @@ func (r *CategoryRepo) GetJoinedPath(categoryId uint) (path string, err error) {
 		select name from temp ORDER BY id asc
 `
 	sql = fmt.Sprintf(sql, categoryId)
-	err = r.DB.Raw(sql).Scan(&names).Error
-
-	for _, name := range names {
-		path = path + "/" + name
-	}
+	err = r.DB.Raw(sql).Scan(&path).Error
 
 	return
 }

@@ -297,7 +297,7 @@ func (s *ServeService) Components(projectId uint) (components *schemaHelper.Comp
 	for _, item := range result {
 		var schema schemaHelper.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
-		item.Ref, _ = s.ServeRepo.GetSchemaRef(item.ID)
+		//item.Ref, _ = s.ServeRepo.GetSchemaRef(item.ID)
 		components.Add(item.ID, item.Ref, &schema)
 	}
 
@@ -315,13 +315,13 @@ func (s *ServeService) Schema2Yaml(data string) (res string) {
 	return string(content)
 }
 
-func (s *ServeService) CopySchema(id uint) (schema model.ComponentSchema, err error) {
-	schema, err = s.ServeRepo.GetSchema(id)
+func (s *ServeService) CopySchema(id uint) (category model.Category, err error) {
+	schema, err := s.ServeRepo.GetSchema(id)
 	if err != nil {
 		return
 	}
 
-	category, err := s.CategoryRepo.GetByEntityId(schema.ID, serverConsts.SchemaCategory)
+	category, err = s.CategoryRepo.GetByEntityId(schema.ID, serverConsts.SchemaCategory)
 	if err != nil {
 		return
 	}
@@ -342,6 +342,26 @@ func (s *ServeService) CopySchema(id uint) (schema model.ComponentSchema, err er
 	category.EntityId = schema.ID
 
 	err = s.CategoryRepo.Save(&category)
+	return
+}
+
+func (s *ServeService) CopySchemaOther(id uint) (entityId uint, err error) {
+	schema, err := s.ServeRepo.GetSchema(id)
+	if err != nil {
+		return
+	}
+
+	schema.ID = 0
+	schema.CreatedAt = nil
+	schema.UpdatedAt = nil
+	schema.Name = "CopyOf" + schema.Name
+	err = s.ServeRepo.Save(0, &schema)
+	if err != nil {
+		return
+	}
+
+	entityId = schema.ID
+
 	return
 }
 

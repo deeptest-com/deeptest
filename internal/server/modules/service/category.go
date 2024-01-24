@@ -16,6 +16,7 @@ import (
 
 type CategoryService struct {
 	EndpointService     *EndpointService          `inject:""`
+	ServeService        *ServeService             `inject:""`
 	CategoryRepo        *repo.CategoryRepo        `inject:""`
 	EndpointRepo        *repo.EndpointRepo        `inject:""`
 	PlanRepo            *repo.PlanRepo            `inject:""`
@@ -398,7 +399,7 @@ func (s *CategoryService) Copy(targetId, newParentId, userId uint, username stri
 	}
 
 	go func() {
-		err = s.copyDataByCategoryId(category.Type, targetId, category.ID, userId, username)
+		err = s.copyDataByCategoryId(category.Type, targetId, category, userId, username)
 		if err != nil {
 			logUtils.Error(err.Error())
 		}
@@ -427,10 +428,18 @@ func (s *CategoryService) copyChildren(parentId, newParentId, userId uint, usern
 	return err
 }
 
-func (s *CategoryService) copyDataByCategoryId(typ serverConsts.CategoryDiscriminator, targetId, categoryId, userId uint, username string) (err error) {
+func (s *CategoryService) copyDataByCategoryId(typ serverConsts.CategoryDiscriminator, targetId uint, category model.Category, userId uint, username string) (err error) {
+	var entityId uint
 	switch typ {
 	case serverConsts.EndpointCategory:
-		err = s.EndpointService.CopyDataByCategoryId(targetId, categoryId, userId, username)
+		err = s.EndpointService.CopyDataByCategoryId(targetId, category.ID, userId, username)
+	case serverConsts.SchemaCategory:
+		entityId, err = s.ServeService.CopySchemaOther(category.EntityId)
+	}
+
+	//更新实体信息
+	if entityId > 0 {
+		s.CategoryRepo.UpdateEntityId(category.ID, entityId)
 	}
 
 	return err

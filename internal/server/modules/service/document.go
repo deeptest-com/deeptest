@@ -104,19 +104,20 @@ func (s *DocumentService) GetProject(projectId uint) (doc domain.DocumentRep) {
 
 	doc.GlobalParams, _ = s.EnvironmentRepo.ListParams(projectId)
 	doc.GlobalVars = s.GetGlobalVars(projectId)
+	doc.Components = s.GetSchemas(projectId)
 	return
 }
 
 func (s *DocumentService) GetServes(serveIds []uint, endpoints map[uint][]domain.EndpointReq) (serves []domain.DocumentServe) {
 	res, _ := s.ServeRepo.GetServesByIds(serveIds)
-	schemas := s.GetSchemas(serveIds)
+	//schemas := s.GetSchemas(serveIds)
 	securities := s.GetSecurities(serveIds)
 	servers := s.GetServers(serveIds)
 	for _, item := range res {
 		var serve domain.DocumentServe
 		copier.CopyWithOption(&serve, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 		serve.Endpoints = endpoints[uint(serve.ID)]
-		serve.Component = schemas[uint(serve.ID)]
+		//serve.Component = schemas[uint(serve.ID)]
 		serve.Securities = securities[uint(serve.ID)]
 		serve.Servers = servers[uint(serve.ID)]
 		s.mocks(serve.Endpoints, serve.Servers)
@@ -138,13 +139,12 @@ func (s *DocumentService) mocks(endpoints []domain.EndpointReq, servers []domain
 
 }
 
-func (s *DocumentService) GetSchemas(serveIds []uint) (schemas map[uint][]domain.ServeSchemaReq) {
-	schemas = make(map[uint][]domain.ServeSchemaReq)
-	res, _ := s.ServeRepo.GetSchemas(serveIds)
+func (s *DocumentService) GetSchemas(projectId uint) (schemas []domain.ServeSchemaReq) {
+	res, _ := s.ServeRepo.GetSchemasByProjectId(projectId)
 	for _, item := range res {
 		var schema domain.ServeSchemaReq
 		copier.CopyWithOption(&schema, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-		schemas[uint(schema.ServeId)] = append(schemas[uint(schema.ServeId)], schema)
+		schemas = append(schemas, schema)
 	}
 	return
 }
@@ -334,7 +334,7 @@ func (s *DocumentService) GetDocumentDetail(documentId, endpointId, interfaceId 
 		return
 	}
 
-	s.EndpointService.SchemaConv(&interfaceDetail, serveId)
+	s.EndpointService.SchemaConv(&interfaceDetail, interfaceDetail.ProjectId)
 	s.MergeGlobalParams(&interfaceDetail)
 
 	res = make(map[string]interface{})

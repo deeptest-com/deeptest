@@ -522,7 +522,7 @@ func (c *ServeCtrl) CopySchema(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	if id != 0 {
 		res, _ := c.ServeService.CopySchema(uint(id))
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res.ID})
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 	}

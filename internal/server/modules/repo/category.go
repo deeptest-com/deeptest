@@ -417,7 +417,7 @@ func (r *CategoryRepo) CopySelf(id, newParentId int) (category model.Category, e
 	if newParentId != 0 {
 		category.ParentId = newParentId
 	} else { // 复制的第一个节点重命名
-		category.Name = fmt.Sprintf("%s_copy", category.Name)
+		category.Name = fmt.Sprintf("CopyOf%s", category.Name)
 	}
 	_, category.Ordr = r.UpdateOrder(serverConsts.After, id, category.Type, category.ProjectId)
 	err = r.Save(&category)

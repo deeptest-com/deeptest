@@ -644,9 +644,9 @@ func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 
 }
 
-func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId uint) {
+func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, projectId uint) {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.ServeService.Components(serveId)
+	schema2conv.Components = s.ServeService.Components(projectId)
 	for k, response := range interf.ResponseBodies {
 		schema := new(schemaHelper.SchemaRef)
 		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
@@ -676,7 +676,7 @@ func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{
 	}
 
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
+	schema2conv.Components = s.ServeService.Components(endpoint.ProjectId)
 
 	schema := schemaHelper.SchemaRef{}
 	_commUtils.JsonDecode(bodyItem.Content, &schema)

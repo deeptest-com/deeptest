@@ -157,6 +157,10 @@ func (c *Components) Component(schema *SchemaRef) (*SchemaRef, uint) {
 	return nil, 0
 }
 
+func (c *Components) GetComponents() map[uint]*component {
+	return c.s
+}
+
 type Schema2conv struct {
 	Components *Components
 	sets       map[string]int64

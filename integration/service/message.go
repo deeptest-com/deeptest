@@ -7,7 +7,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -55,8 +54,7 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint
 		return
 	}
 
-	host, _ := cache.GetCacheString("thirdPartyHost")
-
+	host := config.CONFIG.ThirdParty.Host
 	projectHomePage := fmt.Sprintf("%s/lyapi/%s/workspace", host, project.ShortName)
 	mcsData = integrationDomain.ApprovalReq{
 		CreatorId:    sender.Username,

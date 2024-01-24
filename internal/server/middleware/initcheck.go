@@ -31,7 +31,7 @@ func InitCheck() iris.Handler {
 			}
 			if thirdPartyHost != "" {
 				err := cache.SetCache("thirdPartyHost", thirdPartyHost, -1)
-				logUtils.Infof("initThirdPartyHostErr:%s", err)
+				logUtils.Infof("initThirdPartyHost thirdPartyHost:%s, Err:%+v", thirdPartyHost, err)
 			}
 			ctx.Next()
 		}

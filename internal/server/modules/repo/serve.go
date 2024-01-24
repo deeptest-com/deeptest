@@ -199,6 +199,10 @@ func (r *ServeRepo) GetSchemasByProjectId(projectId uint, options ...[]interface
 	}
 	err = db.Find(&res).Error
 
+	for key, item := range res {
+		res[key].Ref = fmt.Sprintf("#/components/schemas/%s", item.Name)
+	}
+
 	return
 }
 

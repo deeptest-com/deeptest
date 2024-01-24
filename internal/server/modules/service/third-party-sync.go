@@ -28,6 +28,7 @@ type ThirdPartySyncService struct {
 	EndpointRepo             *repo.EndpointRepo          `inject:""`
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
 	UserRepo                 *repo.UserRepo              `inject:""`
+	BaseRepo                 *repo.BaseRepo              `inject:""`
 	RemoteService            *service.RemoteService      `inject:""`
 	ServeService             *ServeService               `inject:""`
 	EndpointService          *EndpointService            `inject:""`
@@ -557,5 +558,15 @@ func (s *ThirdPartySyncService) ListFunctionsByClass(baseUrl, classCode string) 
 		}
 	}
 
+	return
+}
+
+func (s *ThirdPartySyncService) SaveConfig(req model.ThirdPartySync) (err error) {
+	err = s.BaseRepo.Save(req.ID, &req)
+
+	return
+}
+
+func (s *ThirdPartySyncService) GetConfigMap(config string) (res map[string]string, err error) {
 	return
 }

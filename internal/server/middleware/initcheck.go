@@ -26,8 +26,12 @@ func InitCheck() iris.Handler {
 				host = ctx.Request().Header.Get("X-API-Origin")
 				thirdPartyHost = ctx.Request().Header.Get("Origin")
 			}
-			cache.SetCache("host", host, -1)
-			cache.SetCache("thirdPartyHost", thirdPartyHost, -1)
+			if host != "" {
+				cache.SetCache("host", host, -1)
+			}
+			if thirdPartyHost != "" {
+				cache.SetCache("thirdPartyHost", thirdPartyHost, -1)
+			}
 			ctx.Next()
 		}
 

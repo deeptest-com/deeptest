@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"net/http"
 
 	"github.com/kataras/iris/v12"
@@ -17,6 +18,7 @@ func InitCheck() iris.Handler {
 		if dao.GetDB() == nil || (config.CONFIG.System.CacheType == "redis" && config.CACHE == nil) {
 			ctx.StopWithJSON(http.StatusOK, _domain.Response{Code: _domain.NeedInitErr.Code, Data: nil, Msg: _domain.NeedInitErr.Msg})
 		} else {
+			logUtils.Infof("initHostParam X-Token:%s,Origin:%s,X-API-Origin:%s", ctx.GetHeader("X-Token"), ctx.Request().Header.Get("Origin"), ctx.Request().Header.Get("X-API-Origin"))
 			host := ctx.Request().Header.Get("Origin")
 			thirdPartyHost := ctx.Request().Header.Get("Origin")
 

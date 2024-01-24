@@ -63,7 +63,7 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint
 		ApproveIds:   userAccount,
 		ApprovalType: 1,
 		Title:        "乐研API通知-项目权限申请",
-		Content:      fmt.Sprintf("您好！%s申请\"%s\"API关联项目的【%s】角色。请审批！\n项目链接：%s", sender.Name, project.Name, applyRole, projectHomePage),
+		Content:      fmt.Sprintf("您好！%s申请\"%s\"API管理项目的【%s】角色。请审批！\n项目链接：%s", sender.Name, project.Name, applyRole, projectHomePage),
 		SourceIds:    []int{0},
 		Remark:       auditData.Description,
 		NotifyUrl:    fmt.Sprintf("%s/api/v1/message/receiveMcsApprovalData", config.CONFIG.Environment.ServerHost),

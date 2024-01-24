@@ -195,7 +195,9 @@ func (r *MessageRepo) GetCombinedMessage(businessId uint, messageSource consts.M
 
 // ListMsgNeedAsyncToMcs 列出需要异步同步给mcs的消息
 func (r *MessageRepo) ListMsgNeedAsyncToMcs() (messages []model.Message, err error) {
-	var infoMessages, approvalMessages, needCombineMessages []model.Message
+	var approvalMessages []model.Message
+	//var infoMessages, approvalMessages, needCombineMessages []model.Message
+
 	err = r.DB.Model(&model.Message{}).
 		Where("service_type = ?", consts.ServiceTypeApproval).
 		Where("send_status in ?", []consts.MessageSendStatus{consts.MessageCreated, consts.MessageSendFailed}).
@@ -204,38 +206,38 @@ func (r *MessageRepo) ListMsgNeedAsyncToMcs() (messages []model.Message, err err
 		return
 	}
 
-	err = r.DB.Model(&model.Message{}).
-		Select("*, count(*) num").
-		Where("service_type = ?", consts.ServiceTypeInfo).
-		Where("send_status in ?", []consts.MessageSendStatus{consts.MessageCreated, consts.MessageSendFailed}).
-		Group("message_source, business_id").
-		Having("num =1").
-		Find(&infoMessages).Error
-	if err != nil {
-		return
-	}
-
-	err = r.DB.Model(&model.Message{}).
-		Select("*, count(*) num").
-		Where("service_type = ?", consts.ServiceTypeInfo).
-		Where("send_status in ?", []consts.MessageSendStatus{consts.MessageCreated, consts.MessageSendFailed}).
-		Group("message_source, business_id").
-		Having("num >1").
-		Find(&needCombineMessages).Error
-	if err != nil {
-		return
-	}
-
-	for _, v := range needCombineMessages {
-		combinedMessage, err := r.GetCombinedMessage(v.BusinessId, v.MessageSource)
-		if err != nil {
-			continue
-		}
-		messages = append(messages, combinedMessage)
-	}
+	//err = r.DB.Model(&model.Message{}).
+	//	Select("*, count(*) num").
+	//	Where("service_type = ?", consts.ServiceTypeInfo).
+	//	Where("send_status in ?", []consts.MessageSendStatus{consts.MessageCreated, consts.MessageSendFailed}).
+	//	Group("message_source, business_id").
+	//	Having("num =1").
+	//	Find(&infoMessages).Error
+	//if err != nil {
+	//	return
+	//}
+	//
+	//err = r.DB.Model(&model.Message{}).
+	//	Select("*, count(*) num").
+	//	Where("service_type = ?", consts.ServiceTypeInfo).
+	//	Where("send_status in ?", []consts.MessageSendStatus{consts.MessageCreated, consts.MessageSendFailed}).
+	//	Group("message_source, business_id").
+	//	Having("num >1").
+	//	Find(&needCombineMessages).Error
+	//if err != nil {
+	//	return
+	//}
+	//
+	//for _, v := range needCombineMessages {
+	//	combinedMessage, err := r.GetCombinedMessage(v.BusinessId, v.MessageSource)
+	//	if err != nil {
+	//		continue
+	//	}
+	//	messages = append(messages, combinedMessage)
+	//}
 
 	messages = append(messages, approvalMessages...)
-	messages = append(messages, infoMessages...)
+	//messages = append(messages, infoMessages...)
 	return
 }
 
@@ -256,6 +258,14 @@ func (r *MessageRepo) UpdateCombinedSendStatus(messageSource consts.MessageSourc
 func (r *MessageRepo) UpdateSendStatusByMcsMessageId(mcsMessageId string, sendStatus consts.MessageSendStatus) (err error) {
 	err = r.DB.Model(&model.Message{}).
 		Where("mcs_message_id = ? ", mcsMessageId).
+		Update("send_status", sendStatus).Error
+
+	return
+}
+
+func (r *MessageRepo) UpdateSendStatusById(id uint, sendStatus consts.MessageSendStatus) (err error) {
+	err = r.DB.Model(&model.Message{}).
+		Where("id = ? ", id).
 		Update("send_status", sendStatus).Error
 
 	return

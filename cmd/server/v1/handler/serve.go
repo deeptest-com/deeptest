@@ -337,11 +337,6 @@ func (c *ServeCtrl) ListSchema(ctx iris.Context) {
 // @Router	/api/v1/serves/schema/detail	[get]
 func (c *ServeCtrl) GetSchemaByRef(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
-	if id == 0 {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
-		return
-	}
-
 	res, _ := c.ServeService.GetSchema(uint(id))
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 

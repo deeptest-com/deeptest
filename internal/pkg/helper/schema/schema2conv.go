@@ -163,7 +163,7 @@ func (c *Components) Component(schema *SchemaRef) (*SchemaRef, uint, string) {
 		return ret.schema, ret.refId, ret.ref
 	}
 
-	return nil, 0, ""
+	return schema, 0, schema.Ref
 }
 
 func (c *Components) GetComponents() map[uint]*component {
@@ -223,6 +223,8 @@ func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 	if component, _, _ := s.Components.Component(&schema); component != nil {
 		s.sets[ref]++
 		schema = *component
+	} else {
+		return
 	}
 
 	if schema.Ref != "" {

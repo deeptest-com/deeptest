@@ -89,7 +89,8 @@ func (s *ThirdPartySyncService) GetFunctionsByClassNew(serviceId, classCode, par
 	getFunctionsByClassResData := s.RemoteService.LcQueryMsg(getFunctionsByClassReq, token, baseUrl)
 	for _, v := range getFunctionsByClassResData {
 		//不同步继承方法和不允许被重写的内部方法
-		if v.IsExtend == consts.IntegrationFuncIsExtend || (v.MessageType == 0 && v.Overridable == consts.IntegrationFuncCanNotOverridable) {
+		//if v.IsExtend == consts.IntegrationFuncIsExtend || (v.MessageType == 0 && v.Overridable == consts.IntegrationFuncCanNotOverridable) {
+		if v.IsExtend == consts.IntegrationFuncIsExtend {
 			continue
 		}
 
@@ -558,15 +559,5 @@ func (s *ThirdPartySyncService) ListFunctionsByClass(baseUrl, classCode string) 
 		}
 	}
 
-	return
-}
-
-func (s *ThirdPartySyncService) SaveConfig(req model.ThirdPartySync) (err error) {
-	err = s.BaseRepo.Save(req.ID, &req)
-
-	return
-}
-
-func (s *ThirdPartySyncService) GetConfigMap(config string) (res map[string]string, err error) {
 	return
 }

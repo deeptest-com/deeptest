@@ -17,7 +17,6 @@ type ThirdPartySync struct {
 	ServiceCode  string              `json:"serviceCode"`
 	ExecTime     *time.Time          `json:"execTime"`
 	CreateUserId uint                `json:"createUserId"`
-	Config       string              `gorm:"type:text" json:"config"`
 }
 
 func (ThirdPartySync) TableName() string {

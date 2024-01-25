@@ -61,10 +61,11 @@ type GetFunctionsByClassRes struct {
 }
 
 type GetFunctionsByClassResData struct {
-	Code        string                             `json:"code"`
-	MessageType int                                `json:"messageType"` // 0：内部方法，不能被前端调用 1：外部方法，可以被前端调用
-	IsExtend    consts.IntegrationFuncExtendStatus `json:"isExtend"`    // 是否是继承的消息 YES：是 NO：否
-	Overridable consts.IntegrationFuncOverridable  `json:"overridable"` // 是否允许重写 YES：是 NO：否
+	Code           string                             `json:"code"`
+	MessageType    int                                `json:"messageType"`    // 0：内部方法，不能被前端调用 1：外部方法，可以被前端调用
+	IsExtend       consts.IntegrationFuncExtendStatus `json:"isExtend"`       // 是否是继承的消息 YES：是 NO：否
+	Overridable    consts.IntegrationFuncOverridable  `json:"overridable"`    // 自身是否允许重写 YES：是 NO：否
+	IsSelfOverride consts.IntegrationFuncOverridable  `json:"isSelfOverride"` // 是否重写父级方法 YES：是 NO：否
 }
 
 type MetaGetMethodDetailReq struct {

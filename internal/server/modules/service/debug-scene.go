@@ -15,6 +15,7 @@ type DebugSceneService struct {
 	EnvironmentRepo       *repo.EnvironmentRepo       `inject:""`
 	DiagnoseInterfaceRepo *repo.DiagnoseInterfaceRepo `inject:""`
 	ProfileRepo           *repo.ProfileRepo           `inject:""`
+	ServeRepo             *repo.ServeRepo             `inject:""`
 
 	ShareVarService *ShareVarService `inject:""`
 
@@ -40,6 +41,11 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userIdForDisp
 		}
 	}
 
+	if environmentIdForExec > 0 {
+		serveServer, _ := s.ServeRepo.GetCurrServerByUser(debugData.ProjectId, debugServeId, userIdForDisplay)
+		debugServerId = serveServer.ID
+	}
+
 	serveServer, _ := s.ServeServerRepo.Get(debugServerId)
 
 	if debugData.DiagnoseInterfaceId > 0 {
@@ -52,6 +58,7 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userIdForDisp
 	envId := serveServer.EnvironmentId
 	if environmentIdForExec > 0 { // exec loading
 		envId = environmentIdForExec
+
 	} else if userIdForDisplay != 0 { // display loading
 		projectUserServer, _ := s.EnvironmentRepo.GetProjectUserServer(debugData.ProjectId, userIdForDisplay)
 		if projectUserServer.ServerId != 0 {

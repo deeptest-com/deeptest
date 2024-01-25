@@ -372,7 +372,7 @@ func (s *ServeService) AddServerForHistory(req v1.HistoryServeAddServesReq) (err
 					if url == "" {
 						return
 					}
-					_ = s.ServeServerRepo.UpdateUrlByServerAndServer(serve.ID, server.ID, url)
+					_ = s.ServeServerRepo.UpdateUrlByServeAndServer(serve.ID, server.ID, url)
 
 				}
 			}

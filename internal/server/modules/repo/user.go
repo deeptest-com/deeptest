@@ -720,3 +720,30 @@ func (r *UserRepo) UpdateByLdapInfo(ldapUserInfo v1.UserBase) (id uint, err erro
 	}
 	return
 }
+
+func (r *UserRepo) CreateIfNotExisted(req serverDomain.UserReq) (id uint, err error) {
+	user, err := r.GetByUserName(req.Username)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return
+	}
+
+	if user.ID != 0 {
+		id = user.ID
+	} else {
+		createUserReq := v1.UserReq{
+			UserBase: v1.UserBase{
+				Username:  req.Username,
+				Name:      req.Name,
+				Email:     req.Email,
+				ImAccount: req.ImAccount,
+				Password:  _commUtils.RandStr(8),
+			},
+		}
+		id, err = r.Create(createUserReq)
+		if err != nil {
+			return 0, err
+		}
+	}
+
+	return
+}

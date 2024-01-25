@@ -385,6 +385,16 @@ func GetSign(appKey, appSecret, nonce, timestamp, body string) (sign string) {
 	return
 }
 
+func ArrayUnique(arr []string) (ret []string) {
+	temp := map[string]bool{}
+	for _, x := range arr {
+		if _, ok := temp[x]; !ok {
+			ret = append(ret, x)
+		}
+	}
+	return
+}
+
 func UintArrToStr(arr []uint) (res string) {
 	for _, item := range arr {
 		if res != "" {

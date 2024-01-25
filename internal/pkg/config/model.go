@@ -17,6 +17,7 @@ type Config struct {
 	ThirdParty  ThirdParty  `mapstructure:"third-party" json:"third-party" yaml:"third-party"`
 	Mcs         Mcs         `mapstructure:"mcs" json:"mcs" yaml:"mcs"`
 	Environment Environment `mapstructure:"environment" json:"environment" yaml:"environment"`
+	OpenApi     OpenApi     `mapstructure:"openapi" json:"openapi" yaml:"openapi"`
 }
 
 type System struct {
@@ -71,6 +72,7 @@ type ThirdParty struct {
 	Password string  `mapstructure:"password" json:"password" yaml:"password"`
 	Url      string  `mapstructure:"url" json:"url" yaml:"url"`
 	ApiSign  ApiSign `mapstructure:"apiSign" json:"apiSign" yaml:"apiSign"`
+	Host     string  `mapstructure:"host" json:"host" yaml:"host"`
 }
 
 type ApiSign struct {
@@ -87,4 +89,8 @@ type Mcs struct {
 
 type Environment struct {
 	ServerHost string `mapstructure:"server-host" json:"serverHost" yaml:"server-host"`
+}
+
+type OpenApi struct {
+	AppSecret string `mapstructure:"appsecret" json:"appsecret" yaml:"appsecret"`
 }

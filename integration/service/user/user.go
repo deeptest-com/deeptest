@@ -1,7 +1,7 @@
 package user
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	v1 "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/integration/enum"
 	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
 	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"

@@ -1,6 +1,7 @@
 package serverDomain
 
 import (
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -9,6 +10,7 @@ import (
 type ProjectReq struct {
 	_domain.Model
 	ProjectBase
+	integrationDomain.ProjectReq
 }
 
 type ProjectReqPaginate struct {

@@ -1,7 +1,7 @@
 package service
 
 import (
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	v1 "github.com/aaronchen2k/deeptest/integration/domain"
 )
 
 type User struct {

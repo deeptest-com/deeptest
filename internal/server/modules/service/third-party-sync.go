@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	"github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -26,7 +28,7 @@ type ThirdPartySyncService struct {
 	EndpointRepo             *repo.EndpointRepo          `inject:""`
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
 	UserRepo                 *repo.UserRepo              `inject:""`
-	RemoteService            *RemoteService              `inject:""`
+	RemoteService            *service.RemoteService      `inject:""`
 	ServeService             *ServeService               `inject:""`
 	EndpointService          *EndpointService            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
@@ -34,7 +36,7 @@ type ThirdPartySyncService struct {
 }
 
 func (s *ThirdPartySyncService) GetToken(baseUrl string) (token string, err error) {
-	loginByOauthReq := v1.LoginByOauthReq{
+	loginByOauthReq := integrationDomain.LoginByOauthReq{
 		LoginName: config.CONFIG.ThirdParty.Username,
 		Password:  _commUtils.Sha256(config.CONFIG.ThirdParty.Password),
 	}
@@ -44,7 +46,7 @@ func (s *ThirdPartySyncService) GetToken(baseUrl string) (token string, err erro
 		return "", errors.New("login fail")
 	}
 
-	getTokenFromCodeReq := v1.GetTokenFromCodeReq{
+	getTokenFromCodeReq := integrationDomain.GetTokenFromCodeReq{
 		Code: loginByOauthResData.Code,
 	}
 
@@ -54,14 +56,14 @@ func (s *ThirdPartySyncService) GetToken(baseUrl string) (token string, err erro
 	return
 }
 
-func (s *ThirdPartySyncService) GetClasses(serviceCode, token string, baseUrl string) (classes []v1.FindClassByServiceCodeResData) {
+func (s *ThirdPartySyncService) GetClasses(serviceCode, token string, baseUrl string) (classes []integrationDomain.FindClassByServiceCodeResData) {
 	classes = s.RemoteService.LcQueryAgent(serviceCode, token, baseUrl)
 	return
 }
 
 // GetFunctionsByClass 已废弃
 func (s *ThirdPartySyncService) GetFunctionsByClass(serviceCode, classCode, token string, baseUrl string) (functions []string) {
-	getFunctionsByClassReq := v1.GetFunctionsByClassReq{
+	getFunctionsByClassReq := integrationDomain.GetFunctionsByClassReq{
 		ServiceCode: serviceCode,
 		ClassCode:   classCode,
 	}
@@ -77,7 +79,7 @@ func (s *ThirdPartySyncService) GetFunctionsByClass(serviceCode, classCode, toke
 }
 
 func (s *ThirdPartySyncService) GetFunctionsByClassNew(serviceId, classCode, parentCodes, objId, token string, baseUrl string) (functions []string) {
-	getFunctionsByClassReq := v1.QueryMsgReq{}
+	getFunctionsByClassReq := integrationDomain.QueryMsgReq{}
 	getFunctionsByClassReq.ClassInfo.ParentCodes = parentCodes
 	getFunctionsByClassReq.ClassInfo.ObjId = objId
 	getFunctionsByClassReq.ClassInfo.Code = classCode
@@ -96,8 +98,8 @@ func (s *ThirdPartySyncService) GetFunctionsByClassNew(serviceId, classCode, par
 	return
 }
 
-func (s *ThirdPartySyncService) GetFunctionDetail(classCode, function, token string, baseUrl string) (data v1.MetaGetMethodDetailResData) {
-	metaGetMethodDetailReq := v1.MetaGetMethodDetailReq{
+func (s *ThirdPartySyncService) GetFunctionDetail(classCode, function, token string, baseUrl string) (data integrationDomain.MetaGetMethodDetailResData) {
+	metaGetMethodDetailReq := integrationDomain.MetaGetMethodDetailReq{
 		ClassName:   classCode,
 		Method:      function,
 		IncludeSelf: true,
@@ -203,7 +205,7 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 	return
 }
 
-func (s *ThirdPartySyncService) SaveCategory(class v1.FindClassByServiceCodeResData, projectId, serveId uint) (categoryId uint, err error) {
+func (s *ThirdPartySyncService) SaveCategory(class integrationDomain.FindClassByServiceCodeResData, projectId, serveId uint) (categoryId uint, err error) {
 	rootNode, err := s.CategoryRepo.GetRootNode(projectId, serverConsts.EndpointCategory)
 	if err != nil {
 		return
@@ -282,7 +284,7 @@ func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, u
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpointInterface(title string, functionDetail v1.MetaGetMethodDetailResData, endpointId, projectId uint, path string) (interfaceId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpointInterface(title string, functionDetail integrationDomain.MetaGetMethodDetailResData, endpointId, projectId uint, path string) (interfaceId uint, err error) {
 	endpointInterface := model.EndpointInterface{
 		InterfaceBase: model.InterfaceBase{
 			Name:      title,
@@ -314,7 +316,7 @@ func (s *ThirdPartySyncService) getBodyType(requestType string) (bodyType consts
 	return
 }
 
-func (s *ThirdPartySyncService) getRequestBody(functionDetail v1.MetaGetMethodDetailResData) (requestBody string) {
+func (s *ThirdPartySyncService) getRequestBody(functionDetail integrationDomain.MetaGetMethodDetailResData) (requestBody string) {
 	if functionDetail.RequestType == "JSON" {
 		requestBody = functionDetail.RequestBody
 	} else if functionDetail.RequestType == "FORM" {
@@ -340,7 +342,7 @@ func (s *ThirdPartySyncService) GetSchema(bodyString, requestType string) (schem
 
 }
 
-func (s *ThirdPartySyncService) GenerateEndpoint(functionDetail v1.MetaGetMethodDetailResData) (res model.Endpoint, err error) {
+func (s *ThirdPartySyncService) GenerateEndpoint(functionDetail integrationDomain.MetaGetMethodDetailResData) (res model.Endpoint, err error) {
 	functionBody := functionDetail.RequestBody
 	if functionDetail.RequestType == "FORM" {
 		functionBody = functionDetail.RequestFormBody
@@ -381,7 +383,7 @@ func (s *ThirdPartySyncService) GenerateEndpoint(functionDetail v1.MetaGetMethod
 	return
 }
 
-func (s *ThirdPartySyncService) SaveBody(functionDetail v1.MetaGetMethodDetailResData, interfaceId uint) (err error) {
+func (s *ThirdPartySyncService) SaveBody(functionDetail integrationDomain.MetaGetMethodDetailResData, interfaceId uint) (err error) {
 	functionBody := functionDetail.RequestBody
 	if functionDetail.RequestType == "FORM" {
 		functionBody = functionDetail.RequestFormBody
@@ -471,7 +473,11 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointD
 			continue
 		}
 
-		path := "/" + functionDetail.ServiceCode + "/" + req.ClassCode + "/" + function
+		//path := "/" + functionDetail.ServiceCode + "/" + req.ClassCode + "/" + function
+		path := "/" + req.ClassCode + "/" + function
+		if req.AddServicePrefix {
+			path = "/" + functionDetail.ServiceCode + path
+		}
 		title := req.ClassCode + "-" + functionDetail.Code
 
 		endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, req.ProjectId, path, req.ServeId, req.CategoryId)
@@ -527,7 +533,7 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointD
 	return
 }
 
-func (s *ThirdPartySyncService) ListFunctionsByClass(baseUrl, classCode string) (res []v1.GetFunctionDetailsByClassResData, err error) {
+func (s *ThirdPartySyncService) ListFunctionsByClass(baseUrl, classCode string) (res []integrationDomain.GetFunctionDetailsByClassResData, err error) {
 	token, err := s.GetToken(baseUrl)
 	if err != nil {
 		err = errors.New("您输入的环境URL地址有误")

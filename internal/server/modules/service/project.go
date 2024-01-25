@@ -1,11 +1,12 @@
 package service
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	"github.com/aaronchen2k/deeptest/integration/service"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -18,16 +19,18 @@ import (
 )
 
 type ProjectService struct {
-	ProjectRepo     *repo.ProjectRepo     `inject:""`
-	ServeRepo       *repo.ServeRepo       `inject:""`
-	SampleSource    *source.SampleSource  `inject:""`
-	UserRepo        *repo.UserRepo        `inject:""`
-	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
-	MessageRepo     *repo.MessageRepo     `inject:""`
-	BaseRepo        *repo.BaseRepo        `inject:""`
-	RemoteService   *RemoteService        `inject:""`
-	MessageService  *MessageService       `inject:""`
-	UserService     *UserService          `inject:""`
+	ProjectRepo               *repo.ProjectRepo                  `inject:""`
+	ServeRepo                 *repo.ServeRepo                    `inject:""`
+	SampleSource              *source.SampleSource               `inject:""`
+	UserRepo                  *repo.UserRepo                     `inject:""`
+	ProjectRoleRepo           *repo.ProjectRoleRepo              `inject:""`
+	MessageRepo               *repo.MessageRepo                  `inject:""`
+	BaseRepo                  *repo.BaseRepo                     `inject:""`
+	IntegrationRepo           *repo.IntegrationRepo              `inject:""`
+	RemoteService             *service.RemoteService             `inject:""`
+	MessageService            *MessageService                    `inject:""`
+	UserService               *UserService                       `inject:""`
+	IntegrationProjectService *integrationService.ProjectService `inject:""`
 }
 
 func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _domain.PageData, err error) {
@@ -46,11 +49,27 @@ func (s *ProjectService) Get(id uint) (model.Project, error) {
 
 func (s *ProjectService) Create(req v1.ProjectReq, userId uint) (id uint, err _domain.BizErr) {
 	id, err = s.ProjectRepo.Create(req, userId)
+	if err.Code != 0 {
+		return
+	}
+
+	integrationErr := s.IntegrationProjectService.Save(req.ProjectReq, id)
+	if integrationErr != nil {
+		err = _domain.SystemErr
+	}
+
 	return
 }
 
-func (s *ProjectService) Update(req v1.ProjectReq) error {
-	return s.ProjectRepo.Update(req)
+func (s *ProjectService) Update(req v1.ProjectReq) (err error) {
+	err = s.ProjectRepo.Update(req)
+	if err != nil {
+		return
+	}
+
+	err = s.IntegrationProjectService.Save(req.ProjectReq, req.Id)
+
+	return
 }
 
 func (s *ProjectService) DeleteById(id uint) error {
@@ -122,51 +141,11 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 	}
 
 	go func() {
-		if config.CONFIG.System.SysEnv == "ly" {
-			err = s.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
-			if err != nil {
-				logUtils.Infof("申请加入项目发送消息失败，err:%+v", err)
-			}
+		err = s.IntegrationProjectService.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
+		if err != nil {
+			logUtils.Infof("申请加入项目发送消息失败，err:%+v", err)
 		}
 	}()
-
-	return
-}
-
-func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleName consts.RoleType) (err error) {
-	defer func() {
-		if r := recover(); r != nil {
-			err = fmt.Errorf("发送消息异常")
-		}
-	}()
-
-	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
-	messageContentByte, _ := json.Marshal(messageContent)
-
-	adminRole, err := s.ProjectRoleRepo.FindByName(s.BaseRepo.GetAdminRoleName())
-	if err != nil {
-		return
-	}
-
-	messageReq := v1.MessageReq{
-		MessageBase: v1.MessageBase{
-			MessageSource: consts.MessageSourceJoinProject,
-			Content:       string(messageContentByte),
-			ReceiverRange: 3,
-			SenderId:      userId,
-			ReceiverId:    adminRole.ID,
-			SendStatus:    consts.MessageCreated,
-			ServiceType:   consts.ServiceTypeApproval,
-			BusinessId:    auditId,
-		},
-	}
-	messageId, _ := s.MessageService.Create(messageReq)
-	message, err := s.MessageRepo.Get(messageId)
-	if err != nil {
-		return
-	}
-
-	_, err = s.MessageService.SendMessageToMcs(message)
 
 	return
 }
@@ -277,7 +256,7 @@ func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (pro
 	return
 }
 
-func (s *ProjectService) CreateProjectForThirdParty(project v1.ProjectInfo) (projectId uint, err error) {
+func (s *ProjectService) CreateProjectForThirdParty(project integrationDomain.ProjectInfo) (projectId uint, err error) {
 	adminName := "admin"
 	adminUser, err := s.UserRepo.GetByUserName(adminName)
 	if err != nil {
@@ -343,3 +322,31 @@ func (s *ProjectService) createSample(projectId uint) (err error) {
 	return err
 }
 */
+
+func (s *ProjectService) AllProjectList(username string) (res []model.Project, err error) {
+	return s.ProjectRepo.ListByUsername(username)
+}
+
+func (s *ProjectService) GetProjectRole(username, projectCode string) (role string, err error) {
+	var user model.SysUser
+	user, _ = s.UserRepo.GetByUserName(username)
+	if user.ID == 0 {
+		err = fmt.Errorf("用户名不存在")
+		return
+	}
+	var project model.Project
+	project, _ = s.ProjectRepo.GetByShortName(projectCode)
+	if project.ID == 0 {
+		err = fmt.Errorf("项目不存在")
+		return
+	}
+
+	var projectRole model.ProjectRole
+	projectRole, _ = s.ProjectRoleRepo.ProjectUserRoleList(user.ID, project.ID)
+	if projectRole.Name == "" {
+		err = fmt.Errorf("用户角色不存在")
+		return
+	}
+
+	return string(projectRole.Name), err
+}

@@ -2,6 +2,8 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	"github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -11,12 +13,12 @@ import (
 )
 
 type UserAuthService struct {
-	RemoteService *RemoteService `inject:""`
-	UserRepo      *repo.UserRepo `inject:""`
+	RemoteService *service.RemoteService `inject:""`
+	UserRepo      *repo.UserRepo         `inject:""`
 }
 
 func (s *UserAuthService) Auth(token string) (user model.SysUser, err error) {
-	var userInfo v1.UserInfo
+	var userInfo integrationDomain.UserInfo
 	userInfo, err = s.RemoteService.GetUserInfoByToken(token)
 	if err != nil {
 		req := v1.UserReq{UserBase: v1.UserBase{

@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"gorm.io/gorm"
 )
 
@@ -121,5 +122,13 @@ func (r *BaseRepo) GetAdminRoleName() (roleName consts.RoleType) {
 		roleName = consts.IntegrationAdmin
 	}
 
+	return
+}
+
+func (r *BaseRepo) GetDB(tenantId string) (db *gorm.DB) {
+	handler := func() (db *gorm.DB, err error) {
+		return dao.InitSaasDBHandler(tenantId)
+	}
+	db = dao.GetDBResolver().Apply(tenantId, handler).GetConnPool(tenantId)
 	return
 }

@@ -56,6 +56,7 @@ func (s *ProjectSettingsService) AddSwaggerCron(item model.SwaggerSync) {
 
 	taskId := item.ID
 	s.Cron.AddCommonTask(name, item.Cron, func() {
+
 		task, err := s.GetSwaggerSyncById(taskId)
 		logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(item))
 		if err != nil {

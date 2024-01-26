@@ -19,7 +19,7 @@ import (
 )
 
 func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (err error) {
-	InitJsRuntime(projectId, execUuid)
+	//InitJsRuntime(projectId, execUuid)
 	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
 	ResetGojaVariables(execUuid)
 	ResetGojaLogs(execUuid)

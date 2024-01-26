@@ -336,13 +336,14 @@ func (r *EnvironmentRepo) DeleteEnvironment(id uint) (err error) {
 }
 
 func (r *EnvironmentRepo) SaveVars(projectId, environmentId uint, environmentVars []model.EnvironmentVar) (err error) {
-	if len(environmentVars) == 0 {
-		return
-	}
 
 	err = r.DB.Delete(&model.EnvironmentVar{}, "environment_id=? and project_id=?", environmentId, projectId).Error
 	if err != nil {
 		return err
+	}
+
+	if len(environmentVars) == 0 {
+		return
 	}
 
 	for key, _ := range environmentVars {

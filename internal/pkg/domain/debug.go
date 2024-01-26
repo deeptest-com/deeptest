@@ -8,18 +8,23 @@ import (
 type DebugInfo struct {
 	DebugInterfaceId    uint `json:"debugInterfaceId"`
 	EndpointInterfaceId uint `json:"endpointInterfaceId"` // EndpointInterface without DebugInterface init
-	CaseInterfaceId     uint `json:"caseInterfaceId"`     // load by endpoint case
 	ScenarioProcessorId uint `json:"scenarioProcessorId"` // used to load vars by scenario processor
 	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"` // load by interface diagnose
 
-	UsedBy    consts.UsedBy `json:"usedBy"`
-	UserId    uint          `json:"userId"`
-	ProjectId int           `json:"projectId"`
+	CaseInterfaceId    uint `json:"caseInterfaceId"`    // load by endpoint case
+	IsForBenchmarkCase bool `json:"isForBenchmarkCase"` // load by endpoint case
+
+	UsedBy        consts.UsedBy `json:"usedBy"`
+	UserId        uint          `json:"userId"`        // used by loading debugData for display
+	EnvironmentId uint          `json:"environmentId"` // used by loading debugData for exec
+
+	ProjectId int `json:"projectId"`
 }
 
 type SubmitDebugResultRequest struct {
-	Request  DebugData     `json:"request"`
-	Response DebugResponse `json:"response"`
+	ResultStatus consts.ResultStatus
+	Request      DebugData     `json:"request"`
+	Response     DebugResponse `json:"response"`
 
 	PreConditions  []InterfaceExecCondition `json:"preConditions"`
 	PostConditions []InterfaceExecCondition `json:"postConditions"`
@@ -36,6 +41,7 @@ type DebugData struct {
 	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"`
 
 	ScenarioProcessorId uint `json:"scenarioProcessorId"`
+	EnvironmentId       uint `json:"environmentId"`
 
 	UsedBy consts.UsedBy `json:"usedBy"`
 
@@ -46,13 +52,17 @@ type DebugData struct {
 	BaseUrl string `json:"baseUrl"`
 
 	// used for selection and show in right environment tab
-	ShareVars    []GlobalVar   `json:"shareVars"`
-	EnvVars      []GlobalVar   `json:"envVars"`
-	GlobalVars   []GlobalVar   `json:"globalVars"`
-	GlobalParams []GlobalParam `json:"globalParams"`
+	EnvDataToView *EnvDataToView `json:"envDataToView,omitempty"`
 
 	ProcessorInterfaceSrc consts.ProcessorInterfaceSrc `json:"processorInterfaceSrc"`
 	ResponseDefine        Condition                    `json:"responseDefine"`
+}
+
+type EnvDataToView struct {
+	ShareVars  []GlobalVar `json:"shareVars"`
+	EnvVars    []GlobalVar `json:"envVars"`
+	GlobalVars []GlobalVar `json:"globalVars"`
+	//GlobalParams []GlobalParam `json:"globalParams"`
 }
 
 type Condition struct {

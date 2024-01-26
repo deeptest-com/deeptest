@@ -120,7 +120,6 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 			return err
 		}
 	}
-	s.UserRepo = repo.NewUserRepo(s.DB)
 	if req.Sys.AdminPassword != "" {
 		hash, err := bcrypt.GenerateFromPassword([]byte(req.Sys.AdminPassword), bcrypt.DefaultCost)
 		if err != nil {

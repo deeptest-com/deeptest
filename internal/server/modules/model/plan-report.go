@@ -9,7 +9,7 @@ type PlanReport struct {
 	BaseModel
 
 	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Desc string `gorm:"type:text" json:"desc"`
 
 	ProgressStatus consts.ProgressStatus `json:"progressStatus"`
 	ResultStatus   consts.ResultStatus   `json:"resultStatus" gorm:"default:pass"`

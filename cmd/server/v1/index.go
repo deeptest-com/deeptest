@@ -41,11 +41,10 @@ type IndexModule struct {
 	ShareVarModule    *router.ShareVarModule    `inject:""`
 	ParserModule      *router.ParserModule      `inject:""`
 
-	PreConditionModule  *router.PreConditionModule  `inject:""`
-	PostConditionModule *router.PostConditionModule `inject:""`
-	ExtractorModule     *router.ExtractorModule     `inject:""`
-	CheckpointModule    *router.CheckpointModule    `inject:""`
-	ScriptModule        *router.ScriptModule        `inject:""`
+	ConditionModule  *router.ConditionModule  `inject:""`
+	ExtractorModule  *router.ExtractorModule  `inject:""`
+	CheckpointModule *router.CheckpointModule `inject:""`
+	ScriptModule     *router.ScriptModule     `inject:""`
 
 	CategoryModule          *router.CategoryModule          `inject:""`
 	ScenarioModule          *router.ScenarioModule          `inject:""`
@@ -59,9 +58,8 @@ type IndexModule struct {
 	EndpointInterfaceModule *router.EndpointInterfaceModule `inject:""`
 	EndpointTagModule       *router.EndpointTagModule       `inject:""`
 
-	EndpointCaseModule                  *router.EndpointCaseModule                  `inject:""`
-	EndpointCaseAlternativeModule       *router.EndpointCaseAlternativeModule       `inject:""`
-	EndpointCaseAlternativeAssertModule *router.EndpointCaseAlternativeAssertModule `inject:""`
+	EndpointCaseModule            *router.EndpointCaseModule            `inject:""`
+	EndpointCaseAlternativeModule *router.EndpointCaseAlternativeModule `inject:""`
 
 	ServeModule          *router.ServeModule          `inject:""`
 	PlanModule           *router.PlanModule           `inject:""`
@@ -82,6 +80,9 @@ type IndexModule struct {
 	JslibModule          *router.JslibModule          `inject:""`
 
 	EndpointCodeModule *router.EndpointCodeModule `inject:""`
+	DatabaseConnModule *router.DatabaseConnModule `inject:""`
+	DatabaseOptModule  *router.DatabaseOptModule  `inject:""`
+	OpenModule         *router.OpenModule         `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -124,8 +125,7 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.ShareVarModule.Party(),
 		m.ParserModule.Party(),
 
-		m.PreConditionModule.Party(),
-		m.PostConditionModule.Party(),
+		m.ConditionModule.Party(),
 		m.ExtractorModule.Party(),
 		m.CheckpointModule.Party(),
 		m.ScriptModule.Party(),
@@ -142,7 +142,6 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.EndpointTagModule.Party(),
 		m.EndpointCaseModule.Party(),
 		m.EndpointCaseAlternativeModule.Party(),
-		m.EndpointCaseAlternativeAssertModule.Party(),
 
 		m.ServeModule.Party(),
 
@@ -168,6 +167,9 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.JslibModule.Party(),
 
 		m.EndpointCodeModule.Party(),
+		m.DatabaseConnModule.Party(),
+		m.DatabaseOptModule.Party(),
+		m.OpenModule.Party(),
 	}
 
 	return module.NewModule(consts.ApiPathServer, handler, modules...)

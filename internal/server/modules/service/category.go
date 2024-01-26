@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 )
 
@@ -17,8 +18,8 @@ type CategoryService struct {
 	ScenarioRepo    *repo.ScenarioRepo `inject:""`
 }
 
-func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projectId, serveId int) (root *v1.Category, err error) {
-	root, err = s.CategoryRepo.GetTree(typ, uint(projectId), uint(serveId))
+func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projectId int) (root *v1.Category, err error) {
+	root, err = s.CategoryRepo.GetTree(typ, uint(projectId))
 	root.Children = append(root.Children, &v1.Category{Id: -1, Name: "未分类", ParentId: root.Id, Slots: iris.Map{"icon": "icon"}})
 	s.mountCount(root, typ, uint(projectId))
 	return
@@ -94,16 +95,24 @@ func (s *CategoryService) deleteNodeAndChildren(typ serverConsts.CategoryDiscrim
 	//		s.deleteNodeAndChildren(child.ID)
 	//	}
 	//}
-	child, err := s.CategoryRepo.GetAllChild(typ, projectId, int(nodeId))
+
+	categoryIds, err := s.CategoryRepo.GetDescendantIds(nodeId, model.Category{}.TableName(), typ, int(projectId))
 	if err != nil {
 		return
 	}
+	/*
+			child, err := s.CategoryRepo.GetAllChild(typ, projectId, int(nodeId))
+			if err != nil {
+				return
+			}
 
-	categoryIds := make([]uint, 0)
-	for _, v := range child {
-		categoryIds = append(categoryIds, v.ID)
-	}
-	categoryIds = append(categoryIds, nodeId)
+
+		categoryIds := make([]uint, 0)
+		for _, v := range child {
+			categoryIds = append(categoryIds, v.ID)
+		}
+		categoryIds = append(categoryIds, nodeId)
+	*/
 
 	if err = s.CategoryRepo.BatchDelete(categoryIds); err != nil {
 		return
@@ -162,4 +171,50 @@ func (s *CategoryService) mountCountOnNode(root *v1.Category, data map[int64]int
 		root.Count += s.mountCountOnNode(children, data)
 	}
 	return root.Count
+}
+
+func (s *CategoryService) Copy(targetId, newParentId, userId uint, username string) (err error) {
+
+	category, err := s.CategoryRepo.CopySelf(int(targetId), int(newParentId))
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		err = s.copyDataByCategoryId(category.Type, targetId, category.ID, userId, username)
+		if err != nil {
+			logUtils.Error(err.Error())
+		}
+		err = s.copyChildren(targetId, category.ID, userId, username)
+		if err != nil {
+			logUtils.Error(err.Error())
+		}
+	}()
+
+	return
+}
+
+func (s *CategoryService) copyChildren(parentId, newParentId, userId uint, username string) (err error) {
+	children, err := s.CategoryRepo.GetChildren(parentId)
+	if err != nil {
+		return err
+	}
+
+	for _, child := range children {
+		err = s.Copy(child.ID, newParentId, userId, username)
+		if err != nil {
+			return err
+		}
+	}
+
+	return err
+}
+
+func (s *CategoryService) copyDataByCategoryId(typ serverConsts.CategoryDiscriminator, targetId, categoryId, userId uint, username string) (err error) {
+	switch typ {
+	case serverConsts.EndpointCategory:
+		err = s.EndpointService.CopyDataByCategoryId(targetId, categoryId, userId, username)
+	}
+
+	return err
 }

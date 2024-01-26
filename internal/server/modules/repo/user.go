@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
@@ -46,6 +47,10 @@ func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data _domain.Page
 	}
 	if len(req.UserName) > 0 {
 		db = db.Where("username LIKE ?", fmt.Sprintf("%s%%", req.UserName))
+	}
+
+	if config.CONFIG.System.SysEnv == "ly" {
+		db = db.Where("username != ?", serverConsts.AdminUserName)
 	}
 
 	err = db.Count(&count).Error
@@ -653,9 +658,12 @@ func (r *UserRepo) GetUsersNotExistedInProject(projectId uint) (ret []serverDoma
 		userIdsExisted = append(userIdsExisted, v.UserId)
 	}
 
-	err = r.DB.Model(&model.SysUser{}).
-		Where("id NOT IN (?)", userIdsExisted).
-		Find(&ret).Error
+	db := r.DB.Model(&model.SysUser{}).
+		Where("id NOT IN (?)", userIdsExisted)
+	if config.CONFIG.System.SysEnv == "ly" {
+		db = db.Where("username != ?", serverConsts.AdminUserName)
+	}
+	err = db.Find(&ret).Error
 	return
 }
 
@@ -714,5 +722,32 @@ func (r *UserRepo) UpdateByLdapInfo(ldapUserInfo v1.UserBase) (id uint, err erro
 	} else {
 		err = errors.New("未能更新或创建ldap信息")
 	}
+	return
+}
+
+func (r *UserRepo) CreateIfNotExisted(req serverDomain.UserReq) (id uint, err error) {
+	user, err := r.GetByUserName(req.Username)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return
+	}
+
+	if user.ID != 0 {
+		id = user.ID
+	} else {
+		createUserReq := v1.UserReq{
+			UserBase: v1.UserBase{
+				Username:  req.Username,
+				Name:      req.Name,
+				Email:     req.Email,
+				ImAccount: req.ImAccount,
+				Password:  _commUtils.RandStr(8),
+			},
+		}
+		id, err = r.Create(createUserReq)
+		if err != nil {
+			return 0, err
+		}
+	}
+
 	return
 }

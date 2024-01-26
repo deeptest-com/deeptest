@@ -5,8 +5,10 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
-type DebugPreCondition struct {
+type DebugCondition struct {
 	BaseModel
+
+	ConditionSrc consts.ConditionSrc `json:"conditionSrc"`
 
 	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
 	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
@@ -15,32 +17,15 @@ type DebugPreCondition struct {
 	EntityId   uint                 `json:"entityId"`
 	UsedBy     consts.UsedBy        `json:"usedBy"`
 
+	IsForBenchmarkCase bool `gorm:"default:0" json:"isForBenchmarkCase"`
+
 	Name string `json:"name"`
-	Desc string `json:"desc"`
+	Desc string `gorm:"type:text" json:"desc"`
 	Ordr int    `json:"ordr"`
 }
 
-func (DebugPreCondition) TableName() string {
-	return "biz_debug_condition_pre"
-}
-
-type DebugPostCondition struct {
-	BaseModel
-
-	DebugInterfaceId    uint `gorm:"default:0" json:"debugInterfaceId"`
-	EndpointInterfaceId uint `gorm:"default:0" json:"endpointInterfaceId"`
-
-	EntityType consts.ConditionType `json:"entityType"`
-	EntityId   uint                 `json:"entityId"`
-	UsedBy     consts.UsedBy        `json:"usedBy"`
-
-	Name string `json:"name"`
-	Desc string `json:"desc"`
-	Ordr int    `json:"ordr"`
-}
-
-func (DebugPostCondition) TableName() string {
-	return "biz_debug_condition_post"
+func (DebugCondition) TableName() string {
+	return "biz_debug_condition"
 }
 
 type DebugConditionExtractor struct {
@@ -53,6 +38,16 @@ func (DebugConditionExtractor) TableName() string {
 	return "biz_debug_condition_extractor"
 }
 
+type DebugConditionScript struct {
+	BaseModel
+
+	domain.ScriptBase
+}
+
+func (DebugConditionScript) TableName() string {
+	return "biz_debug_condition_script"
+}
+
 type DebugConditionCheckpoint struct {
 	BaseModel
 
@@ -63,14 +58,14 @@ func (DebugConditionCheckpoint) TableName() string {
 	return "biz_debug_condition_checkpoint"
 }
 
-type DebugConditionScript struct {
+type DebugConditionDatabaseOpt struct {
 	BaseModel
 
-	domain.ScriptBase
+	domain.DatabaseOptBase
 }
 
-func (DebugConditionScript) TableName() string {
-	return "biz_debug_condition_script"
+func (DebugConditionDatabaseOpt) TableName() string {
+	return "biz_debug_condition_database_opt"
 }
 
 type DebugConditionResponseDefine struct {

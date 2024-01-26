@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/474420502/requests"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	builtin "github.com/aaronchen2k/deeptest/internal/pkg/buildin"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
@@ -16,28 +15,37 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
+	encoder "github.com/zwgblue/yaml-encoder"
 	"gorm.io/gorm"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
+	"time"
 )
 
 type EndpointService struct {
-	EndpointRepo             *repo.EndpointRepo          `inject:""`
-	ServeRepo                *repo.ServeRepo             `inject:""`
-	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
-	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
-	UserRepo                 *repo.UserRepo              `inject:""`
-	CategoryRepo             *repo.CategoryRepo          `inject:""`
-	DiagnoseInterfaceService *DiagnoseInterfaceService   `inject:""`
-	EndpointTagRepo          *repo.EndpointTagRepo       `inject:""`
-	EndpointTagService       *EndpointTagService         `inject:""`
-	ServeService             *ServeService               `inject:""`
-	MessageService           *MessageService             `inject:""`
-	DebugInterfaceRepo       *repo.DebugInterfaceRepo    `inject:""`
-	EnvironmentRepo          *repo.EnvironmentRepo       `inject:""`
+	EndpointRepo              *repo.EndpointRepo           `inject:""`
+	ServeRepo                 *repo.ServeRepo              `inject:""`
+	EndpointInterfaceRepo     *repo.EndpointInterfaceRepo  `inject:""`
+	ServeServerRepo           *repo.ServeServerRepo        `inject:""`
+	UserRepo                  *repo.UserRepo               `inject:""`
+	CategoryRepo              *repo.CategoryRepo           `inject:""`
+	DiagnoseInterfaceService  *DiagnoseInterfaceService    `inject:""`
+	EndpointTagRepo           *repo.EndpointTagRepo        `inject:""`
+	EndpointTagService        *EndpointTagService          `inject:""`
+	ServeService              *ServeService                `inject:""`
+	MessageService            *MessageService              `inject:""`
+	ThirdPartySyncService     *ThirdPartySyncService       `inject:""`
+	DebugInterfaceRepo        *repo.DebugInterfaceRepo     `inject:""`
+	EnvironmentRepo           *repo.EnvironmentRepo        `inject:""`
+	EndpointCaseService       *EndpointCaseService         `inject:""`
+	EndpointCaseRepo          *repo.EndpointCaseRepo       `inject:""`
+	EndpointMockExpectRepo    *repo.EndpointMockExpectRepo `inject:""`
+	EndpointMockExpectService *EndpointMockExpectService   `inject:""`
+	EndpointMockScriptService *EndpointMockScriptService   `inject:""`
 }
 
 func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -60,13 +68,14 @@ func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
 	}
 
 	ret, _ := s.EndpointRepo.Get(endpoint.ID)
+
 	err = s.EndpointRepo.SaveAll(&endpoint)
 
 	//go func() {
 	//	_ = s.SendEndpointMessage(endpoint.ProjectId, endpoint.ID, userId)
 	//}()
 
-	s.DebugInterfaceRepo.SyncPath(ret.ID, endpoint.Path, ret.Path)
+	s.DebugInterfaceRepo.SyncPath(ret.ID, endpoint.ServeId, endpoint.Path, ret.Path)
 
 	return endpoint.ID, err
 }
@@ -139,12 +148,33 @@ func (s *EndpointService) Develop(id uint) (err error) {
 	return
 }
 
-func (s *EndpointService) Copy(id uint, version string) (res uint, err error) {
+func (s *EndpointService) Copy(id, categoryId, userId uint, username string, version string) (res uint, err error) {
 
 	endpoint, _ := s.EndpointRepo.GetAll(id, version)
 	s.removeIds(&endpoint)
-	endpoint.Title += "_copy"
+
+	if categoryId != 0 {
+		endpoint.CategoryId = int64(categoryId)
+	} else { //复制目录而复制的接口不重命名
+		endpoint.Title += "_copy"
+	}
+	endpoint.CreateUser = username
+	endpoint.UpdateUser = ""
 	err = s.EndpointRepo.SaveAll(&endpoint)
+	if err != nil {
+		return
+	}
+
+	err = s.copyCases(id, endpoint.ID, userId, username)
+	if err != nil {
+		return
+	}
+
+	err = s.copyMockExpect(id, endpoint.ID, username)
+	if err != nil {
+		return
+	}
+
 	return endpoint.ID, err
 }
 
@@ -181,37 +211,33 @@ func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
 }
 
 func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
-	serve, err := s.ServeRepo.Get(endpoint.ServeId)
-	if err != nil {
-		return
-	}
-
-	serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
-	if err != nil {
-		return
-	}
-	serve.Components = serveComponent
-
-	serveServer, err := s.ServeRepo.ListServer(serve.ID)
-	if err != nil {
-		return
-	}
-	serve.Servers = serveServer
-
-	securities, err := s.ServeRepo.ListSecurity(serve.ID)
-	if err != nil {
-		return
-	}
-	serve.Securities = securities
-	/*
-		globalParams, err := s.EnvironmentRepo.ListParamModel(endpoint.ProjectId)
+	var serve model.Serve
+	if endpoint.ServeId != 0 {
+		var err error
+		serve, err = s.ServeRepo.Get(endpoint.ServeId)
 		if err != nil {
 			return
 		}
-		serve.GlobalParams = globalParams
-	*/
 
-	//s.SchemasConv(&endpoint)
+		serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
+		if err != nil {
+			return
+		}
+		serve.Components = serveComponent
+
+		serveServer, err := s.ServeRepo.ListServer(serve.ID)
+		if err != nil {
+			return
+		}
+		serve.Servers = serveServer
+
+		securities, err := s.ServeRepo.ListSecurity(serve.ID)
+		if err != nil {
+			return
+		}
+		serve.Securities = securities
+	}
+
 	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
 	res = serve2conv.ToV3()
 	return
@@ -253,7 +279,7 @@ func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error)
 func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *openapi.Dirs, components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) (err error) {
 
 	if dirs.Id == 0 || dirs.Id == -1 {
-		root, _ := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, req.ProjectId, 0)
+		root, _ := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, req.ProjectId)
 		dirs.Id = int64(root[0].ID)
 	}
 	s.createDirs(dirs, req)
@@ -269,37 +295,82 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 	defer func() {
 		wg.Done()
 	}()
-	user, _ := s.UserRepo.FindById(req.UserId)
+
+	userName := ""
+	if req.UserId != 0 {
+		user, _ := s.UserRepo.FindById(req.UserId)
+		userName = user.Username
+	}
+
+	if req.CategoryId == -1 {
+		if len(dirs.Dirs) > 0 {
+			req.CategoryId = dirs.Id
+		} else {
+			dirs.Id = -1
+		}
+	}
 
 	for _, endpoint := range endpoints {
 		endpoint.ProjectId, endpoint.ServeId, endpoint.CategoryId = req.ProjectId, req.ServeId, req.CategoryId
 		endpoint.Status = 1
 		endpoint.SourceType = req.SourceType
 		if endpoint.CreateUser == "" {
-			endpoint.CreateUser = user.Username
+			endpoint.CreateUser = userName
 		}
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
 
-		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, endpoint.Title)
+		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, req.CategoryId)
 
 		//非Notfound
 		if err != nil && err != gorm.ErrRecordNotFound {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			continue
 		}
+
+		res, _ = s.EndpointRepo.GetAll(res.ID, "v0.1.0")
+
+		//对比endpoint的时候不需要对比组件，所以服务ID设置为0
+		endpoint.ServeId, res.ServeId = 0, 0
+		openAPIDoc := s.Yaml(*endpoint)
+		endpoint.Snapshot = _commUtils.JsonEncode(openAPIDoc)
 
 		if req.DataSyncType == consts.FullCover {
 			if err == nil {
 				endpoint.ID = res.ID
+				endpoint.CategoryId = res.CategoryId
+				endpoint.ChangedStatus = consts.NoChanged
 			}
 
 		} else if req.DataSyncType == consts.AutoAdd {
+
 			if err == nil {
-				continue
+
+				//远端无更新，则不做任何修改
+				if endpoint.Snapshot == res.Snapshot {
+					continue
+				}
+
+				//本地快照和本地数据不一致,更新快照,说明有修改，更新快照
+				localEndpoint := s.Yaml(res)
+				localEndpointJson := _commUtils.JsonEncode(localEndpoint)
+				if res.Snapshot != localEndpointJson {
+					s.EndpointRepo.UpdateSnapshot(res.ID, endpoint.Snapshot)
+					continue
+				} else { //一致覆盖数据
+					endpoint.ID = res.ID
+					endpoint.CategoryId = res.CategoryId
+					now := time.Now()
+					endpoint.ChangedTime = &now
+				}
+
 			}
 		}
+		endpoint.ServeId = req.ServeId //前面销毁了ID，现在补充上
 		_, err = s.Save(*endpoint)
 		if err != nil {
-			return err
+			//遇到错误跳过
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
+			//return err
 		}
 	}
 
@@ -346,6 +417,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 		//全覆盖更新目录
 		res, err := s.CategoryRepo.GetByItem(uint(category.ParentId), category.Type, category.ProjectId, category.Name)
 		if err != nil && err != gorm.ErrRecordNotFound {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			continue
 		}
 
@@ -356,6 +428,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 
 		err = s.CategoryRepo.Save(&category)
 		if err != nil {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			return err
 		}
 
@@ -363,6 +436,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 		dirs.Id = int64(category.ID)
 		err = s.createDirs(dirs, req)
 		if err != nil {
+			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			return err
 		}
 	}
@@ -381,25 +455,14 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 }
 
 func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) {
-	valueType := builtin.InterfaceType(req.Value)
-	if _commUtils.InSlice(req.FieldName, []string{"status", "categoryId"}) {
-		if !_commUtils.InSlice(valueType, []string{"int", "float64"}) {
-			err = errors.New("数据类型错误")
+	if _commUtils.InSlice(req.FieldName, []string{"status", "categoryId", "serveId", "description"}) {
+		err = s.EndpointRepo.BatchUpdate(req.EndpointIds, map[string]interface{}{_commUtils.Camel2Case(req.FieldName): req.Value})
+		if req.FieldName == "serveId" { //修改debug表serveId
+			if serveId, ok := req.Value.(float64); ok {
+				s.DebugInterfaceRepo.SyncServeId(req.EndpointIds, uint(serveId))
+			}
 		}
 
-		var value int64
-		switch valueType {
-		case "int":
-			value = int64(req.Value.(int))
-		case "float64":
-			value = int64(req.Value.(float64))
-		}
-
-		if req.FieldName == "status" {
-			err = s.EndpointRepo.BatchUpdateStatus(req.EndpointIds, value)
-		} else if req.FieldName == "categoryId" {
-			err = s.EndpointRepo.BatchUpdateCategory(req.EndpointIds, value)
-		}
 	} else {
 		err = errors.New("字段错误")
 	}
@@ -569,7 +632,7 @@ func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 		for k, response := range intef.ResponseBodies {
 			schema := new(schemaHelper.SchemaRef)
 			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
-			if endpoint.SourceType == 1 && len(schema.Value.AllOf) > 0 {
+			if endpoint.SourceType == 1 && schema.Value != nil && len(schema.Value.AllOf) > 0 {
 				schema2conv.CombineSchemas(schema)
 			}
 			endpoint.Interfaces[key].ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
@@ -619,4 +682,176 @@ func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{
 
 	return
 
+}
+
+func (s *EndpointService) SyncFromThirdParty(endpointId uint) (err error) {
+	endpoint, err := s.EndpointRepo.Get(endpointId)
+	endpoint.Interfaces, _ = s.EndpointInterfaceRepo.ListByEndpointId(endpoint.ID, "v0.1.0")
+	if err != nil {
+		return
+	}
+
+	if endpoint.SourceType != consts.ThirdPartySync || endpoint.CategoryId == -1 || len(endpoint.Interfaces) == 0 {
+		return
+	}
+
+	pathArr := strings.Split(endpoint.Path, "/")
+
+	err = s.ThirdPartySyncService.SyncFunctionBody(endpoint.ProjectId, endpoint.ServeId, endpoint.Interfaces[0].ID, pathArr[2], pathArr[3])
+	if err != nil {
+		return
+	}
+
+	err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, consts.Changed)
+
+	return
+}
+
+func (s *EndpointService) GetDiff(endpointId uint) (res v1.EndpointDiffRes, err error) {
+	var endpoint model.Endpoint
+	var resYaml []byte
+	endpoint, err = s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	if err != nil {
+		return
+	}
+
+	var sourceName string
+	if endpoint.SourceType == consts.SwaggerSync {
+		sourceName = "Swagger"
+	} else if endpoint.SourceType == consts.SwaggerImport {
+		sourceName = "接口定义"
+	} else if endpoint.SourceType == consts.ThirdPartySync {
+		sourceName = "乐仓智能体厂"
+	}
+
+	res.ChangedStatus = endpoint.ChangedStatus
+
+	res.CurrentDesc = fmt.Sprintf("%s于%s在系统中手动更新", endpoint.CreateUser, endpoint.UpdatedAt.Format("2006-01-02 15:04:05"))
+	res.LatestDesc = fmt.Sprintf("%s从%s自动同步", endpoint.ChangedTime.Format("2006-01-02 15:04:05"), sourceName)
+
+	var ret interface{}
+	endpoint.ServeId = 0
+	_commUtils.JsonDecode(_commUtils.JsonEncode(s.Yaml(endpoint)), &ret)
+	resYaml, err = encoder.NewEncoder(ret).Encode()
+	if err != nil {
+		return
+	}
+	res.Current = string(resYaml)
+
+	_commUtils.JsonDecode(endpoint.Snapshot, &ret)
+	resYaml, err = encoder.NewEncoder(ret).Encode()
+	if err != nil {
+		return
+	}
+	res.Latest = string(resYaml)
+	return
+}
+
+func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool, userName string) (err error) {
+	endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	if err != nil {
+		return
+	}
+
+	if isChanged {
+		var doc openapi3.T
+		_commUtils.JsonDecode(endpoint.Snapshot, &doc)
+		endpoints, _, _ := openapi.NewOpenapi2endpoint(&doc, endpoint.CategoryId).Convert()
+		endpoints[0].ID = endpoint.ID
+		endpoints[0].Title = endpoint.Title
+		endpoints[0].ServeId = endpoint.ServeId
+		endpoints[0].ChangedStatus = consts.NoChanged
+		endpoints[0].ProjectId = endpoint.ProjectId
+		endpoints[0].GlobalParams = endpoint.GlobalParams
+		endpoints[0].UpdateUser = userName
+		err = s.EndpointRepo.SaveAll(endpoints[0])
+	} else {
+		err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, consts.IgnoreChanged)
+	}
+
+	return
+}
+
+func (s *EndpointService) isEqualEndpoint(old, new model.Endpoint) bool {
+	var ret interface{}
+	oldYaml := s.Yaml(old)
+	_commUtils.JsonDecode(_commUtils.JsonEncode(oldYaml), &ret)
+	oldYamlByte, _ := encoder.NewEncoder(ret).Encode()
+
+	newYaml := s.Yaml(new)
+	_commUtils.JsonDecode(_commUtils.JsonEncode(newYaml), &ret)
+	newYamlByte, _ := encoder.NewEncoder(ret).Encode()
+	res1, res2 := string(oldYamlByte), string(newYamlByte)
+
+	return res1 == res2
+
+}
+
+func (s *EndpointService) UpdateName(id uint, name string) (err error) {
+	err = s.EndpointRepo.UpdateName(id, name)
+	if err != nil {
+		return
+	}
+
+	err = s.EndpointInterfaceRepo.UpdateNameByEndpointId(id, name)
+	return
+}
+
+func (s *EndpointService) CopyDataByCategoryId(targetId, categoryId, userId uint, username string) (err error) {
+	endpoints, err := s.EndpointRepo.GetByCategoryId(targetId)
+	if err != nil {
+		return
+	}
+
+	for _, endpoint := range endpoints {
+		_, err = s.Copy(endpoint.ID, categoryId, userId, username, "v0.1.0")
+		if err != nil {
+			return
+		}
+	}
+
+	return
+}
+
+func (s *EndpointService) copyCases(endpointId, newEndpointId uint, userId uint, username string) (err error) {
+	cases, err := s.EndpointCaseRepo.ListByCaseType(endpointId, []consts.CaseType{consts.CaseBenchmark, consts.CaseDefault})
+	if err != nil {
+		return err
+	}
+
+	for _, item := range cases {
+		endpointCase, _ := s.EndpointCaseRepo.Get(item.ID)
+		newEndpointCase, err := s.EndpointCaseService.Copy(int(item.ID), endpointCase.Name, newEndpointId, 0, userId, username, "all")
+		if err != nil {
+			return err
+		}
+
+		err = s.EndpointCaseService.CopyChildrenCases(item.ID, newEndpointCase.ID, newEndpointId, userId, username)
+		if err != nil {
+			return err
+		}
+	}
+
+	return
+}
+
+func (s *EndpointService) copyMockExpect(endpointId, newEndpointId uint, username string) (err error) {
+	mockExpects, err := s.EndpointMockExpectRepo.ListByEndpointId(endpointId)
+	if err != nil {
+		return
+	}
+
+	for _, item := range mockExpects {
+		_, err = s.EndpointMockExpectService.Copy(item.ID, newEndpointId, username)
+		if err != nil {
+			return
+		}
+	}
+
+	err = s.EndpointMockScriptService.Copy(endpointId, newEndpointId)
+	if err != nil {
+		return
+	}
+
+	return
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -37,6 +38,7 @@ type ProjectRepo struct {
 	ScenarioInterfaceRepo      *ScenarioInterfaceRepo      `inject:""`
 	EndpointCaseRepo           *EndpointCaseRepo           `inject:""`
 	DebugInterfaceRepo         *DebugInterfaceRepo         `inject:""`
+	BaseRepo                   *BaseRepo                   `inject:""`
 }
 
 func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
@@ -102,10 +104,13 @@ func (r *ProjectRepo) GetByName(projectName string, id uint) (project model.Proj
 	return
 }
 
-func (r *ProjectRepo) GetByCode(shortName string) (ret model.Project, err error) {
+func (r *ProjectRepo) GetByCode(shortName string, id uint) (ret model.Project, err error) {
 	db := r.DB.Model(&ret).
 		Where("short_name = ? AND NOT deleted", shortName)
 
+	if id > 0 {
+		db.Where("id != ?", id)
+	}
 	err = db.First(&ret).Error
 
 	return
@@ -132,7 +137,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 		return
 	}
 
-	po, err = r.GetByCode(req.ShortName)
+	po, err = r.GetByCode(req.ShortName, 0)
 	if po.ShortName != "" {
 		bizErr = _domain.ErrShortNameExist
 		return
@@ -148,7 +153,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 		return
 	}
 	if req.AdminId != userId {
-		err = r.AddProjectMember(project.ID, req.AdminId, "admin")
+		err = r.AddProjectMember(project.ID, req.AdminId, r.BaseRepo.GetAdminRoleName())
 		if err != nil {
 			logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 			bizErr = _domain.SystemErr
@@ -165,7 +170,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bool) (err error) {
 
 	// create project member
-	err = r.AddProjectMember(projectId, userId, "admin")
+	err = r.AddProjectMember(projectId, userId, r.BaseRepo.GetAdminRoleName())
 	if err != nil {
 		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 		return
@@ -186,11 +191,20 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	}
 
 	// create project endpoint category
-	categoryId, err := r.AddProjectRootEndpointCategory(serve.ID, projectId)
+	categoryId, err := r.AddProjectRootEndpointCategory(projectId)
 	if err != nil {
 		logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
 		return
 	}
+
+	// create project test category
+	/*
+		err = r.ServeRepo.AddDefaultTestCategory(serve.ProjectId)
+		if err != nil {
+			logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
+			return
+		}
+	*/
 
 	// create project scenario category
 	err = r.AddProjectRootScenarioCategory(projectId)
@@ -219,6 +233,16 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 }
 
 func (r *ProjectRepo) Update(req v1.ProjectReq) error {
+	po, _ := r.GetByName(req.Name, req.Id)
+	if po.Name != "" {
+		return errors.New("同名记录已存在")
+	}
+
+	po, _ = r.GetByCode(req.ShortName, req.Id)
+	if po.ShortName != "" {
+		return errors.New("英文缩写已存在")
+	}
+
 	project := model.Project{ProjectBase: req.ProjectBase}
 	err := r.DB.Model(&model.Project{}).Where("id = ?", req.Id).Updates(&project).Error
 	if err != nil {
@@ -420,11 +444,10 @@ func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role consts.RoleT
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootEndpointCategory(serveId, projectId uint) (id uint, err error) {
+func (r *ProjectRepo) AddProjectRootEndpointCategory(projectId uint) (id uint, err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.EndpointCategory,
-		ServeId:   serveId,
 		ProjectId: projectId,
 		IsDir:     true,
 	}
@@ -479,6 +502,10 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 		Where("m.project_id = ?", projectId)
 	if req.Keywords != "" {
 		db = db.Where("sys_user.username LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
+	}
+
+	if config.CONFIG.System.SysEnv == "ly" {
+		db = db.Where("sys_user.username != ?", serverConsts.AdminUserName)
 	}
 
 	var count int64
@@ -560,7 +587,8 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 
 	r.ServeRepo.AddDefaultServer(serve.ProjectId, serve.ID)
 
-	r.ServeRepo.AddDefaultTestCategory(serve.ProjectId, serve.ID)
+	//调试目录不挂在目录下面
+	//	r.ServeRepo.AddDefaultTestCategory(serve.ProjectId, serve.ID)
 
 	return
 }
@@ -611,7 +639,7 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	var count int64
 	db := r.DB.Model(&model.ProjectMemberAudit{})
 	if req.Type == 0 {
-		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, consts.Admin)
+		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, r.BaseRepo.GetAdminRoleName())
 		db = db.Where("project_id in ? and status = 0", projectIds)
 	} else {
 		db = db.Where("apply_user_id = ?", req.ApplyUserId)
@@ -1009,7 +1037,7 @@ func (r *ProjectRepo) GetAuditUsers(projectId uint) (users []model.SysUser, err 
 	err = r.DB.Model(model.SysUser{}).
 		Joins("LEFT JOIN biz_project_member m ON m.user_id=sys_user.id").
 		Joins("LEFT JOIN biz_project_role r ON m.project_role_id=r.id").
-		Where("m.project_id=? and r.name=? and not m.deleted and not m.disabled", projectId, consts.Admin).
+		Where("m.project_id=? and r.name=? and not m.deleted and not m.disabled", projectId, r.BaseRepo.GetAdminRoleName()).
 		Find(&users).Error
 
 	return
@@ -1038,10 +1066,10 @@ func (r *ProjectRepo) GetUserIdsByProjectAnRole(projectId, roleId uint) (project
 	return
 }
 
-func (r *ProjectRepo) GetImAccountsByProjectAndRole(projectId, roleId uint, exceptUserName string) (imAccounts []string, err error) {
+func (r *ProjectRepo) GetUsernamesByProjectAndRole(projectId, roleId uint, exceptUserName string) (imAccounts []string, err error) {
 	conn := r.DB.Model(&model.ProjectMember{}).
 		Joins("left join sys_user u on biz_project_member.user_id=u.id").
-		Select("u.im_account")
+		Select("u.username")
 	if projectId != 0 {
 		conn = conn.Where("biz_project_member.project_id = ?", projectId)
 	}
@@ -1059,5 +1087,65 @@ func (r *ProjectRepo) GetAuditByItem(projectId, ApplyUserId uint, auditStatus []
 	err = r.DB.Model(&model.ProjectMemberAudit{}).
 		Where("project_id = ? and apply_user_id = ? and status in ? ", projectId, ApplyUserId, auditStatus).
 		Last(&ret).Error
+	return
+}
+
+func (r *ProjectRepo) UpdateProjectSource(projectId uint, source serverConsts.ProjectSource) (err error) {
+	err = r.DB.Model(&model.Project{}).
+		Where("id = ?", projectId).Update("source", source).Error
+	return
+}
+
+func (r *ProjectRepo) ListByUsername(username string) (res []model.Project, err error) {
+	err = r.DB.Model(model.Project{}).
+		Joins("LEFT JOIN biz_project_member m ON biz_project.id=m.project_id").
+		Joins("LEFT JOIN sys_user u ON m.user_id=u.id").
+		Where("u.username = ?", username).
+		Where("not biz_project.disabled and not biz_project.deleted and not m.disabled and not m.deleted").
+		Find(&res).Error
+	return
+}
+
+func (r *ProjectRepo) BatchGetByShortNames(shortNames []string) (ret []model.Project, err error) {
+	err = r.DB.Model(&ret).
+		Where("short_name IN (?) AND NOT deleted", shortNames).
+		Find(&ret).Error
+
+	return
+}
+
+func (r *ProjectRepo) AddMemberIfNotExisted(projectId, userId uint, role consts.RoleType) (err error) {
+	isMember, err := r.IfProjectMember(userId, projectId)
+	if err != nil || isMember {
+		return
+	}
+
+	err = r.AddProjectMember(projectId, userId, role)
+	return
+}
+
+func (r *ProjectRepo) FindRolesByProjectsAndUsername(username string, projectIds []uint) (members []model.ProjectMember, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).
+		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
+		Joins("LEFT JOIN sys_user u ON biz_project_member.user_id=u.id").
+		Select("biz_project_member.*, r.name project_role_name").
+		Where("u.username = ?", username).
+		Where("biz_project_member.project_id IN (?)", projectIds).
+		Find(&members).Error
+
+	return
+}
+
+func (r *ProjectRepo) GetUserProjectRoleMap(username string, projectIds []uint) (res map[uint]consts.RoleType, err error) {
+	projectRoles, err := r.FindRolesByProjectsAndUsername(username, projectIds)
+	if err != nil {
+		return
+	}
+
+	res = make(map[uint]consts.RoleType)
+	for _, v := range projectRoles {
+		res[v.ProjectId] = v.ProjectRoleName
+	}
+
 	return
 }

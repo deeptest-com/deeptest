@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/lib/pq"
 )
 
 type EndpointReqPaginate struct {
@@ -17,35 +18,37 @@ type EndpointReqPaginate struct {
 	ServeId      uint     `json:"serveId"`
 	ServeVersion string   `json:"serveVersion"`
 	TagNames     []string `json:"tagNames"`
+	ServeIds     []uint   `json:"serveIds"`
 }
 
 type EndpointInterfaceReqPaginate struct {
 	_domain.PaginateReq
 
-	ServeId    uint   `json:"serveId"`
-	Keywords   string `json:"Keywords"`
-	CategoryId int64  `json:"categoryId"`
-	ProjectId  uint   `json:"projectId"`
+	ServeIds   consts.Integers `json:"serveIds"`
+	Keywords   string          `json:"Keywords"`
+	CategoryId int64           `json:"categoryId"`
+	ProjectId  uint            `json:"projectId"`
 }
 
 type OpenApiParam struct {
 	domain.Param
-	Format      string  `json:"format"`
-	Example     string  `json:"example"`
-	Pattern     string  `json:"pattern"`
-	MinLength   int64   `json:"minLength"`
-	MaxLength   int64   `json:"maxLength"`
-	Default     string  `json:"default"`
-	MultipleOf  int64   `json:"multipleOf"`
-	MinItems    int64   `json:"minItems"`
-	MaxItems    int64   `json:"maxItems"`
-	UniqueItems bool    `json:"uniqueItems"`
-	Ref         string  `json:"ref"`
-	Required    bool    `json:"required"`
-	Type        string  `json:"type"`
-	Description string  `json:"description"`
-	Minimum     float64 `json:"minimum"`
-	Maximum     float64 `json:"maximum"`
+	Format      string         `json:"format"`
+	Example     string         `json:"example"`
+	Pattern     string         `json:"pattern"`
+	MinLength   int64          `json:"minLength"`
+	MaxLength   int64          `json:"maxLength"`
+	Default     string         `json:"default"`
+	MultipleOf  int64          `json:"multipleOf"`
+	MinItems    int64          `json:"minItems"`
+	MaxItems    int64          `json:"maxItems"`
+	UniqueItems bool           `json:"uniqueItems"`
+	Ref         string         `json:"ref"`
+	Required    bool           `json:"required"`
+	Type        string         `json:"type"`
+	Description string         `json:"description"`
+	Minimum     float64        `json:"minimum"`
+	Maximum     float64        `json:"maximum"`
+	Enum        pq.StringArray `json:"enum"`
 }
 
 type EndpointReq struct {
@@ -82,15 +85,18 @@ type EndpointVersionReq struct {
 }
 
 type ImportEndpointDataReq struct {
-	ServeId       uint                `json:"serveId" validate:"required"`    //服务ID
-	DriverType    convert.DriverType  `json:"driverType" validate:"required"` //接口数据来源
-	CategoryId    int64               `json:"categoryId"`                     //所属分类
-	DataSyncType  consts.DataSyncType `json:"dataSyncType"`                   //数据同步方式
-	OpenUrlImport bool                `json:"openUrlImport"`                  //开启url导入
-	FilePath      string              `json:"filePath" validate:"required"`
-	ProjectId     uint                `json:"projectId"`
-	UserId        uint                `json:"userId"`
-	SourceType    consts.SourceType   `json:"sourceType"`
+	ServeId          uint                `json:"serveId" validate:"required"`    //服务ID
+	DriverType       convert.DriverType  `json:"driverType" validate:"required"` //接口数据来源
+	CategoryId       int64               `json:"categoryId"`                     //所属分类
+	DataSyncType     consts.DataSyncType `json:"dataSyncType"`                   //数据同步方式
+	OpenUrlImport    bool                `json:"openUrlImport"`                  //开启url导入
+	FilePath         string              `json:"filePath" validate:"required"`
+	ProjectId        uint                `json:"projectId"`
+	UserId           uint                `json:"userId"`
+	SourceType       consts.SourceType   `json:"sourceType"`
+	ClassCode        string              `json:"classCode"`     //模型类名
+	FunctionCodes    []string            `json:"functionCodes"` //要导入的方法
+	AddServicePrefix bool                `json:"addServicePrefix"`
 }
 
 type BatchUpdateReq struct {
@@ -117,4 +123,20 @@ type GenerateFromRequestReq struct {
 	Description string `json:"description"`
 	InterfaceId uint   `json:"interfaceId"`
 	Data        string `json:"data"`
+}
+
+type ImportThirdPartyEndpointReq struct {
+	CategoryId    int64               `json:"categoryId"`                   //所属分类
+	DataSyncType  consts.DataSyncType `json:"dataSyncType"`                 //数据合并策略
+	FilePath      string              `json:"filePath" validate:"required"` //数据源的环境url
+	ClassCode     string              `json:"classCode"`                    //模型类名
+	FunctionCodes []string            `json:"functionCodes"`                //要导入的方法
+	ProjectId     uint                `json:"projectId"`
+	ServeId       uint                `json:"serveId"`
+	UserId        uint                `json:"userId"`
+}
+
+type UpdateNameReq struct {
+	Id   uint   `json:"id"`
+	Name string `json:"name"`
 }

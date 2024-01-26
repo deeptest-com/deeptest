@@ -14,9 +14,10 @@ type Config struct {
 	Mysql       Mysql       `mapstructure:"mysql" json:"mysql" yaml:"mysql"`
 	Captcha     Captcha     `mapstructure:"captcha" json:"captcha" yaml:"captcha"`
 	Ldap        bool        `mapstructure:"ldap" json:"ldap" yaml:"ldap"`
-	ThirdParty  ThirdParty  `mapstructure:"third-party" json:"thirdParty" yaml:"third-party"`
+	ThirdParty  ThirdParty  `mapstructure:"third-party" json:"third-party" yaml:"third-party"`
 	Mcs         Mcs         `mapstructure:"mcs" json:"mcs" yaml:"mcs"`
 	Environment Environment `mapstructure:"environment" json:"environment" yaml:"environment"`
+	OpenApi     OpenApi     `mapstructure:"openapi" json:"openapi" yaml:"openapi"`
 }
 
 type System struct {
@@ -67,8 +68,16 @@ type Captcha struct {
 }
 
 type ThirdParty struct {
-	Username string `mapstructure:"username" json:"username" yaml:"username"`
-	Password string `mapstructure:"password" json:"password" yaml:"password"`
+	Username string  `mapstructure:"username" json:"username" yaml:"username"`
+	Password string  `mapstructure:"password" json:"password" yaml:"password"`
+	Url      string  `mapstructure:"url" json:"url" yaml:"url"`
+	ApiSign  ApiSign `mapstructure:"apiSign" json:"apiSign" yaml:"apiSign"`
+	Host     string  `mapstructure:"host" json:"host" yaml:"host"`
+}
+
+type ApiSign struct {
+	AppKey    string `mapstructure:"appKey" json:"appKey" yaml:"appKey"`
+	AppSecret string `mapstructure:"appSecret" json:"appSecret" yaml:"appSecret"`
 }
 
 type Mcs struct {
@@ -80,4 +89,8 @@ type Mcs struct {
 
 type Environment struct {
 	ServerHost string `mapstructure:"server-host" json:"serverHost" yaml:"server-host"`
+}
+
+type OpenApi struct {
+	AppSecret string `mapstructure:"appsecret" json:"appsecret" yaml:"appsecret"`
 }

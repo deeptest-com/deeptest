@@ -426,7 +426,7 @@ func (r *ServeRepo) SetCurrServeByUser(serveId, userId uint) (err error) {
 	return
 }
 
-func (r *ServeRepo) GetCurrServerByUser(projectId, userId uint) (currServer model.ServeServer, err error) {
+func (r *ServeRepo) GetCurrServerByUser(projectId, serveId, userId uint) (currServer model.ServeServer, err error) {
 	projectUserServer, err := r.EnvironmentRepo.GetProjectUserServer(projectId, userId)
 	if err != nil {
 		return
@@ -434,7 +434,7 @@ func (r *ServeRepo) GetCurrServerByUser(projectId, userId uint) (currServer mode
 
 	// may be null
 	err = r.DB.Model(&model.ServeServer{}).
-		Where("environment_id = ?", projectUserServer.ServerId).
+		Where("environment_id = ? and serve_id = ?", projectUserServer.ServerId, serveId).
 		First(&currServer).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return
@@ -481,8 +481,8 @@ func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 			if err != nil {
 				return err
 			}
-
-			err = r.AddDefaultTestCategory(serve.ProjectId, serve.ID)
+			//目录树默认不挂在根目录下面
+			//			err = r.AddDefaultTestCategory(serve.ProjectId, serve.ID)
 
 		} else {
 			err = r.Save(serve.ID, &serve)
@@ -550,13 +550,12 @@ func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
 	return
 }
 
-func (r *ServeRepo) AddDefaultTestCategory(projectId, serveId uint) (err error) {
+func (r *ServeRepo) AddDefaultTestCategory(projectId uint) (err error) {
 	root := model.DiagnoseInterface{
 		Title:     "根节点",
 		ProjectId: projectId,
 		IsDir:     true,
 		Type:      "dir",
-		ServeId:   serveId,
 	}
 	err = r.DB.Create(&root).Error
 	return

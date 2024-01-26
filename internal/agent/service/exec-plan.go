@@ -8,11 +8,13 @@ import (
 )
 
 func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
-	agentExec.ResetStat()
-	agentExec.ForceStopExec = false
+	execUuid := req.ExecUuid
 
-	agentExec.ServerUrl = req.ServerUrl
-	agentExec.ServerToken = req.Token
+	agentExec.ResetStat(req.ExecUuid)
+	agentExec.SetForceStopExec(execUuid, false)
+
+	agentExec.SetServerUrl(execUuid, req.ServerUrl)
+	agentExec.SetServerToken(execUuid, req.Token)
 
 	planExecObj := GetPlanToExec(req)
 
@@ -38,9 +40,11 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	}
 
 	for _, scenario := range planExecObj.Scenarios {
+		scenario.ExecUuid = execUuid
 		session, _ := ExecScenario(&scenario, wsMsg)
+
 		scenarioReport, _ := SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,
-			agentExec.ServerUrl, agentExec.ServerToken)
+			agentExec.GetServerUrl(execUuid), agentExec.GetServerToken(execUuid))
 		session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 
 		session.RootProcessor.Result.ScenarioReportId = uint(scenarioReport.ID)
@@ -49,24 +53,13 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	}
 
 	// submit result
-	result.Stat = agentExec.Stat
+	result.Stat = *agentExec.GetInterfaceStat(execUuid)
 	report, _ := SubmitPlanResult(result, req.PlanId, req.ServerUrl, req.Token)
 	execUtils.SendResultMsg(report, wsMsg)
 	//sendPlanSubmitResult(req.PlanId, wsMsg)
 
 	// end msg
 	execUtils.SendEndMsg(wsMsg)
-
-	return
-}
-
-func sendPlanSubmitResult(planId int, wsMsg *websocket.Message) (err error) {
-	result := agentDomain.PlanExecResult{
-		ID:   planId,
-		Name: "提交计划执行结果成功",
-		//Summary:  fmt.Sprintf("错误：%s", err.Error()),
-	}
-	execUtils.SendExecMsg(result, wsMsg)
 
 	return
 }

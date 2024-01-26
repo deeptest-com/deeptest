@@ -1,63 +1,43 @@
 package agentExec
 
 import (
+	queryUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/query"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
-	"strings"
 )
 
-var (
-	ForceStopExec = false
-
-	ServerUrl     = ""
-	ServerApiPath = "api/v1"
-	ServerToken   = ""
-
-	// used to exchange request and response data between goja and go
-	CurrRequest  domain.BaseRequest
-	CurrResponse domain.DebugResponse
-
-	CurrScenarioProcessor   *Processor
-	CurrScenarioProcessorId = uint(0)
-	CurrDebugInterfaceId    = uint(0)
-
-	//CachedShareVarByProcessorForRead map[uint]domain.VarKeyValuePair
-
-	ScopedVariables = map[uint][]domain.ExecVariable{} // for scenario and debug
-	ScopedCookies   = map[uint][]domain.ExecCookie{}   // only for scenario
-	ScopeHierarchy  = map[uint]*[]uint{}               // only for scenario (processId -> ancestorProcessIds)
-
-	ExecScene      = domain.ExecScene{} // for scenario and debug, from server
-	DatapoolCursor = map[string]int{}   // only for scenario
-)
-
-func InitDebugExecContext() (variables []domain.ExecVariable) {
-	ScopedVariables = map[uint][]domain.ExecVariable{}
+func InitDebugExecContext(execUuid string) (variables []domain.ExecVariable) {
+	SetScopedVariables(execUuid, map[uint][]domain.ExecVariable{})
 
 	return
 }
 
 func InitScenarioExecContext(execObj *ScenarioExecObj) (variables []domain.ExecVariable) {
-	ComputerScopeHierarchy(execObj.RootProcessor, &ScopeHierarchy)
+	execUuid := execObj.ExecUuid
 
-	ExecScene = execObj.ExecScene
-	DatapoolCursor = map[string]int{}
+	scopeHierarchy := map[uint]*[]uint{}
+	ComputerScopeHierarchy(execObj.RootProcessor, &scopeHierarchy)
+	SetScopeHierarchy(execUuid, scopeHierarchy)
 
-	ScopedVariables = map[uint][]domain.ExecVariable{}
-	ScopedCookies = map[uint][]domain.ExecCookie{}
+	SetExecScene(execUuid, execObj.ExecScene)
+	SetDatapoolCursor(execUuid, map[string]int{})
+
+	SetScopedVariables(execUuid, map[uint][]domain.ExecVariable{})
+	SetScopedCookies(execUuid, map[uint][]domain.ExecCookie{})
 
 	return
 }
 
-func GetValidScopeIds(id uint) (ret *[]uint) {
-	ret = &[]uint{}
-
-	if id == 0 {
-		*ret = append(*ret, id)
+func GetValidScopeIds(processorId uint, execUuid string) (ret *[]uint) {
+	if processorId == 0 { // return an arr with single 0
+		arr := []uint{processorId}
+		ret = &arr
 		return
 	}
 
-	ret = ScopeHierarchy[id]
+	scopeHierarchy := GetScopeHierarchy(execUuid)
+	ret = scopeHierarchy[processorId]
 
 	return
 }
@@ -65,19 +45,26 @@ func GetValidScopeIds(id uint) (ret *[]uint) {
 // like {name.prop}
 func EvaluateVariablePropExpressionValue(variable domain.ExecVariable, propExpression string) (
 	ret domain.ExecVariable, ok bool) {
-	arr := strings.Split(propExpression, ".")
-	variableName := arr[0]
+
+	variableName, jsonPathExpression, isJsonPath := commUtils.IsJsonPathExpression(propExpression)
 
 	if variable.Name == variableName {
 		ret = variable
 		ret.Name = propExpression // set name from item to item.a
 
-		if len(arr) > 1 {
-			variableProp := arr[1]
-			ret.Value = variable.Value.(domain.VarKeyValuePair)[variableProp]
-		}
-
 		ok = true
+
+		if isJsonPath {
+			jsn, _ := commUtils.ConvertValueForPersistence(variable.Value)
+
+			var err error
+			ret.Value, ret.ValueType, err =
+				queryUtils.JsonPath(jsn, jsonPathExpression)
+
+			if err != nil {
+				ok = false
+			}
+		}
 	}
 
 	return

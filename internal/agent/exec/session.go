@@ -10,6 +10,7 @@ import (
 )
 
 type Session struct {
+	ExecUuid   string
 	ScenarioId uint
 	Name       string
 

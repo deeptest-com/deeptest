@@ -64,13 +64,31 @@ func (s *ScenarioInterfaceService) SetProps(
 	copier.CopyWithOption(&debugData, scenarioInterfacePo, copier.Option{DeepCopy: true})
 	debugData.EndpointInterfaceId = endpointInterface.ID // reset
 
-	debugData.Headers = append(debugData.Headers, domain.Header{Name: "", Value: ""})
-	debugData.QueryParams = append(debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
-	debugData.PathParams = append(debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+	if debugData.Headers == nil {
+		debugData.Headers = &[]domain.Header{}
+	}
+	*debugData.Headers = append(*debugData.Headers, domain.Header{Name: "", Value: ""})
 
-	debugData.BodyFormData = append(debugData.BodyFormData, domain.BodyFormDataItem{
+	if debugData.QueryParams == nil {
+		debugData.QueryParams = &[]domain.Param{}
+	}
+	*debugData.QueryParams = append(*debugData.QueryParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInQuery})
+
+	if debugData.PathParams == nil {
+		debugData.PathParams = &[]domain.Param{}
+	}
+	*debugData.PathParams = append(*debugData.PathParams, domain.Param{Name: "", Value: "", ParamIn: consts.ParamInPath})
+
+	if debugData.BodyFormData == nil {
+		debugData.BodyFormData = &[]domain.BodyFormDataItem{}
+	}
+	*debugData.BodyFormData = append(*debugData.BodyFormData, domain.BodyFormDataItem{
 		Name: "", Value: "", Type: consts.FormDataTypeText})
-	debugData.BodyFormUrlencoded = append(debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
+
+	if debugData.BodyFormUrlencoded == nil {
+		debugData.BodyFormUrlencoded = &[]domain.BodyFormUrlEncodedItem{}
+	}
+	*debugData.BodyFormUrlencoded = append(*debugData.BodyFormUrlencoded, domain.BodyFormUrlEncodedItem{
 		Name: "", Value: "",
 	})
 

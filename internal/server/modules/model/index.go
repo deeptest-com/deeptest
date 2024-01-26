@@ -32,8 +32,7 @@ var (
 		&DebugInterfaceOAuth20{},
 		&DebugInterfaceApiKey{},
 
-		&DebugPreCondition{},
-		&DebugPostCondition{},
+		&DebugCondition{},
 		&DebugConditionExtractor{},
 		&DebugConditionCheckpoint{},
 		&DebugConditionScript{},
@@ -72,6 +71,7 @@ var (
 		&ExecLogExtractor{},
 		&ExecLogCheckpoint{},
 		&ExecLogScript{},
+		&ExecLogDatabaseOpt{},
 
 		&ComponentSchema{},
 		&ComponentSchemaSecurity{},
@@ -86,6 +86,7 @@ var (
 		&EndpointInterface{},
 		&EndpointCase{},
 		&EndpointCaseAlternative{},
+		&EndpointCaseAlternativeFactor{},
 		&EndpointInterfaceParam{},
 		&EndpointInterfaceCookie{},
 		&EndpointInterfaceHeader{},
@@ -113,6 +114,8 @@ var (
 		&ProjectMenu{},
 		&ProjectRecentlyVisited{},
 		&ProjectMemberAudit{},
+		&DatabaseConn{},
+		&DebugConditionDatabaseOpt{},
 
 		&SwaggerSync{},
 		&ProjectMockSetting{},
@@ -133,5 +136,9 @@ var (
 		&ThirdPartySync{},
 
 		&DebugInterfaceGlobalParam{},
+		&DebugInterfaceCookie{},
+
+		&ProjectProductRel{},
+		&ProjectSpaceRel{},
 	}
 )

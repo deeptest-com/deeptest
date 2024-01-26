@@ -15,6 +15,7 @@ type ParserService struct {
 
 func (s *ParserService) TestExpr(req *v1.TestExprRequest) (ret v1.TestExprResponse, err error) {
 	var result interface{}
+	var resultType consts.ExtractorResultType
 
 	if req.ExprType == "xpath" {
 		if req.Type == consts.LangHTML {
@@ -22,14 +23,15 @@ func (s *ParserService) TestExpr(req *v1.TestExprRequest) (ret v1.TestExprRespon
 		} else if req.Type == consts.LangXML {
 			result = queryHelper.XmlQuery(req.Content, req.Expr)
 		} else if req.Type == consts.LangJSON {
-			result = queryHelper.JsonQuery(req.Content, req.Expr)
+			result, resultType = queryHelper.JsonQuery(req.Content, req.Expr)
 		}
 	} else if req.ExprType == "regx" {
 		result = queryHelper.RegxQuery(req.Content, req.Expr)
 	}
 
 	ret = v1.TestExprResponse{
-		Result: fmt.Sprintf("%v", result),
+		Result:     fmt.Sprintf("%v", result),
+		ResultType: resultType,
 	}
 
 	return

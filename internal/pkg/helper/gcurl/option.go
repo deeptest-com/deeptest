@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io/ioutil"
 	"log"
+	"net/url"
 	"os"
 	"regexp"
 	"strconv"
@@ -38,6 +39,7 @@ func init() {
 		// {"--task", 10, parseITask, &extract{re: "--task +(.+)", execute: extractData}},
 		// {"--crontab", 10, parseCrontab, &extract{re: "--crontab +(.+)", execute: extractData}},
 		// {"--name", 10, parseName, &extract{re: "--name +(.+)", execute: extractData}},
+		{"--location", 10, parseURL, nil},
 	}
 
 	for _, oe := range oelist {
@@ -249,5 +251,22 @@ func parseHeader(u *CURL, soption string) {
 	default:
 		u.Header.Add(key, value)
 	}
+
+}
+
+func parseURL(u *CURL, soption string) {
+	res := regexp.MustCompile(`'(.+)'`).FindAllStringSubmatch(soption, 1)
+	if len(res) <= 0 {
+		return
+	}
+	matches := res[0]
+
+	purl, err := url.Parse(matches[1])
+	if err != nil {
+		matches[1] = "http://" + matches[1]
+		purl, err = url.Parse(matches[1])
+	}
+
+	u.ParsedURL = purl
 
 }

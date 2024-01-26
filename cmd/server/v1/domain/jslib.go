@@ -13,4 +13,6 @@ type JslibReq struct {
 
 	CreateUser string `json:"createUser"`
 	UpdateUser string `json:"updateUser"`
+
+	ProjectId uint `json:"projectId"`
 }

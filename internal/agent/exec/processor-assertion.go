@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
@@ -40,8 +41,8 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 		Round:             processor.Round,
 	}
 
-	expr := ReplaceDatapoolVariInGovaluateExpress(entity.Expression)
-	ret, err := EvaluateGovaluateExpressionByProcessorScope(expr, processor.ID)
+	expr := ReplaceDatapoolVariInGovaluateExpress(entity.Expression, session.ExecUuid)
+	ret, params, err := EvaluateGovaluateExpressionByProcessorScope(expr, processor.ID, session.ExecUuid)
 
 	pass, _ := ret.(bool)
 
@@ -50,10 +51,18 @@ func (entity ProcessorAssertion) Run(processor *Processor, session *Session) (er
 
 	//processor.Result.Summary = fmt.Sprintf("断言\"%s\"结果为\"%s\"。", entity.Expression, status)
 	processor.Result.Summary = fmt.Sprintf("结果为\"%s\"。", status)
-	detail := map[string]interface{}{"name": entity.Name, "result": pass, "expression": entity.Expression}
+
+	detail := map[string]interface{}{
+		"name":       entity.Name,
+		"expression": entity.Expression,
+		"result":     pass,
+		"actual":     fmt.Sprintf("%t", pass),
+		"variables":  params,
+	}
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
+
 	processor.AddResultToParent()
-	execUtils.SendExecMsg(*processor.Result, session.WsMsg)
+	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime

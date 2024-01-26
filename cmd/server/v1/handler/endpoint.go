@@ -6,15 +6,18 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	encoder "github.com/zwgblue/yaml-encoder"
+	"go.uber.org/zap"
 )
 
 type EndpointCtrl struct {
-	EndpointService *service.EndpointService `inject:""`
-	ServeService    *service.ServeService    `inject:""`
+	EndpointService       *service.EndpointService       `inject:""`
+	ServeService          *service.ServeService          `inject:""`
+	ThirdPartySyncService *service.ThirdPartySyncService `inject:""`
 }
 
 // Index
@@ -55,6 +58,7 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
 	}
 
 	userName := multi.GetUsername(ctx)
@@ -145,7 +149,7 @@ func (c *EndpointCtrl) BatchDelete(ctx iris.Context) {
 	}
 }
 
-//构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
+// 构造参数构造auth，BasicAuth,BearerToken,OAuth20,ApiKey
 func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint model.Endpoint) {
 
 	for key, item := range req.Interfaces {
@@ -252,7 +256,10 @@ func (c *EndpointCtrl) Develop(ctx iris.Context) {
 func (c *EndpointCtrl) Copy(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(uint(id)))
-	res, err := c.EndpointService.Copy(uint(id), version)
+
+	userId := multi.GetUserId(ctx)
+	userName := multi.GetUsername(ctx)
+	res, err := c.EndpointService.Copy(uint(id), 0, userId, userName, version)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 	} else {
@@ -431,8 +438,99 @@ func (c *EndpointCtrl) UpdateAdvancedMockDisabled(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+func (c *EndpointCtrl) SyncFromThirdParty(ctx iris.Context) {
+	var req _domain.ReqId
+	if err := ctx.ReadParams(&req); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	if err := c.EndpointService.SyncFromThirdParty(req.Id); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
 /*
 func (c *EndpointCtrl) Index() {
 	c.EndpointService.GetVersionsByEndpointId(1)
 }
 */
+
+func (c *EndpointCtrl) GetDiff(ctx iris.Context) {
+
+	endpointId, err := ctx.URLParamInt("endpointId")
+	if err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	if data, err := c.EndpointService.GetDiff(uint(endpointId)); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+	}
+}
+
+func (c *EndpointCtrl) SaveDiff(ctx iris.Context) {
+	var req serverDomain.EndpointDiffReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+	userName := multi.GetUsername(ctx)
+	if err := c.EndpointService.SaveDiff(req.EndpointId, req.IsChanged, userName); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+// UpdateName
+// @Tags	设计器
+// @summary	更新设计器名称
+// @accept	application/json
+// @Produce	application/json
+// @Param 	Authorization	header	string	true	"Authentication header"
+// @Param 	currProjectId	query	int		true	"当前项目ID"
+// @Param 	id 				query 	int	true 	"设计器id"
+// @Param 	name 			query 	string	true 	"设计器状态"
+// @success	200	{object}	_domain.Response
+// @Router	/api/v1/endpoint/updateName	[put]
+func (c *EndpointCtrl) UpdateName(ctx iris.Context) {
+	var req serverDomain.UpdateNameReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+	err := c.EndpointService.UpdateName(req.Id, req.Name)
+	if err == nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	} else {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+	}
+}
+
+func (c *EndpointCtrl) ListFunctionsByThirdPartyClass(ctx iris.Context) {
+	var req serverDomain.ImportThirdPartyEndpointReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	data, err := c.ThirdPartySyncService.ListFunctionsByClass(req.FilePath, req.ClassCode)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ErrThirdPartyFunctions.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: data})
+}

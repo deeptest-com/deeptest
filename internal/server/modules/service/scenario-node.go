@@ -31,8 +31,6 @@ type ScenarioNodeService struct {
 	ExtractorRepo            *repo.ExtractorRepo         `inject:""`
 	CheckpointRepo           *repo.CheckpointRepo        `inject:""`
 	ServeServerRepo          *repo.ServeServerRepo       `inject:""`
-	PreConditionRepo         *repo.PreConditionRepo      `inject:""`
-	PostConditionRepo        *repo.PostConditionRepo     `inject:""`
 
 	DebugInterfaceService    *DebugInterfaceService    `inject:""`
 	DiagnoseInterfaceService *DiagnoseInterfaceService `inject:""`
@@ -99,13 +97,13 @@ func (s *ScenarioNodeService) AddProcessor(req serverDomain.ScenarioAddScenarioR
 		EntityCategory:        req.ProcessorCategory,
 		EntityType:            req.ProcessorType,
 		ProcessorInterfaceSrc: req.ProcessorInterfaceSrc,
-
-		ScenarioId: targetProcessor.ScenarioId,
-		ProjectId:  req.ProjectId,
-		CreatedBy:  req.CreateBy,
-		BaseModel:  model.BaseModel{Disabled: targetProcessor.Disabled},
-		Comments:   req.Comments,
-		Method:     req.Method,
+		EndpointInterfaceId:   targetProcessor.EndpointInterfaceId,
+		ScenarioId:            targetProcessor.ScenarioId,
+		ProjectId:             req.ProjectId,
+		CreatedBy:             req.CreateBy,
+		BaseModel:             model.BaseModel{Disabled: targetProcessor.Disabled},
+		Comments:              req.Comments,
+		Method:                req.Method,
 	}
 
 	if req.Mode == "child" {
@@ -171,7 +169,8 @@ func (s *ScenarioNodeService) CopyInterfaceEntity(srcProcessorId, distProcessorI
 	}
 
 	debugData.ScenarioProcessorId = distProcessorId
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, debugData.DebugInterfaceId)
+	debugData.UsedBy = consts.ScenarioDebug
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, debugData.DebugInterfaceId, debugData.UsedBy)
 	if err != nil {
 		return
 	}
@@ -247,6 +246,7 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 
 	// convert or clone a debug interface obj
 	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(endpointInterfaceId)
+	debugData.UsedBy = consts.ScenarioDebug
 
 	debugData.EndpointInterfaceId = endpointInterfaceId
 
@@ -264,9 +264,8 @@ func (s *ScenarioNodeService) createInterfaceFromDefine(endpointInterfaceId uint
 	debugData.ServerId = server.ID
 	debugData.BaseUrl = server.Url
 
-	debugData.UsedBy = consts.ScenarioDebug
 	srcDebugInterfaceId := debugData.DebugInterfaceId
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId, "")
 
 	if order == 0 {
 		order = s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID)
@@ -306,21 +305,9 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 	ret model.Processor, err error) {
 
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(diagnoseInterfaceNode.DebugInterfaceId)
+	debugData.UsedBy = consts.ScenarioDebug
 
 	if diagnoseInterfaceNode.IsDir && len(diagnoseInterfaceNode.Children) > 0 { // dir
-		/*
-			processor := model.Processor{
-				Name:           diagnoseInterfaceNode.Title,
-				ScenarioId:     parentProcessor.ScenarioId,
-				EntityCategory: consts.ProcessorGroup,
-				EntityType:     consts.ProcessorGroupDefault,
-				ParentId:       parentProcessor.ID,
-				ProjectId:      parentProcessor.ProjectId,
-			}
-			processor.Ordr = s.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-			s.ScenarioNodeRepo.CreateExpression(&processor)
-		*/
-
 		for _, child := range diagnoseInterfaceNode.Children {
 			ret, _ = s.createDirOrInterfaceFromDiagnose(child, parentProcessor, 0)
 		}
@@ -363,9 +350,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromDiagnose(diagnoseInterface
 		debugData.BaseUrl = "" // no need to bind to env in debug page
 		debugData.Url = debugInterfaceOfDiagnoseInterfaceNode.Url
 
-		debugData.UsedBy = consts.ScenarioDebug
 		srcDebugInterfaceId := debugData.DebugInterfaceId
-		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
+		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId, consts.DiagnoseDebug)
 
 		processor.EntityId = debugInterface.ID
 		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, processor.EntityId)
@@ -395,6 +381,7 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		}
 	} else if !caseNode.IsDir { // interface
 		debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(caseNode.DebugInterfaceId)
+		debugData.UsedBy = consts.ScenarioDebug
 
 		if order == 0 {
 			order = s.ScenarioNodeRepo.GetMaxOrder(parentProcessor.ID)
@@ -427,9 +414,8 @@ func (s *ScenarioNodeService) createDirOrInterfaceFromCase(caseNode *serverDomai
 		debugData.BaseUrl = "" // no need to bind to env in debug page
 		debugData.Url = debugInterfaceOfCaseNode.Url
 
-		debugData.UsedBy = consts.ScenarioDebug
 		srcDebugInterfaceId := debugData.DebugInterfaceId
-		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId)
+		debugInterface, _ := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId, consts.CaseDebug)
 
 		processor.EntityId = debugInterface.ID
 		s.ScenarioProcessorRepo.UpdateEntityId(processor.ID, processor.EntityId)
@@ -547,9 +533,9 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 		BaseUrl: "",
 		BaseRequest: domain.BaseRequest{
 			Method:      s.DiagnoseInterfaceService.getMethod(bodyType, curlObj.Method),
-			QueryParams: queryParams,
-			Headers:     headers,
-			Cookies:     cookies,
+			QueryParams: &queryParams,
+			Headers:     &headers,
+			Cookies:     &cookies,
 			Body:        wf.Body.String(),
 			BodyType:    consts.HttpContentType(bodyType),
 			Url:         url,
@@ -562,7 +548,7 @@ func (s *ScenarioNodeService) ImportCurl(req serverDomain.ScenarioCurlImportReq)
 		UsedBy: consts.ScenarioDebug,
 	}
 
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, 0)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, 0, "")
 
 	processor := model.Processor{
 		Name:                url,

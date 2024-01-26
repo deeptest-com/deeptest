@@ -64,3 +64,9 @@ type NotRelationScenarioReqPaginate struct {
 	Type         string `json:"type"`
 	CreateUserId uint   `json:"createUserId"`
 }
+
+type MoveReq struct {
+	PlanId        uint `json:"planId"`
+	SourceId      uint `json:"sourceId"`
+	DestinationId uint `json:"destinationId"`
+}

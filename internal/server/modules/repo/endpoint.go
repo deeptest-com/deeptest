@@ -11,6 +11,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"strconv"
+	"time"
 )
 
 type EndpointRepo struct {
@@ -40,6 +41,10 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	if req.ServeId != 0 {
 		db = db.Where("serve_id = ?", req.ServeId)
 	}
+	if len(req.ServeIds) > 0 {
+		db = db.Where("serve_id in ?", req.ServeIds)
+	}
+
 	if req.ServeVersion != "" {
 		if ids, err := r.ServeRepo.GetBindEndpointIds(req.ServeId, req.ServeVersion); err != nil {
 			db = db.Where("id in ?", ids)
@@ -155,7 +160,7 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 		}
 
 		//保存接口
-		err = r.saveInterfaces(endpoint.ID, endpoint.ProjectId, endpoint.Path, endpoint.Version, endpoint.Interfaces)
+		err = r.saveInterfaces(endpoint.ID, endpoint.ProjectId, endpoint.Path, endpoint.Version, endpoint.Title, endpoint.Interfaces)
 		if err != nil {
 			return err
 		}
@@ -171,7 +176,7 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 	return
 }
 
-//保存终端信息
+// 保存终端信息
 func (r *EndpointRepo) saveEndpoint(endpoint *model.Endpoint) (err error) {
 	err = r.Save(endpoint.ID, endpoint)
 	if err != nil {
@@ -211,7 +216,7 @@ func (r *EndpointRepo) saveEndpointVersion(endpoint *model.Endpoint) (err error)
 	return
 }
 
-//保存路径参数
+// 保存路径参数
 func (r *EndpointRepo) saveEndpointParams(endpointId uint, params []model.EndpointPathParam) (err error) {
 	err = r.removeEndpointParams(endpointId)
 	if err != nil {
@@ -235,8 +240,9 @@ func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
 	return
 }
 
-//保存接口信息
-func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version string, interfaces []model.EndpointInterface) (err error) {
+// 保存接口信息
+func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version, title string, interfaces []model.EndpointInterface) (err error) {
+
 	interfaceIds := make([]uint, 0)
 	for _, v := range interfaces {
 		if v.ID != 0 {
@@ -259,6 +265,7 @@ func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version 
 		interfaces[key].Version = version
 		interfaces[key].Url = path
 		interfaces[key].ProjectId = projectId
+		interfaces[key].Name = title
 
 		err = r.EndpointInterfaceRepo.SaveInterfaces(&interfaces[key])
 		if err != nil {
@@ -268,7 +275,7 @@ func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version 
 	return
 }
 
-//保存调试接口Url
+// 保存调试接口Url
 func (r *EndpointRepo) updateDebugInterfaceUrl(endpointId uint, url string) (err error) {
 	err = r.DB.Model(&model.DebugInterface{}).
 		Where("endpoint_id = ?", endpointId).
@@ -465,9 +472,30 @@ func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
 	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
 }
 
-func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, title string) (res model.Endpoint, err error) {
+func (r *EndpointRepo) BatchUpdate(ids []uint, data map[string]interface{}) error {
+	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Updates(data).Error
+}
 
-	err = r.DB.First(&res, "source_type=? and project_id=? AND path = ? AND serve_id = ? AND title = ?", sourceType, projectId, path, serveId, title).Error
+func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, categoryId int64) (res model.Endpoint, err error) {
+	db := r.DB.Model(&model.Endpoint{}).
+		Where("source_type = ?", sourceType).
+		Where("project_id = ?", projectId).
+		Where("path = ?", path).
+		Where("serve_id = ? AND NOT deleted", serveId)
+
+	if categoryId > 0 {
+		categoryIds, err := r.BaseRepo.GetDescendantIds(uint(categoryId), model.Category{}.TableName(), serverConsts.EndpointCategory, int(projectId))
+		if err != nil {
+			return res, err
+		}
+		if len(categoryIds) > 0 {
+			db.Where("category_id IN (?)", categoryIds)
+		}
+	} else if categoryId == -1 {
+		db.Where("category_id = -1")
+	}
+
+	err = db.First(&res).Error
 
 	return
 
@@ -499,4 +527,37 @@ func (r *EndpointRepo) GetByNameAndProject(name string, projectId uint) (res mod
 		Where("project_id = ?", projectId).
 		First(&res).Error
 	return
+}
+
+func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, changedStatus consts.ChangedStatus) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		Updates(map[string]interface{}{"changed_status": changedStatus, "Updated_at": time.Now()}).Error
+
+	return
+}
+
+func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		UpdateColumns(map[string]interface{}{"changed_status": consts.Changed, "snapshot": snapshot, "changed_time": time.Now()}).Error
+
+	return
+}
+
+func (r *EndpointRepo) UpdateName(id uint, name string) (err error) {
+	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("title", name).Error
+}
+
+func (r *EndpointRepo) ChangeSnapShot(endpointId uint, snapshot string) (err error) {
+	err = r.DB.Model(&model.Endpoint{}).
+		Where("id = ?", endpointId).
+		UpdateColumn("snapshot", snapshot).Error
+
+	return
+}
+
+func (r *EndpointRepo) GetByCategoryId(categoryId uint) (endpoints []model.Endpoint, err error) {
+	err = r.DB.Where("category_id = ?", categoryId).Order("created_at desc").Find(&endpoints).Error
+	return endpoints, err
 }

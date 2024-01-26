@@ -1,6 +1,7 @@
 package serverDomain
 
 import (
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -9,6 +10,7 @@ import (
 type ProjectReq struct {
 	_domain.Model
 	ProjectBase
+	integrationDomain.ProjectReq
 }
 
 type ProjectReqPaginate struct {
@@ -29,16 +31,17 @@ type ProjectMemberRemoveReq struct {
 
 type ProjectBase struct {
 	Name string                   `json:"name"`
-	Desc string                   `json:"desc" gorm:"column:descr"`
+	Desc string                   `json:"desc" gorm:"column:descr;type:text"`
 	Type serverConsts.ProjectType `json:"type"`
 
-	SchemaId       uint   `json:"schemaId"`
-	OrgId          uint   `json:"orgId"`
-	Logo           string `json:"logo"`
-	ShortName      string `json:"shortName"`
-	IncludeExample bool   `json:"includeExample"`
-	AdminId        uint   `json:"adminId"`
-	AdminName      string `gorm:"-" json:"adminName"`
+	SchemaId       uint                       `json:"schemaId"`
+	OrgId          uint                       `json:"orgId"`
+	Logo           string                     `json:"logo"`
+	ShortName      string                     `json:"shortName"`
+	IncludeExample bool                       `json:"includeExample"`
+	AdminId        uint                       `json:"adminId"`
+	AdminName      string                     `gorm:"-" json:"adminName"`
+	Source         serverConsts.ProjectSource `json:"source"`
 }
 
 type ProjectUserPermsPaginate struct {

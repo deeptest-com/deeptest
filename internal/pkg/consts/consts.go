@@ -21,8 +21,8 @@ const (
 	ApiPathMock   = "/mocks"
 	WsPath        = ApiPathAgent + "/ws"
 
-	WsDefaultNameSpace = "default"
-	WsDefaultRoom      = "default"
+	WsDefaultNamespace = "default"
+	WsDefaultRoom      = "default_room"
 	WsChatEvent        = "OnChat"
 
 	WebCheckInterval         = 60 * 60
@@ -53,6 +53,8 @@ const (
 	MaxLoopTimeForPerformanceTest = 1000000
 
 	KEY_MOCKJS = "x-mock-type"
+
+	INVALID_VALUE = "N/A"
 )
 
 var (

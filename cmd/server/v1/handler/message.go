@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -15,8 +16,9 @@ import (
 )
 
 type MessageCtrl struct {
-	MessageService   *service.MessageService   `inject:""`
-	WebSocketService *service.WebSocketService `inject:""`
+	MessageService            *service.MessageService            `inject:""`
+	WebSocketService          *service.WebSocketService          `inject:""`
+	IntegrationMessageService *integrationService.MessageService `inject:""`
 	BaseCtrl
 }
 
@@ -117,6 +119,7 @@ func (c *MessageCtrl) ReceiveMcsApprovalData(ctx iris.Context) {
 	reqData := serverDomain.McsApprovalResData{}
 	_ = json.Unmarshal([]byte(req.Data), &reqData)
 
+	logUtils.Infof("ReceiveMcsApprovalData Req:%+v", req)
 	err = c.MessageService.ReceiveMcsApprovalResult(reqData)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil})
@@ -132,5 +135,5 @@ func (c *MessageCtrl) InitThirdPartySyncCron() {
 		return
 	}
 
-	c.MessageService.SendMessageCron()
+	c.IntegrationMessageService.SendMessageCron()
 }

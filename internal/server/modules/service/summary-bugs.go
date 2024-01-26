@@ -29,19 +29,19 @@ func (s *SummaryBugsService) Bugs(projectId int64) (res v1.ResSummaryBugs, err e
 			switch result.BugSeverity {
 			case "critical":
 				res.Critical = DecimalPer(result.Count, res.Total)
-				res.Critical, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Critical), 64)
+				res.Critical, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", res.Critical), 64)
 			case "blocker":
 				res.Blocker = DecimalPer(result.Count, res.Total)
-				res.Blocker, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Blocker), 64)
+				res.Blocker, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", res.Blocker), 64)
 			case "deadly":
 				res.Deadly = DecimalPer(result.Count, res.Total)
-				res.Deadly, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Deadly), 64)
+				res.Deadly, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", res.Deadly), 64)
 			case "major":
 				res.Major = DecimalPer(result.Count, res.Total)
-				res.Major, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Major), 64)
+				res.Major, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", res.Major), 64)
 			case "minor":
 				res.Minor = DecimalPer(result.Count, res.Total)
-				res.Minor, _ = strconv.ParseFloat(fmt.Sprintf("%.1f", res.Minor), 64)
+				res.Minor, _ = strconv.ParseFloat(fmt.Sprintf("%.2f", res.Minor), 64)
 			default:
 				errors.New("Bug严重程度错误,请检查数据")
 			}

@@ -69,7 +69,7 @@ func (c *AuthCtrl) GetOAuth2AccessToken(ctx iris.Context) {
 	data, err := c.AuthService.GenOAuth2AccessToken(accessTokenURL, clientId, clientSecret, code)
 
 	c.WebSocketService.SendMsg(
-		consts.WsDefaultNameSpace,
+		consts.WsDefaultNamespace,
 		consts.WsDefaultRoom,
 		data)
 
@@ -112,7 +112,7 @@ func (c *AuthCtrl) UseOAuth2AccessToken(ctx iris.Context) {
 		"tokenType": tokenType,
 	}
 	c.WebSocketService.SendMsg(
-		consts.WsDefaultNameSpace,
+		consts.WsDefaultNamespace,
 		consts.WsDefaultRoom,
 		data)
 

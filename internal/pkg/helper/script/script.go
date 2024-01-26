@@ -24,6 +24,27 @@ func GetScript(name ScriptType) string {
 		}
 		return DeepTestDeclare
 
+	} else if name == DeclareDeepTestPost {
+		if DeepTestDeclarePost == "" {
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest-post.d.ts"))
+			DeepTestDeclarePost = string(bytes)
+		}
+		return DeepTestDeclarePost
+
+	} else if name == DeclareDeepTestScenarioCustomCode {
+		if DeepTestScenarioCustomCode == "" {
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "deeptest-scenario-custom-code.d.ts"))
+			DeepTestScenarioCustomCode = string(bytes)
+		}
+		return DeepTestScenarioCustomCode
+
+	} else if name == DeclareChai {
+		if DeepTestDeclareChai == "" {
+			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "chai.d.ts"))
+			DeepTestDeclareChai = string(bytes)
+		}
+		return DeepTestDeclareChai
+
 	} else if name == ScriptMock {
 		if MockScript == "" {
 			bytes, _ := deeptest.ReadResData(filepath.Join("res", "goja", "export", "mock.js"))
@@ -86,16 +107,26 @@ func GenResultMsg(po *domain.ScriptBase) {
 		name = "后处理" + name
 	}
 
-	po.ResultMsg = fmt.Sprintf("%s%s%s，输出%s。", name,
-		_i118Utils.Sprintf("exec"), _i118Utils.Sprintf(po.ResultStatus.String()),
-		po.Output)
+	statusText := ""
+	if po.ResultStatus == consts.Pass {
+		statusText = "成功"
+	} else if po.ResultStatus == consts.Fail {
+		statusText = "失败"
+	}
+
+	po.ResultMsg = fmt.Sprintf("%s%s%s", name, _i118Utils.Sprintf("exec"), statusText)
+
+	po.ResultMsg += " JSON~" + po.Output + "~JSON"
 
 	return
 }
 
 var (
-	DeepTestScript  = ""
-	DeepTestDeclare = ""
+	DeepTestScript             = ""
+	DeepTestDeclare            = ""
+	DeepTestDeclarePost        = ""
+	DeepTestScenarioCustomCode = ""
+	DeepTestDeclareChai        = ""
 
 	MockScript  = ""
 	MockDeclare = ""
@@ -111,8 +142,11 @@ var (
 type ScriptType string
 
 const (
-	ScriptDeepTest  = "deeptest"
-	DeclareDeepTest = "deeptest.d"
+	ScriptDeepTest                    = "deeptest"
+	DeclareDeepTest                   = "deeptest.d"
+	DeclareDeepTestPost               = "deeptest-post.d"
+	DeclareDeepTestScenarioCustomCode = "deeptest-scenario-custom-code.d"
+	DeclareChai                       = "chai.d"
 
 	ScriptMock  = "mock"
 	DeclareMock = "mock.d"

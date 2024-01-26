@@ -21,3 +21,9 @@ func (r *ThirdPartySyncRepo) AllData() (data []model.ThirdPartySync, err error) 
 func (r *ThirdPartySyncRepo) UpdateExecTimeById(id uint) (err error) {
 	return r.DB.Model(&model.ThirdPartySync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
 }
+
+func (r *ThirdPartySyncRepo) GetByProjectAndServe(projectId, serveId uint) (data model.ThirdPartySync, err error) {
+	err = r.DB.Where("project_id = ? and serve_id = ?", projectId, serveId).First(&data).Error
+
+	return
+}

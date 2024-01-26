@@ -2,11 +2,8 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	execDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
-	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
@@ -14,7 +11,6 @@ import (
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
-	"runtime/debug"
 )
 
 var (
@@ -27,7 +23,7 @@ type ExecByWebSocketCtrl struct {
 }
 
 func NewWebsocketCtrl() *ExecByWebSocketCtrl {
-	inst := &ExecByWebSocketCtrl{Namespace: consts.WsDefaultNameSpace}
+	inst := &ExecByWebSocketCtrl{Namespace: consts.WsDefaultNamespace}
 	return inst
 }
 
@@ -67,78 +63,16 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	req := agentDomain.WsReq{}
 	err = json.Unmarshal(wsMsg.Body, &req)
 	if err != nil {
-		sendErr(err, &wsMsg)
-		return
-	}
-
-	act := req.Act
-
-	// stop exec
-	if act == consts.ExecStop {
-		if ch != nil {
-			if !execUtils.GetRunning() {
-				ch = nil
-			} else {
-				ch <- 1
-				ch = nil
-			}
-		}
-
-		agentExec.ForceStopExec = true
-		service.CancelAndSendMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
+		execUtils.SendErrorMsg(err, consts.Processor, &wsMsg)
 
 		return
 	}
 
-	// already running
-	if execUtils.GetRunning() && (act == consts.ExecStart) {
-		execUtils.SendAlreadyRunningMsg(req.ScenarioExecReq.ScenarioId, wsMsg)
+	if req.Act == "init" {
 		return
 	}
 
-	// exec task
-	go func() {
-		defer func(wsMsg websocket.Message) {
-			if wsMsgerr := recover(); wsMsgerr != nil {
-				s := string(debug.Stack())
-				fmt.Printf("err=%v, stack=%s\n", wsMsgerr, s)
-				sendErr(fmt.Errorf("%+v", wsMsgerr), &wsMsg)
-			}
-		}(wsMsg)
-
-		if act == consts.ExecScenario {
-			ch = make(chan int, 1)
-
-			service.RunScenario(&req.ScenarioExecReq, &wsMsg)
-
-		} else if act == consts.ExecPlan {
-			ch = make(chan int, 1)
-
-			service.RunPlan(&req.PlanExecReq, &wsMsg)
-
-		} else if act == consts.ExecMessage {
-			ch = make(chan int, 1)
-
-			service.RunMessage(&req.MessageReq, &wsMsg)
-		}
-	}()
+	err = service.StartExec(req, &wsMsg)
 
 	return
-}
-
-func sendErr(err error, wsMsg *websocket.Message) {
-	root := execDomain.ScenarioExecResult{
-		ID:      -1,
-		Name:    "执行失败",
-		Summary: fmt.Sprintf("错误：%s", err.Error()),
-	}
-	execUtils.SendExecMsg(root, wsMsg)
-
-	result := execDomain.ScenarioExecResult{
-		ID:       -2,
-		ParentId: -1,
-		Name:     "执行失败",
-		Summary:  fmt.Sprintf("错误：%s", err.Error()),
-	}
-	execUtils.SendExecMsg(result, wsMsg)
 }

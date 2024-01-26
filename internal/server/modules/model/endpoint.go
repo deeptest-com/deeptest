@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"time"
 )
 
 type Endpoint struct {
@@ -21,7 +22,7 @@ type Endpoint struct {
 	Versions     []EndpointVersion   `gorm:"-" json:"versions"`
 	Tags         []string            `gorm:"-" json:"tags"`
 	ServeName    string              `gorm:"-" json:"serveName"`
-	Description  string              `json:"description"`
+	Description  string              `gorm:"type:text" json:"description"`
 	SerialNumber string              `json:"serialNumber"`
 	Curl         string              `gorm:"-" json:"curl"`
 	SourceType   consts.SourceType   `json:"sourceType"`
@@ -31,7 +32,10 @@ type Endpoint struct {
 	AdvancedMockDisabled bool `json:"advancedMockDisabled"`
 	ScriptMockDisabled   bool `json:"scriptMockDisabled"`
 
-	GlobalParams []EnvironmentParam `gorm:"-" json:"globalParams"`
+	GlobalParams  []EnvironmentParam   `gorm:"-" json:"globalParams"`
+	Snapshot      string               `gorm:"type:longtext" json:"snapshot"`
+	ChangedTime   *time.Time           `json:"changedTime,omitempty"`
+	ChangedStatus consts.ChangedStatus `gorm:"default:1" json:"changedStatus,omitempty"`
 }
 
 func (Endpoint) TableName() string {

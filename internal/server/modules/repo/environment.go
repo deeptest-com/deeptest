@@ -336,13 +336,14 @@ func (r *EnvironmentRepo) DeleteEnvironment(id uint) (err error) {
 }
 
 func (r *EnvironmentRepo) SaveVars(projectId, environmentId uint, environmentVars []model.EnvironmentVar) (err error) {
-	if len(environmentVars) == 0 {
-		return
-	}
 
 	err = r.DB.Delete(&model.EnvironmentVar{}, "environment_id=? and project_id=?", environmentId, projectId).Error
 	if err != nil {
 		return err
+	}
+
+	if len(environmentVars) == 0 {
+		return
 	}
 
 	for key, _ := range environmentVars {
@@ -380,14 +381,18 @@ func (r *EnvironmentRepo) GetEnvironmentById(id uint) (env *model.Environment, e
 
 func (r *EnvironmentRepo) GetEnvironmentDetail(env *model.Environment) (err error) {
 	var vars []model.EnvironmentVar
-	err = r.DB.Find(&vars, "environment_id=?", env.ID).Error
+	err = r.DB.Find(&vars, "environment_id=? AND NOT deleted", env.ID).Error
 	if err != nil {
 		return
 	}
 	env.Vars = vars
 
 	var servers []model.ServeServer
-	err = r.DB.Find(&servers, "environment_id=?", env.ID).Error
+	err = r.DB.Model(&model.ServeServer{}).
+		Joins("LEFT JOIN biz_project_serve serve ON biz_project_serve_server.serve_id=serve.id ").
+		Select("biz_project_serve_server.*").
+		Where("biz_project_serve_server.environment_id=? AND NOT serve.deleted", env.ID).
+		Find(&servers).Error
 	if err != nil {
 		return
 	}

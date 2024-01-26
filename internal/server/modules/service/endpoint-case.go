@@ -19,8 +19,7 @@ type EndpointCaseService struct {
 	ServeServerRepo       *repo.ServeServerRepo       `inject:""`
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 	EndpointRepo          *repo.EndpointRepo          `inject:""`
-	PreConditionRepo      *repo.PreConditionRepo      `inject:""`
-	PostConditionRepo     *repo.PostConditionRepo     `inject:""`
+	ConditionRepo         *repo.ConditionRepo         `inject:""`
 	CategoryRepo          *repo.CategoryRepo          `inject:""`
 
 	EndpointService       *EndpointService       `inject:""`
@@ -39,8 +38,8 @@ func (s *EndpointCaseService) List(endpointId uint) (ret []model.EndpointCase, e
 	return
 }
 
-func (s *EndpointCaseService) Get(id int) (ret model.EndpointCase, err error) {
-	ret, err = s.EndpointCaseRepo.Get(uint(id))
+func (s *EndpointCaseService) Get(id uint) (ret model.EndpointCase, err error) {
+	ret, err = s.EndpointCaseRepo.Get(id)
 	// its debug data will load in webpage
 
 	return
@@ -62,12 +61,31 @@ func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (case
 	return
 }
 
-func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po model.EndpointCase, err error) {
+func (s *EndpointCaseService) Copy(id int, newNamePrefix string, newEndpointId, baseCaseId, userId uint, userName,
+	forAlternativeCase string) (po model.EndpointCase, err error) {
+
 	endpointCase, _ := s.EndpointCaseRepo.Get(uint(id))
 	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
+	debugData.UsedBy = consts.CaseDebug
 
+	if newEndpointId != 0 {
+		endpointCase.EndpointId = newEndpointId
+	}
+
+	if baseCaseId != 0 {
+		endpointCase.BaseCase = baseCaseId
+	}
+
+	if newNamePrefix == "" {
+		newNamePrefix = "copy-" + endpointCase.Name
+	}
+
+	caseType := endpointCase.CaseType
+	if caseType == consts.CaseBenchmark && newEndpointId == 0 { //复制接口定义导致的复制用例不改变，用例类型
+		caseType = consts.CaseDefault
+	}
 	req := serverDomain.EndpointCaseSaveReq{
-		Name:       "copy-" + endpointCase.Name,
+		Name:       newNamePrefix,
 		EndpointId: endpointCase.EndpointId,
 		ServeId:    endpointCase.ServeId,
 		ProjectId:  endpointCase.ProjectId,
@@ -77,6 +95,8 @@ func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po mod
 
 		Method:    endpointCase.Method,
 		DebugData: debugData,
+		CaseType:  caseType,
+		BaseCase:  endpointCase.BaseCase,
 	}
 
 	s.CopyValueFromRequest(&po, req)
@@ -98,8 +118,7 @@ func (s *EndpointCaseService) Copy(id int, userId uint, userName string) (po mod
 	err = s.DebugInterfaceRepo.Save(&debugInterface)
 
 	// clone conditions
-	s.PreConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID)
-	s.PostConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID)
+	s.ConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy, forAlternativeCase)
 
 	// save case
 	po.ProjectId = endpoint.ProjectId
@@ -126,9 +145,10 @@ func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCa
 	}
 
 	// save debug data
+	srcDebugUsedBy := req.DebugData.UsedBy
 	req.DebugData.UsedBy = consts.CaseDebug
 	srcDebugInterfaceId := req.DebugData.DebugInterfaceId
-	debugInterface, err := s.DebugInterfaceService.SaveAs(req.DebugData, srcDebugInterfaceId)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(req.DebugData, srcDebugInterfaceId, srcDebugUsedBy)
 
 	// save case
 	s.CopyValueFromRequest(&po, req)
@@ -196,8 +216,8 @@ func (s *EndpointCaseService) EndpointCaseToTo(po *serverDomain.InterfaceCase) (
 	return
 }
 
-func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDomain.EndpointCaseTree, err error) {
-	list, err := s.EndpointCaseRepo.GetCategoryEndpointCase(projectId, serveId)
+func (s *EndpointCaseService) LoadTree(projectId uint, serveIds consts.Integers) (ret []*serverDomain.EndpointCaseTree, err error) {
+	list, err := s.EndpointCaseRepo.GetCategoryEndpointCase(projectId, serveIds)
 	if err != nil {
 		return
 	}
@@ -236,7 +256,7 @@ func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDo
 		}
 	}
 
-	categories, err := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, projectId, 0)
+	categories, err := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, projectId)
 	for _, v := range categories {
 		uniqueId := "category_" + strconv.FormatInt(int64(v.ID), 10)
 		entityMap[uniqueId] = &serverDomain.EndpointCaseTree{
@@ -261,13 +281,12 @@ func (s *EndpointCaseService) LoadTree(projectId, serveId uint) (ret []*serverDo
 		IsDir:     true,
 		ParentId:  "category_" + strconv.FormatInt(int64(categories[0].ID), 10),
 		ProjectId: projectId,
-		ServeId:   serveId,
 		Slots:     iris.Map{"icon": "icon"},
 	}
 
 	ret = s.MapToTree(entityMap, "category_"+strconv.FormatInt(int64(categories[0].ID), 10))
-	s.GetNodeCaseNum(ret)
-	return
+	return s.GetNodeCaseNum(ret), nil
+
 }
 
 func (s *EndpointCaseService) MapToTree(mapData map[string]*serverDomain.EndpointCaseTree, parentId string) (res []*serverDomain.EndpointCaseTree) {
@@ -280,18 +299,52 @@ func (s *EndpointCaseService) MapToTree(mapData map[string]*serverDomain.Endpoin
 	return
 }
 
-func (s *EndpointCaseService) GetNodeCaseNum(res []*serverDomain.EndpointCaseTree) (num int64) {
-	for _, v := range res {
-		if v.Type == serverConsts.EndpointCaseTreeTypeCase {
-			num = 1
-			v.Count = 0
-		} else if v.Type == serverConsts.EndpointCaseTreeTypeEndpoint {
-			num += int64(len(v.Children))
-			v.Count = int64(len(v.Children))
-		} else {
-			num = s.GetNodeCaseNum(v.Children)
-			v.Count += num
+func (s *EndpointCaseService) GetNodeCaseNum(req []*serverDomain.EndpointCaseTree) (ret []*serverDomain.EndpointCaseTree) {
+
+	root := &serverDomain.EndpointCaseTree{Children: req}
+	s.GetNodeCaseNumNew(root)
+	return root.Children
+
+}
+
+func (s *EndpointCaseService) GetNodeCaseNumNew(node *serverDomain.EndpointCaseTree) (num int64) {
+	if node.Type == serverConsts.EndpointCaseTreeTypeCase {
+		return 1
+	}
+
+	var children []*serverDomain.EndpointCaseTree
+	for _, child := range node.Children {
+		n := s.GetNodeCaseNumNew(child)
+		if n != 0 {
+			children = append(children, child)
+		}
+		node.Count += n
+	}
+	node.Children = children
+
+	return node.Count
+
+}
+
+func (s *EndpointCaseService) ListByCaseType(endpointId uint, caseType consts.CaseType) (ret []model.EndpointCase, err error) {
+	ret, err = s.EndpointCaseRepo.ListByCaseType(endpointId, []consts.CaseType{caseType})
+
+	return
+}
+
+func (s *EndpointCaseService) CopyChildrenCases(caseId, newCaseId, endpointId, userId uint, username string) (err error) {
+	childrenCases, err := s.EndpointCaseRepo.ListByCaseTypeAndBaseCase(consts.CaseAlternative, caseId)
+	if err != nil {
+		return err
+	}
+
+	for _, item := range childrenCases {
+
+		_, err = s.Copy(int(item.ID), item.Name, endpointId, newCaseId, userId, username, "false")
+		if err != nil {
+			return err
 		}
 	}
+
 	return
 }

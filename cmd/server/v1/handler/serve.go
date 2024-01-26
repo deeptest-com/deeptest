@@ -424,7 +424,7 @@ func (c *ServeCtrl) ChangeServer(ctx iris.Context) {
 		return
 	}
 
-	currServer, err := c.ServeService.ChangeServer(uint(projectId), userId, req.ServerId)
+	currServer, err := c.ServeService.ChangeServer(uint(projectId), userId, req.ServeId, req.ServerId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

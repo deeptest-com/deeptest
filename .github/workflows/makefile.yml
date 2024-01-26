@@ -4,61 +4,43 @@ on:
   workflow_dispatch
   # pull_request:
   #   branches: [ "main" ]
-  # push:
-  #   branches: [ "main" ]
+# push:
+#   branches: [ "main" ]
 
 jobs:
   build-and-deploy:
     runs-on: self-hosted
     defaults:
       run:
-        working-directory: /home/lighthouse/rd/project/deeptest
+        working-directory: /home/ubuntu/rd/project/deeptest
     steps:
-    - name: checkout
-      run: git pull 
-      
-    - name: make server
-      run: make compile_server_linux
+      - name: checkout backend codes
+        run: git pull
 
-    - name: make agent
-      run: make compile_agent_linux
+      - name: checkout frontend codes
+        run: git pull
+        working-directory: /home/ubuntu/rd/project/deeptest-ui
 
-    - name: make ui
-      run: make compile_ui_demo
+      - name: make server
+        run: ENV=dp make compile_server_linux
 
-    - name: copy files
-      run:  | 
-        cp -f bin/linux/deeptest-server /home/lighthouse/rd/server/deeptest
-        cp -f client/bin/linux/agent /home/lighthouse/rd/server/deeptest/deeptest-agent
-        rm -rf /home/lighthouse/rd/server/deeptest/ui
-        mkdir -p /home/lighthouse/rd/server/deeptest/ui
-        cp -fr client/ui /home/lighthouse/rd/server/deeptest/ui/dist
-        
-    - name: start service
-      run:  | 
-        ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs --no-run-if-empty kill -9
-        cd /home/lighthouse/rd/server/deeptest
-        RUNNER_TRACKING_ID="" && nohup ./deeptest-server > server.log 2>&1 &
-        RUNNER_TRACKING_ID="" && export DemoTestSite=http://111.231.16.35:9000 && nohup ./deeptest-agent > agent.log 2>&1 &
+      - name: make agent
+        run: ENV=dp make compile_agent_linux
 
-    # - uses: actions/checkout@v3
-    # - name: install dependencies
-    #   run: go get all
-    # - name: ssh deploy
-    #   uses: easingthemes/ssh-deploy@v4.1.8
-    #   with:
-    #         SSH_PRIVATE_KEY: ${{ secrets.DT_PRIVATEKEY }}
-    #         ARGS: "-rlgoDzvc -i --delete"
-    #         SOURCE: "bin/linux/deeptest-server client/bin/linux/agent"
-    #         REMOTE_HOST: ${{ secrets.DT_SERVER }}
-    #         REMOTE_USER: ${{ secrets.DT_USERNAME }}
-    #         TARGET: "/home/lighthouse/rd/project/deeptest/bin/linux"
-    #         EXCLUDE: ""
-    #         SCRIPT_BEFORE: |
-    #           whoami
-    #           mkdir -p /home/lighthouse/rd/project/deeptest/bin/linux
-    #           ls -al /home/lighthouse/rd/project/deeptest/bin/linux
-    #         SCRIPT_AFTER: |
-    #           whoami
-    #           ls -al /home/lighthouse/rd/project/deeptest/bin/linux
-    #           echo $RSYNC_STDOUT
+      - name: make ui
+        run: make compile_ui_demo
+
+      - name: copy files
+        run:  |
+          cp -f bin/linux/deeptest-server /home/ubuntu/rd/server/
+          cp -f client/bin/linux/deeptest-agent /home/ubuntu/rd/server/
+          
+          rm -rf /home/ubuntu/rd/server/deeptest-ui
+          cp -fr client/ui /home/ubuntu/rd/server/deeptest-ui
+
+      - name: start service
+        run:  |
+          ps -ef | grep 'deeptest-' | grep -v grep | awk '{print $2}' | xargs --no-run-if-empty kill -9
+          cd /home/ubuntu/rd/server
+          RUNNER_TRACKING_ID="" && nohup ./deeptest-server > server.log 2>&1 &
+          RUNNER_TRACKING_ID="" && export DemoTestSite=http://111.231.16.35:9000 && nohup ./deeptest-agent > agent.log 2>&1 &

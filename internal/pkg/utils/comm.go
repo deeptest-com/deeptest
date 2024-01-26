@@ -1,6 +1,7 @@
 package commUtils
 
 import (
+	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
@@ -15,7 +16,7 @@ func GetExecDir() (dir string) { // where ztf exe file in
 
 	if commonUtils.IsRelease() { // release
 		dir = filepath.Dir(exeDir)
-	} else { // debug mode
+	} else {                                                       // debug mode
 		if strings.Index(strings.ToLower(exeDir), "goland") > -1 { // run with ide
 			dir = os.Getenv("ZTF_CODE_DIR")
 		} else {
@@ -91,4 +92,11 @@ func GetDataFileFormat(pth string) (ret consts.DataFileFormat) {
 	}
 
 	return
+}
+
+func CompressedJson(str string) string {
+	var obj interface{}
+	json.Unmarshal([]byte(str), &obj)
+	compressedData, _ := json.Marshal(&obj)
+	return string(compressedData)
 }

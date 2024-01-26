@@ -36,12 +36,12 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 
 	resp, err := httpHelper.Post(httpReq)
 	if err != nil {
-		logUtils.Infof("get interface obj failed, error, %s", err.Error())
+		logUtils.Errorf("get interface obj failed, error, %s", err.Error())
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
-		logUtils.Infof("get interface obj failed, response %v", resp)
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get interface obj failed,request %v, response %v", httpReq, resp)
 		return
 	}
 
@@ -52,13 +52,13 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 	}
 
 	if respContent.Code != 0 {
-		logUtils.Infof("get interface obj failed, response %v", resp.Content)
+		logUtils.Infof("get interface obj failed,request %v, response %v", httpReq, resp.Content)
 		return
 	}
 
 	bytes, err := json.Marshal(respContent.Data)
 	if respContent.Code != 0 {
-		logUtils.Infof("get interface obj failed, response %v", resp.Content)
+		logUtils.Infof("get interface obj failed,request %v, response %v", httpReq, resp.Content)
 		return
 	}
 
@@ -67,15 +67,17 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 	// use the data from page if exist
 	if req.Data.Method != "" {
 		ret.DebugData = req.Data
-		ret.DebugData.BaseRequest.GlobalParams = ret.DebugData.GlobalParams
 	}
 
 	return
 }
-func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.DebugResponse, serverUrl, token string) (err error) {
+func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.DebugResponse, resultStatus consts.ResultStatus,
+	serverUrl, token string) (err error) {
+
 	url := fmt.Sprintf("debugs/invoke/submitResult")
 
 	data := domain.SubmitDebugResultRequest{
+		ResultStatus:   resultStatus,
 		Request:        execObj.DebugData,
 		Response:       respObj,
 		PreConditions:  execObj.PreConditions,
@@ -100,7 +102,7 @@ func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.De
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("submit result failed, response %v", resp)
 		return
 	}
@@ -126,7 +128,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.ScenarioId),
@@ -149,7 +151,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get exec obj failed, response %v", resp)
 		return
 	}
@@ -173,7 +175,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 
 	err = json.Unmarshal(bytes, &ret)
 	if err != nil {
-		logUtils.Infof("get exec obj failed,err:%v", err)
+		logUtils.Infof("get exec obj failed,err:%v", err.Error())
 	}
 	response, _ := json.Marshal(ret)
 	logUtils.Infof("get exec obj ret: %v", string(response))
@@ -193,7 +195,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.ScenarioId),
@@ -211,7 +213,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get exec obj failed, response %v", resp)
 		return
 	}
@@ -255,7 +257,7 @@ func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("submit result failed, response %v", resp)
 		return
 	}
@@ -286,7 +288,7 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.PlanId),
@@ -304,7 +306,7 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get exec obj failed, response %v", resp)
 		return
 	}
@@ -350,7 +352,7 @@ func SubmitPlanResult(result agentDomain.PlanExecResult, planId int, serverUrl, 
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("submit result failed, response %v", resp)
 		return
 	}
@@ -387,7 +389,7 @@ func GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExec
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get exec obj failed, response %v", resp)
 		return
 	}
@@ -420,7 +422,7 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		QueryParams: []domain.Param{
+		QueryParams: &[]domain.Param{
 			{
 				Name:  "id",
 				Value: fmt.Sprintf("%d", req.PlanId),
@@ -438,7 +440,7 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 		return
 	}
 
-	if resp.StatusCode != consts.OK {
+	if resp.StatusCode != consts.OK.Int() {
 		logUtils.Infof("get exec obj failed, response %v", resp)
 		return
 	}
@@ -454,6 +456,56 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 	bytes, err := json.Marshal(respContent.Data)
 	if respContent.Code != 0 {
 		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	json.Unmarshal(bytes, &ret)
+
+	return
+}
+
+func GetCasesToExec(req *agentExec.CasesExecReq) (ret agentExec.CaseExecProcessor) {
+	url := "endpoints/cases/alternatives/loadCasesForExec"
+
+	body, err := json.Marshal(req)
+
+	httpReq := domain.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		AuthorizationType: consts.BearerToken,
+		BearerToken: domain.BearerToken{
+			Token: req.Token,
+		},
+		BodyType: consts.ContentTypeJSON,
+		Body:     string(body),
+	}
+	request, err := json.Marshal(httpReq)
+	logUtils.Infof("get case exec obj request, request: %s", string(request))
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("get interface obj failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get interface obj failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 0 {
+		logUtils.Infof("get interface obj failed, response %v", resp.Content)
+		return
+	}
+
+	bytes, err := json.Marshal(respContent.Data)
+	if respContent.Code != 0 {
+		logUtils.Infof("get interface obj failed, response %v", resp.Content)
 		return
 	}
 

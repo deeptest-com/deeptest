@@ -64,7 +64,7 @@ func Start() {
 		staticPath:        config.CONFIG.System.StaticPath,
 		webPath:           config.CONFIG.System.WebPath,
 		idleConnClosed:    idleConnClosed,
-		globalMiddlewares: []context.Handler{middleware.DBResolver(), middleware.Error()},
+		globalMiddlewares: []context.Handler{middleware.DBResolver(), middleware.Error(), middleware.UserAuth()},
 	}
 
 	server.InjectModule()
@@ -151,8 +151,17 @@ func (webServer *WebServer) AddModule(module ...module.WebModule) {
 
 // AddWebUi 添加前端页面访问
 func (webServer *WebServer) AddWebUi() {
-	pth := filepath.Join(dir.GetCurrentAbPath(), "ui", "dist")
-	fileUtils.MkDirIfNeeded(pth)
+	pth1 := filepath.Join(dir.GetCurrentAbPath(), "ui", "dist")
+	pth2 := filepath.Join(dir.GetCurrentAbPath(), "deeptest-ui")
+
+	pth := ""
+	if fileUtils.FileExist(pth1) {
+		pth = pth1
+	} else {
+		pth = pth2
+	}
+
+	//fileUtils.MkDirIfNeeded(pth)
 	logUtils.Infof("*** ui dir: %s", pth)
 
 	webServer.app.HandleDir("/", iris.Dir(pth), iris.DirOptions{

@@ -31,6 +31,11 @@ func (m *EndpointModule) Party() module.WebModule {
 		public.Post("/batchUpdateField", m.EndpointCtrl.BatchUpdateField).Name = "批量更新字段内容"
 		public.Put("/updateTag", m.EndpointCtrl.UpdateTag).Name = "更新标签"
 		public.Post("/updateMockStatus", m.EndpointCtrl.UpdateAdvancedMockDisabled).Name = "启用/禁用接口所有期望"
+		public.Post("/{id:uint}/syncFromThirdParty", m.EndpointCtrl.SyncFromThirdParty).Name = "从第三方同步数据"
+		public.Get("/diff", m.EndpointCtrl.GetDiff).Name = "导入差异"
+		public.Post("/diff", m.EndpointCtrl.SaveDiff).Name = "导入差异"
+		public.Put("/updateName", m.EndpointCtrl.UpdateName).Name = "更新设计器状态"
+		public.Post("/listFunctionsByThirdPartyClass", m.EndpointCtrl.ListFunctionsByThirdPartyClass).Name = "列出第三方类下面的所有方法"
 	}
 	return module.NewModule("/endpoint", handler)
 }

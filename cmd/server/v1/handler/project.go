@@ -2,6 +2,7 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -16,6 +17,7 @@ import (
 type ProjectCtrl struct {
 	ProjectService                *service.ProjectService                `inject:""`
 	ProjectRecentlyVisitedService *service.ProjectRecentlyVisitedService `inject:""`
+	IntegrationProjectService     *integrationService.ProjectService     `inject:""`
 	BaseCtrl
 }
 
@@ -435,6 +437,7 @@ func (c *ProjectCtrl) AuditUsers(ctx iris.Context) {
 func (c *ProjectCtrl) CheckProjectAndUser(ctx iris.Context) {
 	projectCode := ctx.URLParam("project_code")
 	userId := multi.GetUserId(ctx)
+	//xToken := ctx.GetHeader("X-Token")
 
 	project, userInProject, err := c.ProjectService.CheckProjectAndUser(projectCode, userId)
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -448,4 +451,53 @@ func (c *ProjectCtrl) CheckProjectAndUser(ctx iris.Context) {
 	}
 
 	return
+}
+
+func (c *ProjectCtrl) GetIntegrationDetail(ctx iris.Context) {
+	projectId, err := ctx.URLParamInt("projectId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	res, err := c.IntegrationProjectService.Detail(uint(projectId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
+func (c *ProjectCtrl) GetUserProducts(ctx iris.Context) {
+	userName := multi.GetUsername(ctx)
+	page, _ := ctx.URLParamInt("page")
+	if page <= 0 {
+		page = 1
+	}
+
+	pageSize, _ := ctx.URLParamInt("pageSize")
+	if pageSize <= 0 {
+		pageSize = 10
+	}
+
+	res, err := c.IntegrationProjectService.GetUserProductList(page, pageSize, userName)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
+func (c *ProjectCtrl) GetUserSpaces(ctx iris.Context) {
+	userName := multi.GetUsername(ctx)
+
+	res, err := c.IntegrationProjectService.GetSpacesByUsername(userName)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }

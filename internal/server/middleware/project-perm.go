@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -103,20 +104,22 @@ func (SysRole) TableName() string {
 // ProjectPerm  项目权限权鉴中间件
 func ProjectPerm() iris.Handler {
 	return func(ctx *context.Context) {
-		userId := multi.GetUserId(ctx)
+		if config.CONFIG.System.SysEnv != "ly" {
+			userId := multi.GetUserId(ctx)
 
-		isAdminUser, err := IsAdminUser(userId)
-		if err != nil {
-			ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "系统异常，请重新登录或者联系管理员"})
-			ctx.StopExecution()
-			return
-		}
-		if !isAdminUser {
-			check, err := CheckProjectPerm(ctx.Request(), userId)
-			if err != nil || !check {
-				ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "你未拥有当前项目操作权限，请联系管理员"})
+			isAdminUser, err := IsAdminUser(userId)
+			if err != nil {
+				ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "系统异常，请重新登录或者联系管理员"})
 				ctx.StopExecution()
 				return
+			}
+			if !isAdminUser {
+				check, err := CheckProjectPerm(ctx.Request(), userId)
+				if err != nil || !check {
+					ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "你未拥有当前项目操作权限，请联系管理员"})
+					ctx.StopExecution()
+					return
+				}
 			}
 		}
 

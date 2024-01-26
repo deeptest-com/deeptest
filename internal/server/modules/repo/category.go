@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -9,12 +10,13 @@ import (
 )
 
 type CategoryRepo struct {
+	*BaseRepo   `inject:""`
 	DB          *gorm.DB     `inject:""`
 	ProjectRepo *ProjectRepo `inject:""`
 }
 
-func (r *CategoryRepo) GetTree(typ serverConsts.CategoryDiscriminator, projectId, serveId uint) (root *v1.Category, err error) {
-	pos, err := r.ListByProject(typ, projectId, serveId)
+func (r *CategoryRepo) GetTree(typ serverConsts.CategoryDiscriminator, projectId uint) (root *v1.Category, err error) {
+	pos, err := r.ListByProject(typ, projectId)
 	if err != nil {
 		return
 	}
@@ -32,15 +34,11 @@ func (r *CategoryRepo) GetTree(typ serverConsts.CategoryDiscriminator, projectId
 	return
 }
 
-func (r *CategoryRepo) ListByProject(typ serverConsts.CategoryDiscriminator, projectId, serveId uint) (pos []*model.Category, err error) {
+func (r *CategoryRepo) ListByProject(typ serverConsts.CategoryDiscriminator, projectId uint) (pos []*model.Category, err error) {
 	db := r.DB.
 		Where("project_id=?", projectId).
 		Where("type=?", typ).
 		Where("NOT deleted")
-
-	if serveId > 0 {
-		db.Where("serve_id=?", serveId)
-	}
 
 	err = db.
 		Order("parent_id ASC, ordr ASC").
@@ -104,6 +102,9 @@ func (r *CategoryRepo) hasChild(categories []*v1.Category, parent *v1.Category) 
 }
 
 func (r *CategoryRepo) Save(category *model.Category) (err error) {
+	if category != nil && category.ID == 0 && category.ParentId != 0 && category.Ordr == 0 {
+		category.Ordr = r.GetMaxOrder(uint(category.ParentId), category.Type, category.ProjectId)
+	}
 	err = r.DB.Save(category).Error
 
 	return
@@ -123,6 +124,7 @@ func (r *CategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId int, typ s
 
 	} else if pos == serverConsts.Before {
 		brother, _ := r.Get(targetId)
+		ordr = brother.Ordr
 		parentId = brother.ParentId
 
 		r.DB.Model(&model.Category{}).
@@ -130,15 +132,13 @@ func (r *CategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId int, typ s
 				parentId, typ, projectId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
-		ordr = brother.Ordr
-
 	} else if pos == serverConsts.After {
 		brother, _ := r.Get(targetId)
 		parentId = brother.ParentId
 
 		r.DB.Model(&model.Category{}).
 			Where("NOT deleted AND parent_id=? AND type = ? AND project_id = ? AND ordr > ?",
-				parentId, parentId, typ, brother.Ordr).
+				parentId, typ, projectId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
 		ordr = brother.Ordr + 1
@@ -221,7 +221,7 @@ func (r *CategoryRepo) GetMaxOrder(parentId uint, typ serverConsts.CategoryDiscr
 func (r *CategoryRepo) GetByItem(parentId uint, typ serverConsts.CategoryDiscriminator, projectId uint, name string) (res model.Category, err error) {
 
 	err = r.DB.Model(&model.Category{}).
-		Where("parent_id=? AND type = ? AND project_id = ? AND name = ?", parentId, typ, projectId, name).
+		Where("parent_id=? AND type = ? AND project_id = ? AND name = ? and not deleted", parentId, typ, projectId, name).
 		Order("ordr DESC").
 		First(&res).Error
 
@@ -230,7 +230,7 @@ func (r *CategoryRepo) GetByItem(parentId uint, typ serverConsts.CategoryDiscrim
 }
 
 func (r *CategoryRepo) GetDetail(req model.Category) (res model.Category, err error) {
-	coon := r.DB.Model(&model.Category{})
+	coon := r.DB.Model(&model.Category{}).Where("not deleted")
 	if req.Name != "" {
 		coon = coon.Where("name = ?", req.Name)
 	}
@@ -273,7 +273,7 @@ func (r *CategoryRepo) GetChild(categories, result []*model.Category, parentId i
 }
 
 func (r *CategoryRepo) GetAllChild(typ serverConsts.CategoryDiscriminator, projectId uint, parentId int) (child []*model.Category, err error) {
-	pos, err := r.ListByProject(typ, projectId, 0)
+	pos, err := r.ListByProject(typ, projectId)
 	if err != nil || len(pos) == 0 {
 		return
 	}
@@ -290,4 +290,18 @@ func (r *CategoryRepo) GetRootNode(projectId uint, typ serverConsts.CategoryDisc
 		First(&node).Error
 
 	return
+}
+
+func (r *CategoryRepo) CopySelf(id, newParentId int) (category model.Category, err error) {
+	category, err = r.Get(id)
+	category.ID = 0
+	if newParentId != 0 {
+		category.ParentId = newParentId
+	} else { // 复制的第一个节点重命名
+		category.Name = fmt.Sprintf("%s_copy", category.Name)
+	}
+	_, category.Ordr = r.UpdateOrder(serverConsts.After, id, category.Type, category.ProjectId)
+	err = r.Save(&category)
+
+	return category, err
 }

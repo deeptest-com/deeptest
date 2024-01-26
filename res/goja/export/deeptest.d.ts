@@ -1,23 +1,23 @@
 declare type Param = {
     name: string;
     value: string;
-    paramIn: string;
-    disabled: boolean;
-    type: string;
+    // paramIn?: string | undefined;
+    // disabled?: boolean | undefined;
+    // type?: string | undefined;
 }
 declare type Header = {
     name: string;
     value: string;
-    disabled:    boolean;
-    type: string;
+    // disabled?:    boolean | undefined;
+    // type?: string | undefined;
 }
 declare type ExecCookie = {
     name: string;
     value: any;
-    path: string;
+    path?: string | undefined;
 
-    domain: string;
-    expireTime: Date;
+    domain?: string | undefined;
+    expireTime?: Date | undefined;
 }
 declare type BodyFormDataItem = {
     name: string;
@@ -42,7 +42,6 @@ declare type Request = {
     bodyFormData:       BodyFormDataItem[];
     bodyFormUrlencoded: BodyFormUrlEncodedItem[];
     bodyType: string;
-    bodyLang: string;
 };
 declare type Response = {
     statusCode: number;
@@ -52,6 +51,19 @@ declare type Response = {
     cookies: ExecCookie[];
 
     data: any;
+    contentType: string;
+
+    contentCharset: string;
+    contentLength: number;
+}
+declare type ResponseWithContent = {
+    statusCode: number;
+    statusContent: string;
+
+    headers: Header[];
+    cookies: ExecCookie[];
+
+    content: string;
     contentType: string;
 
     contentCharset: string;
@@ -71,6 +83,8 @@ declare global {
 
         request: Request,
         response: Response,
+
+        sendRequest: (urlOrConfig: string | object, callback: (error, response: ResponseWithContent) => void) => void,
     }
 
     const log : (obj: any) => {}

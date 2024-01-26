@@ -3,11 +3,12 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"strconv"
@@ -17,7 +18,7 @@ import (
 type RemoteService struct {
 }
 
-func (s *RemoteService) LoginByOauth(req v1.LoginByOauthReq, baseUrl string) (ret v1.LoginByOauthResData) {
+func (s *RemoteService) LoginByOauth(req integrationDomain.LoginByOauthReq, baseUrl string) (ret integrationDomain.LoginByOauthResData) {
 	url := fmt.Sprintf("%s/levault/usrsvr/Usr/LoginByOauth", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -44,7 +45,7 @@ func (s *RemoteService) LoginByOauth(req v1.LoginByOauthReq, baseUrl string) (re
 		return
 	}
 
-	respContent := v1.LoginByOauthRes{}
+	respContent := integrationDomain.LoginByOauthRes{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
@@ -60,7 +61,7 @@ func (s *RemoteService) LoginByOauth(req v1.LoginByOauthReq, baseUrl string) (re
 	return
 }
 
-func (s *RemoteService) GetTokenFromCode(req v1.GetTokenFromCodeReq, baseUrl string) (ret v1.GetTokenFromCodeResData) {
+func (s *RemoteService) GetTokenFromCode(req integrationDomain.GetTokenFromCodeReq, baseUrl string) (ret integrationDomain.GetTokenFromCodeResData) {
 	url := fmt.Sprintf("%s/levault/usrsvr/Usr/GetTokenFromCode", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -87,7 +88,7 @@ func (s *RemoteService) GetTokenFromCode(req v1.GetTokenFromCodeReq, baseUrl str
 		return
 	}
 
-	respContent := v1.GetTokenFromCodeRes{}
+	respContent := integrationDomain.GetTokenFromCodeRes{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
@@ -103,7 +104,7 @@ func (s *RemoteService) GetTokenFromCode(req v1.GetTokenFromCodeReq, baseUrl str
 	return
 }
 
-func (s *RemoteService) FindClassByServiceCode(req v1.FindClassByServiceCodeReq, token string, baseUrl string) (ret []v1.FindClassByServiceCodeResData) {
+func (s *RemoteService) FindClassByServiceCode(req integrationDomain.FindClassByServiceCodeReq, token string, baseUrl string) (ret []integrationDomain.FindClassByServiceCodeResData) {
 	url := fmt.Sprintf("%s/levault/agentdesigner/classInfo/findByServiceCode", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -131,7 +132,7 @@ func (s *RemoteService) FindClassByServiceCode(req v1.FindClassByServiceCodeReq,
 		return
 	}
 
-	respContent := v1.FindClassByServiceCodeRes{}
+	respContent := integrationDomain.FindClassByServiceCodeRes{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
@@ -147,7 +148,7 @@ func (s *RemoteService) FindClassByServiceCode(req v1.FindClassByServiceCodeReq,
 	return
 }
 
-func (s *RemoteService) GetFunctionsByClass(req v1.GetFunctionsByClassReq, token string, baseUrl string) (ret []v1.GetFunctionsByClassResData) {
+func (s *RemoteService) GetFunctionsByClass(req integrationDomain.GetFunctionsByClassReq, token string, baseUrl string) (ret []integrationDomain.GetFunctionsByClassResData) {
 	url := fmt.Sprintf("%s/levault/agentdesigner/classMethod/listData", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -175,7 +176,7 @@ func (s *RemoteService) GetFunctionsByClass(req v1.GetFunctionsByClassReq, token
 		return
 	}
 
-	respContent := v1.GetFunctionsByClassRes{}
+	respContent := integrationDomain.GetFunctionsByClassRes{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
@@ -191,7 +192,7 @@ func (s *RemoteService) GetFunctionsByClass(req v1.GetFunctionsByClassReq, token
 	return
 }
 
-func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token string, baseUrl string) (ret v1.MetaGetMethodDetailResData) {
+func (s *RemoteService) MetaGetMethodDetail(req integrationDomain.MetaGetMethodDetailReq, token string, baseUrl string) (ret integrationDomain.MetaGetMethodDetailResData) {
 	url := fmt.Sprintf("%s/levault/meta/metaClassMethod/metaGetClassMethodDetail", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -223,7 +224,7 @@ func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token
 		return
 	}
 
-	respContent := v1.MetaGetMethodDetailRes{}
+	respContent := integrationDomain.MetaGetMethodDetailRes{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
@@ -239,7 +240,7 @@ func (s *RemoteService) MetaGetMethodDetail(req v1.MetaGetMethodDetailReq, token
 	return
 }
 
-func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string, baseUrl string) (ret []v1.GetFunctionDetailsByClassResData, err error) {
+func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string, baseUrl string) (ret []integrationDomain.GetFunctionDetailsByClassResData, err error) {
 	url := fmt.Sprintf("%s/levault/meta/metaClassMethod/metaGetClassMessages", baseUrl)
 
 	headers := s.getLcHeaders(token)
@@ -266,7 +267,7 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 		return
 	}
 
-	respContent := v1.GetFunctionDetailsByClassRes{}
+	respContent := integrationDomain.GetFunctionDetailsByClassRes{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
@@ -283,7 +284,7 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 	return
 }
 
-func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo, err error) {
+func (s *RemoteService) GetUserInfoByToken(token string) (user integrationDomain.UserInfo, err error) {
 	url := fmt.Sprintf("%s/api/v1/user/getUserInfo", config.CONFIG.ThirdParty.Url)
 
 	headers := make([]domain.Header, 0)
@@ -313,7 +314,7 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo, err 
 
 	respContent := struct {
 		Code int
-		Data struct{ UserInfo v1.UserInfo }
+		Data struct{ UserInfo integrationDomain.UserInfo }
 		Msg  string
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
@@ -326,7 +327,7 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user v1.UserInfo, err 
 	return
 }
 
-func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectInfo, err error) {
+func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret integrationDomain.ProjectInfo, err error) {
 	url := fmt.Sprintf("%s/api/v1/project/info/%s", config.CONFIG.ThirdParty.Url, spaceCode)
 
 	httpReq := domain.BaseRequest{
@@ -354,7 +355,7 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectI
 
 	respContent := struct {
 		Code int
-		Data struct{ v1.ProjectInfo }
+		Data struct{ integrationDomain.ProjectInfo }
 		Msg  string
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
@@ -373,9 +374,13 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret v1.ProjectI
 	return
 }
 
-func (s *RemoteService) getHeaders() (headers []domain.Header) {
+func (s *RemoteService) getHeaders(body string) (headers []domain.Header) {
 	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
 	xNancalNonceStr := _commUtils.RandStr(8)
+
+	if body != "" {
+		body = commUtils.CompressedJson(body)
+	}
 
 	headers = []domain.Header{
 		{
@@ -392,7 +397,7 @@ func (s *RemoteService) getHeaders() (headers []domain.Header) {
 		},
 		{
 			Name:  "x-nancal-sign",
-			Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, ""),
+			Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, body),
 		},
 	}
 
@@ -428,22 +433,22 @@ func (s *RemoteService) getQueryAgentRequest(serviceCode string) interface{} {
 	}{}
 
 	attrSet := []string{"objId", "code", "parentCode", "parentCodes", "businessClassType", "container", "lastUpdate", "remark", "rightClassCode", "rightClassName", "rightRelationShip", "rightRelationShipName", "leftClassCode", "leftClassName", "leftRelationShip", "leftRelationShipName", "serviceId", "type", "dialogSource", "className", "classIcon", "serviceCode", "name", "displayName", "displayClassName", "displayCreator", "displayModifier"}
-	conditionParam := v1.QueryAgentConditionParam{
+	conditionParam := integrationDomain.QueryAgentConditionParam{
 		Key:     "serviceCode",
 		Compare: "EQ",
 		Value:   serviceCode,
 	}
 
 	queryArgs := struct {
-		AttrSet   []string                      `json:"attrSet"`
-		Condition []v1.QueryAgentConditionParam `json:"condition"`
+		AttrSet   []string                                     `json:"attrSet"`
+		Condition []integrationDomain.QueryAgentConditionParam `json:"condition"`
 		Sort      struct {
 			SortBy    string `json:"sortBy"`
 			SortOrder string `json:"sortOrder"`
 		} `json:"sort"`
 	}{}
 	queryArgs.AttrSet = attrSet
-	queryArgs.Condition = []v1.QueryAgentConditionParam{conditionParam}
+	queryArgs.Condition = []integrationDomain.QueryAgentConditionParam{conditionParam}
 	queryArgs.Sort.SortBy = "code"
 	queryArgs.Sort.SortOrder = "asc"
 
@@ -453,7 +458,7 @@ func (s *RemoteService) getQueryAgentRequest(serviceCode string) interface{} {
 	return res
 }
 
-func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []v1.FindClassByServiceCodeResData) {
+func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []integrationDomain.FindClassByServiceCodeResData) {
 	url := fmt.Sprintf("%s/levault/mdlsvr/MlClass/QueryAgent", baseUrl)
 	req := s.getQueryAgentRequest(serviceCode)
 	body, err := json.Marshal(req)
@@ -481,7 +486,7 @@ func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []
 		return
 	}
 
-	respContent := v1.QueryAgentRes{}
+	respContent := integrationDomain.QueryAgentRes{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
@@ -497,10 +502,10 @@ func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []
 	return
 }
 
-func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (ret []string, err error) {
+func (s *RemoteService) GetUserButtonPermissions(username string) (ret []string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders()
+	headers := s.getHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -509,10 +514,6 @@ func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (re
 			{
 				Name:  "typeStr",
 				Value: "[20,30]",
-			},
-			{
-				Name:  "nameEngAbbr",
-				Value: spaceCode,
 			},
 			{
 				Name:  "username",
@@ -554,7 +555,7 @@ func (s *RemoteService) GetUserButtonPermissions(username, spaceCode string) (re
 	return
 }
 
-func (s *RemoteService) LcQueryMsg(req v1.QueryMsgReq, token string, baseUrl string) (ret []v1.GetFunctionsByClassResData) {
+func (s *RemoteService) LcQueryMsg(req integrationDomain.QueryMsgReq, token string, baseUrl string) (ret []integrationDomain.GetFunctionsByClassResData) {
 	url := fmt.Sprintf("%s/levault/mdlsvr/ClsMsg/QueryMsg", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -582,7 +583,7 @@ func (s *RemoteService) LcQueryMsg(req v1.QueryMsgReq, token string, baseUrl str
 		return
 	}
 
-	respContent := v1.GetFunctionsByClassRes{}
+	respContent := integrationDomain.GetFunctionsByClassRes{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
@@ -598,10 +599,10 @@ func (s *RemoteService) LcQueryMsg(req v1.QueryMsgReq, token string, baseUrl str
 	return
 }
 
-func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret []v1.UserMenuPermission, err error) {
+func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret []integrationDomain.UserMenuPermission, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenu", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders()
+	headers := s.getHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -636,7 +637,7 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 
 	respContent := struct {
 		Code int
-		Data []v1.UserMenuPermission
+		Data []integrationDomain.UserMenuPermission
 		Msg  string
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
@@ -655,10 +656,10 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 	return
 }
 
-func (s *RemoteService) GetSpaceRoles() (ret []v1.SpaceRole, err error) {
+func (s *RemoteService) GetSpaceRoles() (ret []integrationDomain.SpaceRole, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getSpaceInitRole", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders()
+	headers := s.getHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -679,7 +680,7 @@ func (s *RemoteService) GetSpaceRoles() (ret []v1.SpaceRole, err error) {
 
 	respContent := struct {
 		Code int
-		Data []v1.SpaceRole
+		Data []integrationDomain.SpaceRole
 		Msg  string
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
@@ -701,7 +702,7 @@ func (s *RemoteService) GetSpaceRoles() (ret []v1.SpaceRole, err error) {
 func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getRoleMenus", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders()
+	headers := s.getHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -743,6 +744,323 @@ func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
 	}
 
 	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetUserProductList(page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/listProductManageOptionSecrets", config.CONFIG.ThirdParty.Url)
+
+	headers := s.getHeaders("")
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		QueryParams: &[]domain.Param{
+			{
+				Name:  "page",
+				Value: strconv.Itoa(page),
+			},
+			{
+				Name:  "pageSize",
+				Value: strconv.Itoa(pageSize),
+			},
+			{
+				Name:  "userName",
+				Value: username,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	logUtils.Infof("GetUserProductList userName:%+v, resp:%+v", username, resp)
+	if err != nil {
+		logUtils.Infof("GetUserProductList failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("GetUserProductList failed, response %v", resp)
+		err = fmt.Errorf("GetUserProductList failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []integrationDomain.ProductItem
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("GetUserProductList failed, response %v", resp)
+		err = fmt.Errorf("GetUserProductList failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) GetProductListById(productIds []uint) (ret []integrationDomain.ProductBaseItem, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/listProductManage", config.CONFIG.ThirdParty.Url)
+
+	queryParams := make([]domain.Param, 0)
+	for _, v := range productIds {
+		paramTmp := domain.Param{
+			//Name: fmt.Sprintf("productIds[%d]", k),
+			Name:  "productIds[]",
+			Value: strconv.Itoa(int(v)),
+		}
+		queryParams = append(queryParams, paramTmp)
+	}
+
+	headers := s.getHeaders("")
+	httpReq := domain.BaseRequest{
+		Url:         url,
+		BodyType:    consts.ContentTypeJSON,
+		Headers:     &headers,
+		QueryParams: &queryParams,
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("GetProductListById failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("GetProductListById failed, response %v", resp)
+		err = fmt.Errorf("GetProductListById failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data struct {
+			List []integrationDomain.ProductBaseItem `json:"list"`
+		} `json:"data"`
+		Msg string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("GetProductListById failed, response %v", resp)
+		err = fmt.Errorf("GetProductListById failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data.List
+
+	return
+}
+
+func (s *RemoteService) GetSpacesByUsername(username string) (ret []integrationDomain.SpaceItem, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/project/user", config.CONFIG.ThirdParty.Url)
+
+	headers := s.getHeaders("")
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		QueryParams: &[]domain.Param{
+			{
+				Name:  "username",
+				Value: username,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	logUtils.Infof("GetSpacesByUsername username: +%v, resp:%+v", username, resp)
+	if err != nil {
+		logUtils.Infof("GetSpacesByUsername failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("GetSpacesByUsername failed, response %v", resp)
+		err = fmt.Errorf("GetSpacesByUsername failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []integrationDomain.SpaceItem
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("GetSpacesByUsername failed, response %v", resp)
+		err = fmt.Errorf("GetSpacesByUsername failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) BatchGetSpacesByCode(spaceCodes []string) (ret []integrationDomain.SpaceItem, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/project/abbr", config.CONFIG.ThirdParty.Url)
+
+	queryParams := make([]domain.Param, 0)
+	for _, v := range spaceCodes {
+		paramTmp := domain.Param{
+			Name:  "nameEngAbbrs",
+			Value: v,
+		}
+		queryParams = append(queryParams, paramTmp)
+	}
+
+	headers := s.getHeaders("")
+	httpReq := domain.BaseRequest{
+		Url:         url,
+		BodyType:    consts.ContentTypeJSON,
+		Headers:     &headers,
+		QueryParams: &queryParams,
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("BatchGetSpacesByCode failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("BatchGetSpacesByCode failed, response %v", resp)
+		err = fmt.Errorf("BatchGetSpacesByCode failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []integrationDomain.SpaceItem
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("BatchGetSpacesByCode failed, response %v", resp)
+		err = fmt.Errorf("BatchGetSpacesByCode failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []integrationDomain.SpaceMembersAndRolesItem, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/project/member/abbrs", config.CONFIG.ThirdParty.Url)
+
+	queryParams := make([]domain.Param, 0)
+	for _, v := range spaceCodes {
+		paramTmp := domain.Param{
+			Name:  "projectEngAbbrs[]",
+			Value: v,
+		}
+		queryParams = append(queryParams, paramTmp)
+	}
+
+	headers := s.getHeaders("")
+	httpReq := domain.BaseRequest{
+		Url:         url,
+		BodyType:    consts.ContentTypeJSON,
+		Headers:     &headers,
+		QueryParams: &queryParams,
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("BatchGetMembersBySpaces failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("BatchGetMembersBySpaces failed, response %v", resp)
+		err = fmt.Errorf("BatchGetMembersBySpaces failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []integrationDomain.SpaceMembersAndRolesItem
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("BatchGetMembersBySpaces failed, response %v", resp)
+		err = fmt.Errorf("BatchGetMembersBySpaces failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/approvalAndMsg", config.CONFIG.ThirdParty.Url)
+
+	headers := s.getHeaders(req)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     req,
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	logUtils.Infof("ApprovalAndMsg url:%s, body:%+v,Headers:%+v , response %+v", url, req, headers, resp)
+	if err != nil {
+		logUtils.Infof("ApprovalAndMsg failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("ApprovalAndMsg failed, response %+v", resp)
+		err = fmt.Errorf("ApprovalAndMsg failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data struct {
+			InstanceId string `json:"instance_id"`
+		} `json:"data"`
+		Msg string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("ApprovalAndMsg failed, response %+v", resp)
+		err = fmt.Errorf("ApprovalAndMsg failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data.InstanceId
 
 	return
 }

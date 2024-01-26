@@ -3,6 +3,8 @@ package middleware
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/integration/enum"
 	"github.com/aaronchen2k/deeptest/integration/service/user"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -28,6 +30,7 @@ func init() {
 		"/mocks",
 		"/api/v1/message/receiveMcsApprovalData",
 		"/api/v1/init/initdb",
+		"/api/v1/openApi",
 		"/api/v1/healthz",
 	}
 }
@@ -65,9 +68,9 @@ func UserAuth() iris.Handler {
 				}
 			}
 		}
-		
+
 		atoken := []byte(verifier.RequestToken(ctx))
-		logUtils.Errorf("authorization failed, token:%s,xToken:%", string(atoken), token)
+		logUtils.Errorf("authorization failed, path:%s,token:%s,xToken:%", ctx.Path(), string(atoken), token)
 
 		ctx.JSON(_domain.Response{
 			Code: _domain.AuthErr.Code,
@@ -77,7 +80,7 @@ func UserAuth() iris.Handler {
 	return verifier.Verify()
 }
 
-func creatSession(userInfo v1.UserInfo) (token string, err error) {
+func creatSession(userInfo integrationDomain.UserInfo) (token string, err error) {
 
 	req := v1.UserReq{UserBase: v1.UserBase{
 		Username:  userInfo.Username,

@@ -16,7 +16,7 @@ type ProjectRoleRepo struct {
 }
 
 func (r *ProjectRoleRepo) GetAdminRecord() (projectRole model.ProjectRole, err error) {
-	db := r.DB.Model(&model.ProjectRole{}).Where("name= ?", r.BaseRepo.GetAdminRoleName()).Order("id ASC")
+	db := r.DB.Model(&model.ProjectRole{}).Where("name= ?", consts.Admin).Order("id ASC")
 	err = db.First(&projectRole).Error
 	return
 }

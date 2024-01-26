@@ -1066,10 +1066,10 @@ func (r *ProjectRepo) GetUserIdsByProjectAnRole(projectId, roleId uint) (project
 	return
 }
 
-func (r *ProjectRepo) GetImAccountsByProjectAndRole(projectId, roleId uint, exceptUserName string) (imAccounts []string, err error) {
+func (r *ProjectRepo) GetUsernamesByProjectAndRole(projectId, roleId uint, exceptUserName string) (imAccounts []string, err error) {
 	conn := r.DB.Model(&model.ProjectMember{}).
 		Joins("left join sys_user u on biz_project_member.user_id=u.id").
-		Select("u.im_account")
+		Select("u.username")
 	if projectId != 0 {
 		conn = conn.Where("biz_project_member.project_id = ?", projectId)
 	}
@@ -1093,5 +1093,59 @@ func (r *ProjectRepo) GetAuditByItem(projectId, ApplyUserId uint, auditStatus []
 func (r *ProjectRepo) UpdateProjectSource(projectId uint, source serverConsts.ProjectSource) (err error) {
 	err = r.DB.Model(&model.Project{}).
 		Where("id = ?", projectId).Update("source", source).Error
+	return
+}
+
+func (r *ProjectRepo) ListByUsername(username string) (res []model.Project, err error) {
+	err = r.DB.Model(model.Project{}).
+		Joins("LEFT JOIN biz_project_member m ON biz_project.id=m.project_id").
+		Joins("LEFT JOIN sys_user u ON m.user_id=u.id").
+		Where("u.username = ?", username).
+		Where("not biz_project.disabled and not biz_project.deleted and not m.disabled and not m.deleted").
+		Find(&res).Error
+	return
+}
+
+func (r *ProjectRepo) BatchGetByShortNames(shortNames []string) (ret []model.Project, err error) {
+	err = r.DB.Model(&ret).
+		Where("short_name IN (?) AND NOT deleted", shortNames).
+		Find(&ret).Error
+
+	return
+}
+
+func (r *ProjectRepo) AddMemberIfNotExisted(projectId, userId uint, role consts.RoleType) (err error) {
+	isMember, err := r.IfProjectMember(userId, projectId)
+	if err != nil || isMember {
+		return
+	}
+
+	err = r.AddProjectMember(projectId, userId, role)
+	return
+}
+
+func (r *ProjectRepo) FindRolesByProjectsAndUsername(username string, projectIds []uint) (members []model.ProjectMember, err error) {
+	err = r.DB.Model(&model.ProjectMember{}).
+		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
+		Joins("LEFT JOIN sys_user u ON biz_project_member.user_id=u.id").
+		Select("biz_project_member.*, r.name project_role_name").
+		Where("u.username = ?", username).
+		Where("biz_project_member.project_id IN (?)", projectIds).
+		Find(&members).Error
+
+	return
+}
+
+func (r *ProjectRepo) GetUserProjectRoleMap(username string, projectIds []uint) (res map[uint]consts.RoleType, err error) {
+	projectRoles, err := r.FindRolesByProjectsAndUsername(username, projectIds)
+	if err != nil {
+		return
+	}
+
+	res = make(map[uint]consts.RoleType)
+	for _, v := range projectRoles {
+		res[v.ProjectId] = v.ProjectRoleName
+	}
+
 	return
 }

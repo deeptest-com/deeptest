@@ -75,6 +75,8 @@ type ResSummaryDetails struct {
 	BugTotal         int64              `gorm:"default:0" json:"bugTotal"`
 	UserList         []ResUserIdAndName `json:"userList"`
 	Accessible       int                `json:"accessible"`
+	Products         []uint             `json:"products"`
+	Spaces           []string           `json:"spaces"`
 }
 
 type ResUserIdAndName struct {

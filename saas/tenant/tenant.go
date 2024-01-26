@@ -1,10 +1,17 @@
 package tenant
 
-type Tenant struct {
-	Id string `json:"id"`
+import "github.com/aaronchen2k/deeptest/saas/db"
+
+type tenant struct {
+	Id       string    `json:"id"`
+	DbConfig db.Config `json:"dbConfig"`
 }
 
-func (t *Tenant) GetInfo(tenantId string) {
+func NewTenant() *tenant {
+	return new(tenant)
+}
+
+func (t *tenant) GetInfo(tenantId string) {
 	/*
 		url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
 

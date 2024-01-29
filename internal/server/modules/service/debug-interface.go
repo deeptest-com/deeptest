@@ -52,7 +52,7 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 		} else if loadReq.CaseInterfaceId > 0 {
 			debugData, _ = s.GetDebugInterfaceByEndpointCase(loadReq.CaseInterfaceId)
 		} else if loadReq.EndpointInterfaceId > 0 {
-			debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId)
+			debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId, loadReq.FromDefine)
 		}
 	}
 
@@ -325,10 +325,10 @@ func (s *DebugInterfaceService) GenSample(projectId, serveId uint) (ret *model.D
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugInterfaceByEndpointInterface(endpointInterfaceId uint) (ret domain.DebugData, err error) {
+func (s *DebugInterfaceService) GetDebugInterfaceByEndpointInterface(endpointInterfaceId uint, fromDefine bool) (ret domain.DebugData, err error) {
 	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 
-	if endpointInterface.DebugInterfaceId > 0 {
+	if endpointInterface.DebugInterfaceId > 0 && !fromDefine {
 		ret, err = s.GetDebugDataFromDebugInterface(endpointInterface.DebugInterfaceId)
 	} else {
 		ret, err = s.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
@@ -537,6 +537,11 @@ func (s *DebugInterfaceService) LoadCurl(req serverDomain.DiagnoseCurlLoadReq) (
 		ProjectId:     req.ProjectId,
 		UserId:        req.UserId,
 		UsedBy:        req.UsedBy,
+		FromDefine:    req.FromDefine,
+	}
+
+	if req.EndpointId != 0 {
+		loadReq.FromDefine = true
 	}
 
 	execObj, err := s.loadDetail(loadReq, false)

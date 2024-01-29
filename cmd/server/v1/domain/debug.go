@@ -17,4 +17,5 @@ type DiagnoseCurlLoadReq struct {
 	ProjectId     int           `json:"projectId"`
 	UserId        uint          `json:"userId"`
 	UsedBy        consts.UsedBy `json:"usedBy"`
+	FromDefine    bool          `json:"fromDefine"`
 }

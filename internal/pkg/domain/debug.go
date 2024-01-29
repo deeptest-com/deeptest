@@ -16,8 +16,8 @@ type DebugInfo struct {
 	UsedBy        consts.UsedBy `json:"usedBy"`
 	UserId        uint          `json:"userId"`        // used by loading debugData for display
 	EnvironmentId uint          `json:"environmentId"` // used by loading debugData for exec
-
-	ProjectId int `json:"projectId"`
+	FromDefine    bool          `json:"fromDefine"`
+	ProjectId     int           `json:"projectId"`
 }
 
 type SubmitDebugResultRequest struct {

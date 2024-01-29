@@ -391,11 +391,11 @@ func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) (err error) {
 
 }
 
-func (s *CategoryService) Copy(targetId, newParentId, userId uint, username string) (err error) {
+func (s *CategoryService) Copy(targetId, newParentId, userId uint, username string) (category model.Category, err error) {
 
-	category, err := s.CategoryRepo.CopySelf(int(targetId), int(newParentId))
+	category, err = s.CategoryRepo.CopySelf(int(targetId), int(newParentId))
 	if err != nil {
-		return err
+		return
 	}
 
 	go func() {
@@ -419,7 +419,7 @@ func (s *CategoryService) copyChildren(parentId, newParentId, userId uint, usern
 	}
 
 	for _, child := range children {
-		err = s.Copy(child.ID, newParentId, userId, username)
+		_, err = s.Copy(child.ID, newParentId, userId, username)
 		if err != nil {
 			return err
 		}

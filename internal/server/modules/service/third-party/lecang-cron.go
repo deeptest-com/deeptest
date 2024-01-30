@@ -10,6 +10,8 @@ func (t *LecangCron) Run(options map[string]interface{}) (f func() error) {
 	return
 }
 
-func (t *LecangCron) CallBack(options map[string]interface{}, err error) {
+func (t *LecangCron) CallBack(options map[string]interface{}, err error) func() {
+	return func() {
 
+	}
 }

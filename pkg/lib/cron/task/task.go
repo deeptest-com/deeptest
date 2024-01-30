@@ -4,7 +4,7 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 
 type Task interface {
 	Run(options map[string]interface{}) (f func() error)
-	CallBack(options map[string]interface{}, err error)
+	CallBack(options map[string]interface{}, err error) func()
 }
 
 type Proxy struct {
@@ -50,7 +50,12 @@ func (p *Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 
 	taskFunc = func() {
 		err := runFunc()
-		p.task.CallBack(options, err)
+		callBackFunc := p.task.CallBack(options, err)
+		if callBackFunc == nil {
+			return
+		}
+
+		callBackFunc()
 	}
 
 	return

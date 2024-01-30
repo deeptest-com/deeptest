@@ -224,6 +224,10 @@ func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointIn
 	debugData.ServeId = endpoint.ServeId
 	debugData.ServerId = endpoint.ServerId
 	debugData.ProjectId = endpoint.ProjectId
+	server, err := s.ServeRepo.GetDefaultServer(endpoint.ServeId)
+	if err != nil {
+		debugData.BaseUrl = server.Url
+	}
 
 	debugData.UsedBy = consts.InterfaceDebug
 

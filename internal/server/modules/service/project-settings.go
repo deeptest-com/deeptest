@@ -98,3 +98,7 @@ func (s *ProjectSettingsService) SaveMock(req v1.MockReq) (ret model.ProjectMock
 
 	return
 }
+
+func (s *ProjectSettingsService) UpdateCronExecTimeById(taskId uint, source consts.CronSource, err error) error {
+	return nil
+}

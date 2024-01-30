@@ -36,6 +36,10 @@ func init() {
 }
 
 func isIgnore(path string) bool {
+	if path == "/" { // static client
+		return true
+	}
+
 	for _, item := range whitelist {
 		if strings.HasPrefix(path, item) {
 			return true

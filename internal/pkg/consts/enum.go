@@ -932,3 +932,14 @@ const (
 func (e IntegrationFuncOverridable) String() string {
 	return string(e)
 }
+
+type CronSource string
+
+const (
+	CronSourceSwagger CronSource = "swagger"
+	CronSourceLecang  CronSource = "lecang"
+)
+
+func (e CronSource) String() string {
+	return string(e)
+}

@@ -10,6 +10,7 @@ type ProjectCron struct {
 	Switch   consts.SwitchStatus `json:"switch"`
 	Cron     string              `json:"cron"`
 	ExecTime *time.Time          `json:"execTime"`
+	Source   consts.CronSource   `json:"source"`
 	ConfigId uint                `json:"configId"`
 }
 

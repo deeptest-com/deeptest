@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -22,21 +23,21 @@ type SwaggerCron struct {
 	ProjectSettingsService   *ProjectSettingsService     `inject:""`
 }
 
-func (s *SwaggerCron) Run(option map[string]interface{}) (f func()) {
-	f = func() {
+func (s *SwaggerCron) Run(option map[string]interface{}) (f func() error) {
+	f = func() error {
 		taskId, ok := option["taskId"].(uint)
 		if !ok {
-			return
+			return errors.New("taskId is not existed")
 		}
 		task, err := s.GetSwaggerSyncById(taskId)
 		logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(task))
 		if err != nil {
 			logUtils.Errorf("swagger定时导入任务失败,任务ID：%v,错误原因：%v", task.ID, err.Error())
-			return
+			return err
 		}
 		if task.Switch == consts.SwitchOFF {
 			logUtils.Infof("swagger定时导入关闭,任务ID:%v", task.ID)
-			return
+			return errors.New("task is off")
 		}
 		req := v1.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: task.SyncType, SourceType: 1}
 		err = s.EndpointInterfaceService.ImportEndpointData(req)
@@ -47,6 +48,8 @@ func (s *SwaggerCron) Run(option map[string]interface{}) (f func()) {
 		//更新实现执行时间
 		//s.UpdateSwaggerSyncExecTimeById(taskId)
 		logUtils.Info("swagger定时任务结束：" + _commUtils.JsonEncode(task))
+
+		return nil
 	}
 	return
 }

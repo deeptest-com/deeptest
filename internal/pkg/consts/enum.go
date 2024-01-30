@@ -911,28 +911,6 @@ const (
 	IgnoreChanged ChangedStatus = 3
 )
 
-type IntegrationFuncExtendStatus string
-
-const (
-	IntegrationFuncIsExtend    IntegrationFuncExtendStatus = "YES"
-	IntegrationFuncIsNotExtend IntegrationFuncExtendStatus = "NO"
-)
-
-func (e IntegrationFuncExtendStatus) String() string {
-	return string(e)
-}
-
-type IntegrationFuncOverridable string
-
-const (
-	IntegrationFuncCanOverridable    IntegrationFuncOverridable = "YES"
-	IntegrationFuncCanNotOverridable IntegrationFuncOverridable = "NO"
-)
-
-func (e IntegrationFuncOverridable) String() string {
-	return string(e)
-}
-
 type CronSource string
 
 const (

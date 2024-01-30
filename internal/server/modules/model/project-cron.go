@@ -7,6 +7,7 @@ import (
 
 type ProjectCron struct {
 	BaseModel
+	Name     string              `json:"name"`
 	Switch   consts.SwitchStatus `json:"switch"`
 	Cron     string              `json:"cron"`
 	ExecTime *time.Time          `json:"execTime"`

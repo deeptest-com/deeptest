@@ -398,11 +398,13 @@ func (s *CategoryService) Copy(targetId, newParentId, userId uint, username stri
 		return
 	}
 
+	entityId, err := s.copyDataByCategoryId(category.Type, targetId, category, userId, username)
+	if err != nil {
+		return
+	}
+	category.EntityId = entityId
+	
 	go func() {
-		err = s.copyDataByCategoryId(category.Type, targetId, category, userId, username)
-		if err != nil {
-			logUtils.Error(err.Error())
-		}
 		err = s.copyChildren(targetId, category.ID, userId, username)
 		if err != nil {
 			logUtils.Error(err.Error())
@@ -428,8 +430,7 @@ func (s *CategoryService) copyChildren(parentId, newParentId, userId uint, usern
 	return err
 }
 
-func (s *CategoryService) copyDataByCategoryId(typ serverConsts.CategoryDiscriminator, targetId uint, category model.Category, userId uint, username string) (err error) {
-	var entityId uint
+func (s *CategoryService) copyDataByCategoryId(typ serverConsts.CategoryDiscriminator, targetId uint, category model.Category, userId uint, username string) (entityId uint, err error) {
 	switch typ {
 	case serverConsts.EndpointCategory:
 		err = s.EndpointService.CopyDataByCategoryId(targetId, category.ID, userId, username)
@@ -442,6 +443,5 @@ func (s *CategoryService) copyDataByCategoryId(typ serverConsts.CategoryDiscrimi
 		s.CategoryRepo.UpdateEntityId(category.ID, entityId)
 	}
 
-	return err
-
+	return
 }

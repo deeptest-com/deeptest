@@ -66,7 +66,13 @@ func getVariableFromList(name string, list []domain.GlobalVar) (ret domain.ExecV
 	for _, v := range list {
 		if v.Name == name {
 			ret.Name = v.Name
-			ret.Value = v.LocalValue
+
+			if v.LocalValue != "" {
+				ret.Value = v.LocalValue
+			} else if v.RemoteValue != "" {
+				ret.Value = v.RemoteValue
+			}
+
 			break
 		}
 	}

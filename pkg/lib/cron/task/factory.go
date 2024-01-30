@@ -1,6 +1,9 @@
 package task
 
-import "github.com/aaronchen2k/deeptest/internal/server/modules/service"
+import (
+	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
+	third_party "github.com/aaronchen2k/deeptest/internal/server/modules/service/third-party"
+)
 
 type Factory struct {
 	name   string
@@ -20,7 +23,7 @@ type Factory struct {
 //	return
 //}
 
-func newFactory(name string, task2 task) (factory *Factory) {
+func newFactory(name string, task2 Task) (factory *Factory) {
 	factory = &Factory{
 		name: name,
 	}
@@ -28,14 +31,14 @@ func newFactory(name string, task2 task) (factory *Factory) {
 	return
 }
 
-func (e *Factory) Create() (res task) {
+func (e *Factory) Create() (res Task) {
 	switch e.name {
 	case "swagger":
-		res = new(service.Swagger)
+		res = new(service.SwaggerCron)
 	case "lecang":
-		res = new(service.Lecang)
+		res = new(third_party.LecangCron)
 	default:
-		res = new(service.Swagger)
+		res = new(service.SwaggerCron)
 	}
 
 	return

@@ -1,22 +1,25 @@
 package task
 
-type task interface {
-	Run() (f func())
-	GetTaskId() (taskId interface{})
+type Task interface {
+	Run(options map[string]interface{}) (f func())
 }
 
 type Proxy struct {
-	Name    string                 `json:"name"`
-	Cron    string                 `json:"cron"`
-	Options map[string]interface{} `json:"options"`
-	task    task
+	Name   string `json:"name"`
+	Cron   string `json:"cron"`
+	task   Task
+	TaskId string `json:"taskId"`
 }
 
-func NewProxy(name, cron string, options map[string]interface{}) (proxy Proxy) {
+func (p *Proxy) GetTaskId() (taskId string) {
+	//自己写
+	return
+}
+
+func NewProxy(name, cron, taskId string) (proxy Proxy) {
 	proxy = Proxy{
-		Name:    name,
-		Cron:    cron,
-		Options: options,
+		Name: name,
+		Cron: cron,
 	}
 
 	taskEntity := Factory{
@@ -27,9 +30,9 @@ func NewProxy(name, cron string, options map[string]interface{}) (proxy Proxy) {
 	return
 }
 
-func (p *Proxy) Run() (err error) {
-	//function := p.task.Run()
-	//taskId := p.task.GetTaskId()
+func (p *Proxy) Run(options map[string]interface{}) (err error) {
+	//function := p.task.Run(options)
+	//taskId := p.GetTaskId()
 	//cron := p.Cron
 	// TODO 调用 AddCommonTask
 	return
@@ -38,6 +41,6 @@ func (p *Proxy) Run() (err error) {
 func Test() {
 	options := make(map[string]interface{})
 	options["swagger_1"] = 1
-	proxy := NewProxy("swagger", "*****", options)
-	proxy.Run()
+	proxy := NewProxy("swagger", "*****", "taskId")
+	proxy.Run(options)
 }

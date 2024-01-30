@@ -140,5 +140,7 @@ var (
 
 		&ProjectProductRel{},
 		&ProjectSpaceRel{},
+
+		&ProjectCron{},
 	}
 )

@@ -244,6 +244,7 @@ func (c *CategoryCtrl) BatchAddSchemaRoot(ctx iris.Context) {
 		return
 	}
 
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
 // Copy 详情
@@ -266,11 +267,11 @@ func (c *CategoryCtrl) Copy(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
 
-	err = c.CategoryService.Copy(uint(targetId), 0, userId, userName)
+	nodePo, err := c.CategoryService.Copy(uint(targetId), 0, userId, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: nodePo})
 }

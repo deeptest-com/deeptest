@@ -597,7 +597,11 @@ func (s *DebugInterfaceService) genCurlCommand(execObj agentExec.InterfaceExecOb
 		//str = url.QueryEscape(str)
 		arr = append(arr, str)
 	}
-	command += fmt.Sprintf("'%s?%s' ", debugData.Url, strings.Join(arr, "&"))
+	if len(arr) > 0 {
+		command += fmt.Sprintf("'%s?%s' ", debugData.Url, strings.Join(arr, "&"))
+	} else {
+		command += fmt.Sprintf("'%s' ", debugData.Url)
+	}
 
 	// header
 	for _, header := range *debugData.Headers {

@@ -3,6 +3,7 @@ package repo
 import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/getkin/kin-openapi/openapi3"
 	"gorm.io/gorm"
 	"strings"
 )
@@ -46,6 +47,7 @@ func (r *ComponentSchemaRepo) SaveEntity(category *model.Category) (err error) {
 		ProjectId: category.ProjectId,
 		Name:      category.Name,
 		Content:   "{\"type\":\"object\"}",
+		Type:      openapi3.TypeObject,
 	}
 
 	path, err := r.CategoryRepo.GetJoinedPath(category.ID)

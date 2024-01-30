@@ -151,7 +151,9 @@ func parseBodyURLEncode(u *CURL, data string) {
 		u.Method = "POST"
 	}
 
-	u.ContentType = requests.TypeURLENCODED
+	if u.ContentType == "" {
+		u.ContentType = requests.TypeURLENCODED
+	}
 	u.Body = bytes.NewBufferString(data)
 }
 
@@ -161,7 +163,9 @@ func parseBodyRaw(u *CURL, data string) {
 		u.Method = "POST"
 	}
 
-	u.ContentType = requests.TypeURLENCODED
+	if u.ContentType == "" {
+		u.ContentType = requests.TypeURLENCODED
+	}
 	u.Body = bytes.NewBufferString(data)
 }
 
@@ -171,7 +175,9 @@ func parseBodyASCII(u *CURL, data string) {
 		u.Method = "POST"
 	}
 
-	u.ContentType = requests.TypeURLENCODED
+	if u.ContentType == "" {
+		u.ContentType = requests.TypeURLENCODED
+	}
 
 	if data != "" && data[0] != '@' {
 		u.Body = bytes.NewBufferString(data)
@@ -196,7 +202,9 @@ func parseBodyBinary(u *CURL, data string) {
 		u.Method = "POST"
 	}
 
-	u.ContentType = requests.TypeURLENCODED
+	if u.ContentType == "" {
+		u.ContentType = requests.TypeURLENCODED
+	}
 
 	firstchar := data[0]
 	switch firstchar {

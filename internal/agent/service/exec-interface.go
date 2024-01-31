@@ -14,6 +14,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.SetServerUrl(call.ExecUuid, call.ServerUrl)
 	agentExec.SetServerToken(call.ExecUuid, call.Token)
 	req := GetInterfaceToExec(call)
+	updateLocalValues(&req.ExecScene, call.LocalVarsCache)
 
 	agentExec.SetCurrDebugInterfaceId(call.ExecUuid, req.DebugData.DebugInterfaceId)
 	agentExec.SetCurrScenarioProcessorId(call.ExecUuid, 0) // not in a scenario

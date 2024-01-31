@@ -61,8 +61,19 @@ func (s *SceneService) GetExecServer(debugInterfaceId, endpointInterfaceId, envi
 	interf, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 
 	if environmentId > 0 { // select a env to exec
-		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
-		server, _ = s.ServeServerRepo.FindByServeAndExecEnv(endpoint.ServeId, environmentId)
+		var serveId uint
+
+		if debugInterfaceId > 0 {
+			debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
+			serveId = debugInterface.ServeId
+
+		} else {
+			endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+			serveId = endpoint.ServeId
+
+		}
+
+		server, _ = s.ServeServerRepo.FindByServeAndExecEnv(serveId, environmentId)
 
 	} else {
 		var serverId uint

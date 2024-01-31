@@ -11,7 +11,7 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error) {
+func RunCases(req *agentExec.CasesExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
 	logUtils.Infof("run cases %s on env %d", req.ExecUuid, req.EnvironmentId)
 
 	// reset exec
@@ -22,7 +22,7 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 	execUtils.SendStartMsg(wsMsg)
 
 	// run case one by one
-	doExecCases(req, wsMsg, "")
+	doExecCases(req, localVarsCache, wsMsg, "")
 
 	// end msg
 	execUtils.SendEndMsg(wsMsg)
@@ -30,11 +30,11 @@ func RunCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message) (err error)
 	return
 }
 
-func doExecCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message, parentUuid string) (err error) {
+func doExecCases(req *agentExec.CasesExecReq, localVarsCache iris.Map, wsMsg *websocket.Message, parentUuid string) (err error) {
 	casesExecObj := GetCasesToExec(req)
 
 	for _, cs := range casesExecObj.Children {
-		doExecCase(cs, wsMsg, req.ExecUuid, parentUuid, req.ProjectId)
+		doExecCase(cs, localVarsCache, wsMsg, req.ExecUuid, parentUuid, req.ProjectId)
 
 		// stop if needed
 		if agentExec.GetForceStopExec(parentUuid) {
@@ -45,7 +45,7 @@ func doExecCases(req *agentExec.CasesExecReq, wsMsg *websocket.Message, parentUu
 	return
 }
 
-func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execUuid, parentUuid string, projectId uint) (err error) {
+func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg *websocket.Message, execUuid, parentUuid string, projectId uint) (err error) {
 	if cs.Category != "case" {
 		startMsg := iris.Map{
 			"source":     "execCases",
@@ -59,7 +59,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	}
 
 	for _, child := range cs.Children {
-		doExecCase(child, wsMsg, execUuid, cs.Key, projectId)
+		doExecCase(child, localVarsCache, wsMsg, execUuid, cs.Key, projectId)
 	}
 
 	if cs.Category != "case" {
@@ -67,10 +67,13 @@ func doExecCase(cs *agentExec.CaseExecProcessor, wsMsg *websocket.Message, execU
 	}
 
 	caseInterfaceExecObj := cs.Data
+	updateLocalValues(&caseInterfaceExecObj.ExecScene, localVarsCache)
+	// variables etc.
+	agentExec.SetExecScene(execUuid, caseInterfaceExecObj.ExecScene)
 
 	// execution
-	agentExec.SetCurrDebugInterfaceId(parentUuid, caseInterfaceExecObj.DebugData.DebugInterfaceId)
-	agentExec.SetCurrScenarioProcessorId(parentUuid, 0) // not in a scenario
+	agentExec.SetCurrDebugInterfaceId(execUuid, caseInterfaceExecObj.DebugData.DebugInterfaceId) // must use execUuid not parentUuid
+	agentExec.SetCurrScenarioProcessorId(parentUuid, 0)                                          // not in a scenario
 
 	agentExec.SetCurrRequest(parentUuid, domain.BaseRequest{})
 	agentExec.SetCurrResponse(parentUuid, domain.DebugResponse{})

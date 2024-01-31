@@ -2,7 +2,6 @@ package agentExec
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	casesHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/cases"
 )
 
@@ -22,14 +21,14 @@ type CasesExecReq struct {
 	EnvironmentId uint `json:"environmentId"`
 }
 
-type CaseInterfaceExecObj struct {
-	DebugData domain.DebugData `json:"debugData"`
-
-	PreConditions  []domain.InterfaceExecCondition `json:"preConditions"`
-	PostConditions []domain.InterfaceExecCondition `json:"postConditions"`
-
-	ExecScene domain.ExecScene `json:"execScene"`
-}
+//type CaseInterfaceExecObj struct {
+//	DebugData domain.DebugData `json:"debugData"`
+//
+//	PreConditions  []domain.InterfaceExecCondition `json:"preConditions"`
+//	PostConditions []domain.InterfaceExecCondition `json:"postConditions"`
+//
+//	ExecScene domain.ExecScene `json:"execScene"`
+//}
 
 type CaseExecProcessor struct {
 	Title    string `json:"tile"`

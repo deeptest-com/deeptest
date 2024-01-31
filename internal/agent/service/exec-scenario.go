@@ -4,11 +4,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
 	"go.uber.org/zap"
 )
 
-func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err error) {
+func RunScenario(req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
 	logUtils.Infof("run scenario", zap.Int("ScenarioId", req.ScenarioId), zap.Int("environmentId", req.EnvironmentId))
 
 	agentExec.ResetStat(req.ExecUuid)
@@ -29,6 +30,7 @@ func RunScenario(req *agentExec.ScenarioExecReq, wsMsg *websocket.Message) (err 
 		execUtils.SendEndMsg(wsMsg)
 		return
 	}
+	updateLocalValues(&scenarioExecObj.ExecScene, localVarsCache)
 
 	scenarioExecObj.ExecUuid = req.ExecUuid
 

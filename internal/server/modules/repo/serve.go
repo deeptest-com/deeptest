@@ -630,3 +630,8 @@ func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
 func (r *ServeRepo) UpdateSwaggerSyncExecTimeById(id uint) (err error) {
 	return r.DB.Model(&model.SwaggerSync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
 }
+
+func (r *ServeRepo) GetDefaultServer(serveId uint) (server model.ServeServer, err error) {
+	err = r.DB.Model(&model.ServeServer{}).Where("serve_id=? AND NOT deleted ", serveId).First(&server).Order("created_at desc").Error
+	return
+}

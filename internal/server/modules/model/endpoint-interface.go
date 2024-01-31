@@ -127,7 +127,7 @@ func (EndpointInterfaceResponseBody) TableName() string {
 
 type EndpointInterfaceGlobalParam struct {
 	domain.GlobalParam
-	InterfaceId uint `json:"InterfaceId"`
+	InterfaceId uint `json:"EndpointId"`
 }
 
 func (EndpointInterfaceGlobalParam) TableName() string {

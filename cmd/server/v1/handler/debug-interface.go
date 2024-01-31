@@ -131,3 +131,33 @@ func (c *DebugInterfaceCtrl) SaveAsCase(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
+
+// LoadCurl 导入cURL命令
+// @Tags	快捷调试
+// @summary	获取cURL命令
+// @accept 	application/json
+// @Produce application/json
+// @Param	Authorization				header	string								true	"Authentication header"
+// @Param 	currProjectId				query	int									true	"当前项目ID"
+// @Param 	DiagnoseCurlLoadReq		body	serverDomain.DiagnoseCurlLoadReq	    true	"导入cURL命令的请求体"
+// @success	200	{object}	_domain.Response{data=string}
+// @Router	/api/v1/debugs/interface/loadCurl	[post]
+func (c *DebugInterfaceCtrl) LoadCurl(ctx iris.Context) {
+	req := serverDomain.DiagnoseCurlLoadReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	req.ProjectId, err = ctx.URLParamInt("currProjectId")
+	req.UserId = multi.GetUserId(ctx)
+
+	content, err := c.DebugInterfaceService.LoadCurl(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: content})
+}

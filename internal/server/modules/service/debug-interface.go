@@ -1,14 +1,19 @@
 package service
 
 import (
+	"fmt"
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	agentService "github.com/aaronchen2k/deeptest/internal/agent/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/jinzhu/copier"
+	"strings"
 )
 
 type DebugInterfaceService struct {
@@ -47,8 +52,31 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 		} else if loadReq.CaseInterfaceId > 0 {
 			debugData, _ = s.GetDebugInterfaceByEndpointCase(loadReq.CaseInterfaceId)
 		} else if loadReq.EndpointInterfaceId > 0 {
-			debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId)
+			debugData, _ = s.GetDebugInterfaceByEndpointInterface(loadReq.EndpointInterfaceId, loadReq.FromDefine)
 		}
+	}
+
+	if debugData.QueryParams == nil {
+		debugData.QueryParams = &[]domain.Param{}
+	}
+	if debugData.PathParams == nil {
+		debugData.PathParams = &[]domain.Param{}
+	}
+	if debugData.Headers == nil {
+		debugData.Headers = &[]domain.Header{}
+	}
+	if debugData.Cookies == nil {
+		debugData.Cookies = &[]domain.ExecCookie{}
+	}
+	if debugData.GlobalParams == nil {
+		debugData.GlobalParams = &[]domain.GlobalParam{}
+	}
+
+	if debugData.BodyFormData == nil {
+		debugData.BodyFormData = &[]domain.BodyFormDataItem{}
+	}
+	if debugData.BodyFormUrlencoded == nil {
+		debugData.BodyFormUrlencoded = &[]domain.BodyFormUrlEncodedItem{}
 	}
 
 	debugData.UsedBy = loadReq.UsedBy
@@ -65,6 +93,12 @@ func (s *DebugInterfaceService) Load(loadReq domain.DebugInfo) (debugData domain
 }
 
 func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agentExec.InterfaceExecObj, err error) {
+	ret, err = s.loadDetail(loadReq, true)
+
+	return
+}
+
+func (s *DebugInterfaceService) loadDetail(loadReq domain.DebugInfo, withConditions bool) (ret agentExec.InterfaceExecObj, err error) {
 	ret.DebugData, _ = s.Load(loadReq)
 
 	// load default environment for user
@@ -76,10 +110,12 @@ func (s *DebugInterfaceService) LoadForExec(loadReq domain.DebugInfo) (ret agent
 		}
 	}
 
-	ret.PreConditions, _ = s.ConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPre)
-	ret.PostConditions, _ = s.ConditionRepo.ListTo(
-		ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPost)
+	if withConditions {
+		ret.PreConditions, _ = s.ConditionRepo.ListTo(
+			ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPre)
+		ret.PostConditions, _ = s.ConditionRepo.ListTo(
+			ret.DebugData.DebugInterfaceId, ret.DebugData.EndpointInterfaceId, loadReq.UsedBy, "false", consts.ConditionSrcPost)
+	}
 
 	ret.ExecScene.ShareVars = ret.DebugData.EnvDataToView.ShareVars // for execution
 	ret.DebugData.EnvDataToView = nil
@@ -188,6 +224,10 @@ func (s *DebugInterfaceService) ConvertDebugDataFromEndpointInterface(endpointIn
 	debugData.ServeId = endpoint.ServeId
 	debugData.ServerId = endpoint.ServerId
 	debugData.ProjectId = endpoint.ProjectId
+	server, err := s.ServeRepo.GetDefaultServer(endpoint.ServeId)
+	if err != nil {
+		debugData.BaseUrl = server.Url
+	}
 
 	debugData.UsedBy = consts.InterfaceDebug
 
@@ -289,10 +329,10 @@ func (s *DebugInterfaceService) GenSample(projectId, serveId uint) (ret *model.D
 	return
 }
 
-func (s *DebugInterfaceService) GetDebugInterfaceByEndpointInterface(endpointInterfaceId uint) (ret domain.DebugData, err error) {
+func (s *DebugInterfaceService) GetDebugInterfaceByEndpointInterface(endpointInterfaceId uint, fromDefine bool) (ret domain.DebugData, err error) {
 	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
 
-	if endpointInterface.DebugInterfaceId > 0 {
+	if endpointInterface.DebugInterfaceId > 0 && !fromDefine {
 		ret, err = s.GetDebugDataFromDebugInterface(endpointInterface.DebugInterfaceId)
 	} else {
 		ret, err = s.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
@@ -483,5 +523,138 @@ func (s *DebugInterfaceService) MergeGlobalParams(globalParams []domain.GlobalPa
 		}
 	}
 
+	return
+}
+
+func (s *DebugInterfaceService) LoadCurl(req serverDomain.DiagnoseCurlLoadReq) (ret string, err error) {
+	if req.EndpointId > 0 {
+		_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.InterfaceMethod)
+	}
+
+	loadReq := domain.DebugInfo{
+		DebugInterfaceId:    req.DebugInterfaceId,
+		EndpointInterfaceId: req.EndpointInterfaceId,
+		CaseInterfaceId:     req.CaseId,
+		DiagnoseInterfaceId: req.DiagnoseId,
+
+		EnvironmentId: req.EnvironmentId,
+		ProjectId:     req.ProjectId,
+		UserId:        req.UserId,
+		UsedBy:        req.UsedBy,
+		FromDefine:    req.FromDefine,
+	}
+
+	if req.EndpointId != 0 {
+		loadReq.FromDefine = true
+	}
+
+	execObj, err := s.loadDetail(loadReq, false)
+
+	// replace variables
+	uuid := fmt.Sprintf("load_curl_on_server_side_user%d_%s", req.UserId, _stringUtils.Uuid())
+	agentExec.SetExecScene(uuid, execObj.ExecScene)
+	agentExec.ReplaceVariables(&execObj.DebugData.BaseRequest, uuid)
+
+	// gen url
+	execObj.DebugData.BaseRequest.Url, _ = agentService.UpdateUrl(execObj.DebugData)
+
+	// gen bytes for form file item
+	//if execObj.DebugData.BodyFormData != nil {
+	//	for index, item := range *execObj.DebugData.BodyFormData {
+	//		if item.Type == consts.FormDataTypeFile {
+	//			(*execObj.DebugData.BodyFormData)[index].Value = filepath.Join(consts.WorkDir, item.Value)
+	//		}
+	//	}
+	//}
+
+	// generate curl command
+	ret = s.genCurlCommand(execObj, uuid)
+
+	return
+}
+
+func (s *DebugInterfaceService) genCurlCommand(execObj agentExec.InterfaceExecObj, execUuid string) (ret string) {
+	debugData := execObj.DebugData
+
+	command := "curl -i "
+
+	// basic auth
+	if debugData.BasicAuth.Username != "" {
+		command += fmt.Sprintf("-u '%s:%s'",
+			debugData.BasicAuth.Username, debugData.BasicAuth.Password)
+	}
+
+	// method
+	command += fmt.Sprintf("-X %s ", debugData.Method)
+
+	// url param
+	arr := []string{}
+	for _, param := range *debugData.QueryParams {
+		if param.Name == "" {
+			continue
+		}
+		str := fmt.Sprintf("%s=%s", param.Name, param.Value)
+		//str = url.QueryEscape(str)
+		arr = append(arr, str)
+	}
+	if len(arr) > 0 {
+		command += fmt.Sprintf("'%s?%s' ", debugData.Url, strings.Join(arr, "&"))
+	} else {
+		command += fmt.Sprintf("'%s' ", debugData.Url)
+	}
+
+	// header
+	for _, header := range *debugData.Headers {
+		if header.Name == "" {
+			continue
+		}
+		command += fmt.Sprintf("-H '%s: %s' ", header.Name, header.Value)
+	}
+
+	// cookie
+	for _, cookie := range *debugData.Cookies {
+		if cookie.Name == "" {
+			continue
+		}
+		command += fmt.Sprintf("-b '%s=%s' ", cookie.Name, cookie.Value)
+	}
+
+	// body
+	if debugData.BodyType == consts.ContentTypeFormData {
+		arr := []string{}
+		for _, item := range *debugData.BodyFormData {
+			if item.Name == "" || item.Value == "" {
+				continue
+			}
+			str := fmt.Sprintf("-F %s=%s", item.Name, item.Value)
+			arr = append(arr, str)
+		}
+
+		command += fmt.Sprintf("%s", strings.Join(arr, " "))
+
+	} else if debugData.BodyType == consts.ContentTypeFormUrlencoded {
+		arr := []string{}
+		for _, item := range *debugData.BodyFormUrlencoded {
+			if item.Name == "" || item.Value == "" {
+				continue
+			}
+			str := fmt.Sprintf("--data-urlencode %s=%s", item.Name, item.Value)
+			arr = append(arr, str)
+		}
+
+		command += fmt.Sprintf("%s", strings.Join(arr, " "))
+
+	} else if debugData.Method != consts.GET &&
+		debugData.Method != consts.DELETE &&
+		debugData.Method != consts.TRACE &&
+		debugData.Method != consts.OPTIONS &&
+		debugData.Method != consts.HEAD {
+
+		body := strings.ReplaceAll(debugData.Body, "\n", "")
+		command += fmt.Sprintf("-H 'Content-Type: %s' -d '%s' ", debugData.BodyType, body)
+
+	}
+
+	ret = command
 	return
 }

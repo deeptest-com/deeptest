@@ -710,4 +710,10 @@ func (r *ServeRepo) GetSchemaRef(schemaId uint) (ref string, err error) {
 
 	ref = "#/components/schemas/" + strings.Join(path, ".")
 	return
+
+}
+
+func (r *ServeRepo) GetDefaultServer(serveId uint) (server model.ServeServer, err error) {
+	err = r.DB.Model(&model.ServeServer{}).Where("serve_id=? AND NOT deleted ", serveId).First(&server).Order("created_at desc").Error
+	return
 }

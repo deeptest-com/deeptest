@@ -51,11 +51,14 @@ func genCookies(req domain.BaseRequest) (ret http.CookieJar) {
 	return
 }
 
-func genBodyFormData(req domain.BaseRequest) (formData []domain.BodyFormDataItem) {
+func GenBodyFormData(req domain.BaseRequest) (formData []domain.BodyFormDataItem) {
+	return GenBodyFormDataFromItems(req.BodyFormData)
+}
+func GenBodyFormDataFromItems(items *[]domain.BodyFormDataItem) (formData []domain.BodyFormDataItem) {
 	mp := map[string]bool{}
 
-	if req.BodyFormData != nil {
-		for _, item := range *req.BodyFormData {
+	if items != nil {
+		for _, item := range *items {
 			key := item.Name
 			if _, ok := mp[key]; ok { // skip duplicate one
 				continue
@@ -68,13 +71,19 @@ func genBodyFormData(req domain.BaseRequest) (formData []domain.BodyFormDataItem
 
 	return
 }
-func genBodyFormUrlencoded(req domain.BaseRequest) (ret string) {
+func GenBodyFormUrlencoded(req domain.BaseRequest) (ret string) {
+	return GenBodyFormUrlencodedFromItems(req.BodyFormUrlencoded)
+}
+func GenBodyFormUrlencodedFromItems(items *[]domain.BodyFormUrlEncodedItem) (ret string) {
 	mp := map[string]bool{}
 	formData := make(url.Values)
 
-	if req.BodyFormUrlencoded != nil {
-		for _, item := range *req.BodyFormUrlencoded {
+	if items != nil {
+		for _, item := range *items {
 			key := item.Name
+			if key == "" {
+				continue
+			}
 			if _, ok := mp[key]; ok { // skip duplicate one
 				continue
 			}

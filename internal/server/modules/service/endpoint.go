@@ -572,6 +572,7 @@ func (s *EndpointService) getRequestBodyItem(body string) (requestBodyItem model
 	schema2conv := schemaHelper.NewSchema2conv()
 	var obj interface{}
 	schema := schemaHelper.Schema{}
+	body = strings.ReplaceAll(body, " ", "")
 	_commUtils.JsonDecode(body, &obj)
 	schema2conv.Example2Schema(obj, &schema)
 	requestBodyItem.Content = _commUtils.JsonEncode(schema)

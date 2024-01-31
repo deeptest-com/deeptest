@@ -33,7 +33,7 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 		s.sets[ref]++
 		schema = *component
 		refName = s.getRefName(ref)
-		name = refName
+		//name = refName
 	}
 
 	if schema.Ref != "" {
@@ -59,7 +59,7 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 
 		field.FieldType = openapi3.TypeObject
 		if field.FieldName == "" {
-			field.FieldName = fields.FieldName(s.getVarName("var"))
+			field.FieldName = field.FieldRefName
 		}
 
 		for key, property := range schema.Value.Properties {

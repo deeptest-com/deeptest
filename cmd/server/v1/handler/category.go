@@ -238,11 +238,8 @@ func (c *CategoryCtrl) BatchAddSchemaRoot(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	err = c.CategoryService.BatchAddSchemaRoot(req.ProjectIds)
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-		return
-	}
+
+	go c.CategoryService.BatchAddSchemaRoot(req.ProjectIds)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }

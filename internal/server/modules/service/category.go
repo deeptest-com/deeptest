@@ -387,6 +387,8 @@ func (s *CategoryService) BatchAddSchemaRoot(projectIds []uint) (err error) {
 		createCategoryReq := v1.CategoryCreateReq{Name: schema.Name, TargetId: int(rootId), ProjectId: schema.ProjectId, Type: serverConsts.SchemaCategory, Mode: "child", EntityId: schema.ID}
 		_, _ = s.Create(createCategoryReq)
 	}
+
+	logUtils.Infof("batchAddSchemaRootEnd, projectIds:%+v", projectIds)
 	return
 
 }
@@ -403,7 +405,7 @@ func (s *CategoryService) Copy(targetId, newParentId, userId uint, username stri
 		return
 	}
 	category.EntityId = entityId
-	
+
 	go func() {
 		err = s.copyChildren(targetId, category.ID, userId, username)
 		if err != nil {

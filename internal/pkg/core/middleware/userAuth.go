@@ -3,11 +3,10 @@ package middleware
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/integration/enum"
 	"github.com/aaronchen2k/deeptest/integration/service/user"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -33,6 +32,7 @@ func init() {
 		"/api/v1/init/initdb",
 		"/api/v1/openApi",
 		"/api/v1/healthz",
+		"/api/v1/saas",
 	}
 }
 

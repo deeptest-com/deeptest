@@ -67,3 +67,7 @@ func (c *BaseCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 	default:
 	}
 }
+
+func (c *BaseCtrl) getTenantId(ctx iris.Context) string {
+	return ""
+}

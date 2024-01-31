@@ -1,13 +1,18 @@
 package db
 
-type Config struct {
-	Path            string `json:"path"`
-	Config          string `json:"Config"`
-	Dbname          string `json:"dbname"`
-	Username        string `json:"username"`
-	Password        string `json:"password"`
-	SchemaType      string `json:"schemaType"`
-	Maxidleconns    string `json:"maxidleconns"`
-	Maxopenconns    string `json:"maxopenconns"`
-	Connmaxlifetime string `json:"connmaxlifetime"`
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/saas/tenant"
+)
+
+func GetByTenantId(tenantId string) (m config.Mysql) {
+	ret := tenant.NewTenant()
+	ret.GetDbConfig(tenantId)
+	m = config.Mysql{}
+	m.Url = "127.0.0.1:3306"
+	m.Username = "root"
+	m.Password = "root"
+	m.Dbname = "leyanapi"
+	m.Config = "charset=utf8mb4&parseTime=True&loc=Local"
+	return
 }

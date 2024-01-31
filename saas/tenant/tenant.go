@@ -1,10 +1,12 @@
 package tenant
 
-import "github.com/aaronchen2k/deeptest/saas/db"
+import (
+	"github.com/aaronchen2k/deeptest/saas/domain"
+)
 
 type tenant struct {
-	Id       string    `json:"id"`
-	DbConfig db.Config `json:"dbConfig"`
+	Id       string          `json:"id"`
+	DbConfig domain.DbConfig `json:"dbConfig"`
 }
 
 func NewTenant() *tenant {
@@ -62,4 +64,8 @@ func (t *tenant) GetInfo(tenantId string) {
 
 		ret = respContent.Data
 	*/
+}
+
+func (t *tenant) GetDbConfig(tenantId string) (config domain.DbConfig, err error) {
+	return
 }

@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	SaasDBresolver "github.com/aaronchen2k/deeptest/internal/pkg/helper/dbresolver"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	sassDB "github.com/aaronchen2k/deeptest/saas/db"
 	"go.uber.org/zap"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -146,13 +147,8 @@ func GetDBResolver() *SaasDBresolver.DBResolver {
 
 func InitSaasDBHandler(dbName string) (db *gorm.DB, err error) {
 	var m config.Mysql
-	if dbName == "leyanapi" {
-		m = config.Mysql{}
-		m.Url = "127.0.0.1:3306"
-		m.Username = "root"
-		m.Password = "root"
-		m.Dbname = "leyanapi"
-		m.Config = "charset=utf8mb4&parseTime=True&loc=Local"
+	if dbName == "" {
+		m = sassDB.GetByTenantId(dbName)
 		return GormMySQL(m), nil
 	} else {
 		return GetDB(), nil

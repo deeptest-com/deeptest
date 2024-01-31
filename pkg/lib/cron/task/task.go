@@ -1,6 +1,9 @@
 package task
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+import (
+	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+)
 
 type Task interface {
 	Run(options map[string]interface{}) (f func() error)
@@ -16,7 +19,7 @@ type Proxy struct {
 }
 
 func (p *Proxy) GetTaskId() (taskId string) {
-	taskId = p.name + p.taskId
+	taskId = fmt.Sprintf("%s-%s", p.name, p.taskId)
 	return
 }
 

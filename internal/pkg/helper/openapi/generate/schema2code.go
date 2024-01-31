@@ -29,7 +29,7 @@ func NewSchema2Code(langType template.LangType, nameRule template.NameRule) *Sch
 func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) *fields.Field {
 	ref := schema.Ref
 	refName := ""
-	if component, _, _ := s.Components.Component(&schema); component != nil {
+	if component, _, refx := s.Components.Component(&schema); component != nil && refx != "" {
 		s.sets[ref]++
 		schema = *component
 		refName = s.getRefName(ref)
@@ -104,6 +104,9 @@ func (s *Schema2Code) getRefName(ref string) string {
 }
 
 func (s *Schema2Code) format(ret string) string {
+	if ret == "" {
+		return ""
+	}
 	ret = commonUtils.Case2Camel(ret)
 	if s.nameRule == template.UpperCase {
 		ret = strings.ToUpper(ret[:1]) + ret[1:]

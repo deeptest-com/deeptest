@@ -921,3 +921,14 @@ const (
 func (e CronSource) String() string {
 	return string(e)
 }
+
+type CronExecStatus string
+
+const (
+	CronExecSuccess CronExecStatus = "success"
+	CronExecFail    CronExecStatus = "fail"
+)
+
+func (e CronExecStatus) String() string {
+	return string(e)
+}

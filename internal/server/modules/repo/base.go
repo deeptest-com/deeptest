@@ -130,5 +130,8 @@ func (r *BaseRepo) GetDB(tenantId string) (db *gorm.DB) {
 		return dao.InitSaasDBHandler(tenantId)
 	}
 	db = dao.GetDBResolver().Apply(tenantId, handler).GetConnPool(tenantId)
+	if db == nil {
+		panic(fmt.Errorf("tenantId:%s,db is empty", tenantId))
+	}
 	return
 }

@@ -22,7 +22,7 @@ func DBResolver() iris.Handler {
 			}
 		}(ctx)
 
-		dbname := ctx.URLParam("dbname")
+		dbname := ctx.URLParamDefault("dbname", "")
 		handler := func() (db *gorm.DB, err error) {
 			return dao.InitSaasDBHandler(dbname)
 		}

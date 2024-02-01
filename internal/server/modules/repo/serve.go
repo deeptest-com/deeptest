@@ -255,12 +255,14 @@ func (r *ServeRepo) BindEndpoint(serveId int64, serveVersion string, serveEndpoi
 }
 
 func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, servers []model.ServeServer) (err error) {
-	if len(servers) == 0 {
-		return
-	}
+
 	err = r.DB.Delete(&model.ServeServer{}, "environment_id=?", environmentId).Error
 	if err != nil {
 		return err
+	}
+
+	if len(servers) == 0 {
+		return
 	}
 
 	for key, _ := range servers {
@@ -629,4 +631,9 @@ func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
 
 func (r *ServeRepo) UpdateSwaggerSyncExecTimeById(id uint) (err error) {
 	return r.DB.Model(&model.SwaggerSync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
+}
+
+func (r *ServeRepo) GetDefaultServer(serveId uint) (server model.ServeServer, err error) {
+	err = r.DB.Model(&model.ServeServer{}).Where("serve_id=? AND NOT deleted ", serveId).First(&server).Order("created_at desc").Error
+	return
 }

@@ -122,7 +122,7 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 	} else if req.EndpointInterfaceId > 0 {
 		// convert from endpoint interface define
 		endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
-		debugData, _ := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(req.EndpointInterfaceId)
+		debugData, _ := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(req.EndpointInterfaceId, false)
 
 		saveReq := serverDomain.EndpointCaseSaveReq{
 			Name:           req.Name,

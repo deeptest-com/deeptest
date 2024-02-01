@@ -16,15 +16,15 @@ func GenRequestUrlWithBaseUrlAndPathParam(req *domain.BaseRequest, debugInterfac
 	envId := execScene.DebugInterfaceToEnvMap[debugInterfaceId]
 	vars := execScene.EnvToVariables[envId]
 	if baseUrl == "" {
-		vari, _ := getVariableFromList(consts.KEY_BASE_URL, vars)
+		vari, _ := GetVariableFromList(consts.KEY_BASE_URL, vars)
 		baseUrl = fmt.Sprintf("%v", vari.Value)
 	}
 
 	if req.PathParams != nil {
 		req.Url = ReplacePathParams(req.Url, *req.PathParams)
 	}
-	
-	notUseBaseUrl := execUtils.IsUseBaseUrl(consts.ScenarioDebug, req.ProcessorInterfaceSrc)
+
+	notUseBaseUrl := execUtils.IsNotUseBaseUrl(consts.ScenarioDebug, req.ProcessorInterfaceSrc)
 	if !notUseBaseUrl {
 		req.Url = _httpUtils.CombineUrls(baseUrl, req.Url)
 	}

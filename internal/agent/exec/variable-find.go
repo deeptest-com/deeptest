@@ -38,7 +38,7 @@ LABEL:
 func getVariableFromShareVar(name string, execUuid string) (ret domain.ExecVariable, err error) {
 	execScene := GetExecScene(execUuid)
 
-	ret, err = getVariableFromList(name, execScene.ShareVars)
+	ret, err = GetVariableFromList(name, execScene.ShareVars)
 
 	return
 }
@@ -50,19 +50,19 @@ func getVariableFromEnvVar(name string, execUuid string) (ret domain.ExecVariabl
 
 	vars := execScene.EnvToVariables[envId]
 
-	ret, err = getVariableFromList(name, vars)
+	ret, err = GetVariableFromList(name, vars)
 
 	return
 }
 func getVariableFromGlobalVar(name, execUuid string) (ret domain.ExecVariable, err error) {
 	execScene := GetExecScene(execUuid)
 
-	ret, err = getVariableFromList(name, execScene.GlobalVars)
+	ret, err = GetVariableFromList(name, execScene.GlobalVars)
 
 	return
 }
 
-func getVariableFromList(name string, list []domain.GlobalVar) (ret domain.ExecVariable, err error) {
+func GetVariableFromList(name string, list []domain.GlobalVar) (ret domain.ExecVariable, err error) {
 	for _, v := range list {
 		if v.Name == name {
 			ret.Name = v.Name

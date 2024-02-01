@@ -7,12 +7,20 @@ import (
 
 func GetByTenantId(tenantId string) (m config.Mysql) {
 	ret := tenant.NewTenant()
-	ret.GetDbConfig(tenantId)
+	dbConfig, err := ret.GetDbConfig(tenantId)
+	if err != nil {
+		panic(err)
+	}
+
 	m = config.Mysql{}
+
+	m.Url, m.Username, m.Password, m.Dbname, m.Config = dbConfig.Path, dbConfig.Username, dbConfig.Password, dbConfig.Dbname, dbConfig.Config
+
 	m.Url = "127.0.0.1:3306"
 	m.Username = "root"
 	m.Password = "root"
 	m.Dbname = "deeptest"
 	m.Config = "charset=utf8mb4&parseTime=True&loc=Local"
+
 	return
 }

@@ -23,11 +23,13 @@ func DBResolver() iris.Handler {
 		}(ctx)
 
 		dbname := ctx.URLParamDefault("dbname", "")
-		handler := func() (db *gorm.DB, err error) {
-			return dao.InitSaasDBHandler(dbname)
+		if dbname != "" {
+			handler := func() (db *gorm.DB, err error) {
+				return dao.InitSaasDBHandler(dbname)
+			}
+			dao.GetDBResolver().Apply(dbname, handler).GetConnPool(dbname)
 		}
-		db := dao.GetDBResolver().Apply(dbname, handler).GetConnPool(dbname)
-		ctx.Values().Set("db", db)
+
 		ctx.Next()
 	}
 }

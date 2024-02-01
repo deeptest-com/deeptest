@@ -151,7 +151,7 @@ func InitSaasDBHandler(dbName string) (db *gorm.DB, err error) {
 		m = sassDB.GetByTenantId(dbName)
 		return GormMySQL(m), nil
 	} else {
-		return GetDB(), nil
+		//return GetDB(), nil
 	}
 
 	return

@@ -8,7 +8,7 @@ import (
 
 type SaasCtrl struct {
 	SassService *service.SaasService `inject:""`
-	BaseCtrl
+	*BaseCtrl   `inject:""`
 }
 
 func (c *SaasCtrl) GetUserList(ctx iris.Context) {

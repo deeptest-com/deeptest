@@ -69,5 +69,5 @@ func (c *BaseCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 }
 
 func (c *BaseCtrl) getTenantId(ctx iris.Context) string {
-	return ""
+	return "1234"
 }

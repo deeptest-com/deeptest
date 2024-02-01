@@ -3,7 +3,7 @@ package repo
 import "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 
 type SaasRepo struct {
-	BaseRepo
+	*BaseRepo `inject:""`
 }
 
 func (r *SaasRepo) GetUserList(tenantId string) (data []model.SysUser, err error) {

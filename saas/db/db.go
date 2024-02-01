@@ -12,7 +12,7 @@ func GetByTenantId(tenantId string) (m config.Mysql) {
 	m.Url = "127.0.0.1:3306"
 	m.Username = "root"
 	m.Password = "root"
-	m.Dbname = "leyanapi"
+	m.Dbname = "deeptest"
 	m.Config = "charset=utf8mb4&parseTime=True&loc=Local"
 	return
 }

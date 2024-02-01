@@ -72,6 +72,8 @@ func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[
 		}
 	}
 
+	s.FillRefId(endpoints)
+
 	res = s.GetEndpointsInfo(projectId, serveIds, endpoints)
 
 	return

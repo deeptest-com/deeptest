@@ -102,7 +102,7 @@ func (s *EndpointService) SendEndpointMessage(projectId, endpointId, userId uint
 
 func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) {
 	res, _ = s.EndpointRepo.GetAll(id, version)
-	s.SchemasConv(&res)
+	s.SchemasConv(&res, nil)
 	return
 }
 
@@ -626,11 +626,15 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 	//return
 }
 
-func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
+func (s *EndpointService) SchemasConv(endpoint *model.Endpoint, components *schemaHelper.Components) {
 	schema2conv := schemaHelper.NewSchema2conv()
+	if components == nil {
+		schema2conv.Components = s.ServeService.Components(endpoint.ProjectId)
+	} else {
+		schema2conv.Components = components
+	}
 	for key, intef := range endpoint.Interfaces {
 		for k, response := range intef.ResponseBodies {
-			schema2conv.Components = s.ServeService.Components(endpoint.ProjectId)
 			schema := new(schemaHelper.SchemaRef)
 			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
 			//if endpoint.SourceType == 1 && schema.Value != nil && len(schema.Value.AllOf) > 0 {
@@ -640,7 +644,7 @@ func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 			endpoint.Interfaces[key].ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
 		}
 
-		endpoint.Interfaces[key].RequestBody.SchemaItem.Content = s.ServeService.FillSchemaRefId(endpoint.ProjectId, intef.RequestBody.SchemaItem.Content)
+		endpoint.Interfaces[key].RequestBody.SchemaItem.Content = s.ServeService.FillSchemaRefId(endpoint.ProjectId, intef.RequestBody.SchemaItem.Content, schema2conv.Components)
 	}
 
 }

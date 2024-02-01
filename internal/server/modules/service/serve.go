@@ -208,7 +208,7 @@ func (s *ServeService) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.P
 func (s *ServeService) GetSchema(id uint) (schema model.ComponentSchema, err error) {
 	schema, err = s.ServeRepo.GetSchema(id)
 	if err == nil {
-		schema.Content = s.FillSchemaRefId(schema.ProjectId, schema.Content)
+		schema.Content = s.FillSchemaRefId(schema.ProjectId, schema.Content, nil)
 	}
 	return
 }
@@ -509,9 +509,13 @@ func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
 
 */
 
-func (s *ServeService) FillSchemaRefId(projectId uint, schemaStr string) string {
+func (s *ServeService) FillSchemaRefId(projectId uint, schemaStr string, components *schemaHelper.Components) string {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.Components(projectId)
+	if components == nil {
+		schema2conv.Components = s.Components(projectId)
+	} else {
+		schema2conv.Components = components
+	}
 	schema := new(schemaHelper.SchemaRef)
 	_commUtils.JsonDecode(schemaStr, schema)
 	schema2conv.FillRefId(schema)
@@ -527,4 +531,19 @@ func (s *ServeService) dependComponents(schemaStr string, components, dependComp
 	schema2conv := schemaHelper.NewSchema2conv()
 	schema2conv.Components = components
 	schema2conv.SchemaComponents(schema, dependComponents)
+}
+
+func (s *ServeService) GetComponents(projectId uint) (result []model.ComponentSchema, err error) {
+
+	result, err = s.ServeRepo.GetSchemasByProjectId(projectId)
+	if err != nil {
+		return
+	}
+	components := s.Components(projectId)
+	for key, item := range result {
+		result[key].Content = s.FillSchemaRefId(item.ProjectId, item.Content, components)
+	}
+
+	return
+
 }

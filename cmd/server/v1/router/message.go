@@ -23,6 +23,6 @@ func (m *MessageModule) Party() module.WebModule {
 		index.Post("/operateRead", m.MessageCtrl.OperateRead).Name = "已读操作"
 	}
 
-	m.MessageCtrl.InitThirdPartySyncCron()
+	//m.MessageCtrl.InitThirdPartySyncCron()
 	return module.NewModule("/message", handler)
 }

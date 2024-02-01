@@ -28,6 +28,7 @@ func (dr *DBResolver) Apply(poolName string, handler func() (*gorm.DB, error)) *
 
 		dr.connPools.Store(poolName, connPool)
 	}
+
 	return dr
 }
 

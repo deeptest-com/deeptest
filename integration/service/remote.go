@@ -374,7 +374,7 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret integration
 	return
 }
 
-func (s *RemoteService) getHeaders(body string) (headers []domain.Header) {
+func (s *RemoteService) GetHeaders(body string) (headers []domain.Header) {
 	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
 	xNancalNonceStr := _commUtils.RandStr(8)
 
@@ -505,7 +505,7 @@ func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []
 func (s *RemoteService) GetUserButtonPermissions(username string) (ret []string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -602,7 +602,7 @@ func (s *RemoteService) LcQueryMsg(req integrationDomain.QueryMsgReq, token stri
 func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret []integrationDomain.UserMenuPermission, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenu", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -659,7 +659,7 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 func (s *RemoteService) GetSpaceRoles() (ret []integrationDomain.SpaceRole, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getSpaceInitRole", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -702,7 +702,7 @@ func (s *RemoteService) GetSpaceRoles() (ret []integrationDomain.SpaceRole, err 
 func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getRoleMenus", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -751,7 +751,7 @@ func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
 func (s *RemoteService) GetUserProductList(page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/listProductManageOptionSecrets", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -819,7 +819,7 @@ func (s *RemoteService) GetProductListById(productIds []uint) (ret []integration
 		queryParams = append(queryParams, paramTmp)
 	}
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
@@ -865,7 +865,7 @@ func (s *RemoteService) GetProductListById(productIds []uint) (ret []integration
 func (s *RemoteService) GetSpacesByUsername(username string) (ret []integrationDomain.SpaceItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/project/user", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -924,7 +924,7 @@ func (s *RemoteService) BatchGetSpacesByCode(spaceCodes []string) (ret []integra
 		queryParams = append(queryParams, paramTmp)
 	}
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
@@ -977,7 +977,7 @@ func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []inte
 		queryParams = append(queryParams, paramTmp)
 	}
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders("")
 	httpReq := domain.BaseRequest{
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
@@ -1021,7 +1021,7 @@ func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []inte
 func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/approvalAndMsg", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders(req)
+	headers := s.GetHeaders(req)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,

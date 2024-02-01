@@ -2,18 +2,20 @@ package tenant
 
 import (
 	"github.com/aaronchen2k/deeptest/saas/domain"
+	"github.com/aaronchen2k/deeptest/saas/remote"
 )
 
-type tenant struct {
+type Tenant struct {
 	Id       string          `json:"id"`
 	DbConfig domain.DbConfig `json:"dbConfig"`
 }
 
-func NewTenant() *tenant {
-	return new(tenant)
+func NewTenant() *Tenant {
+	return new(Tenant)
 }
 
-func (t *tenant) GetInfo(tenantId string) {
+func (t *Tenant) GetInfo(tenantId string) (tenant domain.Tenant) {
+	tenant = new(remote.Remote).GetTenant()
 	/*
 		url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
 
@@ -64,8 +66,17 @@ func (t *tenant) GetInfo(tenantId string) {
 
 		ret = respContent.Data
 	*/
+	//	t.GetInfos()
+	return
 }
 
-func (t *tenant) GetDbConfig(tenantId string) (config domain.DbConfig, err error) {
+func (t *Tenant) GetDbConfig(tenantId string) (config domain.DbConfig, err error) {
+	res := t.GetInfo(tenantId)
+	config = res.DbConfig
+	return
+}
+
+func (t *Tenant) GetInfos() (tenants []Tenant) {
+	new(remote.Remote).GetTenants()
 	return
 }

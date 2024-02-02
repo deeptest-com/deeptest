@@ -277,8 +277,8 @@ func (s *EnvironmentService) GetVarsByEnv(envId uint) (ret []domain.GlobalVar, e
 
 	for _, po := range pos {
 		ret = append(ret, domain.GlobalVar{
-			Name:       po.Name,
-			LocalValue: po.LocalValue,
+			Name:        po.Name,
+			RemoteValue: po.RemoteValue,
 		})
 	}
 

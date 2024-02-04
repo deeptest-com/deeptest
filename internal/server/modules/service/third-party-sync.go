@@ -58,7 +58,7 @@ func (s *ThirdPartySyncService) GetToken(baseUrl string) (token string, err erro
 }
 
 func (s *ThirdPartySyncService) GetClasses(serviceCode, token string, baseUrl string) (classes []integrationDomain.FindClassByServiceCodeResData) {
-	classes = s.RemoteService.LcQueryAgent(serviceCode, token, baseUrl)
+	classes = s.RemoteService.LcMlClassQueryAgent(serviceCode, token, baseUrl)
 	return
 }
 
@@ -558,6 +558,43 @@ func (s *ThirdPartySyncService) ListFunctionsByClass(baseUrl, classCode string) 
 			res = append(res, function)
 		}
 	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) GetEngineeringOptions(baseUrl string) (ret []integrationDomain.EngineeringItem, err error) {
+	token, err := s.GetToken(baseUrl)
+	if err != nil {
+		return
+	}
+
+	ret = s.RemoteService.LcContainerQueryAgent(token, baseUrl)
+
+	return
+}
+
+func (s *ThirdPartySyncService) GetServiceOptions(engineeringCode, baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
+	token, err := s.GetToken(baseUrl)
+	if err != nil {
+		return
+	}
+
+	if engineeringCode == "" {
+		ret = s.RemoteService.LcAllServiceList(token, baseUrl)
+	} else {
+		ret = s.RemoteService.LcMlServiceQueryAgent(engineeringCode, token, baseUrl)
+	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) GetAllServiceList(baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
+	token, err := s.GetToken(baseUrl)
+	if err != nil {
+		return
+	}
+
+	ret = s.RemoteService.LcAllServiceList(token, baseUrl)
 
 	return
 }

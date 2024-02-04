@@ -20,7 +20,7 @@ type SwaggerCron struct {
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
 	Cron                     *cron.ServerCron            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
-	ProjectSettingsService   *ProjectSettingsService     `inject:""`
+	ProjectCronService       *ProjectCronService         `inject:""`
 }
 
 func (s *SwaggerCron) Run(option map[string]interface{}) (f func() error) {
@@ -77,7 +77,7 @@ func (s *SwaggerCron) CallBack(option map[string]interface{}, err error) func() 
 		if !ok {
 			return
 		}
-		s.ProjectSettingsService.UpdateCronExecTimeById(taskId, consts.CronSourceSwagger, err)
+		s.ProjectCronService.UpdateCronExecTimeById(taskId, consts.CronSourceSwagger, err)
 	}
 
 	return f

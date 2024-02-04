@@ -118,7 +118,23 @@ type QueryAgentConditionParam struct {
 	Value   string `json:"value"`
 }
 
-type QueryAgentRes struct {
+type QueryAgentSortParam struct {
+	SortBy    string `json:"sortBy"`
+	SortOrder string `json:"sortOrder"`
+}
+
+type QueryAgentQueryArgs struct {
+	AttrSet   []string                   `json:"attrSet"`
+	Condition []QueryAgentConditionParam `json:"condition"`
+	Sort      QueryAgentSortParam        `json:"sort"`
+}
+
+type QueryAgentReq struct {
+	ClassName string              `json:"className"`
+	QueryArgs QueryAgentQueryArgs `json:"queryArgs"`
+}
+
+type MlClassQueryAgentRes struct {
 	ThirdPartyCommonRes
 	Data struct {
 		Total int                             `json:"total"`
@@ -139,4 +155,24 @@ type OtherUserInfo struct {
 	Username string `json:"loginName"`
 	RealName string `json:"name"`
 	Mail     string `json:"email"`
+}
+
+type EngineeringItem struct {
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
+type ContainerQueryAgentRes struct {
+	ThirdPartyCommonRes
+	Data []EngineeringItem `json:"data"`
+}
+
+type ServiceItem struct {
+	Code string `json:"code"`
+	Name string `json:"name"`
+}
+
+type MlServiceQueryAgentRes struct {
+	ThirdPartyCommonRes
+	Data []ServiceItem `json:"data"`
 }

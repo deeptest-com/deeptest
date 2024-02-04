@@ -73,7 +73,7 @@ func (r *ProjectRepo) Paginate(tenantId consts.TenantId, req v1.ProjectReqPagina
 	}
 
 	for key, project := range projects {
-		user, _ := r.UserRepo.FindById(project.AdminId)
+		user, _ := r.UserRepo.FindById(tenantId, project.AdminId)
 		projects[key].AdminName = user.Name
 	}
 
@@ -176,7 +176,7 @@ func (r *ProjectRepo) CreateProjectRes(tenantId consts.TenantId, projectId, user
 	}
 
 	// create project environment
-	err = r.EnvironmentRepo.AddDefaultForProject(projectId)
+	err = r.EnvironmentRepo.AddDefaultForProject(tenantId, projectId)
 	if err != nil {
 		logUtils.Errorf("添加项目默认环境错误", zap.String("错误:", err.Error()))
 		return
@@ -343,7 +343,7 @@ func (r *ProjectRepo) ListProjectByUser(tenantId consts.TenantId, userId uint) (
 }
 
 func (r *ProjectRepo) GetProjectRoleMapByUser(tenantId consts.TenantId, userId uint) (res map[uint]uint, err error) {
-	isAdminUser, err := r.UserRepo.IsAdminUser(userId)
+	isAdminUser, err := r.UserRepo.IsAdminUser(tenantId, userId)
 	if err != nil {
 		return
 	}
@@ -582,9 +582,9 @@ func (r *ProjectRepo) AddProjectDefaultServe(tenantId consts.TenantId, projectId
 
 	err = r.GetDB(tenantId).Create(&serve).Error
 
-	r.ServeRepo.SetCurrServeByUser(serve.ID, userId)
+	r.ServeRepo.SetCurrServeByUser(tenantId, serve.ID, userId)
 
-	r.ServeRepo.AddDefaultServer(serve.ProjectId, serve.ID)
+	r.ServeRepo.AddDefaultServer(tenantId, serve.ProjectId, serve.ID)
 
 	//调试目录不挂在目录下面
 	//	r.ServeRepo.AddDefaultTestCategory(serve.ProjectId, serve.ID)
@@ -660,7 +660,7 @@ func (r *ProjectRepo) GetAuditList(tenantId consts.TenantId, req v1.AuditProject
 		return
 	}
 
-	r.refUserName(list)
+	r.refUserName(tenantId, list)
 	r.refProjectName(tenantId, list)
 
 	data.Populate(list, count, req.Page, req.PageSize)
@@ -668,16 +668,16 @@ func (r *ProjectRepo) GetAuditList(tenantId consts.TenantId, req v1.AuditProject
 	return
 }
 
-func (r *ProjectRepo) refUserName(list []*model.ProjectMemberAudit) {
+func (r *ProjectRepo) refUserName(tenantId consts.TenantId, list []*model.ProjectMemberAudit) {
 	names := make(map[uint]string)
 	for key, item := range list {
 		if _, ok := names[item.ApplyUserId]; !ok {
-			user, _ := r.UserRepo.FindById(item.ApplyUserId)
+			user, _ := r.UserRepo.FindById(tenantId, item.ApplyUserId)
 			names[item.ApplyUserId] = user.Name
 
 		}
 		if _, ok := names[item.AuditUserId]; !ok {
-			user, _ := r.UserRepo.FindById(item.AuditUserId)
+			user, _ := r.UserRepo.FindById(tenantId, item.AuditUserId)
 			names[item.AuditUserId] = user.Name
 		}
 
@@ -752,7 +752,7 @@ func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId,
 	endpointCaseJson := _fileUtils.ReadFile("./config/sample/endpoint-case.json")
 	_commUtils.JsonDecode(endpointCaseJson, &endpointCaseMap)
 
-	user, _ := r.UserRepo.FindById(userId)
+	user, _ := r.UserRepo.FindById(tenantId, userId)
 
 	//获取场景配置
 	var scenario model.Scenario
@@ -778,7 +778,7 @@ func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId,
 			component.ServeId = int64(serveId)
 			component.Ref = "#/components/schemas/" + component.Name
 		}
-		err := r.ServeRepo.SaveSchemas(components)
+		err := r.ServeRepo.SaveSchemas(tenantId, components)
 		if err != nil {
 			return err
 		}
@@ -796,18 +796,18 @@ func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId,
 			endpoint.ProjectId = projectId
 			endpoint.CreateUser = user.Username
 			endpoint.CategoryId = int64(category.ID)
-			err = r.EndpointRepo.SaveAll(&endpoint)
+			err = r.EndpointRepo.SaveAll(tenantId, &endpoint)
 			if err != nil {
 				return err
 			}
 			interfaceIds[endpoint.Interfaces[0].Name] = endpoint.Interfaces[0]
 		}
 
-		r.ServeServerRepo.SetUrl(serveId, "http://192.168.5.224:50400")
+		r.ServeServerRepo.SetUrl(tenantId, serveId, "http://192.168.5.224:50400")
 
 		// 创建接口用例
 		for endpointName, caseDebugs := range endpointCaseMap {
-			endpoint, err := r.EndpointRepo.GetByNameAndProject(endpointName, projectId)
+			endpoint, err := r.EndpointRepo.GetByNameAndProject(tenantId, endpointName, projectId)
 			if err != nil {
 				return err
 			}
@@ -822,7 +822,7 @@ func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId,
 						CreateUserId:   userId,
 						CreateUserName: user.Username,
 					}
-					if err = r.EndpointCaseRepo.Save(&endpointCase); err != nil {
+					if err = r.EndpointCaseRepo.Save(tenantId, &endpointCase); err != nil {
 						return err
 					}
 
@@ -830,9 +830,9 @@ func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId,
 					debug.EndpointInterfaceId = interfaceIds[endpoint.Title].ID
 					debug.ServeId = serveId
 					debug.CaseInterfaceId = endpointCase.ID
-					r.DebugInterfaceRepo.Save(&debug)
+					r.DebugInterfaceRepo.Save(tenantId, &debug)
 
-					if err = r.EndpointCaseRepo.UpdateDebugInterfaceId(debug.ID, endpointCase.ID); err != nil {
+					if err = r.EndpointCaseRepo.UpdateDebugInterfaceId(tenantId, debug.ID, endpointCase.ID); err != nil {
 						return err
 					}
 				}
@@ -874,13 +874,13 @@ func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId,
 		scenario.Status = consts.Draft
 		scenario.CreateUserId = userId
 		scenario.CreateUserName = user.Username
-		scenario, err = r.ScenarioRepo.Create(scenario)
+		scenario, err = r.ScenarioRepo.Create(tenantId, scenario)
 		if err != nil {
 			return err
 		}
 
 		//TODO 添加执行器
-		err = r.createProcessorTree(&root, interfaceIds, processorEntity, projectId, scenario.ID, 0, userId, serveId)
+		err = r.createProcessorTree(tenantId, &root, interfaceIds, processorEntity, projectId, scenario.ID, 0, userId, serveId)
 		if err != nil {
 			return err
 		}
@@ -888,10 +888,10 @@ func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId,
 		plan.ProjectId = projectId
 		plan.Status = consts.Draft
 		plan.CreateUserId = userId
-		plan, _ = r.PlanRepo.Create(plan)
+		plan, _ = r.PlanRepo.Create(tenantId, plan)
 
 		//关联场景
-		err = r.PlanRepo.AddScenarios(plan.ID, []uint{scenario.ID})
+		err = r.PlanRepo.AddScenarios(tenantId, plan.ID, []uint{scenario.ID})
 		if err != nil {
 			return err
 		}
@@ -916,7 +916,7 @@ func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(tenantId consts.TenantId, use
 	return
 }
 
-func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceIds map[string]model.EndpointInterface, processorEntity map[string]interface{}, projectId, scenarioId, parentId, userId, serveId uint) error {
+func (r *ProjectRepo) createProcessorTree(tenantId consts.TenantId, root *agentExec.Processor, interfaceIds map[string]model.EndpointInterface, processorEntity map[string]interface{}, projectId, scenarioId, parentId, userId, serveId uint) error {
 	processor := model.Processor{
 		Name:                  root.Name,
 		EntityCategory:        root.EntityCategory,
@@ -928,8 +928,8 @@ func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceId
 		ProcessorInterfaceSrc: root.ProcessorInterfaceSrc,
 		CreatedBy:             userId,
 	}
-	processor.Ordr = r.ScenarioNodeRepo.GetMaxOrder(processor.ParentId)
-	err := r.ScenarioNodeRepo.Save(&processor)
+	processor.Ordr = r.ScenarioNodeRepo.GetMaxOrder(tenantId, processor.ParentId)
+	err := r.ScenarioNodeRepo.Save(tenantId, &processor)
 	if err != nil {
 		return err
 	}
@@ -943,71 +943,71 @@ func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceId
 			_commUtils.Map2Struct(item, &entity)
 			entity.ProcessorID = processor.ID
 			entity.ParentID = parentId
-			err = r.ScenarioProcessorRepo.SaveGroup(&entity)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+			err = r.ScenarioProcessorRepo.SaveGroup(tenantId, &entity)
+			r.ScenarioNodeRepo.UpdateEntityId(tenantId, processor.ID, entity.ID)
 
 		} else if processorCategory == consts.ProcessorLogic {
 			var entity model.ProcessorLogic
 			_commUtils.Map2Struct(item, &entity)
 			entity.ProcessorID = processor.ID
 			entity.ParentID = parentId
-			err = r.ScenarioProcessorRepo.SaveLogic(&entity)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+			err = r.ScenarioProcessorRepo.SaveLogic(tenantId, &entity)
+			r.ScenarioNodeRepo.UpdateEntityId(tenantId, processor.ID, entity.ID)
 
 		} else if processorCategory == consts.ProcessorLoop {
 			var entity model.ProcessorLoop
 			_commUtils.Map2Struct(item, &entity)
 			entity.ProcessorID = processor.ID
 			entity.ParentID = parentId
-			err = r.ScenarioProcessorRepo.SaveLoop(&entity)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+			err = r.ScenarioProcessorRepo.SaveLoop(tenantId, &entity)
+			r.ScenarioNodeRepo.UpdateEntityId(tenantId, processor.ID, entity.ID)
 
 		} else if processorCategory == consts.ProcessorTimer {
 			var entity model.ProcessorTimer
 			_commUtils.Map2Struct(item, &entity)
 			entity.ProcessorID = processor.ID
 			entity.ParentID = parentId
-			err = r.ScenarioProcessorRepo.SaveTimer(&entity)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+			err = r.ScenarioProcessorRepo.SaveTimer(tenantId, &entity)
+			r.ScenarioNodeRepo.UpdateEntityId(tenantId, processor.ID, entity.ID)
 
 		} else if processorCategory == consts.ProcessorPrint {
 			var entity model.ProcessorPrint
 			_commUtils.Map2Struct(item, &entity)
 			entity.ProcessorID = processor.ID
 			entity.ParentID = parentId
-			err = r.ScenarioProcessorRepo.SavePrint(&entity)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+			err = r.ScenarioProcessorRepo.SavePrint(tenantId, &entity)
+			r.ScenarioNodeRepo.UpdateEntityId(tenantId, processor.ID, entity.ID)
 		} else if processorCategory == consts.ProcessorVariable {
 			var entity model.ProcessorVariable
 			_commUtils.Map2Struct(item, &entity)
 			entity.ProcessorID = processor.ID
 			entity.ParentID = parentId
-			err = r.ScenarioProcessorRepo.SaveVariable(&entity)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+			err = r.ScenarioProcessorRepo.SaveVariable(tenantId, &entity)
+			r.ScenarioNodeRepo.UpdateEntityId(tenantId, processor.ID, entity.ID)
 
 		} else if processorCategory == consts.ProcessorCookie {
 			var entity model.ProcessorCookie
 			_commUtils.Map2Struct(item, &entity)
 			entity.ProcessorID = processor.ID
 			entity.ParentID = parentId
-			err = r.ScenarioProcessorRepo.SaveCookie(&entity)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+			err = r.ScenarioProcessorRepo.SaveCookie(tenantId, &entity)
+			r.ScenarioNodeRepo.UpdateEntityId(tenantId, processor.ID, entity.ID)
 
 		} else if processorCategory == consts.ProcessorAssertion {
 			var entity model.ProcessorAssertion
 			_commUtils.Map2Struct(item, &entity)
 			entity.ProcessorID = processor.ID
 			entity.ParentID = parentId
-			err = r.ScenarioProcessorRepo.SaveAssertion(&entity)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+			err = r.ScenarioProcessorRepo.SaveAssertion(tenantId, &entity)
+			r.ScenarioNodeRepo.UpdateEntityId(tenantId, processor.ID, entity.ID)
 
 		} else if processorCategory == consts.ProcessorData {
 			var entity model.ProcessorData
 			_commUtils.Map2Struct(item, &entity)
 			entity.ProcessorID = processor.ID
 			entity.ParentID = parentId
-			err = r.ScenarioProcessorRepo.SaveData(&entity)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, entity.ID)
+			err = r.ScenarioProcessorRepo.SaveData(tenantId, &entity)
+			r.ScenarioNodeRepo.UpdateEntityId(tenantId, processor.ID, entity.ID)
 		} else if processorCategory == consts.ProcessorInterface {
 			var debug model.DebugInterface
 			_commUtils.Map2Struct(item, &debug)
@@ -1015,17 +1015,17 @@ func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceId
 			debug.ProjectId = projectId
 			debug.ServeId = serveId
 			debug.ScenarioProcessorId = processor.ID
-			err = r.ScenarioInterfaceRepo.SaveDebugData(&debug)
-			r.ScenarioProcessorRepo.UpdateInterfaceId(debug.ScenarioProcessorId, debug.ID)
-			r.ScenarioProcessorRepo.UpdateMethod(debug.ScenarioProcessorId, debug.Method)
-			r.ScenarioNodeRepo.UpdateEntityId(processor.ID, debug.ID)
+			err = r.ScenarioInterfaceRepo.SaveDebugData(tenantId, &debug)
+			r.ScenarioProcessorRepo.UpdateInterfaceId(tenantId, debug.ScenarioProcessorId, debug.ID)
+			r.ScenarioProcessorRepo.UpdateMethod(tenantId, debug.ScenarioProcessorId, debug.Method)
+			r.ScenarioNodeRepo.UpdateEntityId(tenantId, processor.ID, debug.ID)
 
 		}
 
 	}
 
 	for _, child := range root.Children {
-		r.createProcessorTree(child, interfaceIds, processorEntity, projectId, scenarioId, processor.ID, userId, serveId)
+		r.createProcessorTree(tenantId, child, interfaceIds, processorEntity, projectId, scenarioId, processor.ID, userId, serveId)
 	}
 
 	return nil

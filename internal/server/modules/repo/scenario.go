@@ -24,27 +24,27 @@ type ScenarioRepo struct {
 	RelaPlanScenarioRepo *RelaPlanScenarioRepo `inject:""`
 }
 
-func (r *ScenarioRepo) ListByProject(projectId int) (pos []model.Scenario, err error) {
-	err = r.DB.
+func (r *ScenarioRepo) ListByProject(tenantId consts.TenantId, projectId int) (pos []model.Scenario, err error) {
+	err = r.GetDB(tenantId).
 		Where("project_id=?", projectId).
 		Where("NOT deleted").
 		Find(&pos).Error
 	return
 }
 
-func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
+func (r *ScenarioRepo) Paginate(tenantId consts.TenantId, req v1.ScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 	var categoryIds []uint
 
 	if req.CategoryId > 0 {
-		categoryIds, err = r.BaseRepo.GetDescendantIds(uint(req.CategoryId), model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetDescendantIds(tenantId, uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.ScenarioCategory, projectId)
 		if err != nil {
 			return
 		}
 	}
 
-	db := r.DB.Model(&model.Scenario{}).
+	db := r.GetDB(tenantId).Model(&model.Scenario{}).
 		Where("project_id = ? AND NOT deleted",
 			projectId)
 
@@ -91,8 +91,8 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 	return
 }
 
-func (r *ScenarioRepo) Get(id uint) (scenario model.Scenario, err error) {
-	err = r.DB.Model(&model.Scenario{}).Where("id = ?", id).First(&scenario).Error
+func (r *ScenarioRepo) Get(tenantId consts.TenantId, id uint) (scenario model.Scenario, err error) {
+	err = r.GetDB(tenantId).Model(&model.Scenario{}).Where("id = ?", id).First(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
 		return scenario, err
@@ -101,8 +101,8 @@ func (r *ScenarioRepo) Get(id uint) (scenario model.Scenario, err error) {
 	return scenario, nil
 }
 
-func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.Scenario, err error) {
-	db := r.DB.Model(&model.Scenario{}).
+func (r *ScenarioRepo) FindByName(tenantId consts.TenantId, scenarioName string, id uint) (scenario model.Scenario, err error) {
+	db := r.GetDB(tenantId).Model(&model.Scenario{}).
 		Where("name = ? AND NOT deleted", scenarioName)
 
 	if id > 0 {
@@ -114,21 +114,21 @@ func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.
 	return
 }
 
-func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, err error) {
+func (r *ScenarioRepo) Create(tenantId consts.TenantId, scenario model.Scenario) (ret model.Scenario, err error) {
 	//po, err := r.FindExpressionByName(scenario.Name, 0)
 	//if po.Name != "" {
 	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
 	//	return
 	//}
 
-	err = r.DB.Model(&model.Scenario{}).Create(&scenario).Error
+	err = r.GetDB(tenantId).Model(&model.Scenario{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))
 
 		return
 	}
 
-	err = r.UpdateSerialNumber(scenario.ID, scenario.ProjectId)
+	err = r.UpdateSerialNumber(tenantId, scenario.ID, scenario.ProjectId)
 	if err != nil {
 		logUtils.Errorf("update scenario serial number error", zap.String("error:", err.Error()))
 		return
@@ -138,7 +138,7 @@ func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, err 
 	return
 }
 
-func (r *ScenarioRepo) Update(req model.Scenario) error {
+func (r *ScenarioRepo) Update(tenantId consts.TenantId, req model.Scenario) error {
 	/*
 		values := map[string]interface{}{
 			"name":             req.Name,
@@ -151,7 +151,7 @@ func (r *ScenarioRepo) Update(req model.Scenario) error {
 			"status":           req.Status,
 		}
 	*/
-	err := r.DB.Model(&req).Where("id = ?", req.ID).Updates(req).Error
+	err := r.GetDB(tenantId).Model(&req).Where("id = ?", req.ID).Updates(req).Error
 	if err != nil {
 		logUtils.Errorf("update scenario error", zap.String("error:", err.Error()))
 		return err
@@ -160,8 +160,8 @@ func (r *ScenarioRepo) Update(req model.Scenario) error {
 	return nil
 }
 
-func (r *ScenarioRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.Scenario{}).Where("id = ?", id).
+func (r *ScenarioRepo) DeleteById(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Scenario{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))
@@ -171,7 +171,7 @@ func (r *ScenarioRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
+func (r *ScenarioRepo) DeleteChildren(tenantId consts.TenantId, ids []int, tx *gorm.DB) (err error) {
 	err = tx.Model(&model.Scenario{}).Where("id IN (?)", ids).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
@@ -182,7 +182,7 @@ func (r *ScenarioRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
 	return nil
 }
 
-func (r *ScenarioRepo) GetChildrenIds(id uint) (ids []int, err error) {
+func (r *ScenarioRepo) GetChildrenIds(tenantId consts.TenantId, id uint) (ids []int, err error) {
 	tmpl := `
 		WITH RECURSIVE scenario AS (
 			SELECT * FROM biz_scenario WHERE id = %d
@@ -192,7 +192,7 @@ func (r *ScenarioRepo) GetChildrenIds(id uint) (ids []int, err error) {
 		SELECT id FROM scenario WHERE id != %d
     `
 	sql := fmt.Sprintf(tmpl, id, id)
-	err = r.DB.Raw(sql).Scan(&ids).Error
+	err = r.GetDB(tenantId).Raw(sql).Scan(&ids).Error
 	if err != nil {
 		logUtils.Errorf("get children scenario error", zap.String("error:", err.Error()))
 		return
@@ -201,27 +201,27 @@ func (r *ScenarioRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	return
 }
 
-func (r *ScenarioRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+func (r *ScenarioRepo) UpdateSerialNumber(tenantId consts.TenantId, id, projectId uint) (err error) {
 	var project model.Project
-	project, err = r.ProjectRepo.Get(projectId)
+	project, err = r.ProjectRepo.Get(tenantId, projectId)
 	if err != nil {
 		return
 	}
 
-	err = r.DB.Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TS-"+strconv.Itoa(int(id))).Error
+	err = r.GetDB(tenantId).Model(&model.Scenario{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TS-"+strconv.Itoa(int(id))).Error
 	return
 }
 
-func (r *ScenarioRepo) ListScenarioRelation(id uint) (pos []model.RelaPlanScenario, err error) {
-	err = r.DB.
+func (r *ScenarioRepo) ListScenarioRelation(tenantId consts.TenantId, id uint) (pos []model.RelaPlanScenario, err error) {
+	err = r.GetDB(tenantId).
 		Where("scenario_id=?", id).
 		Where("NOT deleted").
 		Find(&pos).Error
 	return
 }
 
-func (r *ScenarioRepo) AddPlans(scenarioId uint, planIds []int) (err error) {
-	relations, _ := r.ListScenarioRelation(scenarioId)
+func (r *ScenarioRepo) AddPlans(tenantId consts.TenantId, scenarioId uint, planIds []int) (err error) {
+	relations, _ := r.ListScenarioRelation(tenantId, scenarioId)
 	existMap := map[uint]bool{}
 	for _, item := range relations {
 		existMap[item.ScenarioId] = true
@@ -243,7 +243,7 @@ func (r *ScenarioRepo) AddPlans(scenarioId uint, planIds []int) (err error) {
 
 	for _, po := range pos {
 		po.Ordr = r.RelaPlanScenarioRepo.GetMaxOrder(po.PlanId)
-		err = r.DB.Create(&po).Error
+		err = r.GetDB(tenantId).Create(&po).Error
 		if err != nil {
 			return
 		}
@@ -252,14 +252,14 @@ func (r *ScenarioRepo) AddPlans(scenarioId uint, planIds []int) (err error) {
 	return
 }
 
-func (r *ScenarioRepo) PlanList(req v1.ScenarioPlanReqPaginate, scenarioId int) (data _domain.PageData, err error) {
-	relations, _ := r.ListScenarioRelation(uint(scenarioId))
+func (r *ScenarioRepo) PlanList(tenantId consts.TenantId, req v1.ScenarioPlanReqPaginate, scenarioId int) (data _domain.PageData, err error) {
+	relations, _ := r.ListScenarioRelation(tenantId, uint(scenarioId))
 	var planIds []uint
 	for _, item := range relations {
 		planIds = append(planIds, item.PlanId)
 	}
 
-	db := r.DB.Model(&model.Plan{}).Where("not deleted and project_id=?", req.ProjectId)
+	db := r.GetDB(tenantId).Model(&model.Plan{}).Where("not deleted and project_id=?", req.ProjectId)
 
 	if req.Ref && len(planIds) == 0 {
 		return
@@ -303,33 +303,33 @@ func (r *ScenarioRepo) PlanList(req v1.ScenarioPlanReqPaginate, scenarioId int) 
 		return
 	}
 
-	r.PlanRepo.CombinePassRate(plans)
-	r.PlanRepo.CombineUserName(plans)
+	r.PlanRepo.CombinePassRate(tenantId, plans)
+	r.PlanRepo.CombineUserName(tenantId, plans)
 	data.Populate(plans, count, req.Page, req.PageSize)
 
 	return
 }
 
-func (r *ScenarioRepo) UpdateStatus(id uint, status consts.TestStatus, updateUserId uint, updateUserName string) error {
+func (r *ScenarioRepo) UpdateStatus(tenantId consts.TenantId, id uint, status consts.TestStatus, updateUserId uint, updateUserName string) error {
 	fields := map[string]interface{}{
 		"status":           status,
 		"update_user_id":   updateUserId,
 		"update_user_name": updateUserName,
 	}
-	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Updates(fields).Error
+	return r.GetDB(tenantId).Model(&model.Scenario{}).Where("id = ?", id).Updates(fields).Error
 }
 
-func (r *ScenarioRepo) UpdatePriority(id uint, priority string, updateUserId uint, updateUserName string) error {
+func (r *ScenarioRepo) UpdatePriority(tenantId consts.TenantId, id uint, priority string, updateUserId uint, updateUserName string) error {
 	fields := map[string]interface{}{
 		"priority":         priority,
 		"update_user_id":   updateUserId,
 		"update_user_name": updateUserName,
 	}
-	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Updates(fields).Error
+	return r.GetDB(tenantId).Model(&model.Scenario{}).Where("id = ?", id).Updates(fields).Error
 }
 
-func (r *ScenarioRepo) GetByIds(ids []uint) (scenarios []model.Scenario, err error) {
-	err = r.DB.Model(&model.Scenario{}).Where("id IN (?)", ids).Find(&scenarios).Error
+func (r *ScenarioRepo) GetByIds(tenantId consts.TenantId, ids []uint) (scenarios []model.Scenario, err error) {
+	err = r.GetDB(tenantId).Model(&model.Scenario{}).Where("id IN (?)", ids).Find(&scenarios).Error
 	if err != nil {
 		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
 		return scenarios, err
@@ -338,24 +338,24 @@ func (r *ScenarioRepo) GetByIds(ids []uint) (scenarios []model.Scenario, err err
 	return
 }
 
-func (r *ScenarioRepo) RemovePlans(scenarioId uint, planIds []int) (err error) {
-	err = r.DB.Model(&model.RelaPlanScenario{}).Where("scenario_id=? and plan_id in (?)", scenarioId, planIds).Update("deleted", true).Error
+func (r *ScenarioRepo) RemovePlans(tenantId consts.TenantId, scenarioId uint, planIds []int) (err error) {
+	err = r.GetDB(tenantId).Model(&model.RelaPlanScenario{}).Where("scenario_id=? and plan_id in (?)", scenarioId, planIds).Update("deleted", true).Error
 	return
 }
 
-func (r *ScenarioRepo) GetCategoryCount(result interface{}, projectId uint) (err error) {
-	err = r.DB.Raw("select count(id) count, category_id from "+model.Scenario{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
+func (r *ScenarioRepo) GetCategoryCount(tenantId consts.TenantId, result interface{}, projectId uint) (err error) {
+	err = r.GetDB(tenantId).Raw("select count(id) count, category_id from "+model.Scenario{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }
 
-func (r *ScenarioRepo) DeleteByCategoryIds(categoryIds []uint) (err error) {
-	err = r.DB.Model(&model.Scenario{}).
+func (r *ScenarioRepo) DeleteByCategoryIds(tenantId consts.TenantId, categoryIds []uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Scenario{}).
 		Where("category_id IN (?)", categoryIds).
 		Update("deleted", 1).Error
 
 	return
 }
 
-func (r *ScenarioRepo) UpdateCurrEnvId(id, currEnvId uint) error {
-	return r.DB.Model(&model.Scenario{}).Where("id = ?", id).Update("curr_env_id", currEnvId).Error
+func (r *ScenarioRepo) UpdateCurrEnvId(tenantId consts.TenantId, id, currEnvId uint) error {
+	return r.GetDB(tenantId).Model(&model.Scenario{}).Where("id = ?", id).Update("curr_env_id", currEnvId).Error
 }

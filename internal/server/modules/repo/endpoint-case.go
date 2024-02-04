@@ -101,23 +101,23 @@ func (r *EndpointCaseRepo) GetDetail(tenantId consts.TenantId, caseId uint) (end
 
 	endpointCase, err = r.Get(tenantId, caseId)
 
-	debugInterface, _ := r.DebugInterfaceRepo.Get(endpointCase.DebugInterfaceId)
+	debugInterface, _ := r.DebugInterfaceRepo.Get(tenantId, endpointCase.DebugInterfaceId)
 
-	debugData, _ := r.DebugInterfaceRepo.GetDetail(debugInterface.ID)
+	debugData, _ := r.DebugInterfaceRepo.GetDetail(tenantId, debugInterface.ID)
 	endpointCase.DebugData = &debugData
 
 	return
 }
 
-func (r *EndpointCaseRepo) Save(po *model.EndpointCase) (err error) {
+func (r *EndpointCaseRepo) Save(tenantId consts.TenantId, po *model.EndpointCase) (err error) {
 	err = r.GetDB(tenantId).Save(po).Error
 
-	err = r.UpdateSerialNumber(po.ID, po.ProjectId)
+	err = r.UpdateSerialNumber(tenantId, po.ID, po.ProjectId)
 
 	return
 }
 
-func (r *EndpointCaseRepo) UpdateName(req serverDomain.EndpointCaseSaveReq) (err error) {
+func (r *EndpointCaseRepo) UpdateName(tenantId consts.TenantId, req serverDomain.EndpointCaseSaveReq) (err error) {
 	err = r.GetDB(tenantId).Model(&model.EndpointCase{}).
 		Where("id=?", req.ID).
 		Update("name", req.Name).Error
@@ -125,7 +125,7 @@ func (r *EndpointCaseRepo) UpdateName(req serverDomain.EndpointCaseSaveReq) (err
 	return
 }
 
-func (r *EndpointCaseRepo) Remove(id uint) (err error) {
+func (r *EndpointCaseRepo) Remove(tenantId consts.TenantId, id uint) (err error) {
 	err = r.GetDB(tenantId).Model(&model.EndpointCase{}).
 		Where("id = ?", id).
 		Update("deleted", true).Error
@@ -133,9 +133,9 @@ func (r *EndpointCaseRepo) Remove(id uint) (err error) {
 	return
 }
 
-func (r *EndpointCaseRepo) SaveDebugData(interf *model.EndpointCase) (err error) {
+func (r *EndpointCaseRepo) SaveDebugData(tenantId consts.TenantId, interf *model.EndpointCase) (err error) {
 	r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
-		err = r.UpdateDebugInfo(interf)
+		err = r.UpdateDebugInfo(tenantId, interf)
 		if err != nil {
 			return err
 		}
@@ -196,12 +196,12 @@ func (r *EndpointCaseRepo) ListByProjectIdAndServeId(tenantId consts.TenantId, p
 	return
 }
 
-func (r *EndpointCaseRepo) GetEndpointCount(projectId uint, serveIds consts.Integers) (result []serverDomain.EndpointCount, err error) {
+func (r *EndpointCaseRepo) GetEndpointCount(tenantId consts.TenantId, projectId uint, serveIds consts.Integers) (result []serverDomain.EndpointCount, err error) {
 	err = r.GetDB(tenantId).Raw("select count(id) count,endpoint_id from "+model.EndpointCase{}.TableName()+" where not deleted and not disabled and project_id=? and serve_id in ? group by endpoint_id", projectId, serveIds).Scan(&result).Error
 	return
 }
 
-func (r *EndpointCaseRepo) GetCategoryEndpointCase(projectId uint, serveIds consts.Integers) (result []serverDomain.CategoryEndpointCase, err error) {
+func (r *EndpointCaseRepo) GetCategoryEndpointCase(tenantId consts.TenantId, projectId uint, serveIds consts.Integers) (result []serverDomain.CategoryEndpointCase, err error) {
 
 	sql := fmt.Sprintf("select concat('case_',ec.id) as case_unique_id,concat('endpoint_',e.id) as endpoint_unique_id,ec.id as case_id,ec.name as case_name,i.method,ec.`desc` as case_desc,ec.endpoint_id as case_endpoint_id,ec.debug_interface_id as case_debug_interface_id,ec.project_id,ec.serve_id,e.id as endpoint_id,e.title as endpoint_title,e.description as endpoint_description,e.category_id as category_id from biz_endpoint_case ec left join biz_endpoint e on ec.endpoint_id=e.id left join biz_debug_interface i on ec.debug_interface_id=i.id Where ec.project_id= %d and not e.deleted and not ec.deleted", projectId)
 	if len(serveIds) != 0 {
@@ -211,7 +211,7 @@ func (r *EndpointCaseRepo) GetCategoryEndpointCase(projectId uint, serveIds cons
 	return
 }
 
-func (r *EndpointCaseRepo) UpdateDebugInterfaceId(debugInterfaceId, id uint) (err error) {
+func (r *EndpointCaseRepo) UpdateDebugInterfaceId(tenantId consts.TenantId, debugInterfaceId, id uint) (err error) {
 	err = r.GetDB(tenantId).Model(&model.EndpointCase{}).
 		Where("id=?", id).
 		Update("debug_interface_id", debugInterfaceId).Error
@@ -219,7 +219,7 @@ func (r *EndpointCaseRepo) UpdateDebugInterfaceId(debugInterfaceId, id uint) (er
 	return
 }
 
-func (r *EndpointCaseRepo) ListByCaseType(endpointId uint, caseTypes []consts.CaseType) (pos []model.EndpointCase, err error) {
+func (r *EndpointCaseRepo) ListByCaseType(tenantId consts.TenantId, endpointId uint, caseTypes []consts.CaseType) (pos []model.EndpointCase, err error) {
 	err = r.GetDB(tenantId).
 		Where("endpoint_id=?", endpointId).
 		Where("case_type in ?", caseTypes).

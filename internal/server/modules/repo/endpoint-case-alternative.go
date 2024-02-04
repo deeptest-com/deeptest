@@ -48,9 +48,9 @@ func (r *EndpointCaseAlternativeRepo) GetDetail(tenantId consts.TenantId, caseId
 
 	endpointCase, err = r.Get(tenantId, caseId)
 
-	debugInterface, _ := r.DebugInterfaceRepo.Get(endpointCase.DebugInterfaceId)
+	debugInterface, _ := r.DebugInterfaceRepo.Get(tenantId, endpointCase.DebugInterfaceId)
 
-	debugData, _ := r.DebugInterfaceRepo.GetDetail(debugInterface.ID)
+	debugData, _ := r.DebugInterfaceRepo.GetDetail(tenantId, debugInterface.ID)
 	endpointCase.DebugData = &debugData
 
 	return
@@ -59,7 +59,7 @@ func (r *EndpointCaseAlternativeRepo) GetDetail(tenantId consts.TenantId, caseId
 func (r *EndpointCaseAlternativeRepo) Save(tenantId consts.TenantId, po *model.EndpointCase) (err error) {
 	err = r.GetDB(tenantId).Save(po).Error
 
-	err = r.UpdateSerialNumber(po.ID, po.ProjectId)
+	err = r.UpdateSerialNumber(tenantId, po.ID, po.ProjectId)
 
 	return
 }
@@ -82,7 +82,7 @@ func (r *EndpointCaseAlternativeRepo) Remove(tenantId consts.TenantId, id uint) 
 
 func (r *EndpointCaseAlternativeRepo) SaveDebugData(tenantId consts.TenantId, interf *model.EndpointCase) (err error) {
 	r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
-		err = r.UpdateDebugInfo(interf)
+		err = r.UpdateDebugInfo(tenantId, interf)
 		if err != nil {
 			return err
 		}
@@ -139,7 +139,7 @@ func (r *EndpointCaseAlternativeRepo) GetEndpointCount(tenantId consts.TenantId,
 	return
 }
 
-func (r *EndpointCaseAlternativeRepo) GetCategoryEndpointCase(tenantId consts.TenantId, serveId uint) (result []serverDomain.CategoryEndpointCase, err error) {
+func (r *EndpointCaseAlternativeRepo) GetCategoryEndpointCase(tenantId consts.TenantId, projectId, serveId uint) (result []serverDomain.CategoryEndpointCase, err error) {
 	err = r.GetDB(tenantId).Raw("select concat('case_',ec.id) as case_unique_id,concat('endpoint_',e.id) as endpoint_unique_id,ec.id as case_id,ec.name as case_name,i.method,ec.`desc` as case_desc,ec.endpoint_id as case_endpoint_id,ec.debug_interface_id as case_debug_interface_id,ec.project_id,ec.serve_id,e.id as endpoint_id,e.title as endpoint_title,e.description as endpoint_description,e.category_id as category_id from biz_endpoint_case ec left join biz_endpoint e on ec.endpoint_id=e.id left join biz_debug_interface i on ec.debug_interface_id=i.id Where ec.project_id= ? and ec.serve_id=? and not e.deleted and not ec.deleted", projectId, serveId).Scan(&result).Error
 	return
 }

@@ -77,7 +77,7 @@ func (r *ProjectRoleRepo) BatchCreate(tenantId consts.TenantId, projectRoles []m
 
 func (r *ProjectRoleRepo) ProjectUserRoleList(tenantId consts.TenantId, userId, projectId uint) (projectRole model.ProjectRole, err error) {
 	//获取用户在项目中拥有的角色
-	projectMemberRole, err := r.ProjectRepo.FindRolesByProjectAndUser(projectId, userId)
+	projectMemberRole, err := r.ProjectRepo.FindRolesByProjectAndUser(tenantId, projectId, userId)
 	if err != nil {
 		return
 	}

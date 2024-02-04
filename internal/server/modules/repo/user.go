@@ -69,7 +69,7 @@ func (r *UserRepo) Paginate(tenantId consts.TenantId, req serverDomain.UserReqPa
 	}
 
 	// 查询用户角色
-	r.GetSysRoles(users...)
+	r.GetSysRoles(tenantId, users...)
 
 	data.Result = users
 	data.Populate(users, count, req.Page, req.PageSize)
@@ -78,7 +78,7 @@ func (r *UserRepo) Paginate(tenantId consts.TenantId, req serverDomain.UserReqPa
 }
 
 // GetSysRoles
-func (r *UserRepo) GetSysRoles(users ...*serverDomain.UserResp) {
+func (r *UserRepo) GetSysRoles(tenantId consts.TenantId, users ...*serverDomain.UserResp) {
 	var roleIds []string
 	userRoleIds := make(map[uint][]string, 10)
 
@@ -99,7 +99,7 @@ func (r *UserRepo) GetSysRoles(users ...*serverDomain.UserResp) {
 		roleIds = append(roleIds, userRoleId...)
 	}
 
-	roles, err := r.RoleRepo.FindInId(roleIds)
+	roles, err := r.RoleRepo.FindInId(tenantId, roleIds)
 	if err != nil {
 		logUtils.Errorf("get role get err ", zap.String("错误:", err.Error()))
 	}
@@ -146,7 +146,7 @@ func (r *UserRepo) FindByUserName(tenantId consts.TenantId, username string, ids
 		return user, err
 	}
 
-	r.GetSysRoles(&user)
+	r.GetSysRoles(tenantId, &user)
 	return user, nil
 }
 
@@ -163,7 +163,7 @@ func (r *UserRepo) FindByEmail(tenantId consts.TenantId, email string, ids ...ui
 		return user, err
 	}
 
-	r.GetSysRoles(&user)
+	r.GetSysRoles(tenantId, &user)
 	return user, nil
 }
 
@@ -375,7 +375,7 @@ func (r *UserRepo) FindDetailById(tenantId consts.TenantId, id uint) (user serve
 		return user, err
 	}
 
-	r.GetSysRoles(&user)
+	r.GetSysRoles(tenantId, &user)
 	r.GetProjectRoles(tenantId, &user)
 
 	return user, nil

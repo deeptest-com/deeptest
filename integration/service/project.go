@@ -23,15 +23,15 @@ type ProjectService struct {
 	MessageService  *MessageService       `inject:""`
 }
 
-func (s *ProjectService) GetUserProductList(page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
+func (s *ProjectService) GetUserProductList(tenantId consts.TenantId, page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
 	return s.RemoteService.GetUserProductList(page, pageSize, username)
 }
 
-func (s *ProjectService) GetSpacesByUsername(username string) (ret []integrationDomain.SpaceItem, err error) {
+func (s *ProjectService) GetSpacesByUsername(tenantId consts.TenantId, username string) (ret []integrationDomain.SpaceItem, err error) {
 	return s.RemoteService.GetSpacesByUsername(username)
 }
 
-func (s *ProjectService) AddProjectRelatedProducts(projectId uint, products []uint) (err error) {
+func (s *ProjectService) AddProjectRelatedProducts(tenantId consts.TenantId, projectId uint, products []uint) (err error) {
 	relations := make([]model.ProjectProductRel, 0)
 	for _, product := range products {
 		relations = append(relations, model.ProjectProductRel{
@@ -41,13 +41,13 @@ func (s *ProjectService) AddProjectRelatedProducts(projectId uint, products []ui
 	}
 
 	if len(relations) > 0 {
-		err = s.IntegrationRepo.BatchCreateProjectProductRel(relations)
+		err = s.IntegrationRepo.BatchCreateProjectProductRel(tenantId, relations)
 	}
 
 	return
 }
 
-func (s *ProjectService) AddProjectRelatedSpaces(projectId uint, spaces []string) (err error) {
+func (s *ProjectService) AddProjectRelatedSpaces(tenantId consts.TenantId, projectId uint, spaces []string) (err error) {
 	relations := make([]model.ProjectSpaceRel, 0)
 	for _, space := range spaces {
 		relations = append(relations, model.ProjectSpaceRel{
@@ -57,65 +57,65 @@ func (s *ProjectService) AddProjectRelatedSpaces(projectId uint, spaces []string
 	}
 
 	if len(relations) > 0 {
-		err = s.IntegrationRepo.BatchCreateProjectSpaceRel(relations)
+		err = s.IntegrationRepo.BatchCreateProjectSpaceRel(tenantId, relations)
 	}
 
 	return
 }
 
-func (s *ProjectService) SyncSpaceMembers(projectId uint, spaces []string) (err error) {
-	members, memberRoles, err := s.GetUserInfoMap(spaces)
+func (s *ProjectService) SyncSpaceMembers(tenantId consts.TenantId, projectId uint, spaces []string) (err error) {
+	members, memberRoles, err := s.GetUserInfoMap(tenantId, spaces)
 	if err != nil {
 		return
 	}
 
-	err = s.AddMembers(projectId, members, memberRoles)
+	err = s.AddMembers(tenantId, projectId, members, memberRoles)
 
 	return
 }
 
-func (s *ProjectService) Save(req integrationDomain.ProjectReq, projectId uint) (err error) {
+func (s *ProjectService) Save(tenantId consts.TenantId, req integrationDomain.ProjectReq, projectId uint) (err error) {
 	if config.CONFIG.System.SysEnv != "ly" {
 		return
 	}
 
-	if err = s.SaveProducts(projectId, req.Products); err != nil {
+	if err = s.SaveProducts(tenantId, projectId, req.Products); err != nil {
 		return
 	}
 
-	if err = s.SaveSpaces(projectId, req.Spaces); err != nil {
+	if err = s.SaveSpaces(tenantId, projectId, req.Spaces); err != nil {
 		return
 	}
 
 	if req.SyncMembers {
-		err = s.SyncSpaceMembers(projectId, req.Spaces)
+		err = s.SyncSpaceMembers(tenantId, projectId, req.Spaces)
 	}
 
 	return
 }
 
-func (s *ProjectService) SaveProducts(projectId uint, products []uint) (err error) {
-	if err = s.IntegrationRepo.DeleteProductByProject(projectId); err != nil {
+func (s *ProjectService) SaveProducts(tenantId consts.TenantId, projectId uint, products []uint) (err error) {
+	if err = s.IntegrationRepo.DeleteProductByProject(tenantId, projectId); err != nil {
 		return
 	}
 
-	err = s.AddProjectRelatedProducts(projectId, products)
+	err = s.AddProjectRelatedProducts(tenantId, projectId, products)
 
 	return
 }
 
-func (s *ProjectService) SaveSpaces(projectId uint, spaces []string) (err error) {
-	if err = s.IntegrationRepo.DeleteSpaceByProject(projectId); err != nil {
+func (s *ProjectService) SaveSpaces(tenantId consts.TenantId, projectId uint, spaces []string) (err error) {
+	if err = s.IntegrationRepo.DeleteSpaceByProject(tenantId, projectId); err != nil {
 		return
 	}
 
-	err = s.AddProjectRelatedSpaces(projectId, spaces)
+	err = s.AddProjectRelatedSpaces(tenantId, projectId, spaces)
 
 	return
 }
 
-func (s *ProjectService) GetProductsByProject(projectId uint) (res []integrationDomain.ProductBaseItem, err error) {
-	productIds, err := s.IntegrationRepo.GetProductsByProject(projectId)
+func (s *ProjectService) GetProductsByProject(tenantId consts.TenantId, projectId uint) (res []integrationDomain.ProductBaseItem, err error) {
+	productIds, err := s.IntegrationRepo.GetProductsByProject(tenantId, projectId)
 	if err != nil {
 		return
 	}
@@ -125,8 +125,8 @@ func (s *ProjectService) GetProductsByProject(projectId uint) (res []integration
 	return
 }
 
-func (s *ProjectService) GetSpacesByProject(projectId uint) (res []integrationDomain.SpaceItem, err error) {
-	spaceCodes, err := s.IntegrationRepo.GetSpacesByProject(projectId)
+func (s *ProjectService) GetSpacesByProject(tenantId consts.TenantId, projectId uint) (res []integrationDomain.SpaceItem, err error) {
+	spaceCodes, err := s.IntegrationRepo.GetSpacesByProject(tenantId, projectId)
 	if err != nil {
 		return
 	}
@@ -136,13 +136,13 @@ func (s *ProjectService) GetSpacesByProject(projectId uint) (res []integrationDo
 	return
 }
 
-func (s *ProjectService) Detail(projectId uint) (res integrationDomain.ProjectDetail, err error) {
-	products, err := s.GetProductsByProject(projectId)
+func (s *ProjectService) Detail(tenantId consts.TenantId, projectId uint) (res integrationDomain.ProjectDetail, err error) {
+	products, err := s.GetProductsByProject(tenantId, projectId)
 	if err != nil {
 		return
 	}
 
-	spaces, err := s.GetSpacesByProject(projectId)
+	spaces, err := s.GetSpacesByProject(tenantId, projectId)
 	if err != nil {
 		return
 	}
@@ -153,24 +153,24 @@ func (s *ProjectService) Detail(projectId uint) (res integrationDomain.ProjectDe
 	return
 }
 
-func (s *ProjectService) GetListWithRoleBySpace(spaceCode, username string) (res []v1.ProjectListWithRole, err error) {
-	res, err = s.IntegrationRepo.GetProjectListWithRoleBySpace(spaceCode)
+func (s *ProjectService) GetListWithRoleBySpace(tenantId consts.TenantId, spaceCode, username string) (res []v1.ProjectListWithRole, err error) {
+	res, err = s.IntegrationRepo.GetProjectListWithRoleBySpace(tenantId, spaceCode)
 	if err != nil {
 		return
 	}
 
-	s.AddMemberRoleForProject(&res, username)
+	s.AddMemberRoleForProject(tenantId, &res, username)
 
 	return
 }
 
-func (s *ProjectService) AddMemberRoleForProject(projects *[]v1.ProjectListWithRole, username string) {
+func (s *ProjectService) AddMemberRoleForProject(tenantId consts.TenantId, projects *[]v1.ProjectListWithRole, username string) {
 	projectIds := make([]uint, 0)
 	for _, v := range *projects {
 		projectIds = append(projectIds, v.ID)
 	}
 
-	projectRoleMap, err := s.ProjectRepo.GetUserProjectRoleMap(username, projectIds)
+	projectRoleMap, err := s.ProjectRepo.GetUserProjectRoleMap(tenantId, username, projectIds)
 	if err != nil {
 		return
 	}
@@ -184,13 +184,13 @@ func (s *ProjectService) AddMemberRoleForProject(projects *[]v1.ProjectListWithR
 	return
 }
 
-func (s *ProjectService) SaveSpaceRelatedProjects(spaceCode string, shortNames []string) (err error) {
-	err = s.IntegrationRepo.DeleteBySpaceCode(spaceCode)
+func (s *ProjectService) SaveSpaceRelatedProjects(tenantId consts.TenantId, spaceCode string, shortNames []string) (err error) {
+	err = s.IntegrationRepo.DeleteBySpaceCode(tenantId, spaceCode)
 	if err != nil {
 		return
 	}
 
-	projectShortNameIdMap, err := s.GetProjectShortNameAndIdMap(shortNames)
+	projectShortNameIdMap, err := s.GetProjectShortNameAndIdMap(tenantId, shortNames)
 	if err != nil {
 		return
 	}
@@ -208,14 +208,14 @@ func (s *ProjectService) SaveSpaceRelatedProjects(spaceCode string, shortNames [
 	}
 
 	if len(relations) > 0 {
-		err = s.IntegrationRepo.BatchCreateProjectSpaceRel(relations)
+		err = s.IntegrationRepo.BatchCreateProjectSpaceRel(tenantId, relations)
 	}
-	
+
 	return
 }
 
-func (s *ProjectService) GetProjectShortNameAndIdMap(shortNames []string) (res map[string]uint, err error) {
-	projects, err := s.ProjectRepo.BatchGetByShortNames(shortNames)
+func (s *ProjectService) GetProjectShortNameAndIdMap(tenantId consts.TenantId, shortNames []string) (res map[string]uint, err error) {
+	projects, err := s.ProjectRepo.BatchGetByShortNames(tenantId, shortNames)
 	if err != nil {
 		return
 	}
@@ -228,7 +228,7 @@ func (s *ProjectService) GetProjectShortNameAndIdMap(shortNames []string) (res m
 	return
 }
 
-func (s *ProjectService) GetUserInfoMap(spaceCodes []string) (res map[string]integrationDomain.UserRoleInfo, userRoles map[string][]string, err error) {
+func (s *ProjectService) GetUserInfoMap(tenantId consts.TenantId, spaceCodes []string) (res map[string]integrationDomain.UserRoleInfo, userRoles map[string][]string, err error) {
 	spaceMemberRoles, err := s.RemoteService.BatchGetMembersBySpaces(spaceCodes)
 	if err != nil {
 		return
@@ -246,7 +246,7 @@ func (s *ProjectService) GetUserInfoMap(spaceCodes []string) (res map[string]int
 		}
 	}
 
-	roleBased, err := s.GetSpaceRoleArrays()
+	roleBased, err := s.GetSpaceRoleArrays(tenantId)
 	if err != nil {
 		return
 	}
@@ -259,7 +259,7 @@ func (s *ProjectService) GetUserInfoMap(spaceCodes []string) (res map[string]int
 	return
 }
 
-func (s *ProjectService) GetSpaceRoleArrays() (res []string, err error) {
+func (s *ProjectService) GetSpaceRoleArrays(tenantId consts.TenantId) (res []string, err error) {
 	spaceRoles, err := s.RemoteService.GetSpaceRoles()
 	if err != nil {
 		return
@@ -272,7 +272,7 @@ func (s *ProjectService) GetSpaceRoleArrays() (res []string, err error) {
 	return
 }
 
-func (s *ProjectService) AddMembers(projectId uint, members map[string]integrationDomain.UserRoleInfo, memberRoles map[string][]string) (err error) {
+func (s *ProjectService) AddMembers(tenantId consts.TenantId, projectId uint, members map[string]integrationDomain.UserRoleInfo, memberRoles map[string][]string) (err error) {
 	for _, member := range members {
 		createUserReq := v1.UserReq{
 			UserBase: v1.UserBase{
@@ -283,7 +283,7 @@ func (s *ProjectService) AddMembers(projectId uint, members map[string]integrati
 				Password:  _commUtils.RandStr(8),
 			},
 		}
-		userId, err := s.UserRepo.CreateIfNotExisted(createUserReq)
+		userId, err := s.UserRepo.CreateIfNotExisted(tenantId, createUserReq)
 		if err != nil {
 			continue
 		}
@@ -293,13 +293,13 @@ func (s *ProjectService) AddMembers(projectId uint, members map[string]integrati
 			role = consts.RoleType(roles[0])
 		}
 
-		err = s.ProjectRepo.AddMemberIfNotExisted(projectId, userId, role)
+		err = s.ProjectRepo.AddMemberIfNotExisted(tenantId, projectId, userId, role)
 	}
 
 	return
 }
 
-func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleName consts.RoleType) (err error) {
+func (s *ProjectService) SendApplyMessage(tenantId consts.TenantId, projectId, userId, auditId uint, roleName consts.RoleType) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("发送消息异常")
@@ -310,10 +310,10 @@ func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleN
 		return
 	}
 
-	messageContent, err := s.MessageService.GetJoinProjectMcsData(userId, projectId, auditId, roleName)
+	messageContent, err := s.MessageService.GetJoinProjectMcsData(tenantId, userId, projectId, auditId, roleName)
 	messageContentByte, _ := json.Marshal(messageContent)
 
-	adminRole, err := s.ProjectRoleRepo.FindByName(s.BaseRepo.GetAdminRoleName())
+	adminRole, err := s.ProjectRoleRepo.FindByName(tenantId, s.BaseRepo.GetAdminRoleName())
 	if err != nil {
 		return
 	}
@@ -330,13 +330,13 @@ func (s *ProjectService) SendApplyMessage(projectId, userId, auditId uint, roleN
 			BusinessId:    auditId,
 		},
 	}
-	messageId, _ := s.MessageRepo.Create(messageReq)
-	message, err := s.MessageRepo.Get(messageId)
+	messageId, _ := s.MessageRepo.Create(tenantId, messageReq)
+	message, err := s.MessageRepo.Get(tenantId, messageId)
 	if err != nil {
 		return
 	}
 
-	_, err = s.MessageService.SendMessageToMcs(message)
+	_, err = s.MessageService.SendMessageToMcs(tenantId, message)
 
 	return
 }

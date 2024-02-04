@@ -14,6 +14,7 @@ import (
 )
 
 type ScenarioReportRepo struct {
+	*BaseRepo       `inject:""`
 	DB              *gorm.DB         `inject:""`
 	LogRepo         *LogRepo         `inject:""`
 	ProjectRepo     *ProjectRepo     `inject:""`
@@ -22,10 +23,10 @@ type ScenarioReportRepo struct {
 	EnvironmentRepo *EnvironmentRepo `inject:""`
 }
 
-func (r *ScenarioReportRepo) Paginate(req v1.ReportReqPaginate) (data _domain.PageData, err error) {
+func (r *ScenarioReportRepo) Paginate(tenantId consts.TenantId, req v1.ReportReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.ScenarioReport{}).Where(" NOT deleted and scenario_id=?", req.ScenarioId)
+	db := r.GetDB(tenantId).Model(&model.ScenarioReport{}).Where(" NOT deleted and scenario_id=?", req.ScenarioId)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
@@ -50,20 +51,20 @@ func (r *ScenarioReportRepo) Paginate(req v1.ReportReqPaginate) (data _domain.Pa
 		logUtils.Errorf("query report error %s", err.Error())
 		return
 	}
-	r.CombineUserName(results)
+	r.CombineUserName(tenantId, results)
 	data.Populate(results, count, req.Page, req.PageSize)
 
 	return
 }
 
-func (r *ScenarioReportRepo) CombineUserName(data []*model.ScenarioReport) {
+func (r *ScenarioReportRepo) CombineUserName(tenantId consts.TenantId, data []*model.ScenarioReport) {
 	userIds := make([]uint, 0)
 	for _, v := range data {
 		userIds = append(userIds, v.CreateUserId)
 	}
 	userIds = _commUtils.ArrayRemoveUintDuplication(userIds)
 
-	users, _ := r.UserRepo.FindByIds(userIds)
+	users, _ := r.UserRepo.FindByIds(tenantId, userIds)
 
 	userIdNameMap := make(map[uint]string)
 	for _, v := range users {
@@ -77,28 +78,28 @@ func (r *ScenarioReportRepo) CombineUserName(data []*model.ScenarioReport) {
 	}
 }
 
-func (r *ScenarioReportRepo) Get(id uint) (report model.ScenarioReport, err error) {
-	err = r.DB.Where("id = ?", id).First(&report).Error
+func (r *ScenarioReportRepo) Get(tenantId consts.TenantId, id uint) (report model.ScenarioReport, err error) {
+	err = r.GetDB(tenantId).Where("id = ?", id).First(&report).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())
 		return
 	}
 
 	var env model.Environment
-	env, err = r.EnvironmentRepo.Get(uint(report.ExecEnvId))
+	env, err = r.EnvironmentRepo.Get(tenantId, uint(report.ExecEnvId))
 	if err != nil {
 		logUtils.Errorf("find environment by id error %s", err.Error())
 	}
 
 	report.ExecEnv = env.Name
-	root, err := r.getLogTree(report)
+	root, err := r.getLogTree(tenantId, report)
 	report.Logs = root.Logs
 
 	return
 }
 
-func (r *ScenarioReportRepo) Create(result *model.ScenarioReport) (bizErr *_domain.BizErr) {
-	err := r.DB.Model(&model.ScenarioReport{}).Create(result).Error
+func (r *ScenarioReportRepo) Create(tenantId consts.TenantId, result *model.ScenarioReport) (bizErr *_domain.BizErr) {
+	err := r.GetDB(tenantId).Model(&model.ScenarioReport{}).Create(result).Error
 	if err != nil {
 		logUtils.Errorf("create report error %s", err.Error())
 		bizErr.Code = _domain.SystemErr.Code
@@ -106,7 +107,7 @@ func (r *ScenarioReportRepo) Create(result *model.ScenarioReport) (bizErr *_doma
 		return
 	}
 
-	if err = r.UpdateSerialNumber(result.ID, result.ProjectId); err != nil {
+	if err = r.UpdateSerialNumber(tenantId, result.ID, result.ProjectId); err != nil {
 		logUtils.Errorf("update scenario report serial number error %s", err.Error())
 		bizErr.Code = _domain.SystemErr.Code
 
@@ -116,15 +117,15 @@ func (r *ScenarioReportRepo) Create(result *model.ScenarioReport) (bizErr *_doma
 	return
 }
 
-func (r *ScenarioReportRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.ScenarioReport{}).Where("id = ?", id).
+func (r *ScenarioReportRepo) DeleteById(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ScenarioReport{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete report by id error %s", err.Error())
 		return
 	}
 
-	err = r.DB.Model(&model.ExecLogProcessor{}).Where("report_id = ?", id).
+	err = r.GetDB(tenantId).Model(&model.ExecLogProcessor{}).Where("report_id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete report's logs by id error %s", err.Error())
@@ -134,21 +135,21 @@ func (r *ScenarioReportRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *ScenarioReportRepo) UpdateStatus(progressStatus consts.ProgressStatus, resultStatus consts.ResultStatus, scenarioId uint) (
+func (r *ScenarioReportRepo) UpdateStatus(tenantId consts.TenantId, progressStatus consts.ProgressStatus, resultStatus consts.ResultStatus, scenarioId uint) (
 	err error) {
 
 	values := map[string]interface{}{
 		"progress_status": progressStatus,
 		"result_status":   resultStatus,
 	}
-	err = r.DB.Model(&model.ScenarioReport{}).
+	err = r.GetDB(tenantId).Model(&model.ScenarioReport{}).
 		Where("scenario_id = ? AND progress_status = ?", scenarioId, consts.InProgress).
 		Updates(values).Error
 
 	return
 }
 
-func (r *ScenarioReportRepo) UpdateResult(report model.ScenarioReport) (err error) {
+func (r *ScenarioReportRepo) UpdateResult(tenantId consts.TenantId, report model.ScenarioReport) (err error) {
 	values := map[string]interface{}{
 		"pass_num":        report.PassRequestNum,
 		"fail_num":        report.FailRequestNum,
@@ -158,19 +159,19 @@ func (r *ScenarioReportRepo) UpdateResult(report model.ScenarioReport) (err erro
 		"progress_status": consts.End,
 		"result_status":   report.ResultStatus,
 	}
-	err = r.DB.Model(&model.ScenarioReport{}).
+	err = r.GetDB(tenantId).Model(&model.ScenarioReport{}).
 		Where("id = ?", report.ID).
 		Updates(values).Error
 
 	return
 }
 
-func (r *ScenarioReportRepo) ResetResult(result model.ScenarioReport) (err error) {
+func (r *ScenarioReportRepo) ResetResult(tenantId consts.TenantId, result model.ScenarioReport) (err error) {
 	values := map[string]interface{}{
 		"name":       result.Name,
 		"start_time": result.StartTime,
 	}
-	err = r.DB.Model(&result).Where("id = ?", result.ID).Updates(values).Error
+	err = r.GetDB(tenantId).Model(&result).Where("id = ?", result.ID).Updates(values).Error
 	if err != nil {
 		logUtils.Errorf("update report error %s", err.Error())
 		return
@@ -179,8 +180,8 @@ func (r *ScenarioReportRepo) ResetResult(result model.ScenarioReport) (err error
 	return
 }
 
-func (r *ScenarioReportRepo) ClearLogs(resultId uint) (err error) {
-	err = r.DB.Model(&model.ExecLogProcessor{}).Where("result_id = ?", resultId).
+func (r *ScenarioReportRepo) ClearLogs(tenantId consts.TenantId, resultId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ExecLogProcessor{}).Where("result_id = ?", resultId).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete logs by result id error %s", err.Error())
@@ -190,15 +191,15 @@ func (r *ScenarioReportRepo) ClearLogs(resultId uint) (err error) {
 	return
 }
 
-func (r *ScenarioReportRepo) FindInProgressResult(scenarioId uint) (result model.ScenarioReport, err error) {
-	err = r.DB.Model(&result).
+func (r *ScenarioReportRepo) FindInProgressResult(tenantId consts.TenantId, scenarioId uint) (result model.ScenarioReport, err error) {
+	err = r.GetDB(tenantId).Model(&result).
 		Where("progress_status =? AND scenario_id = ? AND  not deleted", consts.InProgress, scenarioId).
 		First(&result).Error
 
 	return
 }
 
-func (r *ScenarioReportRepo) getLogTree(report model.ScenarioReport) (root model.ExecLogProcessor, err error) {
+func (r *ScenarioReportRepo) getLogTree(tenantId consts.TenantId, report model.ScenarioReport) (root model.ExecLogProcessor, err error) {
 	logs, err := r.LogRepo.ListByReport(report.ID)
 	if err != nil {
 		return
@@ -206,8 +207,8 @@ func (r *ScenarioReportRepo) getLogTree(report model.ScenarioReport) (root model
 
 	for _, log := range logs {
 		if log.ProcessorType == consts.ProcessorInterfaceDefault {
-			log.InterfaceExtractorsResult, _ = r.listLogExtractors(log.InvokeId)
-			log.InterfaceCheckpointsResult, _ = r.listLogCheckpoints(log.InvokeId)
+			log.InterfaceExtractorsResult, _ = r.listLogExtractors(tenantId, log.InvokeId)
+			log.InterfaceCheckpointsResult, _ = r.listLogCheckpoints(tenantId, log.InvokeId)
 
 		}
 	}
@@ -215,27 +216,27 @@ func (r *ScenarioReportRepo) getLogTree(report model.ScenarioReport) (root model
 	root = model.ExecLogProcessor{
 		Name: report.Name,
 	}
-	r.makeTree(logs, &root)
+	r.makeTree(tenantId, logs, &root)
 
 	return
 }
 
-func (r *ScenarioReportRepo) makeTree(Data []*model.ExecLogProcessor, parent *model.ExecLogProcessor) { //参数为父节点，添加父节点的子节点指针切片
-	children, _ := r.haveChild(Data, parent) //判断节点是否有子节点并返回
+func (r *ScenarioReportRepo) makeTree(tenantId consts.TenantId, Data []*model.ExecLogProcessor, parent *model.ExecLogProcessor) { //参数为父节点，添加父节点的子节点指针切片
+	children, _ := r.haveChild(tenantId, Data, parent) //判断节点是否有子节点并返回
 
 	if children != nil {
 		parent.Logs = append(parent.Logs, children[0:]...) //添加子节点
 
 		for _, child := range children { //查询子节点的子节点，并添加到子节点
-			_, has := r.haveChild(Data, child)
+			_, has := r.haveChild(tenantId, Data, child)
 			if has {
-				r.makeTree(Data, child) //递归添加节点
+				r.makeTree(tenantId, Data, child) //递归添加节点
 			}
 		}
 	}
 }
 
-func (r *ScenarioReportRepo) haveChild(Data []*model.ExecLogProcessor, node *model.ExecLogProcessor) (children []*model.ExecLogProcessor, yes bool) {
+func (r *ScenarioReportRepo) haveChild(tenantId consts.TenantId, Data []*model.ExecLogProcessor, node *model.ExecLogProcessor) (children []*model.ExecLogProcessor, yes bool) {
 	for _, v := range Data {
 		if v.ParentId == node.ID {
 			children = append(children, v)
@@ -249,38 +250,38 @@ func (r *ScenarioReportRepo) haveChild(Data []*model.ExecLogProcessor, node *mod
 	return
 }
 
-func (r *ScenarioReportRepo) listLogExtractors(invokeId uint) (extractors []model.ExecLogExtractor, err error) {
-	err = r.DB.
+func (r *ScenarioReportRepo) listLogExtractors(tenantId consts.TenantId, invokeId uint) (extractors []model.ExecLogExtractor, err error) {
+	err = r.GetDB(tenantId).
 		Where("invoke_id =? AND not deleted", invokeId).
 		Find(&extractors).Error
 
 	return
 }
 
-func (r *ScenarioReportRepo) listLogCheckpoints(invokeId uint) (checkpoints []model.ExecLogCheckpoint, err error) {
-	err = r.DB.
+func (r *ScenarioReportRepo) listLogCheckpoints(tenantId consts.TenantId, invokeId uint) (checkpoints []model.ExecLogCheckpoint, err error) {
+	err = r.GetDB(tenantId).
 		Where("invoke_id =? AND not deleted", invokeId).
 		Find(&checkpoints).Error
 
 	return
 }
 
-func (r *ScenarioReportRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+func (r *ScenarioReportRepo) UpdateSerialNumber(tenantId consts.TenantId, id, projectId uint) (err error) {
 	var project model.Project
-	project, err = r.ProjectRepo.Get(projectId)
+	project, err = r.ProjectRepo.Get(tenantId, projectId)
 	if err != nil {
 		return
 	}
 
-	err = r.DB.Model(&model.ScenarioReport{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TR-"+strconv.Itoa(int(id))).Error
+	err = r.GetDB(tenantId).Model(&model.ScenarioReport{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TR-"+strconv.Itoa(int(id))).Error
 	return
 }
 
-func (r *ScenarioReportRepo) UpdatePlanReportId(id, planReportId uint) (err error) {
+func (r *ScenarioReportRepo) UpdatePlanReportId(tenantId consts.TenantId, id, planReportId uint) (err error) {
 	values := map[string]interface{}{
 		"plan_report_id": planReportId,
 	}
-	err = r.DB.Model(&model.ScenarioReport{}).Where("id = ?", id).Updates(values).Error
+	err = r.GetDB(tenantId).Model(&model.ScenarioReport{}).Where("id = ?", id).Updates(values).Error
 	if err != nil {
 		logUtils.Errorf("update scenario report error %s", err.Error())
 		return
@@ -289,11 +290,11 @@ func (r *ScenarioReportRepo) UpdatePlanReportId(id, planReportId uint) (err erro
 	return
 }
 
-func (r *ScenarioReportRepo) BatchUpdatePlanReportId(ids []uint, planReportId uint) (err error) {
+func (r *ScenarioReportRepo) BatchUpdatePlanReportId(tenantId consts.TenantId, ids []uint, planReportId uint) (err error) {
 	values := map[string]interface{}{
 		"plan_report_id": planReportId,
 	}
-	err = r.DB.Model(&model.ScenarioReport{}).Where("id IN (?)", ids).Updates(values).Error
+	err = r.GetDB(tenantId).Model(&model.ScenarioReport{}).Where("id IN (?)", ids).Updates(values).Error
 	if err != nil {
 		logUtils.Errorf("batch update scenario reports error %s", err.Error())
 		return
@@ -302,16 +303,16 @@ func (r *ScenarioReportRepo) BatchUpdatePlanReportId(ids []uint, planReportId ui
 	return
 }
 
-func (r *ScenarioReportRepo) GetReportsByPlanReportId(planReportId uint) (reports []model.ScenarioReportDetail, err error) {
+func (r *ScenarioReportRepo) GetReportsByPlanReportId(tenantId consts.TenantId, planReportId uint) (reports []model.ScenarioReportDetail, err error) {
 	var scenarioReports []model.ScenarioReport
-	err = r.DB.Model(&model.ScenarioReport{}).Where("plan_report_id = ?", planReportId).Find(&scenarioReports).Error
+	err = r.GetDB(tenantId).Model(&model.ScenarioReport{}).Where("plan_report_id = ?", planReportId).Find(&scenarioReports).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())
 		return
 	}
 
 	for _, report := range scenarioReports {
-		root, err := r.getLogTree(report)
+		root, err := r.getLogTree(tenantId, report)
 		if err != nil {
 			continue
 		}
@@ -321,19 +322,19 @@ func (r *ScenarioReportRepo) GetReportsByPlanReportId(planReportId uint) (report
 		}
 		reports = append(reports, scenarioReport)
 	}
-	reports, err = r.CombinePriority(reports)
+	reports, err = r.CombinePriority(tenantId, reports)
 
 	return
 }
 
-func (r *ScenarioReportRepo) CombinePriority(data []model.ScenarioReportDetail) (res []model.ScenarioReportDetail, err error) {
+func (r *ScenarioReportRepo) CombinePriority(tenantId consts.TenantId, data []model.ScenarioReportDetail) (res []model.ScenarioReportDetail, err error) {
 	scenarioIds := make([]uint, 0)
 	for _, v := range data {
 		scenarioIds = append(scenarioIds, v.ScenarioId)
 	}
 	scenarioIds = _commUtils.ArrayRemoveUintDuplication(scenarioIds)
 
-	scenarios, err := r.ScenarioRepo.GetByIds(scenarioIds)
+	scenarios, err := r.ScenarioRepo.GetByIds(tenantId, scenarioIds)
 	if err != nil {
 		return
 	}
@@ -352,8 +353,8 @@ func (r *ScenarioReportRepo) CombinePriority(data []model.ScenarioReportDetail) 
 	return
 }
 
-func (r *ScenarioReportRepo) GetBaseReportsByPlanReportId(planReportId uint) (reports []model.ScenarioReport, err error) {
-	err = r.DB.Model(&model.ScenarioReport{}).Where("plan_report_id = ?", planReportId).Find(&reports).Error
+func (r *ScenarioReportRepo) GetBaseReportsByPlanReportId(tenantId consts.TenantId, planReportId uint) (reports []model.ScenarioReport, err error) {
+	err = r.GetDB(tenantId).Model(&model.ScenarioReport{}).Where("plan_report_id = ?", planReportId).Find(&reports).Error
 	if err != nil {
 		logUtils.Errorf("find report by id error %s", err.Error())
 		return
@@ -362,10 +363,10 @@ func (r *ScenarioReportRepo) GetBaseReportsByPlanReportId(planReportId uint) (re
 	return
 }
 
-func (r *ScenarioReportRepo) BatchDelete(planReportId uint) (err error) {
+func (r *ScenarioReportRepo) BatchDelete(tenantId consts.TenantId, planReportId uint) (err error) {
 	scenarioReportIds := make([]uint, 0)
 
-	scenarioReports, err := r.GetBaseReportsByPlanReportId(planReportId)
+	scenarioReports, err := r.GetBaseReportsByPlanReportId(tenantId, planReportId)
 	if err != nil {
 		return
 	}
@@ -376,14 +377,14 @@ func (r *ScenarioReportRepo) BatchDelete(planReportId uint) (err error) {
 	if len(scenarioReportIds) == 0 {
 		return
 	}
-	err = r.DB.Model(&model.ScenarioReport{}).Where("id IN (?)", scenarioReportIds).
+	err = r.GetDB(tenantId).Model(&model.ScenarioReport{}).Where("id IN (?)", scenarioReportIds).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete report by id error %s", err.Error())
 		return
 	}
 
-	err = r.DB.Model(&model.ExecLogProcessor{}).Where("report_id IN (?)", scenarioReportIds).
+	err = r.GetDB(tenantId).Model(&model.ExecLogProcessor{}).Where("report_id IN (?)", scenarioReportIds).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete report's logs by id error %s", err.Error())

@@ -14,7 +14,8 @@ import (
 )
 
 type ConditionRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 
 	ExtractorRepo    *ExtractorRepo    `inject:""`
 	CheckpointRepo   *CheckpointRepo   `inject:""`
@@ -26,11 +27,11 @@ type ConditionRepo struct {
 	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
 }
 
-func (r *ConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory,
+func (r *ConditionRepo) List(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint, typ consts.ConditionCategory,
 	usedBy consts.UsedBy, forAlternativeCase string, src consts.ConditionSrc) (
 	pos []model.DebugCondition, err error) {
 
-	db := r.DB.Where("NOT deleted")
+	db := r.GetDB(tenantId).Where("NOT deleted")
 
 	if debugInterfaceId > 0 {
 		db.Where("debug_interface_id=?", debugInterfaceId)
@@ -92,10 +93,10 @@ func (r *ConditionRepo) List(debugInterfaceId, endpointInterfaceId uint, typ con
 	return
 }
 
-func (r *ConditionRepo) ListExtractor(req domain.DebugInfo) (
+func (r *ConditionRepo) ListExtractor(tenantId consts.TenantId, req domain.DebugInfo) (
 	pos []model.DebugCondition, err error) {
 
-	db := r.DB.
+	db := r.GetDB(tenantId).
 		Where("NOT deleted").
 		Order("ordr ASC")
 
@@ -116,8 +117,8 @@ func (r *ConditionRepo) ListExtractor(req domain.DebugInfo) (
 	return
 }
 
-func (r *ConditionRepo) ListDbOpt(req domain.DebugInfo) (pos []model.DebugCondition, err error) {
-	db := r.DB.
+func (r *ConditionRepo) ListDbOpt(tenantId consts.TenantId, req domain.DebugInfo) (pos []model.DebugCondition, err error) {
+	db := r.GetDB(tenantId).
 		Where("NOT deleted").
 		Order("ordr ASC")
 
@@ -138,26 +139,26 @@ func (r *ConditionRepo) ListDbOpt(req domain.DebugInfo) (pos []model.DebugCondit
 	return
 }
 
-func (r *ConditionRepo) Get(id uint) (po model.DebugCondition, err error) {
-	err = r.DB.
+func (r *ConditionRepo) Get(tenantId consts.TenantId, id uint) (po model.DebugCondition, err error) {
+	err = r.GetDB(tenantId).
 		Where("id=?", id).
 		Where("NOT deleted").
 		First(&po).Error
 	return
 }
 
-func (r *ConditionRepo) Save(po *model.DebugCondition) (err error) {
+func (r *ConditionRepo) Save(tenantId consts.TenantId, po *model.DebugCondition) (err error) {
 	if po.Ordr == 0 {
-		po.Ordr = r.GetMaxOrder(po.DebugInterfaceId, po.EndpointInterfaceId, po.IsForBenchmarkCase)
+		po.Ordr = r.GetMaxOrder(tenantId, po.DebugInterfaceId, po.EndpointInterfaceId, po.IsForBenchmarkCase)
 	}
 
-	err = r.DB.Save(po).Error
+	err = r.GetDB(tenantId).Save(po).Error
 	return
 }
 
-func (r *ConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint,
+func (r *ConditionRepo) CloneAll(tenantId consts.TenantId, srcDebugInterfaceId, srcEndpointInterfaceId, distDebugInterfaceId uint,
 	dictUsedBy, srcUsedBy consts.UsedBy, forAlternativeCase string) (err error) {
-	srcConditions, err := r.List(srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll, srcUsedBy, forAlternativeCase, "")
+	srcConditions, err := r.List(tenantId, srcDebugInterfaceId, srcEndpointInterfaceId, consts.ConditionCategoryAll, srcUsedBy, forAlternativeCase, "")
 
 	for _, srcCondition := range srcConditions {
 		// clone condition po
@@ -172,7 +173,7 @@ func (r *ConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, di
 			}
 		}
 
-		r.Save(&srcCondition)
+		r.Save(tenantId, &srcCondition)
 
 		// clone condition entity
 		var entityId uint
@@ -208,25 +209,25 @@ func (r *ConditionRepo) CloneAll(srcDebugInterfaceId, srcEndpointInterfaceId, di
 			entityId = srcEntity.ID
 
 		} else if srcCondition.EntityType == consts.ConditionTypeResponseDefine {
-			srcEntity, _ := r.ResponseDefineRepo.Get(srcCondition.EntityId)
+			srcEntity, _ := r.ResponseDefineRepo.Get(tenantId, srcCondition.EntityId)
 			srcEntity.ID = 0
 			srcEntity.ConditionId = srcCondition.ID
 			srcEntity.Disabled = false
 
-			r.ResponseDefineRepo.Save(&srcEntity)
+			r.ResponseDefineRepo.Save(tenantId, &srcEntity)
 			entityId = srcEntity.ID
 		}
 
-		err = r.UpdateEntityId(srcCondition.ID, entityId)
+		err = r.UpdateEntityId(tenantId, srcCondition.ID, entityId)
 	}
 
 	return
 }
 
-func (r *ConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uint, conditions []domain.InterfaceExecCondition,
+func (r *ConditionRepo) ReplaceAll(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint, conditions []domain.InterfaceExecCondition,
 	usedBy consts.UsedBy, src consts.ConditionSrc) (err error) {
 
-	r.removeAll(debugInterfaceId, endpointInterfaceId, usedBy, src)
+	r.removeAll(tenantId, debugInterfaceId, endpointInterfaceId, usedBy, src)
 
 	for _, item := range conditions {
 		// clone condition po
@@ -237,7 +238,7 @@ func (r *ConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uint, c
 			Desc:                item.Desc,
 			ConditionSrc:        src,
 		}
-		r.Save(&condition)
+		r.Save(tenantId, &condition)
 
 		// clone condition entity
 		var entityId uint
@@ -281,16 +282,16 @@ func (r *ConditionRepo) ReplaceAll(debugInterfaceId, endpointInterfaceId uint, c
 			entityId = entity.ID
 		}
 
-		err = r.UpdateEntityId(condition.ID, entityId)
+		err = r.UpdateEntityId(tenantId, condition.ID, entityId)
 	}
 
 	return
 }
 
-func (r *ConditionRepo) Delete(id uint) (err error) {
-	po, _ := r.Get(id)
+func (r *ConditionRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
+	po, _ := r.Get(tenantId, id)
 
-	err = r.DB.Model(&model.DebugCondition{}).
+	err = r.GetDB(tenantId).Model(&model.DebugCondition{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -306,8 +307,8 @@ func (r *ConditionRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *ConditionRepo) Disable(id uint) (err error) {
-	err = r.DB.Model(&model.DebugCondition{}).
+func (r *ConditionRepo) Disable(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugCondition{}).
 		Where("id=?", id).
 		Update("disabled", gorm.Expr("NOT disabled")).
 		Error
@@ -315,13 +316,13 @@ func (r *ConditionRepo) Disable(id uint) (err error) {
 	return
 }
 
-func (r *ConditionRepo) UpdateOrders(req serverDomain.ConditionMoveReq) (err error) {
-	return r.DB.Transaction(func(tx *gorm.DB) error {
+func (r *ConditionRepo) UpdateOrders(tenantId consts.TenantId, req serverDomain.ConditionMoveReq) (err error) {
+	return r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
 		for index, id := range req.Data {
 			sql := fmt.Sprintf("UPDATE %s SET ordr = %d WHERE id = %d",
 				model.DebugCondition{}.TableName(), index+1, id)
 
-			err = r.DB.Exec(sql).Error
+			err = r.GetDB(tenantId).Exec(sql).Error
 			if err != nil {
 				return err
 			}
@@ -331,8 +332,8 @@ func (r *ConditionRepo) UpdateOrders(req serverDomain.ConditionMoveReq) (err err
 	})
 }
 
-func (r *ConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
-	err = r.DB.Model(&model.DebugCondition{}).
+func (r *ConditionRepo) UpdateEntityId(tenantId consts.TenantId, id uint, entityId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugCondition{}).
 		Where("id=?", id).
 		Update("entity_id", entityId).
 		Error
@@ -340,9 +341,9 @@ func (r *ConditionRepo) UpdateEntityId(id uint, entityId uint) (err error) {
 	return
 }
 
-func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
+func (r *ConditionRepo) ListTo(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint,
 	usedBy consts.UsedBy, forAlternativeCase string, src consts.ConditionSrc) (ret []domain.InterfaceExecCondition, err error) {
-	pos, err := r.List(debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll, usedBy, forAlternativeCase, src)
+	pos, err := r.List(tenantId, debugInterfaceId, endpointInterfaceId, consts.ConditionCategoryAll, usedBy, forAlternativeCase, src)
 
 	for _, po := range pos {
 		typ := po.EntityType
@@ -426,7 +427,7 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 		} else if typ == consts.ConditionTypeResponseDefine {
 			responseDefine := domain.ResponseDefineBase{}
 
-			entity, err := r.ResponseDefineRepo.Get(po.EntityId)
+			entity, err := r.ResponseDefineRepo.Get(tenantId, po.EntityId)
 			if err != nil {
 				logUtils.Infof("响应码校验拿不到数据 %v", po.EntityId)
 				continue
@@ -437,7 +438,7 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 			responseDefine.ConditionEntityType = typ
 			responseDefine.Disabled = po.Disabled
 
-			responseBody := r.EndpointInterfaceRepo.GetResponse(endpointInterfaceId, entity.Code)
+			responseBody := r.EndpointInterfaceRepo.GetResponse(tenantId, endpointInterfaceId, entity.Code)
 			if responseBody.ID == 0 {
 				logUtils.Infof("响应体拿不到数据 %v", po.EntityId)
 				continue
@@ -445,7 +446,7 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 			responseDefine.Schema = responseBody.SchemaItem.Content
 			responseDefine.Code = entity.Code
 			responseDefine.MediaType = responseBody.MediaType
-			components := r.ResponseDefineRepo.Components(endpointInterfaceId)
+			components := r.ResponseDefineRepo.Components(tenantId, endpointInterfaceId)
 			responseDefine.Component = commonUtils.JsonEncode(components)
 			raw, _ := json.Marshal(responseDefine)
 			condition := domain.InterfaceExecCondition{
@@ -461,41 +462,41 @@ func (r *ConditionRepo) ListTo(debugInterfaceId, endpointInterfaceId uint,
 	return
 }
 
-func (r *ConditionRepo) removeAll(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, src consts.ConditionSrc) (err error) {
-	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, "", usedBy, "false", src)
+func (r *ConditionRepo) removeAll(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, src consts.ConditionSrc) (err error) {
+	pos, _ := r.List(tenantId, debugInterfaceId, endpointInterfaceId, "", usedBy, "false", src)
 
 	for _, po := range pos {
-		r.Delete(po.ID)
+		r.Delete(tenantId, po.ID)
 	}
 
 	return
 }
 
-func (r *ConditionRepo) RemoveAllForBenchmarkCase(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, entityType consts.ConditionCategory) (err error) {
-	pos, _ := r.List(debugInterfaceId, endpointInterfaceId, entityType, usedBy, "true", "")
+func (r *ConditionRepo) RemoveAllForBenchmarkCase(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy, entityType consts.ConditionCategory) (err error) {
+	pos, _ := r.List(tenantId, debugInterfaceId, endpointInterfaceId, entityType, usedBy, "true", "")
 
 	for _, po := range pos {
 		if po.IsForBenchmarkCase {
-			r.Delete(po.ID)
+			r.Delete(tenantId, po.ID)
 		}
 	}
 
 	return
 }
 
-func (r *ConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (condition domain.Condition) {
+func (r *ConditionRepo) CreateDefaultResponseDefine(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint, usedBy consts.UsedBy) (condition domain.Condition) {
 	if endpointInterfaceId == 0 {
 		return
 	}
 
-	codes := r.EndpointInterfaceRepo.GetResponseCodes(endpointInterfaceId)
+	codes := r.EndpointInterfaceRepo.GetResponseCodes(tenantId, endpointInterfaceId)
 	if len(codes) == 0 {
 		return
 	}
 
-	po, err := r.GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId, usedBy)
+	po, err := r.GetByDebugInterfaceId(tenantId, debugInterfaceId, endpointInterfaceId, usedBy)
 	if err == gorm.ErrRecordNotFound {
-		po, err = r.saveDefault(debugInterfaceId, endpointInterfaceId, codes, usedBy)
+		po, err = r.saveDefault(tenantId, debugInterfaceId, endpointInterfaceId, codes, usedBy)
 		if err != nil {
 			return
 		}
@@ -503,7 +504,7 @@ func (r *ConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointIn
 
 	copier.CopyWithOption(&condition, po, copier.Option{DeepCopy: true})
 
-	entityData, _ := r.ResponseDefineRepo.Get(po.EntityId)
+	entityData, _ := r.ResponseDefineRepo.Get(tenantId, po.EntityId)
 	entityData.Codes = codes
 	//entityData.Component = r.ResponseDefineRepo.Components(endpointInterfaceId)
 	condition.EntityData = entityData
@@ -511,15 +512,15 @@ func (r *ConditionRepo) CreateDefaultResponseDefine(debugInterfaceId, endpointIn
 	return
 }
 
-func (r *ConditionRepo) GetByDebugInterfaceId(debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (po model.DebugCondition, err error) {
-	err = r.DB.
+func (r *ConditionRepo) GetByDebugInterfaceId(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint, by consts.UsedBy) (po model.DebugCondition, err error) {
+	err = r.GetDB(tenantId).
 		Where("debug_interface_id=? and endpoint_interface_id=? and entity_type=?", debugInterfaceId, endpointInterfaceId, consts.ConditionTypeResponseDefine).
 		Where("NOT deleted").
 		First(&po).Error
 	return
 }
 
-func (r *ConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId uint, codes []string, by consts.UsedBy) (
+func (r *ConditionRepo) saveDefault(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint, codes []string, by consts.UsedBy) (
 	po model.DebugCondition, err error) {
 
 	responseDefine := model.DebugConditionResponseDefine{}
@@ -528,7 +529,7 @@ func (r *ConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId uint, 
 		responseDefine.Code = codes[0]
 	}
 
-	err = r.ResponseDefineRepo.Save(&responseDefine)
+	err = r.ResponseDefineRepo.Save(tenantId, &responseDefine)
 	if err != nil {
 		return
 	}
@@ -538,15 +539,15 @@ func (r *ConditionRepo) saveDefault(debugInterfaceId, endpointInterfaceId uint, 
 	po.DebugInterfaceId = debugInterfaceId
 	po.UsedBy = by
 	po.EntityId = responseDefine.ID
-	err = r.Save(&po)
+	err = r.Save(tenantId, &po)
 
 	return
 }
 
-func (r *ConditionRepo) GetMaxOrder(debugInterfaceId, endpointInterfaceId uint, isForBenchmarkCase bool) (order int) {
+func (r *ConditionRepo) GetMaxOrder(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint, isForBenchmarkCase bool) (order int) {
 	postCondition := model.DebugCondition{}
 
-	db := r.DB.Model(&postCondition).
+	db := r.GetDB(tenantId).Model(&postCondition).
 		Where("is_for_benchmark_case", isForBenchmarkCase)
 
 	if debugInterfaceId > 0 {

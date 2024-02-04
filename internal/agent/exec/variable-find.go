@@ -46,7 +46,10 @@ func getVariableFromShareVar(name string, execUuid string) (ret domain.ExecVaria
 func getVariableFromEnvVar(name string, execUuid string) (ret domain.ExecVariable, err error) {
 	execScene := GetExecScene(execUuid)
 
-	envId := execScene.DebugInterfaceToEnvMap[GetCurrDebugInterfaceId(execUuid)]
+	envId := uint(GetCurrEnvironmentId(execUuid))
+	if envId == 0 {
+		envId = execScene.DebugInterfaceToEnvMap[GetCurrDebugInterfaceId(execUuid)]
+	}
 
 	vars := execScene.EnvToVariables[envId]
 
@@ -66,7 +69,13 @@ func GetVariableFromList(name string, list []domain.GlobalVar) (ret domain.ExecV
 	for _, v := range list {
 		if v.Name == name {
 			ret.Name = v.Name
-			ret.Value = v.LocalValue
+
+			if v.LocalValue != "" {
+				ret.Value = v.LocalValue
+			} else if v.RemoteValue != "" {
+				ret.Value = v.RemoteValue
+			}
+
 			break
 		}
 	}

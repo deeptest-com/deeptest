@@ -34,7 +34,7 @@ func RunScenario(req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg 
 
 	scenarioExecObj.ExecUuid = req.ExecUuid
 
-	session, err := ExecScenario(scenarioExecObj, wsMsg)
+	session, err := ExecScenario(scenarioExecObj, req.EnvironmentId, wsMsg)
 	session.RootProcessor.Result.Stat = *agentExec.GetInterfaceStat(req.ExecUuid)
 	session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 	session.RootProcessor.Result.ScenarioId = uint(req.ScenarioId)
@@ -52,9 +52,10 @@ func RunScenario(req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg 
 	return
 }
 
-func ExecScenario(execObj *agentExec.ScenarioExecObj, wsMsg *websocket.Message) (
+func ExecScenario(execObj *agentExec.ScenarioExecObj, selectedEnvironmentId int, wsMsg *websocket.Message) (
 	session *agentExec.Session, err error) {
 	// variables etc.
+	agentExec.SetCurrEnvironmentId(execObj.ExecUuid, selectedEnvironmentId)
 	agentExec.SetExecScene(execObj.ExecUuid, execObj.ExecScene)
 
 	RestoreEntityFromRawAndSetParent(execObj.RootProcessor)

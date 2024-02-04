@@ -43,7 +43,7 @@ func RunPlan(req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websock
 		updateLocalValues(&scenario.ExecScene, localVarsCache)
 
 		scenario.ExecUuid = execUuid
-		session, _ := ExecScenario(&scenario, wsMsg)
+		session, _ := ExecScenario(&scenario, req.EnvironmentId, wsMsg)
 
 		scenarioReport, _ := SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,
 			agentExec.GetServerUrl(execUuid), agentExec.GetServerToken(execUuid))

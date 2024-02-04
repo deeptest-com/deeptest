@@ -46,7 +46,10 @@ func getVariableFromShareVar(name string, execUuid string) (ret domain.ExecVaria
 func getVariableFromEnvVar(name string, execUuid string) (ret domain.ExecVariable, err error) {
 	execScene := GetExecScene(execUuid)
 
-	envId := execScene.DebugInterfaceToEnvMap[GetCurrDebugInterfaceId(execUuid)]
+	envId := uint(GetCurrEnvironmentId(execUuid))
+	if envId == 0 {
+		envId = execScene.DebugInterfaceToEnvMap[GetCurrDebugInterfaceId(execUuid)]
+	}
 
 	vars := execScene.EnvToVariables[envId]
 

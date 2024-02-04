@@ -1,6 +1,7 @@
 package tenant
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/saas/domain"
 	"github.com/aaronchen2k/deeptest/saas/remote"
 )
@@ -14,7 +15,7 @@ func NewTenant() *Tenant {
 	return new(Tenant)
 }
 
-func (t *Tenant) GetInfo(tenantId string) (tenant domain.Tenant) {
+func (t *Tenant) GetInfo(tenantId consts.TenantId) (tenant domain.Tenant) {
 	tenant = new(remote.Remote).GetTenant()
 	/*
 		url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
@@ -70,7 +71,7 @@ func (t *Tenant) GetInfo(tenantId string) (tenant domain.Tenant) {
 	return
 }
 
-func (t *Tenant) GetDbConfig(tenantId string) (config domain.DbConfig, err error) {
+func (t *Tenant) GetDbConfig(tenantId consts.TenantId) (config domain.DbConfig, err error) {
 	res := t.GetInfo(tenantId)
 	config = res.DbConfig
 	return

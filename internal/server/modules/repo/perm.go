@@ -13,9 +13,9 @@ import (
 )
 
 type PermRepo struct {
-	DB *gorm.DB `inject:""`
-
-	RoleRepo *RoleRepo `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB  `inject:""`
+	RoleRepo  *RoleRepo `inject:""`
 }
 
 // Paginate
@@ -88,7 +88,7 @@ func (r *PermRepo) CreateInBatches(perms []model.SysPerm) error {
 }
 
 // CreateIfNotExist
-func (r *PermRepo) CreateIfNotExist(perms []model.SysPerm) (count int, err error) {
+func (r *PermRepo) CreateIfNotExist(tenantId consts.TenantId, perms []model.SysPerm) (count int, err error) {
 	_ = r.DB.Delete(&model.SysPerm{}, "id > 0").Error
 	for _, perm := range perms {
 		err := r.DB.Model(&model.SysPerm{}).Create(&perm).Error
@@ -197,7 +197,7 @@ func (r *PermRepo) GetPermsForRole() ([][]string, error) {
 	return permsForRoles, nil
 }
 
-func (r *PermRepo) GetPermsForRoles() (map[consts.RoleType][][]string, error) {
+func (r *PermRepo) GetPermsForRoles(tenantId consts.TenantId) (map[consts.RoleType][][]string, error) {
 	permsUserNotInclude := []v1.PermStruct{
 		{
 			Name: "/api/v1/users",
@@ -214,7 +214,8 @@ func (r *PermRepo) GetPermsForRoles() (map[consts.RoleType][][]string, error) {
 	}
 	var adminPerms, userPerms [][]string
 	var perms []model.SysPerm
-	err := r.DB.Model(&model.SysPerm{}).Find(&perms).Error
+	db := r.GetDB(tenantId)
+	err := db.Model(&model.SysPerm{}).Find(&perms).Error
 	if err != nil {
 		return nil, fmt.Errorf("获取权限错误 %w", err)
 	}

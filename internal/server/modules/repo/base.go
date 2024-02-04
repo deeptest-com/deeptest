@@ -125,7 +125,7 @@ func (r *BaseRepo) GetAdminRoleName() (roleName consts.RoleType) {
 	return
 }
 
-func (r *BaseRepo) GetDB(tenantId string) (db *gorm.DB) {
+func (r *BaseRepo) GetDB(tenantId consts.TenantId) (db *gorm.DB) {
 	if tenantId == "" {
 		return r.DB
 	}

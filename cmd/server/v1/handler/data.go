@@ -37,8 +37,8 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 			return
 		}
 	}
-
-	err := c.DataService.InitDB(req)
+	tenantId := c.getTenantId(ctx)
+	err := c.DataService.InitDB(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

@@ -4,11 +4,13 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"gorm.io/gorm"
 )
 
 type DataRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
 func NewDataRepo(db *gorm.DB) *DataRepo {
@@ -16,7 +18,10 @@ func NewDataRepo(db *gorm.DB) *DataRepo {
 }
 
 // CreateMySqlDb 创建数据库(mysql)
-func (s *DataRepo) CreateMySqlDb() error {
+func (s *DataRepo) CreateMySqlDb(tenantId consts.TenantId) error {
+	if tenantId != "" {
+		return nil
+	}
 	dsn := fmt.Sprintf("%s:%s@tcp(%s)/",
 		config.CONFIG.Mysql.Username, config.CONFIG.Mysql.Password,
 		config.CONFIG.Mysql.Url)
@@ -33,6 +38,7 @@ func (s *DataRepo) CreateMySqlDb() error {
 	if err = db.Ping(); err != nil {
 		return err
 	}
+
 	_, err = db.Exec(createSql)
 	return err
 }

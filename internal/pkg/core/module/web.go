@@ -1,12 +1,13 @@
 package module
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 )
 
 // InitDBFunc 数据化初始化接口
 type InitDBFunc interface {
-	Init() (err error)
+	Init(consts.TenantId) (err error)
 }
 
 // WebModule web 模块结构

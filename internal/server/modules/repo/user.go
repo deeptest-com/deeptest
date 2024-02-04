@@ -26,6 +26,7 @@ import (
 )
 
 type UserRepo struct {
+	*BaseRepo       `inject:""`
 	DB              *gorm.DB         `inject:""`
 	ProfileRepo     *ProfileRepo     `inject:""`
 	RoleRepo        *RoleRepo        `inject:""`
@@ -38,10 +39,10 @@ func NewUserRepo(db *gorm.DB) *UserRepo {
 	return &UserRepo{DB: db}
 }
 
-func (r *UserRepo) Paginate(req serverDomain.UserReqPaginate) (data _domain.PageData, err error) {
+func (r *UserRepo) Paginate(tenantId consts.TenantId, req serverDomain.UserReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.SysUser{})
+	db := r.GetDB(tenantId).Model(&model.SysUser{})
 	if len(req.Name) > 0 {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%s%%", req.Name))
 	}
@@ -114,13 +115,13 @@ func (r *UserRepo) GetSysRoles(users ...*serverDomain.UserResp) {
 }
 
 // getRoles
-func (r *UserRepo) GetProjectRoles(users ...*serverDomain.UserResp) {
+func (r *UserRepo) GetProjectRoles(tenantId consts.TenantId, users ...*serverDomain.UserResp) {
 	if len(users) == 0 {
 		return
 	}
 
 	for _, user := range users {
-		projectRoles, err := r.ProjectRepo.FindRolesByUser(user.Id)
+		projectRoles, err := r.ProjectRepo.FindRolesByUser(tenantId, user.Id)
 		if err != nil {
 			break
 		}
@@ -132,9 +133,9 @@ func (r *UserRepo) GetProjectRoles(users ...*serverDomain.UserResp) {
 	}
 }
 
-func (r *UserRepo) FindByUserName(username string, ids ...uint) (serverDomain.UserResp, error) {
+func (r *UserRepo) FindByUserName(tenantId consts.TenantId, username string, ids ...uint) (serverDomain.UserResp, error) {
 	user := serverDomain.UserResp{}
-	db := r.DB.Model(&model.SysUser{}).Where("username = ?", username)
+	db := r.GetDB(tenantId).Model(&model.SysUser{}).Where("username = ?", username)
 
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
@@ -149,9 +150,9 @@ func (r *UserRepo) FindByUserName(username string, ids ...uint) (serverDomain.Us
 	return user, nil
 }
 
-func (r *UserRepo) FindByEmail(email string, ids ...uint) (serverDomain.UserResp, error) {
+func (r *UserRepo) FindByEmail(tenantId consts.TenantId, email string, ids ...uint) (serverDomain.UserResp, error) {
 	user := serverDomain.UserResp{}
-	db := r.DB.Model(&model.SysUser{}).Where("email = ?", email)
+	db := r.GetDB(tenantId).Model(&model.SysUser{}).Where("email = ?", email)
 
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
@@ -166,9 +167,9 @@ func (r *UserRepo) FindByEmail(email string, ids ...uint) (serverDomain.UserResp
 	return user, nil
 }
 
-func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (serverDomain.LoginResp, error) {
+func (r *UserRepo) FindPasswordByUserName(tenantId consts.TenantId, username string, ids ...uint) (serverDomain.LoginResp, error) {
 	user := serverDomain.LoginResp{}
-	db := r.DB.Model(&model.SysUser{}).Select("id,password").Where("username = ?", username)
+	db := r.GetDB(tenantId).Model(&model.SysUser{}).Select("id,password").Where("username = ?", username)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
@@ -181,9 +182,9 @@ func (r *UserRepo) FindPasswordByUserName(username string, ids ...uint) (serverD
 	return user, nil
 }
 
-func (r *UserRepo) FindPasswordByEmail(email string) (serverDomain.LoginResp, error) {
+func (r *UserRepo) FindPasswordByEmail(tenantId consts.TenantId, email string) (serverDomain.LoginResp, error) {
 	user := serverDomain.LoginResp{}
-	db := r.DB.Model(&model.SysUser{}).Select("id,password").Where("email = ?", email)
+	db := r.GetDB(tenantId).Model(&model.SysUser{}).Select("id,password").Where("email = ?", email)
 
 	err := db.First(&user).Error
 	if err != nil {
@@ -194,8 +195,8 @@ func (r *UserRepo) FindPasswordByEmail(email string) (serverDomain.LoginResp, er
 	return user, nil
 }
 
-func (r *UserRepo) FindByUserNameAndVcode(username, vcode string) (user model.SysUser, err error) {
-	err = r.DB.Model(&model.SysUser{}).Where("username = ? AND vcode = ?", username, vcode).
+func (r *UserRepo) FindByUserNameAndVcode(tenantId consts.TenantId, username, vcode string) (user model.SysUser, err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).Where("username = ? AND vcode = ?", username, vcode).
 		First(&user).Error
 
 	if err != nil {
@@ -205,29 +206,29 @@ func (r *UserRepo) FindByUserNameAndVcode(username, vcode string) (user model.Sy
 	return
 }
 
-func (r *UserRepo) Register(user *model.SysUser) (err error) {
+func (r *UserRepo) Register(tenantId consts.TenantId, user *model.SysUser) (err error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return
 	}
 
 	user.Password = string(hash)
-	err = r.DB.Model(&model.SysUser{}).Create(&user).Error
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).Create(&user).Error
 	if err != nil {
 		return
 	}
 
-	project, err := r.AddProjectForUser(user)
+	project, err := r.AddProjectForUser(tenantId, user)
 	if err != nil {
 		return
 	}
 
-	err = r.AddProfileForUser(user, project.ID)
+	err = r.AddProfileForUser(tenantId, user, project.ID)
 	if err != nil {
 		return
 	}
 
-	err = r.AddRoleForUser(user)
+	err = r.AddRoleForUser(tenantId, user)
 	if err != nil {
 		return
 	}
@@ -235,8 +236,8 @@ func (r *UserRepo) Register(user *model.SysUser) (err error) {
 	return
 }
 
-func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
-	if _, err := r.GetByUsernameOrEmail(req.Username, req.Email); !errors.Is(err, gorm.ErrRecordNotFound) {
+func (r *UserRepo) Create(tenantId consts.TenantId, req serverDomain.UserReq) (uint, error) {
+	if _, err := r.GetByUsernameOrEmail(tenantId, req.Username, req.Email); !errors.Is(err, gorm.ErrRecordNotFound) {
 		return 0, fmt.Errorf("用户名 %s 或者邮箱 %s 已经被使用", req.Username, req.Email)
 	}
 
@@ -247,7 +248,7 @@ func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
 	}
 
 	user.Password = string(hash)
-	err = r.DB.Model(&model.SysUser{}).Create(&user).Error
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).Create(&user).Error
 	if err != nil {
 		return 0, err
 	}
@@ -260,34 +261,34 @@ func (r *UserRepo) Create(req serverDomain.UserReq) (uint, error) {
 	*/
 
 	//新用户默认授权默认项目权限
-	if err := r.AddProfileForUser(&user, 1); err != nil {
+	if err := r.AddProfileForUser(tenantId, &user, 1); err != nil {
 		return 0, err
 	}
 
 	if len(user.RoleIds) == 0 {
-		role, _ := r.RoleRepo.FindByName("user")
+		role, _ := r.RoleRepo.FindByName(tenantId, "user")
 		user.RoleIds = append(user.RoleIds, role.Id)
 	}
 
-	if err := r.AddRoleForUser(&user); err != nil {
+	if err := r.AddRoleForUser(tenantId, &user); err != nil {
 		return 0, err
 	}
 
 	return user.ID, nil
 }
 
-func (r *UserRepo) Update(userId, id uint, req serverDomain.UserReq) error {
-	operatorIsAdmin, err := r.IsAdminUser(userId)
+func (r *UserRepo) Update(tenantId consts.TenantId, userId, id uint, req serverDomain.UserReq) error {
+	operatorIsAdmin, err := r.IsAdminUser(tenantId, userId)
 	if err != nil {
 		return err
 	}
-	if b, err := r.IsAdminUser(id); err != nil {
+	if b, err := r.IsAdminUser(tenantId, id); err != nil {
 		return err
 	} else if b && !operatorIsAdmin {
 		return errors.New("不能编辑超级管理员")
 	}
 
-	userFind, err := r.GetByUsernameOrEmail(req.Username, req.Email, id)
+	userFind, err := r.GetByUsernameOrEmail(tenantId, req.Username, req.Email, id)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return err
 	}
@@ -305,13 +306,13 @@ func (r *UserRepo) Update(userId, id uint, req serverDomain.UserReq) error {
 		user.Password = string(hash)
 	}
 	user.ID = id
-	err = r.DB.Model(&model.SysUser{}).Where("id = ?", id).Updates(&user).Error
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).Where("id = ?", id).Updates(&user).Error
 	if err != nil {
 		logUtils.Errorf("更新用户错误", zap.String("错误:", err.Error()))
 		return err
 	}
 
-	if err = r.AddRoleForUser(&user); err != nil {
+	if err = r.AddRoleForUser(tenantId, &user); err != nil {
 		logUtils.Errorf("添加用户角色错误", zap.String("错误:", err.Error()))
 		return err
 	}
@@ -319,14 +320,14 @@ func (r *UserRepo) Update(userId, id uint, req serverDomain.UserReq) error {
 	return nil
 }
 
-func (r *UserRepo) InviteToProject(req serverDomain.InviteUserReq) (user model.SysUser, err error) {
-	user, err = r.GetByUserId(req.UserId)
+func (r *UserRepo) InviteToProject(tenantId consts.TenantId, req serverDomain.InviteUserReq) (user model.SysUser, err error) {
+	user, err = r.GetByUserId(tenantId, req.UserId)
 	if err != nil {
 		err = errors.New("用户不存在，请先创建用户")
 		return
 	}
 
-	projectMemberRole, err := r.ProjectRepo.FindRolesByProjectAndUser(uint(req.ProjectId), user.ID)
+	projectMemberRole, err := r.ProjectRepo.FindRolesByProjectAndUser(tenantId, uint(req.ProjectId), user.ID)
 	if projectMemberRole.ID != 0 {
 		err = errors.New("用户已经存在于项目中")
 		return
@@ -335,7 +336,7 @@ func (r *UserRepo) InviteToProject(req serverDomain.InviteUserReq) (user model.S
 	if req.RoleName == "" {
 		roleName = "user"
 	} else {
-		role, err := r.ProjectRoleRepo.FindByName(req.RoleName)
+		role, err := r.ProjectRoleRepo.FindByName(tenantId, req.RoleName)
 		if err != nil || role.ID == 0 {
 			err = errors.New("角色不存在")
 			return user, err
@@ -343,7 +344,7 @@ func (r *UserRepo) InviteToProject(req serverDomain.InviteUserReq) (user model.S
 		roleName = req.RoleName
 	}
 
-	err = r.ProjectRepo.AddProjectMember(uint(req.ProjectId), user.ID, roleName)
+	err = r.ProjectRepo.AddProjectMember(tenantId, uint(req.ProjectId), user.ID, roleName)
 	if err != nil {
 		return
 	}
@@ -351,8 +352,8 @@ func (r *UserRepo) InviteToProject(req serverDomain.InviteUserReq) (user model.S
 	return
 }
 
-func (r *UserRepo) IsAdminUser(id uint) (bool, error) {
-	user, err := r.FindDetailById(id)
+func (r *UserRepo) IsAdminUser(tenantId consts.TenantId, id uint) (bool, error) {
+	user, err := r.FindDetailById(tenantId, id)
 	if err != nil {
 		return false, err
 	}
@@ -360,28 +361,28 @@ func (r *UserRepo) IsAdminUser(id uint) (bool, error) {
 	return arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil
 }
 
-func (r *UserRepo) FindById(id uint) (user serverDomain.UserResp, err error) {
-	err = r.DB.Model(&model.SysUser{}).Where("id = ?", id).First(&user).Error
+func (r *UserRepo) FindById(tenantId consts.TenantId, id uint) (user serverDomain.UserResp, err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).Where("id = ?", id).First(&user).Error
 	if err != nil {
 		return user, err
 	}
 
 	return
 }
-func (r *UserRepo) FindDetailById(id uint) (user serverDomain.UserResp, err error) {
-	user, err = r.FindById(id)
+func (r *UserRepo) FindDetailById(tenantId consts.TenantId, id uint) (user serverDomain.UserResp, err error) {
+	user, err = r.FindById(tenantId, id)
 	if err != nil {
 		return user, err
 	}
 
 	r.GetSysRoles(&user)
-	r.GetProjectRoles(&user)
+	r.GetProjectRoles(tenantId, &user)
 
 	return user, nil
 }
 
-func (r *UserRepo) GetByUsernameOrPassword(usernameOrPassword string) (user model.SysUser, err error) {
-	err = r.DB.Model(&model.SysUser{}).
+func (r *UserRepo) GetByUsernameOrPassword(tenantId consts.TenantId, usernameOrPassword string) (user model.SysUser, err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("NOT deleted").
 		Where("username = ? OR email = ?", usernameOrPassword, usernameOrPassword).
 		First(&user).Error
@@ -393,8 +394,8 @@ func (r *UserRepo) GetByUsernameOrPassword(usernameOrPassword string) (user mode
 	return
 }
 
-func (r *UserRepo) GetByUserId(id uint) (user model.SysUser, err error) {
-	err = r.DB.Model(&model.SysUser{}).
+func (r *UserRepo) GetByUserId(tenantId consts.TenantId, id uint) (user model.SysUser, err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("NOT deleted").
 		Where("id = ?", id).
 		First(&user).Error
@@ -405,8 +406,8 @@ func (r *UserRepo) GetByUserId(id uint) (user model.SysUser, err error) {
 
 	return
 }
-func (r *UserRepo) GetByUserName(userName string) (user model.SysUser, err error) {
-	err = r.DB.Model(&model.SysUser{}).
+func (r *UserRepo) GetByUserName(tenantId consts.TenantId, userName string) (user model.SysUser, err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("NOT deleted").
 		Where("username = ?", userName).
 		First(&user).Error
@@ -418,8 +419,8 @@ func (r *UserRepo) GetByUserName(userName string) (user model.SysUser, err error
 	return
 }
 
-func (r *UserRepo) DeleteById(id uint) error {
-	err := r.DB.Unscoped().Delete(&model.SysUser{}, id).Error
+func (r *UserRepo) DeleteById(tenantId consts.TenantId, id uint) error {
+	err := r.GetDB(tenantId).Unscoped().Delete(&model.SysUser{}, id).Error
 	if err != nil {
 		logUtils.Errorf("delete user by id get  err ", zap.String("错误:", err.Error()))
 		return err
@@ -427,14 +428,14 @@ func (r *UserRepo) DeleteById(id uint) error {
 	return nil
 }
 
-func (r *UserRepo) AddProfileForUser(user *model.SysUser, projectId uint) (err error) {
+func (r *UserRepo) AddProfileForUser(tenantId consts.TenantId, user *model.SysUser, projectId uint) (err error) {
 	_, err = r.ProfileRepo.FindByUserId(user.ID)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return fmt.Errorf("用户 %s 信息已经被使用", user.Name)
 	}
 
 	profile := model.SysUserProfile{UserId: user.ID, CurrProjectId: projectId}
-	err = r.DB.Create(&profile).Error
+	err = r.GetDB(tenantId).Create(&profile).Error
 	if err != nil {
 		logUtils.Errorf("添加用户错误", zap.String("错误:", err.Error()))
 		return err
@@ -444,7 +445,7 @@ func (r *UserRepo) AddProfileForUser(user *model.SysUser, projectId uint) (err e
 }
 
 // AddRoleForUser add roles for user
-func (r *UserRepo) AddRoleForUser(user *model.SysUser) error {
+func (r *UserRepo) AddRoleForUser(tenantId consts.TenantId, user *model.SysUser) error {
 	userId := strconv.FormatUint(uint64(user.ID), 10)
 	oldRoleIds, err := casbin.Instance().GetRolesForUser(userId)
 	if err != nil {
@@ -459,7 +460,7 @@ func (r *UserRepo) AddRoleForUser(user *model.SysUser) error {
 		}
 	}
 	if len(user.RoleIds) == 0 {
-		role, _ := r.RoleRepo.FindByName("user")
+		role, _ := r.RoleRepo.FindByName(tenantId, "user")
 		user.RoleIds = append(user.RoleIds, role.Id)
 	}
 
@@ -498,8 +499,8 @@ func (r *UserRepo) UpdateRoleForUser(userId string, roleIds []string) error {
 	return nil
 }
 
-func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project, err error) {
-	_, err = r.ProjectRepo.GetCurrProjectByUser(user.ID)
+func (r *UserRepo) AddProjectForUser(tenantId consts.TenantId, user *model.SysUser) (project model.Project, err error) {
+	_, err = r.ProjectRepo.GetCurrProjectByUser(tenantId, user.ID)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		err = fmt.Errorf("用户%s的默认项目已存在", user.Name)
 		return
@@ -507,13 +508,13 @@ func (r *UserRepo) AddProjectForUser(user *model.SysUser) (project model.Project
 
 	// create project
 	project = model.Project{ProjectBase: serverDomain.ProjectBase{Name: "默认项目", ShortName: "T"}}
-	err = r.DB.Create(&project).Error
+	err = r.GetDB(tenantId).Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("添加项目错误", zap.String("错误:", err.Error()))
 		return
 	}
 
-	r.ProjectRepo.CreateProjectRes(project.ID, user.ID, false)
+	r.ProjectRepo.CreateProjectRes(tenantId, project.ID, user.ID, false)
 
 	return
 }
@@ -538,8 +539,8 @@ func (r *UserRepo) CleanToken(authorityType int, userId string) error {
 	return nil
 }
 
-func (r *UserRepo) UpdatePasswordByName(name string, password string) (err error) {
-	err = r.DB.Model(&model.SysUser{}).Where("username = ?", name).
+func (r *UserRepo) UpdatePasswordByName(tenantId consts.TenantId, name string, password string) (err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).Where("username = ?", name).
 		Updates(map[string]interface{}{"password": password}).Error
 	if err != nil {
 		logUtils.Errorf("更新用户错误", zap.String("错误:", err.Error()))
@@ -552,8 +553,8 @@ func (r *UserRepo) UpdateAvatar(id uint, avatar string) error {
 	return nil
 }
 
-func (r *UserRepo) UpdateEmail(email string, id uint) (err error) {
-	err = r.DB.Model(&model.SysUser{}).
+func (r *UserRepo) UpdateEmail(tenantId consts.TenantId, email string, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"email": email}).Error
 	if err != nil {
@@ -564,8 +565,8 @@ func (r *UserRepo) UpdateEmail(email string, id uint) (err error) {
 	return
 }
 
-func (r *UserRepo) UpdateName(username string, id uint) (err error) {
-	err = r.DB.Model(&model.SysUser{}).
+func (r *UserRepo) UpdateName(tenantId consts.TenantId, username string, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"username": username}).Error
 	if err != nil {
@@ -576,8 +577,8 @@ func (r *UserRepo) UpdateName(username string, id uint) (err error) {
 	return
 }
 
-func (r *UserRepo) ChangePassword(req serverDomain.UpdateUserReq, id uint) (err error) {
-	user, err := r.FindById(id)
+func (r *UserRepo) ChangePassword(tenantId consts.TenantId, req serverDomain.UpdateUserReq, id uint) (err error) {
+	user, err := r.FindById(tenantId, id)
 	if err != nil {
 		if err != nil {
 			return
@@ -596,7 +597,7 @@ func (r *UserRepo) ChangePassword(req serverDomain.UpdateUserReq, id uint) (err 
 	}
 	req.NewPassword = string(hash)
 
-	err = r.DB.Model(&model.SysUser{}).
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"password": req.NewPassword}).Error
 	if err != nil {
@@ -606,7 +607,7 @@ func (r *UserRepo) ChangePassword(req serverDomain.UpdateUserReq, id uint) (err 
 	return
 }
 
-func (r *UserRepo) UpdatePassword(password string, id uint) (err error) {
+func (r *UserRepo) UpdatePassword(tenantId consts.TenantId, password string, id uint) (err error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return
@@ -614,7 +615,7 @@ func (r *UserRepo) UpdatePassword(password string, id uint) (err error) {
 
 	newPassword := string(hash)
 
-	err = r.DB.Model(&model.SysUser{}).
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"password": newPassword}).Error
 
@@ -625,10 +626,10 @@ func (r *UserRepo) UpdatePassword(password string, id uint) (err error) {
 	return
 }
 
-func (r *UserRepo) GenAndUpdateVcode(id uint) (vcode string, err error) {
+func (r *UserRepo) GenAndUpdateVcode(tenantId consts.TenantId, id uint) (vcode string, err error) {
 	vcode = strings.ToLower(_stringUtils.RandStr(6))
 
-	err = r.DB.Model(&model.SysUser{}).
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"vcode": vcode}).Error
 	if err != nil {
@@ -638,8 +639,8 @@ func (r *UserRepo) GenAndUpdateVcode(id uint) (vcode string, err error) {
 	return
 }
 
-func (r *UserRepo) ClearVcode(id uint) (err error) {
-	err = r.DB.Model(&model.SysUser{}).
+func (r *UserRepo) ClearVcode(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"vcode": ""}).Error
 
@@ -650,15 +651,15 @@ func (r *UserRepo) ClearVcode(id uint) (err error) {
 	return
 }
 
-func (r *UserRepo) GetUsersNotExistedInProject(projectId uint) (ret []serverDomain.UserResp, err error) {
-	membersExisted, err := r.ProjectRepo.GetMembersByProject(projectId)
+func (r *UserRepo) GetUsersNotExistedInProject(tenantId consts.TenantId, projectId uint) (ret []serverDomain.UserResp, err error) {
+	membersExisted, err := r.ProjectRepo.GetMembersByProject(tenantId, projectId)
 
 	userIdsExisted := make([]uint, 0)
 	for _, v := range membersExisted {
 		userIdsExisted = append(userIdsExisted, v.UserId)
 	}
 
-	db := r.DB.Model(&model.SysUser{}).
+	db := r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("id NOT IN (?)", userIdsExisted)
 	if config.CONFIG.System.SysEnv == "ly" {
 		db = db.Where("username != ?", serverConsts.AdminUserName)
@@ -667,18 +668,18 @@ func (r *UserRepo) GetUsersNotExistedInProject(projectId uint) (ret []serverDoma
 	return
 }
 
-func (r *UserRepo) FindByIds(ids []uint) (res []model.SysUser, err error) {
-	db := r.DB.Model(&model.SysUser{}).Where("id IN (?)", ids)
+func (r *UserRepo) FindByIds(tenantId consts.TenantId, ids []uint) (res []model.SysUser, err error) {
+	db := r.GetDB(tenantId).Model(&model.SysUser{}).Where("id IN (?)", ids)
 
 	err = db.Find(&res).Error
 	return
 }
 
-func (r *UserRepo) GetUserIdNameMap(ids []uint) map[uint]string {
+func (r *UserRepo) GetUserIdNameMap(tenantId consts.TenantId, ids []uint) map[uint]string {
 	userIdNameMap := make(map[uint]string)
 	ids = _commUtils.ArrayRemoveUintDuplication(ids)
 
-	users, err := r.FindByIds(ids)
+	users, err := r.FindByIds(tenantId, ids)
 	if err != nil {
 		return userIdNameMap
 	}
@@ -690,8 +691,8 @@ func (r *UserRepo) GetUserIdNameMap(ids []uint) map[uint]string {
 	return userIdNameMap
 }
 
-func (r *UserRepo) GetByUsernameOrEmail(username, email string, ids ...uint) (user model.SysUser, err error) {
-	db := r.DB.Model(&model.SysUser{}).
+func (r *UserRepo) GetByUsernameOrEmail(tenantId consts.TenantId, username, email string, ids ...uint) (user model.SysUser, err error) {
+	db := r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("NOT deleted").
 		Where("username = ? OR email = ?", username, email)
 
@@ -703,9 +704,9 @@ func (r *UserRepo) GetByUsernameOrEmail(username, email string, ids ...uint) (us
 	return
 }
 
-func (r *UserRepo) UpdateByLdapInfo(ldapUserInfo v1.UserBase) (id uint, err error) {
+func (r *UserRepo) UpdateByLdapInfo(tenantId consts.TenantId, ldapUserInfo v1.UserBase) (id uint, err error) {
 	var user serverDomain.UserReq
-	db := r.DB.Model(&model.SysUser{}).
+	db := r.GetDB(tenantId).Model(&model.SysUser{}).
 		Where("NOT deleted").
 		Where("email = ?", ldapUserInfo.Email)
 	err = db.First(&user).Error
@@ -715,9 +716,9 @@ func (r *UserRepo) UpdateByLdapInfo(ldapUserInfo v1.UserBase) (id uint, err erro
 	user.ImAccount = ldapUserInfo.ImAccount
 
 	if err != nil && err.Error() == "record not found" {
-		id, err = r.Create(user)
+		id, err = r.Create(tenantId, user)
 	} else if err == nil && user.Id != 1 && user.Model.Id != 0 {
-		err = r.Update(user.Id, user.Model.Id, user)
+		err = r.Update(tenantId, user.Id, user.Model.Id, user)
 		id = user.Id
 	} else {
 		err = errors.New("未能更新或创建ldap信息")
@@ -725,8 +726,8 @@ func (r *UserRepo) UpdateByLdapInfo(ldapUserInfo v1.UserBase) (id uint, err erro
 	return
 }
 
-func (r *UserRepo) CreateIfNotExisted(req serverDomain.UserReq) (id uint, err error) {
-	user, err := r.GetByUserName(req.Username)
+func (r *UserRepo) CreateIfNotExisted(tenantId consts.TenantId, req serverDomain.UserReq) (id uint, err error) {
+	user, err := r.GetByUserName(tenantId, req.Username)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return
 	}
@@ -743,7 +744,7 @@ func (r *UserRepo) CreateIfNotExisted(req serverDomain.UserReq) (id uint, err er
 				Password:  _commUtils.RandStr(8),
 			},
 		}
-		id, err = r.Create(createUserReq)
+		id, err = r.Create(tenantId, createUserReq)
 		if err != nil {
 			return 0, err
 		}

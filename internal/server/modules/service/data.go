@@ -4,6 +4,7 @@ import (
 	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
@@ -57,7 +58,7 @@ func (s *DataService) refreshConfig(viper *viper.Viper, conf config.Config) erro
 }
 
 // InitDB 创建数据库并初始化
-func (s *DataService) InitDB(req v1.DataReq) error {
+func (s *DataService) InitDB(tenantId consts.TenantId, req v1.DataReq) error {
 	defaultConfig := config.CONFIG
 	if config.VIPER == nil {
 		logUtils.Errorf("初始化错误", zap.String("InitDB", ErrViperEmpty.Error()))
@@ -78,7 +79,7 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 	}
 
 	if config.CONFIG.System.DbType == "mysql" {
-		if err := s.DataRepo.CreateMySqlDb(); err != nil {
+		if err := s.DataRepo.CreateMySqlDb(tenantId); err != nil {
 			return err
 		}
 	}
@@ -101,7 +102,7 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 	}
 
 	if req.ClearData {
-		err = s.initData(
+		err = s.initData(tenantId,
 			s.SysConfigSource,
 			s.SysAgentSource,
 			s.PermSource,
@@ -135,9 +136,9 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 }
 
 // initDB 初始化数据
-func (s *DataService) initData(InitDBFunctions ...module.InitDBFunc) error {
+func (s *DataService) initData(tenantId consts.TenantId, InitDBFunctions ...module.InitDBFunc) error {
 	for _, v := range InitDBFunctions {
-		err := v.Init()
+		err := v.Init(tenantId)
 		if err != nil {
 			return err
 		}

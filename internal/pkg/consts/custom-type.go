@@ -15,3 +15,5 @@ func (n Integers) ToString() (ret string) {
 
 	return ret
 }
+
+type TenantId string

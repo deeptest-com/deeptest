@@ -2,6 +2,7 @@ package dbresolver
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"sync"
@@ -15,7 +16,7 @@ func NewDBResolver() *DBResolver {
 	return &DBResolver{connPools: sync.Map{}}
 }
 
-func (dr *DBResolver) Apply(poolName string, handler func() (*gorm.DB, error)) *DBResolver {
+func (dr *DBResolver) Apply(poolName consts.TenantId, handler func() (*gorm.DB, error)) *DBResolver {
 	if poolName == "" {
 		return dr
 	}
@@ -32,7 +33,7 @@ func (dr *DBResolver) Apply(poolName string, handler func() (*gorm.DB, error)) *
 	return dr
 }
 
-func (dr *DBResolver) GetConnPool(poolName string) *gorm.DB {
+func (dr *DBResolver) GetConnPool(poolName consts.TenantId) *gorm.DB {
 	if poolName == "" {
 		return nil
 	}

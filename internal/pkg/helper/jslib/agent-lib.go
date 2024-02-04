@@ -61,7 +61,8 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 		id := lib.Id
 		//updateTime, ok := GetAgentCache(projectId, id)
 		//if  !ok || updateTime.Before(lib.UpdatedAt) {
-		pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d.js", id))
+		//pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d.js", id))
+		pth := filepath.Join("./res/tmp/", fmt.Sprintf("%d.js", id))
 		fileUtils.WriteFile(pth, lib.Script)
 		module, err := require.Require(pth)
 		if err != nil {

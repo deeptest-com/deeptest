@@ -38,14 +38,14 @@ func (s *ProjectRoleSource) GetSources() (sources []model.ProjectRole, err error
 	return
 }
 
-func (s *ProjectRoleSource) Init() (err error) {
+func (s *ProjectRoleSource) Init(tenantId consts.TenantId) (err error) {
 	sources, err := s.GetSources()
 	if err != nil {
 		return
 	}
 
 	for _, source := range sources {
-		err = s.ProjectRoleRepo.Create(source)
+		err = s.ProjectRoleRepo.Create(tenantId, source)
 		if err != nil { // 遇到错误时回滚事务
 			color.Info.Printf("\n[Mysql] --> %s 表初始数据失败!,err:%s", model.ProjectRole{}.TableName(), err.Error())
 			return

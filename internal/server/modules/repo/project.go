@@ -38,17 +38,16 @@ type ProjectRepo struct {
 	ScenarioInterfaceRepo      *ScenarioInterfaceRepo      `inject:""`
 	EndpointCaseRepo           *EndpointCaseRepo           `inject:""`
 	DebugInterfaceRepo         *DebugInterfaceRepo         `inject:""`
-	BaseRepo                   *BaseRepo                   `inject:""`
+	BaseRepo                   `inject:""`
 }
 
-func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
+func (r *ProjectRepo) Paginate(tenantId consts.TenantId, req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
 	var count int64
-
 	var projectIds []uint
-	r.DB.Model(&model.ProjectMember{}).
+	r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Select("project_id").Where("user_id = ?", userId).Scan(&projectIds)
 
-	db := r.DB.Model(&model.Project{}).Where("NOT deleted AND id IN (?)", projectIds)
+	db := r.GetDB(tenantId).Model(&model.Project{}).Where("NOT deleted AND id IN (?)", projectIds)
 
 	if req.Keywords != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Keywords))
@@ -83,16 +82,16 @@ func (r *ProjectRepo) Paginate(req v1.ProjectReqPaginate, userId uint) (data _do
 	return
 }
 
-func (r *ProjectRepo) Get(id uint) (project model.Project, err error) {
-	err = r.DB.Model(&model.Project{}).
+func (r *ProjectRepo) Get(tenantId consts.TenantId, id uint) (project model.Project, err error) {
+	err = r.GetDB(tenantId).Model(&model.Project{}).
 		Where("id = ?", id).
 		First(&project).Error
 
 	return
 }
 
-func (r *ProjectRepo) GetByName(projectName string, id uint) (project model.Project, err error) {
-	db := r.DB.Model(&model.Project{}).
+func (r *ProjectRepo) GetByName(tenantId consts.TenantId, projectName string, id uint) (project model.Project, err error) {
+	db := r.GetDB(tenantId).Model(&model.Project{}).
 		Where("name = ? AND NOT deleted AND NOT disabled", projectName)
 
 	if id > 0 {
@@ -104,8 +103,8 @@ func (r *ProjectRepo) GetByName(projectName string, id uint) (project model.Proj
 	return
 }
 
-func (r *ProjectRepo) GetByCode(shortName string, id uint) (ret model.Project, err error) {
-	db := r.DB.Model(&ret).
+func (r *ProjectRepo) GetByCode(tenantId consts.TenantId, shortName string, id uint) (ret model.Project, err error) {
+	db := r.GetDB(tenantId).Model(&ret).
 		Where("short_name = ? AND NOT deleted", shortName)
 
 	if id > 0 {
@@ -116,28 +115,28 @@ func (r *ProjectRepo) GetByCode(shortName string, id uint) (ret model.Project, e
 	return
 }
 
-func (r *ProjectRepo) GetBySpec(spec string) (project model.Project, err error) {
-	err = r.DB.Model(&model.Project{}).
+func (r *ProjectRepo) GetBySpec(tenantId consts.TenantId, spec string) (project model.Project, err error) {
+	err = r.GetDB(tenantId).Model(&model.Project{}).
 		Where("spec = ?", spec).
 		First(&project).Error
 
 	return
 }
 
-func (r *ProjectRepo) Save(po *model.Project) (err error) {
-	err = r.DB.Save(po).Error
+func (r *ProjectRepo) Save(tenantId consts.TenantId, po *model.Project) (err error) {
+	err = r.GetDB(tenantId).Save(po).Error
 
 	return
 }
 
-func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _domain.BizErr) {
-	po, err := r.GetByName(req.Name, 0)
+func (r *ProjectRepo) Create(tenantId consts.TenantId, req v1.ProjectReq, userId uint) (id uint, bizErr _domain.BizErr) {
+	po, err := r.GetByName(tenantId, req.Name, 0)
 	if po.Name != "" {
 		bizErr = _domain.ErrNameExist
 		return
 	}
 
-	po, err = r.GetByCode(req.ShortName, 0)
+	po, err = r.GetByCode(tenantId, req.ShortName, 0)
 	if po.ShortName != "" {
 		bizErr = _domain.ErrShortNameExist
 		return
@@ -145,7 +144,7 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 
 	// create project
 	project := model.Project{ProjectBase: req.ProjectBase}
-	err = r.DB.Model(&model.Project{}).Create(&project).Error
+	err = r.GetDB(tenantId).Model(&model.Project{}).Create(&project).Error
 	if err != nil {
 		logUtils.Errorf("add project error", zap.String("error:", err.Error()))
 		bizErr = _domain.SystemErr
@@ -153,24 +152,24 @@ func (r *ProjectRepo) Create(req v1.ProjectReq, userId uint) (id uint, bizErr _d
 		return
 	}
 	if req.AdminId != userId {
-		err = r.AddProjectMember(project.ID, req.AdminId, r.BaseRepo.GetAdminRoleName())
+		err = r.AddProjectMember(tenantId, project.ID, req.AdminId, r.BaseRepo.GetAdminRoleName())
 		if err != nil {
 			logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 			bizErr = _domain.SystemErr
 			return 0, bizErr
 		}
 	}
-	err = r.CreateProjectRes(project.ID, userId, req.IncludeExample)
+	err = r.CreateProjectRes(tenantId, project.ID, userId, req.IncludeExample)
 
 	id = project.ID
 
 	return
 }
 
-func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bool) (err error) {
+func (r *ProjectRepo) CreateProjectRes(tenantId consts.TenantId, projectId, userId uint, IncludeExample bool) (err error) {
 
 	// create project member
-	err = r.AddProjectMember(projectId, userId, r.BaseRepo.GetAdminRoleName())
+	err = r.AddProjectMember(tenantId, projectId, userId, r.BaseRepo.GetAdminRoleName())
 	if err != nil {
 		logUtils.Errorf("添加项目角色错误", zap.String("错误:", err.Error()))
 		return
@@ -184,14 +183,14 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	}
 
 	// create project serve
-	serve, err := r.AddProjectDefaultServe(projectId, userId)
+	serve, err := r.AddProjectDefaultServe(tenantId, projectId, userId)
 	if err != nil {
 		logUtils.Errorf("添加默认服务错误", zap.String("错误:", err.Error()))
 		return
 	}
 
 	// create project endpoint category
-	categoryId, err := r.AddProjectRootEndpointCategory(projectId)
+	categoryId, err := r.AddProjectRootEndpointCategory(tenantId, projectId)
 	if err != nil {
 		logUtils.Errorf("添加终端分类错误", zap.String("错误:", err.Error()))
 		return
@@ -207,14 +206,14 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	*/
 
 	// create project scenario category
-	err = r.AddProjectRootScenarioCategory(projectId)
+	err = r.AddProjectRootScenarioCategory(tenantId, projectId)
 	if err != nil {
 		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
 		return
 	}
 
 	// create project plan category
-	err = r.AddProjectRootPlanCategory(projectId)
+	err = r.AddProjectRootPlanCategory(tenantId, projectId)
 	if err != nil {
 		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
 		return
@@ -222,7 +221,7 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 
 	//create sample
 	if IncludeExample {
-		err = r.CreateSample(projectId, serve.ID, userId, categoryId)
+		err = r.CreateSample(tenantId, projectId, serve.ID, userId, categoryId)
 		if err != nil {
 			logUtils.Errorf("创建示例失败", zap.String("错误:", err.Error()))
 			return
@@ -232,19 +231,19 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	return
 }
 
-func (r *ProjectRepo) Update(req v1.ProjectReq) error {
-	po, _ := r.GetByName(req.Name, req.Id)
+func (r *ProjectRepo) Update(tenantId consts.TenantId, req v1.ProjectReq) error {
+	po, _ := r.GetByName(tenantId, req.Name, req.Id)
 	if po.Name != "" {
 		return errors.New("同名记录已存在")
 	}
 
-	po, _ = r.GetByCode(req.ShortName, req.Id)
+	po, _ = r.GetByCode(tenantId, req.ShortName, req.Id)
 	if po.ShortName != "" {
 		return errors.New("英文缩写已存在")
 	}
 
 	project := model.Project{ProjectBase: req.ProjectBase}
-	err := r.DB.Model(&model.Project{}).Where("id = ?", req.Id).Updates(&project).Error
+	err := r.GetDB(tenantId).Model(&model.Project{}).Where("id = ?", req.Id).Updates(&project).Error
 	if err != nil {
 		logUtils.Errorf("update project error", zap.String("error:", err.Error()))
 		return err
@@ -253,8 +252,8 @@ func (r *ProjectRepo) Update(req v1.ProjectReq) error {
 	return nil
 }
 
-func (r *ProjectRepo) UpdateDefaultEnvironment(projectId, envId uint) (err error) {
-	err = r.DB.Model(&model.Project{}).
+func (r *ProjectRepo) UpdateDefaultEnvironment(tenantId consts.TenantId, projectId, envId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Project{}).
 		Where("id = ?", projectId).
 		Updates(map[string]interface{}{"environment_id": envId}).Error
 
@@ -266,8 +265,8 @@ func (r *ProjectRepo) UpdateDefaultEnvironment(projectId, envId uint) (err error
 	return
 }
 
-func (r *ProjectRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.Project{}).Where("id = ?", id).
+func (r *ProjectRepo) DeleteById(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Project{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete project by id error", zap.String("error:", err.Error()))
@@ -288,7 +287,7 @@ func (r *ProjectRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
 	return nil
 }
 
-func (r *ProjectRepo) GetChildrenIds(id uint) (ids []int, err error) {
+func (r *ProjectRepo) GetChildrenIds(tenantId consts.TenantId, id uint) (ids []int, err error) {
 	tmpl := `
 		WITH RECURSIVE project AS (
 			SELECT * FROM biz_project WHERE id = %d
@@ -298,7 +297,7 @@ func (r *ProjectRepo) GetChildrenIds(id uint) (ids []int, err error) {
 		SELECT id FROM project WHERE id != %d
     `
 	sql := fmt.Sprintf(tmpl, id, id)
-	err = r.DB.Raw(sql).Scan(&ids).Error
+	err = r.GetDB(tenantId).Raw(sql).Scan(&ids).Error
 	if err != nil {
 		logUtils.Errorf("get children project error", zap.String("error:", err.Error()))
 		return
@@ -307,8 +306,8 @@ func (r *ProjectRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	return
 }
 
-func (r *ProjectRepo) ListProjectByUser(userId uint) (res []model.ProjectMemberRole, err error) {
-	projectRoleMap, err := r.GetProjectRoleMapByUser(userId)
+func (r *ProjectRepo) ListProjectByUser(tenantId consts.TenantId, userId uint) (res []model.ProjectMemberRole, err error) {
+	projectRoleMap, err := r.GetProjectRoleMapByUser(tenantId, userId)
 
 	if err != nil {
 		return
@@ -319,18 +318,18 @@ func (r *ProjectRepo) ListProjectByUser(userId uint) (res []model.ProjectMemberR
 		projectIds = append(projectIds, k)
 	}
 
-	projects, err := r.GetProjectsByIds(projectIds)
+	projects, err := r.GetProjectsByIds(tenantId, projectIds)
 	if err != nil {
 		return
 	}
 
-	res, err = r.CombineRoleForProject(projects, projectRoleMap)
+	res, err = r.CombineRoleForProject(tenantId, projects, projectRoleMap)
 
 	if err != nil {
 		return
 	}
 
-	//db := r.DB.Model(&model.ProjectMember{}).
+	//db := r.GetDB(tenantId).Model(&model.ProjectMember{}).
 	//	Joins("LEFT JOIN biz_project p ON biz_project_member.project_id=p.id").
 	//	Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
 	//	Select("p.*, r.id role_id, r.name role_name").
@@ -343,14 +342,14 @@ func (r *ProjectRepo) ListProjectByUser(userId uint) (res []model.ProjectMemberR
 	return
 }
 
-func (r *ProjectRepo) GetProjectRoleMapByUser(userId uint) (res map[uint]uint, err error) {
+func (r *ProjectRepo) GetProjectRoleMapByUser(tenantId consts.TenantId, userId uint) (res map[uint]uint, err error) {
 	isAdminUser, err := r.UserRepo.IsAdminUser(userId)
 	if err != nil {
 		return
 	}
 
 	var projectMembers []model.ProjectMember
-	db := r.DB.Model(&model.ProjectMember{}).
+	db := r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Select("project_id, project_role_id")
 	if !isAdminUser {
 		db.Where("user_id = ?", userId)
@@ -367,21 +366,21 @@ func (r *ProjectRepo) GetProjectRoleMapByUser(userId uint) (res map[uint]uint, e
 	return
 }
 
-func (r *ProjectRepo) GetProjectsByIds(ids []uint) (projects []model.Project, err error) {
-	err = r.DB.Model(&model.Project{}).
+func (r *ProjectRepo) GetProjectsByIds(tenantId consts.TenantId, ids []uint) (projects []model.Project, err error) {
+	err = r.GetDB(tenantId).Model(&model.Project{}).
 		Where("id IN (?) AND NOT deleted AND NOT disabled ", ids).
 		Find(&projects).Error
 	return
 }
 
-func (r *ProjectRepo) CombineRoleForProject(projects []model.Project, projectRoleMap map[uint]uint) (res []model.ProjectMemberRole, err error) {
+func (r *ProjectRepo) CombineRoleForProject(tenantId consts.TenantId, projects []model.Project, projectRoleMap map[uint]uint) (res []model.ProjectMemberRole, err error) {
 	roleIds := make([]uint, 0)
 	for _, v := range projectRoleMap {
 		roleIds = append(roleIds, v)
 	}
 	roleIds = _commUtils.ArrayRemoveUintDuplication(roleIds)
 
-	roleIdNameMap, err := r.ProjectRoleRepo.GetRoleIdNameMap(roleIds)
+	roleIdNameMap, err := r.ProjectRoleRepo.GetRoleIdNameMap(tenantId, roleIds)
 	if err != nil {
 		return
 	}
@@ -405,82 +404,82 @@ func (r *ProjectRepo) CombineRoleForProject(projects []model.Project, projectRol
 	return
 }
 
-func (r *ProjectRepo) GetCurrProjectByUser(userId uint) (currProject model.Project, err error) {
+func (r *ProjectRepo) GetCurrProjectByUser(tenantId consts.TenantId, userId uint) (currProject model.Project, err error) {
 	var user model.SysUser
-	err = r.DB.Preload("Profile").
+	err = r.GetDB(tenantId).Preload("Profile").
 		Where("id = ?", userId).
 		First(&user).
 		Error
 
-	err = r.DB.Model(&model.Project{}).
+	err = r.GetDB(tenantId).Model(&model.Project{}).
 		Where("id = ?", user.Profile.CurrProjectId).
 		First(&currProject).Error
 
 	return
 }
 
-func (r *ProjectRepo) ListProjectsRecentlyVisited(userId uint) (projects []model.Project, err error) {
-	err = r.DB.Raw(fmt.Sprintf("SELECT p.*,max( v.created_at ) visited_time FROM biz_project_recently_visited v,biz_project p WHERE v.project_id = p.id AND v.user_id = %d AND NOT p.deleted GROUP BY v.project_id ORDER BY visited_time DESC LIMIT 3", userId)).Find(&projects).Error
+func (r *ProjectRepo) ListProjectsRecentlyVisited(tenantId consts.TenantId, userId uint) (projects []model.Project, err error) {
+	err = r.GetDB(tenantId).Raw(fmt.Sprintf("SELECT p.*,max( v.created_at ) visited_time FROM biz_project_recently_visited v,biz_project p WHERE v.project_id = p.id AND v.user_id = %d AND NOT p.deleted GROUP BY v.project_id ORDER BY visited_time DESC LIMIT 3", userId)).Find(&projects).Error
 	return
 }
 
-func (r *ProjectRepo) ChangeProject(projectId, userId uint) (err error) {
-	err = r.DB.Model(&model.SysUserProfile{}).Where("user_id = ?", userId).
+func (r *ProjectRepo) ChangeProject(tenantId consts.TenantId, projectId, userId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUserProfile{}).Where("user_id = ?", userId).
 		Updates(map[string]interface{}{"curr_project_id": projectId}).Error
 
 	return
 }
 
-func (r *ProjectRepo) AddProjectMember(projectId, userId uint, role consts.RoleType) (err error) {
+func (r *ProjectRepo) AddProjectMember(tenantId consts.TenantId, projectId, userId uint, role consts.RoleType) (err error) {
 	var projectRole model.ProjectRole
-	projectRole, err = r.ProjectRoleRepo.FindByName(role)
+	projectRole, err = r.ProjectRoleRepo.FindByName(tenantId, role)
 	if err != nil {
 		return
 	}
 
 	projectMember := model.ProjectMember{UserId: userId, ProjectId: projectId, ProjectRoleId: projectRole.ID}
-	err = r.DB.Create(&projectMember).Error
+	err = r.GetDB(tenantId).Create(&projectMember).Error
 
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootEndpointCategory(projectId uint) (id uint, err error) {
+func (r *ProjectRepo) AddProjectRootEndpointCategory(tenantId consts.TenantId, projectId uint) (id uint, err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.EndpointCategory,
 		ProjectId: projectId,
 		IsDir:     true,
 	}
-	err = r.DB.Create(&root).Error
+	err = r.GetDB(tenantId).Create(&root).Error
 
 	return root.ID, err
 }
 
-func (r *ProjectRepo) AddProjectRootScenarioCategory(projectId uint) (err error) {
+func (r *ProjectRepo) AddProjectRootScenarioCategory(tenantId consts.TenantId, projectId uint) (err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.ScenarioCategory,
 		ProjectId: projectId,
 		IsDir:     true,
 	}
-	err = r.DB.Create(&root).Error
+	err = r.GetDB(tenantId).Create(&root).Error
 
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
+func (r *ProjectRepo) AddProjectRootPlanCategory(tenantId consts.TenantId, projectId uint) (err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.PlanCategory,
 		ProjectId: projectId,
 		IsDir:     true,
 	}
-	err = r.DB.Create(&root).Error
+	err = r.GetDB(tenantId).Create(&root).Error
 
 	return
 }
 
-func (r *ProjectRepo) AddProjectRootTestCategory(projectId, serveId uint) (err error) {
+func (r *ProjectRepo) AddProjectRootTestCategory(tenantId consts.TenantId, projectId, serveId uint) (err error) {
 	root := model.DiagnoseInterface{
 		Title:     "根节点",
 		ProjectId: projectId,
@@ -488,14 +487,14 @@ func (r *ProjectRepo) AddProjectRootTestCategory(projectId, serveId uint) (err e
 		Type:      "dir",
 		ServeId:   serveId,
 	}
-	err = r.DB.Create(&root).Error
+	err = r.GetDB(tenantId).Create(&root).Error
 
 	return
 }
 
-func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
+func (r *ProjectRepo) Members(tenantId consts.TenantId, req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
 	req.Order = "sys_user.created_at"
-	db := r.DB.Model(&model.SysUser{}).
+	db := r.GetDB(tenantId).Model(&model.SysUser{}).
 		Select("sys_user.id, sys_user.username, sys_user.email,sys_user.name, m.project_role_id, r.name as role_name").
 		Joins("left join biz_project_member m on sys_user.id=m.user_id").
 		Joins("left join biz_project_role r on m.project_role_id=r.id").
@@ -529,25 +528,25 @@ func (r *ProjectRepo) Members(req v1.ProjectReqPaginate, projectId int) (data _d
 	return
 }
 
-func (r *ProjectRepo) RemoveMember(userId, projectId int) (err error) {
+func (r *ProjectRepo) RemoveMember(tenantId consts.TenantId, userId, projectId int) (err error) {
 	/*
-		err = r.DB.Model(&modelRef.ProjectMember{}).
+		err = r.GetDB(tenantId).Model(&modelRef.ProjectMember{}).
 			Where("user_id = ? AND project_id = ?", userId, projectId).
 			Updates(map[string]interface{}{"deleted": true}).Error
 		if err != nil {
 			return
 		}
 	*/
-	err = r.DB.
+	err = r.GetDB(tenantId).
 		Where("user_id = ? AND project_id=?", userId, projectId).
 		Delete(&model.ProjectMember{}).Error
 
 	return
 }
 
-func (r *ProjectRepo) FindRolesByUser(userId uint) (members []model.ProjectMember, err error) {
+func (r *ProjectRepo) FindRolesByUser(tenantId consts.TenantId, userId uint) (members []model.ProjectMember, err error) {
 
-	err = r.DB.Model(&model.ProjectMember{}).
+	err = r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
 		Select("biz_project_member.*, r.name project_role_name").
 		Where("biz_project_member.user_id = ?", userId).
@@ -556,9 +555,9 @@ func (r *ProjectRepo) FindRolesByUser(userId uint) (members []model.ProjectMembe
 	return
 }
 
-func (r *ProjectRepo) GetProjectsAndRolesByUser(userId uint) (projectIds, roleIds []uint) {
+func (r *ProjectRepo) GetProjectsAndRolesByUser(tenantId consts.TenantId, userId uint) (projectIds, roleIds []uint) {
 	var members []model.ProjectMember
-	r.DB.Model(&model.ProjectMember{}).
+	r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Where("user_id = ?", userId).
 		Find(&members)
 
@@ -575,13 +574,13 @@ func (r *ProjectRepo) GetProjectsAndRolesByUser(userId uint) (projectIds, roleId
 	return
 }
 
-func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve model.Serve, err error) {
+func (r *ProjectRepo) AddProjectDefaultServe(tenantId consts.TenantId, projectId, userId uint) (serve model.Serve, err error) {
 	serve = model.Serve{
 		Name:      "默认服务",
 		ProjectId: projectId,
 	}
 
-	err = r.DB.Create(&serve).Error
+	err = r.GetDB(tenantId).Create(&serve).Error
 
 	r.ServeRepo.SetCurrServeByUser(serve.ID, userId)
 
@@ -593,16 +592,16 @@ func (r *ProjectRepo) AddProjectDefaultServe(projectId, userId uint) (serve mode
 	return
 }
 
-func (r *ProjectRepo) FindRolesByProjectAndUser(projectId, userId uint) (projectMember model.ProjectMember, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).
+func (r *ProjectRepo) FindRolesByProjectAndUser(tenantId consts.TenantId, projectId, userId uint) (projectMember model.ProjectMember, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Where("project_id = ?", projectId).
 		Where("user_id = ?", userId).
 		Scan(&projectMember).Error
 	return
 }
 
-func (r *ProjectRepo) UpdateUserRole(req v1.UpdateProjectMemberReq) (err error) {
-	err = r.DB.Model(&model.ProjectMember{}).
+func (r *ProjectRepo) UpdateUserRole(tenantId consts.TenantId, req v1.UpdateProjectMemberReq) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Where("project_id = ?", req.ProjectId).
 		Where("user_id = ?", req.UserId).
 		Updates(map[string]interface{}{"project_role_id": req.ProjectRoleId}).Error
@@ -615,31 +614,31 @@ func (r *ProjectRepo) UpdateUserRole(req v1.UpdateProjectMemberReq) (err error) 
 	return
 }
 
-func (r *ProjectRepo) GetCurrProjectMemberRoleByUser(userId uint) (ret model.ProjectMember, err error) {
-	curProject, err := r.GetCurrProjectByUser(userId)
+func (r *ProjectRepo) GetCurrProjectMemberRoleByUser(tenantId consts.TenantId, userId uint) (ret model.ProjectMember, err error) {
+	curProject, err := r.GetCurrProjectByUser(tenantId, userId)
 	if err != nil {
 		return
 	}
 	if curProject.ID == 0 {
 		return ret, errors.New("current project is not existed")
 	}
-	return r.FindRolesByProjectAndUser(curProject.ID, userId)
+	return r.FindRolesByProjectAndUser(tenantId, curProject.ID, userId)
 }
 
-func (r *ProjectRepo) GetMembersByProject(projectId uint) (ret []model.ProjectMember, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).
+func (r *ProjectRepo) GetMembersByProject(tenantId consts.TenantId, projectId uint) (ret []model.ProjectMember, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Where("project_id = ?", projectId).
 		Find(&ret).Error
 	return
 }
 
-func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.PageData, err error) {
+func (r *ProjectRepo) GetAuditList(tenantId consts.TenantId, req v1.AuditProjectPaginate) (data _domain.PageData, err error) {
 	req.Field = "status asc,created_at"
 
 	var count int64
-	db := r.DB.Model(&model.ProjectMemberAudit{})
+	db := r.GetDB(tenantId).Model(&model.ProjectMemberAudit{})
 	if req.Type == 0 {
-		projectIds := r.GetProjectIdsByUserIdAndRole(req.AuditUserId, r.BaseRepo.GetAdminRoleName())
+		projectIds := r.GetProjectIdsByUserIdAndRole(tenantId, req.AuditUserId, r.BaseRepo.GetAdminRoleName())
 		db = db.Where("project_id in ? and status = 0", projectIds)
 	} else {
 		db = db.Where("apply_user_id = ?", req.ApplyUserId)
@@ -662,7 +661,7 @@ func (r *ProjectRepo) GetAuditList(req v1.AuditProjectPaginate) (data _domain.Pa
 	}
 
 	r.refUserName(list)
-	r.refProjectName(list)
+	r.refProjectName(tenantId, list)
 
 	data.Populate(list, count, req.Page, req.PageSize)
 
@@ -688,11 +687,11 @@ func (r *ProjectRepo) refUserName(list []*model.ProjectMemberAudit) {
 	}
 }
 
-func (r *ProjectRepo) refProjectName(list []*model.ProjectMemberAudit) {
+func (r *ProjectRepo) refProjectName(tenantId consts.TenantId, list []*model.ProjectMemberAudit) {
 	names := make(map[uint]string)
 	for key, item := range list {
 		if _, ok := names[item.ProjectId]; !ok {
-			project, _ := r.Get(item.ProjectId)
+			project, _ := r.Get(tenantId, item.ProjectId)
 			names[item.ProjectId] = project.Name
 		}
 
@@ -700,29 +699,29 @@ func (r *ProjectRepo) refProjectName(list []*model.ProjectMemberAudit) {
 	}
 }
 
-func (r *ProjectRepo) GetAudit(id uint) (ret model.ProjectMemberAudit, err error) {
-	err = r.DB.Model(&model.ProjectMemberAudit{}).
+func (r *ProjectRepo) GetAudit(tenantId consts.TenantId, id uint) (ret model.ProjectMemberAudit, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMemberAudit{}).
 		Where("id = ?", id).
 		First(&ret).Error
 	return
 }
 
-func (r *ProjectRepo) UpdateAuditStatus(id, auditUserId uint, status consts.AuditStatus) (err error) {
-	err = r.DB.Model(&model.ProjectMemberAudit{}).
+func (r *ProjectRepo) UpdateAuditStatus(tenantId consts.TenantId, id, auditUserId uint, status consts.AuditStatus) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMemberAudit{}).
 		Where("id=?", id).
 		Updates(map[string]interface{}{"status": status, "audit_user_id": auditUserId}).Error
 	return
 }
 
-func (r *ProjectRepo) SaveAudit(audit model.ProjectMemberAudit) (auditId uint, err error) {
-	err = r.DB.Save(&audit).Error
+func (r *ProjectRepo) SaveAudit(tenantId consts.TenantId, audit model.ProjectMemberAudit) (auditId uint, err error) {
+	err = r.GetDB(tenantId).Save(&audit).Error
 	auditId = audit.ID
 	return
 }
 
-func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err error) {
+func (r *ProjectRepo) IfProjectMember(tenantId consts.TenantId, userId, projectId uint) (res bool, err error) {
 	var count int64
-	err = r.DB.Model(&model.ProjectMember{}).Where("user_id=? and project_id=?", userId, projectId).Count(&count).Error
+	err = r.GetDB(tenantId).Model(&model.ProjectMember{}).Where("user_id=? and project_id=?", userId, projectId).Count(&count).Error
 	if err != nil {
 		return
 	}
@@ -730,7 +729,7 @@ func (r *ProjectRepo) IfProjectMember(userId, projectId uint) (res bool, err err
 	return
 }
 
-func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) (err error) {
+func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId, userId, categoryId uint) (err error) {
 	//创建目录
 	var category model.Category
 	categoryJson := _fileUtils.ReadFile("./config/sample/category.json")
@@ -773,7 +772,7 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 	planJson := _fileUtils.ReadFile("./config/sample/plan.json")
 	_commUtils.JsonDecode(planJson, &plan)
 
-	return r.DB.Transaction(func(tx *gorm.DB) error {
+	return r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
 
 		for _, component := range components {
 			component.ServeId = int64(serveId)
@@ -902,9 +901,9 @@ func (r *ProjectRepo) CreateSample(projectId, serveId, userId, categoryId uint) 
 
 }
 
-func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(userId uint, roleName consts.RoleType) (projectIds []uint) {
+func (r *ProjectRepo) GetProjectIdsByUserIdAndRole(tenantId consts.TenantId, userId uint, roleName consts.RoleType) (projectIds []uint) {
 	var projects []model.ProjectMember
-	err := r.DB.Model(model.ProjectMember{}).
+	err := r.GetDB(tenantId).Model(model.ProjectMember{}).
 		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
 		Where("biz_project_member.user_id=? and r.name=? and not biz_project_member.deleted and not biz_project_member.disabled", userId, roleName).
 		Find(&projects).Error
@@ -1033,8 +1032,8 @@ func (r *ProjectRepo) createProcessorTree(root *agentExec.Processor, interfaceId
 
 }
 
-func (r *ProjectRepo) GetAuditUsers(projectId uint) (users []model.SysUser, err error) {
-	err = r.DB.Model(model.SysUser{}).
+func (r *ProjectRepo) GetAuditUsers(tenantId consts.TenantId, projectId uint) (users []model.SysUser, err error) {
+	err = r.GetDB(tenantId).Model(model.SysUser{}).
 		Joins("LEFT JOIN biz_project_member m ON m.user_id=sys_user.id").
 		Joins("LEFT JOIN biz_project_role r ON m.project_role_id=r.id").
 		Where("m.project_id=? and r.name=? and not m.deleted and not m.disabled", projectId, r.BaseRepo.GetAdminRoleName()).
@@ -1043,31 +1042,31 @@ func (r *ProjectRepo) GetAuditUsers(projectId uint) (users []model.SysUser, err 
 	return
 }
 
-func (r *ProjectRepo) ListAll() (res []model.Project, err error) {
-	err = r.DB.Model(model.Project{}).
+func (r *ProjectRepo) ListAll(tenantId consts.TenantId) (res []model.Project, err error) {
+	err = r.GetDB(tenantId).Model(model.Project{}).
 		Where("not disabled and not deleted").
 		Find(&res).Error
 	return
 }
 
-func (r *ProjectRepo) GetByShortName(shortName string) (project model.Project, err error) {
-	err = r.DB.Model(&model.Project{}).
+func (r *ProjectRepo) GetByShortName(tenantId consts.TenantId, shortName string) (project model.Project, err error) {
+	err = r.GetDB(tenantId).Model(&model.Project{}).
 		Where("short_name = ? and not deleted", shortName).
 		First(&project).Error
 
 	return
 }
 
-func (r *ProjectRepo) GetUserIdsByProjectAnRole(projectId, roleId uint) (projectMembers []model.ProjectMember, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).
+func (r *ProjectRepo) GetUserIdsByProjectAnRole(tenantId consts.TenantId, projectId, roleId uint) (projectMembers []model.ProjectMember, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Where("project_id = ?", projectId).
 		Where("project_role_id = ?", roleId).
 		Find(&projectMembers).Error
 	return
 }
 
-func (r *ProjectRepo) GetUsernamesByProjectAndRole(projectId, roleId uint, exceptUserName string) (imAccounts []string, err error) {
-	conn := r.DB.Model(&model.ProjectMember{}).
+func (r *ProjectRepo) GetUsernamesByProjectAndRole(tenantId consts.TenantId, projectId, roleId uint, exceptUserName string) (imAccounts []string, err error) {
+	conn := r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Joins("left join sys_user u on biz_project_member.user_id=u.id").
 		Select("u.username")
 	if projectId != 0 {
@@ -1083,21 +1082,21 @@ func (r *ProjectRepo) GetUsernamesByProjectAndRole(projectId, roleId uint, excep
 	return
 }
 
-func (r *ProjectRepo) GetAuditByItem(projectId, ApplyUserId uint, auditStatus []consts.AuditStatus) (ret model.ProjectMemberAudit, err error) {
-	err = r.DB.Model(&model.ProjectMemberAudit{}).
+func (r *ProjectRepo) GetAuditByItem(tenantId consts.TenantId, projectId, ApplyUserId uint, auditStatus []consts.AuditStatus) (ret model.ProjectMemberAudit, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMemberAudit{}).
 		Where("project_id = ? and apply_user_id = ? and status in ? ", projectId, ApplyUserId, auditStatus).
 		Last(&ret).Error
 	return
 }
 
-func (r *ProjectRepo) UpdateProjectSource(projectId uint, source serverConsts.ProjectSource) (err error) {
-	err = r.DB.Model(&model.Project{}).
+func (r *ProjectRepo) UpdateProjectSource(tenantId consts.TenantId, projectId uint, source serverConsts.ProjectSource) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Project{}).
 		Where("id = ?", projectId).Update("source", source).Error
 	return
 }
 
-func (r *ProjectRepo) ListByUsername(username string) (res []model.Project, err error) {
-	err = r.DB.Model(model.Project{}).
+func (r *ProjectRepo) ListByUsername(tenantId consts.TenantId, username string) (res []model.Project, err error) {
+	err = r.GetDB(tenantId).Model(model.Project{}).
 		Joins("LEFT JOIN biz_project_member m ON biz_project.id=m.project_id").
 		Joins("LEFT JOIN sys_user u ON m.user_id=u.id").
 		Where("u.username = ?", username).
@@ -1106,26 +1105,26 @@ func (r *ProjectRepo) ListByUsername(username string) (res []model.Project, err 
 	return
 }
 
-func (r *ProjectRepo) BatchGetByShortNames(shortNames []string) (ret []model.Project, err error) {
-	err = r.DB.Model(&ret).
+func (r *ProjectRepo) BatchGetByShortNames(tenantId consts.TenantId, shortNames []string) (ret []model.Project, err error) {
+	err = r.GetDB(tenantId).Model(&ret).
 		Where("short_name IN (?) AND NOT deleted", shortNames).
 		Find(&ret).Error
 
 	return
 }
 
-func (r *ProjectRepo) AddMemberIfNotExisted(projectId, userId uint, role consts.RoleType) (err error) {
-	isMember, err := r.IfProjectMember(userId, projectId)
+func (r *ProjectRepo) AddMemberIfNotExisted(tenantId consts.TenantId, projectId, userId uint, role consts.RoleType) (err error) {
+	isMember, err := r.IfProjectMember(tenantId, userId, projectId)
 	if err != nil || isMember {
 		return
 	}
 
-	err = r.AddProjectMember(projectId, userId, role)
+	err = r.AddProjectMember(tenantId, projectId, userId, role)
 	return
 }
 
-func (r *ProjectRepo) FindRolesByProjectsAndUsername(username string, projectIds []uint) (members []model.ProjectMember, err error) {
-	err = r.DB.Model(&model.ProjectMember{}).
+func (r *ProjectRepo) FindRolesByProjectsAndUsername(tenantId consts.TenantId, username string, projectIds []uint) (members []model.ProjectMember, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Joins("LEFT JOIN biz_project_role r ON biz_project_member.project_role_id=r.id").
 		Joins("LEFT JOIN sys_user u ON biz_project_member.user_id=u.id").
 		Select("biz_project_member.*, r.name project_role_name").
@@ -1136,8 +1135,8 @@ func (r *ProjectRepo) FindRolesByProjectsAndUsername(username string, projectIds
 	return
 }
 
-func (r *ProjectRepo) GetUserProjectRoleMap(username string, projectIds []uint) (res map[uint]consts.RoleType, err error) {
-	projectRoles, err := r.FindRolesByProjectsAndUsername(username, projectIds)
+func (r *ProjectRepo) GetUserProjectRoleMap(tenantId consts.TenantId, username string, projectIds []uint) (res map[uint]consts.RoleType, err error) {
+	projectRoles, err := r.FindRolesByProjectsAndUsername(tenantId, username, projectIds)
 	if err != nil {
 		return
 	}

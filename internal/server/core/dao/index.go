@@ -145,7 +145,7 @@ func GetDBResolver() *SaasDBresolver.DBResolver {
 	return dbResolver
 }
 
-func InitSaasDBHandler(dbName string) (db *gorm.DB, err error) {
+func InitSaasDBHandler(dbName consts.TenantId) (db *gorm.DB, err error) {
 	var m config.Mysql
 	if dbName != "" {
 		m = sassDB.GetByTenantId(dbName)

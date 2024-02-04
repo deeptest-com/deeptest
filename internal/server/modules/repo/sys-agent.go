@@ -8,7 +8,8 @@ import (
 )
 
 type SysAgentRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
 func (r *SysAgentRepo) List(keywords string) (pos []model.SysAgent, err error) {

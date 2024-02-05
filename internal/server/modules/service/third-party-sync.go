@@ -18,7 +18,9 @@ import (
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
+	"strings"
 	"time"
 )
 
@@ -63,38 +65,64 @@ func (s *ThirdPartySyncService) GetClasses(serviceCode, token string, baseUrl st
 }
 
 // GetFunctionsByClass 已废弃
-func (s *ThirdPartySyncService) GetFunctionsByClass(serviceCode, classCode, token string, baseUrl string) (functions []string) {
-	getFunctionsByClassReq := integrationDomain.GetFunctionsByClassReq{
-		ServiceCode: serviceCode,
-		ClassCode:   classCode,
-	}
-	getFunctionsByClassResData := s.RemoteService.GetFunctionsByClass(getFunctionsByClassReq, token, baseUrl)
-	for _, v := range getFunctionsByClassResData {
-		//不同步内部方法
-		if v.MessageType == 1 {
-			functions = append(functions, v.Code)
-		}
-	}
+//func (s *ThirdPartySyncService) GetFunctionsByClass(serviceCode, classCode, token string, baseUrl string) (functions []string) {
+//	getFunctionsByClassReq := integrationDomain.GetFunctionsByClassReq{
+//		ServiceCode: serviceCode,
+//		ClassCode:   classCode,
+//	}
+//	getFunctionsByClassResData := s.RemoteService.GetFunctionsByClass(getFunctionsByClassReq, token, baseUrl)
+//	for _, v := range getFunctionsByClassResData {
+//		//不同步内部方法
+//		if v.MessageType == 1 {
+//			functions = append(functions, v.Code)
+//		}
+//	}
+//
+//	return
+//}
+
+func (s *ThirdPartySyncService) GetFunctionsByClassNew(classInfo integrationDomain.FindClassByServiceCodeResData, funcLimit v1.LecangFuncLimit, token, baseUrl string) (functions []string) {
+	getFunctionsByClassResData := s.DoGetFunctionsByClass(classInfo, token, baseUrl)
+
+	functions = s.GetFilteredFunctions(getFunctionsByClassResData, funcLimit)
 
 	return
 }
 
-func (s *ThirdPartySyncService) GetFunctionsByClassNew(serviceId, classCode, parentCodes, objId, token string, baseUrl string) (functions []string) {
+func (s *ThirdPartySyncService) DoGetFunctionsByClass(classInfo integrationDomain.FindClassByServiceCodeResData, token, baseUrl string) (ret []integrationDomain.GetFunctionsByClassResData) {
 	getFunctionsByClassReq := integrationDomain.QueryMsgReq{}
-	getFunctionsByClassReq.ClassInfo.ParentCodes = parentCodes
-	getFunctionsByClassReq.ClassInfo.ObjId = objId
-	getFunctionsByClassReq.ClassInfo.Code = classCode
-	getFunctionsByClassReq.ClassInfo.ServiceId = serviceId
+	getFunctionsByClassReq.ClassInfo.ParentCodes = classInfo.ParentCodes
+	getFunctionsByClassReq.ClassInfo.ObjId = classInfo.ObjId
+	getFunctionsByClassReq.ClassInfo.Code = classInfo.Code
+	getFunctionsByClassReq.ClassInfo.ServiceId = classInfo.ServiceId
 
-	getFunctionsByClassResData := s.RemoteService.LcQueryMsg(getFunctionsByClassReq, token, baseUrl)
-	for _, v := range getFunctionsByClassResData {
-		//不同步继承方法和不允许被重写的内部方法
-		//if v.IsExtend == consts.IntegrationFuncIsExtend || (v.MessageType == 0 && v.Overridable == consts.IntegrationFuncCanNotOverridable) {
-		if v.IsExtend == consts.IntegrationFuncIsExtend {
+	return s.RemoteService.LcQueryMsg(getFunctionsByClassReq, token, baseUrl)
+}
+
+func (s *ThirdPartySyncService) GetFilteredFunctions(oldFunctions []integrationDomain.GetFunctionsByClassResData, limit v1.LecangFuncLimit) (res []string) {
+	for _, v := range oldFunctions {
+		//过滤消息类型
+		if (limit.MessageType == consts.CronLecangMessageTypeInner && v.MessageType == 1) || (limit.MessageType == consts.CronLecangMessageTypeOutside && v.MessageType == 0) {
 			continue
 		}
 
-		functions = append(functions, v.Code)
+		//过滤继承父类和是否已重写父类
+		if limit.ExtendOverride == consts.CronLecangExtendOverride && !(v.IsExtend == consts.IntegrationFuncIsNotExtend && v.IsSelfOverride == consts.IntegrationFuncCanOverridable) {
+			continue
+		}
+		if limit.ExtendOverride == consts.CronLecangExtend && !(v.IsExtend == consts.IntegrationFuncIsExtend && v.IsSelfOverride == consts.IntegrationFuncCanNotOverridable) {
+			continue
+		}
+		if limit.ExtendOverride == consts.CronLecangNotExtend && !(v.IsExtend == consts.IntegrationFuncIsNotExtend && v.IsSelfOverride == consts.IntegrationFuncCanNotOverridable) {
+			continue
+		}
+
+		//过滤自身是否允许重写
+		if limit.Overridable != "" && limit.Overridable != v.Overridable {
+			continue
+		}
+
+		res = append(res, v.Code)
 	}
 
 	return
@@ -107,6 +135,101 @@ func (s *ThirdPartySyncService) GetFunctionDetail(classCode, function, token str
 		IncludeSelf: true,
 	}
 	data = s.RemoteService.MetaGetMethodDetail(metaGetMethodDetailReq, token, baseUrl)
+
+	return
+}
+
+func (s *ThirdPartySyncService) ImportEndpoint(projectId uint, cronConfig model.CronConfigLecang) (err error) {
+	baseUrl := cronConfig.Url
+	token, err := s.GetToken(baseUrl)
+	if err != nil {
+		return
+	}
+
+	serviceCodeArr := strings.Split(cronConfig.ServiceCodes, ",")
+	for _, serviceCode := range serviceCodeArr {
+		req := v1.LecangCronReq{}
+		copier.CopyWithOption(&req, cronConfig, copier.Option{DeepCopy: true})
+		req.Token = token
+		req.ProjectId = projectId
+		req.ServiceCode = serviceCode
+
+		go s.ImportEndpointForService(req)
+	}
+
+	return
+}
+
+// ImportEndpointForService TODO 加标签
+func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (err error) {
+	baseUrl, token, serviceCode, projectId, serveId, userId := req.Url, req.Token, req.ServiceCode, req.ProjectId, req.ServeId, req.CreateUserId
+
+	classes := s.GetClasses(serviceCode, token, baseUrl)
+	for _, class := range classes {
+		classCode := class.Code
+
+		functionList := s.GetFunctionsByClassNew(class, req.LecangFuncLimit, token, baseUrl)
+		if len(functionList) == 0 {
+			continue
+		}
+
+		categoryId, err := s.SaveCategory(class, projectId, serveId)
+		if err != nil {
+			continue
+		}
+
+		for _, function := range functionList {
+			path := "/" + serviceCode + "/" + classCode + "/" + function
+			functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)
+			if functionDetail.Code == "" {
+				continue
+			}
+
+			title := classCode + "-" + functionDetail.Code
+			endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, int64(categoryId))
+			if err != nil && err != gorm.ErrRecordNotFound {
+				continue
+			}
+
+			oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
+			if err != nil && err != gorm.ErrRecordNotFound {
+				continue
+			}
+
+			newEndpointDetail, err := s.GenerateEndpoint(functionDetail)
+			if err != nil && err != gorm.ErrRecordNotFound {
+				continue
+			}
+
+			oldEndpointDetail.ServeId = 0
+			newEndpointDetail.ServeId = 0
+			newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
+			if oldEndpointDetail.Snapshot == newSnapshot {
+				continue
+			}
+			oldEndpointId := endpoint.ID
+
+			oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
+			if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson {
+				s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
+				continue
+			}
+
+			endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path, newSnapshot, consts.AutoAdd)
+			if err != nil {
+				continue
+			}
+
+			interfaceId, err := s.SaveEndpointInterface(title, functionDetail, endpointId, projectId, path)
+			if err != nil {
+				continue
+			}
+
+			if err = s.SaveBody(functionDetail, interfaceId); err != nil {
+				continue
+			}
+		}
+	}
 
 	return
 }
@@ -138,7 +261,8 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 		for _, class := range classes {
 			classCode := class.Code
 
-			functionList := s.GetFunctionsByClassNew(class.ServiceId, classCode, class.ParentCodes, class.ObjId, token, baseUrl)
+			funcLimit := v1.LecangFuncLimit{}
+			functionList := s.GetFunctionsByClassNew(class, funcLimit, token, baseUrl)
 			if len(functionList) == 0 {
 				continue
 			}

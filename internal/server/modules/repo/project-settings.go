@@ -58,3 +58,9 @@ func (r *ProjectSettingsRepo) SaveMock(po *model.ProjectMockSetting) (err error)
 	err = r.Save(po.ID, po)
 	return
 }
+
+func (r *ProjectSettingsRepo) DeleteSwaggerSyncById(id uint) error {
+	return r.DB.Model(&model.SwaggerSync{}).
+		Where("id = ?", id).
+		Update("deleted", true).Error
+}

@@ -61,6 +61,12 @@ func (r *ProjectCronRepo) CombineCategory(configs []*model.ProjectCron) {
 
 }
 
+func (r *ProjectCronRepo) ListAllCron() (res []model.ProjectCron, err error) {
+	err = r.DB.Model(&model.ProjectCron{}).
+		Find(&res).Error
+
+	return
+}
 func (r *ProjectCronRepo) Create(config model.ProjectCron) (id uint, err error) {
 	err = r.DB.Model(&model.ProjectCron{}).Create(&config).Error
 	if err != nil {

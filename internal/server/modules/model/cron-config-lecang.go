@@ -6,11 +6,11 @@ import (
 
 type CronConfigLecang struct {
 	BaseModel
-	SyncType         consts.DataSyncType               `json:"syncType"`
-	CategoryId       int                               `json:"categoryId"`
-	Url              string                            `json:"url"`
-	Cron             string                            `json:"cron"`
-	ProjectId        uint                              `json:"projectId"`
+	SyncType   consts.DataSyncType `json:"syncType"`
+	CategoryId int                 `json:"categoryId"`
+	Url        string              `json:"url"`
+	Cron       string              `json:"cron"`
+	//ProjectId        uint                              `json:"projectId"`
 	ServeId          uint                              `json:"serveId"`
 	CreateUserId     uint                              `json:"createUserId"`
 	Engineering      string                            `json:"engineering"`    //所属工程

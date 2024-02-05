@@ -17,7 +17,7 @@ func (m *ProjectSettingsModule) Party() module.WebModule {
 		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
 
 		public.Post("/saveSwaggerSync", m.ProjectSettingsCtrl.SaveSwaggerSync).Name = "保存同步信息"
-		public.Get("/swaggerSyncDetail", m.ProjectSettingsCtrl.SwaggerSyncDetail).Name = "保存同步信息"
+		//public.Get("/swaggerSyncDetail", m.ProjectSettingsCtrl.SwaggerSyncDetail).Name = "保存同步信息"
 
 		public.Post("/saveMock", m.ProjectSettingsCtrl.SaveMock).Name = "保存同步信息"
 		public.Get("/getMock", m.ProjectSettingsCtrl.GetMock).Name = "保存同步信息"

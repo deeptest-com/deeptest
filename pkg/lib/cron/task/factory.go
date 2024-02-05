@@ -2,7 +2,6 @@ package task
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	third_party "github.com/aaronchen2k/deeptest/internal/server/modules/service/third-party"
 )
 
 type Factory struct {
@@ -36,7 +35,7 @@ func (e *Factory) Create() (res Task) {
 	case "swagger":
 		res = new(service.SwaggerCron)
 	case "lecang":
-		res = new(third_party.LecangCron)
+		res = new(service.LecangCronService)
 	default:
 		res = new(service.SwaggerCron)
 	}

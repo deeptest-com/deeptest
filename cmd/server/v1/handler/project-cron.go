@@ -4,9 +4,11 @@ import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	third_party "github.com/aaronchen2k/deeptest/internal/server/modules/service/third-party"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/aaronchen2k/deeptest/pkg/lib/cron/task"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
@@ -16,8 +18,9 @@ import (
 
 type ProjectCronCtrl struct {
 	ProjectCronService    *service.ProjectCronService    `inject:""`
-	LecangCronService     *third_party.LecangCronService `inject:""`
+	LecangCronService     *service.LecangCronService     `inject:""`
 	ThirdPartySyncService *service.ThirdPartySyncService `inject:""`
+	ProjectCronRepo       *repo.ProjectCronRepo          `inject:""`
 	BaseCtrl
 }
 
@@ -88,12 +91,12 @@ func (c *ProjectCronCtrl) Get(ctx iris.Context) {
 
 // Save
 // @Tags	定时任务
-// @summary	新建定时任务
+// @summary	保存定时任务
 // @accept 	application/json
 // @Produce application/json
 // @Param	Authorization	header	string						true	"Authentication header"
 // @Param 	currProjectId	query	int							true	"当前项目ID"
-// @Param 	ProjectCronReq	body	serverDomain.ProjectCronReq	true	"新建定时任务的请求参数"
+// @Param 	ProjectCronReq	body	model.ProjectCron	true	"保存定时任务的请求参数"
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/project/cron	[post]
 func (c *ProjectCronCtrl) Save(ctx iris.Context) {
@@ -103,7 +106,7 @@ func (c *ProjectCronCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	req := serverDomain.ProjectCronReq{}
+	req := model.ProjectCron{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -122,26 +125,26 @@ func (c *ProjectCronCtrl) Save(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: cronId, Msg: _domain.NoErr.Msg})
 }
 
-// Update
+// UpdateSwitchStatus
 // @Tags	定时任务
-// @summary	更新定时任务
+// @summary	更新定时任务状态
 // @accept 	application/json
 // @Produce application/json
 // @Param	Authorization	header	string						true	"Authentication header"
 // @Param 	currProjectId	query	int							true	"当前项目ID"
-// @Param 	ProjectCronReq	body	serverDomain.ProjectCronReq	true	"更新定时任务的请求参数"
+// @Param 	id		body	number	true	"任务id"
+// @Param 	switch	body	number	true	"开关状态"
 // @success	200	{object}	_domain.Response
-// @Router	/api/v1/project/cron	[put]
-func (c *ProjectCronCtrl) Update(ctx iris.Context) {
-	req := serverDomain.ProjectCronReq{}
+// @Router	/api/v1/project/cron/updateStatus	[post]
+func (c *ProjectCronCtrl) UpdateSwitchStatus(ctx iris.Context) {
+	req := model.ProjectCron{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	req.UpdateUserId = multi.GetUserId(ctx)
 
-	err = c.ProjectCronService.Update(req)
+	err = c.ProjectCronService.UpdateSwitchStatus(req.ID, req.Switch)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -285,4 +288,18 @@ func (c *ProjectCronCtrl) AllServiceList(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}
+
+func (c *ProjectCronCtrl) InitProjectCron() {
+	cronList, _ := c.ProjectCronRepo.ListAllCron()
+
+	for _, item := range cronList {
+		options := make(map[string]interface{})
+		options["projectId"] = item.ProjectId
+		options["taskId"] = item.ConfigId
+
+		proxy := task.NewProxy(string(item.Source), item.Cron)
+		_ = proxy.Add(options)
+	}
+
 }

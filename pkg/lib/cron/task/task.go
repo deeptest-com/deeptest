@@ -8,7 +8,7 @@ type Task interface {
 }
 
 type Proxy struct {
-	name   string
+	source string
 	cron   string
 	task   Task
 	taskId string
@@ -16,18 +16,18 @@ type Proxy struct {
 }
 
 func (p *Proxy) GetTaskId() (taskId string) {
-	taskId = p.name + p.taskId
+	taskId = p.source + "_" + p.taskId
 	return
 }
 
-func NewProxy(name, cron, taskId string) (proxy Proxy) {
+func NewProxy(source, cron string) (proxy Proxy) {
 	proxy = Proxy{
-		name: name,
-		cron: cron,
+		source: source,
+		cron:   cron,
 	}
 
 	taskEntity := Factory{
-		name: name,
+		name: source,
 	}
 
 	proxy.task = taskEntity.Create()
@@ -64,6 +64,6 @@ func (p *Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 func Test() {
 	options := make(map[string]interface{})
 	options["swagger_1"] = 1
-	proxy := NewProxy("swagger", "*****", "1")
+	proxy := NewProxy("swagger", "*****")
 	proxy.Add(options)
 }

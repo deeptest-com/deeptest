@@ -5,106 +5,75 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	third_party "github.com/aaronchen2k/deeptest/internal/server/modules/service/third-party"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	"github.com/jinzhu/copier"
 )
 
 type ProjectCronService struct {
-	ProjectCronRepo      *repo.ProjectCronRepo          `inject:""`
-	CronConfigLecangRepo *repo.CronConfigLecangRepo     `inject:""`
-	LecangCronService    *third_party.LecangCronService `inject:""`
+	ProjectCronRepo      *repo.ProjectCronRepo      `inject:""`
+	CronConfigLecangRepo *repo.CronConfigLecangRepo `inject:""`
+	ProjectSettingsRepo  *repo.ProjectSettingsRepo  `inject:""`
+	BaseRepo             *repo.BaseRepo             `inject:""`
+	LecangCronService    *LecangCronService         `inject:""`
+	SwaggerCron          *SwaggerCron               `inject:""`
 }
 
 func (s *ProjectCronService) Paginate(req v1.ProjectCronReqPaginate) (ret _domain.PageData, err error) {
 	return s.ProjectCronRepo.Paginate(req)
 }
 
-func (s *ProjectCronService) Get(id uint) (ret v1.ProjectCronReq, err error) {
-	projectCron, err := s.ProjectCronRepo.GetById(id)
+func (s *ProjectCronService) Get(id uint) (ret model.ProjectCron, err error) {
+	ret, err = s.ProjectCronRepo.GetById(id)
 	if err != nil {
 		return
 	}
 
-	copier.CopyWithOption(&ret, &projectCron, copier.Option{DeepCopy: true})
-
 	if ret.Source == consts.CronSourceLecang {
-
-		cronLecang, err := s.LecangCronService.Get(ret.ConfigId)
+		lecangConfig, err := s.LecangCronService.Get(ret.ConfigId)
 		if err != nil {
 			return ret, err
 		}
 
-		copier.CopyWithOption(&ret.LecangReq, &cronLecang, copier.Option{DeepCopy: true})
+		ret.LecangConfig = lecangConfig
 	} else if ret.Source == consts.CronSourceSwagger {
-		// TODO
+		swaggerConfig, err := s.SwaggerCron.GetSwaggerSyncById(ret.ConfigId)
+		if err != nil {
+			return ret, err
+		}
+
+		ret.SwaggerConfig = swaggerConfig
 	}
 
 	return
 }
 
-func (s *ProjectCronService) Create(req v1.ProjectCronReq) (id uint, err error) {
-	var configId uint
+func (s *ProjectCronService) Save(req model.ProjectCron) (id uint, err error) {
+	s.initCron(&req)
 
-	if req.Source == consts.CronSourceLecang {
-		configId, err = s.LecangCronService.Save(0, req.LecangReq)
-	} else if req.Source == consts.CronSourceSwagger {
-		// TODO
-	}
-
-	if err != nil {
-		return
-	}
-
-	projectCron := model.ProjectCron{}
-	copier.CopyWithOption(&projectCron, &req, copier.Option{DeepCopy: true})
-
-	projectCron.ConfigId = configId
-	id, err = s.ProjectCronRepo.Save(projectCron)
-
-	return
-}
-
-func (s *ProjectCronService) Update(req v1.ProjectCronReq) (err error) {
-	if req.Source == consts.CronSourceLecang {
-		_, err = s.LecangCronService.Save(req.ConfigId, req.LecangReq)
-	} else if req.Source == consts.CronSourceSwagger {
-		// TODO
-	}
-
-	if err != nil {
-		return
-	}
-
-	projectCron := model.ProjectCron{}
-	copier.CopyWithOption(&projectCron, &req, copier.Option{DeepCopy: true})
-	projectCron.ID = req.Id
-	_, err = s.ProjectCronRepo.Save(projectCron)
-
-	return
-}
-
-func (s *ProjectCronService) Save(req v1.ProjectCronReq) (id uint, err error) {
 	var configId uint
 	if req.Source == consts.CronSourceLecang {
-		configId, err = s.LecangCronService.Save(req.ConfigId, req.LecangReq)
+		configId, err = s.LecangCronService.Save(req.LecangConfig)
 	} else if req.Source == consts.CronSourceSwagger {
-		// TODO
+		configId, err = s.SwaggerCron.SaveSwaggerSync(req.SwaggerConfig)
 	}
 
 	if err != nil {
 		return
 	}
 
-	projectCron := model.ProjectCron{}
-	copier.CopyWithOption(&projectCron, &req, copier.Option{DeepCopy: true})
-	projectCron.ID = req.Id
-	projectCron.ConfigId = configId
+	req.ConfigId = configId
 
-	id, err = s.ProjectCronRepo.Save(projectCron)
+	id, err = s.ProjectCronRepo.Save(req)
 
 	return
 }
+
+func (s *ProjectCronService) initCron(req *model.ProjectCron) {
+	if req.ID == 0 {
+		req.LecangConfig.ID = 0
+		req.SwaggerConfig.ID = 0
+	}
+}
+
 func (s *ProjectCronService) Delete(id uint) (err error) {
 	projectCron, err := s.ProjectCronRepo.GetById(id)
 	if err != nil {
@@ -119,7 +88,7 @@ func (s *ProjectCronService) Delete(id uint) (err error) {
 	if projectCron.Source == consts.CronSourceLecang {
 		err = s.CronConfigLecangRepo.DeleteById(projectCron.ConfigId)
 	} else if projectCron.Source == consts.CronSourceSwagger {
-		// TODO
+		err = s.ProjectSettingsRepo.DeleteSwaggerSyncById(projectCron.ConfigId)
 	}
 
 	return
@@ -131,8 +100,9 @@ func (s *ProjectCronService) Clone(id, userId uint) (ret uint, err error) {
 		return
 	}
 
+	oldCron.ID = 0
 	oldCron.CreateUserId = userId
-	ret, err = s.Create(oldCron)
+	ret, err = s.Save(oldCron)
 
 	return
 }
@@ -151,3 +121,30 @@ func (s *ProjectCronService) UpdateCronExecTimeById(configId uint, source consts
 
 	return s.ProjectCronRepo.UpdateExecResult(configId, source, execStatus, execErr)
 }
+
+//func (s *ProjectCronService) AddCronItem(cronConfig model.ProjectCron) (err error) {
+//	options := make(map[string]interface{})
+//	options["projectId"] = cronConfig.ProjectId
+//	options["taskId"] = cronConfig.ConfigId
+//
+//	proxy := task.NewProxy(string(cronConfig.Source), cronConfig.Cron)
+//	err = proxy.Add(options)
+//
+//	return
+//}
+//
+//func (s *ProjectCronService) BatchAddCron() (err error) {
+//	cronList, err := s.ProjectCronRepo.ListAllCron()
+//	if err != nil {
+//		return
+//	}
+//
+//	for _, cron := range cronList {
+//		err = s.AddCronItem(cron)
+//		if err != nil {
+//			logUtils.Errorf("AddCronItem fail, cronItem:%+v, err:%+v", cron, err)
+//		}
+//	}
+//
+//	return
+//}

@@ -17,8 +17,8 @@ func (m *ProjectCronModule) Party() module.WebModule {
 
 		index.Get("/", m.ProjectCronCtrl.List).Name = "定时任务列表"
 		index.Get("/{id:uint}", m.ProjectCronCtrl.Get).Name = "定时任务详情"
-		index.Post("/", m.ProjectCronCtrl.Save).Name = "新建定时任务"
-		index.Put("/", m.ProjectCronCtrl.Update).Name = "更新定时任务"
+		index.Post("/", m.ProjectCronCtrl.Save).Name = "保存定时任务"
+		index.Post("/updateStatus", m.ProjectCronCtrl.UpdateSwitchStatus).Name = "更新定时任务开关状态"
 		index.Delete("/{id:uint}", m.ProjectCronCtrl.Delete).Name = "删除定时任务"
 		index.Get("/{id:uint}/clone", m.ProjectCronCtrl.Clone).Name = "克隆定时任务"
 		index.Get("/engineeringOptions", m.ProjectCronCtrl.EngineeringOptions).Name = "获取工程下拉选项"

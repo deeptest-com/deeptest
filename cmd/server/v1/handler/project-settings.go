@@ -58,16 +58,16 @@ func (c *ProjectSettingsCtrl) SaveSwaggerSync(ctx iris.Context) {
 // @Param 	currProjectId	query	int		true	"当前项目ID"
 // @success	200	{object}	_domain.Response{data=model.SwaggerSync}
 // @Router	/api/v1/serves/swaggerSyncDetail	[get]
-func (c *ProjectSettingsCtrl) SwaggerSyncDetail(ctx iris.Context) {
-	projectId := ctx.URLParamUint64("currProjectId")
-	res, err := c.ProjectSettingsService.SwaggerSyncDetail(uint(projectId))
-	if err != nil {
-		res.CategoryId = -1
-		res.SyncType = consts.FullCover
-		res.Cron = "23 * * * *"
-	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
-}
+//func (c *ProjectSettingsCtrl) SwaggerSyncDetail(ctx iris.Context) {
+//	projectId := ctx.URLParamUint64("currProjectId")
+//	res, err := c.ProjectSettingsService.SwaggerSyncDetail(uint(projectId))
+//	if err != nil {
+//		res.CategoryId = -1
+//		res.SyncType = consts.FullCover
+//		res.Cron = "23 * * * *"
+//	}
+//	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+//}
 
 func (c *ProjectSettingsCtrl) InitSwaggerCron() {
 	syncList, err := c.ProjectSettingsService.SwaggerSyncList()

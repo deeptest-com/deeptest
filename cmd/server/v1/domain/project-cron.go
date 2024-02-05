@@ -15,24 +15,25 @@ type ProjectCronReq struct {
 	ConfigId     uint                `json:"configId"`
 	CreateUserId uint                `json:"createUserId"`
 	UpdateUserId uint                `json:"updateUserId"`
-	SwaggerReq   SwaggerSyncReq      `json:"swaggerReq"`
-	LecangReq    LecangCronReq       `json:"lecangReq"`
-}
-
-type SwaggerCronReq struct {
 }
 
 type LecangCronReq struct {
-	SyncType         consts.DataSyncType               `json:"syncType"`
-	CategoryId       int                               `json:"categoryId"`
-	Url              string                            `json:"url"`
-	ServeId          uint                              `json:"serveId"`
-	EngineeringCode  string                            `json:"engineeringCode"` //所属工程
-	ServiceCodes     string                            `json:"serviceCodes"`    //服务名，逗号分隔
-	MessageType      consts.CronLecangMessageType      `json:"messageType"`     //消息类型
-	ExtendOverride   consts.CronLecangIsExtendOverride `json:"extendOverride"`  //继承父类
-	Overridable      string                            `json:"overridable"`     //是否允许重写
-	AddServicePrefix bool                              `json:"addServicePrefix"`
+	Token            string              `json:"token"`
+	SyncType         consts.DataSyncType `json:"syncType"`
+	ProjectId        uint                `json:"projectId"`
+	CategoryId       int                 `json:"categoryId"`
+	Url              string              `json:"url"`
+	ServeId          uint                `json:"serveId"`
+	CreateUserId     uint                `json:"createUserId"`
+	ServiceCode      string              `json:"serviceCode"` //乐仓服务名
+	AddServicePrefix bool                `json:"addServicePrefix"`
+	LecangFuncLimit
+}
+
+type LecangFuncLimit struct {
+	MessageType    consts.CronLecangMessageType      `json:"messageType"`    //消息类型
+	ExtendOverride consts.CronLecangIsExtendOverride `json:"extendOverride"` //继承父类
+	Overridable    consts.IntegrationFuncOverridable `json:"overridable"`    //是否允许重写
 }
 
 type ProjectCronReqPaginate struct {

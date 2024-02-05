@@ -10,7 +10,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/jinzhu/copier"
 )
 
 type SwaggerCron struct {
@@ -23,9 +22,9 @@ type SwaggerCron struct {
 	ProjectCronService       *ProjectCronService         `inject:""`
 }
 
-func (s *SwaggerCron) Run(option map[string]interface{}) (f func() error) {
+func (s *SwaggerCron) Run(options map[string]interface{}) (f func() error) {
 	f = func() error {
-		taskId, ok := option["taskId"].(uint)
+		taskId, ok := options["taskId"].(uint)
 		if !ok {
 			return errors.New("taskId is not existed")
 		}
@@ -35,11 +34,23 @@ func (s *SwaggerCron) Run(option map[string]interface{}) (f func() error) {
 			logUtils.Errorf("swagger定时导入任务失败,任务ID：%v,错误原因：%v", task.ID, err.Error())
 			return err
 		}
-		if task.Switch == consts.SwitchOFF {
-			logUtils.Infof("swagger定时导入关闭,任务ID:%v", task.ID)
-			return errors.New("task is off")
+
+		//switchStatus, ok := option["switch"].(uint)
+		//if !ok {
+		//	return errors.New("switch is not existed")
+		//}
+		//
+		//if switchStatus != 1 {
+		//	logUtils.Infof("swagger定时导入关闭,任务ID:%v", task.ID)
+		//	return errors.New("task is off")
+		//}
+
+		projectId, ok := options["projectId"].(uint)
+		if !ok {
+			return errors.New("projectId is not existed")
 		}
-		req := v1.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: task.SyncType, SourceType: 1}
+
+		req := v1.ImportEndpointDataReq{ProjectId: projectId, ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: task.SyncType, SourceType: 1}
 		err = s.EndpointInterfaceService.ImportEndpointData(req)
 		if err != nil {
 			logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
@@ -54,15 +65,10 @@ func (s *SwaggerCron) Run(option map[string]interface{}) (f func() error) {
 	return
 }
 
-func (s *SwaggerCron) SaveSwaggerSync(req v1.SwaggerSyncReq) (data model.SwaggerSync, err error) {
-	var swaggerSync model.SwaggerSync
-	copier.CopyWithOption(&swaggerSync, req, copier.Option{DeepCopy: true})
-	serve, _ := s.ServeRepo.GetDefault(req.ProjectId)
-	swaggerSync.ServeId = int(serve.ID)
-	err = s.ProjectSettingsRepo.SaveSwaggerSync(&swaggerSync)
-	//s.AddSwaggerCron(swaggerSync)
-	//任务
-	data, err = s.ProjectSettingsRepo.GetSwaggerSync(req.ProjectId)
+func (s *SwaggerCron) SaveSwaggerSync(req model.SwaggerSync) (id uint, err error) {
+	err = s.ProjectSettingsRepo.SaveSwaggerSync(&req)
+	id = req.ID
+
 	return
 }
 
@@ -71,9 +77,9 @@ func (s *SwaggerCron) GetSwaggerSyncById(id uint) (data model.SwaggerSync, err e
 	return
 }
 
-func (s *SwaggerCron) CallBack(option map[string]interface{}, err error) func() {
+func (s *SwaggerCron) CallBack(options map[string]interface{}, err error) func() {
 	f := func() {
-		taskId, ok := option["taskId"].(uint)
+		taskId, ok := options["taskId"].(uint)
 		if !ok {
 			return
 		}

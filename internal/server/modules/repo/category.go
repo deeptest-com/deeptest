@@ -116,13 +116,18 @@ func (r *CategoryRepo) UpdateOrder(pos serverConsts.DropPos, targetId int, typ s
 	if pos == serverConsts.Inner {
 		parentId = targetId
 
-		var preChild model.Category
-		r.DB.Where("parent_id=? AND type = ? AND project_id = ?", parentId, typ, projectId).
-			Order("ordr DESC").Limit(1).
-			First(&preChild)
+		//var preChild model.Category
+		//r.DB.Where("parent_id=? AND type = ? AND project_id = ?", parentId, typ, projectId).
+		//	Order("ordr DESC").Limit(1).
+		//	First(&preChild)
+		//
+		//ordr = preChild.Ordr + 1
 
-		ordr = preChild.Ordr + 1
-
+		r.DB.Model(&model.Category{}).
+			Where("NOT deleted AND parent_id=? AND type = ? AND project_id = ? ",
+				parentId, typ, projectId).
+			Update("ordr", gorm.Expr("ordr + 1"))
+		ordr = 1
 	} else if pos == serverConsts.Before {
 		brother, _ := r.Get(targetId)
 		ordr = brother.Ordr

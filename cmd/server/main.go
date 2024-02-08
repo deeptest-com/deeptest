@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/aaronchen2k/deeptest/cmd/server/serverServe"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
+	websocketHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/fatih/color"
 	"os"
@@ -33,6 +33,7 @@ func main() {
 		os.Exit(0)
 	}()
 
+	// mq of websocket msg
 	websocketHelper.InitMq()
 
 	serverServe.Start()

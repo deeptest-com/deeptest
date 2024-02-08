@@ -1,0 +1,115 @@
+syntax = "proto3";
+package ptProto;
+option go_package = "/ptProto";
+
+import "google/protobuf/struct.proto";
+import "google/protobuf/wrappers.proto";
+
+service PerformanceService {
+  // for controller
+  rpc ExecStart(stream PerformanceExecStartReq) returns (stream PerformanceExecResp){};
+  rpc ExecStop(stream PerformanceExecStopReq) returns (stream PerformanceExecResp){};
+
+  // for runner
+  rpc GetRendezvousVal (GlobalVarRequest) returns (google.protobuf.Int32Value);
+  rpc AddRendezvousVal (GlobalVarRequest) returns (google.protobuf.Int32Value);
+  rpc ClearRendezvousVal (GlobalVarRequest) returns (google.protobuf.BoolValue);
+  rpc ClearAllRendezvousVal (GlobalVarRequest) returns (google.protobuf.BoolValue);
+}
+
+// exec request
+message Processor {
+  int32 id = 1;
+  string name = 2;
+  string type = 3;
+  int32 rendezvousTarget = 4;
+}
+
+message Scenario {
+  int32 id = 1;
+  string name = 2;
+
+  string generateType = 3;
+  repeated Stage stages = 4;
+  repeated Processor processors = 5;
+}
+
+message Stage {
+  int32 target = 1;
+  int32 duration  = 2;
+  int32 loop     = 3;
+}
+message Runner {
+  int32 id = 1;
+  string name = 2;
+  string address  = 3;
+  int32 weight = 4;
+  repeated int32 scenarios = 5;
+}
+
+message PerformanceExecStartReq {
+  string room = 1;
+  int32 runnerId = 2;
+  string title = 3;
+
+  int64 dur = 4;
+  string mode = 5;
+  repeated Scenario scenarios = 6;
+
+  int32 weight = 7;
+
+  string serverAddress = 8;
+  string nsqServerAddress = 9;
+  string nsqLookupAddress = 10;
+}
+message PerformanceExecStopReq {
+  string room = 1;
+}
+
+message PerformanceExecResp {
+  string room = 1;
+  int64 timestamp = 2;
+
+  string instruction = 3;
+  string execUUid = 4;
+  int32 runnerId = 5;
+
+  repeated PerformanceExecRecord requests = 6;
+  PerformanceExecMetrics metrics = 7;
+}
+
+message PerformanceExecRecord {
+  int32 recordId = 1;
+  string recordName = 2;
+  int32 vuId = 3;
+
+  string status = 4;
+  int64 startTime = 5;
+  int64 endTime = 6;
+  int32 duration = 7;
+  string msg = 8;
+}
+
+message PerformanceExecMetrics {
+  int64 timestamp = 1;
+
+  double cpuUsage = 2;
+  double memoryUsage = 3;
+  map<string, double> diskUsages = 4;
+  map<string, double> networkUsages = 5;
+
+  //  string ip = 7;
+  //  int32 maxGoroutines = 8;
+  //  int32 currentGoroutines = 9;
+  //  int32 serverType = 10;
+}
+
+message GlobalVarRequest {
+  string room = 1;
+  string name = 2;
+  google.protobuf.Value value = 3;
+}
+
+message GlobalVarResponse {
+  int32 value = 1;
+}

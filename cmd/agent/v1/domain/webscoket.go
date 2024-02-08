@@ -2,6 +2,7 @@ package agentDomain
 
 import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 )
@@ -15,4 +16,6 @@ type WsReq struct {
 
 	MessageReq     agentExec.MessageExecReq `json:"messageReq"`
 	LocalVarsCache iris.Map                 `json:"localVarsCache"`
+
+	PerformanceTestExecReq ptdomain.PerformanceTestReq `json:"performanceTestExecReq"`
 }

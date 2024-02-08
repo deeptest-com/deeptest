@@ -4,6 +4,8 @@ import (
 	"flag"
 	"github.com/aaronchen2k/deeptest/cmd/agent/serve"
 	"github.com/aaronchen2k/deeptest/cmd/agent/v1"
+	"github.com/aaronchen2k/deeptest/internal/performance"
+	ptqueue "github.com/aaronchen2k/deeptest/internal/performance/pkg/queue"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
@@ -35,6 +37,13 @@ func main() {
 	flagSet.BoolVar(&_consts.Verbose, "verbose", false, "")
 	flagSet.Parse(os.Args[1:])
 
+	/*** for performance test */
+	// grpc service
+	go performance.StartGrpcServe()
+	// queue of controller
+	ptqueue.InitControllerQueue()
+
+	// websocket service
 	websocketHelper.InitMq()
 
 	agent := agentServe.Init()

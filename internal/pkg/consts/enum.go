@@ -595,6 +595,9 @@ const (
 	ExecPlan     ExecType = "execPlan"
 	ExecCase     ExecType = "execCases"
 	ExecMessage  ExecType = "execMessage"
+
+	StartPerformanceTest ExecType = "startPerformanceTest"
+	StopPerformanceTest  ExecType = "stopPerformanceTest"
 )
 
 func (e ExecType) String() string {

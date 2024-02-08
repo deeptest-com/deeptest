@@ -3,7 +3,9 @@ package consts
 import "time"
 
 const (
-	App = "deeptest"
+	App       = "deeptest"
+	AppServer = "server"
+	AppAgent  = "agent"
 
 	ContentType   = "Content-Type"
 	ContentLength = "Content-Length"

@@ -8,6 +8,8 @@ import (
 )
 
 const (
+	// token             = "TKxDOjrhq9vnhvnJAe7zIuU3qdZ_oiTjVz8ILeB7rpYWkq7coavBOSaS17zifqy-0CauLBhia4hCkjK0wAWi-g=="
+
 	precision         = "ms"
 	tableResponseTime = "response_time"
 
@@ -27,14 +29,16 @@ type InfluxdbSender struct {
 	DbAddress   string
 }
 
-func GetInfluxdbSenderInstant(room string, dbAddress string) MessageSender {
+func GetInfluxdbSenderInstant(room string, dbAddress, username, password string) MessageSender {
 	if InfluxdbInstant != nil {
 		return InfluxdbInstant
 	}
 
 	var err error
 	influxdbClient, err := client.NewHTTPClient(client.HTTPConfig{
-		Addr: "http://localhost:8086",
+		Addr:     "http://localhost:8086",
+		Username: username,
+		Password: password,
 	})
 	if err != nil {
 		ptlog.Logf("failed to creat influxdb client, err: %s", err.Error())

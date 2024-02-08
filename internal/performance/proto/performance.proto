@@ -60,6 +60,8 @@ message PerformanceExecStartReq {
 
   string serverAddress = 8;
   string influxdbAddress = 9;
+  string influxdbUsername = 10;
+  string influxdbPassword = 11;
 }
 message PerformanceExecStopReq {
   string room = 1;

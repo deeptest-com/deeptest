@@ -138,7 +138,8 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 
 	// gen sender
 	grpcSender := indicator.NewGrpcSender(&stream)
-	msgSender := indicator.GetInfluxdbSenderInstant(req.Room, req.InfluxdbAddress)
+	msgSender := indicator.GetInfluxdbSenderInstant(req.Room,
+		req.InfluxdbAddress, req.InfluxdbUsername, req.InfluxdbPassword)
 
 	s.execCtx, s.execCancel = context.WithCancel(context.Background())
 

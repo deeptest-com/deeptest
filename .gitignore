@@ -41,3 +41,5 @@ client/icon/ly
 package-ly.json
 /cmd/ly-launcher/
 /deeptest-ui/
+/internal/performance/proto/performance.pb.go
+/internal/performance/proto/performance_grpc.pb.go

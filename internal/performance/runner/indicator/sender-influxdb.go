@@ -197,7 +197,7 @@ func (s InfluxdbSender) addDiskUsagePoint(mp map[string]float64, room string) (e
 		point, err := client.NewPoint(tableDiskUsage, tags, fields, time.Now())
 		if err != nil {
 			ptlog.Logf("failed to creat influxdb point, err: %s", err.Error())
-			return
+			continue
 		}
 
 		bp.AddPoint(point)
@@ -233,7 +233,7 @@ func (s InfluxdbSender) addNetworkUsagePoint(mp map[string]float64, room string)
 		point, err := client.NewPoint(tableNetworkUsage, tags, fields, time.Now())
 		if err != nil {
 			ptlog.Logf("failed to creat influxdb point, err: %s", err.Error())
-			return
+			continue
 		}
 
 		bp.AddPoint(point)

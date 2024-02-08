@@ -33,8 +33,9 @@ type BaseExecReqOfRunner struct {
 	Scenarios []*ptProto.Scenario `json:"scenarios"`
 
 	ServerAddress    string `json:"serverAddress,omitempty"`
-	NsqServerAddress string `json:"nsqServerAddress,omitempty"`
-	NsqLookupAddress string `json:"nsqLookupAddress,omitempty"`
+	InfluxdbAddress  string `json:"influxdbAddress,omitempty"`
+	InfluxdbUsername string `json:"influxdbUsername,omitempty"`
+	InfluxdbPassword string `json:"influxdbPassword,omitempty"`
 }
 
 type Scenario struct {

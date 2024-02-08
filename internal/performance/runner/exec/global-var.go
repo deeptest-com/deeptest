@@ -14,10 +14,10 @@ var (
 	serverAddress string
 
 	conn   *grpc.ClientConn
-	client ptProto.GlobalVarServiceClient
+	client ptProto.PerformanceServiceClient
 )
 
-func getConn(address string) (client ptProto.GlobalVarServiceClient) {
+func getConn(address string) (client ptProto.PerformanceServiceClient) {
 	if conn == nil || client == nil || conn.GetState() != connectivity.Ready || address != serverAddress {
 		var err error
 		conn, err = grpc.Dial(address, grpc.WithTransportCredentials(insecure.NewCredentials()))
@@ -26,7 +26,7 @@ func getConn(address string) (client ptProto.GlobalVarServiceClient) {
 			return
 		}
 
-		client = ptProto.NewGlobalVarServiceClient(conn)
+		client = ptProto.NewPerformanceServiceClient(conn)
 
 		serverAddress = address
 	}

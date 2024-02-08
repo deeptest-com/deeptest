@@ -1,6 +1,7 @@
 package performance
 
 import (
+	controllerService "github.com/aaronchen2k/deeptest/internal/performance/controller/service"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"google.golang.org/grpc"
 	"log"
@@ -9,7 +10,7 @@ import (
 
 func StartGrpcServe() {
 	server := grpc.NewServer()
-	ptProto.RegisterPerformanceServiceServer(server, &GrpcService{})
+	ptProto.RegisterPerformanceServiceServer(server, &controllerService.GrpcService{})
 
 	lis, err := net.Listen("tcp", "127.0.0.1:9528")
 	if err != nil {

@@ -65,16 +65,6 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 	// 1. call cancel in this method by websocket request
 	// 2. sub cancel instruction from runner via grpc
 
-	if req.NsqServerAddress != "" { // runner send logs via nsq MQ
-		// check ctx.Done to stop
-		go s.HandleRunnerNsqMsg(s.execCtx, req.Room, req.NsqLookupAddress, req.NsqServerAddress, wsMsg)
-
-	} else { // runner send logs via grpc, server store msgs in queue
-		// check ctx.Done to stop
-		// cancel ctx by instruction from runner
-		go s.HandleRunnerGrpcMsg(s.execCtx, s.execCancel, req.Room, wsMsg)
-	}
-
 	// independent job to summary metrics and send web client
 	go s.ScheduleService.ScheduleJob(s.execCtx, s.execCancel, req, wsMsg)
 
@@ -87,7 +77,6 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 			continue
 		}
 
-		s.HandleAndPubToQueueGrpcMsg(stream) // sync
 		stream.CloseSend()
 	}
 
@@ -147,8 +136,9 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 		Weight:    weight,
 
 		ServerAddress:    req.ServerAddress,
-		NsqServerAddress: req.NsqServerAddress,
-		NsqLookupAddress: req.NsqLookupAddress,
+		InfluxdbAddress:  req.InfluxdbAddress,
+		InfluxdbUsername: req.InfluxdbAddress,
+		InfluxdbPassword: req.InfluxdbAddress,
 	})
 
 	if err != nil {

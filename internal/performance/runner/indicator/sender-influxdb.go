@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	// token             = "TKxDOjrhq9vnhvnJAe7zIuU3qdZ_oiTjVz8ILeB7rpYWkq7coavBOSaS17zifqy-0CauLBhia4hCkjK0wAWi-g=="
+	// token             = "lRB558ADMYH7uaKPsGOoPHvQHhOuWHG2uPA9XKCkocL2569MqVrlBPa-OMDv8Jw9FZi2-dIUC08B0OVBnZKLYA=="
 
 	precision         = "ms"
 	tableResponseTime = "response_time"

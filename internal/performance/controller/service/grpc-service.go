@@ -138,19 +138,14 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 
 	// gen sender
 	grpcSender := indicator.NewGrpcSender(&stream)
-	var sender indicator.MessageSender
-	if req.NsqServerAddress != "" {
-		sender = indicator.GetNsqSenderInstant(req.Room, req.NsqServerAddress, req.NsqLookupAddress)
-	} else {
-		sender = grpcSender
-	}
+	msgSender := indicator.GetInfluxdbSenderInstant(req.Room, req.InfluxdbAddress)
 
 	s.execCtx, s.execCancel = context.WithCancel(context.Background())
 
 	// run interval job
-	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.Room, sender)
+	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.Room, grpcSender)
 
-	exec.ExecProgram(s.execCtx, s.execCancel, req, sender) // sync
+	exec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) // sync
 
 	return
 }

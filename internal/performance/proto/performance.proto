@@ -59,8 +59,7 @@ message PerformanceExecStartReq {
   int32 weight = 7;
 
   string serverAddress = 8;
-  string nsqServerAddress = 9;
-  string nsqLookupAddress = 10;
+  string influxdbAddress = 9;
 }
 message PerformanceExecStopReq {
   string room = 1;

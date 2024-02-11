@@ -13,6 +13,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"io"
 	"log"
 )
 
@@ -77,6 +78,8 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 		if err != nil {
 			continue
 		}
+
+		s.HandleAndPubToQueueGrpcMsg(stream) // sync exec
 
 		stream.CloseSend()
 	}
@@ -177,6 +180,27 @@ func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.Performance
 		if notSet || scenarioIdsMap[scenario.Id] {
 			ret = append(ret, scenario)
 		}
+	}
+
+	return
+}
+
+func (s *PerformanceTestService) HandleAndPubToQueueGrpcMsg(stream ptProto.PerformanceService_ExecStartClient) (err error) {
+	for true {
+		resp, err := stream.Recv()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			continue
+		}
+
+		// dealwith Instruction from agent
+		if resp.Instruction != "" {
+			continue
+		}
+
+		ptlog.Logf("get grpc msg from runner: %v", resp)
 	}
 
 	return

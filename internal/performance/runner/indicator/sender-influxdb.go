@@ -90,8 +90,10 @@ func (s InfluxdbSender) Send(result ptProto.PerformanceExecResp) (err error) {
 	var lines []string
 
 	// 1. send responseTime
-	for _, request := range result.Requests {
-		s.addResponseTimePoint(request, result.Room, &lines)
+	if len(result.Requests) > 0 {
+		for _, request := range result.Requests {
+			s.addResponseTimePoint(request, result.Room, &lines)
+		}
 	}
 
 	// OR 2. send metrics
@@ -101,7 +103,9 @@ func (s InfluxdbSender) Send(result ptProto.PerformanceExecResp) (err error) {
 		s.addMemoryUsagePoint(metrics.MemoryUsage, result.Room, &lines)
 		s.addDiskUsagePoint(metrics.DiskUsages, result.Room, &lines)
 		s.addNetworkUsagePoint(metrics.NetworkUsages, result.Room, &lines)
+	}
 
+	if len(lines) > 0 {
 		err = s.WriteAPI.WriteRecord(context.Background(), lines...)
 		if err != nil {
 			ptlog.Logf("failed to write influxdb dta, err: %s", err.Error())
@@ -114,13 +118,9 @@ func (s InfluxdbSender) Send(result ptProto.PerformanceExecResp) (err error) {
 
 func (s InfluxdbSender) addResponseTimePoint(request *ptProto.PerformanceExecRecord, room string, lines *[]string) (
 	err error) {
+	line := fmt.Sprintf("%s,name=%s value=%d", tableResponseTime, request.RecordName, request.Duration)
 
-	//tags := map[string]string{
-	//	"name": request.RecordName,
-	//}
-	//fields := map[string]interface{}{
-	//	"value": request.Duration,
-	//}
+	*lines = append(*lines, line)
 
 	return
 }

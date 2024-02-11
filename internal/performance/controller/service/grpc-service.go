@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/exec"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
@@ -140,6 +141,10 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 	//grpcSender := indicator.NewGrpcSender(&stream)
 	msgSender := indicator.GetInfluxdbSenderInstant(req.Room,
 		req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
+	if msgSender == nil {
+		ptlog.Logf("stop to run since msgSender return nil")
+		return
+	}
 
 	s.execCtx, s.execCancel = context.WithCancel(context.Background())
 

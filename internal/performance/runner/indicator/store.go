@@ -3,7 +3,6 @@ package indicator
 import (
 	"fmt"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
-	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	_floatUtils "github.com/aaronchen2k/deeptest/pkg/lib/float"
 	"sync"
@@ -53,40 +52,6 @@ func Init() {
 	UpdateAvgQps(0)
 
 	clearRequestResponseTime()
-}
-
-func GetRequests() (ret *[]*ptProto.PerformanceExecRecord) {
-	val, ok := requestsCache.Load(keyRequests)
-	if !ok {
-		val = &[]*ptProto.PerformanceExecRecord{}
-		requestsCache.Store(keyRequests, val)
-	}
-
-	ret = val.(*[]*ptProto.PerformanceExecRecord)
-
-	return
-}
-func AddRequest(val *ptProto.PerformanceExecRecord) {
-	arr := GetRequests()
-	*arr = append(*arr, val)
-
-	requestCountCollected++
-	ptlog.Logf("****** RUNNER DEBUG: totally %d requests collected", requestCountCollected)
-}
-func ClearRequests() {
-	requestsCache.Delete(keyRequests)
-}
-
-func GetSummary() (ret ptdomain.Stat) {
-	ret.StartTime = GetStartTime()
-	ret.EndTime = GetEndTime()
-	ret.Duration = GetDuration()
-
-	ret.Pass = GetPass()
-	ret.Fail = GetFail()
-	ret.Error = GetError()
-
-	return
 }
 
 func GetStartTime() (ret int64) {

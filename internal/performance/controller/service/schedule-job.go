@@ -44,31 +44,31 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 
 		_logUtils.Debug(">>>>>> start server schedule job")
 
-		responseTimeData, summary := s.StatService.ComputeResponseTimeByInterface(req.Room)
-
-		data := ptdomain.PerformanceExecResults{
-			Timestamp: time.Now().UnixMilli(),
-
-			Summary: summary,
-
-			ReqAllResponseTime: responseTimeData[ptconsts.ChartRespTimeAll.String()],
-			Req50ResponseTime:  responseTimeData[ptconsts.ChartRespTime50.String()],
-			Req90ResponseTime:  responseTimeData[ptconsts.ChartRespTime90.String()],
-			Req95ResponseTime:  responseTimeData[ptconsts.ChartRespTime95.String()],
-
-			ReqQps:  s.StatService.ComputeQpsByInterface(req.Room),
-			Metrics: s.StatService.LoadMetricsByRunner(),
-		}
-
-		s.SendMetricsByWebsocket(data, req.Room, wsMsg)
-
-		s.SaveReportItems(data, req.Room)
-
-		if IsGoalMet(req, summary.AvgResponseTime, summary.AvgQps, int32(summary.Fail+summary.Error), int32(summary.Total)) {
-			execCancel()
-
-			s.RemoteRunnerService.CallStop(req)
-		}
+		//responseTimeData, summary := s.StatService.ComputeResponseTimeByInterface(req.Room)
+		//
+		//data := ptdomain.PerformanceExecResults{
+		//	Timestamp: time.Now().UnixMilli(),
+		//
+		//	Summary: summary,
+		//
+		//	ReqAllResponseTime: responseTimeData[ptconsts.ChartRespTimeAll.String()],
+		//	Req50ResponseTime:  responseTimeData[ptconsts.ChartRespTime50.String()],
+		//	Req90ResponseTime:  responseTimeData[ptconsts.ChartRespTime90.String()],
+		//	Req95ResponseTime:  responseTimeData[ptconsts.ChartRespTime95.String()],
+		//
+		//	ReqQps:  s.StatService.ComputeQpsByInterface(req.Room),
+		//	Metrics: s.StatService.LoadMetricsByRunner(),
+		//}
+		//
+		//s.SendMetricsByWebsocket(data, req.Room, wsMsg)
+		//
+		//s.SaveReportItems(data, req.Room)
+		//
+		//if IsGoalMet(req, summary.AvgResponseTime, summary.AvgQps, int32(summary.Fail+summary.Error), int32(summary.Total)) {
+		//	execCancel()
+		//
+		//	s.RemoteRunnerService.CallStop(req)
+		//}
 
 		lastTime = time.Now().UnixMilli()
 

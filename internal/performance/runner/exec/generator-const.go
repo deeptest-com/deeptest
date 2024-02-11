@@ -3,6 +3,7 @@ package exec
 import (
 	"context"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"sync"
 	"time"
@@ -11,7 +12,7 @@ import (
 type ConstantVuGenerator struct {
 }
 
-func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
+func (g ConstantVuGenerator) Run(execCtx context.Context, sender indicator.MessageSender) (err error) {
 	execParams := getExecParamsInCtx(execCtx)
 
 	var wgVus sync.WaitGroup
@@ -28,7 +29,7 @@ func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
 		index := i
 		go func() {
 			defer wgVus.Done()
-			ExecScenarioWithVu(childCtx, index)
+			ExecScenarioWithVu(childCtx, sender, index)
 
 			ptlog.Logf("vu %d completed", index)
 		}()

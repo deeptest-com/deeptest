@@ -3,6 +3,7 @@ package exec
 import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"sync"
@@ -12,7 +13,7 @@ import (
 type RampVuGenerator struct {
 }
 
-func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
+func (g RampVuGenerator) Run(execCtx context.Context, sender indicator.MessageSender) (err error) {
 	execParams := getExecParamsInCtx(execCtx)
 
 	if len(execParams.Stages) != 1 {
@@ -46,7 +47,7 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 			wgVus.Add(1)
 			go func() {
 				defer wgVus.Done()
-				ExecScenarioWithVu(childCtx, index)
+				ExecScenarioWithVu(childCtx, sender, index)
 			}()
 
 			vuNo++

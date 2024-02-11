@@ -3,10 +3,11 @@ package exec
 import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
 )
 
 type VuGenerator interface {
-	Run(execCtx context.Context) error
+	Run(execCtx context.Context, sender indicator.MessageSender) error
 }
 
 type VuGeneratorParam struct {

@@ -9,7 +9,11 @@ import (
 	"time"
 )
 
-func ExecInterfaceProcessor(processor *ptProto.Processor, room string, vuNo, index int) {
+var (
+	requestCountSent = 0
+)
+
+func ExecInterfaceProcessor(processor *ptProto.Processor, room string, vuNo, index int, runnerId int32, sender indicator.MessageSender) {
 	startTime := time.Now().UnixMilli()
 
 	_, err := _httpUtils.Get("http://111.231.16.35:9000/get")
@@ -40,8 +44,19 @@ func ExecInterfaceProcessor(processor *ptProto.Processor, room string, vuNo, ind
 		VuId: int32(vuNo),
 	}
 
-	// add request record to requestsCache, will be batch sent to server via grpc by scheduled job.
-	indicator.AddRequest(&record)
+	result := ptProto.PerformanceExecResp{
+		Timestamp: time.Now().UnixMilli(),
+		RunnerId:  runnerId,
+		Room:      room,
+
+		Requests: []*ptProto.PerformanceExecRecord{
+			&record,
+		},
+	}
+	sender.Send(result)
+
+	requestCountSent += 1
+	ptlog.Logf("****** RUNNER DEBUG: totally %d requests sent to server", requestCountSent)
 
 	return
 }

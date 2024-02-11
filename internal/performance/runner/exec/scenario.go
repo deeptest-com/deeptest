@@ -10,7 +10,7 @@ import (
 
 func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 	scenario *ptProto.Scenario, weight int32, room, serverAddress string,
-	sender indicator.MessageSender) (result ptProto.PerformanceExecResp) {
+	runnerId int32, sender indicator.MessageSender) (result ptProto.PerformanceExecResp) {
 
 	var generater VuGenerator
 
@@ -22,10 +22,11 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 		data := ptdomain.ExecParamsInCtx{
 			Scenario: scenario,
 
-			Room:   room,
-			Target: int(scenario.Stages[0].Target),
-			Weight: int(weight),
-			Mode:   mode,
+			RunnerId: runnerId,
+			Room:     room,
+			Target:   int(scenario.Stages[0].Target),
+			Weight:   int(weight),
+			Mode:     mode,
 
 			Duration: runDur,
 			Loop:     int(scenario.Stages[0].Loop),
@@ -42,9 +43,10 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 			Stages:   scenario.Stages,
 			Scenario: scenario,
 
-			Room:   room,
-			Weight: int(weight),
-			Mode:   mode,
+			RunnerId: runnerId,
+			Room:     room,
+			Weight:   int(weight),
+			Mode:     mode,
 
 			// computer Duration and Loop in each stage
 		}
@@ -54,7 +56,7 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 		generater = RampVuGenerator{}
 	}
 
-	generater.Run(valueCtx)
+	generater.Run(valueCtx, sender)
 
 	return
 }

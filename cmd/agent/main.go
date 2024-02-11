@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/cmd/agent/serve"
 	"github.com/aaronchen2k/deeptest/cmd/agent/v1"
 	"github.com/aaronchen2k/deeptest/internal/performance"
+	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptqueue "github.com/aaronchen2k/deeptest/internal/performance/pkg/queue"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -38,6 +39,8 @@ func main() {
 	flagSet.Parse(os.Args[1:])
 
 	/*** for performance test */
+	ptlog.Init()
+
 	// grpc service
 	go performance.StartGrpcServe()
 	// queue of controller

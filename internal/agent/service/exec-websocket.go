@@ -78,6 +78,9 @@ func getExecUuid(req agentDomain.WsReq) (ret string) {
 	} else if req.CasesExecReq.ExecUuid != "" {
 		ret = req.CasesExecReq.ExecUuid
 
+	} else if req.PerformanceTestExecReq.Room != "" {
+		ret = req.PerformanceTestExecReq.Room
+
 	}
 
 	return

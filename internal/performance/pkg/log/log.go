@@ -2,7 +2,6 @@ package ptlog
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/snowlyg/helper/dir"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -18,7 +17,7 @@ func Init() {
 		dir.InsureDir(logDir)
 	}
 
-	logUtils.Logger, _ = getLogger(logDir)
+	Logger, _ = getLogger(logDir)
 }
 
 func getLogger(logDir string) (*zap.Logger, error) {

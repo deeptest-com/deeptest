@@ -137,14 +137,14 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 	}
 
 	// gen sender
-	grpcSender := indicator.NewGrpcSender(&stream)
+	//grpcSender := indicator.NewGrpcSender(&stream)
 	msgSender := indicator.GetInfluxdbSenderInstant(req.Room,
-		req.InfluxdbAddress, req.InfluxdbUsername, req.InfluxdbPassword)
+		req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
 
 	s.execCtx, s.execCancel = context.WithCancel(context.Background())
 
 	// run interval job
-	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.Room, grpcSender)
+	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.Room, msgSender)
 
 	exec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) // sync
 

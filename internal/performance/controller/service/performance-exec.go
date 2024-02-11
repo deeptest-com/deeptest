@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/performance/controller/dao"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	websocketHelper "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/facebookgo/inject"
@@ -121,6 +122,7 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 
 	stream, err = client.ExecStart(context.Background())
 	if err != nil {
+		ptlog.Logf(err.Error())
 		return
 	}
 
@@ -135,10 +137,10 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 		Scenarios: runnerExecScenarios,
 		Weight:    weight,
 
-		ServerAddress:    req.ServerAddress,
-		InfluxdbAddress:  req.InfluxdbAddress,
-		InfluxdbUsername: req.InfluxdbAddress,
-		InfluxdbPassword: req.InfluxdbAddress,
+		ServerAddress:   req.ServerAddress,
+		InfluxdbAddress: req.InfluxdbAddress,
+		InfluxdbOrg:     req.InfluxdbOrg,
+		InfluxdbToken:   req.InfluxdbToken,
 	})
 
 	if err != nil {

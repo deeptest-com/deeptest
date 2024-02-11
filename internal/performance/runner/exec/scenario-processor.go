@@ -4,17 +4,18 @@ import (
 	"context"
 	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
-func ExecProcessors(timeoutCtx context.Context, vuNo int) {
+func ExecProcessors(timeoutCtx context.Context, sender indicator.MessageSender, runnerId int32, vuNo int) {
 	execParams := getExecParamsInCtx(timeoutCtx)
 
 	for index, processor := range execParams.Scenario.Processors {
 		if processor.Type == consts.ProcessorInterfaceDefault.ToString() {
 			ptlog.Logf("exec processor %v", processor)
-			ExecInterfaceProcessor(processor, execParams.Room, vuNo, index)
+			ExecInterfaceProcessor(processor, execParams.Room, vuNo, index, runnerId, sender)
 
 		} else if execParams.Mode == ptconsts.Parallel && processor.Type == ptconsts.Rendezvous.String() {
 			ptlog.Logf("exec processor %v", processor)

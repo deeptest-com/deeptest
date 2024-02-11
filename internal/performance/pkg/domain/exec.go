@@ -6,7 +6,8 @@ import (
 )
 
 type ExecParamsInCtx struct {
-	Room string
+	RunnerId int32
+	Room     string
 
 	Target int
 	Weight int

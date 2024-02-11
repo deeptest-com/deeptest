@@ -5,18 +5,22 @@ import (
 	"fmt"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	influxdb2 "github.com/influxdata/influxdb-client-go"
-	"github.com/influxdata/influxdb-client-go/api"
-	"github.com/influxdata/influxdb-client-go/domain"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
+	"github.com/influxdata/influxdb-client-go/v2/api"
+	"github.com/influxdata/influxdb-client-go/v2/domain"
+
 	"time"
 )
 
 var (
-	precision         = "ms"
-	tableResponseTime = "response_time"
+	precision = "ms"
 
 	//orgName           = "deeptest"
-	bucketName        = "performance"
+	bucketName            = "performance"
+	bucketNameDownsampled = "performance-downsampled"
+	taskName              = "downsampled"
+
+	tableResponseTime = "response_time"
 	tableCpuUsage     = "cpu_usage"
 	tableMemoryUsage  = "memory_usage"
 	tableDiskUsage    = "disk_usage"
@@ -44,6 +48,7 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
+	// recreate bucket if needed
 	bucketsAPI := influxdbClient.BucketsAPI()
 
 	bucket, err := bucketsAPI.FindBucketByName(ctx, bucketName)
@@ -66,15 +71,20 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 		ptlog.Logf("success to create org %s", bucketName)
 	}
 
-	// Create  a bucket with 1 day retention policy
 	bucket, err = bucketsAPI.CreateBucketWithName(ctx, org, bucketName, domain.RetentionRule{EverySeconds: 3600 * 24})
 	if err != nil {
 		ptlog.Logf("failed to create bucketName %s, err %s", bucketName, err.Error())
 		return nil
 	}
+	ptlog.Logf("success to create bucket %s", bucket.Name)
 
-	ptlog.Logf("success to create bucketName %s", bucket.Name)
+	// tasks
+	err = createResponseTimeTask(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return nil
+	}
 
+	// write
 	writeAPI := influxdbClient.WriteAPIBlocking(orgName, bucketName)
 
 	InfluxdbInstant = &InfluxdbSender{
@@ -84,6 +94,41 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 	}
 
 	return InfluxdbInstant
+}
+
+func createResponseTimeTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	tasksAPI := influxdbClient.TasksAPI()
+	taskStatus := domain.TaskStatusTypeActive
+	taskEvery := "10s"
+	taskOffset := "0s"
+	taskFlux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> range(start: -task.every)
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s",
+    )
+    |> aggregateWindow(every: 5m, fn: mean)
+    |> to(bucket: "%s")
+`, bucketName, tableResponseTime, bucketNameDownsampled)
+
+	newTask := &domain.Task{
+		Name:   taskName,
+		Every:  &taskEvery,
+		Offset: &taskOffset,
+		Flux:   taskFlux,
+		OrgID:  orgId,
+		Status: &taskStatus,
+	}
+
+	task, err := tasksAPI.CreateTask(ctx, newTask)
+	if err != nil {
+		ptlog.Logf("failed to create task %s, err %s.", taskName, err.Error())
+		return
+	}
+	ptlog.Logf("success to create bucketName %s", task.Name)
+
+	return
 }
 
 func (s InfluxdbSender) Send(result ptProto.PerformanceExecResp) (err error) {

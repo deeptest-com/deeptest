@@ -3,8 +3,8 @@ package indicator
 import (
 	"context"
 	"fmt"
-	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	"github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
+	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/influxdata/influxdb-client-go/v2/domain"
@@ -79,10 +79,14 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 	ptlog.Logf("success to create bucket %s", bucket.Name)
 
 	// tasks
-	err = createResponseTimeTask(ctx, influxdbClient, *org.Id)
-	if err != nil {
-		return nil
-	}
+	//err = createResponseTimeTask(ctx, influxdbClient, *org.Id)
+	//if err != nil {
+	//	return nil
+	//}
+
+	// queries
+	//queryAPI := influxdbClient.QueryAPI("my-org")
+	//queryAPI.
 
 	// write
 	writeAPI := influxdbClient.WriteAPIBlocking(orgName, bucketName)
@@ -131,7 +135,7 @@ from(bucket: "%s")
 	return
 }
 
-func (s InfluxdbSender) Send(result ptProto.PerformanceExecResp) (err error) {
+func (s InfluxdbSender) Send(result ptproto.PerformanceExecResp) (err error) {
 	var lines []string
 
 	// 1. send responseTime
@@ -161,7 +165,7 @@ func (s InfluxdbSender) Send(result ptProto.PerformanceExecResp) (err error) {
 	return
 }
 
-func (s InfluxdbSender) addResponseTimePoint(request *ptProto.PerformanceExecRecord, room string, lines *[]string) (
+func (s InfluxdbSender) addResponseTimePoint(request *ptproto.PerformanceExecRecord, room string, lines *[]string) (
 	err error) {
 	line := fmt.Sprintf("%s,name=%s value=%d", tableResponseTime, request.RecordName, request.Duration)
 

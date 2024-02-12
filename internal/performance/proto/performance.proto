@@ -1,6 +1,6 @@
 syntax = "proto3";
-package ptProto;
-option go_package = "/ptProto";
+package ptproto;
+option go_package = "/ptproto";
 
 import "google/protobuf/struct.proto";
 import "google/protobuf/wrappers.proto";

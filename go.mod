@@ -2,6 +2,8 @@ module github.com/aaronchen2k/deeptest
 
 go 1.21
 
+toolchain go1.21.7
+
 require (
 	github.com/474420502/requests v1.35.0
 	github.com/Knetic/govaluate v3.0.1-0.20171022003610-9aa49832a739+incompatible

@@ -3,6 +3,7 @@ package casbin
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
+	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"path/filepath"
 	"strconv"
@@ -39,7 +40,11 @@ func GetEnforcer() *casbin.Enforcer {
 		return nil
 	}
 
-	enforcer, err := casbin.NewEnforcer(filepath.Join(dir.GetCurrentAbPath(), consts.CasbinFileName), c)
+	pth := filepath.Join(dir.GetCurrentAbPath(), consts.CasbinFileName)
+	if !_fileUtils.FileExist(pth) {
+		pth = consts.CasbinFileName
+	}
+	enforcer, err := casbin.NewEnforcer(pth, c)
 	if err != nil {
 		logUtils.Errorf("初始化失败", zap.String("casbin.NewEnforcer()", err.Error()))
 		return nil

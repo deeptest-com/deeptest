@@ -63,10 +63,10 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 	if err == nil {
 		err = influxdbClient.BucketsAPI().DeleteBucket(ctx, bucket)
 		if err != nil {
-			ptlog.Logf("failed to delete bucketName %s, err %s", bucketName, err.Error())
+			ptlog.Logf("failed to delete bucket %s, err %s", bucketName, err.Error())
 			return nil
 		}
-		ptlog.Logf("success to delete bucketName %s", bucketName)
+		ptlog.Logf("success to delete bucket %s", bucketName)
 	}
 
 	org, err2 := influxdbClient.OrganizationsAPI().FindOrganizationByName(ctx, orgName)

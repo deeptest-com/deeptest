@@ -31,7 +31,7 @@ func IsRendezvousReady(room, name, serverAddress string, target int) (ret int, r
 }
 
 func IncreaseRendezvousArrived(room, name, serverAddress string) (ret int) {
-	remoteValue := IncreaseRemoteVal(room, getArrivedKey(name), serverAddress)
+	remoteValue := AddRemoteVal(room, getArrivedKey(name), serverAddress)
 
 	ret = int(remoteValue.Value)
 
@@ -39,7 +39,7 @@ func IncreaseRendezvousArrived(room, name, serverAddress string) (ret int) {
 }
 
 func IncreaseRendezvousPassed(room, name, serverAddress string) (ret int) {
-	remoteValue := IncreaseRemoteVal(room, getPassedKey(name), serverAddress)
+	remoteValue := AddRemoteVal(room, getPassedKey(name), serverAddress)
 
 	ret = int(remoteValue.Value)
 

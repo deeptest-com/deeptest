@@ -18,7 +18,15 @@ var (
 	//orgName           = "deeptest"
 	bucketName            = "performance"
 	bucketNameDownsampled = "performance-downsampled"
-	taskName              = "downsampled"
+
+	taskResponseTime   = "task_response_time"
+	taskResponseTime90 = "task_response_time_90"
+	taskResponseTime95 = "task_response_time_95"
+	taskQps            = "task_qps"
+	taskCpuUsage       = "task_cpu_usage"
+	taskMemoryUsage    = "task_memory_usage"
+	taskDiskUsage      = "task_disk_usage"
+	taskNetworkUsage   = "task_network_usage"
 
 	tableResponseTime = "response_time"
 	tableCpuUsage     = "cpu_usage"
@@ -79,10 +87,38 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 	ptlog.Logf("success to create bucket %s", bucket.Name)
 
 	// tasks
-	//err = createResponseTimeTask(ctx, influxdbClient, *org.Id)
-	//if err != nil {
-	//	return nil
-	//}
+	err = createResponseTimeTask(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return nil
+	}
+	err = createResponseTime90Task(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return nil
+	}
+	err = createResponseTime95Task(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return nil
+	}
+	err = createQpsTask(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return nil
+	}
+	err = createCpuTask(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return nil
+	}
+	err = createMemoryTask(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return nil
+	}
+	err = createDiskTask(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return nil
+	}
+	err = createNetworkTask(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return nil
+	}
 
 	// queries
 	//queryAPI := influxdbClient.QueryAPI("my-org")
@@ -101,23 +137,189 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 }
 
 func createResponseTimeTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
-	tasksAPI := influxdbClient.TasksAPI()
-	taskStatus := domain.TaskStatusTypeActive
-	taskEvery := "10s"
-	taskOffset := "0s"
-	taskFlux := fmt.Sprintf(`
+	table := tableResponseTime
+	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
     |> filter(
         fn: (r) =>
             r._measurement == "%s",
     )
-    |> aggregateWindow(every: 5m, fn: mean)
+    |> aggregateWindow(every: task.every, fn: mean)
+    |> to(bucket: "%s")
+`, bucketName, table, bucketNameDownsampled)
+
+	createTask(ctx, influxdbClient, orgId, table, taskResponseTime, flux)
+
+	return
+}
+
+func createResponseTime90Task(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	name := taskResponseTime90
+	table := tableResponseTime
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> range(start: -task.every)
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s",
+    )
+    |> aggregateWindow(
+       every: task.every, 
+       fn: (t=<-, column) => t 
+           |> quantile(q: 0.9, method: "exact_selector"), 
     |> to(bucket: "%s")
 `, bucketName, tableResponseTime, bucketNameDownsampled)
 
+	createTask(ctx, influxdbClient, orgId, table, name, flux)
+
+	return
+}
+
+func createResponseTime95Task(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	name := taskResponseTime95
+	table := tableResponseTime
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> range(start: -task.every)
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s",
+    )
+    |> aggregateWindow(
+       every: task.every, 
+       fn: (t=<-, column) => t 
+           |> quantile(q: 0.9, method: "exact_selector"), 
+    |> to(bucket: "%s")
+`, bucketName, tableResponseTime, bucketNameDownsampled)
+
+	createTask(ctx, influxdbClient, orgId, table, name, flux)
+
+	return
+}
+
+func createQpsTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	name := taskQps
+	table := tableResponseTime
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> range(start: -task.every)
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s",
+    )
+    |> aggregateWindow(
+	   every: task.every, 
+	   fn: (table=<-, column) => table 
+		 |> count(column: "_value") / task.every, 
+	   createEmpty: false)
+    |> to(bucket: "%s")
+`, bucketName, tableResponseTime, bucketNameDownsampled)
+
+	createTask(ctx, influxdbClient, orgId, table, name, flux)
+
+	return
+}
+
+func createCpuTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	name := taskCpuUsage
+	table := tableCpuUsage
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> range(start: -task.every)
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s",
+    )
+    |> aggregateWindow(
+	   every: task.every, 
+	   fn: mean, 
+	   createEmpty: false)
+    |> to(bucket: "%s")
+`, bucketName, tableCpuUsage, bucketNameDownsampled)
+
+	createTask(ctx, influxdbClient, orgId, table, name, flux)
+
+	return
+}
+
+func createMemoryTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	name := taskMemoryUsage
+	table := tableMemoryUsage
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> range(start: -task.every)
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s",
+    )
+    |> aggregateWindow(
+	   every: task.every, 
+	   fn: mean, 
+	   createEmpty: false)
+    |> to(bucket: "%s")
+`, bucketName, tableMemoryUsage, bucketNameDownsampled)
+
+	createTask(ctx, influxdbClient, orgId, table, name, flux)
+
+	return
+}
+
+func createDiskTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	name := taskDiskUsage
+	table := tableDiskUsage
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> range(start: -task.every)
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s",
+    )
+    |> aggregateWindow(
+	   every: task.every, 
+	   fn: mean, 
+	   createEmpty: false)
+    |> to(bucket: "%s")
+`, bucketName, tableDiskUsage, bucketNameDownsampled)
+
+	createTask(ctx, influxdbClient, orgId, table, name, flux)
+
+	return
+}
+
+func createNetworkTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	name := taskNetworkUsage
+	table := tableNetworkUsage
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> range(start: -task.every)
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s",
+    )
+    |> aggregateWindow(
+	   every: task.every, 
+	   fn: mean, 
+	   createEmpty: false)
+    |> to(bucket: "%s")
+`, bucketName, table, bucketNameDownsampled)
+
+	createTask(ctx, influxdbClient, orgId, table, name, flux)
+
+	return
+}
+
+func createTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string,
+	table, name, flux string) {
+
+	tasksAPI := influxdbClient.TasksAPI()
+	taskStatus := domain.TaskStatusTypeActive
+	taskEvery := "10s"
+	taskOffset := "0s"
+	taskFlux := fmt.Sprintf(flux, bucketName, table, bucketNameDownsampled)
+
 	newTask := &domain.Task{
-		Name:   taskName,
+		Name:   name,
 		Every:  &taskEvery,
 		Offset: &taskOffset,
 		Flux:   taskFlux,
@@ -125,12 +327,12 @@ from(bucket: "%s")
 		Status: &taskStatus,
 	}
 
-	task, err := tasksAPI.CreateTask(ctx, newTask)
+	_, err := tasksAPI.CreateTask(ctx, newTask)
 	if err != nil {
-		ptlog.Logf("failed to create task %s, err %s.", taskName, err.Error())
+		ptlog.Logf("failed to create task %s, err %s.", name, err.Error())
 		return
 	}
-	ptlog.Logf("success to create bucketName %s", task.Name)
+	ptlog.Logf("success to create bucketName %s", name)
 
 	return
 }

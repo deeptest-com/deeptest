@@ -26,6 +26,9 @@ func (g ConstantVuGenerator) Run(execCtx context.Context, sender indicator.Messa
 		}
 
 		wgVus.Add(1)
+		newVal := IncreaseVuCount(execParams.Room, serverAddress)
+		ptlog.Logf("====== vu count added, value is %d", newVal)
+
 		index := i
 		go func() {
 			defer wgVus.Done()

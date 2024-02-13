@@ -61,7 +61,7 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 
 	dao.ClearData(req.Room)
 	s.ScheduleService.Reset(req.Scenarios)
-	s.GrpcService.ClearAllRendezvousVal(context.Background(), &ptProto.GlobalVarRequest{})
+	s.GrpcService.ClearAllGlobalVar(context.Background(), &ptProto.GlobalVarRequest{})
 
 	// stop execution in 2 ways:
 	// 1. call cancel in this method by websocket request

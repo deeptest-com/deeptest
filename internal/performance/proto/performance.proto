@@ -11,10 +11,10 @@ service PerformanceService {
   rpc ExecStop(stream PerformanceExecStopReq) returns (stream PerformanceExecResp){};
 
   // for runner
-  rpc GetRendezvousVal (GlobalVarRequest) returns (google.protobuf.Int32Value);
-  rpc AddRendezvousVal (GlobalVarRequest) returns (google.protobuf.Int32Value);
-  rpc ClearRendezvousVal (GlobalVarRequest) returns (google.protobuf.BoolValue);
-  rpc ClearAllRendezvousVal (GlobalVarRequest) returns (google.protobuf.BoolValue);
+  rpc GetGlobalVar (GlobalVarRequest) returns (google.protobuf.Int32Value);
+  rpc AddGlobalVar (GlobalVarRequest) returns (google.protobuf.Int32Value);
+  rpc ClearGlobalVar (GlobalVarRequest) returns (google.protobuf.BoolValue);
+  rpc ClearAllGlobalVar (GlobalVarRequest) returns (google.protobuf.BoolValue);
 }
 
 // exec request
@@ -75,8 +75,9 @@ message PerformanceExecResp {
   string execUUid = 4;
   int32 runnerId = 5;
 
-  repeated PerformanceExecRecord requests = 6;
-  PerformanceExecMetrics metrics = 7;
+  int32 vuCount = 6;
+  repeated PerformanceExecRecord requests = 7;
+  PerformanceExecMetrics metrics = 8;
 }
 
 message PerformanceExecRecord {

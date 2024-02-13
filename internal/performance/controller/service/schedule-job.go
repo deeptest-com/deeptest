@@ -9,6 +9,7 @@ import (
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	websocketHelper "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/exec"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
 	"time"
@@ -17,6 +18,7 @@ import (
 type ScheduleService struct {
 	RunnerIdToNameMap map[int]string
 
+	GrpcService         *GrpcService         `inject:"private"`
 	StatService         *StatService         `inject:"private"`
 	RemoteRunnerService *RemoteRunnerService `inject:"private"`
 }
@@ -44,31 +46,36 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 
 		_logUtils.Debug(">>>>>> start server schedule job")
 
-		//responseTimeData, summary := s.StatService.ComputeResponseTimeByInterface(req.Room)
-		//
-		//data := ptdomain.PerformanceExecResults{
-		//	Timestamp: time.Now().UnixMilli(),
-		//
-		//	Summary: summary,
-		//
-		//	ReqAllResponseTime: responseTimeData[ptconsts.ChartRespTimeAll.String()],
-		//	Req50ResponseTime:  responseTimeData[ptconsts.ChartRespTime50.String()],
-		//	Req90ResponseTime:  responseTimeData[ptconsts.ChartRespTime90.String()],
-		//	Req95ResponseTime:  responseTimeData[ptconsts.ChartRespTime95.String()],
-		//
-		//	ReqQps:  s.StatService.ComputeQpsByInterface(req.Room),
-		//	Metrics: s.StatService.LoadMetricsByRunner(),
-		//}
-		//
-		//s.SendMetricsByWebsocket(data, req.Room, wsMsg)
-		//
-		//s.SaveReportItems(data, req.Room)
-		//
-		//if IsGoalMet(req, summary.AvgResponseTime, summary.AvgQps, int32(summary.Fail+summary.Error), int32(summary.Total)) {
-		//	execCancel()
-		//
-		//	s.RemoteRunnerService.CallStop(req)
-		//}
+		responseTimeData, summary := s.StatService.ComputeResponseTimeByInterface(req.Room)
+		vuCount, _ := s.GrpcService.GetGlobalVar(execCtx, &ptProto.GlobalVarRequest{
+			Room: req.Room,
+			Name: exec.VarNameVuCount,
+		})
+
+		data := ptdomain.PerformanceExecResults{
+			Timestamp: time.Now().UnixMilli(),
+
+			VuCount: int(vuCount.GetValue()),
+			Summary: summary,
+
+			ReqAllResponseTime: responseTimeData[ptconsts.ChartRespTimeAll.String()],
+			Req50ResponseTime:  responseTimeData[ptconsts.ChartRespTime50.String()],
+			Req90ResponseTime:  responseTimeData[ptconsts.ChartRespTime90.String()],
+			Req95ResponseTime:  responseTimeData[ptconsts.ChartRespTime95.String()],
+
+			ReqQps:  s.StatService.ComputeQpsByInterface(req.Room),
+			Metrics: s.StatService.LoadMetricsByRunner(),
+		}
+
+		s.SendMetricsByWebsocket(data, req.Room, wsMsg)
+
+		s.SaveReportItems(data, req.Room)
+
+		if IsGoalMet(req, summary.AvgResponseTime, summary.AvgQps, int32(summary.Fail+summary.Error), int32(summary.Total)) {
+			execCancel()
+
+			s.RemoteRunnerService.CallStop(req)
+		}
 
 		lastTime = time.Now().UnixMilli()
 

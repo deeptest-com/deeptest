@@ -22,7 +22,7 @@ type GrpcService struct {
 }
 
 // for controller
-func (s *GrpcService) AddRendezvousVal(ctx context.Context, req *ptProto.GlobalVarRequest) (
+func (s *GrpcService) AddGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.Int32Value, err error) {
 
 	key := fmt.Sprintf("%s_%s", req.Room, req.Name)
@@ -48,7 +48,7 @@ func (s *GrpcService) AddRendezvousVal(ctx context.Context, req *ptProto.GlobalV
 	ret.Value = int32(*varRef.(*int))
 
 	// test
-	testValue, _ := s.GetRendezvousVal(ctx, &ptProto.GlobalVarRequest{
+	testValue, _ := s.GetGlobalVar(ctx, &ptProto.GlobalVarRequest{
 		Room: req.Room,
 		Name: req.Name,
 	})
@@ -58,7 +58,7 @@ func (s *GrpcService) AddRendezvousVal(ctx context.Context, req *ptProto.GlobalV
 	return
 }
 
-func (s *GrpcService) GetRendezvousVal(ctx context.Context, req *ptProto.GlobalVarRequest) (
+func (s *GrpcService) GetGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.Int32Value, err error) {
 
 	key := fmt.Sprintf("%s_%s", req.Room, req.Name)
@@ -81,7 +81,7 @@ func (s *GrpcService) GetRendezvousVal(ctx context.Context, req *ptProto.GlobalV
 	return
 }
 
-func (s *GrpcService) ClearRendezvousVal(ctx context.Context, req *ptProto.GlobalVarRequest) (
+func (s *GrpcService) ClearGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.BoolValue, err error) {
 
 	ret = &wrapperspb.BoolValue{}
@@ -96,7 +96,7 @@ func (s *GrpcService) ClearRendezvousVal(ctx context.Context, req *ptProto.Globa
 	return
 }
 
-func (s *GrpcService) ClearAllRendezvousVal(ctx context.Context, req *ptProto.GlobalVarRequest) (
+func (s *GrpcService) ClearAllGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.BoolValue, err error) {
 
 	ret = &wrapperspb.BoolValue{}

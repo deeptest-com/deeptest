@@ -34,7 +34,7 @@ func getConn(address string) (client ptProto.PerformanceServiceClient) {
 	return
 }
 
-func IncreaseRemoteVal(room, name, serverAddress string) (ret *wrapperspb.Int32Value) {
+func AddRemoteVal(room, name, serverAddress string) (ret *wrapperspb.Int32Value) {
 	req := ptProto.GlobalVarRequest{
 		Room: room,
 		Name: name,
@@ -42,7 +42,7 @@ func IncreaseRemoteVal(room, name, serverAddress string) (ret *wrapperspb.Int32V
 
 	client := getConn(serverAddress)
 
-	ret, err := client.AddRendezvousVal(context.Background(), &req)
+	ret, err := client.AddGlobalVar(context.Background(), &req)
 	if err != nil {
 		logUtils.Debug(err.Error())
 
@@ -63,7 +63,7 @@ func GetRemoteVal(room, name, serverAddress string) (ret *wrapperspb.Int32Value)
 
 	client := getConn(serverAddress)
 
-	ret, err := client.GetRendezvousVal(context.Background(), &req)
+	ret, err := client.GetGlobalVar(context.Background(), &req)
 	if err != nil {
 		logUtils.Debug(err.Error())
 
@@ -84,7 +84,7 @@ func ResetRemoteVal(room, name, serverAddress string) (ret *wrapperspb.BoolValue
 
 	client := getConn(serverAddress)
 
-	ret, err := client.ClearRendezvousVal(context.Background(), &req)
+	ret, err := client.ClearGlobalVar(context.Background(), &req)
 	if err != nil {
 		logUtils.Debug(err.Error())
 

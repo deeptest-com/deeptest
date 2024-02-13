@@ -3,6 +3,7 @@ package ptdomain
 type PerformanceExecResults struct {
 	Timestamp int64 `json:"timestamp,omitempty"`
 
+	VuCount int                    `json:"vuCount,omitempty"`
 	Summary PerformanceExecSummary `json:"summary,omitempty"`
 
 	Metrics []PerformanceExecMetrics `json:"metrics,omitempty"`

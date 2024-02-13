@@ -19,6 +19,11 @@ var (
 	bucketName            = "performance"
 	bucketNameDownsampled = "performance-downsampled"
 
+	taskStatus    = domain.TaskStatusTypeActive
+	taskEveryNumb = 10
+	taskEvery     = fmt.Sprintf("%ds", taskEveryNumb)
+	taskOffset    = "0s"
+
 	taskResponseTime   = "task_response_time"
 	taskResponseTime90 = "task_response_time_90"
 	taskResponseTime95 = "task_response_time_95"
@@ -166,10 +171,11 @@ from(bucket: "%s")
             r._measurement == "%s",
     )
     |> aggregateWindow(
-       every: task.every, 
-       fn: (t=<-, column) => t 
-           |> quantile(q: 0.9, method: "exact_selector"), 
-	|> set(key: "_measurement", value: "%s"),
+        every: task.every, 
+        fn: (table=<-, column) => table 
+            |> quantile(q: 0.9, method: "exact_selector"),
+    )
+	|> set(key: "_measurement", value: "%s")
     |> to(bucket: "%s")
 `, bucketName, tableResponseTime, tableResponseTime+"_90", bucketNameDownsampled)
 
@@ -188,10 +194,11 @@ from(bucket: "%s")
             r._measurement == "%s",
     )
     |> aggregateWindow(
-       every: task.every, 
-       fn: (t=<-, column) => t 
-           |> quantile(q: 0.9, method: "exact_selector"), 
-	|> set(key: "_measurement", value: "%s"),
+        every: task.every, 
+        fn: (table=<-, column) => table 
+            |> quantile(q: 0.95, method: "exact_selector"),
+    )
+	|> set(key: "_measurement", value: "%s")
     |> to(bucket: "%s")
 `, bucketName, tableResponseTime, tableResponseTime+"_95", bucketNameDownsampled)
 
@@ -212,10 +219,10 @@ from(bucket: "%s")
     |> aggregateWindow(
 	   every: task.every, 
 	   fn: (table=<-, column) => table 
-		 |> count(column: "_value") / task.every, 
+		 |> count(column: "_value") / %d, 
 	   createEmpty: false)
     |> to(bucket: "%s")
-`, bucketName, tableQps, bucketNameDownsampled)
+`, bucketName, tableQps, taskEveryNumb, bucketNameDownsampled)
 
 	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
@@ -310,9 +317,6 @@ func createTask(ctx context.Context, influxdbClient influxdb2.Client, orgId stri
 	name, flux string) (err error) {
 
 	tasksAPI := influxdbClient.TasksAPI()
-	taskStatus := domain.TaskStatusTypeActive
-	taskEvery := "10s"
-	taskOffset := "0s"
 
 	newTask := &domain.Task{
 		Name:   name,

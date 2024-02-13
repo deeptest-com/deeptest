@@ -318,6 +318,11 @@ func createTask(ctx context.Context, influxdbClient influxdb2.Client, orgId stri
 
 	tasksAPI := influxdbClient.TasksAPI()
 
+	tasks, err := tasksAPI.FindTasks(ctx, &api.TaskFilter{Name: name})
+	for _, task := range tasks {
+		tasksAPI.DeleteTaskWithID(ctx, task.Id)
+	}
+
 	newTask := &domain.Task{
 		Name:   name,
 		Every:  &taskEvery,

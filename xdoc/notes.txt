@@ -73,7 +73,11 @@ make compile_ui_demo
 ENV=dp make compile_server_linux
 ENV=dp make compile_agent_linux
 
+// 安装gRP工具
+go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+
 protoc --go_out=. --go_opt=paths=source_relative --go-grpc_out=. --go-grpc_opt=paths=source_relative \
   --go-grpc_opt=require_unimplemented_servers=false \
   internal/performance/proto/performance.proto
-

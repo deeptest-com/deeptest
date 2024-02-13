@@ -9,7 +9,6 @@ import (
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	websocketHelper "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/exec"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
 	"time"
@@ -47,15 +46,11 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 		_logUtils.Debug(">>>>>> start server schedule job")
 
 		responseTimeData, summary := s.StatService.ComputeResponseTimeByInterface(req.Room)
-		vuCount, _ := s.GrpcService.GetGlobalVar(execCtx, &ptProto.GlobalVarRequest{
-			Room: req.Room,
-			Name: exec.VarNameVuCount,
-		})
 
 		data := ptdomain.PerformanceExecResults{
 			Timestamp: time.Now().UnixMilli(),
 
-			VuCount: int(vuCount.GetValue()),
+			//VuCount: int(vuCount.GetValue()),
 			Summary: summary,
 
 			ReqAllResponseTime: responseTimeData[ptconsts.ChartRespTimeAll.String()],

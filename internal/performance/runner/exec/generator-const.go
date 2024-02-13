@@ -3,6 +3,7 @@ package exec
 import (
 	"context"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
+	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"sync"
@@ -26,8 +27,15 @@ func (g ConstantVuGenerator) Run(execCtx context.Context, sender indicator.Messa
 		}
 
 		wgVus.Add(1)
-		newVal := IncreaseVuCount(execParams.Room, serverAddress)
-		ptlog.Logf("====== vu count added, value is %d", newVal)
+
+		result := ptProto.PerformanceExecResp{
+			Timestamp: time.Now().UnixMilli(),
+			RunnerId:  execParams.RunnerId,
+			Room:      execParams.Room,
+
+			VuCount: 1,
+		}
+		sender.Send(result)
 
 		index := i
 		go func() {

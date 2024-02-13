@@ -76,6 +76,7 @@ message PerformanceExecResp {
   int32 runnerId = 5;
 
   int32 vuCount = 6;
+
   repeated PerformanceExecRecord requests = 7;
   PerformanceExecMetrics metrics = 8;
 }

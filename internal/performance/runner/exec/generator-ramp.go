@@ -3,7 +3,7 @@ package exec
 import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
-	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
+	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
@@ -46,8 +46,15 @@ func (g RampVuGenerator) Run(execCtx context.Context, sender indicator.MessageSe
 			childCtx = genExecParamsCtx(&execPramsOfStage, childTimeoutCtx)
 
 			wgVus.Add(1)
-			newVal := IncreaseVuCount(execParams.Room, serverAddress)
-			ptlog.Logf("====== vu count added, value is %d", newVal)
+
+			result := ptProto.PerformanceExecResp{
+				Timestamp: time.Now().UnixMilli(),
+				RunnerId:  execParams.RunnerId,
+				Room:      execParams.Room,
+
+				VuCount: 1,
+			}
+			sender.Send(result)
 
 			go func() {
 				defer wgVus.Done()

@@ -28,6 +28,7 @@ var (
 	taskDiskUsage      = "task_disk_usage"
 	taskNetworkUsage   = "task_network_usage"
 
+	tableVuCount      = "vu_count"
 	tableResponseTime = "response_time"
 	tableQps          = "qps"
 	tableCpuUsage     = "cpu_usage"
@@ -351,6 +352,11 @@ func (s InfluxdbSender) Send(result ptproto.PerformanceExecResp) (err error) {
 		s.addNetworkUsagePoint(metrics.NetworkUsages, result.Room, &lines)
 	}
 
+	// OR 3. send metrics
+	if result.VuCount > 0 {
+		s.addVuCount(result.VuCount, result.Room, &lines)
+	}
+
 	if len(lines) > 0 {
 		err = s.WriteAPI.WriteRecord(context.Background(), lines...)
 		if err != nil {
@@ -401,6 +407,13 @@ func (s InfluxdbSender) addNetworkUsagePoint(mp map[string]float64, room string,
 		line := fmt.Sprintf("%s,name=%s value=%f", tableNetworkUsage, name, value)
 		*lines = append(*lines, line)
 	}
+
+	return
+}
+
+func (s InfluxdbSender) addVuCount(count int32, room string, lines *[]string) (err error) {
+	line := fmt.Sprintf("%s value=%d", tableVuCount, count)
+	*lines = append(*lines, line)
 
 	return
 }

@@ -29,6 +29,7 @@ var (
 	taskNetworkUsage   = "task_network_usage"
 
 	tableResponseTime = "response_time"
+	tableQps          = "qps"
 	tableCpuUsage     = "cpu_usage"
 	tableMemoryUsage  = "memory_usage"
 	tableDiskUsage    = "disk_usage"
@@ -137,7 +138,6 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 }
 
 func createResponseTimeTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
-	table := tableResponseTime
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
@@ -146,17 +146,17 @@ from(bucket: "%s")
             r._measurement == "%s",
     )
     |> aggregateWindow(every: task.every, fn: mean)
+	|> set(key: "_measurement", value: "response_time_90")
     |> to(bucket: "%s")
-`, bucketName, table, bucketNameDownsampled)
+`, bucketName, tableResponseTime, bucketNameDownsampled)
 
-	createTask(ctx, influxdbClient, orgId, table, taskResponseTime, flux)
+	err = createTask(ctx, influxdbClient, orgId, taskResponseTime, flux)
 
 	return
 }
 
 func createResponseTime90Task(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
 	name := taskResponseTime90
-	table := tableResponseTime
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
@@ -168,17 +168,17 @@ from(bucket: "%s")
        every: task.every, 
        fn: (t=<-, column) => t 
            |> quantile(q: 0.9, method: "exact_selector"), 
+	|> set(key: "_measurement", value: "%s")
     |> to(bucket: "%s")
-`, bucketName, tableResponseTime, bucketNameDownsampled)
+`, bucketName, tableResponseTime, tableResponseTime+"_90", bucketNameDownsampled)
 
-	createTask(ctx, influxdbClient, orgId, table, name, flux)
+	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
 	return
 }
 
 func createResponseTime95Task(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
 	name := taskResponseTime95
-	table := tableResponseTime
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
@@ -190,17 +190,17 @@ from(bucket: "%s")
        every: task.every, 
        fn: (t=<-, column) => t 
            |> quantile(q: 0.9, method: "exact_selector"), 
+	|> set(key: "_measurement", value: "%s")
     |> to(bucket: "%s")
-`, bucketName, tableResponseTime, bucketNameDownsampled)
+`, bucketName, tableResponseTime, tableResponseTime+"_95", bucketNameDownsampled)
 
-	createTask(ctx, influxdbClient, orgId, table, name, flux)
+	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
 	return
 }
 
 func createQpsTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
 	name := taskQps
-	table := tableResponseTime
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
@@ -214,16 +214,15 @@ from(bucket: "%s")
 		 |> count(column: "_value") / task.every, 
 	   createEmpty: false)
     |> to(bucket: "%s")
-`, bucketName, tableResponseTime, bucketNameDownsampled)
+`, bucketName, tableQps, bucketNameDownsampled)
 
-	createTask(ctx, influxdbClient, orgId, table, name, flux)
+	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
 	return
 }
 
 func createCpuTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
 	name := taskCpuUsage
-	table := tableCpuUsage
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
@@ -238,14 +237,13 @@ from(bucket: "%s")
     |> to(bucket: "%s")
 `, bucketName, tableCpuUsage, bucketNameDownsampled)
 
-	createTask(ctx, influxdbClient, orgId, table, name, flux)
+	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
 	return
 }
 
 func createMemoryTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
 	name := taskMemoryUsage
-	table := tableMemoryUsage
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
@@ -260,14 +258,13 @@ from(bucket: "%s")
     |> to(bucket: "%s")
 `, bucketName, tableMemoryUsage, bucketNameDownsampled)
 
-	createTask(ctx, influxdbClient, orgId, table, name, flux)
+	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
 	return
 }
 
 func createDiskTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
 	name := taskDiskUsage
-	table := tableDiskUsage
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
@@ -282,14 +279,13 @@ from(bucket: "%s")
     |> to(bucket: "%s")
 `, bucketName, tableDiskUsage, bucketNameDownsampled)
 
-	createTask(ctx, influxdbClient, orgId, table, name, flux)
+	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
 	return
 }
 
 func createNetworkTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
 	name := taskNetworkUsage
-	table := tableNetworkUsage
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
@@ -302,32 +298,31 @@ from(bucket: "%s")
 	   fn: mean, 
 	   createEmpty: false)
     |> to(bucket: "%s")
-`, bucketName, table, bucketNameDownsampled)
+`, bucketName, tableNetworkUsage, bucketNameDownsampled)
 
-	createTask(ctx, influxdbClient, orgId, table, name, flux)
+	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
 	return
 }
 
 func createTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string,
-	table, name, flux string) {
+	name, flux string) (err error) {
 
 	tasksAPI := influxdbClient.TasksAPI()
 	taskStatus := domain.TaskStatusTypeActive
 	taskEvery := "10s"
 	taskOffset := "0s"
-	taskFlux := fmt.Sprintf(flux, bucketName, table, bucketNameDownsampled)
 
 	newTask := &domain.Task{
 		Name:   name,
 		Every:  &taskEvery,
 		Offset: &taskOffset,
-		Flux:   taskFlux,
+		Flux:   flux,
 		OrgID:  orgId,
 		Status: &taskStatus,
 	}
 
-	_, err := tasksAPI.CreateTask(ctx, newTask)
+	_, err = tasksAPI.CreateTask(ctx, newTask)
 	if err != nil {
 		ptlog.Logf("failed to create task %s, err %s.", name, err.Error())
 		return

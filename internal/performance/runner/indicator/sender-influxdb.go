@@ -320,7 +320,12 @@ func createTask(ctx context.Context, influxdbClient influxdb2.Client, orgId stri
 
 	tasks, err := tasksAPI.FindTasks(ctx, &api.TaskFilter{Name: name})
 	for _, task := range tasks {
-		tasksAPI.DeleteTaskWithID(ctx, task.Id)
+		err = tasksAPI.DeleteTaskWithID(ctx, task.Id)
+		if err != nil {
+			ptlog.Logf("failed to delete task %s, err %s.", task.Id, err.Error())
+			continue
+		}
+		ptlog.Logf("success to create task %s", task.Id)
 	}
 
 	newTask := &domain.Task{

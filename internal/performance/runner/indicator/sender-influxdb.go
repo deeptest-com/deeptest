@@ -169,7 +169,7 @@ from(bucket: "%s")
        every: task.every, 
        fn: (t=<-, column) => t 
            |> quantile(q: 0.9, method: "exact_selector"), 
-	|> set(key: "_measurement", value: "%s")
+	|> set(key: "_measurement", value: "%s"),
     |> to(bucket: "%s")
 `, bucketName, tableResponseTime, tableResponseTime+"_90", bucketNameDownsampled)
 
@@ -191,7 +191,7 @@ from(bucket: "%s")
        every: task.every, 
        fn: (t=<-, column) => t 
            |> quantile(q: 0.9, method: "exact_selector"), 
-	|> set(key: "_measurement", value: "%s")
+	|> set(key: "_measurement", value: "%s"),
     |> to(bucket: "%s")
 `, bucketName, tableResponseTime, tableResponseTime+"_95", bucketNameDownsampled)
 
@@ -328,7 +328,7 @@ func createTask(ctx context.Context, influxdbClient influxdb2.Client, orgId stri
 		ptlog.Logf("failed to create task %s, err %s.", name, err.Error())
 		return
 	}
-	ptlog.Logf("success to create bucketName %s", name)
+	ptlog.Logf("success to create task %s", name)
 
 	return
 }

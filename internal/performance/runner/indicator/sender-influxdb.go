@@ -406,7 +406,14 @@ func queryData(influxdbClient influxdb2.Client, orgId string, query string) (err
 	}
 
 	for result.Next() {
-		fmt.Printf("value: %v\n", result.Record())
+		mp := result.Record().Values()
+		name := mp["name"]
+		min := mp["min"]
+		max := mp["max"]
+		mean := mp["mean"]
+		median := mp["median"]
+
+		ptlog.Logf("%s, %v, %v, %v, %v", name, min, max, mean, median)
 	}
 
 	return

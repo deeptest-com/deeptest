@@ -15,7 +15,7 @@ func TestQuery(t *testing.T) {
 	ptlog.Init()
 
 	//influxdbClient := influxdb2.NewClient(influxdbAddress, influxdbToken)
-	//
+
 	//indicator.QueryResponseTimeSummary(context.Background(), influxdbClient, influxdbOrg)
 
 }

@@ -139,8 +139,7 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 
 	// gen sender
 	//grpcSender := indicator.NewGrpcSender(&stream)
-	msgSender := indicator.GetInfluxdbSenderInstant(req.Room,
-		req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
+	msgSender := indicator.GetInfluxdbSenderInstant(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
 	if msgSender == nil {
 		ptlog.Logf("stop to run since msgSender return nil")
 		return

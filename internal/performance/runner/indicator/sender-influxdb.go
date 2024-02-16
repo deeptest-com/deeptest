@@ -13,8 +13,6 @@ import (
 )
 
 var (
-	precision = "ms"
-
 	//orgName           = "deeptest"
 	bucketName            = "performance"
 	bucketNameDownsampled = "performance-downsampled"
@@ -24,6 +22,8 @@ var (
 	taskEvery     = fmt.Sprintf("%ds", taskEveryNumb)
 	taskOffset    = "0s"
 
+	taskVuNumb         = "task_vu_numb"
+	taskFailNumb       = "task_fail_numb"
 	taskResponseTime   = "task_response_time"
 	taskResponseTime90 = "task_response_time_90"
 	taskResponseTime95 = "task_response_time_95"
@@ -52,11 +52,7 @@ type InfluxdbSender struct {
 	DbAddress string
 }
 
-func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSender {
-	if InfluxdbInstant != nil {
-		return InfluxdbInstant
-	}
-
+func ResetInfluxdb(room, dbAddress, orgName, token string) {
 	influxdbClient := influxdb2.NewClient(dbAddress, token)
 
 	// 删除已有bucket
@@ -71,7 +67,7 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 		err = influxdbClient.BucketsAPI().DeleteBucket(ctx, bucket)
 		if err != nil {
 			ptlog.Logf("failed to delete bucket %s, err %s", bucketName, err.Error())
-			return nil
+			return
 		}
 		ptlog.Logf("success to delete bucket %s", bucketName)
 	}
@@ -81,7 +77,7 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 		org, err2 = influxdbClient.OrganizationsAPI().CreateOrganizationWithName(ctx, orgName)
 		if err2 != nil {
 			ptlog.Logf("failed to create org by name %s, err %s", orgName, err.Error())
-			return nil
+			return
 		}
 		ptlog.Logf("success to create org %s", bucketName)
 	}
@@ -89,47 +85,61 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 	bucket, err = bucketsAPI.CreateBucketWithName(ctx, org, bucketName, domain.RetentionRule{EverySeconds: 3600 * 24})
 	if err != nil {
 		ptlog.Logf("failed to create bucketName %s, err %s", bucketName, err.Error())
-		return nil
+		return
 	}
 	ptlog.Logf("success to create bucket %s", bucket.Name)
 
 	// tasks
-	err = createResponseTimeTask(ctx, influxdbClient, *org.Id)
+	err = createVuNumbTask(ctx, influxdbClient, *org.Id)
 	if err != nil {
-		return nil
+		return
+	}
+	err = createFailNumbTask(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return
+	}
+	err = createResponseTimeAllTask(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return
 	}
 	err = createResponseTime90Task(ctx, influxdbClient, *org.Id)
 	if err != nil {
-		return nil
+		return
 	}
 	err = createResponseTime95Task(ctx, influxdbClient, *org.Id)
 	if err != nil {
-		return nil
+		return
 	}
 	err = createQpsTask(ctx, influxdbClient, *org.Id)
 	if err != nil {
-		return nil
+		return
 	}
 	err = createCpuTask(ctx, influxdbClient, *org.Id)
 	if err != nil {
-		return nil
+		return
 	}
 	err = createMemoryTask(ctx, influxdbClient, *org.Id)
 	if err != nil {
-		return nil
+		return
 	}
 	err = createDiskTask(ctx, influxdbClient, *org.Id)
 	if err != nil {
-		return nil
+		return
 	}
 	err = createNetworkTask(ctx, influxdbClient, *org.Id)
 	if err != nil {
-		return nil
+		return
 	}
 
-	// queries
-	//queryAPI := influxdbClient.QueryAPI("my-org")
-	//queryAPI.
+	return
+}
+
+func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSender {
+	if InfluxdbInstant != nil {
+		return InfluxdbInstant
+	}
+
+	influxdbClient := influxdb2.NewClient(dbAddress, token)
 
 	// write
 	writeAPI := influxdbClient.WriteAPIBlocking(orgName, bucketName)
@@ -143,7 +153,81 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 	return InfluxdbInstant
 }
 
-func createResponseTimeTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+func QueryResponseTimeSummary(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	sql := fmt.Sprintf(`
+baseData = from(bucket: "%s")
+  |> range(start: -task.every)
+  |> filter(
+      fn: (r) =>
+          r._measurement == "%s",
+  )
+
+minData = baseData
+  |> min()
+  |> rename(columns: {"_value":"min"})
+
+maxData = baseData
+  |> max()
+  |> rename(columns: {"_value":"max"})
+
+meanData = baseData
+  |> mean()
+  |> rename(columns: {"_value":"mean"})
+
+medianData = baseData
+  |> median()
+  |> rename(columns: {"_value":"median"})
+
+union(tables: [minData, maxData, meanData, medianData])
+  |> keep(columns: ["name", "min", "max", "mean", "median"])
+`, bucketName, tableResponseTime)
+
+	err = queryData(influxdbClient, orgId, sql)
+
+	return
+}
+
+func createVuNumbTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	name := taskVuNumb
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s",
+    )
+    |> aggregateWindow(
+	   every: task.every, 
+	   fn: sum, 
+	   createEmpty: false)
+    |> to(bucket: "%s")
+`, bucketName, tableVuCount, bucketNameDownsampled)
+
+	err = createTask(ctx, influxdbClient, orgId, name, flux)
+
+	return
+}
+
+func createFailNumbTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	name := taskNetworkUsage
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s" and (r.status == "fail" or r.status == "err"),
+    )
+    |> aggregateWindow(
+	   every: task.every, 
+	   fn: sum, 
+	   createEmpty: false)
+    |> to(bucket: "%s")
+`, bucketName, tableNetworkUsage, bucketNameDownsampled)
+
+	err = createTask(ctx, influxdbClient, orgId, name, flux)
+
+	return
+}
+
+func createResponseTimeAllTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
@@ -313,6 +397,21 @@ from(bucket: "%s")
 	return
 }
 
+func queryData(influxdbClient influxdb2.Client, orgId string, query string) (err error) {
+	queryAPI := influxdbClient.QueryAPI(orgId)
+	result, err := queryAPI.Query(context.Background(), query)
+	if err != nil {
+		ptlog.Logf("failed to query, err %s.", err.Error())
+		return
+	}
+
+	for result.Next() {
+		fmt.Printf("value: %v\n", result.Record().Value())
+	}
+
+	return
+}
+
 func createTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string,
 	name, flux string) (err error) {
 
@@ -384,7 +483,8 @@ func (s InfluxdbSender) Send(result ptproto.PerformanceExecResp) (err error) {
 
 func (s InfluxdbSender) addResponseTimePoint(request *ptproto.PerformanceExecRecord, room string, lines *[]string) (
 	err error) {
-	line := fmt.Sprintf("%s,name=%s value=%d", tableResponseTime, request.RecordName, request.Duration)
+	line := fmt.Sprintf("%s,name=%s,status=%s value=%d",
+		tableResponseTime, request.RecordName, request.Status, request.Duration)
 
 	*lines = append(*lines, line)
 

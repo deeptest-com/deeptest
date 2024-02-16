@@ -8,6 +8,7 @@ import (
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	websocketHelper "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
 	"github.com/facebookgo/inject"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/sirupsen/logrus"
@@ -60,6 +61,7 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 	s.execCtx, s.execCancel = context.WithCancel(context.Background())
 
 	dao.ClearData(req.Room)
+	indicator.ResetInfluxdb(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
 	s.ScheduleService.Reset(req.Scenarios)
 	s.GrpcService.ClearAllGlobalVar(context.Background(), &ptProto.GlobalVarRequest{})
 

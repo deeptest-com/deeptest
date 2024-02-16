@@ -22,18 +22,20 @@ var (
 	taskEvery     = fmt.Sprintf("%ds", taskEveryNumb)
 	taskOffset    = "0s"
 
-	taskVuNumb         = "task_vu_numb"
-	taskFailNumb       = "task_fail_numb"
-	taskResponseTime   = "task_response_time"
-	taskResponseTime90 = "task_response_time_90"
-	taskResponseTime95 = "task_response_time_95"
-	taskQps            = "task_qps"
-	taskCpuUsage       = "task_cpu_usage"
-	taskMemoryUsage    = "task_memory_usage"
-	taskDiskUsage      = "task_disk_usage"
-	taskNetworkUsage   = "task_network_usage"
+	taskVuNumb          = "task_vu_numb"
+	taskFailNumb        = "task_fail_numb"
+	taskResponseSummary = "task_response_time_summary"
+	taskResponseTimeAll = "task_response_time"
+	taskResponseTime90  = "task_response_time_90"
+	taskResponseTime95  = "task_response_time_95"
+	taskQps             = "task_qps"
+	taskCpuUsage        = "task_cpu_usage"
+	taskMemoryUsage     = "task_memory_usage"
+	taskDiskUsage       = "task_disk_usage"
+	taskNetworkUsage    = "task_network_usage"
 
-	tableVuCount      = "vu_count"
+	tableVuNumb       = "vu_numb"
+	tableFailNumb     = "fail_numb"
 	tableResponseTime = "response_time"
 	tableQps          = "qps"
 	tableCpuUsage     = "cpu_usage"
@@ -98,6 +100,11 @@ func ResetInfluxdb(room, dbAddress, orgName, token string) {
 	if err != nil {
 		return
 	}
+
+	err = createResponseTimeSummaryTask(ctx, influxdbClient, *org.Id)
+	if err != nil {
+		return
+	}
 	err = createResponseTimeAllTask(ctx, influxdbClient, *org.Id)
 	if err != nil {
 		return
@@ -110,6 +117,7 @@ func ResetInfluxdb(room, dbAddress, orgName, token string) {
 	if err != nil {
 		return
 	}
+
 	err = createQpsTask(ctx, influxdbClient, *org.Id)
 	if err != nil {
 		return
@@ -153,40 +161,6 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 	return InfluxdbInstant
 }
 
-func QueryResponseTimeSummary(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
-	sql := fmt.Sprintf(`
-baseData = from(bucket: "%s")
-  |> range(start: -1d)
-  |> filter(
-      fn: (r) =>
-          r._measurement == "%s",
-  )
-
-minData = baseData
-  |> min()
-  |> rename(columns: {"_value":"min"})
-
-maxData = baseData
-  |> max()
-  |> rename(columns: {"_value":"max"})
-
-meanData = baseData
-  |> mean()
-  |> rename(columns: {"_value":"mean"})
-
-medianData = baseData
-  |> median()
-  |> rename(columns: {"_value":"median"})
-
-union(tables: [minData, maxData, meanData, medianData])
-  |> keep(columns: ["name", "min", "max", "mean", "median"])
-`, bucketName, tableResponseTime)
-
-	err = queryData(influxdbClient, orgId, sql)
-
-	return
-}
-
 func createVuNumbTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
 	name := taskVuNumb
 	flux := fmt.Sprintf(`
@@ -200,7 +174,7 @@ from(bucket: "%s")
 	   fn: sum, 
 	   createEmpty: false)
     |> to(bucket: "%s")
-`, bucketName, tableVuCount, bucketNameDownsampled)
+`, bucketName, tableVuNumb, bucketNameDownsampled)
 
 	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
@@ -208,7 +182,7 @@ from(bucket: "%s")
 }
 
 func createFailNumbTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
-	name := taskNetworkUsage
+	name := taskFailNumb
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> filter(
@@ -220,14 +194,54 @@ from(bucket: "%s")
 	   fn: sum, 
 	   createEmpty: false)
     |> to(bucket: "%s")
-`, bucketName, tableNetworkUsage, bucketNameDownsampled)
+`, bucketName, tableFailNumb, bucketNameDownsampled)
 
 	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
 	return
 }
 
+func createResponseTimeSummaryTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	flux := fmt.Sprintf(`
+baseData =
+    from(bucket: "%s")
+        |> range(start: -task.every)
+        |> filter(fn: (r) => r._measurement == "%s")
+
+minData =
+    baseData
+        |> min()
+        |> set(key: "_field", value: "min")
+
+maxData =
+    baseData
+        |> max()
+        |> set(key: "_field", value: "max")
+
+meanData =
+    baseData
+        |> mean()
+        |> set(key: "_field", value: "mean")
+
+medianData =
+    baseData
+        |> median()
+        |> set(key: "_field", value: "median")
+
+union(tables: [minData, maxData, meanData, medianData])
+    |> set(key: "_measurement", value: "%s")
+    |> duplicate(column: "_stop", as: "_time")
+    |> to(bucket: "%s")
+`, bucketName, tableResponseTime, taskResponseSummary, bucketNameDownsampled)
+
+	err = createTask(ctx, influxdbClient, orgId, taskResponseTimeAll, flux)
+
+	return
+}
+
 func createResponseTimeAllTask(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
+	name := taskResponseTimeAll
+
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -task.every)
@@ -236,11 +250,11 @@ from(bucket: "%s")
             r._measurement == "%s",
     )
     |> aggregateWindow(every: task.every, fn: mean)
-	|> set(key: "_measurement", value: "response_time_90")
+	|> set(key: "_measurement", value: "%s")
     |> to(bucket: "%s")
-`, bucketName, tableResponseTime, bucketNameDownsampled)
+`, bucketName, tableResponseTime, tableResponseTime+"_all", bucketNameDownsampled)
 
-	err = createTask(ctx, influxdbClient, orgId, taskResponseTime, flux)
+	err = createTask(ctx, influxdbClient, orgId, name, flux)
 
 	return
 }
@@ -533,7 +547,7 @@ func (s InfluxdbSender) addNetworkUsagePoint(mp map[string]float64, room string,
 }
 
 func (s InfluxdbSender) addVuCount(count int32, room string, lines *[]string) (err error) {
-	line := fmt.Sprintf("%s value=%d", tableVuCount, count)
+	line := fmt.Sprintf("%s value=%d", tableVuNumb, count)
 	*lines = append(*lines, line)
 
 	return

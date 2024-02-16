@@ -156,7 +156,7 @@ func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSen
 func QueryResponseTimeSummary(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (err error) {
 	sql := fmt.Sprintf(`
 baseData = from(bucket: "%s")
-  |> range(start: -task.every)
+  |> range(start: -1d)
   |> filter(
       fn: (r) =>
           r._measurement == "%s",
@@ -406,7 +406,7 @@ func queryData(influxdbClient influxdb2.Client, orgId string, query string) (err
 	}
 
 	for result.Next() {
-		fmt.Printf("value: %v\n", result.Record().Value())
+		fmt.Printf("value: %v\n", result.Record())
 	}
 
 	return

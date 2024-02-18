@@ -51,7 +51,7 @@ func ListRequestRecordForQps(lastId uint, room string) (ret []BizRequest) {
 	return
 }
 
-func CountAllByStatus(room string) (total, pass, fail, err, unknown int) {
+func CountAllByStatus(room string) (total, pass, fail, err int) {
 	var list []ptdomain.StatusModel
 
 	GetDB(consts.AppServer).
@@ -67,8 +67,7 @@ func CountAllByStatus(room string) (total, pass, fail, err, unknown int) {
 	pass = mp[ptconsts.Pass]
 	fail = mp[ptconsts.Fail]
 	err = mp[ptconsts.Error]
-	unknown = mp[ptconsts.Unknown]
-	total = pass + fail + err + unknown
+	total = pass + fail + err
 
 	return
 }
@@ -231,7 +230,7 @@ func SaveReport(room string, startTime, endTime int64) {
 		Duration:  endTime - startTime,
 	}
 
-	report.Total, report.Pass, report.Fail, report.Error, report.Unknown = CountAllByStatus(room)
+	report.Total, report.Pass, report.Fail, report.Error = CountAllByStatus(room)
 
 	report.AvgResponseTime, report.AvgQps = CountAvgTime(room, report.Duration)
 

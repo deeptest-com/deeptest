@@ -10,7 +10,9 @@ import (
 	websocketHelper "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/kataras/iris/v12/websocket"
+	"github.com/rs/zerolog/log"
 	"time"
 )
 
@@ -36,6 +38,9 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 
 	s.StatService.Room = wsMsg.Room
 
+	influxdbClient := influxdb2.NewClient(req.InfluxdbAddress, req.InfluxdbToken)
+	ctx := context.Background()
+
 	for true {
 		time.Sleep(1 * time.Second)
 
@@ -45,32 +50,35 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 
 		_logUtils.Debug(">>>>>> start server schedule job")
 
-		responseTimeData, summary := s.StatService.ComputeResponseTimeByInterface(req.Room)
+		summary, _ := dao.QueryResponseTimeSummary(ctx, influxdbClient, req.InfluxdbOrg)
+		log.Print(summary)
 
-		data := ptdomain.PerformanceExecResults{
-			Timestamp: time.Now().UnixMilli(),
-
-			//VuCount: int(vuCount.GetValue()),
-			Summary: summary,
-
-			ReqAllResponseTime: responseTimeData[ptconsts.ChartRespTimeAll.String()],
-			Req50ResponseTime:  responseTimeData[ptconsts.ChartRespTime50.String()],
-			Req90ResponseTime:  responseTimeData[ptconsts.ChartRespTime90.String()],
-			Req95ResponseTime:  responseTimeData[ptconsts.ChartRespTime95.String()],
-
-			ReqQps:  s.StatService.ComputeQpsByInterface(req.Room),
-			Metrics: s.StatService.LoadMetricsByRunner(),
-		}
-
-		s.SendMetricsByWebsocket(data, req.Room, wsMsg)
-
-		s.SaveReportItems(data, req.Room)
-
-		if IsGoalMet(req, summary.AvgResponseTime, summary.AvgQps, int32(summary.Fail+summary.Error), int32(summary.Total)) {
-			execCancel()
-
-			s.RemoteRunnerService.CallStop(req)
-		}
+		//responseTimeData, summary := s.StatService.ComputeResponseTimeByInterface(req.Room)
+		//
+		//data := ptdomain.PerformanceExecResults{
+		//	Timestamp: time.Now().UnixMilli(),
+		//
+		//	//VuCount: int(vuCount.GetValue()),
+		//	Summary: summary,
+		//
+		//	ReqAllResponseTime: responseTimeData[ptconsts.ChartRespTimeAll.String()],
+		//	Req50ResponseTime:  responseTimeData[ptconsts.ChartRespTime50.String()],
+		//	Req90ResponseTime:  responseTimeData[ptconsts.ChartRespTime90.String()],
+		//	Req95ResponseTime:  responseTimeData[ptconsts.ChartRespTime95.String()],
+		//
+		//	ReqQps:  s.StatService.ComputeQpsByInterface(req.Room),
+		//	Metrics: s.StatService.LoadMetricsByRunner(),
+		//}
+		//
+		//s.SendMetricsByWebsocket(data, req.Room, wsMsg)
+		//
+		//s.SaveReportItems(data, req.Room)
+		//
+		//if IsGoalMet(req, summary.MeanResponseTime, summary.AvgQps, int32(summary.Fail+summary.Error), int32(summary.Total)) {
+		//	execCancel()
+		//
+		//	s.RemoteRunnerService.CallStop(req)
+		//}
 
 		lastTime = time.Now().UnixMilli()
 
@@ -105,7 +113,6 @@ func (s *ScheduleService) SaveReportItems(data ptdomain.PerformanceExecResults, 
 	dao.InsertReportItem(room, ptconsts.ChartStatusCount.String(), "status_pass", float64(summary.Pass), timestamp)
 	dao.InsertReportItem(room, ptconsts.ChartStatusCount.String(), "status_fail", float64(summary.Fail), timestamp)
 	dao.InsertReportItem(room, ptconsts.ChartStatusCount.String(), "status_error", float64(summary.Error), timestamp)
-	dao.InsertReportItem(room, ptconsts.ChartStatusCount.String(), "status_unknown", float64(summary.Unknown), timestamp)
 
 	reqAllResponseTime := data.ReqAllResponseTime
 	for _, req := range reqAllResponseTime {

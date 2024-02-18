@@ -106,11 +106,11 @@ func (s *StatService) ComputeResponseTimeByInterface(room string) (ret map[strin
 	}
 
 	summary.Duration = summary.EndTime - summary.StartTime
-	summary.AvgResponseTime = float64(sumOfAll) / float64(summary.Total)
+	summary.MeanResponseTime = float64(sumOfAll) / float64(summary.Total)
 	summary.AvgQps = float64(summary.Total) * 1000 / float64(summary.Duration)
 
 	// for all records
-	summary.Total, summary.Pass, summary.Fail, summary.Error, summary.Unknown = dao.CountAllByStatus(room)
+	summary.Total, summary.Pass, summary.Fail, summary.Error = dao.CountAllByStatus(room)
 
 	computeEndTime := time.Now()
 	ptlog.Logf("****** SERVER DEBUG: end compute %d records' response time, duration: %d micro secs (%s - %s).",

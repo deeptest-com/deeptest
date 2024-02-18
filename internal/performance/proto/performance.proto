@@ -75,7 +75,7 @@ message PerformanceExecResp {
   string execUUid = 4;
   int32 runnerId = 5;
 
-  int32 vuCount = 6;
+  int32 vuIncrease = 6;
 
   repeated PerformanceExecRecord requests = 7;
   PerformanceExecMetrics metrics = 8;

@@ -21,14 +21,24 @@ type PerformanceExecSummary struct {
 	EndTime   int64 `json:"endTime,omitempty"`
 	Duration  int64 `json:"duration,omitempty"`
 
-	Total   int `json:"total,omitempty"`
-	Pass    int `json:"pass,omitempty"`
-	Fail    int `json:"fail,omitempty"`
-	Error   int `json:"error,omitempty"`
-	Unknown int `json:"unknown,omitempty"`
+	Total int `json:"total,omitempty"`
+	Pass  int `json:"pass,omitempty"`
+	Fail  int `json:"fail,omitempty"`
+	Error int `json:"error,omitempty"`
+	//Unknown int `json:"unknown,omitempty"`
 
-	AvgResponseTime float64 `json:"avgResponseTime,omitempty"`
-	AvgQps          float64 `json:"avgQps,omitempty"`
+	MinResponseTime    float64 `json:"minResponseTime,omitempty"`
+	MaxResponseTime    float64 `json:"maxResponseTime,omitempty"`
+	MeanResponseTime   float64 `json:"meanResponseTime,omitempty"`
+	MedianResponseTime float64 `json:"medianResponseTime,omitempty"`
+	AvgQps             float64 `json:"avgQps,omitempty"`
+}
+
+type PerformanceRequestTable struct {
+	RecordId   int32  `json:"recordId,omitempty"`
+	RecordName string `json:"recordName,omitempty"`
+	Type       string `json:"type,omitempty"`
+	Value      int32  `json:"value,omitempty"`
 }
 
 type PerformanceRequestQps struct {
@@ -42,7 +52,6 @@ type PerformanceRequestResponseTime struct {
 	RecordId   int32  `json:"recordId,omitempty"`
 	RecordName string `json:"recordName,omitempty"`
 	Value      int32  `json:"value,omitempty"`
-	Total      int32  `json:"total,omitempty"`
 }
 
 type PerformanceExecMetrics struct {

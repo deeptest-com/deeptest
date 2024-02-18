@@ -90,11 +90,10 @@ type BizSummaryReport struct {
 	AvgResponseTime float64 `json:"avgResponseTime"`
 	AvgQps          float64 `json:"avgQps"`
 
-	Total   int `json:"total"`
-	Pass    int `json:"pass"`
-	Fail    int `json:"fail"`
-	Error   int `json:"error"`
-	Unknown int `json:"unknown"`
+	Total int `json:"total"`
+	Pass  int `json:"pass"`
+	Fail  int `json:"fail"`
+	Error int `json:"error"`
 }
 
 func (BizSummaryReport) TableName() string {

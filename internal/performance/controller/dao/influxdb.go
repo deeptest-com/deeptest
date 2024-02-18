@@ -72,51 +72,6 @@ func ResetInfluxdb(room, dbAddress, orgName, token string) {
 	return
 }
 
-func QueryVuNumb(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (numb float64) {
-	flux := fmt.Sprintf(`
-from(bucket: "%s")
-    |> filter(
-        fn: (r) =>
-            r._measurement == "%s",
-    )
-    |> aggregateWindow(
-	   fn: sum, 
-	   createEmpty: false)
-`, bucketName, tableVuNumb)
-
-	result, err := queryData(influxdbClient, orgId, flux)
-	if err != nil {
-		return
-	}
-
-	result.Next()
-	mp := result.Record().Values()
-	numb = mp["name"].(float64)
-
-	return
-}
-
-func QueryFailNumb(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (numb float64, err error) {
-	flux := fmt.Sprintf(`
-from(bucket: "%s")
-    |> filter(
-        fn: (r) =>
-            r._measurement == "%s" and (r.status == "fail" or r.status == "err"),
-    )
-    |> aggregateWindow(
-	   fn: sum, 
-	   createEmpty: false)
-`, bucketName, tableFailNumb)
-
-	result, err := queryData(influxdbClient, orgId, flux)
-
-	result.Next()
-	mp := result.Record().Values()
-	numb = mp["name"].(float64)
-
-	return
-}
-
 func QueryResponseTimeSummary(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
 	ret ptdomain.PerformanceExecSummary, err error) {
 	flux1 := fmt.Sprintf(`
@@ -290,10 +245,11 @@ func QueryVuCount(ctx context.Context, influxdbClient influxdb2.Client, orgId st
 		return
 	}
 
-	result.Next()
-	mp := result.Record().Values()
+	if result.Next() {
+		mp := result.Record().Values()
 
-	ret = int(mp["vmNumb"].(int64))
+		ret = int(mp["_value"].(float64))
+	}
 
 	return
 }

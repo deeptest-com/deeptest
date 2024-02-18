@@ -272,6 +272,32 @@ union(tables: [passNumb, failNumb, errNumb])
 	return
 }
 
+func QueryVuCount(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
+	ret int, err error) {
+
+	flux := fmt.Sprintf(`
+  from(bucket: "%s")
+	|> range(start: -1d)
+	|> filter(fn: (r) => r._measurement == "%s")
+       |> sum()
+       |> set(key: "_field", value: "vmNumb")
+
+`, bucketName, tableVuNumb)
+
+	result, err := queryData(influxdbClient, orgId, flux)
+	if err != nil {
+		ptlog.Logf("query data failed, err %s", err.Error())
+		return
+	}
+
+	result.Next()
+	mp := result.Record().Values()
+
+	ret = int(mp["vmNumb"].(int64))
+
+	return
+}
+
 func queryResponseTimeTableByInterface(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
 	ret []ptdomain.PerformanceRequestTable, err error) {
 	flux := fmt.Sprintf(`

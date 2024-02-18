@@ -12,7 +12,6 @@ import (
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/kataras/iris/v12/websocket"
-	"github.com/rs/zerolog/log"
 	"time"
 )
 
@@ -51,27 +50,27 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 		_logUtils.Debug(">>>>>> start server schedule job")
 
 		summary, _ := dao.QueryResponseTimeSummary(ctx, influxdbClient, req.InfluxdbOrg)
-		log.Print(summary)
+		vuCount, _ := dao.QueryVuCount(ctx, influxdbClient, req.InfluxdbOrg)
 
 		//responseTimeData, summary := s.StatService.ComputeResponseTimeByInterface(req.Room)
 		//
-		//data := ptdomain.PerformanceExecResults{
-		//	Timestamp: time.Now().UnixMilli(),
-		//
-		//	//VuCount: int(vuCount.GetValue()),
-		//	Summary: summary,
-		//
-		//	ReqAllResponseTime: responseTimeData[ptconsts.ChartRespTimeAll.String()],
-		//	Req50ResponseTime:  responseTimeData[ptconsts.ChartRespTime50.String()],
-		//	Req90ResponseTime:  responseTimeData[ptconsts.ChartRespTime90.String()],
-		//	Req95ResponseTime:  responseTimeData[ptconsts.ChartRespTime95.String()],
-		//
-		//	ReqQps:  s.StatService.ComputeQpsByInterface(req.Room),
-		//	Metrics: s.StatService.LoadMetricsByRunner(),
-		//}
-		//
-		//s.SendMetricsByWebsocket(data, req.Room, wsMsg)
-		//
+		data := ptdomain.PerformanceExecResults{
+			Timestamp: time.Now().UnixMilli(),
+
+			VuCount: vuCount,
+			Summary: summary,
+
+			//ReqAllResponseTime: responseTimeData[ptconsts.ChartRespTimeAll.String()],
+			//Req50ResponseTime:  responseTimeData[ptconsts.ChartRespTime50.String()],
+			//Req90ResponseTime:  responseTimeData[ptconsts.ChartRespTime90.String()],
+			//Req95ResponseTime:  responseTimeData[ptconsts.ChartRespTime95.String()],
+			//
+			//ReqQps:  s.StatService.ComputeQpsByInterface(req.Room),
+			//Metrics: s.StatService.LoadMetricsByRunner(),
+		}
+
+		s.SendMetricsByWebsocket(data, req.Room, wsMsg)
+
 		//s.SaveReportItems(data, req.Room)
 		//
 		//if IsGoalMet(req, summary.MeanResponseTime, summary.AvgQps, int32(summary.Fail+summary.Error), int32(summary.Total)) {

@@ -8,28 +8,19 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/influxdata/influxdb-client-go/v2/api/write"
-	"github.com/influxdata/influxdb-client-go/v2/domain"
 	"time"
 )
 
 var (
 	//orgName           = "deeptest"
-	bucketName            = "performance"
-	bucketNameDownsampled = "performance-downsampled"
+	bucketName = "performance"
 
 	tableVuNumb       = "vu_numb"
-	tableFailNumb     = "fail_numb"
 	tableResponseTime = "response_time"
-	tableQps          = "qps"
 	tableCpuUsage     = "cpu_usage"
 	tableMemoryUsage  = "memory_usage"
 	tableDiskUsage    = "disk_usage"
 	tableNetworkUsage = "network_usage"
-
-	taskStatus    = domain.TaskStatusTypeActive
-	taskEveryNumb = 10
-	taskEvery     = fmt.Sprintf("%ds", taskEveryNumb)
-	taskOffset    = "0s"
 )
 
 var (

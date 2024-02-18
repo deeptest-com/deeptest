@@ -186,8 +186,8 @@ union(tables: [startTime, endTime, minVal, maxVal, meanVal, medianVal, passNumb,
 		mp := result.Record().Values()
 
 		if mp["_field"].(string) == "minVal" {
-			startTime := mp["_value"].(time.Time)
-			ret.StartTime = startTime.UnixMilli()
+			startTime := mp["_value"].(int64)
+			ret.StartTime = startTime
 		}
 
 	}

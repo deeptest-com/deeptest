@@ -119,78 +119,155 @@ from(bucket: "%s")
 
 func QueryResponseTimeSummary(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
 	ret ptdomain.PerformanceExecSummary, err error) {
-	flux := fmt.Sprintf(`
-baseData =
+	flux1 := fmt.Sprintf(`
+baseDataResponse =
     from(bucket: "%s")
         |> range(start: -1m)
-        |> filter(fn: (r) => r._measurement == "%s")
+        |> filter(fn: (r) => r._measurement == "%s" and r._field == "value")
+        |> group()
+
+minVal =
+   baseDataResponse
+       |> min()
+       |> toFloat()
+       |> set(key: "_field", value: "minVal")
+maxVal =
+   baseDataResponse
+       |> max()
+       |> toFloat()
+       |> set(key: "_field", value: "maxVal")
+meanVal =
+   baseDataResponse
+       |> median()
+       |> set(key: "_field", value: "meanVal")
+medianVal =
+   baseDataResponse
+       |> median()
+       |> set(key: "_field", value: "medianVal")
+
+union(tables: [minVal, maxVal, meanVal, medianVal])
+
+`, bucketName, tableResponseTime)
+
+	flux2 := fmt.Sprintf(`
+baseDataOthers =
+    from(bucket: "%s")
+        |> range(start: -1m)
+        |> filter(fn: (r) => r._measurement == "%s" and r._field != "value")
 
 startTime =
-    baseData
+    baseDataOthers
         |> filter(fn: (r) => r["_field"] == "start")
         |> lowestMin(n: 1, column: "_value")
         |> set(key: "_field", value: "startTime")
 endTime =
-    baseData
+    baseDataOthers
         |> filter(fn: (r) => r["_field"] == "end")
         |> highestMax(n: 1, column: "_value")
         |> set(key: "_field", value: "endTime")
 
-minVal =
-   baseData
-       |> filter(fn: (r) => r._field == "value")
-       |> min()
-       |> set(key: "_field", value: "minVal")
-maxVal =
-   baseData
-       |> filter(fn: (r) => r._field == "value")
-       |> max()
-       |> set(key: "_field", value: "maxVal")
-meanVal =
-   baseData
-       |> filter(fn: (r) => r._field == "value")
-       |> median()
-       |> set(key: "_field", value: "meanVal")
-medianVal =
-   baseData
-       |> filter(fn: (r) => r._field == "value")
-       |> median()
-       |> set(key: "_field", value: "medianVal")
+union(tables: [startTime, endTime])
+
+`, bucketName, tableResponseTime)
+
+	flux3 := fmt.Sprintf(`
+baseDataResponse =
+    from(bucket: "%s")
+        |> range(start: -1m)
+        |> filter(fn: (r) => r._measurement == "%s" and r._field == "status")
 
 passNumb =
-   baseData
-       |> filter(fn: (r) => r["status"] == "pass")
+   baseDataResponse
+       |> filter(fn: (r) => r["_value"] == "pass")
        |> count()
        |> set(key: "_field", value: "passNumb")
 failNumb =
-   baseData
-       |> filter(fn: (r) => r["status"] == "fail")
+   baseDataResponse
+       |> filter(fn: (r) => r["_value"] == "fail")
        |> count()
        |> set(key: "_field", value: "failNumb")
 errNumb =
-   baseData
-       |> filter(fn: (r) => r["status"] == "error")
+   baseDataResponse
+       |> filter(fn: (r) => r["_value"] == "error")
        |> count()
        |> set(key: "_field", value: "errNumb")
 
-union(tables: [startTime, endTime, minVal, maxVal, meanVal, medianVal, passNumb, failNumb, errNumb])
+union(tables: [passNumb, failNumb, errNumb])
+
 `, bucketName, tableResponseTime)
 
-	result, err := queryData(influxdbClient, orgId, flux)
-	if err != nil {
-		ptlog.Logf("query data failed, err %s", err.Error())
+	result1, err1 := queryData(influxdbClient, orgId, flux1)
+	if err1 != nil {
+		ptlog.Logf("query data failed, err %s", err1.Error())
 		return
 	}
 
-	for result.Next() {
-		mp := result.Record().Values()
+	for result1.Next() {
+		mp := result1.Record().Values()
 
-		if mp["_field"].(string) == "minVal" {
+		typ := mp["_field"].(string)
+
+		if typ == "minVal" {
+			val := mp["_value"].(float64)
+			ret.MinResponseTime = val
+		} else if typ == "maxVal" {
+			val := mp["_value"].(float64)
+			ret.MaxResponseTime = val
+		} else if typ == "meanVal" {
+			val := mp["_value"].(float64)
+			ret.MeanResponseTime = val
+		} else if typ == "medianVal" {
+			val := mp["_value"].(float64)
+			ret.MedianResponseTime = val
+		}
+	}
+
+	result2, err2 := queryData(influxdbClient, orgId, flux2)
+	if err2 != nil {
+		ptlog.Logf("query data failed, err %s", err2.Error())
+		return
+	}
+
+	for result2.Next() {
+		mp := result2.Record().Values()
+
+		typ := mp["_field"].(string)
+
+		if typ == "startTime" {
 			startTime := mp["_value"].(int64)
 			ret.StartTime = startTime
+		} else if typ == "endTime" {
+			endTime := mp["_value"].(int64)
+			ret.EndTime = endTime
 		}
-
 	}
+
+	result3, err3 := queryData(influxdbClient, orgId, flux3)
+	if err3 != nil {
+		ptlog.Logf("query data failed, err %s", err3.Error())
+		return
+	}
+
+	for result3.Next() {
+		mp := result3.Record().Values()
+
+		typ := mp["_field"].(string)
+
+		if typ == "passNumb" {
+			val := mp["_value"].(int64)
+			ret.Pass = int(val)
+		} else if typ == "failNumb" {
+			val := mp["_value"].(int64)
+			ret.Fail = int(val)
+		} else if typ == "errNumb" {
+			val := mp["_value"].(int64)
+			ret.Error = int(val)
+		}
+	}
+
+	ret.Total = ret.Pass + ret.Pass + ret.Error
+	ret.Duration = ret.EndTime - ret.StartTime
+	ret.AvgQps = float64(ret.Total) * 1000 / float64(ret.Duration)
 
 	return
 }

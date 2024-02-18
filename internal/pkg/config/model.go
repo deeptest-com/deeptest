@@ -97,6 +97,7 @@ type OpenApi struct {
 }
 
 type Saas struct {
+	Switch   string  `mapstructure:"switch" json:"switch" yaml:"switch"`
 	Username string  `mapstructure:"username" json:"username" yaml:"username"`
 	Password string  `mapstructure:"password" json:"password" yaml:"password"`
 	Url      string  `mapstructure:"url" json:"url" yaml:"url"`

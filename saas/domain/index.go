@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+
 type DbConfig struct {
 	Path            string `json:"path"`
 	Config          string `json:"Config"`
@@ -13,6 +15,6 @@ type DbConfig struct {
 }
 
 type Tenant struct {
-	Id       int64    `json:"id"`
-	DbConfig DbConfig `json:"pjtDB"`
+	Id       consts.TenantId `json:"id"`
+	DbConfig DbConfig        `json:"pjtDB"`
 }

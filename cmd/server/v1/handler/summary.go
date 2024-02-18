@@ -4,6 +4,8 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/saas/tenant"
+
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
@@ -14,11 +16,15 @@ type SummaryCtrl struct {
 	BaseCtrl
 }
 
-func (c *SummaryCtrl) Summary(ctx iris.Context) {
+func (c *SummaryCtrl) Summary() {
 	//SAAS
-	tenantId := c.getTenantId(ctx)
-	c.SummaryService.Collection(tenantId)
-	return
+	tenants := tenant.NewTenant().GetInfos()
+	for _, tenant := range tenants {
+		go c.SummaryService.Collection(tenant.Id)
+		return
+	}
+	//default
+	c.SummaryService.Collection("")
 }
 
 // Card

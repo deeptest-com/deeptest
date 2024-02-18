@@ -27,7 +27,7 @@ func (m *SummaryModule) Party() module.WebModule {
 
 	//SAAS
 	m.Cron.AddTask("summary", consts.SummaryDataCheckInterval, func() {
-		m.SummaryCtrl.Summary(nil)
+		m.SummaryCtrl.Summary()
 	})
 	return module.NewModule("/summary", handler)
 }

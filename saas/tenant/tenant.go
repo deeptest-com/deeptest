@@ -1,6 +1,7 @@
 package tenant
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/saas/domain"
 	"github.com/aaronchen2k/deeptest/saas/remote"
@@ -77,7 +78,9 @@ func (t *Tenant) GetDbConfig(tenantId consts.TenantId) (config domain.DbConfig, 
 	return
 }
 
-func (t *Tenant) GetInfos() (tenants []Tenant) {
-	new(remote.Remote).GetTenants()
+func (t *Tenant) GetInfos() (tenants []domain.Tenant) {
+	if config.CONFIG.Saas.Switch == "ON" {
+		tenants = new(remote.Remote).GetTenants()
+	}
 	return
 }

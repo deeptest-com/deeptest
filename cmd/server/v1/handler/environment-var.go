@@ -48,7 +48,7 @@ func (c *EnvironmentVarCtrl) ListByEnvId(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	envId, err := ctx.URLParamInt("envId")
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code})
 		return
 	}
 

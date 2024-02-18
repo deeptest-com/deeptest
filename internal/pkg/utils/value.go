@@ -12,6 +12,10 @@ func ConvertValueForPersistence(obj interface{}) (value string, valueType consts
 	value = ""
 	valueType = consts.ExtractorResultTypeString
 
+	if obj == nil {
+		return
+	}
+
 	switch obj.(type) {
 	case string:
 		value = obj.(string)

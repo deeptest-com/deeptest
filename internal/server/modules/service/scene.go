@@ -26,6 +26,7 @@ func (s *SceneService) LoadEnvVarMapByScenario(tenantId consts.TenantId, scene *
 	scene.EnvToVariables = domain.EnvToVariables{}
 	scene.DebugInterfaceToEnvMap = domain.InterfaceToEnvMap{}
 
+	// load baseUrl for interface processors
 	processors, _ := s.ScenarioNodeRepo.ListByScenario(tenantId, scenarioId)
 
 	for _, processor := range processors {
@@ -34,24 +35,25 @@ func (s *SceneService) LoadEnvVarMapByScenario(tenantId consts.TenantId, scene *
 		}
 
 		var server = s.GetExecServer(tenantId, processor.EntityId, processor.EndpointInterfaceId, environmentId)
-		envId := server.EnvironmentId
 
-		scene.DebugInterfaceToEnvMap[processor.EntityId] = envId
+		scene.DebugInterfaceToEnvMap[processor.EntityId] = server.EnvironmentId
 
-		scene.EnvToVariables[envId] = append(scene.EnvToVariables[envId], domain.GlobalVar{
+		scene.EnvToVariables[server.EnvironmentId] = append(scene.EnvToVariables[server.EnvironmentId], domain.GlobalVar{
 			Name:        consts.KEY_BASE_URL,
 			LocalValue:  server.Url,
 			RemoteValue: server.Url,
 		})
+	}
 
-		vars, _ := s.EnvironmentRepo.GetVars(tenantId, envId)
-		for _, v := range vars {
-			scene.EnvToVariables[envId] = append(scene.EnvToVariables[envId], domain.GlobalVar{
-				Name:        v.Name,
-				LocalValue:  v.LocalValue,
-				RemoteValue: v.RemoteValue,
-			})
-		}
+	// load vars by env
+	vars, _ := s.EnvironmentRepo.GetVars(tenantId, environmentId)
+	for _, v := range vars {
+		scene.EnvToVariables[environmentId] = append(scene.EnvToVariables[environmentId], domain.GlobalVar{
+			Name:        v.Name,
+			LocalValue:  v.LocalValue,
+			RemoteValue: v.RemoteValue,
+		})
+
 	}
 
 	return
@@ -61,10 +63,22 @@ func (s *SceneService) GetExecServer(tenantId consts.TenantId, debugInterfaceId,
 	interf, _ := s.EndpointInterfaceRepo.Get(tenantId, endpointInterfaceId)
 
 	if environmentId > 0 { // select a env to exec
-		endpoint, _ := s.EndpointRepo.Get(tenantId, interf.EndpointId)
-		server, _ = s.ServeServerRepo.FindByServeAndExecEnv(tenantId, endpoint.ServeId, environmentId)
 
-	} else {
+		var serveId uint
+
+		if debugInterfaceId > 0 {
+			debugInterface, _ := s.DebugInterfaceRepo.Get(tenantId, debugInterfaceId)
+			serveId = debugInterface.ServeId
+
+		} else {
+			endpoint, _ := s.EndpointRepo.Get(tenantId, interf.EndpointId)
+			serveId = endpoint.ServeId
+
+		}
+
+		server, _ = s.ServeServerRepo.FindByServeAndExecEnv(tenantId, serveId, environmentId)
+
+	} else { // TODO: may not used, since now environmentId always not empty
 		var serverId uint
 		if debugInterfaceId > 0 { // from debug interface
 			debugInterface, _ := s.DebugInterfaceRepo.Get(tenantId, debugInterfaceId)

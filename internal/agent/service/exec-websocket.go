@@ -45,13 +45,13 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 		defer errDefer(wsMsg)
 
 		if act == consts.ExecScenario {
-			RunScenario(&req.ScenarioExecReq, wsMsg)
+			RunScenario(&req.ScenarioExecReq, req.LocalVarsCache, wsMsg)
 
 		} else if act == consts.ExecPlan {
-			RunPlan(&req.PlanExecReq, wsMsg)
+			RunPlan(&req.PlanExecReq, req.LocalVarsCache, wsMsg)
 
 		} else if act == consts.ExecCase {
-			RunCases(&req.CasesExecReq, wsMsg)
+			RunCases(&req.CasesExecReq, req.LocalVarsCache, wsMsg)
 
 		} else if act == consts.ExecMessage {
 			RunMessage(&req.MessageReq, wsMsg)

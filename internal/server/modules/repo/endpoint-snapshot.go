@@ -23,7 +23,7 @@ func NewEndpointSnapshotRepo() *EndpointSnapshotRepo {
 }
 
 func (r *EndpointSnapshotRepo) BatchCreateSnapshot(tenantId consts.TenantId, req v1.DocumentVersionReq, projectId uint) (documentId uint, err error) {
-	documentId, err = r.EndpointDocumentRepo.GetIdByVersionAndProject(req, projectId)
+	documentId, err = r.EndpointDocumentRepo.GetIdByVersionAndProject(tenantId, req, projectId)
 	if err != nil {
 		return
 	}

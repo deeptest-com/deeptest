@@ -48,40 +48,40 @@ type EndpointService struct {
 	EndpointMockScriptService *EndpointMockScriptService   `inject:""`
 }
 
-func (s *EndpointService) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
-	ret, err = s.EndpointRepo.Paginate(req)
+func (s *EndpointService) Paginate(tenantId consts.TenantId, req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
+	ret, err = s.EndpointRepo.Paginate(tenantId, req)
 	return
 }
 
-func (s *EndpointService) Save(endpoint model.Endpoint) (res uint, err error) {
+func (s *EndpointService) Save(tenantId consts.TenantId, endpoint model.Endpoint) (res uint, err error) {
 
 	if endpoint.ServerId == 0 {
-		server, _ := s.ServeServerRepo.GetDefaultByServe(endpoint.ServeId)
+		server, _ := s.ServeServerRepo.GetDefaultByServe(tenantId, endpoint.ServeId)
 		endpoint.ServerId = server.ID
 	}
 
 	if endpoint.Curl != "" {
-		err = s.curlToEndpoint(&endpoint)
+		err = s.curlToEndpoint(tenantId, &endpoint)
 		if err != nil {
 			return
 		}
 	}
 
-	ret, _ := s.EndpointRepo.Get(endpoint.ID)
+	ret, _ := s.EndpointRepo.Get(tenantId, endpoint.ID)
 
-	err = s.EndpointRepo.SaveAll(&endpoint)
+	err = s.EndpointRepo.SaveAll(tenantId, &endpoint)
 
 	//go func() {
 	//	_ = s.SendEndpointMessage(endpoint.ProjectId, endpoint.ID, userId)
 	//}()
 
-	s.DebugInterfaceRepo.SyncPath(ret.ID, endpoint.ServeId, endpoint.Path, ret.Path)
+	s.DebugInterfaceRepo.SyncPath(tenantId, ret.ID, endpoint.ServeId, endpoint.Path, ret.Path)
 
 	return endpoint.ID, err
 }
 
-func (s *EndpointService) SendEndpointMessage(projectId, endpointId, userId uint) (err error) {
-	messageContent, err := s.MessageService.GetEndpointMcsData(projectId, endpointId)
+func (s *EndpointService) SendEndpointMessage(tenantId consts.TenantId, projectId, endpointId, userId uint) (err error) {
+	messageContent, err := s.MessageService.GetEndpointMcsData(tenantId, projectId, endpointId)
 	messageContentByte, _ := json.Marshal(messageContent)
 	messageReq := v1.MessageReq{
 		MessageBase: v1.MessageBase{
@@ -95,18 +95,18 @@ func (s *EndpointService) SendEndpointMessage(projectId, endpointId, userId uint
 			BusinessId:    endpointId,
 		},
 	}
-	_, _ = s.MessageService.Create(messageReq)
+	_, _ = s.MessageService.Create(tenantId, messageReq)
 
 	return
 }
 
-func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) {
-	res, _ = s.EndpointRepo.GetAll(id, version)
-	s.SchemasConv(&res)
+func (s *EndpointService) GetById(tenantId consts.TenantId, id uint, version string) (res model.Endpoint) {
+	res, _ = s.EndpointRepo.GetAll(tenantId, id, version)
+	s.SchemasConv(tenantId, &res)
 	return
 }
 
-func (s *EndpointService) DeleteById(id uint) (err error) {
+func (s *EndpointService) DeleteById(tenantId consts.TenantId, id uint) (err error) {
 	//var count int64
 	//count, err = s.EndpointRepo.GetUsedCountByEndpointId(id)
 	//if err != nil {
@@ -118,40 +118,40 @@ func (s *EndpointService) DeleteById(id uint) (err error) {
 	//	return err
 	//}
 
-	err = s.EndpointRepo.DeleteById(id)
-	err = s.EndpointInterfaceRepo.DeleteByEndpoint(id)
+	err = s.EndpointRepo.DeleteById(tenantId, id)
+	err = s.EndpointInterfaceRepo.DeleteByEndpoint(tenantId, id)
 
 	return
 }
 
-func (s *EndpointService) DeleteByCategories(categoryIds []uint) (err error) {
-	endpointIds, err := s.EndpointRepo.ListEndpointByCategories(categoryIds)
+func (s *EndpointService) DeleteByCategories(tenantId consts.TenantId, categoryIds []uint) (err error) {
+	endpointIds, err := s.EndpointRepo.ListEndpointByCategories(tenantId, categoryIds)
 
-	err = s.EndpointRepo.DeleteByIds(endpointIds)
-	err = s.EndpointInterfaceRepo.DeleteByEndpoints(endpointIds)
+	err = s.EndpointRepo.DeleteByIds(tenantId, endpointIds)
+	err = s.EndpointInterfaceRepo.DeleteByEndpoints(tenantId, endpointIds)
 
 	return
 }
 
-func (s *EndpointService) DisableById(id uint) (err error) {
-	err = s.EndpointRepo.UpdateStatus(id, serverConsts.Abandoned)
+func (s *EndpointService) DisableById(tenantId consts.TenantId, id uint) (err error) {
+	err = s.EndpointRepo.UpdateStatus(tenantId, id, serverConsts.Abandoned)
 	return
 }
 
-func (s *EndpointService) Publish(id uint) (err error) {
-	err = s.EndpointRepo.UpdateStatus(id, serverConsts.Published)
+func (s *EndpointService) Publish(tenantId consts.TenantId, id uint) (err error) {
+	err = s.EndpointRepo.UpdateStatus(tenantId, id, serverConsts.Published)
 	return
 }
 
-func (s *EndpointService) Develop(id uint) (err error) {
-	err = s.EndpointRepo.UpdateStatus(id, serverConsts.Developing)
+func (s *EndpointService) Develop(tenantId consts.TenantId, id uint) (err error) {
+	err = s.EndpointRepo.UpdateStatus(tenantId, id, serverConsts.Developing)
 	return
 }
 
-func (s *EndpointService) Copy(id, categoryId, userId uint, username string, version string) (res uint, err error) {
+func (s *EndpointService) Copy(tenantId consts.TenantId, id, categoryId, userId uint, username string, version string) (res uint, err error) {
 
-	endpoint, _ := s.EndpointRepo.GetAll(id, version)
-	s.removeIds(&endpoint)
+	endpoint, _ := s.EndpointRepo.GetAll(tenantId, id, version)
+	s.removeIds(tenantId, &endpoint)
 
 	if categoryId != 0 {
 		endpoint.CategoryId = int64(categoryId)
@@ -160,17 +160,17 @@ func (s *EndpointService) Copy(id, categoryId, userId uint, username string, ver
 	}
 	endpoint.CreateUser = username
 	endpoint.UpdateUser = ""
-	err = s.EndpointRepo.SaveAll(&endpoint)
+	err = s.EndpointRepo.SaveAll(tenantId, &endpoint)
 	if err != nil {
 		return
 	}
 
-	err = s.copyCases(id, endpoint.ID, userId, username)
+	err = s.copyCases(tenantId, id, endpoint.ID, userId, username)
 	if err != nil {
 		return
 	}
 
-	err = s.copyMockExpect(id, endpoint.ID, username)
+	err = s.copyMockExpect(tenantId, id, endpoint.ID, username)
 	if err != nil {
 		return
 	}
@@ -178,7 +178,7 @@ func (s *EndpointService) Copy(id, categoryId, userId uint, username string, ver
 	return endpoint.ID, err
 }
 
-func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
+func (s *EndpointService) removeIds(tenantId consts.TenantId, endpoint *model.Endpoint) {
 	endpoint.ID = 0
 	endpoint.CreatedAt = nil
 	endpoint.UpdatedAt = nil
@@ -210,28 +210,28 @@ func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
 
 }
 
-func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
+func (s *EndpointService) Yaml(tenantId consts.TenantId, endpoint model.Endpoint) (res *openapi3.T) {
 	var serve model.Serve
 	if endpoint.ServeId != 0 {
 		var err error
-		serve, err = s.ServeRepo.Get(endpoint.ServeId)
+		serve, err = s.ServeRepo.Get(tenantId, endpoint.ServeId)
 		if err != nil {
 			return
 		}
 
-		serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
+		serveComponent, err := s.ServeRepo.GetSchemasByServeId(tenantId, serve.ID)
 		if err != nil {
 			return
 		}
 		serve.Components = serveComponent
 
-		serveServer, err := s.ServeRepo.ListServer(serve.ID)
+		serveServer, err := s.ServeRepo.ListServer(tenantId, serve.ID)
 		if err != nil {
 			return
 		}
 		serve.Servers = serveServer
 
-		securities, err := s.ServeRepo.ListSecurity(serve.ID)
+		securities, err := s.ServeRepo.ListSecurity(tenantId, serve.ID)
 		if err != nil {
 			return
 		}
@@ -243,62 +243,62 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
 	return
 }
 
-func (s *EndpointService) UpdateStatus(id uint, status int64) (err error) {
-	err = s.EndpointRepo.UpdateStatus(id, status)
+func (s *EndpointService) UpdateStatus(tenantId consts.TenantId, id uint, status int64) (err error) {
+	err = s.EndpointRepo.UpdateStatus(tenantId, id, status)
 	return
 }
 
-func (s *EndpointService) BatchDelete(ids []uint) (err error) {
-	err = s.EndpointRepo.DeleteByIds(ids)
+func (s *EndpointService) BatchDelete(tenantId consts.TenantId, ids []uint) (err error) {
+	err = s.EndpointRepo.DeleteByIds(tenantId, ids)
 	return
 }
 
-func (s *EndpointService) GetVersionsByEndpointId(endpointId uint) (res []model.EndpointVersion, err error) {
-	res, err = s.EndpointRepo.GetVersionsByEndpointId(endpointId)
+func (s *EndpointService) GetVersionsByEndpointId(tenantId consts.TenantId, endpointId uint) (res []model.EndpointVersion, err error) {
+	res, err = s.EndpointRepo.GetVersionsByEndpointId(tenantId, endpointId)
 	return
 }
 
-func (s *EndpointService) GetLatestVersion(endpointId uint) (version string) {
+func (s *EndpointService) GetLatestVersion(tenantId consts.TenantId, endpointId uint) (version string) {
 	version = "v0.1.0"
-	if res, err := s.EndpointRepo.GetLatestVersion(endpointId); err != nil {
+	if res, err := s.EndpointRepo.GetLatestVersion(tenantId, endpointId); err != nil {
 		version = res.Version
 	}
 	return
 }
 
-func (s *EndpointService) AddVersion(version *model.EndpointVersion) (err error) {
-	err = s.EndpointRepo.FindVersion(version)
+func (s *EndpointService) AddVersion(tenantId consts.TenantId, version *model.EndpointVersion) (err error) {
+	err = s.EndpointRepo.FindVersion(tenantId, version)
 	if err != nil {
-		err = s.EndpointRepo.Save(0, version)
+		err = s.EndpointRepo.Save(tenantId, 0, version)
 	} else {
 		err = fmt.Errorf("version already exists")
 	}
 	return
 }
 
-func (s *EndpointService) SaveEndpoints(endpoints []*model.Endpoint, dirs *openapi.Dirs, components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) (err error) {
+func (s *EndpointService) SaveEndpoints(tenantId consts.TenantId, endpoints []*model.Endpoint, dirs *openapi.Dirs, components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) (err error) {
 
 	if dirs.Id == 0 || dirs.Id == -1 {
-		root, _ := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, req.ProjectId)
+		root, _ := s.CategoryRepo.ListByProject(tenantId, serverConsts.EndpointCategory, req.ProjectId)
 		dirs.Id = int64(root[0].ID)
 	}
-	s.createDirs(dirs, req)
+	s.createDirs(tenantId, dirs, req)
 	wg := new(sync.WaitGroup)
 	wg.Add(2)
-	go s.createComponents(wg, components, req)
-	go s.createEndpoints(wg, endpoints, dirs, req)
+	go s.createComponents(tenantId, wg, components, req)
+	go s.createEndpoints(tenantId, wg, endpoints, dirs, req)
 	wg.Wait()
 	return
 }
 
-func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model.Endpoint, dirs *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
+func (s *EndpointService) createEndpoints(tenantId consts.TenantId, wg *sync.WaitGroup, endpoints []*model.Endpoint, dirs *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
 	defer func() {
 		wg.Done()
 	}()
 
 	userName := ""
 	if req.UserId != 0 {
-		user, _ := s.UserRepo.FindById(req.UserId)
+		user, _ := s.UserRepo.FindById(tenantId, req.UserId)
 		userName = user.Username
 	}
 
@@ -319,7 +319,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 		}
 		endpoint.CategoryId = s.getCategoryId(endpoint.Tags, dirs)
 
-		res, err := s.EndpointRepo.GetByItem(endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, req.CategoryId)
+		res, err := s.EndpointRepo.GetByItem(tenantId, endpoint.SourceType, endpoint.ProjectId, endpoint.Path, endpoint.ServeId, req.CategoryId)
 
 		//非Notfound
 		if err != nil && err != gorm.ErrRecordNotFound {
@@ -327,11 +327,11 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 			continue
 		}
 
-		res, _ = s.EndpointRepo.GetAll(res.ID, "v0.1.0")
+		res, _ = s.EndpointRepo.GetAll(tenantId, res.ID, "v0.1.0")
 
 		//对比endpoint的时候不需要对比组件，所以服务ID设置为0
 		endpoint.ServeId, res.ServeId = 0, 0
-		openAPIDoc := s.Yaml(*endpoint)
+		openAPIDoc := s.Yaml(tenantId, *endpoint)
 		endpoint.Snapshot = _commUtils.JsonEncode(openAPIDoc)
 
 		if req.DataSyncType == consts.FullCover {
@@ -351,10 +351,10 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 				}
 
 				//本地快照和本地数据不一致,更新快照,说明有修改，更新快照
-				localEndpoint := s.Yaml(res)
+				localEndpoint := s.Yaml(tenantId, res)
 				localEndpointJson := _commUtils.JsonEncode(localEndpoint)
 				if res.Snapshot != localEndpointJson {
-					s.EndpointRepo.UpdateSnapshot(res.ID, endpoint.Snapshot)
+					s.EndpointRepo.UpdateSnapshot(tenantId, res.ID, endpoint.Snapshot)
 					continue
 				} else { //一致覆盖数据
 					endpoint.ID = res.ID
@@ -366,7 +366,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 			}
 		}
 		endpoint.ServeId = req.ServeId //前面销毁了ID，现在补充上
-		_, err = s.Save(*endpoint)
+		_, err = s.Save(tenantId, *endpoint)
 		if err != nil {
 			//遇到错误跳过
 			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
@@ -377,7 +377,7 @@ func (s *EndpointService) createEndpoints(wg *sync.WaitGroup, endpoints []*model
 	return
 }
 
-func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) {
+func (s *EndpointService) createComponents(tenantId consts.TenantId, wg *sync.WaitGroup, components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) {
 	defer func() {
 		wg.Done()
 	}()
@@ -386,7 +386,7 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 		component.ServeId = int64(req.ServeId)
 		component.SourceType = req.SourceType
 
-		res, err := s.ServeRepo.GetComponentByItem(component.SourceType, uint(component.ServeId), component.Ref)
+		res, err := s.ServeRepo.GetComponentByItem(tenantId, component.SourceType, uint(component.ServeId), component.Ref)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			continue
 		}
@@ -406,16 +406,16 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 		newComponents = append(newComponents, component)
 	}
 
-	s.ServeRepo.SaveSchemas(newComponents)
+	s.ServeRepo.SaveSchemas(tenantId, newComponents)
 
 }
 
-func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
+func (s *EndpointService) createDirs(tenantId consts.TenantId, data *openapi.Dirs, req v1.ImportEndpointDataReq) (err error) {
 	for name, dirs := range data.Dirs {
 
 		category := model.Category{Name: name, ParentId: int(data.Id), ProjectId: req.ProjectId, UseID: req.UserId, Type: serverConsts.EndpointCategory, SourceType: req.SourceType}
 		//全覆盖更新目录
-		res, err := s.CategoryRepo.GetByItem(uint(category.ParentId), category.Type, category.ProjectId, category.Name)
+		res, err := s.CategoryRepo.GetByItem(tenantId, uint(category.ParentId), category.Type, category.ProjectId, category.Name)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			continue
@@ -426,7 +426,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 			goto here
 		}
 
-		err = s.CategoryRepo.Save(&category)
+		err = s.CategoryRepo.Save(tenantId, &category)
 		if err != nil {
 			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			return err
@@ -434,7 +434,7 @@ func (s *EndpointService) createDirs(data *openapi.Dirs, req v1.ImportEndpointDa
 
 	here:
 		dirs.Id = int64(category.ID)
-		err = s.createDirs(dirs, req)
+		err = s.createDirs(tenantId, dirs, req)
 		if err != nil {
 			logUtils.Logger.Error(fmt.Sprintf("swagger import error:%s", err.Error()))
 			return err
@@ -454,12 +454,12 @@ func (s *EndpointService) getCategoryId(tags []string, dirs *openapi.Dirs) int64
 	return dirs.Id
 }
 
-func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) {
+func (s *EndpointService) BatchUpdateByField(tenantId consts.TenantId, req v1.BatchUpdateReq) (err error) {
 	if _commUtils.InSlice(req.FieldName, []string{"status", "categoryId", "serveId", "description"}) {
-		err = s.EndpointRepo.BatchUpdate(req.EndpointIds, map[string]interface{}{_commUtils.Camel2Case(req.FieldName): req.Value})
+		err = s.EndpointRepo.BatchUpdate(tenantId, req.EndpointIds, map[string]interface{}{_commUtils.Camel2Case(req.FieldName): req.Value})
 		if req.FieldName == "serveId" { //修改debug表serveId
 			if serveId, ok := req.Value.(float64); ok {
-				s.DebugInterfaceRepo.SyncServeId(req.EndpointIds, uint(serveId))
+				s.DebugInterfaceRepo.SyncServeId(tenantId, req.EndpointIds, uint(serveId))
 			}
 		}
 
@@ -469,7 +469,7 @@ func (s *EndpointService) BatchUpdateByField(req v1.BatchUpdateReq) (err error) 
 	return
 }
 
-func (s *EndpointService) curlToEndpoint(endpoint *model.Endpoint) (err error) {
+func (s *EndpointService) curlToEndpoint(tenantId consts.TenantId, endpoint *model.Endpoint) (err error) {
 	defer func() {
 		if r := recover(); r != nil {
 			err = fmt.Errorf("curl格式错误")
@@ -480,12 +480,12 @@ func (s *EndpointService) curlToEndpoint(endpoint *model.Endpoint) (err error) {
 
 	endpoint.Path = curlObj.ParsedURL.Path
 
-	endpoint.Interfaces = s.getInterfaces(endpoint.Title, curlObj, wf)
+	endpoint.Interfaces = s.getInterfaces(tenantId, endpoint.Title, curlObj, wf)
 
 	return
 }
 
-func (s *EndpointService) getInterfaces(name string, cURL *curlHelper.CURL, wf *requests.Temporary) (interfaces []model.EndpointInterface) {
+func (s *EndpointService) getInterfaces(tenantId consts.TenantId, name string, cURL *curlHelper.CURL, wf *requests.Temporary) (interfaces []model.EndpointInterface) {
 	interf := model.EndpointInterface{}
 	interf.Name = name
 	interf.Params = s.getQueryParams(wf.GetQuery())
@@ -579,13 +579,13 @@ func (s *EndpointService) getRequestBodyItem(body string) (requestBodyItem model
 	return
 }
 
-func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err error) {
-	if err = s.EndpointTagRepo.DeleteRelByEndpointAndProject(req.Id, projectId); err != nil {
+func (s *EndpointService) UpdateTags(tenantId consts.TenantId, req v1.EndpointTagReq, projectId uint) (err error) {
+	if err = s.EndpointTagRepo.DeleteRelByEndpointAndProject(tenantId, req.Id, projectId); err != nil {
 		return
 	}
 
 	if len(req.TagNames) > 0 {
-		err = s.EndpointTagRepo.BatchAddRel(req.Id, projectId, req.TagNames)
+		err = s.EndpointTagRepo.BatchAddRel(tenantId, req.Id, projectId, req.TagNames)
 	}
 	return
 	//oldTagIds, err := s.EndpointTagRepo.GetTagIdsByEndpointId(req.Id)
@@ -626,9 +626,9 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 	//return
 }
 
-func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
+func (s *EndpointService) SchemasConv(tenantId consts.TenantId, endpoint *model.Endpoint) {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
+	schema2conv.Components = s.ServeService.Components(tenantId, endpoint.ServeId)
 	for key, intef := range endpoint.Interfaces {
 		for k, response := range intef.ResponseBodies {
 			schema := new(schemaHelper.SchemaRef)
@@ -642,9 +642,9 @@ func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
 
 }
 
-func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId uint) {
+func (s *EndpointService) SchemaConv(tenantId consts.TenantId, interf *model.EndpointInterface, serveId uint) {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.ServeService.Components(serveId)
+	schema2conv.Components = s.ServeService.Components(tenantId, serveId)
 	for k, response := range interf.ResponseBodies {
 		schema := new(schemaHelper.SchemaRef)
 		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
@@ -655,26 +655,26 @@ func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId ui
 	}
 }
 
-func (s *EndpointService) UpdateAdvancedMockDisabled(endpointId uint, disabled bool) (err error) {
-	err = s.EndpointRepo.UpdateAdvancedMockDisabled(endpointId, disabled)
+func (s *EndpointService) UpdateAdvancedMockDisabled(tenantId consts.TenantId, endpointId uint, disabled bool) (err error) {
+	err = s.EndpointRepo.UpdateAdvancedMockDisabled(tenantId, endpointId, disabled)
 	return
 }
 
-func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{}, err error) {
+func (s *EndpointService) CreateExample(tenantId consts.TenantId, req v1.CreateExampleReq) (ret interface{}, err error) {
 	var endpoint model.Endpoint
-	endpoint, err = s.EndpointRepo.Get(req.EndpointId)
+	endpoint, err = s.EndpointRepo.Get(tenantId, req.EndpointId)
 	if err != nil {
 		return
 	}
 
 	var bodyItem model.EndpointInterfaceResponseBodyItem
-	bodyItem, err = s.EndpointInterfaceRepo.GetResponseDefine(req.EndpointId, req.Method, req.Code)
+	bodyItem, err = s.EndpointInterfaceRepo.GetResponseDefine(tenantId, req.EndpointId, req.Method, req.Code)
 	if err != nil || bodyItem.Content == "" {
 		return
 	}
 
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
+	schema2conv.Components = s.ServeService.Components(tenantId, endpoint.ServeId)
 
 	schema := schemaHelper.SchemaRef{}
 	_commUtils.JsonDecode(bodyItem.Content, &schema)
@@ -685,9 +685,9 @@ func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{
 
 }
 
-func (s *EndpointService) SyncFromThirdParty(endpointId uint) (err error) {
-	endpoint, err := s.EndpointRepo.Get(endpointId)
-	endpoint.Interfaces, _ = s.EndpointInterfaceRepo.ListByEndpointId(endpoint.ID, "v0.1.0")
+func (s *EndpointService) SyncFromThirdParty(tenantId consts.TenantId, endpointId uint) (err error) {
+	endpoint, err := s.EndpointRepo.Get(tenantId, endpointId)
+	endpoint.Interfaces, _ = s.EndpointInterfaceRepo.ListByEndpointId(tenantId, endpoint.ID, "v0.1.0")
 	if err != nil {
 		return
 	}
@@ -698,20 +698,20 @@ func (s *EndpointService) SyncFromThirdParty(endpointId uint) (err error) {
 
 	pathArr := strings.Split(endpoint.Path, "/")
 
-	err = s.ThirdPartySyncService.SyncFunctionBody(endpoint.ProjectId, endpoint.ServeId, endpoint.Interfaces[0].ID, pathArr[2], pathArr[3])
+	err = s.ThirdPartySyncService.SyncFunctionBody(tenantId, endpoint.ProjectId, endpoint.ServeId, endpoint.Interfaces[0].ID, pathArr[2], pathArr[3])
 	if err != nil {
 		return
 	}
 
-	err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, consts.Changed)
+	err = s.EndpointRepo.UpdateBodyIsChanged(tenantId, endpointId, consts.Changed)
 
 	return
 }
 
-func (s *EndpointService) GetDiff(endpointId uint) (res v1.EndpointDiffRes, err error) {
+func (s *EndpointService) GetDiff(tenantId consts.TenantId, endpointId uint) (res v1.EndpointDiffRes, err error) {
 	var endpoint model.Endpoint
 	var resYaml []byte
-	endpoint, err = s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+	endpoint, err = s.EndpointRepo.GetAll(tenantId, endpointId, "v0.1.0")
 	if err != nil {
 		return
 	}
@@ -732,7 +732,7 @@ func (s *EndpointService) GetDiff(endpointId uint) (res v1.EndpointDiffRes, err 
 
 	var ret interface{}
 	endpoint.ServeId = 0
-	_commUtils.JsonDecode(_commUtils.JsonEncode(s.Yaml(endpoint)), &ret)
+	_commUtils.JsonDecode(_commUtils.JsonEncode(s.Yaml(tenantId, endpoint)), &ret)
 	resYaml, err = encoder.NewEncoder(ret).Encode()
 	if err != nil {
 		return
@@ -748,8 +748,8 @@ func (s *EndpointService) GetDiff(endpointId uint) (res v1.EndpointDiffRes, err 
 	return
 }
 
-func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool, userName string) (err error) {
-	endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
+func (s *EndpointService) SaveDiff(tenantId consts.TenantId, endpointId uint, isChanged bool, userName string) (err error) {
+	endpoint, err := s.EndpointRepo.GetAll(tenantId, endpointId, "v0.1.0")
 	if err != nil {
 		return
 	}
@@ -765,21 +765,21 @@ func (s *EndpointService) SaveDiff(endpointId uint, isChanged bool, userName str
 		endpoints[0].ProjectId = endpoint.ProjectId
 		endpoints[0].GlobalParams = endpoint.GlobalParams
 		endpoints[0].UpdateUser = userName
-		err = s.EndpointRepo.SaveAll(endpoints[0])
+		err = s.EndpointRepo.SaveAll(tenantId, endpoints[0])
 	} else {
-		err = s.EndpointRepo.UpdateBodyIsChanged(endpointId, consts.IgnoreChanged)
+		err = s.EndpointRepo.UpdateBodyIsChanged(tenantId, endpointId, consts.IgnoreChanged)
 	}
 
 	return
 }
 
-func (s *EndpointService) isEqualEndpoint(old, new model.Endpoint) bool {
+func (s *EndpointService) isEqualEndpoint(tenantId consts.TenantId, old, new model.Endpoint) bool {
 	var ret interface{}
-	oldYaml := s.Yaml(old)
+	oldYaml := s.Yaml(tenantId, old)
 	_commUtils.JsonDecode(_commUtils.JsonEncode(oldYaml), &ret)
 	oldYamlByte, _ := encoder.NewEncoder(ret).Encode()
 
-	newYaml := s.Yaml(new)
+	newYaml := s.Yaml(tenantId, new)
 	_commUtils.JsonDecode(_commUtils.JsonEncode(newYaml), &ret)
 	newYamlByte, _ := encoder.NewEncoder(ret).Encode()
 	res1, res2 := string(oldYamlByte), string(newYamlByte)
@@ -788,24 +788,24 @@ func (s *EndpointService) isEqualEndpoint(old, new model.Endpoint) bool {
 
 }
 
-func (s *EndpointService) UpdateName(id uint, name string) (err error) {
-	err = s.EndpointRepo.UpdateName(id, name)
+func (s *EndpointService) UpdateName(tenantId consts.TenantId, id uint, name string) (err error) {
+	err = s.EndpointRepo.UpdateName(tenantId, id, name)
 	if err != nil {
 		return
 	}
 
-	err = s.EndpointInterfaceRepo.UpdateNameByEndpointId(id, name)
+	err = s.EndpointInterfaceRepo.UpdateNameByEndpointId(tenantId, id, name)
 	return
 }
 
-func (s *EndpointService) CopyDataByCategoryId(targetId, categoryId, userId uint, username string) (err error) {
-	endpoints, err := s.EndpointRepo.GetByCategoryId(targetId)
+func (s *EndpointService) CopyDataByCategoryId(tenantId consts.TenantId, targetId, categoryId, userId uint, username string) (err error) {
+	endpoints, err := s.EndpointRepo.GetByCategoryId(tenantId, targetId)
 	if err != nil {
 		return
 	}
 
 	for _, endpoint := range endpoints {
-		_, err = s.Copy(endpoint.ID, categoryId, userId, username, "v0.1.0")
+		_, err = s.Copy(tenantId, endpoint.ID, categoryId, userId, username, "v0.1.0")
 		if err != nil {
 			return
 		}
@@ -814,20 +814,20 @@ func (s *EndpointService) CopyDataByCategoryId(targetId, categoryId, userId uint
 	return
 }
 
-func (s *EndpointService) copyCases(endpointId, newEndpointId uint, userId uint, username string) (err error) {
-	cases, err := s.EndpointCaseRepo.ListByCaseType(endpointId, []consts.CaseType{consts.CaseBenchmark, consts.CaseDefault})
+func (s *EndpointService) copyCases(tenantId consts.TenantId, endpointId, newEndpointId uint, userId uint, username string) (err error) {
+	cases, err := s.EndpointCaseRepo.ListByCaseType(tenantId, endpointId, []consts.CaseType{consts.CaseBenchmark, consts.CaseDefault})
 	if err != nil {
 		return err
 	}
 
 	for _, item := range cases {
-		endpointCase, _ := s.EndpointCaseRepo.Get(item.ID)
-		newEndpointCase, err := s.EndpointCaseService.Copy(int(item.ID), endpointCase.Name, newEndpointId, 0, userId, username, "all")
+		endpointCase, _ := s.EndpointCaseRepo.Get(tenantId, item.ID)
+		newEndpointCase, err := s.EndpointCaseService.Copy(tenantId, int(item.ID), endpointCase.Name, newEndpointId, 0, userId, username, "all")
 		if err != nil {
 			return err
 		}
 
-		err = s.EndpointCaseService.CopyChildrenCases(item.ID, newEndpointCase.ID, newEndpointId, userId, username)
+		err = s.EndpointCaseService.CopyChildrenCases(tenantId, item.ID, newEndpointCase.ID, newEndpointId, userId, username)
 		if err != nil {
 			return err
 		}
@@ -836,20 +836,20 @@ func (s *EndpointService) copyCases(endpointId, newEndpointId uint, userId uint,
 	return
 }
 
-func (s *EndpointService) copyMockExpect(endpointId, newEndpointId uint, username string) (err error) {
-	mockExpects, err := s.EndpointMockExpectRepo.ListByEndpointId(endpointId)
+func (s *EndpointService) copyMockExpect(tenantId consts.TenantId, endpointId, newEndpointId uint, username string) (err error) {
+	mockExpects, err := s.EndpointMockExpectRepo.ListByEndpointId(tenantId, endpointId)
 	if err != nil {
 		return
 	}
 
 	for _, item := range mockExpects {
-		_, err = s.EndpointMockExpectService.Copy(item.ID, newEndpointId, username)
+		_, err = s.EndpointMockExpectService.Copy(tenantId, item.ID, newEndpointId, username)
 		if err != nil {
 			return
 		}
 	}
 
-	err = s.EndpointMockScriptService.Copy(endpointId, newEndpointId)
+	err = s.EndpointMockScriptService.Copy(tenantId, endpointId, newEndpointId)
 	if err != nil {
 		return
 	}

@@ -266,7 +266,7 @@ func (r *PlanRepo) AddScenarios(tenantId consts.TenantId, planId uint, scenarioI
 	}
 
 	for _, po := range pos {
-		po.Ordr = r.RelaPlanScenarioRepo.GetMaxOrder(planId)
+		po.Ordr = r.RelaPlanScenarioRepo.GetMaxOrder(tenantId, planId)
 		err = r.GetDB(tenantId).Create(&po).Error
 		if err != nil {
 			return
@@ -468,28 +468,28 @@ func (r *PlanRepo) UpdateCurrEnvId(tenantId consts.TenantId, id, currEnvId uint)
 	return r.GetDB(tenantId).Model(&model.Plan{}).Where("id = ?", id).UpdateColumn("curr_env_id", currEnvId).Error
 }
 
-func (r *PlanRepo) MoveScenario(req v1.MoveReq) (err error) {
-	destination, err := r.RelaPlanScenarioRepo.Get(req.DestinationId)
+func (r *PlanRepo) MoveScenario(tenantId consts.TenantId, req v1.MoveReq) (err error) {
+	destination, err := r.RelaPlanScenarioRepo.Get(tenantId, req.DestinationId)
 	if err != nil {
 		return
 	}
 
-	souurce, err := r.RelaPlanScenarioRepo.Get(req.SourceId)
+	souurce, err := r.RelaPlanScenarioRepo.Get(tenantId, req.SourceId)
 	if err != nil {
 		return
 	}
 
 	if destination.Ordr < souurce.Ordr {
-		err = r.RelaPlanScenarioRepo.IncreaseOrderAfter(destination.Ordr, req.PlanId)
+		err = r.RelaPlanScenarioRepo.IncreaseOrderAfter(tenantId, destination.Ordr, req.PlanId)
 	} else {
-		err = r.RelaPlanScenarioRepo.DecreaseOrderBefore(destination.Ordr, req.PlanId)
+		err = r.RelaPlanScenarioRepo.DecreaseOrderBefore(tenantId, destination.Ordr, req.PlanId)
 	}
 
 	if err != nil {
 		return
 	}
 
-	err = r.RelaPlanScenarioRepo.UpdateOrdrById(req.SourceId, destination.Ordr)
+	err = r.RelaPlanScenarioRepo.UpdateOrdrById(tenantId, req.SourceId, destination.Ordr)
 
 	return
 }

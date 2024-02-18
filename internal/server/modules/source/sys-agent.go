@@ -45,7 +45,7 @@ func (s *SysAgentSource) Init(tenantId consts.TenantId) (err error) {
 	}
 
 	for _, source := range sources {
-		if err := s.AgentRepo.Save(&source); err != nil {
+		if err := s.AgentRepo.Save(tenantId, &source); err != nil {
 			return err
 		}
 	}

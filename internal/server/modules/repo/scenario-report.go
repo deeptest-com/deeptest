@@ -200,7 +200,7 @@ func (r *ScenarioReportRepo) FindInProgressResult(tenantId consts.TenantId, scen
 }
 
 func (r *ScenarioReportRepo) getLogTree(tenantId consts.TenantId, report model.ScenarioReport) (root model.ExecLogProcessor, err error) {
-	logs, err := r.LogRepo.ListByReport(report.ID)
+	logs, err := r.LogRepo.ListByReport(tenantId, report.ID)
 	if err != nil {
 		return
 	}

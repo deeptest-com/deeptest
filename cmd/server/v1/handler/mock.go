@@ -18,6 +18,7 @@ func (c *MockCtrl) OAuth2Callback(ctx iris.Context) {
 }
 
 func (c *MockCtrl) Mock(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	// http://127.0.0.1:8085/mocks/serve_id/json?id=44
 
 	method := ctx.Method()
@@ -36,7 +37,7 @@ func (c *MockCtrl) Mock(ctx iris.Context) {
 		Code:                code,
 	}
 
-	resp, err := c.MockService.ByRequest(&req, ctx)
+	resp, err := c.MockService.ByRequest(tenantId, &req, ctx)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return

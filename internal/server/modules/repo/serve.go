@@ -518,7 +518,7 @@ func (r *ServeRepo) CreateServeSample(tenantId consts.TenantId, projectId uint) 
 
 func (r *ServeRepo) AddDefaultCategory(tenantId consts.TenantId, projectId uint) (err error) {
 	category := model.Category{Name: "所属分类", ProjectId: projectId, Type: serverConsts.EndpointCategory}
-	err = r.CategoryRepo.Save(&category)
+	err = r.CategoryRepo.Save(tenantId, &category)
 	return
 }
 

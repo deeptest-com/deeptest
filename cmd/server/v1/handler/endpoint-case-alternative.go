@@ -11,12 +11,14 @@ import (
 )
 
 type EndpointCaseAlternativeCtrl struct {
+	BaseCtrl
 	EndpointCaseAlternativeService *service.EndpointCaseAlternativeService `inject:""`
 	DebugInterfaceService          *service.DebugInterfaceService          `inject:""`
 }
 
 // LoadAlternative
 func (c *EndpointCaseAlternativeCtrl) LoadAlternative(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	endpointId, err := ctx.URLParamInt("endpointId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -24,26 +26,28 @@ func (c *EndpointCaseAlternativeCtrl) LoadAlternative(ctx iris.Context) {
 	}
 	method := ctx.URLParam("method")
 
-	root, err := c.EndpointCaseAlternativeService.LoadAlternative(uint(endpointId), consts.HttpMethod(method))
+	root, err := c.EndpointCaseAlternativeService.LoadAlternative(tenantId, uint(endpointId), consts.HttpMethod(method))
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: root})
 }
 
 // LoadFactor
 func (c *EndpointCaseAlternativeCtrl) LoadFactor(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	caseId, err := ctx.URLParamInt("caseId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	ret, err := c.EndpointCaseAlternativeService.LoadFactor(uint(caseId))
+	ret, err := c.EndpointCaseAlternativeService.LoadFactor(tenantId, uint(caseId))
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
 
 // CreateBenchmark
 func (c *EndpointCaseAlternativeCtrl) CreateBenchmark(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointCaseBenchmarkCreateReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -54,13 +58,14 @@ func (c *EndpointCaseAlternativeCtrl) CreateBenchmark(ctx iris.Context) {
 	req.CreateUserId = multi.GetUserId(ctx)
 	req.CreateUserName = multi.GetUsername(ctx)
 
-	ret, err := c.EndpointCaseAlternativeService.CreateBenchmarkCase(req)
+	ret, err := c.EndpointCaseAlternativeService.CreateBenchmarkCase(tenantId, req)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
 
 // SaveFactor
 func (c *EndpointCaseAlternativeCtrl) SaveFactor(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointCaseFactorSaveReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -68,13 +73,14 @@ func (c *EndpointCaseAlternativeCtrl) SaveFactor(ctx iris.Context) {
 		return
 	}
 
-	err = c.EndpointCaseAlternativeService.SaveFactor(req)
+	err = c.EndpointCaseAlternativeService.SaveFactor(tenantId, req)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
 
 // SaveCase
 func (c *EndpointCaseAlternativeCtrl) SaveCase(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointCaseAlternativeSaveReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -85,13 +91,14 @@ func (c *EndpointCaseAlternativeCtrl) SaveCase(ctx iris.Context) {
 	req.CreateUserId = multi.GetUserId(ctx)
 	req.CreateUserName = multi.GetUsername(ctx)
 
-	ret, err := c.EndpointCaseAlternativeService.SaveCase(req)
+	ret, err := c.EndpointCaseAlternativeService.SaveCase(tenantId, req)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }
 
 // LoadCasesForExec
 func (c *EndpointCaseAlternativeCtrl) LoadCasesForExec(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req agentExec.CasesExecReq
 
 	err := ctx.ReadJSON(&req)
@@ -102,7 +109,7 @@ func (c *EndpointCaseAlternativeCtrl) LoadCasesForExec(ctx iris.Context) {
 
 	req.UserId = multi.GetUserId(ctx)
 
-	ret, err := c.EndpointCaseAlternativeService.LoadCasesForExec(req)
+	ret, err := c.EndpointCaseAlternativeService.LoadCasesForExec(tenantId, req)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 }

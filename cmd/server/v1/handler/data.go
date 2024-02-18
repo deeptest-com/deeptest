@@ -28,6 +28,7 @@ type DataCtrl struct {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/init/initdb	[post]
 func (c *DataCtrl) Init(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.DataReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -37,7 +38,7 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 			return
 		}
 	}
-	tenantId := c.getTenantId(ctx)
+
 	err := c.DataService.InitDB(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -55,6 +56,7 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{needInit=bool}}
 // @Router	/api/v1/init/checkdb	[get]
 func (c *DataCtrl) Check(ctx iris.Context) {
+
 	if c.DataService.DataRepo.DB == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NeedInitErr.Code, Data: iris.Map{
 			"needInit": true,

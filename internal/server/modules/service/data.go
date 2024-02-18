@@ -129,7 +129,7 @@ func (s *DataService) InitDB(tenantId consts.TenantId, req v1.DataReq) error {
 		}
 
 		req.Sys.AdminPassword = string(hash)
-		s.UserRepo.UpdatePasswordByName(serverConsts.AdminUserName, req.Sys.AdminPassword)
+		s.UserRepo.UpdatePasswordByName(tenantId, serverConsts.AdminUserName, req.Sys.AdminPassword)
 	}
 
 	return nil

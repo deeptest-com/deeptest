@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -10,32 +11,32 @@ type SysAgentService struct {
 	SysAgentRepo *repo.SysAgentRepo `inject:""`
 }
 
-func (s *SysAgentService) List(keywords string) (pos []model.SysAgent, err error) {
-	pos, err = s.SysAgentRepo.List(keywords)
+func (s *SysAgentService) List(tenantId consts.TenantId, keywords string) (pos []model.SysAgent, err error) {
+	pos, err = s.SysAgentRepo.List(tenantId, keywords)
 
 	return
 }
 
-func (s *SysAgentService) Get(id uint) (po model.SysAgent, err error) {
-	po, err = s.SysAgentRepo.Get(id)
+func (s *SysAgentService) Get(tenantId consts.TenantId, id uint) (po model.SysAgent, err error) {
+	po, err = s.SysAgentRepo.Get(tenantId, id)
 
 	return
 }
 
-func (s *SysAgentService) Save(req *model.SysAgent) (err error) {
-	err = s.SysAgentRepo.Save(req)
+func (s *SysAgentService) Save(tenantId consts.TenantId, req *model.SysAgent) (err error) {
+	err = s.SysAgentRepo.Save(tenantId, req)
 	return
 }
 
-func (s *SysAgentService) UpdateName(req v1.AgentReq) (err error) {
-	err = s.SysAgentRepo.UpdateName(req)
+func (s *SysAgentService) UpdateName(tenantId consts.TenantId, req v1.AgentReq) (err error) {
+	err = s.SysAgentRepo.UpdateName(tenantId, req)
 	return
 }
 
-func (s *SysAgentService) Delete(id uint) (err error) {
-	return s.SysAgentRepo.Delete(id)
+func (s *SysAgentService) Delete(tenantId consts.TenantId, id uint) (err error) {
+	return s.SysAgentRepo.Delete(tenantId, id)
 }
 
-func (s *SysAgentService) Disable(id uint) (err error) {
-	return s.SysAgentRepo.Disable(id)
+func (s *SysAgentService) Disable(tenantId consts.TenantId, id uint) (err error) {
+	return s.SysAgentRepo.Disable(tenantId, id)
 }

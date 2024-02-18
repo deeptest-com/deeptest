@@ -10,8 +10,8 @@ import (
 )
 
 type IRepo interface {
-	Save(id uint, entity interface{}) error
-	GetCategoryCount(result interface{}, projectId uint) (err error)
+	Save(tenantId consts.TenantId, id uint, entity interface{}) error
+	GetCategoryCount(tenantId consts.TenantId, result interface{}, projectId uint) (err error)
 }
 
 type BaseRepo struct {

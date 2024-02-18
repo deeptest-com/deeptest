@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/generate/template"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
@@ -11,13 +12,13 @@ type EndpointCodeService struct {
 	ServeService *ServeService `inject:""`
 }
 
-func (s *EndpointCodeService) Generate(langType template.LangType, nameRule template.NameRule, serveId uint, data string) (code string) {
+func (s *EndpointCodeService) Generate(tenantId consts.TenantId, langType template.LangType, nameRule template.NameRule, serveId uint, data string) (code string) {
 	if data == "" {
 		return
 	}
 
 	schema2Code := generate.NewSchema2Code(langType, nameRule)
-	schema2Code.Components = s.ServeService.Components(serveId)
+	schema2Code.Components = s.ServeService.Components(tenantId, serveId)
 	//schema1 := openapi3.Schema{}
 	//_commUtils.JsonDecode(data, &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema)

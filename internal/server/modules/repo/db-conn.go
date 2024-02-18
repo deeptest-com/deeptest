@@ -4,16 +4,18 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
 
 type DatabaseConnRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
-func (r *DatabaseConnRepo) List(keywords string, projectId int, ignoreDisabled bool) (pos []model.DatabaseConn, err error) {
-	db := r.DB.Model(&model.DatabaseConn{}).
+func (r *DatabaseConnRepo) List(tenantId consts.TenantId, keywords string, projectId int, ignoreDisabled bool) (pos []model.DatabaseConn, err error) {
+	db := r.GetDB(tenantId).Model(&model.DatabaseConn{}).
 		Where("project_id = ? AND NOT deleted", projectId)
 
 	if ignoreDisabled {
@@ -29,56 +31,56 @@ func (r *DatabaseConnRepo) List(keywords string, projectId int, ignoreDisabled b
 	return
 }
 
-func (r *DatabaseConnRepo) Get(id uint) (po model.DatabaseConn, err error) {
-	err = r.DB.Model(&model.DatabaseConn{}).
+func (r *DatabaseConnRepo) Get(tenantId consts.TenantId, id uint) (po model.DatabaseConn, err error) {
+	err = r.GetDB(tenantId).Model(&model.DatabaseConn{}).
 		Where("id = ?", id).First(&po).Error
 
 	return
 }
 
-func (r *DatabaseConnRepo) GetByName(id, projectId uint, name string) (po model.DatabaseConn, err error) {
-	err = r.DB.Model(&model.DatabaseConn{}).
+func (r *DatabaseConnRepo) GetByName(tenantId consts.TenantId, id, projectId uint, name string) (po model.DatabaseConn, err error) {
+	err = r.GetDB(tenantId).Model(&model.DatabaseConn{}).
 		Where("id != ? AND project_id = ? AND name = ? and not deleted", id, projectId, name).First(&po).Error
 
 	return
 }
 
-func (r *DatabaseConnRepo) Save(po *model.DatabaseConn) (err error) {
-	exist, _ := r.GetByName(po.ID, po.ProjectId, po.Name)
+func (r *DatabaseConnRepo) Save(tenantId consts.TenantId, po *model.DatabaseConn) (err error) {
+	exist, _ := r.GetByName(tenantId, po.ID, po.ProjectId, po.Name)
 	if exist.ID > 0 {
 		err = errors.New("名称不能和已存在的记录相同")
 		return
 	}
 
-	err = r.DB.Save(po).Error
+	err = r.GetDB(tenantId).Save(po).Error
 
 	return
 }
 
-func (r *DatabaseConnRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.DatabaseConn{}).
+func (r *DatabaseConnRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DatabaseConn{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 
 	return
 }
 
-func (r *DatabaseConnRepo) Disable(id uint) (err error) {
-	err = r.DB.Model(&model.DatabaseConn{}).
+func (r *DatabaseConnRepo) Disable(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DatabaseConn{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"disabled": gorm.Expr("NOT disabled")}).Error
 
 	return
 }
 
-func (r *DatabaseConnRepo) UpdateName(req v1.DbConnReq) (err error) {
-	exist, _ := r.GetByName(req.Id, req.ProjectId, req.Name)
+func (r *DatabaseConnRepo) UpdateName(tenantId consts.TenantId, req v1.DbConnReq) (err error) {
+	exist, _ := r.GetByName(tenantId, req.Id, req.ProjectId, req.Name)
 	if exist.ID > 0 {
 		err = errors.New("名称不能和已存在的记录相同")
 		return
 	}
 
-	err = r.DB.Model(&model.DatabaseConn{}).
+	err = r.GetDB(tenantId).Model(&model.DatabaseConn{}).
 		Where("id = ?", req.Id).
 		Updates(map[string]interface{}{"name": req.Name, "update_user": req.UpdateUser}).Error
 

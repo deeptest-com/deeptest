@@ -178,34 +178,34 @@ func (r *ConditionRepo) CloneAll(tenantId consts.TenantId, srcDebugInterfaceId, 
 		// clone condition entity
 		var entityId uint
 		if srcCondition.EntityType == consts.ConditionTypeScript {
-			srcEntity, _ := r.ScriptRepo.Get(srcCondition.EntityId)
+			srcEntity, _ := r.ScriptRepo.Get(tenantId, srcCondition.EntityId)
 			srcEntity.ID = 0
 			srcEntity.ConditionId = srcCondition.ID
 
-			r.ScriptRepo.Save(&srcEntity)
+			r.ScriptRepo.Save(tenantId, &srcEntity)
 			entityId = srcEntity.ID
 		} else if srcCondition.EntityType == consts.ConditionTypeDatabase {
-			srcEntity, _ := r.DatabaseOptRepo.Get(srcCondition.EntityId)
+			srcEntity, _ := r.DatabaseOptRepo.Get(tenantId, srcCondition.EntityId)
 			srcEntity.ID = 0
 			srcEntity.ConditionId = srcCondition.ID
 
-			r.DatabaseOptRepo.Save(&srcEntity)
+			r.DatabaseOptRepo.Save(tenantId, &srcEntity)
 			entityId = srcEntity.ID
 
 		} else if srcCondition.EntityType == consts.ConditionTypeExtractor {
-			srcEntity, _ := r.ExtractorRepo.Get(srcCondition.EntityId)
+			srcEntity, _ := r.ExtractorRepo.Get(tenantId, srcCondition.EntityId)
 			srcEntity.ID = 0
 			srcEntity.ConditionId = srcCondition.ID
 
-			r.ExtractorRepo.Save(&srcEntity)
+			r.ExtractorRepo.Save(tenantId, &srcEntity)
 			entityId = srcEntity.ID
 
 		} else if srcCondition.EntityType == consts.ConditionTypeCheckpoint {
-			srcEntity, _ := r.CheckpointRepo.Get(srcCondition.EntityId)
+			srcEntity, _ := r.CheckpointRepo.Get(tenantId, srcCondition.EntityId)
 			srcEntity.ID = 0
 			srcEntity.ConditionId = srcCondition.ID
 
-			r.CheckpointRepo.Save(&srcEntity)
+			r.CheckpointRepo.Save(tenantId, &srcEntity)
 			entityId = srcEntity.ID
 
 		} else if srcCondition.EntityType == consts.ConditionTypeResponseDefine {
@@ -252,7 +252,7 @@ func (r *ConditionRepo) ReplaceAll(tenantId consts.TenantId, debugInterfaceId, e
 			entity.ID = 0
 			entity.ConditionId = condition.ID
 
-			r.ExtractorRepo.Save(&entity)
+			r.ExtractorRepo.Save(tenantId, &entity)
 			entityId = entity.ID
 
 		} else if item.Type == consts.ConditionTypeCheckpoint {
@@ -265,7 +265,7 @@ func (r *ConditionRepo) ReplaceAll(tenantId consts.TenantId, debugInterfaceId, e
 			entity.ID = 0
 			entity.ConditionId = condition.ID
 
-			r.CheckpointRepo.Save(&entity)
+			r.CheckpointRepo.Save(tenantId, &entity)
 			entityId = entity.ID
 
 		} else if item.Type == consts.ConditionTypeScript {
@@ -278,7 +278,7 @@ func (r *ConditionRepo) ReplaceAll(tenantId consts.TenantId, debugInterfaceId, e
 			entity.ID = 0
 			entity.ConditionId = condition.ID
 
-			r.ScriptRepo.Save(&entity)
+			r.ScriptRepo.Save(tenantId, &entity)
 			entityId = entity.ID
 		}
 
@@ -297,11 +297,11 @@ func (r *ConditionRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
 		Error
 
 	if po.EntityType == consts.ConditionTypeExtractor {
-		r.ExtractorRepo.DeleteByCondition(id)
+		r.ExtractorRepo.DeleteByCondition(tenantId, id)
 	} else if po.EntityType == consts.ConditionTypeCheckpoint {
-		r.CheckpointRepo.DeleteByCondition(id)
+		r.CheckpointRepo.DeleteByCondition(tenantId, id)
 	} else if po.EntityType == consts.ConditionTypeScript {
-		r.ScriptRepo.DeleteByCondition(id)
+		r.ScriptRepo.DeleteByCondition(tenantId, id)
 	}
 
 	return
@@ -351,7 +351,7 @@ func (r *ConditionRepo) ListTo(tenantId consts.TenantId, debugInterfaceId, endpo
 		if typ == consts.ConditionTypeScript {
 			script := domain.ScriptBase{}
 
-			entity, _ := r.ScriptRepo.Get(po.EntityId)
+			entity, _ := r.ScriptRepo.Get(tenantId, po.EntityId)
 			copier.CopyWithOption(&script, entity, copier.Option{DeepCopy: true})
 			script.Output = ""
 			script.ConditionId = po.ID
@@ -370,7 +370,7 @@ func (r *ConditionRepo) ListTo(tenantId consts.TenantId, debugInterfaceId, endpo
 		} else if typ == consts.ConditionTypeDatabase {
 			opt := domain.DatabaseOptBase{}
 
-			entity, _ := r.DatabaseOptRepo.Get(po.EntityId)
+			entity, _ := r.DatabaseOptRepo.Get(tenantId, po.EntityId)
 			copier.CopyWithOption(&opt, entity, copier.Option{DeepCopy: true})
 
 			opt.ConditionId = po.ID
@@ -389,7 +389,7 @@ func (r *ConditionRepo) ListTo(tenantId consts.TenantId, debugInterfaceId, endpo
 		} else if typ == consts.ConditionTypeExtractor {
 			extractor := domain.ExtractorBase{}
 
-			entity, _ := r.ExtractorRepo.Get(po.EntityId)
+			entity, _ := r.ExtractorRepo.Get(tenantId, po.EntityId)
 			copier.CopyWithOption(&extractor, entity, copier.Option{DeepCopy: true})
 			extractor.ConditionEntityType = typ
 			extractor.ConditionId = po.ID
@@ -408,7 +408,7 @@ func (r *ConditionRepo) ListTo(tenantId consts.TenantId, debugInterfaceId, endpo
 		} else if typ == consts.ConditionTypeCheckpoint {
 			checkpoint := domain.CheckpointBase{}
 
-			entity, _ := r.CheckpointRepo.Get(po.EntityId)
+			entity, _ := r.CheckpointRepo.Get(tenantId, po.EntityId)
 			copier.CopyWithOption(&checkpoint, entity, copier.Option{DeepCopy: true})
 			checkpoint.ConditionEntityType = typ
 			checkpoint.ConditionId = po.ID

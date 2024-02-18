@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -18,38 +19,38 @@ type ProjectMenuService struct {
 	RoleService      *RoleService              `inject:""`
 }
 
-func (s *ProjectMenuService) GetUserMenuList(projectId, userId uint) (ret []model.ProjectMenu, err error) {
+func (s *ProjectMenuService) GetUserMenuList(tenantId consts.TenantId, projectId, userId uint) (ret []model.ProjectMenu, err error) {
 	var roleId uint
-	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
+	isAdminUser, err := s.UserRepo.IsAdminUser(tenantId, userId)
 	if err != nil {
 		return
 	}
 
 	if isAdminUser {
-		adminProjectRole, err := s.ProjectRoleRepo.GetAdminRecord()
+		adminProjectRole, err := s.ProjectRoleRepo.GetAdminRecord(tenantId)
 		if err != nil {
 			return ret, err
 		}
 		roleId = adminProjectRole.ID
 	} else {
-		projectMemberRole, err := s.ProjectRepo.FindRolesByProjectAndUser(projectId, userId)
+		projectMemberRole, err := s.ProjectRepo.FindRolesByProjectAndUser(tenantId, projectId, userId)
 		if err != nil {
 			return ret, err
 		}
 		roleId = projectMemberRole.ProjectRoleId
 	}
 
-	ret, err = s.ProjectMenuRepo.GetRoleMenuList(roleId)
+	ret, err = s.ProjectMenuRepo.GetRoleMenuList(tenantId, roleId)
 	return
 }
 
-func (s *ProjectMenuService) GetAll(userId, projectRoleId uint) (ret []string, err error) {
-	ret, err = s.RoleService.GetAuthByEnv(userId)
+func (s *ProjectMenuService) GetAll(tenantId consts.TenantId, userId, projectRoleId uint) (ret []string, err error) {
+	ret, err = s.RoleService.GetAuthByEnv(tenantId, userId)
 	if err != nil {
 		return
 	}
 
-	projectRoleMenus, err := s.ProjectMenuRepo.GetRoleMenuCodeList(projectRoleId)
+	projectRoleMenus, err := s.ProjectMenuRepo.GetRoleMenuCodeList(tenantId, projectRoleId)
 	if err != nil {
 		return
 	}
@@ -60,17 +61,17 @@ func (s *ProjectMenuService) GetAll(userId, projectRoleId uint) (ret []string, e
 	return
 }
 
-func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint, userName string) (ret []string, err error) {
-	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
+func (s *ProjectMenuService) GetUserMenuListNew(tenantId consts.TenantId, projectId, userId uint, userName string) (ret []string, err error) {
+	isAdminUser, err := s.UserRepo.IsAdminUser(tenantId, userId)
 	if err != nil {
 		return
 	}
 
 	var projectRole model.ProjectRole
 	if isAdminUser {
-		projectRole, err = s.ProjectRoleRepo.GetAdminRecord()
+		projectRole, err = s.ProjectRoleRepo.GetAdminRecord(tenantId)
 	} else {
-		projectRole, err = s.ProjectRoleRepo.GetRoleByProjectAndUser(projectId, userId)
+		projectRole, err = s.ProjectRoleRepo.GetRoleByProjectAndUser(tenantId, projectId, userId)
 	}
 	if err != nil {
 		return
@@ -79,7 +80,7 @@ func (s *ProjectMenuService) GetUserMenuListNew(projectId, userId uint, userName
 	if config.CONFIG.System.SysEnv == "ly" && !isAdminUser {
 		ret, err = s.PrivilegeService.GetAll(userName, string(projectRole.Name))
 	} else {
-		ret, err = s.GetAll(userId, projectRole.ID)
+		ret, err = s.GetAll(tenantId, userId, projectRole.ID)
 	}
 
 	//if config.CONFIG.System.SysEnv == "ly" {

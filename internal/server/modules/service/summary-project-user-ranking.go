@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"sort"
@@ -12,13 +13,13 @@ type SummaryProjectUserRankingService struct {
 	SummaryProjectUserRankingRepo *repo.SummaryProjectUserRankingRepo `inject:""`
 }
 
-func (s *SummaryProjectUserRankingService) ProjectUserRanking(cycle int64, projectId int64) (resRankingList v1.ResRankingList, err error) {
+func (s *SummaryProjectUserRankingService) ProjectUserRanking(tenantId consts.TenantId, cycle int64, projectId int64) (resRankingList v1.ResRankingList, err error) {
 
 	//获取即时数据
-	newRankings, _ := s.GetRanking(projectId)
+	newRankings, _ := s.GetRanking(tenantId, projectId)
 
 	//查询所有用户名字，map的key为userId
-	userInfo, _ := s.FindAllUserName()
+	userInfo, _ := s.FindAllUserName(tenantId)
 	var lastWeekRanking map[int64]model.SummaryProjectUserRanking
 	lastWeekRanking = make(map[int64]model.SummaryProjectUserRanking)
 
@@ -29,7 +30,7 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(cycle int64, proje
 
 		//查询7天前直到现在，最靠前的数据
 		earlierDateStartTime, todayEndTime := GetEarlierDateUntilTodayStartAndEndTime(-7)
-		lastWeekRanking, err = s.FindMinDataByDateAndProjectIdOfMap(earlierDateStartTime, todayEndTime, projectId)
+		lastWeekRanking, err = s.FindMinDataByDateAndProjectIdOfMap(tenantId, earlierDateStartTime, todayEndTime, projectId)
 
 		if cycle == 1 {
 			//全部范围数据,就是最新的数据，newRanking
@@ -39,7 +40,7 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(cycle int64, proje
 			//当月范围数据
 			//先查询31天前的数据
 			earlierDateStartTime, earlierDateEndTime := GetEarlierDateStartAndEndTime(-31)
-			lastMonthLastDayRanking, _ := s.FindMaxDataByDateAndProjectIdOfMap(earlierDateStartTime, earlierDateEndTime, projectId)
+			lastMonthLastDayRanking, _ := s.FindMaxDataByDateAndProjectIdOfMap(tenantId, earlierDateStartTime, earlierDateEndTime, projectId)
 			//那newRanking的所有数据，减去30天前的，就是当月增量数据情况
 			scenarioTotal = newRanking.ScenarioTotal - lastMonthLastDayRanking[newRanking.UserId].ScenarioTotal
 			testTotal = newRanking.TestCaseTotal - lastMonthLastDayRanking[newRanking.UserId].TestCaseTotal
@@ -51,7 +52,7 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(cycle int64, proje
 		resRanking.ScenarioTotal = scenarioTotal
 		resRanking.TestCaseTotal = testTotal
 		resRanking.UserName = userInfo[newRanking.UserId]
-		lastUpdateTime, _ := s.FindUserLastUpdateTestCasesByProjectId(projectId)
+		lastUpdateTime, _ := s.FindUserLastUpdateTestCasesByProjectId(tenantId, projectId)
 		if lastUpdateTime[newRanking.UserId] != nil {
 			resRanking.UpdatedAt = lastUpdateTime[newRanking.UserId].Format("2006-01-02 15:04:05")
 		} else {
@@ -73,49 +74,49 @@ func (s *SummaryProjectUserRankingService) HandlerSummaryProjectUserRankingRepo(
 	return repo.NewSummaryProjectUserRankingRepo()
 }
 
-func (s *SummaryProjectUserRankingService) Create(req model.SummaryProjectUserRanking) (err error) {
-	return s.HandlerSummaryProjectUserRankingRepo().Create(req)
+func (s *SummaryProjectUserRankingService) Create(tenantId consts.TenantId, req model.SummaryProjectUserRanking) (err error) {
+	return s.HandlerSummaryProjectUserRankingRepo().Create(tenantId, req)
 }
 
-func (s *SummaryProjectUserRankingService) CreateByDate(req model.SummaryProjectUserRanking) (err error) {
+func (s *SummaryProjectUserRankingService) CreateByDate(tenantId consts.TenantId, req model.SummaryProjectUserRanking) (err error) {
 	startTime, endTime := GetTodayStartAndEndTime()
-	id, err := s.Existed(startTime, endTime, req.ProjectId, req.UserId)
+	id, err := s.Existed(tenantId, startTime, endTime, req.ProjectId, req.UserId)
 	if id == 0 {
-		err = s.Create(req)
+		err = s.Create(tenantId, req)
 	} else {
-		err = s.UpdateColumnsByDate(id, req)
+		err = s.UpdateColumnsByDate(tenantId, id, req)
 	}
 	return
 }
 
-func (s *SummaryProjectUserRankingService) UpdateColumnsByDate(id int64, req model.SummaryProjectUserRanking) (err error) {
-	return s.HandlerSummaryProjectUserRankingRepo().UpdateColumnsByDate(id, req)
+func (s *SummaryProjectUserRankingService) UpdateColumnsByDate(tenantId consts.TenantId, id int64, req model.SummaryProjectUserRanking) (err error) {
+	return s.HandlerSummaryProjectUserRankingRepo().UpdateColumnsByDate(tenantId, id, req)
 }
 
-func (s *SummaryProjectUserRankingService) FindProjectIds() (projectIds []int64, err error) {
-	return s.HandlerSummaryProjectUserRankingRepo().FindProjectIds()
+func (s *SummaryProjectUserRankingService) FindProjectIds(tenantId consts.TenantId) (projectIds []int64, err error) {
+	return s.HandlerSummaryProjectUserRankingRepo().FindProjectIds(tenantId)
 }
 
-func (s *SummaryProjectUserRankingService) Existed(startTime string, endTiem string, projectId int64, userId int64) (id int64, err error) {
-	return s.HandlerSummaryProjectUserRankingRepo().Existed(startTime, endTiem, projectId, userId)
+func (s *SummaryProjectUserRankingService) Existed(tenantId consts.TenantId, startTime string, endTiem string, projectId int64, userId int64) (id int64, err error) {
+	return s.HandlerSummaryProjectUserRankingRepo().Existed(tenantId, startTime, endTiem, projectId, userId)
 }
 
-func (s *SummaryProjectUserRankingService) FindByProjectId(projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
-	return s.HandlerSummaryProjectUserRankingRepo().FindByProjectId(projectId)
+func (s *SummaryProjectUserRankingService) FindByProjectId(tenantId consts.TenantId, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
+	return s.HandlerSummaryProjectUserRankingRepo().FindByProjectId(tenantId, projectId)
 }
 
-func (s *SummaryProjectUserRankingService) FindMaxDataByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
+func (s *SummaryProjectUserRankingService) FindMaxDataByDateAndProjectId(tenantId consts.TenantId, startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
 
-	return s.HandlerSummaryProjectUserRankingRepo().FindMaxDataByDateAndProjectId(startTime, endTime, projectId)
+	return s.HandlerSummaryProjectUserRankingRepo().FindMaxDataByDateAndProjectId(tenantId, startTime, endTime, projectId)
 }
 
-func (s *SummaryProjectUserRankingService) FindMinDataByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
+func (s *SummaryProjectUserRankingService) FindMinDataByDateAndProjectId(tenantId consts.TenantId, startTime string, endTime string, projectId int64) (summaryProjectUserRanking []model.SummaryProjectUserRanking, err error) {
 
-	return s.HandlerSummaryProjectUserRankingRepo().FindMinDataByDateAndProjectId(startTime, endTime, projectId)
+	return s.HandlerSummaryProjectUserRankingRepo().FindMinDataByDateAndProjectId(tenantId, startTime, endTime, projectId)
 }
 
-func (s *SummaryProjectUserRankingService) FindMaxDataByDateAndProjectIdOfMap(startTime string, endTime string, projectId int64) (result map[int64]model.SummaryProjectUserRanking, err error) {
-	summaryProjectUserRanking, _ := s.FindMaxDataByDateAndProjectId(startTime, endTime, projectId)
+func (s *SummaryProjectUserRankingService) FindMaxDataByDateAndProjectIdOfMap(tenantId consts.TenantId, startTime string, endTime string, projectId int64) (result map[int64]model.SummaryProjectUserRanking, err error) {
+	summaryProjectUserRanking, _ := s.FindMaxDataByDateAndProjectId(tenantId, startTime, endTime, projectId)
 
 	result = make(map[int64]model.SummaryProjectUserRanking, len(summaryProjectUserRanking))
 	for _, ranking := range summaryProjectUserRanking {
@@ -124,8 +125,8 @@ func (s *SummaryProjectUserRankingService) FindMaxDataByDateAndProjectIdOfMap(st
 	return
 }
 
-func (s *SummaryProjectUserRankingService) FindMinDataByDateAndProjectIdOfMap(startTime string, endTime string, projectId int64) (result map[int64]model.SummaryProjectUserRanking, err error) {
-	summaryProjectUserRanking, _ := s.FindMinDataByDateAndProjectId(startTime, endTime, projectId)
+func (s *SummaryProjectUserRankingService) FindMinDataByDateAndProjectIdOfMap(tenantId consts.TenantId, startTime string, endTime string, projectId int64) (result map[int64]model.SummaryProjectUserRanking, err error) {
+	summaryProjectUserRanking, _ := s.FindMinDataByDateAndProjectId(tenantId, startTime, endTime, projectId)
 
 	result = make(map[int64]model.SummaryProjectUserRanking, len(summaryProjectUserRanking))
 	for _, ranking := range summaryProjectUserRanking {
@@ -134,13 +135,13 @@ func (s *SummaryProjectUserRankingService) FindMinDataByDateAndProjectIdOfMap(st
 	return
 }
 
-func (s *SummaryProjectUserRankingService) CheckUpdated(lastUpdateTime *time.Time) (result bool, err error) {
-	return s.HandlerSummaryProjectUserRankingRepo().CheckUpdated(lastUpdateTime)
+func (s *SummaryProjectUserRankingService) CheckUpdated(tenantId consts.TenantId, lastUpdateTime *time.Time) (result bool, err error) {
+	return s.HandlerSummaryProjectUserRankingRepo().CheckUpdated(tenantId, lastUpdateTime)
 }
 
-func (s *SummaryProjectUserRankingService) FindScenarioTotalOfUserGroupByProject() (ScenariosTotal map[int64][]model.ProjectUserTotal, err error) {
+func (s *SummaryProjectUserRankingService) FindScenarioTotalOfUserGroupByProject(tenantId consts.TenantId) (ScenariosTotal map[int64][]model.ProjectUserTotal, err error) {
 
-	results, err := s.HandlerSummaryProjectUserRankingRepo().FindProjectUserScenarioTotal()
+	results, err := s.HandlerSummaryProjectUserRankingRepo().FindProjectUserScenarioTotal(tenantId)
 	ScenariosTotal = make(map[int64][]model.ProjectUserTotal, len(results))
 
 	for _, result := range results {
@@ -149,9 +150,9 @@ func (s *SummaryProjectUserRankingService) FindScenarioTotalOfUserGroupByProject
 	return
 }
 
-func (s *SummaryProjectUserRankingService) FindTestCasesTotalOfUserGroupByProject() (testCasesTotal map[int64][]model.ProjectUserTotal, err error) {
+func (s *SummaryProjectUserRankingService) FindTestCasesTotalOfUserGroupByProject(tenantId consts.TenantId) (testCasesTotal map[int64][]model.ProjectUserTotal, err error) {
 
-	results, err := s.HandlerSummaryProjectUserRankingRepo().FindProjectUserTestCasesTotal()
+	results, err := s.HandlerSummaryProjectUserRankingRepo().FindProjectUserTestCasesTotal(tenantId)
 	testCasesTotal = make(map[int64][]model.ProjectUserTotal, len(results))
 
 	for _, result := range results {
@@ -160,9 +161,9 @@ func (s *SummaryProjectUserRankingService) FindTestCasesTotalOfUserGroupByProjec
 	return
 }
 
-func (s *SummaryProjectUserRankingService) FindCasesTotalByProjectId(projectId int64) (result map[int64]int64, err error) {
+func (s *SummaryProjectUserRankingService) FindCasesTotalByProjectId(tenantId consts.TenantId, projectId int64) (result map[int64]int64, err error) {
 
-	counts, err := s.HandlerSummaryProjectUserRankingRepo().FindCasesTotalByProjectId(projectId)
+	counts, err := s.HandlerSummaryProjectUserRankingRepo().FindCasesTotalByProjectId(tenantId, projectId)
 	result = make(map[int64]int64, len(counts))
 	for _, tmp := range counts {
 		result[tmp.CreateUserId] = tmp.Count
@@ -171,9 +172,9 @@ func (s *SummaryProjectUserRankingService) FindCasesTotalByProjectId(projectId i
 	return
 }
 
-func (s *SummaryProjectUserRankingService) FindScenariosTotalByProjectId(projectId int64) (result map[int64]int64, err error) {
+func (s *SummaryProjectUserRankingService) FindScenariosTotalByProjectId(tenantId consts.TenantId, projectId int64) (result map[int64]int64, err error) {
 
-	counts, err := s.HandlerSummaryProjectUserRankingRepo().FindScenariosTotalByProjectId(projectId)
+	counts, err := s.HandlerSummaryProjectUserRankingRepo().FindScenariosTotalByProjectId(tenantId, projectId)
 	result = make(map[int64]int64, len(counts))
 	for _, tmp := range counts {
 		result[tmp.CreateUserId] = tmp.Count
@@ -182,9 +183,9 @@ func (s *SummaryProjectUserRankingService) FindScenariosTotalByProjectId(project
 	return
 }
 
-func (s *SummaryProjectUserRankingService) FindUserLastUpdateTestCasesByProjectId(projectId int64) (result map[int64]*time.Time, err error) {
+func (s *SummaryProjectUserRankingService) FindUserLastUpdateTestCasesByProjectId(tenantId consts.TenantId, projectId int64) (result map[int64]*time.Time, err error) {
 
-	updateTime, err := s.HandlerSummaryProjectUserRankingRepo().FindUserLastUpdateTestCasesByProjectId(projectId)
+	updateTime, err := s.HandlerSummaryProjectUserRankingRepo().FindUserLastUpdateTestCasesByProjectId(tenantId, projectId)
 	result = make(map[int64]*time.Time, len(updateTime))
 	for _, tmp := range updateTime {
 		result[tmp.CreatedBy] = tmp.UpdatedAt
@@ -192,8 +193,8 @@ func (s *SummaryProjectUserRankingService) FindUserLastUpdateTestCasesByProjectI
 	return
 }
 
-func (s *SummaryProjectUserRankingService) FindAllUserName() (result map[int64]string, err error) {
-	users, err := s.HandlerSummaryProjectUserRankingRepo().FindAllUserName()
+func (s *SummaryProjectUserRankingService) FindAllUserName(tenantId consts.TenantId) (result map[int64]string, err error) {
+	users, err := s.HandlerSummaryProjectUserRankingRepo().FindAllUserName(tenantId)
 	result = make(map[int64]string, len(users))
 	for _, user := range users {
 		result[user.Id] = user.Name
@@ -201,13 +202,13 @@ func (s *SummaryProjectUserRankingService) FindAllUserName() (result map[int64]s
 	return
 }
 
-func (s *SummaryProjectUserRankingService) FindUserByProjectId(projectId int64) (users []model.RankingUser, err error) {
-	users, err = s.HandlerSummaryProjectUserRankingRepo().FindUserByProjectId(projectId)
+func (s *SummaryProjectUserRankingService) FindUserByProjectId(tenantId consts.TenantId, projectId int64) (users []model.RankingUser, err error) {
+	users, err = s.HandlerSummaryProjectUserRankingRepo().FindUserByProjectId(tenantId, projectId)
 	return
 }
 
-func (s *SummaryProjectUserRankingService) FindUserIdsByProjectId(projectId int64) (userIds []int64, err error) {
-	userIds, err = s.HandlerSummaryProjectUserRankingRepo().FindUserIdsByProjectId(projectId)
+func (s *SummaryProjectUserRankingService) FindUserIdsByProjectId(tenantId consts.TenantId, projectId int64) (userIds []int64, err error) {
+	userIds, err = s.HandlerSummaryProjectUserRankingRepo().FindUserIdsByProjectId(tenantId, projectId)
 	return
 }
 
@@ -295,13 +296,13 @@ func (s *SummaryProjectUserRankingService) SortRankingList(req v1.ResRankingList
 	return
 }
 
-func (s *SummaryProjectUserRankingService) GetRanking(projectId int64) (rankings []model.SummaryProjectUserRanking, err error) {
+func (s *SummaryProjectUserRankingService) GetRanking(tenantId consts.TenantId, projectId int64) (rankings []model.SummaryProjectUserRanking, err error) {
 
-	users, err := s.FindUserIdsByProjectId(projectId)
+	users, err := s.FindUserIdsByProjectId(tenantId, projectId)
 
-	cases, err := s.FindCasesTotalByProjectId(projectId)
-	scenarios, err := s.FindScenariosTotalByProjectId(projectId)
-	lastUpdateTime, _ := s.FindUserLastUpdateTestCasesByProjectId(projectId)
+	cases, err := s.FindCasesTotalByProjectId(tenantId, projectId)
+	scenarios, err := s.FindScenariosTotalByProjectId(tenantId, projectId)
+	lastUpdateTime, _ := s.FindUserLastUpdateTestCasesByProjectId(tenantId, projectId)
 
 	for _, user := range users {
 		var ranking model.SummaryProjectUserRanking
@@ -319,12 +320,12 @@ func (s *SummaryProjectUserRankingService) GetRanking(projectId int64) (rankings
 	return
 }
 
-func (s *SummaryProjectUserRankingService) SaveRanking() (err error) {
-	projectIds, err := s.FindProjectIds()
+func (s *SummaryProjectUserRankingService) SaveRanking(tenantId consts.TenantId) (err error) {
+	projectIds, err := s.FindProjectIds(tenantId)
 	for _, projectId := range projectIds {
-		rankings, _ := s.GetRanking(projectId)
+		rankings, _ := s.GetRanking(tenantId, projectId)
 		for _, ranking := range rankings {
-			err := s.CreateByDate(ranking)
+			err := s.CreateByDate(tenantId, ranking)
 			if err != nil {
 				return err
 			}

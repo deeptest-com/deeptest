@@ -23,11 +23,11 @@ type ProjectService struct {
 	MessageService  *MessageService       `inject:""`
 }
 
-func (s *ProjectService) GetUserProductList(tenantId consts.TenantId, page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
+func (s *ProjectService) GetUserProductList(page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
 	return s.RemoteService.GetUserProductList(page, pageSize, username)
 }
 
-func (s *ProjectService) GetSpacesByUsername(tenantId consts.TenantId, username string) (ret []integrationDomain.SpaceItem, err error) {
+func (s *ProjectService) GetSpacesByUsername(username string) (ret []integrationDomain.SpaceItem, err error) {
 	return s.RemoteService.GetSpacesByUsername(username)
 }
 

@@ -19,7 +19,7 @@ type PermRepo struct {
 }
 
 // Paginate
-func (r *PermRepo) Paginate(req v1.PermReqPaginate) (data _domain.PageData, err error) {
+func (r *PermRepo) Paginate(tenantId consts.TenantId, req v1.PermReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 	db := r.DB.Model(&model.SysPerm{})
 	if req.Name != "" {
@@ -49,7 +49,7 @@ func (r *PermRepo) Paginate(req v1.PermReqPaginate) (data _domain.PageData, err 
 // name 名称
 // act 方法
 // ids 当 ids 的 len = 1 ，排除次 id 数据
-func (r *PermRepo) FindByNameAndAct(name, act string, ids ...uint) (v1.PermResp, error) {
+func (r *PermRepo) FindByNameAndAct(tenantId consts.TenantId, name, act string, ids ...uint) (v1.PermResp, error) {
 	perm := v1.PermResp{}
 	db := r.DB.Model(&model.SysPerm{}).Where("name = ?", name).Where("act = ?", act)
 	if len(ids) == 1 {
@@ -64,9 +64,9 @@ func (r *PermRepo) FindByNameAndAct(name, act string, ids ...uint) (v1.PermResp,
 }
 
 // Create
-func (r *PermRepo) Create(req v1.PermReq) (uint, error) {
+func (r *PermRepo) Create(tenantId consts.TenantId, req v1.PermReq) (uint, error) {
 	perm := model.SysPerm{PermBase: req.PermBase}
-	if !r.CheckNameAndAct(req) {
+	if !r.CheckNameAndAct(tenantId, req) {
 		return perm.ID, fmt.Errorf("权限[%s-%s]已存在", req.Name, req.Act)
 	}
 	err := r.DB.Model(&model.SysPerm{}).Create(&perm).Error
@@ -78,7 +78,7 @@ func (r *PermRepo) Create(req v1.PermReq) (uint, error) {
 }
 
 // CreateInBatches
-func (r *PermRepo) CreateInBatches(perms []model.SysPerm) error {
+func (r *PermRepo) CreateInBatches(tenantId consts.TenantId, perms []model.SysPerm) error {
 	err := r.DB.Model(&model.SysPerm{}).CreateInBatches(&perms, 500).Error
 	if err != nil {
 		logUtils.Errorf("添加权限失败，错误%s。", err.Error())
@@ -132,8 +132,8 @@ func (r *PermRepo) CreateIfNotExist(tenantId consts.TenantId, perms []model.SysP
 }
 
 // Update
-func (r *PermRepo) Update(id uint, req v1.PermReq) error {
-	if !r.CheckNameAndAct(req, id) {
+func (r *PermRepo) Update(tenantId consts.TenantId, id uint, req v1.PermReq) error {
+	if !r.CheckNameAndAct(tenantId, req, id) {
 		return fmt.Errorf("权限[%s-%s]已存在", req.Name, req.Act)
 	}
 	perm := model.SysPerm{PermBase: req.PermBase}
@@ -146,13 +146,13 @@ func (r *PermRepo) Update(id uint, req v1.PermReq) error {
 }
 
 // checkNameAndAct
-func (r *PermRepo) CheckNameAndAct(req v1.PermReq, ids ...uint) bool {
-	_, err := r.FindByNameAndAct(req.Name, req.Act, ids...)
+func (r *PermRepo) CheckNameAndAct(tenantId consts.TenantId, req v1.PermReq, ids ...uint) bool {
+	_, err := r.FindByNameAndAct(tenantId, req.Name, req.Act, ids...)
 	return errors.Is(err, gorm.ErrRecordNotFound)
 }
 
 // FindById
-func (r *PermRepo) FindById(id uint) (v1.PermResp, error) {
+func (r *PermRepo) FindById(tenantId consts.TenantId, id uint) (v1.PermResp, error) {
 	res := v1.PermResp{}
 	err := r.DB.Model(&model.SysPerm{}).Where("id = ?", id).First(&res).Error
 	if err != nil {
@@ -163,7 +163,7 @@ func (r *PermRepo) FindById(id uint) (v1.PermResp, error) {
 }
 
 // DeleteById
-func (r *PermRepo) DeleteById(id uint) error {
+func (r *PermRepo) DeleteById(tenantId consts.TenantId, id uint) error {
 	err := r.DB.Unscoped().Delete(&model.SysPerm{}, id).Error
 	if err != nil {
 		logUtils.Errorf("删除权限失败, 错误%s。", err.Error())
@@ -173,7 +173,7 @@ func (r *PermRepo) DeleteById(id uint) error {
 }
 
 // DeleteAll, for init
-func (r *PermRepo) DeleteAll() error {
+func (r *PermRepo) DeleteAll(tenantId consts.TenantId) error {
 	err := r.DB.Where("1 = 1").Delete(&model.SysPerm{}).Error
 	if err != nil {
 		logUtils.Errorf("删除权限失败, 错误%s。", err.Error())
@@ -183,7 +183,7 @@ func (r *PermRepo) DeleteAll() error {
 }
 
 // GetPermsForRole
-func (r *PermRepo) GetPermsForRole() ([][]string, error) {
+func (r *PermRepo) GetPermsForRole(tenantId consts.TenantId) ([][]string, error) {
 	var permsForRoles [][]string
 	var perms []model.SysPerm
 	err := r.DB.Model(&model.SysPerm{}).Find(&perms).Error

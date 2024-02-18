@@ -86,7 +86,7 @@ func (r *ProjectRoleMenuRepo) GetConfigData(tenantId consts.TenantId) (menus []m
 		return
 	}
 
-	menuCodeIdMap, err := r.ProjectMenuRepo.GetAllMenuCodeIdMap()
+	menuCodeIdMap, err := r.ProjectMenuRepo.GetAllMenuCodeIdMap(tenantId)
 	if err != nil {
 		logUtils.Errorf("get all menu code id map err ", zap.String("错误:", err.Error()))
 		return

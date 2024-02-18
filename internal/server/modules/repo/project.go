@@ -38,7 +38,7 @@ type ProjectRepo struct {
 	ScenarioInterfaceRepo      *ScenarioInterfaceRepo      `inject:""`
 	EndpointCaseRepo           *EndpointCaseRepo           `inject:""`
 	DebugInterfaceRepo         *DebugInterfaceRepo         `inject:""`
-	BaseRepo                   `inject:""`
+	*BaseRepo                  `inject:""`
 }
 
 func (r *ProjectRepo) Paginate(tenantId consts.TenantId, req v1.ProjectReqPaginate, userId uint) (data _domain.PageData, err error) {
@@ -784,7 +784,7 @@ func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId,
 		}
 
 		category.ProjectId, category.ServeId, category.ParentId = projectId, serveId, int(categoryId)
-		err = r.CategoryRepo.Save(&category)
+		err = r.CategoryRepo.Save(tenantId, &category)
 		if err != nil {
 			return err
 		}
@@ -847,7 +847,7 @@ func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId,
 					mockExpect.EndpointInterfaceId = endpointInterface.ID
 					mockExpect.Method = endpointInterface.Method
 					mockExpect.CreateUser = user.Username
-					_, err = r.EndpointMockExpectRepo.Save(mockExpect)
+					_, err = r.EndpointMockExpectRepo.Save(tenantId, mockExpect)
 					if err != nil {
 						return err
 					}
@@ -856,14 +856,14 @@ func (r *ProjectRepo) CreateSample(tenantId consts.TenantId, projectId, serveId,
 		}
 
 		//创建场景目录
-		ScenarioCategory, err := r.CategoryRepo.GetByItem(0, serverConsts.ScenarioCategory, projectId, "分类")
+		ScenarioCategory, err := r.CategoryRepo.GetByItem(tenantId, 0, serverConsts.ScenarioCategory, projectId, "分类")
 		if err != nil {
 			return err
 		}
 		ScenarioCategory.ParentId = int(ScenarioCategory.ID)
 		ScenarioCategory.ID = 0
 		ScenarioCategory.Name = "宠物商店"
-		err = r.CategoryRepo.Save(&ScenarioCategory)
+		err = r.CategoryRepo.Save(tenantId, &ScenarioCategory)
 		if err != nil {
 			return err
 		}

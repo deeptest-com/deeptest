@@ -10,6 +10,7 @@ import (
 )
 
 type ProjectSettingsCtrl struct {
+	BaseCtrl
 	Cron                   *cron.ServerCron                `inject:""`
 	ProjectSettingsService *service.ProjectSettingsService `inject:""`
 	ThirdPartySyncService  *service.ThirdPartySyncService  `inject:""`
@@ -26,6 +27,7 @@ type ProjectSettingsCtrl struct {
 // @success	200	{object}	_domain.Response{data=model.SwaggerSync}
 // @Router	/api/v1/serves/saveSwaggerSync	[post]
 func (c *ProjectSettingsCtrl) SaveSwaggerSync(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.SwaggerSyncReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -41,7 +43,7 @@ func (c *ProjectSettingsCtrl) SaveSwaggerSync(ctx iris.Context) {
 	if req.ProjectId == 0 {
 		req.ProjectId = uint(projectId)
 	}
-	res, err := c.ProjectSettingsService.SaveSwaggerSync(req)
+	res, err := c.ProjectSettingsService.SaveSwaggerSync(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -59,8 +61,9 @@ func (c *ProjectSettingsCtrl) SaveSwaggerSync(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.SwaggerSync}
 // @Router	/api/v1/serves/swaggerSyncDetail	[get]
 func (c *ProjectSettingsCtrl) SwaggerSyncDetail(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId := ctx.URLParamUint64("currProjectId")
-	res, err := c.ProjectSettingsService.SwaggerSyncDetail(uint(projectId))
+	res, err := c.ProjectSettingsService.SwaggerSyncDetail(tenantId, uint(projectId))
 	if err != nil {
 		res.CategoryId = -1
 		res.SyncType = consts.FullCover
@@ -69,21 +72,24 @@ func (c *ProjectSettingsCtrl) SwaggerSyncDetail(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
 
-func (c *ProjectSettingsCtrl) InitSwaggerCron() {
-	syncList, err := c.ProjectSettingsService.SwaggerSyncList()
+func (c *ProjectSettingsCtrl) InitSwaggerCron(ctx iris.Context) {
+	//SAAS
+	tenantId := c.getTenantId(ctx)
+	syncList, err := c.ProjectSettingsService.SwaggerSyncList(tenantId)
 	if err != nil {
 		return
 	}
 	for _, item := range syncList {
-		c.ProjectSettingsService.AddSwaggerCron(item)
+		c.ProjectSettingsService.AddSwaggerCron(tenantId, item)
 	}
 }
 
 // GetMock - Get Project Mock Settings
 func (c *ProjectSettingsCtrl) GetMock(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId := ctx.URLParamUint64("currProjectId")
 
-	res, err := c.ProjectSettingsService.GetMock(uint(projectId))
+	res, err := c.ProjectSettingsService.GetMock(tenantId, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -94,6 +100,7 @@ func (c *ProjectSettingsCtrl) GetMock(ctx iris.Context) {
 
 // SaveMock - Save Project Mock Settings
 func (c *ProjectSettingsCtrl) SaveMock(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.MockReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -105,7 +112,7 @@ func (c *ProjectSettingsCtrl) SaveMock(ctx iris.Context) {
 		req.ProjectId = uint(projectId)
 	}
 
-	res, err := c.ProjectSettingsService.SaveMock(req)
+	res, err := c.ProjectSettingsService.SaveMock(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -114,6 +121,8 @@ func (c *ProjectSettingsCtrl) SaveMock(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
 
-func (c *ProjectSettingsCtrl) InitThirdPartySyncCron() {
-	c.ThirdPartySyncService.AddThirdPartySyncCron()
+func (c *ProjectSettingsCtrl) InitThirdPartySyncCron(ctx iris.Context) {
+	//SAAS
+	tenantId := c.getTenantId(ctx)
+	c.ThirdPartySyncService.AddThirdPartySyncCron(tenantId)
 }

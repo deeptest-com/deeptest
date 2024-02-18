@@ -8,15 +8,16 @@ import (
 )
 
 type EndpointCodeCtrl struct {
+	BaseCtrl
 	EndpointCodeService *service.EndpointCodeService `inject:""`
 }
 
 func (c *EndpointCodeCtrl) Index(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	var req domain.EndpointCodeReq
 
 	if err := ctx.ReadJSON(&req); err == nil {
-		res := c.EndpointCodeService.Generate(req.LangType, req.NameRule, req.ServeId, req.Data)
+		res := c.EndpointCodeService.Generate(tenantId, req.LangType, req.NameRule, req.ServeId, req.Data)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})

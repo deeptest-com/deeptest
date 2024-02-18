@@ -15,6 +15,7 @@ import (
 )
 
 type EndpointCtrl struct {
+	BaseCtrl
 	EndpointService       *service.EndpointService       `inject:""`
 	ServeService          *service.ServeService          `inject:""`
 	ThirdPartySyncService *service.ThirdPartySyncService `inject:""`
@@ -31,12 +32,13 @@ type EndpointCtrl struct {
 // @success	200	{object}	_domain.Response{data=object{result=[]model.Endpoint}}
 // @Router	/api/v1/endpoint/index	[post]
 func (c *EndpointCtrl) Index(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointReqPaginate
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	res, _ := c.EndpointService.Paginate(req)
+	res, _ := c.EndpointService.Paginate(tenantId, req)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 
 	return
@@ -53,6 +55,7 @@ func (c *EndpointCtrl) Index(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/endpoint/save	[post]
 func (c *EndpointCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointReq
 	err := ctx.ReadJSON(&req)
 
@@ -76,7 +79,7 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 		}
 	*/
 
-	if res, err := c.EndpointService.Save(endpoint); err != nil {
+	if res, err := c.EndpointService.Save(tenantId, endpoint); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
@@ -97,10 +100,11 @@ func (c *EndpointCtrl) Save(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Endpoint}
 // @Router	/api/v1/endpoint/detail	[get]
 func (c *EndpointCtrl) Detail(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(uint(id)))
+	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(tenantId, uint(id)))
 	if id != 0 {
-		res := c.EndpointService.GetById(uint(id), version)
+		res := c.EndpointService.GetById(tenantId, uint(id), version)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -118,9 +122,10 @@ func (c *EndpointCtrl) Detail(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/delete	[delete]
 func (c *EndpointCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
 
-	err := c.EndpointService.DeleteById(uint(id))
+	err := c.EndpointService.DeleteById(tenantId, uint(id))
 
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
@@ -140,9 +145,10 @@ func (c *EndpointCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/batchDelete	[delete]
 func (c *EndpointCtrl) BatchDelete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req []uint
 	if err := ctx.ReadJSON(&req); err == nil {
-		c.EndpointService.BatchDelete(req)
+		c.EndpointService.BatchDelete(tenantId, req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -193,8 +199,9 @@ func (c *EndpointCtrl) requestParser(req serverDomain.EndpointReq) (endpoint mod
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/expire	[put]
 func (c *EndpointCtrl) Expire(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	err := c.EndpointService.DisableById(uint(id))
+	err := c.EndpointService.DisableById(tenantId, uint(id))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -213,8 +220,9 @@ func (c *EndpointCtrl) Expire(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/publish	[put]
 func (c *EndpointCtrl) Publish(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	err := c.EndpointService.Publish(uint(id))
+	err := c.EndpointService.Publish(tenantId, uint(id))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -233,8 +241,9 @@ func (c *EndpointCtrl) Publish(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/develop	[put]
 func (c *EndpointCtrl) Develop(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	err := c.EndpointService.Develop(uint(id))
+	err := c.EndpointService.Develop(tenantId, uint(id))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -254,12 +263,13 @@ func (c *EndpointCtrl) Develop(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/endpoint/copy	[get]
 func (c *EndpointCtrl) Copy(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(uint(id)))
+	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(tenantId, uint(id)))
 
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
-	res, err := c.EndpointService.Copy(uint(id), 0, userId, userName, version)
+	res, err := c.EndpointService.Copy(tenantId, uint(id), 0, userId, userName, version)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 	} else {
@@ -278,10 +288,11 @@ func (c *EndpointCtrl) Copy(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=string}
 // @Router	/api/v1/endpoint/yaml	[post]
 func (c *EndpointCtrl) Yaml(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		endpoint := c.requestParser(req)
-		res := c.EndpointService.Yaml(endpoint)
+		res := c.EndpointService.Yaml(tenantId, endpoint)
 		var ret interface{}
 		commonUtils.JsonDecode(commonUtils.JsonEncode(res), &ret)
 		content, _ := encoder.NewEncoder(ret).Encode()
@@ -304,9 +315,10 @@ func (c *EndpointCtrl) Yaml(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/updateStatus	[put]
 func (c *EndpointCtrl) UpdateStatus(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
 	status := ctx.URLParamUint64("status")
-	err := c.EndpointService.UpdateStatus(uint(id), int64(status))
+	err := c.EndpointService.UpdateStatus(tenantId, uint(id), int64(status))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -325,11 +337,12 @@ func (c *EndpointCtrl) UpdateStatus(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=string}
 // @Router	/api/v1/endpoint/version/add	[post]
 func (c *EndpointCtrl) AddVersion(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointVersionReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		var version model.EndpointVersion
 		copier.CopyWithOption(&version, &req, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-		err = c.EndpointService.AddVersion(&version)
+		err = c.EndpointService.AddVersion(tenantId, &version)
 		if err == nil {
 			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: req.Version})
 		} else {
@@ -351,8 +364,9 @@ func (c *EndpointCtrl) AddVersion(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]model.EndpointVersion}
 // @Router	/api/v1/endpoint/version/list	[get]
 func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	res, err := c.EndpointService.GetVersionsByEndpointId(uint(id))
+	res, err := c.EndpointService.GetVersionsByEndpointId(tenantId, uint(id))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
@@ -371,13 +385,14 @@ func (c *EndpointCtrl) ListVersions(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/batchUpdateField	[post]
 func (c *EndpointCtrl) BatchUpdateField(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.BatchUpdateReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	if err := c.EndpointService.BatchUpdateByField(req); err != nil {
+	if err := c.EndpointService.BatchUpdateByField(tenantId, req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
@@ -396,6 +411,7 @@ func (c *EndpointCtrl) BatchUpdateField(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/updateTag	[put]
 func (c *EndpointCtrl) UpdateTag(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointTagReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -403,7 +419,7 @@ func (c *EndpointCtrl) UpdateTag(ctx iris.Context) {
 	}
 
 	projectId, _ := ctx.URLParamInt("currProjectId")
-	if err := c.EndpointService.UpdateTags(req, uint(projectId)); err != nil {
+	if err := c.EndpointService.UpdateTags(tenantId, req, uint(projectId)); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
@@ -424,13 +440,14 @@ func (c *EndpointCtrl) UpdateTag(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/updateMockStatus	[post]
 func (c *EndpointCtrl) UpdateAdvancedMockDisabled(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req model.Endpoint
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	if err := c.EndpointService.UpdateAdvancedMockDisabled(req.ID, req.AdvancedMockDisabled); err != nil {
+	if err := c.EndpointService.UpdateAdvancedMockDisabled(tenantId, req.ID, req.AdvancedMockDisabled); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
@@ -439,6 +456,7 @@ func (c *EndpointCtrl) UpdateAdvancedMockDisabled(ctx iris.Context) {
 }
 
 func (c *EndpointCtrl) SyncFromThirdParty(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
@@ -446,7 +464,7 @@ func (c *EndpointCtrl) SyncFromThirdParty(ctx iris.Context) {
 		return
 	}
 
-	if err := c.EndpointService.SyncFromThirdParty(req.Id); err != nil {
+	if err := c.EndpointService.SyncFromThirdParty(tenantId, req.Id); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
@@ -461,7 +479,7 @@ func (c *EndpointCtrl) Index() {
 */
 
 func (c *EndpointCtrl) GetDiff(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	endpointId, err := ctx.URLParamInt("endpointId")
 	if err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
@@ -469,7 +487,7 @@ func (c *EndpointCtrl) GetDiff(ctx iris.Context) {
 		return
 	}
 
-	if data, err := c.EndpointService.GetDiff(uint(endpointId)); err != nil {
+	if data, err := c.EndpointService.GetDiff(tenantId, uint(endpointId)); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
@@ -477,6 +495,7 @@ func (c *EndpointCtrl) GetDiff(ctx iris.Context) {
 }
 
 func (c *EndpointCtrl) SaveDiff(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointDiffReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
@@ -484,7 +503,7 @@ func (c *EndpointCtrl) SaveDiff(ctx iris.Context) {
 		return
 	}
 	userName := multi.GetUsername(ctx)
-	if err := c.EndpointService.SaveDiff(req.EndpointId, req.IsChanged, userName); err != nil {
+	if err := c.EndpointService.SaveDiff(tenantId, req.EndpointId, req.IsChanged, userName); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
@@ -504,13 +523,14 @@ func (c *EndpointCtrl) SaveDiff(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoint/updateName	[put]
 func (c *EndpointCtrl) UpdateName(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.UpdateNameReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	err := c.EndpointService.UpdateName(req.Id, req.Name)
+	err := c.EndpointService.UpdateName(tenantId, req.Id, req.Name)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {

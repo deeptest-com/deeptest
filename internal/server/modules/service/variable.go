@@ -23,25 +23,25 @@ type VariableService struct {
 	DatapoolService    *DatapoolService    `inject:""`
 }
 
-func (s *VariableService) GetCombinedVarsForCheckpoint(debugInterfaceId, endpointInterfaceId, caseInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
+func (s *VariableService) GetCombinedVarsForCheckpoint(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId, caseInterfaceId, scenarioProcessorId uint, usedBy consts.UsedBy) (
 	ret map[string]interface{}, datapools domain.Datapools, err error) {
 
 	diagnoseInterfaceId := uint(0)
 
 	if debugInterfaceId > 0 {
-		debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
+		debugInterface, _ := s.DebugInterfaceRepo.Get(tenantId, debugInterfaceId)
 		diagnoseInterfaceId = debugInterface.DiagnoseInterfaceId
 	}
 
-	server, _ := s.ServeServerRepo.GetByDebugInfo(debugInterfaceId, endpointInterfaceId)
+	server, _ := s.ServeServerRepo.GetByDebugInfo(tenantId, debugInterfaceId, endpointInterfaceId)
 	envId := server.EnvironmentId
-	env, _ := s.EnvironmentRepo.Get(envId)
+	env, _ := s.EnvironmentRepo.Get(tenantId, envId)
 	projectId := env.ProjectId
 
-	shareVariables := s.ShareVarService.List(debugInterfaceId, endpointInterfaceId, diagnoseInterfaceId, caseInterfaceId, scenarioProcessorId, usedBy)
-	envVars, _ := s.EnvironmentService.GetVarsByEnv(envId)
-	globalVars, _ := s.EnvironmentService.GetGlobalVars(projectId)
-	datapools, _ = s.DatapoolService.ListForExec(projectId)
+	shareVariables := s.ShareVarService.List(tenantId, debugInterfaceId, endpointInterfaceId, diagnoseInterfaceId, caseInterfaceId, scenarioProcessorId, usedBy)
+	envVars, _ := s.EnvironmentService.GetVarsByEnv(tenantId, envId)
+	globalVars, _ := s.EnvironmentService.GetGlobalVars(tenantId, projectId)
+	datapools, _ = s.DatapoolService.ListForExec(tenantId, projectId)
 
 	ret = CombineVariables(shareVariables, envVars, globalVars)
 

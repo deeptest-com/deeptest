@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -43,8 +44,8 @@ func (s *ImportService) GenerateInterface(doc openapi3.T, targetId, projectId ui
 	return
 }
 
-func (s *ImportService) GenerateEnvironment(doc openapi3.T, projectId uint) (err error) {
-	env, err := s.EnvironmentRepo.GetByProject(projectId)
+func (s *ImportService) GenerateEnvironment(tenantId consts.TenantId, doc openapi3.T, projectId uint) (err error) {
+	env, err := s.EnvironmentRepo.GetByProject(tenantId, projectId)
 	if err != nil {
 		return
 	}
@@ -55,11 +56,11 @@ func (s *ImportService) GenerateEnvironment(doc openapi3.T, projectId uint) (err
 	}
 
 	for _, vari := range envVars {
-		po, _ := s.EnvironmentRepo.GetSameVar(vari, env.ID)
+		po, _ := s.EnvironmentRepo.GetSameVar(tenantId, vari, env.ID)
 
 		if po.ID == 0 {
 			vari.EnvironmentId = env.ID
-			s.EnvironmentRepo.SaveVar(&vari)
+			s.EnvironmentRepo.SaveVar(tenantId, &vari)
 		}
 	}
 

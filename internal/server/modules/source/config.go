@@ -1,6 +1,7 @@
 package source
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/gookit/color"
@@ -21,7 +22,7 @@ func (s *ConfigSource) GetSources() ([]model.SysConfig, error) {
 	return configs, nil
 }
 
-func (s *ConfigSource) Init() error {
+func (s *ConfigSource) Init(tenantId consts.TenantId) error {
 	s.ConfigRepo.DB.Delete(&model.SysConfig{}, "1=1")
 
 	sources, err := s.GetSources()
@@ -30,7 +31,7 @@ func (s *ConfigSource) Init() error {
 	}
 
 	for _, source := range sources {
-		if err := s.ConfigRepo.Save(source); err != nil { // 遇到错误时回滚事务
+		if err := s.ConfigRepo.Save(tenantId, source); err != nil { // 遇到错误时回滚事务
 			return err
 		}
 	}

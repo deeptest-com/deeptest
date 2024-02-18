@@ -11,6 +11,7 @@ import (
 )
 
 type EndpointCaseCtrl struct {
+	BaseCtrl
 	EndpointCaseService   *service.EndpointCaseService   `inject:""`
 	DebugInterfaceService *service.DebugInterfaceService `inject:""`
 }
@@ -26,6 +27,7 @@ type EndpointCaseCtrl struct {
 // @success	200	{object}	_domain.Response{data=[]model.EndpointCase}
 // @Router	/api/v1/endpoints/cases/list	[get]
 func (c *EndpointCaseCtrl) Paginate(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointCaseReqPaginate
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -35,7 +37,7 @@ func (c *EndpointCaseCtrl) Paginate(ctx iris.Context) {
 
 	req.ConvertParams()
 
-	data, err := c.EndpointCaseService.Paginate(req)
+	data, err := c.EndpointCaseService.Paginate(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -55,9 +57,10 @@ func (c *EndpointCaseCtrl) Paginate(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.EndpointCase}
 // @Router	/api/v1/endpoints/cases/{id}	[get]
 func (c *EndpointCaseCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, _ := ctx.Params().GetInt("id")
 
-	data, err := c.EndpointCaseService.Get(uint(id))
+	data, err := c.EndpointCaseService.Get(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -78,6 +81,7 @@ func (c *EndpointCaseCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]model.EndpointCase}
 // @Router	/api/v1/endpoints/cases/{id}	[post]
 func (c *EndpointCaseCtrl) Create(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.EndpointCaseSaveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -88,13 +92,13 @@ func (c *EndpointCaseCtrl) Create(ctx iris.Context) {
 	req.CreateUserName = multi.GetUsername(ctx)
 	req.CreateUserId = multi.GetUserId(ctx)
 
-	po, err := c.EndpointCaseService.Create(req)
+	po, err := c.EndpointCaseService.Create(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.EndpointCaseService.List(po.EndpointId)
+	data, err := c.EndpointCaseService.List(tenantId, po.EndpointId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -113,6 +117,7 @@ func (c *EndpointCaseCtrl) Create(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.EndpointCase}
 // @Router	/api/v1/endpoints/cases/copy	[post]
 func (c *EndpointCaseCtrl) Copy(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.URLParamInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -122,7 +127,7 @@ func (c *EndpointCaseCtrl) Copy(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
 
-	po, err := c.EndpointCaseService.Copy(id, "", 0, 0, userId, userName, "false")
+	po, err := c.EndpointCaseService.Copy(tenantId, id, "", 0, 0, userId, userName, "false")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -143,6 +148,7 @@ func (c *EndpointCaseCtrl) Copy(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]model.EndpointCase}
 // @Router	/api/v1/endpoints/cases/{id}	[put]
 func (c *EndpointCaseCtrl) UpdateName(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.EndpointCaseSaveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -150,13 +156,13 @@ func (c *EndpointCaseCtrl) UpdateName(ctx iris.Context) {
 		return
 	}
 
-	err = c.EndpointCaseService.UpdateName(req)
+	err = c.EndpointCaseService.UpdateName(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.EndpointCaseService.List(req.EndpointId)
+	data, err := c.EndpointCaseService.List(tenantId, req.EndpointId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -176,6 +182,7 @@ func (c *EndpointCaseCtrl) UpdateName(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]model.EndpointCase}
 // @Router	/api/v1/endpoints/cases/saveDebugData	[post]
 func (c *EndpointCaseCtrl) SaveDebugData(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := domain.DebugData{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -183,13 +190,13 @@ func (c *EndpointCaseCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.DebugInterfaceService.CreateOrUpdate(req)
+	_, err = c.DebugInterfaceService.CreateOrUpdate(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.EndpointCaseService.List(req.EndpointInterfaceId)
+	data, err := c.EndpointCaseService.List(tenantId, req.EndpointInterfaceId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -210,6 +217,7 @@ func (c *EndpointCaseCtrl) SaveDebugData(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoints/cases/{id}	[delete]
 func (c *EndpointCaseCtrl) Remove(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, _ := ctx.Params().GetInt("id")
 
 	req := serverDomain.EndpointCaseSaveReq{}
@@ -219,7 +227,7 @@ func (c *EndpointCaseCtrl) Remove(ctx iris.Context) {
 		return
 	}
 
-	err = c.EndpointCaseService.Remove(uint(id))
+	err = c.EndpointCaseService.Remove(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -239,11 +247,12 @@ func (c *EndpointCaseCtrl) Remove(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]serverDomain.EndpointCaseTree}
 // @Router	/api/v1/endpoints/cases/loadTree	[get]
 func (c *EndpointCaseCtrl) LoadTree(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, _ := ctx.URLParamInt("currProjectId")
 	var serveIds consts.Integers
 	ctx.ReadJSON(&serveIds)
 
-	data, err := c.EndpointCaseService.LoadTree(uint(projectId), serveIds)
+	data, err := c.EndpointCaseService.LoadTree(tenantId, uint(projectId), serveIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -263,13 +272,14 @@ func (c *EndpointCaseCtrl) LoadTree(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]serverDomain.EndpointCaseTree}
 // @Router	/api/v1/endpoints/cases/listForBenchmark	[get]
 func (c *EndpointCaseCtrl) ListForBenchmark(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	endpointId, err := ctx.URLParamInt("endpointId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.EndpointCaseService.ListByCaseType(uint(endpointId), consts.CaseDefault)
+	data, err := c.EndpointCaseService.ListByCaseType(tenantId, uint(endpointId), consts.CaseDefault)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

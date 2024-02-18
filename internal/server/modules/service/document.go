@@ -28,7 +28,7 @@ const (
 	EncryptKey = "docencryptkey123"
 )
 
-func (s *DocumentService) Content(req domain.DocumentReq) (res domain.DocumentRep, err error) {
+func (s *DocumentService) Content(tenantId consts.TenantId, req domain.DocumentReq) (res domain.DocumentRep, err error) {
 	var projectId, documentId uint
 	var endpointIds, serveIds []uint
 	var needDetail bool
@@ -36,29 +36,29 @@ func (s *DocumentService) Content(req domain.DocumentReq) (res domain.DocumentRe
 	projectId, serveIds, endpointIds, documentId, needDetail = req.ProjectId, req.ServeIds, req.EndpointIds, req.DocumentId, req.NeedDetail
 
 	var endpoints map[uint][]domain.EndpointReq
-	endpoints, err = s.GetEndpoints(&projectId, &serveIds, &endpointIds, documentId, needDetail)
+	endpoints, err = s.GetEndpoints(tenantId, &projectId, &serveIds, &endpointIds, documentId, needDetail)
 	if err != nil {
 		return
 	}
 
-	res = s.GetProject(projectId)
+	res = s.GetProject(tenantId, projectId)
 
-	res.Serves = s.GetServes(serveIds, endpoints)
+	res.Serves = s.GetServes(tenantId, serveIds, endpoints)
 
 	return
 }
 
-func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[]uint, documentId uint, needDetail bool) (res map[uint][]domain.EndpointReq, err error) {
+func (s *DocumentService) GetEndpoints(tenantId consts.TenantId, projectId *uint, serveIds, endpointIds *[]uint, documentId uint, needDetail bool) (res map[uint][]domain.EndpointReq, err error) {
 	var endpoints []*model.Endpoint
 
 	if documentId != 0 {
-		endpoints, err = s.EndpointSnapshotRepo.GetByDocumentId(documentId)
+		endpoints, err = s.EndpointSnapshotRepo.GetByDocumentId(tenantId, documentId)
 	} else if *projectId != 0 {
-		endpoints, err = s.EndpointRepo.GetByProjectId(*projectId, needDetail)
+		endpoints, err = s.EndpointRepo.GetByProjectId(tenantId, *projectId, needDetail)
 	} else if len(*serveIds) != 0 {
-		endpoints, err = s.EndpointRepo.GetByServeIds(*serveIds, needDetail)
+		endpoints, err = s.EndpointRepo.GetByServeIds(tenantId, *serveIds, needDetail)
 	} else if len(*endpointIds) != 0 {
-		endpoints, err = s.EndpointRepo.GetByEndpointIds(*endpointIds, needDetail)
+		endpoints, err = s.EndpointRepo.GetByEndpointIds(tenantId, *endpointIds, needDetail)
 	}
 
 	if err != nil {
@@ -67,16 +67,16 @@ func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[
 
 	for key, endpoint := range endpoints {
 		for k, _ := range endpoint.Interfaces {
-			s.MergeGlobalParams(&endpoints[key].Interfaces[k])
+			s.MergeGlobalParams(tenantId, &endpoints[key].Interfaces[k])
 		}
 	}
 
-	res = s.GetEndpointsInfo(projectId, serveIds, endpoints)
+	res = s.GetEndpointsInfo(tenantId, projectId, serveIds, endpoints)
 
 	return
 }
 
-func (s *DocumentService) GetEndpointsInfo(projectId *uint, serveIds *[]uint, endpoints []*model.Endpoint) (res map[uint][]domain.EndpointReq) {
+func (s *DocumentService) GetEndpointsInfo(tenantId consts.TenantId, projectId *uint, serveIds *[]uint, endpoints []*model.Endpoint) (res map[uint][]domain.EndpointReq) {
 	res = make(map[uint][]domain.EndpointReq)
 
 	serves := make(map[uint]uint)
@@ -95,23 +95,23 @@ func (s *DocumentService) GetEndpointsInfo(projectId *uint, serveIds *[]uint, en
 	return
 }
 
-func (s *DocumentService) GetProject(projectId uint) (doc domain.DocumentRep) {
-	project, err := s.ProjectRepo.Get(projectId)
+func (s *DocumentService) GetProject(tenantId consts.TenantId, projectId uint) (doc domain.DocumentRep) {
+	project, err := s.ProjectRepo.Get(tenantId, projectId)
 	if err != nil {
 		return
 	}
 	copier.CopyWithOption(&doc, &project, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 
-	doc.GlobalParams, _ = s.EnvironmentRepo.ListParams(projectId)
-	doc.GlobalVars = s.GetGlobalVars(projectId)
+	doc.GlobalParams, _ = s.EnvironmentRepo.ListParams(tenantId, projectId)
+	doc.GlobalVars = s.GetGlobalVars(tenantId, projectId)
 	return
 }
 
-func (s *DocumentService) GetServes(serveIds []uint, endpoints map[uint][]domain.EndpointReq) (serves []domain.DocumentServe) {
-	res, _ := s.ServeRepo.GetServesByIds(serveIds)
-	schemas := s.GetSchemas(serveIds)
-	securities := s.GetSecurities(serveIds)
-	servers := s.GetServers(serveIds)
+func (s *DocumentService) GetServes(tenantId consts.TenantId, serveIds []uint, endpoints map[uint][]domain.EndpointReq) (serves []domain.DocumentServe) {
+	res, _ := s.ServeRepo.GetServesByIds(tenantId, serveIds)
+	schemas := s.GetSchemas(tenantId, serveIds)
+	securities := s.GetSecurities(tenantId, serveIds)
+	servers := s.GetServers(tenantId, serveIds)
 	for _, item := range res {
 		var serve domain.DocumentServe
 		copier.CopyWithOption(&serve, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
@@ -119,28 +119,28 @@ func (s *DocumentService) GetServes(serveIds []uint, endpoints map[uint][]domain
 		serve.Component = schemas[uint(serve.ID)]
 		serve.Securities = securities[uint(serve.ID)]
 		serve.Servers = servers[uint(serve.ID)]
-		s.mocks(serve.Endpoints, serve.Servers)
+		s.mocks(tenantId, serve.Endpoints, serve.Servers)
 		serves = append(serves, serve)
 	}
 	return
 }
 
-func (s *DocumentService) mocks(endpoints []domain.EndpointReq, servers []domain.ServeServer) {
+func (s *DocumentService) mocks(tenantId consts.TenantId, endpoints []domain.EndpointReq, servers []domain.ServeServer) {
 	var serve []model.ServeServer
 	copier.CopyWithOption(&serve, &servers, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 	for key1, endpoint := range endpoints {
 		for key2, interf := range endpoint.Interfaces {
 			var interfaceDetail model.EndpointInterface
 			copier.CopyWithOption(&interfaceDetail, &interf, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-			endpoints[key1].Interfaces[key2].Mock = s.mock(serve, interfaceDetail)
+			endpoints[key1].Interfaces[key2].Mock = s.mock(tenantId, serve, interfaceDetail)
 		}
 	}
 
 }
 
-func (s *DocumentService) GetSchemas(serveIds []uint) (schemas map[uint][]domain.ServeSchemaReq) {
+func (s *DocumentService) GetSchemas(tenantId consts.TenantId, serveIds []uint) (schemas map[uint][]domain.ServeSchemaReq) {
 	schemas = make(map[uint][]domain.ServeSchemaReq)
-	res, _ := s.ServeRepo.GetSchemas(serveIds)
+	res, _ := s.ServeRepo.GetSchemas(tenantId, serveIds)
 	for _, item := range res {
 		var schema domain.ServeSchemaReq
 		copier.CopyWithOption(&schema, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
@@ -149,9 +149,9 @@ func (s *DocumentService) GetSchemas(serveIds []uint) (schemas map[uint][]domain
 	return
 }
 
-func (s *DocumentService) GetServers(serveIds []uint) (servers map[uint][]domain.ServeServer) {
+func (s *DocumentService) GetServers(tenantId consts.TenantId, serveIds []uint) (servers map[uint][]domain.ServeServer) {
 	servers = make(map[uint][]domain.ServeServer)
-	res, _ := s.ServeRepo.GetServers(serveIds)
+	res, _ := s.ServeRepo.GetServers(tenantId, serveIds)
 	for _, item := range res {
 		var server domain.ServeServer
 		copier.CopyWithOption(&server, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
@@ -160,9 +160,9 @@ func (s *DocumentService) GetServers(serveIds []uint) (servers map[uint][]domain
 	return
 }
 
-func (s *DocumentService) GetSecurities(serveIds []uint) (securities map[uint][]domain.ServeSecurityReq) {
+func (s *DocumentService) GetSecurities(tenantId consts.TenantId, serveIds []uint) (securities map[uint][]domain.ServeSecurityReq) {
 	securities = make(map[uint][]domain.ServeSecurityReq)
-	res, _ := s.ServeRepo.GetSecurities(serveIds)
+	res, _ := s.ServeRepo.GetSecurities(tenantId, serveIds)
 	for _, item := range res {
 		var security domain.ServeSecurityReq
 		copier.CopyWithOption(&security, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
@@ -171,13 +171,13 @@ func (s *DocumentService) GetSecurities(serveIds []uint) (securities map[uint][]
 	return
 }
 
-func (s *DocumentService) GetGlobalVars(projectId uint) (globalVars []domain.EnvironmentParam) {
-	res, _ := s.EnvironmentRepo.ListGlobalVar(projectId)
+func (s *DocumentService) GetGlobalVars(tenantId consts.TenantId, projectId uint) (globalVars []domain.EnvironmentParam) {
+	res, _ := s.EnvironmentRepo.ListGlobalVar(tenantId, projectId)
 	copier.CopyWithOption(&globalVars, &res, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 	return
 }
 
-func (s *DocumentService) GetDocumentVersionList(projectId uint, needLatest bool) (documents []model.EndpointDocument, err error) {
+func (s *DocumentService) GetDocumentVersionList(tenantId consts.TenantId, projectId uint, needLatest bool) (documents []model.EndpointDocument, err error) {
 	if needLatest {
 		latestDocument := model.EndpointDocument{
 			Name:    "实时版本",
@@ -186,7 +186,7 @@ func (s *DocumentService) GetDocumentVersionList(projectId uint, needLatest bool
 		documents = append(documents, latestDocument)
 	}
 
-	documentsTmp, err := s.EndpointDocumentRepo.ListByProject(projectId)
+	documentsTmp, err := s.EndpointDocumentRepo.ListByProject(tenantId, projectId)
 	if err != nil {
 		return
 	}
@@ -195,34 +195,34 @@ func (s *DocumentService) GetDocumentVersionList(projectId uint, needLatest bool
 	return
 }
 
-func (s *DocumentService) Publish(req domain.DocumentVersionReq, projectId uint) (documentId uint, err error) {
-	documentId, err = s.EndpointSnapshotRepo.BatchCreateSnapshot(req, projectId)
+func (s *DocumentService) Publish(tenantId consts.TenantId, req domain.DocumentVersionReq, projectId uint) (documentId uint, err error) {
+	documentId, err = s.EndpointSnapshotRepo.BatchCreateSnapshot(tenantId, req, projectId)
 	return
 }
 
-func (s *DocumentService) RemoveSnapshot(snapshotId uint) (err error) {
-	err = s.EndpointSnapshotRepo.DeleteById(snapshotId)
+func (s *DocumentService) RemoveSnapshot(tenantId consts.TenantId, snapshotId uint) (err error) {
+	err = s.EndpointSnapshotRepo.DeleteById(tenantId, snapshotId)
 	return
 }
 
-func (s *DocumentService) UpdateSnapshotContent(id uint, endpoint model.Endpoint) (err error) {
-	err = s.EndpointSnapshotRepo.UpdateContent(id, endpoint)
+func (s *DocumentService) UpdateSnapshotContent(tenantId consts.TenantId, id uint, endpoint model.Endpoint) (err error) {
+	err = s.EndpointSnapshotRepo.UpdateContent(tenantId, id, endpoint)
 	return
 }
 
-func (s *DocumentService) UpdateDocument(req domain.UpdateDocumentVersionReq) (err error) {
-	err = s.EndpointDocumentRepo.Update(req)
+func (s *DocumentService) UpdateDocument(tenantId consts.TenantId, req domain.UpdateDocumentVersionReq) (err error) {
+	err = s.EndpointDocumentRepo.Update(tenantId, req)
 	return
 }
 
-func (s *DocumentService) GenerateShareLink(req domain.DocumentShareReq) (link string, err error) {
+func (s *DocumentService) GenerateShareLink(tenantId consts.TenantId, req domain.DocumentShareReq) (link string, err error) {
 	encryptValue := strconv.Itoa(int(req.ProjectId)) + "-" + strconv.Itoa(int(req.DocumentId)) + "-" + strconv.Itoa(int(req.EndpointId))
 	res, err := commUtils.AesCBCEncrypt([]byte(encryptValue), []byte(EncryptKey))
 	link = base64.RawURLEncoding.EncodeToString(res)
 	return
 }
 
-func (s *DocumentService) DecryptShareLink(link string) (req domain.DocumentShareReq, err error) {
+func (s *DocumentService) DecryptShareLink(tenantId consts.TenantId, link string) (req domain.DocumentShareReq, err error) {
 	linkByte, err := base64.RawURLEncoding.DecodeString(link)
 	if err != nil {
 		return
@@ -245,19 +245,19 @@ func (s *DocumentService) DecryptShareLink(link string) (req domain.DocumentShar
 	return
 }
 
-func (s *DocumentService) GetEndpointsByShare(projectId, endpointId *uint, serveIds *[]uint, documentId uint) (res map[uint][]domain.EndpointReq, err error) {
+func (s *DocumentService) GetEndpointsByShare(tenantId consts.TenantId, projectId, endpointId *uint, serveIds *[]uint, documentId uint) (res map[uint][]domain.EndpointReq, err error) {
 	var endpoints []*model.Endpoint
 	if documentId != 0 {
 		if *endpointId != 0 {
-			endpoints, err = s.EndpointSnapshotRepo.GetByDocumentIdAndEndpointId(documentId, *endpointId)
+			endpoints, err = s.EndpointSnapshotRepo.GetByDocumentIdAndEndpointId(tenantId, documentId, *endpointId)
 		} else {
-			endpoints, err = s.EndpointSnapshotRepo.GetByDocumentId(documentId)
+			endpoints, err = s.EndpointSnapshotRepo.GetByDocumentId(tenantId, documentId)
 		}
 	} else if *projectId != 0 {
 		if *endpointId != 0 {
-			endpoints, err = s.EndpointRepo.GetByEndpointIds([]uint{*endpointId}, false)
+			endpoints, err = s.EndpointRepo.GetByEndpointIds(tenantId, []uint{*endpointId}, false)
 		} else {
-			endpoints, err = s.EndpointRepo.GetByProjectId(*projectId, false)
+			endpoints, err = s.EndpointRepo.GetByProjectId(tenantId, *projectId, false)
 		}
 	}
 	if err != nil {
@@ -268,23 +268,23 @@ func (s *DocumentService) GetEndpointsByShare(projectId, endpointId *uint, serve
 		return
 	}
 
-	res = s.GetEndpointsInfo(projectId, serveIds, endpoints)
+	res = s.GetEndpointsInfo(tenantId, projectId, serveIds, endpoints)
 
 	return
 }
 
-func (s *DocumentService) ContentByShare(link string) (res domain.DocumentRep, err error) {
+func (s *DocumentService) ContentByShare(tenantId consts.TenantId, link string) (res domain.DocumentRep, err error) {
 	var projectId, documentId, endpointId uint
 	var serveIds []uint
 
-	req, err := s.DecryptShareLink(link)
+	req, err := s.DecryptShareLink(tenantId, link)
 	if err != nil {
 		return
 	}
 
 	projectId, endpointId, documentId = req.ProjectId, req.EndpointId, req.DocumentId
 
-	endpoints, err := s.GetEndpointsByShare(&projectId, &endpointId, &serveIds, documentId)
+	endpoints, err := s.GetEndpointsByShare(tenantId, &projectId, &endpointId, &serveIds, documentId)
 	if err != nil {
 		return
 	}
@@ -293,7 +293,7 @@ func (s *DocumentService) ContentByShare(link string) (res domain.DocumentRep, e
 	if documentId == 0 {
 		version = "latest"
 	} else {
-		document, err := s.EndpointDocumentRepo.GetById(documentId)
+		document, err := s.EndpointDocumentRepo.GetById(tenantId, documentId)
 		if err != nil {
 			return res, err
 		}
@@ -301,52 +301,52 @@ func (s *DocumentService) ContentByShare(link string) (res domain.DocumentRep, e
 		documentId = document.ID
 	}
 
-	res = s.GetProject(projectId)
+	res = s.GetProject(tenantId, projectId)
 
-	res.Serves = s.GetServes(serveIds, endpoints)
+	res.Serves = s.GetServes(tenantId, serveIds, endpoints)
 	res.Version = version
 	res.DocumentId = documentId
 
 	return
 }
 
-func (s *DocumentService) GetDocumentDetail(documentId, endpointId, interfaceId uint) (res map[string]interface{}, err error) {
+func (s *DocumentService) GetDocumentDetail(tenantId consts.TenantId, documentId, endpointId, interfaceId uint) (res map[string]interface{}, err error) {
 	var interfaceDetail model.EndpointInterface
 
 	if documentId == 0 {
-		interfaceDetail, err = s.EndpointInterfaceRepo.GetDetail(interfaceId)
+		interfaceDetail, err = s.EndpointInterfaceRepo.GetDetail(tenantId, interfaceId)
 	} else {
-		interfaceDetail, err = s.EndpointSnapshotRepo.GetInterfaceDetail(documentId, endpointId, interfaceId)
+		interfaceDetail, err = s.EndpointSnapshotRepo.GetInterfaceDetail(tenantId, documentId, endpointId, interfaceId)
 	}
 
 	if err != nil {
 		return
 	}
 
-	endpoint, err := s.EndpointRepo.Get(interfaceDetail.EndpointId)
+	endpoint, err := s.EndpointRepo.Get(tenantId, interfaceDetail.EndpointId)
 	if err != nil {
 		return
 	}
 
 	serveId := endpoint.ServeId
-	serves, err := s.ServeRepo.GetServers([]uint{serveId})
+	serves, err := s.ServeRepo.GetServers(tenantId, []uint{serveId})
 	if err != nil {
 		return
 	}
 
-	s.EndpointService.SchemaConv(&interfaceDetail, serveId)
-	s.MergeGlobalParams(&interfaceDetail)
+	s.EndpointService.SchemaConv(tenantId, &interfaceDetail, serveId)
+	s.MergeGlobalParams(tenantId, &interfaceDetail)
 
 	res = make(map[string]interface{})
 	res["interface"] = interfaceDetail
 	res["servers"] = serves
-	res["mock"] = s.mock(serves, interfaceDetail)
+	res["mock"] = s.mock(tenantId, serves, interfaceDetail)
 
 	return
 }
 
-func (s *DocumentService) mock(serves []model.ServeServer, interfaceDetail model.EndpointInterface) (ret []interface{}) {
-	url := s.getMockEnvironment(serves)
+func (s *DocumentService) mock(tenantId consts.TenantId, serves []model.ServeServer, interfaceDetail model.EndpointInterface) (ret []interface{}) {
+	url := s.getMockEnvironment(tenantId, serves)
 	if url == "" {
 		return
 	}
@@ -359,7 +359,7 @@ func (s *DocumentService) mock(serves []model.ServeServer, interfaceDetail model
 	return
 }
 
-func (s *DocumentService) getMockEnvironment(serves []model.ServeServer) string {
+func (s *DocumentService) getMockEnvironment(tenantId consts.TenantId, serves []model.ServeServer) string {
 	for _, item := range serves {
 		if item.EnvironmentName == "Mock环境" {
 			return item.Url
@@ -369,7 +369,7 @@ func (s *DocumentService) getMockEnvironment(serves []model.ServeServer) string 
 	return ""
 }
 
-func (s *DocumentService) MergeGlobalParams(endpointInterface *model.EndpointInterface) {
+func (s *DocumentService) MergeGlobalParams(tenantId consts.TenantId, endpointInterface *model.EndpointInterface) {
 	for _, globalParam := range endpointInterface.GlobalParams {
 		if globalParam.Disabled {
 			continue

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"strconv"
@@ -13,15 +14,15 @@ type SummaryBugsService struct {
 	SummaryBugsRepo *repo.SummaryBugsRepo `inject:""`
 }
 
-func (s *SummaryBugsService) Bugs(projectId int64) (res v1.ResSummaryBugs, err error) {
+func (s *SummaryBugsService) Bugs(tenantId consts.TenantId, projectId int64) (res v1.ResSummaryBugs, err error) {
 
 	var summaryBugsSeverity []model.SummaryBugsSeverity
 	if projectId == 0 {
-		res.Total, err = s.Count()
-		summaryBugsSeverity, err = s.FindGroupByBugSeverity()
+		res.Total, err = s.Count(tenantId)
+		summaryBugsSeverity, err = s.FindGroupByBugSeverity(tenantId)
 	} else {
-		res.Total, err = s.CountByProjectId(projectId)
-		summaryBugsSeverity, err = s.FindByProjectIdGroupByBugSeverity(projectId)
+		res.Total, err = s.CountByProjectId(tenantId, projectId)
+		summaryBugsSeverity, err = s.FindByProjectIdGroupByBugSeverity(tenantId, projectId)
 	}
 
 	if err == nil {
@@ -61,57 +62,57 @@ func (s *SummaryBugsService) HandlerSummaryBugsRepo() *repo.SummaryBugsRepo {
 }
 
 // FindByProjectId
-func (s *SummaryBugsService) FindByProjectIdGroupByBugSeverity(projectId int64) (summaryBugsSeverity []model.SummaryBugsSeverity, err error) {
+func (s *SummaryBugsService) FindByProjectIdGroupByBugSeverity(tenantId consts.TenantId, projectId int64) (summaryBugsSeverity []model.SummaryBugsSeverity, err error) {
 
-	summaryBugsSeverity, err = s.HandlerSummaryBugsRepo().FindByProjectIdGroupByBugSeverity(projectId)
+	summaryBugsSeverity, err = s.HandlerSummaryBugsRepo().FindByProjectIdGroupByBugSeverity(tenantId, projectId)
 	return
 }
 
-func (s *SummaryBugsService) FindProjectIds() (projectIds []int64, err error) {
+func (s *SummaryBugsService) FindProjectIds(tenantId consts.TenantId) (projectIds []int64, err error) {
 
-	return s.HandlerSummaryBugsRepo().FindProjectIds()
+	return s.HandlerSummaryBugsRepo().FindProjectIds(tenantId)
 }
 
 // FindGroupByBugSeverity
-func (s *SummaryBugsService) FindGroupByBugSeverity() (summaryBugsSeverity []model.SummaryBugsSeverity, err error) {
+func (s *SummaryBugsService) FindGroupByBugSeverity(tenantId consts.TenantId) (summaryBugsSeverity []model.SummaryBugsSeverity, err error) {
 
-	summaryBugsSeverity, err = s.HandlerSummaryBugsRepo().FindGroupByBugSeverity()
+	summaryBugsSeverity, err = s.HandlerSummaryBugsRepo().FindGroupByBugSeverity(tenantId)
 	return
 }
 
-func (s *SummaryBugsService) Create(req model.SummaryBugs) (err error) {
+func (s *SummaryBugsService) Create(tenantId consts.TenantId, req model.SummaryBugs) (err error) {
 
-	return s.HandlerSummaryBugsRepo().Create(req)
+	return s.HandlerSummaryBugsRepo().Create(tenantId, req)
 }
 
-func (s *SummaryBugsService) CreateBug(req model.SummaryBugs) (err error) {
-	id, err := s.Existed(req.BugId, req.ProjectId)
+func (s *SummaryBugsService) CreateBug(tenantId consts.TenantId, req model.SummaryBugs) (err error) {
+	id, err := s.Existed(tenantId, req.BugId, req.ProjectId)
 	if id == 0 {
-		err = s.Create(req)
+		err = s.Create(tenantId, req)
 	} else {
-		err = s.UpdateColumnsByDate(req, id)
+		err = s.UpdateColumnsByDate(tenantId, req, id)
 	}
 	return
 }
 
-func (s *SummaryBugsService) UpdateColumnsByDate(req model.SummaryBugs, id int64) (err error) {
+func (s *SummaryBugsService) UpdateColumnsByDate(tenantId consts.TenantId, req model.SummaryBugs, id int64) (err error) {
 
-	return s.HandlerSummaryBugsRepo().UpdateColumnsByDate(req, id)
+	return s.HandlerSummaryBugsRepo().UpdateColumnsByDate(tenantId, req, id)
 }
 
-func (s *SummaryBugsService) Existed(bugId int64, projectId int64) (id int64, err error) {
+func (s *SummaryBugsService) Existed(tenantId consts.TenantId, bugId int64, projectId int64) (id int64, err error) {
 
-	return s.HandlerSummaryBugsRepo().Existed(bugId, projectId)
+	return s.HandlerSummaryBugsRepo().Existed(tenantId, bugId, projectId)
 }
 
 // Count
-func (s *SummaryBugsService) Count() (count int64, err error) {
+func (s *SummaryBugsService) Count(tenantId consts.TenantId) (count int64, err error) {
 
-	return s.HandlerSummaryBugsRepo().Count()
+	return s.HandlerSummaryBugsRepo().Count(tenantId)
 }
 
 // CountByProjectId
-func (s *SummaryBugsService) CountByProjectId(projectId int64) (count int64, err error) {
+func (s *SummaryBugsService) CountByProjectId(tenantId consts.TenantId, projectId int64) (count int64, err error) {
 
-	return s.HandlerSummaryBugsRepo().CountByProjectId(projectId)
+	return s.HandlerSummaryBugsRepo().CountByProjectId(tenantId, projectId)
 }

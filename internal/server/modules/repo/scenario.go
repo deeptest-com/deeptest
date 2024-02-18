@@ -242,7 +242,7 @@ func (r *ScenarioRepo) AddPlans(tenantId consts.TenantId, scenarioId uint, planI
 	}
 
 	for _, po := range pos {
-		po.Ordr = r.RelaPlanScenarioRepo.GetMaxOrder(po.PlanId)
+		po.Ordr = r.RelaPlanScenarioRepo.GetMaxOrder(tenantId, po.PlanId)
 		err = r.GetDB(tenantId).Create(&po).Error
 		if err != nil {
 			return

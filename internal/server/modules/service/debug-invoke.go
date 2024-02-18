@@ -33,45 +33,45 @@ type DebugInvokeService struct {
 	ScenarioInterfaceRepo *repo.ScenarioInterfaceRepo `inject:""`
 }
 
-func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (invoke model.DebugInvoke, err error) {
+func (s *DebugInvokeService) SubmitResult(tenantId consts.TenantId, req domain.SubmitDebugResultRequest) (invoke model.DebugInvoke, err error) {
 	usedBy := req.Request.UsedBy
 	var endpointId, serveId, processorId, scenarioId, projectId uint
 
 	if usedBy == consts.InterfaceDebug {
-		endpointId, serveId = s.DebugInterfaceService.GetEndpointAndServeIdForEndpointInterface(req.Request.EndpointInterfaceId)
+		endpointId, serveId = s.DebugInterfaceService.GetEndpointAndServeIdForEndpointInterface(tenantId, req.Request.EndpointInterfaceId)
 
-		endpoint, _ := s.EndpointRepo.Get(endpointId)
+		endpoint, _ := s.EndpointRepo.Get(tenantId, endpointId)
 		serveId = endpoint.ServeId
 		projectId = endpoint.ProjectId
 
 	} else if usedBy == consts.ScenarioDebug {
 		processorId = req.Request.ScenarioProcessorId
-		scenarioId = s.DebugInterfaceService.GetScenarioIdForDebugInterface(req.Request.ScenarioProcessorId)
+		scenarioId = s.DebugInterfaceService.GetScenarioIdForDebugInterface(tenantId, req.Request.ScenarioProcessorId)
 
-		scenario, _ := s.ScenarioRepo.Get(scenarioId)
+		scenario, _ := s.ScenarioRepo.Get(tenantId, scenarioId)
 		projectId = scenario.ProjectId
 
 	} else if usedBy == consts.DiagnoseDebug {
-		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(req.Request.DiagnoseInterfaceId)
+		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(tenantId, req.Request.DiagnoseInterfaceId)
 
 		serveId = diagnoseInterface.ServeId
 		projectId = diagnoseInterface.ProjectId
 
 	} else if usedBy == consts.CaseDebug {
-		caseInterface, _ := s.EndpointCaseRepo.Get(req.Request.CaseInterfaceId)
+		caseInterface, _ := s.EndpointCaseRepo.Get(tenantId, req.Request.CaseInterfaceId)
 
 		serveId = caseInterface.ServeId
 		projectId = caseInterface.ProjectId
 	}
 
-	invoke, err = s.Create(req, serveId, processorId, scenarioId, projectId)
+	invoke, err = s.Create(tenantId, req, serveId, processorId, scenarioId, projectId)
 
-	s.ExecConditionService.SavePreConditionResult(invoke.ID,
+	s.ExecConditionService.SavePreConditionResult(tenantId, invoke.ID,
 		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
 		serveId, processorId, scenarioId, usedBy,
 		req.PreConditions)
 
-	s.ExecConditionService.SavePostConditionResult(invoke.ID,
+	s.ExecConditionService.SavePostConditionResult(tenantId, invoke.ID,
 		req.Request.DebugInterfaceId, req.Request.CaseInterfaceId, req.Request.EndpointInterfaceId,
 		serveId, processorId, scenarioId, usedBy,
 		req.PostConditions)
@@ -83,10 +83,10 @@ func (s *DebugInvokeService) SubmitResult(req domain.SubmitDebugResultRequest) (
 	return
 }
 
-func (s *DebugInvokeService) Create(req domain.SubmitDebugResultRequest,
+func (s *DebugInvokeService) Create(tenantId consts.TenantId, req domain.SubmitDebugResultRequest,
 	serveId, scenarioProcessorId, scenarioId, projectId uint) (po model.DebugInvoke, err error) {
 
-	debugInterface, _ := s.DebugInterfaceRepo.Get(req.Request.DebugInterfaceId)
+	debugInterface, _ := s.DebugInterfaceRepo.Get(tenantId, req.Request.DebugInterfaceId)
 
 	po = model.DebugInvoke{
 		ServeId: serveId,
@@ -116,19 +116,19 @@ func (s *DebugInvokeService) Create(req domain.SubmitDebugResultRequest,
 	bytesPostConditions, _ := json.Marshal(req.PostConditions)
 	po.PostConditionsContent = string(bytesPostConditions)
 
-	err = s.DebugInvokeRepo.Save(&po)
+	err = s.DebugInvokeRepo.Save(tenantId, &po)
 
 	return
 }
 
-func (s *DebugInvokeService) ListByInterface(debugInterfaceId, endpointInterfaceId uint) (invocations []model.DebugInvoke, err error) {
-	invocations, err = s.DebugRepo.List(debugInterfaceId, endpointInterfaceId)
+func (s *DebugInvokeService) ListByInterface(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint) (invocations []model.DebugInvoke, err error) {
+	invocations, err = s.DebugRepo.List(tenantId, debugInterfaceId, endpointInterfaceId)
 
 	return
 }
 
-func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId uint) (ret iris.Map, err error) {
-	po, _ := s.DebugRepo.GetLast(debugInterfaceId, endpointInterfaceId)
+func (s *DebugInvokeService) GetLastResp(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint) (ret iris.Map, err error) {
+	po, _ := s.DebugRepo.GetLast(tenantId, debugInterfaceId, endpointInterfaceId)
 
 	req := domain.DebugData{}
 	resp := domain.DebugResponse{}
@@ -153,25 +153,25 @@ func (s *DebugInvokeService) GetLastResp(debugInterfaceId, endpointInterfaceId u
 	return
 }
 
-func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err error) {
-	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
+func (s *DebugInvokeService) GetResult(tenantId consts.TenantId, invokeId int) (results []interface{}, err error) {
+	invocation, err := s.DebugInvokeRepo.Get(tenantId, uint(invokeId))
 
-	conditions, err := s.ConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryResult, "", "false", "")
+	conditions, err := s.ConditionRepo.List(tenantId, invocation.DebugInterfaceId, invocation.EndpointInterfaceId, consts.ConditionCategoryResult, "", "false", "")
 
 	for _, condition := range conditions {
 		typ := condition.EntityType
 		var log interface{}
 
 		if typ == consts.ConditionTypeCheckpoint {
-			log, _ = s.CheckpointRepo.GetLog(condition.ID, uint(invokeId))
+			log, _ = s.CheckpointRepo.GetLog(tenantId, condition.ID, uint(invokeId))
 			results = append(results, log)
 
 		} else if typ == consts.ConditionTypeResponseDefine {
-			log, _ = s.ResponseDefineRepo.GetLog(condition.ID, uint(invokeId))
+			log, _ = s.ResponseDefineRepo.GetLog(tenantId, condition.ID, uint(invokeId))
 			results = append(results, log)
 
 		} else if typ == consts.ConditionTypeScript {
-			logs, _ := s.CheckpointRepo.GetLogFromScriptAssert(condition.ID, uint(invokeId))
+			logs, _ := s.CheckpointRepo.GetLogFromScriptAssert(tenantId, condition.ID, uint(invokeId))
 			for _, item := range logs {
 				results = append(results, item)
 			}
@@ -181,10 +181,10 @@ func (s *DebugInvokeService) GetResult(invokeId int) (results []interface{}, err
 	return
 }
 
-func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err error) {
-	invocation, err := s.DebugInvokeRepo.Get(uint(invokeId))
+func (s *DebugInvokeService) GetLog(tenantId consts.TenantId, invokeId int) (results []interface{}, err error) {
+	invocation, err := s.DebugInvokeRepo.Get(tenantId, uint(invokeId))
 
-	preConditions, err := s.ConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId,
+	preConditions, err := s.ConditionRepo.List(tenantId, invocation.DebugInterfaceId, invocation.EndpointInterfaceId,
 		consts.ConditionCategoryConsole, "", "false", consts.ConditionSrcPre)
 
 	for _, condition := range preConditions {
@@ -196,9 +196,9 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 		var log interface{}
 
 		if typ == consts.ConditionTypeScript {
-			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
+			log, _ = s.ScriptRepo.GetLog(tenantId, condition.ID, uint(invokeId))
 		} else if typ == consts.ConditionTypeDatabase {
-			log, _ = s.DatabaseOptRepo.GetLog(condition.ID, uint(invokeId))
+			log, _ = s.DatabaseOptRepo.GetLog(tenantId, condition.ID, uint(invokeId))
 		}
 
 		if log != nil {
@@ -206,7 +206,7 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 		}
 	}
 
-	postConditions, err := s.ConditionRepo.List(invocation.DebugInterfaceId, invocation.EndpointInterfaceId,
+	postConditions, err := s.ConditionRepo.List(tenantId, invocation.DebugInterfaceId, invocation.EndpointInterfaceId,
 		consts.ConditionCategoryConsole, "", "false", consts.ConditionSrcPost)
 
 	for _, condition := range postConditions {
@@ -218,13 +218,13 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 		var log interface{}
 
 		if typ == consts.ConditionTypeExtractor {
-			log, _ = s.ExtractorRepo.GetLog(condition.ID, uint(invokeId))
+			log, _ = s.ExtractorRepo.GetLog(tenantId, condition.ID, uint(invokeId))
 
 		} else if typ == consts.ConditionTypeScript {
-			log, _ = s.ScriptRepo.GetLog(condition.ID, uint(invokeId))
+			log, _ = s.ScriptRepo.GetLog(tenantId, condition.ID, uint(invokeId))
 
 		} else if typ == consts.ConditionTypeDatabase {
-			log, _ = s.DatabaseOptRepo.GetLog(condition.ID, uint(invokeId))
+			log, _ = s.DatabaseOptRepo.GetLog(tenantId, condition.ID, uint(invokeId))
 
 		}
 
@@ -242,7 +242,7 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 		var log interface{}
 
 		if typ == consts.ConditionTypeCheckpoint {
-			log, _ = s.CheckpointRepo.GetLog(condition.ID, uint(invokeId))
+			log, _ = s.CheckpointRepo.GetLog(tenantId, condition.ID, uint(invokeId))
 
 		}
 
@@ -254,10 +254,10 @@ func (s *DebugInvokeService) GetLog(invokeId int) (results []interface{}, err er
 	return
 }
 
-func (s *DebugInvokeService) GetAsInterface(id int) (debugData domain.DebugData,
+func (s *DebugInvokeService) GetAsInterface(tenantId consts.TenantId, id int) (debugData domain.DebugData,
 	resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
 
-	invocation, err := s.DebugInvokeRepo.Get(uint(id))
+	invocation, err := s.DebugInvokeRepo.Get(tenantId, uint(id))
 
 	// deal with query params
 	json.Unmarshal([]byte(invocation.ReqContent), &debugData)
@@ -274,19 +274,19 @@ func (s *DebugInvokeService) GetAsInterface(id int) (debugData domain.DebugData,
 
 	// update request data
 	debugPo := model.DebugInterface{}
-	s.DebugInterfaceService.CopyValueFromRequest(&debugPo, debugData)
+	s.DebugInterfaceService.CopyValueFromRequest(tenantId, &debugPo, debugData)
 	if resultReq.DebugInterfaceId > 0 {
 		debugPo.ID = resultReq.DebugInterfaceId
 	}
-	err = s.ScenarioInterfaceRepo.SaveDebugData(&debugPo)
+	err = s.ScenarioInterfaceRepo.SaveDebugData(tenantId, &debugPo)
 
 	// save pre/post conditions
 	preConditions := []domain.InterfaceExecCondition{}
 	postConditions := []domain.InterfaceExecCondition{}
 	json.Unmarshal([]byte(invocation.PreConditionsContent), &preConditions)
 	json.Unmarshal([]byte(invocation.PostConditionsContent), &postConditions)
-	s.ConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, preConditions, debugData.UsedBy, consts.ConditionSrcPre)
-	s.ConditionRepo.ReplaceAll(debugData.DebugInterfaceId, debugData.EndpointInterfaceId, postConditions, debugData.UsedBy, consts.ConditionSrcPre)
+	s.ConditionRepo.ReplaceAll(tenantId, debugData.DebugInterfaceId, debugData.EndpointInterfaceId, preConditions, debugData.UsedBy, consts.ConditionSrcPre)
+	s.ConditionRepo.ReplaceAll(tenantId, debugData.DebugInterfaceId, debugData.EndpointInterfaceId, postConditions, debugData.UsedBy, consts.ConditionSrcPre)
 
 	// response data to show
 	resultReq = debugData
@@ -295,8 +295,8 @@ func (s *DebugInvokeService) GetAsInterface(id int) (debugData domain.DebugData,
 	return
 }
 
-func (s *DebugInvokeService) Delete(id uint) (err error) {
-	err = s.DebugRepo.Delete(id)
+func (s *DebugInvokeService) Delete(tenantId consts.TenantId, id uint) (err error) {
+	err = s.DebugRepo.Delete(tenantId, id)
 
 	return
 }

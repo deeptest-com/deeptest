@@ -2,6 +2,7 @@ package repo
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
@@ -14,17 +15,17 @@ type MockJsRepo struct {
 	ServeRepo   *ServeRepo   `inject:""`
 }
 
-func (r *MockJsRepo) ListExpressions() (tos []serverDomain.MockJsExpression, err error) {
-	err = r.DB.Model(&model.MockJsExpression{}).
+func (r *MockJsRepo) ListExpressions(tenantId consts.TenantId) (tos []serverDomain.MockJsExpression, err error) {
+	err = r.GetDB(tenantId).Model(&model.MockJsExpression{}).
 		Where("NOT deleted and expression != ''").
 		Order("ordr ASC").
 		Find(&tos).Error
 	return
 }
 
-func (r *MockJsRepo) BatchCreateExpression(pos []model.MockJsExpression) (successCount int, failItems []string, err error) {
+func (r *MockJsRepo) BatchCreateExpression(tenantId consts.TenantId, pos []model.MockJsExpression) (successCount int, failItems []string, err error) {
 	for _, po := range pos {
-		_, err := r.CreateExpression(po)
+		_, err := r.CreateExpression(tenantId, po)
 		if err != nil {
 			failItems = append(failItems, po.Name)
 			continue
@@ -34,8 +35,8 @@ func (r *MockJsRepo) BatchCreateExpression(pos []model.MockJsExpression) (succes
 	return
 }
 
-func (r *MockJsRepo) CreateExpression(po model.MockJsExpression) (id uint, err error) {
-	menu, err := r.FindExpressionByName(po.Name)
+func (r *MockJsRepo) CreateExpression(tenantId consts.TenantId, po model.MockJsExpression) (id uint, err error) {
+	menu, err := r.FindExpressionByName(tenantId, po.Name)
 	/*
 		if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 			logUtils.Errorf("创建mockjs变量失败%s", err.Error())
@@ -45,7 +46,7 @@ func (r *MockJsRepo) CreateExpression(po model.MockJsExpression) (id uint, err e
 
 	if menu.ID != 0 {
 		po.ID = menu.ID
-		err = r.DB.Save(&po).Error
+		err = r.GetDB(tenantId).Save(&po).Error
 		if err != nil {
 			logUtils.Errorf("更新mockjs变量失败%s", err.Error())
 			return
@@ -53,7 +54,7 @@ func (r *MockJsRepo) CreateExpression(po model.MockJsExpression) (id uint, err e
 		return
 	}
 
-	err = r.DB.Create(&po).Error
+	err = r.GetDB(tenantId).Create(&po).Error
 	if err != nil {
 		logUtils.Errorf("创建mockjs变量失败%s", err.Error())
 		return
@@ -62,8 +63,8 @@ func (r *MockJsRepo) CreateExpression(po model.MockJsExpression) (id uint, err e
 	return
 }
 
-func (r *MockJsRepo) FindExpressionByName(name string) (po model.MockJsExpression, err error) {
-	db := r.DB.Model(&model.MockJsExpression{}).Where("name = ?", name)
+func (r *MockJsRepo) FindExpressionByName(tenantId consts.TenantId, name string) (po model.MockJsExpression, err error) {
+	db := r.GetDB(tenantId).Model(&model.MockJsExpression{}).Where("name = ?", name)
 
 	err = db.First(&po).Error
 	return

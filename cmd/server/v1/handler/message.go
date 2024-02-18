@@ -33,6 +33,7 @@ type MessageCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Message}}
 // @Router	/api/v1/message	[get]
 func (c *MessageCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	var req serverDomain.MessageReqPaginate
@@ -46,7 +47,7 @@ func (c *MessageCtrl) List(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.MessageService.Paginate(req, userId)
+	data, err := c.MessageService.Paginate(tenantId, req, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -65,9 +66,10 @@ func (c *MessageCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{count=int}}
 // @Router	/api/v1/message/unreadCount	[get]
 func (c *MessageCtrl) UnreadCount(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
-	count, err := c.MessageService.UnreadCount(userId)
+	count, err := c.MessageService.UnreadCount(tenantId, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -89,6 +91,7 @@ func (c *MessageCtrl) UnreadCount(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{id=int}}
 // @Router	/api/v1/message/operateRead	[post]
 func (c *MessageCtrl) OperateRead(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	req := serverDomain.MessageReadReq{}
@@ -98,7 +101,7 @@ func (c *MessageCtrl) OperateRead(ctx iris.Context) {
 		return
 	}
 	req.UserId = userId
-	id, err := c.MessageService.OperateRead(req)
+	id, err := c.MessageService.OperateRead(tenantId, req)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil})
@@ -109,6 +112,7 @@ func (c *MessageCtrl) OperateRead(ctx iris.Context) {
 }
 
 func (c *MessageCtrl) ReceiveMcsApprovalData(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.McsApprovalRes{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -120,7 +124,7 @@ func (c *MessageCtrl) ReceiveMcsApprovalData(ctx iris.Context) {
 	_ = json.Unmarshal([]byte(req.Data), &reqData)
 
 	logUtils.Infof("ReceiveMcsApprovalData Req:%+v", req)
-	err = c.MessageService.ReceiveMcsApprovalResult(reqData)
+	err = c.MessageService.ReceiveMcsApprovalResult(tenantId, reqData)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil})
 		return
@@ -130,10 +134,12 @@ func (c *MessageCtrl) ReceiveMcsApprovalData(ctx iris.Context) {
 
 }
 
-func (c *MessageCtrl) InitThirdPartySyncCron() {
+func (c *MessageCtrl) InitThirdPartySyncCron(ctx iris.Context) {
+	//SAAS
+	tenantId := c.getTenantId(ctx)
 	if !config.CONFIG.Mcs.Switch {
 		return
 	}
 
-	c.IntegrationMessageService.SendMessageCron()
+	c.IntegrationMessageService.SendMessageCron(tenantId)
 }

@@ -27,6 +27,7 @@ type ProjectRolePermCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=model.ProjectRole}}
 // @Router	/api/v1/projects/perms/userRole	[get]
 func (c *ProjectRolePermCtrl) GetProjectUserRole(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
@@ -34,7 +35,7 @@ func (c *ProjectRolePermCtrl) GetProjectUserRole(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.ProjectRolePermService.GetProjectUserRole(userId, uint(projectId))
+	data, err := c.ProjectRolePermService.GetProjectUserRole(tenantId, userId, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -53,7 +54,8 @@ func (c *ProjectRolePermCtrl) GetProjectUserRole(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ProjectRole}}
 // @Router	/api/v1/projects/perms/rolesList	[get]
 func (c *ProjectRolePermCtrl) AllRoleList(ctx iris.Context) {
-	data, err := c.ProjectRolePermService.AllRoleList()
+	tenantId := c.getTenantId(ctx)
+	data, err := c.ProjectRolePermService.AllRoleList(tenantId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -74,6 +76,7 @@ func (c *ProjectRolePermCtrl) AllRoleList(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ProjectPerm}}
 // @Router	/api/v1/projects/perms/rolePermList	[get]
 func (c *ProjectRolePermCtrl) RolePermList(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ProjectRolePermPaginateReq
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -85,7 +88,7 @@ func (c *ProjectRolePermCtrl) RolePermList(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.ProjectRolePermService.PaginateRolePerms(req)
+	data, err := c.ProjectRolePermService.PaginateRolePerms(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -105,6 +108,7 @@ func (c *ProjectRolePermCtrl) RolePermList(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ProjectPerm}}
 // @Router	/api/v1/projects/perms/userPermList	[get]
 func (c *ProjectRolePermCtrl) UserPermList(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	var req serverDomain.ProjectUserPermsPaginate
@@ -118,7 +122,7 @@ func (c *ProjectRolePermCtrl) UserPermList(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.ProjectRolePermService.PaginateUserPerms(req, userId)
+	data, err := c.ProjectRolePermService.PaginateUserPerms(tenantId, req, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

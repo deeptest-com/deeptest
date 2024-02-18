@@ -28,6 +28,7 @@ type ScenarioReportCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ScenarioReport}}
 // @Router	/api/v1/scenarios/reports	[post]
 func (c *ScenarioReportCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	/*
 		projectId, err := ctx.URLParamInt("currProjectId")
 		if projectId == 0 {
@@ -46,7 +47,7 @@ func (c *ScenarioReportCtrl) List(ctx iris.Context) {
 		}
 	}
 
-	data, err := c.ScenarioReportService.Paginate(req)
+	data, err := c.ScenarioReportService.Paginate(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -66,13 +67,14 @@ func (c *ScenarioReportCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.ScenarioReport}
 // @Router	/api/v1/scenarios/reports/{id}	[get]
 func (c *ScenarioReportCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	report, err := c.ScenarioReportService.GetById(req.Id)
+	report, err := c.ScenarioReportService.GetById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -91,6 +93,7 @@ func (c *ScenarioReportCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/reports/{id}	[delete]
 func (c *ScenarioReportCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
 	if err != nil {
@@ -98,7 +101,7 @@ func (c *ScenarioReportCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScenarioReportService.DeleteById(req.Id)
+	err = c.ScenarioReportService.DeleteById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -118,6 +121,7 @@ func (c *ScenarioReportCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/reports/{id}	[put]
 func (c *ScenarioReportCtrl) Create(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
 	if err != nil {
@@ -125,7 +129,7 @@ func (c *ScenarioReportCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScenarioReportService.CreatePlanReport(req.Id)
+	err = c.ScenarioReportService.CreatePlanReport(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

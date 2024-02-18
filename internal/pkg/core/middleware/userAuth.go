@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/integration/enum"
 	"github.com/aaronchen2k/deeptest/integration/service/user"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -58,13 +59,13 @@ func UserAuth() iris.Handler {
 			return
 		}
 
-		appName, token, origin := getAppName(ctx)
+		appName, token, origin, tenantId := getAppName(ctx)
 		user := user.NewUser(appName)
 
 		if appName != "" {
 			userInfo, err := user.GetUserInfoByToken(token, origin)
 			if err == nil && userInfo.Username != "" {
-				token, err := creatSession(userInfo)
+				token, err := creatSession(tenantId, userInfo)
 				if err == nil && token != "" {
 					ctx.Request().Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 					ctx.Header("Authorization", token)
@@ -85,7 +86,7 @@ func UserAuth() iris.Handler {
 	return verifier.Verify()
 }
 
-func creatSession(userInfo integrationDomain.UserInfo) (token string, err error) {
+func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo) (token string, err error) {
 
 	req := v1.UserReq{UserBase: v1.UserBase{
 		Username:  userInfo.Username,
@@ -97,9 +98,9 @@ func creatSession(userInfo integrationDomain.UserInfo) (token string, err error)
 	userRepo := repo.UserRepo{DB: dao.GetDB()}
 	userRepo.ProfileRepo = &repo.ProfileRepo{DB: dao.GetDB()}
 	userRepo.RoleRepo = &repo.RoleRepo{DB: dao.GetDB()}
-	userRepo.Create(req)
+	userRepo.Create(tenantId, req)
 
-	user, err := userRepo.GetByUsernameOrEmail(userInfo.Username, userInfo.Mail)
+	user, err := userRepo.GetByUsernameOrEmail(tenantId, userInfo.Username, userInfo.Mail)
 	if err != nil {
 		return
 	}
@@ -122,7 +123,7 @@ func creatSession(userInfo integrationDomain.UserInfo) (token string, err error)
 	return
 }
 
-func getAppName(ctx *context.Context) (appName enum.AppName, token, origin string) {
+func getAppName(ctx *context.Context) (appName enum.AppName, token, origin string, tenantId consts.TenantId) {
 
 	origin = ctx.GetHeader("Origin")
 	//origin = "http://192.168.5.60:804"

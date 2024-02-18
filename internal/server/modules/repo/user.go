@@ -429,7 +429,7 @@ func (r *UserRepo) DeleteById(tenantId consts.TenantId, id uint) error {
 }
 
 func (r *UserRepo) AddProfileForUser(tenantId consts.TenantId, user *model.SysUser, projectId uint) (err error) {
-	_, err = r.ProfileRepo.FindByUserId(user.ID)
+	_, err = r.ProfileRepo.FindByUserId(tenantId, user.ID)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		return fmt.Errorf("用户 %s 信息已经被使用", user.Name)
 	}

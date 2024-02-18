@@ -27,13 +27,14 @@ type ScenarioProcessorCtrl struct {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/processors/{id}	[get]
 func (c *ScenarioProcessorCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	processorId, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	processorEntity, err := c.ScenarioProcessorService.GetEntity(processorId)
+	processorEntity, err := c.ScenarioProcessorService.GetEntity(tenantId, processorId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -53,6 +54,7 @@ func (c *ScenarioProcessorCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{name=string}}
 // @Router	/api/v1/scenarios/processors/saveProcessorInfo	[put]
 func (c *ScenarioProcessorCtrl) SaveBasicInfo(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req domain.ScenarioProcessorInfo
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -61,7 +63,7 @@ func (c *ScenarioProcessorCtrl) SaveBasicInfo(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScenarioProcessorService.SaveBasicInfo(req)
+	err = c.ScenarioProcessorService.SaveBasicInfo(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -81,6 +83,7 @@ func (c *ScenarioProcessorCtrl) SaveBasicInfo(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.ProcessorData}
 // @Router	/api/v1/scenarios/processors/{category}/save	[put]
 func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	processorCategoryString := ctx.Params().Get("category")
 	processorCategory := consts.ProcessorCategory(processorCategoryString)
 
@@ -90,68 +93,68 @@ func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 	if processorCategory == consts.ProcessorGroup {
 		var entity model.ProcessorGroup
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveGroup(&entity)
+		err = c.ScenarioProcessorService.SaveGroup(tenantId, &entity)
 		po = entity
 
 	} else if processorCategory == consts.ProcessorLogic {
 		var entity model.ProcessorLogic
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveLogic(&entity)
+		err = c.ScenarioProcessorService.SaveLogic(tenantId, &entity)
 		po = entity
 
 	} else if processorCategory == consts.ProcessorLoop {
 		var entity model.ProcessorLoop
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveLoop(&entity)
+		err = c.ScenarioProcessorService.SaveLoop(tenantId, &entity)
 		po = entity
 
 	} else if processorCategory == consts.ProcessorTimer {
 		var entity model.ProcessorTimer
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveTimer(&entity)
+		err = c.ScenarioProcessorService.SaveTimer(tenantId, &entity)
 		po = entity
 
 	} else if processorCategory == consts.ProcessorPrint {
 		var entity model.ProcessorPrint
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SavePrint(&entity)
+		err = c.ScenarioProcessorService.SavePrint(tenantId, &entity)
 		po = entity
 
 	} else if processorCategory == consts.ProcessorVariable {
 		var entity model.ProcessorVariable
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveVariable(&entity)
+		err = c.ScenarioProcessorService.SaveVariable(tenantId, &entity)
 		po = entity
 
 	} else if processorCategory == consts.ProcessorCookie {
 		var entity model.ProcessorCookie
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveCookie(&entity)
+		err = c.ScenarioProcessorService.SaveCookie(tenantId, &entity)
 		po = entity
 
 	} else if processorCategory == consts.ProcessorAssertion {
 		var entity model.ProcessorAssertion
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveAssertion(&entity)
+		err = c.ScenarioProcessorService.SaveAssertion(tenantId, &entity)
 		po = entity
 
 	} else if processorCategory == consts.ProcessorData {
 		var entity model.ProcessorData
 		entity.Separator = ","
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveData(&entity)
+		err = c.ScenarioProcessorService.SaveData(tenantId, &entity)
 		po = entity
 
 	} else if processorCategory == consts.ProcessorCustomCode {
 		var entity model.ProcessorCustomCode
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveCustomCode(&entity)
+		err = c.ScenarioProcessorService.SaveCustomCode(tenantId, &entity)
 		po = entity
 
 	} else if processorCategory == consts.ProcessorInterface {
 		var entity model.ProcessorComm
 		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveInterface(&entity)
+		err = c.ScenarioProcessorService.SaveInterface(tenantId, &entity)
 		po = entity
 
 	} else {

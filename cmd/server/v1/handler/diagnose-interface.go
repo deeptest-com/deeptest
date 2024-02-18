@@ -32,9 +32,10 @@ type DiagnoseInterfaceCtrl struct {
 // @success	200	{object}	_domain.Response{data=[]serverDomain.DiagnoseInterface}
 // @Router	/api/v1/diagnoseInterfaces	[get]
 func (c *DiagnoseInterfaceCtrl) Load(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, _ := ctx.URLParamInt("projectId")
 
-	data, err := c.DiagnoseInterfaceService.Load(projectId)
+	data, err := c.DiagnoseInterfaceService.Load(tenantId, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -54,9 +55,10 @@ func (c *DiagnoseInterfaceCtrl) Load(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.DiagnoseInterface}
 // @Router	/api/v1/diagnoseInterfaces/{id}	[get]
 func (c *DiagnoseInterfaceCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, _ := ctx.Params().GetInt("id")
 
-	data, err := c.DiagnoseInterfaceService.Get(id)
+	data, err := c.DiagnoseInterfaceService.Get(tenantId, id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -76,6 +78,7 @@ func (c *DiagnoseInterfaceCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]serverDomain.DiagnoseInterface}
 // @Router	/api/v1/diagnoseInterfaces	[post]
 func (c *DiagnoseInterfaceCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.DiagnoseInterfaceSaveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -84,7 +87,7 @@ func (c *DiagnoseInterfaceCtrl) Save(ctx iris.Context) {
 	}
 
 	req.CreatedBy = multi.GetUserId(ctx)
-	po, err := c.DiagnoseInterfaceService.Save(req)
+	po, err := c.DiagnoseInterfaceService.Save(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -110,6 +113,7 @@ func (c *DiagnoseInterfaceCtrl) Save(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=domain.DebugData}
 // @Router	/api/v1/diagnoseInterfaces/saveDebugData	[post]
 func (c *DiagnoseInterfaceCtrl) SaveDebugData(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := domain.DebugData{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -117,7 +121,7 @@ func (c *DiagnoseInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.DebugInterfaceService.CreateOrUpdate(req)
+	_, err = c.DebugInterfaceService.CreateOrUpdate(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -129,7 +133,7 @@ func (c *DiagnoseInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 		UsedBy:              consts.DiagnoseDebug,
 	}
 
-	data, err := c.DebugInterfaceService.Load(loadReq)
+	data, err := c.DebugInterfaceService.Load(tenantId, loadReq)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -149,6 +153,7 @@ func (c *DiagnoseInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]serverDomain.DiagnoseInterface}
 // @Router	/api/v1/diagnoseInterfaces	[put]
 func (c *DiagnoseInterfaceCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.DiagnoseInterfaceSaveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -157,7 +162,7 @@ func (c *DiagnoseInterfaceCtrl) Update(ctx iris.Context) {
 	}
 
 	req.UpdatedBy = multi.GetUserId(ctx)
-	po, err := c.DiagnoseInterfaceService.Save(req)
+	po, err := c.DiagnoseInterfaceService.Save(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -184,10 +189,11 @@ func (c *DiagnoseInterfaceCtrl) Update(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/diagnoseInterfaces/{id}	[delete]
 func (c *DiagnoseInterfaceCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, _ := ctx.Params().GetInt("id")
 	typ := ctx.URLParam("type")
 
-	err := c.DiagnoseInterfaceService.Remove(id, serverConsts.DiagnoseInterfaceType(typ))
+	err := c.DiagnoseInterfaceService.Remove(tenantId, id, serverConsts.DiagnoseInterfaceType(typ))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -207,6 +213,7 @@ func (c *DiagnoseInterfaceCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/diagnoseInterfaces/move	[post]
 func (c *DiagnoseInterfaceCtrl) Move(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
 	var req serverDomain.DiagnoseInterfaceMoveReq
@@ -216,7 +223,7 @@ func (c *DiagnoseInterfaceCtrl) Move(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.DiagnoseInterfaceService.Move(uint(req.DragKey), uint(req.DropKey), req.DropPos, uint(projectId))
+	_, err = c.DiagnoseInterfaceService.Move(tenantId, uint(req.DragKey), uint(req.DropKey), req.DropPos, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -236,6 +243,7 @@ func (c *DiagnoseInterfaceCtrl) Move(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.DiagnoseInterface}
 // @Router	/api/v1/diagnoseInterfaces/importInterfaces	[post]
 func (c *DiagnoseInterfaceCtrl) ImportInterfaces(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.DiagnoseInterfaceImportReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -244,7 +252,7 @@ func (c *DiagnoseInterfaceCtrl) ImportInterfaces(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	newNode, bizErr := c.DiagnoseInterfaceService.ImportInterfaces(req)
+	newNode, bizErr := c.DiagnoseInterfaceService.ImportInterfaces(tenantId, req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -266,6 +274,7 @@ func (c *DiagnoseInterfaceCtrl) ImportInterfaces(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.DiagnoseInterface}
 // @Router	/api/v1/diagnoseInterfaces/importCurl	[post]
 func (c *DiagnoseInterfaceCtrl) ImportCurl(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.DiagnoseCurlImportReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -274,7 +283,7 @@ func (c *DiagnoseInterfaceCtrl) ImportCurl(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	newNode, bizErr := c.DiagnoseInterfaceService.ImportCurl(req)
+	newNode, bizErr := c.DiagnoseInterfaceService.ImportCurl(tenantId, req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,

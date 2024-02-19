@@ -3,7 +3,6 @@ package ptqueue
 import (
 	"context"
 	"fmt"
-	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/pkg/core/mq"
 	"github.com/kataras/iris/v12/websocket"
@@ -37,15 +36,11 @@ func SubRunnerGrpcMsg(callback func(ptProto.PerformanceExecResp, string, *websoc
 		return
 	}
 
-	count := 0
 	for {
 		msg := queueClientOfServer.GetPayLoad(ch).(ptProto.PerformanceExecResp)
 		fmt.Printf("get queue msg [%s]%s\n", queueTopicOfServer, msg.Instruction)
 
 		callback(msg, execUuid, wsMsg)
-
-		count += len(msg.Requests)
-		ptlog.Logf("****** SERVER DEBUG: totally %d requests sub from queue and insert to sqlite", count)
 
 		select {
 		case <-ctx.Done():

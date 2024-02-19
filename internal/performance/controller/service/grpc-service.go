@@ -148,7 +148,7 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 	s.execCtx, s.execCancel = context.WithCancel(context.Background())
 
 	// run interval job
-	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.Room, msgSender)
+	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, msgSender)
 
 	exec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) // sync
 

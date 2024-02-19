@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-func ScheduleJob(ctx context.Context, runnerId int32, room string, sender MessageSender) {
+func ScheduleJob(ctx context.Context, runnerId int32, runnerName string, room string, sender MessageSender) {
 	prevDiskInfoMap := map[string]*int64{}
 	prevDiskTsMap := map[string]*int64{}
 	prevNetworkInfoMap := map[string]*int64{}
@@ -17,7 +17,7 @@ func ScheduleJob(ctx context.Context, runnerId int32, room string, sender Messag
 
 		_logUtils.Debug(">>>>>> start runner schedule job")
 
-		SendMetrics(sender, runnerId, room, &prevDiskInfoMap, &prevDiskTsMap, &prevNetworkInfoMap, &prevNetworkTsMap)
+		SendMetrics(sender, runnerId, runnerName, room, &prevDiskInfoMap, &prevDiskTsMap, &prevNetworkInfoMap, &prevNetworkTsMap)
 
 		select {
 		case <-ctx.Done():

@@ -111,12 +111,13 @@ func (e ProcessorType) String() string {
 type ChartType string
 
 const (
-	ChartStatusCount ChartType = "statusCount"
+	ChartSummaryVuCount ChartType = "vuCount"
 
-	ChartRespTimeAll ChartType = "respTimeAll"
-	ChartRespTime50  ChartType = "respTime50"
-	ChartRespTime90  ChartType = "respTime90"
-	ChartRespTime95  ChartType = "respTime95"
+	ChartSummaryStatusCount  ChartType = "statusCount"
+	ChartSummaryResponseTime ChartType = "responseTime"
+	ChartSummaryQps          ChartType = "qps"
+
+	ChartRespTime ChartType = "respTime"
 
 	ChartQps ChartType = "qps"
 

@@ -64,17 +64,17 @@ func (s InfluxdbSender) Send(result ptproto.PerformanceExecResp) (err error) {
 	}
 
 	// OR 2. send metrics
-	metrics := result.GetMetrics()
+	metrics := result.Metrics
 	if metrics != nil {
-		s.addCpuUsagePoint(metrics.CpuUsage, result.Room, &lines)
-		s.addMemoryUsagePoint(metrics.MemoryUsage, result.Room, &lines)
-		s.addDiskUsagePoint(metrics.DiskUsages, result.Room, &lines)
-		s.addNetworkUsagePoint(metrics.NetworkUsages, result.Room, &lines)
+		s.addCpuUsagePoint(metrics.CpuUsage, result.Room, result.RunnerName, &lines)
+		s.addMemoryUsagePoint(metrics.MemoryUsage, result.Room, result.RunnerName, &lines)
+		s.addDiskUsagePoint(metrics.DiskUsages, result.Room, result.RunnerName, &lines)
+		s.addNetworkUsagePoint(metrics.NetworkUsages, result.Room, result.RunnerName, &lines)
 	}
 
 	// OR 3. send metrics
 	if result.VuCount > 0 {
-		s.addVuCount(result.VuCount, result.Room, &lines)
+		s.addVuCount(result.VuCount, result.Room, result.RunnerName, &lines)
 	}
 
 	if len(lines) > 0 {
@@ -115,42 +115,42 @@ func (s InfluxdbSender) addResponseTimePoint(request *ptproto.PerformanceExecRec
 	return
 }
 
-func (s InfluxdbSender) addCpuUsagePoint(value float64, room string, lines *[]string) (err error) {
-	line := fmt.Sprintf("%s value=%f", tableCpuUsage, value)
+func (s InfluxdbSender) addCpuUsagePoint(value float64, room string, runnerName string, lines *[]string) (err error) {
+	line := fmt.Sprintf("%s,runner=%s value=%f", tableCpuUsage, runnerName, value)
 
 	*lines = append(*lines, line)
 
 	return
 }
 
-func (s InfluxdbSender) addMemoryUsagePoint(value float64, room string, lines *[]string) (err error) {
-	line := fmt.Sprintf("%s value=%f", tableMemoryUsage, value)
+func (s InfluxdbSender) addMemoryUsagePoint(value float64, room string, runnerName string, lines *[]string) (err error) {
+	line := fmt.Sprintf("%s,runner=%s value=%f", tableMemoryUsage, runnerName, value)
 
 	*lines = append(*lines, line)
 
 	return
 }
 
-func (s InfluxdbSender) addDiskUsagePoint(mp map[string]float64, room string, lines *[]string) (err error) {
+func (s InfluxdbSender) addDiskUsagePoint(mp map[string]float64, room string, runnerName string, lines *[]string) (err error) {
 	for name, value := range mp {
-		line := fmt.Sprintf("%s,name=%s value=%f", tableDiskUsage, name, value)
+		line := fmt.Sprintf("%s,runner=%s,name=%s value=%f", tableDiskUsage, runnerName, name, value)
 		*lines = append(*lines, line)
 	}
 
 	return
 }
 
-func (s InfluxdbSender) addNetworkUsagePoint(mp map[string]float64, room string, lines *[]string) (err error) {
+func (s InfluxdbSender) addNetworkUsagePoint(mp map[string]float64, room string, runnerName string, lines *[]string) (err error) {
 	for name, value := range mp {
-		line := fmt.Sprintf("%s,name=%s value=%f", tableNetworkUsage, name, value)
+		line := fmt.Sprintf("%s,runner=%s,name=%s value=%f", tableNetworkUsage, runnerName, name, value)
 		*lines = append(*lines, line)
 	}
 
 	return
 }
 
-func (s InfluxdbSender) addVuCount(count int32, room string, lines *[]string) (err error) {
-	line := fmt.Sprintf("%s value=%d", tableVuNumb, count)
+func (s InfluxdbSender) addVuCount(count int32, room, runnerName string, lines *[]string) (err error) {
+	line := fmt.Sprintf("%s,runner=%s value=%d", tableVuNumb, runnerName, count)
 	*lines = append(*lines, line)
 
 	return

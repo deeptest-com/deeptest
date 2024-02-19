@@ -199,10 +199,7 @@ func GetPercentNumbsByInterface(room string) (ret map[int]map[string]int) {
 		percentNumbsMap := map[string]int{}
 
 		total := item.Numb
-		percentNumbsMap[ptconsts.ChartRespTimeAll.String()] = total
-		percentNumbsMap[ptconsts.ChartRespTime50.String()] = total * 50 / 100
-		percentNumbsMap[ptconsts.ChartRespTime90.String()] = total * 90 / 100
-		percentNumbsMap[ptconsts.ChartRespTime95.String()] = total * 95 / 100
+		percentNumbsMap[ptconsts.ChartRespTime.String()] = total
 
 		ret[int(item.InterfaceId)] = percentNumbsMap
 	}

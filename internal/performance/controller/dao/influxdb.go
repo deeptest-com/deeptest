@@ -8,28 +8,19 @@ import (
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/influxdata/influxdb-client-go/v2/domain"
-
 	"time"
 )
 
 var (
 	//orgName           = "deeptest"
-	bucketName            = "performance"
-	bucketNameDownsampled = "performance-downsampled"
+	bucketName = "performance"
 
 	tableVuNumb       = "vu_numb"
-	tableFailNumb     = "fail_numb"
 	tableResponseTime = "response_time"
-	tableQps          = "qps"
 	tableCpuUsage     = "cpu_usage"
 	tableMemoryUsage  = "memory_usage"
 	tableDiskUsage    = "disk_usage"
 	tableNetworkUsage = "network_usage"
-
-	taskStatus    = domain.TaskStatusTypeActive
-	taskEveryNumb = 10
-	taskEvery     = fmt.Sprintf("%ds", taskEveryNumb)
-	taskOffset    = "0s"
 )
 
 func ResetInfluxdb(room, dbAddress, orgName, token string) {
@@ -72,12 +63,13 @@ func ResetInfluxdb(room, dbAddress, orgName, token string) {
 	return
 }
 
-func QueryResponseTimeSummary(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
+func QueryResponseTimeSummary(influxdbClient influxdb2.Client, orgId string) (
 	ret ptdomain.PerformanceExecSummary, err error) {
+
 	flux1 := fmt.Sprintf(`
 baseDataResponse =
     from(bucket: "%s")
-        |> range(start: -1m)
+        |> range(start: -1d)
         |> filter(fn: (r) => r._measurement == "%s" and r._field == "value")
         |> group()
 
@@ -100,14 +92,20 @@ medianVal =
        |> median()
        |> set(key: "_field", value: "medianVal")
 
-union(tables: [minVal, maxVal, meanVal, medianVal])
+quantile95Val =
+   baseDataResponse
+       |> quantile(q: 0.95, method: "exact_selector")
+       |> toFloat()
+       |> set(key: "_field", value: "quantile95Val")
+
+union(tables: [minVal, maxVal, meanVal, medianVal, quantile95Val])
 
 `, bucketName, tableResponseTime)
 
 	flux2 := fmt.Sprintf(`
 baseDataOthers =
     from(bucket: "%s")
-        |> range(start: -1m)
+        |> range(start: -1d)
         |> filter(fn: (r) => r._measurement == "%s" and r._field != "value")
 
 startTime =
@@ -128,7 +126,7 @@ union(tables: [startTime, endTime])
 	flux3 := fmt.Sprintf(`
 baseDataResponse =
     from(bucket: "%s")
-        |> range(start: -1m)
+        |> range(start: -1d)
         |> filter(fn: (r) => r._measurement == "%s" and r._field == "status")
 
 passNumb =
@@ -164,16 +162,19 @@ union(tables: [passNumb, failNumb, errNumb])
 
 		if typ == "minVal" {
 			val := mp["_value"].(float64)
-			ret.MinResponseTime = val
+			ret.Min = val
 		} else if typ == "maxVal" {
 			val := mp["_value"].(float64)
-			ret.MaxResponseTime = val
+			ret.Max = val
 		} else if typ == "meanVal" {
 			val := mp["_value"].(float64)
-			ret.MeanResponseTime = val
+			ret.Mean = val
 		} else if typ == "medianVal" {
 			val := mp["_value"].(float64)
-			ret.MedianResponseTime = val
+			ret.Median = val
+		} else if typ == "quantile95Val" {
+			val := mp["_value"].(float64)
+			ret.Quantile95 = val
 		}
 	}
 
@@ -222,12 +223,12 @@ union(tables: [passNumb, failNumb, errNumb])
 
 	ret.Total = ret.Pass + ret.Pass + ret.Error
 	ret.Duration = ret.EndTime - ret.StartTime
-	ret.AvgQps = float64(ret.Total) * 1000 / float64(ret.Duration)
+	ret.Qps = float64(ret.Total) * 1000 / float64(ret.Duration)
 
 	return
 }
 
-func QueryVuCount(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
+func QueryVuCount(influxdbClient influxdb2.Client, orgId string) (
 	ret int, err error) {
 
 	flux := fmt.Sprintf(`
@@ -254,12 +255,76 @@ func QueryVuCount(ctx context.Context, influxdbClient influxdb2.Client, orgId st
 	return
 }
 
-func queryResponseTimeTableByInterface(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
+func QueryLastAvgResponseTime(influxdbClient influxdb2.Client, orgId string) (
+	ret []ptdomain.PerformanceRequestResponseTime, err error) {
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> range(start: -1m)
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s" and r["_field"] == "_value",
+    )
+    |> aggregateWindow(every: 1m, fn: mean)
+`, bucketName, tableResponseTime)
+
+	result, err := queryData(influxdbClient, orgId, flux)
+
+	for result.Next() {
+		mp := result.Record().Values()
+
+		item := ptdomain.PerformanceRequestResponseTime{
+			RecordName: mp["name"].(string),
+			Value:      int32(mp["_value"].(float64)),
+		}
+		ret = append(ret, item)
+	}
+
+	return
+}
+
+func QueryLastQps(influxdbClient influxdb2.Client, orgId string) (
+	ret []ptdomain.PerformanceRequestQps, err error) {
+	flux := fmt.Sprintf(`
+from(bucket: "%s")
+    |> range(start: -1m)
+    |> filter(
+        fn: (r) =>
+            r._measurement == "%s" and r["_field"] == "_value",
+    )
+    |> aggregateWindow(
+	   every: 1m, 
+	   fn: (table=<-, column) => table 
+		 |> count(column: "_value"), 
+	   createEmpty: false)
+`, bucketName, tableResponseTime)
+
+	result, err := queryData(influxdbClient, orgId, flux)
+
+	for result.Next() {
+		mp := result.Record().Values()
+
+		item := ptdomain.PerformanceRequestQps{
+			RecordName: mp["name"].(string),
+			Value:      mp["_value"].(float64) / 60,
+		}
+		ret = append(ret, item)
+	}
+
+	return
+}
+
+func QueryResponseTimeTableByInterface(influxdbClient influxdb2.Client, orgId string) (
 	ret []ptdomain.PerformanceRequestTable, err error) {
 	flux := fmt.Sprintf(`
 baseData =
     from(bucket: "%s")
         |> filter(fn: (r) => r._measurement == "%s" and r["_field"] == "_value")
+
+totalData =
+    baseData
+        |> count()
+        |> toFloat()
+        |> set(key: "_field", value: "total")
 
 minData =
     baseData
@@ -281,207 +346,141 @@ medianData =
         |> median()
         |> set(key: "_field", value: "median")
 
-union(tables: [minData, maxData, meanData, medianData])
+union(tables: [totalDataminData, maxData, meanData, medianData])
 `, bucketName, tableResponseTime)
 
 	result, err := queryData(influxdbClient, orgId, flux)
 
+	tableMap := map[string]ptdomain.PerformanceRequestTable{}
+
 	for result.Next() {
 		mp := result.Record().Values()
 
-		item := ptdomain.PerformanceRequestTable{
-			RecordName: mp["name"].(string),
-			Type:       mp["_field"].(string),
-			Value:      int32(mp["_value"].(float64)),
+		name := mp["name"].(string)
+		typ := mp["_field"].(string)
+
+		val, ok := tableMap[name]
+		if !ok {
+			val = ptdomain.PerformanceRequestTable{
+				RecordName: name,
+			}
+			tableMap[name] = val
 		}
-		ret = append(ret, item)
+
+		if typ == "min" {
+			val.Min = mp["_value"].(int32)
+		} else if typ == "max" {
+			val.Max = mp["_value"].(int32)
+		} else if typ == "mean" {
+			val.Mean = mp["_value"].(float64)
+		} else if typ == "median" {
+			val.Median = mp["_value"].(float64)
+		}
+	}
+
+	for _, val := range tableMap {
+		ret = append(ret, val)
 	}
 
 	return
 }
 
-func queryResponseTimeAvgAll(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
-	ret []ptdomain.PerformanceRequestResponseTime, err error) {
+func QueryMetrics(influxdbClient influxdb2.Client, orgId string) (ret []ptdomain.PerformanceExecMetrics, err error) {
+	cpuData, _ := queryCpu(influxdbClient, orgId)
+	memoryData, _ := queryMemory(influxdbClient, orgId)
+	diskData, _ := queryDisk(influxdbClient, orgId)
+	networkData, _ := queryNetwork(influxdbClient, orgId)
+
+	for key, cpuVal := range cpuData {
+		to := ptdomain.PerformanceExecMetrics{
+			RunnerName: key,
+
+			CpuUsage:    cpuVal,
+			MemoryUsage: 0,
+
+			DiskUsages:    map[string]float64{},
+			NetworkUsages: map[string]float64{},
+		}
+
+		to.MemoryUsage = memoryData[key]
+
+		for name, val := range diskData[key] {
+			to.DiskUsages[name] = val
+		}
+
+		for name, val := range networkData[key] {
+			to.NetworkUsages[name] = val
+		}
+
+		ret = append(ret, to)
+	}
+
+	return
+}
+func queryCpu(influxdbClient influxdb2.Client, orgId string) (
+	ret map[string]float64, err error) {
+
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -1m)
-    |> filter(
-        fn: (r) =>
-            r._measurement == "%s" and r["_field"] == "_value",
-    )
-    |> aggregateWindow(every: 1m, fn: mean)
-	|> set(key: "_measurement", value: "%s")
-`, bucketName, tableResponseTime, bucketNameDownsampled)
-
-	result, err := queryData(influxdbClient, orgId, flux)
-
-	for result.Next() {
-		mp := result.Record().Values()
-
-		item := ptdomain.PerformanceRequestResponseTime{
-			RecordName: mp["name"].(string),
-			Value:      int32(mp["_value"].(float64)),
-		}
-		ret = append(ret, item)
-	}
-
-	return
-}
-
-func queryResponseTimeAvg90(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
-	ret []ptdomain.PerformanceRequestResponseTime, err error) {
-	flux := fmt.Sprintf(`
-from(bucket: "%s")
-    |> range(start: -1m)
-    |> filter(
-        fn: (r) =>
-            r._measurement == "%s" and r["_field"] == "_value",
-    )
-    |> aggregateWindow(
-        every: 1m, 
-        fn: (table=<-, column) => table 
-            |> quantile(q: 0.9, method: "exact_selector"),
-    )
-	|> set(key: "_measurement", value: "%s")
-`, bucketName, tableResponseTime, bucketNameDownsampled)
-
-	result, err := queryData(influxdbClient, orgId, flux)
-
-	for result.Next() {
-		mp := result.Record().Values()
-
-		item := ptdomain.PerformanceRequestResponseTime{
-			RecordName: mp["name"].(string),
-			Value:      int32(mp["_value"].(float64)),
-		}
-		ret = append(ret, item)
-	}
-
-	return
-}
-
-func queryResponseTimeAvg95(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
-	ret []ptdomain.PerformanceRequestResponseTime, err error) {
-	flux := fmt.Sprintf(`
-from(bucket: "%s")
-    |> range(start: -1m)
-    |> filter(
-        fn: (r) =>
-            r._measurement == "%s" and r["_field"] == "_value",
-    )
-    |> aggregateWindow(
-        every: task.every, 
-        fn: (table=<-, column) => table 
-            |> quantile(q: 0.95, method: "exact_selector"),
-    )
-	|> set(key: "_measurement", value: "%s")
-`, bucketName, tableResponseTime, bucketNameDownsampled)
-
-	result, err := queryData(influxdbClient, orgId, flux)
-
-	for result.Next() {
-		mp := result.Record().Values()
-
-		item := ptdomain.PerformanceRequestResponseTime{
-			RecordName: mp["name"].(string),
-			Value:      int32(mp["_value"].(float64)),
-		}
-		ret = append(ret, item)
-	}
-
-	return
-}
-
-func queryQps(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
-	ret []ptdomain.PerformanceRequestQps, err error) {
-	flux := fmt.Sprintf(`
-from(bucket: "%s")
-    |> range(start: -1m)
-    |> filter(
-        fn: (r) =>
-            r._measurement == "%s" and r["_field"] == "_value",
-    )
-    |> aggregateWindow(
-	   every: 1m, 
-	   fn: (table=<-, column) => table 
-		 |> count(column: "_value") / %d, 
-	   createEmpty: false)
-`, bucketName, tableQps, bucketNameDownsampled)
-
-	result, err := queryData(influxdbClient, orgId, flux)
-
-	for result.Next() {
-		mp := result.Record().Values()
-
-		item := ptdomain.PerformanceRequestQps{
-			RecordName: mp["name"].(string),
-			Value:      mp["_value"].(float64),
-		}
-		ret = append(ret, item)
-	}
-
-	return
-}
-
-func queryCpu(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
-	ret float64, err error) {
-	flux := fmt.Sprintf(`
-from(bucket: "%s")
-    |> range(start: -10s)
     |> filter(
         fn: (r) =>
             r._measurement == "%s",
     )
     |> aggregateWindow(
-	   every: 10s, 
+	   every: 1m, 
 	   fn: mean, 
 	   createEmpty: false)
 `, bucketName, tableCpuUsage)
 
 	result, err := queryData(influxdbClient, orgId, flux)
 
-	result.Next()
-	mp := result.Record().Values()
-	ret = mp["_value"].(float64)
+	for result.Next() {
+		mp := result.Record().Values()
+
+		ret[mp["runner"].(string)] = mp["_value"].(float64)
+	}
 
 	return
 }
 
-func queryMemory(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
-	ret float64, err error) {
+func queryMemory(influxdbClient influxdb2.Client, orgId string) (
+	ret map[string]float64, err error) {
+
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
-    |> range(start: -10s)
+    |> range(start: -1m)
     |> filter(
         fn: (r) =>
             r._measurement == "%s",
     )
     |> aggregateWindow(
-	   every: 10s, 
+	   every: 1m, 
 	   fn: mean, 
 	   createEmpty: false)
 `, bucketName, tableMemoryUsage)
 
 	result, err := queryData(influxdbClient, orgId, flux)
 
-	result.Next()
-	mp := result.Record().Values()
-	ret = mp["_value"].(float64)
+	for result.Next() {
+		mp := result.Record().Values()
+
+		ret[mp["runner"].(string)] = mp["_value"].(float64)
+	}
 
 	return
 }
-
-func queryDisk(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
-	ret map[string]float64, err error) {
+func queryDisk(influxdbClient influxdb2.Client, orgId string) (
+	ret map[string]map[string]float64, err error) {
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
-    |> range(start: -10s)
+    |> range(start: -1m)
     |> filter(
         fn: (r) =>
             r._measurement == "%s",
     )
     |> aggregateWindow(
-	   every: 10s, 
+	   every: 1m, 
 	   fn: mean, 
 	   createEmpty: false)
 `, bucketName, tableDiskUsage)
@@ -491,23 +490,31 @@ from(bucket: "%s")
 	for result.Next() {
 		mp := result.Record().Values()
 
-		ret[mp["name"].(string)] = mp["_value"].(float64)
+		runner := mp["runner"].(string)
+		name := mp["name"].(string)
+		val := mp["_value"].(float64)
+
+		_, ok := ret[runner]
+		if !ok {
+			ret[runner] = map[string]float64{}
+		}
+
+		ret[runner][name] = val
 	}
 
 	return
 }
-
-func queryNetwork(ctx context.Context, influxdbClient influxdb2.Client, orgId string) (
-	ret map[string]float64, err error) {
+func queryNetwork(influxdbClient influxdb2.Client, orgId string) (
+	ret map[string]map[string]float64, err error) {
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
-    |> range(start: -10s)
+    |> range(start: -1m)
     |> filter(
         fn: (r) =>
             r._measurement == "%s",
     )
     |> aggregateWindow(
-	   every: 10s, 
+	   every: 1m, 
 	   fn: mean, 
 	   createEmpty: false)
 `, bucketName, tableNetworkUsage)
@@ -517,7 +524,16 @@ from(bucket: "%s")
 	for result.Next() {
 		mp := result.Record().Values()
 
-		ret[mp["name"].(string)] = mp["_value"].(float64)
+		runner := mp["runner"].(string)
+		name := mp["name"].(string)
+		val := mp["_value"].(float64)
+
+		_, ok := ret[runner]
+		if !ok {
+			ret[runner] = map[string]float64{}
+		}
+
+		ret[runner][name] = val
 	}
 
 	return

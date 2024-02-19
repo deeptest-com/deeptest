@@ -38,7 +38,6 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 	s.StatService.Room = wsMsg.Room
 
 	influxdbClient := influxdb2.NewClient(req.InfluxdbAddress, req.InfluxdbToken)
-	ctx := context.Background()
 
 	for true {
 		time.Sleep(1 * time.Second)
@@ -46,38 +45,39 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 		if time.Now().UnixMilli()-lastTime < 6*1000 {
 			continue
 		}
-
 		_logUtils.Debug(">>>>>> start server schedule job")
 
-		summary, _ := dao.QueryResponseTimeSummary(ctx, influxdbClient, req.InfluxdbOrg)
-		vuCount, _ := dao.QueryVuCount(ctx, influxdbClient, req.InfluxdbOrg)
+		summary, _ := dao.QueryResponseTimeSummary(influxdbClient, req.InfluxdbOrg)
+		vuCount, _ := dao.QueryVuCount(influxdbClient, req.InfluxdbOrg)
 
-		//responseTimeData, summary := s.StatService.ComputeResponseTimeByInterface(req.Room)
-		//
+		lastAvgResponseTime, _ := dao.QueryLastAvgResponseTime(influxdbClient, req.InfluxdbOrg)
+		lastQps, _ := dao.QueryLastQps(influxdbClient, req.InfluxdbOrg)
+
+		responseTimeTable, _ := dao.QueryResponseTimeTableByInterface(influxdbClient, req.InfluxdbOrg)
+
+		metrics, _ := dao.QueryMetrics(influxdbClient, req.InfluxdbOrg)
+
 		data := ptdomain.PerformanceExecResults{
 			Timestamp: time.Now().UnixMilli(),
 
 			VuCount: vuCount,
 			Summary: summary,
 
-			//ReqAllResponseTime: responseTimeData[ptconsts.ChartRespTimeAll.String()],
-			//Req50ResponseTime:  responseTimeData[ptconsts.ChartRespTime50.String()],
-			//Req90ResponseTime:  responseTimeData[ptconsts.ChartRespTime90.String()],
-			//Req95ResponseTime:  responseTimeData[ptconsts.ChartRespTime95.String()],
-			//
-			//ReqQps:  s.StatService.ComputeQpsByInterface(req.Room),
-			//Metrics: s.StatService.LoadMetricsByRunner(),
+			ReqResponseTime:      lastAvgResponseTime,
+			ReqQps:               lastQps,
+			ReqResponseTimeTable: responseTimeTable,
+			Metrics:              metrics,
 		}
 
 		s.SendMetricsByWebsocket(data, req.Room, wsMsg)
 
-		//s.SaveReportItems(data, req.Room)
-		//
-		//if IsGoalMet(req, summary.MeanResponseTime, summary.AvgQps, int32(summary.Fail+summary.Error), int32(summary.Total)) {
-		//	execCancel()
-		//
-		//	s.RemoteRunnerService.CallStop(req)
-		//}
+		s.SaveReportItems(data, req.Room)
+
+		if IsGoalMet(req, summary.Mean, summary.Qps, int32(summary.Fail+summary.Error), int32(summary.Total)) {
+			execCancel()
+
+			s.RemoteRunnerService.CallStop(req)
+		}
 
 		lastTime = time.Now().UnixMilli()
 
@@ -109,33 +109,30 @@ func (s *ScheduleService) SaveReportItems(data ptdomain.PerformanceExecResults, 
 	timestamp := data.Timestamp
 
 	summary := data.Summary
-	dao.InsertReportItem(room, ptconsts.ChartStatusCount.String(), "status_pass", float64(summary.Pass), timestamp)
-	dao.InsertReportItem(room, ptconsts.ChartStatusCount.String(), "status_fail", float64(summary.Fail), timestamp)
-	dao.InsertReportItem(room, ptconsts.ChartStatusCount.String(), "status_error", float64(summary.Error), timestamp)
+	dao.InsertReportItem(room, ptconsts.ChartSummaryStatusCount.String(), "status_total", float64(summary.Total), timestamp)
+	dao.InsertReportItem(room, ptconsts.ChartSummaryStatusCount.String(), "status_pass", float64(summary.Pass), timestamp)
+	dao.InsertReportItem(room, ptconsts.ChartSummaryStatusCount.String(), "status_fail", float64(summary.Fail), timestamp)
+	dao.InsertReportItem(room, ptconsts.ChartSummaryStatusCount.String(), "status_error", float64(summary.Error), timestamp)
 
-	reqAllResponseTime := data.ReqAllResponseTime
-	for _, req := range reqAllResponseTime {
-		dao.InsertReportItem(room, ptconsts.ChartRespTimeAll.String(), req.RecordName, float64(req.Value), timestamp)
-	}
+	dao.InsertReportItem(room, ptconsts.ChartSummaryResponseTime.String(), "min", summary.Min, timestamp)
+	dao.InsertReportItem(room, ptconsts.ChartSummaryResponseTime.String(), "max", summary.Max, timestamp)
+	dao.InsertReportItem(room, ptconsts.ChartSummaryResponseTime.String(), "mean", summary.Mean, timestamp)
+	dao.InsertReportItem(room, ptconsts.ChartSummaryResponseTime.String(), "median", summary.Median, timestamp)
+	dao.InsertReportItem(room, ptconsts.ChartSummaryResponseTime.String(), "quantile95", summary.Quantile95, timestamp)
 
-	req50ResponseTime := data.Req50ResponseTime
-	for _, req := range req50ResponseTime {
-		dao.InsertReportItem(room, ptconsts.ChartRespTime50.String(), req.RecordName, float64(req.Value), timestamp)
-	}
+	dao.InsertReportItem(room, ptconsts.ChartSummaryQps.String(), "", summary.Qps, timestamp)
 
-	req90ResponseTime := data.Req90ResponseTime
-	for _, req := range req90ResponseTime {
-		dao.InsertReportItem(room, ptconsts.ChartRespTime90.String(), req.RecordName, float64(req.Value), timestamp)
-	}
+	vuCount := data.VuCount
+	dao.InsertReportItem(room, ptconsts.ChartSummaryVuCount.String(), "", float64(vuCount), timestamp)
 
-	req95ResponseTime := data.Req95ResponseTime
-	for _, req := range req95ResponseTime {
-		dao.InsertReportItem(room, ptconsts.ChartRespTime95.String(), req.RecordName, float64(req.Value), timestamp)
+	reqResponseTime := data.ReqResponseTime
+	for _, item := range reqResponseTime {
+		dao.InsertReportItem(room, ptconsts.ChartRespTime.String(), item.RecordName, float64(item.Value), timestamp)
 	}
 
 	reqQps := data.ReqQps
-	for _, req := range reqQps {
-		dao.InsertReportItem(room, ptconsts.ChartQps.String(), req.RecordName, req.Value, timestamp)
+	for _, item := range reqQps {
+		dao.InsertReportItem(room, ptconsts.ChartQps.String(), item.RecordName, item.Value, timestamp)
 	}
 
 	metrics := data.Metrics

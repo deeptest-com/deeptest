@@ -50,18 +50,19 @@ message Runner {
 message PerformanceExecStartReq {
   string room = 1;
   int32 runnerId = 2;
-  string title = 3;
+  string runnerName = 3;
+  string title = 4;
 
-  int64 dur = 4;
-  string mode = 5;
-  repeated Scenario scenarios = 6;
+  int64 dur = 5;
+  string mode = 6;
+  repeated Scenario scenarios = 7;
 
-  int32 weight = 7;
+  int32 weight = 8;
 
-  string serverAddress = 8;
-  string influxdbAddress = 9;
-  string influxdbOrg = 10;
-  string influxdbToken = 11;
+  string serverAddress = 9;
+  string influxdbAddress = 10;
+  string influxdbOrg = 11;
+  string influxdbToken = 12;
 }
 message PerformanceExecStopReq {
   string room = 1;
@@ -74,11 +75,12 @@ message PerformanceExecResp {
   string instruction = 3;
   string execUUid = 4;
   int32 runnerId = 5;
+  string runnerName = 6;
 
-  int32 vuIncrease = 6;
+  int32 vuCount = 7;
 
-  repeated PerformanceExecRecord requests = 7;
-  PerformanceExecMetrics metrics = 8;
+  repeated PerformanceExecRecord requests = 8;
+  PerformanceExecMetrics metrics = 9;
 }
 
 message PerformanceExecRecord {

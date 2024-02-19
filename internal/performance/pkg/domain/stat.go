@@ -2,15 +2,12 @@ package ptdomain
 
 import (
 	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 )
 
 type Stat struct {
 	StartTime int64
 	EndTime   int64
 	Duration  int64
-
-	Requests []*ptProto.PerformanceExecRecord `json:"requests"`
 
 	Pass  int `json:"pass"`
 	Fail  int `json:"fail"`

@@ -74,29 +74,8 @@ func (s *StatService) ComputeResponseTimeByInterface(room string) (ret map[strin
 
 		percentNumbsMap := percentNumbsOfInterface[interfaceId]
 
-		if *countOfInterface == percentNumbsMap[ptconsts.ChartRespTime50.String()] {
-			ret[ptconsts.ChartRespTime50.String()] = append(ret[ptconsts.ChartRespTime50.String()], ptdomain.PerformanceRequestResponseTime{
-				RecordId:   int32(interfaceId),
-				RecordName: interfaceName,
-				Value:      int32(*sumOfInterface / *countOfInterface),
-			})
-
-		} else if *countOfInterface == percentNumbsMap[ptconsts.ChartRespTime90.String()] {
-			ret[ptconsts.ChartRespTime90.String()] = append(ret[ptconsts.ChartRespTime90.String()], ptdomain.PerformanceRequestResponseTime{
-				RecordId:   int32(interfaceId),
-				RecordName: interfaceName,
-				Value:      int32(*sumOfInterface / *countOfInterface),
-			})
-
-		} else if *countOfInterface == percentNumbsMap[ptconsts.ChartRespTime95.String()] {
-			ret[ptconsts.ChartRespTime95.String()] = append(ret[ptconsts.ChartRespTime95.String()], ptdomain.PerformanceRequestResponseTime{
-				RecordId:   int32(interfaceId),
-				RecordName: interfaceName,
-				Value:      int32(*sumOfInterface / *countOfInterface),
-			})
-
-		} else if *countOfInterface == percentNumbsMap[ptconsts.ChartRespTimeAll.String()] {
-			ret[ptconsts.ChartRespTimeAll.String()] = append(ret[ptconsts.ChartRespTimeAll.String()], ptdomain.PerformanceRequestResponseTime{
+		if *countOfInterface == percentNumbsMap[ptconsts.ChartRespTime.String()] {
+			ret[ptconsts.ChartRespTime.String()] = append(ret[ptconsts.ChartRespTime.String()], ptdomain.PerformanceRequestResponseTime{
 				RecordId:   int32(interfaceId),
 				RecordName: interfaceName,
 				Value:      int32(*sumOfInterface / *countOfInterface),
@@ -106,8 +85,8 @@ func (s *StatService) ComputeResponseTimeByInterface(room string) (ret map[strin
 	}
 
 	summary.Duration = summary.EndTime - summary.StartTime
-	summary.MeanResponseTime = float64(sumOfAll) / float64(summary.Total)
-	summary.AvgQps = float64(summary.Total) * 1000 / float64(summary.Duration)
+	summary.Mean = float64(sumOfAll) / float64(summary.Total)
+	summary.Qps = float64(summary.Total) * 1000 / float64(summary.Duration)
 
 	// for all records
 	summary.Total, summary.Pass, summary.Fail, summary.Error = dao.CountAllByStatus(room)

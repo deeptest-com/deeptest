@@ -75,7 +75,7 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 	for _, runner := range req.Runners {
 		client := s.Connect(runner)
 
-		stream, err := s.CallRunnerExecStartByGrpc(client, req, runner.Id, runner.Weight)
+		stream, err := s.CallRunnerExecStartByGrpc(client, req, runner.Id, runner.Name, runner.Weight)
 		if err != nil {
 			continue
 		}
@@ -122,7 +122,7 @@ func (s *PerformanceTestService) ExecStop(req ptdomain.PerformanceTestReq, wsMsg
 //}
 
 func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
-	client ptProto.PerformanceServiceClient, req ptdomain.PerformanceTestReq, runnerId, weight int32) (stream ptProto.PerformanceService_ExecStartClient, err error) {
+	client ptProto.PerformanceServiceClient, req ptdomain.PerformanceTestReq, runnerId int32, runnerName string, weight int32) (stream ptProto.PerformanceService_ExecStartClient, err error) {
 
 	stream, err = client.ExecStart(context.Background())
 	if err != nil {
@@ -133,9 +133,10 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 	runnerExecScenarios := s.getRunnerExecScenarios(req, runnerId)
 
 	err = stream.Send(&ptProto.PerformanceExecStartReq{
-		Room:     req.Room,
-		RunnerId: runnerId,
-		Title:    req.Title,
+		Room:       req.Room,
+		RunnerId:   runnerId,
+		RunnerName: runnerName,
+		Title:      req.Title,
 
 		Mode:      req.Mode.String(),
 		Scenarios: runnerExecScenarios,

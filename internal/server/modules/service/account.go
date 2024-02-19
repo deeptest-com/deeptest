@@ -57,7 +57,7 @@ func (s *AccountService) Login(tenantId consts.TenantId, req v1.LoginReq) (ret v
 	claims := &multi.CustomClaims{
 		ID:            strconv.FormatUint(uint64(Id), 10),
 		Username:      req.Username,
-		AuthorityId:   "",
+		AuthorityId:   string(tenantId),
 		AuthorityType: multi.AdminAuthority,
 		LoginType:     multi.LoginTypeApp,
 		AuthType:      multi.AuthPwd,

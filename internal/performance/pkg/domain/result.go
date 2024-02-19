@@ -51,11 +51,13 @@ type PerformanceRequestTable struct {
 	RecordId   int32  `json:"recordId,omitempty"`
 	RecordName string `json:"recordName,omitempty"`
 
-	Total  string  `json:"total,omitempty"`
+	Total  int32   `json:"total,omitempty"`
 	Min    int32   `json:"min,omitempty"`
 	Max    int32   `json:"max,omitempty"`
 	Mean   float64 `json:"mean,omitempty"`
 	Median float64 `json:"median,omitempty"`
+
+	Quantile95 float64 `json:"quantile95,omitempty"`
 }
 
 type PerformanceExecMetrics struct {

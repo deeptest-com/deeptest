@@ -262,9 +262,9 @@ from(bucket: "%s")
     |> range(start: -1m)
     |> filter(
         fn: (r) =>
-            r._measurement == "%s" and r["_field"] == "_value",
+            r._measurement == "%s" and r["_field"] == "value",
     )
-    |> aggregateWindow(every: 1m, fn: mean)
+    |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
 `, bucketName, tableResponseTime)
 
 	result, err := queryData(influxdbClient, orgId, flux)
@@ -289,7 +289,7 @@ from(bucket: "%s")
     |> range(start: -1m)
     |> filter(
         fn: (r) =>
-            r._measurement == "%s" and r["_field"] == "_value",
+            r._measurement == "%s" and r["_field"] == "value",
     )
     |> aggregateWindow(
 	   every: 1m, 
@@ -305,7 +305,7 @@ from(bucket: "%s")
 
 		item := ptdomain.PerformanceRequestQps{
 			RecordName: mp["name"].(string),
-			Value:      mp["_value"].(float64) / 60,
+			Value:      float64(mp["_value"].(int64)) / 60,
 		}
 		ret = append(ret, item)
 	}
@@ -318,12 +318,12 @@ func QueryResponseTimeTableByInterface(influxdbClient influxdb2.Client, orgId st
 	flux := fmt.Sprintf(`
 baseData =
     from(bucket: "%s")
-        |> filter(fn: (r) => r._measurement == "%s" and r["_field"] == "_value")
+    	|> range(start: -1d)
+        |> filter(fn: (r) => r._measurement == "%s" and r["_field"] == "value")
 
 totalData =
     baseData
         |> count()
-        |> toFloat()
         |> set(key: "_field", value: "total")
 
 minData =
@@ -346,12 +346,18 @@ medianData =
         |> median()
         |> set(key: "_field", value: "median")
 
-union(tables: [totalDataminData, maxData, meanData, medianData])
+quantile95Val =
+   baseData
+       |> quantile(q: 0.95, method: "exact_selector")
+       |> toFloat()
+       |> set(key: "_field", value: "quantile95Val")
+
+union(tables: [totalData, minData, maxData, meanData, medianData, quantile95Val])
 `, bucketName, tableResponseTime)
 
 	result, err := queryData(influxdbClient, orgId, flux)
 
-	tableMap := map[string]ptdomain.PerformanceRequestTable{}
+	tableMap := map[string]*ptdomain.PerformanceRequestTable{}
 
 	for result.Next() {
 		mp := result.Record().Values()
@@ -361,25 +367,29 @@ union(tables: [totalDataminData, maxData, meanData, medianData])
 
 		val, ok := tableMap[name]
 		if !ok {
-			val = ptdomain.PerformanceRequestTable{
+			val = &ptdomain.PerformanceRequestTable{
 				RecordName: name,
 			}
 			tableMap[name] = val
 		}
 
-		if typ == "min" {
-			val.Min = mp["_value"].(int32)
+		if typ == "total" {
+			val.Total = int32(mp["_value"].(int64))
+		} else if typ == "min" {
+			val.Min = int32(mp["_value"].(int64))
 		} else if typ == "max" {
-			val.Max = mp["_value"].(int32)
+			val.Max = int32(mp["_value"].(int64))
 		} else if typ == "mean" {
 			val.Mean = mp["_value"].(float64)
 		} else if typ == "median" {
 			val.Median = mp["_value"].(float64)
+		} else if typ == "quantile95Val" {
+			val.Quantile95 = mp["_value"].(float64)
 		}
 	}
 
 	for _, val := range tableMap {
-		ret = append(ret, val)
+		ret = append(ret, *val)
 	}
 
 	return
@@ -420,6 +430,8 @@ func QueryMetrics(influxdbClient influxdb2.Client, orgId string) (ret []ptdomain
 func queryCpu(influxdbClient influxdb2.Client, orgId string) (
 	ret map[string]float64, err error) {
 
+	ret = map[string]float64{}
+
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -1m)
@@ -447,6 +459,8 @@ from(bucket: "%s")
 func queryMemory(influxdbClient influxdb2.Client, orgId string) (
 	ret map[string]float64, err error) {
 
+	ret = map[string]float64{}
+
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -1m)
@@ -472,6 +486,9 @@ from(bucket: "%s")
 }
 func queryDisk(influxdbClient influxdb2.Client, orgId string) (
 	ret map[string]map[string]float64, err error) {
+
+	ret = map[string]map[string]float64{}
+
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -1m)
@@ -506,6 +523,9 @@ from(bucket: "%s")
 }
 func queryNetwork(influxdbClient influxdb2.Client, orgId string) (
 	ret map[string]map[string]float64, err error) {
+
+	ret = map[string]map[string]float64{}
+
 	flux := fmt.Sprintf(`
 from(bucket: "%s")
     |> range(start: -1m)

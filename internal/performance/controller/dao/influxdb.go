@@ -447,7 +447,7 @@ from(bucket: "%s")
 	for result.Next() {
 		mp := result.Record().Values()
 
-		ret[mp["runner"].(string)] = mp["_value"].(float64)
+		ret[mp["runner"].(string)] = _floatUtils.PointNumb(mp["_value"].(float64), 2)
 	}
 
 	return
@@ -476,7 +476,7 @@ from(bucket: "%s")
 	for result.Next() {
 		mp := result.Record().Values()
 
-		ret[mp["runner"].(string)] = mp["_value"].(float64)
+		ret[mp["runner"].(string)] = _floatUtils.PointNumb(mp["_value"].(float64), 2)
 	}
 
 	return
@@ -506,7 +506,7 @@ from(bucket: "%s")
 
 		runner := mp["runner"].(string)
 		name := mp["name"].(string)
-		val := mp["_value"].(float64)
+		val := _floatUtils.PointNumb(mp["_value"].(float64), 2)
 
 		_, ok := ret[runner]
 		if !ok {
@@ -543,7 +543,7 @@ from(bucket: "%s")
 
 		runner := mp["runner"].(string)
 		name := mp["name"].(string)
-		val := mp["_value"].(float64)
+		val := _floatUtils.PointNumb(mp["_value"].(float64), 2)
 
 		_, ok := ret[runner]
 		if !ok {

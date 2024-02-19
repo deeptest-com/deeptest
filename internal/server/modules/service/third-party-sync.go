@@ -190,7 +190,7 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 			continue
 		}
 
-		var categoryId *int64
+		var categoryId int64
 		//categoryId, err := s.SaveCategory(class, projectId, serveId, req.CategoryId)
 		//if err != nil {
 		//	continue
@@ -214,12 +214,11 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 				continue
 			}
 
-			if (endpoint.ID == 0 || req.SyncType == consts.AutoAdd) && *categoryId == 0 {
-				categoryIdTmp, err := s.SaveCategory(class, projectId, serveId, req.CategoryId)
+			if (endpoint.ID == 0 || req.SyncType == consts.AutoAdd) && categoryId == 0 {
+				err = s.SaveCategory(class, projectId, serveId, req.CategoryId, &categoryId)
 				if err != nil {
 					continue
 				}
-				*categoryId = int64(categoryIdTmp)
 			}
 
 			oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
@@ -235,6 +234,7 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 			oldEndpointDetail.ServeId = 0
 			newEndpointDetail.ServeId = 0
 			newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
+
 			if oldEndpointDetail.Snapshot == newSnapshot {
 				continue
 			}
@@ -246,7 +246,7 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 				continue
 			}
 
-			saveEndpointReq := v1.SaveLcEndpointReq{Title: title, ProjectId: projectId, ServeId: serveId, UserId: userId, OldEndpointId: oldEndpointId, Path: path, Snapshot: newSnapshot, DataSyncType: req.SyncType, CategoryId: *categoryId}
+			saveEndpointReq := v1.SaveLcEndpointReq{Title: title, ProjectId: projectId, ServeId: serveId, UserId: userId, OldEndpointId: oldEndpointId, Path: path, Snapshot: newSnapshot, DataSyncType: req.SyncType, CategoryId: categoryId}
 			endpointId, err := s.SaveEndpoint(saveEndpointReq)
 			if err != nil {
 				continue
@@ -363,17 +363,17 @@ func (s *ThirdPartySyncService) SaveData() (err error) {
 	return
 }
 
-func (s *ThirdPartySyncService) SaveCategory(class integrationDomain.FindClassByServiceCodeResData, projectId, serveId uint, parentCategoryId int) (categoryId uint, err error) {
+func (s *ThirdPartySyncService) SaveCategory(class integrationDomain.FindClassByServiceCodeResData, projectId, serveId uint, parentCategoryId int, categoryId *int64) (err error) {
 	if parentCategoryId == 0 || parentCategoryId == -1 {
 		rootNode, err := s.CategoryRepo.GetRootNode(projectId, serverConsts.EndpointCategory)
 		if err != nil {
-			return categoryId, err
+			return err
 		}
 		parentCategoryId = int(rootNode.ID)
 	}
 
 	name := class.Code
-	if class.Code != class.Name {
+	if class.Code != class.Name && class.Name != "" {
 		name = class.Name + "(" + name + ")"
 	}
 	categoryReq := model.Category{
@@ -391,14 +391,15 @@ func (s *ThirdPartySyncService) SaveCategory(class integrationDomain.FindClassBy
 	}
 
 	if category.ID != 0 {
-		return category.ID, nil
+		*categoryId = int64(category.ID)
+		return
 	}
 
 	err = s.CategoryRepo.Save(&categoryReq)
 	if err != nil {
-		return 0, err
+		return
 	}
-	categoryId = categoryReq.ID
+	*categoryId = int64(categoryReq.ID)
 
 	return
 }

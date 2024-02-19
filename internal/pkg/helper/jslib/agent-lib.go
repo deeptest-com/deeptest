@@ -54,8 +54,8 @@ func LoadChaiJslibs(runtime *goja.Runtime) {
 	runtime.Set("expect", chaiInst.Exports().Named["expect"])
 }
 
-func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, projectId uint, serverUrl, token string) {
-	libs := getJslibsFromServer(projectId, serverUrl, token)
+func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, tenantId consts.TenantId, projectId uint, serverUrl, token string) {
+	libs := getJslibsFromServer(tenantId, projectId, serverUrl, token)
 
 	for _, lib := range libs {
 		id := lib.Id
@@ -80,19 +80,19 @@ func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireMod
 	}
 }
 
-func GetAgentCache(projectId, id uint) (val time.Time, ok bool) {
-	mp := GetAgentLoadedLibs(projectId)
+func GetAgentCache(tenantId consts.TenantId, projectId uint, id uint) (val time.Time, ok bool) {
+	mp := GetAgentLoadedLibs(tenantId, projectId)
 	val, ok = (*mp)[id]
 
 	return
 }
 
-func SetAgentCache(projectId, id uint, val time.Time) {
-	mp := GetAgentLoadedLibs(projectId)
+func SetAgentCache(tenantId consts.TenantId, projectId uint, id uint, val time.Time) {
+	mp := GetAgentLoadedLibs(tenantId, projectId)
 	(*mp)[id] = val
 }
 
-func getJslibsFromServer(projectId uint, serverUrl, token string) (libs []Jslib) {
+func getJslibsFromServer(tenantId consts.TenantId, projectId uint, serverUrl, token string) (libs []Jslib) {
 	url := fmt.Sprintf("snippets/getJslibsForAgent?projectId=%d", projectId)
 
 	loadedLibs := &map[uint]time.Time{} // GetAgentLoadedLibs(projectId)
@@ -107,7 +107,8 @@ func getJslibsFromServer(projectId uint, serverUrl, token string) (libs []Jslib)
 			Token: token,
 		},
 
-		Body: string(body),
+		Body:    string(body),
+		Headers: &[]domain.Header{{Name: "TenantId", Value: string(tenantId)}},
 	}
 
 	resp, err := httpHelper.Post(httpReq)

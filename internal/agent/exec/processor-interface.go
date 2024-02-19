@@ -71,8 +71,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 
 	// dealwith variables
 	ReplaceVariables(&baseRequest, session.ExecUuid)
-
-	GetReqValueFromGoja(session.ExecUuid, processor.ProjectId)
+	GetReqValueFromGoja(session.ExecUuid, session.TenantId, processor.ProjectId)
 
 	// add cookies
 	DealwithCookies(&baseRequest, entity.ProcessorID, session.ExecUuid)
@@ -88,7 +87,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	// exec post-condition
 	SetRespValueToGoja(&entity.Response)
 	processor.Result.ResultStatus, _ = entity.ExecPostConditions(processor, &detail, session)
-	GetRespValueFromGoja(session.ExecUuid, processor.ProjectId)
+	GetRespValueFromGoja(session.ExecUuid, session.TenantId, processor.ProjectId)
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	// get the response data updated by script post-condition
@@ -121,7 +120,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, session *Session) (err error) {
 	for _, condition := range entity.PreConditions {
 		if condition.Type == consts.ConditionTypeScript {
-			entity.DealwithScriptCondition(condition, nil, processor.ProjectId, &processor.Result.PreConditions,
+			entity.DealwithScriptCondition(condition, nil, session.TenantId, processor.ProjectId, &processor.Result.PreConditions,
 				session.ExecUuid, false)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
@@ -138,7 +137,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 	interfaceStatus = processor.Result.ResultStatus
 	for _, condition := range entity.PostConditions {
 		if condition.Type == consts.ConditionTypeScript {
-			entity.DealwithScriptCondition(condition, &interfaceStatus, processor.ProjectId, &processor.Result.PostConditions,
+			entity.DealwithScriptCondition(condition, &interfaceStatus, session.TenantId, processor.ProjectId, &processor.Result.PostConditions,
 				session.ExecUuid, true)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
@@ -165,7 +164,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 }
 
 func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.InterfaceExecCondition,
-	interfaceStatus *consts.ResultStatus, projectId uint, conditions *[]domain.InterfaceExecCondition,
+	interfaceStatus *consts.ResultStatus, tenantId consts.TenantId, projectId uint, conditions *[]domain.InterfaceExecCondition,
 	execUuid string, isPostCondition bool) {
 
 	var scriptBase domain.ScriptBase
@@ -173,8 +172,7 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 	if scriptBase.Disabled {
 		return
 	}
-
-	err := ExecScript(&scriptBase, projectId, execUuid) // will set vari
+	err := ExecScript(&scriptBase, tenantId, projectId, execUuid) // will set vari
 	if err != nil {
 	}
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
+	"github.com/aaronchen2k/deeptest/saas/common"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"google.golang.org/protobuf/proto"
@@ -70,5 +71,5 @@ func (c *BaseCtrl) WriteRespByContentType(resp mockGenerator.Response, ctx iris.
 }
 
 func (c *BaseCtrl) getTenantId(ctx iris.Context) consts.TenantId {
-	return "123"
+	return common.GetTenantId(ctx)
 }

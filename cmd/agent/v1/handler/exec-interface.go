@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/aaronchen2k/deeptest/saas/common"
 	"github.com/kataras/iris/v12"
 )
 
@@ -34,5 +35,5 @@ func (c *ExecInterfaceCtrl) Call(ctx iris.Context) {
 }
 
 func (c *ExecInterfaceCtrl) getTenantId(ctx iris.Context) consts.TenantId {
-	return "123"
+	return common.GetTenantId(ctx)
 }

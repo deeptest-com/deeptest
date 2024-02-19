@@ -21,7 +21,6 @@ func (c *SummaryCtrl) Summary() {
 	tenants := tenant.NewTenant().GetInfos()
 	for _, tenant := range tenants {
 		go c.SummaryService.Collection(tenant.Id)
-		return
 	}
 	//default
 	c.SummaryService.Collection("")

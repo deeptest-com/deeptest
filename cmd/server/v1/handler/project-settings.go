@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/aaronchen2k/deeptest/saas/tenant"
 	"github.com/kataras/iris/v12"
 )
 
@@ -72,16 +73,14 @@ func (c *ProjectSettingsCtrl) SwaggerSyncDetail(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
 
-func (c *ProjectSettingsCtrl) InitSwaggerCron(ctx iris.Context) {
+func (c *ProjectSettingsCtrl) InitSwaggerCron() {
 	//SAAS
-	tenantId := c.getTenantId(ctx)
-	syncList, err := c.ProjectSettingsService.SwaggerSyncList(tenantId)
-	if err != nil {
-		return
+	tenants := tenant.NewTenant().GetInfos()
+	for _, tenant := range tenants {
+		go c.initSwaggerCron(tenant.Id)
 	}
-	for _, item := range syncList {
-		c.ProjectSettingsService.AddSwaggerCron(tenantId, item)
-	}
+	//default
+	c.initSwaggerCron("")
 }
 
 // GetMock - Get Project Mock Settings
@@ -121,8 +120,21 @@ func (c *ProjectSettingsCtrl) SaveMock(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
 
-func (c *ProjectSettingsCtrl) InitThirdPartySyncCron(ctx iris.Context) {
+func (c *ProjectSettingsCtrl) InitThirdPartySyncCron() {
 	//SAAS
-	tenantId := c.getTenantId(ctx)
-	c.ThirdPartySyncService.AddThirdPartySyncCron(tenantId)
+	tenants := tenant.NewTenant().GetInfos()
+	for _, tenant := range tenants {
+		go c.ThirdPartySyncService.AddThirdPartySyncCron(tenant.Id)
+	}
+
+	c.ThirdPartySyncService.AddThirdPartySyncCron("")
+}
+func (c *ProjectSettingsCtrl) initSwaggerCron(tenantId consts.TenantId) {
+	syncList, err := c.ProjectSettingsService.SwaggerSyncList(tenantId)
+	if err != nil {
+		return
+	}
+	for _, item := range syncList {
+		c.ProjectSettingsService.AddSwaggerCron(tenantId, item)
+	}
 }

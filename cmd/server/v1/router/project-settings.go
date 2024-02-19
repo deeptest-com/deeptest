@@ -22,8 +22,8 @@ func (m *ProjectSettingsModule) Party() module.WebModule {
 		public.Post("/saveMock", m.ProjectSettingsCtrl.SaveMock).Name = "保存同步信息"
 		public.Get("/getMock", m.ProjectSettingsCtrl.GetMock).Name = "保存同步信息"
 	}
-	//SAAS
-	m.ProjectSettingsCtrl.InitSwaggerCron(nil)
-	m.ProjectSettingsCtrl.InitThirdPartySyncCron(nil)
+	//SAAS 增加定义初始化定时任务，防止租户服务请求失败，导致初始化失败
+	m.ProjectSettingsCtrl.InitSwaggerCron()
+	m.ProjectSettingsCtrl.InitThirdPartySyncCron()
 	return module.NewModule("/projectSettings", handler)
 }

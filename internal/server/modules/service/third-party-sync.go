@@ -424,7 +424,7 @@ func (s *ThirdPartySyncService) UpdateExecTimeById(tenantId consts.TenantId, id 
 }
 
 func (s *ThirdPartySyncService) AddThirdPartySyncCron(tenantId consts.TenantId) {
-	name := "ThirdPartySync"
+	name := fmt.Sprintf("ThirdPartySync_%v", tenantId)
 
 	s.Cron.RemoveTask(name)
 

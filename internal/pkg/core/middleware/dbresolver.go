@@ -2,9 +2,9 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/aaronchen2k/deeptest/saas/common"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"gorm.io/gorm"
@@ -23,7 +23,7 @@ func DBResolver() iris.Handler {
 			}
 		}(ctx)
 
-		dbname := consts.TenantId(ctx.URLParamDefault("dbname", ""))
+		dbname := common.GetTenantId(ctx)
 		if dbname != "" {
 			handler := func() (db *gorm.DB, err error) {
 				return dao.InitSaasDBHandler(dbname)

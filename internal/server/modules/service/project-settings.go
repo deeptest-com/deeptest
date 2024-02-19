@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -10,7 +11,6 @@ import (
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
-	"strconv"
 )
 
 type ProjectSettingsService struct {
@@ -47,7 +47,7 @@ func (s *ProjectSettingsService) GetSwaggerSyncById(tenantId consts.TenantId, id
 }
 
 func (s *ProjectSettingsService) AddSwaggerCron(tenantId consts.TenantId, item model.SwaggerSync) {
-	name := "swaggerSync" + "_" + strconv.Itoa(int(item.ID))
+	name := fmt.Sprintf("swaggerSync_%v_%d", tenantId, item.ID)
 	s.Cron.RemoveTask(name)
 
 	if item.Switch == consts.SwitchOFF {

@@ -6,8 +6,9 @@ import (
 )
 
 type ExecParamsInCtx struct {
-	RunnerId int32
-	Room     string
+	RunnerId   int32
+	RunnerName string
+	Room       string
 
 	Target int
 	Weight int

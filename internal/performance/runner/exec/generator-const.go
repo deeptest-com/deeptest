@@ -29,9 +29,10 @@ func (g ConstantVuGenerator) Run(execCtx context.Context, sender indicator.Messa
 		wgVus.Add(1)
 
 		result := ptProto.PerformanceExecResp{
-			Timestamp: time.Now().UnixMilli(),
-			RunnerId:  execParams.RunnerId,
-			Room:      execParams.Room,
+			Timestamp:  time.Now().UnixMilli(),
+			RunnerId:   execParams.RunnerId,
+			RunnerName: execParams.RunnerName,
+			Room:       execParams.Room,
 
 			VuCount: 1,
 		}

@@ -13,6 +13,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 	"strings"
 )
 
@@ -21,6 +22,8 @@ type ProjectCronCtrl struct {
 	LecangCronService     *service.LecangCronService     `inject:""`
 	ThirdPartySyncService *service.ThirdPartySyncService `inject:""`
 	ProjectCronRepo       *repo.ProjectCronRepo          `inject:""`
+	DB                    *gorm.DB                       `inject:""`
+	Proxy                 *task.Proxy                    `inject:""`
 	BaseCtrl
 }
 
@@ -291,6 +294,7 @@ func (c *ProjectCronCtrl) AllServiceList(ctx iris.Context) {
 }
 
 func (c *ProjectCronCtrl) InitProjectCron() {
+	//c.ProjectCronService.BatchAddCron()
 	cronList, _ := c.ProjectCronRepo.ListAllCron()
 
 	for _, item := range cronList {
@@ -298,8 +302,8 @@ func (c *ProjectCronCtrl) InitProjectCron() {
 		options["projectId"] = item.ProjectId
 		options["taskId"] = item.ConfigId
 
-		proxy := task.NewProxy(string(item.Source), item.Cron)
-		_ = proxy.Add(options)
+		c.Proxy.Init(string(item.Source), item.Cron)
+		//proxy := task.NewProxy(string(item.Source), item.Cron)
+		_ = c.Proxy.Add(options)
 	}
-
 }

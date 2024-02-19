@@ -8,11 +8,12 @@ type Task interface {
 }
 
 type Proxy struct {
-	source string
-	cron   string
-	task   Task
-	taskId string
-	Cron   *cron.ServerCron `inject:""`
+	source     string
+	cron       string
+	task       Task
+	taskId     string
+	ServerCron *cron.ServerCron `inject:""`
+	Factory    *Factory         `inject:""`
 }
 
 func (p *Proxy) GetTaskId() (taskId string) {
@@ -26,29 +27,32 @@ func NewProxy(source, cron string) (proxy Proxy) {
 		cron:   cron,
 	}
 
-	taskEntity := Factory{
-		name: source,
-	}
-
-	proxy.task = taskEntity.Create()
 	return
+}
+
+func (p *Proxy) Init(source, cron string) {
+	p.source = source
+	p.cron = cron
+
+	p.Factory.name = source
+	p.task = p.Factory.Create()
 }
 
 func (p *Proxy) Add(options map[string]interface{}) (err error) {
 	taskFunc := p.getTaskFunc(options)
 
-	err = p.Cron.AddCommonTask(p.GetTaskId(), p.cron, taskFunc)
+	err = p.ServerCron.AddCommonTask(p.GetTaskId(), p.cron, taskFunc)
 
 	return
 }
 
 func (p *Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
-	runFunc := p.task.Run(options)
-	if runFunc() == nil {
-		return
-	}
-
 	taskFunc = func() {
+		runFunc := p.task.Run(options)
+		if runFunc() == nil {
+			return
+		}
+
 		err := runFunc()
 		callBackFunc := p.task.CallBack(options, err)
 		if callBackFunc == nil {

@@ -44,3 +44,15 @@ type ProjectCronReqPaginate struct {
 	Source    consts.CronSource   `json:"source"`
 	Switch    consts.SwitchStatus `json:"switch"`
 }
+
+type SaveLcEndpointReq struct {
+	Title         string              `json:"title"`
+	ProjectId     uint                `json:"projectId"`
+	ServeId       uint                `json:"serveId"`
+	UserId        uint                `json:"userId"`
+	OldEndpointId uint                `json:"oldEndpointId"`
+	Path          string              `json:"path"`
+	Snapshot      string              `json:"snapshot"`
+	DataSyncType  consts.DataSyncType `json:"dataSyncType"`
+	CategoryId    int64               `json:"categoryId"`
+}

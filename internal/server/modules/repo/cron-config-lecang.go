@@ -6,7 +6,8 @@ import (
 )
 
 type CronConfigLecangRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
 func (r *CronConfigLecangRepo) Create(config model.CronConfigLecang) (id uint, err error) {

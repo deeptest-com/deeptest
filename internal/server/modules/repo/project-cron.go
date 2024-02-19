@@ -63,6 +63,7 @@ func (r *ProjectCronRepo) CombineCategory(configs []*model.ProjectCron) {
 
 func (r *ProjectCronRepo) ListAllCron() (res []model.ProjectCron, err error) {
 	err = r.DB.Model(&model.ProjectCron{}).
+		Where("switch = ? AND NOT deleted", consts.SwitchON).
 		Find(&res).Error
 
 	return

@@ -5,8 +5,10 @@ import (
 )
 
 type Factory struct {
-	name   string
-	taskId uint
+	name              string
+	taskId            uint
+	SwaggerCron       *service.SwaggerCron       `inject:""`
+	LecangCronService *service.LecangCronService `inject:""`
 }
 
 //func c Create() (res CronRun) {
@@ -33,11 +35,11 @@ func newFactory(name string, task2 Task) (factory *Factory) {
 func (e *Factory) Create() (res Task) {
 	switch e.name {
 	case "swagger":
-		res = new(service.SwaggerCron)
+		res = e.SwaggerCron
 	case "lecang":
-		res = new(service.LecangCronService)
+		res = e.LecangCronService
 	default:
-		res = new(service.SwaggerCron)
+		res = e.SwaggerCron
 	}
 
 	return

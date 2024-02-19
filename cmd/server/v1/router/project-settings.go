@@ -23,7 +23,7 @@ func (m *ProjectSettingsModule) Party() module.WebModule {
 		public.Get("/getMock", m.ProjectSettingsCtrl.GetMock).Name = "保存同步信息"
 	}
 
-	m.ProjectSettingsCtrl.InitSwaggerCron()
-	m.ProjectSettingsCtrl.InitThirdPartySyncCron()
+	//m.ProjectSettingsCtrl.InitSwaggerCron()
+	//m.ProjectSettingsCtrl.InitThirdPartySyncCron()
 	return module.NewModule("/projectSettings", handler)
 }

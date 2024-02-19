@@ -12,7 +12,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/thirdPart"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -154,15 +153,33 @@ func (s *ThirdPartySyncService) ImportEndpoint(projectId uint, cronConfig model.
 		req.ProjectId = projectId
 		req.ServiceCode = serviceCode
 
-		go s.ImportEndpointForService(req)
+		//TODO 加go
+		s.ImportEndpointForService(req)
 	}
 
 	return
 }
 
-// ImportEndpointForService TODO 加标签
+func (s *ThirdPartySyncService) getParentNodeId(categoryId int, projectId uint) (parentNodeId int, err error) {
+	parentNodeId = categoryId
+	if categoryId == 0 || categoryId == -1 {
+		rootNode, err := s.CategoryRepo.GetRootNode(projectId, serverConsts.EndpointCategory)
+		if err != nil {
+			return parentNodeId, err
+		}
+		parentNodeId = int(rootNode.ID)
+	}
+
+	return
+}
+
+// ImportEndpointForService TODO 加分类 路径前缀
 func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (err error) {
 	baseUrl, token, serviceCode, projectId, serveId, userId := req.Url, req.Token, req.ServiceCode, req.ProjectId, req.ServeId, req.CreateUserId
+	parentNodeId, err := s.getParentNodeId(req.CategoryId, req.ProjectId)
+	if err != nil {
+		return
+	}
 
 	classes := s.GetClasses(serviceCode, token, baseUrl)
 	for _, class := range classes {
@@ -173,22 +190,36 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 			continue
 		}
 
-		categoryId, err := s.SaveCategory(class, projectId, serveId)
-		if err != nil {
-			continue
-		}
+		var categoryId *int64
+		//categoryId, err := s.SaveCategory(class, projectId, serveId, req.CategoryId)
+		//if err != nil {
+		//	continue
+		//}
 
 		for _, function := range functionList {
-			path := "/" + serviceCode + "/" + classCode + "/" + function
+			var path string
+			if req.AddServicePrefix {
+				path = "/" + serviceCode
+			}
+			path = path + "/" + classCode + "/" + function
+
 			functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)
 			if functionDetail.Code == "" {
 				continue
 			}
 
 			title := classCode + "-" + functionDetail.Code
-			endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, int64(categoryId))
+			endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, int64(parentNodeId))
 			if err != nil && err != gorm.ErrRecordNotFound {
 				continue
+			}
+
+			if (endpoint.ID == 0 || req.SyncType == consts.AutoAdd) && *categoryId == 0 {
+				categoryIdTmp, err := s.SaveCategory(class, projectId, serveId, req.CategoryId)
+				if err != nil {
+					continue
+				}
+				*categoryId = int64(categoryIdTmp)
 			}
 
 			oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
@@ -215,7 +246,8 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 				continue
 			}
 
-			endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path, newSnapshot, consts.AutoAdd)
+			saveEndpointReq := v1.SaveLcEndpointReq{Title: title, ProjectId: projectId, ServeId: serveId, UserId: userId, OldEndpointId: oldEndpointId, Path: path, Snapshot: newSnapshot, DataSyncType: req.SyncType, CategoryId: *categoryId}
+			endpointId, err := s.SaveEndpoint(saveEndpointReq)
 			if err != nil {
 				continue
 			}
@@ -235,106 +267,109 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 }
 
 func (s *ThirdPartySyncService) SaveData() (err error) {
-	thirdPartySyncStatus, _ := cache.GetCacheString("thirdPartySyncStatus")
-	if thirdPartySyncStatus == "Start" {
-		return
-	}
-
-	_ = cache.SetCache("thirdPartySyncStatus", "Start", 1*time.Hour)
-	syncList, err := s.GetAllData()
-	if err != nil {
-		return
-	}
-
-	for _, syncConfig := range syncList {
-		if syncConfig.Switch == consts.SwitchOFF {
-			continue
-		}
-		projectId, serveId, userId, baseUrl := syncConfig.ProjectId, syncConfig.ServeId, syncConfig.CreateUserId, syncConfig.Url
-
-		token, err := s.GetToken(baseUrl)
-		if err != nil {
-			continue
-		}
-
-		classes := s.GetClasses(syncConfig.ServiceCode, token, baseUrl)
-		for _, class := range classes {
-			classCode := class.Code
-
-			funcLimit := v1.LecangFuncLimit{}
-			functionList := s.GetFunctionsByClassNew(class, funcLimit, token, baseUrl)
-			if len(functionList) == 0 {
-				continue
-			}
-
-			categoryId, err := s.SaveCategory(class, projectId, syncConfig.ServeId)
-			if err != nil {
-				continue
-			}
-
-			for _, function := range functionList {
-				path := "/" + syncConfig.ServiceCode + "/" + classCode + "/" + function
-				functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)
-				if functionDetail.Code == "" {
-					continue
-				}
-
-				fmt.Println(functionDetail)
-				title := classCode + "-" + functionDetail.Code
-				endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, int64(categoryId))
-				if err != nil && err != gorm.ErrRecordNotFound {
-					continue
-				}
-
-				oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
-				if err != nil && err != gorm.ErrRecordNotFound {
-					continue
-				}
-
-				newEndpointDetail, err := s.GenerateEndpoint(functionDetail)
-				if err != nil && err != gorm.ErrRecordNotFound {
-					continue
-				}
-
-				oldEndpointDetail.ServeId = 0
-				newEndpointDetail.ServeId = 0
-				newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
-				if oldEndpointDetail.Snapshot == newSnapshot {
-					continue
-				}
-				oldEndpointId := endpoint.ID
-
-				oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
-				if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson {
-					s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
-					continue
-				}
-
-				endpointId, err := s.SaveEndpoint(title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path, newSnapshot, consts.AutoAdd)
-				if err != nil {
-					continue
-				}
-
-				interfaceId, err := s.SaveEndpointInterface(title, functionDetail, endpointId, projectId, path)
-				if err != nil {
-					continue
-				}
-
-				if err = s.SaveBody(functionDetail, interfaceId); err != nil {
-					continue
-				}
-			}
-		}
-	}
-
-	cache.SetCache("thirdPartySyncStatus", "Stop", -1)
+	//thirdPartySyncStatus, _ := cache.GetCacheString("thirdPartySyncStatus")
+	//if thirdPartySyncStatus == "Start" {
+	//	return
+	//}
+	//
+	//_ = cache.SetCache("thirdPartySyncStatus", "Start", 1*time.Hour)
+	//syncList, err := s.GetAllData()
+	//if err != nil {
+	//	return
+	//}
+	//
+	//for _, syncConfig := range syncList {
+	//	if syncConfig.Switch == consts.SwitchOFF {
+	//		continue
+	//	}
+	//	projectId, serveId, userId, baseUrl := syncConfig.ProjectId, syncConfig.ServeId, syncConfig.CreateUserId, syncConfig.Url
+	//
+	//	token, err := s.GetToken(baseUrl)
+	//	if err != nil {
+	//		continue
+	//	}
+	//
+	//	classes := s.GetClasses(syncConfig.ServiceCode, token, baseUrl)
+	//	for _, class := range classes {
+	//		classCode := class.Code
+	//
+	//		funcLimit := v1.LecangFuncLimit{}
+	//		functionList := s.GetFunctionsByClassNew(class, funcLimit, token, baseUrl)
+	//		if len(functionList) == 0 {
+	//			continue
+	//		}
+	//
+	//		categoryId, err := s.SaveCategory(class, projectId, syncConfig.ServeId)
+	//		if err != nil {
+	//			continue
+	//		}
+	//
+	//		for _, function := range functionList {
+	//			path := "/" + syncConfig.ServiceCode + "/" + classCode + "/" + function
+	//			functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)
+	//			if functionDetail.Code == "" {
+	//				continue
+	//			}
+	//
+	//			fmt.Println(functionDetail)
+	//			title := classCode + "-" + functionDetail.Code
+	//			endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, int64(categoryId))
+	//			if err != nil && err != gorm.ErrRecordNotFound {
+	//				continue
+	//			}
+	//
+	//			oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
+	//			if err != nil && err != gorm.ErrRecordNotFound {
+	//				continue
+	//			}
+	//
+	//			newEndpointDetail, err := s.GenerateEndpoint(functionDetail)
+	//			if err != nil && err != gorm.ErrRecordNotFound {
+	//				continue
+	//			}
+	//
+	//			oldEndpointDetail.ServeId = 0
+	//			newEndpointDetail.ServeId = 0
+	//			newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
+	//			if oldEndpointDetail.Snapshot == newSnapshot {
+	//				continue
+	//			}
+	//			oldEndpointId := endpoint.ID
+	//
+	//			oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
+	//			if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson {
+	//				s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
+	//				continue
+	//			}
+	//			saveEndpointReq := v1.SaveLcEndpointReq{Title: title, ProjectId: projectId, ServeId: serveId, UserId: userId, OldEndpointId: oldEndpointId, Path: path, Snapshot: newSnapshot, DataSyncType: consts.AutoAdd, CategoryId: int64(categoryId)}
+	//			endpointId, err := s.SaveEndpoint(saveEndpointReq)
+	//			if err != nil {
+	//				continue
+	//			}
+	//
+	//			interfaceId, err := s.SaveEndpointInterface(title, functionDetail, endpointId, projectId, path)
+	//			if err != nil {
+	//				continue
+	//			}
+	//
+	//			if err = s.SaveBody(functionDetail, interfaceId); err != nil {
+	//				continue
+	//			}
+	//		}
+	//	}
+	//}
+	//
+	//cache.SetCache("thirdPartySyncStatus", "Stop", -1)
 	return
 }
 
-func (s *ThirdPartySyncService) SaveCategory(class integrationDomain.FindClassByServiceCodeResData, projectId, serveId uint) (categoryId uint, err error) {
-	rootNode, err := s.CategoryRepo.GetRootNode(projectId, serverConsts.EndpointCategory)
-	if err != nil {
-		return
+func (s *ThirdPartySyncService) SaveCategory(class integrationDomain.FindClassByServiceCodeResData, projectId, serveId uint, parentCategoryId int) (categoryId uint, err error) {
+	if parentCategoryId == 0 || parentCategoryId == -1 {
+		rootNode, err := s.CategoryRepo.GetRootNode(projectId, serverConsts.EndpointCategory)
+		if err != nil {
+			return categoryId, err
+		}
+		parentCategoryId = int(rootNode.ID)
 	}
 
 	name := class.Code
@@ -347,7 +382,7 @@ func (s *ThirdPartySyncService) SaveCategory(class integrationDomain.FindClassBy
 		ServeId:    serveId,
 		Type:       serverConsts.EndpointCategory,
 		SourceType: consts.ThirdPartySync,
-		ParentId:   int(rootNode.ID),
+		ParentId:   parentCategoryId,
 	}
 
 	category, err := s.CategoryRepo.GetDetail(categoryReq)
@@ -368,36 +403,36 @@ func (s *ThirdPartySyncService) SaveCategory(class integrationDomain.FindClassBy
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpoint(title string, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path, snapshot string, dataSyncType consts.DataSyncType) (endpointId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpoint(req v1.SaveLcEndpointReq) (endpointId uint, err error) {
 	timeNow := time.Now()
 	endpoint := model.Endpoint{
-		Title:       title,
-		ProjectId:   projectId,
-		ServeId:     serveId,
-		Path:        path,
+		Title:       req.Title,
+		ProjectId:   req.ProjectId,
+		ServeId:     req.ServeId,
+		Path:        req.Path,
 		Status:      1,
-		Snapshot:    snapshot,
+		Snapshot:    req.Snapshot,
 		SourceType:  consts.ThirdPartySync,
 		ChangedTime: &timeNow,
 	}
-	if dataSyncType == consts.FullCover {
+	if req.DataSyncType == consts.FullCover {
 		endpoint.ChangedStatus = consts.NoChanged
 	}
 
-	if oldEndpointId == 0 || dataSyncType == consts.Add {
-		endpoint.CategoryId = categoryId
+	if req.OldEndpointId == 0 || req.DataSyncType == consts.Add {
+		endpoint.CategoryId = req.CategoryId
 	}
 
-	if userId != 0 {
-		user, err := s.UserRepo.FindById(userId)
+	if req.UserId != 0 {
+		user, err := s.UserRepo.FindById(req.UserId)
 		if err != nil {
 			return 0, err
 		}
 		endpoint.CreateUser = user.Username
 	}
 
-	if oldEndpointId != 0 {
-		endpoint.ID = oldEndpointId
+	if req.OldEndpointId != 0 {
+		endpoint.ID = req.OldEndpointId
 	}
 
 	err = s.EndpointRepo.SaveAll(&endpoint)
@@ -641,7 +676,8 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(req v1.ImportEndpointD
 			oldEndpointId = endpoint.ID
 		}
 
-		endpointId, err := s.SaveEndpoint(title, req.ProjectId, req.ServeId, req.UserId, oldEndpointId, req.CategoryId, path, newSnapshot, req.DataSyncType)
+		saveEndpointReq := v1.SaveLcEndpointReq{Title: title, ProjectId: req.ProjectId, ServeId: req.ServeId, UserId: req.UserId, OldEndpointId: oldEndpointId, Path: path, Snapshot: newSnapshot, DataSyncType: req.DataSyncType, CategoryId: req.CategoryId}
+		endpointId, err := s.SaveEndpoint(saveEndpointReq)
 		if err != nil {
 			continue
 		}

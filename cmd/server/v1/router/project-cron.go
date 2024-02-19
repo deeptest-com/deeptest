@@ -26,6 +26,7 @@ func (m *ProjectCronModule) Party() module.WebModule {
 		index.Get("/allServiceList", m.ProjectCronCtrl.AllServiceList).Name = "获取所有服务列表"
 
 	}
+	m.ProjectCronCtrl.InitProjectCron()
 	return module.NewModule("/project/cron", handler)
 
 }

@@ -32,7 +32,7 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		Headers: &[]domain.Header{{Name: "TenantId", Value: string(req.TenantId)}},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
 	resp, err := httpHelper.Post(httpReq)
@@ -97,7 +97,7 @@ func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.De
 		BearerToken: domain.BearerToken{
 			Token: token,
 		},
-		Headers: &[]domain.Header{{Name: "TenantId", Value: string(execObj.TenantId)}},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(execObj.TenantId)}},
 	}
 
 	resp, err := httpHelper.Post(req)
@@ -142,7 +142,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 				Value: _stringUtils.IntToStr(req.EnvironmentId),
 			},
 		},
-		Headers: &[]domain.Header{{Name: "TenantId", Value: string(req.TenantId)}},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 	request, err := json.Marshal(httpReq)
 	logUtils.Infof("get exec obj request, request: %s", string(request))
@@ -209,7 +209,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 				Value: _stringUtils.IntToStr(req.EnvironmentId),
 			},
 		},
-		Headers: &[]domain.Header{{Name: "TenantId", Value: string(req.TenantId)}},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
 	resp, err := httpHelper.Get(httpReq)
@@ -253,7 +253,7 @@ func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint
 		BearerToken: domain.BearerToken{
 			Token: token,
 		},
-		Headers: &[]domain.Header{{Name: "TenantId", Value: string(tenantId)}},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(tenantId)}},
 	}
 
 	resp, err := httpHelper.Post(req)
@@ -303,7 +303,7 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 				Value: _stringUtils.IntToStr(req.EnvironmentId),
 			},
 		},
-		Headers: &[]domain.Header{{Name: "TenantId", Value: string(req.TenantId)}},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
 	resp, err := httpHelper.Get(httpReq)
@@ -357,7 +357,7 @@ func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err 
 				Value: _stringUtils.IntToStr(req.EnvironmentId),
 			},
 		},
-		Headers: &[]domain.Header{{Name: "TenantId", Value: string(req.TenantId)}},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
 	resp, err := httpHelper.Get(httpReq)
@@ -400,7 +400,7 @@ func SubmitPlanResult(result agentDomain.PlanExecResult, planId int, serverUrl, 
 		BearerToken: domain.BearerToken{
 			Token: token,
 		},
-		Headers: &[]domain.Header{{Name: "TenantId", Value: string(tenantId)}},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(tenantId)}},
 	}
 
 	resp, err := httpHelper.Post(req)
@@ -443,7 +443,7 @@ func GetCasesToExec(req *agentExec.CasesExecReq) (ret agentExec.CaseExecProcesso
 		},
 		BodyType: consts.ContentTypeJSON,
 		Body:     string(body),
-		Headers:  &[]domain.Header{{Name: "TenantId", Value: string(req.TenantId)}},
+		Headers:  &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 	request, err := json.Marshal(httpReq)
 	logUtils.Infof("get case exec obj request, request: %s", string(request))
@@ -490,7 +490,7 @@ func GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExec
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
-		Headers: &[]domain.Header{{Name: "TenantId", Value: string(req.TenantId)}},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
 	resp, err := httpHelper.Get(httpReq)

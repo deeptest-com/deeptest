@@ -484,7 +484,7 @@ func (c *ProjectCtrl) GetIntegrationDetail(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) GetUserProducts(ctx iris.Context) {
-	//SAAS
+	tenantId := c.getTenantId(ctx)
 	userName := multi.GetUsername(ctx)
 	page, _ := ctx.URLParamInt("page")
 	if page <= 0 {
@@ -496,7 +496,7 @@ func (c *ProjectCtrl) GetUserProducts(ctx iris.Context) {
 		pageSize = 10
 	}
 
-	res, err := c.IntegrationProjectService.GetUserProductList(page, pageSize, userName)
+	res, err := c.IntegrationProjectService.GetUserProductList(tenantId, page, pageSize, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -506,11 +506,10 @@ func (c *ProjectCtrl) GetUserProducts(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) GetUserSpaces(ctx iris.Context) {
-	//tenantId := c.getTenantId(ctx)
-	//SAAS
+	tenantId := c.getTenantId(ctx)
 	userName := multi.GetUsername(ctx)
 
-	res, err := c.IntegrationProjectService.GetSpacesByUsername(userName)
+	res, err := c.IntegrationProjectService.GetSpacesByUsername(tenantId, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

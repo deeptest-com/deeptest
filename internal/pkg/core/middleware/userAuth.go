@@ -63,7 +63,7 @@ func UserAuth() iris.Handler {
 		user := user.NewUser(appName)
 
 		if appName != "" {
-			userInfo, err := user.GetUserInfoByToken(token, origin)
+			userInfo, err := user.GetUserInfoByToken(tenantId, token, origin)
 			if err == nil && userInfo.Username != "" {
 				token, err := creatSession(tenantId, userInfo)
 				if err == nil && token != "" {

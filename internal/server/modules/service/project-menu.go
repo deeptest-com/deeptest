@@ -78,7 +78,7 @@ func (s *ProjectMenuService) GetUserMenuListNew(tenantId consts.TenantId, projec
 	}
 
 	if config.CONFIG.System.SysEnv == "ly" && !isAdminUser {
-		ret, err = s.PrivilegeService.GetAll(userName, string(projectRole.Name))
+		ret, err = s.PrivilegeService.GetAll(tenantId, userName, string(projectRole.Name))
 	} else {
 		ret, err = s.GetAll(tenantId, userId, projectRole.ID)
 	}

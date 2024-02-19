@@ -23,12 +23,12 @@ type ProjectService struct {
 	MessageService  *MessageService       `inject:""`
 }
 
-func (s *ProjectService) GetUserProductList(page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
-	return s.RemoteService.GetUserProductList(page, pageSize, username)
+func (s *ProjectService) GetUserProductList(tenantId consts.TenantId, page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
+	return s.RemoteService.GetUserProductList(tenantId, page, pageSize, username)
 }
 
-func (s *ProjectService) GetSpacesByUsername(username string) (ret []integrationDomain.SpaceItem, err error) {
-	return s.RemoteService.GetSpacesByUsername(username)
+func (s *ProjectService) GetSpacesByUsername(tenantId consts.TenantId, username string) (ret []integrationDomain.SpaceItem, err error) {
+	return s.RemoteService.GetSpacesByUsername(tenantId, username)
 }
 
 func (s *ProjectService) AddProjectRelatedProducts(tenantId consts.TenantId, projectId uint, products []uint) (err error) {
@@ -120,7 +120,7 @@ func (s *ProjectService) GetProductsByProject(tenantId consts.TenantId, projectI
 		return
 	}
 
-	res, err = s.RemoteService.GetProductListById(productIds)
+	res, err = s.RemoteService.GetProductListById(tenantId, productIds)
 
 	return
 }
@@ -131,7 +131,7 @@ func (s *ProjectService) GetSpacesByProject(tenantId consts.TenantId, projectId 
 		return
 	}
 
-	res, err = s.RemoteService.BatchGetSpacesByCode(spaceCodes)
+	res, err = s.RemoteService.BatchGetSpacesByCode(tenantId, spaceCodes)
 
 	return
 }
@@ -229,7 +229,7 @@ func (s *ProjectService) GetProjectShortNameAndIdMap(tenantId consts.TenantId, s
 }
 
 func (s *ProjectService) GetUserInfoMap(tenantId consts.TenantId, spaceCodes []string) (res map[string]integrationDomain.UserRoleInfo, userRoles map[string][]string, err error) {
-	spaceMemberRoles, err := s.RemoteService.BatchGetMembersBySpaces(spaceCodes)
+	spaceMemberRoles, err := s.RemoteService.BatchGetMembersBySpaces(tenantId, spaceCodes)
 	if err != nil {
 		return
 	}
@@ -260,7 +260,7 @@ func (s *ProjectService) GetUserInfoMap(tenantId consts.TenantId, spaceCodes []s
 }
 
 func (s *ProjectService) GetSpaceRoleArrays(tenantId consts.TenantId) (res []string, err error) {
-	spaceRoles, err := s.RemoteService.GetSpaceRoles()
+	spaceRoles, err := s.RemoteService.GetSpaceRoles(tenantId)
 	if err != nil {
 		return
 	}

@@ -39,7 +39,7 @@ func (s *MessageService) GetJoinProjectMcsData(tenantId consts.TenantId, senderI
 		return
 	}
 
-	applyRole, err := s.RoleService.GetRoleNameByValue(string(roleValue))
+	applyRole, err := s.RoleService.GetRoleNameByValue(tenantId, string(roleValue))
 	if err != nil {
 		return
 	}
@@ -71,7 +71,7 @@ func (s *MessageService) GetJoinProjectMcsData(tenantId consts.TenantId, senderI
 }
 
 func (s *MessageService) SendMessageToMcs(tenantId consts.TenantId, message model.Message) (mcsMessageId string, err error) {
-	mcsMessageId, err = s.RemoteService.ApprovalAndMsg(message.Content)
+	mcsMessageId, err = s.RemoteService.ApprovalAndMsg(tenantId, message.Content)
 	if err != nil {
 		_ = s.MessageRepo.UpdateSendStatusById(tenantId, message.ID, consts.MessageSendFailed)
 		return

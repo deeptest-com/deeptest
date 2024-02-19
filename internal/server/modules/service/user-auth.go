@@ -20,7 +20,7 @@ type UserAuthService struct {
 
 func (s *UserAuthService) Auth(tenantId consts.TenantId, token string) (user model.SysUser, err error) {
 	var userInfo integrationDomain.UserInfo
-	userInfo, err = s.RemoteService.GetUserInfoByToken(token)
+	userInfo, err = s.RemoteService.GetUserInfoByToken(tenantId, token)
 	if err != nil {
 		req := v1.UserReq{UserBase: v1.UserBase{
 			Username:  userInfo.Username,

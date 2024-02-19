@@ -32,7 +32,7 @@ func (s *ProjectRolePermService) AllRoleList(tenantId consts.TenantId) (data []m
 }
 
 func (s *ProjectRolePermService) GetRoleFromOther(tenantId consts.TenantId) (data []model.ProjectRole, err error) {
-	spaceRoles, err := s.RemoteService.GetSpaceRoles()
+	spaceRoles, err := s.RemoteService.GetSpaceRoles(tenantId)
 	if err != nil {
 		return
 	}

@@ -6,6 +6,6 @@ import (
 )
 
 func GetTenantId(ctx iris.Context) consts.TenantId {
-	ret := ctx.GetHeader("TenantId")
+	ret := ctx.GetHeader("tenantId")
 	return consts.TenantId(ret)
 }

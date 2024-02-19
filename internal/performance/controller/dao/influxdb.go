@@ -5,6 +5,7 @@ import (
 	"fmt"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
+	_floatUtils "github.com/aaronchen2k/deeptest/pkg/lib/float"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/influxdata/influxdb-client-go/v2/api"
 	"github.com/influxdata/influxdb-client-go/v2/domain"
@@ -264,7 +265,7 @@ from(bucket: "%s")
         fn: (r) =>
             r._measurement == "%s" and r["_field"] == "value",
     )
-    |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
+    |> mean()
 `, bucketName, tableResponseTime)
 
 	result, err := queryData(influxdbClient, orgId, flux)
@@ -291,11 +292,7 @@ from(bucket: "%s")
         fn: (r) =>
             r._measurement == "%s" and r["_field"] == "value",
     )
-    |> aggregateWindow(
-	   every: 1m, 
-	   fn: (table=<-, column) => table 
-		 |> count(column: "_value"), 
-	   createEmpty: false)
+    |> count()
 `, bucketName, tableResponseTime)
 
 	result, err := queryData(influxdbClient, orgId, flux)
@@ -305,7 +302,7 @@ from(bucket: "%s")
 
 		item := ptdomain.PerformanceRequestQps{
 			RecordName: mp["name"].(string),
-			Value:      float64(mp["_value"].(int64)) / 60,
+			Value:      _floatUtils.PointNumb(float64(mp["_value"].(int64))/60, 2),
 		}
 		ret = append(ret, item)
 	}

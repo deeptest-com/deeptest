@@ -3,6 +3,8 @@ limit:
   limit: 10
   burst: 5
 system:
+  name: deeptest
+  sysEnv: ""
   level: debug
   agentAddress: 0.0.0.0:8086
   time-format: "2006-01-02 15:04:05"

@@ -40,9 +40,8 @@ func EvaluateGovaluateExpressionWithDebugVariables(expression string, execUuid s
 		logUtils.Errorf("error:%v", err)
 		return
 	}
-	expr := commUtils.RemoveLeftVariableSymbol(expression)
 
-	convertParams, convertExpr := convertGovaluateParamAndExpressionForProcessor(params, expr)
+	convertParams, convertExpr := convertGovaluateParamAndExpressionForProcessor(params, expression)
 
 	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(convertExpr, GovaluateFunctions)
 	if err != nil {
@@ -92,7 +91,8 @@ func convertGovaluateParamAndExpressionForProcessor(params domain.VarKeyValuePai
 		newKey := fmt.Sprintf("p___%d", paramIndex)
 
 		convertParams[newKey] = val
-		convertExpr = strings.ReplaceAll(convertExpr, key, newKey)
+		convertExpr = strings.ReplaceAll(convertExpr, fmt.Sprintf("${%s}", key), newKey)
+		convertExpr = strings.ReplaceAll(convertExpr, fmt.Sprintf("${+%s}", key), newKey)
 
 		paramIndex += 1
 	}
@@ -147,7 +147,7 @@ func generateGovaluateParamsWithVariables(expression string, execUuid string) (r
 			val = variValueStr
 		}
 
-		ret[variNameWithoutPlus] = val
+		ret[varName] = val
 	}
 
 	return

@@ -34,6 +34,7 @@ type ThirdPartySyncService struct {
 	ServeService             *ServeService               `inject:""`
 	EndpointService          *EndpointService            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
+	EndpointTagService       *EndpointTagService         `inject:""`
 	Cron                     *cron.ServerCron            `inject:""`
 }
 
@@ -80,7 +81,7 @@ func (s *ThirdPartySyncService) GetClasses(serviceCode, token string, baseUrl st
 //	return
 //}
 
-func (s *ThirdPartySyncService) GetFunctionsByClassNew(classInfo integrationDomain.FindClassByServiceCodeResData, funcLimit v1.LecangFuncLimit, token, baseUrl string) (functions []string) {
+func (s *ThirdPartySyncService) GetFunctionsByClassNew(classInfo integrationDomain.FindClassByServiceCodeResData, funcLimit v1.LecangFuncLimit, token, baseUrl string) (functions []integrationDomain.GetFunctionsByClassResData) {
 	getFunctionsByClassResData := s.DoGetFunctionsByClass(classInfo, token, baseUrl)
 
 	functions = s.GetFilteredFunctions(getFunctionsByClassResData, funcLimit)
@@ -98,7 +99,7 @@ func (s *ThirdPartySyncService) DoGetFunctionsByClass(classInfo integrationDomai
 	return s.RemoteService.LcQueryMsg(getFunctionsByClassReq, token, baseUrl)
 }
 
-func (s *ThirdPartySyncService) GetFilteredFunctions(oldFunctions []integrationDomain.GetFunctionsByClassResData, limit v1.LecangFuncLimit) (res []string) {
+func (s *ThirdPartySyncService) GetFilteredFunctions(oldFunctions []integrationDomain.GetFunctionsByClassResData, limit v1.LecangFuncLimit) (res []integrationDomain.GetFunctionsByClassResData) {
 	for _, v := range oldFunctions {
 		//过滤消息类型
 		if (limit.MessageType == consts.CronLecangMessageTypeInner && v.MessageType == 1) || (limit.MessageType == consts.CronLecangMessageTypeOutside && v.MessageType == 0) {
@@ -121,7 +122,7 @@ func (s *ThirdPartySyncService) GetFilteredFunctions(oldFunctions []integrationD
 			continue
 		}
 
-		res = append(res, v.Code)
+		res = append(res, v)
 	}
 
 	return
@@ -173,8 +174,47 @@ func (s *ThirdPartySyncService) getParentNodeId(categoryId int, projectId uint) 
 	return
 }
 
-// ImportEndpointForService TODO 加分类 路径前缀
+func (s *ThirdPartySyncService) BatchAddTag(data map[string][]uint, projectId uint) (err error) {
+	for tagName, endpointIds := range data {
+		err = s.EndpointTagService.BatchAddEndpointForTag(tagName, endpointIds, projectId)
+		if err != nil {
+			logUtils.Errorf("ThirdPartySyncService-BatchAddTagErr, tagName:%+v, endpointIds:%+v, projectId:%+v", tagName, endpointIds, projectId)
+		}
+	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) FillTagEndpointRel(rel *map[string][]uint, function integrationDomain.GetFunctionsByClassResData, endpointId uint) {
+	innerTag := "内部"
+	overridableTag := "允许重写"
+	isSelfOverrideTag := "重写父类"
+
+	if function.MessageType == 0 {
+		if _, ok := (*rel)[innerTag]; !ok {
+			(*rel)[innerTag] = []uint{}
+		}
+		(*rel)[innerTag] = append((*rel)[innerTag], endpointId)
+	}
+
+	if function.Overridable == consts.IntegrationFuncCanOverridable {
+		if _, ok := (*rel)[overridableTag]; !ok {
+			(*rel)[overridableTag] = []uint{}
+		}
+		(*rel)[overridableTag] = append((*rel)[overridableTag], endpointId)
+	}
+
+	if function.IsSelfOverride == consts.IntegrationFuncCanOverridable {
+		if _, ok := (*rel)[isSelfOverrideTag]; !ok {
+			(*rel)[isSelfOverrideTag] = []uint{}
+		}
+		(*rel)[isSelfOverrideTag] = append((*rel)[isSelfOverrideTag], endpointId)
+	}
+}
+
 func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (err error) {
+	tagEndpointRel := make(map[string][]uint)
+
 	baseUrl, token, serviceCode, projectId, serveId, userId := req.Url, req.Token, req.ServiceCode, req.ProjectId, req.ServeId, req.CreateUserId
 	parentNodeId, err := s.getParentNodeId(req.CategoryId, req.ProjectId)
 	if err != nil {
@@ -201,9 +241,9 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 			if req.AddServicePrefix {
 				path = "/" + serviceCode
 			}
-			path = path + "/" + classCode + "/" + function
+			path = path + "/" + classCode + "/" + function.Code
 
-			functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)
+			functionDetail := s.GetFunctionDetail(classCode, function.Code, token, baseUrl)
 			if functionDetail.Code == "" {
 				continue
 			}
@@ -236,6 +276,7 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 			newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
 
 			if oldEndpointDetail.Snapshot == newSnapshot {
+				s.FillTagEndpointRel(&tagEndpointRel, function, endpoint.ID)
 				continue
 			}
 			oldEndpointId := endpoint.ID
@@ -243,6 +284,8 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 			oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
 			if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson {
 				s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
+				s.FillTagEndpointRel(&tagEndpointRel, function, endpoint.ID)
+
 				continue
 			}
 
@@ -260,9 +303,12 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 			if err = s.SaveBody(functionDetail, interfaceId); err != nil {
 				continue
 			}
+
+			s.FillTagEndpointRel(&tagEndpointRel, function, endpointId)
 		}
 	}
 
+	err = s.BatchAddTag(tagEndpointRel, projectId)
 	return
 }
 

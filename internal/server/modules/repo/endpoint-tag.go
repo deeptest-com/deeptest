@@ -268,3 +268,36 @@ func (r *EndpointTagRepo) ListRelByProject(projectId uint) (tags []model.Endpoin
 
 	return
 }
+
+func (r *EndpointTagRepo) BatchAddRelForTag(tagName string, endpointIds []uint, projectId uint) (err error) {
+	relations := make([]model.EndpointTagRel, 0)
+	for _, v := range endpointIds {
+		relation := model.EndpointTagRel{
+			EndpointId: v,
+			TagName:    tagName,
+			ProjectId:  projectId,
+		}
+		relations = append(relations, relation)
+	}
+
+	err = r.DB.Model(&model.EndpointTagRel{}).
+		Create(relations).Error
+
+	if err != nil {
+		logUtils.Errorf("batch add tag relation for endpoint error", zap.String("error:", err.Error()))
+		return
+	}
+
+	return
+}
+
+func (r *EndpointTagRepo) BatchGetEndpointIdsByTag(tagName string, endpointIds []uint, projectId uint) (res []uint, err error) {
+	err = r.DB.Model(&model.EndpointTagRel{}).
+		Where("tag_name = ?", tagName).
+		Where("endpoint_id IN (?)", endpointIds).
+		Where("project_id = ? AND NOT deleted AND NOT disabled", projectId).
+		Select("endpoint_id").
+		Find(&res).Error
+
+	return
+}

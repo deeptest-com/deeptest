@@ -6,11 +6,11 @@ type PerformanceExecResults struct {
 	VuCount int                    `json:"vuCount,omitempty"`
 	Summary PerformanceExecSummary `json:"summary,omitempty"`
 
-	ReqResponseTime []PerformanceRequestResponseTime `json:"reqAllResponseTime,omitempty"`
+	ReqResponseTime []PerformanceRequestResponseTime `json:"reqResponseTime,omitempty"`
 
 	ReqQps []PerformanceRequestQps `json:"reqQps,omitempty"`
 
-	ReqResponseTimeTable []PerformanceRequestTable
+	ReqResponseTimeTable []PerformanceRequestTable `json:"reqResponseTimeTable,omitempty"`
 
 	Metrics []PerformanceExecMetrics `json:"metrics,omitempty"`
 }
@@ -26,7 +26,7 @@ type PerformanceExecSummary struct {
 	Error int `json:"error,omitempty"`
 
 	Min    float64 `json:"min,omitempty"`
-	Max    float64 `json:"maxs,omitempty"`
+	Max    float64 `json:"max,omitempty"`
 	Mean   float64 `json:"mean,omitempty"`
 	Median float64 `json:"median,omitempty"`
 	Qps    float64 `json:"qps,omitempty"`
@@ -51,7 +51,7 @@ type PerformanceRequestTable struct {
 	RecordId   int32  `json:"recordId,omitempty"`
 	RecordName string `json:"recordName,omitempty"`
 
-	Total  int32   `json:"total,omitempty"`
+	Count  int32   `json:"count,omitempty"`
 	Min    int32   `json:"min,omitempty"`
 	Max    int32   `json:"max,omitempty"`
 	Mean   float64 `json:"mean,omitempty"`

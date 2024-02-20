@@ -196,10 +196,10 @@ union(tables: [passNumb, failNumb, errNumb])
 			val := mp["_value"].(float64)
 			ret.Max = val
 		} else if typ == "meanVal" {
-			val := mp["_value"].(float64)
+			val := _floatUtils.PointNumb(mp["_value"].(float64), 2)
 			ret.Mean = val
 		} else if typ == "medianVal" {
-			val := mp["_value"].(float64)
+			val := _floatUtils.PointNumb(mp["_value"].(float64), 2)
 			ret.Median = val
 		} else if typ == "quantile95Val" {
 			val := mp["_value"].(float64)
@@ -319,10 +319,10 @@ baseData =
     	|> range(start: -1d)
         |> filter(fn: (r) => r._measurement == "%s" and r["_field"] == "value")
 
-totalData =
+countData =
     baseData
         |> count()
-        |> set(key: "_field", value: "total")
+        |> set(key: "_field", value: "count")
 
 minData =
     baseData
@@ -350,7 +350,7 @@ quantile95Val =
        |> toFloat()
        |> set(key: "_field", value: "quantile95Val")
 
-union(tables: [totalData, minData, maxData, meanData, medianData, quantile95Val])
+union(tables: [countData, minData, maxData, meanData, medianData, quantile95Val])
 `, bucketName, tableResponseTime)
 
 	result, err := queryData(influxdbClient, orgId, flux)
@@ -371,18 +371,18 @@ union(tables: [totalData, minData, maxData, meanData, medianData, quantile95Val]
 			tableMap[name] = val
 		}
 
-		if typ == "total" {
-			val.Total = int32(mp["_value"].(int64))
+		if typ == "count" {
+			val.Count = int32(mp["_value"].(int64))
 		} else if typ == "min" {
 			val.Min = int32(mp["_value"].(int64))
 		} else if typ == "max" {
 			val.Max = int32(mp["_value"].(int64))
 		} else if typ == "mean" {
-			val.Mean = mp["_value"].(float64)
+			val.Mean = _floatUtils.PointNumb(mp["_value"].(float64), 2)
 		} else if typ == "median" {
-			val.Median = mp["_value"].(float64)
+			val.Median = _floatUtils.PointNumb(mp["_value"].(float64), 2)
 		} else if typ == "quantile95Val" {
-			val.Quantile95 = mp["_value"].(float64)
+			val.Quantile95 = _floatUtils.PointNumb(mp["_value"].(float64), 2)
 		}
 	}
 

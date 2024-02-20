@@ -38,9 +38,6 @@ func main() {
 	flagSet.BoolVar(&_consts.Verbose, "verbose", false, "")
 	flagSet.Parse(os.Args[1:])
 
-	/*** for performance test */
-	ptlog.Init()
-
 	// grpc service
 	go performance.StartGrpcServe()
 	// queue of controller
@@ -53,6 +50,9 @@ func main() {
 	if agent == nil {
 		return
 	}
+
+	/*** for performance test */
+	ptlog.Init()
 
 	injectModule(agent)
 

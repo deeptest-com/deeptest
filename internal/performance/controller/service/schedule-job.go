@@ -42,7 +42,9 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 	for true {
 		time.Sleep(1 * time.Second)
 
-		if time.Now().UnixMilli()-lastTime < 6*1000 {
+		start := time.Now().UnixMilli()
+
+		if start-lastTime < 6*1000 {
 			continue
 		}
 		_logUtils.Debug(">>>>>> start server schedule job")
@@ -56,6 +58,9 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 		responseTimeTable, _ := dao.QueryResponseTimeTableByInterface(influxdbClient, req.InfluxdbOrg)
 
 		metrics, _ := dao.QueryMetrics(influxdbClient, req.InfluxdbOrg)
+
+		end := time.Now().UnixMilli()
+		ptlog.Logf("!!!!!! influxdb query spend %d milli secs", end-start)
 
 		data := ptdomain.PerformanceExecResults{
 			Timestamp: time.Now().UnixMilli(),

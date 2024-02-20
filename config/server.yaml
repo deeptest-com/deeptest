@@ -25,7 +25,7 @@ redis:
   password: ""
   pool-size: 0
 system:
-  name: deeptest2
+  name: deeptest
   sysEnv: dev
   level: debug
   serverAddress: 0.0.0.0:8085

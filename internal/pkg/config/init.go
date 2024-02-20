@@ -30,14 +30,10 @@ func Init() {
 	VIPER = v
 	VIPER.SetConfigType("yaml")
 
-	home, _ := _fileUtils.GetUserHome()
-	consts.HomeDir = filepath.Join(home, consts.App)
-	consts.TmpDir = filepath.Join(consts.HomeDir, consts.FolderTmp)
-
-	_fileUtils.MkDirIfNeeded(consts.TmpDir)
-
 	// agent
 	if consts.RunFrom == consts.FromAgent {
+		getWorkdir(consts.App)
+
 		configRes := path.Join("res", consts.RunFrom.String()+".yaml")
 		yamlDefault, _ := deeptest.ReadResData(configRes)
 		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
@@ -107,6 +103,16 @@ func Init() {
 		fmt.Println(err)
 	}
 
+	getWorkdir(CONFIG.System.Name)
+
 	CONFIG.System.SysEnv = _commUtils.GetEnvVar("SysEnv", CONFIG.System.SysEnv)
 	myZap.ZapInst = CONFIG.Zap
+}
+
+func getWorkdir(appName string) {
+	home, _ := _fileUtils.GetUserHome()
+	consts.WorkDir = filepath.Join(home, appName)
+	consts.TmpDir = filepath.Join(consts.WorkDir, consts.FolderTmp)
+
+	_fileUtils.MkDirIfNeeded(consts.TmpDir)
 }

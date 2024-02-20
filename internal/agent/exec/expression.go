@@ -6,6 +6,7 @@ import (
 	valueUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/value"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/utils"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"regexp"
 	"strings"
@@ -36,6 +37,7 @@ func EvaluateGovaluateExpressionWithDebugVariables(expression string, execUuid s
 	// 1
 	params, err = generateGovaluateParamsWithVariables(expression, execUuid)
 	if err != nil {
+		logUtils.Errorf("error:%v", err)
 		return
 	}
 	expr := commUtils.RemoveLeftVariableSymbol(expression)
@@ -44,10 +46,14 @@ func EvaluateGovaluateExpressionWithDebugVariables(expression string, execUuid s
 
 	govaluateExpression, err := govaluate.NewEvaluableExpressionWithFunctions(convertExpr, GovaluateFunctions)
 	if err != nil {
+		logUtils.Errorf("error:%v", err)
 		return
 	}
 
 	ret, err = govaluateExpression.Evaluate(convertParams)
+	if err != nil {
+		logUtils.Errorf("error:%v", err)
+	}
 
 	return
 }

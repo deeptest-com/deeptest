@@ -64,6 +64,34 @@ func ResetInfluxdb(room, dbAddress, orgName, token string) {
 	return
 }
 
+func QueryVuCount(influxdbClient influxdb2.Client, orgId string) (
+	ret int, err error) {
+
+	flux := fmt.Sprintf(`
+  from(bucket: "%s")
+	|> range(start: -1d)
+	|> filter(fn: (r) => r._measurement == "%s")
+    |> group()
+    |> sum()
+    |> set(key: "_field", value: "vmNumb")
+
+`, bucketName, tableVuNumb)
+
+	result, err := queryData(influxdbClient, orgId, flux)
+	if err != nil {
+		ptlog.Logf("query data failed, err %s", err.Error())
+		return
+	}
+
+	if result.Next() {
+		mp := result.Record().Values()
+
+		ret = int(mp["_value"].(float64))
+	}
+
+	return
+}
+
 func QueryResponseTimeSummary(influxdbClient influxdb2.Client, orgId string) (
 	ret ptdomain.PerformanceExecSummary, err error) {
 
@@ -225,33 +253,6 @@ union(tables: [passNumb, failNumb, errNumb])
 	ret.Total = ret.Pass + ret.Pass + ret.Error
 	ret.Duration = ret.EndTime - ret.StartTime
 	ret.Qps = float64(ret.Total) * 1000 / float64(ret.Duration)
-
-	return
-}
-
-func QueryVuCount(influxdbClient influxdb2.Client, orgId string) (
-	ret int, err error) {
-
-	flux := fmt.Sprintf(`
-  from(bucket: "%s")
-	|> range(start: -1d)
-	|> filter(fn: (r) => r._measurement == "%s")
-       |> sum()
-       |> set(key: "_field", value: "vmNumb")
-
-`, bucketName, tableVuNumb)
-
-	result, err := queryData(influxdbClient, orgId, flux)
-	if err != nil {
-		ptlog.Logf("query data failed, err %s", err.Error())
-		return
-	}
-
-	if result.Next() {
-		mp := result.Record().Values()
-
-		ret = int(mp["_value"].(float64))
-	}
 
 	return
 }

@@ -24,6 +24,8 @@ redis:
   password:
   pool-size: 0
 system:
+  name: deeptest
+  sysEnv: ""
   level: debug
   serverAddress: 0.0.0.0:8085
   static-path: /static

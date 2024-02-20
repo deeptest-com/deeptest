@@ -32,8 +32,6 @@ func Init() {
 
 	// agent
 	if consts.RunFrom == consts.FromAgent {
-		getWorkdir(consts.App)
-
 		configRes := path.Join("res", consts.RunFrom.String()+".yaml")
 		yamlDefault, _ := deeptest.ReadResData(configRes)
 		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
@@ -48,6 +46,11 @@ func Init() {
 		}
 
 		myZap.ZapInst = CONFIG.Zap
+
+		if CONFIG.System.Name == "" {
+			CONFIG.System.Name = consts.App
+		}
+		getWorkdir(CONFIG.System.Name)
 
 		return
 	}

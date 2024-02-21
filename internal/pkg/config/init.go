@@ -12,7 +12,6 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/snowlyg/helper/dir"
 	"github.com/spf13/viper"
-	"path"
 	"path/filepath"
 )
 
@@ -32,15 +31,25 @@ func Init() {
 
 	// agent
 	if consts.RunFrom == consts.FromAgent {
-		configRes := path.Join("res", consts.RunFrom.String()+".yaml")
-		yamlDefault, _ := deeptest.ReadResData(configRes)
+		agentConfigPath := filepath.Join(consts.WorkDir, consts.AgentConfigFileName)
 
-		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
-			panic(fmt.Errorf("读取默认配置文件错误: %s ", err.Error()))
+		if !dir.IsExist(agentConfigPath) { // 没有配置文件，写入默认配置
+			configRes := filepath.Join("res", consts.AgentConfigFileName)
+			yamlDefault, _ := deeptest.ReadResData(configRes)
+
+			if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
+				panic(fmt.Errorf("读取默认配置文件错误: %w ", err))
+			}
+
+			if err := VIPER.WriteConfigAs(agentConfigPath); err != nil {
+				panic(fmt.Errorf("写入配置文件错误: %w ", err))
+			}
 		}
 
-		if err := VIPER.Unmarshal(&CONFIG); err != nil {
-			panic(fmt.Errorf("解析配置文件错误: %s ", err.Error()))
+		VIPER.SetConfigFile(agentConfigPath)
+		err := VIPER.ReadInConfig()
+		if err != nil {
+			panic(fmt.Errorf("读取配置错误: %w ", err))
 		}
 
 		if consts.Port > 0 {
@@ -74,29 +83,24 @@ func Init() {
 	}
 
 	// 初始化server.yaml配置
-	configPath := filepath.Join(consts.WorkDir, consts.ConfigFileName)
-	if !dir.IsExist(configPath) { // 没有配置文件，写入默认配置
-		configRes := filepath.Join("res", consts.ConfigFileName)
+	serverConfigPath := filepath.Join(consts.WorkDir, consts.ServerConfigFileName)
+	if !dir.IsExist(serverConfigPath) { // 没有配置文件，写入默认配置
+		configRes := filepath.Join("res", consts.ServerConfigFileName)
 		yamlDefault, _ := deeptest.ReadResData(configRes)
 
 		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
 			panic(fmt.Errorf("读取默认配置文件错误: %w ", err))
 		}
 
-		if err := VIPER.Unmarshal(&CONFIG); err != nil {
-			panic(fmt.Errorf("解析配置文件错误: %w ", err))
-		}
-
-		if err := VIPER.WriteConfigAs(configPath); err != nil {
+		if err := VIPER.WriteConfigAs(serverConfigPath); err != nil {
 			panic(fmt.Errorf("写入配置文件错误: %w ", err))
 		}
+	}
 
-	} else {
-		VIPER.SetConfigFile(consts.ConfigFileName)
-		err := VIPER.ReadInConfig()
-		if err != nil {
-			panic(fmt.Errorf("读取配置错误: %w ", err))
-		}
+	VIPER.SetConfigFile(serverConfigPath)
+	err := VIPER.ReadInConfig()
+	if err != nil {
+		panic(fmt.Errorf("读取配置错误: %w ", err))
 	}
 
 	// 监控配置文件变化

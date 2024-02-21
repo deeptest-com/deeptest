@@ -88,7 +88,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		}
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", result)
-		variablesBytes, _ := json.Marshal(variablesArr)
+		variablesBytes, _ := json.Marshal(combineSameVars(variablesArr))
 		checkpoint.Variables = string(variablesBytes)
 
 		ret, ok := result.(bool)
@@ -125,6 +125,17 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
 
 		return
+	}
+
+	return
+}
+
+func combineSameVars(variables domain.VarKeyValuePair) (ret domain.VarKeyValuePair) {
+	ret = domain.VarKeyValuePair{}
+
+	for key, val := range variables {
+		name := strings.TrimLeft(key, "+")
+		ret[name] = val
 	}
 
 	return

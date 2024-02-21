@@ -1,4 +1,4 @@
-package serverServe
+package serve
 
 import (
 	stdContext "context"
@@ -173,7 +173,7 @@ func (webServer *WebServer) AddWebUi() {
 
 // AddUpload 添加上传文件访问
 func (webServer *WebServer) AddUpload() {
-	pth := filepath.Join(dir.GetCurrentAbPath(), consts.DirUpload)
+	pth := filepath.Join(consts.WorkDir, consts.DirUpload)
 	fileUtils.MkDirIfNeeded(pth)
 	logUtils.Infof("*** upload dir: %s", pth)
 

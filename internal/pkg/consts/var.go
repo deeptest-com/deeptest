@@ -13,6 +13,5 @@ var (
 	Port int
 
 	FolderTmp = "tmp"
-	HomeDir   = ""
 	TmpDir    = ""
 )

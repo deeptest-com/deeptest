@@ -54,9 +54,7 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 
 		lastAvgResponseTime, _ := dao.QueryLastAvgResponseTime(influxdbClient, req.InfluxdbOrg)
 		lastQps, _ := dao.QueryLastQps(influxdbClient, req.InfluxdbOrg)
-
 		responseTimeTable, _ := dao.QueryResponseTimeTableByInterface(influxdbClient, req.InfluxdbOrg)
-
 		metrics, _ := dao.QueryMetrics(influxdbClient, req.InfluxdbOrg)
 
 		end := time.Now().UnixMilli()

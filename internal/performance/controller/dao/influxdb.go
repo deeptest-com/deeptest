@@ -79,7 +79,6 @@ func QueryVuCount(influxdbClient influxdb2.Client, orgId string) (
 
 	result, err := queryData(influxdbClient, orgId, flux)
 	if err != nil {
-		ptlog.Logf("query data failed, err %s", err.Error())
 		return
 	}
 
@@ -180,7 +179,6 @@ union(tables: [passNumb, failNumb, errNumb])
 
 	result1, err1 := queryData(influxdbClient, orgId, flux1)
 	if err1 != nil {
-		ptlog.Logf("query data failed, err %s", err1.Error())
 		return
 	}
 
@@ -209,7 +207,6 @@ union(tables: [passNumb, failNumb, errNumb])
 
 	result2, err2 := queryData(influxdbClient, orgId, flux2)
 	if err2 != nil {
-		ptlog.Logf("query data failed, err %s", err2.Error())
 		return
 	}
 
@@ -229,7 +226,6 @@ union(tables: [passNumb, failNumb, errNumb])
 
 	result3, err3 := queryData(influxdbClient, orgId, flux3)
 	if err3 != nil {
-		ptlog.Logf("query data failed, err %s", err3.Error())
 		return
 	}
 
@@ -270,6 +266,9 @@ from(bucket: "%s")
 `, bucketName, tableResponseTime)
 
 	result, err := queryData(influxdbClient, orgId, flux)
+	if err != nil {
+		return
+	}
 
 	for result.Next() {
 		mp := result.Record().Values()
@@ -297,6 +296,9 @@ from(bucket: "%s")
 `, bucketName, tableResponseTime)
 
 	result, err := queryData(influxdbClient, orgId, flux)
+	if err != nil {
+		return
+	}
 
 	for result.Next() {
 		mp := result.Record().Values()
@@ -354,6 +356,9 @@ union(tables: [countData, minData, maxData, meanData, medianData, quantile95Val]
 `, bucketName, tableResponseTime)
 
 	result, err := queryData(influxdbClient, orgId, flux)
+	if err != nil {
+		return
+	}
 
 	tableMap := map[string]*ptdomain.PerformanceRequestTable{}
 
@@ -444,6 +449,9 @@ from(bucket: "%s")
 `, bucketName, tableCpuUsage)
 
 	result, err := queryData(influxdbClient, orgId, flux)
+	if err != nil {
+		return
+	}
 
 	for result.Next() {
 		mp := result.Record().Values()
@@ -473,6 +481,9 @@ from(bucket: "%s")
 `, bucketName, tableMemoryUsage)
 
 	result, err := queryData(influxdbClient, orgId, flux)
+	if err != nil {
+		return
+	}
 
 	for result.Next() {
 		mp := result.Record().Values()
@@ -501,6 +512,9 @@ from(bucket: "%s")
 `, bucketName, tableDiskUsage)
 
 	result, err := queryData(influxdbClient, orgId, flux)
+	if err != nil {
+		return
+	}
 
 	for result.Next() {
 		mp := result.Record().Values()
@@ -538,6 +552,9 @@ from(bucket: "%s")
 `, bucketName, tableNetworkUsage)
 
 	result, err := queryData(influxdbClient, orgId, flux)
+	if err != nil {
+		return
+	}
 
 	for result.Next() {
 		mp := result.Record().Values()

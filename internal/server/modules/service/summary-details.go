@@ -188,7 +188,7 @@ func (s *SummaryDetailsService) LetUsersGroupByProjectId(projectsInfo []model.Su
 }
 
 func (s *SummaryDetailsService) HandlerSummaryDetailsRepo() *repo.SummaryDetailsRepo {
-	return repo.NewSummaryDetailsRepo()
+	return s.SummaryDetailsRepo
 }
 
 func (s *SummaryDetailsService) Count(tenantId consts.TenantId) (count int64, err error) {

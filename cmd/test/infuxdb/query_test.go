@@ -12,7 +12,7 @@ const (
 )
 
 func TestQuery(t *testing.T) {
-	ptlog.Init()
+	ptlog.Init("")
 
 	//influxdbClient := influxdb2.NewClient(influxdbAddress, influxdbToken)
 

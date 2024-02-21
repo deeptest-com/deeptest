@@ -3,6 +3,7 @@ package controllerService
 import (
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	websocketHelper "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12/websocket"
@@ -23,6 +24,8 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 		}
 
 	} else if act == consts.StartPerformanceTest {
+		ptlog.Init(req.Room)
+
 		websocketHelper.SendExecInstructionToClient(
 			"performance testing start", err, ptconsts.MsgInstructionStart, req.Room, wsMsg)
 
@@ -39,23 +42,32 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 		performanceTestServiceObj, ok := PerformanceTestServicesMap.Load(req.Room)
 		if !ok {
 			runningRoom = ""
+			sendStopMsg("performanceTestService not found", req.Room, wsMsg)
 			return
 		}
 
 		performanceTestService, ok := performanceTestServiceObj.(*PerformanceTestService)
 		if !ok {
 			runningRoom = ""
+			sendStopMsg("performanceTestService failed convert", req.Room, wsMsg)
 			return
 		}
 
 		err = performanceTestService.ExecStop(wsMsg)
-		if err == nil {
-			websocketHelper.SendExecInstructionToClient(
-				"performance testing stop", err, ptconsts.MsgInstructionTerminal, req.Room, wsMsg)
+		if err != nil {
+			runningRoom = ""
+			sendStopMsg("stop failed", req.Room, wsMsg)
+			return
 		}
 
 		runningRoom = ""
+		sendStopMsg("stop successfully", req.Room, wsMsg)
 	}
 
 	return
+}
+
+func sendStopMsg(data interface{}, room string, wsMsg *websocket.Message) {
+	websocketHelper.SendExecInstructionToClient(
+		"performance testing stop", data, ptconsts.MsgInstructionTerminal, room, wsMsg)
 }

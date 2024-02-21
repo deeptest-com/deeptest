@@ -5,7 +5,6 @@ import (
 	"github.com/aaronchen2k/deeptest/cmd/agent/serve"
 	"github.com/aaronchen2k/deeptest/cmd/agent/v1"
 	"github.com/aaronchen2k/deeptest/internal/performance"
-	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptqueue "github.com/aaronchen2k/deeptest/internal/performance/pkg/queue"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -50,9 +49,6 @@ func main() {
 	if agent == nil {
 		return
 	}
-
-	/*** for performance test */
-	ptlog.Init()
 
 	injectModule(agent)
 

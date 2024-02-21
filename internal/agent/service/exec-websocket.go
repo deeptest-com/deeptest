@@ -71,9 +71,6 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 
 		} else if act == consts.ExecMessage {
 			RunMessage(&req.MessageReq, wsMsg)
-
-		} else if act == consts.StartPerformanceTest || act == consts.StopPerformanceTest {
-			RunPerformanceTest(act, req.PerformanceTestExecReq, wsMsg)
 		}
 
 		agentExec.ClearExecContext(execUuid)

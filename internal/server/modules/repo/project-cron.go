@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
@@ -14,7 +15,8 @@ import (
 )
 
 type ProjectCronRepo struct {
-	DB *gorm.DB `inject:""`
+	DB       *gorm.DB  `inject:""`
+	UserRepo *UserRepo `inject:""`
 }
 
 func (r *ProjectCronRepo) Paginate(req v1.ProjectCronReqPaginate) (data _domain.PageData, err error) {
@@ -50,10 +52,32 @@ func (r *ProjectCronRepo) Paginate(req v1.ProjectCronReqPaginate) (data _domain.
 		return
 	}
 
+	r.CombineUserName(cronList)
 	r.CombineCategory(cronList)
 	data.Populate(cronList, count, req.Page, req.PageSize)
 
 	return
+}
+
+func (r *ProjectCronRepo) CombineUserName(data []*model.ProjectCron) {
+	userIds := make([]uint, 0)
+	for _, v := range data {
+		userIds = append(userIds, v.CreateUserId)
+	}
+	userIds = _commUtils.ArrayRemoveUintDuplication(userIds)
+
+	users, _ := r.UserRepo.FindByIds(userIds)
+
+	userIdNameMap := make(map[uint]string)
+	for _, v := range users {
+		userIdNameMap[v.ID] = v.Name
+	}
+
+	for _, v := range data {
+		if name, ok := userIdNameMap[v.CreateUserId]; ok {
+			v.CreateUserName = name
+		}
+	}
 }
 
 func (r *ProjectCronRepo) CombineCategory(configs []*model.ProjectCron) {

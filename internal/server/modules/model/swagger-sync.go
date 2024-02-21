@@ -12,7 +12,7 @@ type SwaggerSync struct {
 	Url        string              `json:"url"`
 	//Cron       string              `json:"cron"`
 	//ProjectId  int                 `json:"projectId" gorm:"unique"`
-	ServeId int `json:"ServeId"`
+	ServeId int `json:"serveId"`
 	//ExecTime   *time.Time          `json:"execTime"`
 }
 

@@ -254,7 +254,7 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 				continue
 			}
 
-			if (endpoint.ID == 0 || req.SyncType == consts.AutoAdd) && categoryId == 0 {
+			if (endpoint.ID == 0 || req.SyncType == consts.Add) && categoryId == 0 {
 				err = s.SaveCategory(class, projectId, serveId, req.CategoryId, &categoryId)
 				if err != nil {
 					continue
@@ -275,14 +275,14 @@ func (s *ThirdPartySyncService) ImportEndpointForService(req v1.LecangCronReq) (
 			newEndpointDetail.ServeId = 0
 			newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
 
-			if oldEndpointDetail.Snapshot == newSnapshot {
+			if oldEndpointDetail.Snapshot == newSnapshot && req.SyncType == consts.AutoAdd {
 				s.FillTagEndpointRel(&tagEndpointRel, function, endpoint.ID)
 				continue
 			}
 			oldEndpointId := endpoint.ID
 
 			oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
-			if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson {
+			if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson && req.SyncType == consts.AutoAdd {
 				s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
 				s.FillTagEndpointRel(&tagEndpointRel, function, endpoint.ID)
 
@@ -478,7 +478,7 @@ func (s *ThirdPartySyncService) SaveEndpoint(req v1.SaveLcEndpointReq) (endpoint
 		endpoint.CreateUser = user.Username
 	}
 
-	if req.OldEndpointId != 0 {
+	if req.OldEndpointId != 0 && req.DataSyncType != consts.Add {
 		endpoint.ID = req.OldEndpointId
 	}
 

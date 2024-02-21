@@ -26,13 +26,13 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 		websocketHelper.SendExecInstructionToClient(
 			"performance testing start", err, ptconsts.MsgInstructionStart, req.Room, wsMsg)
 
-		performanceTestService := NewPerformanceTestService()
+		performanceTestService := NewPerformanceTestServiceRef(req)
 
 		go func() {
 			performanceTestService.ExecStart(req, wsMsg)
 		}()
 
-		PerformanceTestServicesMap.Store(req.Room, &performanceTestService)
+		PerformanceTestServicesMap.Store(req.Room, performanceTestService)
 		runningRoom = req.Room
 
 	} else if act == consts.StopPerformanceTest {
@@ -48,7 +48,7 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 			return
 		}
 
-		err = performanceTestService.ExecStop(req, wsMsg)
+		err = performanceTestService.ExecStop(wsMsg)
 		if err == nil {
 			websocketHelper.SendExecInstructionToClient(
 				"performance testing stop", err, ptconsts.MsgInstructionTerminal, req.Room, wsMsg)

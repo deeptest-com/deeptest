@@ -18,6 +18,8 @@ import (
 )
 
 type PerformanceTestService struct {
+	req ptdomain.PerformanceTestReq
+
 	execCtx    context.Context
 	execCancel context.CancelFunc
 	client     *ptProto.PerformanceServiceClient
@@ -27,8 +29,10 @@ type PerformanceTestService struct {
 	RemoteRunnerService *RemoteRunnerService `inject:"private"`
 }
 
-func NewPerformanceTestService() PerformanceTestService {
-	service := PerformanceTestService{}
+func NewPerformanceTestServiceRef(req ptdomain.PerformanceTestReq) *PerformanceTestService {
+	service := &PerformanceTestService{
+		req: req,
+	}
 
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
@@ -95,17 +99,17 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 	return
 }
 
-func (s *PerformanceTestService) ExecStop(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
+func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) {
 	// stop server execution
 	if s.execCancel != nil {
 		s.execCancel()
 	}
 
 	// exec by runners
-	s.RemoteRunnerService.CallStop(req)
+	s.RemoteRunnerService.CallStop(s.req)
 
 	// send end msg to websocket client
-	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, req.Room, wsMsg)
+	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, s.req.Room, wsMsg)
 
 	return
 }

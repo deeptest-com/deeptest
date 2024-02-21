@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/aaronchen2k/deeptest/saas/common"
@@ -24,6 +25,11 @@ func DBResolver() iris.Handler {
 		}(ctx)
 
 		dbname := common.GetTenantId(ctx)
+
+		if config.CONFIG.Saas.Switch == "ON" && dbname == "" {
+			panic(fmt.Errorf("the saas environment does not allow the tenant id to be empty"))
+		}
+
 		if dbname != "" {
 			handler := func() (db *gorm.DB, err error) {
 				return dao.InitSaasDBHandler(dbname)

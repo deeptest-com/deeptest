@@ -58,7 +58,7 @@ func DecimalPer(number int64, total int64) float64 {
 }
 
 func (s *SummaryBugsService) HandlerSummaryBugsRepo() *repo.SummaryBugsRepo {
-	return repo.NewSummaryBugsRepo()
+	return s.SummaryBugsRepo
 }
 
 // FindByProjectId

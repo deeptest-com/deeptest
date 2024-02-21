@@ -14,8 +14,8 @@ import (
 
 type AccountCtrl struct {
 	BaseCtrl
-	AccountService *service.AccountService
-	UserRepo       *repo.UserRepo `inject:""`
+	AccountService *service.AccountService `inject:""`
+	UserRepo       *repo.UserRepo          `inject:""`
 }
 
 // Login

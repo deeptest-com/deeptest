@@ -12,11 +12,6 @@ type SummaryBugsRepo struct {
 	DB        *gorm.DB `inject:""`
 }
 
-func NewSummaryBugsRepo() *SummaryBugsRepo {
-	//db := dao.GetDB()
-	return &SummaryBugsRepo{}
-}
-
 func (r *SummaryBugsRepo) Create(tenantId consts.TenantId, bugs model.SummaryBugs) (err error) {
 	err = r.GetDB(tenantId).Model(&model.SummaryBugs{}).Create(&bugs).Error
 	return

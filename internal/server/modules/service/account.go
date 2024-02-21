@@ -15,7 +15,6 @@ import (
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 	"strconv"
 	"time"
 )
@@ -25,13 +24,8 @@ var (
 )
 
 type AccountService struct {
-	DB          *gorm.DB
 	UserRepo    *repo.UserRepo           `inject:""`
 	LdapService *commService.LdapService `inject:""`
-}
-
-func NewAccountService(db *gorm.DB) *AccountService {
-	return &AccountService{DB: db}
 }
 
 // Login 登录

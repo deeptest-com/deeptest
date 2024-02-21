@@ -71,7 +71,7 @@ func (s *SummaryProjectUserRankingService) ProjectUserRanking(tenantId consts.Te
 }
 
 func (s *SummaryProjectUserRankingService) HandlerSummaryProjectUserRankingRepo() *repo.SummaryProjectUserRankingRepo {
-	return repo.NewSummaryProjectUserRankingRepo()
+	return s.SummaryProjectUserRankingRepo
 }
 
 func (s *SummaryProjectUserRankingService) Create(tenantId consts.TenantId, req model.SummaryProjectUserRanking) (err error) {

@@ -3,7 +3,6 @@ package casbin
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
-	_fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"path/filepath"
 	"strconv"
@@ -11,7 +10,6 @@ import (
 
 	"github.com/casbin/casbin/v2"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
-	"github.com/snowlyg/helper/dir"
 	"go.uber.org/zap"
 )
 
@@ -40,11 +38,7 @@ func GetEnforcer() *casbin.Enforcer {
 		return nil
 	}
 
-	pth := filepath.Join(dir.GetCurrentAbPath(), consts.CasbinFileName)
-	if !_fileUtils.FileExist(pth) {
-		pth = consts.CasbinFileName
-	}
-
+	pth := filepath.Join(consts.WorkDir, consts.CasbinFileName) // created if needed in config init method
 	enforcer, err := casbin.NewEnforcer(pth, c)
 	if err != nil {
 		logUtils.Errorf("初始化失败", zap.String("casbin.NewEnforcer()", err.Error()))

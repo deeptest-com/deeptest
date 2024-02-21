@@ -1,4 +1,4 @@
-package serverServe
+package serve
 
 import (
 	"fmt"

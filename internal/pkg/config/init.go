@@ -34,11 +34,13 @@ func Init() {
 	if consts.RunFrom == consts.FromAgent {
 		configRes := path.Join("res", consts.RunFrom.String()+".yaml")
 		yamlDefault, _ := deeptest.ReadResData(configRes)
+
 		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
-			panic(fmt.Errorf("读取默认配置文件错误: %w ", err))
+			panic(fmt.Errorf("读取默认配置文件错误: %s ", err.Error()))
 		}
+
 		if err := VIPER.Unmarshal(&CONFIG); err != nil {
-			panic(fmt.Errorf("解析配置文件错误: %w ", err))
+			panic(fmt.Errorf("解析配置文件错误: %s ", err.Error()))
 		}
 
 		if consts.Port > 0 {
@@ -56,9 +58,8 @@ func Init() {
 	}
 
 	// server
-	// 初始化Casbin配置
-	casbinPath := consts.CasbinFileName
-
+	// 初始化rbac_model.conf配置
+	casbinPath := filepath.Join(consts.WorkDir, consts.CasbinFileName)
 	if !dir.IsExist(casbinPath) {
 		casbinRes := filepath.Join("res", consts.CasbinFileName)
 		yamlDefault, err := deeptest.ReadResData(casbinRes)
@@ -72,19 +73,24 @@ func Init() {
 		}
 	}
 
-	if !dir.IsExist(consts.ConfigFileName) { // 没有配置文件，写入默认配置
+	// 初始化server.yaml配置
+	configPath := filepath.Join(consts.WorkDir, consts.ConfigFileName)
+	if !dir.IsExist(configPath) { // 没有配置文件，写入默认配置
 		configRes := filepath.Join("res", consts.ConfigFileName)
 		yamlDefault, _ := deeptest.ReadResData(configRes)
 
 		if err := VIPER.ReadConfig(bytes.NewBuffer(yamlDefault)); err != nil {
 			panic(fmt.Errorf("读取默认配置文件错误: %w ", err))
 		}
+
 		if err := VIPER.Unmarshal(&CONFIG); err != nil {
 			panic(fmt.Errorf("解析配置文件错误: %w ", err))
 		}
-		if err := VIPER.WriteConfigAs(consts.ConfigFileName); err != nil {
+
+		if err := VIPER.WriteConfigAs(configPath); err != nil {
 			panic(fmt.Errorf("写入配置文件错误: %w ", err))
 		}
+
 	} else {
 		VIPER.SetConfigFile(consts.ConfigFileName)
 		err := VIPER.ReadInConfig()

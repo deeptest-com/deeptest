@@ -86,6 +86,14 @@ func (c *TestsCtrl) Head(ctx iris.Context) {
 }
 
 func (c *TestsCtrl) Connect(ctx iris.Context) {
+	//for i := 0; i < 3; i++ {
+	//	str := fmt.Sprintf("%d", i)
+	//
+	//	ctx.Write([]byte(str))
+	//
+	//	time.Sleep(1 * time.Second)
+	//}
+
 	ctx.Header(consts.Server, "kataras iris v12")
 }
 

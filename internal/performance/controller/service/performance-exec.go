@@ -27,8 +27,8 @@ type PerformanceTestService struct {
 	RemoteRunnerService *RemoteRunnerService `inject:"private"`
 }
 
-func NewPerformanceTestService() *PerformanceTestService {
-	service := &PerformanceTestService{}
+func NewPerformanceTestService() PerformanceTestService {
+	service := PerformanceTestService{}
 
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
@@ -38,10 +38,12 @@ func NewPerformanceTestService() *PerformanceTestService {
 	); err != nil {
 		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
 	}
+
 	err := g.Populate()
 	if err != nil {
 		logrus.Fatalf("populate the incomplete Objects: %v", err)
 	}
+
 	return service
 }
 

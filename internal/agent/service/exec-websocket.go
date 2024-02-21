@@ -1,10 +1,10 @@
 package service
 
 import (
-	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
@@ -17,10 +17,26 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 	execUuid := getExecUuid(req)
 	if execUuid == "" {
 		logUtils.Info("****** execUuid is empty")
-		logUtils.Infof("%v", req)
 		return
 	}
 
+	/** 1. dealwith performance testing */
+	if strings.Include(
+		[]string{
+			consts.JoinPerformanceTest.String(),
+			consts.StartPerformanceTest.String(),
+			consts.StopPerformanceTest.String(),
+		}, act.String()) {
+
+		go func() {
+			defer errDefer(wsMsg)
+			RunPerformanceTest(act, req.PerformanceTestExecReq, wsMsg)
+		}()
+
+		return
+	}
+
+	/** 2. dealwith other type of testing */
 	isRunning := agentExec.GetIsRunning(execUuid)
 
 	// stop exec
@@ -31,13 +47,11 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 	}
 
 	// already running
-	if isRunning && (strings.Include([]string{
+	if isRunning && strings.Include([]string{
 		consts.ExecScenario.String(),
 		consts.ExecPlan.String(),
 		consts.ExecCase.String(),
-		consts.StartPerformanceTest.String(),
-		consts.StopPerformanceTest.String(),
-	}, act.String())) {
+	}, act.String()) {
 		execUtils.SendAlreadyRunningMsg(consts.Processor, wsMsg)
 		return
 	}
@@ -100,7 +114,7 @@ func errDefer(wsMsg *websocket.Message) {
 
 	if err != nil {
 		s := string(debug.Stack())
-		fmt.Printf("err=%v, stack=%s\n", err, s)
+		ptlog.Logf("err=%v, stack=%s\n", err, s)
 
 		execUtils.SendErrorMsg(err, consts.Processor, wsMsg)
 	}

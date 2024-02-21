@@ -596,6 +596,7 @@ const (
 	ExecCase     ExecType = "execCases"
 	ExecMessage  ExecType = "execMessage"
 
+	JoinPerformanceTest  ExecType = "joinPerformanceTest"
 	StartPerformanceTest ExecType = "startPerformanceTest"
 	StopPerformanceTest  ExecType = "stopPerformanceTest"
 )

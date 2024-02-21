@@ -64,7 +64,6 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	err = json.Unmarshal(wsMsg.Body, &req)
 	if err != nil {
 		execUtils.SendErrorMsg(err, consts.Processor, &wsMsg)
-
 		return
 	}
 

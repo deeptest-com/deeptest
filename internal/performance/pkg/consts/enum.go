@@ -28,10 +28,11 @@ func (e MsgCategory) String() string {
 type MsgInstructionServerToRunner string
 
 const (
-	MsgInstructionStart    MsgInstructionServerToRunner = "start"
-	MsgInstructionEnd      MsgInstructionServerToRunner = "end"
-	MsgInstructionTerminal MsgInstructionServerToRunner = "terminal"
-	MsgInstructionContinue MsgInstructionServerToRunner = "continue"
+	MsgInstructionJoinExist MsgInstructionServerToRunner = "joinExist"
+	MsgInstructionStart     MsgInstructionServerToRunner = "start"
+	MsgInstructionEnd       MsgInstructionServerToRunner = "end"
+	MsgInstructionTerminal  MsgInstructionServerToRunner = "terminal"
+	MsgInstructionContinue  MsgInstructionServerToRunner = "continue"
 
 	MsgInstructionGlobalVarOptResult MsgInstructionServerToRunner = "globalVarOptResult"
 )

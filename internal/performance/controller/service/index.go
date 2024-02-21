@@ -11,33 +11,50 @@ import (
 
 var (
 	PerformanceTestServicesMap sync.Map
+
+	runningRoom string
 )
 
 func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
-	if act == consts.StartPerformanceTest {
+	if act == consts.JoinPerformanceTest {
+		if runningRoom != "" && req.Room != runningRoom {
+			websocketHelper.SendExecInstructionToClient(
+				runningRoom, err, ptconsts.MsgInstructionJoinExist, req.Room, wsMsg)
+		}
+
+	} else if act == consts.StartPerformanceTest {
 		websocketHelper.SendExecInstructionToClient(
-			"exec start", err, ptconsts.MsgInstructionStart, req.Room, wsMsg)
+			"performance testing start", err, ptconsts.MsgInstructionStart, req.Room, wsMsg)
+
+		performanceTestService := NewPerformanceTestService()
 
 		go func() {
-			performanceTestService := NewPerformanceTestService()
-			err = NewPerformanceTestService().ExecStart(req, wsMsg)
-
-			PerformanceTestServicesMap.Store(wsMsg.Room, &performanceTestService)
+			performanceTestService.ExecStart(req, wsMsg)
 		}()
+
+		PerformanceTestServicesMap.Store(req.Room, &performanceTestService)
+		runningRoom = req.Room
 
 	} else if act == consts.StopPerformanceTest {
 		performanceTestServiceObj, ok := PerformanceTestServicesMap.Load(req.Room)
 		if !ok {
+			runningRoom = ""
 			return
 		}
 
-		performanceTestService := performanceTestServiceObj.(*PerformanceTestService)
+		performanceTestService, ok := performanceTestServiceObj.(*PerformanceTestService)
+		if !ok {
+			runningRoom = ""
+			return
+		}
 
 		err = performanceTestService.ExecStop(req, wsMsg)
 		if err == nil {
 			websocketHelper.SendExecInstructionToClient(
-				"exec continue", err, ptconsts.MsgInstructionTerminal, req.Room, wsMsg)
+				"performance testing stop", err, ptconsts.MsgInstructionTerminal, req.Room, wsMsg)
 		}
+
+		runningRoom = ""
 	}
 
 	return

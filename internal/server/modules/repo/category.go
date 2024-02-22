@@ -305,3 +305,11 @@ func (r *CategoryRepo) CopySelf(id, newParentId int) (category model.Category, e
 
 	return category, err
 }
+
+func (r *CategoryRepo) BatchGetByIds(ids []int) (res []model.Category, err error) {
+	err = r.DB.Model(&model.Category{}).
+		Where("id IN (?) AND NOT deleted", ids).
+		Find(&res).Error
+
+	return
+}

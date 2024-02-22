@@ -48,7 +48,7 @@ func (s *LecangCronService) CallBack(options map[string]interface{}, err error) 
 		if !ok {
 			return
 		}
-		s.ProjectCronService.UpdateCronExecTimeById(taskId, consts.CronSourceSwagger, err)
+		s.ProjectCronService.UpdateCronExecTimeById(taskId, consts.CronSourceLecang, err)
 	}
 
 	return f

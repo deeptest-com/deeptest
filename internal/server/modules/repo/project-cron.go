@@ -4,49 +4,47 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
 type ProjectCronRepo struct {
-	DB       *gorm.DB  `inject:""`
-	UserRepo *UserRepo `inject:""`
+	DB           *gorm.DB      `inject:""`
+	UserRepo     *UserRepo     `inject:""`
+	CategoryRepo *CategoryRepo `inject:""`
 }
 
 func (r *ProjectCronRepo) Paginate(req v1.ProjectCronReqPaginate) (data _domain.PageData, err error) {
-	var count int64
-
-	db := r.DB.Model(&model.ProjectCron{}).
-		Where("project_id = ? AND NOT deleted",
-			req.ProjectId)
+	baseSql := " FROM biz_project_cron t1 LEFT JOIN biz_project_cron_config_lecang t2 ON t1.config_id = t2.id LEFT JOIN biz_project_serve_swagger_sync t3 ON t1.config_id = t3.id WHERE NOT t1.deleted"
 
 	if req.Name != "" {
-		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Name))
+		baseSql = baseSql + fmt.Sprintf("where t1.name LIKE %s", fmt.Sprintf("%%%s%%", req.Name))
 	}
 	if req.Source != "" {
-		db = db.Where("source = ?", req.Source)
+		baseSql = baseSql + fmt.Sprintf("where t1.source = %s", req.Source)
 	}
+
 	if req.Switch != 0 {
-		db = db.Where("switch = ?", req.Switch)
+		baseSql = baseSql + fmt.Sprintf("where t1.switch = %d", req.Switch)
 	}
 
-	err = db.Count(&count).Error
-	if err != nil {
-		logUtils.Errorf("count scenario error", zap.String("error:", err.Error()))
-		return
-	}
+	selectSql := "SELECT t1.*,CASE WHEN t1.source = 'lecang' THEN t2.category_id WHEN t1.source = 'swagger' THEN t3.category_id ELSE 0 END AS category_id" + baseSql
+	countSql := "SELECT count(*)" + baseSql
 
-	cronList := make([]*model.ProjectCron, 0)
+	var count int64
 
-	err = db.
-		Scopes(dao.PaginateScope(req.Page, req.PageSize, req.Order, req.Field)).
-		Find(&cronList).Error
+	db := r.DB.Model(&model.ProjectCronList{})
+
+	err = db.Raw(countSql).Count(&count).Error
+
+	cronList := make([]*model.ProjectCronList, 0)
+	err = db.Raw(selectSql + " limit " + strconv.Itoa((req.Page-1)*req.PageSize) + "," + strconv.Itoa(req.PageSize)).Find(&cronList).Error
 	if err != nil {
 		logUtils.Errorf("query project cron list error", zap.String("error:", err.Error()))
 		return
@@ -59,7 +57,7 @@ func (r *ProjectCronRepo) Paginate(req v1.ProjectCronReqPaginate) (data _domain.
 	return
 }
 
-func (r *ProjectCronRepo) CombineUserName(data []*model.ProjectCron) {
+func (r *ProjectCronRepo) CombineUserName(data []*model.ProjectCronList) {
 	userIds := make([]uint, 0)
 	for _, v := range data {
 		userIds = append(userIds, v.CreateUserId)
@@ -80,9 +78,26 @@ func (r *ProjectCronRepo) CombineUserName(data []*model.ProjectCron) {
 	}
 }
 
-func (r *ProjectCronRepo) CombineCategory(configs []*model.ProjectCron) {
-	// TODO
+func (r *ProjectCronRepo) CombineCategory(configs []*model.ProjectCronList) {
+	categoryIds := make([]int, 0)
+	for _, v := range configs {
+		categoryIds = append(categoryIds, v.CategoryId)
+	}
 
+	categoryIds = _commUtils.ArrayRemoveIntDuplication(categoryIds)
+	categories, _ := r.CategoryRepo.BatchGetByIds(categoryIds)
+
+	categoryIdNameMap := make(map[int]string)
+	for _, v := range categories {
+		categoryIdNameMap[int(v.ID)] = v.Name
+	}
+	categoryIdNameMap[-1] = "未分类"
+
+	for _, v := range configs {
+		if name, ok := categoryIdNameMap[v.CategoryId]; ok {
+			v.CategoryName = name
+		}
+	}
 }
 
 func (r *ProjectCronRepo) ListAllCron() (res []model.ProjectCron, err error) {

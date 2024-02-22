@@ -49,15 +49,15 @@ func (p *Proxy) Add(options map[string]interface{}) (err error) {
 func (p *Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 	taskFunc = func() {
 		runFunc := p.task.Run(options)
-		if runFunc() == nil {
-			return
-		}
+		//if runFunc() == nil {
+		//	return
+		//}
 
 		err := runFunc()
 		callBackFunc := p.task.CallBack(options, err)
-		if callBackFunc == nil {
-			return
-		}
+		//if callBackFunc == nil {
+		//	return
+		//}
 
 		callBackFunc()
 	}

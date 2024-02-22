@@ -216,7 +216,14 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 	// create project plan category
 	err = r.AddProjectRootPlanCategory(projectId)
 	if err != nil {
-		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
+		logUtils.Errorf("添加计划分类错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	// create project schema category
+	err = r.AddProjectRootSchemaCategory(projectId)
+	if err != nil {
+		logUtils.Errorf("添加组件分类错误", zap.String("错误:", err.Error()))
 		return
 	}
 
@@ -472,6 +479,18 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.PlanCategory,
+		ProjectId: projectId,
+		IsDir:     true,
+	}
+	err = r.DB.Create(&root).Error
+
+	return
+}
+
+func (r *ProjectRepo) AddProjectRootSchemaCategory(projectId uint) (err error) {
+	root := model.Category{
+		Name:      "分类",
+		Type:      serverConsts.SchemaCategory,
 		ProjectId: projectId,
 		IsDir:     true,
 	}

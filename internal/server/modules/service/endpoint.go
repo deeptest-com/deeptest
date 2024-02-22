@@ -102,7 +102,7 @@ func (s *EndpointService) SendEndpointMessage(projectId, endpointId, userId uint
 
 func (s *EndpointService) GetById(id uint, version string) (res model.Endpoint) {
 	res, _ = s.EndpointRepo.GetAll(id, version)
-	s.SchemasConv(&res)
+	s.SchemasConv(&res, nil)
 	return
 }
 
@@ -219,7 +219,7 @@ func (s *EndpointService) Yaml(endpoint model.Endpoint) (res *openapi3.T) {
 			return
 		}
 
-		serveComponent, err := s.ServeRepo.GetSchemasByServeId(serve.ID)
+		serveComponent, err := s.ServeRepo.GetSchemasByProjectId(endpoint.ProjectId)
 		if err != nil {
 			return
 		}
@@ -383,10 +383,10 @@ func (s *EndpointService) createComponents(wg *sync.WaitGroup, components map[st
 	}()
 	var newComponents []*model.ComponentSchema
 	for _, component := range components {
-		component.ServeId = int64(req.ServeId)
+		component.ProjectId = req.ProjectId
 		component.SourceType = req.SourceType
 
-		res, err := s.ServeRepo.GetComponentByItem(component.SourceType, uint(component.ServeId), component.Ref)
+		res, err := s.ServeRepo.GetComponentByItem(component.SourceType, component.ProjectId, component.Ref)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			continue
 		}
@@ -626,25 +626,32 @@ func (s *EndpointService) UpdateTags(req v1.EndpointTagReq, projectId uint) (err
 	//return
 }
 
-func (s *EndpointService) SchemasConv(endpoint *model.Endpoint) {
+func (s *EndpointService) SchemasConv(endpoint *model.Endpoint, components *schemaHelper.Components) {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
+	if components == nil {
+		schema2conv.Components = s.ServeService.Components(endpoint.ProjectId)
+	} else {
+		schema2conv.Components = components
+	}
 	for key, intef := range endpoint.Interfaces {
 		for k, response := range intef.ResponseBodies {
 			schema := new(schemaHelper.SchemaRef)
 			_commUtils.JsonDecode(response.SchemaItem.Content, schema)
-			if endpoint.SourceType == 1 && schema.Value != nil && len(schema.Value.AllOf) > 0 {
-				schema2conv.CombineSchemas(schema)
-			}
+			//if endpoint.SourceType == 1 && schema.Value != nil && len(schema.Value.AllOf) > 0 {
+			schema2conv.CombineSchemas(schema)
+			//}
+			schema2conv.FillRefId(schema)
 			endpoint.Interfaces[key].ResponseBodies[k].SchemaItem.Content = _commUtils.JsonEncode(schema)
 		}
+
+		endpoint.Interfaces[key].RequestBody.SchemaItem.Content = s.ServeService.FillSchemaRefId(endpoint.ProjectId, intef.RequestBody.SchemaItem.Content, schema2conv.Components)
 	}
 
 }
 
-func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, serveId uint) {
+func (s *EndpointService) SchemaConv(interf *model.EndpointInterface, projectId uint) {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.ServeService.Components(serveId)
+	schema2conv.Components = s.ServeService.Components(projectId)
 	for k, response := range interf.ResponseBodies {
 		schema := new(schemaHelper.SchemaRef)
 		_commUtils.JsonDecode(response.SchemaItem.Content, schema)
@@ -674,7 +681,7 @@ func (s *EndpointService) CreateExample(req v1.CreateExampleReq) (ret interface{
 	}
 
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.ServeService.Components(endpoint.ServeId)
+	schema2conv.Components = s.ServeService.Components(endpoint.ProjectId)
 
 	schema := schemaHelper.SchemaRef{}
 	_commUtils.JsonDecode(bodyItem.Content, &schema)

@@ -13,6 +13,7 @@ type ComponentSchema struct {
 	Description string            `gorm:"type:text" json:"description"`
 	Ref         string            `json:"ref"`
 	SourceType  consts.SourceType `json:"sourceType" gorm:"default:0"`
+	ProjectId   uint              `gorm:"index:idx_project_id,default:0" json:"projectId"`
 }
 
 func (ComponentSchema) TableName() string {

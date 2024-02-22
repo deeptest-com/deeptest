@@ -231,6 +231,19 @@ func (c *CategoryCtrl) Move(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
 
+func (c *CategoryCtrl) BatchAddSchemaRoot(ctx iris.Context) {
+	var req serverDomain.BatchAddSchemaRootReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	go c.CategoryService.BatchAddSchemaRoot(req.ProjectIds)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
 // Copy 详情
 // @Tags	分类管理
 // @summary	复制分类
@@ -242,6 +255,7 @@ func (c *CategoryCtrl) Move(ctx iris.Context) {
 // @Router	/api/v1/categories/copy/{id}	[get]
 func (c *CategoryCtrl) Copy(ctx iris.Context) {
 	targetId, err := ctx.Params().GetInt("id")
+
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -250,10 +264,11 @@ func (c *CategoryCtrl) Copy(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
 
-	err = c.CategoryService.Copy(uint(targetId), 0, userId, userName)
+	nodePo, err := c.CategoryService.Copy(uint(targetId), 0, userId, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: nodePo})
 }

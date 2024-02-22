@@ -192,7 +192,7 @@ func (r *ServeRepo) GetSchema(id uint) (res model.ComponentSchema, err error) {
 }
 
 func (r *ServeRepo) GetSchemasByProjectId(projectId uint, options ...[]interface{}) (res []model.ComponentSchema, err error) {
-	db := r.DB.Select("id", fmt.Sprintf("(WITH RECURSIVE temp(id,parent_id,name) AS (SELECT id,parent_id,name from biz_category where entity_id = biz_project_serve_component_schema.id and type = '%s'  UNION ALL SELECT b.id,b.parent_id,b.name from biz_category b, temp c where c.parent_id = b.id and  b.parent_id > 0) select GROUP_CONCAT(name ORDER BY id asc SEPARATOR  '.') name from temp ORDER BY id asc ) name", serverConsts.SchemaCategory), "type", "content", "serve_id", "examples", "tags", "description", "ref", "source_type", "project_id")
+	db := r.DB.Select("id", fmt.Sprintf("(WITH RECURSIVE temp(id,parent_id,name) AS (SELECT id,parent_id,name from biz_category where entity_id = biz_project_serve_component_schema.id and type = '%s'  UNION ALL SELECT b.id,b.parent_id,b.name from biz_category b, temp c where c.parent_id = b.id and  b.parent_id > 0) select GROUP_CONCAT(name ORDER BY (@row_number:=@row_number+1) desc SEPARATOR  '.') name from temp,(select @row_number := 0) x  ) name", serverConsts.SchemaCategory), "type", "content", "serve_id", "examples", "tags", "description", "ref", "source_type", "project_id")
 	db = db.Where("NOT deleted AND not disabled AND project_id = ?", projectId)
 	if len(options) > 0 && len(options[0]) > 0 {
 		db = db.Where("id in ?", options[0])

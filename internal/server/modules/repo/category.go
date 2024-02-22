@@ -394,7 +394,7 @@ func (r *CategoryRepo) GetJoinedPath(categoryId uint) (path []string, err error)
 		  UNION ALL
 		  SELECT b.id,b.parent_id,b.name from biz_category b, temp c where c.parent_id = b.id and  b.parent_id > 0
 		) 
-		select name from temp ORDER BY id asc
+		select name from temp,(select @row_number := 0) x ORDER BY (@row_number:=@row_number+1) desc
 `
 	sql = fmt.Sprintf(sql, categoryId)
 	err = r.DB.Raw(sql).Scan(&path).Error

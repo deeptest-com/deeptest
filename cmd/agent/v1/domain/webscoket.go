@@ -15,4 +15,5 @@ type WsReq struct {
 
 	MessageReq     agentExec.MessageExecReq `json:"messageReq"`
 	LocalVarsCache iris.Map                 `json:"localVarsCache"`
+	TenantId       consts.TenantId          `json:"tenantId"`
 }

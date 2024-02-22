@@ -74,12 +74,12 @@ func (s *DocumentService) GetEndpoints(tenantId consts.TenantId, projectId *uint
 
 	s.FillRefId(tenantId, endpoints)
 
-	res = s.GetEndpointsInfo(tenantId, projectId, serveIds, endpoints)
+	res = s.GetEndpointsInfo(projectId, serveIds, endpoints)
 
 	return
 }
 
-func (s *DocumentService) GetEndpointsInfo(tenantId consts.TenantId, projectId *uint, serveIds *[]uint, endpoints []*model.Endpoint) (res map[uint][]domain.EndpointReq) {
+func (s *DocumentService) GetEndpointsInfo(projectId *uint, serveIds *[]uint, endpoints []*model.Endpoint) (res map[uint][]domain.EndpointReq) {
 	res = make(map[uint][]domain.EndpointReq)
 
 	serves := make(map[uint]uint)
@@ -271,7 +271,7 @@ func (s *DocumentService) GetEndpointsByShare(tenantId consts.TenantId, projectI
 		return
 	}
 
-	res = s.GetEndpointsInfo(tenantId, projectId, serveIds, endpoints)
+	res = s.GetEndpointsInfo(projectId, serveIds, endpoints)
 
 	return
 }

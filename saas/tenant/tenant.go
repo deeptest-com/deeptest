@@ -79,7 +79,7 @@ func (t *Tenant) GetDbConfig(tenantId consts.TenantId) (config domain.DbConfig, 
 }
 
 func (t *Tenant) GetInfos() (tenants []domain.Tenant) {
-	if config.CONFIG.Saas.Switch == "ON" {
+	if config.CONFIG.Saas.Switch {
 		tenants = new(remote.Remote).GetTenants()
 	}
 	return

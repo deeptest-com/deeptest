@@ -37,13 +37,10 @@ func (s *Remote) GetTenant(tenantId consts.TenantId) (ret domain.Tenant) {
 		err = fmt.Errorf("get tenant/list failed, response %v", resp)
 		return
 	}
-	type Data struct {
-		Id       int64           `json:"id"`
-		DbConfig domain.DbConfig `json:"pjtDB"`
-	}
+
 	respContent := struct {
 		Code int
-		Data Data
+		Data domain.Tenant
 		Msg  string
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
@@ -57,7 +54,7 @@ func (s *Remote) GetTenant(tenantId consts.TenantId) (ret domain.Tenant) {
 		return
 	}
 
-	ret.Id, ret.DbConfig = consts.TenantId(fmt.Sprintf("%d", respContent.Data.Id)), respContent.Data.DbConfig
+	ret = respContent.Data
 	return
 }
 

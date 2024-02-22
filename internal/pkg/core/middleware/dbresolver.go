@@ -26,7 +26,7 @@ func DBResolver() iris.Handler {
 
 		dbname := common.GetTenantId(ctx)
 
-		if config.CONFIG.Saas.Switch == "ON" && dbname == "" {
+		if config.CONFIG.Saas.Switch && dbname == "" {
 			panic(fmt.Errorf("the saas environment does not allow the tenant id to be empty"))
 		}
 

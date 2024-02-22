@@ -11,15 +11,17 @@ import (
 )
 
 func Init(room string) {
-	logDir := filepath.Join(consts.WorkDir, "log", "performance")
+	logPath := GetLogPath(room)
+
+	logDir := filepath.Dir(logPath)
 	if !dir.IsExist(logDir) {
 		dir.InsureDir(logDir)
 	}
 
-	Logger, _ = getLogger(logDir, room)
+	Logger, _ = getLogger(logPath)
 }
 
-func getLogger(logDir, room string) (*zap.Logger, error) {
+func getLogger(logPath string) (*zap.Logger, error) {
 	performancePriority := zap.LevelEnablerFunc(func(lev zapcore.Level) bool {
 
 		return lev >= zap.DebugLevel
@@ -28,10 +30,9 @@ func getLogger(logDir, room string) (*zap.Logger, error) {
 	prodEncoder := zap.NewProductionEncoderConfig()
 	prodEncoder.EncodeTime = zapcore.ISO8601TimeEncoder
 
-	performanceLogPath := filepath.Join(logDir, fmt.Sprintf("%s.log", room))
-	_fileUtils.RmDir(performanceLogPath)
+	_fileUtils.RmDir(logPath)
 
-	performanceWriteSyncer, lowClose, err := zap.Open(performanceLogPath)
+	performanceWriteSyncer, lowClose, err := zap.Open(logPath)
 	if err != nil {
 		lowClose()
 		return nil, err
@@ -40,4 +41,10 @@ func getLogger(logDir, room string) (*zap.Logger, error) {
 	performanceCore := zapcore.NewCore(zapcore.NewJSONEncoder(prodEncoder), performanceWriteSyncer, performancePriority)
 
 	return zap.New(zapcore.NewTee(performanceCore), zap.AddCaller()), nil
+}
+
+func GetLogPath(room string) (ret string) {
+	ret = filepath.Join(consts.WorkDir, "log", "performance", fmt.Sprintf("%s.log", room))
+
+	return
 }

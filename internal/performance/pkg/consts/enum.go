@@ -44,9 +44,7 @@ func (e MsgInstructionServerToRunner) String() string {
 type MsgInstructionRunnerToServer string
 
 const (
-	MsgInstructionGlobalVarOptIncrease MsgInstructionRunnerToServer = "globalVarOptIncrease"
-	MsgInstructionGlobalVarOptGet      MsgInstructionRunnerToServer = "globalVarOptGet"
-	MsgInstructionGlobalVarOptReset    MsgInstructionRunnerToServer = "globalVarOptReset"
+	MsgInstructionRunnerFinish MsgInstructionRunnerToServer = "runnerFinish"
 )
 
 func (e MsgInstructionRunnerToServer) String() string {

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/pkg/core/mq"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"log"
+	"strings"
 	"time"
 )
 
@@ -31,6 +33,10 @@ func SubMsg() {
 		msg := mqClient.GetPayLoad(ch).(_domain.MqMsg)
 		fmt.Printf("%s get mq msg '%#v'\n", mqTopic, msg.Content)
 
+		if strings.Index(msg.Content, "joinExist") > -1 {
+			log.Print(1)
+		}
+
 		if msg.Content == "exit" {
 			mqClient.Unsubscribe(mqTopic, ch)
 			break
@@ -43,6 +49,10 @@ func SubMsg() {
 }
 
 func PubMsg(data _domain.MqMsg) {
+	if strings.Index(data.Content, "joinExist") > -1 {
+		log.Print(1)
+	}
+
 	err := mqClient.Publish(mqTopic, data)
 	if err != nil {
 		fmt.Println("pub mq message failed")

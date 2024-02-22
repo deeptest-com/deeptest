@@ -3,6 +3,7 @@ package controllerService
 import (
 	"context"
 	"fmt"
+	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
@@ -12,6 +13,7 @@ import (
 	"io"
 	"log"
 	"sync"
+	"time"
 )
 
 type GrpcService struct {
@@ -21,7 +23,7 @@ type GrpcService struct {
 	variableMap sync.Map
 }
 
-// for controller
+// runner to controller
 func (s *GrpcService) AddGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.Int32Value, err error) {
 
@@ -113,7 +115,7 @@ func (s *GrpcService) ClearAllGlobalVar(ctx context.Context, req *ptProto.Global
 	return
 }
 
-// for runner
+// controller to runner
 func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServer) (err error) {
 	if exec.IsRunnerTestRunning() {
 		err = &ptdomain.ErrorAlreadyRunning{}
@@ -138,7 +140,6 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 	}
 
 	// gen sender
-	//grpcSender := indicator.NewGrpcSender(&stream)
 	msgSender := indicator.GetInfluxdbSenderInstant(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
 	if msgSender == nil {
 		ptlog.Logf("stop to run since msgSender return nil")
@@ -151,6 +152,16 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, msgSender)
 
 	exec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) // sync
+
+	result := ptProto.PerformanceExecResp{
+		Timestamp: time.Now().UnixMilli(),
+		RunnerId:  req.RunnerId,
+		Room:      req.Room,
+
+		Instruction: ptconsts.MsgInstructionRunnerFinish.String(),
+	}
+	grpcSender := indicator.NewGrpcSender(&stream)
+	grpcSender.Send(result)
 
 	return
 }

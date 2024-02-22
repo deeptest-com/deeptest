@@ -1,18 +1,17 @@
 package service
 
 import (
-	controllerService "github.com/aaronchen2k/deeptest/internal/performance/controller/service"
+	"github.com/aaronchen2k/deeptest/internal/performance/controller"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12/websocket"
-	"go.uber.org/zap"
 )
 
 func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
-	logUtils.Infof("run performance test", zap.String("act", act.String()), zap.String("room", req.Room))
+	ptlog.Logf("run performance test act=%s, room=%s", act.String(), req.Room)
 
-	controllerService.RunPerformanceTest(act, req, wsMsg)
+	controller.RunPerformanceTest(act, req, wsMsg)
 
 	return
 }

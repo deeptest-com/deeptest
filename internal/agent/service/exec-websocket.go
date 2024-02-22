@@ -26,6 +26,9 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 			consts.JoinPerformanceTest.String(),
 			consts.StartPerformanceTest.String(),
 			consts.StopPerformanceTest.String(),
+
+			consts.StartPerformanceLog.String(),
+			consts.StopPerformanceLog.String(),
 		}, act.String()) {
 
 		go func() {

@@ -8,13 +8,17 @@ import (
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	websocketHelper "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
+	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
+	"github.com/nxadm/tail"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"io"
 	"log"
+	"sync"
 )
 
 type PerformanceTestService struct {
@@ -71,13 +75,12 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 	s.GrpcService.ClearAllGlobalVar(context.Background(), &ptProto.GlobalVarRequest{})
 
 	// stop execution in 2 ways:
-	// 1. call cancel in this method by websocket request
+	// 1. call cancel in this method by websocket request OR after all runners completed
 	// 2. sub cancel instruction from runner via grpc
 
-	// independent job to summary metrics and send web client
-	go s.ScheduleService.ScheduleJob(s.execCtx, s.execCancel, req, wsMsg)
+	go s.ScheduleService.SendMetricsToClient(s.execCtx, s.execCancel, req, wsMsg)
 
-	// exec by runners
+	var wgRunners sync.WaitGroup
 	for _, runner := range req.Runners {
 		client := s.Connect(runner)
 
@@ -86,12 +89,13 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 			continue
 		}
 
-		s.HandleAndPubToQueueGrpcMsg(stream) // sync exec
+		wgRunners.Add(1)
 
-		stream.CloseSend()
+		s.HandleGrpcMsgAsync(stream, wgRunners)
 	}
 
-	// send cancel signal
+	wgRunners.Wait()
+
 	s.execCancel()
 
 	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, req.Room, wsMsg)
@@ -114,18 +118,48 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 	return
 }
 
-//func (s *PerformanceTestService) ExecReconnectListenMsg(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
-//	s.execCtx, s.execCancel = context.WithCancel(context.Background())
-//
-//	if req.NsqServerAddress != "" {
-//		go s.HandleRunnerNsqInstructionMsg(req, s.execCtx, req.Uuid, wsMsg)
-//
-//	} else {
-//		go ptqueue.SubRunnerGrpcMsg(s.retrieveAndDealwithResult, s.execCtx, s.execCancel, req.Uuid, wsMsg)
-//	}
-//
-//	return
-//}
+func (s *PerformanceTestService) SendLogAsync(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) {
+	go func() {
+		s.SendLog(req, wsMsg)
+	}()
+}
+
+func (s *PerformanceTestService) SendLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
+	room := req.Room
+	logPath := ptlog.GetLogPath(room)
+
+	t, err := tail.TailFile(logPath, tail.Config{Follow: true, ReOpen: true})
+	if err != nil {
+		return
+	}
+
+	var arr []string
+
+	for line := range t.Lines {
+		arr = append(arr, line.Text)
+
+		if len(arr) > 100 {
+			data := iris.Map{
+				"log": line.Text,
+			}
+			websocketHelper.SendExecResultToClient(data, ptconsts.MsgResultRecord, req.Room, wsMsg)
+
+			arr = make([]string, 0)
+		}
+
+		select {
+		case <-s.execCtx.Done():
+			_logUtils.Debug("<<<<<<< stop sendLog job")
+			return
+
+		default:
+		}
+	}
+
+	s.execCancel()
+
+	return
+}
 
 func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 	client ptProto.PerformanceServiceClient, req ptdomain.PerformanceTestReq, runnerId int32, runnerName string, weight int32) (stream ptProto.PerformanceService_ExecStartClient, err error) {
@@ -193,7 +227,19 @@ func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.Performance
 	return
 }
 
-func (s *PerformanceTestService) HandleAndPubToQueueGrpcMsg(stream ptProto.PerformanceService_ExecStartClient) (err error) {
+func (s *PerformanceTestService) HandleGrpcMsgAsync(stream ptProto.PerformanceService_ExecStartClient,
+	wgRunners sync.WaitGroup) {
+
+	go func() {
+		defer wgRunners.Done()
+
+		s.HandleGrpcMsg(stream)
+
+		stream.CloseSend()
+	}()
+}
+
+func (s *PerformanceTestService) HandleGrpcMsg(stream ptProto.PerformanceService_ExecStartClient) (err error) {
 	for true {
 		resp, err := stream.Recv()
 		if err == io.EOF {
@@ -203,12 +249,20 @@ func (s *PerformanceTestService) HandleAndPubToQueueGrpcMsg(stream ptProto.Perfo
 			continue
 		}
 
+		ptlog.Logf("get grpc msg from runner: %v", resp)
+
 		// dealwith Instruction from agent
-		if resp.Instruction != "" {
-			continue
+		if resp.Instruction == ptconsts.MsgInstructionRunnerFinish.String() {
+			break
 		}
 
-		ptlog.Logf("get grpc msg from runner: %v", resp)
+		select {
+		case <-s.execCtx.Done():
+			_logUtils.Debug("<<<<<<< stop sendLog job")
+			break
+
+		default:
+		}
 	}
 
 	return

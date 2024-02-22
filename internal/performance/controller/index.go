@@ -1,6 +1,7 @@
-package controllerService
+package controller
 
 import (
+	controllerService "github.com/aaronchen2k/deeptest/internal/performance/controller/service"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
@@ -29,27 +30,17 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 		websocketHelper.SendExecInstructionToClient(
 			"performance testing start", err, ptconsts.MsgInstructionStart, req.Room, wsMsg)
 
-		performanceTestService := NewPerformanceTestServiceRef(req)
+		performanceTestService := controllerService.NewPerformanceTestServiceRef(req)
 
-		go func() {
-			performanceTestService.ExecStart(req, wsMsg)
-		}()
+		performanceTestService.ExecStart(req, wsMsg)
 
 		PerformanceTestServicesMap.Store(req.Room, performanceTestService)
 		runningRoom = req.Room
 
 	} else if act == consts.StopPerformanceTest {
-		performanceTestServiceObj, ok := PerformanceTestServicesMap.Load(req.Room)
-		if !ok {
-			runningRoom = ""
-			sendStopMsg("performanceTestService not found", req.Room, wsMsg)
-			return
-		}
-
-		performanceTestService, ok := performanceTestServiceObj.(*PerformanceTestService)
-		if !ok {
-			runningRoom = ""
-			sendStopMsg("performanceTestService failed convert", req.Room, wsMsg)
+		performanceTestService := getPerformanceTestServiceRef(req.Room)
+		if performanceTestService == nil {
+			sendStopMsg("get performanceTestService failed", req.Room, wsMsg)
 			return
 		}
 
@@ -62,6 +53,32 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 
 		runningRoom = ""
 		sendStopMsg("stop successfully", req.Room, wsMsg)
+
+	} else if act == consts.StartPerformanceLog {
+		room := req.Room
+		performanceTestService := getPerformanceTestServiceRef(room)
+		if performanceTestService == nil {
+			sendStopMsg("get performanceTestService failed", req.Room, wsMsg)
+			return
+		}
+
+		performanceTestService.SendLogAsync(req, wsMsg)
+	}
+
+	return
+}
+
+func getPerformanceTestServiceRef(room string) (ret *controllerService.PerformanceTestService) {
+	performanceTestServiceObj, ok := PerformanceTestServicesMap.Load(room)
+	if !ok {
+		runningRoom = ""
+		return
+	}
+
+	ret, ok = performanceTestServiceObj.(*controllerService.PerformanceTestService)
+	if !ok {
+		runningRoom = ""
+		return
 	}
 
 	return
@@ -70,4 +87,9 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 func sendStopMsg(data interface{}, room string, wsMsg *websocket.Message) {
 	websocketHelper.SendExecInstructionToClient(
 		"performance testing stop", data, ptconsts.MsgInstructionTerminal, room, wsMsg)
+}
+
+func sendLogMsg(line string, room string, wsMsg *websocket.Message) {
+	websocketHelper.SendExecInstructionToClient(
+		line, nil, ptconsts.MsgInstructionTerminal, room, wsMsg)
 }

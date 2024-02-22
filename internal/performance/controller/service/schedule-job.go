@@ -27,7 +27,7 @@ func (s *ScheduleService) Reset(scenarios []*ptProto.Scenario) {
 	s.StatService.Reset(scenarios)
 }
 
-func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel context.CancelFunc,
+func (s *ScheduleService) SendMetricsToClient(execCtx context.Context, execCancel context.CancelFunc,
 	req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) {
 
 	s.genRunnerIdToNameMap(req.Runners)
@@ -98,8 +98,6 @@ func (s *ScheduleService) ScheduleJob(execCtx context.Context, execCancel contex
 
 func (s *ScheduleService) SendMetricsByWebsocket(result ptdomain.PerformanceExecResults, execUUid string, wsMsg *websocket.Message) {
 	if wsMsg != nil {
-		ptlog.Logf("888888888888 %d", result.Timestamp)
-
 		websocketHelper.SendExecResultToClient(result, ptconsts.MsgResultRecord, execUUid, wsMsg)
 	}
 }

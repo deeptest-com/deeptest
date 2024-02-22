@@ -40,9 +40,6 @@ func (c *ExecByWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) erro
 	return nil
 }
 
-// OnNamespaceDisconnect
-// This will call the "OnVisit" event on all clients, except the current one,
-// it can't because it's left but for any case use this type of design.
 func (c *ExecByWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
 	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_disconnected :id=%v room=%v", c.Conn.ID(), wsMsg.Room))
 
@@ -52,10 +49,18 @@ func (c *ExecByWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) err
 
 	websocketHelper.PubMsg(mqData)
 
+	// sample
+	// This will call the "OnVisit" event on all clients, except the current one,
+	// (it can't because it's left but for any case use this type of design)
+	//c.Conn.Server().Broadcast(nil, websocket.Message{
+	//	Namespace: wsMsg.Namespace,
+	//	Event:     "OnVisit",
+	//	Body:      []byte(fmt.Sprintf("%d", newCount)),
+	//})
+
 	return nil
 }
 
-// OnChat This will call the "OnVisit" event on all clients, including the current one, with the 'newCount' variable.
 func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	ctx := websocket.GetContext(c.Conn)
 	_logUtils.Infof("WebSocket OnChat: remote address=%s, room=%s, msg=%s", ctx.RemoteAddr(), wsMsg.Room, string(wsMsg.Body))

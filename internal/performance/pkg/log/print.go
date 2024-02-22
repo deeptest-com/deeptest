@@ -15,5 +15,8 @@ func Log(str string) {
 func Logf(str string, args ...interface{}) {
 	msg := fmt.Sprintf(str, args...)
 	log.Println(msg)
-	Logger.Debug(msg)
+
+	if Logger != nil {
+		Logger.Debug(msg)
+	}
 }

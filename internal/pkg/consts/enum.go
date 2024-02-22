@@ -599,6 +599,9 @@ const (
 	JoinPerformanceTest  ExecType = "joinPerformanceTest"
 	StartPerformanceTest ExecType = "startPerformanceTest"
 	StopPerformanceTest  ExecType = "stopPerformanceTest"
+
+	StartPerformanceLog ExecType = "startPerformanceLog"
+	StopPerformanceLog  ExecType = "stopPerformanceLog"
 )
 
 func (e ExecType) String() string {

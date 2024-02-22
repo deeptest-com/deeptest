@@ -8,7 +8,7 @@ import (
 )
 
 type Tenant struct {
-	Id       string          `json:"id"`
+	Id       consts.TenantId `json:"id"`
 	DbConfig domain.DbConfig `json:"dbConfig"`
 }
 
@@ -17,7 +17,7 @@ func NewTenant() *Tenant {
 }
 
 func (t *Tenant) GetInfo(tenantId consts.TenantId) (tenant domain.Tenant) {
-	tenant = new(remote.Remote).GetTenant()
+	tenant = new(remote.Remote).GetTenant(tenantId)
 	/*
 		url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
 

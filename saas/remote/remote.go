@@ -15,7 +15,7 @@ import (
 type Remote struct {
 }
 
-func (s *Remote) GetTenant() (ret domain.Tenant) {
+func (s *Remote) GetTenant(tenantId consts.TenantId) (ret domain.Tenant) {
 	url := fmt.Sprintf("%s/api/v1/tenant", config.CONFIG.Saas.Url)
 
 	headers := pkg.GetHeaders("")
@@ -23,7 +23,7 @@ func (s *Remote) GetTenant() (ret domain.Tenant) {
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
 		Headers:     &headers,
-		QueryParams: &[]v1.Param{{Name: "id", Value: "1704448518063"}},
+		QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}},
 	}
 
 	resp, err := httpHelper.Get(httpReq)
@@ -37,10 +37,13 @@ func (s *Remote) GetTenant() (ret domain.Tenant) {
 		err = fmt.Errorf("get tenant/list failed, response %v", resp)
 		return
 	}
-
+	type Data struct {
+		Id       int64           `json:"id"`
+		DbConfig domain.DbConfig `json:"pjtDB"`
+	}
 	respContent := struct {
 		Code int
-		Data domain.Tenant
+		Data Data
 		Msg  string
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
@@ -54,7 +57,7 @@ func (s *Remote) GetTenant() (ret domain.Tenant) {
 		return
 	}
 
-	ret = respContent.Data
+	ret.Id, ret.DbConfig = consts.TenantId(fmt.Sprintf("%d", respContent.Data.Id)), respContent.Data.DbConfig
 	return
 }
 

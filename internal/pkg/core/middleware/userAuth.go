@@ -13,6 +13,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/saas/common"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/snowlyg/multi"
@@ -140,6 +141,8 @@ func getAppName(ctx *context.Context) (appName enum.AppName, token, origin strin
 		appName = enum.Lecang
 		return
 	}
+
+	tenantId = common.GetTenantId(ctx)
 
 	return
 }

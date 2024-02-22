@@ -61,7 +61,6 @@ func (s *ProjectCronService) Save(req model.ProjectCron) (id uint, err error) {
 	}
 
 	req.ConfigId = configId
-
 	id, err = s.ProjectCronRepo.Save(req)
 
 	return
@@ -71,6 +70,7 @@ func (s *ProjectCronService) initCron(req *model.ProjectCron) {
 	if req.ID == 0 {
 		req.LecangConfig.ID = 0
 		req.SwaggerConfig.ID = 0
+		req.Switch = consts.SwitchON
 	}
 }
 

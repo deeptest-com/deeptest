@@ -91,13 +91,19 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 
 		wgRunners.Add(1)
 
-		s.HandleGrpcMsgAsync(stream, wgRunners)
+		go func() {
+			defer wgRunners.Done()
+
+			s.HandleGrpcMsg(stream)
+			stream.CloseSend()
+		}()
 	}
 
+	// wait all runners finished
 	wgRunners.Wait()
 
+	// close exec and send to web client
 	s.execCancel()
-
 	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, req.Room, wsMsg)
 
 	return
@@ -225,18 +231,6 @@ func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.Performance
 	}
 
 	return
-}
-
-func (s *PerformanceTestService) HandleGrpcMsgAsync(stream ptProto.PerformanceService_ExecStartClient,
-	wgRunners sync.WaitGroup) {
-
-	go func() {
-		defer wgRunners.Done()
-
-		s.HandleGrpcMsg(stream)
-
-		stream.CloseSend()
-	}()
 }
 
 func (s *PerformanceTestService) HandleGrpcMsg(stream ptProto.PerformanceService_ExecStartClient) (err error) {

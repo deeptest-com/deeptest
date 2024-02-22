@@ -154,10 +154,9 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 	exec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) // sync
 
 	result := ptProto.PerformanceExecResp{
-		Timestamp: time.Now().UnixMilli(),
-		RunnerId:  req.RunnerId,
-		Room:      req.Room,
-
+		Timestamp:   time.Now().UnixMilli(),
+		RunnerId:    req.RunnerId,
+		Room:        req.Room,
 		Instruction: ptconsts.MsgInstructionRunnerFinish.String(),
 	}
 	grpcSender := indicator.NewGrpcSender(&stream)

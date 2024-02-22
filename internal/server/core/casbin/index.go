@@ -10,7 +10,6 @@ import (
 
 	"github.com/casbin/casbin/v2"
 	gormadapter "github.com/casbin/gorm-adapter/v3"
-	"github.com/snowlyg/helper/dir"
 	"go.uber.org/zap"
 )
 
@@ -39,7 +38,8 @@ func GetEnforcer() *casbin.Enforcer {
 		return nil
 	}
 
-	enforcer, err := casbin.NewEnforcer(filepath.Join(dir.GetCurrentAbPath(), consts.CasbinFileName), c)
+	pth := filepath.Join(consts.WorkDir, consts.CasbinFileName) // created if needed in config init method
+	enforcer, err := casbin.NewEnforcer(pth, c)
 	if err != nil {
 		logUtils.Errorf("初始化失败", zap.String("casbin.NewEnforcer()", err.Error()))
 		return nil

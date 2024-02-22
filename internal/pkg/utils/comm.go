@@ -16,7 +16,7 @@ func GetExecDir() (dir string) { // where ztf exe file in
 
 	if commonUtils.IsRelease() { // release
 		dir = filepath.Dir(exeDir)
-	} else {                                                       // debug mode
+	} else { // debug mode
 		if strings.Index(strings.ToLower(exeDir), "goland") > -1 { // run with ide
 			dir = os.Getenv("ZTF_CODE_DIR")
 		} else {
@@ -31,11 +31,6 @@ func GetExecDir() (dir string) { // where ztf exe file in
 }
 
 func GetWorkDir() (dir string) {
-	//dir, _ := os.Getwd()
-	//
-	//dir, _ = filepath.Abs(dir)
-	//dir = fileUtils.AddSepIfNeeded(dir)
-
 	home, _ := fileUtils.GetUserHome()
 	dir = filepath.Join(home, consts.App)
 	dir = fileUtils.AddSepIfNeeded(dir)

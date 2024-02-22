@@ -19,12 +19,7 @@ type ScheduleService struct {
 	RunnerIdToNameMap map[int]string
 
 	GrpcService         *GrpcService         `inject:"private"`
-	StatService         *StatService         `inject:"private"`
 	RemoteRunnerService *RemoteRunnerService `inject:"private"`
-}
-
-func (s *ScheduleService) Reset(scenarios []*ptProto.Scenario) {
-	s.StatService.Reset(scenarios)
 }
 
 func (s *ScheduleService) SendMetricsToClient(execCtx context.Context, execCancel context.CancelFunc,
@@ -34,8 +29,6 @@ func (s *ScheduleService) SendMetricsToClient(execCtx context.Context, execCance
 
 	startTime := time.Now().UnixMilli()
 	lastTime := startTime
-
-	s.StatService.Room = wsMsg.Room
 
 	influxdbClient := influxdb2.NewClient(req.InfluxdbAddress, req.InfluxdbToken)
 

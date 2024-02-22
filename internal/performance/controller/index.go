@@ -32,10 +32,10 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 
 		performanceTestService := controllerService.NewPerformanceTestServiceRef(req)
 
-		performanceTestService.ExecStart(req, wsMsg)
-
-		PerformanceTestServicesMap.Store(req.Room, performanceTestService)
 		runningRoom = req.Room
+		PerformanceTestServicesMap.Store(req.Room, performanceTestService)
+
+		performanceTestService.ExecStart(req, wsMsg, &runningRoom)
 
 	} else if act == consts.StopPerformanceTest {
 		performanceTestService := getPerformanceTestServiceRef(req.Room)

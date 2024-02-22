@@ -23,7 +23,77 @@ type GrpcService struct {
 	variableMap sync.Map
 }
 
-// runner to controller
+// controller call runner, executed on runner side
+func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServer) (err error) {
+	if exec.IsRunnerTestRunning() {
+		err = &ptdomain.ErrorAlreadyRunning{}
+
+		return
+	}
+
+	exec.SetRunnerTestRunning(true)
+	defer func() {
+		exec.SetRunnerTestRunning(false)
+	}()
+
+	indicator.Init()
+
+	req, err := stream.Recv()
+	if err == io.EOF {
+		err = nil
+		return
+	}
+	if req == nil {
+		return
+	}
+
+	// gen sender
+	msgSender := indicator.GetInfluxdbSenderInstant(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
+	if msgSender == nil {
+		ptlog.Logf("stop to run since msgSender return nil")
+		return
+	}
+
+	s.execCtx, s.execCancel = context.WithCancel(context.Background())
+
+	// run interval job
+	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, msgSender)
+
+	// sync exec testing
+	exec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) //
+
+	// send end signal to controller
+	result := ptProto.PerformanceExecResp{
+		Timestamp:   time.Now().UnixMilli(),
+		RunnerId:    req.RunnerId,
+		Room:        req.Room,
+		Instruction: ptconsts.MsgInstructionRunnerFinish.String(),
+	}
+	grpcSender := indicator.NewGrpcSender(&stream)
+	grpcSender.Send(result)
+
+	return
+}
+
+func (s *GrpcService) ExecStop(stream ptProto.PerformanceService_ExecStopServer) (err error) {
+	instruction, err := stream.Recv()
+	if err == io.EOF {
+		err = nil
+		return
+	}
+
+	if instruction == nil {
+		return
+	}
+
+	if s.execCancel != nil {
+		s.execCancel()
+	}
+
+	return
+}
+
+// runner call controller, executed on controller side
 func (s *GrpcService) AddGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.Int32Value, err error) {
 
@@ -111,82 +181,6 @@ func (s *GrpcService) ClearAllGlobalVar(ctx context.Context, req *ptProto.Global
 	})
 
 	ret.Value = true
-
-	return
-}
-
-// controller to runner
-func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServer) (err error) {
-	if exec.IsRunnerTestRunning() {
-		err = &ptdomain.ErrorAlreadyRunning{}
-
-		return
-	}
-
-	exec.SetRunnerTestRunning(true)
-	defer func() {
-		exec.SetRunnerTestRunning(false)
-	}()
-
-	indicator.Init()
-
-	req, err := stream.Recv()
-	if err == io.EOF {
-		err = nil
-		return
-	}
-	if req == nil {
-		return
-	}
-
-	// gen sender
-	msgSender := indicator.GetInfluxdbSenderInstant(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
-	if msgSender == nil {
-		ptlog.Logf("stop to run since msgSender return nil")
-		return
-	}
-
-	s.execCtx, s.execCancel = context.WithCancel(context.Background())
-
-	// run interval job
-	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, msgSender)
-
-	exec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) // sync
-
-	result := ptProto.PerformanceExecResp{
-		Timestamp:   time.Now().UnixMilli(),
-		RunnerId:    req.RunnerId,
-		Room:        req.Room,
-		Instruction: ptconsts.MsgInstructionRunnerFinish.String(),
-	}
-	grpcSender := indicator.NewGrpcSender(&stream)
-	grpcSender.Send(result)
-
-	return
-}
-
-func (s *GrpcService) ExecStop(stream ptProto.PerformanceService_ExecStopServer) (err error) {
-	instruction, err := stream.Recv()
-	if err == io.EOF {
-		err = nil
-		return
-	}
-
-	if instruction == nil {
-		return
-	}
-
-	if s.execCancel != nil {
-		s.execCancel()
-	}
-
-	return
-}
-
-func (s *GrpcService) ForwardResult(result ptProto.PerformanceExecResp,
-	stream *ptProto.PerformanceService_ExecStartServer) (err error) {
-
-	err = (*stream).Send(&result)
 
 	return
 }

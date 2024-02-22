@@ -66,12 +66,13 @@ func (s *PerformanceTestService) Connect(runner *ptProto.Runner) (client ptProto
 	return
 }
 
-func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
+func (s *PerformanceTestService) ExecStart(
+	req ptdomain.PerformanceTestReq, wsMsg *websocket.Message, runningRoom *string) (err error) {
+
 	s.execCtx, s.execCancel = context.WithCancel(context.Background())
 
 	dao.ClearData(req.Room)
 	dao.ResetInfluxdb(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
-	s.ScheduleService.Reset(req.Scenarios)
 	s.GrpcService.ClearAllGlobalVar(context.Background(), &ptProto.GlobalVarRequest{})
 
 	// stop execution in 2 ways:
@@ -103,6 +104,7 @@ func (s *PerformanceTestService) ExecStart(req ptdomain.PerformanceTestReq, wsMs
 	wgRunners.Wait()
 
 	// close exec and send to web client
+	*runningRoom = ""
 	s.execCancel()
 	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, req.Room, wsMsg)
 

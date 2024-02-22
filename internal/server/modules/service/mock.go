@@ -110,8 +110,10 @@ func (s *MockService) generateEndpointRouter(tenantId consts.TenantId, endpointI
 	//}
 
 	// generate openapi spec
-	endpoint, err := s.EndpointRepo.GetAll(tenantId, endpointId, "v0.1.0")
-	if err != nil {
+
+	endpoint := s.EndpointService.GetById(tenantId, endpointId, "v0.1.0")
+	if endpoint.ID == 0 {
+
 		return
 	}
 

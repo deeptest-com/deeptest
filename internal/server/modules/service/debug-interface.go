@@ -253,7 +253,9 @@ func (s *DebugInterfaceService) CopyDebugDataPropsFromPo(tenantId consts.TenantI
 
 	if debugInterfacePo == nil { // is null when converting from EndpointInterface
 		schema2conv := schemaHelper.NewSchema2conv()
-		schema2conv.Components = s.ServeService.Components(tenantId, serve.ID)
+
+		schema2conv.Components = s.ServeService.Components(tenantId, endpoint.ProjectId)
+
 		interfaces2debug := openapi.NewInterfaces2debug(endpointInterface, endpoint, serve, schema2conv)
 		debugInterfacePo = interfaces2debug.Convert()
 

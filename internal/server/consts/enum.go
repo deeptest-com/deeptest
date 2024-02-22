@@ -40,6 +40,7 @@ const (
 	EndpointCategory CategoryDiscriminator = "endpoint"
 	ScenarioCategory CategoryDiscriminator = "scenario"
 	PlanCategory     CategoryDiscriminator = "plan"
+	SchemaCategory   CategoryDiscriminator = "schema"
 )
 
 func (e CategoryDiscriminator) String() string {

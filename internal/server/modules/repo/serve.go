@@ -13,6 +13,7 @@ import (
 	"gorm.io/gorm"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -35,7 +36,16 @@ func (r *ServeRepo) ListByProject(tenantId consts.TenantId, projectId uint) (pos
 	return
 }
 
+func (r *ServeRepo) ListByProjects(tenantId consts.TenantId, projectIds []uint) (pos []model.Serve, err error) {
+	err = r.GetDB(tenantId).
+		Where("project_id IN (?)", projectIds).
+		Where("NOT deleted").
+		Find(&pos).Error
+	return
+}
+
 func (r *ServeRepo) Paginate(tenantId consts.TenantId, req v1.ServeReqPaginate) (ret _domain.PageData, err error) {
+
 	var count int64
 	db := r.GetDB(tenantId).Model(&model.Serve{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 
@@ -103,8 +113,7 @@ func (r *ServeRepo) PaginateVersion(tenantId consts.TenantId, req v1.ServeVersio
 
 func (r *ServeRepo) PaginateSchema(tenantId consts.TenantId, req v1.ServeSchemaPaginate) (ret _domain.PageData, err error) {
 	var count int64
-	db := r.GetDB(tenantId).Model(&model.ComponentSchema{}).Where("serve_id = ? AND NOT deleted AND NOT disabled", req.ServeId)
-
+	db := r.GetDB(tenantId).Model(&model.ComponentSchema{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 	if req.Type != "" {
 		db.Where("type=?", req.Type)
 	}
@@ -125,6 +134,11 @@ func (r *ServeRepo) PaginateSchema(tenantId consts.TenantId, req v1.ServeSchemaP
 	if err != nil {
 		logUtils.Errorf("query report error %s", err.Error())
 		return
+	}
+
+	//事实计算schema组件引用信息
+	for key, item := range results {
+		results[key].Ref, err = r.GetSchemaRef(tenantId, item.ID)
 	}
 	ret.Populate(results, count, req.Page, req.PageSize)
 
@@ -179,6 +193,21 @@ func (r *ServeRepo) GetSchema(tenantId consts.TenantId, id uint) (res model.Comp
 
 func (r *ServeRepo) GetSchemasByServeId(tenantId consts.TenantId, serveId uint) (res []model.ComponentSchema, err error) {
 	err = r.GetDB(tenantId).Where("NOT deleted AND not disabled AND serve_id = ?", serveId).Find(&res).Error
+	return
+}
+
+func (r *ServeRepo) GetSchemasByProjectId(tenantId consts.TenantId, projectId uint, options ...[]interface{}) (res []model.ComponentSchema, err error) {
+	db := r.GetDB(tenantId).Select("id", fmt.Sprintf("(WITH RECURSIVE temp(id,parent_id,name) AS (SELECT id,parent_id,name from biz_category where entity_id = biz_project_serve_component_schema.id and type = '%s'  UNION ALL SELECT b.id,b.parent_id,b.name from biz_category b, temp c where c.parent_id = b.id and  b.parent_id > 0) select GROUP_CONCAT(name ORDER BY (@row_number:=@row_number+1) desc SEPARATOR  '.') name from temp,(select @row_number := 0) x  ) name", serverConsts.SchemaCategory), "type", "content", "serve_id", "examples", "tags", "description", "ref", "source_type", "project_id")
+	db = db.Where("NOT deleted AND not disabled AND project_id = ?", projectId)
+	if len(options) > 0 && len(options[0]) > 0 {
+		db = db.Where("id in ?", options[0])
+	}
+	err = db.Find(&res).Error
+
+	for key, item := range res {
+		res[key].Ref = fmt.Sprintf("#/components/schemas/%s", item.Name)
+	}
+
 	return
 }
 
@@ -497,8 +526,8 @@ func (r *ServeRepo) SaveServe(tenantId consts.TenantId, serve *model.Serve) (err
 	})
 }
 
-func (r *ServeRepo) GetSchemaByRef(tenantId consts.TenantId, serveId uint, ref string) (res model.ComponentSchema, err error) {
-	err = r.GetDB(tenantId).Where("serve_id = ? AND NOT deleted AND not disabled and ref = ?", serveId, ref).Find(&res).Error
+func (r *ServeRepo) GetSchemaByRef(tenantId consts.TenantId, projectId uint, ref string) (res model.ComponentSchema, err error) {
+	err = r.GetDB(tenantId).Where("project_id = ? AND NOT deleted AND not disabled and ref = ?", projectId, ref).Find(&res).Error
 	return
 }
 
@@ -620,17 +649,75 @@ func (r *ServeRepo) GetDefault(tenantId consts.TenantId, projectId uint) (res mo
 	return
 }
 
-func (r *ServeRepo) GetComponentByItem(tenantId consts.TenantId, sourceType consts.SourceType, serveId uint, ref string) (res model.ComponentSchema, err error) {
-	err = r.GetDB(tenantId).First(&res, "source_type=? AND serve_id=? AND ref=? AND NOT deleted", sourceType, serveId, ref).Error
+func (r *ServeRepo) GetComponentByItem(tenantId consts.TenantId, sourceType consts.SourceType, projectId uint, ref string) (res model.ComponentSchema, err error) {
+	err = r.GetDB(tenantId).First(&res, "source_type=? AND project_id=? AND ref=? AND NOT deleted", sourceType, projectId, ref).Error
 	return
 }
 
 func (r *ServeRepo) SaveSchemas(tenantId consts.TenantId, schemas []*model.ComponentSchema) (err error) {
-	return r.GetDB(tenantId).Save(schemas).Error
+	err = r.GetDB(tenantId).Save(schemas).Error
+	if err == nil {
+		var categories []*model.Category
+		if len(schemas) == 0 {
+			return err
+		}
+
+		var rootCategory model.Category
+		projectId := schemas[0].ProjectId
+		rootCategory, err = r.CategoryRepo.GetRoot(tenantId, serverConsts.SchemaCategory, schemas[0].ProjectId)
+		if err != nil {
+			return err
+		}
+
+		ordr := r.CategoryRepo.GetMaxOrder(tenantId, rootCategory.ID, serverConsts.SchemaCategory, projectId)
+		for _, schema := range schemas {
+			category, _ := r.CategoryRepo.GetByEntityId(tenantId, schema.ID, serverConsts.SchemaCategory)
+			category.Name = schema.Name
+			category.EntityId = schema.ID
+			category.ParentId = int(rootCategory.ID)
+			category.Type = serverConsts.SchemaCategory
+			category.ProjectId = schema.ProjectId
+			category.Ordr = ordr
+			categories = append(categories, &category)
+			ordr += 1
+		}
+
+		err = r.GetDB(tenantId).Save(categories).Error
+
+	}
+
+	return err
 }
 
 func (r *ServeRepo) UpdateSwaggerSyncExecTimeById(tenantId consts.TenantId, id uint) (err error) {
 	return r.GetDB(tenantId).Model(&model.SwaggerSync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
+}
+
+func (r *ServeRepo) ListAll(tenantId consts.TenantId) (res []model.Serve, err error) {
+	err = r.GetDB(tenantId).Model(&model.Serve{}).
+		Where("not disabled and not deleted").
+		Find(&res).Error
+	return
+}
+
+func (r *ServeRepo) BatchUpdateSchemaProjectByServeId(tenantId consts.TenantId, serveIds []uint, projectId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ComponentSchema{}).Where("serve_id IN (?)", serveIds).Update("project_id", projectId).Error
+	return
+}
+
+func (r *ServeRepo) GetSchemaRef(tenantId consts.TenantId, schemaId uint) (ref string, err error) {
+	category, err := r.CategoryRepo.GetByEntityId(tenantId, schemaId, serverConsts.SchemaCategory)
+	if err != nil {
+		return
+	}
+	path, err := r.CategoryRepo.GetJoinedPath(tenantId, category.ID)
+	if err != nil {
+		return
+	}
+
+	ref = "#/components/schemas/" + strings.Join(path, ".")
+	return
+
 }
 
 func (r *ServeRepo) GetDefaultServer(tenantId consts.TenantId, serveId uint) (server model.ServeServer, err error) {

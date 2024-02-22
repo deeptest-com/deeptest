@@ -5,13 +5,16 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
 
 type IRepo interface {
 	Save(tenantId consts.TenantId, id uint, entity interface{}) error
 	GetCategoryCount(tenantId consts.TenantId, result interface{}, projectId uint) (err error)
+	SaveEntity(tenantId consts.TenantId, category *model.Category) (err error)
 }
 
 type BaseRepo struct {
@@ -116,13 +119,17 @@ func (r *BaseRepo) Save(tenantId consts.TenantId, id uint, entity interface{}) (
 	return
 }
 
+func (r *BaseRepo) SaveEntity(tenantId consts.TenantId, category *model.Category) (err error) {
+	return
+}
+
 func (r *BaseRepo) GetAdminRoleName() (roleName consts.RoleType) {
 	roleName = consts.Admin
 	if config.CONFIG.System.SysEnv == "ly" {
 		roleName = consts.IntegrationAdmin
 	}
-
 	return
+
 }
 
 func (r *BaseRepo) GetDB(tenantId consts.TenantId) (db *gorm.DB) {

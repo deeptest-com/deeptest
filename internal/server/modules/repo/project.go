@@ -215,7 +215,14 @@ func (r *ProjectRepo) CreateProjectRes(tenantId consts.TenantId, projectId, user
 	// create project plan category
 	err = r.AddProjectRootPlanCategory(tenantId, projectId)
 	if err != nil {
-		logUtils.Errorf("添加场景分类错误", zap.String("错误:", err.Error()))
+		logUtils.Errorf("添加计划分类错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	// create project schema category
+	err = r.AddProjectRootSchemaCategory(tenantId, projectId)
+	if err != nil {
+		logUtils.Errorf("添加组件分类错误", zap.String("错误:", err.Error()))
 		return
 	}
 
@@ -479,7 +486,20 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(tenantId consts.TenantId, proje
 	return
 }
 
+func (r *ProjectRepo) AddProjectRootSchemaCategory(tenantId consts.TenantId, projectId uint) (err error) {
+	root := model.Category{
+		Name:      "分类",
+		Type:      serverConsts.SchemaCategory,
+		ProjectId: projectId,
+		IsDir:     true,
+	}
+	err = r.GetDB(tenantId).Create(&root).Error
+
+	return
+}
+
 func (r *ProjectRepo) AddProjectRootTestCategory(tenantId consts.TenantId, projectId, serveId uint) (err error) {
+
 	root := model.DiagnoseInterface{
 		Title:     "根节点",
 		ProjectId: projectId,

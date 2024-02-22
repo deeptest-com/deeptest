@@ -22,6 +22,7 @@ type DocumentService struct {
 	EndpointSnapshotRepo  *repo.EndpointSnapshotRepo  `inject:""`
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointService       *EndpointService            `inject:""`
+	ServeService          *ServeService               `inject:""`
 }
 
 const (
@@ -67,9 +68,11 @@ func (s *DocumentService) GetEndpoints(tenantId consts.TenantId, projectId *uint
 
 	for key, endpoint := range endpoints {
 		for k, _ := range endpoint.Interfaces {
-			s.MergeGlobalParams(tenantId, &endpoints[key].Interfaces[k])
+			s.MergeGlobalParams(&endpoints[key].Interfaces[k])
 		}
 	}
+
+	s.FillRefId(tenantId, endpoints)
 
 	res = s.GetEndpointsInfo(tenantId, projectId, serveIds, endpoints)
 
@@ -104,19 +107,20 @@ func (s *DocumentService) GetProject(tenantId consts.TenantId, projectId uint) (
 
 	doc.GlobalParams, _ = s.EnvironmentRepo.ListParams(tenantId, projectId)
 	doc.GlobalVars = s.GetGlobalVars(tenantId, projectId)
+	doc.Components = s.GetSchemas(tenantId, projectId)
 	return
 }
 
 func (s *DocumentService) GetServes(tenantId consts.TenantId, serveIds []uint, endpoints map[uint][]domain.EndpointReq) (serves []domain.DocumentServe) {
 	res, _ := s.ServeRepo.GetServesByIds(tenantId, serveIds)
-	schemas := s.GetSchemas(tenantId, serveIds)
+	//schemas := s.GetSchemas(serveIds)
 	securities := s.GetSecurities(tenantId, serveIds)
 	servers := s.GetServers(tenantId, serveIds)
 	for _, item := range res {
 		var serve domain.DocumentServe
 		copier.CopyWithOption(&serve, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 		serve.Endpoints = endpoints[uint(serve.ID)]
-		serve.Component = schemas[uint(serve.ID)]
+		//serve.Component = schemas[uint(serve.ID)]
 		serve.Securities = securities[uint(serve.ID)]
 		serve.Servers = servers[uint(serve.ID)]
 		s.mocks(tenantId, serve.Endpoints, serve.Servers)
@@ -132,19 +136,18 @@ func (s *DocumentService) mocks(tenantId consts.TenantId, endpoints []domain.End
 		for key2, interf := range endpoint.Interfaces {
 			var interfaceDetail model.EndpointInterface
 			copier.CopyWithOption(&interfaceDetail, &interf, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-			endpoints[key1].Interfaces[key2].Mock = s.mock(tenantId, serve, interfaceDetail)
+			endpoints[key1].Interfaces[key2].Mock = s.mock(serve, interfaceDetail)
 		}
 	}
 
 }
 
-func (s *DocumentService) GetSchemas(tenantId consts.TenantId, serveIds []uint) (schemas map[uint][]domain.ServeSchemaReq) {
-	schemas = make(map[uint][]domain.ServeSchemaReq)
-	res, _ := s.ServeRepo.GetSchemas(tenantId, serveIds)
+func (s *DocumentService) GetSchemas(tenantId consts.TenantId, projectId uint) (schemas []domain.ServeSchemaReq) {
+	res, _ := s.ServeService.GetComponents(tenantId, projectId)
 	for _, item := range res {
 		var schema domain.ServeSchemaReq
 		copier.CopyWithOption(&schema, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-		schemas[uint(schema.ServeId)] = append(schemas[uint(schema.ServeId)], schema)
+		schemas = append(schemas, schema)
 	}
 	return
 }
@@ -334,19 +337,19 @@ func (s *DocumentService) GetDocumentDetail(tenantId consts.TenantId, documentId
 		return
 	}
 
-	s.EndpointService.SchemaConv(tenantId, &interfaceDetail, serveId)
-	s.MergeGlobalParams(tenantId, &interfaceDetail)
+	s.EndpointService.SchemaConv(tenantId, &interfaceDetail, interfaceDetail.ProjectId)
+	s.MergeGlobalParams(&interfaceDetail)
 
 	res = make(map[string]interface{})
 	res["interface"] = interfaceDetail
 	res["servers"] = serves
-	res["mock"] = s.mock(tenantId, serves, interfaceDetail)
+	res["mock"] = s.mock(serves, interfaceDetail)
 
 	return
 }
 
-func (s *DocumentService) mock(tenantId consts.TenantId, serves []model.ServeServer, interfaceDetail model.EndpointInterface) (ret []interface{}) {
-	url := s.getMockEnvironment(tenantId, serves)
+func (s *DocumentService) mock(serves []model.ServeServer, interfaceDetail model.EndpointInterface) (ret []interface{}) {
+	url := s.getMockEnvironment(serves)
 	if url == "" {
 		return
 	}
@@ -359,7 +362,7 @@ func (s *DocumentService) mock(tenantId consts.TenantId, serves []model.ServeSer
 	return
 }
 
-func (s *DocumentService) getMockEnvironment(tenantId consts.TenantId, serves []model.ServeServer) string {
+func (s *DocumentService) getMockEnvironment(serves []model.ServeServer) string {
 	for _, item := range serves {
 		if item.EnvironmentName == "Mock环境" {
 			return item.Url
@@ -369,7 +372,7 @@ func (s *DocumentService) getMockEnvironment(tenantId consts.TenantId, serves []
 	return ""
 }
 
-func (s *DocumentService) MergeGlobalParams(tenantId consts.TenantId, endpointInterface *model.EndpointInterface) {
+func (s *DocumentService) MergeGlobalParams(endpointInterface *model.EndpointInterface) {
 	for _, globalParam := range endpointInterface.GlobalParams {
 		if globalParam.Disabled {
 			continue
@@ -382,6 +385,18 @@ func (s *DocumentService) MergeGlobalParams(tenantId consts.TenantId, endpointIn
 			endpointInterface.Headers = append(endpointInterface.Headers, model.EndpointInterfaceHeader{SchemaParam: model.SchemaParam{Name: globalParam.Name, Type: string(globalParam.Type), Example: globalParam.DefaultValue, Default: globalParam.DefaultValue, Value: globalParam.DefaultValue, IsGlobal: true}})
 		}
 
+	}
+
+}
+
+func (s *DocumentService) FillRefId(tenantId consts.TenantId, endpoints []*model.Endpoint) {
+	if len(endpoints) == 0 {
+		return
+	}
+	projectId := endpoints[0].ProjectId
+	components := s.ServeService.Components(tenantId, projectId)
+	for _, endpoint := range endpoints {
+		s.EndpointService.SchemasConv(tenantId, endpoint, components)
 	}
 
 }

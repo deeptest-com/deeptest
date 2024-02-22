@@ -38,7 +38,7 @@ type ServeVersionPaginate struct {
 
 type ServeSchemaReq struct {
 	ID          uint   `json:"id"`
-	ServeId     int64  `json:"serveId" validate:"required"`
+	ServeId     int64  `json:"serveId"`
 	Name        string `json:"name" validate:"required"`
 	Tag         string `json:"tag"`
 	Content     string `json:"content"`
@@ -47,6 +47,8 @@ type ServeSchemaReq struct {
 	Tags        string `json:"tags"`
 	Description string `json:"description"`
 	Ref         string `json:"ref"`
+	ProjectId   uint   `json:"projectId"`
+	TargetId    int    `json:"targetId"`
 }
 
 type ServeSchemaRefReq struct {
@@ -79,15 +81,15 @@ type EnvironmentVariable struct {
 
 type ServeSchemaPaginate struct {
 	_domain.PaginateReq
-	ServeId int64  `json:"serveId"`
-	Tag     string `json:"tag"`
-	Type    string `json:"type"`
-	Name    string `json:"name"`
+	ProjectId int64  `json:"projectId"`
+	Tag       string `json:"tag"`
+	Type      string `json:"type"`
+	Name      string `json:"name"`
 }
 
 type JsonContent struct {
-	ServeId uint   `json:"serveId"`
-	Data    string `json:"data"`
+	ProjectId uint   `json:"projectId"`
+	Data      string `json:"data"`
 }
 
 type SchemaContent struct {
@@ -169,4 +171,9 @@ type MockReq struct {
 type HistoryServeAddServesReq struct {
 	ServerName string `json:"serverName"`
 	Url        string `json:"url"`
+}
+
+type SaveSchemaRes struct {
+	EntityId   uint `json:"entityId"`
+	CategoryId uint `json:"categoryId"`
 }

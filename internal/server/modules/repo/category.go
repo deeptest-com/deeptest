@@ -60,6 +60,7 @@ func (r *CategoryRepo) toTos(pos []*model.Category) (tos []*v1.Category) {
 			Name:     po.Name,
 			Desc:     po.Desc,
 			ParentId: int64(po.ParentId),
+			EntityId: po.EntityId,
 		}
 
 		tos = append(tos, &to)
@@ -115,14 +116,11 @@ func (r *CategoryRepo) UpdateOrder(tenantId consts.TenantId, pos serverConsts.Dr
 	parentId int, ordr int) {
 	if pos == serverConsts.Inner {
 		parentId = targetId
-
-		var preChild model.Category
-		r.GetDB(tenantId).Where("parent_id=? AND type = ? AND project_id = ?", parentId, typ, projectId).
-			Order("ordr DESC").Limit(1).
-			First(&preChild)
-
-		ordr = preChild.Ordr + 1
-
+		r.GetDB(tenantId).Model(&model.Category{}).
+			Where("NOT deleted AND parent_id=? AND type = ? AND project_id = ? ",
+				parentId, typ, projectId).
+			Update("ordr", gorm.Expr("ordr + 1"))
+		ordr = 1
 	} else if pos == serverConsts.Before {
 		brother, _ := r.Get(tenantId, targetId)
 		ordr = brother.Ordr
@@ -168,6 +166,11 @@ func (r *CategoryRepo) Update(tenantId consts.TenantId, req v1.CategoryReq) (err
 
 	po.Name = req.Name
 	po.Desc = req.Desc
+
+	//if req.Type == serverConsts.SchemaCategory && int(req.Parent) != po.ParentId {
+	//	po.ParentId = int(req.Parent)
+	//	po.Ordr = r.GetMaxOrder(req.Parent, req.Type, po.ProjectId)
+	//}
 
 	err = r.GetDB(tenantId).Save(&po).Error
 
@@ -295,14 +298,124 @@ func (r *CategoryRepo) GetRootNode(tenantId consts.TenantId, projectId uint, typ
 
 func (r *CategoryRepo) CopySelf(tenantId consts.TenantId, id, newParentId int) (category model.Category, err error) {
 	category, err = r.Get(tenantId, id)
+
 	category.ID = 0
 	if newParentId != 0 {
 		category.ParentId = newParentId
 	} else { // 复制的第一个节点重命名
-		category.Name = fmt.Sprintf("%s_copy", category.Name)
+		category.Name = fmt.Sprintf("CopyOf%s", category.Name)
 	}
 	_, category.Ordr = r.UpdateOrder(tenantId, serverConsts.After, id, category.Type, category.ProjectId)
 	err = r.Save(tenantId, &category)
 
 	return category, err
+}
+
+func (r *CategoryRepo) GetEntityIdsByIds(tenantId consts.TenantId, ids []uint) (entityIds []uint, err error) {
+	err = r.GetDB(tenantId).Model(&model.Category{}).
+		Select("entity_id").
+		Where("id IN (?)", ids).
+		Find(&entityIds).Error
+
+	return
+}
+
+func (r *CategoryRepo) GetByEntityId(tenantId consts.TenantId, entityId uint, _type serverConsts.CategoryDiscriminator) (category model.Category, err error) {
+	err = r.GetDB(tenantId).Model(&model.Category{}).
+		Where("entity_id = ? AND type = ? AND NOT deleted", entityId, _type).
+		First(&category).Error
+
+	return
+}
+
+func (r *CategoryRepo) DeleteByEntityId(tenantId consts.TenantId, entityId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Category{}).
+		Where("entity_id = ?", entityId).
+		Update("deleted", true).Error
+
+	return
+}
+
+func (r *CategoryRepo) UpdateEntityId(tenantId consts.TenantId, id, entityId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Category{}).
+		Where("id = ?", id).
+		Update("entity_id", entityId).Error
+
+	return
+}
+
+func (r *CategoryRepo) UpdateNameByEntityId(tenantId consts.TenantId, entityId uint, name string, _type serverConsts.CategoryDiscriminator) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Category{}).
+		Where("entity_id = ? AND type = ?", entityId, _type).
+		Update("name", name).Error
+
+	return
+}
+
+func (r *CategoryRepo) BatchAddProjectRootSchemaCategory(tenantId consts.TenantId, projectIds []uint) (err error) {
+	roots := make([]model.Category, 0)
+	for _, projectId := range projectIds {
+		root := model.Category{
+			Name:      "分类",
+			Type:      serverConsts.SchemaCategory,
+			ProjectId: projectId,
+			IsDir:     true,
+		}
+
+		roots = append(roots, root)
+	}
+
+	err = r.GetDB(tenantId).Create(&roots).Error
+
+	return
+}
+
+func (r *CategoryRepo) BatchGetRootNodeProjectIds(tenantId consts.TenantId, projectIds []uint, typ serverConsts.CategoryDiscriminator) (res []uint, err error) {
+	err = r.GetDB(tenantId).Model(&model.Category{}).
+		Select("project_id").
+		Where("project_id IN (?)", projectIds).
+		Where("type = ?", typ).
+		Where("parent_id = ?", 0).
+		Where("name = ? AND NOT deleted", "分类").
+		Find(&res).Error
+
+	return
+}
+
+func (r *CategoryRepo) BatchGetRootNodes(tenantId consts.TenantId, projectIds []uint, typ serverConsts.CategoryDiscriminator) (res []model.Category, err error) {
+	err = r.GetDB(tenantId).Model(&model.Category{}).
+		Where("project_id IN (?)", projectIds).
+		Where("type = ?", typ).
+		Where("parent_id = ?", 0).
+		Where("name = ? AND NOT deleted", "分类").
+		Find(&res).Error
+
+	return
+}
+
+func (r *CategoryRepo) GetJoinedPath(tenantId consts.TenantId, categoryId uint) (path []string, err error) {
+
+	sql := `
+		WITH RECURSIVE temp(id,parent_id,name) AS
+		(
+			SELECT id,parent_id,name from biz_category where id = %d
+		  UNION ALL
+		  SELECT b.id,b.parent_id,b.name from biz_category b, temp c where c.parent_id = b.id and  b.parent_id > 0
+		) 
+		select name from temp,(select @row_number := 0) x ORDER BY (@row_number:=@row_number+1) desc
+`
+	sql = fmt.Sprintf(sql, categoryId)
+	err = r.GetDB(tenantId).Raw(sql).Scan(&path).Error
+
+	return
+}
+
+func (r *CategoryRepo) GetRoot(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint) (res model.Category, err error) {
+
+	err = r.GetDB(tenantId).Model(&model.Category{}).
+		Where("parent_id = 0 AND type = ? AND project_id = ? and not deleted", typ, projectId).
+		First(&res).Error
+
+	return
+
 }

@@ -64,6 +64,9 @@ func (t *typeScript) array(field fields.Field) string {
 }
 
 func (t *typeScript) object(field fields.Field) string {
+	if field.FieldRefName != "" {
+		field.FieldName = field.FieldRefName
+	}
 	code := fmt.Sprintf("export interface %s {", field.FieldName)
 	var properties []string
 	for _, property := range field.Properties {

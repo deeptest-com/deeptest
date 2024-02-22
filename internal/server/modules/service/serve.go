@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -16,6 +17,7 @@ import (
 	encoder "github.com/zwgblue/yaml-encoder"
 	"gorm.io/gorm"
 	"strconv"
+	"strings"
 )
 
 type ServeService struct {
@@ -25,8 +27,11 @@ type ServeService struct {
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
 	ProjectRepo              *repo.ProjectRepo           `inject:""`
 	EnvironmentRepo          *repo.EnvironmentRepo       `inject:""`
+	CategoryRepo             *repo.CategoryRepo          `inject:""`
 	Cron                     *cron.ServerCron            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
+	CategoryService          *CategoryService            `inject:""`
+	ComponentService         *ComponentService           `inject:""`
 }
 
 func (s *ServeService) ListByProject(tenantId consts.TenantId, projectId int, userId uint) (ret []model.Serve, currServe model.Serve, err error) {
@@ -166,14 +171,25 @@ func (s *ServeService) Copy(tenantId consts.TenantId, id uint) (err error) {
 
 func (s *ServeService) SaveSchema(tenantId consts.TenantId, req v1.ServeSchemaReq) (res uint, err error) {
 	var serveSchema model.ComponentSchema
-	if req.ID == 0 && s.ServeRepo.SchemaExist(tenantId, req.ID, uint(req.ServeId), req.Name) {
-		err = fmt.Errorf("schema name already exist")
+
+	if req.ID != 0 {
+		err = s.CategoryRepo.UpdateNameByEntityId(tenantId, req.ID, req.Name, serverConsts.SchemaCategory)
+	}
+
+	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
+	serveSchema.Ref, err = s.ServeRepo.GetSchemaRef(tenantId, serveSchema.ID)
+	if err != nil {
 		return
 	}
-	copier.CopyWithOption(&serveSchema, req, copier.Option{DeepCopy: true})
-	serveSchema.Ref = "#/components/schemas/" + serveSchema.Name
+
 	err = s.ServeRepo.Save(tenantId, serveSchema.ID, &serveSchema)
-	return serveSchema.ID, err
+	if err != nil {
+		return
+
+	}
+	res = serveSchema.ID
+	return
+
 }
 
 func (s *ServeService) SaveSecurity(tenantId consts.TenantId, req v1.ServeSecurityReq) (res uint, err error) {
@@ -191,8 +207,13 @@ func (s *ServeService) PaginateSchema(tenantId consts.TenantId, req v1.ServeSche
 	return s.ServeRepo.PaginateSchema(tenantId, req)
 }
 
-func (s *ServeService) GetSchema(tenantId consts.TenantId, serverId uint, ref string) (schema model.ComponentSchema, err error) {
-	return s.ServeRepo.GetSchemaByRef(tenantId, serverId, ref)
+func (s *ServeService) GetSchema(tenantId consts.TenantId, id uint) (schema model.ComponentSchema, err error) {
+	schema, err = s.ServeRepo.GetSchema(tenantId, id)
+	if err == nil {
+		schema.Content = s.FillSchemaRefId(tenantId, schema.ProjectId, schema.Content, nil)
+	}
+	return
+
 }
 
 func (s *ServeService) PaginateSecurity(tenantId consts.TenantId, req v1.ServeSecurityPaginate) (ret _domain.PageData, err error) {
@@ -236,6 +257,12 @@ func (s *ServeService) DeleteSchemaById(tenantId consts.TenantId, id uint) (err 
 	*/
 
 	err = s.ServeRepo.DeleteSchemaById(tenantId, id)
+	if err != nil {
+		return
+	}
+
+	err = s.CategoryRepo.DeleteByEntityId(tenantId, id)
+
 	return
 }
 
@@ -244,11 +271,11 @@ func (s *ServeService) DeleteSecurityId(tenantId consts.TenantId, id uint) (err 
 	return
 }
 
-func (s *ServeService) Schema2Example(tenantId consts.TenantId, serveId uint, data string) (obj interface{}) {
+func (s *ServeService) Schema2Example(tenantId consts.TenantId, projectId uint, data string) (obj interface{}) {
 	schema2conv := schemaHelper.NewSchema2conv()
-	schema2conv.Components = s.Components(tenantId, serveId)
+	schema2conv.Components = s.Components(tenantId, projectId)
 	//schema1 := openapi3.Schema{}
-	//_commUtils.JsonDecode(data, &schema)
+	//_commUtils.JsonDecode(data, &schema),
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"type\":\"number\"}}", &schema)
 	//_commUtils.JsonDecode("{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}", &schema)
 	//_commUtils.JsonDecode("{\"type\":\"array\",\"items\":{\"properties\":{\"id\":{\"type\":\"number\"},\"name\":{\"type\":\"string\"}},\"type\":\"object\"}}", &schema)
@@ -263,9 +290,11 @@ func (s *ServeService) Schema2Example(tenantId consts.TenantId, serveId uint, da
 	return
 }
 
-func (s *ServeService) Components(tenantId consts.TenantId, serveId uint) (components schemaHelper.Components) {
-	components = schemaHelper.Components{}
-	result, err := s.ServeRepo.GetSchemasByServeId(tenantId, serveId)
+func (s *ServeService) Components(tenantId consts.TenantId, projectId uint) (components *schemaHelper.Components) {
+	components = schemaHelper.NewComponents()
+
+	result, err := s.ServeRepo.GetSchemasByProjectId(tenantId, projectId)
+
 	if err != nil {
 		return
 	}
@@ -273,7 +302,7 @@ func (s *ServeService) Components(tenantId consts.TenantId, serveId uint) (compo
 	for _, item := range result {
 		var schema schemaHelper.SchemaRef
 		_commUtils.JsonDecode(item.Content, &schema)
-		components[item.Ref] = &schema
+		components.Add(item.ID, item.Ref, &schema)
 	}
 
 	return
@@ -290,15 +319,55 @@ func (s *ServeService) Schema2Yaml(data string) (res string) {
 	return string(content)
 }
 
-func (s *ServeService) CopySchema(tenantId consts.TenantId, id uint) (schema model.ComponentSchema, err error) {
-	schema, err = s.ServeRepo.GetSchema(tenantId, id)
+func (s *ServeService) CopySchema(tenantId consts.TenantId, id uint) (category model.Category, err error) {
+	schema, err := s.ServeRepo.GetSchema(tenantId, id)
+
 	if err != nil {
 		return
 	}
+
+	category, err = s.CategoryRepo.GetByEntityId(tenantId, schema.ID, serverConsts.SchemaCategory)
+	if err != nil {
+		return
+	}
+
 	schema.ID = 0
 	schema.CreatedAt = nil
 	schema.UpdatedAt = nil
+
+	schema.Name = "CopyOf" + schema.Name
 	err = s.ServeRepo.Save(tenantId, 0, &schema)
+	if err != nil {
+		return
+	}
+
+	category.ID = 0
+	category.CreatedAt = nil
+	category.UpdatedAt = nil
+	category.Name = schema.Name
+	category.EntityId = schema.ID
+
+	err = s.CategoryRepo.Save(tenantId, &category)
+	return
+}
+
+func (s *ServeService) CopySchemaOther(tenantId consts.TenantId, id uint) (entityId uint, err error) {
+	schema, err := s.ServeRepo.GetSchema(tenantId, id)
+	if err != nil {
+		return
+	}
+
+	schema.ID = 0
+	schema.CreatedAt = nil
+	schema.UpdatedAt = nil
+	schema.Name = "CopyOf" + schema.Name
+	err = s.ServeRepo.Save(tenantId, 0, &schema)
+	if err != nil {
+		return
+	}
+
+	entityId = schema.ID
+
 	return
 }
 
@@ -446,3 +515,42 @@ func (s *ServeService) AddSwaggerCron(item model.SwaggerSync) {
 }
 
 */
+
+func (s *ServeService) FillSchemaRefId(tenantId consts.TenantId, projectId uint, schemaStr string, components *schemaHelper.Components) string {
+	schema2conv := schemaHelper.NewSchema2conv()
+	if components == nil {
+		schema2conv.Components = s.Components(tenantId, projectId)
+	} else {
+		schema2conv.Components = components
+	}
+	schema := new(schemaHelper.SchemaRef)
+	_commUtils.JsonDecode(schemaStr, schema)
+	schema2conv.FillRefId(schema)
+	return _commUtils.JsonEncode(schema)
+}
+
+func (s *ServeService) dependComponents(schemaStr string, components, dependComponents *schemaHelper.Components) {
+	schema := new(schemaHelper.SchemaRef)
+	schemaStr = strings.ReplaceAll(schemaStr, "\\u0026", "&")
+	schemaStr = strings.ReplaceAll(schemaStr, "\n", "")
+	schemaStr = strings.ReplaceAll(schemaStr, "\"ref\":", "\"$ref\":")
+	_commUtils.JsonDecode(schemaStr, schema)
+	schema2conv := schemaHelper.NewSchema2conv()
+	schema2conv.Components = components
+	schema2conv.SchemaComponents(schema, dependComponents)
+}
+
+func (s *ServeService) GetComponents(tenantId consts.TenantId, projectId uint) (result []model.ComponentSchema, err error) {
+
+	result, err = s.ServeRepo.GetSchemasByProjectId(tenantId, projectId)
+	if err != nil {
+		return
+	}
+	components := s.Components(tenantId, projectId)
+	for key, item := range result {
+		result[key].Content = s.FillSchemaRefId(tenantId, item.ProjectId, item.Content, components)
+	}
+
+	return
+
+}

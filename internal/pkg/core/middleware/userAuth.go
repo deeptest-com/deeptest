@@ -8,7 +8,6 @@ import (
 	"github.com/aaronchen2k/deeptest/integration/service/user"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -96,9 +95,7 @@ func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo)
 		Name:      userInfo.RealName,
 		Password:  commonUtils.RandStr(8),
 	}}
-	userRepo := repo.UserRepo{DB: dao.GetDBResolver().GetConnPool(tenantId)}
-	userRepo.ProfileRepo = &repo.ProfileRepo{DB: dao.GetDBResolver().GetConnPool(tenantId)}
-	userRepo.RoleRepo = &repo.RoleRepo{DB: dao.GetDBResolver().GetConnPool(tenantId)}
+	userRepo := repo.UserRepo{}
 	userRepo.Create(tenantId, req)
 
 	user, err := userRepo.GetByUsernameOrEmail(tenantId, userInfo.Username, userInfo.Mail)
@@ -125,7 +122,7 @@ func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo)
 }
 
 func getAppName(ctx *context.Context) (appName enum.AppName, token, origin string, tenantId consts.TenantId) {
-
+	tenantId = common.GetTenantId(ctx)
 	origin = ctx.GetHeader("Origin")
 	//origin = "http://192.168.5.60:804"
 
@@ -141,8 +138,6 @@ func getAppName(ctx *context.Context) (appName enum.AppName, token, origin strin
 		appName = enum.Lecang
 		return
 	}
-
-	tenantId = common.GetTenantId(ctx)
 
 	return
 }

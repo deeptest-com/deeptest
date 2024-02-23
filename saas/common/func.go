@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/context"
 	"runtime/debug"
 )
 
-func GetTenantId(ctx iris.Context) consts.TenantId {
+func GetTenantId(ctx *context.Context) consts.TenantId {
 	ret := ctx.GetHeader("tenantId")
 	//ret = "1705374224174"
 	return consts.TenantId(ret)

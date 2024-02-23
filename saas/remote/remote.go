@@ -23,7 +23,7 @@ func (s *Remote) GetTenant(tenantId consts.TenantId) (ret domain.Tenant) {
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
 		Headers:  &headers,
-		//		QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}, {Name: "env", Value: "local"}},
+		//QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}, {Name: "env", Value: "local"}},
 		QueryParams: &[]v1.Param{{Name: "id", Value: string(tenantId)}},
 	}
 

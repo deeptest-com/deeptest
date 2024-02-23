@@ -12,6 +12,7 @@ import (
 type LecangCronService struct {
 	CronConfigLecangRepo  *repo.CronConfigLecangRepo `inject:""`
 	BaseRepo              *repo.BaseRepo             `inject:""`
+	ProjectCronRepo       *repo.ProjectCronRepo      `inject:""`
 	ProjectCronService    *ProjectCronService        `inject:""`
 	ThirdPartySyncService *ThirdPartySyncService     `inject:""`
 }
@@ -25,8 +26,19 @@ func (s *LecangCronService) Run(options map[string]interface{}) (f func() error)
 		task, err := s.Get(taskId)
 		logUtils.Info("lecang定时任务开启：" + _commUtils.JsonEncode(task))
 		if err != nil {
-			logUtils.Errorf("lecang定时导入任务失败,任务ID：%v,错误原因：%v", task.ID, err.Error())
+			logUtils.Errorf("lecang定时导入任务失败,任务ID：%+v,错误原因：%+v", task.ID, err.Error())
 			return err
+		}
+
+		cronId, ok := options["cronId"].(uint)
+		if !ok {
+			return errors.New("switch is not existed")
+		}
+		projectCron, err := s.ProjectCronRepo.GetById(cronId)
+
+		if projectCron.Switch != consts.SwitchON {
+			logUtils.Infof("lecang定时导入关闭,任务ID:%+v", task.ID)
+			return errors.New("task is off")
 		}
 
 		projectId, ok := options["projectId"].(uint)
@@ -35,6 +47,9 @@ func (s *LecangCronService) Run(options map[string]interface{}) (f func() error)
 		}
 
 		err = s.ThirdPartySyncService.ImportEndpoint(projectId, task)
+		if err != nil {
+			logUtils.Errorf("lecang定时导入任务失败，任务ID:%+v, 错误原因：%+v", task.ID, err.Error())
+		}
 
 		return err
 	}

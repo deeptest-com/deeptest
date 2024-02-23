@@ -17,6 +17,7 @@ type SwaggerCron struct {
 	ProjectSettingsRepo      *repo.ProjectSettingsRepo   `inject:""`
 	EndpointRepo             *repo.EndpointRepo          `inject:""`
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
+	ProjectCronRepo          *repo.ProjectCronRepo       `inject:""`
 	Cron                     *cron.ServerCron            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
 	ProjectCronService       *ProjectCronService         `inject:""`
@@ -35,15 +36,16 @@ func (s *SwaggerCron) Run(options map[string]interface{}) (f func() error) {
 			return err
 		}
 
-		//switchStatus, ok := option["switch"].(uint)
-		//if !ok {
-		//	return errors.New("switch is not existed")
-		//}
-		//
-		//if switchStatus != 1 {
-		//	logUtils.Infof("swagger定时导入关闭,任务ID:%v", task.ID)
-		//	return errors.New("task is off")
-		//}
+		cronId, ok := options["cronId"].(uint)
+		if !ok {
+			return errors.New("switch is not existed")
+		}
+		projectCron, err := s.ProjectCronRepo.GetById(cronId)
+
+		if projectCron.Switch != consts.SwitchON {
+			logUtils.Infof("swagger定时导入关闭,任务ID:%v", task.ID)
+			return errors.New("task is off")
+		}
 
 		projectId, ok := options["projectId"].(uint)
 		if !ok {

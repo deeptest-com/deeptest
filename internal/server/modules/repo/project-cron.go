@@ -122,13 +122,13 @@ func (r *ProjectCronRepo) Update(config model.ProjectCron) error {
 	//return r.DB.Model(&model.ProjectCron{}).Where("id = ?", config.ID).Updates(&config).Error
 }
 
-func (r *ProjectCronRepo) Save(config model.ProjectCron) (id uint, err error) {
+func (r *ProjectCronRepo) Save(config model.ProjectCron) (ret model.ProjectCron, err error) {
 	err = r.DB.Save(&config).Error
 	if err != nil {
 		return
 	}
 
-	id = config.ID
+	ret = config
 
 	return
 }

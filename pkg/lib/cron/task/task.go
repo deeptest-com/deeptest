@@ -1,6 +1,11 @@
 package task
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+import (
+	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"strconv"
+)
 
 type Task interface {
 	Run(options map[string]interface{}) (f func() error)
@@ -16,8 +21,8 @@ type Proxy struct {
 	Factory    *Factory         `inject:""`
 }
 
-func (p *Proxy) GetTaskId() (taskId string) {
-	taskId = p.source + "_" + p.taskId
+func (p *Proxy) GetTaskId(taskIdPostFix string) (taskId string) {
+	taskId = p.source + "_" + taskIdPostFix
 	return
 }
 
@@ -41,13 +46,23 @@ func (p *Proxy) Init(source, cron string) {
 func (p *Proxy) Add(options map[string]interface{}) (err error) {
 	taskFunc := p.getTaskFunc(options)
 
-	err = p.ServerCron.AddCommonTask(p.GetTaskId(), p.cron, taskFunc)
+	var taskId string
+	if v, ok := options["taskId"]; ok {
+		taskId = strconv.Itoa(int(v.(uint)))
+	}
+	err = p.ServerCron.AddCommonTask(p.GetTaskId(taskId), p.cron, taskFunc)
 
 	return
 }
 
-func (p *Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
+func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 	taskFunc = func() {
+		defer func() {
+			if err := recover(); err != nil {
+				logUtils.Errorf(fmt.Sprintf("%v", err))
+			}
+		}()
+
 		runFunc := p.task.Run(options)
 		//if runFunc() == nil {
 		//	return

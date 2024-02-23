@@ -3,9 +3,11 @@ package service
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"strconv"
 )
 
 type ProjectCronService struct {
@@ -15,6 +17,7 @@ type ProjectCronService struct {
 	BaseRepo             *repo.BaseRepo             `inject:""`
 	LecangCronService    *LecangCronService         `inject:""`
 	SwaggerCron          *SwaggerCron               `inject:""`
+	ServerCron           *cron.ServerCron           `inject:""`
 }
 
 func (s *ProjectCronService) Paginate(req v1.ProjectCronReqPaginate) (ret _domain.PageData, err error) {
@@ -46,7 +49,7 @@ func (s *ProjectCronService) Get(id uint) (ret model.ProjectCron, err error) {
 	return
 }
 
-func (s *ProjectCronService) Save(req model.ProjectCron) (id uint, err error) {
+func (s *ProjectCronService) Save(req model.ProjectCron) (ret model.ProjectCron, err error) {
 	s.initCron(&req)
 
 	var configId uint
@@ -61,7 +64,7 @@ func (s *ProjectCronService) Save(req model.ProjectCron) (id uint, err error) {
 	}
 
 	req.ConfigId = configId
-	id, err = s.ProjectCronRepo.Save(req)
+	ret, err = s.ProjectCronRepo.Save(req)
 
 	return
 }
@@ -90,11 +93,16 @@ func (s *ProjectCronService) Delete(id uint) (err error) {
 	} else if projectCron.Source == consts.CronSourceSwagger {
 		err = s.ProjectSettingsRepo.DeleteSwaggerSyncById(projectCron.ConfigId)
 	}
+	if err != nil {
+		return
+	}
 
+	taskName := projectCron.Source.String() + "_" + strconv.Itoa(int(projectCron.ConfigId))
+	s.ServerCron.RemoveTask(taskName)
 	return
 }
 
-func (s *ProjectCronService) Clone(id, userId uint) (ret uint, err error) {
+func (s *ProjectCronService) Clone(id, userId uint) (ret model.ProjectCron, err error) {
 	oldCron, err := s.Get(id)
 	if err != nil {
 		return

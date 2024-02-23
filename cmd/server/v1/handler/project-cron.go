@@ -117,13 +117,17 @@ func (c *ProjectCronCtrl) Save(ctx iris.Context) {
 	req.ProjectId = uint(projectId)
 	req.CreateUserId = multi.GetUserId(ctx)
 
-	cronId, err := c.ProjectCronService.Save(req)
+	cron, err := c.ProjectCronService.Save(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: cronId, Msg: _domain.NoErr.Msg})
+	if req.ID == 0 {
+		c.addCron(cron)
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: cron.ID, Msg: _domain.NoErr.Msg})
 }
 
 // UpdateSwitchStatus
@@ -201,13 +205,16 @@ func (c *ProjectCronCtrl) Clone(ctx iris.Context) {
 		return
 	}
 
-	cronId, err := c.ProjectCronService.Clone(req.Id, userId)
+	cron, err := c.ProjectCronService.Clone(req.Id, userId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: cronId, Msg: _domain.NoErr.Msg})
+
+	c.addCron(cron)
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: cron.ID, Msg: _domain.NoErr.Msg})
 }
 
 // EngineeringOptions
@@ -292,16 +299,19 @@ func (c *ProjectCronCtrl) AllServiceList(ctx iris.Context) {
 }
 
 func (c *ProjectCronCtrl) InitProjectCron() {
-	//c.ProjectCronService.BatchAddCron()
 	cronList, _ := c.ProjectCronRepo.ListAllCron()
 
 	for _, item := range cronList {
-		options := make(map[string]interface{})
-		options["projectId"] = item.ProjectId
-		options["taskId"] = item.ConfigId
-
-		c.Proxy.Init(string(item.Source), item.Cron)
-		//proxy := task.NewProxy(string(item.Source), item.Cron)
-		_ = c.Proxy.Add(options)
+		c.addCron(item)
 	}
+}
+
+func (c *ProjectCronCtrl) addCron(cron model.ProjectCron) {
+	options := make(map[string]interface{})
+	options["projectId"] = cron.ProjectId
+	options["taskId"] = cron.ConfigId
+	options["cronId"] = cron.ID
+
+	c.Proxy.Init(string(cron.Source), cron.Cron)
+	_ = c.Proxy.Add(options)
 }

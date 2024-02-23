@@ -105,7 +105,7 @@ func (s *PerformanceTestService) ExecStart(
 	wgRunners.Wait()
 
 	// close exec and send to web client
-	SetRunningRoom("")
+	SetRunningTest(nil)
 	s.execCancel()
 	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, req.Room, wsMsg)
 

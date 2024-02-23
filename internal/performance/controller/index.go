@@ -16,26 +16,39 @@ var (
 )
 
 func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
-	runningRoom := controllerExec.GetRunningRoom()
+	runningTest := controllerExec.GetRunningTest()
 
 	if act == consts.JoinPerformanceTest {
-		existRunningRoom := ""
-		if runningRoom != "" && req.Room != runningRoom {
-			existRunningRoom = runningRoom
-			controllerExec.ResumeLog()
+		if runningTest == nil { // no exist room to join
+			websocketHelper.SendExecInstructionToClient(
+				"", err, ptconsts.MsgInstructionJoinExist, req.Room, wsMsg)
+
+		} else {
+			if req.Room != runningTest.Room { // notify client to join
+				websocketHelper.SendExecInstructionToClient(
+					runningTest.Room, err, ptconsts.MsgInstructionJoinExist, req.Room, wsMsg)
+
+				controllerExec.ResumeLog()
+
+			} else { //  client joined successfully
+				websocketHelper.SendExecInstructionToClient(
+					"performance testing joined", runningTest, ptconsts.MsgInstructionStart, req.Room, wsMsg)
+			}
 		}
 
-		websocketHelper.SendExecInstructionToClient(existRunningRoom, err, ptconsts.MsgInstructionJoinExist, req.Room, wsMsg)
-
 	} else if act == consts.StartPerformanceTest {
+		if runningTest != nil { // client should call like this
+			return
+		}
+
 		ptlog.Init(req.Room)
 
 		websocketHelper.SendExecInstructionToClient(
-			"performance testing start", err, ptconsts.MsgInstructionStart, req.Room, wsMsg)
+			"performance testing start", nil, ptconsts.MsgInstructionStart, req.Room, wsMsg)
 
 		performanceTestService := controllerExec.NewPerformanceTestServiceRef(req)
 
-		controllerExec.SetRunningRoom(req.Room)
+		controllerExec.SetRunningTest(&req)
 		PerformanceTestServicesMap.Store(req.Room, performanceTestService)
 
 		performanceTestService.ExecStart(req, wsMsg)
@@ -49,12 +62,12 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 
 		err = performanceTestService.ExecStop(wsMsg)
 		if err != nil {
-			controllerExec.SetRunningRoom("")
+			controllerExec.SetRunningTest(nil)
 			sendStopMsg("stop failed", req.Room, wsMsg)
 			return
 		}
 
-		controllerExec.SetRunningRoom("")
+		controllerExec.SetRunningTest(nil)
 		sendStopMsg("stop successfully", req.Room, wsMsg)
 
 	} else if act == consts.StartPerformanceLog {
@@ -84,13 +97,13 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 func getPerformanceTestServiceRef(room string) (ret *controllerExec.PerformanceTestService) {
 	performanceTestServiceObj, ok := PerformanceTestServicesMap.Load(room)
 	if !ok {
-		controllerExec.SetRunningRoom("")
+		controllerExec.SetRunningTest(nil)
 		return
 	}
 
 	ret, ok = performanceTestServiceObj.(*controllerExec.PerformanceTestService)
 	if !ok {
-		controllerExec.SetRunningRoom("")
+		controllerExec.SetRunningTest(nil)
 		return
 	}
 

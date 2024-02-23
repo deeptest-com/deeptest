@@ -1,16 +1,30 @@
 package controllerExec
 
+import (
+	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	"time"
+)
+
 var (
-	runningRoom string
+	runningTest *ptdomain.PerformanceTestReq
 
 	suspendLog bool
 )
 
-func GetRunningRoom() string {
-	return runningRoom
+func GetRunningRoom() (ret string) {
+	test := GetRunningTest()
+
+	if test != nil {
+		ret = test.Room
+	}
+
+	return
 }
-func SetRunningRoom(val string) {
-	runningRoom = val
+func GetRunningTest() *ptdomain.PerformanceTestReq {
+	return runningTest
+}
+func SetRunningTest(val *ptdomain.PerformanceTestReq) {
+	runningTest = val
 }
 
 func IsLogSuspend() bool {
@@ -22,5 +36,8 @@ func SuspendLog() {
 }
 
 func ResumeLog() {
-	suspendLog = false
+	go func() {
+		time.Sleep(3 * time.Second)
+		suspendLog = false
+	}()
 }

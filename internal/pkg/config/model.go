@@ -45,6 +45,7 @@ type Redis struct {
 	Addr     string `mapstructure:"addr" json:"addr" yaml:"addr"`
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
 	PoolSize int    `mapstructure:"pool-size" json:"poolSize" yaml:"pool-size"`
+	Prefix   string `mapstructure:"prefix" json:"prefix" yaml:"prefix"`
 }
 
 type Mysql struct {

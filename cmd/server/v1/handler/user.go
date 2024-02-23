@@ -255,7 +255,7 @@ func (c *UserCtrl) Profile(ctx iris.Context) {
 
 	user, err := c.UserRepo.FindDetailById(tenantId, id)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 

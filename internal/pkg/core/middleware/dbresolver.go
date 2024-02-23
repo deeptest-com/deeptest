@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/saas/common"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
@@ -25,6 +26,7 @@ func DBResolver() iris.Handler {
 		}(ctx)
 
 		dbname := common.GetTenantId(ctx)
+		logUtils.Infof("DBResolver,path:%s,dbname:%s", ctx.Path(), dbname)
 
 		if config.CONFIG.Saas.Switch && dbname == "" {
 			panic(fmt.Errorf("the saas environment does not allow the tenant id to be empty"))

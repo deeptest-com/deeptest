@@ -59,16 +59,20 @@ func Init() *AgentServer {
 
 	// init websocket
 	websocketCtrl := handler.NewWebsocketCtrl()
-	injectWebsocketModule(websocketCtrl)
+	websocketLogCtrl := handler.NewLogByWebSocketCtrl()
+	injectWebsocketModule(websocketCtrl, websocketLogCtrl)
 
 	websocketAPI := app.Party(consts.WsPath)
 	m := mvc.New(websocketAPI)
-	m.Register(
-		&commService.PrefixedLogger{Prefix: ""},
-	)
+	m.Register(&commService.PrefixedLogger{Prefix: ""})
 	m.HandleWebsocket(websocketCtrl)
+	m.HandleWebsocket(websocketLogCtrl)
 
-	websocketServer := websocket.New(gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
+	websocketServer := websocket.New(gorilla.Upgrader(
+		gorillaWs.Upgrader{
+			CheckOrigin: func(*http.Request) bool { return true },
+		}), m)
+
 	websocketAPI.Get("/", websocket.Handler(websocketServer))
 
 	return &AgentServer{
@@ -124,16 +128,18 @@ func (s *AgentServer) Start() {
 	<-s.idleConnClosed
 }
 
-func injectWebsocketModule(websocketCtrl *handler.ExecByWebSocketCtrl) {
+func injectWebsocketModule(websocketCtrl *handler.ExecByWebSocketCtrl, websocketLogCtrl *handler.LogByWebSocketCtrl) {
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 
-	if err := g.Provide(
+	err := g.Provide(
 		&inject.Object{Value: websocketCtrl},
-	); err != nil {
+	)
+	if err != nil {
 		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
 	}
-	err := g.Populate()
+
+	err = g.Populate()
 	if err != nil {
 		logrus.Fatalf("populate the incomplete Objects: %v", err)
 	}

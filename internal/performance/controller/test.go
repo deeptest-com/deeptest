@@ -70,25 +70,6 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 		controllerExec.SetRunningTest(nil)
 		sendStopMsg("stop successfully", req.Room, wsMsg)
 
-	} else if act == consts.StartPerformanceLog {
-		room := req.Room
-		performanceTestService := getPerformanceTestServiceRef(room)
-		if performanceTestService == nil {
-			sendStopMsg("get performanceTestService failed", req.Room, wsMsg)
-			return
-		}
-
-		performanceTestService.StartSendLog(req, wsMsg)
-
-	} else if act == consts.StopPerformanceLog {
-		room := req.Room
-		performanceTestService := getPerformanceTestServiceRef(room)
-		if performanceTestService == nil {
-			sendStopMsg("get performanceTestService failed", req.Room, wsMsg)
-			return
-		}
-
-		performanceTestService.StopSendLog(req, wsMsg)
 	}
 
 	return
@@ -113,9 +94,4 @@ func getPerformanceTestServiceRef(room string) (ret *controllerExec.PerformanceT
 func sendStopMsg(data interface{}, room string, wsMsg *websocket.Message) {
 	websocketHelper.SendExecInstructionToClient(
 		"performance testing stop", data, ptconsts.MsgInstructionTerminal, room, wsMsg)
-}
-
-func sendLogMsg(line string, room string, wsMsg *websocket.Message) {
-	websocketHelper.SendExecInstructionToClient(
-		line, nil, ptconsts.MsgInstructionTerminal, room, wsMsg)
 }

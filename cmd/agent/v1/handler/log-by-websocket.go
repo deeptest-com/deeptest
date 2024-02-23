@@ -15,31 +15,29 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-type ExecByWebSocketCtrl struct {
+var ()
+
+type LogByWebSocketCtrl struct {
 	Namespace         string
 	*websocket.NSConn `stateless:"true"`
 }
 
-func NewWebsocketCtrl() *ExecByWebSocketCtrl {
-	inst := &ExecByWebSocketCtrl{Namespace: consts.WsDefaultNamespace}
+func NewLogByWebSocketCtrl() *LogByWebSocketCtrl {
+	inst := &LogByWebSocketCtrl{Namespace: consts.WsPerformanceLogNamespace}
 	return inst
 }
 
-func (c *ExecByWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
+func (c *LogByWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
 	websocketHelper.SetConn(c.Conn)
-	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_connected :id=%v room=%v", c.Conn.ID(), wsMsg.Room))
-
-	resp := _domain.WsResp{Msg: "from agent: connected to websocket"}
-	bytes, _ := json.Marshal(resp)
-	mqData := _domain.MqMsg{Namespace: wsMsg.Namespace, Room: wsMsg.Room, Event: wsMsg.Event, Content: string(bytes)}
-
-	websocketHelper.PubMsg(mqData)
+	_logUtils.Infof(_i118Utils.Sprintf("connect to namespace %s, id=%s room=%s",
+		consts.WsPerformanceLogNamespace, c.Conn.ID(), wsMsg.Room))
 
 	return nil
 }
 
-func (c *ExecByWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
-	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_disconnected :id=%v room=%v", c.Conn.ID(), wsMsg.Room))
+func (c *LogByWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
+	_logUtils.Infof(_i118Utils.Sprintf("disconnect to namespace %s, id=%s room=%s",
+		consts.WsPerformanceLogNamespace, c.Conn.ID(), wsMsg.Room))
 
 	req := agentDomain.WsReq{
 		Act: consts.StopPerformanceLog,
@@ -57,19 +55,10 @@ func (c *ExecByWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) err
 
 	websocketHelper.PubMsg(mqData)
 
-	// sample
-	// This will call the "OnVisit" event on all clients, except the current one,
-	// (it can't because it's left but for any case use this type of design)
-	//c.Conn.Server().Broadcast(nil, websocket.Message{
-	//	Namespace: wsMsg.Namespace,
-	//	Event:     "OnVisit",
-	//	Body:      []byte(fmt.Sprintf("%d", newCount)),
-	//})
-
 	return nil
 }
 
-func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
+func (c *LogByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 	ctx := websocket.GetContext(c.Conn)
 	_logUtils.Infof("WebSocket OnChat: remote address=%s, room=%s, msg=%s", ctx.RemoteAddr(), wsMsg.Room, string(wsMsg.Body))
 
@@ -84,7 +73,7 @@ func (c *ExecByWebSocketCtrl) OnChat(wsMsg websocket.Message) (err error) {
 		return
 	}
 
-	err = service.StartExec(req, &wsMsg)
+	err = service.RunPerformanceLog(req.Act, req.PerformanceTestExecReq, &wsMsg)
 
 	return
 }

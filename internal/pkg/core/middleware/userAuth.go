@@ -62,6 +62,8 @@ func UserAuth() iris.Handler {
 		appName, token, origin, tenantId := getAppName(ctx)
 		user := user.NewUser(appName)
 
+		logUtils.Infof("authorization start, appName:%s,token:%s,origin:%s,tenantId:%s", appName, token, origin, tenantId)
+
 		if appName != "" {
 			userInfo, err := user.GetUserInfoByToken(tenantId, token, origin)
 			if err == nil && userInfo.Username != "" {

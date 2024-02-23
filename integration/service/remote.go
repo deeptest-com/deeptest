@@ -304,12 +304,12 @@ func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token strin
 	var resp domain.DebugResponse
 	resp, err = httpHelper.Get(httpReq)
 	if err != nil {
-		logUtils.Infof("meta get method detail failed, error, %s", err.Error())
+		logUtils.Errorf("meta get method detail failed, error, %s", err.Error())
 		return
 	}
 
 	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Infof("meta get method detail failed, response %v", resp)
+		logUtils.Errorf("meta get method detail failed, response %v", resp)
 		err = fmt.Errorf("meta get method detail failed, response %v", resp)
 		return
 	}
@@ -321,7 +321,7 @@ func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token strin
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
-		logUtils.Infof(err.Error())
+		logUtils.Errorf(err.Error())
 	}
 
 	user = respContent.Data.UserInfo

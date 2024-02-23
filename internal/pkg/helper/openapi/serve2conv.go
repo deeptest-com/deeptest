@@ -51,6 +51,7 @@ func (s *serve2conv) components() (components openapi3.Components) {
 			_commUtils.JsonDecode(component.Content, &items)
 			schema.Items = items
 		}
+
 		components.Schemas[component.Name] = openapi3.NewSchemaRef("", schema)
 	}
 

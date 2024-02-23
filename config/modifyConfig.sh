@@ -4,4 +4,4 @@
 file_path="/workspace/leyanapi-backend/internal/pkg/consts/consts.go"  
   
 # 使用sed命令替换文件中的内容  
-sed -i 's/ConfigFileName = "server.yaml"/ConfigFileName = "\/workspace\/leyanapi-backend\/config\/configMap\/server.yaml"/g' "$file_path"
+sed -i 's/ConfigFileName = "server.yaml"/ConfigFileName = "config\/configMap\/server.yaml"/g' "$file_path"

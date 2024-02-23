@@ -22,6 +22,7 @@ type DocumentService struct {
 	EndpointSnapshotRepo  *repo.EndpointSnapshotRepo  `inject:""`
 	EndpointInterfaceRepo *repo.EndpointInterfaceRepo `inject:""`
 	EndpointService       *EndpointService            `inject:""`
+	ServeService          *ServeService               `inject:""`
 }
 
 const (
@@ -71,6 +72,8 @@ func (s *DocumentService) GetEndpoints(projectId *uint, serveIds, endpointIds *[
 		}
 	}
 
+	s.FillRefId(endpoints)
+
 	res = s.GetEndpointsInfo(projectId, serveIds, endpoints)
 
 	return
@@ -104,19 +107,20 @@ func (s *DocumentService) GetProject(projectId uint) (doc domain.DocumentRep) {
 
 	doc.GlobalParams, _ = s.EnvironmentRepo.ListParams(projectId)
 	doc.GlobalVars = s.GetGlobalVars(projectId)
+	doc.Components = s.GetSchemas(projectId)
 	return
 }
 
 func (s *DocumentService) GetServes(serveIds []uint, endpoints map[uint][]domain.EndpointReq) (serves []domain.DocumentServe) {
 	res, _ := s.ServeRepo.GetServesByIds(serveIds)
-	schemas := s.GetSchemas(serveIds)
+	//schemas := s.GetSchemas(serveIds)
 	securities := s.GetSecurities(serveIds)
 	servers := s.GetServers(serveIds)
 	for _, item := range res {
 		var serve domain.DocumentServe
 		copier.CopyWithOption(&serve, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 		serve.Endpoints = endpoints[uint(serve.ID)]
-		serve.Component = schemas[uint(serve.ID)]
+		//serve.Component = schemas[uint(serve.ID)]
 		serve.Securities = securities[uint(serve.ID)]
 		serve.Servers = servers[uint(serve.ID)]
 		s.mocks(serve.Endpoints, serve.Servers)
@@ -138,13 +142,12 @@ func (s *DocumentService) mocks(endpoints []domain.EndpointReq, servers []domain
 
 }
 
-func (s *DocumentService) GetSchemas(serveIds []uint) (schemas map[uint][]domain.ServeSchemaReq) {
-	schemas = make(map[uint][]domain.ServeSchemaReq)
-	res, _ := s.ServeRepo.GetSchemas(serveIds)
+func (s *DocumentService) GetSchemas(projectId uint) (schemas []domain.ServeSchemaReq) {
+	res, _ := s.ServeService.GetComponents(projectId)
 	for _, item := range res {
 		var schema domain.ServeSchemaReq
 		copier.CopyWithOption(&schema, &item, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-		schemas[uint(schema.ServeId)] = append(schemas[uint(schema.ServeId)], schema)
+		schemas = append(schemas, schema)
 	}
 	return
 }
@@ -334,7 +337,7 @@ func (s *DocumentService) GetDocumentDetail(documentId, endpointId, interfaceId 
 		return
 	}
 
-	s.EndpointService.SchemaConv(&interfaceDetail, serveId)
+	s.EndpointService.SchemaConv(&interfaceDetail, interfaceDetail.ProjectId)
 	s.MergeGlobalParams(&interfaceDetail)
 
 	res = make(map[string]interface{})
@@ -382,6 +385,18 @@ func (s *DocumentService) MergeGlobalParams(endpointInterface *model.EndpointInt
 			endpointInterface.Headers = append(endpointInterface.Headers, model.EndpointInterfaceHeader{SchemaParam: model.SchemaParam{Name: globalParam.Name, Type: string(globalParam.Type), Example: globalParam.DefaultValue, Default: globalParam.DefaultValue, Value: globalParam.DefaultValue, IsGlobal: true}})
 		}
 
+	}
+
+}
+
+func (s *DocumentService) FillRefId(endpoints []*model.Endpoint) {
+	if len(endpoints) == 0 {
+		return
+	}
+	projectId := endpoints[0].ProjectId
+	components := s.ServeService.Components(projectId)
+	for _, endpoint := range endpoints {
+		s.EndpointService.SchemasConv(endpoint, components)
 	}
 
 }

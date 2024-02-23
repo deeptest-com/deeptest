@@ -14,6 +14,7 @@ type Category struct {
 	Children []*Category `json:"children"`
 	Slots    iris.Map    `json:"slots"`
 	Count    int64       `json:"count"`
+	EntityId uint        `json:"entityId"`
 }
 
 type CategoryCreateReq struct {
@@ -24,13 +25,16 @@ type CategoryCreateReq struct {
 	ModuleId  string                             `json:"moduleId"`
 	TargetId  int                                `json:"targetId"`
 	ProjectId uint                               `json:"projectId"`
+	EntityId  uint                               `json:"entityId"`
+	IsEntity  bool                               `json:"isEntity"`
 }
 
 type CategoryReq struct {
-	Id     int    `json:"id"`
-	Name   string `json:"name"`
-	Desc   string `json:"desc"`
-	Parent uint
+	Id     int                                `json:"id"`
+	Name   string                             `json:"name"`
+	Desc   string                             `json:"desc"`
+	Parent uint                               `json:"parent"`
+	Type   serverConsts.CategoryDiscriminator `json:"type"`
 }
 
 type CategoryMoveReq struct {
@@ -43,4 +47,8 @@ type CategoryMoveReq struct {
 type CategoryCount struct {
 	Count      int64
 	CategoryId int64
+}
+
+type BatchAddSchemaRootReq struct {
+	ProjectIds []uint `json:"projectIds"`
 }

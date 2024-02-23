@@ -87,7 +87,9 @@ func DownloadUploadedFile(uri string, execUuid string) (ret string, err error) {
 
 	_, name := path.Split(uri)
 
-	dist := filepath.Join(consts.TmpDir, "download", name)
+	dr := filepath.Join(consts.TmpDir, "download")
+	_fileUtils.MkDirIfNeeded(dr)
+	dist := filepath.Join(dr, name)
 
 	_fileUtils.Download(url, dist)
 

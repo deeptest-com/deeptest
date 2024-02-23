@@ -274,6 +274,9 @@ func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+	projectId, _ := ctx.URLParamInt("currProjectId")
+	req.ProjectId = uint(projectId)
+
 	res, err := c.ServeService.SaveSchema(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -331,15 +334,12 @@ func (c *ServeCtrl) ListSchema(ctx iris.Context) {
 // @Param 	currProjectId		query	int								true	"当前项目ID"
 // @Param 	ServeSchemaRefReq	body	serverDomain.ServeSchemaRefReq	true	"获取Schema的请求参数"
 // @success	200	{object}	_domain.Response{data=model.ComponentSchema}
-// @Router	/api/v1/serves/schema/detail	[post]
+// @Router	/api/v1/serves/schema/detail	[get]
 func (c *ServeCtrl) GetSchemaByRef(ctx iris.Context) {
-	var req serverDomain.ServeSchemaRefReq
-	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.GetSchema(uint(req.ServeId), req.Ref)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
-	} else {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-	}
+	id := ctx.URLParamUint64("id")
+	res, _ := c.ServeService.GetSchema(uint(id))
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+
 }
 
 // DeleteSchema
@@ -476,7 +476,7 @@ func (c *ServeCtrl) ExampleToSchema(ctx iris.Context) {
 func (c *ServeCtrl) SchemaToExample(ctx iris.Context) {
 	var req serverDomain.JsonContent
 	if err := ctx.ReadJSON(&req); err == nil {
-		res := c.ServeService.Schema2Example(req.ServeId, req.Data)
+		res := c.ServeService.Schema2Example(req.ProjectId, req.Data)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -517,7 +517,7 @@ func (c *ServeCtrl) CopySchema(ctx iris.Context) {
 	id := ctx.URLParamUint64("id")
 	if id != 0 {
 		res, _ := c.ServeService.CopySchema(uint(id))
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res.ID})
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 	}

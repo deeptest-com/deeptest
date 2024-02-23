@@ -5,12 +5,14 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
 
 type IRepo interface {
 	Save(id uint, entity interface{}) error
 	GetCategoryCount(result interface{}, projectId uint) (err error)
+	SaveEntity(category *model.Category) (err error)
 }
 
 type BaseRepo struct {
@@ -115,11 +117,14 @@ func (r *BaseRepo) Save(id uint, entity interface{}) (err error) {
 	return
 }
 
+func (r *BaseRepo) SaveEntity(category *model.Category) (err error) {
+	return
+}
+
 func (r *BaseRepo) GetAdminRoleName() (roleName consts.RoleType) {
 	roleName = consts.Admin
 	if config.CONFIG.System.SysEnv == "ly" {
 		roleName = consts.IntegrationAdmin
 	}
-
 	return
 }

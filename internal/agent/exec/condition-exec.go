@@ -102,6 +102,8 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition,
 		return
 	}
 
+	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, execUuid)
+
 	err := ExecDbOpt(&databaseOptBase)
 	if err != nil || databaseOptBase.ResultStatus == consts.Fail {
 		status = consts.Fail

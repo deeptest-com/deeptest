@@ -780,16 +780,16 @@ func (s *ThirdPartySyncService) GetEngineeringOptions(baseUrl string) (ret []int
 	return
 }
 
-func (s *ThirdPartySyncService) GetServiceOptions(engineeringCode, baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
+func (s *ThirdPartySyncService) GetServiceOptions(engineering, baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
 	token, err := s.GetToken(baseUrl)
 	if err != nil {
 		return
 	}
 
-	if engineeringCode == "" {
+	if engineering == "" {
 		ret = s.RemoteService.LcAllServiceList(token, baseUrl)
 	} else {
-		ret = s.RemoteService.LcMlServiceQueryAgent(engineeringCode, token, baseUrl)
+		ret = s.RemoteService.LcMlServiceQueryAgent(engineering, token, baseUrl)
 	}
 
 	return

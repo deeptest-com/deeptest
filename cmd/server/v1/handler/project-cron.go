@@ -251,7 +251,7 @@ func (c *ProjectCronCtrl) EngineeringOptions(ctx iris.Context) {
 // @Param	Authorization	header	string	true	"Authentication header"
 // @Param 	currProjectId	query	int		true	"当前项目ID"
 // @Param 	url				query	string	true	"环境URL"
-// @Param 	engineeringCode	query	string	true	"工程code"
+// @Param 	engineering		query	string	true	"工程code"
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/project/cron/serviceOptions	[get]
 func (c *ProjectCronCtrl) ServiceOptions(ctx iris.Context) {
@@ -261,9 +261,9 @@ func (c *ProjectCronCtrl) ServiceOptions(ctx iris.Context) {
 		return
 	}
 
-	engineeringCode := ctx.URLParam("engineeringCode")
+	engineering := ctx.URLParam("engineering")
 
-	data, err := c.ThirdPartySyncService.GetServiceOptions(engineeringCode, url)
+	data, err := c.ThirdPartySyncService.GetServiceOptions(engineering, url)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

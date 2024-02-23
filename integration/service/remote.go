@@ -1121,12 +1121,12 @@ func (s *RemoteService) LcContainerQueryAgent(token, baseUrl string) (ret []inte
 	return
 }
 
-func (s *RemoteService) getLcMlServiceQueryAgentRequest(engineeringCode string) (res integrationDomain.QueryAgentReq) {
+func (s *RemoteService) getLcMlServiceQueryAgentRequest(engineering string) (res integrationDomain.QueryAgentReq) {
 	attrSet := []string{"className", "code", "langPrefix", "container", "codePrefix", "creator", "createAt", "modifier", "lastUpdate", "developMethod", "lifeCycleState", "objId", "tenantId", "name", "displayName", "displayClassName", "displayCreator", "displayModifier"}
 	conditionParam := integrationDomain.QueryAgentConditionParam{
 		Key:     "container",
 		Compare: "EQ",
-		Value:   engineeringCode,
+		Value:   engineering,
 	}
 
 	queryArgs := integrationDomain.QueryAgentQueryArgs{
@@ -1143,9 +1143,9 @@ func (s *RemoteService) getLcMlServiceQueryAgentRequest(engineeringCode string) 
 	return
 }
 
-func (s *RemoteService) LcMlServiceQueryAgent(engineeringCode, token, baseUrl string) (ret []integrationDomain.ServiceItem) {
+func (s *RemoteService) LcMlServiceQueryAgent(engineering, token, baseUrl string) (ret []integrationDomain.ServiceItem) {
 	url := fmt.Sprintf("%s/levault/mdlsvr/MlService/QueryAgent", baseUrl)
-	req := s.getLcMlServiceQueryAgentRequest(engineeringCode)
+	req := s.getLcMlServiceQueryAgentRequest(engineering)
 	body, err := json.Marshal(req)
 	if err != nil {
 		logUtils.Infof("marshal request data failed, error, %s", err.Error())

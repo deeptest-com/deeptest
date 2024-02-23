@@ -1,11 +1,11 @@
 package handler
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/aaronchen2k/deeptest/saas/tenant"
-
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
@@ -18,12 +18,15 @@ type SummaryCtrl struct {
 
 func (c *SummaryCtrl) Summary() {
 	//SAAS
-	tenants := tenant.NewTenant().GetInfos()
-	for _, tenant := range tenants {
-		go c.SummaryService.Collection(tenant.Id)
+	if config.CONFIG.Saas.Switch {
+		tenants := tenant.NewTenant().GetInfos()
+		for _, tenant := range tenants {
+			go c.SummaryService.Collection(tenant.Id)
+		}
+	} else { //default
+		c.SummaryService.Collection("")
 	}
-	//default
-	c.SummaryService.Collection("")
+
 }
 
 // Card

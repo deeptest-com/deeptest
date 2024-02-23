@@ -96,9 +96,9 @@ func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo)
 		Name:      userInfo.RealName,
 		Password:  commonUtils.RandStr(8),
 	}}
-	userRepo := repo.UserRepo{DB: dao.GetDB()}
-	userRepo.ProfileRepo = &repo.ProfileRepo{DB: dao.GetDB()}
-	userRepo.RoleRepo = &repo.RoleRepo{DB: dao.GetDB()}
+	userRepo := repo.UserRepo{DB: dao.GetDBResolver().GetConnPool(tenantId)}
+	userRepo.ProfileRepo = &repo.ProfileRepo{DB: dao.GetDBResolver().GetConnPool(tenantId)}
+	userRepo.RoleRepo = &repo.RoleRepo{DB: dao.GetDBResolver().GetConnPool(tenantId)}
 	userRepo.Create(tenantId, req)
 
 	user, err := userRepo.GetByUsernameOrEmail(tenantId, userInfo.Username, userInfo.Mail)

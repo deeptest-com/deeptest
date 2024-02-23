@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/saas/common"
 	"github.com/aaronchen2k/deeptest/saas/tenant"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
@@ -21,7 +22,9 @@ func (c *SummaryCtrl) Summary() {
 	if config.CONFIG.Saas.Switch {
 		tenants := tenant.NewTenant().GetInfos()
 		for _, tenant := range tenants {
-			go c.SummaryService.Collection(tenant.Id)
+			go common.AsyncCatchErrRun(func() {
+				c.SummaryService.Collection(tenant.Id)
+			})
 		}
 	} else { //default
 		c.SummaryService.Collection("")

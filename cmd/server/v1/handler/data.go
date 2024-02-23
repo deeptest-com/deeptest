@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/saas/tenant"
 	"strings"
 
 	"github.com/kataras/iris/v12"
@@ -38,8 +39,16 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 			return
 		}
 	}
+	var err error
+	if config.CONFIG.Saas.Switch {
+		tenants := tenant.NewTenant().GetInfos()
+		for _, tenant := range tenants {
+			go c.DataService.InitDB(tenant.Id, req)
+		}
+	} else {
+		err = c.DataService.InitDB(tenantId, req)
+	}
 
-	err := c.DataService.InitDB(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

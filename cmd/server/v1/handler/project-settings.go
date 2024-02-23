@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/aaronchen2k/deeptest/saas/common"
 	"github.com/aaronchen2k/deeptest/saas/tenant"
 	"github.com/kataras/iris/v12"
 )
@@ -79,7 +80,10 @@ func (c *ProjectSettingsCtrl) InitSwaggerCron() {
 	if config.CONFIG.Saas.Switch {
 		tenants := tenant.NewTenant().GetInfos()
 		for _, tenant := range tenants {
-			go c.initSwaggerCron(tenant.Id)
+			go common.AsyncCatchErrRun(func() {
+				c.initSwaggerCron(tenant.Id)
+			})
+			break
 		}
 	} else {
 		//default
@@ -129,7 +133,9 @@ func (c *ProjectSettingsCtrl) InitThirdPartySyncCron() {
 	if config.CONFIG.Saas.Switch {
 		tenants := tenant.NewTenant().GetInfos()
 		for _, tenant := range tenants {
-			go c.ThirdPartySyncService.AddThirdPartySyncCron(tenant.Id)
+			go common.AsyncCatchErrRun(func() {
+				c.ThirdPartySyncService.AddThirdPartySyncCron(tenant.Id)
+			})
 		}
 	} else {
 		c.ThirdPartySyncService.AddThirdPartySyncCron("")

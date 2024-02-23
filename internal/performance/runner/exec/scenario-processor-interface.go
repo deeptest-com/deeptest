@@ -1,4 +1,4 @@
-package exec
+package runnerExec
 
 import (
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"

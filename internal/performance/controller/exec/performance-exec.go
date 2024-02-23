@@ -1,14 +1,14 @@
-package controllerService
+package controllerExec
 
 import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/performance/controller/dao"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
-	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
+	"github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	websocketHelper "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/internal/performance/proto"
+	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
@@ -19,6 +19,7 @@ import (
 	"io"
 	"log"
 	"sync"
+	"time"
 )
 
 type PerformanceTestService struct {
@@ -26,7 +27,7 @@ type PerformanceTestService struct {
 
 	execCtx    context.Context
 	execCancel context.CancelFunc
-	client     *ptProto.PerformanceServiceClient
+	client     *ptproto.PerformanceServiceClient
 
 	GrpcService         *GrpcService         `inject:"private"`
 	ScheduleService     *ScheduleService     `inject:"private"`
@@ -55,25 +56,25 @@ func NewPerformanceTestServiceRef(req ptdomain.PerformanceTestReq) *PerformanceT
 	return service
 }
 
-func (s *PerformanceTestService) Connect(runner *ptProto.Runner) (client ptProto.PerformanceServiceClient) {
+func (s *PerformanceTestService) Connect(runner *ptproto.Runner) (client ptproto.PerformanceServiceClient) {
 	connect, err := grpc.Dial(runner.Address, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	client = ptProto.NewPerformanceServiceClient(connect)
+	client = ptproto.NewPerformanceServiceClient(connect)
 
 	return
 }
 
 func (s *PerformanceTestService) ExecStart(
-	req ptdomain.PerformanceTestReq, wsMsg *websocket.Message, runningRoom *string) (err error) {
+	req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
 
 	s.execCtx, s.execCancel = context.WithCancel(context.Background())
 
 	dao.ClearData(req.Room)
 	dao.ResetInfluxdb(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
-	s.GrpcService.ClearAllGlobalVar(context.Background(), &ptProto.GlobalVarRequest{})
+	s.GrpcService.ClearAllGlobalVar(context.Background(), &ptproto.GlobalVarRequest{})
 
 	// stop execution in 2 ways:
 	// 1. call cancel in this method by websocket request OR after all runners completed
@@ -104,7 +105,7 @@ func (s *PerformanceTestService) ExecStart(
 	wgRunners.Wait()
 
 	// close exec and send to web client
-	*runningRoom = ""
+	SetRunningRoom("")
 	s.execCancel()
 	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, req.Room, wsMsg)
 
@@ -126,13 +127,9 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 	return
 }
 
-func (s *PerformanceTestService) SendLogAsync(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) {
-	go func() {
-		s.SendLog(req, wsMsg)
-	}()
-}
+func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
+	ResumeLog()
 
-func (s *PerformanceTestService) SendLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
 	room := req.Room
 	logPath := ptlog.GetLogPath(room)
 
@@ -140,37 +137,56 @@ func (s *PerformanceTestService) SendLog(req ptdomain.PerformanceTestReq, wsMsg 
 	if err != nil {
 		return
 	}
+	defer t.Cleanup()
 
-	var arr []string
+	go func() {
+		var arr []string
 
-	for line := range t.Lines {
-		arr = append(arr, line.Text)
+		for line := range t.Lines {
+			arr = append(arr, line.Text)
 
-		if len(arr) > 100 {
-			data := iris.Map{
-				"log": line.Text,
+			if len(arr) > 100 {
+				data := iris.Map{
+					"log": line.Text,
+				}
+				websocketHelper.SendExecResultToClient(data, ptconsts.MsgResultRecord, req.Room, wsMsg)
+
+				arr = make([]string, 0)
 			}
-			websocketHelper.SendExecResultToClient(data, ptconsts.MsgResultRecord, req.Room, wsMsg)
+		}
+	}()
 
-			arr = make([]string, 0)
+	for true {
+		if IsLogSuspend() {
+			_logUtils.Debug("<<<<<<< suspend sendLog")
+
+			t.Stop()
+			return
 		}
 
 		select {
 		case <-s.execCtx.Done():
-			_logUtils.Debug("<<<<<<< stop sendLog job")
+			_logUtils.Debug("<<<<<<< stop sendLog job by execCtx.Done")
+
+			t.Stop()
 			return
 
 		default:
 		}
-	}
 
-	s.execCancel()
+		time.Sleep(3 * time.Second)
+	}
 
 	return
 }
 
+func (s *PerformanceTestService) StopSendLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
+	SuspendLog()
+	return
+}
+
 func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
-	client ptProto.PerformanceServiceClient, req ptdomain.PerformanceTestReq, runnerId int32, runnerName string, weight int32) (stream ptProto.PerformanceService_ExecStartClient, err error) {
+	client ptproto.PerformanceServiceClient, req ptdomain.PerformanceTestReq, runnerId int32, runnerName string, weight int32) (stream ptproto.PerformanceService_ExecStartClient, err error) {
 
 	stream, err = client.ExecStart(context.Background())
 	if err != nil {
@@ -180,7 +196,7 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 
 	runnerExecScenarios := s.getRunnerExecScenarios(req, runnerId)
 
-	err = stream.Send(&ptProto.PerformanceExecStartReq{
+	err = stream.Send(&ptproto.PerformanceExecStartReq{
 		Room:       req.Room,
 		RunnerId:   runnerId,
 		RunnerName: runnerName,
@@ -204,7 +220,7 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 }
 
 func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.PerformanceTestReq, runnerId int32) (
-	ret []*ptProto.Scenario) {
+	ret []*ptproto.Scenario) {
 
 	notSet := false
 	scenarioIdsMap := map[int32]bool{}
@@ -235,7 +251,7 @@ func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.Performance
 	return
 }
 
-func (s *PerformanceTestService) HandleGrpcMsg(stream ptProto.PerformanceService_ExecStartClient) (err error) {
+func (s *PerformanceTestService) HandleGrpcMsg(stream ptproto.PerformanceService_ExecStartClient) (err error) {
 	for true {
 		resp, err := stream.Recv()
 		if err == io.EOF {

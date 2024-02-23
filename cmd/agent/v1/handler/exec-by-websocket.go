@@ -5,6 +5,8 @@ import (
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
+	controllerExec "github.com/aaronchen2k/deeptest/internal/performance/controller/exec"
+	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -42,6 +44,16 @@ func (c *ExecByWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) erro
 
 func (c *ExecByWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Message) error {
 	_logUtils.Infof(_i118Utils.Sprintf("ws_namespace_disconnected :id=%v room=%v", c.Conn.ID(), wsMsg.Room))
+
+	req := agentDomain.WsReq{
+		Act: consts.StopPerformanceLog,
+		PerformanceTestExecReq: ptdomain.PerformanceTestReq{
+			BaseExecReqOfRunner: ptdomain.BaseExecReqOfRunner{
+				Room: controllerExec.GetRunningRoom(),
+			},
+		},
+	}
+	service.StartExec(req, &wsMsg)
 
 	resp := _domain.WsResp{Msg: "from agent: disconnected to websocket"}
 	bytes, _ := json.Marshal(resp)

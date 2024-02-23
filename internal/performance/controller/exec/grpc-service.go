@@ -1,4 +1,4 @@
-package controllerService
+package controllerExec
 
 import (
 	"context"
@@ -25,15 +25,15 @@ type GrpcService struct {
 
 // controller call runner, executed on runner side
 func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServer) (err error) {
-	if exec.IsRunnerTestRunning() {
+	if runnerExec.IsRunnerTestRunning() {
 		err = &ptdomain.ErrorAlreadyRunning{}
 
 		return
 	}
 
-	exec.SetRunnerTestRunning(true)
+	runnerExec.SetRunnerTestRunning(true)
 	defer func() {
-		exec.SetRunnerTestRunning(false)
+		runnerExec.SetRunnerTestRunning(false)
 	}()
 
 	indicator.Init()
@@ -60,7 +60,7 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, msgSender)
 
 	// sync exec testing
-	exec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) //
+	runnerExec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) //
 
 	// send end signal to controller
 	result := ptProto.PerformanceExecResp{

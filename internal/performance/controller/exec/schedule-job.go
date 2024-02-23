@@ -1,4 +1,4 @@
-package controllerService
+package controllerExec
 
 import (
 	"context"
@@ -65,7 +65,9 @@ func (s *ScheduleService) SendMetricsToClient(execCtx context.Context, execCance
 			Metrics:              metrics,
 		}
 
-		s.SendMetricsByWebsocket(data, req.Room, wsMsg)
+		if !IsLogSuspend() {
+			s.SendMetricsByWebsocket(data, req.Room, wsMsg)
+		}
 
 		s.SaveReportItems(data, req.Room)
 

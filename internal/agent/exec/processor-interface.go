@@ -204,6 +204,8 @@ func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.
 		return
 	}
 
+	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, execUuid)
+
 	conditionStatus := true
 	err := ExecDbOpt(&databaseOptBase)
 	if err != nil || databaseOptBase.ResultStatus == consts.Fail {

@@ -56,8 +56,8 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{needInit=bool}}
 // @Router	/api/v1/init/checkdb	[get]
 func (c *DataCtrl) Check(ctx iris.Context) {
-
-	if c.DataService.DataRepo.DB == nil {
+	tenantId := c.getTenantId(ctx)
+	if c.DataService.DataRepo.GetDB(tenantId) == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NeedInitErr.Code, Data: iris.Map{
 			"needInit": true,
 		}, Msg: str.Join(_domain.NeedInitErr.Msg, ":数据库初始化失败")})

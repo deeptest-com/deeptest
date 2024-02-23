@@ -39,7 +39,7 @@ func (s *UserSource) GetSources(tenantId consts.TenantId) ([]v1.UserReq, v1.Proj
 }
 
 func (s *UserSource) Init(tenantId consts.TenantId) error {
-	if s.UserRepo.DB.Model(&model.SysUser{}).Where("id IN ?", []int{1}).Find(&[]model.SysUser{}).RowsAffected == 1 {
+	if s.UserRepo.GetDB(tenantId).Model(&model.SysUser{}).Where("id IN ?", []int{1}).Find(&[]model.SysUser{}).RowsAffected == 1 {
 		color.Danger.Printf("\n[Mysql] --> %s 表的初始数据已存在!", model.SysUser{}.TableName())
 		return nil
 	}

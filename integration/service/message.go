@@ -83,7 +83,7 @@ func (s *MessageService) SendMessageToMcs(tenantId consts.TenantId, message mode
 			err = s.MessageRepo.UpdateCombinedSendStatus(tenantId, message.MessageSource, message.BusinessId, consts.MessageSendSuccess)
 		} else {
 			message.SendStatus = consts.MessageSendSuccess
-			s.MessageRepo.DB.Save(&message)
+			s.MessageRepo.GetDB(tenantId).Save(&message)
 		}
 	}
 

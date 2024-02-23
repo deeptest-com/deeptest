@@ -23,7 +23,7 @@ func (s *ConfigSource) GetSources() ([]model.SysConfig, error) {
 }
 
 func (s *ConfigSource) Init(tenantId consts.TenantId) error {
-	s.ConfigRepo.DB.Delete(&model.SysConfig{}, "1=1")
+	s.ConfigRepo.GetDB(tenantId).Delete(&model.SysConfig{}, "1=1")
 
 	sources, err := s.GetSources()
 	if err != nil {

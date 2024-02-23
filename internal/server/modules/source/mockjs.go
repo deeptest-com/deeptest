@@ -331,7 +331,7 @@ func (s *MockJsExpressionSource) GetSources() (ret []model.MockJsExpression, err
 }
 
 func (s *MockJsExpressionSource) Init(tenantId consts.TenantId) error {
-	if s.MockJsExpressionRepo.DB.Model(&model.MockJsExpression{}).
+	if s.MockJsExpressionRepo.GetDB(tenantId).Model(&model.MockJsExpression{}).
 		//Where("id IN ?", []int{1}).
 		Find(&[]model.MockJsExpression{}).RowsAffected > 0 {
 		color.Danger.Printf("\n[Mysql] --> %s 表的初始数据已存在!", model.MockJsExpression{}.TableName())

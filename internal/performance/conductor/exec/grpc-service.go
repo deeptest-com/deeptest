@@ -1,4 +1,4 @@
-package controllerExec
+package conductorExec
 
 import (
 	"context"
@@ -23,7 +23,7 @@ type GrpcService struct {
 	variableMap sync.Map
 }
 
-// controller call runner, executed on runner side
+// conductor call runner, executed on runner side
 func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServer) (err error) {
 	if runnerExec.IsRunnerTestRunning() {
 		err = &ptdomain.ErrorAlreadyRunning{}
@@ -62,7 +62,7 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 	// sync exec testing
 	runnerExec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) //
 
-	// send end signal to controller
+	// send end signal to conductor
 	result := ptProto.PerformanceExecResp{
 		Timestamp:   time.Now().UnixMilli(),
 		RunnerId:    req.RunnerId,
@@ -93,7 +93,7 @@ func (s *GrpcService) ExecStop(stream ptProto.PerformanceService_ExecStopServer)
 	return
 }
 
-// runner call controller, executed on controller side
+// runner call conductor, executed on conductor side
 func (s *GrpcService) AddGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.Int32Value, err error) {
 

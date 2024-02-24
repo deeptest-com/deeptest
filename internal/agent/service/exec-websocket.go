@@ -20,26 +20,6 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 		return
 	}
 
-	/** 1. dealwith performance testing */
-	if strings.Include(
-		[]string{
-			consts.JoinPerformanceTest.String(),
-			consts.StartPerformanceTest.String(),
-			consts.StopPerformanceTest.String(),
-
-			consts.StartPerformanceLog.String(),
-			consts.StopPerformanceLog.String(),
-		}, act.String()) {
-
-		go func() {
-			defer errDefer(wsMsg)
-			RunPerformanceTest(act, req.PerformanceTestExecReq, wsMsg)
-		}()
-
-		return
-	}
-
-	/** 2. dealwith other type of testing */
 	isRunning := agentExec.GetIsRunning(execUuid)
 
 	// stop exec

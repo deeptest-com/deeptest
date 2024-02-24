@@ -59,13 +59,15 @@ func Init() *AgentServer {
 
 	// init websocket
 	websocketCtrl := handler.NewWebsocketCtrl()
-	websocketLogCtrl := handler.NewLogByWebSocketCtrl()
-	injectWebsocketModule(websocketCtrl, websocketLogCtrl)
+	websocketTestCtrl := handler.NewPerformanceTestWebSocketCtrl()
+	websocketLogCtrl := handler.NewPerformanceLogWebSocketCtrl()
+	injectWebsocketModule(websocketCtrl, websocketTestCtrl, websocketLogCtrl)
 
 	websocketAPI := app.Party(consts.WsPath)
 	m := mvc.New(websocketAPI)
 	m.Register(&commService.PrefixedLogger{Prefix: ""})
 	m.HandleWebsocket(websocketCtrl)
+	m.HandleWebsocket(websocketTestCtrl)
 	m.HandleWebsocket(websocketLogCtrl)
 
 	websocketServer := websocket.New(gorilla.Upgrader(
@@ -128,12 +130,17 @@ func (s *AgentServer) Start() {
 	<-s.idleConnClosed
 }
 
-func injectWebsocketModule(websocketCtrl *handler.ExecByWebSocketCtrl, websocketLogCtrl *handler.LogByWebSocketCtrl) {
+func injectWebsocketModule(websocketCtrl *handler.ExecByWebSocketCtrl,
+	websocketTestCtrl *handler.PerformanceTestWebSocketCtrl,
+	websocketLogCtrl *handler.PerformanceLogWebSocketCtrl) {
+
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 
 	err := g.Provide(
 		&inject.Object{Value: websocketCtrl},
+		&inject.Object{Value: websocketTestCtrl},
+		&inject.Object{Value: websocketLogCtrl},
 	)
 	if err != nil {
 		logrus.Fatalf("provide usecase objects to the Graph: %v", err)

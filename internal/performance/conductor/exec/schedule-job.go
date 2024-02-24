@@ -1,9 +1,9 @@
-package controllerExec
+package conductorExec
 
 import (
 	"context"
 	"fmt"
-	"github.com/aaronchen2k/deeptest/internal/performance/controller/dao"
+	"github.com/aaronchen2k/deeptest/internal/performance/conductor/dao"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"

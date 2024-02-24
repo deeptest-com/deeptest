@@ -1,8 +1,9 @@
-package controllerExec
+package conductorService
 
 import (
 	"context"
-	"github.com/aaronchen2k/deeptest/internal/performance/controller/dao"
+	"github.com/aaronchen2k/deeptest/internal/performance/conductor/dao"
+	conductorExec "github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
@@ -29,9 +30,9 @@ type PerformanceTestService struct {
 	execCancel context.CancelFunc
 	client     *ptproto.PerformanceServiceClient
 
-	GrpcService         *GrpcService         `inject:"private"`
-	ScheduleService     *ScheduleService     `inject:"private"`
-	RemoteRunnerService *RemoteRunnerService `inject:"private"`
+	GrpcService         *conductorExec.GrpcService         `inject:"private"`
+	ScheduleService     *conductorExec.ScheduleService     `inject:"private"`
+	RemoteRunnerService *conductorExec.RemoteRunnerService `inject:"private"`
 }
 
 func NewPerformanceTestServiceRef(req ptdomain.PerformanceTestReq) *PerformanceTestService {
@@ -105,7 +106,7 @@ func (s *PerformanceTestService) ExecStart(
 	wgRunners.Wait()
 
 	// close exec and send to web client
-	SetRunningTest(nil)
+	conductorExec.SetRunningTest(nil)
 	s.execCancel()
 	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, req.Room, wsMsg)
 
@@ -128,7 +129,7 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 }
 
 func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
-	ResumeLog()
+	conductorExec.ResumeLog()
 
 	room := req.Room
 	logPath := ptlog.GetLogPath(room)
@@ -157,7 +158,7 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, w
 	}()
 
 	for true {
-		if IsLogSuspend() {
+		if conductorExec.IsLogSuspend() {
 			_logUtils.Debug("<<<<<<< suspend sendLog")
 
 			t.Stop()
@@ -181,7 +182,7 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, w
 }
 
 func (s *PerformanceTestService) StopSendLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
-	SuspendLog()
+	conductorExec.SuspendLog()
 	return
 }
 

@@ -23,10 +23,11 @@ const (
 	ApiPathMock   = "/mocks"
 	WsPath        = ApiPathAgent + "/ws"
 
-	WsDefaultNamespace        = "default"
-	WsPerformanceLogNamespace = "performance_log"
-	WsDefaultRoom             = "default_room"
-	WsChatEvent               = "OnChat"
+	WsDefaultNamespace         = "default"
+	WsPerformanceTestNamespace = "performance_test"
+	WsPerformanceLogNamespace  = "performance_log"
+	WsDefaultRoom              = "default_room"
+	WsChatEvent                = "OnChat"
 
 	WebCheckInterval         = 60 * 60
 	SummaryDataCheckInterval = 60 * 60

@@ -1,4 +1,4 @@
-package controller
+package conductorService
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"

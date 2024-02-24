@@ -1,7 +1,7 @@
 package performance
 
 import (
-	controllerService "github.com/aaronchen2k/deeptest/internal/performance/controller/exec"
+	controllerService "github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"google.golang.org/grpc"
 	"log"

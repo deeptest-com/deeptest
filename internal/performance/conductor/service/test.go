@@ -1,7 +1,7 @@
-package controller
+package conductorService
 
 import (
-	controllerExec "github.com/aaronchen2k/deeptest/internal/performance/controller/exec"
+	conductorExec "github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
@@ -16,7 +16,7 @@ var (
 )
 
 func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
-	runningTest := controllerExec.GetRunningTest()
+	runningTest := conductorExec.GetRunningTest()
 
 	if act == consts.JoinPerformanceTest {
 		if runningTest == nil { // no exist room to join
@@ -28,7 +28,7 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 				websocketHelper.SendExecInstructionToClient(
 					runningTest.Room, err, ptconsts.MsgInstructionJoinExist, req.Room, wsMsg)
 
-				controllerExec.ResumeLog()
+				conductorExec.ResumeLog()
 
 			} else { //  client joined successfully
 				websocketHelper.SendExecInstructionToClient(
@@ -46,9 +46,9 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 		websocketHelper.SendExecInstructionToClient(
 			"performance testing start", nil, ptconsts.MsgInstructionStart, req.Room, wsMsg)
 
-		performanceTestService := controllerExec.NewPerformanceTestServiceRef(req)
+		performanceTestService := NewPerformanceTestServiceRef(req)
 
-		controllerExec.SetRunningTest(&req)
+		conductorExec.SetRunningTest(&req)
 		PerformanceTestServicesMap.Store(req.Room, performanceTestService)
 
 		performanceTestService.ExecStart(req, wsMsg)
@@ -62,12 +62,12 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 
 		err = performanceTestService.ExecStop(wsMsg)
 		if err != nil {
-			controllerExec.SetRunningTest(nil)
+			conductorExec.SetRunningTest(nil)
 			sendStopMsg("stop failed", req.Room, wsMsg)
 			return
 		}
 
-		controllerExec.SetRunningTest(nil)
+		conductorExec.SetRunningTest(nil)
 		sendStopMsg("stop successfully", req.Room, wsMsg)
 
 	}
@@ -75,16 +75,16 @@ func RunPerformanceTest(act consts.ExecType, req ptdomain.PerformanceTestReq, ws
 	return
 }
 
-func getPerformanceTestServiceRef(room string) (ret *controllerExec.PerformanceTestService) {
+func getPerformanceTestServiceRef(room string) (ret *PerformanceTestService) {
 	performanceTestServiceObj, ok := PerformanceTestServicesMap.Load(room)
 	if !ok {
-		controllerExec.SetRunningTest(nil)
+		conductorExec.SetRunningTest(nil)
 		return
 	}
 
-	ret, ok = performanceTestServiceObj.(*controllerExec.PerformanceTestService)
+	ret, ok = performanceTestServiceObj.(*PerformanceTestService)
 	if !ok {
-		controllerExec.SetRunningTest(nil)
+		conductorExec.SetRunningTest(nil)
 		return
 	}
 

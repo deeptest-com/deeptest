@@ -1,4 +1,4 @@
-package controllerExec
+package conductorExec
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"

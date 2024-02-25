@@ -21,7 +21,7 @@ func JoinPerformanceTest(room string, wsMsg *websocket.Message) (err error) {
 			websocketHelper.SendExecInstructionToClient(
 				runningTest.Room, nil, ptconsts.MsgInstructionJoinExist, room, wsMsg)
 
-			conductorExec.ResumeLog()
+			conductorExec.ResumeWsMsg()
 
 		} else { //  client joined successfully
 			websocketHelper.SendExecInstructionToClient(
@@ -34,7 +34,6 @@ func JoinPerformanceTest(room string, wsMsg *websocket.Message) (err error) {
 
 func StartPerformanceTest(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
 	runningTest := conductorExec.GetRunningTest()
-
 	if runningTest != nil { // client should call like this
 		return
 	}
@@ -49,7 +48,7 @@ func StartPerformanceTest(req ptdomain.PerformanceTestReq, wsMsg *websocket.Mess
 	conductorExec.SetRunningTest(&req)
 	PerformanceTestServicesMap.Store(req.Room, performanceTestService)
 
-	performanceTestService.ExecStart(req, wsMsg)
+	go performanceTestService.ExecStart(req, wsMsg)
 
 	return
 }
@@ -82,7 +81,7 @@ func StartPerformanceLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Messa
 		return
 	}
 
-	performanceTestService.StartSendLog(req, wsMsg)
+	go performanceTestService.StartSendLog(req, wsMsg)
 
 	return
 }

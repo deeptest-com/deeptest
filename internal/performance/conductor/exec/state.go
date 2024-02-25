@@ -8,7 +8,7 @@ import (
 var (
 	runningTest *ptdomain.PerformanceTestReq
 
-	suspendLog bool
+	suspendWsMsg bool
 )
 
 func GetRunningRoom() (ret string) {
@@ -27,17 +27,16 @@ func SetRunningTest(val *ptdomain.PerformanceTestReq) {
 	runningTest = val
 }
 
-func IsLogSuspend() bool {
-	return suspendLog
+func IsWsMsgSuspend() bool {
+	return suspendWsMsg
 }
 
-func SuspendLog() {
-	suspendLog = true
+func SuspendWsMsg() {
+	suspendWsMsg = true
 }
-
-func ResumeLog() {
+func ResumeWsMsg() {
 	go func() {
 		time.Sleep(3 * time.Second)
-		suspendLog = false
+		suspendWsMsg = false
 	}()
 }

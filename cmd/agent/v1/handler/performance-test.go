@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
-	controllerExec "github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
+	"github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
 	conductorService "github.com/aaronchen2k/deeptest/internal/performance/conductor/service"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -37,10 +37,12 @@ func (c *PerformanceTestWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Mes
 	_logUtils.Infof(_i118Utils.Sprintf("disconnect to namespace %s, id=%s room=%s",
 		consts.WsPerformanceTestNamespace, c.Conn.ID(), wsMsg.Room))
 
-	// stop performance log schedule job
+	// stop performance msg and log schedule job
+	conductorExec.SuspendWsMsg()
+
 	req := ptdomain.PerformanceTestReq{
 		BaseExecReqOfRunner: ptdomain.BaseExecReqOfRunner{
-			Room: controllerExec.GetRunningRoom(),
+			Room: conductorExec.GetRunningRoom(),
 		},
 	}
 	conductorService.StopPerformanceLog(req, &wsMsg)

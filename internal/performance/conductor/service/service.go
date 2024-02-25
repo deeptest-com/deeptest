@@ -32,7 +32,11 @@ type PerformanceTestService struct {
 
 	execCtx    context.Context
 	execCancel context.CancelFunc
-	client     *ptproto.PerformanceServiceClient
+
+	logCtx    context.Context
+	logCancel context.CancelFunc
+
+	client *ptproto.PerformanceServiceClient
 
 	GrpcService         *conductorExec.GrpcService         `inject:"private"`
 	ScheduleService     *conductorExec.ScheduleService     `inject:"private"`
@@ -149,14 +153,18 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 }
 
 func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
-	conductorExec.ResumeLog()
+	if s.logCtx != nil {
+		return
+	}
+
+	s.logCtx, s.logCancel = context.WithCancel(context.Background())
 
 	room := req.Room
 	logPath := ptlog.GetLogPath(room)
 
 	t, err := tail.TailFile(logPath, tail.Config{Follow: true, ReOpen: true})
 	if err != nil {
-		return
+		goto Label_END_LOG
 	}
 	defer t.Cleanup()
 
@@ -175,14 +183,24 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, w
 				arr = make([]string, 0)
 			}
 		}
+
+		s.logCancel()
 	}()
 
 	for true {
-		if conductorExec.IsLogSuspend() {
-			_logUtils.Debug("<<<<<<< suspend sendLog")
+		if s.logCtx == nil || conductorExec.IsWsMsgSuspend() {
+			t.Stop()
+			goto Label_END_LOG
+		}
+
+		select {
+		case <-s.logCtx.Done():
+			_logUtils.Debug("<<<<<<< stop sendLog job by logCtx.Done")
 
 			t.Stop()
-			return
+			goto Label_END_LOG
+
+		default:
 		}
 
 		select {
@@ -190,7 +208,7 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, w
 			_logUtils.Debug("<<<<<<< stop sendLog job by execCtx.Done")
 
 			t.Stop()
-			return
+			goto Label_END_LOG
 
 		default:
 		}
@@ -198,11 +216,16 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, w
 		time.Sleep(3 * time.Second)
 	}
 
+Label_END_LOG:
+	s.logCtx = nil
+
 	return
 }
 
 func (s *PerformanceTestService) StopSendLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
-	conductorExec.SuspendLog()
+	s.logCancel()
+	s.logCtx = nil
+
 	return
 }
 

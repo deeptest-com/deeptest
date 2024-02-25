@@ -65,7 +65,7 @@ func (s *ScheduleService) SendMetricsToClient(execCtx context.Context, execCance
 			Metrics:              metrics,
 		}
 
-		if !IsLogSuspend() {
+		if !IsWsMsgSuspend() {
 			s.SendMetricsByWebsocket(data, req.Room, wsMsg)
 		}
 

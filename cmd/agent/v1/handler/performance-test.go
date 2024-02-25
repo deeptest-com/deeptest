@@ -73,7 +73,18 @@ func (c *PerformanceTestWebSocketCtrl) OnChat(wsMsg websocket.Message) (err erro
 		return
 	}
 
-	err = conductorService.RunPerformanceTest(req.Act, req.PerformanceTestExecReq, &wsMsg)
+	if req.Act == consts.JoinPerformanceTest {
+		err = conductorService.JoinPerformanceTest(req.PerformanceTestExecReq.Room, &wsMsg)
+	} else if req.Act == consts.StartPerformanceTest {
+		err = conductorService.StartPerformanceTest(req.PerformanceTestExecReq, &wsMsg)
+	} else if req.Act == consts.StopPerformanceTest {
+		err = conductorService.StopPerformanceTest(req.PerformanceTestExecReq.Room, &wsMsg)
+
+	} else if req.Act == consts.StartPerformanceLog {
+		err = conductorService.StartPerformanceLog(req.PerformanceTestExecReq, &wsMsg)
+	} else if req.Act == consts.StopPerformanceLog {
+		err = conductorService.StopPerformanceLog(req.PerformanceTestExecReq, &wsMsg)
+	}
 
 	return
 }

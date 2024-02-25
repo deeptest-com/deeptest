@@ -23,6 +23,10 @@ import (
 	"time"
 )
 
+var (
+	PerformanceTestServicesMap sync.Map
+)
+
 type PerformanceTestService struct {
 	req ptdomain.PerformanceTestReq
 
@@ -55,6 +59,22 @@ func NewPerformanceTestServiceRef(req ptdomain.PerformanceTestReq) *PerformanceT
 	}
 
 	return service
+}
+
+func GetPerformanceTestServiceRef(room string) (ret *PerformanceTestService) {
+	performanceTestServiceObj, ok := PerformanceTestServicesMap.Load(room)
+	if !ok {
+		conductorExec.SetRunningTest(nil)
+		return
+	}
+
+	ret, ok = performanceTestServiceObj.(*PerformanceTestService)
+	if !ok {
+		conductorExec.SetRunningTest(nil)
+		return
+	}
+
+	return
 }
 
 func (s *PerformanceTestService) Connect(runner *ptproto.Runner) (client ptproto.PerformanceServiceClient) {
@@ -97,7 +117,7 @@ func (s *PerformanceTestService) ExecStart(
 		go func() {
 			defer wgRunners.Done()
 
-			s.HandleGrpcMsg(stream)
+			s.handleGrpcMsg(stream)
 			stream.CloseSend()
 		}()
 	}
@@ -252,7 +272,7 @@ func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.Performance
 	return
 }
 
-func (s *PerformanceTestService) HandleGrpcMsg(stream ptproto.PerformanceService_ExecStartClient) (err error) {
+func (s *PerformanceTestService) handleGrpcMsg(stream ptproto.PerformanceService_ExecStartClient) (err error) {
 	for true {
 		resp, err := stream.Recv()
 		if err == io.EOF {

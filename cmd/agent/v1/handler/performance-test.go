@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
-	"github.com/aaronchen2k/deeptest/internal/agent/service"
 	controllerExec "github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
 	conductorService "github.com/aaronchen2k/deeptest/internal/performance/conductor/service"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
@@ -38,16 +37,13 @@ func (c *PerformanceTestWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Mes
 	_logUtils.Infof(_i118Utils.Sprintf("disconnect to namespace %s, id=%s room=%s",
 		consts.WsPerformanceTestNamespace, c.Conn.ID(), wsMsg.Room))
 
-	// stop log schedule job
-	req := agentDomain.WsReq{
-		Act: consts.StopPerformanceLog,
-		PerformanceTestExecReq: ptdomain.PerformanceTestReq{
-			BaseExecReqOfRunner: ptdomain.BaseExecReqOfRunner{
-				Room: controllerExec.GetRunningRoom(),
-			},
+	// stop performance log schedule job
+	req := ptdomain.PerformanceTestReq{
+		BaseExecReqOfRunner: ptdomain.BaseExecReqOfRunner{
+			Room: controllerExec.GetRunningRoom(),
 		},
 	}
-	service.StartExec(req, &wsMsg)
+	conductorService.StopPerformanceLog(req, &wsMsg)
 
 	resp := _domain.WsResp{Msg: "from agent: disconnected to websocket"}
 	bytes, _ := json.Marshal(resp)

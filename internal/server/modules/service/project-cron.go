@@ -75,6 +75,13 @@ func (s *ProjectCronService) initCron(req *model.ProjectCron) {
 		req.SwaggerConfig.ID = 0
 		req.Switch = consts.SwitchON
 	}
+
+	if req.SwaggerConfig.CategoryId == 0 {
+		req.SwaggerConfig.CategoryId = -1
+	}
+	if req.LecangConfig.CategoryId == 0 {
+		req.LecangConfig.CategoryId = -1
+	}
 }
 
 func (s *ProjectCronService) Delete(id uint) (err error) {
@@ -110,6 +117,7 @@ func (s *ProjectCronService) Clone(id, userId uint) (ret model.ProjectCron, err 
 
 	oldCron.ID = 0
 	oldCron.CreateUserId = userId
+	oldCron.UpdatedAt = nil
 	ret, err = s.Save(oldCron)
 
 	return

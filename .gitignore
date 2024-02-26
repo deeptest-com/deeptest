@@ -8,6 +8,7 @@ tmp/
 .idea/
 
 /deeptest.db
+/agent.db
 /res/res.go
 /res/agent.yaml
 /res/server.yaml
@@ -19,6 +20,7 @@ tmp/
 /static/dist/
 /rbac_model.conf
 /server.yaml
+/agent.yaml
 /upload/
 /cmd/test/nodejs/node_modules/
 /cmd/test/nodejs/package-lock.json

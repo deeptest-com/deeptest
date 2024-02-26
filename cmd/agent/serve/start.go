@@ -60,7 +60,7 @@ func Init() *AgentServer {
 	// init websocket
 	websocketCtrl := handler.NewWebsocketCtrl()
 	websocketTestCtrl := handler.NewPerformanceTestWebSocketCtrl()
-	injectWebsocketModule(websocketCtrl, websocketTestCtrl)
+	injectWebsocketModule(websocketCtrl)
 
 	websocketAPI := app.Party(consts.WsPath)
 	m := mvc.New(websocketAPI)
@@ -128,15 +128,13 @@ func (s *AgentServer) Start() {
 	<-s.idleConnClosed
 }
 
-func injectWebsocketModule(websocketCtrl *handler.ExecByWebSocketCtrl,
-	websocketTestCtrl *handler.PerformanceTestWebSocketCtrl) {
+func injectWebsocketModule(websocketCtrl *handler.ExecByWebSocketCtrl) {
 
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 
 	err := g.Provide(
 		&inject.Object{Value: websocketCtrl},
-		&inject.Object{Value: websocketTestCtrl},
 	)
 	if err != nil {
 		logrus.Fatalf("provide usecase objects to the Graph: %v", err)

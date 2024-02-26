@@ -6,24 +6,54 @@ import (
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
 	conductorService "github.com/aaronchen2k/deeptest/internal/performance/conductor/service"
-	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptwebsocket "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/facebookgo/inject"
 	"github.com/kataras/iris/v12/websocket"
+	"github.com/sirupsen/logrus"
 )
 
 type PerformanceTestWebSocketCtrl struct {
 	Namespace         string
 	*websocket.NSConn `stateless:"true"`
+
+	performanceTestService *conductorService.PerformanceTestService
 }
 
 func NewPerformanceTestWebSocketCtrl() *PerformanceTestWebSocketCtrl {
 	inst := &PerformanceTestWebSocketCtrl{Namespace: consts.WsPerformanceTestNamespace}
+
 	return inst
+}
+
+func (c *PerformanceTestWebSocketCtrl) getService() (ret *conductorService.PerformanceTestService) {
+	if c.performanceTestService != nil {
+		return c.performanceTestService
+	}
+
+	insts := &conductorService.PerformanceTestService{}
+
+	var g inject.Graph
+	g.Logger = logrus.StandardLogger()
+
+	if err := g.Provide(
+		&inject.Object{Value: insts},
+	); err != nil {
+		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
+	}
+
+	err := g.Populate()
+	if err != nil {
+		logrus.Fatalf("populate the incomplete Objects: %v", err)
+	}
+
+	c.performanceTestService = insts
+
+	return c.getService()
 }
 
 func (c *PerformanceTestWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
@@ -41,13 +71,7 @@ func (c *PerformanceTestWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Mes
 
 	// stop performance msg and log schedule job
 	conductorExec.SuspendWsMsg()
-
-	req := ptdomain.PerformanceTestReq{
-		BaseExecReqOfRunner: ptdomain.BaseExecReqOfRunner{
-			Room: conductorExec.GetRunningRoom(),
-		},
-	}
-	conductorService.StopPerformanceLog(req, &wsMsg)
+	c.getService().StopSendLog()
 
 	resp := _domain.WsResp{Msg: "from agent: disconnected to websocket"}
 	bytes, _ := json.Marshal(resp)
@@ -69,21 +93,21 @@ func (c *PerformanceTestWebSocketCtrl) OnChat(wsMsg websocket.Message) (err erro
 		return
 	}
 
-	if req.Act == "init" {
-		return
-	}
+	if req.Act == consts.JoinPerformanceTest { // test
+		err = c.getService().ExecJoin(req.PerformanceTestExecReq.Room, &wsMsg)
 
-	if req.Act == consts.JoinPerformanceTest {
-		err = conductorService.JoinPerformanceTest(req.PerformanceTestExecReq.Room, &wsMsg)
 	} else if req.Act == consts.StartPerformanceTest {
-		err = conductorService.StartPerformanceTest(req.PerformanceTestExecReq, &wsMsg)
-	} else if req.Act == consts.StopPerformanceTest {
-		err = conductorService.StopPerformanceTest(req.PerformanceTestExecReq.Room, &wsMsg)
+		err = c.getService().ExecStart(req.PerformanceTestExecReq, &wsMsg)
 
-	} else if req.Act == consts.StartPerformanceLog {
-		err = conductorService.StartPerformanceLog(req.PerformanceTestExecReq, &wsMsg)
+	} else if req.Act == consts.StopPerformanceTest {
+		err = c.getService().ExecStop(&wsMsg)
+
+	} else if req.Act == consts.StartPerformanceLog { // log
+		err = c.getService().StartSendLog(req.PerformanceTestExecReq, &wsMsg)
+
 	} else if req.Act == consts.StopPerformanceLog {
-		err = conductorService.StopPerformanceLog(req.PerformanceTestExecReq, &wsMsg)
+		err = c.getService().StopSendLog()
+
 	}
 
 	return

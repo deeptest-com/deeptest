@@ -323,7 +323,7 @@ func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token strin
 	if err != nil {
 		logUtils.Errorf(err.Error())
 	}
-
+	respContent.Data.UserInfo.Mail = respContent.Data.UserInfo.Username
 	user = respContent.Data.UserInfo
 
 	return

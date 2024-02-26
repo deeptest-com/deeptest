@@ -61,9 +61,7 @@ func UserAuth() iris.Handler {
 
 		appName, token, origin, tenantId := getAppName(ctx)
 		user := user.NewUser(appName)
-
-		logUtils.Infof("authorization start, appName:%s,token:%s,origin:%s,tenantId:%s", appName, token, origin, tenantId)
-
+		logUtils.Infof("authorization, appName:%s,token:%s,origin:%s,tenantId:%s", appName, token, origin, tenantId)
 		if appName != "" {
 			userInfo, err := user.GetUserInfoByToken(tenantId, token, origin)
 			if err == nil && userInfo.Username != "" {
@@ -98,6 +96,8 @@ func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo)
 		Password:  commonUtils.RandStr(8),
 	}}
 	userRepo := repo.UserRepo{}
+	userRepo.ProfileRepo = &repo.ProfileRepo{}
+	userRepo.RoleRepo = &repo.RoleRepo{}
 	userRepo.Create(tenantId, req)
 
 	user, err := userRepo.GetByUsernameOrEmail(tenantId, userInfo.Username, userInfo.Mail)
@@ -124,6 +124,7 @@ func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo)
 }
 
 func getAppName(ctx *context.Context) (appName enum.AppName, token, origin string, tenantId consts.TenantId) {
+
 	tenantId = common.GetTenantId(ctx)
 	origin = ctx.GetHeader("Origin")
 	//origin = "http://192.168.5.60:804"

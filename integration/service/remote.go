@@ -301,6 +301,7 @@ func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token strin
 		Headers:  &headers,
 	}
 
+	logUtils.Infof("leyan-getUserInfoByToken: %s", _commUtils.JsonEncode(httpReq))
 	var resp domain.DebugResponse
 	resp, err = httpHelper.Get(httpReq)
 	if err != nil {
@@ -309,7 +310,7 @@ func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token strin
 	}
 
 	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Errorf("meta get method detail failed, response %v", resp)
+		logUtils.Errorf("meta get method detail failed, response %v", _commUtils.JsonEncode(resp))
 		err = fmt.Errorf("meta get method detail failed, response %v", resp)
 		return
 	}

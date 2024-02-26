@@ -98,7 +98,7 @@ func DBFile() string {
 // GormMySQL 初始化Mysql数据库
 func GormMySQL(m config.Mysql) *gorm.DB {
 	if m.Url == "" {
-		return nil
+		return new(gorm.DB)
 	}
 	mysqlConfig := mysql.Config{
 		DSN:                       m.Dsn(), // DSN data source name

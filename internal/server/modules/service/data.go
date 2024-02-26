@@ -84,10 +84,12 @@ func (s *DataService) InitDB(tenantId consts.TenantId, req v1.DataReq) error {
 		}
 	}
 
-	if err := s.writeConfig(config.VIPER, config.CONFIG); err != nil {
-		logUtils.Errorf("更新配置文件错误", zap.String("writeConfig(consts.VIPER)", err.Error()))
+	if !config.CONFIG.Saas.Switch {
+		if err := s.writeConfig(config.VIPER, config.CONFIG); err != nil {
+			logUtils.Errorf("更新配置文件错误", zap.String("writeConfig(consts.VIPER)", err.Error()))
+		}
 	}
-
+	
 	if s.DataRepo.GetDB(tenantId) == nil {
 		logUtils.Error("数据库初始化错误")
 		s.refreshConfig(config.VIPER, defaultConfig)

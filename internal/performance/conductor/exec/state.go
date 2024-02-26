@@ -13,7 +13,6 @@ var (
 
 func GetRunningRoom() (ret string) {
 	test := GetRunningTest()
-
 	if test != nil {
 		ret = test.Room
 	}
@@ -30,7 +29,6 @@ func SetRunningTest(val *ptdomain.PerformanceTestReq) {
 func IsWsMsgSuspend() bool {
 	return suspendWsMsg
 }
-
 func SuspendWsMsg() {
 	suspendWsMsg = true
 }

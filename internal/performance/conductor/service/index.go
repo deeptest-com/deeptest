@@ -14,18 +14,18 @@ func JoinPerformanceTest(room string, wsMsg *websocket.Message) (err error) {
 
 	if runningTest == nil { // no exist room to join
 		websocketHelper.SendExecInstructionToClient(
-			"", nil, ptconsts.MsgInstructionJoinExist, room, wsMsg)
+			"", nil, ptconsts.MsgInstructionJoinExist, wsMsg)
 
 	} else {
 		if room != runningTest.Room { // notify client to join
 			websocketHelper.SendExecInstructionToClient(
-				runningTest.Room, nil, ptconsts.MsgInstructionJoinExist, room, wsMsg)
+				runningTest.Room, nil, ptconsts.MsgInstructionJoinExist, wsMsg)
 
 			conductorExec.ResumeWsMsg()
 
 		} else { //  client joined successfully
 			websocketHelper.SendExecInstructionToClient(
-				"performance testing joined", runningTest, ptconsts.MsgInstructionStart, room, wsMsg)
+				"performance testing joined", runningTest, ptconsts.MsgInstructionStart, wsMsg)
 		}
 	}
 
@@ -41,7 +41,7 @@ func StartPerformanceTest(req ptdomain.PerformanceTestReq, wsMsg *websocket.Mess
 	ptlog.Init(req.Room)
 
 	websocketHelper.SendExecInstructionToClient(
-		"performance testing start", nil, ptconsts.MsgInstructionStart, req.Room, wsMsg)
+		"performance testing start", nil, ptconsts.MsgInstructionStart, wsMsg)
 
 	performanceTestService := NewPerformanceTestServiceRef(req)
 
@@ -56,19 +56,19 @@ func StartPerformanceTest(req ptdomain.PerformanceTestReq, wsMsg *websocket.Mess
 func StopPerformanceTest(room string, wsMsg *websocket.Message) (err error) {
 	performanceTestService := GetPerformanceTestServiceRef(room)
 	if performanceTestService == nil {
-		sendStopMsg("get performanceTestService failed", room, wsMsg)
+		sendStopMsg("get performanceTestService failed", wsMsg)
 		return
 	}
 
 	err = performanceTestService.ExecStop(wsMsg)
 	if err != nil {
 		conductorExec.SetRunningTest(nil)
-		sendStopMsg("stop failed", room, wsMsg)
+		sendStopMsg("stop failed", wsMsg)
 		return
 	}
 
 	conductorExec.SetRunningTest(nil)
-	sendStopMsg("stop successfully", room, wsMsg)
+	sendStopMsg("stop successfully", wsMsg)
 
 	return
 }
@@ -77,7 +77,7 @@ func StartPerformanceLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Messa
 	room := req.Room
 	performanceTestService := GetPerformanceTestServiceRef(room)
 	if performanceTestService == nil {
-		sendStopMsg("get performanceTestService failed", req.Room, wsMsg)
+		sendStopMsg("get performanceTestService failed", wsMsg)
 		return
 	}
 
@@ -90,7 +90,7 @@ func StopPerformanceLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Messag
 	room := req.Room
 	performanceTestService := GetPerformanceTestServiceRef(room)
 	if performanceTestService == nil {
-		sendStopMsg("get performanceTestService failed", req.Room, wsMsg)
+		sendStopMsg("get performanceTestService failed", wsMsg)
 		return
 	}
 
@@ -99,7 +99,7 @@ func StopPerformanceLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Messag
 	return
 }
 
-func sendStopMsg(data interface{}, room string, wsMsg *websocket.Message) {
+func sendStopMsg(data interface{}, wsMsg *websocket.Message) {
 	websocketHelper.SendExecInstructionToClient(
-		"performance testing stop", data, ptconsts.MsgInstructionTerminal, room, wsMsg)
+		"performance testing stop", data, ptconsts.MsgInstructionTerminal, wsMsg)
 }

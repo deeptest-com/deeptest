@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
 	conductorService "github.com/aaronchen2k/deeptest/internal/performance/conductor/service"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	ptwebsocket "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
@@ -26,7 +27,8 @@ func NewPerformanceTestWebSocketCtrl() *PerformanceTestWebSocketCtrl {
 }
 
 func (c *PerformanceTestWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
-	websocketHelper.SetConn(c.Conn)
+	ptwebsocket.SetConn(c.Conn)
+
 	_logUtils.Infof(_i118Utils.Sprintf("connect to namespace %s, id=%s room=%s",
 		consts.WsPerformanceTestNamespace, c.Conn.ID(), wsMsg.Room))
 

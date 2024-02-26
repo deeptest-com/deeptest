@@ -13,11 +13,6 @@ import (
 
 const (
 	result = "result"
-	outPut = "output"
-)
-
-var (
-	ch chan int
 )
 
 type WebSocketCtrl struct {

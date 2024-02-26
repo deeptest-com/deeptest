@@ -18,7 +18,7 @@ var (
 	wsConn *neffos.Conn
 )
 
-func SendExecInstructionToClient(msg string, data interface{}, instructionType ptconsts.MsgInstructionServerToRunner, uuid string, wsMsg *websocket.Message) {
+func SendExecInstructionToClient(msg string, data interface{}, instructionType ptconsts.MsgInstructionServerToRunner, wsMsg *websocket.Message) {
 	obj := ptdomain.WsResp{
 		Category:        ptconsts.MsgCategoryInstruction,
 		InstructionType: instructionType,
@@ -31,14 +31,8 @@ func SendExecInstructionToClient(msg string, data interface{}, instructionType p
 	if wsMsg != nil {
 		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, msg))
 
-		mqData := _domain.MqMsg{
-			Namespace: wsMsg.Namespace,
-			Room:      wsMsg.Room,
-			Event:     wsMsg.Event,
-			Content:   string(bytes),
-		}
+		Broadcast(wsMsg.Namespace, wsMsg.Room, wsMsg.Event, string(bytes))
 
-		websocketHelper.PubMsg(mqData)
 	} else {
 		logUtils.Infof(msg)
 	}

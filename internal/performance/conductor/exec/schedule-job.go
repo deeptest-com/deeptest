@@ -7,7 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
-	websocketHelper "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
+	"github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -93,7 +93,7 @@ func (s *ScheduleService) SendMetricsToClient(execCtx context.Context, execCance
 
 func (s *ScheduleService) SendMetricsByWebsocket(result ptdomain.PerformanceExecResults, execUUid string, wsMsg *websocket.Message) {
 	if wsMsg != nil {
-		websocketHelper.SendExecResultToClient(result, ptconsts.MsgResultRecord, execUUid, wsMsg)
+		ptwebsocket.SendExecResultToClient(result, ptconsts.MsgResultRecord, execUUid, wsMsg)
 	}
 }
 

@@ -132,7 +132,7 @@ func (s *PerformanceTestService) ExecStart(
 	// close exec and send to web client
 	conductorExec.SetRunningTest(nil)
 	s.execCancel()
-	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, req.Room, wsMsg)
+	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 
 	return
 }
@@ -147,7 +147,7 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 	s.RemoteRunnerService.CallStop(s.req)
 
 	// send end msg to websocket client
-	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, s.req.Room, wsMsg)
+	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 
 	return
 }

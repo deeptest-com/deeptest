@@ -49,10 +49,6 @@ func SubMsg() {
 }
 
 func PubMsg(data _domain.MqMsg) {
-	if strings.Index(data.Content, "joinExist") > -1 {
-		log.Print(1)
-	}
-
 	err := mqClient.Publish(mqTopic, data)
 	if err != nil {
 		fmt.Println("pub mq message failed")

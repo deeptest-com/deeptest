@@ -29,9 +29,9 @@ type JsVm struct {
 	JsRuntime *goja.Runtime
 }
 
-func ExecScript(script string) (err error) {
+func ExecScript(tenantId consts.TenantId, script string) (err error) {
 	if mockVm.JsRuntime == nil {
-		InitJsRuntime()
+		InitJsRuntime(tenantId)
 	}
 
 	if script == "" {
@@ -105,9 +105,9 @@ func SetValueToGoja(name string, value interface{}) {
 	_setValueFunc(name, value)
 }
 
-func InitJsRuntime() {
+func InitJsRuntime(tenantId consts.TenantId) {
 	if mockVm.JsRuntime != nil {
-		jslibHelper.LoadServerJslibs(mockVm.JsRuntime, mockRequire)
+		jslibHelper.LoadServerJslibs(tenantId, mockVm.JsRuntime, mockRequire)
 		return
 	}
 
@@ -135,5 +135,5 @@ func InitJsRuntime() {
 	mockVm.JsRuntime.Set("dt", dt)
 
 	// import other custom libs
-	jslibHelper.LoadServerJslibs(mockVm.JsRuntime, mockRequire)
+	jslibHelper.LoadServerJslibs(tenantId, mockVm.JsRuntime, mockRequire)
 }

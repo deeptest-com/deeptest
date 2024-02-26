@@ -40,13 +40,15 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 		}
 	}
 	var err error
-	if config.CONFIG.Saas.Switch {
+	if tenantId != "" {
+		err = c.DataService.InitDB(tenantId, req)
+	} else if config.CONFIG.Saas.Switch {
 		tenants := tenant.NewTenant().GetInfos()
 		for _, tenant := range tenants {
 			go c.DataService.InitDB(tenant.Id, req)
 		}
 	} else {
-		err = c.DataService.InitDB(tenantId, req)
+		err = c.DataService.InitDB("", req)
 	}
 
 	if err != nil {

@@ -2,8 +2,10 @@ package middleware
 
 import (
 	"bytes"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/saas/common"
 	"io/ioutil"
 	"strings"
 	"time"
@@ -63,8 +65,8 @@ func OperationRecord() iris.Handler {
 		record.Status = ctx.GetStatusCode()
 		record.Latency = latency
 		record.Resp = writer.body.String()
-
-		if err := CreateOplog(record); err != nil {
+		tenantId := common.GetTenantId(ctx)
+		if err := CreateOplog(tenantId, record); err != nil {
 			logUtils.Errorf("生成日志错误 %s", zap.String("错误:", err.Error()))
 		}
 	}
@@ -81,8 +83,8 @@ func (r responseBodyWriter) Write(b []byte) (int, error) {
 }
 
 // CreateOplog
-func CreateOplog(ol Oplog) error {
-	err := dao.GetDB().Model(&Oplog{}).Create(&ol).Error
+func CreateOplog(tenantId consts.TenantId, ol Oplog) error {
+	err := dao.GetDB(tenantId).Model(&Oplog{}).Create(&ol).Error
 	if err != nil {
 		logUtils.Errorf("生成系统日志错误 %s", zap.String("错误:", err.Error()))
 		return err

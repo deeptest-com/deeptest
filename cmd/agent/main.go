@@ -59,7 +59,7 @@ func injectModule(ws *agentServe.AgentServer) {
 
 	// inject objects
 	if err := g.Provide(
-		&inject.Object{Value: dao.GetDB()},
+		&inject.Object{Value: dao.GetDB("")},
 		&inject.Object{Value: cron},
 		&inject.Object{Value: indexModule},
 	); err != nil {

@@ -173,8 +173,8 @@ func (r *RoleRepo) FindInId(tenantId consts.TenantId, ids []string) (roles []v1.
 // AddPermForRole
 func (r *RoleRepo) AddPermForRole(tenantId consts.TenantId, id uint, perms [][]string) error {
 	roleId := strconv.FormatUint(uint64(id), 10)
-	oldPerms := casbin.GetPermissionsForUser(roleId)
-	_, err := casbin.Instance().RemovePolicies(oldPerms)
+	oldPerms := casbin.GetPermissionsForUser(tenantId, roleId)
+	_, err := casbin.Instance(tenantId).RemovePolicies(oldPerms)
 	if err != nil {
 		logUtils.Errorf("add policy err: %+v", zap.String("错误:", err.Error()))
 		return err
@@ -189,7 +189,7 @@ func (r *RoleRepo) AddPermForRole(tenantId consts.TenantId, id uint, perms [][]s
 		newPerms = append(newPerms, append([]string{roleId}, perm...))
 	}
 	logUtils.Debugf("添加权限到角色", myZap.Strings("新权限", newPerms))
-	_, err = casbin.Instance().AddPolicies(newPerms)
+	_, err = casbin.Instance(tenantId).AddPolicies(newPerms)
 	if err != nil {
 		logUtils.Errorf("add policy err: %+v", zap.String("错误:", err.Error()))
 		return err

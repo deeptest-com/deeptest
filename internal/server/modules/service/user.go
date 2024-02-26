@@ -102,12 +102,12 @@ func (s *UserService) GetUsersNotExistedInProject(tenantId consts.TenantId, proj
 	return
 }
 
-func (s *UserService) UpdateSysRoleForUser(userId uint, roleIds []uint) (err error) {
+func (s *UserService) UpdateSysRoleForUser(tenantId consts.TenantId, userId uint, roleIds []uint) (err error) {
 	strRoleIds := make([]string, 0)
 	for _, v := range roleIds {
 		strRoleIds = append(strRoleIds, strconv.Itoa(int(v)))
 	}
-	err = s.UserRepo.UpdateRoleForUser(strconv.Itoa(int(userId)), strRoleIds)
+	err = s.UserRepo.UpdateRoleForUser(tenantId, strconv.Itoa(int(userId)), strRoleIds)
 
 	return
 }

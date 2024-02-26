@@ -27,7 +27,7 @@ func (s *JslibService) Save(tenantId consts.TenantId, req *model.SysJslib) (err 
 		return
 	}
 
-	jslibHelper.InitJslibCache()
+	jslibHelper.InitJslibCache(tenantId)
 
 	return
 }
@@ -35,7 +35,7 @@ func (s *JslibService) Save(tenantId consts.TenantId, req *model.SysJslib) (err 
 func (s *JslibService) UpdateName(tenantId consts.TenantId, req v1.JslibReq) (err error) {
 	err = s.JslibRepo.UpdateName(tenantId, req)
 
-	jslibHelper.InitJslibCache()
+	jslibHelper.InitJslibCache(tenantId)
 
 	return
 }

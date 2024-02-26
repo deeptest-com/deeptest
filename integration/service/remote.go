@@ -529,7 +529,7 @@ func (s *RemoteService) GetUserButtonPermissions(tenantId consts.TenantId, usern
 			},
 		},
 	}
-
+	logUtils.Infof("leyan-UserButtonPermissions,%s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get UserButtonPermissions failed, error, %s", err.Error())
@@ -630,7 +630,7 @@ func (s *RemoteService) GetUserMenuPermissions(tenantId consts.TenantId, usernam
 			},
 		},
 	}
-
+	logUtils.Infof("leyan-GetUserMenuPermissions %s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get GetUserMenuPermissions failed, error, %s", err.Error())

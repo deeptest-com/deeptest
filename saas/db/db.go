@@ -15,7 +15,7 @@ func GetByTenantId(tenantId consts.TenantId) (m config.Mysql) {
 
 	m = config.Mysql{}
 
-	m.Url, m.Username, m.Password, m.Dbname, m.Config = dbConfig.Path, dbConfig.Username, dbConfig.Password, dbConfig.Dbname, dbConfig.Config
+	m.Url, m.Username, m.Password, m.Dbname, m.Config, m.LogMode = dbConfig.Path, dbConfig.Username, dbConfig.Password, dbConfig.Dbname, dbConfig.Config, true
 	/*
 		m.Url = "127.0.0.1:3306"
 		m.Username = "root"

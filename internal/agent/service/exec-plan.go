@@ -46,7 +46,7 @@ func RunPlan(req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websock
 		session, _ := ExecScenario(&scenario, req.EnvironmentId, wsMsg)
 
 		scenarioReport, _ := SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,
-			agentExec.GetServerUrl(execUuid), agentExec.GetServerToken(execUuid))
+			agentExec.GetServerUrl(execUuid), agentExec.GetServerToken(execUuid), req.TenantId)
 		session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 
 		session.RootProcessor.Result.ScenarioReportId = uint(scenarioReport.ID)
@@ -56,7 +56,7 @@ func RunPlan(req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websock
 
 	// submit result
 	result.Stat = *agentExec.GetInterfaceStat(execUuid)
-	report, _ := SubmitPlanResult(result, req.PlanId, req.ServerUrl, req.Token)
+	report, _ := SubmitPlanResult(result, req.PlanId, req.ServerUrl, req.Token, req.TenantId)
 	execUtils.SendResultMsg(report, wsMsg)
 	//sendPlanSubmitResult(req.PlanId, wsMsg)
 

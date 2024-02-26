@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/saas/tenant"
 	"strings"
 
 	"github.com/kataras/iris/v12"
@@ -15,6 +16,7 @@ import (
 )
 
 type DataCtrl struct {
+	BaseCtrl
 	DataService *service.DataService `inject:""`
 }
 
@@ -27,6 +29,7 @@ type DataCtrl struct {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/init/initdb	[post]
 func (c *DataCtrl) Init(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.DataReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -36,8 +39,16 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 			return
 		}
 	}
+	var err error
+	if config.CONFIG.Saas.Switch {
+		tenants := tenant.NewTenant().GetInfos()
+		for _, tenant := range tenants {
+			go c.DataService.InitDB(tenant.Id, req)
+		}
+	} else {
+		err = c.DataService.InitDB(tenantId, req)
+	}
 
-	err := c.DataService.InitDB(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -54,7 +65,8 @@ func (c *DataCtrl) Init(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{needInit=bool}}
 // @Router	/api/v1/init/checkdb	[get]
 func (c *DataCtrl) Check(ctx iris.Context) {
-	if c.DataService.DataRepo.DB == nil {
+	tenantId := c.getTenantId(ctx)
+	if c.DataService.DataRepo.GetDB(tenantId) == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NeedInitErr.Code, Data: iris.Map{
 			"needInit": true,
 		}, Msg: str.Join(_domain.NeedInitErr.Msg, ":数据库初始化失败")})

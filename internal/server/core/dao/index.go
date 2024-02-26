@@ -3,36 +3,37 @@ package dao
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	SaasDBresolver "github.com/aaronchen2k/deeptest/internal/pkg/helper/dbresolver"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	sassDB "github.com/aaronchen2k/deeptest/saas/db"
+	"go.uber.org/zap"
+	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"gorm.io/gorm/schema"
 	"gorm.io/plugin/dbresolver"
 	"os"
 	"path/filepath"
 	"sync"
 	"time"
-
-	"go.uber.org/zap"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
 )
 
 var (
-	once sync.Once
-	db   *gorm.DB
+	once       sync.Once
+	db         *gorm.DB
+	dbResolver *SaasDBresolver.DBResolver
 )
 
 // GetDB 数据库单例
 func GetDB() *gorm.DB {
 	once.Do(func() {
 		if consts.RunFrom == consts.FromServer && config.CONFIG.System.DbType == "mysql" {
-			db = GormMySQL()
+			db = GormMySQL(config.CONFIG.Mysql)
 		} else {
 			db = GormSQLLite()
 		}
 	})
-
 	return db
 }
 
@@ -90,9 +91,8 @@ func DBFile() string {
 }
 
 // GormMySQL 初始化Mysql数据库
-func GormMySQL() *gorm.DB {
-	m := config.CONFIG.Mysql
-	if m.Dbname == "" {
+func GormMySQL(m config.Mysql) *gorm.DB {
+	if m.Url == "" {
 		return nil
 	}
 	mysqlConfig := mysql.Config{
@@ -135,4 +135,24 @@ func gormConfig(mod bool) *gorm.Config {
 		gormConf.Logger = Default.LogMode(logger.Silent)
 	}
 	return gormConf
+}
+
+func GetDBResolver() *SaasDBresolver.DBResolver {
+	if dbResolver == nil {
+		dbResolver = SaasDBresolver.NewDBResolver()
+	}
+
+	return dbResolver
+}
+
+func InitSaasDBHandler(dbName consts.TenantId) (db *gorm.DB, err error) {
+	var m config.Mysql
+	if dbName != "" {
+		m = sassDB.GetByTenantId(dbName)
+		return GormMySQL(m), nil
+	} else {
+		//return GetDB(), nil
+	}
+
+	return
 }

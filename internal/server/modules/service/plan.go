@@ -19,8 +19,8 @@ type PlanService struct {
 	EnvironmentRepo *repo.EnvironmentRepo `inject:""`
 }
 
-func (s *PlanService) Paginate(req v1.PlanReqPaginate, projectId int) (ret _domain.PageData, err error) {
-	ret, err = s.PlanRepo.Paginate(req, projectId)
+func (s *PlanService) Paginate(tenantId consts.TenantId, req v1.PlanReqPaginate, projectId int) (ret _domain.PageData, err error) {
+	ret, err = s.PlanRepo.Paginate(tenantId, req, projectId)
 
 	if err != nil {
 		return
@@ -29,9 +29,9 @@ func (s *PlanService) Paginate(req v1.PlanReqPaginate, projectId int) (ret _doma
 	return
 }
 
-func (s *PlanService) GetById(id uint, detail bool) (ret model.Plan, err error) {
+func (s *PlanService) GetById(tenantId consts.TenantId, id uint, detail bool) (ret model.Plan, err error) {
 	userIds := make([]uint, 0)
-	ret, err = s.PlanRepo.Get(id)
+	ret, err = s.PlanRepo.Get(tenantId, id)
 	if err != nil {
 		return
 	}
@@ -39,12 +39,12 @@ func (s *PlanService) GetById(id uint, detail bool) (ret model.Plan, err error) 
 	userIds = append(userIds, ret.UpdateUserId)
 	userIds = append(userIds, ret.CreateUserId)
 
-	lastPlanReport, err := s.PlanReportRepo.GetLastByPlanId(id)
+	lastPlanReport, err := s.PlanReportRepo.GetLastByPlanId(tenantId, id)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return
 	}
 
-	planExecTimes, err := s.PlanReportRepo.GetPlanExecNumber(id)
+	planExecTimes, err := s.PlanReportRepo.GetPlanExecNumber(tenantId, id)
 	if err != nil {
 		return
 	}
@@ -62,7 +62,7 @@ func (s *PlanService) GetById(id uint, detail bool) (ret model.Plan, err error) 
 		}
 	}
 
-	userIdNameMap := s.UserRepo.GetUserIdNameMap(userIds)
+	userIdNameMap := s.UserRepo.GetUserIdNameMap(tenantId, userIds)
 
 	if adminName, ok := userIdNameMap[ret.AdminId]; ok {
 		ret.AdminName = adminName
@@ -81,7 +81,7 @@ func (s *PlanService) GetById(id uint, detail bool) (ret model.Plan, err error) 
 		}
 		ret.ExecTime = lastPlanReport.CreatedAt
 
-		environment, _ := s.EnvironmentRepo.Get(lastPlanReport.ExecEnvId)
+		environment, _ := s.EnvironmentRepo.Get(tenantId, lastPlanReport.ExecEnvId)
 		if environment.ID != 0 {
 			ret.ExecEnv = environment.Name
 		}
@@ -94,32 +94,32 @@ func (s *PlanService) GetById(id uint, detail bool) (ret model.Plan, err error) 
 	return
 }
 
-func (s *PlanService) Create(req model.Plan) (po model.Plan, bizErr *_domain.BizErr) {
-	po, bizErr = s.PlanRepo.Create(req)
+func (s *PlanService) Create(tenantId consts.TenantId, req model.Plan) (po model.Plan, bizErr *_domain.BizErr) {
+	po, bizErr = s.PlanRepo.Create(tenantId, req)
 
 	return
 }
 
-func (s *PlanService) Update(req model.Plan) error {
-	return s.PlanRepo.Update(req)
+func (s *PlanService) Update(tenantId consts.TenantId, req model.Plan) error {
+	return s.PlanRepo.Update(tenantId, req)
 }
 
-func (s *PlanService) DeleteById(id uint) error {
-	return s.PlanRepo.DeleteById(id)
+func (s *PlanService) DeleteById(tenantId consts.TenantId, id uint) error {
+	return s.PlanRepo.DeleteById(tenantId, id)
 }
 
-func (s *PlanService) AddScenarios(planId uint, scenarioIds []uint) (err error) {
-	err = s.PlanRepo.AddScenarios(planId, scenarioIds)
+func (s *PlanService) AddScenarios(tenantId consts.TenantId, planId uint, scenarioIds []uint) (err error) {
+	err = s.PlanRepo.AddScenarios(tenantId, planId, scenarioIds)
 	return
 }
 
-func (s *PlanService) RemoveScenario(planId int, scenarioId int) (err error) {
-	err = s.PlanRepo.RemoveScenario(planId, scenarioId)
+func (s *PlanService) RemoveScenario(tenantId consts.TenantId, planId int, scenarioId int) (err error) {
+	err = s.PlanRepo.RemoveScenario(tenantId, planId, scenarioId)
 	return
 }
 
-func (s *PlanService) RemoveScenarios(planId int, scenarioIds []uint) (err error) {
-	err = s.PlanRepo.RemoveScenarios(planId, scenarioIds)
+func (s *PlanService) RemoveScenarios(tenantId consts.TenantId, planId int, scenarioIds []uint) (err error) {
+	err = s.PlanRepo.RemoveScenarios(tenantId, planId, scenarioIds)
 	return
 }
 
@@ -131,13 +131,13 @@ func (s *PlanService) TestStageDropDownOptions() map[consts.TestStage]string {
 	return s.PlanRepo.TestStageDropDownOptions()
 }
 
-func (s *PlanService) Clone(id, userId uint) (ret model.Plan, err error) {
-	plan, err := s.PlanRepo.Get(id)
+func (s *PlanService) Clone(tenantId consts.TenantId, id, userId uint) (ret model.Plan, err error) {
+	plan, err := s.PlanRepo.Get(tenantId, id)
 	if err != nil {
 		return
 	}
 
-	planScenarioRelations, err := s.PlanRepo.ListScenarioRelation(id)
+	planScenarioRelations, err := s.PlanRepo.ListScenarioRelation(tenantId, id)
 	if err != nil {
 		return
 	}
@@ -152,14 +152,14 @@ func (s *PlanService) Clone(id, userId uint) (ret model.Plan, err error) {
 	plan.UpdateUserId = 0
 	now := time.Now()
 	plan.CreatedAt = &now
-	plan, bizErr := s.PlanRepo.Create(plan)
+	plan, bizErr := s.PlanRepo.Create(tenantId, plan)
 	if bizErr != nil {
 		err = errors.New(bizErr.Msg)
 		return
 	}
 
 	if len(scenarioIds) > 0 {
-		err = s.AddScenarios(plan.ID, scenarioIds)
+		err = s.AddScenarios(tenantId, plan.ID, scenarioIds)
 		if err != nil {
 			return ret, err
 		}
@@ -170,15 +170,15 @@ func (s *PlanService) Clone(id, userId uint) (ret model.Plan, err error) {
 	return
 }
 
-func (s *PlanService) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId uint) (ret _domain.PageData, err error) {
-	return s.PlanRepo.PlanScenariosPaginate(req, planId)
+func (s *PlanService) PlanScenariosPaginate(tenantId consts.TenantId, req v1.PlanScenariosReqPaginate, planId uint) (ret _domain.PageData, err error) {
+	return s.PlanRepo.PlanScenariosPaginate(tenantId, req, planId)
 }
 
-func (s *PlanService) NotRelationScenarioList(req v1.NotRelationScenarioReqPaginate, projectId int) (ret _domain.PageData, err error) {
-	return s.PlanRepo.NotRelationScenarioList(req, projectId)
+func (s *PlanService) NotRelationScenarioList(tenantId consts.TenantId, req v1.NotRelationScenarioReqPaginate, projectId int) (ret _domain.PageData, err error) {
+	return s.PlanRepo.NotRelationScenarioList(tenantId, req, projectId)
 }
 
-func (s *PlanService) MoveScenario(req v1.MoveReq) (err error) {
-	err = s.PlanRepo.MoveScenario(req)
+func (s *PlanService) MoveScenario(tenantId consts.TenantId, req v1.MoveReq) (err error) {
+	err = s.PlanRepo.MoveScenario(tenantId, req)
 	return
 }

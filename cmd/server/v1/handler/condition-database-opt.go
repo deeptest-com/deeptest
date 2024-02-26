@@ -22,13 +22,14 @@ type DatabaseOptCtrl struct {
 // @success	200	{object}		_domain.Response{data=model.DebugConditionDatabaseOpt}
 // @Router	/api/v1/databaseOpts/{id}	[get]
 func (c *DatabaseOptCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	opt, err := c.DatabaseOptService.Get(uint(id))
+	opt, err := c.DatabaseOptService.Get(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -46,6 +47,7 @@ func (c *DatabaseOptCtrl) Get(ctx iris.Context) {
 // @success	200	{object}				_domain.Response
 // @Router	/api/v1/checkpoints	[put]
 func (c *DatabaseOptCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var opt model.DebugConditionDatabaseOpt
 	err := ctx.ReadJSON(&opt)
 	if err != nil {
@@ -53,7 +55,7 @@ func (c *DatabaseOptCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.DatabaseOptService.Update(&opt)
+	err = c.DatabaseOptService.Update(tenantId, &opt)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

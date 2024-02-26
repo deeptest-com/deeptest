@@ -25,6 +25,7 @@ func (m *SummaryModule) Party() module.WebModule {
 		index.Get("/collection/{store:string}", m.SummaryCtrl.Collection).Name = "汇总数据"
 	}
 
+	//SAAS
 	m.Cron.AddTask("summary", consts.SummaryDataCheckInterval, func() {
 		m.SummaryCtrl.Summary()
 	})

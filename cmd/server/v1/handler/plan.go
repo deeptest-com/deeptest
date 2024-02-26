@@ -31,6 +31,7 @@ type PlanCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Plan}}
 // @Router	/api/v1/plans	[get]
 func (c *PlanCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -50,7 +51,7 @@ func (c *PlanCtrl) List(ctx iris.Context) {
 	req.ConvertParams()
 	req.Field = "updated_at"
 	req.Order = "desc"
-	data, err := c.PlanService.Paginate(req, projectId)
+	data, err := c.PlanService.Paginate(tenantId, req, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -71,6 +72,7 @@ func (c *PlanCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Plan}
 // @Router	/api/v1/plans/{id}	[get]
 func (c *PlanCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
@@ -80,7 +82,7 @@ func (c *PlanCtrl) Get(ctx iris.Context) {
 
 	detail, _ := ctx.URLParamBool("detail")
 
-	plan, err := c.PlanService.GetById(req.Id, detail)
+	plan, err := c.PlanService.GetById(tenantId, req.Id, detail)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -100,6 +102,7 @@ func (c *PlanCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Plan}
 // @Router	/api/v1/plans	[post]
 func (c *PlanCtrl) Create(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
@@ -116,7 +119,7 @@ func (c *PlanCtrl) Create(ctx iris.Context) {
 	req.CreateUserId = multi.GetUserId(ctx)
 	req.ProjectId = uint(projectId)
 	req.Status = consts.Draft
-	po, bizErr := c.PlanService.Create(req)
+	po, bizErr := c.PlanService.Create(tenantId, req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil})
 		return
@@ -136,6 +139,7 @@ func (c *PlanCtrl) Create(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/plans	[put]
 func (c *PlanCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req model.Plan
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -146,7 +150,7 @@ func (c *PlanCtrl) Update(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	req.UpdateUserId = userId
 
-	err = c.PlanService.Update(req)
+	err = c.PlanService.Update(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -165,6 +169,7 @@ func (c *PlanCtrl) Update(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/plans/{id}	[delete]
 func (c *PlanCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
 	if err != nil {
@@ -172,7 +177,7 @@ func (c *PlanCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.PlanService.DeleteById(req.Id)
+	err = c.PlanService.DeleteById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -193,6 +198,7 @@ func (c *PlanCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/plans/{id}/addScenarios	[post]
 func (c *PlanCtrl) AddScenarios(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	planId, _ := ctx.Params().GetInt("id")
 
 	req := serverDomain.PlanAddScenariosReq{}
@@ -202,7 +208,7 @@ func (c *PlanCtrl) AddScenarios(ctx iris.Context) {
 		return
 	}
 
-	err = c.PlanService.AddScenarios(uint(planId), req.ScenarioIds)
+	err = c.PlanService.AddScenarios(tenantId, uint(planId), req.ScenarioIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -223,11 +229,12 @@ func (c *PlanCtrl) AddScenarios(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/plans/{id}/removeScenario	[post]
 func (c *PlanCtrl) RemoveScenario(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	planId, _ := ctx.Params().GetInt("id")
 
 	scenarioId, err := ctx.URLParamInt("scenarioId")
 
-	err = c.PlanService.RemoveScenario(planId, scenarioId)
+	err = c.PlanService.RemoveScenario(tenantId, planId, scenarioId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -248,6 +255,7 @@ func (c *PlanCtrl) RemoveScenario(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/plans/{id}/removeScenarios	[post]
 func (c *PlanCtrl) RemoveScenarios(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	planId, _ := ctx.Params().GetInt("id")
 
 	req := serverDomain.PlanAddScenariosReq{}
@@ -257,7 +265,7 @@ func (c *PlanCtrl) RemoveScenarios(ctx iris.Context) {
 		return
 	}
 
-	err = c.PlanService.RemoveScenarios(planId, req.ScenarioIds)
+	err = c.PlanService.RemoveScenarios(tenantId, planId, req.ScenarioIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -305,6 +313,7 @@ func (c *PlanCtrl) TestStageDropDownOptions(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/plans/{id}/clone	[post]
 func (c *PlanCtrl) Clone(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	var req _domain.ReqId
@@ -314,7 +323,7 @@ func (c *PlanCtrl) Clone(ctx iris.Context) {
 		return
 	}
 
-	plan, err := c.PlanService.Clone(req.Id, userId)
+	plan, err := c.PlanService.Clone(tenantId, req.Id, userId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -335,6 +344,7 @@ func (c *PlanCtrl) Clone(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ScenarioDetail}}
 // @Router	/api/v1/planScenariosList	[get]
 func (c *PlanCtrl) PlanScenariosList(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	planId, err := ctx.URLParamInt("planId")
 	if planId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -353,7 +363,7 @@ func (c *PlanCtrl) PlanScenariosList(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.PlanService.PlanScenariosPaginate(req, uint(planId))
+	data, err := c.PlanService.PlanScenariosPaginate(tenantId, req, uint(planId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -373,6 +383,7 @@ func (c *PlanCtrl) PlanScenariosList(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Scenario}}
 // @Router	/api/v1/notRelationScenarioList	[get]
 func (c *PlanCtrl) NotRelationScenarioList(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -391,7 +402,7 @@ func (c *PlanCtrl) NotRelationScenarioList(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.PlanService.NotRelationScenarioList(req, projectId)
+	data, err := c.PlanService.NotRelationScenarioList(tenantId, req, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -401,6 +412,7 @@ func (c *PlanCtrl) NotRelationScenarioList(ctx iris.Context) {
 }
 
 func (c *PlanCtrl) Move(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.MoveReq{}
 	err := ctx.ReadJSON(&req)
 
@@ -409,7 +421,7 @@ func (c *PlanCtrl) Move(ctx iris.Context) {
 		return
 	}
 
-	err = c.PlanService.MoveScenario(req)
+	err = c.PlanService.MoveScenario(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

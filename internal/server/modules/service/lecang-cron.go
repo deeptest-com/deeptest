@@ -19,11 +19,16 @@ type LecangCronService struct {
 
 func (s *LecangCronService) Run(options map[string]interface{}) (f func() error) {
 	f = func() error {
+		tenantId, ok := options["tenantId"].(consts.TenantId)
+		if !ok {
+			return errors.New("tenantId is not existed")
+		}
+
 		taskId, ok := options["taskId"].(uint)
 		if !ok {
 			return errors.New("taskId is not existed")
 		}
-		task, err := s.Get(taskId)
+		task, err := s.Get(tenantId, taskId)
 		logUtils.Info("lecang定时任务开启：" + _commUtils.JsonEncode(task))
 		if err != nil {
 			logUtils.Errorf("lecang定时导入任务失败,任务ID：%+v,错误原因：%+v", task.ID, err.Error())
@@ -34,7 +39,7 @@ func (s *LecangCronService) Run(options map[string]interface{}) (f func() error)
 		if !ok {
 			return errors.New("switch is not existed")
 		}
-		projectCron, err := s.ProjectCronRepo.GetById(cronId)
+		projectCron, err := s.ProjectCronRepo.GetById(tenantId, cronId)
 
 		if projectCron.Switch != consts.SwitchON {
 			logUtils.Infof("lecang定时导入关闭,任务ID:%+v", task.ID)
@@ -46,7 +51,7 @@ func (s *LecangCronService) Run(options map[string]interface{}) (f func() error)
 			return errors.New("projectId is not existed")
 		}
 
-		err = s.ThirdPartySyncService.ImportEndpoint(projectId, task)
+		err = s.ThirdPartySyncService.ImportEndpoint(tenantId, projectId, task)
 		if err != nil {
 			logUtils.Errorf("lecang定时导入任务失败，任务ID:%+v, 错误原因：%+v", task.ID, err.Error())
 		}
@@ -63,18 +68,23 @@ func (s *LecangCronService) CallBack(options map[string]interface{}, err error) 
 		if !ok {
 			return
 		}
-		s.ProjectCronService.UpdateCronExecTimeById(taskId, consts.CronSourceLecang, err)
+
+		tenantId, ok := options["tenantId"].(consts.TenantId)
+		if !ok {
+			return
+		}
+		s.ProjectCronService.UpdateCronExecTimeById(tenantId, taskId, consts.CronSourceLecang, err)
 	}
 
 	return f
 }
 
-func (s *LecangCronService) Get(id uint) (ret model.CronConfigLecang, err error) {
-	return s.CronConfigLecangRepo.GetById(id)
+func (s *LecangCronService) Get(tenantId consts.TenantId, id uint) (ret model.CronConfigLecang, err error) {
+	return s.CronConfigLecangRepo.GetById(tenantId, id)
 }
 
-func (s *LecangCronService) Save(req model.CronConfigLecang) (ret uint, err error) {
-	ret, err = s.CronConfigLecangRepo.Save(req)
+func (s *LecangCronService) Save(tenantId consts.TenantId, req model.CronConfigLecang) (ret uint, err error) {
+	ret, err = s.CronConfigLecangRepo.Save(tenantId, req)
 
 	return
 }

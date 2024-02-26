@@ -18,9 +18,10 @@ type ProjectCronRepo struct {
 	DB           *gorm.DB      `inject:""`
 	UserRepo     *UserRepo     `inject:""`
 	CategoryRepo *CategoryRepo `inject:""`
+	*BaseRepo    `inject:""`
 }
 
-func (r *ProjectCronRepo) Paginate(req v1.ProjectCronReqPaginate) (data _domain.PageData, err error) {
+func (r *ProjectCronRepo) Paginate(tenantId consts.TenantId, req v1.ProjectCronReqPaginate) (data _domain.PageData, err error) {
 	baseSql := " FROM biz_project_cron t1 LEFT JOIN biz_project_cron_config_lecang t2 ON t1.config_id = t2.id LEFT JOIN biz_project_serve_swagger_sync t3 ON t1.config_id = t3.id WHERE NOT t1.deleted"
 
 	if req.Name != "" {
@@ -39,7 +40,7 @@ func (r *ProjectCronRepo) Paginate(req v1.ProjectCronReqPaginate) (data _domain.
 
 	var count int64
 
-	db := r.DB.Model(&model.ProjectCronList{})
+	db := r.GetDB(tenantId).Model(&model.ProjectCronList{})
 
 	err = db.Raw(countSql).Count(&count).Error
 
@@ -50,21 +51,21 @@ func (r *ProjectCronRepo) Paginate(req v1.ProjectCronReqPaginate) (data _domain.
 		return
 	}
 
-	r.CombineUserName(cronList)
-	r.CombineCategory(cronList)
+	r.CombineUserName(tenantId, cronList)
+	r.CombineCategory(tenantId, cronList)
 	data.Populate(cronList, count, req.Page, req.PageSize)
 
 	return
 }
 
-func (r *ProjectCronRepo) CombineUserName(data []*model.ProjectCronList) {
+func (r *ProjectCronRepo) CombineUserName(tenantId consts.TenantId, data []*model.ProjectCronList) {
 	userIds := make([]uint, 0)
 	for _, v := range data {
 		userIds = append(userIds, v.CreateUserId)
 	}
 	userIds = _commUtils.ArrayRemoveUintDuplication(userIds)
 
-	users, _ := r.UserRepo.FindByIds(userIds)
+	users, _ := r.UserRepo.FindByIds(tenantId, userIds)
 
 	userIdNameMap := make(map[uint]string)
 	for _, v := range users {
@@ -78,14 +79,14 @@ func (r *ProjectCronRepo) CombineUserName(data []*model.ProjectCronList) {
 	}
 }
 
-func (r *ProjectCronRepo) CombineCategory(configs []*model.ProjectCronList) {
+func (r *ProjectCronRepo) CombineCategory(tenantId consts.TenantId, configs []*model.ProjectCronList) {
 	categoryIds := make([]int, 0)
 	for _, v := range configs {
 		categoryIds = append(categoryIds, v.CategoryId)
 	}
 
 	categoryIds = _commUtils.ArrayRemoveIntDuplication(categoryIds)
-	categories, _ := r.CategoryRepo.BatchGetByIds(categoryIds)
+	categories, _ := r.CategoryRepo.BatchGetByIds(tenantId, categoryIds)
 
 	categoryIdNameMap := make(map[int]string)
 	for _, v := range categories {
@@ -100,15 +101,15 @@ func (r *ProjectCronRepo) CombineCategory(configs []*model.ProjectCronList) {
 	}
 }
 
-func (r *ProjectCronRepo) ListAllCron() (res []model.ProjectCron, err error) {
-	err = r.DB.Model(&model.ProjectCron{}).
+func (r *ProjectCronRepo) ListAllCron(tenantId consts.TenantId) (res []model.ProjectCron, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectCron{}).
 		Where("switch = ? AND NOT deleted", consts.SwitchON).
 		Find(&res).Error
 
 	return
 }
-func (r *ProjectCronRepo) Create(config model.ProjectCron) (id uint, err error) {
-	err = r.DB.Model(&model.ProjectCron{}).Create(&config).Error
+func (r *ProjectCronRepo) Create(tenantId consts.TenantId, config model.ProjectCron) (id uint, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectCron{}).Create(&config).Error
 	if err != nil {
 		return
 	}
@@ -117,13 +118,13 @@ func (r *ProjectCronRepo) Create(config model.ProjectCron) (id uint, err error) 
 	return
 }
 
-func (r *ProjectCronRepo) Update(config model.ProjectCron) error {
-	return r.DB.Save(&config).Error
+func (r *ProjectCronRepo) Update(tenantId consts.TenantId, config model.ProjectCron) error {
+	return r.GetDB(tenantId).Save(&config).Error
 	//return r.DB.Model(&model.ProjectCron{}).Where("id = ?", config.ID).Updates(&config).Error
 }
 
-func (r *ProjectCronRepo) Save(config model.ProjectCron) (ret model.ProjectCron, err error) {
-	err = r.DB.Save(&config).Error
+func (r *ProjectCronRepo) Save(tenantId consts.TenantId, config model.ProjectCron) (ret model.ProjectCron, err error) {
+	err = r.GetDB(tenantId).Save(&config).Error
 	if err != nil {
 		return
 	}
@@ -133,33 +134,33 @@ func (r *ProjectCronRepo) Save(config model.ProjectCron) (ret model.ProjectCron,
 	return
 }
 
-func (r *ProjectCronRepo) DeleteById(id uint) error {
-	return r.DB.Model(&model.ProjectCron{}).
+func (r *ProjectCronRepo) DeleteById(tenantId consts.TenantId, id uint) error {
+	return r.GetDB(tenantId).Model(&model.ProjectCron{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 }
 
-func (r *ProjectCronRepo) UpdateSwitchById(id uint, switchStatus consts.SwitchStatus) error {
-	return r.DB.Model(&model.ProjectCron{}).
+func (r *ProjectCronRepo) UpdateSwitchById(tenantId consts.TenantId, id uint, switchStatus consts.SwitchStatus) error {
+	return r.GetDB(tenantId).Model(&model.ProjectCron{}).
 		Where("id = ?", id).
 		Update("switch", switchStatus).Error
 }
 
-func (r *ProjectCronRepo) GetById(id uint) (config model.ProjectCron, err error) {
-	err = r.DB.Model(&model.ProjectCron{}).
+func (r *ProjectCronRepo) GetById(tenantId consts.TenantId, id uint) (config model.ProjectCron, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectCron{}).
 		Where("id = ?", id).
 		Find(&config).Error
 
 	return
 }
 
-func (r *ProjectCronRepo) UpdateExecResult(configId uint, source consts.CronSource, execStatus consts.CronExecStatus, execErr string) (err error) {
+func (r *ProjectCronRepo) UpdateExecResult(tenantId consts.TenantId, configId uint, source consts.CronSource, execStatus consts.CronExecStatus, execErr string) (err error) {
 	updateColumns := make(map[string]interface{})
 	updateColumns["exec_status"] = execStatus
 	updateColumns["exec_err"] = execErr
 	updateColumns["exec_time"] = time.Now()
 
-	err = r.DB.Model(&model.ProjectCron{}).
+	err = r.GetDB(tenantId).Model(&model.ProjectCron{}).
 		Where("config_id = ?", configId).
 		Where("source = ?", source).
 		Updates(updateColumns).Error

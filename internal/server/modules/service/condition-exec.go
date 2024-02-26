@@ -18,7 +18,7 @@ type ExecConditionService struct {
 	ShareVarService    *ShareVarService         `inject:""`
 }
 
-func (s *ExecConditionService) SavePreConditionResult(invokeId,
+func (s *ExecConditionService) SavePreConditionResult(tenantId consts.TenantId, invokeId,
 	debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, usedBy consts.UsedBy,
 	preConditions []domain.InterfaceExecCondition) (err error) {
 
@@ -30,7 +30,7 @@ func (s *ExecConditionService) SavePreConditionResult(invokeId,
 				continue
 			}
 
-			s.dealwithScriptResult(scriptBase, invokeId,
+			s.dealwithScriptResult(tenantId, scriptBase, invokeId,
 				debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, usedBy)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
@@ -40,7 +40,7 @@ func (s *ExecConditionService) SavePreConditionResult(invokeId,
 				continue
 			}
 
-			s.dealwithDbOptResult(databaseOptBase, invokeId,
+			s.dealwithDbOptResult(tenantId, databaseOptBase, invokeId,
 				debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, usedBy)
 		}
 	}
@@ -48,7 +48,7 @@ func (s *ExecConditionService) SavePreConditionResult(invokeId,
 	return
 }
 
-func (s *ExecConditionService) SavePostConditionResult(invokeId,
+func (s *ExecConditionService) SavePostConditionResult(tenantId consts.TenantId, invokeId,
 	debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, usedBy consts.UsedBy,
 	postConditions []domain.InterfaceExecCondition) (err error) {
 
@@ -60,7 +60,7 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 				continue
 			}
 
-			s.dealwithScriptResult(scriptBase, invokeId,
+			s.dealwithScriptResult(tenantId, scriptBase, invokeId,
 				debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, usedBy)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
@@ -70,7 +70,7 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 				continue
 			}
 
-			s.dealwithDbOptResult(databaseOptBase, invokeId,
+			s.dealwithDbOptResult(tenantId, databaseOptBase, invokeId,
 				debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, usedBy)
 
 		} else if condition.Type == consts.ConditionTypeExtractor {
@@ -80,7 +80,7 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 				continue
 			}
 
-			s.dealwithExtractorResult(extractorBase, invokeId,
+			s.dealwithExtractorResult(tenantId, extractorBase, invokeId,
 				debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId, usedBy)
 
 		} else if condition.Type == consts.ConditionTypeCheckpoint {
@@ -90,7 +90,7 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 				continue
 			}
 
-			s.dealwithCheckoutResult(checkpointBase, invokeId)
+			s.dealwithCheckoutResult(tenantId, checkpointBase, invokeId)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			var responseDefineBase domain.ResponseDefineBase
@@ -99,24 +99,24 @@ func (s *ExecConditionService) SavePostConditionResult(invokeId,
 				continue
 			}
 
-			s.dealwithResponseDefineResult(responseDefineBase, invokeId)
+			s.dealwithResponseDefineResult(tenantId, responseDefineBase, invokeId)
 		}
 	}
 
 	return
 }
 
-func (s *ExecConditionService) dealwithScriptResult(scriptBase domain.ScriptBase, invokeId,
+func (s *ExecConditionService) dealwithScriptResult(tenantId consts.TenantId, scriptBase domain.ScriptBase, invokeId,
 	debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, usedBy consts.UsedBy) (err error) {
 	scriptBase.InvokeId = invokeId
 
-	s.ScriptRepo.UpdateResult(scriptBase)
-	s.ScriptRepo.CreateLog(scriptBase)
+	s.ScriptRepo.UpdateResult(tenantId, scriptBase)
+	s.ScriptRepo.CreateLog(tenantId, scriptBase)
 
 	for _, settings := range scriptBase.VariableSettings {
 		value := valueUtils.InterfaceToStr(settings.Value)
 
-		s.ShareVarService.Save(settings.Name, value, settings.ValueType,
+		s.ShareVarService.Save(tenantId, settings.Name, value, settings.ValueType,
 			invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 			consts.Public, usedBy)
 	}
@@ -124,16 +124,16 @@ func (s *ExecConditionService) dealwithScriptResult(scriptBase domain.ScriptBase
 	return
 }
 
-func (s *ExecConditionService) dealwithDbOptResult(databaseOptBase domain.DatabaseOptBase, invokeId,
+func (s *ExecConditionService) dealwithDbOptResult(tenantId consts.TenantId, databaseOptBase domain.DatabaseOptBase, invokeId,
 	debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, usedBy consts.UsedBy) (err error) {
 
 	databaseOptBase.InvokeId = invokeId
 
-	s.DatabaseOptRepo.UpdateResult(databaseOptBase)
-	s.DatabaseOptRepo.CreateLog(databaseOptBase)
+	s.DatabaseOptRepo.UpdateResult(tenantId, databaseOptBase)
+	s.DatabaseOptRepo.CreateLog(tenantId, databaseOptBase)
 
 	if databaseOptBase.ResultStatus == consts.Pass {
-		s.ShareVarService.Save(databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
+		s.ShareVarService.Save(tenantId, databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
 			invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 			databaseOptBase.Scope, usedBy)
 	}
@@ -141,16 +141,16 @@ func (s *ExecConditionService) dealwithDbOptResult(databaseOptBase domain.Databa
 	return
 }
 
-func (s *ExecConditionService) dealwithExtractorResult(extractorBase domain.ExtractorBase, invokeId,
+func (s *ExecConditionService) dealwithExtractorResult(tenantId consts.TenantId, extractorBase domain.ExtractorBase, invokeId,
 	debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint, usedBy consts.UsedBy) (err error) {
 
 	extractorBase.InvokeId = invokeId
 
-	s.ExtractorRepo.UpdateResult(extractorBase)
-	s.ExtractorRepo.CreateLog(extractorBase)
+	s.ExtractorRepo.UpdateResult(tenantId, extractorBase)
+	s.ExtractorRepo.CreateLog(tenantId, extractorBase)
 
 	if extractorBase.ResultStatus == consts.Pass {
-		s.ShareVarService.Save(extractorBase.Variable, extractorBase.Result, extractorBase.ResultType,
+		s.ShareVarService.Save(tenantId, extractorBase.Variable, extractorBase.Result, extractorBase.ResultType,
 			invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId,
 			extractorBase.Scope, usedBy)
 	}
@@ -158,21 +158,21 @@ func (s *ExecConditionService) dealwithExtractorResult(extractorBase domain.Extr
 	return
 }
 
-func (s *ExecConditionService) dealwithCheckoutResult(checkpointBase domain.CheckpointBase, invokeId uint) (err error) {
+func (s *ExecConditionService) dealwithCheckoutResult(tenantId consts.TenantId, checkpointBase domain.CheckpointBase, invokeId uint) (err error) {
 	checkpointBase.InvokeId = invokeId
 
-	s.CheckpointRepo.UpdateResult(checkpointBase)
-	s.CheckpointRepo.CreateLog(checkpointBase)
+	s.CheckpointRepo.UpdateResult(tenantId, checkpointBase)
+	s.CheckpointRepo.CreateLog(tenantId, checkpointBase)
 
 	return
 }
 
-func (s *ExecConditionService) dealwithResponseDefineResult(responseDefineBase domain.ResponseDefineBase, invokeId uint) (err error) {
+func (s *ExecConditionService) dealwithResponseDefineResult(tenantId consts.TenantId, responseDefineBase domain.ResponseDefineBase, invokeId uint) (err error) {
 
 	responseDefineBase.InvokeId = invokeId
 
-	s.ResponseDefineRepo.UpdateResult(responseDefineBase)
-	s.ResponseDefineRepo.CreateLog(responseDefineBase)
+	s.ResponseDefineRepo.UpdateResult(tenantId, responseDefineBase)
+	s.ResponseDefineRepo.CreateLog(tenantId, responseDefineBase)
 
 	return
 }

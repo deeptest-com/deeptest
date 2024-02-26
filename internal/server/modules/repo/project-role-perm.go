@@ -13,16 +13,17 @@ import (
 )
 
 type ProjectRolePermRepo struct {
+	*BaseRepo       `inject:""`
 	DB              *gorm.DB         `inject:""`
 	ProjectRepo     *ProjectRepo     `inject:""`
 	ProjectRoleRepo *ProjectRoleRepo `inject:""`
 }
 
-func (r *ProjectRolePermRepo) PaginateRolePerms(req v1.ProjectRolePermPaginateReq) (data _domain.PageData, err error) {
+func (r *ProjectRolePermRepo) PaginateRolePerms(tenantId consts.TenantId, req v1.ProjectRolePermPaginateReq) (data _domain.PageData, err error) {
 	var count int64
 	projectPerms := make([]*model.ProjectPerm, 0)
 
-	db := r.DB.Model(&model.ProjectPerm{}).Joins("JOIN biz_project_role_perm p ON biz_project_perm.id=p.project_perm_id AND p.project_role_id = ?", req.RoleId)
+	db := r.GetDB(tenantId).Model(&model.ProjectPerm{}).Joins("JOIN biz_project_role_perm p ON biz_project_perm.id=p.project_perm_id AND p.project_role_id = ?", req.RoleId)
 
 	err = db.Count(&count).Error
 	if err != nil {
@@ -42,22 +43,22 @@ func (r *ProjectRolePermRepo) PaginateRolePerms(req v1.ProjectRolePermPaginateRe
 	return
 }
 
-func (r *ProjectRolePermRepo) UserPermList(req v1.ProjectUserPermsPaginate, userId uint) (data _domain.PageData, err error) {
-	currProject, err := r.ProjectRepo.GetCurrProjectByUser(userId)
+func (r *ProjectRolePermRepo) UserPermList(tenantId consts.TenantId, req v1.ProjectUserPermsPaginate, userId uint) (data _domain.PageData, err error) {
+	currProject, err := r.ProjectRepo.GetCurrProjectByUser(tenantId, userId)
 	if err != nil {
 		logUtils.Errorf("query project profile error", zap.String("error:", err.Error()))
 		return
 	}
 
 	var roleId uint
-	r.DB.Model(&model.ProjectMember{}).
+	r.GetDB(tenantId).Model(&model.ProjectMember{}).
 		Select("project_role_id").
 		Where("user_id = ?", userId).
 		Where("project_id = ? AND NOT deleted", currProject.ID).First(&roleId)
 
 	projectPerms := make([]*model.ProjectPerm, 0)
 
-	db := r.DB.Model(&model.ProjectPerm{}).Joins("JOIN biz_project_role_perm p ON biz_project_perm.id=p.project_perm_id AND p.project_role_id = ?", roleId)
+	db := r.GetDB(tenantId).Model(&model.ProjectPerm{}).Joins("JOIN biz_project_role_perm p ON biz_project_perm.id=p.project_perm_id AND p.project_role_id = ?", roleId)
 
 	var count int64
 	err = db.Count(&count).Error
@@ -79,8 +80,8 @@ func (r *ProjectRolePermRepo) UserPermList(req v1.ProjectUserPermsPaginate, user
 	return
 }
 
-func (r *ProjectRolePermRepo) GetByRoleAndPerm(roleId, permId uint) (ret model.ProjectRolePerm, err error) {
-	err = r.DB.Model(&model.ProjectRolePerm{}).
+func (r *ProjectRolePermRepo) GetByRoleAndPerm(tenantId consts.TenantId, roleId, permId uint) (ret model.ProjectRolePerm, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectRolePerm{}).
 		Where("project_role_id = ?", roleId).
 		Where("project_perm_id = ?", permId).
 		First(&ret).Error
@@ -88,10 +89,10 @@ func (r *ProjectRolePermRepo) GetByRoleAndPerm(roleId, permId uint) (ret model.P
 }
 
 // GetProjectPermsForRole TODO: 每个角色需要的权限还未确定，需要改动
-func (r *ProjectRolePermRepo) GetProjectPermsForRole() (res map[consts.RoleType][]uint, err error) {
+func (r *ProjectRolePermRepo) GetProjectPermsForRole(tenantId consts.TenantId) (res map[consts.RoleType][]uint, err error) {
 	var permIds, testPermIds []uint
-	err = r.DB.Model(&model.ProjectPerm{}).Select("id").Find(&permIds).Error
-	err = r.DB.Model(&model.ProjectPerm{}).Select("id").Where("name like ?", "/api/v1/projects%").Find(&testPermIds).Error
+	err = r.GetDB(tenantId).Model(&model.ProjectPerm{}).Select("id").Find(&permIds).Error
+	err = r.GetDB(tenantId).Model(&model.ProjectPerm{}).Select("id").Where("name like ?", "/api/v1/projects%").Find(&testPermIds).Error
 	res = map[consts.RoleType][]uint{
 		consts.Admin:          permIds,
 		consts.User:           permIds,
@@ -103,15 +104,15 @@ func (r *ProjectRolePermRepo) GetProjectPermsForRole() (res map[consts.RoleType]
 	return
 }
 
-func (r *ProjectRolePermRepo) AddPermForProjectRole(roleName consts.RoleType, perms []uint) (successCount int, failItems []string) {
-	projectRole, err := r.ProjectRoleRepo.FindByName(roleName)
+func (r *ProjectRolePermRepo) AddPermForProjectRole(tenantId consts.TenantId, roleName consts.RoleType, perms []uint) (successCount int, failItems []string) {
+	projectRole, err := r.ProjectRoleRepo.FindByName(tenantId, roleName)
 	if err != nil {
 		failItems = append(failItems, fmt.Sprintf("为角色%+v添加权限%+v失败，错误%s", roleName, perms, err.Error()))
 		return
 	}
 
 	projectRoleId := projectRole.ID
-	err = r.DB.Delete(&model.ProjectRolePerm{}, "project_role_id = ?", projectRoleId).Error
+	err = r.GetDB(tenantId).Delete(&model.ProjectRolePerm{}, "project_role_id = ?", projectRoleId).Error
 	if err != nil {
 		failItems = append(failItems, fmt.Sprintf("为角色%+v添加权限%+v失败，错误%s", roleName, perms, err.Error()))
 		return
@@ -119,7 +120,7 @@ func (r *ProjectRolePermRepo) AddPermForProjectRole(roleName consts.RoleType, pe
 
 	for _, perm := range perms {
 		permModel := &model.ProjectRolePerm{ProjectRolePermBase: v1.ProjectRolePermBase{ProjectRoleId: projectRoleId, ProjectPermId: perm}}
-		err := r.DB.Model(&model.ProjectRolePerm{}).Create(&permModel).Error
+		err := r.GetDB(tenantId).Model(&model.ProjectRolePerm{}).Create(&permModel).Error
 		if err != nil {
 			failItems = append(failItems, fmt.Sprintf("为角色%+v添加权限%d失败，错误%s", roleName, perm, err.Error()))
 		} else {

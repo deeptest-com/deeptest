@@ -7,13 +7,13 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"strings"
-
 	"github.com/kataras/iris/v12"
 	"go.uber.org/zap"
+	"strings"
 )
 
 type AccountCtrl struct {
+	BaseCtrl
 	AccountService *service.AccountService `inject:""`
 	UserRepo       *repo.UserRepo          `inject:""`
 }
@@ -27,6 +27,7 @@ type AccountCtrl struct {
 // @success	200	{object}	_domain.Response{data=serverDomain.LoginResp}
 // @Router	/api/v1/account/login	[post]
 func (c *AccountCtrl) Login(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.LoginReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -37,7 +38,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 			return
 		}
 	}
-	resp, err := c.AccountService.Login(req)
+	resp, err := c.AccountService.Login(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.LoginErr.Code, Msg: err.Error()})
 		return
@@ -54,6 +55,7 @@ func (c *AccountCtrl) Login(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/account/register	[post]
 func (c *AccountCtrl) Register(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.RegisterReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -64,7 +66,7 @@ func (c *AccountCtrl) Register(ctx iris.Context) {
 		}
 	}
 
-	err := c.AccountService.Register(req)
+	err := c.AccountService.Register(tenantId, req)
 
 	ctx.JSON(_domain.Response{Code: err.Code, Msg: err.Msg})
 }
@@ -79,13 +81,14 @@ func (c *AccountCtrl) Register(ctx iris.Context) {
 // @Router	/api/v1/account/forgotPassword	[post]
 // @x-creator "wangzhen"
 func (c *AccountCtrl) ForgotPassword(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	usernameOrPassword := ctx.URLParam("usernameOrPassword")
 	if usernameOrPassword == "" {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: "no usernameOrPassword param"})
 		return
 	}
 
-	err := c.AccountService.ForgotPassword(usernameOrPassword)
+	err := c.AccountService.ForgotPassword(tenantId, usernameOrPassword)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -103,6 +106,7 @@ func (c *AccountCtrl) ForgotPassword(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/account/resetPassword	[post]
 func (c *AccountCtrl) ResetPassword(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ResetPasswordReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -113,7 +117,7 @@ func (c *AccountCtrl) ResetPassword(ctx iris.Context) {
 		}
 	}
 
-	err = c.AccountService.ResetPassword(req)
+	err = c.AccountService.ResetPassword(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

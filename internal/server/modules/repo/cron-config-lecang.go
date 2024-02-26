@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
@@ -10,8 +11,8 @@ type CronConfigLecangRepo struct {
 	DB        *gorm.DB `inject:""`
 }
 
-func (r *CronConfigLecangRepo) Create(config model.CronConfigLecang) (id uint, err error) {
-	err = r.DB.Model(&model.CronConfigLecang{}).Create(&config).Error
+func (r *CronConfigLecangRepo) Create(tenantId consts.TenantId, config model.CronConfigLecang) (id uint, err error) {
+	err = r.GetDB(tenantId).Model(&model.CronConfigLecang{}).Create(&config).Error
 	if err != nil {
 		return
 	}
@@ -20,14 +21,14 @@ func (r *CronConfigLecangRepo) Create(config model.CronConfigLecang) (id uint, e
 	return
 }
 
-func (r *CronConfigLecangRepo) Update(config model.CronConfigLecang) (err error) {
-	err = r.DB.Save(&config).Error
+func (r *CronConfigLecangRepo) Update(tenantId consts.TenantId, config model.CronConfigLecang) (err error) {
+	err = r.GetDB(tenantId).Save(&config).Error
 
 	return
 }
 
-func (r *CronConfigLecangRepo) Save(config model.CronConfigLecang) (id uint, err error) {
-	err = r.DB.Save(&config).Error
+func (r *CronConfigLecangRepo) Save(tenantId consts.TenantId, config model.CronConfigLecang) (id uint, err error) {
+	err = r.GetDB(tenantId).Save(&config).Error
 	if err != nil {
 		return
 	}
@@ -37,15 +38,15 @@ func (r *CronConfigLecangRepo) Save(config model.CronConfigLecang) (id uint, err
 	return
 }
 
-func (r *CronConfigLecangRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.CronConfigLecang{}).Where("id = ?", id).
+func (r *CronConfigLecangRepo) DeleteById(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.CronConfigLecang{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 
 	return
 }
 
-func (r *CronConfigLecangRepo) GetById(id uint) (config model.CronConfigLecang, err error) {
-	err = r.DB.Model(&model.CronConfigLecang{}).
+func (r *CronConfigLecangRepo) GetById(tenantId consts.TenantId, id uint) (config model.CronConfigLecang, err error) {
+	err = r.GetDB(tenantId).Model(&model.CronConfigLecang{}).
 		Where("id = ?", id).
 		Find(&config).Error
 

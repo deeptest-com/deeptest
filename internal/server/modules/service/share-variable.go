@@ -19,7 +19,7 @@ type ShareVarService struct {
 	ScenarioProcessorRepo *repo.ScenarioProcessorRepo `inject:""`
 }
 
-func (s *ShareVarService) Save(name, value string, resultType consts.ExtractorResultType,
+func (s *ShareVarService) Save(tenantId consts.TenantId, name, value string, resultType consts.ExtractorResultType,
 	invokeId, debugInterfaceId, caseInterfaceId, endpointInterfaceId, serveId, processorId, scenarioId uint,
 	scope consts.ExtractorScope, usedBy consts.UsedBy) (err error) {
 
@@ -39,79 +39,79 @@ func (s *ShareVarService) Save(name, value string, resultType consts.ExtractorRe
 	}
 
 	if usedBy == consts.ScenarioDebug {
-		po.ID, err = s.ShareVariableRepo.GetExistByScenarioDebug(name, scenarioId)
+		po.ID, err = s.ShareVariableRepo.GetExistByScenarioDebug(tenantId, name, scenarioId)
 	} else {
-		po.ID, err = s.ShareVariableRepo.GetExistByInterfaceDebug(name, serveId, usedBy)
+		po.ID, err = s.ShareVariableRepo.GetExistByInterfaceDebug(tenantId, name, serveId, usedBy)
 	}
 
-	err = s.ShareVariableRepo.Save(&po)
+	err = s.ShareVariableRepo.Save(tenantId, &po)
 
 	return
 }
 
-func (s *ShareVarService) List(debugInterfaceId, endpointInterfaceId, diagnoseInterfaceId, caseInterfaceId, scenarioProcessorId uint,
+func (s *ShareVarService) List(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId, diagnoseInterfaceId, caseInterfaceId, scenarioProcessorId uint,
 	usedBy consts.UsedBy) (
 	shareVariables []domain.GlobalVar) {
 
 	var serveId uint
 
 	if diagnoseInterfaceId > 0 {
-		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(diagnoseInterfaceId)
+		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(tenantId, diagnoseInterfaceId)
 		serveId = diagnoseInterface.ServeId
 
 	} else if caseInterfaceId > 0 {
-		caseInterface, _ := s.EndpointCaseRepo.Get(caseInterfaceId)
+		caseInterface, _ := s.EndpointCaseRepo.Get(tenantId, caseInterfaceId)
 		serveId = caseInterface.ServeId
 
 	} else if endpointInterfaceId > 0 {
-		endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-		endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(tenantId, endpointInterfaceId)
+		endpoint, _ := s.EndpointRepo.Get(tenantId, endpointInterface.EndpointId)
 		serveId = endpoint.ServeId
 
 	} else if debugInterfaceId > 0 {
-		debugInterface, _ := s.DebugInterfaceRepo.Get(debugInterfaceId)
-		endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugInterface.EndpointInterfaceId)
-		endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+		debugInterface, _ := s.DebugInterfaceRepo.Get(tenantId, debugInterfaceId)
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(tenantId, debugInterface.EndpointInterfaceId)
+		endpoint, _ := s.EndpointRepo.Get(tenantId, endpointInterface.EndpointId)
 		serveId = endpoint.ServeId
 	}
 
-	shareVariables, _ = s.ListForDebug(serveId, scenarioProcessorId, usedBy)
+	shareVariables, _ = s.ListForDebug(tenantId, serveId, scenarioProcessorId, usedBy)
 
 	return
 }
 
-func (s *ShareVarService) Delete(id int) (err error) {
-	err = s.ShareVariableRepo.Delete(id)
+func (s *ShareVarService) Delete(tenantId consts.TenantId, id int) (err error) {
+	err = s.ShareVariableRepo.Delete(tenantId, id)
 
 	return
 }
 
-func (s *ShareVarService) Clear(debugReq domain.DebugInfo) (err error) {
+func (s *ShareVarService) Clear(tenantId consts.TenantId, debugReq domain.DebugInfo) (err error) {
 	if debugReq.ScenarioProcessorId > 0 {
-		processor, _ := s.ScenarioProcessorRepo.Get(debugReq.ScenarioProcessorId)
-		err = s.ShareVariableRepo.DeleteAllByScenarioId(processor.ScenarioId)
+		processor, _ := s.ScenarioProcessorRepo.Get(tenantId, debugReq.ScenarioProcessorId)
+		err = s.ShareVariableRepo.DeleteAllByScenarioId(tenantId, processor.ScenarioId)
 
 	} else if debugReq.DebugInterfaceId > 0 {
-		debugData, _ := s.DebugInterfaceRepo.Get(debugReq.DebugInterfaceId)
-		err = s.ShareVariableRepo.DeleteAllByServeId(debugData.ServeId)
+		debugData, _ := s.DebugInterfaceRepo.Get(tenantId, debugReq.DebugInterfaceId)
+		err = s.ShareVariableRepo.DeleteAllByServeId(tenantId, debugData.ServeId)
 
 	} else if debugReq.EndpointInterfaceId > 0 {
-		endpointInterface, _ := s.EndpointInterfaceRepo.Get(debugReq.EndpointInterfaceId)
-		endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
-		err = s.ShareVariableRepo.DeleteAllByServeId(endpoint.ServeId)
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(tenantId, debugReq.EndpointInterfaceId)
+		endpoint, _ := s.EndpointRepo.Get(tenantId, endpointInterface.EndpointId)
+		err = s.ShareVariableRepo.DeleteAllByServeId(tenantId, endpoint.ServeId)
 
 	}
 
 	return
 }
 
-func (s *ShareVarService) ListForDebug(serveId, scenarioProcessorId uint, usedBy consts.UsedBy) (ret []domain.GlobalVar, err error) {
+func (s *ShareVarService) ListForDebug(tenantId consts.TenantId, serveId, scenarioProcessorId uint, usedBy consts.UsedBy) (ret []domain.GlobalVar, err error) {
 	var pos []model.ShareVariable
 
 	if scenarioProcessorId > 0 {
-		pos, err = s.ShareVariableRepo.ListForScenarioDebug(scenarioProcessorId)
+		pos, err = s.ShareVariableRepo.ListForScenarioDebug(tenantId, scenarioProcessorId)
 	} else {
-		pos, err = s.ShareVariableRepo.ListForInterfaceDebug(serveId, usedBy)
+		pos, err = s.ShareVariableRepo.ListForInterfaceDebug(tenantId, serveId, usedBy)
 	}
 
 	for _, po := range pos {

@@ -12,33 +12,34 @@ import (
 )
 
 type ResponseDefineRepo struct {
+	*BaseRepo             `inject:""`
 	DB                    *gorm.DB               `inject:""`
 	ServeRepo             *ServeRepo             `inject:""`
 	EndpointRepo          *EndpointRepo          `inject:""`
 	EndpointInterfaceRepo *EndpointInterfaceRepo `inject:""`
 }
 
-func (r *ResponseDefineRepo) Get(id uint) (responseDefine model.DebugConditionResponseDefine, err error) {
-	err = r.DB.
+func (r *ResponseDefineRepo) Get(tenantId consts.TenantId, id uint) (responseDefine model.DebugConditionResponseDefine, err error) {
+	err = r.GetDB(tenantId).
 		Where("id=?", id).
 		Where("NOT deleted").
 		First(&responseDefine).Error
 	return
 }
 
-func (r *ResponseDefineRepo) Save(responseDefine *model.DebugConditionResponseDefine) (err error) {
+func (r *ResponseDefineRepo) Save(tenantId consts.TenantId, responseDefine *model.DebugConditionResponseDefine) (err error) {
 
-	err = r.DB.Save(responseDefine).Error
+	err = r.GetDB(tenantId).Save(responseDefine).Error
 	return
 }
 
-func (r *ResponseDefineRepo) UpdateResult(responseDefine domain.ResponseDefineBase) (err error) {
+func (r *ResponseDefineRepo) UpdateResult(tenantId consts.TenantId, responseDefine domain.ResponseDefineBase) (err error) {
 	values := map[string]interface{}{
 		"result_msg":    responseDefine.ResultMsg,
 		"result_status": responseDefine.ResultStatus,
 	}
 
-	err = r.DB.Model(&model.DebugConditionResponseDefine{}).
+	err = r.GetDB(tenantId).Model(&model.DebugConditionResponseDefine{}).
 		Where("id=?", responseDefine.ConditionEntityId).
 		Updates(values).
 		Error
@@ -46,15 +47,15 @@ func (r *ResponseDefineRepo) UpdateResult(responseDefine domain.ResponseDefineBa
 	return
 }
 
-func (r *ResponseDefineRepo) Update(id uint, data map[string]interface{}) (err error) {
-	err = r.DB.Model(&model.DebugConditionResponseDefine{}).
+func (r *ResponseDefineRepo) Update(tenantId consts.TenantId, id uint, data map[string]interface{}) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugConditionResponseDefine{}).
 		Where("id=?", id).
 		Updates(data).
 		Error
 	return
 }
 
-func (r *ResponseDefineRepo) CreateLog(responseDefine domain.ResponseDefineBase) (
+func (r *ResponseDefineRepo) CreateLog(tenantId consts.TenantId, responseDefine domain.ResponseDefineBase) (
 	log model.ExecLogResponseDefine, err error) {
 
 	copier.CopyWithOption(&log, responseDefine, copier.Option{DeepCopy: true})
@@ -67,13 +68,13 @@ func (r *ResponseDefineRepo) CreateLog(responseDefine domain.ResponseDefineBase)
 	log.CreatedAt = nil
 	log.UpdatedAt = nil
 
-	err = r.DB.Save(&log).Error
+	err = r.GetDB(tenantId).Save(&log).Error
 
 	return
 }
 
-func (r *ResponseDefineRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogResponseDefine, err error) {
-	err = r.DB.
+func (r *ResponseDefineRepo) GetLog(tenantId consts.TenantId, conditionId, invokeId uint) (ret model.ExecLogResponseDefine, err error) {
+	err = r.GetDB(tenantId).
 		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
 		Where("NOT deleted").
 		First(&ret).Error
@@ -83,16 +84,16 @@ func (r *ResponseDefineRepo) GetLog(conditionId, invokeId uint) (ret model.ExecL
 	return
 }
 
-func (r *ResponseDefineRepo) Components(endpointInterfaceId uint) responseDefineHelper.Components {
-	endpointInterface, _ := r.EndpointInterfaceRepo.Get(endpointInterfaceId)
-	endpoint, _ := r.EndpointRepo.Get(endpointInterface.EndpointId)
+func (r *ResponseDefineRepo) Components(tenantId consts.TenantId, endpointInterfaceId uint) responseDefineHelper.Components {
+	endpointInterface, _ := r.EndpointInterfaceRepo.Get(tenantId, endpointInterfaceId)
+	endpoint, _ := r.EndpointRepo.Get(tenantId, endpointInterface.EndpointId)
 
 	components := responseDefineHelper.NewComponents()
-	result, err := r.ServeRepo.GetSchemasByProjectId(endpoint.ProjectId)
+	result, err := r.ServeRepo.GetSchemasByProjectId(tenantId, endpoint.ProjectId)
 	if err != nil {
 		return *components
 	}
-	responseBodies, err := r.EndpointInterfaceRepo.ListResponseBodies(endpointInterfaceId)
+	responseBodies, err := r.EndpointInterfaceRepo.ListResponseBodies(tenantId, endpointInterfaceId)
 	if err != nil {
 		return *components
 	}

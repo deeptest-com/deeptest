@@ -3,6 +3,7 @@ package repo
 import (
 	"errors"
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -11,19 +12,20 @@ import (
 )
 
 type AuthRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
-func (r *AuthRepo) CreateToken(name, token, tokenType string, projectId int) (po model.Auth2Token, err error) {
-	pos, _ := r.FindByToken(token)
+func (r *AuthRepo) CreateToken(tenantId consts.TenantId, name, token, tokenType string, projectId int) (po model.Auth2Token, err error) {
+	pos, _ := r.FindByToken(tenantId, token)
 	if len(pos) > 0 {
 		err = errors.New("Token值已存在")
 		return
 	}
 
-	pos, _ = r.FindByName(name)
+	pos, _ = r.FindByName(tenantId, name)
 	if len(pos) > 0 {
-		r.RemoveToken(pos[0].ID)
+		r.RemoveToken(tenantId, pos[0].ID)
 	}
 
 	po = model.Auth2Token{
@@ -32,7 +34,7 @@ func (r *AuthRepo) CreateToken(name, token, tokenType string, projectId int) (po
 		TokenType: tokenType,
 		ProjectId: projectId}
 
-	err = r.DB.Model(&po).Create(&po).Error
+	err = r.GetDB(tenantId).Model(&po).Create(&po).Error
 	if err != nil {
 		logUtils.Errorf("add token error", zap.String("error:", err.Error()))
 		err = fmt.Errorf("%d", _domain.ErrNameExist.Code)
@@ -43,8 +45,8 @@ func (r *AuthRepo) CreateToken(name, token, tokenType string, projectId int) (po
 	return
 }
 
-func (r *AuthRepo) ListOAuth2Token(projectId int) (pos []model.Auth2Token, err error) {
-	err = r.DB.
+func (r *AuthRepo) ListOAuth2Token(tenantId consts.TenantId, projectId int) (pos []model.Auth2Token, err error) {
+	err = r.GetDB(tenantId).
 		Where("project_id=?", projectId).
 		Where("NOT deleted").
 		Order("created_at DESC").
@@ -54,23 +56,23 @@ func (r *AuthRepo) ListOAuth2Token(projectId int) (pos []model.Auth2Token, err e
 	return
 }
 
-func (r *AuthRepo) FindByToken(token string) (pos []model.Auth2Token, err error) {
-	err = r.DB.
+func (r *AuthRepo) FindByToken(tenantId consts.TenantId, token string) (pos []model.Auth2Token, err error) {
+	err = r.GetDB(tenantId).
 		Where("token=?", token).
 		Where("NOT deleted").
 		Find(&pos).Error
 	return
 }
-func (r *AuthRepo) FindByName(name string) (pos []model.Auth2Token, err error) {
-	err = r.DB.
+func (r *AuthRepo) FindByName(tenantId consts.TenantId, name string) (pos []model.Auth2Token, err error) {
+	err = r.GetDB(tenantId).
 		Where("name=?", name).
 		Where("NOT deleted").
 		Find(&pos).Error
 	return
 }
 
-func (r *AuthRepo) RemoveToken(id uint) (err error) {
-	err = r.DB.Model(&model.Auth2Token{}).Where("id = ?", id).
+func (r *AuthRepo) RemoveToken(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Auth2Token{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete token by id error", zap.String("error:", err.Error()))

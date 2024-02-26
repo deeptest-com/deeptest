@@ -26,13 +26,14 @@ type EndpointMockExpectCtrl struct {
 // @success	200	{object}	_domain.Response{data=[]model.EndpointMockExpect}
 // @Router	/api/v1/mockExpect/list	[get]
 func (c *EndpointMockExpectCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	endpointId, err := ctx.URLParamInt("endpointId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	res, err := c.EndpointMockExpectService.List(uint(endpointId))
+	res, err := c.EndpointMockExpectService.List(tenantId, uint(endpointId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -53,13 +54,14 @@ func (c *EndpointMockExpectCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.EndpointMockExpect}
 // @Router	/api/v1/mockExpect	[get]
 func (c *EndpointMockExpectCtrl) Detail(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	expectId, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	res, err := c.EndpointMockExpectService.GetDetail(uint(expectId))
+	res, err := c.EndpointMockExpectService.GetDetail(tenantId, uint(expectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -79,6 +81,7 @@ func (c *EndpointMockExpectCtrl) Detail(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/mockExpect/save	[post]
 func (c *EndpointMockExpectCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := model.EndpointMockExpect{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -92,7 +95,7 @@ func (c *EndpointMockExpectCtrl) Save(ctx iris.Context) {
 	} else {
 		req.UpdateUser = userName
 	}
-	expectId, err := c.EndpointMockExpectService.Save(req)
+	expectId, err := c.EndpointMockExpectService.Save(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -112,6 +115,7 @@ func (c *EndpointMockExpectCtrl) Save(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/mockExpect/copy	[get]
 func (c *EndpointMockExpectCtrl) Copy(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	expectId, err := ctx.URLParamInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -119,7 +123,7 @@ func (c *EndpointMockExpectCtrl) Copy(ctx iris.Context) {
 	}
 
 	userName := multi.GetUsername(ctx)
-	id, err := c.EndpointMockExpectService.Copy(uint(expectId), 0, userName)
+	id, err := c.EndpointMockExpectService.Copy(tenantId, uint(expectId), 0, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -139,13 +143,14 @@ func (c *EndpointMockExpectCtrl) Copy(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/mockExpect	[delete]
 func (c *EndpointMockExpectCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	expectId, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	if err = c.EndpointMockExpectService.DeleteById(uint(expectId)); err != nil {
+	if err = c.EndpointMockExpectService.DeleteById(tenantId, uint(expectId)); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
@@ -154,13 +159,14 @@ func (c *EndpointMockExpectCtrl) Delete(ctx iris.Context) {
 }
 
 func (c *EndpointMockExpectCtrl) Disable(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	endpointId, err := ctx.Params().GetInt("endpointId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.EndpointMockExpectService.Disable(uint(endpointId))
+	err = c.EndpointMockExpectService.Disable(tenantId, uint(endpointId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -180,6 +186,7 @@ func (c *EndpointMockExpectCtrl) Disable(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/mockExpect/order	[post]
 func (c *EndpointMockExpectCtrl) Order(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.MockExpectIdsReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -187,7 +194,7 @@ func (c *EndpointMockExpectCtrl) Order(ctx iris.Context) {
 		return
 	}
 
-	if err = c.EndpointMockExpectService.SaveOrder(req); err != nil {
+	if err = c.EndpointMockExpectService.SaveOrder(tenantId, req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
@@ -207,6 +214,7 @@ func (c *EndpointMockExpectCtrl) Order(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/mockExpect/updateExpectDisabled	[post]
 func (c *EndpointMockExpectCtrl) UpdateExpectDisabled(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := model.EndpointMockExpect{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -214,7 +222,7 @@ func (c *EndpointMockExpectCtrl) UpdateExpectDisabled(ctx iris.Context) {
 		return
 	}
 
-	if err = c.EndpointMockExpectService.UpdateExpectDisabled(req.ID, req.Disabled); err != nil {
+	if err = c.EndpointMockExpectService.UpdateExpectDisabled(tenantId, req.ID, req.Disabled); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
@@ -234,6 +242,7 @@ func (c *EndpointMockExpectCtrl) UpdateExpectDisabled(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/mockExpect/updateName	[post]
 func (c *EndpointMockExpectCtrl) UpdateExpectName(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := model.EndpointMockExpect{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -241,7 +250,7 @@ func (c *EndpointMockExpectCtrl) UpdateExpectName(ctx iris.Context) {
 		return
 	}
 
-	if err = c.EndpointMockExpectService.UpdateExpectName(req.ID, req.Name); err != nil {
+	if err = c.EndpointMockExpectService.UpdateExpectName(tenantId, req.ID, req.Name); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
@@ -261,11 +270,7 @@ func (c *EndpointMockExpectCtrl) UpdateExpectName(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.MockExpectRequestOptions}
 // @Router	/api/v1/mockExpect/requestOptions	[get]
 func (c *EndpointMockExpectCtrl) GetExpectRequestOptions(ctx iris.Context) {
-	endpointId, err := ctx.URLParamInt("endpointId")
-	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
-		return
-	}
+	tenantId := c.getTenantId(ctx)
 
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 	if err != nil {
@@ -273,7 +278,7 @@ func (c *EndpointMockExpectCtrl) GetExpectRequestOptions(ctx iris.Context) {
 		return
 	}
 
-	options, err := c.EndpointMockExpectService.GetExpectRequestOptions(uint(endpointId), uint(endpointInterfaceId))
+	options, err := c.EndpointMockExpectService.GetExpectRequestOptions(tenantId, uint(endpointInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -291,7 +296,7 @@ func (c *EndpointMockExpectCtrl) GetExpectRequestOptions(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/mockExpect/createExample	[post]
 func (c *EndpointMockExpectCtrl) CreateExample(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.CreateExampleReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -299,7 +304,7 @@ func (c *EndpointMockExpectCtrl) CreateExample(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.EndpointService.CreateExample(req)
+	data, err := c.EndpointService.CreateExample(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

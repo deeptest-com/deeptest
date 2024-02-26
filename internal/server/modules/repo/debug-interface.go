@@ -17,9 +17,9 @@ type DebugInterfaceRepo struct {
 	DiagnoseInterfaceRepo *DiagnoseInterfaceRepo `inject:""`
 }
 
-func (r *DebugInterfaceRepo) Tested(id uint) (res bool, err error) {
+func (r *DebugInterfaceRepo) Tested(tenantId consts.TenantId, id uint) (res bool, err error) {
 	var count int64
-	err = r.DB.Model(&model.DebugInterface{}).Where("id=?", id).Count(&count).Error
+	err = r.GetDB(tenantId).Model(&model.DebugInterface{}).Where("id=?", id).Count(&count).Error
 	if err != nil {
 		return
 	}
@@ -27,32 +27,32 @@ func (r *DebugInterfaceRepo) Tested(id uint) (res bool, err error) {
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int) {
+func (r *DebugInterfaceRepo) UpdateOrder(tenantId consts.TenantId, pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int) {
 	if pos == serverConsts.Inner {
 		parentId = targetId
 
 		var preChild model.DebugInterface
-		r.DB.Where("parent_id=?", parentId).
+		r.GetDB(tenantId).Where("parent_id=?", parentId).
 			Order("ordr DESC").Limit(1).
 			First(&preChild)
 
 		ordr = preChild.Ordr + 1
 
 	} else if pos == serverConsts.Before {
-		brother, _ := r.Get(targetId)
+		brother, _ := r.Get(tenantId, targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.DebugInterface{}).
+		r.GetDB(tenantId).Model(&model.DebugInterface{}).
 			Where("NOT deleted AND parent_id=? AND ordr >= ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
 		ordr = brother.Ordr
 
 	} else if pos == serverConsts.After {
-		brother, _ := r.Get(targetId)
+		brother, _ := r.Get(tenantId, targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.DebugInterface{}).
+		r.GetDB(tenantId).Model(&model.DebugInterface{}).
 			Where("NOT deleted AND parent_id=? AND ordr > ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
@@ -63,8 +63,8 @@ func (r *DebugInterfaceRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint
 	return
 }
 
-func (r *DebugInterfaceRepo) ListByProject(projectId int) (pos []*model.DebugInterface, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) ListByProject(tenantId consts.TenantId, projectId int) (pos []*model.DebugInterface, err error) {
+	err = r.GetDB(tenantId).
 		Where("project_id=?", projectId).
 		Where("NOT deleted").
 		Order("parent_id ASC, ordr ASC").
@@ -72,99 +72,99 @@ func (r *DebugInterfaceRepo) ListByProject(projectId int) (pos []*model.DebugInt
 	return
 }
 
-func (r *DebugInterfaceRepo) Get(id uint) (po model.DebugInterface, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) Get(tenantId consts.TenantId, id uint) (po model.DebugInterface, err error) {
+	err = r.GetDB(tenantId).
 		Where("id=?", id).
 		Where("NOT deleted").
 		First(&po).Error
 	return
 }
 
-func (r *DebugInterfaceRepo) GetByCaseInterfaceId(caseInterfaceId uint) (po model.DebugInterface, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) GetByCaseInterfaceId(tenantId consts.TenantId, caseInterfaceId uint) (po model.DebugInterface, err error) {
+	err = r.GetDB(tenantId).
 		Where("case_interface_id=?", caseInterfaceId).
 		Where("NOT deleted").
 		First(&po).Error
 	return
 }
 
-func (r *DebugInterfaceRepo) GetDetail(interfId uint) (interf model.DebugInterface, err error) {
+func (r *DebugInterfaceRepo) GetDetail(tenantId consts.TenantId, interfId uint) (interf model.DebugInterface, err error) {
 	if interfId <= 0 {
 		return
 	}
 
-	interf, err = r.Get(interfId)
+	interf, err = r.Get(tenantId, interfId)
 
-	interf.QueryParams, interf.PathParams, _ = r.ListParams(interfId)
-	interf.Headers, _ = r.ListHeaders(interfId)
+	interf.QueryParams, interf.PathParams, _ = r.ListParams(tenantId, interfId)
+	interf.Headers, _ = r.ListHeaders(tenantId, interfId)
 
-	interf.BodyFormData, _ = r.ListBodyFormData(interfId)
-	interf.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(interfId)
+	interf.BodyFormData, _ = r.ListBodyFormData(tenantId, interfId)
+	interf.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(tenantId, interfId)
 
-	interf.BasicAuth, _ = r.GetBasicAuth(interfId)
-	interf.BearerToken, _ = r.GetBearerToken(interfId)
-	interf.OAuth20, _ = r.GetOAuth20(interfId)
-	interf.ApiKey, _ = r.GetApiKey(interfId)
+	interf.BasicAuth, _ = r.GetBasicAuth(tenantId, interfId)
+	interf.BearerToken, _ = r.GetBearerToken(tenantId, interfId)
+	interf.OAuth20, _ = r.GetOAuth20(tenantId, interfId)
+	interf.ApiKey, _ = r.GetApiKey(tenantId, interfId)
 
-	interf.GlobalParams, _ = r.GetGlobalParams(interfId)
-	interf.Cookies, _ = r.ListCookies(interfId)
+	interf.GlobalParams, _ = r.GetGlobalParams(tenantId, interfId)
+	interf.Cookies, _ = r.ListCookies(tenantId, interfId)
 
 	return
 }
 
-func (r *DebugInterfaceRepo) Save(interf *model.DebugInterface) (err error) {
-	r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.DB.Save(interf).Error
+func (r *DebugInterfaceRepo) Save(tenantId consts.TenantId, interf *model.DebugInterface) (err error) {
+	r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
+		err = r.GetDB(tenantId).Save(interf).Error
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateParams(interf.ID, interf.QueryParams, interf.PathParams)
+		err = r.UpdateParams(tenantId, interf.ID, interf.QueryParams, interf.PathParams)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateBodyFormData(interf.ID, interf.BodyFormData)
+		err = r.UpdateBodyFormData(tenantId, interf.ID, interf.BodyFormData)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateBodyFormUrlencoded(interf.ID, interf.BodyFormUrlencoded)
+		err = r.UpdateBodyFormUrlencoded(tenantId, interf.ID, interf.BodyFormUrlencoded)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateHeaders(interf.ID, interf.Headers)
+		err = r.UpdateHeaders(tenantId, interf.ID, interf.Headers)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateBasicAuth(interf.ID, interf.BasicAuth)
+		err = r.UpdateBasicAuth(tenantId, interf.ID, interf.BasicAuth)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateBearerToken(interf.ID, interf.BearerToken)
+		err = r.UpdateBearerToken(tenantId, interf.ID, interf.BearerToken)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateOAuth20(interf.ID, interf.OAuth20)
+		err = r.UpdateOAuth20(tenantId, interf.ID, interf.OAuth20)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateApiKey(interf.ID, interf.ApiKey)
+		err = r.UpdateApiKey(tenantId, interf.ID, interf.ApiKey)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateGlobalParams(interf.ID, interf.GlobalParams)
+		err = r.UpdateGlobalParams(tenantId, interf.ID, interf.GlobalParams)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateCookies(interf.ID, interf.Cookies)
+		err = r.UpdateCookies(tenantId, interf.ID, interf.Cookies)
 		if err != nil {
 			return err
 		}
@@ -174,16 +174,16 @@ func (r *DebugInterfaceRepo) Save(interf *model.DebugInterface) (err error) {
 
 	return
 }
-func (r *DebugInterfaceRepo) UpdateName(req serverDomain.EndpointCase) (err error) {
-	err = r.DB.Model(&model.DebugInterface{}).
+func (r *DebugInterfaceRepo) UpdateName(tenantId consts.TenantId, req serverDomain.EndpointCase) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugInterface{}).
 		Where("id = ?", req.Id).
 		Update("name", req.Name).Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateHeaders(id uint, headers []model.DebugInterfaceHeader) (err error) {
-	err = r.RemoveHeaders(id)
+func (r *DebugInterfaceRepo) UpdateHeaders(tenantId consts.TenantId, id uint, headers []model.DebugInterfaceHeader) (err error) {
+	err = r.RemoveHeaders(tenantId, id)
 
 	if len(headers) == 0 {
 		return
@@ -204,21 +204,21 @@ func (r *DebugInterfaceRepo) UpdateHeaders(id uint, headers []model.DebugInterfa
 	if len(newHeaders) == 0 {
 		return
 	}
-	err = r.DB.Create(&newHeaders).Error
+	err = r.GetDB(tenantId).Create(&newHeaders).Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) RemoveHeaders(id uint) (err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) RemoveHeaders(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.DebugInterfaceHeader{}, "").Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []model.DebugInterfaceParam) (err error) {
-	err = r.RemoveParams(id)
+func (r *DebugInterfaceRepo) UpdateParams(tenantId consts.TenantId, id uint, queryParams, pathParams []model.DebugInterfaceParam) (err error) {
+	err = r.RemoveParams(tenantId, id)
 
 	var params []model.DebugInterfaceParam
 
@@ -247,20 +247,20 @@ func (r *DebugInterfaceRepo) UpdateParams(id uint, queryParams, pathParams []mod
 		return
 	}
 
-	err = r.DB.Create(&params).Error
+	err = r.GetDB(tenantId).Create(&params).Error
 
 	return
 }
-func (r *DebugInterfaceRepo) RemoveParams(id uint) (err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) RemoveParams(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.DebugInterfaceParam{}, "").Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateCookies(id uint, cookies []model.DebugInterfaceCookie) (err error) {
-	err = r.RemoveCookie(id)
+func (r *DebugInterfaceRepo) UpdateCookies(tenantId consts.TenantId, id uint, cookies []model.DebugInterfaceCookie) (err error) {
+	err = r.RemoveCookie(tenantId, id)
 
 	if len(cookies) == 0 {
 		return
@@ -281,30 +281,30 @@ func (r *DebugInterfaceRepo) UpdateCookies(id uint, cookies []model.DebugInterfa
 	if len(newCookies) == 0 {
 		return
 	}
-	err = r.DB.Create(&newCookies).Error
+	err = r.GetDB(tenantId).Create(&newCookies).Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) RemoveCookie(id uint) (err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) RemoveCookie(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.DebugInterfaceCookie{}, "").Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateProcessorId(id, processorId uint) (err error) {
+func (r *DebugInterfaceRepo) UpdateProcessorId(tenantId consts.TenantId, id, processorId uint) (err error) {
 	values := map[string]interface{}{
 		"scenario_processor_id": processorId,
 	}
-	err = r.UpdateDebugInfo(id, values)
+	err = r.UpdateDebugInfo(tenantId, id, values)
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateBodyFormData(id uint, items []model.DebugInterfaceBodyFormDataItem) (err error) {
-	err = r.RemoveBodyFormData(id)
+func (r *DebugInterfaceRepo) UpdateBodyFormData(tenantId consts.TenantId, id uint, items []model.DebugInterfaceBodyFormDataItem) (err error) {
+	err = r.RemoveBodyFormData(tenantId, id)
 
 	if len(items) == 0 {
 		return
@@ -325,20 +325,20 @@ func (r *DebugInterfaceRepo) UpdateBodyFormData(id uint, items []model.DebugInte
 	if len(list) == 0 {
 		return
 	}
-	err = r.DB.Create(&list).Error
+	err = r.GetDB(tenantId).Create(&list).Error
 
 	return
 }
-func (r *DebugInterfaceRepo) RemoveBodyFormData(id uint) (err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) RemoveBodyFormData(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.DebugInterfaceBodyFormDataItem{}, "").Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.DebugInterfaceBodyFormUrlEncodedItem) (err error) {
-	err = r.RemoveBodyFormUrlencoded(id)
+func (r *DebugInterfaceRepo) UpdateBodyFormUrlencoded(tenantId consts.TenantId, id uint, items []model.DebugInterfaceBodyFormUrlEncodedItem) (err error) {
+	err = r.RemoveBodyFormUrlencoded(tenantId, id)
 
 	if len(items) == 0 {
 		return
@@ -359,84 +359,84 @@ func (r *DebugInterfaceRepo) UpdateBodyFormUrlencoded(id uint, items []model.Deb
 	if len(list) == 0 {
 		return
 	}
-	err = r.DB.Create(&list).Error
+	err = r.GetDB(tenantId).Create(&list).Error
 
 	return
 }
-func (r *DebugInterfaceRepo) RemoveBodyFormUrlencoded(id uint) (err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) RemoveBodyFormUrlencoded(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.DebugInterfaceBodyFormUrlEncodedItem{}, "").Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateBasicAuth(id uint, payload model.DebugInterfaceBasicAuth) (err error) {
-	r.RemoveBasicAuth(id)
+func (r *DebugInterfaceRepo) UpdateBasicAuth(tenantId consts.TenantId, id uint, payload model.DebugInterfaceBasicAuth) (err error) {
+	r.RemoveBasicAuth(tenantId, id)
 
 	payload.InterfaceId = id
-	err = r.DB.Save(&payload).Error
+	err = r.GetDB(tenantId).Save(&payload).Error
 
 	return
 }
-func (r *DebugInterfaceRepo) RemoveBasicAuth(id uint) (err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) RemoveBasicAuth(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.DebugInterfaceBasicAuth{}, "").Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateBearerToken(id uint, payload model.DebugInterfaceBearerToken) (err error) {
-	r.RemoveBearerToken(id)
+func (r *DebugInterfaceRepo) UpdateBearerToken(tenantId consts.TenantId, id uint, payload model.DebugInterfaceBearerToken) (err error) {
+	r.RemoveBearerToken(tenantId, id)
 
 	payload.InterfaceId = id
-	err = r.DB.Save(&payload).Error
+	err = r.GetDB(tenantId).Save(&payload).Error
 
 	return
 }
-func (r *DebugInterfaceRepo) RemoveBearerToken(id uint) (err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) RemoveBearerToken(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.DebugInterfaceBearerToken{}, "").Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateOAuth20(interfaceId uint, payload model.DebugInterfaceOAuth20) (err error) {
-	r.RemoveOAuth20(interfaceId)
+func (r *DebugInterfaceRepo) UpdateOAuth20(tenantId consts.TenantId, interfaceId uint, payload model.DebugInterfaceOAuth20) (err error) {
+	r.RemoveOAuth20(tenantId, interfaceId)
 
 	payload.InterfaceId = interfaceId
-	err = r.DB.Save(&payload).Error
+	err = r.GetDB(tenantId).Save(&payload).Error
 
 	return
 }
-func (r *DebugInterfaceRepo) RemoveOAuth20(interfaceId uint) (err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) RemoveOAuth20(tenantId consts.TenantId, interfaceId uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", interfaceId).
 		Delete(&model.DebugInterfaceOAuth20{}).Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateApiKey(id uint, payload model.DebugInterfaceApiKey) (err error) {
-	r.RemoveApiKey(id)
+func (r *DebugInterfaceRepo) UpdateApiKey(tenantId consts.TenantId, id uint, payload model.DebugInterfaceApiKey) (err error) {
+	r.RemoveApiKey(tenantId, id)
 
 	payload.InterfaceId = id
-	err = r.DB.Save(&payload).Error
+	err = r.GetDB(tenantId).Save(&payload).Error
 
 	return
 }
-func (r *DebugInterfaceRepo) RemoveApiKey(id uint) (err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) RemoveApiKey(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.DebugInterfaceApiKey{}, "").Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.DebugInterface{}).
+func (r *DebugInterfaceRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugInterface{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -444,40 +444,40 @@ func (r *DebugInterfaceRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *DebugInterfaceRepo) GetChildren(defId, fieldId uint) (children []*model.DebugInterface, err error) {
-	err = r.DB.Where("defID=? AND parentID=?", defId, fieldId).Find(&children).Error
+func (r *DebugInterfaceRepo) GetChildren(tenantId consts.TenantId, defId, fieldId uint) (children []*model.DebugInterface, err error) {
+	err = r.GetDB(tenantId).Where("defID=? AND parentID=?", defId, fieldId).Find(&children).Error
 	return
 }
 
-func (r *DebugInterfaceRepo) SetIsRange(fieldId uint, b bool) (err error) {
-	err = r.DB.Model(&model.DebugInterface{}).
+func (r *DebugInterfaceRepo) SetIsRange(tenantId consts.TenantId, fieldId uint, b bool) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugInterface{}).
 		Where("id = ?", fieldId).Update("isRange", b).Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateOrdAndParent(interf model.DebugInterface) (err error) {
-	err = r.DB.Model(&interf).
+func (r *DebugInterfaceRepo) UpdateOrdAndParent(tenantId consts.TenantId, interf model.DebugInterface) (err error) {
+	err = r.GetDB(tenantId).Model(&interf).
 		Updates(model.DebugInterface{InterfaceBase: model.InterfaceBase{Ordr: interf.Ordr, ParentId: interf.ParentId}}).
 		Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) SetOAuth2AccessToken(token string, interfaceId int) (err error) {
-	err = r.DB.Model(&model.DebugInterfaceOAuth20{}).
+func (r *DebugInterfaceRepo) SetOAuth2AccessToken(tenantId consts.TenantId, token string, interfaceId int) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugInterfaceOAuth20{}).
 		Where("interface_id = ?", interfaceId).
 		Update("access_token", token).Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) ListParams(interfaceId uint) (
+func (r *DebugInterfaceRepo) ListParams(tenantId consts.TenantId, interfaceId uint) (
 	queryParams []model.DebugInterfaceParam, pathParams []model.DebugInterfaceParam, err error) {
 
 	pos := []model.DebugInterfaceParam{}
 
-	err = r.DB.
+	err = r.GetDB(tenantId).
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
 		Order("id ASC").
@@ -493,8 +493,8 @@ func (r *DebugInterfaceRepo) ListParams(interfaceId uint) (
 
 	return
 }
-func (r *DebugInterfaceRepo) ListHeaders(interfaceId uint) (pos []model.DebugInterfaceHeader, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) ListHeaders(tenantId consts.TenantId, interfaceId uint) (pos []model.DebugInterfaceHeader, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
 		Order("id ASC").
@@ -502,8 +502,8 @@ func (r *DebugInterfaceRepo) ListHeaders(interfaceId uint) (pos []model.DebugInt
 
 	return
 }
-func (r *DebugInterfaceRepo) ListCookies(interfaceId uint) (pos []model.DebugInterfaceCookie, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) ListCookies(tenantId consts.TenantId, interfaceId uint) (pos []model.DebugInterfaceCookie, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
 		Order("id ASC").
@@ -511,8 +511,8 @@ func (r *DebugInterfaceRepo) ListCookies(interfaceId uint) (pos []model.DebugInt
 
 	return
 }
-func (r *DebugInterfaceRepo) ListBodyFormData(interfaceId uint) (pos []model.DebugInterfaceBodyFormDataItem, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) ListBodyFormData(tenantId consts.TenantId, interfaceId uint) (pos []model.DebugInterfaceBodyFormDataItem, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
 		Order("id ASC").
@@ -520,8 +520,8 @@ func (r *DebugInterfaceRepo) ListBodyFormData(interfaceId uint) (pos []model.Deb
 
 	return
 }
-func (r *DebugInterfaceRepo) ListBodyFormUrlencoded(interfaceId uint) (pos []model.DebugInterfaceBodyFormUrlEncodedItem, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) ListBodyFormUrlencoded(tenantId consts.TenantId, interfaceId uint) (pos []model.DebugInterfaceBodyFormUrlEncodedItem, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
 		Order("id ASC").
@@ -530,53 +530,53 @@ func (r *DebugInterfaceRepo) ListBodyFormUrlencoded(interfaceId uint) (pos []mod
 	return
 }
 
-func (r *DebugInterfaceRepo) GetBasicAuth(id uint) (po model.DebugInterfaceBasicAuth, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) GetBasicAuth(tenantId consts.TenantId, id uint) (po model.DebugInterfaceBasicAuth, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		First(&po).Error
 
 	return
 }
-func (r *DebugInterfaceRepo) GetBearerToken(id uint) (po model.DebugInterfaceBearerToken, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) GetBearerToken(tenantId consts.TenantId, id uint) (po model.DebugInterfaceBearerToken, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		First(&po).Error
 
 	return
 }
-func (r *DebugInterfaceRepo) GetOAuth20(id uint) (po model.DebugInterfaceOAuth20, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) GetOAuth20(tenantId consts.TenantId, id uint) (po model.DebugInterfaceOAuth20, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		First(&po).Error
 
 	return
 }
-func (r *DebugInterfaceRepo) GetApiKey(id uint) (po model.DebugInterfaceApiKey, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) GetApiKey(tenantId consts.TenantId, id uint) (po model.DebugInterfaceApiKey, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		First(&po).Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) SaveInterfaces(interf *model.DebugInterface) (err error) {
-	r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.UpdateInterface(interf)
+func (r *DebugInterfaceRepo) SaveInterfaces(tenantId consts.TenantId, interf *model.DebugInterface) (err error) {
+	r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
+		err = r.UpdateInterface(tenantId, interf)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateParams(interf.ID, interf.QueryParams, interf.PathParams)
+		err = r.UpdateParams(tenantId, interf.ID, interf.QueryParams, interf.PathParams)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateHeaders(interf.ID, interf.Headers)
+		err = r.UpdateHeaders(tenantId, interf.ID, interf.Headers)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateCookies(interf.ID, interf.Cookies)
+		err = r.UpdateCookies(tenantId, interf.ID, interf.Cookies)
 		if err != nil {
 			return err
 		}
@@ -587,26 +587,26 @@ func (r *DebugInterfaceRepo) SaveInterfaces(interf *model.DebugInterface) (err e
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateInterface(interf *model.DebugInterface) (err error) {
-	err = r.BaseRepo.Save(interf.ID, interf)
+func (r *DebugInterfaceRepo) UpdateInterface(tenantId consts.TenantId, interf *model.DebugInterface) (err error) {
+	err = r.BaseRepo.Save(tenantId, interf.ID, interf)
 	return
 }
 
-func (r *DebugInterfaceRepo) PopulateProps(po *model.DebugInterface) (err error) {
-	po.QueryParams, po.PathParams, _ = r.ListParams(po.ID)
-	po.Headers, _ = r.ListHeaders(po.ID)
-	po.BodyFormData, _ = r.ListBodyFormData(po.ID)
-	po.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(po.ID)
-	po.BasicAuth, _ = r.GetBasicAuth(po.ID)
-	po.BearerToken, _ = r.GetBearerToken(po.ID)
-	po.OAuth20, _ = r.GetOAuth20(po.ID)
-	po.ApiKey, _ = r.GetApiKey(po.ID)
+func (r *DebugInterfaceRepo) PopulateProps(tenantId consts.TenantId, po *model.DebugInterface) (err error) {
+	po.QueryParams, po.PathParams, _ = r.ListParams(tenantId, po.ID)
+	po.Headers, _ = r.ListHeaders(tenantId, po.ID)
+	po.BodyFormData, _ = r.ListBodyFormData(tenantId, po.ID)
+	po.BodyFormUrlencoded, _ = r.ListBodyFormUrlencoded(tenantId, po.ID)
+	po.BasicAuth, _ = r.GetBasicAuth(tenantId, po.ID)
+	po.BearerToken, _ = r.GetBearerToken(tenantId, po.ID)
+	po.OAuth20, _ = r.GetOAuth20(tenantId, po.ID)
+	po.ApiKey, _ = r.GetApiKey(tenantId, po.ID)
 
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateDebugInfo(id uint, values map[string]interface{}) (err error) {
-	err = r.DB.Model(&model.DebugInterface{}).
+func (r *DebugInterfaceRepo) UpdateDebugInfo(tenantId consts.TenantId, id uint, values map[string]interface{}) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugInterface{}).
 		Where("id=?", id).
 		Updates(values).
 		Error
@@ -614,9 +614,9 @@ func (r *DebugInterfaceRepo) UpdateDebugInfo(id uint, values map[string]interfac
 	return
 }
 
-func (r *DebugInterfaceRepo) DeleteByProcessorIds(ids []uint) (err error) {
+func (r *DebugInterfaceRepo) DeleteByProcessorIds(tenantId consts.TenantId, ids []uint) (err error) {
 	if len(ids) > 0 {
-		err = r.DB.Model(&model.DebugInterface{}).
+		err = r.GetDB(tenantId).Model(&model.DebugInterface{}).
 			Where("scenario_processor_id IN (?)", ids).
 			Update("deleted", true).
 			Error
@@ -625,7 +625,7 @@ func (r *DebugInterfaceRepo) DeleteByProcessorIds(ids []uint) (err error) {
 	return
 }
 
-func (r *DebugInterfaceRepo) CreateDefault(src consts.ProcessorInterfaceSrc, projectId uint) (id uint, err error) {
+func (r *DebugInterfaceRepo) CreateDefault(tenantId consts.TenantId, src consts.ProcessorInterfaceSrc, projectId uint) (id uint, err error) {
 	po := model.DebugInterface{
 		ProcessorInterfaceSrc: src,
 
@@ -637,42 +637,42 @@ func (r *DebugInterfaceRepo) CreateDefault(src consts.ProcessorInterfaceSrc, pro
 		},
 	}
 
-	serves, _ := r.ServeRepo.ListByProject(projectId)
+	serves, _ := r.ServeRepo.ListByProject(tenantId, projectId)
 	if len(serves) > 0 {
 		po.ServeId = serves[0].ID
 
-		server, _ := r.ServeServerRepo.GetDefaultByServe(po.ServeId)
+		server, _ := r.ServeServerRepo.GetDefaultByServe(tenantId, po.ServeId)
 		po.ServerId = server.ID
 	}
 
-	err = r.Save(&po)
+	err = r.Save(tenantId, &po)
 
 	id = po.ID
 
 	return
 }
 
-func (r *DebugInterfaceRepo) GetSourceNameById(id uint) (name string, err error) {
-	debugInterface, err := r.Get(id)
+func (r *DebugInterfaceRepo) GetSourceNameById(tenantId consts.TenantId, id uint) (name string, err error) {
+	debugInterface, err := r.Get(tenantId, id)
 	if err != nil {
 		return
 	}
 
 	switch debugInterface.ProcessorInterfaceSrc {
 	case consts.InterfaceSrcDefine:
-		endpointInterface, err := r.EndpointInterfaceRepo.Get(debugInterface.EndpointInterfaceId)
+		endpointInterface, err := r.EndpointInterfaceRepo.Get(tenantId, debugInterface.EndpointInterfaceId)
 		if err != nil {
 			return "", err
 		}
 		name = endpointInterface.Name
 	case consts.InterfaceSrcCase:
-		endpointCase, err := r.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
+		endpointCase, err := r.EndpointCaseRepo.Get(tenantId, debugInterface.CaseInterfaceId)
 		if err != nil {
 			return "", err
 		}
 		name = endpointCase.Name
 	case consts.InterfaceSrcDiagnose:
-		diagnoseInterface, err := r.DiagnoseInterfaceRepo.Get(debugInterface.DiagnoseInterfaceId)
+		diagnoseInterface, err := r.DiagnoseInterfaceRepo.Get(tenantId, debugInterface.DiagnoseInterfaceId)
 		if err != nil {
 			return "", err
 		}
@@ -682,8 +682,8 @@ func (r *DebugInterfaceRepo) GetSourceNameById(id uint) (name string, err error)
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateGlobalParams(id uint, params []model.DebugInterfaceGlobalParam) (err error) {
-	err = r.RemoveGlobalParams(id)
+func (r *DebugInterfaceRepo) UpdateGlobalParams(tenantId consts.TenantId, id uint, params []model.DebugInterfaceGlobalParam) (err error) {
+	err = r.RemoveGlobalParams(tenantId, id)
 
 	if len(params) == 0 {
 		return
@@ -693,69 +693,69 @@ func (r *DebugInterfaceRepo) UpdateGlobalParams(id uint, params []model.DebugInt
 		params[key].InterfaceId = id
 	}
 
-	err = r.DB.Create(&params).Error
+	err = r.GetDB(tenantId).Create(&params).Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) RemoveGlobalParams(id uint) (err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) RemoveGlobalParams(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.DebugInterfaceGlobalParam{}, "").Error
 
 	return
 }
 
-func (r *DebugInterfaceRepo) GetGlobalParams(id uint) (po []model.DebugInterfaceGlobalParam, err error) {
-	err = r.DB.
+func (r *DebugInterfaceRepo) GetGlobalParams(tenantId consts.TenantId, id uint) (po []model.DebugInterfaceGlobalParam, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Find(&po).Error
 	return
 }
 
-func (r *DebugInterfaceRepo) SyncPath(endpointId, serveId uint, newPath, oldPath string) {
+func (r *DebugInterfaceRepo) SyncPath(tenantId consts.TenantId, endpointId, serveId uint, newPath, oldPath string) {
 	if endpointId == 0 {
 		return
 	}
 
-	interfaceIds, err := r.EndpointInterfaceRepo.ListIdByEndpoint(endpointId)
+	interfaceIds, err := r.EndpointInterfaceRepo.ListIdByEndpoint(tenantId, endpointId)
 	if err != nil {
 		return
 	}
 	if len(interfaceIds) > 0 {
-		r.UpdateDefinePath(interfaceIds, newPath, oldPath)
-		r.UpdateServeId(interfaceIds, serveId)
+		r.UpdateDefinePath(tenantId, interfaceIds, newPath, oldPath)
+		r.UpdateServeId(tenantId, interfaceIds, serveId)
 	}
 }
 
 // UpdateDefinePath 如果路径没变更，则更新接口定义-调试-接口定义-用例路径
-func (r *DebugInterfaceRepo) UpdateDefinePath(ids []uint, newPath, oldPath string) (err error) {
-	err = r.DB.Model(&model.DebugInterface{}).
+func (r *DebugInterfaceRepo) UpdateDefinePath(tenantId consts.TenantId, ids []uint, newPath, oldPath string) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugInterface{}).
 		Where("endpoint_interface_id in ? and url = ? and scenario_processor_id = 0 and diagnose_interface_id = 0", ids, oldPath).
 		Update("url", newPath).
 		Error
 	return
 }
 
-func (r *DebugInterfaceRepo) UpdateServeId(ids []uint, serveId uint) (err error) {
-	err = r.DB.Model(&model.DebugInterface{}).
+func (r *DebugInterfaceRepo) UpdateServeId(tenantId consts.TenantId, ids []uint, serveId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugInterface{}).
 		Where("endpoint_interface_id in ?", ids).
 		Update("serve_id", serveId).
 		Error
 	return
 }
 
-func (r *DebugInterfaceRepo) SyncServeId(endpointIds []uint, serveId uint) (err error) {
+func (r *DebugInterfaceRepo) SyncServeId(tenantId consts.TenantId, endpointIds []uint, serveId uint) (err error) {
 	if len(endpointIds) == 0 {
 		return
 	}
 
-	interfaceIds, err := r.EndpointInterfaceRepo.ListIdByEndpoints(endpointIds)
+	interfaceIds, err := r.EndpointInterfaceRepo.ListIdByEndpoints(tenantId, endpointIds)
 	if err != nil {
 		return
 	}
 	if len(interfaceIds) > 0 {
-		err = r.UpdateServeId(interfaceIds, serveId)
+		err = r.UpdateServeId(tenantId, interfaceIds, serveId)
 	}
 
 	return

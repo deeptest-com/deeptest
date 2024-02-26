@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 	"strconv"
@@ -15,8 +16,8 @@ type EnvironmentRepo struct {
 	ServeRepo   *ServeRepo   `inject:""`
 }
 
-func (r *EnvironmentRepo) List(projectId int) (pos []model.Environment, err error) {
-	err = r.DB.
+func (r *EnvironmentRepo) List(tenantId consts.TenantId, projectId int) (pos []model.Environment, err error) {
+	err = r.GetDB(tenantId).
 		Select("id", "name").
 		Where("NOT deleted and project_id=?", projectId).
 		Order("sort ASC").
@@ -24,18 +25,18 @@ func (r *EnvironmentRepo) List(projectId int) (pos []model.Environment, err erro
 	return
 }
 
-func (r *EnvironmentRepo) Get(id uint) (env model.Environment, err error) {
-	err = r.DB.
+func (r *EnvironmentRepo) Get(tenantId consts.TenantId, id uint) (env model.Environment, err error) {
+	err = r.GetDB(tenantId).
 		Where("id=?", id).
 		Where("NOT deleted").
 		First(&env).Error
 	return
 }
 
-func (r *EnvironmentRepo) GetByName(name string) (env model.Environment, err error) {
+func (r *EnvironmentRepo) GetByName(tenantId consts.TenantId, name string) (env model.Environment, err error) {
 	var envs []model.Environment
 
-	db := r.DB.Model(&env).
+	db := r.GetDB(tenantId).Model(&env).
 		Where("name =? AND not deleted", name)
 
 	err = db.Find(&envs).Error
@@ -51,9 +52,9 @@ func (r *EnvironmentRepo) GetByName(name string) (env model.Environment, err err
 	return
 }
 
-func (r *EnvironmentRepo) GetByProject(projectId uint) (env model.Environment, err error) {
+func (r *EnvironmentRepo) GetByProject(tenantId consts.TenantId, projectId uint) (env model.Environment, err error) {
 
-	err = r.DB.
+	err = r.GetDB(tenantId).
 		Where("project_id=?", projectId).
 		Where("NOT deleted").
 		First(&env).Error
@@ -61,19 +62,19 @@ func (r *EnvironmentRepo) GetByProject(projectId uint) (env model.Environment, e
 	return
 }
 
-func (r *EnvironmentRepo) GetByUserAndProject(userId, projectId uint) (env model.Environment, err error) {
-	relaPo, err := r.GetProjectUserServer(projectId, userId)
+func (r *EnvironmentRepo) GetByUserAndProject(tenantId consts.TenantId, userId, projectId uint) (env model.Environment, err error) {
+	relaPo, err := r.GetProjectUserServer(tenantId, projectId, userId)
 	if err != nil {
 		return
 	}
 
-	env, err = r.Get(relaPo.ServerId)
+	env, err = r.Get(tenantId, relaPo.ServerId)
 
 	return
 }
 
-func (r *EnvironmentRepo) SetProjectUserServer(projectId, userId, serverId uint) (err error) {
-	data, err := r.GetProjectUserServer(projectId, userId)
+func (r *EnvironmentRepo) SetProjectUserServer(tenantId consts.TenantId, projectId, userId, serverId uint) (err error) {
+	data, err := r.GetProjectUserServer(tenantId, projectId, userId)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return
 	}
@@ -81,13 +82,13 @@ func (r *EnvironmentRepo) SetProjectUserServer(projectId, userId, serverId uint)
 	data.ProjectId = projectId
 	data.UserId = userId
 	data.ServerId = serverId
-	err = r.DB.Save(&data).Error
+	err = r.GetDB(tenantId).Save(&data).Error
 
 	return
 }
 
-func (r *EnvironmentRepo) GetProjectUserServer(projectId, userId uint) (res model.ProjectUserServer, err error) {
-	err = r.DB.
+func (r *EnvironmentRepo) GetProjectUserServer(tenantId consts.TenantId, projectId, userId uint) (res model.ProjectUserServer, err error) {
+	err = r.GetDB(tenantId).
 		Where("user_id = ? AND project_id=?", userId, projectId).
 		Where("NOT deleted").
 		First(&res).Error
@@ -96,8 +97,8 @@ func (r *EnvironmentRepo) GetProjectUserServer(projectId, userId uint) (res mode
 }
 
 // GetDefaultByProject 默认/Mock
-func (r *EnvironmentRepo) GetDefaultByProject(projectId uint) (envs []model.Environment, err error) {
-	err = r.DB.
+func (r *EnvironmentRepo) GetDefaultByProject(tenantId consts.TenantId, projectId uint) (envs []model.Environment, err error) {
+	err = r.GetDB(tenantId).
 		Where("project_id=?", projectId).
 		Where("name IN (?)", []string{"默认环境", "Mock环境"}).
 		Where("NOT deleted").
@@ -106,8 +107,8 @@ func (r *EnvironmentRepo) GetDefaultByProject(projectId uint) (envs []model.Envi
 	return
 }
 
-func (r *EnvironmentRepo) GetVars(envId uint) (vars []model.EnvironmentVar, err error) {
-	err = r.DB.
+func (r *EnvironmentRepo) GetVars(tenantId consts.TenantId, envId uint) (vars []model.EnvironmentVar, err error) {
+	err = r.GetDB(tenantId).
 		Where("environment_id=?", envId).
 		Where("NOT deleted").
 		Order("created_at ASC").
@@ -116,8 +117,8 @@ func (r *EnvironmentRepo) GetVars(envId uint) (vars []model.EnvironmentVar, err 
 	return
 }
 
-func (r *EnvironmentRepo) GetSameVar(vari model.EnvironmentVar, envId uint) (ret model.EnvironmentVar, err error) {
-	err = r.DB.
+func (r *EnvironmentRepo) GetSameVar(tenantId consts.TenantId, vari model.EnvironmentVar, envId uint) (ret model.EnvironmentVar, err error) {
+	err = r.GetDB(tenantId).
 		Where("name=? AND right_value=?", vari.Name, vari.RightValue).
 		Where("environment_id=?", envId).
 		Where("NOT deleted").
@@ -126,51 +127,51 @@ func (r *EnvironmentRepo) GetSameVar(vari model.EnvironmentVar, envId uint) (ret
 	return
 }
 
-func (r *EnvironmentRepo) Save(env *model.Environment) (err error) {
-	err = r.DB.Save(env).Error
+func (r *EnvironmentRepo) Save(tenantId consts.TenantId, env *model.Environment) (err error) {
+	err = r.GetDB(tenantId).Save(env).Error
 	return
 }
 
-func (r *EnvironmentRepo) Copy(id int) (err error) {
-	src, err := r.Get(uint(id))
+func (r *EnvironmentRepo) Copy(tenantId consts.TenantId, id int) (err error) {
+	src, err := r.Get(tenantId, uint(id))
 	if err != nil {
 		return
 	}
 
 	dist := model.Environment{}
-	dist.Name = r.getCopyName(src.Name)
+	dist.Name = r.getCopyName(tenantId, src.Name)
 
-	r.Save(&dist)
+	r.Save(tenantId, &dist)
 
-	vars, _ := r.GetVars(src.ID)
+	vars, _ := r.GetVars(tenantId, src.ID)
 	for _, item := range vars {
 		item.ID = 0
 		item.EnvironmentId = dist.ID
 
-		r.SaveVar(&item)
+		r.SaveVar(tenantId, &item)
 	}
 
 	return
 }
 
-func (r *EnvironmentRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.Environment{}).
+func (r *EnvironmentRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Environment{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
 
-	err = r.DB.Model(&model.EnvironmentVar{}).
+	err = r.GetDB(tenantId).Model(&model.EnvironmentVar{}).
 		Where("environment_id = ?", id).Update("deleted", true).Error
 
 	return
 }
 
-func (r *EnvironmentRepo) AddDefaultForProject(projectId uint) (err error) {
+func (r *EnvironmentRepo) AddDefaultForProject(tenantId consts.TenantId, projectId uint) (err error) {
 	env := model.Environment{
 		ProjectId: projectId,
 		Name:      "默认环境",
 	}
-	if err = r.Save(&env); err != nil {
+	if err = r.Save(tenantId, &env); err != nil {
 		return
 	}
 
@@ -179,28 +180,28 @@ func (r *EnvironmentRepo) AddDefaultForProject(projectId uint) (err error) {
 		Name:      "Mock环境",
 		Sort:      1,
 	}
-	err = r.Save(&mockEnv)
+	err = r.Save(tenantId, &mockEnv)
 	//err = r.ProjectRepo.UpdateDefaultEnvironment(projectId, env.ID)
 
 	return
 }
 
-func (r *EnvironmentRepo) GetVar(id uint) (po model.EnvironmentVar, err error) {
-	err = r.DB.
+func (r *EnvironmentRepo) GetVar(tenantId consts.TenantId, id uint) (po model.EnvironmentVar, err error) {
+	err = r.GetDB(tenantId).
 		Where("id=?", id).
 		Where("NOT deleted").
 		First(&po).Error
 	return
 }
 
-func (r *EnvironmentRepo) SaveVar(po *model.EnvironmentVar) (err error) {
-	err = r.DB.Save(po).Error
+func (r *EnvironmentRepo) SaveVar(tenantId consts.TenantId, po *model.EnvironmentVar) (err error) {
+	err = r.GetDB(tenantId).Save(po).Error
 
 	return
 }
 
-func (r *EnvironmentRepo) DeleteVar(id uint) (err error) {
-	err = r.DB.Model(&model.EnvironmentVar{}).
+func (r *EnvironmentRepo) DeleteVar(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.EnvironmentVar{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -208,8 +209,8 @@ func (r *EnvironmentRepo) DeleteVar(id uint) (err error) {
 	return
 }
 
-func (r *EnvironmentRepo) ClearAllVar(environmentId uint) (err error) {
-	err = r.DB.Model(&model.EnvironmentVar{}).
+func (r *EnvironmentRepo) ClearAllVar(tenantId consts.TenantId, environmentId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.EnvironmentVar{}).
 		Where("environment_id=?", environmentId).
 		Update("deleted", true).
 		Error
@@ -217,8 +218,8 @@ func (r *EnvironmentRepo) ClearAllVar(environmentId uint) (err error) {
 	return
 }
 
-func (r *EnvironmentRepo) DisableShareVar(id uint) (err error) {
-	err = r.DB.Model(&model.DebugConditionExtractor{}).
+func (r *EnvironmentRepo) DisableShareVar(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugConditionExtractor{}).
 		Where("id=?", id).
 		Update("disable_share", true).
 		Error
@@ -226,8 +227,8 @@ func (r *EnvironmentRepo) DisableShareVar(id uint) (err error) {
 	return
 }
 
-func (r *EnvironmentRepo) DisableAllShareVar(projectId uint) (err error) {
-	err = r.DB.Model(&model.DebugConditionExtractor{}).
+func (r *EnvironmentRepo) DisableAllShareVar(tenantId consts.TenantId, projectId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugConditionExtractor{}).
 		Where("project_id=?", projectId).
 		Update("disable_share", true).
 		Error
@@ -235,10 +236,10 @@ func (r *EnvironmentRepo) DisableAllShareVar(projectId uint) (err error) {
 	return
 }
 
-func (r *EnvironmentRepo) GetVarByName(name string, id, environmentId uint) (envVar model.EnvironmentVar, err error) {
+func (r *EnvironmentRepo) GetVarByName(tenantId consts.TenantId, name string, id, environmentId uint) (envVar model.EnvironmentVar, err error) {
 	var envVars []model.EnvironmentVar
 
-	db := r.DB.Model(&envVar).
+	db := r.GetDB(tenantId).Model(&envVar).
 		Where("name = ? AND environment_id =? AND not deleted", name, environmentId)
 	if id > 0 {
 		db.Where("id != ?", id)
@@ -257,14 +258,14 @@ func (r *EnvironmentRepo) GetVarByName(name string, id, environmentId uint) (env
 	return
 }
 
-func (r *EnvironmentRepo) getCopyName(name string) (ret string) {
+func (r *EnvironmentRepo) getCopyName(tenantId consts.TenantId, name string) (ret string) {
 	idx := strings.LastIndex(name, " ")
 
 	if idx <= 0 {
 		ret = name + " 1"
-		env, _ := r.GetByName(ret)
+		env, _ := r.GetByName(tenantId, ret)
 		if env.ID > 0 {
-			ret = r.getCopyName(ret)
+			ret = r.getCopyName(tenantId, ret)
 		}
 		return
 	}
@@ -274,9 +275,9 @@ func (r *EnvironmentRepo) getCopyName(name string) (ret string) {
 	rightNum, err := strconv.Atoi(right)
 	if err != nil { // not a valid num
 		ret = name + " 1"
-		env, _ := r.GetByName(ret)
+		env, _ := r.GetByName(tenantId, ret)
 		if env.ID > 0 {
-			ret = r.getCopyName(ret)
+			ret = r.getCopyName(tenantId, ret)
 		}
 		return
 	}
@@ -284,9 +285,9 @@ func (r *EnvironmentRepo) getCopyName(name string) (ret string) {
 	nextNum := rightNum + 1
 	ret = left + fmt.Sprintf(" %d", nextNum)
 
-	env, _ := r.GetByName(ret)
+	env, _ := r.GetByName(tenantId, ret)
 	if env.ID > 0 {
-		ret = r.getCopyName(ret)
+		ret = r.getCopyName(tenantId, ret)
 	}
 
 	return
@@ -299,35 +300,17 @@ func (r *EnvironmentRepo) getCopyName(name string) (ret string) {
 //	return
 //}
 
-func (r *EnvironmentRepo) SaveEnvironment(environment *model.Environment) (err error) {
-	return r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.BaseRepo.Save(environment.ID, environment)
+func (r *EnvironmentRepo) SaveEnvironment(tenantId consts.TenantId, environment *model.Environment) (err error) {
+	return r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
+		err = r.BaseRepo.Save(tenantId, environment.ID, environment)
 		if err != nil {
 			return err
 		}
-		err = r.ServeRepo.SaveServer(environment.ID, environment.Name, environment.ServeServers)
+		err = r.ServeRepo.SaveServer(tenantId, environment.ID, environment.Name, environment.ServeServers)
 		if err != nil {
 			return err
 		}
-		err = r.SaveVars(environment.ProjectId, environment.ID, environment.Vars)
-		if err != nil {
-			return err
-		}
-		return nil
-	})
-}
-
-func (r *EnvironmentRepo) DeleteEnvironment(id uint) (err error) {
-	return r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.DB.Delete(&model.Environment{}, id).Error
-		if err != nil {
-			return err
-		}
-		err = r.DB.Delete(&model.ServeServer{}, "environment_id=?", id).Error
-		if err != nil {
-			return err
-		}
-		err = r.DB.Delete(&model.EnvironmentVar{}, "environment_id=?", id).Error
+		err = r.SaveVars(tenantId, environment.ProjectId, environment.ID, environment.Vars)
 		if err != nil {
 			return err
 		}
@@ -335,9 +318,27 @@ func (r *EnvironmentRepo) DeleteEnvironment(id uint) (err error) {
 	})
 }
 
-func (r *EnvironmentRepo) SaveVars(projectId, environmentId uint, environmentVars []model.EnvironmentVar) (err error) {
+func (r *EnvironmentRepo) DeleteEnvironment(tenantId consts.TenantId, id uint) (err error) {
+	return r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
+		err = r.GetDB(tenantId).Delete(&model.Environment{}, id).Error
+		if err != nil {
+			return err
+		}
+		err = r.GetDB(tenantId).Delete(&model.ServeServer{}, "environment_id=?", id).Error
+		if err != nil {
+			return err
+		}
+		err = r.GetDB(tenantId).Delete(&model.EnvironmentVar{}, "environment_id=?", id).Error
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+}
 
-	err = r.DB.Delete(&model.EnvironmentVar{}, "environment_id=? and project_id=?", environmentId, projectId).Error
+func (r *EnvironmentRepo) SaveVars(tenantId consts.TenantId, projectId, environmentId uint, environmentVars []model.EnvironmentVar) (err error) {
+
+	err = r.GetDB(tenantId).Delete(&model.EnvironmentVar{}, "environment_id=? and project_id=?", environmentId, projectId).Error
 	if err != nil {
 		return err
 	}
@@ -351,7 +352,7 @@ func (r *EnvironmentRepo) SaveVars(projectId, environmentId uint, environmentVar
 		environmentVars[key].EnvironmentId = environmentId
 		environmentVars[key].ProjectId = projectId
 	}
-	err = r.DB.Create(environmentVars).Error
+	err = r.GetDB(tenantId).Create(environmentVars).Error
 
 	if err != nil {
 		return err
@@ -360,13 +361,13 @@ func (r *EnvironmentRepo) SaveVars(projectId, environmentId uint, environmentVar
 	return
 }
 
-func (r *EnvironmentRepo) GetListByProjectId(projectId uint) (environments []model.Environment, err error) {
-	err = r.DB.Order("sort").Find(&environments, "project_id=?", projectId).Error
+func (r *EnvironmentRepo) GetListByProjectId(tenantId consts.TenantId, projectId uint) (environments []model.Environment, err error) {
+	err = r.GetDB(tenantId).Order("sort").Find(&environments, "project_id=?", projectId).Error
 	if err != nil {
 		return
 	}
 	for key, _ := range environments {
-		err = r.GetEnvironmentDetail(&environments[key])
+		err = r.GetEnvironmentDetail(tenantId, &environments[key])
 		if err != nil {
 			return
 		}
@@ -374,21 +375,21 @@ func (r *EnvironmentRepo) GetListByProjectId(projectId uint) (environments []mod
 	return
 }
 
-func (r *EnvironmentRepo) GetEnvironmentById(id uint) (env *model.Environment, err error) {
-	err = r.DB.First(&env, id).Error
+func (r *EnvironmentRepo) GetEnvironmentById(tenantId consts.TenantId, id uint) (env *model.Environment, err error) {
+	err = r.GetDB(tenantId).First(&env, id).Error
 	return
 }
 
-func (r *EnvironmentRepo) GetEnvironmentDetail(env *model.Environment) (err error) {
+func (r *EnvironmentRepo) GetEnvironmentDetail(tenantId consts.TenantId, env *model.Environment) (err error) {
 	var vars []model.EnvironmentVar
-	err = r.DB.Find(&vars, "environment_id=? AND NOT deleted", env.ID).Error
+	err = r.GetDB(tenantId).Find(&vars, "environment_id=? AND NOT deleted", env.ID).Error
 	if err != nil {
 		return
 	}
 	env.Vars = vars
 
 	var servers []model.ServeServer
-	err = r.DB.Model(&model.ServeServer{}).
+	err = r.GetDB(tenantId).Model(&model.ServeServer{}).
 		Joins("LEFT JOIN biz_project_serve serve ON biz_project_serve_server.serve_id=serve.id ").
 		Select("biz_project_serve_server.*").
 		Where("biz_project_serve_server.environment_id=? AND NOT serve.deleted", env.ID).
@@ -399,7 +400,7 @@ func (r *EnvironmentRepo) GetEnvironmentDetail(env *model.Environment) (err erro
 
 	for key, server := range servers {
 		var serve model.Serve
-		r.DB.First(&serve, "id=?", server.ServeId)
+		r.GetDB(tenantId).First(&serve, "id=?", server.ServeId)
 		servers[key].ServeName = serve.Name
 	}
 
@@ -408,19 +409,19 @@ func (r *EnvironmentRepo) GetEnvironmentDetail(env *model.Environment) (err erro
 	return
 }
 
-func (r *EnvironmentRepo) ListGlobalVar(projectId uint) (vars []model.EnvironmentVar, err error) {
-	err = r.DB.Find(&vars, "project_id=? and environment_id=0", projectId).Error
+func (r *EnvironmentRepo) ListGlobalVar(tenantId consts.TenantId, projectId uint) (vars []model.EnvironmentVar, err error) {
+	err = r.GetDB(tenantId).Find(&vars, "project_id=? and environment_id=0", projectId).Error
 	return
 }
 
-func (r *EnvironmentRepo) SaveParams(projectId uint, params []model.EnvironmentParam) (err error) {
-	return r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.DB.Delete(&model.EnvironmentParam{}, " project_id=?", projectId).Error
+func (r *EnvironmentRepo) SaveParams(tenantId consts.TenantId, projectId uint, params []model.EnvironmentParam) (err error) {
+	return r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
+		err = r.GetDB(tenantId).Delete(&model.EnvironmentParam{}, " project_id=?", projectId).Error
 		if err != nil {
 			return err
 		}
 		if len(params) > 0 {
-			err = r.DB.Create(params).Error
+			err = r.GetDB(tenantId).Create(params).Error
 			if err != nil {
 				return err
 			}
@@ -429,8 +430,8 @@ func (r *EnvironmentRepo) SaveParams(projectId uint, params []model.EnvironmentP
 	})
 }
 
-func (r *EnvironmentRepo) ListParamModel(projectId uint) (ret []model.EnvironmentParam, err error) {
-	err = r.DB.Find(&ret, "project_id=?", projectId).Error
+func (r *EnvironmentRepo) ListParamModel(tenantId consts.TenantId, projectId uint) (ret []model.EnvironmentParam, err error) {
+	err = r.GetDB(tenantId).Find(&ret, "project_id=?", projectId).Error
 	if err != nil {
 		return
 	}
@@ -438,11 +439,11 @@ func (r *EnvironmentRepo) ListParamModel(projectId uint) (ret []model.Environmen
 	return
 }
 
-func (r *EnvironmentRepo) ListParams(projectId uint) (res map[string]interface{}, err error) {
+func (r *EnvironmentRepo) ListParams(tenantId consts.TenantId, projectId uint) (res map[string]interface{}, err error) {
 	res = map[string]interface{}{}
 
 	var params []model.EnvironmentParam
-	err = r.DB.Find(&params, "project_id=?", projectId).Error
+	err = r.GetDB(tenantId).Find(&params, "project_id=?", projectId).Error
 	if err != nil {
 		return
 	}
@@ -461,10 +462,10 @@ func (r *EnvironmentRepo) ListParams(projectId uint) (res map[string]interface{}
 	return
 }
 
-func (r *EnvironmentRepo) SaveOrder(ids []uint) (err error) {
-	return r.DB.Transaction(func(tx *gorm.DB) error {
+func (r *EnvironmentRepo) SaveOrder(tenantId consts.TenantId, ids []uint) (err error) {
+	return r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
 		for key, id := range ids {
-			err = r.DB.Model(&model.Environment{}).Where("id=?", id).Update("sort", key).Error
+			err = r.GetDB(tenantId).Model(&model.Environment{}).Where("id=?", id).Update("sort", key).Error
 			if err != nil {
 				return err
 			}
@@ -473,9 +474,9 @@ func (r *EnvironmentRepo) SaveOrder(ids []uint) (err error) {
 	})
 }
 
-func (r *EnvironmentRepo) GetByIds(ids []uint) (envs map[uint]model.Environment, err error) {
+func (r *EnvironmentRepo) GetByIds(tenantId consts.TenantId, ids []uint) (envs map[uint]model.Environment, err error) {
 	var res []model.Environment
-	err = r.DB.Where("NOT disabled and NOT deleted and id in ?", ids).Find(&res).Error
+	err = r.GetDB(tenantId).Where("NOT disabled and NOT deleted and id in ?", ids).Find(&res).Error
 
 	envs = make(map[uint]model.Environment)
 	for _, item := range res {
@@ -484,9 +485,9 @@ func (r *EnvironmentRepo) GetByIds(ids []uint) (envs map[uint]model.Environment,
 	return
 }
 
-func (r *EnvironmentRepo) GetByProjectAndName(projectId uint, name string) (env model.Environment, err error) {
+func (r *EnvironmentRepo) GetByProjectAndName(tenantId consts.TenantId, projectId uint, name string) (env model.Environment, err error) {
 
-	err = r.DB.
+	err = r.GetDB(tenantId).
 		Where("project_id=?", projectId).
 		Where("name=?", name).
 		Where("NOT deleted").
@@ -495,10 +496,10 @@ func (r *EnvironmentRepo) GetByProjectAndName(projectId uint, name string) (env 
 	return
 }
 
-func (r *EnvironmentRepo) GetMaxOrder(projectId uint) (order uint) {
+func (r *EnvironmentRepo) GetMaxOrder(tenantId consts.TenantId, projectId uint) (order uint) {
 	environment := model.Environment{}
 
-	err := r.DB.Model(&model.Environment{}).
+	err := r.GetDB(tenantId).Model(&model.Environment{}).
 		Where("project_id = ?", projectId).
 		Order("sort DESC").
 		First(&environment).Error

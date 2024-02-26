@@ -3,16 +3,16 @@ package middleware
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/integration/enum"
 	"github.com/aaronchen2k/deeptest/integration/service/user"
-	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/saas/common"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
 	"github.com/snowlyg/multi"
@@ -33,6 +33,7 @@ func init() {
 		"/api/v1/init/initdb",
 		"/api/v1/openApi",
 		"/api/v1/healthz",
+		"/api/v1/saas",
 	}
 }
 
@@ -58,13 +59,13 @@ func UserAuth() iris.Handler {
 			return
 		}
 
-		appName, token, origin := getAppName(ctx)
+		appName, token, origin, tenantId := getAppName(ctx)
 		user := user.NewUser(appName)
-
+		logUtils.Infof("authorization, appName:%s,token:%s,origin:%s,tenantId:%s", appName, token, origin, tenantId)
 		if appName != "" {
-			userInfo, err := user.GetUserInfoByToken(token, origin)
+			userInfo, err := user.GetUserInfoByToken(tenantId, token, origin)
 			if err == nil && userInfo.Username != "" {
-				token, err := creatSession(userInfo)
+				token, err := creatSession(tenantId, userInfo)
 				if err == nil && token != "" {
 					ctx.Request().Header.Set("Authorization", fmt.Sprintf("Bearer %s", token))
 					ctx.Header("Authorization", token)
@@ -85,7 +86,7 @@ func UserAuth() iris.Handler {
 	return verifier.Verify()
 }
 
-func creatSession(userInfo integrationDomain.UserInfo) (token string, err error) {
+func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo) (token string, err error) {
 
 	req := v1.UserReq{UserBase: v1.UserBase{
 		Username:  userInfo.Username,
@@ -94,12 +95,12 @@ func creatSession(userInfo integrationDomain.UserInfo) (token string, err error)
 		Name:      userInfo.RealName,
 		Password:  commonUtils.RandStr(8),
 	}}
-	userRepo := repo.UserRepo{DB: dao.GetDB()}
-	userRepo.ProfileRepo = &repo.ProfileRepo{DB: dao.GetDB()}
-	userRepo.RoleRepo = &repo.RoleRepo{DB: dao.GetDB()}
-	userRepo.Create(req)
+	userRepo := repo.UserRepo{}
+	userRepo.ProfileRepo = &repo.ProfileRepo{}
+	userRepo.RoleRepo = &repo.RoleRepo{}
+	userRepo.Create(tenantId, req)
 
-	user, err := userRepo.GetByUsernameOrEmail(userInfo.Username, userInfo.Mail)
+	user, err := userRepo.GetByUsernameOrEmail(tenantId, userInfo.Username, userInfo.Mail)
 	if err != nil {
 		return
 	}
@@ -122,8 +123,9 @@ func creatSession(userInfo integrationDomain.UserInfo) (token string, err error)
 	return
 }
 
-func getAppName(ctx *context.Context) (appName enum.AppName, token, origin string) {
+func getAppName(ctx *context.Context) (appName enum.AppName, token, origin string, tenantId consts.TenantId) {
 
+	tenantId = common.GetTenantId(ctx)
 	origin = ctx.GetHeader("Origin")
 	//origin = "http://192.168.5.60:804"
 

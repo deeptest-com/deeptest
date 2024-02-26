@@ -10,15 +10,14 @@ import (
 )
 
 type ScenarioNodeRepo struct {
-	*BaseRepo `inject:""`
-
+	*BaseRepo             `inject:""`
 	ScenarioProcessorRepo *ScenarioProcessorRepo `inject:""`
 	ScenarioRepo          *ScenarioRepo          `inject:""`
 	DebugInterfaceRepo    *DebugInterfaceRepo    `inject:""`
 }
 
-func (r *ScenarioNodeRepo) ListByScenario(scenarioId uint) (pos []*model.Processor, err error) {
-	err = r.DB.
+func (r *ScenarioNodeRepo) ListByScenario(tenantId consts.TenantId, scenarioId uint) (pos []*model.Processor, err error) {
+	err = r.GetDB(tenantId).
 		Where("scenario_id=?", scenarioId).
 		Where("NOT deleted").
 		Order("parent_id ASC, ordr ASC").
@@ -26,28 +25,28 @@ func (r *ScenarioNodeRepo) ListByScenario(scenarioId uint) (pos []*model.Process
 	return
 }
 
-func (r *ScenarioNodeRepo) Get(id uint) (processor model.Processor, err error) {
-	err = r.DB.Where("id = ?", id).First(&processor).Error
+func (r *ScenarioNodeRepo) Get(tenantId consts.TenantId, id uint) (processor model.Processor, err error) {
+	err = r.GetDB(tenantId).Where("id = ?", id).First(&processor).Error
 	return
 }
 
-func (r *ScenarioNodeRepo) MakeTree(findIn []*agentExec.Processor, parent *agentExec.Processor) { //参数为父节点，添加父节点的子节点指针切片
-	children, _ := r.hasChild(findIn, parent) // 判断节点是否有子节点并返回
+func (r *ScenarioNodeRepo) MakeTree(tenantId consts.TenantId, findIn []*agentExec.Processor, parent *agentExec.Processor) { //参数为父节点，添加父节点的子节点指针切片
+	children, _ := r.hasChild(tenantId, findIn, parent) // 判断节点是否有子节点并返回
 
 	if children != nil {
 		parent.IsDir = true
 		parent.Children = append(parent.Children, children[0:]...) // 添加子节点
 
 		for _, child := range children { // 查询子节点的子节点，并添加到子节点
-			_, has := r.hasChild(findIn, child)
+			_, has := r.hasChild(tenantId, findIn, child)
 			if has {
-				r.MakeTree(findIn, child) // 递归添加节点
+				r.MakeTree(tenantId, findIn, child) // 递归添加节点
 			}
 		}
 	}
 }
 
-func (r *ScenarioNodeRepo) hasChild(processors []*agentExec.Processor, parent *agentExec.Processor) (
+func (r *ScenarioNodeRepo) hasChild(tenantId consts.TenantId, processors []*agentExec.Processor, parent *agentExec.Processor) (
 	ret []*agentExec.Processor, yes bool) {
 
 	for _, item := range processors {
@@ -67,7 +66,7 @@ func (r *ScenarioNodeRepo) hasChild(processors []*agentExec.Processor, parent *a
 	return
 }
 
-func (r *ScenarioNodeRepo) CreateDefault(scenarioId, projectId, createUserId uint) (po model.Processor, err error) {
+func (r *ScenarioNodeRepo) CreateDefault(tenantId consts.TenantId, scenarioId, projectId, createUserId uint) (po model.Processor, err error) {
 	po = model.Processor{
 		ScenarioId:     scenarioId,
 		ProjectId:      projectId,
@@ -77,43 +76,43 @@ func (r *ScenarioNodeRepo) CreateDefault(scenarioId, projectId, createUserId uin
 		EntityId:       0,
 		CreatedBy:      createUserId,
 	}
-	err = r.DB.Create(&po).Error
+	err = r.GetDB(tenantId).Create(&po).Error
 
 	return
 }
 
-func (r *ScenarioNodeRepo) Save(processor *model.Processor) (err error) {
-	err = r.DB.Save(processor).Error
+func (r *ScenarioNodeRepo) Save(tenantId consts.TenantId, processor *model.Processor) (err error) {
+	err = r.GetDB(tenantId).Save(processor).Error
 
 	return
 }
 
-func (r *ScenarioNodeRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int, disabled bool) {
+func (r *ScenarioNodeRepo) UpdateOrder(tenantId consts.TenantId, pos serverConsts.DropPos, targetId uint) (parentId uint, ordr int, disabled bool) {
 	if pos == serverConsts.Inner {
 		parentId = targetId
 
 		var preChild model.Processor
-		r.DB.Where("parent_id=?", parentId).
+		r.GetDB(tenantId).Where("parent_id=?", parentId).
 			Order("ordr DESC").Limit(1).
 			First(&preChild)
 
 		ordr = preChild.Ordr + 1
 
 	} else if pos == serverConsts.Before {
-		brother, _ := r.Get(targetId)
+		brother, _ := r.Get(tenantId, targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.Processor{}).
+		r.GetDB(tenantId).Model(&model.Processor{}).
 			Where("NOT deleted AND parent_id=? AND ordr >= ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
 		ordr = brother.Ordr
 
 	} else if pos == serverConsts.After {
-		brother, _ := r.Get(targetId)
+		brother, _ := r.Get(tenantId, targetId)
 		parentId = brother.ParentId
 
-		r.DB.Model(&model.Processor{}).
+		r.GetDB(tenantId).Model(&model.Processor{}).
 			Where("NOT deleted AND parent_id=? AND ordr > ?", parentId, brother.Ordr).
 			Update("ordr", gorm.Expr("ordr + 1"))
 
@@ -121,41 +120,41 @@ func (r *ScenarioNodeRepo) UpdateOrder(pos serverConsts.DropPos, targetId uint) 
 
 	}
 
-	parentNode, _ := r.Get(parentId)
+	parentNode, _ := r.Get(tenantId, parentId)
 	disabled = parentNode.Disabled
 
 	return
 }
 
-func (r *ScenarioNodeRepo) UpdateName(id int, name string) (err error) {
-	err = r.DB.Model(&model.Processor{}).
+func (r *ScenarioNodeRepo) UpdateName(tenantId consts.TenantId, id int, name string) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Processor{}).
 		Where("id = ?", id).
 		Update("name", name).Error
 
 	return
 }
 
-func (r *ScenarioNodeRepo) DeleteWithChildren(id uint) (err error) {
-	node, err := r.Get(id)
+func (r *ScenarioNodeRepo) DeleteWithChildren(tenantId consts.TenantId, id uint) (err error) {
+	node, err := r.Get(tenantId, id)
 
 	ids := []uint{}
 	if !r.IsDir(node) {
 		ids = append(ids, id)
 	} else {
-		ids, _ = r.GetAllChildIdsSimple(id, model.Processor{}.TableName())
+		ids, _ = r.GetAllChildIdsSimple(tenantId, id, model.Processor{}.TableName())
 	}
 
-	err = r.DB.Model(&model.Processor{}).
+	err = r.GetDB(tenantId).Model(&model.Processor{}).
 		Where("id IN (?)", ids).
 		Update("deleted", true).Error
 
-	err = r.DebugInterfaceRepo.DeleteByProcessorIds(ids)
+	err = r.DebugInterfaceRepo.DeleteByProcessorIds(tenantId, ids)
 
 	return
 }
 
-func (r *ScenarioNodeRepo) DisableWithChildren(id uint) (err error) {
-	node, err := r.Get(id)
+func (r *ScenarioNodeRepo) DisableWithChildren(tenantId consts.TenantId, id uint) (err error) {
+	node, err := r.Get(tenantId, id)
 
 	action := "disable"
 	if node.Disabled {
@@ -166,47 +165,47 @@ func (r *ScenarioNodeRepo) DisableWithChildren(id uint) (err error) {
 	if !r.IsDir(node) {
 		ids = append(ids, id)
 	} else {
-		ids, _ = r.GetAllChildIdsSimple(id, model.Processor{}.TableName())
+		ids, _ = r.GetAllChildIdsSimple(tenantId, id, model.Processor{}.TableName())
 	}
 
-	err = r.DB.Model(&model.Processor{}).
+	err = r.GetDB(tenantId).Model(&model.Processor{}).
 		Where("id IN (?)", ids).
 		Update("disabled", !node.Disabled).Error
 
 	if action == "enable" {
-		r.EnableAncestors(id)
+		r.EnableAncestors(tenantId, id)
 	}
 
 	return
 }
 
-func (r *ScenarioNodeRepo) EnableAncestors(nodeId uint) (err error) {
-	ids, err := r.GetAncestorIds(nodeId, model.Processor{}.TableName())
+func (r *ScenarioNodeRepo) EnableAncestors(tenantId consts.TenantId, nodeId uint) (err error) {
+	ids, err := r.GetAncestorIds(tenantId, nodeId, model.Processor{}.TableName())
 
-	err = r.DB.Model(&model.Processor{}).
+	err = r.GetDB(tenantId).Model(&model.Processor{}).
 		Where("id IN (?)", ids).
 		Update("disabled", false).Error
 
 	return
 }
 
-func (r *ScenarioNodeRepo) GetChildren(nodeId uint) (children []*model.Processor, err error) {
-	err = r.DB.Where("parent_id=?", nodeId).Find(&children).Error
+func (r *ScenarioNodeRepo) GetChildren(tenantId consts.TenantId, nodeId uint) (children []*model.Processor, err error) {
+	err = r.GetDB(tenantId).Where("parent_id=?", nodeId).Find(&children).Error
 	return
 }
 
-func (r *ScenarioNodeRepo) UpdateOrdAndParent(node model.Processor) (err error) {
-	err = r.DB.Model(&node).
+func (r *ScenarioNodeRepo) UpdateOrdAndParent(tenantId consts.TenantId, node model.Processor) (err error) {
+	err = r.GetDB(tenantId).Model(&node).
 		Updates(model.Processor{Ordr: node.Ordr, ParentId: node.ParentId, BaseModel: model.BaseModel{Disabled: node.Disabled}}).
 		Error
 
 	return
 }
 
-func (r *ScenarioNodeRepo) GetMaxOrder(parentId uint) (order int) {
+func (r *ScenarioNodeRepo) GetMaxOrder(tenantId consts.TenantId, parentId uint) (order int) {
 	node := model.Processor{}
 
-	err := r.DB.Model(&model.Processor{}).
+	err := r.GetDB(tenantId).Model(&model.Processor{}).
 		Where("parent_id=?", parentId).
 		Order("ordr DESC").
 		First(&node).Error
@@ -218,8 +217,8 @@ func (r *ScenarioNodeRepo) GetMaxOrder(parentId uint) (order int) {
 	return
 }
 
-func (r *ScenarioNodeRepo) GetScopeHierarchy(scenarioId uint, scopeHierarchyMap *map[uint]*[]uint) {
-	processors, err := r.ListByScenario(scenarioId)
+func (r *ScenarioNodeRepo) GetScopeHierarchy(tenantId consts.TenantId, scenarioId uint, scopeHierarchyMap *map[uint]*[]uint) {
+	processors, err := r.ListByScenario(tenantId, scenarioId)
 	if err != nil {
 		return
 	}
@@ -236,16 +235,16 @@ func (r *ScenarioNodeRepo) GetScopeHierarchy(scenarioId uint, scopeHierarchyMap 
 		}
 		*(*scopeHierarchyMap)[childId] = append(*(*scopeHierarchyMap)[childId], parentId)
 
-		r.addSuperParent(childId, parentId, childToParentIdMap, scopeHierarchyMap)
+		r.addSuperParent(tenantId, childId, parentId, childToParentIdMap, scopeHierarchyMap)
 	}
 }
 
-func (r *ScenarioNodeRepo) addSuperParent(id, parentId uint, childToParentIdMap map[uint]uint, scopeHierarchyMap *map[uint]*[]uint) {
+func (r *ScenarioNodeRepo) addSuperParent(tenantId consts.TenantId, id, parentId uint, childToParentIdMap map[uint]uint, scopeHierarchyMap *map[uint]*[]uint) {
 	superId, ok := childToParentIdMap[parentId]
 	if ok {
 		*(*scopeHierarchyMap)[id] = append(*(*scopeHierarchyMap)[id], superId)
 
-		r.addSuperParent(id, superId, childToParentIdMap, scopeHierarchyMap)
+		r.addSuperParent(tenantId, id, superId, childToParentIdMap, scopeHierarchyMap)
 	}
 }
 
@@ -260,8 +259,8 @@ func (r *ScenarioNodeRepo) IsDir(po model.Processor) (ret bool) {
 	return
 }
 
-func (r *ScenarioNodeRepo) GetNumberByScenariosAndEntityCategory(scenarioIds []uint, entityCategory consts.ProcessorCategory) (num int64, err error) {
-	db := r.DB.Model(model.Processor{}).Where("not deleted and not disabled and scenario_id IN (?)", scenarioIds)
+func (r *ScenarioNodeRepo) GetNumberByScenariosAndEntityCategory(tenantId consts.TenantId, scenarioIds []uint, entityCategory consts.ProcessorCategory) (num int64, err error) {
+	db := r.GetDB(tenantId).Model(model.Processor{}).Where("not deleted and not disabled and scenario_id IN (?)", scenarioIds)
 	if entityCategory != "" {
 		db.Where("entity_category=?", entityCategory)
 	}
@@ -269,33 +268,33 @@ func (r *ScenarioNodeRepo) GetNumberByScenariosAndEntityCategory(scenarioIds []u
 	return
 }
 
-func (r *ScenarioNodeRepo) UpdateEntityId(id, entityId uint) error {
-	return r.DB.Model(model.Processor{}).Where("id=?", id).Update("entity_id", entityId).Error
+func (r *ScenarioNodeRepo) UpdateEntityId(tenantId consts.TenantId, id, entityId uint) error {
+	return r.GetDB(tenantId).Model(model.Processor{}).Where("id=?", id).Update("entity_id", entityId).Error
 }
 
-func (r *ScenarioNodeRepo) MoveMaxOrder(parentId, order, step uint) (err error) {
-	return r.DB.Model(model.Processor{}).Where("parent_id=? and ordr>?", parentId, order).Update("ordr", gorm.Expr("ordr + ?", step)).Error
+func (r *ScenarioNodeRepo) MoveMaxOrder(tenantId consts.TenantId, parentId, order, step uint) (err error) {
+	return r.GetDB(tenantId).Model(model.Processor{}).Where("parent_id=? and ordr>?", parentId, order).Update("ordr", gorm.Expr("ordr + ?", step)).Error
 }
 
-func (r *ScenarioNodeRepo) GetNextNode(id uint) (processor model.Processor, err error) {
-	node, err := r.Get(id)
+func (r *ScenarioNodeRepo) GetNextNode(tenantId consts.TenantId, id uint) (processor model.Processor, err error) {
+	node, err := r.Get(tenantId, id)
 	if err != nil {
 		return
 	}
 
-	err = r.DB.Where("parent_id = ? and ordr > ?", node.ParentId, node.Ordr).Order("ordr ASC").First(&processor).Error
+	err = r.GetDB(tenantId).Where("parent_id = ? and ordr > ?", node.ParentId, node.Ordr).Order("ordr ASC").First(&processor).Error
 
 	return
 
 }
 
-func (r *ScenarioNodeRepo) GetPreNode(id uint) (processor model.Processor, err error) {
-	node, err := r.Get(id)
+func (r *ScenarioNodeRepo) GetPreNode(tenantId consts.TenantId, id uint) (processor model.Processor, err error) {
+	node, err := r.Get(tenantId, id)
 	if err != nil {
 		return
 	}
 
-	err = r.DB.Where("parent_id = ? and ordr < ?", node.ParentId, node.Ordr).Order("ordr DESC").First(&processor).Error
+	err = r.GetDB(tenantId).Where("parent_id = ? and ordr < ?", node.ParentId, node.Ordr).Order("ordr DESC").First(&processor).Error
 
 	return
 

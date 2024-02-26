@@ -20,25 +20,25 @@ type ProjectCronService struct {
 	ServerCron           *cron.ServerCron           `inject:""`
 }
 
-func (s *ProjectCronService) Paginate(req v1.ProjectCronReqPaginate) (ret _domain.PageData, err error) {
-	return s.ProjectCronRepo.Paginate(req)
+func (s *ProjectCronService) Paginate(tenantId consts.TenantId, req v1.ProjectCronReqPaginate) (ret _domain.PageData, err error) {
+	return s.ProjectCronRepo.Paginate(tenantId, req)
 }
 
-func (s *ProjectCronService) Get(id uint) (ret model.ProjectCron, err error) {
-	ret, err = s.ProjectCronRepo.GetById(id)
+func (s *ProjectCronService) Get(tenantId consts.TenantId, id uint) (ret model.ProjectCron, err error) {
+	ret, err = s.ProjectCronRepo.GetById(tenantId, id)
 	if err != nil {
 		return
 	}
 
 	if ret.Source == consts.CronSourceLecang {
-		lecangConfig, err := s.LecangCronService.Get(ret.ConfigId)
+		lecangConfig, err := s.LecangCronService.Get(tenantId, ret.ConfigId)
 		if err != nil {
 			return ret, err
 		}
 
 		ret.LecangConfig = lecangConfig
 	} else if ret.Source == consts.CronSourceSwagger {
-		swaggerConfig, err := s.SwaggerCron.GetSwaggerSyncById(ret.ConfigId)
+		swaggerConfig, err := s.SwaggerCron.GetSwaggerSyncById(tenantId, ret.ConfigId)
 		if err != nil {
 			return ret, err
 		}
@@ -49,14 +49,14 @@ func (s *ProjectCronService) Get(id uint) (ret model.ProjectCron, err error) {
 	return
 }
 
-func (s *ProjectCronService) Save(req model.ProjectCron) (ret model.ProjectCron, err error) {
+func (s *ProjectCronService) Save(tenantId consts.TenantId, req model.ProjectCron) (ret model.ProjectCron, err error) {
 	s.initCron(&req)
 
 	var configId uint
 	if req.Source == consts.CronSourceLecang {
-		configId, err = s.LecangCronService.Save(req.LecangConfig)
+		configId, err = s.LecangCronService.Save(tenantId, req.LecangConfig)
 	} else if req.Source == consts.CronSourceSwagger {
-		configId, err = s.SwaggerCron.SaveSwaggerSync(req.SwaggerConfig)
+		configId, err = s.SwaggerCron.SaveSwaggerSync(tenantId, req.SwaggerConfig)
 	}
 
 	if err != nil {
@@ -64,7 +64,7 @@ func (s *ProjectCronService) Save(req model.ProjectCron) (ret model.ProjectCron,
 	}
 
 	req.ConfigId = configId
-	ret, err = s.ProjectCronRepo.Save(req)
+	ret, err = s.ProjectCronRepo.Save(tenantId, req)
 
 	return
 }
@@ -84,21 +84,21 @@ func (s *ProjectCronService) initCron(req *model.ProjectCron) {
 	}
 }
 
-func (s *ProjectCronService) Delete(id uint) (err error) {
-	projectCron, err := s.ProjectCronRepo.GetById(id)
+func (s *ProjectCronService) Delete(tenantId consts.TenantId, id uint) (err error) {
+	projectCron, err := s.ProjectCronRepo.GetById(tenantId, id)
 	if err != nil {
 		return
 	}
 
-	err = s.ProjectCronRepo.DeleteById(id)
+	err = s.ProjectCronRepo.DeleteById(tenantId, id)
 	if err != nil {
 		return
 	}
 
 	if projectCron.Source == consts.CronSourceLecang {
-		err = s.CronConfigLecangRepo.DeleteById(projectCron.ConfigId)
+		err = s.CronConfigLecangRepo.DeleteById(tenantId, projectCron.ConfigId)
 	} else if projectCron.Source == consts.CronSourceSwagger {
-		err = s.ProjectSettingsRepo.DeleteSwaggerSyncById(projectCron.ConfigId)
+		err = s.ProjectSettingsRepo.DeleteSwaggerSyncById(tenantId, projectCron.ConfigId)
 	}
 	if err != nil {
 		return
@@ -109,8 +109,8 @@ func (s *ProjectCronService) Delete(id uint) (err error) {
 	return
 }
 
-func (s *ProjectCronService) Clone(id, userId uint) (ret model.ProjectCron, err error) {
-	oldCron, err := s.Get(id)
+func (s *ProjectCronService) Clone(tenantId consts.TenantId, id, userId uint) (ret model.ProjectCron, err error) {
+	oldCron, err := s.Get(tenantId, id)
 	if err != nil {
 		return
 	}
@@ -118,16 +118,16 @@ func (s *ProjectCronService) Clone(id, userId uint) (ret model.ProjectCron, err 
 	oldCron.ID = 0
 	oldCron.CreateUserId = userId
 	oldCron.UpdatedAt = nil
-	ret, err = s.Save(oldCron)
+	ret, err = s.Save(tenantId, oldCron)
 
 	return
 }
 
-func (s *ProjectCronService) UpdateSwitchStatus(id uint, switchStatus consts.SwitchStatus) (err error) {
-	return s.ProjectCronRepo.UpdateSwitchById(id, switchStatus)
+func (s *ProjectCronService) UpdateSwitchStatus(tenantId consts.TenantId, id uint, switchStatus consts.SwitchStatus) (err error) {
+	return s.ProjectCronRepo.UpdateSwitchById(tenantId, id, switchStatus)
 }
 
-func (s *ProjectCronService) UpdateCronExecTimeById(configId uint, source consts.CronSource, err error) error {
+func (s *ProjectCronService) UpdateCronExecTimeById(tenantId consts.TenantId, configId uint, source consts.CronSource, err error) error {
 	execStatus := consts.CronExecSuccess
 	execErr := ""
 	if err != nil {
@@ -135,32 +135,5 @@ func (s *ProjectCronService) UpdateCronExecTimeById(configId uint, source consts
 		execErr = err.Error()
 	}
 
-	return s.ProjectCronRepo.UpdateExecResult(configId, source, execStatus, execErr)
+	return s.ProjectCronRepo.UpdateExecResult(tenantId, configId, source, execStatus, execErr)
 }
-
-//func (s *ProjectCronService) AddCronItem(cronConfig model.ProjectCron) (err error) {
-//	options := make(map[string]interface{})
-//	options["projectId"] = cronConfig.ProjectId
-//	options["taskId"] = cronConfig.ConfigId
-//
-//	proxy := task.NewProxy(string(cronConfig.Source), cronConfig.Cron)
-//	err = proxy.Add(options)
-//
-//	return
-//}
-//
-//func (s *ProjectCronService) BatchAddCron() (err error) {
-//	cronList, err := s.ProjectCronRepo.ListAllCron()
-//	if err != nil {
-//		return
-//	}
-//
-//	for _, cron := range cronList {
-//		err = s.AddCronItem(cron)
-//		if err != nil {
-//			logUtils.Errorf("AddCronItem fail, cronItem:%+v, err:%+v", cron, err)
-//		}
-//	}
-//
-//	return
-//}

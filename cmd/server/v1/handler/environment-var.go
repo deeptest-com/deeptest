@@ -22,13 +22,14 @@ type EnvironmentVarCtrl struct {
 // @success	200	{object}	_domain.Response{data=[]domain.GlobalVar}
 // @Router	/api/v1/environments/envVars	[get]
 func (c *EnvironmentVarCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	serverId, err := ctx.URLParamInt("serverId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, _ := c.EnvironmentService.GetVarsByServer(uint(serverId))
+	data, _ := c.EnvironmentService.GetVarsByServer(tenantId, uint(serverId))
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }
@@ -44,13 +45,14 @@ func (c *EnvironmentVarCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]domain.GlobalVar}
 // @Router	/api/v1/environments/varsByEnv	[get]
 func (c *EnvironmentVarCtrl) ListByEnvId(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	envId, err := ctx.URLParamInt("envId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code})
 		return
 	}
 
-	data, _ := c.EnvironmentService.GetVarsByEnv(uint(envId))
+	data, _ := c.EnvironmentService.GetVarsByEnv(tenantId, uint(envId))
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
 }

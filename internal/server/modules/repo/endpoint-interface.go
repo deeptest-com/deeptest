@@ -24,9 +24,9 @@ type EndpointInterfaceRepo struct {
 	EnvironmentRepo    *EnvironmentRepo    `inject:""`
 }
 
-func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (ret _domain.PageData, err error) {
+func (r *EndpointInterfaceRepo) Paginate(tenantId consts.TenantId, req v1.EndpointInterfaceReqPaginate) (ret _domain.PageData, err error) {
 	var count int64
-	db := r.DB.Model(&model.EndpointInterface{}).
+	db := r.GetDB(tenantId).Model(&model.EndpointInterface{}).
 		Joins("LEFT JOIN biz_endpoint e ON biz_endpoint_interface.endpoint_id=e.id").
 		Where("biz_endpoint_interface.project_id = ?", req.ProjectId).
 		Where("NOT biz_endpoint_interface.deleted AND NOT biz_endpoint_interface.disabled")
@@ -40,7 +40,7 @@ func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (r
 
 	if req.CategoryId > 0 {
 		var categoryIds []uint
-		categoryIds, err = r.BaseRepo.GetDescendantIds(uint(req.CategoryId), model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetDescendantIds(tenantId, uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.EndpointCategory, int(req.ProjectId))
 		if err != nil {
 			return
@@ -72,16 +72,16 @@ func (r *EndpointInterfaceRepo) Paginate(req v1.EndpointInterfaceReqPaginate) (r
 	return
 }
 
-func (r *EndpointInterfaceRepo) ListByProject(projectId int) (pos []*model.EndpointInterface, err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) ListByProject(tenantId consts.TenantId, projectId int) (pos []*model.EndpointInterface, err error) {
+	err = r.GetDB(tenantId).
 		Where("project_id=?", projectId).
 		Where("NOT deleted").
 		Order("parent_id ASC, ordr ASC").
 		Find(&pos).Error
 	return
 }
-func (r *EndpointInterfaceRepo) ListIdByEndpoint(endpointId uint) (ids []uint, err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) ListIdByEndpoint(tenantId consts.TenantId, endpointId uint) (ids []uint, err error) {
+	err = r.GetDB(tenantId).
 		Model(model.EndpointInterface{}).
 		Select("id").
 		Where("endpoint_id=?", endpointId).
@@ -91,8 +91,8 @@ func (r *EndpointInterfaceRepo) ListIdByEndpoint(endpointId uint) (ids []uint, e
 	return
 }
 
-func (r *EndpointInterfaceRepo) ListIdByEndpoints(endpointIds []uint) (ids []uint, err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) ListIdByEndpoints(tenantId consts.TenantId, endpointIds []uint) (ids []uint, err error) {
+	err = r.GetDB(tenantId).
 		Model(model.EndpointInterface{}).
 		Select("id").
 		Where("endpoint_id IN (?)", endpointIds).
@@ -102,17 +102,17 @@ func (r *EndpointInterfaceRepo) ListIdByEndpoints(endpointIds []uint) (ids []uin
 	return
 }
 
-func (r *EndpointInterfaceRepo) Get(interfaceId uint) (po model.EndpointInterface, err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) Get(tenantId consts.TenantId, interfaceId uint) (po model.EndpointInterface, err error) {
+	err = r.GetDB(tenantId).
 		Where("id=? AND NOT deleted", interfaceId).
 		First(&po).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetByMethod(endpointId uint, method consts.HttpMethod) (debugInterfaceId, endpointInterfaceId uint) {
+func (r *EndpointInterfaceRepo) GetByMethod(tenantId consts.TenantId, endpointId uint, method consts.HttpMethod) (debugInterfaceId, endpointInterfaceId uint) {
 	var po model.EndpointInterface
 
-	r.DB.Where("endpoint_id=? AND method=? AND  NOT deleted", endpointId, method).
+	r.GetDB(tenantId).Where("endpoint_id=? AND method=? AND  NOT deleted", endpointId, method).
 		First(&po)
 
 	endpointInterfaceId = po.ID
@@ -121,21 +121,21 @@ func (r *EndpointInterfaceRepo) GetByMethod(endpointId uint, method consts.HttpM
 	return
 }
 
-func (r *EndpointInterfaceRepo) BatchGet(interfaceIds []uint) (fields []model.EndpointInterface, err error) {
-	err = r.DB.Model(model.EndpointInterface{}).
+func (r *EndpointInterfaceRepo) BatchGet(tenantId consts.TenantId, interfaceIds []uint) (fields []model.EndpointInterface, err error) {
+	err = r.GetDB(tenantId).Model(model.EndpointInterface{}).
 		Where("id IN (?) AND NOT deleted", interfaceIds).
 		Find(&fields).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetIdAndModelMap(interfaceIds []uint) (res map[uint]model.EndpointInterface, err error) {
+func (r *EndpointInterfaceRepo) GetIdAndModelMap(tenantId consts.TenantId, interfaceIds []uint) (res map[uint]model.EndpointInterface, err error) {
 	res = make(map[uint]model.EndpointInterface)
 
 	if len(interfaceIds) == 0 {
 		return
 	}
 
-	interfaces, err := r.BatchGet(interfaceIds)
+	interfaces, err := r.BatchGet(tenantId, interfaceIds)
 	if err != nil {
 		return
 	}
@@ -146,45 +146,45 @@ func (r *EndpointInterfaceRepo) GetIdAndModelMap(interfaceIds []uint) (res map[u
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetDetail(interfId uint) (interf model.EndpointInterface, err error) {
+func (r *EndpointInterfaceRepo) GetDetail(tenantId consts.TenantId, interfId uint) (interf model.EndpointInterface, err error) {
 	if interfId > 0 {
-		interf, err = r.Get(interfId)
-		interf.Params, _ = r.ListParams(interfId)
-		interf.Headers, _ = r.ListHeaders(interfId)
-		interf.Cookies, _ = r.ListCookies(interfId)
-		interf.RequestBody, _ = r.ListRequestBody(interfId)
-		interf.ResponseBodies, _ = r.ListResponseBodies(interfId)
-		interf.GlobalParams, _ = r.GetGlobalParams(interfId, interf.ProjectId)
+		interf, err = r.Get(tenantId, interfId)
+		interf.Params, _ = r.ListParams(tenantId, interfId)
+		interf.Headers, _ = r.ListHeaders(tenantId, interfId)
+		interf.Cookies, _ = r.ListCookies(tenantId, interfId)
+		interf.RequestBody, _ = r.ListRequestBody(tenantId, interfId)
+		interf.ResponseBodies, _ = r.ListResponseBodies(tenantId, interfId)
+		interf.GlobalParams, _ = r.GetGlobalParams(tenantId, interfId, interf.ProjectId)
 	}
 	return
 }
 
-func (r *EndpointInterfaceRepo) Save(interf *model.EndpointInterface) (err error) {
-	err = r.DB.Save(interf).Error
+func (r *EndpointInterfaceRepo) Save(tenantId consts.TenantId, interf *model.EndpointInterface) (err error) {
+	err = r.GetDB(tenantId).Save(interf).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) SetDebugInterfaceId(endpointInterfaceId, debugInterfaceId uint) (err error) {
-	err = r.DB.Model(&model.EndpointInterface{}).
+func (r *EndpointInterfaceRepo) SetDebugInterfaceId(tenantId consts.TenantId, endpointInterfaceId, debugInterfaceId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.EndpointInterface{}).
 		Where("id = ?", endpointInterfaceId).
 		Update("debug_interface_id", debugInterfaceId).Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) Update(interf model.EndpointInterface) (err error) {
-	r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.DB.Updates(interf).Error
+func (r *EndpointInterfaceRepo) Update(tenantId consts.TenantId, interf model.EndpointInterface) (err error) {
+	r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
+		err = r.GetDB(tenantId).Updates(interf).Error
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateParams(interf.ID, interf.Params)
+		err = r.UpdateParams(tenantId, interf.ID, interf.Params)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateHeaders(interf.ID, interf.Headers)
+		err = r.UpdateHeaders(tenantId, interf.ID, interf.Headers)
 		if err != nil {
 			return err
 		}
@@ -193,20 +193,20 @@ func (r *EndpointInterfaceRepo) Update(interf model.EndpointInterface) (err erro
 
 	return
 }
-func (r *EndpointInterfaceRepo) UpdateName(id int, name string) (err error) {
-	err = r.DB.Model(&model.EndpointInterface{}).
+func (r *EndpointInterfaceRepo) UpdateName(tenantId consts.TenantId, id int, name string) (err error) {
+	err = r.GetDB(tenantId).Model(&model.EndpointInterface{}).
 		Where("id = ?", id).
 		Update("name", name).Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) UpdateNameByEndpointId(endpointId uint, name string) (err error) {
-	return r.DB.Model(&model.EndpointInterface{}).Where("endpoint_id = ?", endpointId).Update("name", name).Error
+func (r *EndpointInterfaceRepo) UpdateNameByEndpointId(tenantId consts.TenantId, endpointId uint, name string) (err error) {
+	return r.GetDB(tenantId).Model(&model.EndpointInterface{}).Where("endpoint_id = ?", endpointId).Update("name", name).Error
 }
 
-func (r *EndpointInterfaceRepo) UpdateHeaders(id uint, headers []model.EndpointInterfaceHeader) (err error) {
-	err = r.RemoveHeaders(id)
+func (r *EndpointInterfaceRepo) UpdateHeaders(tenantId consts.TenantId, id uint, headers []model.EndpointInterfaceHeader) (err error) {
+	err = r.RemoveHeaders(tenantId, id)
 
 	if len(headers) == 0 {
 		return
@@ -217,21 +217,21 @@ func (r *EndpointInterfaceRepo) UpdateHeaders(id uint, headers []model.EndpointI
 		headers[idx].InterfaceId = id
 	}
 
-	err = r.DB.Create(&headers).Error
+	err = r.GetDB(tenantId).Create(&headers).Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) RemoveHeaders(id uint) (err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) RemoveHeaders(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.EndpointInterfaceHeader{}, "").Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) UpdateParams(id uint, params []model.EndpointInterfaceParam) (err error) {
-	err = r.RemoveParams(id)
+func (r *EndpointInterfaceRepo) UpdateParams(tenantId consts.TenantId, id uint, params []model.EndpointInterfaceParam) (err error) {
+	err = r.RemoveParams(tenantId, id)
 
 	if len(params) == 0 {
 		return
@@ -243,20 +243,20 @@ func (r *EndpointInterfaceRepo) UpdateParams(id uint, params []model.EndpointInt
 		params[idx].Value = params[idx].Example
 	}
 
-	err = r.DB.Create(&params).Error
+	err = r.GetDB(tenantId).Create(&params).Error
 
 	return
 }
-func (r *EndpointInterfaceRepo) RemoveParams(id uint) (err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) RemoveParams(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.EndpointInterfaceParam{}, "").Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) UpdateCookies(id uint, cookies []model.EndpointInterfaceCookie) (err error) {
-	err = r.RemoveCookie(id)
+func (r *EndpointInterfaceRepo) UpdateCookies(tenantId consts.TenantId, id uint, cookies []model.EndpointInterfaceCookie) (err error) {
+	err = r.RemoveCookie(tenantId, id)
 
 	if len(cookies) == 0 {
 		return
@@ -267,13 +267,13 @@ func (r *EndpointInterfaceRepo) UpdateCookies(id uint, cookies []model.EndpointI
 		cookies[idx].InterfaceId = id
 	}
 
-	err = r.DB.Create(&cookies).Error
+	err = r.GetDB(tenantId).Create(&cookies).Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) RemoveCookie(id uint) (err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) RemoveCookie(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Delete(&model.EndpointInterfaceCookie{}, "").Error
 
@@ -293,37 +293,28 @@ func (r *EndpointInterfaceRepo) haveChild(Data []*model.EndpointInterface, node 
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetChildren(defId, fieldId uint) (children []*model.EndpointInterface, err error) {
-	err = r.DB.Where("defID=? AND parentID=?", defId, fieldId).Find(&children).Error
+func (r *EndpointInterfaceRepo) GetChildren(tenantId consts.TenantId, defId, fieldId uint) (children []*model.EndpointInterface, err error) {
+	err = r.GetDB(tenantId).Where("defID=? AND parentID=?", defId, fieldId).Find(&children).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) SetIsRange(fieldId uint, b bool) (err error) {
-	err = r.DB.Model(&model.EndpointInterface{}).
+func (r *EndpointInterfaceRepo) SetIsRange(tenantId consts.TenantId, fieldId uint, b bool) (err error) {
+	err = r.GetDB(tenantId).Model(&model.EndpointInterface{}).
 		Where("id = ?", fieldId).Update("isRange", b).Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) ListParams(interfaceId uint) (pos []model.EndpointInterfaceParam, err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) ListParams(tenantId consts.TenantId, interfaceId uint) (pos []model.EndpointInterfaceParam, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
 		Order("id ASC").
 		Find(&pos).Error
 	return
 }
-func (r *EndpointInterfaceRepo) ListHeaders(interfaceId uint) (pos []model.EndpointInterfaceHeader, err error) {
-	err = r.DB.
-		Where("interface_id=?", interfaceId).
-		Where("NOT deleted").
-		Order("id ASC").
-		Find(&pos).Error
-
-	return
-}
-func (r *EndpointInterfaceRepo) ListCookies(interfaceId uint) (pos []model.EndpointInterfaceCookie, err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) ListHeaders(tenantId consts.TenantId, interfaceId uint) (pos []model.EndpointInterfaceHeader, err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id=?", interfaceId).
 		Where("NOT deleted").
 		Order("id ASC").
@@ -331,42 +322,51 @@ func (r *EndpointInterfaceRepo) ListCookies(interfaceId uint) (pos []model.Endpo
 
 	return
 }
+func (r *EndpointInterfaceRepo) ListCookies(tenantId consts.TenantId, interfaceId uint) (pos []model.EndpointInterfaceCookie, err error) {
+	err = r.GetDB(tenantId).
+		Where("interface_id=?", interfaceId).
+		Where("NOT deleted").
+		Order("id ASC").
+		Find(&pos).Error
 
-func (r *EndpointInterfaceRepo) SaveInterfaces(interf *model.EndpointInterface) (err error) {
+	return
+}
 
-	r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.UpdateInterface(interf)
+func (r *EndpointInterfaceRepo) SaveInterfaces(tenantId consts.TenantId, interf *model.EndpointInterface) (err error) {
+
+	r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
+		err = r.UpdateInterface(tenantId, interf)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateParams(interf.ID, interf.Params)
+		err = r.UpdateParams(tenantId, interf.ID, interf.Params)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateHeaders(interf.ID, interf.Headers)
+		err = r.UpdateHeaders(tenantId, interf.ID, interf.Headers)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateCookies(interf.ID, interf.Cookies)
+		err = r.UpdateCookies(tenantId, interf.ID, interf.Cookies)
 		if err != nil {
 			return err
 		}
 
 		interf.RequestBody.InterfaceId = interf.ID
-		err = r.UpdateRequestBody(&interf.RequestBody)
+		err = r.UpdateRequestBody(tenantId, &interf.RequestBody)
 		if err != nil {
 			return err
 		}
 
-		err = r.UpdateResponseBodies(interf.ID, interf.ResponseBodies)
+		err = r.UpdateResponseBodies(tenantId, interf.ID, interf.ResponseBodies)
 		if err != nil {
 			return err
 		}
 
-		err = r.saveEndpointGlobalParams(interf.ID, interf.GlobalParams)
+		err = r.saveEndpointGlobalParams(tenantId, interf.ID, interf.GlobalParams)
 		if err != nil {
 			return err
 		}
@@ -377,47 +377,47 @@ func (r *EndpointInterfaceRepo) SaveInterfaces(interf *model.EndpointInterface) 
 	return
 }
 
-func (r *EndpointInterfaceRepo) UpdateRequestBody(requestBody *model.EndpointInterfaceRequestBody) (err error) {
-	err = r.removeRequestBody(requestBody.InterfaceId)
+func (r *EndpointInterfaceRepo) UpdateRequestBody(tenantId consts.TenantId, requestBody *model.EndpointInterfaceRequestBody) (err error) {
+	err = r.removeRequestBody(tenantId, requestBody.InterfaceId)
 	if err != nil {
 		return
 	}
 
-	err = r.BaseRepo.Save(requestBody.ID, requestBody)
+	err = r.BaseRepo.Save(tenantId, requestBody.ID, requestBody)
 	if err != nil {
 		return
 	}
 
 	schemaItem := requestBody.SchemaItem
 	schemaItem.RequestBodyId = requestBody.ID
-	err = r.removeRequestBodyItem(requestBody.ID)
+	err = r.removeRequestBodyItem(tenantId, requestBody.ID)
 	if err != nil {
 		return
 	}
 
-	err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
+	err = r.BaseRepo.Save(tenantId, schemaItem.ID, &schemaItem)
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) removeRequestBodyItem(requestBodyId uint) (err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) removeRequestBodyItem(tenantId consts.TenantId, requestBodyId uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("request_body_id = ?", requestBodyId).
 		Delete(&model.EndpointInterfaceRequestBodyItem{}).Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) removeRequestBody(interId uint) (err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) removeRequestBody(tenantId consts.TenantId, interId uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", interId).
 		Delete(&model.EndpointInterfaceRequestBody{}).Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) UpdateResponseBodies(interfaceId uint, responseBodies []model.EndpointInterfaceResponseBody) (err error) {
-	err = r.removeResponseBodies(interfaceId)
+func (r *EndpointInterfaceRepo) UpdateResponseBodies(tenantId consts.TenantId, interfaceId uint, responseBodies []model.EndpointInterfaceResponseBody) (err error) {
+	err = r.removeResponseBodies(tenantId, interfaceId)
 	if err != nil {
 		return
 	}
@@ -428,24 +428,24 @@ func (r *EndpointInterfaceRepo) UpdateResponseBodies(interfaceId uint, responseB
 		}
 		responseBody.InterfaceId = interfaceId
 
-		err = r.BaseRepo.Save(responseBody.ID, &responseBody)
+		err = r.BaseRepo.Save(tenantId, responseBody.ID, &responseBody)
 		if err != nil {
 			return
 		}
 
-		err = r.removeResponseBodyItem(responseBody.ID)
+		err = r.removeResponseBodyItem(tenantId, responseBody.ID)
 		if err != nil {
 			return
 		}
 
 		schemaItem := responseBody.SchemaItem
 		schemaItem.ResponseBodyId = responseBody.ID
-		err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
+		err = r.BaseRepo.Save(tenantId, schemaItem.ID, &schemaItem)
 		if err != nil {
 			return
 		}
 
-		err = r.removeResponseBodyHeader(responseBody.ID)
+		err = r.removeResponseBodyHeader(tenantId, responseBody.ID)
 		if err != nil {
 			return
 		}
@@ -453,7 +453,7 @@ func (r *EndpointInterfaceRepo) UpdateResponseBodies(interfaceId uint, responseB
 		responseBodyHeaders := responseBody.Headers
 		for _, header := range responseBodyHeaders {
 			header.ResponseBodyId = responseBody.ID
-			err = r.BaseRepo.Save(header.ID, &header)
+			err = r.BaseRepo.Save(tenantId, header.ID, &header)
 			if err != nil {
 				return
 			}
@@ -463,88 +463,88 @@ func (r *EndpointInterfaceRepo) UpdateResponseBodies(interfaceId uint, responseB
 	return
 }
 
-func (r *EndpointInterfaceRepo) removeResponseBodies(interId uint) (err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) removeResponseBodies(tenantId consts.TenantId, interId uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", interId).
 		Delete(&model.EndpointInterfaceResponseBody{}).Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) removeResponseBodyItem(responseBodyId uint) (err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) removeResponseBodyItem(tenantId consts.TenantId, responseBodyId uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("response_body_id = ?", responseBodyId).
 		Delete(&model.EndpointInterfaceResponseBodyItem{}).Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) removeResponseBodyHeader(responseBodyId uint) (err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) removeResponseBodyHeader(tenantId consts.TenantId, responseBodyId uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("response_body_id = ?", responseBodyId).
 		Delete(&model.EndpointInterfaceResponseBodyHeader{}).Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) UpdateInterface(interf *model.EndpointInterface) (err error) {
-	err = r.BaseRepo.Save(interf.ID, interf)
+func (r *EndpointInterfaceRepo) UpdateInterface(tenantId consts.TenantId, interf *model.EndpointInterface) (err error) {
+	err = r.BaseRepo.Save(tenantId, interf.ID, interf)
 	return
 }
 
-func (r *EndpointInterfaceRepo) ListByEndpointId(endpointId uint, version string) (interfaces []model.EndpointInterface, err error) {
-	interfaces, err = r.QueryByEndpointId(endpointId, version)
+func (r *EndpointInterfaceRepo) ListByEndpointId(tenantId consts.TenantId, endpointId uint, version string) (interfaces []model.EndpointInterface, err error) {
+	interfaces, err = r.QueryByEndpointId(tenantId, endpointId, version)
 	for key, interf := range interfaces {
-		interfaces[key].Params, _ = r.ListParams(interf.ID)
-		interfaces[key].Headers, _ = r.ListHeaders(interf.ID)
-		interfaces[key].Cookies, _ = r.ListCookies(interf.ID)
-		interfaces[key].RequestBody, _ = r.ListRequestBody(interf.ID)
-		interfaces[key].ResponseBodies, _ = r.ListResponseBodies(interf.ID)
-		interfaces[key].GlobalParams, _ = r.GetGlobalParams(interf.ID, interf.ProjectId)
+		interfaces[key].Params, _ = r.ListParams(tenantId, interf.ID)
+		interfaces[key].Headers, _ = r.ListHeaders(tenantId, interf.ID)
+		interfaces[key].Cookies, _ = r.ListCookies(tenantId, interf.ID)
+		interfaces[key].RequestBody, _ = r.ListRequestBody(tenantId, interf.ID)
+		interfaces[key].ResponseBodies, _ = r.ListResponseBodies(tenantId, interf.ID)
+		interfaces[key].GlobalParams, _ = r.GetGlobalParams(tenantId, interf.ID, interf.ProjectId)
 		//interfaces[key].ResponseCodes = strings.Split(interf.ResponseCodes.(string), ",")
 	}
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) QueryByEndpointId(endpointId uint, version string) (pos []model.EndpointInterface, err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) QueryByEndpointId(tenantId consts.TenantId, endpointId uint, version string) (pos []model.EndpointInterface, err error) {
+	err = r.GetDB(tenantId).
 		Where("endpoint_id=? and version=?", endpointId, version).
 		Where("NOT deleted").
 		Find(&pos).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) ListRequestBody(interfaceId uint) (requestBody model.EndpointInterfaceRequestBody, err error) {
-	err = r.DB.First(&requestBody, "interface_id = ?", interfaceId).Error
+func (r *EndpointInterfaceRepo) ListRequestBody(tenantId consts.TenantId, interfaceId uint) (requestBody model.EndpointInterfaceRequestBody, err error) {
+	err = r.GetDB(tenantId).First(&requestBody, "interface_id = ?", interfaceId).Error
 	if err != nil {
 		return
 	}
 
-	requestBody.SchemaItem, err = r.ListRequestBodyItem(requestBody.ID)
+	requestBody.SchemaItem, err = r.ListRequestBodyItem(tenantId, requestBody.ID)
 	if err != nil {
 		//requestBody.SchemaItem.Content = _commUtils.JsonDecode(builtin.Interface2String(requestBody.SchemaItem.Content))
 	}
 	return
 }
-func (r *EndpointInterfaceRepo) ListRequestBodyItem(requestBodyId uint) (requestBodyItem model.EndpointInterfaceRequestBodyItem, err error) {
-	err = r.DB.First(&requestBodyItem, "request_body_id = ?", requestBodyId).Error
+func (r *EndpointInterfaceRepo) ListRequestBodyItem(tenantId consts.TenantId, requestBodyId uint) (requestBodyItem model.EndpointInterfaceRequestBodyItem, err error) {
+	err = r.GetDB(tenantId).First(&requestBodyItem, "request_body_id = ?", requestBodyId).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) ListResponseBodies(interfaceId uint) (responseBodies []model.EndpointInterfaceResponseBody, err error) {
-	err = r.DB.Find(&responseBodies, "interface_id = ?", interfaceId).Error
+func (r *EndpointInterfaceRepo) ListResponseBodies(tenantId consts.TenantId, interfaceId uint) (responseBodies []model.EndpointInterfaceResponseBody, err error) {
+	err = r.GetDB(tenantId).Find(&responseBodies, "interface_id = ?", interfaceId).Error
 	if err != nil {
 		return
 	}
 
 	for key, responseBody := range responseBodies {
-		responseBodies[key].SchemaItem, err = r.ListResponseBodyItem(responseBody.ID)
+		responseBodies[key].SchemaItem, err = r.ListResponseBodyItem(tenantId, responseBody.ID)
 		if err != nil {
 			return
 		}
 
-		responseBodies[key].Headers, err = r.ListResponseBodyHeaders(responseBody.ID)
+		responseBodies[key].Headers, err = r.ListResponseBodyHeaders(tenantId, responseBody.ID)
 		if err != nil {
 			return
 		}
@@ -553,19 +553,19 @@ func (r *EndpointInterfaceRepo) ListResponseBodies(interfaceId uint) (responseBo
 	return
 }
 
-func (r *EndpointInterfaceRepo) ListResponseBodyItem(requestBodyId uint) (responseBodyItem model.EndpointInterfaceResponseBodyItem, err error) {
-	err = r.DB.First(&responseBodyItem, "response_body_id = ?", requestBodyId).Error
+func (r *EndpointInterfaceRepo) ListResponseBodyItem(tenantId consts.TenantId, requestBodyId uint) (responseBodyItem model.EndpointInterfaceResponseBodyItem, err error) {
+	err = r.GetDB(tenantId).First(&responseBodyItem, "response_body_id = ?", requestBodyId).Error
 	//fmt.Println(err)
 	return
 }
 
-func (r *EndpointInterfaceRepo) ListResponseBodyHeaders(requestBodyId uint) (responseBodyHeaders []model.EndpointInterfaceResponseBodyHeader, err error) {
-	err = r.DB.Find(&responseBodyHeaders, "response_body_id = ?", requestBodyId).Error
+func (r *EndpointInterfaceRepo) ListResponseBodyHeaders(tenantId consts.TenantId, requestBodyId uint) (responseBodyHeaders []model.EndpointInterfaceResponseBodyHeader, err error) {
+	err = r.GetDB(tenantId).Find(&responseBodyHeaders, "response_body_id = ?", requestBodyId).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetRequestBody(interfaceId uint) (result model.EndpointInterfaceRequestBody, err error) {
-	err = r.DB.Find(&result, "interface_id = ? AND NOT deleted", interfaceId).Error
+func (r *EndpointInterfaceRepo) GetRequestBody(tenantId consts.TenantId, interfaceId uint) (result model.EndpointInterfaceRequestBody, err error) {
+	err = r.GetDB(tenantId).Find(&result, "interface_id = ? AND NOT deleted", interfaceId).Error
 	if err != nil {
 		return
 	}
@@ -573,12 +573,12 @@ func (r *EndpointInterfaceRepo) GetRequestBody(interfaceId uint) (result model.E
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetCountByRef(ref string) (count int64, err error) {
+func (r *EndpointInterfaceRepo) GetCountByRef(tenantId consts.TenantId, ref string) (count int64, err error) {
 
 	models := []interface{}{&model.EndpointPathParam{}, &model.EndpointInterfaceParam{}, &model.EndpointInterfaceHeader{}, &model.EndpointInterfaceCookie{}}
 
 	for _, model := range models {
-		err = r.DB.Model(&model).Where("ref=?", ref).Count(&count).Error
+		err = r.GetDB(tenantId).Model(&model).Where("ref=?", ref).Count(&count).Error
 		if err != nil {
 			return
 		}
@@ -590,7 +590,7 @@ func (r *EndpointInterfaceRepo) GetCountByRef(ref string) (count int64, err erro
 	return
 }
 
-func (r *EndpointInterfaceRepo) ImportEndpointData(req v1.ImportEndpointDataReq) (err error) {
+func (r *EndpointInterfaceRepo) ImportEndpointData(tenantId consts.TenantId, req v1.ImportEndpointDataReq) (err error) {
 	/*
 		if req.OpenUrlImport {
 
@@ -619,10 +619,10 @@ func (r *EndpointInterfaceRepo) ImportEndpointData(req v1.ImportEndpointDataReq)
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetInterfaces(endpointIds []uint, needDetail bool) (interfaces map[uint][]model.EndpointInterface, err error) {
+func (r *EndpointInterfaceRepo) GetInterfaces(tenantId consts.TenantId, endpointIds []uint, needDetail bool) (interfaces map[uint][]model.EndpointInterface, err error) {
 	interfaces = map[uint][]model.EndpointInterface{}
 	var result []model.EndpointInterface
-	err = r.DB.Where("endpoint_id in ?", endpointIds).Where("NOT deleted").Find(&result).Error
+	err = r.GetDB(tenantId).Where("endpoint_id in ?", endpointIds).Where("NOT deleted").Find(&result).Error
 
 	if !needDetail {
 		for key, item := range result {
@@ -637,34 +637,34 @@ func (r *EndpointInterfaceRepo) GetInterfaces(endpointIds []uint, needDetail boo
 	}
 
 	var params map[uint][]model.EndpointInterfaceParam
-	params, err = r.GetQueryParams(interfaceIds)
+	params, err = r.GetQueryParams(tenantId, interfaceIds)
 	if err != nil {
 		return
 	}
 
 	var cookies map[uint][]model.EndpointInterfaceCookie
-	cookies, err = r.GetCookies(interfaceIds)
+	cookies, err = r.GetCookies(tenantId, interfaceIds)
 	if err != nil {
 		return
 	}
 
 	var headers map[uint][]model.EndpointInterfaceHeader
-	headers, err = r.GetHeaders(interfaceIds)
+	headers, err = r.GetHeaders(tenantId, interfaceIds)
 	if err != nil {
 		return
 	}
 
 	var requestBodies map[uint]model.EndpointInterfaceRequestBody
-	requestBodies, err = r.GetRequestBodies(interfaceIds)
+	requestBodies, err = r.GetRequestBodies(tenantId, interfaceIds)
 	if err != nil {
 		return
 	}
 
 	var responseBodies map[uint][]model.EndpointInterfaceResponseBody
-	responseBodies, err = r.GetResponseBodies(interfaceIds)
+	responseBodies, err = r.GetResponseBodies(tenantId, interfaceIds)
 
 	var globalParams map[uint][]model.EndpointInterfaceGlobalParam
-	globalParams, err = r.GetMapGlobalParams(interfaceIds)
+	globalParams, err = r.GetMapGlobalParams(tenantId, interfaceIds)
 
 	for key, item := range result {
 		result[key].Params = params[item.ID]
@@ -680,9 +680,9 @@ func (r *EndpointInterfaceRepo) GetInterfaces(endpointIds []uint, needDetail boo
 
 }
 
-func (r *EndpointInterfaceRepo) GetQueryParams(interfaceIds []uint) (params map[uint][]model.EndpointInterfaceParam, err error) {
+func (r *EndpointInterfaceRepo) GetQueryParams(tenantId consts.TenantId, interfaceIds []uint) (params map[uint][]model.EndpointInterfaceParam, err error) {
 	var result []model.EndpointInterfaceParam
-	err = r.DB.Where("NOT deleted and interface_id in ?", interfaceIds).Find(&result).Error
+	err = r.GetDB(tenantId).Where("NOT deleted and interface_id in ?", interfaceIds).Find(&result).Error
 
 	params = make(map[uint][]model.EndpointInterfaceParam)
 	for key, item := range result {
@@ -692,9 +692,9 @@ func (r *EndpointInterfaceRepo) GetQueryParams(interfaceIds []uint) (params map[
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetCookies(interfaceIds []uint) (cookies map[uint][]model.EndpointInterfaceCookie, err error) {
+func (r *EndpointInterfaceRepo) GetCookies(tenantId consts.TenantId, interfaceIds []uint) (cookies map[uint][]model.EndpointInterfaceCookie, err error) {
 	var result []model.EndpointInterfaceCookie
-	err = r.DB.Where("NOT deleted and interface_id in ?", interfaceIds).Find(&result).Error
+	err = r.GetDB(tenantId).Where("NOT deleted and interface_id in ?", interfaceIds).Find(&result).Error
 
 	cookies = make(map[uint][]model.EndpointInterfaceCookie)
 	for key, item := range result {
@@ -704,9 +704,9 @@ func (r *EndpointInterfaceRepo) GetCookies(interfaceIds []uint) (cookies map[uin
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetHeaders(interfaceIds []uint) (headers map[uint][]model.EndpointInterfaceHeader, err error) {
+func (r *EndpointInterfaceRepo) GetHeaders(tenantId consts.TenantId, interfaceIds []uint) (headers map[uint][]model.EndpointInterfaceHeader, err error) {
 	var result []model.EndpointInterfaceHeader
-	err = r.DB.Where("NOT deleted and interface_id in ?", interfaceIds).Find(&result).Error
+	err = r.GetDB(tenantId).Where("NOT deleted and interface_id in ?", interfaceIds).Find(&result).Error
 
 	headers = make(map[uint][]model.EndpointInterfaceHeader)
 	for key, item := range result {
@@ -716,9 +716,9 @@ func (r *EndpointInterfaceRepo) GetHeaders(interfaceIds []uint) (headers map[uin
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetRequestBodies(interfaceIds []uint) (requestBodies map[uint]model.EndpointInterfaceRequestBody, err error) {
+func (r *EndpointInterfaceRepo) GetRequestBodies(tenantId consts.TenantId, interfaceIds []uint) (requestBodies map[uint]model.EndpointInterfaceRequestBody, err error) {
 	var result []model.EndpointInterfaceRequestBody
-	err = r.DB.Find(&result, "interface_id in ?", interfaceIds).Error
+	err = r.GetDB(tenantId).Find(&result, "interface_id in ?", interfaceIds).Error
 	if err != nil {
 		return
 	}
@@ -729,7 +729,7 @@ func (r *EndpointInterfaceRepo) GetRequestBodies(interfaceIds []uint) (requestBo
 	}
 
 	var requestBodyItems map[uint]model.EndpointInterfaceRequestBodyItem
-	requestBodyItems, err = r.GetRequestBodyItems(requestBodyIds)
+	requestBodyItems, err = r.GetRequestBodyItems(tenantId, requestBodyIds)
 
 	requestBodies = make(map[uint]model.EndpointInterfaceRequestBody)
 	for key, item := range result {
@@ -740,9 +740,9 @@ func (r *EndpointInterfaceRepo) GetRequestBodies(interfaceIds []uint) (requestBo
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetRequestBodyItems(requestBodyIds []uint) (requestBodyItems map[uint]model.EndpointInterfaceRequestBodyItem, err error) {
+func (r *EndpointInterfaceRepo) GetRequestBodyItems(tenantId consts.TenantId, requestBodyIds []uint) (requestBodyItems map[uint]model.EndpointInterfaceRequestBodyItem, err error) {
 	var result []model.EndpointInterfaceRequestBodyItem
-	err = r.DB.Find(&result, "request_body_id in ?", requestBodyIds).Error
+	err = r.GetDB(tenantId).Find(&result, "request_body_id in ?", requestBodyIds).Error
 
 	requestBodyItems = make(map[uint]model.EndpointInterfaceRequestBodyItem)
 	for key, item := range result {
@@ -751,8 +751,8 @@ func (r *EndpointInterfaceRepo) GetRequestBodyItems(requestBodyIds []uint) (requ
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetRequestBodyItem(requestBodyId uint) (result model.EndpointInterfaceRequestBodyItem, err error) {
-	err = r.DB.Find(&result, "request_body_id = ?  AND NOT deleted", requestBodyId).Error
+func (r *EndpointInterfaceRepo) GetRequestBodyItem(tenantId consts.TenantId, requestBodyId uint) (result model.EndpointInterfaceRequestBodyItem, err error) {
+	err = r.GetDB(tenantId).Find(&result, "request_body_id = ?  AND NOT deleted", requestBodyId).Error
 	if err != nil {
 		return
 	}
@@ -760,9 +760,9 @@ func (r *EndpointInterfaceRepo) GetRequestBodyItem(requestBodyId uint) (result m
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetResponseBodies(interfaceIds []uint) (responseBodies map[uint][]model.EndpointInterfaceResponseBody, err error) {
+func (r *EndpointInterfaceRepo) GetResponseBodies(tenantId consts.TenantId, interfaceIds []uint) (responseBodies map[uint][]model.EndpointInterfaceResponseBody, err error) {
 	var result []model.EndpointInterfaceResponseBody
-	err = r.DB.Find(&result, "interface_id in ?", interfaceIds).Error
+	err = r.GetDB(tenantId).Find(&result, "interface_id in ?", interfaceIds).Error
 	if err != nil {
 		return
 	}
@@ -773,13 +773,13 @@ func (r *EndpointInterfaceRepo) GetResponseBodies(interfaceIds []uint) (response
 	}
 
 	var responseBodyItems map[uint]model.EndpointInterfaceResponseBodyItem
-	responseBodyItems, err = r.GetResponseBodyItems(responseBodyIds)
+	responseBodyItems, err = r.GetResponseBodyItems(tenantId, responseBodyIds)
 	if err != nil {
 		return
 	}
 
 	var responseBodyHeaders map[uint][]model.EndpointInterfaceResponseBodyHeader
-	responseBodyHeaders, err = r.GetResponseBodyHeaders(responseBodyIds)
+	responseBodyHeaders, err = r.GetResponseBodyHeaders(tenantId, responseBodyIds)
 	if err != nil {
 		return
 	}
@@ -795,9 +795,9 @@ func (r *EndpointInterfaceRepo) GetResponseBodies(interfaceIds []uint) (response
 
 }
 
-func (r *EndpointInterfaceRepo) GetResponseBodyItems(responseBodyIds []uint) (responseBodyItem map[uint]model.EndpointInterfaceResponseBodyItem, err error) {
+func (r *EndpointInterfaceRepo) GetResponseBodyItems(tenantId consts.TenantId, responseBodyIds []uint) (responseBodyItem map[uint]model.EndpointInterfaceResponseBodyItem, err error) {
 	var result []model.EndpointInterfaceResponseBodyItem
-	err = r.DB.Find(&result, "response_body_id in ?", responseBodyIds).Error
+	err = r.GetDB(tenantId).Find(&result, "response_body_id in ?", responseBodyIds).Error
 
 	responseBodyItem = make(map[uint]model.EndpointInterfaceResponseBodyItem)
 	for key, item := range result {
@@ -807,10 +807,10 @@ func (r *EndpointInterfaceRepo) GetResponseBodyItems(responseBodyIds []uint) (re
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetResponseBodyHeaders(responseBodyIds []uint) (responseBodyHeaders map[uint][]model.EndpointInterfaceResponseBodyHeader, err error) {
+func (r *EndpointInterfaceRepo) GetResponseBodyHeaders(tenantId consts.TenantId, responseBodyIds []uint) (responseBodyHeaders map[uint][]model.EndpointInterfaceResponseBodyHeader, err error) {
 
 	var result []model.EndpointInterfaceResponseBodyHeader
-	err = r.DB.Find(&result, "response_body_id in ?", responseBodyIds).Error
+	err = r.GetDB(tenantId).Find(&result, "response_body_id in ?", responseBodyIds).Error
 
 	responseBodyHeaders = make(map[uint][]model.EndpointInterfaceResponseBodyHeader)
 	for key, item := range result {
@@ -820,68 +820,68 @@ func (r *EndpointInterfaceRepo) GetResponseBodyHeaders(responseBodyIds []uint) (
 	return
 }
 
-func (r *EndpointInterfaceRepo) DeleteByEndpoint(endpointId uint) (err error) {
-	ids, err := r.ListIdByEndpoint(endpointId)
+func (r *EndpointInterfaceRepo) DeleteByEndpoint(tenantId consts.TenantId, endpointId uint) (err error) {
+	ids, err := r.ListIdByEndpoint(tenantId, endpointId)
 
-	err = r.DeleteBatch(ids)
-
-	return
-}
-
-func (r *EndpointInterfaceRepo) DeleteByEndpoints(endpointIds []uint) (err error) {
-	ids, err := r.ListIdByEndpoints(endpointIds)
-
-	err = r.DeleteBatch(ids)
+	err = r.DeleteBatch(tenantId, ids)
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) DeleteBatch(ids []uint) (err error) {
+func (r *EndpointInterfaceRepo) DeleteByEndpoints(tenantId consts.TenantId, endpointIds []uint) (err error) {
+	ids, err := r.ListIdByEndpoints(tenantId, endpointIds)
+
+	err = r.DeleteBatch(tenantId, ids)
+
+	return
+}
+
+func (r *EndpointInterfaceRepo) DeleteBatch(tenantId consts.TenantId, ids []uint) (err error) {
 	for _, id := range ids {
-		err = r.Delete(id)
+		err = r.Delete(tenantId, id)
 	}
 	return
 }
-func (r *EndpointInterfaceRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.EndpointInterface{}).
+func (r *EndpointInterfaceRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.EndpointInterface{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
 
-	endpointInterface, _ := r.Get(id)
+	endpointInterface, _ := r.Get(tenantId, id)
 	if endpointInterface.DebugInterfaceId > 0 {
-		r.DebugInterfaceRepo.Delete(endpointInterface.DebugInterfaceId)
+		r.DebugInterfaceRepo.Delete(tenantId, endpointInterface.DebugInterfaceId)
 	}
 	return
 }
 
-func (r *EndpointInterfaceRepo) RemoveAll(id uint) (err error) {
-	err = r.RemoveParams(id)
-	err = r.RemoveHeaders(id)
-	err = r.RemoveCookie(id)
+func (r *EndpointInterfaceRepo) RemoveAll(tenantId consts.TenantId, id uint) (err error) {
+	err = r.RemoveParams(tenantId, id)
+	err = r.RemoveHeaders(tenantId, id)
+	err = r.RemoveCookie(tenantId, id)
 
-	err = r.removeRequestBody(id)
-	err = r.removeResponseBodies(id)
+	err = r.removeRequestBody(tenantId, id)
+	err = r.removeResponseBodies(tenantId, id)
 
-	requestBody, err := r.ListRequestBody(id)
-	err = r.removeRequestBodyItem(requestBody.ID)
+	requestBody, err := r.ListRequestBody(tenantId, id)
+	err = r.removeRequestBodyItem(tenantId, requestBody.ID)
 
-	responseBodies, err := r.ListResponseBodies(id)
+	responseBodies, err := r.ListResponseBodies(tenantId, id)
 	for _, body := range responseBodies {
-		err = r.removeResponseBodyItem(body.ID)
-		err = r.removeResponseBodyHeader(body.ID)
+		err = r.removeResponseBodyItem(tenantId, body.ID)
+		err = r.removeResponseBodyHeader(tenantId, body.ID)
 	}
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetByItem(sourceType consts.SourceType, endpointId uint, method consts.HttpMethod) (res model.EndpointInterface, err error) {
-	err = r.DB.First(&res, "not deleted AND source_type = ? AND endpoint_id=? and method=?", sourceType, endpointId, method).Error
+func (r *EndpointInterfaceRepo) GetByItem(tenantId consts.TenantId, sourceType consts.SourceType, endpointId uint, method consts.HttpMethod) (res model.EndpointInterface, err error) {
+	err = r.GetDB(tenantId).First(&res, "not deleted AND source_type = ? AND endpoint_id=? and method=?", sourceType, endpointId, method).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetResponseCodes(endpointInterfaceId uint) (codes []string) {
+func (r *EndpointInterfaceRepo) GetResponseCodes(tenantId consts.TenantId, endpointInterfaceId uint) (codes []string) {
 
-	responseBodies, err := r.GetResponseBodies([]uint{endpointInterfaceId})
+	responseBodies, err := r.GetResponseBodies(tenantId, []uint{endpointInterfaceId})
 	if err != nil {
 		return
 	}
@@ -894,8 +894,8 @@ func (r *EndpointInterfaceRepo) GetResponseCodes(endpointInterfaceId uint) (code
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetResponse(endpointInterfaceId uint, code string) (ret model.EndpointInterfaceResponseBody) {
-	responseBodies, err := r.GetResponseBodies([]uint{endpointInterfaceId})
+func (r *EndpointInterfaceRepo) GetResponse(tenantId consts.TenantId, endpointInterfaceId uint, code string) (ret model.EndpointInterfaceResponseBody) {
+	responseBodies, err := r.GetResponseBodies(tenantId, []uint{endpointInterfaceId})
 	if err != nil {
 		return
 	}
@@ -910,21 +910,21 @@ func (r *EndpointInterfaceRepo) GetResponse(endpointInterfaceId uint, code strin
 	return
 }
 
-func (r *EndpointInterfaceRepo) BatchGetByEndpointIds(endpointIds []uint) (fields []model.EndpointInterface, err error) {
-	err = r.DB.Model(model.EndpointInterface{}).
+func (r *EndpointInterfaceRepo) BatchGetByEndpointIds(tenantId consts.TenantId, endpointIds []uint) (fields []model.EndpointInterface, err error) {
+	err = r.GetDB(tenantId).Model(model.EndpointInterface{}).
 		Where("endpoint_id IN (?) AND NOT deleted", endpointIds).
 		Find(&fields).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetByMethodAndPathAndServeId(serveId uint, path string, method consts.HttpMethod) (endpointInterfaceId uint) {
+func (r *EndpointInterfaceRepo) GetByMethodAndPathAndServeId(tenantId consts.TenantId, serveId uint, path string, method consts.HttpMethod) (endpointInterfaceId uint) {
 
 	type result struct {
 		Id uint
 	}
 	var data result
 
-	err := r.DB.Model(&model.EndpointInterface{}).Select("biz_endpoint_interface.id").Joins("left join biz_endpoint on biz_endpoint_interface.endpoint_id = biz_endpoint.id").Where("not biz_endpoint.deleted and not biz_endpoint_interface.deleted and biz_endpoint.serve_id=? and biz_endpoint.path=? and biz_endpoint_interface.method=?", serveId, path, method).Scan(&data).Error
+	err := r.GetDB(tenantId).Model(&model.EndpointInterface{}).Select("biz_endpoint_interface.id").Joins("left join biz_endpoint on biz_endpoint_interface.endpoint_id = biz_endpoint.id").Where("not biz_endpoint.deleted and not biz_endpoint_interface.deleted and biz_endpoint.serve_id=? and biz_endpoint.path=? and biz_endpoint_interface.method=?", serveId, path, method).Scan(&data).Error
 	if err != nil {
 		return 0
 	}
@@ -932,21 +932,21 @@ func (r *EndpointInterfaceRepo) GetByMethodAndPathAndServeId(serveId uint, path 
 
 }
 
-func (r *EndpointInterfaceRepo) GetResponseDefine(endpointId uint, method consts.HttpMethod, code string) (ret model.EndpointInterfaceResponseBodyItem, err error) {
+func (r *EndpointInterfaceRepo) GetResponseDefine(tenantId consts.TenantId, endpointId uint, method consts.HttpMethod, code string) (ret model.EndpointInterfaceResponseBodyItem, err error) {
 
 	var endpointInterface model.EndpointInterface
-	err = r.DB.Where("endpoint_id=? AND method=? AND  NOT deleted", endpointId, method).First(&endpointInterface).Error
+	err = r.GetDB(tenantId).Where("endpoint_id=? AND method=? AND  NOT deleted", endpointId, method).First(&endpointInterface).Error
 	if err != nil {
 		return
 	}
 
-	response := r.GetResponse(endpointInterface.ID, code)
+	response := r.GetResponse(tenantId, endpointInterface.ID, code)
 	if response.ID == 0 {
 		return
 	}
 
 	var bodyItems map[uint]model.EndpointInterfaceResponseBodyItem
-	bodyItems, err = r.GetResponseBodyItems([]uint{response.ID})
+	bodyItems, err = r.GetResponseBodyItems(tenantId, []uint{response.ID})
 	if err != nil {
 		return
 	}
@@ -955,15 +955,15 @@ func (r *EndpointInterfaceRepo) GetResponseDefine(endpointId uint, method consts
 
 }
 
-func (r *EndpointInterfaceRepo) GetByEndpointId(endpointId uint) (fields []model.EndpointInterface, err error) {
-	err = r.DB.Model(model.EndpointInterface{}).
+func (r *EndpointInterfaceRepo) GetByEndpointId(tenantId consts.TenantId, endpointId uint) (fields []model.EndpointInterface, err error) {
+	err = r.GetDB(tenantId).Model(model.EndpointInterface{}).
 		Where("endpoint_id = ? AND NOT deleted", endpointId).
 		Find(&fields).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetResponseBody(interfaceId uint, code string) (result model.EndpointInterfaceResponseBody, err error) {
-	err = r.DB.Find(&result, "interface_id = ? AND code = ?  AND NOT deleted", interfaceId, code).Error
+func (r *EndpointInterfaceRepo) GetResponseBody(tenantId consts.TenantId, interfaceId uint, code string) (result model.EndpointInterfaceResponseBody, err error) {
+	err = r.GetDB(tenantId).Find(&result, "interface_id = ? AND code = ?  AND NOT deleted", interfaceId, code).Error
 	if err != nil {
 		return
 	}
@@ -971,8 +971,8 @@ func (r *EndpointInterfaceRepo) GetResponseBody(interfaceId uint, code string) (
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetResponseBodyItem(responseBodyId uint) (result model.EndpointInterfaceResponseBodyItem, err error) {
-	err = r.DB.Find(&result, "response_body_id = ?  AND NOT deleted", responseBodyId).Error
+func (r *EndpointInterfaceRepo) GetResponseBodyItem(tenantId consts.TenantId, responseBodyId uint) (result model.EndpointInterfaceResponseBodyItem, err error) {
+	err = r.GetDB(tenantId).Find(&result, "response_body_id = ?  AND NOT deleted", responseBodyId).Error
 	if err != nil {
 		return
 	}
@@ -980,34 +980,34 @@ func (r *EndpointInterfaceRepo) GetResponseBodyItem(responseBodyId uint) (result
 	return
 }
 
-func (r *EndpointInterfaceRepo) SaveResponseBody(responseBody *model.EndpointInterfaceResponseBody) (err error) {
+func (r *EndpointInterfaceRepo) SaveResponseBody(tenantId consts.TenantId, responseBody *model.EndpointInterfaceResponseBody) (err error) {
 
-	err = r.BaseRepo.Save(responseBody.ID, responseBody)
+	err = r.BaseRepo.Save(tenantId, responseBody.ID, responseBody)
 	if err != nil {
 		return
 	}
 
-	err = r.removeResponseBodyItem(responseBody.ID)
+	err = r.removeResponseBodyItem(tenantId, responseBody.ID)
 	if err != nil {
 		return
 	}
 
 	schemaItem := responseBody.SchemaItem
 	schemaItem.ResponseBodyId = responseBody.ID
-	err = r.BaseRepo.Save(schemaItem.ID, &schemaItem)
+	err = r.BaseRepo.Save(tenantId, schemaItem.ID, &schemaItem)
 	if err != nil {
 		return
 	}
 
-	err = r.AddResponseCode(responseBody.InterfaceId, responseBody.Code)
+	err = r.AddResponseCode(tenantId, responseBody.InterfaceId, responseBody.Code)
 
 	return
 
 }
 
-func (r *EndpointInterfaceRepo) AddResponseCode(interfaceId uint, code string) (err error) {
+func (r *EndpointInterfaceRepo) AddResponseCode(tenantId consts.TenantId, interfaceId uint, code string) (err error) {
 	var endpointInterface model.EndpointInterface
-	endpointInterface, err = r.Get(interfaceId)
+	endpointInterface, err = r.Get(tenantId, interfaceId)
 	if err != nil {
 		return err
 	}
@@ -1026,15 +1026,15 @@ func (r *EndpointInterfaceRepo) AddResponseCode(interfaceId uint, code string) (
 	if needAdd {
 		responseCodes = append(responseCodes, code)
 	}
-	err = r.DB.Model(endpointInterface).Update("response_codes", strings.Join(responseCodes, ",")).Where("id", interfaceId).Error
+	err = r.GetDB(tenantId).Model(endpointInterface).Update("response_codes", strings.Join(responseCodes, ",")).Where("id", interfaceId).Error
 
 	return
 
 }
 
-//保存路径参数
-func (r *EndpointInterfaceRepo) saveEndpointGlobalParams(interfaceId uint, params []model.EndpointInterfaceGlobalParam) (err error) {
-	err = r.removeEndpointGlobalParams(interfaceId)
+// 保存路径参数
+func (r *EndpointInterfaceRepo) saveEndpointGlobalParams(tenantId consts.TenantId, interfaceId uint, params []model.EndpointInterfaceGlobalParam) (err error) {
+	err = r.removeEndpointGlobalParams(tenantId, interfaceId)
 	if err != nil {
 		return
 	}
@@ -1046,21 +1046,21 @@ func (r *EndpointInterfaceRepo) saveEndpointGlobalParams(interfaceId uint, param
 		return
 	}
 
-	err = r.DB.Create(params).Error
+	err = r.GetDB(tenantId).Create(params).Error
 	return
 }
 
-func (r *EndpointInterfaceRepo) removeEndpointGlobalParams(interfaceId uint) (err error) {
-	err = r.DB.
+func (r *EndpointInterfaceRepo) removeEndpointGlobalParams(tenantId consts.TenantId, interfaceId uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", interfaceId).
 		Delete(&model.EndpointInterfaceGlobalParam{}, "").Error
 
 	return
 }
 
-func (r *EndpointInterfaceRepo) GetGlobalParams(id, projectId uint) (ret []model.EndpointInterfaceGlobalParam, err error) {
+func (r *EndpointInterfaceRepo) GetGlobalParams(tenantId consts.TenantId, id, projectId uint) (ret []model.EndpointInterfaceGlobalParam, err error) {
 	var po []model.EndpointInterfaceGlobalParam
-	err = r.DB.
+	err = r.GetDB(tenantId).
 		Where("interface_id = ?", id).
 		Find(&po).Error
 
@@ -1068,7 +1068,7 @@ func (r *EndpointInterfaceRepo) GetGlobalParams(id, projectId uint) (ret []model
 		return nil, err
 	}
 
-	if params, err := r.EnvironmentRepo.ListParamModel(projectId); err == nil {
+	if params, err := r.EnvironmentRepo.ListParamModel(tenantId, projectId); err == nil {
 		for _, param := range params {
 			var temp model.EndpointInterfaceGlobalParam
 			copier.CopyWithOption(&temp, &param, copier.Option{IgnoreEmpty: true, DeepCopy: true})
@@ -1085,9 +1085,9 @@ func (r *EndpointInterfaceRepo) GetGlobalParams(id, projectId uint) (ret []model
 
 }
 
-func (r *EndpointInterfaceRepo) GetMapGlobalParams(interfaceIds []uint) (params map[uint][]model.EndpointInterfaceGlobalParam, err error) {
+func (r *EndpointInterfaceRepo) GetMapGlobalParams(tenantId consts.TenantId, interfaceIds []uint) (params map[uint][]model.EndpointInterfaceGlobalParam, err error) {
 	var result []model.EndpointInterfaceGlobalParam
-	err = r.DB.Where("interface_id in ?", interfaceIds).Find(&result).Error
+	err = r.GetDB(tenantId).Where("interface_id in ?", interfaceIds).Find(&result).Error
 
 	params = make(map[uint][]model.EndpointInterfaceGlobalParam)
 	for key, item := range result {

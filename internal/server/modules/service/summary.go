@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"strconv"
 	"time"
 )
@@ -12,40 +13,40 @@ type SummaryService struct {
 	SummaryProjectUserRankingService *SummaryProjectUserRankingService `inject:""`
 }
 
-func (s *SummaryService) Bugs(projectId int64) (res v1.ResSummaryBugs, err error) {
-	res, err = s.SummaryBugsService.Bugs(projectId)
+func (s *SummaryService) Bugs(tenantId consts.TenantId, projectId int64) (res v1.ResSummaryBugs, err error) {
+	res, err = s.SummaryBugsService.Bugs(tenantId, projectId)
 	return
 }
 
-func (s *SummaryService) Details(userId int64) (res v1.ResSummaryDetail, err error) {
+func (s *SummaryService) Details(tenantId consts.TenantId, userId int64) (res v1.ResSummaryDetail, err error) {
 	//改为项目数据实时，但统计数据非实时
-	res, err = s.SummaryDetailsService.Details(userId)
+	res, err = s.SummaryDetailsService.Details(tenantId, userId)
 	return
 }
 
-func (s *SummaryService) ProjectUserRanking(cycle int64, projectId int64) (res v1.ResRankingList, err error) {
-	res, err = s.SummaryProjectUserRankingService.ProjectUserRanking(cycle, projectId)
+func (s *SummaryService) ProjectUserRanking(tenantId consts.TenantId, cycle int64, projectId int64) (res v1.ResRankingList, err error) {
+	res, err = s.SummaryProjectUserRankingService.ProjectUserRanking(tenantId, cycle, projectId)
 	return
 }
 
-func (s *SummaryService) Card(projectId int64) (res v1.ResSummaryCard, err error) {
-	res, err = s.SummaryDetailsService.Card(projectId)
+func (s *SummaryService) Card(tenantId consts.TenantId, projectId int64) (res v1.ResSummaryCard, err error) {
+	res, err = s.SummaryDetailsService.Card(tenantId, projectId)
 	return
 }
 
-func (s *SummaryService) Collection() (err error) {
-	err = s.CollectionDetails()
-	err = s.CollectionBugs()
-	err = s.CollectionRanking()
+func (s *SummaryService) Collection(tenantId consts.TenantId) (err error) {
+	err = s.CollectionDetails(tenantId)
+	err = s.CollectionBugs(tenantId)
+	err = s.CollectionRanking(tenantId)
 	return
 }
 
-func (s *SummaryService) CollectionRanking() (err error) {
-	s.SummaryProjectUserRankingService.SaveRanking()
+func (s *SummaryService) CollectionRanking(tenantId consts.TenantId) (err error) {
+	s.SummaryProjectUserRankingService.SaveRanking(tenantId)
 	return
 }
 
-func (s *SummaryService) CollectionBugs() (err error) {
+func (s *SummaryService) CollectionBugs(tenantId consts.TenantId) (err error) {
 	//配置地址
 	//请求对应系统,获取bug信息
 	//bug转化,配置字段映射关系
@@ -55,8 +56,8 @@ func (s *SummaryService) CollectionBugs() (err error) {
 	return
 }
 
-func (s *SummaryService) CollectionDetails() (err error) {
-	err = s.SummaryDetailsService.SaveDetails()
+func (s *SummaryService) CollectionDetails(tenantId consts.TenantId) (err error) {
+	err = s.SummaryDetailsService.SaveDetails(tenantId)
 	return
 }
 

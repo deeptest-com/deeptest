@@ -16,6 +16,7 @@ import (
 )
 
 type UserCtrl struct {
+	BaseCtrl
 	UserService *service.UserService `inject:""`
 	UserRepo    *repo.UserRepo       `inject:""`
 }
@@ -31,6 +32,7 @@ type UserCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]serverDomain.UserResp}}
 // @Router	/api/v1/users	[get]
 func (c *UserCtrl) ListAll(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.UserReqPaginate
 
 	if err := ctx.ReadQuery(&req); err != nil {
@@ -42,7 +44,7 @@ func (c *UserCtrl) ListAll(ctx iris.Context) {
 		}
 	}
 
-	data, err := c.UserRepo.Paginate(req)
+	data, err := c.UserRepo.Paginate(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -62,13 +64,14 @@ func (c *UserCtrl) ListAll(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.UserResp}
 // @Router	/api/v1/users/{id}	[get]
 func (c *UserCtrl) GetUser(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		_logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	user, err := c.UserRepo.FindDetailById(req.Id)
+	user, err := c.UserRepo.FindDetailById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -87,6 +90,7 @@ func (c *UserCtrl) GetUser(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/users/invite	[post]
 func (c *UserCtrl) Invite(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.InviteUserReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -100,7 +104,7 @@ func (c *UserCtrl) Invite(ctx iris.Context) {
 		return
 	}
 	req.ProjectId = projectId
-	_, bizErr := c.UserService.Invite(req)
+	_, bizErr := c.UserService.Invite(tenantId, req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{Code: bizErr.Code})
 		return
@@ -120,6 +124,7 @@ func (c *UserCtrl) Invite(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/users/updateEmail	[post]
 func (c *UserCtrl) UpdateEmail(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 	req := serverDomain.UpdateUserReq{}
 	err := ctx.ReadJSON(&req)
@@ -128,20 +133,20 @@ func (c *UserCtrl) UpdateEmail(ctx iris.Context) {
 		return
 	}
 
-	po, _ := c.UserRepo.FindByEmail(req.Email, userId)
+	po, _ := c.UserRepo.FindByEmail(tenantId, req.Email, userId)
 	if po.Id > 0 {
 		bizErr := _domain.ErrEmailExist
 		ctx.JSON(_domain.Response{Code: bizErr.Code})
 		return
 	}
 
-	err = c.UserRepo.UpdateEmail(req.Email, userId)
+	err = c.UserRepo.UpdateEmail(tenantId, req.Email, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	user, err := c.UserRepo.FindDetailById(userId)
+	user, err := c.UserRepo.FindDetailById(tenantId, userId)
 	user.Password = ""
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -162,6 +167,7 @@ func (c *UserCtrl) UpdateEmail(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.UserResp}
 // @Router	/api/v1/users/updateName	[post]
 func (c *UserCtrl) UpdateName(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 	req := serverDomain.UpdateUserReq{}
 	err := ctx.ReadJSON(&req)
@@ -170,20 +176,20 @@ func (c *UserCtrl) UpdateName(ctx iris.Context) {
 		return
 	}
 
-	po, _ := c.UserRepo.FindByUserName(req.Username, userId)
+	po, _ := c.UserRepo.FindByUserName(tenantId, req.Username, userId)
 	if po.Id > 0 {
 		bizErr := _domain.ErrUsernameExist
 		ctx.JSON(_domain.Response{Code: bizErr.Code})
 		return
 	}
 
-	err = c.UserRepo.UpdateName(req.Username, userId)
+	err = c.UserRepo.UpdateName(tenantId, req.Username, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	user, err := c.UserRepo.FindDetailById(userId)
+	user, err := c.UserRepo.FindDetailById(tenantId, userId)
 	user.Password = ""
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -204,6 +210,7 @@ func (c *UserCtrl) UpdateName(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.UserResp}
 // @Router	/api/v1/users/updatePassword	[post]
 func (c *UserCtrl) UpdatePassword(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	req := serverDomain.UpdateUserReq{}
@@ -213,13 +220,13 @@ func (c *UserCtrl) UpdatePassword(ctx iris.Context) {
 		return
 	}
 
-	err = c.UserRepo.ChangePassword(req, userId)
+	err = c.UserRepo.ChangePassword(tenantId, req, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	user, err := c.UserRepo.FindDetailById(userId)
+	user, err := c.UserRepo.FindDetailById(tenantId, userId)
 	user.Password = ""
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -239,15 +246,16 @@ func (c *UserCtrl) UpdatePassword(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.UserResp}
 // @Router	/api/v1/users/profile	[get]
 func (c *UserCtrl) Profile(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := multi.GetUserId(ctx)
 	if id == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ErrNoUser.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 
-	user, err := c.UserRepo.FindDetailById(id)
+	user, err := c.UserRepo.FindDetailById(tenantId, id)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -272,6 +280,7 @@ func (c *UserCtrl) Message(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/users	[post]
 func (c *UserCtrl) CreateUser(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.UserReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -283,7 +292,7 @@ func (c *UserCtrl) CreateUser(ctx iris.Context) {
 	}
 	//区分手动手动添加的账号和域账号登录，true 为手动创建，非true 为域账号
 	req.Type = true
-	id, err := c.UserRepo.Create(req)
+	id, err := c.UserRepo.Create(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -304,6 +313,7 @@ func (c *UserCtrl) CreateUser(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/users/{id}	[post]
 func (c *UserCtrl) UpdateUser(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 	var reqId _domain.ReqId
 	if err := ctx.ReadParams(&reqId); err != nil {
@@ -322,7 +332,7 @@ func (c *UserCtrl) UpdateUser(ctx iris.Context) {
 		}
 	}
 
-	err := c.UserRepo.Update(userId, reqId.Id, req)
+	err := c.UserRepo.Update(tenantId, userId, reqId.Id, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -341,13 +351,14 @@ func (c *UserCtrl) UpdateUser(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/users/{id}	[delete]
 func (c *UserCtrl) DeleteUser(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		_logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	err := c.UserRepo.DeleteById(req.Id)
+	err := c.UserRepo.DeleteById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -439,9 +450,10 @@ func (c *UserCtrl) ChangeAvatar(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{result=[]serverDomain.UserResp}}
 // @Router	/api/v1/users/usersNotExistedInProject	[get]
 func (c *UserCtrl) GetUsersNotExistedInProject(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
-	users, err := c.UserService.GetUsersNotExistedInProject(uint(projectId))
+	users, err := c.UserService.GetUsersNotExistedInProject(tenantId, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -462,6 +474,7 @@ func (c *UserCtrl) GetUsersNotExistedInProject(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/users/changeUserSysRole	[post]
 func (c *UserCtrl) ChangeUserSysRole(ctx iris.Context) {
+	//SAAS
 	req := serverDomain.UpdateUserRoleReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {

@@ -23,11 +23,11 @@ type EndpointRepo struct {
 	EnvironmentRepo       *EnvironmentRepo       `inject:""`
 }
 
-func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
-	//fmt.Println(r.DB.Model(&modelRef.SysUser{}))
-	//err = r.DB.Where("id=?", id).Where("name=?", name).Find(&res).Error
+func (r *EndpointRepo) Paginate(tenantId consts.TenantId, req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
+	//fmt.Println(r.GetDB(tenantId).Model(&modelRef.SysUser{}))
+	//err = r.GetDB(tenantId).Where("id=?", id).Where("name=?", name).Find(&res).Error
 	var count int64
-	db := r.DB.Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
+	db := r.GetDB(tenantId).Model(&model.Endpoint{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 
 	if req.Title != "" {
 		db = db.Where("title LIKE ? or path LIKE ?", fmt.Sprintf("%%%s%%", req.Title), fmt.Sprintf("%%%s%%", req.Title))
@@ -46,14 +46,14 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	}
 
 	if req.ServeVersion != "" {
-		if ids, err := r.ServeRepo.GetBindEndpointIds(req.ServeId, req.ServeVersion); err != nil {
+		if ids, err := r.ServeRepo.GetBindEndpointIds(tenantId, req.ServeId, req.ServeVersion); err != nil {
 			db = db.Where("id in ?", ids)
 		}
 	}
 
 	if req.CategoryId > 0 {
 		var categoryIds []uint
-		categoryIds, err = r.BaseRepo.GetDescendantIds(uint(req.CategoryId), model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetDescendantIds(tenantId, uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.EndpointCategory, int(req.ProjectId))
 		if err != nil {
 			return
@@ -66,7 +66,7 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 	}
 
 	if len(req.TagNames) != 0 {
-		endpointIds, err := r.EndpointTagRepo.GetEndpointIdsByTagNames(req.TagNames, req.ProjectId)
+		endpointIds, err := r.EndpointTagRepo.GetEndpointIdsByTagNames(tenantId, req.TagNames, req.ProjectId)
 		if err != nil {
 			return ret, err
 		}
@@ -92,7 +92,7 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 
 	for key, result := range results {
 		var versions []model.EndpointVersion
-		r.DB.Find(&versions, "endpoint_id=?", result.ID).Order("version desc")
+		r.GetDB(tenantId).Find(&versions, "endpoint_id=?", result.ID).Order("version desc")
 		results[key].Versions = versions
 		if len(versions) > 0 {
 			results[key].Version = versions[0].Version
@@ -100,21 +100,21 @@ func (r *EndpointRepo) Paginate(req v1.EndpointReqPaginate) (ret _domain.PageDat
 
 		if _, ok := serveNames[result.ServeId]; !ok {
 			var serve model.Serve
-			r.DB.Find(&serve, "id=?", result.ServeId)
+			r.GetDB(tenantId).Find(&serve, "id=?", result.ServeId)
 			serveNames[result.ServeId] = serve.Name
 		}
 		results[key].ServeName = serveNames[result.ServeId]
 
-		results[key].Tags, err = r.EndpointTagRepo.GetTagNamesByEndpointId(result.ID, result.ProjectId)
+		results[key].Tags, err = r.EndpointTagRepo.GetTagNamesByEndpointId(tenantId, result.ID, result.ProjectId)
 	}
 
-	r.CombineMethodsForEndpoints(results)
+	r.CombineMethodsForEndpoints(tenantId, results)
 
 	ret.Populate(results, count, req.Page, req.PageSize)
 
 	return
 }
-func (r *EndpointRepo) CombineMethodsForEndpoints(endpoints []*model.Endpoint) {
+func (r *EndpointRepo) CombineMethodsForEndpoints(tenantId consts.TenantId, endpoints []*model.Endpoint) {
 	endpointIds := make([]uint, 0)
 	for _, v := range endpoints {
 		endpointIds = append(endpointIds, v.ID)
@@ -123,7 +123,7 @@ func (r *EndpointRepo) CombineMethodsForEndpoints(endpoints []*model.Endpoint) {
 		return
 	}
 
-	interfaces, err := r.EndpointInterfaceRepo.BatchGetByEndpointIds(endpointIds)
+	interfaces, err := r.EndpointInterfaceRepo.BatchGetByEndpointIds(tenantId, endpointIds)
 	if err != nil {
 		return
 	}
@@ -138,29 +138,29 @@ func (r *EndpointRepo) CombineMethodsForEndpoints(endpoints []*model.Endpoint) {
 	}
 	return
 }
-func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
-	r.DB.Transaction(func(tx *gorm.DB) error {
+func (r *EndpointRepo) SaveAll(tenantId consts.TenantId, endpoint *model.Endpoint) (err error) {
+	r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
 
 		//更新终端
-		err = r.saveEndpoint(endpoint)
+		err = r.saveEndpoint(tenantId, endpoint)
 		if err != nil {
 			return err
 		}
 
 		//创建version
-		err = r.saveEndpointVersion(endpoint)
+		err = r.saveEndpointVersion(tenantId, endpoint)
 		if err != nil {
 			return err
 		}
 
 		//保存路径参数
-		err = r.saveEndpointParams(endpoint.ID, endpoint.PathParams)
+		err = r.saveEndpointParams(tenantId, endpoint.ID, endpoint.PathParams)
 		if err != nil {
 			return err
 		}
 
 		//保存接口
-		err = r.saveInterfaces(endpoint.ID, endpoint.ProjectId, endpoint.Path, endpoint.Version, endpoint.Title, endpoint.Interfaces)
+		err = r.saveInterfaces(tenantId, endpoint.ID, endpoint.ProjectId, endpoint.Path, endpoint.Version, endpoint.Title, endpoint.Interfaces)
 		if err != nil {
 			return err
 		}
@@ -177,37 +177,37 @@ func (r *EndpointRepo) SaveAll(endpoint *model.Endpoint) (err error) {
 }
 
 // 保存终端信息
-func (r *EndpointRepo) saveEndpoint(endpoint *model.Endpoint) (err error) {
-	err = r.Save(endpoint.ID, endpoint)
+func (r *EndpointRepo) saveEndpoint(tenantId consts.TenantId, endpoint *model.Endpoint) (err error) {
+	err = r.Save(tenantId, endpoint.ID, endpoint)
 	if err != nil {
 		return
 	}
 
-	err = r.UpdateSerialNumber(endpoint.ID, uint(endpoint.ProjectId))
+	err = r.UpdateSerialNumber(tenantId, endpoint.ID, uint(endpoint.ProjectId))
 	return
 }
 
-func (r *EndpointRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+func (r *EndpointRepo) UpdateSerialNumber(tenantId consts.TenantId, id, projectId uint) (err error) {
 	var project model.Project
-	project, err = r.ProjectRepo.Get(projectId)
+	project, err = r.ProjectRepo.Get(tenantId, projectId)
 	if err != nil {
 		return
 	}
 
-	err = r.DB.Model(&model.Endpoint{}).Where("id=?", id).Update("serial_number", project.ShortName+"-I-"+strconv.Itoa(int(id))).Error
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).Where("id=?", id).Update("serial_number", project.ShortName+"-I-"+strconv.Itoa(int(id))).Error
 	return
 
 }
 
-func (r *EndpointRepo) saveEndpointVersion(endpoint *model.Endpoint) (err error) {
+func (r *EndpointRepo) saveEndpointVersion(tenantId consts.TenantId, endpoint *model.Endpoint) (err error) {
 	if endpoint.Version == "" {
 		endpoint.Version = "v0.1.0"
 	}
 
 	endpointVersion := model.EndpointVersion{EndpointId: endpoint.ID, Version: endpoint.Version}
-	r.FindVersion(&endpointVersion)
+	r.FindVersion(tenantId, &endpointVersion)
 	if endpointVersion.ID == 0 {
-		err = r.DB.Create(&endpointVersion).Error
+		err = r.GetDB(tenantId).Create(&endpointVersion).Error
 		if err != nil {
 			endpoint.Version = endpointVersion.Version
 		}
@@ -217,14 +217,14 @@ func (r *EndpointRepo) saveEndpointVersion(endpoint *model.Endpoint) (err error)
 }
 
 // 保存路径参数
-func (r *EndpointRepo) saveEndpointParams(endpointId uint, params []model.EndpointPathParam) (err error) {
-	err = r.removeEndpointParams(endpointId)
+func (r *EndpointRepo) saveEndpointParams(tenantId consts.TenantId, endpointId uint, params []model.EndpointPathParam) (err error) {
+	err = r.removeEndpointParams(tenantId, endpointId)
 	if err != nil {
 		return
 	}
 	for _, item := range params {
 		item.EndpointId = endpointId
-		err = r.Save(item.ID, &item)
+		err = r.Save(tenantId, item.ID, &item)
 		if err != nil {
 			return
 		}
@@ -232,8 +232,8 @@ func (r *EndpointRepo) saveEndpointParams(endpointId uint, params []model.Endpoi
 	return
 }
 
-func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
-	err = r.DB.
+func (r *EndpointRepo) removeEndpointParams(tenantId consts.TenantId, endpointId uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("endpoint_id = ?", endpointId).
 		Delete(&model.EndpointPathParam{}, "").Error
 
@@ -241,7 +241,7 @@ func (r *EndpointRepo) removeEndpointParams(endpointId uint) (err error) {
 }
 
 // 保存接口信息
-func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version, title string, interfaces []model.EndpointInterface) (err error) {
+func (r *EndpointRepo) saveInterfaces(tenantId consts.TenantId, endpointId, projectId uint, path, version, title string, interfaces []model.EndpointInterface) (err error) {
 
 	interfaceIds := make([]uint, 0)
 	for _, v := range interfaces {
@@ -249,9 +249,9 @@ func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version,
 			interfaceIds = append(interfaceIds, v.ID)
 		}
 	}
-	interfaceIdModelMap, err := r.EndpointInterfaceRepo.GetIdAndModelMap(interfaceIds)
+	interfaceIdModelMap, err := r.EndpointInterfaceRepo.GetIdAndModelMap(tenantId, interfaceIds)
 
-	err = r.removeInterfaces(endpointId)
+	err = r.removeInterfaces(tenantId, endpointId)
 	if err != nil {
 		return
 	}
@@ -267,7 +267,7 @@ func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version,
 		interfaces[key].ProjectId = projectId
 		interfaces[key].Name = title
 
-		err = r.EndpointInterfaceRepo.SaveInterfaces(&interfaces[key])
+		err = r.EndpointInterfaceRepo.SaveInterfaces(tenantId, &interfaces[key])
 		if err != nil {
 			return err
 		}
@@ -276,165 +276,165 @@ func (r *EndpointRepo) saveInterfaces(endpointId, projectId uint, path, version,
 }
 
 // 保存调试接口Url
-func (r *EndpointRepo) updateDebugInterfaceUrl(endpointId uint, url string) (err error) {
-	err = r.DB.Model(&model.DebugInterface{}).
+func (r *EndpointRepo) updateDebugInterfaceUrl(tenantId consts.TenantId, endpointId uint, url string) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugInterface{}).
 		Where("endpoint_id = ?", endpointId).
 		Update("url", url).Error
 
 	return
 }
 
-func (r *EndpointRepo) removeInterfaces(endpointId uint) (err error) {
-	err = r.DB.
+func (r *EndpointRepo) removeInterfaces(tenantId consts.TenantId, endpointId uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("endpoint_id = ?", endpointId).
 		Delete(&model.EndpointInterface{}, "").Error
 
 	return
 }
 
-func (r *EndpointRepo) GetAll(id uint, version string) (endpoint model.Endpoint, err error) {
-	endpoint, err = r.Get(id)
+func (r *EndpointRepo) GetAll(tenantId consts.TenantId, id uint, version string) (endpoint model.Endpoint, err error) {
+	endpoint, err = r.Get(tenantId, id)
 	if err != nil {
 		return
 	}
 
-	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
-	endpoint.PathParams, _ = r.GetEndpointPathParams(id)
-	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
-	endpoint.GlobalParams, _ = r.EnvironmentRepo.ListParamModel(endpoint.ProjectId)
+	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(tenantId, id, endpoint.ProjectId)
+	endpoint.PathParams, _ = r.GetEndpointPathParams(tenantId, id)
+	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(tenantId, id, version)
+	endpoint.GlobalParams, _ = r.EnvironmentRepo.ListParamModel(tenantId, endpoint.ProjectId)
 
 	return
 }
 
-func (r *EndpointRepo) GetWithInterface(id uint, version string) (endpoint model.Endpoint, err error) {
-	endpoint, err = r.Get(id)
+func (r *EndpointRepo) GetWithInterface(tenantId consts.TenantId, id uint, version string) (endpoint model.Endpoint, err error) {
+	endpoint, err = r.Get(tenantId, id)
 	if err != nil {
 		return
 	}
 
-	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(id, endpoint.ProjectId)
-	endpoint.PathParams, _ = r.GetEndpointPathParams(id)
-	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(id, version)
+	endpoint.Tags, _ = r.EndpointTagRepo.GetTagNamesByEndpointId(tenantId, id, endpoint.ProjectId)
+	endpoint.PathParams, _ = r.GetEndpointPathParams(tenantId, id)
+	endpoint.Interfaces, _ = r.EndpointInterfaceRepo.ListByEndpointId(tenantId, id, version)
 
 	return
 }
 
-func (r *EndpointRepo) Get(id uint) (res model.Endpoint, err error) {
-	err = r.DB.First(&res, id).Error
+func (r *EndpointRepo) Get(tenantId consts.TenantId, id uint) (res model.Endpoint, err error) {
+	err = r.GetDB(tenantId).First(&res, id).Error
 	return
 }
 
-func (r *EndpointRepo) GetEndpointPathParams(endpointId uint) (pathParam []model.EndpointPathParam, err error) {
-	err = r.DB.Find(&pathParam, "endpoint_id=?", endpointId).Error
+func (r *EndpointRepo) GetEndpointPathParams(tenantId consts.TenantId, endpointId uint) (pathParam []model.EndpointPathParam, err error) {
+	err = r.GetDB(tenantId).Find(&pathParam, "endpoint_id=?", endpointId).Error
 	return
 }
 
-func (r *EndpointRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.Endpoint{}).
+func (r *EndpointRepo) DeleteById(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).
 		Where("id = ?", id).
 		Update("deleted", 1).Error
 
 	return
 }
-func (r *EndpointRepo) DeleteByIds(ids []uint) error {
-	return r.DB.Model(&model.Endpoint{}).Where("id IN ?", ids).Update("deleted", 1).Error
+func (r *EndpointRepo) DeleteByIds(tenantId consts.TenantId, ids []uint) error {
+	return r.GetDB(tenantId).Model(&model.Endpoint{}).Where("id IN ?", ids).Update("deleted", 1).Error
 }
 
-func (r *EndpointRepo) DeleteByCategoryIds(categoryIds []int64) (err error) {
-	err = r.DB.Model(&model.Endpoint{}).
+func (r *EndpointRepo) DeleteByCategoryIds(tenantId consts.TenantId, categoryIds []int64) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).
 		Where("category_id IN ?", categoryIds).
 		Update("deleted", 1).Error
 
 	return
 }
 
-func (r *EndpointRepo) DisableById(id uint) error {
-	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("status", 4).Error
+func (r *EndpointRepo) DisableById(tenantId consts.TenantId, id uint) error {
+	return r.GetDB(tenantId).Model(&model.Endpoint{}).Where("id = ?", id).Update("status", 4).Error
 }
 
-func (r *EndpointRepo) UpdateStatus(id uint, status int64) error {
-	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("status", status).Error
+func (r *EndpointRepo) UpdateStatus(tenantId consts.TenantId, id uint, status int64) error {
+	return r.GetDB(tenantId).Model(&model.Endpoint{}).Where("id = ?", id).Update("status", status).Error
 }
 
-func (r *EndpointRepo) GetVersionsByEndpointId(endpointId uint) (res []model.EndpointVersion, err error) {
-	err = r.DB.Find(&res, "endpoint_id=?", endpointId).Error
+func (r *EndpointRepo) GetVersionsByEndpointId(tenantId consts.TenantId, endpointId uint) (res []model.EndpointVersion, err error) {
+	err = r.GetDB(tenantId).Find(&res, "endpoint_id=?", endpointId).Error
 	return
 }
 
-func (r *EndpointRepo) GetLatestVersion(endpointId uint) (res model.EndpointVersion, err error) {
-	err = r.DB.Take(&res, "endpoint_id=?", endpointId).Order("version desc").Error
+func (r *EndpointRepo) GetLatestVersion(tenantId consts.TenantId, endpointId uint) (res model.EndpointVersion, err error) {
+	err = r.GetDB(tenantId).Take(&res, "endpoint_id=?", endpointId).Order("version desc").Error
 	return
 }
-func (r *EndpointRepo) FindVersion(res *model.EndpointVersion) (err error) {
-	err = r.DB.Where("endpoint_id=? and version=?", res.EndpointId, res.Version).First(&res).Error
+func (r *EndpointRepo) FindVersion(tenantId consts.TenantId, res *model.EndpointVersion) (err error) {
+	err = r.GetDB(tenantId).Where("endpoint_id=? and version=?", res.EndpointId, res.Version).First(&res).Error
 	return
 }
 
-func (r *EndpointRepo) GetFirstMethod(id uint) (res model.EndpointInterface, err error) {
+func (r *EndpointRepo) GetFirstMethod(tenantId consts.TenantId, id uint) (res model.EndpointInterface, err error) {
 	var interfs []model.EndpointInterface
-	interfs, err = r.EndpointInterfaceRepo.ListByEndpointId(id, "v0.1.0")
+	interfs, err = r.EndpointInterfaceRepo.ListByEndpointId(tenantId, id, "v0.1.0")
 	if len(interfs) > 0 {
 		res = interfs[0]
 	}
 	return
 }
 
-func (r *EndpointRepo) GetCountByServeId(serveId uint) (count int64, err error) {
-	err = r.DB.Model(&model.Endpoint{}).Where("serve_id=? and NOT deleted", serveId).Count(&count).Error
+func (r *EndpointRepo) GetCountByServeId(tenantId consts.TenantId, serveId uint) (count int64, err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).Where("serve_id=? and NOT deleted", serveId).Count(&count).Error
 	return
 }
 
-func (r *EndpointRepo) ListEndpointByCategory(categoryId uint) (ids []uint, err error) {
-	err = r.DB.Model(&model.Endpoint{}).
+func (r *EndpointRepo) ListEndpointByCategory(tenantId consts.TenantId, categoryId uint) (ids []uint, err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).
 		Select("id").
 		Where("category_id = ? AND NOT deleted", categoryId).
 		Find(&ids).Error
 	return
 }
 
-func (r *EndpointRepo) ListEndpointByCategories(categoryIds []uint) (ids []uint, err error) {
-	err = r.DB.Model(&model.Endpoint{}).
+func (r *EndpointRepo) ListEndpointByCategories(tenantId consts.TenantId, categoryIds []uint) (ids []uint, err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).
 		Select("id").
 		Where("category_id IN (?) AND NOT deleted", categoryIds).
 		Find(&ids).Error
 	return
 }
 
-func (r *EndpointRepo) CreateEndpointSample(serveId uint) (endpointId uint, err error) {
+func (r *EndpointRepo) CreateEndpointSample(tenantId consts.TenantId, serveId uint) (endpointId uint, err error) {
 
 	return
 }
 
-func (r *EndpointRepo) GetCategoryCount(result interface{}, projectId uint) (err error) {
-	err = r.DB.Raw("select count(id) count, category_id from "+model.Endpoint{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
+func (r *EndpointRepo) GetCategoryCount(tenantId consts.TenantId, result interface{}, projectId uint) (err error) {
+	err = r.GetDB(tenantId).Raw("select count(id) count, category_id from "+model.Endpoint{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }
 
-func (r *EndpointRepo) GetByProjectId(projectId uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
-	err = r.DB.Find(&endpoints, "project_id = ? and not deleted and not disabled", projectId).Error
-	r.GetByEndpoints(endpoints, needDetail)
+func (r *EndpointRepo) GetByProjectId(tenantId consts.TenantId, projectId uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
+	err = r.GetDB(tenantId).Find(&endpoints, "project_id = ? and not deleted and not disabled", projectId).Error
+	r.GetByEndpoints(tenantId, endpoints, needDetail)
 	return
 }
 
-func (r *EndpointRepo) GetByServeIds(serveIds []uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
-	err = r.DB.Where("serve_id = ? and not deleted and not disabled", serveIds).Find(&endpoints).Error
-	r.GetByEndpoints(endpoints, needDetail)
+func (r *EndpointRepo) GetByServeIds(tenantId consts.TenantId, serveIds []uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
+	err = r.GetDB(tenantId).Where("serve_id = ? and not deleted and not disabled", serveIds).Find(&endpoints).Error
+	r.GetByEndpoints(tenantId, endpoints, needDetail)
 	return
 }
 
-func (r *EndpointRepo) GetByEndpointIds(endpointIds []uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
-	err = r.DB.Where("id in ? and not deleted and not disabled", endpointIds).Find(&endpoints).Error
-	r.GetByEndpoints(endpoints, needDetail)
+func (r *EndpointRepo) GetByEndpointIds(tenantId consts.TenantId, endpointIds []uint, needDetail bool) (endpoints []*model.Endpoint, err error) {
+	err = r.GetDB(tenantId).Where("id in ? and not deleted and not disabled", endpointIds).Find(&endpoints).Error
+	r.GetByEndpoints(tenantId, endpoints, needDetail)
 	return
 }
 
-func (r *EndpointRepo) GetByEndpoints(endpoints []*model.Endpoint, needDetail bool) {
+func (r *EndpointRepo) GetByEndpoints(tenantId consts.TenantId, endpoints []*model.Endpoint, needDetail bool) {
 	var endpointIds []uint
 	for _, endpoint := range endpoints {
 		endpointIds = append(endpointIds, endpoint.ID)
 	}
 
-	interfaces, err := r.EndpointInterfaceRepo.GetInterfaces(endpointIds, needDetail)
+	interfaces, err := r.EndpointInterfaceRepo.GetInterfaces(tenantId, endpointIds, needDetail)
 	if err != nil {
 		return
 	}
@@ -445,46 +445,46 @@ func (r *EndpointRepo) GetByEndpoints(endpoints []*model.Endpoint, needDetail bo
 	return
 }
 
-func (r *EndpointRepo) GetPathParams(endpointIds []uint) (err error, pathParams model.EndpointPathParam) {
-	err = r.DB.Find(&pathParams, "not disabled and not deleted and endpoint_id in ?", endpointIds).Error
+func (r *EndpointRepo) GetPathParams(tenantId consts.TenantId, endpointIds []uint) (err error, pathParams model.EndpointPathParam) {
+	err = r.GetDB(tenantId).Find(&pathParams, "not disabled and not deleted and endpoint_id in ?", endpointIds).Error
 	return
 }
 
-func (r *EndpointRepo) GetUsedCountByEndpointId(endpointId uint) (count int64, err error) {
-	endpointInterfaceIds, _ := r.EndpointInterfaceRepo.ListIdByEndpoint(endpointId)
+func (r *EndpointRepo) GetUsedCountByEndpointId(tenantId consts.TenantId, endpointId uint) (count int64, err error) {
+	endpointInterfaceIds, _ := r.EndpointInterfaceRepo.ListIdByEndpoint(tenantId, endpointId)
 
-	err = r.DB.Model(&model.Processor{}).
+	err = r.GetDB(tenantId).Model(&model.Processor{}).
 		Where("NOT deleted and endpoint_interface_id IN (?)", endpointInterfaceIds).
 		Count(&count).Error
 
 	return
 }
 
-func (r *EndpointRepo) CreateEndpoints(endpoints []*model.Endpoint) error {
-	return r.DB.Create(endpoints).Error
+func (r *EndpointRepo) CreateEndpoints(tenantId consts.TenantId, endpoints []*model.Endpoint) error {
+	return r.GetDB(tenantId).Create(endpoints).Error
 }
 
-func (r *EndpointRepo) BatchUpdateStatus(ids []uint, status int64) error {
-	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("status", status).Error
+func (r *EndpointRepo) BatchUpdateStatus(tenantId consts.TenantId, ids []uint, status int64) error {
+	return r.GetDB(tenantId).Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("status", status).Error
 }
 
-func (r *EndpointRepo) BatchUpdateCategory(ids []uint, categoryId int64) error {
-	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
+func (r *EndpointRepo) BatchUpdateCategory(tenantId consts.TenantId, ids []uint, categoryId int64) error {
+	return r.GetDB(tenantId).Model(&model.Endpoint{}).Where("id IN (?)", ids).Update("category_id", categoryId).Error
 }
 
-func (r *EndpointRepo) BatchUpdate(ids []uint, data map[string]interface{}) error {
-	return r.DB.Model(&model.Endpoint{}).Where("id IN (?)", ids).Updates(data).Error
+func (r *EndpointRepo) BatchUpdate(tenantId consts.TenantId, ids []uint, data map[string]interface{}) error {
+	return r.GetDB(tenantId).Model(&model.Endpoint{}).Where("id IN (?)", ids).Updates(data).Error
 }
 
-func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, path string, serveId uint, categoryId int64) (res model.Endpoint, err error) {
-	db := r.DB.Model(&model.Endpoint{}).
+func (r *EndpointRepo) GetByItem(tenantId consts.TenantId, sourceType consts.SourceType, projectId uint, path string, serveId uint, categoryId int64) (res model.Endpoint, err error) {
+	db := r.GetDB(tenantId).Model(&model.Endpoint{}).
 		Where("source_type = ?", sourceType).
 		Where("project_id = ?", projectId).
 		Where("path = ?", path).
 		Where("serve_id = ? AND NOT deleted", serveId)
 
 	if categoryId > 0 {
-		categoryIds, err := r.BaseRepo.GetDescendantIds(uint(categoryId), model.Category{}.TableName(), serverConsts.EndpointCategory, int(projectId))
+		categoryIds, err := r.BaseRepo.GetDescendantIds(tenantId, uint(categoryId), model.Category{}.TableName(), serverConsts.EndpointCategory, int(projectId))
 		if err != nil {
 			return res, err
 		}
@@ -501,63 +501,63 @@ func (r *EndpointRepo) GetByItem(sourceType consts.SourceType, projectId uint, p
 
 }
 
-func (r *EndpointRepo) ListByProjectIdAndServeId(serveId uint, method consts.HttpMethod) (endpoints []*model.Endpoint, err error) {
+func (r *EndpointRepo) ListByProjectIdAndServeId(tenantId consts.TenantId, serveId uint, method consts.HttpMethod) (endpoints []*model.Endpoint, err error) {
 
-	err = r.DB.Model(&model.Endpoint{}).Select("biz_endpoint.*").Joins("left join biz_endpoint_interface on biz_endpoint_interface.endpoint_id = biz_endpoint.id").Where("not biz_endpoint.deleted and not biz_endpoint_interface.deleted and biz_endpoint.serve_id=? and biz_endpoint_interface.method=?", serveId, method).Scan(&endpoints).Error
-
-	return
-}
-
-func (r *EndpointRepo) GetByPath(serveId uint, pth string, method consts.HttpMethod) (endpoints []*model.Endpoint, err error) {
-	err = r.DB.Model(&model.Endpoint{}).Select("biz_endpoint.*").Joins("left join biz_endpoint_interface on biz_endpoint_interface.endpoint_id = biz_endpoint.id").Where("not biz_endpoint.deleted and not biz_endpoint_interface.deleted and biz_endpoint.serve_id=? and biz_endpoint_interface.method=? and biz_endpoint.path=?", serveId, method, pth).Scan(&endpoints).Error
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).Select("biz_endpoint.*").Joins("left join biz_endpoint_interface on biz_endpoint_interface.endpoint_id = biz_endpoint.id").Where("not biz_endpoint.deleted and not biz_endpoint_interface.deleted and biz_endpoint.serve_id=? and biz_endpoint_interface.method=?", serveId, method).Scan(&endpoints).Error
 
 	return
 }
 
-func (r *EndpointRepo) UpdateAdvancedMockDisabled(endpointId uint, advancedMockDisabled bool) (err error) {
-	err = r.DB.Model(&model.Endpoint{}).
+func (r *EndpointRepo) GetByPath(tenantId consts.TenantId, serveId uint, pth string, method consts.HttpMethod) (endpoints []*model.Endpoint, err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).Select("biz_endpoint.*").Joins("left join biz_endpoint_interface on biz_endpoint_interface.endpoint_id = biz_endpoint.id").Where("not biz_endpoint.deleted and not biz_endpoint_interface.deleted and biz_endpoint.serve_id=? and biz_endpoint_interface.method=? and biz_endpoint.path=?", serveId, method, pth).Scan(&endpoints).Error
+
+	return
+}
+
+func (r *EndpointRepo) UpdateAdvancedMockDisabled(tenantId consts.TenantId, endpointId uint, advancedMockDisabled bool) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
 		Update("advanced_mock_disabled", advancedMockDisabled).Error
 
 	return
 }
 
-func (r *EndpointRepo) GetByNameAndProject(name string, projectId uint) (res model.Endpoint, err error) {
-	err = r.DB.Where("title = ?", name).
+func (r *EndpointRepo) GetByNameAndProject(tenantId consts.TenantId, name string, projectId uint) (res model.Endpoint, err error) {
+	err = r.GetDB(tenantId).Where("title = ?", name).
 		Where("project_id = ?", projectId).
 		First(&res).Error
 	return
 }
 
-func (r *EndpointRepo) UpdateBodyIsChanged(endpointId uint, changedStatus consts.ChangedStatus) (err error) {
-	err = r.DB.Model(&model.Endpoint{}).
+func (r *EndpointRepo) UpdateBodyIsChanged(tenantId consts.TenantId, endpointId uint, changedStatus consts.ChangedStatus) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
 		Updates(map[string]interface{}{"changed_status": changedStatus, "Updated_at": time.Now()}).Error
 
 	return
 }
 
-func (r *EndpointRepo) UpdateSnapshot(endpointId uint, snapshot string) (err error) {
-	err = r.DB.Model(&model.Endpoint{}).
+func (r *EndpointRepo) UpdateSnapshot(tenantId consts.TenantId, endpointId uint, snapshot string) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
 		UpdateColumns(map[string]interface{}{"changed_status": consts.Changed, "snapshot": snapshot, "changed_time": time.Now()}).Error
 
 	return
 }
 
-func (r *EndpointRepo) UpdateName(id uint, name string) (err error) {
-	return r.DB.Model(&model.Endpoint{}).Where("id = ?", id).Update("title", name).Error
+func (r *EndpointRepo) UpdateName(tenantId consts.TenantId, id uint, name string) (err error) {
+	return r.GetDB(tenantId).Model(&model.Endpoint{}).Where("id = ?", id).Update("title", name).Error
 }
 
-func (r *EndpointRepo) ChangeSnapShot(endpointId uint, snapshot string) (err error) {
-	err = r.DB.Model(&model.Endpoint{}).
+func (r *EndpointRepo) ChangeSnapShot(tenantId consts.TenantId, endpointId uint, snapshot string) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
 		UpdateColumn("snapshot", snapshot).Error
 
 	return
 }
 
-func (r *EndpointRepo) GetByCategoryId(categoryId uint) (endpoints []model.Endpoint, err error) {
-	err = r.DB.Where("category_id = ?", categoryId).Order("created_at desc").Find(&endpoints).Error
+func (r *EndpointRepo) GetByCategoryId(tenantId consts.TenantId, categoryId uint) (endpoints []model.Endpoint, err error) {
+	err = r.GetDB(tenantId).Where("category_id = ?", categoryId).Order("created_at desc").Find(&endpoints).Error
 	return endpoints, err
 }

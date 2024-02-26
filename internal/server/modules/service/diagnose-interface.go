@@ -31,8 +31,8 @@ type DiagnoseInterfaceService struct {
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
 
-func (s *DiagnoseInterfaceService) Load(projectId int) (ret []*serverDomain.DiagnoseInterface, err error) {
-	root, err := s.DiagnoseInterfaceRepo.GetTree(uint(projectId))
+func (s *DiagnoseInterfaceService) Load(tenantId consts.TenantId, projectId int) (ret []*serverDomain.DiagnoseInterface, err error) {
+	root, err := s.DiagnoseInterfaceRepo.GetTree(tenantId, uint(projectId))
 
 	if root != nil {
 		ret = root.Children
@@ -41,15 +41,15 @@ func (s *DiagnoseInterfaceService) Load(projectId int) (ret []*serverDomain.Diag
 	return
 }
 
-func (s *DiagnoseInterfaceService) Get(id int) (ret model.DiagnoseInterface, err error) {
-	ret, err = s.DiagnoseInterfaceRepo.Get(uint(id))
+func (s *DiagnoseInterfaceService) Get(tenantId consts.TenantId, id int) (ret model.DiagnoseInterface, err error) {
+	ret, err = s.DiagnoseInterfaceRepo.Get(tenantId, uint(id))
 	// its debug data will load in webpage
 
 	return
 }
 
-func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveReq) (diagnoseInterface model.DiagnoseInterface, err error) {
-	s.CopyValueFromRequest(&diagnoseInterface, req)
+func (s *DiagnoseInterfaceService) Save(tenantId consts.TenantId, req serverDomain.DiagnoseInterfaceSaveReq) (diagnoseInterface model.DiagnoseInterface, err error) {
+	s.CopyValueFromRequest(tenantId, &diagnoseInterface, req)
 
 	//if diagnoseInterface.ID != 0 {
 	//	oldDiagnoseInterface, err := s.DiagnoseInterfaceRepo.Get(diagnoseInterface.ID)
@@ -75,23 +75,23 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 				//	ServerId: server.ID,
 				BaseUrl: "",
 			}
-			err = s.DebugInterfaceRepo.Save(&debugInterface)
+			err = s.DebugInterfaceRepo.Save(tenantId, &debugInterface)
 			diagnoseInterface.DebugInterfaceId = debugInterface.ID
 			diagnoseInterface.Method = debugInterface.Method
 
-			err = s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
+			err = s.DiagnoseInterfaceRepo.Save(tenantId, &diagnoseInterface)
 
 			if diagnoseInterface.DebugInterfaceId > 0 {
 				values := map[string]interface{}{
 					"diagnose_interface_id": diagnoseInterface.ID,
 				}
-				err = s.DebugInterfaceRepo.UpdateDebugInfo(diagnoseInterface.DebugInterfaceId, values)
+				err = s.DebugInterfaceRepo.UpdateDebugInfo(tenantId, diagnoseInterface.DebugInterfaceId, values)
 			}
 		} else {
-			diagnoseInterface, _ = s.DiagnoseInterfaceRepo.Get(req.ID)
+			diagnoseInterface, _ = s.DiagnoseInterfaceRepo.Get(tenantId, req.ID)
 			diagnoseInterface.Title = req.Title
 
-			err = s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
+			err = s.DiagnoseInterfaceRepo.Save(tenantId, &diagnoseInterface)
 		}
 
 		// create new DebugInterface
@@ -110,89 +110,89 @@ func (s *DiagnoseInterfaceService) Save(req serverDomain.DiagnoseInterfaceSaveRe
 
 	} else {
 		if req.ID != 0 {
-			diagnoseInterface, _ = s.DiagnoseInterfaceRepo.Get(req.ID)
+			diagnoseInterface, _ = s.DiagnoseInterfaceRepo.Get(tenantId, req.ID)
 			diagnoseInterface.Title = req.Title
 		}
-		err = s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
+		err = s.DiagnoseInterfaceRepo.Save(tenantId, &diagnoseInterface)
 	}
 
 	return
 }
 
-func (s *DiagnoseInterfaceService) Remove(id int, typ serverConsts.DiagnoseInterfaceType) (err error) {
-	err = s.DiagnoseInterfaceRepo.Remove(uint(id), typ)
+func (s *DiagnoseInterfaceService) Remove(tenantId consts.TenantId, id int, typ serverConsts.DiagnoseInterfaceType) (err error) {
+	err = s.DiagnoseInterfaceRepo.Remove(tenantId, uint(id), typ)
 	return
 }
 
-func (s *DiagnoseInterfaceService) Move(srcId, targetId uint, pos serverConsts.DropPos, projectId uint) (
+func (s *DiagnoseInterfaceService) Move(tenantId consts.TenantId, srcId, targetId uint, pos serverConsts.DropPos, projectId uint) (
 	srcScenarioNode model.DiagnoseInterface, err error) {
-	srcScenarioNode, err = s.DiagnoseInterfaceRepo.Get(srcId)
+	srcScenarioNode, err = s.DiagnoseInterfaceRepo.Get(tenantId, srcId)
 
-	srcScenarioNode.ParentId, srcScenarioNode.Ordr = s.DiagnoseInterfaceRepo.UpdateOrder(pos, targetId, projectId)
-	err = s.DiagnoseInterfaceRepo.UpdateOrdAndParent(srcScenarioNode)
+	srcScenarioNode.ParentId, srcScenarioNode.Ordr = s.DiagnoseInterfaceRepo.UpdateOrder(tenantId, pos, targetId, projectId)
+	err = s.DiagnoseInterfaceRepo.UpdateOrdAndParent(tenantId, srcScenarioNode)
 
 	return
 }
 
-func (s *DiagnoseInterfaceService) CopyValueFromRequest(interf *model.DiagnoseInterface, req serverDomain.DiagnoseInterfaceSaveReq) {
+func (s *DiagnoseInterfaceService) CopyValueFromRequest(tenantId consts.TenantId, interf *model.DiagnoseInterface, req serverDomain.DiagnoseInterfaceSaveReq) {
 	copier.CopyWithOption(interf, req, copier.Option{
 		DeepCopy: true,
 	})
 }
 
-func (s *DiagnoseInterfaceService) CopyDebugDataValueFromRequest(interf *model.DiagnoseInterface, req domain.DebugData) (err error) {
+func (s *DiagnoseInterfaceService) CopyDebugDataValueFromRequest(tenantId consts.TenantId, interf *model.DiagnoseInterface, req domain.DebugData) (err error) {
 	copier.CopyWithOption(interf, req, copier.Option{DeepCopy: true})
 
 	return
 }
 
-func (s *DiagnoseInterfaceService) ImportInterfaces(req serverDomain.DiagnoseInterfaceImportReq) (ret model.DiagnoseInterface, err error) {
-	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
+func (s *DiagnoseInterfaceService) ImportInterfaces(tenantId consts.TenantId, req serverDomain.DiagnoseInterfaceImportReq) (ret model.DiagnoseInterface, err error) {
+	parent, _ := s.DiagnoseInterfaceRepo.Get(tenantId, req.TargetId)
 
 	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
-		parent, _ = s.DiagnoseInterfaceRepo.Get(parent.ParentId)
+		parent, _ = s.DiagnoseInterfaceRepo.Get(tenantId, parent.ParentId)
 	}
 
 	for _, interfaceId := range req.InterfaceIds {
-		ret, err = s.createInterfaceFromDefine(interfaceId, req.CreateBy, parent)
+		ret, err = s.createInterfaceFromDefine(tenantId, interfaceId, req.CreateBy, parent)
 	}
 
 	return
 }
 
-func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId int, createBy uint, parent model.DiagnoseInterface) (
+func (s *DiagnoseInterfaceService) createInterfaceFromDefine(tenantId consts.TenantId, endpointInterfaceId int, createBy uint, parent model.DiagnoseInterface) (
 	ret model.DiagnoseInterface, err error) {
 
-	endpointInterface, err := s.EndpointInterfaceRepo.Get(uint(endpointInterfaceId))
+	endpointInterface, err := s.EndpointInterfaceRepo.Get(tenantId, uint(endpointInterfaceId))
 	if err != nil {
 		return
 	}
 
 	// convert or clone a debug interface obj
-	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(uint(endpointInterfaceId))
+	debugData, err := s.DebugInterfaceService.GetDebugDataFromEndpointInterface(tenantId, uint(endpointInterfaceId))
 	debugData.UsedBy = "" // mark src usedBy for pre/post-condition loading, empty for no pre/post conditions
 
 	debugData.EndpointInterfaceId = uint(endpointInterfaceId)
 	//debugData.ServeId = parent.ServeId
 
 	if debugData.ServerId == 0 {
-		server, _ := s.ServeServerRepo.GetDefaultByServe(debugData.ServeId)
+		server, _ := s.ServeServerRepo.GetDefaultByServe(tenantId, debugData.ServeId)
 		debugData.ServerId = server.ID
 	}
 
-	server, _ := s.ServeServerRepo.Get(debugData.ServerId)
+	server, _ := s.ServeServerRepo.Get(tenantId, debugData.ServerId)
 	debugData.BaseUrl = "" // no need to bind to env in debug page
 	debugData.Url = _httpUtils.CombineUrls(server.Url, debugData.Url)
 
 	debugData.UsedBy = consts.DiagnoseDebug
 	srcDebugInterfaceId := debugData.DebugInterfaceId
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, srcDebugInterfaceId, "")
+	debugInterface, err := s.DebugInterfaceService.SaveAs(tenantId, debugData, srcDebugInterfaceId, "")
 
 	// save test interface
 	diagnoseInterface := model.DiagnoseInterface{
 		Title:            endpointInterface.Name,
 		Type:             serverConsts.DiagnoseInterfaceTypeInterface,
-		Ordr:             s.DiagnoseInterfaceRepo.GetMaxOrder(parent.ID),
+		Ordr:             s.DiagnoseInterfaceRepo.GetMaxOrder(tenantId, parent.ID),
 		Method:           debugData.Method,
 		DebugInterfaceId: debugInterface.ID,
 		ParentId:         parent.ID,
@@ -200,23 +200,23 @@ func (s *DiagnoseInterfaceService) createInterfaceFromDefine(endpointInterfaceId
 		ProjectId:        parent.ProjectId,
 		CreatedBy:        createBy,
 	}
-	s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
+	s.DiagnoseInterfaceRepo.Save(tenantId, &diagnoseInterface)
 
 	// update diagnose_interface_id
 	values := map[string]interface{}{
 		"diagnose_interface_id": diagnoseInterface.ID,
 	}
-	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
+	s.DebugInterfaceRepo.UpdateDebugInfo(tenantId, debugInterface.ID, values)
 
 	ret = diagnoseInterface
 
 	return
 }
 
-func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImportReq) (ret model.DiagnoseInterface, err error) {
-	parent, _ := s.DiagnoseInterfaceRepo.Get(req.TargetId)
+func (s *DiagnoseInterfaceService) ImportCurl(tenantId consts.TenantId, req serverDomain.DiagnoseCurlImportReq) (ret model.DiagnoseInterface, err error) {
+	parent, _ := s.DiagnoseInterfaceRepo.Get(tenantId, req.TargetId)
 	if parent.Type != serverConsts.DiagnoseInterfaceTypeDir {
-		parent, _ = s.DiagnoseInterfaceRepo.Get(parent.ParentId)
+		parent, _ = s.DiagnoseInterfaceRepo.Get(tenantId, parent.ParentId)
 	}
 
 	curlObj := curlHelper.Parse(req.Content)
@@ -229,7 +229,7 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 	headers := s.getHeaders(wf.Header)
 	cookies := s.getCookies(wf.Cookies)
 
-	server, _ := s.ServeServerRepo.GetDefaultByServe(parent.ServeId)
+	server, _ := s.ServeServerRepo.GetDefaultByServe(tenantId, parent.ServeId)
 	bodyType := ""
 	contentType := strings.Split(curlObj.ContentType, ";")
 	if len(contentType) > 1 {
@@ -255,13 +255,13 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 		UsedBy: consts.DiagnoseDebug,
 	}
 
-	debugInterface, err := s.DebugInterfaceService.SaveAs(debugData, 0, "")
+	debugInterface, err := s.DebugInterfaceService.SaveAs(tenantId, debugData, 0, "")
 
 	// save test interface
 	diagnoseInterface := model.DiagnoseInterface{
 		Title:            url,
 		Type:             serverConsts.DiagnoseInterfaceTypeInterface,
-		Ordr:             s.DiagnoseInterfaceRepo.GetMaxOrder(parent.ID),
+		Ordr:             s.DiagnoseInterfaceRepo.GetMaxOrder(tenantId, parent.ID),
 		Method:           debugData.Method,
 		DebugInterfaceId: debugInterface.ID,
 		ParentId:         parent.ID,
@@ -269,13 +269,13 @@ func (s *DiagnoseInterfaceService) ImportCurl(req serverDomain.DiagnoseCurlImpor
 		ProjectId:        parent.ProjectId,
 		CreatedBy:        req.CreateBy,
 	}
-	s.DiagnoseInterfaceRepo.Save(&diagnoseInterface)
+	s.DiagnoseInterfaceRepo.Save(tenantId, &diagnoseInterface)
 
 	// update diagnose_interface_id
 	values := map[string]interface{}{
 		"diagnose_interface_id": diagnoseInterface.ID,
 	}
-	s.DebugInterfaceRepo.UpdateDebugInfo(debugInterface.ID, values)
+	s.DebugInterfaceRepo.UpdateDebugInfo(tenantId, debugInterface.ID, values)
 
 	ret = diagnoseInterface
 

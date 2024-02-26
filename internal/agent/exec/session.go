@@ -2,6 +2,7 @@ package agentExec
 
 import (
 	"crypto/tls"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12/websocket"
 	"golang.org/x/net/http2"
 	"net/http"
@@ -13,6 +14,7 @@ type Session struct {
 	ExecUuid   string
 	ScenarioId uint
 	Name       string
+	TenantId   consts.TenantId `json:"tenantId"`
 
 	HttpClient  *http.Client
 	Http2Client *http.Client

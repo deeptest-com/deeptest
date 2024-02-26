@@ -14,13 +14,13 @@ type ScenarioService struct {
 	UserRepo         *repo2.UserRepo         `inject:""`
 }
 
-func (s *ScenarioService) ListByProject(serveId int) (pos []model.Scenario, err error) {
-	pos, err = s.ScenarioRepo.ListByProject(serveId)
+func (s *ScenarioService) ListByProject(tenantId consts.TenantId, serveId int) (pos []model.Scenario, err error) {
+	pos, err = s.ScenarioRepo.ListByProject(tenantId, serveId)
 	return
 }
 
-func (s *ScenarioService) Paginate(req v1.ScenarioReqPaginate, projectId int) (ret _domain.PageData, err error) {
-	ret, err = s.ScenarioRepo.Paginate(req, projectId)
+func (s *ScenarioService) Paginate(tenantId consts.TenantId, req v1.ScenarioReqPaginate, projectId int) (ret _domain.PageData, err error) {
+	ret, err = s.ScenarioRepo.Paginate(tenantId, req, projectId)
 
 	if err != nil {
 		return
@@ -29,57 +29,57 @@ func (s *ScenarioService) Paginate(req v1.ScenarioReqPaginate, projectId int) (r
 	return
 }
 
-func (s *ScenarioService) GetById(id uint) (scenario model.Scenario, err error) {
-	scenario, err = s.ScenarioRepo.Get(id)
+func (s *ScenarioService) GetById(tenantId consts.TenantId, id uint) (scenario model.Scenario, err error) {
+	scenario, err = s.ScenarioRepo.Get(tenantId, id)
 	if err != nil {
 		return
 	}
 
-	user, _ := s.UserRepo.GetByUserId(scenario.CreateUserId)
+	user, _ := s.UserRepo.GetByUserId(tenantId, scenario.CreateUserId)
 	scenario.CreatorName = user.Name
 	return
 }
 
-func (s *ScenarioService) Create(req model.Scenario) (po model.Scenario, err error) {
-	po, err = s.ScenarioRepo.Create(req)
+func (s *ScenarioService) Create(tenantId consts.TenantId, req model.Scenario) (po model.Scenario, err error) {
+	po, err = s.ScenarioRepo.Create(tenantId, req)
 
-	s.ScenarioNodeRepo.CreateDefault(po.ID, req.ProjectId, req.CreateUserId)
+	s.ScenarioNodeRepo.CreateDefault(tenantId, po.ID, req.ProjectId, req.CreateUserId)
 
 	return
 }
 
-func (s *ScenarioService) Update(req model.Scenario) error {
-	return s.ScenarioRepo.Update(req)
+func (s *ScenarioService) Update(tenantId consts.TenantId, req model.Scenario) error {
+	return s.ScenarioRepo.Update(tenantId, req)
 }
 
-func (s *ScenarioService) DeleteById(id uint) error {
-	return s.ScenarioRepo.DeleteById(id)
+func (s *ScenarioService) DeleteById(tenantId consts.TenantId, id uint) error {
+	return s.ScenarioRepo.DeleteById(tenantId, id)
 }
 
-func (s *ScenarioService) AddPlans(scenarioId int, planIds []int) (err error) {
-	err = s.ScenarioRepo.AddPlans(uint(scenarioId), planIds)
+func (s *ScenarioService) AddPlans(tenantId consts.TenantId, scenarioId int, planIds []int) (err error) {
+	err = s.ScenarioRepo.AddPlans(tenantId, uint(scenarioId), planIds)
 	return
 }
 
-func (s *ScenarioService) RemovePlans(scenarioId int, planIds []int) (err error) {
+func (s *ScenarioService) RemovePlans(tenantId consts.TenantId, scenarioId int, planIds []int) (err error) {
 	if len(planIds) == 0 {
 		return
 	}
-	err = s.ScenarioRepo.RemovePlans(uint(scenarioId), planIds)
+	err = s.ScenarioRepo.RemovePlans(tenantId, uint(scenarioId), planIds)
 	return
 }
 
-func (s *ScenarioService) PlanPaginate(req v1.ScenarioPlanReqPaginate, scenarioId int) (ret _domain.PageData, err error) {
-	ret, err = s.ScenarioRepo.PlanList(req, scenarioId)
+func (s *ScenarioService) PlanPaginate(tenantId consts.TenantId, req v1.ScenarioPlanReqPaginate, scenarioId int) (ret _domain.PageData, err error) {
+	ret, err = s.ScenarioRepo.PlanList(tenantId, req, scenarioId)
 	return
 }
 
-func (s *ScenarioService) UpdateStatus(id uint, status consts.TestStatus, updateUserId uint, updateUserName string) (err error) {
-	err = s.ScenarioRepo.UpdateStatus(id, status, updateUserId, updateUserName)
+func (s *ScenarioService) UpdateStatus(tenantId consts.TenantId, id uint, status consts.TestStatus, updateUserId uint, updateUserName string) (err error) {
+	err = s.ScenarioRepo.UpdateStatus(tenantId, id, status, updateUserId, updateUserName)
 	return
 }
 
-func (s *ScenarioService) UpdatePriority(id uint, priority string, updateUserId uint, updateUserName string) (err error) {
-	err = s.ScenarioRepo.UpdatePriority(id, priority, updateUserId, updateUserName)
+func (s *ScenarioService) UpdatePriority(tenantId consts.TenantId, id uint, priority string, updateUserId uint, updateUserName string) (err error) {
+	err = s.ScenarioRepo.UpdatePriority(tenantId, id, priority, updateUserId, updateUserName)
 	return
 }

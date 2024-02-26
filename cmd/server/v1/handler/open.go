@@ -15,9 +15,10 @@ type OpenCtrl struct {
 }
 
 func (c *OpenCtrl) AllProjectList(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	username := ctx.URLParam("username")
 
-	data, err := c.ProjectService.AllProjectList(username)
+	data, err := c.ProjectService.AllProjectList(tenantId, username)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -27,10 +28,11 @@ func (c *OpenCtrl) AllProjectList(ctx iris.Context) {
 }
 
 func (c *OpenCtrl) GetProjectsBySpace(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	spaceCode := ctx.URLParam("spaceCode")
 	username := ctx.URLParam("username")
 
-	data, err := c.IntegrationProjectService.GetListWithRoleBySpace(spaceCode, username)
+	data, err := c.IntegrationProjectService.GetListWithRoleBySpace(tenantId, spaceCode, username)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -40,6 +42,7 @@ func (c *OpenCtrl) GetProjectsBySpace(ctx iris.Context) {
 }
 
 func (c *OpenCtrl) SaveSpaceRelatedProjects(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := v1.SaveSpaceRelatedProjectsReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -47,7 +50,7 @@ func (c *OpenCtrl) SaveSpaceRelatedProjects(ctx iris.Context) {
 		return
 	}
 
-	err = c.IntegrationProjectService.SaveSpaceRelatedProjects(req.SpaceCode, req.ProjectShortNames)
+	err = c.IntegrationProjectService.SaveSpaceRelatedProjects(tenantId, req.SpaceCode, req.ProjectShortNames)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -57,9 +60,10 @@ func (c *OpenCtrl) SaveSpaceRelatedProjects(ctx iris.Context) {
 }
 
 func (c *OpenCtrl) GetProjectRole(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	username := ctx.URLParam("username")
 	projectCode := ctx.URLParam("projectCode")
-	if role, err := c.ProjectService.GetProjectRole(username, projectCode); err == nil {
+	if role, err := c.ProjectService.GetProjectRole(tenantId, username, projectCode); err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: role})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.ErrUserNotInProject.Code, Msg: err.Error()})

@@ -24,6 +24,7 @@ type DatabaseConnCtrl struct {
 // @success	200	{object}	        _domain.Response{data=[]model.DatabaseConn}
 // @Router	/api/v1/dbconns	[get]
 func (c *DatabaseConnCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -33,7 +34,7 @@ func (c *DatabaseConnCtrl) List(ctx iris.Context) {
 	keywords := ctx.URLParam("keywords")
 	ignoreDisabled, err := ctx.URLParamBool("ignoreDisabled")
 
-	res, err := c.DatabaseConnService.List(keywords, projectId, ignoreDisabled)
+	res, err := c.DatabaseConnService.List(tenantId, keywords, projectId, ignoreDisabled)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
@@ -52,13 +53,14 @@ func (c *DatabaseConnCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.DatabaseConn}
 // @Router	/api/v1/dbconns/{id}	[get]
 func (c *DatabaseConnCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	po, err := c.DatabaseConnService.Get(uint(id))
+	po, err := c.DatabaseConnService.Get(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -77,6 +79,7 @@ func (c *DatabaseConnCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/dbconns	[post]
 func (c *DatabaseConnCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 
 	req := model.DatabaseConn{}
@@ -95,7 +98,7 @@ func (c *DatabaseConnCtrl) Save(ctx iris.Context) {
 		req.CreateUser = userName
 	}
 
-	err = c.DatabaseConnService.Save(&req)
+	err = c.DatabaseConnService.Save(tenantId, &req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Msg: err.Error()})
 		return
@@ -105,6 +108,7 @@ func (c *DatabaseConnCtrl) Save(ctx iris.Context) {
 }
 
 func (c *DatabaseConnCtrl) UpdateName(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 
 	req := v1.DbConnReq{}
@@ -117,7 +121,7 @@ func (c *DatabaseConnCtrl) UpdateName(ctx iris.Context) {
 	req.ProjectId = uint(projectId)
 	req.UpdateUser = multi.GetUsername(ctx)
 
-	err = c.DatabaseConnService.UpdateName(req)
+	err = c.DatabaseConnService.UpdateName(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Data: err.Error()})
 		return
@@ -136,13 +140,14 @@ func (c *DatabaseConnCtrl) UpdateName(ctx iris.Context) {
 // @success	200	{object}	    _domain.Response
 // @Router	/api/v1/dbconns/{id}	[delete]
 func (c *DatabaseConnCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.DatabaseConnService.Delete(uint(id))
+	err = c.DatabaseConnService.Delete(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -162,13 +167,14 @@ func (c *DatabaseConnCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	    _domain.Response
 // @Router	/api/v1/dbconns/{id}/disable	[put]
 func (c *DatabaseConnCtrl) Disable(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.DatabaseConnService.Disable(uint(id))
+	err = c.DatabaseConnService.Disable(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

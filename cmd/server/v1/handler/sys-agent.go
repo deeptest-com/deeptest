@@ -15,9 +15,10 @@ type SysAgentCtrl struct {
 }
 
 func (c *SysAgentCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	keywords := ctx.URLParam("keywords")
 
-	pos, err := c.SysAgentService.List(keywords)
+	pos, err := c.SysAgentService.List(tenantId, keywords)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -27,13 +28,14 @@ func (c *SysAgentCtrl) List(ctx iris.Context) {
 }
 
 func (c *SysAgentCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	po, err := c.SysAgentService.Get(uint(id))
+	po, err := c.SysAgentService.Get(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -43,6 +45,7 @@ func (c *SysAgentCtrl) Get(ctx iris.Context) {
 }
 
 func (c *SysAgentCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := model.SysAgent{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -56,7 +59,7 @@ func (c *SysAgentCtrl) Save(ctx iris.Context) {
 		req.CreateUser = multi.GetUsername(ctx)
 	}
 
-	err = c.SysAgentService.Save(&req)
+	err = c.SysAgentService.Save(tenantId, &req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -66,6 +69,7 @@ func (c *SysAgentCtrl) Save(ctx iris.Context) {
 }
 
 func (c *SysAgentCtrl) UpdateName(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := v1.AgentReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -75,7 +79,7 @@ func (c *SysAgentCtrl) UpdateName(ctx iris.Context) {
 
 	req.UpdateUser = multi.GetUsername(ctx)
 
-	err = c.SysAgentService.UpdateName(req)
+	err = c.SysAgentService.UpdateName(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: err.Error()})
 		return
@@ -85,13 +89,14 @@ func (c *SysAgentCtrl) UpdateName(ctx iris.Context) {
 }
 
 func (c *SysAgentCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.SysAgentService.Delete(uint(id))
+	err = c.SysAgentService.Delete(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -101,13 +106,14 @@ func (c *SysAgentCtrl) Delete(ctx iris.Context) {
 }
 
 func (c *SysAgentCtrl) Disable(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.SysAgentService.Disable(uint(id))
+	err = c.SysAgentService.Disable(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

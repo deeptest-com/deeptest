@@ -1,20 +1,23 @@
 package service
 
-import commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
+)
 
 type PrivilegeService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *PrivilegeService) GetAll(username, roleCode string) (ret []string, err error) {
+func (s *PrivilegeService) GetAll(tenantId consts.TenantId, username, roleCode string) (ret []string, err error) {
 	if roleCode != "" {
-		ret, err = s.RemoteService.GetRoleMenus(roleCode)
+		ret, err = s.RemoteService.GetRoleMenus(tenantId, roleCode)
 		if err != nil {
 			return
 		}
 	}
 	var points []string
-	points, err = s.RemoteService.GetUserButtonPermissions(username)
+	points, err = s.RemoteService.GetUserButtonPermissions(tenantId, username)
 	if err != nil {
 		return
 	}

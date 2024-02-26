@@ -2,6 +2,8 @@ package handler
 
 import (
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -9,6 +11,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/cron/task"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/saas/tenant"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
@@ -37,6 +40,7 @@ type ProjectCronCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ProjectCron}}
 // @Router	/api/v1/project/cron	[get]
 func (c *ProjectCronCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -55,7 +59,7 @@ func (c *ProjectCronCtrl) List(ctx iris.Context) {
 	req.ConvertParams()
 	req.ProjectId = uint(projectId)
 
-	data, err := c.ProjectCronService.Paginate(req)
+	data, err := c.ProjectCronService.Paginate(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -75,6 +79,8 @@ func (c *ProjectCronCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.ProjectCronReq}
 // @Router	/api/v1/project/cron/{id}	[get]
 func (c *ProjectCronCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
+
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
@@ -82,7 +88,7 @@ func (c *ProjectCronCtrl) Get(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.ProjectCronService.Get(req.Id)
+	data, err := c.ProjectCronService.Get(tenantId, req.Id)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -102,6 +108,7 @@ func (c *ProjectCronCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/project/cron	[post]
 func (c *ProjectCronCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "projectId"})
@@ -117,14 +124,14 @@ func (c *ProjectCronCtrl) Save(ctx iris.Context) {
 	req.ProjectId = uint(projectId)
 	req.CreateUserId = multi.GetUserId(ctx)
 
-	cron, err := c.ProjectCronService.Save(req)
+	cron, err := c.ProjectCronService.Save(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 
 	if req.ID == 0 {
-		c.addCron(cron)
+		c.addCron(tenantId, cron)
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: cron.ID, Msg: _domain.NoErr.Msg})
@@ -142,6 +149,8 @@ func (c *ProjectCronCtrl) Save(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/project/cron/updateStatus	[post]
 func (c *ProjectCronCtrl) UpdateSwitchStatus(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
+
 	req := model.ProjectCron{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -149,7 +158,7 @@ func (c *ProjectCronCtrl) UpdateSwitchStatus(ctx iris.Context) {
 		return
 	}
 
-	err = c.ProjectCronService.UpdateSwitchStatus(req.ID, req.Switch)
+	err = c.ProjectCronService.UpdateSwitchStatus(tenantId, req.ID, req.Switch)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -169,6 +178,8 @@ func (c *ProjectCronCtrl) UpdateSwitchStatus(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/project/cron/{id}	[delete]
 func (c *ProjectCronCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
+
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
 	if err != nil {
@@ -176,7 +187,7 @@ func (c *ProjectCronCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.ProjectCronService.Delete(req.Id)
+	err = c.ProjectCronService.Delete(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -196,6 +207,7 @@ func (c *ProjectCronCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/project/cron/{id}/clone	[get]
 func (c *ProjectCronCtrl) Clone(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	var req _domain.ReqId
@@ -205,14 +217,14 @@ func (c *ProjectCronCtrl) Clone(ctx iris.Context) {
 		return
 	}
 
-	cron, err := c.ProjectCronService.Clone(req.Id, userId)
+	cron, err := c.ProjectCronService.Clone(tenantId, req.Id, userId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
 	}
 
-	c.addCron(cron)
+	c.addCron(tenantId, cron)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: cron.ID, Msg: _domain.NoErr.Msg})
 }
@@ -299,18 +311,26 @@ func (c *ProjectCronCtrl) AllServiceList(ctx iris.Context) {
 }
 
 func (c *ProjectCronCtrl) InitProjectCron() {
-	cronList, _ := c.ProjectCronRepo.ListAllCron()
+	if config.CONFIG.Saas.Switch {
+		tenants := tenant.NewTenant().GetInfos()
 
-	for _, item := range cronList {
-		c.addCron(item)
+		for _, tenantIem := range tenants {
+			tenantId := tenantIem.Id
+			cronList, _ := c.ProjectCronRepo.ListAllCron(tenantId)
+			for _, item := range cronList {
+				c.addCron(tenantId, item)
+			}
+		}
 	}
+
 }
 
-func (c *ProjectCronCtrl) addCron(cron model.ProjectCron) {
+func (c *ProjectCronCtrl) addCron(tenantId consts.TenantId, cron model.ProjectCron) {
 	options := make(map[string]interface{})
 	options["projectId"] = cron.ProjectId
 	options["taskId"] = cron.ConfigId
 	options["cronId"] = cron.ID
+	options["talentId"] = tenantId
 
 	c.Proxy.Init(string(cron.Source), cron.Cron)
 	_ = c.Proxy.Add(options)

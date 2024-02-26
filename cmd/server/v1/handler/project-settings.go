@@ -2,14 +2,18 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/aaronchen2k/deeptest/saas/common"
+	"github.com/aaronchen2k/deeptest/saas/tenant"
 	"github.com/kataras/iris/v12"
 )
 
 type ProjectSettingsCtrl struct {
+	BaseCtrl
 	Cron                   *cron.ServerCron                `inject:""`
 	ProjectSettingsService *service.ProjectSettingsService `inject:""`
 	ThirdPartySyncService  *service.ThirdPartySyncService  `inject:""`
@@ -26,6 +30,7 @@ type ProjectSettingsCtrl struct {
 // @success	200	{object}	_domain.Response{data=model.SwaggerSync}
 // @Router	/api/v1/serves/saveSwaggerSync	[post]
 func (c *ProjectSettingsCtrl) SaveSwaggerSync(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.SwaggerSyncReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -41,7 +46,7 @@ func (c *ProjectSettingsCtrl) SaveSwaggerSync(ctx iris.Context) {
 	if req.ProjectId == 0 {
 		req.ProjectId = uint(projectId)
 	}
-	res, err := c.ProjectSettingsService.SaveSwaggerSync(req)
+	res, err := c.ProjectSettingsService.SaveSwaggerSync(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -59,8 +64,9 @@ func (c *ProjectSettingsCtrl) SaveSwaggerSync(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.SwaggerSync}
 // @Router	/api/v1/serves/swaggerSyncDetail	[get]
 //func (c *ProjectSettingsCtrl) SwaggerSyncDetail(ctx iris.Context) {
+//	tenantId := c.getTenantId(ctx)
 //	projectId := ctx.URLParamUint64("currProjectId")
-//	res, err := c.ProjectSettingsService.SwaggerSyncDetail(uint(projectId))
+//	res, err := c.ProjectSettingsService.SwaggerSyncDetail(tenantId, uint(projectId))
 //	if err != nil {
 //		res.CategoryId = -1
 //		res.SyncType = consts.FullCover
@@ -70,20 +76,27 @@ func (c *ProjectSettingsCtrl) SaveSwaggerSync(ctx iris.Context) {
 //}
 
 func (c *ProjectSettingsCtrl) InitSwaggerCron() {
-	syncList, err := c.ProjectSettingsService.SwaggerSyncList()
-	if err != nil {
-		return
-	}
-	for _, item := range syncList {
-		c.ProjectSettingsService.AddSwaggerCron(item)
+	//SAAS
+	if config.CONFIG.Saas.Switch {
+		tenants := tenant.NewTenant().GetInfos()
+		for _, tenant := range tenants {
+			go common.AsyncCatchErrRun(func() {
+				c.initSwaggerCron(tenant.Id)
+			})
+			break
+		}
+	} else {
+		//default
+		c.initSwaggerCron("")
 	}
 }
 
 // GetMock - Get Project Mock Settings
 func (c *ProjectSettingsCtrl) GetMock(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId := ctx.URLParamUint64("currProjectId")
 
-	res, err := c.ProjectSettingsService.GetMock(uint(projectId))
+	res, err := c.ProjectSettingsService.GetMock(tenantId, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -94,6 +107,7 @@ func (c *ProjectSettingsCtrl) GetMock(ctx iris.Context) {
 
 // SaveMock - Save Project Mock Settings
 func (c *ProjectSettingsCtrl) SaveMock(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.MockReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -105,7 +119,7 @@ func (c *ProjectSettingsCtrl) SaveMock(ctx iris.Context) {
 		req.ProjectId = uint(projectId)
 	}
 
-	res, err := c.ProjectSettingsService.SaveMock(req)
+	res, err := c.ProjectSettingsService.SaveMock(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -115,5 +129,25 @@ func (c *ProjectSettingsCtrl) SaveMock(ctx iris.Context) {
 }
 
 func (c *ProjectSettingsCtrl) InitThirdPartySyncCron() {
-	c.ThirdPartySyncService.AddThirdPartySyncCron()
+	//SAAS
+	if config.CONFIG.Saas.Switch {
+		tenants := tenant.NewTenant().GetInfos()
+		for _, tenant := range tenants {
+			go common.AsyncCatchErrRun(func() {
+				c.ThirdPartySyncService.AddThirdPartySyncCron(tenant.Id)
+			})
+		}
+	} else {
+		c.ThirdPartySyncService.AddThirdPartySyncCron("")
+	}
+
+}
+func (c *ProjectSettingsCtrl) initSwaggerCron(tenantId consts.TenantId) {
+	syncList, err := c.ProjectSettingsService.SwaggerSyncList(tenantId)
+	if err != nil {
+		return
+	}
+	for _, item := range syncList {
+		c.ProjectSettingsService.AddSwaggerCron(tenantId, item)
+	}
 }

@@ -26,10 +26,11 @@ type PlanExecCtrl struct {
 // @success	200	{object}	_domain.Response{data=agentExec.PlanExecObj}
 // @Router	/api/v1/plans/exec/loadExecPlan	[get]
 func (c *PlanExecCtrl) LoadExecData(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.URLParamInt("id")
 	environmentId, err := ctx.URLParamInt("environmentId")
 
-	data, err := c.PlanExecService.LoadExecData(id, environmentId)
+	data, err := c.PlanExecService.LoadExecData(tenantId, id, environmentId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -49,9 +50,10 @@ func (c *PlanExecCtrl) LoadExecData(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=domain.Report}
 // @Router	/api/v1/plans/exec/loadExecResult	[get]
 func (c *PlanExecCtrl) LoadExecResult(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	scenarioId, err := ctx.URLParamInt("planId")
 
-	data, err := c.PlanExecService.LoadExecResult(scenarioId)
+	data, err := c.PlanExecService.LoadExecResult(tenantId, scenarioId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -72,6 +74,7 @@ func (c *PlanExecCtrl) LoadExecResult(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.PlanReport}
 // @Router	/api/v1/plans/exec/submitResult/{id}	[post]
 func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	planId, err := ctx.Params().GetInt("id")
 
 	result := agentDomain.PlanExecResult{}
@@ -82,7 +85,7 @@ func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
 	}
 
 	userId := multi.GetUserId(ctx)
-	report, err := c.PlanExecService.SaveReport(planId, userId, result)
+	report, err := c.PlanExecService.SaveReport(tenantId, planId, userId, result)
 
 	// report.Logs = nil // otherwise will cause a json parse err on agent size
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: report})
@@ -100,6 +103,7 @@ func (c *PlanExecCtrl) SubmitResult(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=agentDomain.Report}
 // @Router	/api/v1/plans/exec/getPlanReportNormalData	[get]
 func (c *PlanExecCtrl) GetPlanReportNormalData(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	planId, err := ctx.URLParamInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -112,7 +116,7 @@ func (c *PlanExecCtrl) GetPlanReportNormalData(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.PlanExecService.GetPlanReportNormalData(uint(planId), uint(environmentId))
+	data, err := c.PlanExecService.GetPlanReportNormalData(tenantId, uint(planId), uint(environmentId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.ParamErr.Msg})
 		return

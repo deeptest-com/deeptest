@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -17,14 +18,15 @@ import (
 )
 
 type RoleRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
 // Paginate
-func (r *RoleRepo) Paginate(req v1.RoleReqPaginate) (data _domain.PageData, err error) {
+func (r *RoleRepo) Paginate(tenantId consts.TenantId, req v1.RoleReqPaginate) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.SysRole{})
+	db := r.GetDB(tenantId).Model(&model.SysRole{})
 	if req.Name != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%s%%", req.Name))
 	}
@@ -49,9 +51,10 @@ func (r *RoleRepo) Paginate(req v1.RoleReqPaginate) (data _domain.PageData, err 
 }
 
 // FindByName
-func (r *RoleRepo) FindByName(name string, ids ...uint) (v1.RoleResp, error) {
+func (r *RoleRepo) FindByName(tenantId consts.TenantId, name string, ids ...uint) (v1.RoleResp, error) {
 	role := v1.RoleResp{}
-	db := r.DB.Model(&model.SysRole{}).Where("name = ?", name)
+	db := r.GetDB(tenantId)
+	db = db.Model(&model.SysRole{}).Where("name = ?", name)
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])
 	}
@@ -63,9 +66,9 @@ func (r *RoleRepo) FindByName(name string, ids ...uint) (v1.RoleResp, error) {
 }
 
 // FindByName
-func (r *RoleRepo) FindFirstAdminUser() (v1.RoleResp, error) {
+func (r *RoleRepo) FindFirstAdminUser(tenantId consts.TenantId) (v1.RoleResp, error) {
 	role := v1.RoleResp{}
-	err := r.DB.Model(&model.SysRole{}).Where("true").First(&role).Error
+	err := r.GetDB(tenantId).Model(&model.SysRole{}).Where("true").First(&role).Error
 
 	if err != nil {
 		logUtils.Errorf("管理员角色不存在，错误%s。", err.Error())
@@ -74,15 +77,15 @@ func (r *RoleRepo) FindFirstAdminUser() (v1.RoleResp, error) {
 	return role, nil
 }
 
-func (r *RoleRepo) Create(req v1.RoleReq) (roleId uint, err error) {
+func (r *RoleRepo) Create(tenantId consts.TenantId, req v1.RoleReq) (roleId uint, err error) {
 	role := model.SysRole{RoleBase: req.RoleBase}
-	roleRes, err := r.FindByName(req.Name)
+	roleRes, err := r.FindByName(tenantId, req.Name)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		return
 	}
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
-		err = r.DB.Create(&role).Error
+		err = r.GetDB(tenantId).Create(&role).Error
 		if err != nil {
 			logUtils.Errorf("create data err ", zap.String("错误:", err.Error()))
 			return
@@ -92,7 +95,7 @@ func (r *RoleRepo) Create(req v1.RoleReq) (roleId uint, err error) {
 		roleId = roleRes.Id
 	}
 
-	err = r.AddPermForRole(roleId, req.Perms)
+	err = r.AddPermForRole(tenantId, roleId, req.Perms)
 	if err != nil {
 		logUtils.Errorf("添加权限到角色错误", zap.String("错误:", err.Error()))
 		return
@@ -101,24 +104,24 @@ func (r *RoleRepo) Create(req v1.RoleReq) (roleId uint, err error) {
 	return
 }
 
-func (r *RoleRepo) Update(id uint, req v1.RoleReq) error {
-	if b, err := r.IsAdminRole(id); err != nil {
+func (r *RoleRepo) Update(tenantId consts.TenantId, id uint, req v1.RoleReq) error {
+	if b, err := r.IsAdminRole(tenantId, id); err != nil {
 		return err
 	} else if b {
 		return errors.New("不能编辑超级管理员")
 	}
-	_, err := r.FindByName(req.Name, id)
+	_, err := r.FindByName(tenantId, req.Name, id)
 	if !errors.Is(err, gorm.ErrRecordNotFound) {
 		logUtils.Errorf("角色名称已经被使用")
 		return err
 	}
 	role := model.SysRole{RoleBase: req.RoleBase}
-	err = r.DB.Model(&model.SysRole{}).Where("id = ?", id).Updates(&role).Error
+	err = r.GetDB(tenantId).Model(&model.SysRole{}).Where("id = ?", id).Updates(&role).Error
 	if err != nil {
 		logUtils.Errorf("更新角色错误", zap.String("错误:", err.Error()))
 		return err
 	}
-	err = r.AddPermForRole(role.ID, req.Perms)
+	err = r.AddPermForRole(tenantId, role.ID, req.Perms)
 	if err != nil {
 		logUtils.Errorf("添加权限到角色错误", zap.String("错误:", err.Error()))
 		return err
@@ -126,17 +129,17 @@ func (r *RoleRepo) Update(id uint, req v1.RoleReq) error {
 	return nil
 }
 
-func (r *RoleRepo) IsAdminRole(id uint) (bool, error) {
-	role, err := r.FindById(id)
+func (r *RoleRepo) IsAdminRole(tenantId consts.TenantId, id uint) (bool, error) {
+	role, err := r.FindById(tenantId, id)
 	if err != nil {
 		return false, err
 	}
 	return role.Name == serverConsts.AdminRoleName, nil
 }
 
-func (r *RoleRepo) FindById(id uint) (v1.RoleResp, error) {
+func (r *RoleRepo) FindById(tenantId consts.TenantId, id uint) (v1.RoleResp, error) {
 	role := v1.RoleResp{}
-	err := r.DB.Model(&model.SysRole{}).Where("id = ?", id).First(&role).Error
+	err := r.GetDB(tenantId).Model(&model.SysRole{}).Where("id = ?", id).First(&role).Error
 	if err != nil {
 		logUtils.Errorf("根据id查询角色错误", zap.String("错误:", err.Error()))
 		return role, err
@@ -144,13 +147,13 @@ func (r *RoleRepo) FindById(id uint) (v1.RoleResp, error) {
 	return role, nil
 }
 
-func (r *RoleRepo) DeleteById(id uint) error {
-	if b, err := r.IsAdminRole(id); err != nil {
+func (r *RoleRepo) DeleteById(tenantId consts.TenantId, id uint) error {
+	if b, err := r.IsAdminRole(tenantId, id); err != nil {
 		return err
 	} else if b {
 		return errors.New("不能删除超级管理员")
 	}
-	err := r.DB.Unscoped().Delete(&model.SysRole{}, id).Error
+	err := r.GetDB(tenantId).Unscoped().Delete(&model.SysRole{}, id).Error
 	if err != nil {
 		logUtils.Errorf("删除角色错误", zap.String("错误:", err.Error()))
 		return err
@@ -158,8 +161,8 @@ func (r *RoleRepo) DeleteById(id uint) error {
 	return nil
 }
 
-func (r *RoleRepo) FindInId(ids []string) (roles []v1.RoleResp, error error) {
-	err := r.DB.Model(&model.SysRole{}).Where("id in ?", ids).Find(&roles).Error
+func (r *RoleRepo) FindInId(tenantId consts.TenantId, ids []string) (roles []v1.RoleResp, error error) {
+	err := r.GetDB(tenantId).Model(&model.SysRole{}).Where("id in ?", ids).Find(&roles).Error
 	if err != nil {
 		logUtils.Errorf("通过ids查询角色错误", zap.String("错误:", err.Error()))
 		return
@@ -168,7 +171,7 @@ func (r *RoleRepo) FindInId(ids []string) (roles []v1.RoleResp, error error) {
 }
 
 // AddPermForRole
-func (r *RoleRepo) AddPermForRole(id uint, perms [][]string) error {
+func (r *RoleRepo) AddPermForRole(tenantId consts.TenantId, id uint, perms [][]string) error {
 	roleId := strconv.FormatUint(uint64(id), 10)
 	oldPerms := casbin.GetPermissionsForUser(roleId)
 	_, err := casbin.Instance().RemovePolicies(oldPerms)
@@ -195,16 +198,16 @@ func (r *RoleRepo) AddPermForRole(id uint, perms [][]string) error {
 	return nil
 }
 
-func (r *RoleRepo) GetRoleIds() ([]uint, error) {
+func (r *RoleRepo) GetRoleIds(tenantId consts.TenantId) ([]uint, error) {
 	var roleIds []uint
-	err := r.DB.Model(&model.SysRole{}).Select("id").Find(&roleIds).Error
+	err := r.GetDB(tenantId).Model(&model.SysRole{}).Select("id").Find(&roleIds).Error
 	if err != nil {
 		return roleIds, fmt.Errorf("获取角色ids错误 %w", err)
 	}
 	return roleIds, nil
 }
 
-func (r *RoleRepo) GetAllRoles() (res []v1.RoleResp, err error) {
-	err = r.DB.Model(&model.SysRole{}).Find(&res).Error
+func (r *RoleRepo) GetAllRoles(tenantId consts.TenantId) (res []v1.RoleResp, err error) {
+	err = r.GetDB(tenantId).Model(&model.SysRole{}).Find(&res).Error
 	return
 }

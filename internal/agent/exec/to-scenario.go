@@ -1,15 +1,16 @@
 package agentExec
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
 type ScenarioExecReq struct {
-	ExecUuid  string `json:"execUuid"`
-	ServerUrl string `json:"serverUrl"`
-	Token     string `json:"token"`
-
-	ScenarioId int `json:"scenarioId"`
+	ExecUuid   string          `json:"execUuid"`
+	ServerUrl  string          `json:"serverUrl"`
+	Token      string          `json:"token"`
+	TenantId   consts.TenantId `json:"tenantId"`
+	ScenarioId int             `json:"scenarioId"`
 
 	EnvironmentId int `json:"environmentId"`
 }
@@ -32,7 +33,8 @@ type ScenarioExecObjBase struct {
 
 	ExecScene domain.ExecScene `json:"execScene"`
 
-	ExecUuid  string `json:"execUuid"`
-	ServerUrl string `json:"serverUrl"`
-	Token     string `json:"token"`
+	ExecUuid  string          `json:"execUuid"`
+	ServerUrl string          `json:"serverUrl"`
+	Token     string          `json:"token"`
+	TenantId  consts.TenantId `json:"tenantId"`
 }

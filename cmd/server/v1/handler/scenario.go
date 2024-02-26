@@ -29,13 +29,14 @@ type ScenarioCtrl struct {
 // @success	200	{object}	_domain.Response{data=[]model.Scenario}
 // @Router	/api/v1/scenarios/listByProject	[get]
 func (c *ScenarioCtrl) ListByProject(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	res, err := c.ScenarioService.ListByProject(projectId)
+	res, err := c.ScenarioService.ListByProject(tenantId, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -57,6 +58,7 @@ func (c *ScenarioCtrl) ListByProject(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Scenario}}
 // @Router	/api/v1/scenarios	[get]
 func (c *ScenarioCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -76,7 +78,7 @@ func (c *ScenarioCtrl) List(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.ScenarioService.Paginate(req, projectId)
+	data, err := c.ScenarioService.Paginate(tenantId, req, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -96,13 +98,14 @@ func (c *ScenarioCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Scenario}
 // @Router	/api/v1/scenarios/{id}	[get]
 func (c *ScenarioCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	scenario, err := c.ScenarioService.GetById(req.Id)
+	scenario, err := c.ScenarioService.GetById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -121,6 +124,7 @@ func (c *ScenarioCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Scenario}
 // @Router	/api/v1/scenarios	[post]
 func (c *ScenarioCtrl) Create(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -139,7 +143,7 @@ func (c *ScenarioCtrl) Create(ctx iris.Context) {
 	req.CreateUserId = multi.GetUserId(ctx)
 	req.Status = consts.Draft
 
-	po, err := c.ScenarioService.Create(req)
+	po, err := c.ScenarioService.Create(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil})
 		return
@@ -159,6 +163,7 @@ func (c *ScenarioCtrl) Create(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios	[put]
 func (c *ScenarioCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req model.Scenario
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -167,7 +172,7 @@ func (c *ScenarioCtrl) Update(ctx iris.Context) {
 	}
 	req.UpdateUserName = multi.GetUsername(ctx)
 	req.UpdateUserId = multi.GetUserId(ctx)
-	err = c.ScenarioService.Update(req)
+	err = c.ScenarioService.Update(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -186,6 +191,7 @@ func (c *ScenarioCtrl) Update(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/{id}	[delete]
 func (c *ScenarioCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
 	if err != nil {
@@ -193,7 +199,7 @@ func (c *ScenarioCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScenarioService.DeleteById(req.Id)
+	err = c.ScenarioService.DeleteById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -213,6 +219,7 @@ func (c *ScenarioCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/{id}/addPlans	[post]
 func (c *ScenarioCtrl) AddPlans(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	scenarioId, _ := ctx.Params().GetInt("id")
 
 	planIds := make([]int, 0)
@@ -222,7 +229,7 @@ func (c *ScenarioCtrl) AddPlans(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScenarioService.AddPlans(scenarioId, planIds)
+	err = c.ScenarioService.AddPlans(tenantId, scenarioId, planIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -243,7 +250,7 @@ func (c *ScenarioCtrl) AddPlans(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Plan}}
 // @Router	/api/v1/scenarios/{id}/plans	[post]
 func (c *ScenarioCtrl) Plans(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -264,7 +271,7 @@ func (c *ScenarioCtrl) Plans(ctx iris.Context) {
 	}
 
 	req.ProjectId = uint(projectId)
-	data, err := c.ScenarioService.PlanPaginate(req, scenarioId)
+	data, err := c.ScenarioService.PlanPaginate(tenantId, req, scenarioId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -286,6 +293,7 @@ func (c *ScenarioCtrl) Plans(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/{id}/updateStatus	[put]
 func (c *ScenarioCtrl) UpdateStatus(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, _ := ctx.Params().GetInt("id")
 	status := ctx.URLParamDefault("status", "")
 	if status == "" {
@@ -294,7 +302,7 @@ func (c *ScenarioCtrl) UpdateStatus(ctx iris.Context) {
 
 	updateUserId := multi.GetUserId(ctx)
 	updateUserName := multi.GetUsername(ctx)
-	err := c.ScenarioService.UpdateStatus(uint(id), consts.TestStatus(status), updateUserId, updateUserName)
+	err := c.ScenarioService.UpdateStatus(tenantId, uint(id), consts.TestStatus(status), updateUserId, updateUserName)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -314,6 +322,7 @@ func (c *ScenarioCtrl) UpdateStatus(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/{id}/updatePriority	[put]
 func (c *ScenarioCtrl) UpdatePriority(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, _ := ctx.Params().GetInt("id")
 	priority := ctx.URLParamDefault("priority", "")
 	if priority == "" {
@@ -322,7 +331,7 @@ func (c *ScenarioCtrl) UpdatePriority(ctx iris.Context) {
 
 	updateUserId := multi.GetUserId(ctx)
 	updateUserName := multi.GetUsername(ctx)
-	err := c.ScenarioService.UpdatePriority(uint(id), priority, updateUserId, updateUserName)
+	err := c.ScenarioService.UpdatePriority(tenantId, uint(id), priority, updateUserId, updateUserName)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -342,6 +351,7 @@ func (c *ScenarioCtrl) UpdatePriority(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/{id}/removePlans	[post]
 func (c *ScenarioCtrl) RemovePlans(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	scenarioId, _ := ctx.Params().GetInt("id")
 
 	planIds := make([]int, 0)
@@ -351,7 +361,7 @@ func (c *ScenarioCtrl) RemovePlans(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScenarioService.RemovePlans(scenarioId, planIds)
+	err = c.ScenarioService.RemovePlans(tenantId, scenarioId, planIds)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

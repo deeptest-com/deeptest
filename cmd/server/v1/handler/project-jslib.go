@@ -15,6 +15,7 @@ type JslibCtrl struct {
 }
 
 func (c *JslibCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -23,7 +24,7 @@ func (c *JslibCtrl) List(ctx iris.Context) {
 
 	keywords := ctx.URLParam("keywords")
 
-	res, err := c.JslibService.List(keywords, projectId)
+	res, err := c.JslibService.List(tenantId, keywords, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
@@ -33,13 +34,14 @@ func (c *JslibCtrl) List(ctx iris.Context) {
 }
 
 func (c *JslibCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	datapool, err := c.JslibService.Get(uint(id))
+	datapool, err := c.JslibService.Get(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -49,6 +51,7 @@ func (c *JslibCtrl) Get(ctx iris.Context) {
 }
 
 func (c *JslibCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -71,7 +74,7 @@ func (c *JslibCtrl) Save(ctx iris.Context) {
 		req.CreateUser = userName
 	}
 
-	err = c.JslibService.Save(&req)
+	err = c.JslibService.Save(tenantId, &req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Msg: err.Error()})
 		return
@@ -81,6 +84,7 @@ func (c *JslibCtrl) Save(ctx iris.Context) {
 }
 
 func (c *JslibCtrl) UpdateName(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 
 	req := v1.JslibReq{}
@@ -93,7 +97,7 @@ func (c *JslibCtrl) UpdateName(ctx iris.Context) {
 	req.ProjectId = uint(projectId)
 	req.UpdateUser = multi.GetUsername(ctx)
 
-	err = c.JslibService.UpdateName(req)
+	err = c.JslibService.UpdateName(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Data: err.Error()})
 		return
@@ -103,13 +107,14 @@ func (c *JslibCtrl) UpdateName(ctx iris.Context) {
 }
 
 func (c *JslibCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.JslibService.Delete(uint(id))
+	err = c.JslibService.Delete(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -119,13 +124,14 @@ func (c *JslibCtrl) Delete(ctx iris.Context) {
 }
 
 func (c *JslibCtrl) Disable(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.JslibService.Disable(uint(id))
+	err = c.JslibService.Disable(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -15,23 +15,23 @@ type EndpointMockExpectService struct {
 	EndpointRepo           *repo.EndpointRepo           `inject:""`
 }
 
-func (s *EndpointMockExpectService) List(endpointId uint) (res []model.EndpointMockExpect, err error) {
-	res, err = s.EndpointMockExpectRepo.ListByEndpointId(endpointId)
+func (s *EndpointMockExpectService) List(tenantId consts.TenantId, endpointId uint) (res []model.EndpointMockExpect, err error) {
+	res, err = s.EndpointMockExpectRepo.ListByEndpointId(tenantId, endpointId)
 	return
 }
 
-func (s *EndpointMockExpectService) GetDetail(expectId uint) (res model.EndpointMockExpect, err error) {
-	res, err = s.EndpointMockExpectRepo.GetExpectDetail(expectId)
+func (s *EndpointMockExpectService) GetDetail(tenantId consts.TenantId, expectId uint) (res model.EndpointMockExpect, err error) {
+	res, err = s.EndpointMockExpectRepo.GetExpectDetail(tenantId, expectId)
 	return
 }
 
-func (s *EndpointMockExpectService) Save(req model.EndpointMockExpect) (expectId uint, err error) {
-	expectId, err = s.EndpointMockExpectRepo.Save(req)
+func (s *EndpointMockExpectService) Save(tenantId consts.TenantId, req model.EndpointMockExpect) (expectId uint, err error) {
+	expectId, err = s.EndpointMockExpectRepo.Save(tenantId, req)
 	return
 }
 
-func (s *EndpointMockExpectService) Copy(expectId, endpointId uint, username string) (id uint, err error) {
-	expectDetail, err := s.GetDetail(expectId)
+func (s *EndpointMockExpectService) Copy(tenantId consts.TenantId, expectId, endpointId uint, username string) (id uint, err error) {
+	expectDetail, err := s.GetDetail(tenantId, expectId)
 	if err != nil {
 		return
 	}
@@ -40,7 +40,7 @@ func (s *EndpointMockExpectService) Copy(expectId, endpointId uint, username str
 	expectDetail.CreateUser = username
 	expectDetail.UpdateUser = ""
 
-	id, err = s.Save(expectDetail)
+	id, err = s.Save(tenantId, expectDetail)
 
 	return
 }
@@ -81,35 +81,35 @@ func (s *EndpointMockExpectService) InitExpectId(expect *model.EndpointMockExpec
 	}
 }
 
-func (s *EndpointMockExpectService) DeleteById(expectId uint) (err error) {
-	err = s.EndpointMockExpectRepo.DeleteById(expectId)
+func (s *EndpointMockExpectService) DeleteById(tenantId consts.TenantId, expectId uint) (err error) {
+	err = s.EndpointMockExpectRepo.DeleteById(tenantId, expectId)
 	return
 }
 
-func (s *EndpointMockExpectService) Disable(endpointId uint) (err error) {
-	err = s.EndpointMockExpectRepo.Disable(endpointId)
+func (s *EndpointMockExpectService) Disable(tenantId consts.TenantId, endpointId uint) (err error) {
+	err = s.EndpointMockExpectRepo.Disable(tenantId, endpointId)
 	return
 }
 
-func (s *EndpointMockExpectService) SaveOrder(req v1.MockExpectIdsReq) (err error) {
-	err = s.EndpointMockExpectRepo.SaveOrder(req)
+func (s *EndpointMockExpectService) SaveOrder(tenantId consts.TenantId, req v1.MockExpectIdsReq) (err error) {
+	err = s.EndpointMockExpectRepo.SaveOrder(tenantId, req)
 	return
 }
 
-func (s *EndpointMockExpectService) UpdateExpectDisabled(expectId uint, disabled bool) (err error) {
-	err = s.EndpointMockExpectRepo.UpdateDisabledStatus(expectId, disabled)
+func (s *EndpointMockExpectService) UpdateExpectDisabled(tenantId consts.TenantId, expectId uint, disabled bool) (err error) {
+	err = s.EndpointMockExpectRepo.UpdateDisabledStatus(tenantId, expectId, disabled)
 	return
 }
 
-func (s *EndpointMockExpectService) UpdateExpectName(expectId uint, name string) (err error) {
-	err = s.EndpointMockExpectRepo.UpdateExpectName(expectId, name)
+func (s *EndpointMockExpectService) UpdateExpectName(tenantId consts.TenantId, expectId uint, name string) (err error) {
+	err = s.EndpointMockExpectRepo.UpdateExpectName(tenantId, expectId, name)
 	return
 }
 
-func (s *EndpointMockExpectService) GetExpectRequestOptions(endpointId, endpointInterfaceId uint) (ret v1.MockExpectRequestOptions, err error) {
+func (s *EndpointMockExpectService) GetExpectRequestOptions(tenantId consts.TenantId, endpointInterfaceId uint) (ret v1.MockExpectRequestOptions, err error) {
 	ret = make(v1.MockExpectRequestOptions)
 
-	headerOptions, err := s.GetExpectRequestHeaderOptions(endpointInterfaceId)
+	headerOptions, err := s.GetExpectRequestHeaderOptions(tenantId, endpointInterfaceId)
 	if err != nil {
 		return
 	}
@@ -118,8 +118,8 @@ func (s *EndpointMockExpectService) GetExpectRequestOptions(endpointId, endpoint
 	return
 }
 
-func (s *EndpointMockExpectService) GetExpectRequestHeaderOptions(endpointInterfaceId uint) (options []v1.MockExpectRequestOption, err error) {
-	headers, err := s.EndpointInterfaceRepo.ListHeaders(endpointInterfaceId)
+func (s *EndpointMockExpectService) GetExpectRequestHeaderOptions(tenantId consts.TenantId, endpointInterfaceId uint) (options []v1.MockExpectRequestOption, err error) {
+	headers, err := s.EndpointInterfaceRepo.ListHeaders(tenantId, endpointInterfaceId)
 	if err != nil {
 		return
 	}
@@ -147,8 +147,8 @@ func (s *EndpointMockExpectService) GetExpectRequestHeaderOptions(endpointInterf
 	return
 }
 
-func (s *EndpointMockExpectService) GetExpectRequestBodyOptions(endpointInterfaceId uint) (options []string, err error) {
-	body, err := s.EndpointInterfaceRepo.ListRequestBody(endpointInterfaceId)
+func (s *EndpointMockExpectService) GetExpectRequestBodyOptions(tenantId consts.TenantId, endpointInterfaceId uint) (options []string, err error) {
+	body, err := s.EndpointInterfaceRepo.ListRequestBody(tenantId, endpointInterfaceId)
 	if err != nil {
 		return
 	}
@@ -164,8 +164,8 @@ func (s *EndpointMockExpectService) GetExpectRequestBodyOptions(endpointInterfac
 	return
 }
 
-func (s *EndpointMockExpectService) GetExpectRequestQueryOptions(endpointInterfaceId uint) (options []v1.MockExpectRequestOption, err error) {
-	queries, err := s.EndpointInterfaceRepo.ListParams(endpointInterfaceId)
+func (s *EndpointMockExpectService) GetExpectRequestQueryOptions(tenantId consts.TenantId, endpointInterfaceId uint) (options []v1.MockExpectRequestOption, err error) {
+	queries, err := s.EndpointInterfaceRepo.ListParams(tenantId, endpointInterfaceId)
 	if err != nil {
 		return
 	}
@@ -177,8 +177,8 @@ func (s *EndpointMockExpectService) GetExpectRequestQueryOptions(endpointInterfa
 	return
 }
 
-func (s *EndpointMockExpectService) GetExpectRequestPathOptions(endpointId uint) (options []v1.MockExpectRequestOption, err error) {
-	paths, err := s.EndpointRepo.GetEndpointPathParams(endpointId)
+func (s *EndpointMockExpectService) GetExpectRequestPathOptions(tenantId consts.TenantId, endpointId uint) (options []v1.MockExpectRequestOption, err error) {
+	paths, err := s.EndpointRepo.GetEndpointPathParams(tenantId, endpointId)
 	if err != nil {
 		return
 	}

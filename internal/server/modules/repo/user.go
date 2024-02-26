@@ -88,7 +88,7 @@ func (r *UserRepo) GetSysRoles(tenantId consts.TenantId, users ...*serverDomain.
 
 	for _, user := range users {
 		user.ToString()
-		userRoleId := casbin.GetRolesForUser(user.Id)
+		userRoleId := casbin.GetRolesForUser(tenantId, user.Id)
 		uintRoleIds := make([]uint, 0)
 		for _, v := range userRoleId {
 			intRoleId, _ := strconv.Atoi(v)
@@ -447,14 +447,14 @@ func (r *UserRepo) AddProfileForUser(tenantId consts.TenantId, user *model.SysUs
 // AddRoleForUser add roles for user
 func (r *UserRepo) AddRoleForUser(tenantId consts.TenantId, user *model.SysUser) error {
 	userId := strconv.FormatUint(uint64(user.ID), 10)
-	oldRoleIds, err := casbin.Instance().GetRolesForUser(userId)
+	oldRoleIds, err := casbin.Instance(tenantId).GetRolesForUser(userId)
 	if err != nil {
 		logUtils.Errorf("获取用户角色错误", zap.String("错误:", err.Error()))
 		return err
 	}
 
 	if len(oldRoleIds) > 0 {
-		if _, err := casbin.Instance().DeleteRolesForUser(userId); err != nil {
+		if _, err := casbin.Instance(tenantId).DeleteRolesForUser(userId); err != nil {
 			logUtils.Errorf("添加角色到用户错误", zap.String("错误:", err.Error()))
 			return err
 		}
@@ -469,7 +469,7 @@ func (r *UserRepo) AddRoleForUser(tenantId consts.TenantId, user *model.SysUser)
 		roleIds = append(roleIds, strconv.FormatUint(uint64(userRoleId), 10))
 	}
 
-	if _, err := casbin.Instance().AddRolesForUser(userId, roleIds); err != nil {
+	if _, err := casbin.Instance(tenantId).AddRolesForUser(userId, roleIds); err != nil {
 		logUtils.Errorf("添加角色到用户错误", zap.String("错误:", err.Error()))
 		return err
 	}
@@ -477,21 +477,21 @@ func (r *UserRepo) AddRoleForUser(tenantId consts.TenantId, user *model.SysUser)
 	return nil
 }
 
-func (r *UserRepo) UpdateRoleForUser(userId string, roleIds []string) error {
-	oldRoleIds, err := casbin.Instance().GetRolesForUser(userId)
+func (r *UserRepo) UpdateRoleForUser(tenantId consts.TenantId, userId string, roleIds []string) error {
+	oldRoleIds, err := casbin.Instance(tenantId).GetRolesForUser(userId)
 	if err != nil {
 		logUtils.Errorf("获取用户角色错误", zap.String("错误:", err.Error()))
 		return err
 	}
 
 	if len(oldRoleIds) > 0 {
-		if _, err := casbin.Instance().DeleteRolesForUser(userId); err != nil {
+		if _, err := casbin.Instance(tenantId).DeleteRolesForUser(userId); err != nil {
 			logUtils.Errorf("添加角色到用户错误", zap.String("错误:", err.Error()))
 			return err
 		}
 	}
 
-	if _, err := casbin.Instance().AddRolesForUser(userId, roleIds); err != nil {
+	if _, err := casbin.Instance(tenantId).AddRolesForUser(userId, roleIds); err != nil {
 		logUtils.Errorf("添加角色到用户错误", zap.String("错误:", err.Error()))
 		return err
 	}

@@ -26,7 +26,7 @@ var (
 )
 
 // GetDB 数据库单例
-func GetDB() *gorm.DB {
+func GetDB(dbname consts.TenantId) *gorm.DB {
 	once.Do(func() {
 		if consts.RunFrom == consts.FromServer && config.CONFIG.System.DbType == "mysql" {
 			db = GormMySQL(config.CONFIG.Mysql)
@@ -34,6 +34,11 @@ func GetDB() *gorm.DB {
 			db = GormSQLLite()
 		}
 	})
+
+	if dbname != "" {
+		return GetSaasDB(dbname)
+	}
+
 	return db
 }
 
@@ -93,7 +98,7 @@ func DBFile() string {
 // GormMySQL 初始化Mysql数据库
 func GormMySQL(m config.Mysql) *gorm.DB {
 	if m.Url == "" {
-		return nil
+		return new(gorm.DB)
 	}
 	mysqlConfig := mysql.Config{
 		DSN:                       m.Dsn(), // DSN data source name
@@ -155,4 +160,8 @@ func InitSaasDBHandler(dbName consts.TenantId) (db *gorm.DB, err error) {
 	}
 
 	return
+}
+
+func GetSaasDB(dbName consts.TenantId) *gorm.DB {
+	return GetDBResolver().GetConnPool(dbName)
 }

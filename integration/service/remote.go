@@ -301,6 +301,7 @@ func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token strin
 		Headers:  &headers,
 	}
 
+	logUtils.Infof("leyan-getUserInfoByToken: %s", _commUtils.JsonEncode(httpReq))
 	var resp domain.DebugResponse
 	resp, err = httpHelper.Get(httpReq)
 	if err != nil {
@@ -309,7 +310,7 @@ func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token strin
 	}
 
 	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Errorf("meta get method detail failed, response %v", resp)
+		logUtils.Errorf("meta get method detail failed, response %v", _commUtils.JsonEncode(resp))
 		err = fmt.Errorf("meta get method detail failed, response %v", resp)
 		return
 	}
@@ -518,7 +519,7 @@ func (s *RemoteService) GetUserButtonPermissions(tenantId consts.TenantId, usern
 			},
 		},
 	}
-
+	logUtils.Infof("leyan-UserButtonPermissions,%s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get UserButtonPermissions failed, error, %s", err.Error())
@@ -619,7 +620,7 @@ func (s *RemoteService) GetUserMenuPermissions(tenantId consts.TenantId, usernam
 			},
 		},
 	}
-
+	logUtils.Infof("leyan-GetUserMenuPermissions %s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get GetUserMenuPermissions failed, error, %s", err.Error())

@@ -475,6 +475,8 @@ func (c *UserCtrl) GetUsersNotExistedInProject(ctx iris.Context) {
 // @Router	/api/v1/users/changeUserSysRole	[post]
 func (c *UserCtrl) ChangeUserSysRole(ctx iris.Context) {
 	//SAAS
+
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.UpdateUserRoleReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -482,7 +484,7 @@ func (c *UserCtrl) ChangeUserSysRole(ctx iris.Context) {
 		return
 	}
 
-	if err = c.UserService.UpdateSysRoleForUser(req.UserId, req.RoleIds); err != nil {
+	if err = c.UserService.UpdateSysRoleForUser(tenantId, req.UserId, req.RoleIds); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}

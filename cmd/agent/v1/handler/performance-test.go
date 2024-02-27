@@ -45,9 +45,11 @@ func (c *PerformanceTestWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Mes
 
 	// stop performance log msg
 	testItem := conductorExec.GetCurrItem()
-	service := conductorExec.GetTestService(testItem.Room)
-	if service != nil {
-		service.StopSendLog()
+	if testItem != nil {
+		service := conductorExec.GetTestService(testItem.Room)
+		if service != nil {
+			service.StopSendLog()
+		}
 	}
 
 	resp := _domain.WsResp{Msg: "from agent: disconnected to websocket"}

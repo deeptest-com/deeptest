@@ -4,56 +4,27 @@ import (
 	"encoding/json"
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
-	"github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
-	conductorService "github.com/aaronchen2k/deeptest/internal/performance/conductor/service"
+	conductorExec "github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
+	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
+	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptwebsocket "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/facebookgo/inject"
 	"github.com/kataras/iris/v12/websocket"
-	"github.com/sirupsen/logrus"
 )
 
 type PerformanceTestWebSocketCtrl struct {
 	Namespace         string
 	*websocket.NSConn `stateless:"true"`
-
-	performanceTestService *conductorService.PerformanceTestService
 }
 
 func NewPerformanceTestWebSocketCtrl() *PerformanceTestWebSocketCtrl {
 	inst := &PerformanceTestWebSocketCtrl{Namespace: consts.WsPerformanceTestNamespace}
 
 	return inst
-}
-
-func (c *PerformanceTestWebSocketCtrl) getService() (ret *conductorService.PerformanceTestService) {
-	if c.performanceTestService != nil {
-		return c.performanceTestService
-	}
-
-	insts := &conductorService.PerformanceTestService{}
-
-	var g inject.Graph
-	g.Logger = logrus.StandardLogger()
-
-	if err := g.Provide(
-		&inject.Object{Value: insts},
-	); err != nil {
-		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
-	}
-
-	err := g.Populate()
-	if err != nil {
-		logrus.Fatalf("populate the incomplete Objects: %v", err)
-	}
-
-	c.performanceTestService = insts
-
-	return c.getService()
 }
 
 func (c *PerformanceTestWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
@@ -69,9 +40,15 @@ func (c *PerformanceTestWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Mes
 	_logUtils.Infof(_i118Utils.Sprintf("disconnect to namespace %s, id=%s room=%s",
 		consts.WsPerformanceTestNamespace, c.Conn.ID(), wsMsg.Room))
 
-	// stop performance msg and log schedule job
+	// stop performance result msg
 	conductorExec.SuspendWsMsg()
-	c.getService().StopSendLog()
+
+	// stop performance log msg
+	testItem := conductorExec.GetCurrItem()
+	service := conductorExec.GetTestService(testItem.Room)
+	if service != nil {
+		service.StopSendLog()
+	}
 
 	resp := _domain.WsResp{Msg: "from agent: disconnected to websocket"}
 	bytes, _ := json.Marshal(resp)
@@ -93,20 +70,63 @@ func (c *PerformanceTestWebSocketCtrl) OnChat(wsMsg websocket.Message) (err erro
 		return
 	}
 
-	if req.Act == consts.JoinPerformanceTest { // test
-		err = c.getService().ExecJoin(req.PerformanceTestExecReq.Room, &wsMsg)
+	c.exec(req, wsMsg)
 
-	} else if req.Act == consts.StartPerformanceTest {
-		err = c.getService().ExecStart(req.PerformanceTestExecReq, &wsMsg)
+	return
+}
+
+func (c *PerformanceTestWebSocketCtrl) exec(req agentDomain.WsReq, wsMsg websocket.Message) (err error) {
+	room := req.PerformanceTestExecReq.Room
+
+	if req.Act == consts.StartPerformanceTest {
+		service := conductorExec.CreatePerformanceTestService()
+		conductorExec.SetTestService(room, service)
+
+		err = service.ExecStart(req.PerformanceTestExecReq, &wsMsg)
 
 	} else if req.Act == consts.StopPerformanceTest {
-		err = c.getService().ExecStop(&wsMsg)
+		service := conductorExec.GetTestService(room)
+		if service == nil {
+			ptlog.Logf("not found test service for room %s to stop", room)
+			return
+		}
+
+		err = service.ExecStop(&wsMsg)
+
+		conductorExec.DeleteTestService(room)
+
+	} else if req.Act == consts.JoinPerformanceTest { // test
+		service := conductorExec.GetTestService(room)
+		if service == nil {
+			ptwebsocket.SendExecInstructionToClient("", nil, ptconsts.MsgInstructionJoinExist, &wsMsg)
+			return
+		}
+
+		if room != service.TestReq.Room { // notify client to join
+			ptwebsocket.SendExecInstructionToClient(service.TestReq.Room, nil, ptconsts.MsgInstructionJoinExist, &wsMsg)
+			conductorExec.ResumeWsMsg()
+
+		} else { //  client joined successfully
+			ptwebsocket.SendExecInstructionToClient("performance test joined", service.TestReq, ptconsts.MsgInstructionStart, &wsMsg)
+		}
 
 	} else if req.Act == consts.StartPerformanceLog { // log
-		err = c.getService().StartSendLog(req.PerformanceTestExecReq, &wsMsg)
+		service := conductorExec.GetTestService(room)
+		if service == nil {
+			ptlog.Logf("not found test service for room %s to start log", room)
+			return
+		}
+
+		err = service.StartSendLog(req.PerformanceTestExecReq, &wsMsg)
 
 	} else if req.Act == consts.StopPerformanceLog {
-		err = c.getService().StopSendLog()
+		service := conductorExec.GetTestService(room)
+		if service == nil {
+			ptlog.Logf("not found test service for room %s to stop log", room)
+			return
+		}
+
+		err = service.StopSendLog()
 
 	}
 

@@ -4,17 +4,25 @@ import (
 	"flag"
 	"github.com/aaronchen2k/deeptest/cmd/agent/serve"
 	"github.com/aaronchen2k/deeptest/cmd/agent/v1"
+	"github.com/aaronchen2k/deeptest/cmd/agent/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/performance"
 	ptqueue "github.com/aaronchen2k/deeptest/internal/performance/pkg/queue"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
+	commService "github.com/aaronchen2k/deeptest/internal/pkg/service"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/pkg/consts"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/facebookgo/inject"
 	"github.com/fatih/color"
+	gorillaWs "github.com/gorilla/websocket"
+	"github.com/kataras/iris/v12"
+	"github.com/kataras/iris/v12/mvc"
+	"github.com/kataras/iris/v12/websocket"
+	"github.com/kataras/neffos/gorilla"
 	"github.com/sirupsen/logrus"
+	"net/http"
 	"os"
 )
 
@@ -50,20 +58,57 @@ func main() {
 		return
 	}
 
-	injectModule(agent)
+	injectWebSocketModule((*agent).App)
+
+	injectWebModule(agent)
 
 	agent.Start()
 
 	_logUtils.Infof("start agent")
 }
 
-func injectModule(ws *agentServe.AgentServer) {
+func injectWebSocketModule(app *iris.Application) {
+	// init websocket
+	websocketCtrl := handler.NewWebsocketCtrl()
+	websocketTestCtrl := handler.NewPerformanceTestWebSocketCtrl()
+
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
 
+	err := g.Provide(
+		&inject.Object{Value: websocketCtrl},
+		&inject.Object{Value: websocketTestCtrl},
+	)
+	if err != nil {
+		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
+	}
+
+	err = g.Populate()
+	if err != nil {
+		logrus.Fatalf("populate the incomplete Objects: %v", err)
+	}
+
+	websocketAPI := app.Party(consts.WsPath)
+	mvcApp := mvc.New(websocketAPI)
+	mvcApp.Register(&commService.PrefixedLogger{Prefix: ""})
+	mvcApp.HandleWebsocket(websocketCtrl)
+	mvcApp.HandleWebsocket(websocketTestCtrl)
+
+	websocketServer := websocket.New(gorilla.Upgrader(
+		gorillaWs.Upgrader{
+			CheckOrigin: func(*http.Request) bool { return true },
+		}), mvcApp)
+
+	websocketAPI.Get("/", websocket.Handler(websocketServer))
+}
+
+func injectWebModule(ws *agentServe.AgentServer) {
 	cron := cron.NewServerCron()
 	cron.Init()
 	indexModule := v1.NewIndexModule()
+
+	var g inject.Graph
+	g.Logger = logrus.StandardLogger()
 
 	// inject objects
 	if err := g.Provide(

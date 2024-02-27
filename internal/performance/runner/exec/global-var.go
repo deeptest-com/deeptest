@@ -42,7 +42,7 @@ func AddRemoteVal(room, name, serverAddress string) (ret *wrapperspb.Int32Value)
 
 	client := getConn(serverAddress)
 
-	ret, err := client.AddGlobalVar(context.Background(), &req)
+	ret, err := client.ConductorAddGlobalVar(context.Background(), &req)
 	if err != nil {
 		logUtils.Debug(err.Error())
 
@@ -63,7 +63,7 @@ func GetRemoteVal(room, name, serverAddress string) (ret *wrapperspb.Int32Value)
 
 	client := getConn(serverAddress)
 
-	ret, err := client.GetGlobalVar(context.Background(), &req)
+	ret, err := client.ConductorGetGlobalVar(context.Background(), &req)
 	if err != nil {
 		logUtils.Debug(err.Error())
 
@@ -84,7 +84,7 @@ func ResetRemoteVal(room, name, serverAddress string) (ret *wrapperspb.BoolValue
 
 	client := getConn(serverAddress)
 
-	ret, err := client.ClearGlobalVar(context.Background(), &req)
+	ret, err := client.ConductorClearGlobalVar(context.Background(), &req)
 	if err != nil {
 		logUtils.Debug(err.Error())
 

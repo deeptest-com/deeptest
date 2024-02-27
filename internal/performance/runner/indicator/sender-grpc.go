@@ -5,10 +5,10 @@ import (
 )
 
 type GrpcSender struct {
-	Stream *ptProto.PerformanceService_ExecStartServer
+	Stream *ptProto.PerformanceService_RunnerExecStartServer
 }
 
-func NewGrpcSender(stream *ptProto.PerformanceService_ExecStartServer) MessageSender {
+func NewGrpcSender(stream *ptProto.PerformanceService_RunnerExecStartServer) MessageSender {
 	ret := GrpcSender{
 		Stream: stream,
 	}

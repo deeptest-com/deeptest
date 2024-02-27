@@ -41,9 +41,9 @@ func (s *RemoteRunnerService) CallStop(req ptdomain.PerformanceTestReq) (err err
 
 func (s *RemoteRunnerService) CallRunnerExecStopByGrpc(
 	client ptProto.PerformanceServiceClient, room string) (
-	stream ptProto.PerformanceService_ExecStopClient, err error) {
+	stream ptProto.PerformanceService_RunnerExecStopClient, err error) {
 
-	stream, err = client.ExecStop(context.Background())
+	stream, err = client.RunnerExecStop(context.Background())
 	if err != nil {
 		return
 	}

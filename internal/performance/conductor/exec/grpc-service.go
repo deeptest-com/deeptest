@@ -16,6 +16,11 @@ import (
 	"time"
 )
 
+/**
+	注意：本文件包括双向的GRPC调用方法的服务端，如conductor调用runner执行，runner调用conductor设置全局变量等。
+         启动的Agent程序，同时包含conductor和runner端的代码和功能。
+*/
+
 type GrpcService struct {
 	execCtx    context.Context
 	execCancel context.CancelFunc
@@ -24,7 +29,7 @@ type GrpcService struct {
 }
 
 // conductor call runner, executed on runner side
-func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServer) (err error) {
+func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerExecStartServer) (err error) {
 	if runnerExec.IsRunnerTestRunning() {
 		err = &ptdomain.ErrorAlreadyRunning{}
 
@@ -60,7 +65,10 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, msgSender)
 
 	// sync exec testing
-	runnerExec.ExecProgram(s.execCtx, s.execCancel, req, msgSender) //
+	runnerExec.ExecProgram(s.execCtx, s.execCancel, req, msgSender)
+
+	// runner add item to cache
+	AddTestItem(req.Room, ptconsts.Runner, nil, req)
 
 	// send end signal to conductor
 	result := ptProto.PerformanceExecResp{
@@ -75,7 +83,7 @@ func (s *GrpcService) ExecStart(stream ptProto.PerformanceService_ExecStartServe
 	return
 }
 
-func (s *GrpcService) ExecStop(stream ptProto.PerformanceService_ExecStopServer) (err error) {
+func (s *GrpcService) RunnerExecStop(stream ptProto.PerformanceService_RunnerExecStopServer) (err error) {
 	instruction, err := stream.Recv()
 	if err == io.EOF {
 		err = nil
@@ -94,7 +102,7 @@ func (s *GrpcService) ExecStop(stream ptProto.PerformanceService_ExecStopServer)
 }
 
 // runner call conductor, executed on conductor side
-func (s *GrpcService) AddGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
+func (s *GrpcService) ConductorAddGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.Int32Value, err error) {
 
 	key := fmt.Sprintf("%s_%s", req.Room, req.Name)
@@ -120,7 +128,7 @@ func (s *GrpcService) AddGlobalVar(ctx context.Context, req *ptProto.GlobalVarRe
 	ret.Value = int32(*varRef.(*int))
 
 	// test
-	testValue, _ := s.GetGlobalVar(ctx, &ptProto.GlobalVarRequest{
+	testValue, _ := s.ConductorGetGlobalVar(ctx, &ptProto.GlobalVarRequest{
 		Room: req.Room,
 		Name: req.Name,
 	})
@@ -130,7 +138,7 @@ func (s *GrpcService) AddGlobalVar(ctx context.Context, req *ptProto.GlobalVarRe
 	return
 }
 
-func (s *GrpcService) GetGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
+func (s *GrpcService) ConductorGetGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.Int32Value, err error) {
 
 	key := fmt.Sprintf("%s_%s", req.Room, req.Name)
@@ -153,7 +161,7 @@ func (s *GrpcService) GetGlobalVar(ctx context.Context, req *ptProto.GlobalVarRe
 	return
 }
 
-func (s *GrpcService) ClearGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
+func (s *GrpcService) ConductorClearGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.BoolValue, err error) {
 
 	ret = &wrapperspb.BoolValue{}
@@ -168,7 +176,7 @@ func (s *GrpcService) ClearGlobalVar(ctx context.Context, req *ptProto.GlobalVar
 	return
 }
 
-func (s *GrpcService) ClearAllGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
+func (s *GrpcService) ConductorClearAllGlobalVar(ctx context.Context, req *ptProto.GlobalVarRequest) (
 	ret *wrapperspb.BoolValue, err error) {
 
 	ret = &wrapperspb.BoolValue{}

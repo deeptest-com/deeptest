@@ -18,7 +18,7 @@ import (
 
 // AgentServer 服务器
 type AgentServer struct {
-	app               *iris.Application
+	App               *iris.Application
 	modules           []module.WebModule
 	idleConnClosed    chan struct{}
 	addr              string
@@ -31,16 +31,16 @@ type AgentServer struct {
 
 // InitRouter 初始化模块路由
 func (s *AgentServer) InitRouter() error {
-	s.app.UseRouter(middleware.CrsAuth("agent"))
+	s.App.UseRouter(middleware.CrsAuth("agent"))
 
-	app := s.app.Party("/").AllowMethods(iris.MethodOptions)
+	app := s.App.Party("/").AllowMethods(iris.MethodOptions)
 	{
 		if config.CONFIG.System.Level == "debug" {
 			debug := DebugParty()
 			app.PartyFunc(debug.RelativePath, debug.Handler)
 		}
 		s.initModule()
-		err := s.app.Build()
+		err := s.App.Build()
 		if err != nil {
 			return fmt.Errorf("build router %w", err)
 		}
@@ -53,9 +53,9 @@ func (s *AgentServer) InitRouter() error {
 
 // GetSources 获取web服务需要认证的权限
 func (s *AgentServer) GetSources() []map[string]string {
-	routeLen := len(s.app.GetRoutes())
+	routeLen := len(s.App.GetRoutes())
 	ch := make(chan map[string]string, routeLen)
-	for _, r := range s.app.GetRoutes() {
+	for _, r := range s.App.GetRoutes() {
 		if strings.Index(r.Path, "test123") > -1 {
 			logUtils.Info("")
 		}
@@ -92,7 +92,7 @@ func (s *AgentServer) initModule() {
 			mod := mod
 			s.wg.Add(1)
 			go func(mod module.WebModule) {
-				sub := s.app.PartyFunc(mod.RelativePath, mod.Handler)
+				sub := s.App.PartyFunc(mod.RelativePath, mod.Handler)
 				if len(mod.Modules) > 0 {
 					for _, subModule := range mod.Modules {
 						sub.PartyFunc(subModule.RelativePath, subModule.Handler)

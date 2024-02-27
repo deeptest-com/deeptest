@@ -1,5 +1,16 @@
 package ptconsts
 
+type TestRole string
+
+const (
+	Conductor TestRole = "Conductor"
+	Runner    TestRole = "runner"
+)
+
+func (e TestRole) String() string {
+	return string(e)
+}
+
 type ResultStatus string
 
 const (

@@ -6,15 +6,13 @@ import "google/protobuf/struct.proto";
 import "google/protobuf/wrappers.proto";
 
 service PerformanceService {
-  // for controller
-  rpc ExecStart(stream PerformanceExecStartReq) returns (stream PerformanceExecResp){};
-  rpc ExecStop(stream PerformanceExecStopReq) returns (stream PerformanceExecResp){};
+  rpc RunnerExecStart(stream PerformanceExecStartReq) returns (stream PerformanceExecResp){};
+  rpc RunnerExecStop(stream PerformanceExecStopReq) returns (stream PerformanceExecResp){};
 
-  // for runner
-  rpc GetGlobalVar (GlobalVarRequest) returns (google.protobuf.Int32Value);
-  rpc AddGlobalVar (GlobalVarRequest) returns (google.protobuf.Int32Value);
-  rpc ClearGlobalVar (GlobalVarRequest) returns (google.protobuf.BoolValue);
-  rpc ClearAllGlobalVar (GlobalVarRequest) returns (google.protobuf.BoolValue);
+  rpc ConductorGetGlobalVar (GlobalVarRequest) returns (google.protobuf.Int32Value);
+  rpc ConductorAddGlobalVar (GlobalVarRequest) returns (google.protobuf.Int32Value);
+  rpc ConductorClearGlobalVar (GlobalVarRequest) returns (google.protobuf.BoolValue);
+  rpc ConductorClearAllGlobalVar (GlobalVarRequest) returns (google.protobuf.BoolValue);
 }
 
 // exec request

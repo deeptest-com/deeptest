@@ -1,18 +1,20 @@
-package conductorService
+package conductorExec
 
 import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/performance/conductor/dao"
-	conductorExec "github.com/aaronchen2k/deeptest/internal/performance/conductor/exec"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
-	websocketHelper "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
+	"github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	"github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/facebookgo/inject"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/nxadm/tail"
+	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"io"
@@ -21,8 +23,37 @@ import (
 	"time"
 )
 
+var (
+	once sync.Once
+	inst *PerformanceTestService
+)
+
+func CreatePerformanceTestService() *PerformanceTestService {
+	inst = &PerformanceTestService{
+		uuid: _stringUtils.Uuid(),
+	}
+
+	var g inject.Graph
+	g.Logger = logrus.StandardLogger()
+
+	if err := g.Provide(
+		&inject.Object{Value: inst},
+	); err != nil {
+		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
+	}
+
+	err := g.Populate()
+	if err != nil {
+		logrus.Fatalf("populate the incomplete Objects: %v", err)
+	}
+
+	return inst
+}
+
 type PerformanceTestService struct {
-	testReq      *ptdomain.PerformanceTestReq
+	uuid string
+
+	TestReq      *ptdomain.PerformanceTestReq
 	suspendWsMsg bool
 
 	execCtx    context.Context
@@ -33,51 +64,30 @@ type PerformanceTestService struct {
 
 	client *ptproto.PerformanceServiceClient
 
-	GrpcService         *conductorExec.GrpcService         `inject:"private"`
-	ScheduleService     *conductorExec.ScheduleService     `inject:"private"`
-	RemoteRunnerService *conductorExec.RemoteRunnerService `inject:"private"`
+	GrpcService         *GrpcService         `inject:"private"`
+	ScheduleService     *ScheduleService     `inject:"private"`
+	RemoteRunnerService *RemoteRunnerService `inject:"private"`
 }
 
-// performance test excution
-
-func (s *PerformanceTestService) ExecJoin(room string, wsMsg *websocket.Message) (err error) {
-	runningTest := conductorExec.GetRunningTest()
-
-	if s.testReq == nil { // no exist execution to join
-		websocketHelper.SendExecInstructionToClient(
-			"", nil, ptconsts.MsgInstructionJoinExist, wsMsg)
-
-	} else {
-		if room != runningTest.Room { // notify client to join
-			websocketHelper.SendExecInstructionToClient(
-				runningTest.Room, nil, ptconsts.MsgInstructionJoinExist, wsMsg)
-
-			conductorExec.ResumeWsMsg()
-
-		} else { //  client joined successfully
-			websocketHelper.SendExecInstructionToClient(
-				"performance testing joined", runningTest, ptconsts.MsgInstructionStart, wsMsg)
-		}
-	}
-
-	return
-}
+// performance test execution
 
 func (s *PerformanceTestService) ExecStart(
 	req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
 
-	if s.testReq != nil {
-		websocketHelper.SendExecInstructionToClient(
-			"", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
+	if s.TestReq != nil {
+		ptwebsocket.SendExecInstructionToClient(
+			"performance testing is running on conductor", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
 		return
 	}
 
-	websocketHelper.SendExecInstructionToClient(
+	ptwebsocket.SendExecInstructionToClient(
 		"performance testing start", nil, ptconsts.MsgInstructionStart, wsMsg)
 
 	ptlog.Init(req.Room)
 
-	s.testReq = &req
+	s.TestReq = &req
+
+	AddTestItem(s.TestReq.Room, ptconsts.Conductor, s.TestReq, nil)
 
 	// start execution
 	go func() {
@@ -85,7 +95,7 @@ func (s *PerformanceTestService) ExecStart(
 
 		dao.ClearData(req.Room)
 		dao.ResetInfluxdb(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
-		s.GrpcService.ClearAllGlobalVar(context.Background(), &ptproto.GlobalVarRequest{})
+		s.GrpcService.ConductorClearAllGlobalVar(context.Background(), &ptproto.GlobalVarRequest{})
 
 		// stop execution in 2 ways:
 		// 1. call cancel in this method by websocket request OR after all runners completed
@@ -115,17 +125,20 @@ func (s *PerformanceTestService) ExecStart(
 		// wait all runners finished
 		wgRunners.Wait()
 
+		// remove from cache
+		RemoveTestItem(req.Room)
+		DeleteTestService(req.Room)
+
 		// close exec and send to web client
-		conductorExec.SetRunningTest(nil)
 		s.execCancel()
-		websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
+		ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 	}()
 
 	return
 }
 
 func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) {
-	if s.testReq == nil {
+	if s.TestReq == nil {
 		return
 	}
 
@@ -135,12 +148,12 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 	}
 
 	// exec by runners
-	s.RemoteRunnerService.CallStop(*s.testReq)
+	s.RemoteRunnerService.CallStop(*s.TestReq)
 
 	// send end msg to websocket client
-	websocketHelper.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
+	ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 
-	s.testReq = nil
+	s.TestReq = nil
 
 	return
 }
@@ -173,7 +186,7 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, w
 				data := iris.Map{
 					"log": line.Text,
 				}
-				websocketHelper.SendExecResultToClient(data, ptconsts.MsgResultRecord, req.Room, wsMsg)
+				ptwebsocket.SendExecResultToClient(data, ptconsts.MsgResultRecord, req.Room, wsMsg)
 
 				arr = make([]string, 0)
 			}
@@ -185,7 +198,7 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, w
 
 	go func() {
 		for true {
-			if s.logCtx == nil || conductorExec.IsWsMsgSuspend() {
+			if s.logCtx == nil || IsWsMsgSuspend() {
 				t.Stop()
 				break
 			}
@@ -240,9 +253,9 @@ func (s *PerformanceTestService) ConnectGrpc(runner *ptproto.Runner) (client ptp
 }
 
 func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
-	client ptproto.PerformanceServiceClient, req ptdomain.PerformanceTestReq, runnerId int32, runnerName string, weight int32) (stream ptproto.PerformanceService_ExecStartClient, err error) {
+	client ptproto.PerformanceServiceClient, req ptdomain.PerformanceTestReq, runnerId int32, runnerName string, weight int32) (stream ptproto.PerformanceService_RunnerExecStartClient, err error) {
 
-	stream, err = client.ExecStart(context.Background())
+	stream, err = client.RunnerExecStart(context.Background())
 	if err != nil {
 		ptlog.Logf(err.Error())
 		return
@@ -273,7 +286,7 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 	return
 }
 
-func (s *PerformanceTestService) handleGrpcMsg(stream ptproto.PerformanceService_ExecStartClient) (err error) {
+func (s *PerformanceTestService) handleGrpcMsg(stream ptproto.PerformanceService_RunnerExecStartClient) (err error) {
 	for true {
 		resp, err := stream.Recv()
 		if err == io.EOF {

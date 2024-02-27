@@ -1,9 +1,7 @@
 package indicator
 
 import (
-	"fmt"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	_floatUtils "github.com/aaronchen2k/deeptest/pkg/lib/float"
 	"sync"
 	"time"
@@ -104,19 +102,7 @@ func GetResponseTimeData(key string) (ret *ptdomain.ResponseTimeData) {
 
 	return
 }
-func AddResponseTime(record ptProto.PerformanceExecRecord) {
-	id := record.RecordId
-	name := record.RecordName
-	dur := record.Duration
 
-	key := fmt.Sprintf("%d-%s", id, name)
-
-	// add to durations arr
-	recordData := GetResponseTimeData(key)
-	durations := recordData.Durations
-
-	*durations = append(*durations, int(dur))
-}
 func clearRequestResponseTime() {
 	requestResponseTimeCache = sync.Map{}
 }

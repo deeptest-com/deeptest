@@ -41,9 +41,8 @@ message Runner {
   int32 id = 1;
   string name = 2;
   string address  = 3;
-  string url  = 4;
-  int32 weight = 5;
-  repeated int32 scenarios = 6;
+  int32 weight = 4;
+  repeated int32 scenarios = 5;
 }
 
 message PerformanceExecStartReq {

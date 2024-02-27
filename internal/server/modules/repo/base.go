@@ -135,7 +135,7 @@ func (r *BaseRepo) GetAdminRoleName() (roleName consts.RoleType) {
 func (r *BaseRepo) GetDB(tenantId consts.TenantId) (db *gorm.DB) {
 	//return default db
 	if tenantId == "" {
-		return r.DB
+		return dao.GetDB("")
 	}
 	handler := func() (db *gorm.DB, err error) {
 		return dao.InitSaasDBHandler(tenantId)

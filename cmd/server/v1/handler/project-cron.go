@@ -154,7 +154,7 @@ func (c *ProjectCronCtrl) UpdateSwitchStatus(ctx iris.Context) {
 	req := model.ProjectCron{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -162,6 +162,18 @@ func (c *ProjectCronCtrl) UpdateSwitchStatus(ctx iris.Context) {
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
+	}
+
+	cron, err := c.ProjectCronService.Get(tenantId, req.ID)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	if req.Switch == consts.SwitchON {
+		c.addCron(tenantId, cron)
+	} else {
+		c.ProjectCronService.RemoveCronTask(cron)
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
@@ -313,16 +325,19 @@ func (c *ProjectCronCtrl) AllServiceList(ctx iris.Context) {
 func (c *ProjectCronCtrl) InitProjectCron() {
 	if config.CONFIG.Saas.Switch {
 		tenants := tenant.NewTenant().GetInfos()
-
 		for _, tenantIem := range tenants {
-			tenantId := tenantIem.Id
-			cronList, _ := c.ProjectCronRepo.ListAllCron(tenantId)
-			for _, item := range cronList {
-				c.addCron(tenantId, item)
-			}
+			c.addCronForSaas(tenantIem.Id)
 		}
+	} else {
+		c.addCronForSaas("")
 	}
+}
 
+func (c *ProjectCronCtrl) addCronForSaas(tenantId consts.TenantId) {
+	cronList, _ := c.ProjectCronRepo.ListAllCron(tenantId)
+	for _, item := range cronList {
+		c.addCron(tenantId, item)
+	}
 }
 
 func (c *ProjectCronCtrl) addCron(tenantId consts.TenantId, cron model.ProjectCron) {
@@ -330,7 +345,7 @@ func (c *ProjectCronCtrl) addCron(tenantId consts.TenantId, cron model.ProjectCr
 	options["projectId"] = cron.ProjectId
 	options["taskId"] = cron.ConfigId
 	options["cronId"] = cron.ID
-	options["talentId"] = tenantId
+	options["tenantId"] = tenantId
 
 	c.Proxy.Init(string(cron.Source), cron.Cron)
 	_ = c.Proxy.Add(options)

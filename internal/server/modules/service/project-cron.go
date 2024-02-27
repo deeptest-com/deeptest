@@ -104,9 +104,14 @@ func (s *ProjectCronService) Delete(tenantId consts.TenantId, id uint) (err erro
 		return
 	}
 
-	taskName := projectCron.Source.String() + "_" + strconv.Itoa(int(projectCron.ConfigId))
-	s.ServerCron.RemoveTask(taskName)
+	s.RemoveCronTask(projectCron)
+
 	return
+}
+
+func (s *ProjectCronService) RemoveCronTask(cron model.ProjectCron) {
+	taskName := cron.Source.String() + "_" + strconv.Itoa(int(cron.ConfigId))
+	s.ServerCron.RemoveTask(taskName)
 }
 
 func (s *ProjectCronService) Clone(tenantId consts.TenantId, id, userId uint) (ret model.ProjectCron, err error) {

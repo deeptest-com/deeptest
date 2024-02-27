@@ -104,7 +104,7 @@ func (s *MessageService) SendMessageToMcsAsync(tenantId consts.TenantId) (err er
 }
 
 func (s *MessageService) SendMessageCron(tenantId consts.TenantId) {
-	name := "SendMessageSync"
+	name := fmt.Sprintf("SendMessageSync_%s", tenantId)
 
 	s.Cron.RemoveTask(name)
 

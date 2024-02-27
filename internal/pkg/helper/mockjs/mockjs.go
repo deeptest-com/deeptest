@@ -47,7 +47,7 @@ func initJsRuntime() {
 	module := "mockjs.js"
 	pth := filepath.Join(consts.TmpDir, module)
 	fileUtils.WriteFile(pth, scriptHelper.GetModule(module))
-	pth = "./res/goja/module/mockjs.js"
+	//pth = "./res/goja/module/mockjs.js"
 	mock, err := mockJsRequire.Require(pth)
 
 	mockJsVm.JsRuntime.Set("mock", mock)

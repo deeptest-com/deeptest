@@ -14,6 +14,7 @@ import (
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/nxadm/tail"
+	"github.com/nxadm/tail/ratelimiter"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -168,28 +169,35 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceLogReq, ws
 
 	room := req.Room
 	logPath := ptlog.GetLogPath(room)
-
-	t, err := tail.TailFile(logPath, tail.Config{Follow: true, ReOpen: true})
-	if err != nil {
-		s.logCancel()
-		s.logCtx = nil
-		return
-	}
-	defer t.Cleanup()
+	var t *tail.Tail
 
 	go func() {
-		var arr []string
+		t, err = tail.TailFile(logPath, tail.Config{
+			Follow:      true,
+			ReOpen:      true,
+			RateLimiter: ratelimiter.NewLeakyBucket(6, time.Second),
+		})
+		if err != nil {
+			s.logCancel()
+			s.logCtx = nil
+			return
+		}
+		defer t.Cleanup()
+
+		var buffer []string
+		timeBefore := time.Now().UnixMilli()
 
 		for line := range t.Lines {
-			arr = append(arr, line.Text)
+			buffer = append(buffer, line.Text)
 
-			if len(arr) > 100 {
+			if len(buffer) > 20 || time.Now().UnixMilli()-timeBefore > 1000 {
 				data := iris.Map{
 					"log": line.Text,
 				}
 				ptwebsocket.SendExecResultToClient(data, ptconsts.MsgResultRecord, req.Room, wsMsg)
 
-				arr = make([]string, 0)
+				buffer = make([]string, 0)
+				timeBefore = time.Now().UnixMilli()
 			}
 		}
 

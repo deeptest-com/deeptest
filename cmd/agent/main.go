@@ -72,6 +72,7 @@ func injectWebSocketModule(app *iris.Application) {
 	// init websocket
 	websocketCtrl := handler.NewWebsocketCtrl()
 	websocketTestCtrl := handler.NewPerformanceTestWebSocketCtrl()
+	websocketLogCtrl := handler.NewPerformanceLogWebSocketCtrl()
 
 	var g inject.Graph
 	g.Logger = logrus.StandardLogger()
@@ -79,6 +80,7 @@ func injectWebSocketModule(app *iris.Application) {
 	err := g.Provide(
 		&inject.Object{Value: websocketCtrl},
 		&inject.Object{Value: websocketTestCtrl},
+		&inject.Object{Value: websocketLogCtrl},
 	)
 	if err != nil {
 		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
@@ -94,6 +96,7 @@ func injectWebSocketModule(app *iris.Application) {
 	mvcApp.Register(&commService.PrefixedLogger{Prefix: ""})
 	mvcApp.HandleWebsocket(websocketCtrl)
 	mvcApp.HandleWebsocket(websocketTestCtrl)
+	mvcApp.HandleWebsocket(websocketLogCtrl)
 
 	websocketServer := websocket.New(gorilla.Upgrader(
 		gorillaWs.Upgrader{

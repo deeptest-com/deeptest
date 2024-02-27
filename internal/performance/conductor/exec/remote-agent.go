@@ -14,7 +14,7 @@ type RemoteRunnerService struct {
 }
 
 func (s *RemoteRunnerService) Connect(runner *ptProto.Runner) (client ptProto.PerformanceServiceClient) {
-	connect, err := grpc.Dial(runner.Address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	connect, err := grpc.Dial(runner.GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalln(err)
 	}

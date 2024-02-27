@@ -18,4 +18,5 @@ type WsReq struct {
 	LocalVarsCache iris.Map                 `json:"localVarsCache"`
 
 	PerformanceTestExecReq ptdomain.PerformanceTestReq `json:"performanceTestExecReq"`
+	PerformanceLogExecReq  ptdomain.PerformanceLogReq  `json:"performanceLogExecReq"`
 }

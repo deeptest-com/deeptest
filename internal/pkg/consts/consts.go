@@ -25,6 +25,7 @@ const (
 
 	WsDefaultNamespace         = "default"
 	WsPerformanceTestNamespace = "performance_test"
+	WsPerformanceLogNamespace  = "performance_log"
 	WsDefaultRoom              = "default_room"
 	WsChatEvent                = "OnChat"
 

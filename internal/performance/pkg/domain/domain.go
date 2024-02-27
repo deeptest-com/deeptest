@@ -15,6 +15,10 @@ type PerformanceTestReq struct {
 	GoalFailed          string  `json:"goalFailed"`
 }
 
+type PerformanceLogReq struct {
+	Room string `json:"room"`
+}
+
 type PerformanceTestReqOfRunner struct {
 	BaseExecReqOfRunner
 

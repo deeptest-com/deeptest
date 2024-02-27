@@ -159,7 +159,7 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 	return
 }
 
-func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
+func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceLogReq, wsMsg *websocket.Message) (err error) {
 	if s.logCtx != nil {
 		return
 	}
@@ -243,7 +243,7 @@ func (s *PerformanceTestService) StopSendLog() (err error) {
 
 // call grpc client
 func (s *PerformanceTestService) ConnectGrpc(runner *ptproto.Runner) (client ptproto.PerformanceServiceClient) {
-	connect, err := grpc.Dial(runner.Address, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	connect, err := grpc.Dial(runner.GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalln(err)
 	}

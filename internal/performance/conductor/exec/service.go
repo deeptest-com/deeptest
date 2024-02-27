@@ -109,6 +109,7 @@ func (s *PerformanceTestService) ExecStart(
 
 			stream, err := s.CallRunnerExecStartByGrpc(client, req, runner.Id, runner.Name, runner.Weight)
 			if err != nil {
+				ptlog.Logf("failed to call remote runner via grpc, err %s", err.Error())
 				continue
 			}
 

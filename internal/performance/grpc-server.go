@@ -12,7 +12,7 @@ func StartGrpcServe() {
 	server := grpc.NewServer()
 	ptProto.RegisterPerformanceServiceServer(server, &controllerService.GrpcService{})
 
-	lis, err := net.Listen("tcp", "127.0.0.1:9528")
+	lis, err := net.Listen("tcp", ":9528")
 	if err != nil {
 		log.Fatalf("grpc net.Listen err: %v", err)
 	}

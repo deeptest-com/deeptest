@@ -47,6 +47,7 @@ func main() {
 
 	// grpc service
 	go performance.StartGrpcServe()
+
 	// queue of controller
 	ptqueue.InitControllerQueue()
 

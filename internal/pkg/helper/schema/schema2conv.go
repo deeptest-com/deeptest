@@ -221,7 +221,9 @@ func (s *Schema2conv) Example2Schema(object interface{}, schema *Schema) (err er
 func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 	ref := schema.Ref
 	if component, _, _ := s.Components.Component(&schema); component != nil {
-		s.sets[ref]++
+		if schema.Ref != "" {
+			s.sets[ref]++
+		}
 		schema = *component
 	} else {
 		return

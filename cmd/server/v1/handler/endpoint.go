@@ -292,6 +292,7 @@ func (c *EndpointCtrl) Yaml(ctx iris.Context) {
 	var req serverDomain.EndpointReq
 	if err := ctx.ReadJSON(&req); err == nil {
 		endpoint := c.requestParser(req)
+		c.EndpointService.SchemasConv(tenantId, &endpoint, nil)
 		res := c.EndpointService.Yaml(tenantId, endpoint)
 		var ret interface{}
 		commonUtils.JsonDecode(commonUtils.JsonEncode(res), &ret)

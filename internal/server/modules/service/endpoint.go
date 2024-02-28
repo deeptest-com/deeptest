@@ -151,7 +151,7 @@ func (s *EndpointService) Develop(tenantId consts.TenantId, id uint) (err error)
 func (s *EndpointService) Copy(tenantId consts.TenantId, id, categoryId, userId uint, username string, version string) (res uint, err error) {
 
 	endpoint, _ := s.EndpointRepo.GetAll(tenantId, id, version)
-	s.removeIds(tenantId, &endpoint)
+	s.removeIds(&endpoint)
 
 	if categoryId != 0 {
 		endpoint.CategoryId = int64(categoryId)
@@ -178,7 +178,7 @@ func (s *EndpointService) Copy(tenantId consts.TenantId, id, categoryId, userId 
 	return endpoint.ID, err
 }
 
-func (s *EndpointService) removeIds(tenantId consts.TenantId, endpoint *model.Endpoint) {
+func (s *EndpointService) removeIds(endpoint *model.Endpoint) {
 	endpoint.ID = 0
 	endpoint.CreatedAt = nil
 	endpoint.UpdatedAt = nil
@@ -212,6 +212,7 @@ func (s *EndpointService) removeIds(tenantId consts.TenantId, endpoint *model.En
 
 func (s *EndpointService) Yaml(tenantId consts.TenantId, endpoint model.Endpoint) (res *openapi3.T) {
 	var serve model.Serve
+	var dependComponents openapi3.Schemas
 	if endpoint.ServeId != 0 {
 		var err error
 		serve, err = s.ServeRepo.Get(tenantId, endpoint.ServeId)
@@ -220,6 +221,10 @@ func (s *EndpointService) Yaml(tenantId consts.TenantId, endpoint model.Endpoint
 		}
 
 		serveComponent, err := s.ServeRepo.GetSchemasByProjectId(tenantId, endpoint.ProjectId)
+
+		components := s.ServeService.Components(tenantId, endpoint.ProjectId)
+
+		dependComponents = s.dependComponents(&endpoint, components)
 
 		if err != nil {
 			return
@@ -239,7 +244,7 @@ func (s *EndpointService) Yaml(tenantId consts.TenantId, endpoint model.Endpoint
 		serve.Securities = securities
 	}
 
-	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint})
+	serve2conv := openapi.NewServe2conv(serve, []model.Endpoint{endpoint}, dependComponents)
 	res = serve2conv.ToV3()
 	return
 }
@@ -482,12 +487,12 @@ func (s *EndpointService) curlToEndpoint(tenantId consts.TenantId, endpoint *mod
 
 	endpoint.Path = curlObj.ParsedURL.Path
 
-	endpoint.Interfaces = s.getInterfaces(tenantId, endpoint.Title, curlObj, wf)
+	endpoint.Interfaces = s.getInterfaces(endpoint.Title, curlObj, wf)
 
 	return
 }
 
-func (s *EndpointService) getInterfaces(tenantId consts.TenantId, name string, cURL *curlHelper.CURL, wf *requests.Temporary) (interfaces []model.EndpointInterface) {
+func (s *EndpointService) getInterfaces(name string, cURL *curlHelper.CURL, wf *requests.Temporary) (interfaces []model.EndpointInterface) {
 	interf := model.EndpointInterface{}
 	interf.Name = name
 	interf.Params = s.getQueryParams(wf.GetQuery())
@@ -867,4 +872,28 @@ func (s *EndpointService) copyMockExpect(tenantId consts.TenantId, endpointId, n
 	}
 
 	return
+}
+
+func (s *EndpointService) dependComponents(endpoint *model.Endpoint, components *schemaHelper.Components) (ret openapi3.Schemas) {
+	dependComponents := schemaHelper.NewComponents()
+	for _, interf := range endpoint.Interfaces {
+
+		s.ServeService.DependComponents(interf.RequestBody.SchemaItem.Content, components, dependComponents)
+		for _, responseBody := range interf.ResponseBodies {
+			s.ServeService.DependComponents(responseBody.SchemaItem.Content, components, dependComponents)
+		}
+
+	}
+
+	res := dependComponents.GetSliceComponents()
+	schemas := map[string]*schemaHelper.SchemaRef{}
+	for key, item := range res {
+		key = strings.ReplaceAll(key, "#/components/schemas/", "")
+		schemas[key] = item.GetSchema()
+	}
+
+	_commUtils.JsonDecode(_commUtils.JsonEncode(schemas), &ret)
+
+	return
+
 }

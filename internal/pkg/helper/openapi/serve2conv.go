@@ -8,16 +8,17 @@ import (
 )
 
 type serve2conv struct {
-	serve     model.Serve
-	endpoints []model.Endpoint
-	doc3      *openapi3.T
+	serve            model.Serve
+	endpoints        []model.Endpoint
+	doc3             *openapi3.T
+	dependComponents openapi3.Schemas
 }
 
-func NewServe2conv(serve model.Serve, endpoints []model.Endpoint) *serve2conv {
+func NewServe2conv(serve model.Serve, endpoints []model.Endpoint, dependComponents openapi3.Schemas) *serve2conv {
 	doc3 := &openapi3.T{
 		OpenAPI: "3.0.3",
 	}
-	return &serve2conv{serve: serve, endpoints: endpoints, doc3: doc3}
+	return &serve2conv{serve: serve, endpoints: endpoints, doc3: doc3, dependComponents: dependComponents}
 }
 
 func (s *serve2conv) ToV3() *openapi3.T {
@@ -39,21 +40,23 @@ func (s *serve2conv) info() (info *openapi3.Info) {
 func (s *serve2conv) components() (components openapi3.Components) {
 	components = openapi3.NewComponents()
 
-	components.Schemas = openapi3.Schemas{}
-	for _, component := range s.serve.Components {
-		schema := new(openapi3.Schema)
-		if component.Type == openapi3.TypeObject {
-			//var schemas openapi3.Schema
-			_commUtils.JsonDecode(component.Content, &schema)
-			//schema = schemas
-		} else {
-			var items *openapi3.SchemaRef
-			_commUtils.JsonDecode(component.Content, &items)
-			schema.Items = items
-		}
+	components.Schemas = s.dependComponents
+	/*
+		for _, component := range s.serve.Components {
+			schema := new(openapi3.Schema)
+			if component.Type == openapi3.TypeObject {
+				//var schemas openapi3.Schema
+				_commUtils.JsonDecode(component.Content, &schema)
+				//schema = schemas
+			} else {
+				var items *openapi3.SchemaRef
+				_commUtils.JsonDecode(component.Content, &items)
+				schema.Items = items
+			}
 
-		components.Schemas[component.Name] = openapi3.NewSchemaRef("", schema)
-	}
+			components.Schemas[component.Name] = openapi3.NewSchemaRef("", schema)
+		}
+	*/
 
 	components.SecuritySchemes = s.security()
 	components.Parameters = s.componentParameters()

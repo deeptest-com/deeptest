@@ -89,7 +89,7 @@ func (c *PerformanceTestWebSocketCtrl) exec(req agentDomain.WsReq, wsMsg websock
 		conductorExec.DeleteTestService(room)
 
 	} else if req.Act == consts.JoinPerformanceTest {
-		if room == "" { // join exist room, may be reload page with no room field
+		if room == "" { // to join exist room, may be reload page with no room field
 			testItem := conductorExec.GetCurrItem()
 			if testItem == nil {
 				ptwebsocket.SendExecInstructionToClient("", nil, ptconsts.MsgInstructionJoinExist, &wsMsg)
@@ -105,7 +105,7 @@ func (c *PerformanceTestWebSocketCtrl) exec(req agentDomain.WsReq, wsMsg websock
 			ptwebsocket.SendExecInstructionToClient(testItem.Room, nil, ptconsts.MsgInstructionJoinExist, &wsMsg)
 			conductorExec.ResumeWsMsg()
 
-		} else { //  client joined successfully
+		} else { //  join exist room successfully, do nothing except sending a start msg
 			service := conductorExec.GetTestService(room)
 			ptwebsocket.SendExecInstructionToClient("performance test joined", service.TestReq, ptconsts.MsgInstructionStart, &wsMsg)
 		}

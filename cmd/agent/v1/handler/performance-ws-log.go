@@ -82,8 +82,8 @@ func (c *PerformanceLogWebSocketCtrl) exec(req agentDomain.WsReq, wsMsg websocke
 	if req.Act == consts.StartPerformanceLog { // log
 		service := conductorExec.GetLogService(room)
 		if service == nil {
-			ptlog.Logf("not found test service for room %s to start log", room)
-			return
+			service = conductorExec.CreatePerformanceLogService()
+			conductorExec.SetLogService(room, service)
 		}
 
 		err = service.StartSendLog(req.PerformanceLogExecReq, &wsMsg)

@@ -11,17 +11,13 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/facebookgo/inject"
-	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
-	"github.com/nxadm/tail"
-	"github.com/nxadm/tail/ratelimiter"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"io"
 	"log"
 	"sync"
-	"time"
 )
 
 var (
@@ -126,13 +122,7 @@ func (s *PerformanceTestService) ExecStart(
 		// wait all runners finished
 		wgRunners.Wait()
 
-		// remove from cache
-		RemoveTestItem(req.Room)
-		DeleteTestService(req.Room)
-
-		// close exec and send to web client
-		s.execCancel()
-		ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
+		s.StopAndClearScene(req.Room, wsMsg)
 	}()
 
 	return
@@ -143,115 +133,25 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 		return
 	}
 
-	// stop server execution
+	// call remote runners to stop
+	s.RemoteRunnerService.CallStop(*s.TestReq)
+
+	s.StopAndClearScene(s.TestReq.Room, wsMsg)
+
+	return
+}
+
+func (s *PerformanceTestService) StopAndClearScene(room string, wsMsg *websocket.Message) (err error) {
+	// close exec and send msg
 	if s.execCancel != nil {
 		s.execCancel()
 	}
-
-	// exec by runners
-	s.RemoteRunnerService.CallStop(*s.TestReq)
-
-	// send end msg to websocket client
 	ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 
+	// remove from cache
 	s.TestReq = nil
-
-	return
-}
-
-func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceLogReq, wsMsg *websocket.Message) (err error) {
-	if s.logCtx != nil {
-		return
-	}
-
-	s.logCtx, s.logCancel = context.WithCancel(context.Background())
-
-	room := req.Room
-	logPath := ptlog.GetLogPath(room)
-	var t *tail.Tail
-
-	go func() {
-		t, err = tail.TailFile(logPath, tail.Config{
-			Follow:      true,
-			ReOpen:      true,
-			RateLimiter: ratelimiter.NewLeakyBucket(6, time.Second),
-		})
-		if err != nil {
-			s.logCancel()
-			s.logCtx = nil
-			return
-		}
-		defer t.Cleanup()
-
-		var buffer []string
-		timeBefore := time.Now().UnixMilli()
-
-		for line := range t.Lines {
-			buffer = append(buffer, line.Text)
-
-			if len(buffer) > 20 || time.Now().UnixMilli()-timeBefore > 1000 {
-				data := iris.Map{
-					"log": line.Text,
-				}
-				ptwebsocket.SendExecLogToClient(data, ptconsts.MsgResultRecord, req.Room, wsMsg)
-
-				buffer = make([]string, 0)
-				timeBefore = time.Now().UnixMilli()
-			}
-		}
-
-		s.logCancel()
-		s.logCtx = nil
-	}()
-
-	go func() {
-		for true {
-			if s.logCtx == nil || IsWsMsgSuspend() {
-				if t != nil {
-					t.Stop()
-				}
-				break
-			}
-
-			select {
-			case <-s.logCtx.Done():
-				_logUtils.Debug("<<<<<<< stop sendLog job by logCtx.Done")
-
-				if t != nil {
-					t.Stop()
-				}
-				break
-
-			default:
-			}
-
-			select {
-			case <-s.execCtx.Done():
-				_logUtils.Debug("<<<<<<< stop sendLog job by execCtx.Done")
-
-				if t != nil {
-					t.Stop()
-				}
-				break
-
-			default:
-			}
-
-			time.Sleep(3 * time.Second)
-		}
-
-		s.logCancel()
-		s.logCtx = nil
-	}()
-
-	return
-}
-
-func (s *PerformanceTestService) StopSendLog() (err error) {
-	if s.logCancel != nil {
-		s.logCancel()
-	}
-	s.logCtx = nil
+	RemoveTestItem(room)
+	DeleteTestService(room)
 
 	return
 }

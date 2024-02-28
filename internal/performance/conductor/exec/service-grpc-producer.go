@@ -84,14 +84,23 @@ func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerEx
 }
 
 func (s *GrpcService) RunnerExecStop(stream ptProto.PerformanceService_RunnerExecStopServer) (err error) {
-	instruction, err := stream.Recv()
+	req, err := stream.Recv()
 	if err == io.EOF {
 		err = nil
 		return
 	}
-
-	if instruction == nil {
+	if req == nil {
 		return
+	}
+
+	room := req.Room
+
+	logService := GetLogService(room)
+	if logService != nil {
+		if logService.logCancel != nil {
+			logService.logCancel()
+		}
+		DeleteLogService(room)
 	}
 
 	if s.execCancel != nil {

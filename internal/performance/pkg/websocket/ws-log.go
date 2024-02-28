@@ -44,6 +44,10 @@ func SendExecLogToClient(data interface{}, resultType ptconsts.MsgResultTypeToWs
 }
 
 func BroadcastLog(namespace, room, event string, content string) {
+	if wsConnLog == nil {
+		return
+	}
+
 	wsConnLog.Server().Broadcast(nil, websocket.Message{
 		Namespace: namespace,
 		Room:      room,

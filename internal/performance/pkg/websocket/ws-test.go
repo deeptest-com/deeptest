@@ -65,6 +65,10 @@ func SendExecResultToClient(data interface{}, resultType ptconsts.MsgResultTypeT
 }
 
 func BroadcastTest(namespace, room, event string, content string) {
+	if wsConnTest == nil {
+		return
+	}
+
 	wsConnTest.Server().Broadcast(nil, websocket.Message{
 		Namespace: namespace,
 		Room:      room,

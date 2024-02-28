@@ -98,6 +98,10 @@ func SendInitializeMsg(data interface{}, wsMsg *websocket.Message) {
 }
 
 func Broadcast(namespace, room, event string, content string) {
+	if wsConn == nil {
+		return
+	}
+
 	wsConn.Server().Broadcast(nil, websocket.Message{
 		Namespace: namespace,
 		Room:      room,

@@ -141,7 +141,9 @@ func JsonEncode(data interface{}) (res string) {
 }
 
 func JsonDecode(str string, res interface{}) (err error) {
-
+	if str == "" {
+		return nil
+	}
 	if err = json.Unmarshal([]byte(str), res); err != nil {
 		//panic(err)
 		logUtils.Error(err.Error())

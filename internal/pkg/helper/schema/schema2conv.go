@@ -128,6 +128,10 @@ type component struct {
 	schema *SchemaRef
 }
 
+func (c *component) GetSchema() *SchemaRef {
+	return c.schema
+}
+
 func NewComponents() (c *Components) {
 	c = new(Components)
 	c.m = map[string]*component{}
@@ -168,6 +172,10 @@ func (c *Components) Component(schema *SchemaRef) (*SchemaRef, uint, string) {
 
 func (c *Components) GetComponents() map[uint]*component {
 	return c.s
+}
+
+func (c *Components) GetSliceComponents() map[string]*component {
+	return c.m
 }
 
 type Schema2conv struct {
@@ -221,7 +229,9 @@ func (s *Schema2conv) Example2Schema(object interface{}, schema *Schema) (err er
 func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 	ref := schema.Ref
 	if component, _, _ := s.Components.Component(&schema); component != nil {
-		s.sets[ref]++
+		if schema.Ref != "" {
+			s.sets[ref]++
+		}
 		schema = *component
 	} else {
 		return
@@ -279,10 +289,13 @@ func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 
 func (s *Schema2conv) SchemaComponents(schema *SchemaRef, components *Components) {
 
+	if components == nil {
+		components = NewComponents()
+	}
+
 	if component, refId, ref := s.Components.Component(schema); refId != 0 {
 		components.Add(refId, ref, component)
-	} else {
-		return
+		schema = component
 	}
 
 	if schema.Value == nil {
@@ -569,4 +582,39 @@ func (s *Schema2conv) FillRefId(schema *SchemaRef) {
 		}
 	}
 
+}
+
+func (s *Schema2conv) GetRefComponents(components *[]openapi3.Schemas, schema *Schema) (err error) {
+	V := reflect.ValueOf(schema)
+
+	switch V.Kind() {
+	case reflect.Map:
+		schema.Type = openapi3.TypeObject
+		schema.Properties = Schemas{}
+		iter := V.MapRange()
+		for iter.Next() {
+			key := iter.Key().String()
+			schema.Properties[key] = new(SchemaRef)
+			schema.Properties[key].Value = new(Schema)
+			s.Example2Schema(iter.Value().Interface(), schema.Properties[key].Value)
+		}
+	case reflect.Slice:
+		schema.Type = openapi3.TypeArray
+		schema.Items = new(SchemaRef)
+		schema.Items.Value = new(Schema)
+		if V.Len() != 0 {
+			s.Example2Schema(V.Index(0).Interface(), schema.Items.Value)
+		}
+	case reflect.String:
+		schema.Type = openapi3.TypeString
+	case reflect.Int64:
+		schema.Type = openapi3.TypeInteger
+	case reflect.Bool:
+		schema.Type = openapi3.TypeBoolean
+	case reflect.Float64:
+		schema.Type = openapi3.TypeNumber
+	default:
+		schema.Type = openapi3.TypeObject
+	}
+	return
 }

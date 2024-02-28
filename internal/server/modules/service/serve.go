@@ -529,7 +529,7 @@ func (s *ServeService) FillSchemaRefId(tenantId consts.TenantId, projectId uint,
 	return _commUtils.JsonEncode(schema)
 }
 
-func (s *ServeService) dependComponents(schemaStr string, components, dependComponents *schemaHelper.Components) {
+func (s *ServeService) DependComponents(schemaStr string, components, dependComponents *schemaHelper.Components) {
 	schema := new(schemaHelper.SchemaRef)
 	schemaStr = strings.ReplaceAll(schemaStr, "\\u0026", "&")
 	schemaStr = strings.ReplaceAll(schemaStr, "\n", "")

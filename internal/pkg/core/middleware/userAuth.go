@@ -102,6 +102,7 @@ func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo)
 
 	user, err := userRepo.GetByUsernameOrEmail(tenantId, userInfo.Username, userInfo.Mail)
 	if err != nil {
+		logUtils.Errorf("%s", err.Error())
 		return
 	}
 
@@ -118,6 +119,7 @@ func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo)
 
 	token, _, err = multi.AuthDriver.GenerateToken(claims)
 	if err != nil {
+		logUtils.Errorf("%s", err.Error())
 		return
 	}
 	return

@@ -47,7 +47,10 @@ func (dr *DBResolver) GetConnPool(poolName consts.TenantId) *gorm.DB {
 		dr.connPools.Delete(poolName)
 		return nil
 	}
-
+	if db.Config == nil {
+		dr.connPools.Delete(poolName)
+		return nil
+	}
 	if pinger, ok := db.ConnPool.(interface{ Ping() error }); ok {
 		err := pinger.Ping()
 		if err != nil {

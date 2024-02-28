@@ -194,7 +194,7 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceLogReq, ws
 				data := iris.Map{
 					"log": line.Text,
 				}
-				ptwebsocket.SendExecResultToClient(data, ptconsts.MsgResultRecord, req.Room, wsMsg)
+				ptwebsocket.SendExecLogToClient(data, ptconsts.MsgResultRecord, req.Room, wsMsg)
 
 				buffer = make([]string, 0)
 				timeBefore = time.Now().UnixMilli()
@@ -208,7 +208,9 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceLogReq, ws
 	go func() {
 		for true {
 			if s.logCtx == nil || IsWsMsgSuspend() {
-				t.Stop()
+				if t != nil {
+					t.Stop()
+				}
 				break
 			}
 
@@ -216,7 +218,9 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceLogReq, ws
 			case <-s.logCtx.Done():
 				_logUtils.Debug("<<<<<<< stop sendLog job by logCtx.Done")
 
-				t.Stop()
+				if t != nil {
+					t.Stop()
+				}
 				break
 
 			default:
@@ -226,7 +230,9 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceLogReq, ws
 			case <-s.execCtx.Done():
 				_logUtils.Debug("<<<<<<< stop sendLog job by execCtx.Done")
 
-				t.Stop()
+				if t != nil {
+					t.Stop()
+				}
 				break
 
 			default:
@@ -243,7 +249,9 @@ func (s *PerformanceTestService) StartSendLog(req ptdomain.PerformanceLogReq, ws
 }
 
 func (s *PerformanceTestService) StopSendLog() (err error) {
-	s.logCancel()
+	if s.logCancel != nil {
+		s.logCancel()
+	}
 	s.logCtx = nil
 
 	return

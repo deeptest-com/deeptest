@@ -6,7 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/cmd/agent/v1"
 	"github.com/aaronchen2k/deeptest/cmd/agent/v1/handler"
 	"github.com/aaronchen2k/deeptest/internal/performance"
-	ptqueue "github.com/aaronchen2k/deeptest/internal/performance/pkg/queue"
+	ptwebsocket "github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
@@ -48,8 +48,9 @@ func main() {
 	// grpc service
 	go performance.StartGrpcServe()
 
-	// queue of controller
-	ptqueue.InitControllerQueue()
+	// init queues
+	ptwebsocket.InitTestMq()
+	ptwebsocket.InitLogMq()
 
 	// websocket service
 	websocketHelper.InitMq()

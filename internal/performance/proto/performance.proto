@@ -41,7 +41,7 @@ message Runner {
   int32 id = 1;
   string name = 2;
   string grpcAddress  = 3;
-  string webSocketUrl  = 4;
+  string webAddress  = 4;
   int32 weight = 5;
   repeated int32 scenarios = 6;
 }

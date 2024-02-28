@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/pkg/core/mq"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	"log"
-	"strings"
 	"time"
 )
 
@@ -32,10 +30,6 @@ func SubMsg() {
 	for {
 		msg := mqClient.GetPayLoad(ch).(_domain.MqMsg)
 		fmt.Printf("%s get mq msg '%#v'\n", mqTopic, msg.Content)
-
-		if strings.Index(msg.Content, "joinExist") > -1 {
-			log.Print(1)
-		}
 
 		if msg.Content == "exit" {
 			mqClient.Unsubscribe(mqTopic, ch)

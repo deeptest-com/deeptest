@@ -30,6 +30,7 @@ type MsgCategory string
 const (
 	MsgCategoryInstruction MsgCategory = "instruction"
 	MsgCategoryResult      MsgCategory = "result"
+	MsgCategoryLog         MsgCategory = "log"
 )
 
 func (e MsgCategory) String() string {

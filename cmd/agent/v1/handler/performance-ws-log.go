@@ -27,7 +27,7 @@ func NewPerformanceLogWebSocketCtrl() *PerformanceLogWebSocketCtrl {
 }
 
 func (c *PerformanceLogWebSocketCtrl) OnNamespaceConnected(wsMsg websocket.Message) error {
-	ptwebsocket.SetConn(c.Conn)
+	ptwebsocket.SetLogConn(c.Conn)
 
 	_logUtils.Infof(_i118Utils.Sprintf("connect to namespace %s, id=%s room=%s",
 		consts.WsPerformanceLogNamespace, c.Conn.ID(), wsMsg.Room))

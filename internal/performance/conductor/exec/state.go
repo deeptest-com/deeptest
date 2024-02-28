@@ -17,8 +17,9 @@ var (
 )
 
 var (
-	ItemsStore    sync.Map
-	ServicesStore sync.Map
+	ItemsStore        sync.Map
+	TestServicesStore sync.Map
+	LogServicesStore  sync.Map
 )
 
 func GetCurrItem() (ret *ptdomain.TestItem) {
@@ -90,7 +91,7 @@ func RemoveTestItem(room string) {
 }
 
 func GetTestService(room string) (ret *PerformanceTestService) {
-	obj, ok := ServicesStore.Load(room)
+	obj, ok := TestServicesStore.Load(room)
 	if ok {
 		ret = obj.(*PerformanceTestService)
 	}
@@ -98,14 +99,38 @@ func GetTestService(room string) (ret *PerformanceTestService) {
 	return
 }
 func SetTestService(room string, service *PerformanceTestService) {
-	ServicesStore.Store(room, service)
+	TestServicesStore.Store(room, service)
 
 	return
 }
 func DeleteTestService(room string) {
-	ServicesStore.Range(func(key, value interface{}) bool {
+	TestServicesStore.Range(func(key, value interface{}) bool {
 		if room == key {
-			ServicesStore.Delete(key)
+			TestServicesStore.Delete(key)
+		}
+		return true
+	})
+
+	return
+}
+
+func GetLogService(room string) (ret *PerformanceLogService) {
+	obj, ok := LogServicesStore.Load(room)
+	if ok {
+		ret = obj.(*PerformanceLogService)
+	}
+
+	return
+}
+func SetLogService(room string, service *PerformanceLogService) {
+	LogServicesStore.Store(room, service)
+
+	return
+}
+func DeleteLogService(room string) {
+	LogServicesStore.Range(func(key, value interface{}) bool {
+		if room == key {
+			LogServicesStore.Delete(key)
 		}
 		return true
 	})

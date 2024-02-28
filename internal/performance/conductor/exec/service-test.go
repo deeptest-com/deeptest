@@ -25,12 +25,11 @@ import (
 )
 
 var (
-	once sync.Once
-	inst *PerformanceTestService
+	testInst *PerformanceTestService
 )
 
 func CreatePerformanceTestService() *PerformanceTestService {
-	inst = &PerformanceTestService{
+	testInst = &PerformanceTestService{
 		uuid: _stringUtils.Uuid(),
 	}
 
@@ -38,7 +37,7 @@ func CreatePerformanceTestService() *PerformanceTestService {
 	g.Logger = logrus.StandardLogger()
 
 	if err := g.Provide(
-		&inject.Object{Value: inst},
+		&inject.Object{Value: testInst},
 	); err != nil {
 		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
 	}
@@ -48,7 +47,7 @@ func CreatePerformanceTestService() *PerformanceTestService {
 		logrus.Fatalf("populate the incomplete Objects: %v", err)
 	}
 
-	return inst
+	return testInst
 }
 
 type PerformanceTestService struct {

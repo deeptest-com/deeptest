@@ -45,7 +45,7 @@ func (c *PerformanceLogWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Mess
 	// stop performance log msg
 	testItem := conductorExec.GetCurrItem()
 	if testItem != nil {
-		service := conductorExec.GetTestService(testItem.Room)
+		service := conductorExec.GetLogService(testItem.Room)
 		if service != nil {
 			service.StopSendLog()
 		}
@@ -80,7 +80,7 @@ func (c *PerformanceLogWebSocketCtrl) exec(req agentDomain.WsReq, wsMsg websocke
 	room := req.PerformanceLogExecReq.Room
 
 	if req.Act == consts.StartPerformanceLog { // log
-		service := conductorExec.GetTestService(room)
+		service := conductorExec.GetLogService(room)
 		if service == nil {
 			ptlog.Logf("not found test service for room %s to start log", room)
 			return
@@ -89,7 +89,7 @@ func (c *PerformanceLogWebSocketCtrl) exec(req agentDomain.WsReq, wsMsg websocke
 		err = service.StartSendLog(req.PerformanceLogExecReq, &wsMsg)
 
 	} else if req.Act == consts.StopPerformanceLog {
-		service := conductorExec.GetTestService(room)
+		service := conductorExec.GetLogService(room)
 		if service == nil {
 			ptlog.Logf("not found test service for room %s to stop log", room)
 			return

@@ -141,7 +141,7 @@ func JsonEncode(data interface{}) (res string) {
 }
 
 func JsonDecode(str string, res interface{}) (err error) {
-
+	str = strings.ReplaceAll(str, "\x00", " ")
 	if err = json.Unmarshal([]byte(str), res); err != nil {
 		//panic(err)
 		logUtils.Error(err.Error())

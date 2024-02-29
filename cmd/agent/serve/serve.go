@@ -105,6 +105,10 @@ func (s *AgentServer) initModule() {
 	}
 }
 
+func (s *AgentServer) GetApp() *iris.Application {
+	return s.app
+}
+
 // Party 调试模块
 func DebugParty() module.WebModule {
 	handler := func(index iris.Party) {

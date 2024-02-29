@@ -42,6 +42,13 @@
     "parent":""
   },
   {
+    "code":"p-api-pt",
+    "title":"性能测试",
+    "path":"/:projectNameAbbr/PT",
+    "type":"menu",
+    "parent":""
+  },
+  {
     "code":"p-api-tr",
     "title":"测试报告",
     "path":"/:projectNameAbbr/TR",

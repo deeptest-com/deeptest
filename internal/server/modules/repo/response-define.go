@@ -117,6 +117,9 @@ func (r *ResponseDefineRepo) requiredComponents(responseBodies []model.EndpointI
 }
 
 func (r *ResponseDefineRepo) dependComponents(responseBody model.EndpointInterfaceResponseBody, components, dependComponents *responseDefineHelper.Components) {
+	if dependComponents == nil {
+		dependComponents = responseDefineHelper.NewComponents()
+	}
 	schema := new(responseDefineHelper.SchemaRef)
 	responseBody.SchemaItem.Content = strings.ReplaceAll(responseBody.SchemaItem.Content, "\\u0026", "&")
 	responseBody.SchemaItem.Content = strings.ReplaceAll(responseBody.SchemaItem.Content, "\n", "")

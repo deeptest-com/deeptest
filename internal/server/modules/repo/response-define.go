@@ -108,7 +108,7 @@ func (r *ResponseDefineRepo) Components(endpointInterfaceId uint) responseDefine
 }
 
 func (r *ResponseDefineRepo) requiredComponents(responseBodies []model.EndpointInterfaceResponseBody, components *responseDefineHelper.Components) (ret responseDefineHelper.Components) {
-	ret = responseDefineHelper.Components{}
+	ret = *responseDefineHelper.NewComponents()
 	for _, responseBody := range responseBodies {
 		r.dependComponents(responseBody, components, &ret)
 	}

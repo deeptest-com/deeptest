@@ -162,7 +162,8 @@ func (r *PerformanceTestPlanRepo) UpdateSerialNumber(id, projectId uint) (err er
 		return
 	}
 
-	err = r.DB.Model(&model.PerformanceTestPlan{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TS-"+strconv.Itoa(int(id))).Error
+	err = r.DB.Model(&model.PerformanceTestPlan{}).Where("id=?", id).
+		Update("serial_number", project.ShortName+"-PT-"+strconv.Itoa(int(id))).Error
 	return
 }
 

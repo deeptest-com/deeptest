@@ -15,15 +15,16 @@ import (
 )
 
 type CategoryService struct {
-	EndpointService     *EndpointService          `inject:""`
-	ServeService        *ServeService             `inject:""`
-	CategoryRepo        *repo.CategoryRepo        `inject:""`
-	EndpointRepo        *repo.EndpointRepo        `inject:""`
-	PlanRepo            *repo.PlanRepo            `inject:""`
-	ScenarioRepo        *repo.ScenarioRepo        `inject:""`
-	ComponentSchemaRepo *repo.ComponentSchemaRepo `inject:""`
-	ProjectRepo         *repo.ProjectRepo         `inject:""`
-	ServeRepo           *repo.ServeRepo           `inject:""`
+	EndpointService         *EndpointService              `inject:""`
+	ServeService            *ServeService                 `inject:""`
+	CategoryRepo            *repo.CategoryRepo            `inject:""`
+	EndpointRepo            *repo.EndpointRepo            `inject:""`
+	PlanRepo                *repo.PlanRepo                `inject:""`
+	ScenarioRepo            *repo.ScenarioRepo            `inject:""`
+	PerformanceTestPlanRepo *repo.PerformanceTestPlanRepo `inject:""`
+	ComponentSchemaRepo     *repo.ComponentSchemaRepo     `inject:""`
+	ProjectRepo             *repo.ProjectRepo             `inject:""`
+	ServeRepo               *repo.ServeRepo               `inject:""`
 }
 
 func (s *CategoryService) GetTree(typ serverConsts.CategoryDiscriminator, projectId int) (root *v1.Category, err error) {
@@ -179,10 +180,11 @@ func (s *CategoryService) mountCount(root *v1.Category, typ serverConsts.Categor
 func (s *CategoryService) getRepo(typ serverConsts.CategoryDiscriminator) repo.IRepo {
 
 	repos := map[serverConsts.CategoryDiscriminator]repo.IRepo{
-		serverConsts.EndpointCategory: s.EndpointRepo,
-		serverConsts.PlanCategory:     s.PlanRepo,
-		serverConsts.ScenarioCategory: s.ScenarioRepo,
-		serverConsts.SchemaCategory:   s.ComponentSchemaRepo,
+		serverConsts.EndpointCategory:            s.EndpointRepo,
+		serverConsts.PlanCategory:                s.PlanRepo,
+		serverConsts.ScenarioCategory:            s.ScenarioRepo,
+		serverConsts.PerformanceTestPlanCategory: s.PerformanceTestPlanRepo,
+		serverConsts.SchemaCategory:              s.ComponentSchemaRepo,
 	}
 
 	return repos[typ]

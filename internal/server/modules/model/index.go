@@ -65,6 +65,8 @@ var (
 		&ProcessorExtractor{},
 		&ProcessorCustomCode{},
 
+		&PerformanceTestPlan{},
+
 		&ScenarioReport{},
 		&PlanReport{},
 		&ExecLogProcessor{},

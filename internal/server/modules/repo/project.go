@@ -213,10 +213,17 @@ func (r *ProjectRepo) CreateProjectRes(projectId, userId uint, IncludeExample bo
 		return
 	}
 
-	// create project plan category
+	// create project testplan category
 	err = r.AddProjectRootPlanCategory(projectId)
 	if err != nil {
 		logUtils.Errorf("添加计划分类错误", zap.String("错误:", err.Error()))
+		return
+	}
+
+	// create performance testplan category
+	err = r.AddProjectRootPerformanceTestplanCategory(projectId)
+	if err != nil {
+		logUtils.Errorf("添加性能测试计划分类错误", zap.String("错误:", err.Error()))
 		return
 	}
 
@@ -479,6 +486,18 @@ func (r *ProjectRepo) AddProjectRootPlanCategory(projectId uint) (err error) {
 	root := model.Category{
 		Name:      "分类",
 		Type:      serverConsts.PlanCategory,
+		ProjectId: projectId,
+		IsDir:     true,
+	}
+	err = r.DB.Create(&root).Error
+
+	return
+}
+
+func (r *ProjectRepo) AddProjectRootPerformanceTestplanCategory(projectId uint) (err error) {
+	root := model.Category{
+		Name:      "分类",
+		Type:      serverConsts.PerformanceTestPlanCategory,
 		ProjectId: projectId,
 		IsDir:     true,
 	}

@@ -37,10 +37,11 @@ func (e DropPos) Int() int {
 type CategoryDiscriminator string
 
 const (
-	EndpointCategory CategoryDiscriminator = "endpoint"
-	ScenarioCategory CategoryDiscriminator = "scenario"
-	PlanCategory     CategoryDiscriminator = "plan"
-	SchemaCategory   CategoryDiscriminator = "schema"
+	EndpointCategory            CategoryDiscriminator = "endpoint"
+	ScenarioCategory            CategoryDiscriminator = "scenario"
+	PlanCategory                CategoryDiscriminator = "plan"
+	PerformanceTestPlanCategory CategoryDiscriminator = "performance-testplan"
+	SchemaCategory              CategoryDiscriminator = "schema"
 )
 
 func (e CategoryDiscriminator) String() string {

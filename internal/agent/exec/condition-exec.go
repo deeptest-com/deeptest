@@ -48,7 +48,7 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, ex
 			DealwithExtractorCondition(condition, resp, &postConditions, execUuid)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
-			DealwithResponseDefineCondition(condition, resp, &resultStatus, &postConditions)
+			//DealwithResponseDefineCondition(condition, resp, &resultStatus, &postConditions)
 		}
 	}
 
@@ -100,6 +100,8 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition,
 	if databaseOptBase.Disabled {
 		return
 	}
+
+	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, execUuid)
 
 	err := ExecDbOpt(&databaseOptBase)
 	if err != nil || databaseOptBase.ResultStatus == consts.Fail {

@@ -5,11 +5,11 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	"sync"
 )
 
-func ExecProgram(execCtx context.Context, execCancel context.CancelFunc, req *ptProto.PerformanceExecStartReq, sender indicator.MessageSender) {
+func ExecProgram(execCtx context.Context, execCancel context.CancelFunc, req *ptProto.PerformanceExecStartReq, sender metrics.MessageSender) {
 	if req.Mode == ptconsts.Parallel.String() {
 		var wgScenarios sync.WaitGroup
 

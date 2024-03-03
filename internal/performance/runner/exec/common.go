@@ -6,18 +6,6 @@ import (
 	"math"
 )
 
-var (
-	isRunnerRunning = false
-)
-
-func IsRunnerTestRunning() bool {
-	return isRunnerRunning
-}
-
-func SetRunnerTestRunning(val bool) {
-	isRunnerRunning = val
-}
-
 func getVuNumbByWeight(target, weight int) (ret int) {
 	runnerTarget := math.Round(float64(target) * float64(weight) / float64(100))
 

@@ -8,7 +8,7 @@ import (
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/exec"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 	"io"
 	"log"
@@ -32,16 +32,10 @@ type GrpcService struct {
 func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerExecStartServer) (err error) {
 	if runnerExec.IsRunnerTestRunning() {
 		err = &ptdomain.ErrorAlreadyRunning{}
-
 		return
 	}
 
 	runnerExec.SetRunnerTestRunning(true)
-	defer func() {
-		runnerExec.SetRunnerTestRunning(false)
-	}()
-
-	indicator.Init()
 
 	req, err := stream.Recv()
 	if err == io.EOF {
@@ -55,33 +49,38 @@ func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerEx
 	// init runner log
 	ptlog.Init(req.Room)
 
-	// gen sender
-	msgSender := indicator.GetInfluxdbSenderInstant(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
-	if msgSender == nil {
+	// runner add item to cache
+	AddTestItem(req.Room, ptconsts.Runner, nil, req)
+
+	// context
+	s.execCtx, s.execCancel = context.WithCancel(context.Background())
+
+	// gen influxdb sender
+	influxdbSender := metrics.GetInfluxdbSenderInstant(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
+	if influxdbSender == nil {
 		ptlog.Logf("stop to run since msgSender return nil")
 		return
 	}
 
-	s.execCtx, s.execCancel = context.WithCancel(context.Background())
+	// schedule job to send metrics
+	go metrics.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, influxdbSender)
 
-	// run interval job
-	go indicator.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, msgSender)
+	go func() {
+		defer runnerExec.SetRunnerTestRunning(false)
 
-	// runner add item to cache
-	AddTestItem(req.Room, ptconsts.Runner, nil, req)
+		// SYNC exec testing
+		runnerExec.ExecProgram(s.execCtx, s.execCancel, req, influxdbSender)
 
-	// SYNC exec testing
-	runnerExec.ExecProgram(s.execCtx, s.execCancel, req, msgSender)
-
-	// send end signal to conductor
-	result := ptProto.PerformanceExecResp{
-		Timestamp:   time.Now().UnixMilli(),
-		RunnerId:    req.RunnerId,
-		Room:        req.Room,
-		Instruction: ptconsts.MsgInstructionRunnerFinish.String(),
-	}
-	grpcSender := indicator.NewGrpcSender(&stream)
-	grpcSender.Send(result)
+		// send end signal to conductor
+		result := ptProto.PerformanceExecResp{
+			Timestamp:   time.Now().UnixMilli(),
+			RunnerId:    req.RunnerId,
+			Room:        req.Room,
+			Instruction: ptconsts.MsgInstructionRunnerFinish.String(),
+		}
+		grpcSender := metrics.NewGrpcSender(&stream)
+		grpcSender.Send(result)
+	}()
 
 	return
 }

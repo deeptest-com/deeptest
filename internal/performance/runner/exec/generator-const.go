@@ -4,7 +4,7 @@ import (
 	"context"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"sync"
 	"time"
@@ -13,7 +13,7 @@ import (
 type ConstantVuGenerator struct {
 }
 
-func (g ConstantVuGenerator) Run(execCtx context.Context, sender indicator.MessageSender) (err error) {
+func (g ConstantVuGenerator) Run(execCtx context.Context, sender metrics.MessageSender) (err error) {
 	execParams := getExecParamsInCtx(execCtx)
 
 	var wgVus sync.WaitGroup

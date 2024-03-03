@@ -1,4 +1,4 @@
-package indicator
+package metrics
 
 import (
 	ptutils "github.com/aaronchen2k/deeptest/internal/performance/pkg/utils"

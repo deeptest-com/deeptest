@@ -4,12 +4,12 @@ import (
 	"context"
 	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
-func ExecProcessors(timeoutCtx context.Context, sender indicator.MessageSender, runnerId int32, vuNo int) {
+func ExecProcessors(timeoutCtx context.Context, sender metrics.MessageSender, runnerId int32, vuNo int) {
 	execParams := getExecParamsInCtx(timeoutCtx)
 
 	for index, processor := range execParams.Scenario.Processors {

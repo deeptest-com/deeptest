@@ -1,4 +1,4 @@
-package indicator
+package metrics
 
 import (
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"

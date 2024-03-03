@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"sync"
@@ -14,7 +14,7 @@ import (
 type RampVuGenerator struct {
 }
 
-func (g RampVuGenerator) Run(execCtx context.Context, sender indicator.MessageSender) (err error) {
+func (g RampVuGenerator) Run(execCtx context.Context, sender metrics.MessageSender) (err error) {
 	execParams := getExecParamsInCtx(execCtx)
 
 	if len(execParams.Stages) != 1 {

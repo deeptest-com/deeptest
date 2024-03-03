@@ -5,12 +5,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 )
 
 func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 	scenario *ptProto.Scenario, weight int32, room, serverAddress string,
-	runnerId int32, runnerName string, sender indicator.MessageSender) (result ptProto.PerformanceExecResp) {
+	runnerId int32, runnerName string, sender metrics.MessageSender) (result ptProto.PerformanceExecResp) {
 
 	var generater VuGenerator
 

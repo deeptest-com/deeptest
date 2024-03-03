@@ -3,7 +3,7 @@ package runnerExec
 import (
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/indicator"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
 	"time"
@@ -13,7 +13,7 @@ var (
 	requestCountSent = 0
 )
 
-func ExecInterfaceProcessor(processor *ptProto.Processor, room string, vuNo, index int, runnerId int32, sender indicator.MessageSender) {
+func ExecInterfaceProcessor(processor *ptProto.Processor, room string, vuNo, index int, runnerId int32, sender metrics.MessageSender) {
 	startTime := time.Now().UnixMilli()
 
 	_, err := _httpUtils.Get("http://111.231.16.35:9000/get")

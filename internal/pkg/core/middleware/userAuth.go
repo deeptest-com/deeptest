@@ -109,7 +109,7 @@ func creatSession(tenantId consts.TenantId, userInfo integrationDomain.UserInfo)
 	claims := &multi.CustomClaims{
 		ID:            strconv.FormatUint(uint64(user.ID), 10),
 		Username:      user.Username,
-		AuthorityId:   "",
+		AuthorityId:   string(tenantId),
 		AuthorityType: multi.AdminAuthority,
 		LoginType:     multi.LoginTypeWx,
 		AuthType:      multi.AuthPwd,

@@ -1,6 +1,10 @@
 package service
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/integration/enum"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	"github.com/snowlyg/helper/arr"
+)
 
 type RoleService struct {
 	RemoteService *RemoteService `inject:""`
@@ -29,6 +33,30 @@ func (s *RoleService) GetRoleNameByValue(tenantId consts.TenantId, value string)
 	if name, ok := roleValueNameMap[value]; ok {
 		res = name
 	}
+
+	return
+}
+
+func (s *RoleService) GetUserRoleArr(tenantId consts.TenantId, username string) (ret []string, err error) {
+	roles, err := s.RemoteService.GetUserOpenRoles(tenantId, username)
+	if err != nil {
+		return
+	}
+
+	for _, v := range roles {
+		ret = append(ret, v.RoleValue)
+	}
+
+	return
+}
+
+func (s *RoleService) IsSuperAdmin(tenantId consts.TenantId, username string) (ret bool, err error) {
+	roleValueArr, err := s.GetUserRoleArr(tenantId, username)
+	if err != nil {
+		return
+	}
+
+	ret = arr.InArrayS(roleValueArr, enum.SuperAdmin)
 
 	return
 }

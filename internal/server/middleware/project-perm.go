@@ -4,9 +4,11 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -106,10 +108,10 @@ func (SysRole) TableName() string {
 // ProjectPerm  项目权限权鉴中间件
 func ProjectPerm() iris.Handler {
 	return func(ctx *context.Context) {
+		tenantId := common.GetTenantId(ctx)
+
 		if config.CONFIG.System.SysEnv != "ly" {
 			userId := multi.GetUserId(ctx)
-			tenantId := common.GetTenantId(ctx)
-
 			isAdminUser, err := IsAdminUser(tenantId, userId)
 			if err != nil {
 				ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "系统异常，请重新登录或者联系管理员"})
@@ -124,6 +126,9 @@ func ProjectPerm() iris.Handler {
 					return
 				}
 			}
+		} else {
+			userName := multi.GetUsername(ctx)
+			SetIsAdminCache(tenantId, userName)
 		}
 
 		ctx.Next()
@@ -218,13 +223,40 @@ func GetProjectRolePerm(tenantId consts.TenantId, roleId, permId uint) (data Pro
 	return
 }
 
-func IsAdminUser(tenantId consts.TenantId, id uint) (bool, error) {
+func SetIsAdminCache(tenantId consts.TenantId, username string) (ret bool, err error) {
+	redisKey := string(tenantId) + "-" + "isAdmin-" + username
+	isAdmin, err := cache.GetCacheString(redisKey)
+	if err == nil {
+		if isAdmin == serverConsts.IsAdminRole {
+			ret = true
+		}
+		return ret, nil
+	}
+
+	roleService := new(integrationService.RoleService)
+	ret, err = roleService.IsSuperAdmin(tenantId, username)
+	if err != nil {
+		return
+	}
+
+	if ret {
+		err = cache.SetCache(redisKey, serverConsts.IsAdminRole, time.Hour*4)
+	} else {
+		err = cache.SetCache(redisKey, serverConsts.IsNotAdminRole, time.Hour*4)
+	}
+
+	return
+}
+
+func IsAdminUser(tenantId consts.TenantId, id uint) (ret bool, err error) {
 	user, err := FindUserDetailById(tenantId, id)
 	if err != nil {
 		return false, err
 	}
 
-	return arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil
+	ret, err = arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil
+
+	return
 }
 
 func FindUserDetailById(tenantId consts.TenantId, id uint) (user v1.UserResp, err error) {

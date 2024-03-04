@@ -22,3 +22,6 @@ const (
 )
 
 const DefaultSever = "http://localhost"
+
+const IsAdminRole = "YES"
+const IsNotAdminRole = "NO"

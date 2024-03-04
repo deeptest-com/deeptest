@@ -110,7 +110,7 @@ func (s *MessageService) GetAuditProjectResultMcsData(tenantId consts.TenantId, 
 		auditRes = "通过"
 	}
 
-	host, _ := cache.GetCacheString("host")
+	host, _ := cache.GetCacheString(fmt.Sprintf("%s_host", tenantId))
 	articles := make([]im.EnterpriseWechatInfoContentArticles, 0)
 	articles = append(articles, im.EnterpriseWechatInfoContentArticles{
 		Title:       "申请加入项目审批结果通知",

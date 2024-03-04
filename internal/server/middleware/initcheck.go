@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -25,7 +26,7 @@ func InitCheck() iris.Handler {
 				host = ctx.Request().Header.Get("X-API-Origin")
 			}
 			if host != "" {
-				cache.SetCache("host", host, -1)
+				cache.SetCache(fmt.Sprintf("%s_host", tenantId), host, -1)
 			}
 			ctx.Next()
 		}

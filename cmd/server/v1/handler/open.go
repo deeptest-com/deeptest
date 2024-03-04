@@ -2,7 +2,11 @@ package handler
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/integration/enum"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -65,9 +69,21 @@ func (c *OpenCtrl) GetProjectRole(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	username := ctx.URLParam("username")
 	projectCode := ctx.URLParam("projectCode")
-	if role, err := c.ProjectService.GetProjectRole(tenantId, username, projectCode); err == nil {
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: role})
+
+	var role string
+	var err error
+	redisKey := string(tenantId) + "-" + "isAdmin-" + username
+	isAdmin, _ := cache.GetCacheString(redisKey)
+	if config.CONFIG.System.SysEnv == "ly" && isAdmin == serverConsts.IsAdminRole {
+		role = enum.SuperAdmin
 	} else {
-		ctx.JSON(_domain.Response{Code: _domain.ErrUserNotInProject.Code, Msg: err.Error()})
+		role, err = c.ProjectService.GetProjectRole(tenantId, username, projectCode)
 	}
+
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: role})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.ErrUserNotInProject.Code, Msg: err.Error()})
 }

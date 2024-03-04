@@ -1072,3 +1072,53 @@ func (s *RemoteService) ApprovalAndMsg(tenantId consts.TenantId, req string) (re
 
 	return
 }
+
+func (s *RemoteService) GetUserOpenRoles(tenantId consts.TenantId, username string) (ret []integrationDomain.UserRoleItem, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/getUserOpenRole", config.CONFIG.ThirdParty.Url)
+
+	headers := s.GetHeaders(tenantId, "")
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		QueryParams: &[]domain.Param{
+			{
+				Name:  "username",
+				Value: username,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	logUtils.Infof("GetUserOpenRoles username: +%v, resp:%+v", username, resp)
+	if err != nil {
+		logUtils.Errorf("GetUserOpenRoles failed, username: +%v,error: %s", username, err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("GetUserOpenRoles failed, response %v", resp)
+		err = fmt.Errorf("GetUserOpenRoles failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []integrationDomain.UserRoleItem
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("GetUserOpenRoles failed, response %v", resp)
+		err = fmt.Errorf("GetUserOpenRoles failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}

@@ -5,6 +5,7 @@ import (
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 )
 
@@ -32,6 +33,7 @@ func (c *OpenCtrl) GetProjectsBySpace(ctx iris.Context) {
 	spaceCode := ctx.URLParam("spaceCode")
 	username := ctx.URLParam("username")
 
+	logUtils.Infof("GetProjectsBySpace tenantId:%+v, spaceCode:%+v, username:%+v", tenantId, spaceCode, username)
 	data, err := c.IntegrationProjectService.GetListWithRoleBySpace(tenantId, spaceCode, username)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

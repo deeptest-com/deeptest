@@ -14,6 +14,9 @@ import (
 type ScenarioNodeCtrl struct {
 	ScenarioNodeService *service.ScenarioNodeService `inject:""`
 	ScenarioService     *service.ScenarioService     `inject:""`
+
+	PerformanceTestPlanService *service.PerformanceTestPlanService `inject:""`
+
 	BaseCtrl
 }
 
@@ -28,9 +31,18 @@ type ScenarioNodeCtrl struct {
 // @success	200	{object}	_domain.Response{data=agentExec.Processor}
 // @Router	/api/v1/scenarios/load	[get]
 func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
-	scenarioId, err := ctx.URLParamInt("scenarioId")
+	designFor := ctx.URLParam("designFor")
+	scenarioOrPlanId, _ := ctx.URLParamInt("scenarioId")
 
-	scenario, err := c.ScenarioService.GetById(uint(scenarioId))
+	var scenarioId uint
+
+	if designFor == consts.DesignForFunctionalTest.String() {
+		scenarioId = uint(scenarioOrPlanId)
+	} else if designFor == consts.DesignForPerformanceTest.String() {
+		scenarioId, _ = c.PerformanceTestPlanService.GetScenarioId(scenarioOrPlanId)
+	}
+
+	scenario, err := c.ScenarioService.GetById(scenarioId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

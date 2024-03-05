@@ -17,10 +17,11 @@ import (
 )
 
 type PerformanceTestPlanRepo struct {
-	DB                      *gorm.DB `inject:""`
-	*BaseRepo               `inject:""`
-	ProjectRepo             *ProjectRepo             `inject:""`
-	PerformanceTestPlanRepo *PerformanceTestPlanRepo `inject:""`
+	DB               *gorm.DB `inject:""`
+	*BaseRepo        `inject:""`
+	ProjectRepo      *ProjectRepo      `inject:""`
+	ScenarioRepo     *ScenarioRepo     `inject:""`
+	ScenarioNodeRepo *ScenarioNodeRepo `inject:""`
 }
 
 func (r *PerformanceTestPlanRepo) Paginate(req v1.PerformanceTestPlanReqPaginate, projectId int) (data _domain.PageData, err error) {
@@ -87,6 +88,27 @@ func (r *PerformanceTestPlanRepo) Get(id uint) (performanceTestPlan model.Perfor
 }
 
 func (r *PerformanceTestPlanRepo) Create(performanceTestPlan model.PerformanceTestPlan) (ret model.PerformanceTestPlan, err error) {
+	scenario := model.Scenario{
+
+		Status:    consts.Draft,
+		DesignFor: consts.DesignForPerformanceTest,
+
+		ProjectId:      performanceTestPlan.ProjectId,
+		CreateUserName: performanceTestPlan.CreateUserName,
+		CreateUserId:   performanceTestPlan.CreateUserId,
+	}
+
+	scenario, err = r.ScenarioRepo.Create(scenario)
+	if err != nil {
+		return
+	}
+	_, err = r.ScenarioNodeRepo.CreateDefault(scenario.ID, scenario.ProjectId, scenario.CreateUserId)
+	if err != nil {
+		return
+	}
+
+	performanceTestPlan.ScenarioId = scenario.ID
+
 	err = r.DB.Model(&model.PerformanceTestPlan{}).Create(&performanceTestPlan).Error
 	if err != nil {
 		logUtils.Errorf("add performanceTestPlan error", zap.String("error:", err.Error()))
@@ -115,6 +137,10 @@ func (r *PerformanceTestPlanRepo) Update(req model.PerformanceTestPlan) error {
 }
 
 func (r *PerformanceTestPlanRepo) DeleteById(id uint) (err error) {
+	po, _ := r.Get(id)
+
+	r.ScenarioRepo.DeleteById(po.ScenarioId)
+
 	err = r.DB.Model(&model.PerformanceTestPlan{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {

@@ -15,6 +15,7 @@ type PerformanceTestPlanModule struct {
 func (m *PerformanceTestPlanModule) Party() module.WebModule {
 	handler := func(index iris.Party) {
 		index.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
+
 		index.Get("/", m.PerformanceTestPlanCtrl.List).Name = "性能测试计划列表"
 		index.Get("/{id:uint}", m.PerformanceTestPlanCtrl.Get).Name = "性能测试计划详情"
 		index.Post("/", m.PerformanceTestPlanCtrl.Create).Name = "新建性能测试计划"

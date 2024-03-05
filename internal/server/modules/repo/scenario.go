@@ -26,7 +26,7 @@ type ScenarioRepo struct {
 
 func (r *ScenarioRepo) ListByProject(projectId int) (pos []model.Scenario, err error) {
 	err = r.DB.
-		Where("project_id=?", projectId).
+		Where("project_id=? AND design_for = ?", projectId, consts.DesignForFunctionalTest).
 		Where("NOT deleted").
 		Find(&pos).Error
 	return
@@ -45,8 +45,8 @@ func (r *ScenarioRepo) Paginate(req v1.ScenarioReqPaginate, projectId int) (data
 	}
 
 	db := r.DB.Model(&model.Scenario{}).
-		Where("project_id = ? AND NOT deleted",
-			projectId)
+		Where("project_id = ? AND design_for = ? AND NOT deleted",
+			projectId, consts.DesignForFunctionalTest)
 
 	if len(categoryIds) > 0 {
 		db.Where("category_id IN(?)", categoryIds)
@@ -115,12 +115,6 @@ func (r *ScenarioRepo) FindByName(scenarioName string, id uint) (scenario model.
 }
 
 func (r *ScenarioRepo) Create(scenario model.Scenario) (ret model.Scenario, err error) {
-	//po, err := r.FindExpressionByName(scenario.Name, 0)
-	//if po.Name != "" {
-	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
-	//	return
-	//}
-
 	err = r.DB.Model(&model.Scenario{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))

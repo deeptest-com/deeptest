@@ -266,6 +266,17 @@ const (
 	ScenarioDebug UsedBy = "scenario_debug"
 )
 
+type DesignScenarioFor string
+
+const (
+	DesignForFunctionalTest  DesignScenarioFor = "functional_test"
+	DesignForPerformanceTest DesignScenarioFor = "performance_test"
+)
+
+func (e DesignScenarioFor) String() string {
+	return string(e)
+}
+
 type CaseType string
 
 const (
@@ -451,7 +462,11 @@ type ProcessorCategory string
 
 const (
 	ProcessorRoot ProcessorCategory = "processor_root"
-	//ProcessorThreadGroup ProcessorCategory = "processor_thread_group"
+
+	ProcessorPerformanceRunners   ProcessorCategory = "processor_performance_runners"
+	ProcessorPerformanceRunner    ProcessorCategory = "processor_performance_runner"
+	ProcessorPerformanceScenarios ProcessorCategory = "processor_performance_scenarios"
+	ProcessorPerformanceScenario  ProcessorCategory = "processor_performance_scenario"
 
 	ProcessorInterface ProcessorCategory = "processor_interface"
 	ProcessorGroup     ProcessorCategory = "processor_group"
@@ -475,7 +490,11 @@ type ProcessorType string
 
 const (
 	ProcessorRootDefault ProcessorType = "processor_root_default"
-	//ProcessorThreadDefault ProcessorType = "processor_thread_default"
+
+	ProcessorPerformanceRunnersDefault   ProcessorCategory = "processor_performance_runners_default"
+	ProcessorPerformanceRunnerDefault    ProcessorCategory = "processor_performance_runner_default"
+	ProcessorPerformanceScenariosDefault ProcessorCategory = "processor_performance_scenarios_default"
+	ProcessorPerformanceScenarioDefault  ProcessorCategory = "processor_performance_scenario_default"
 
 	ProcessorInterfaceDefault ProcessorType = "processor_interface_default"
 	ProcessorGroupDefault     ProcessorType = "processor_group_default"

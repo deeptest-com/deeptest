@@ -9,6 +9,8 @@ type PerformanceTestPlan struct {
 	Name    string  `json:"name" yaml:"name"`
 	Desc    string  `json:"desc" yaml:"desc"`
 
+	ScenarioId uint `json:"scenarioId"`
+
 	Processor      Processor         `json:"processor" yaml:"processor" gorm:"-"`
 	CategoryId     int64             `json:"categoryId"`
 	ServeId        uint              `json:"serveId"`

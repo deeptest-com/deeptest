@@ -23,6 +23,8 @@ type Scenario struct {
 	Priority       string            `json:"priority"`
 	Type           consts.TestType   `json:"type"`
 	CurrEnvId      uint              `json:"currEnvId"`
+
+	DesignFor consts.DesignScenarioFor `gorm:"default:'functional_test'" json:"designFor"`
 }
 
 func (Scenario) TableName() string {

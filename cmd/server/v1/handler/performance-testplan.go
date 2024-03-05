@@ -108,8 +108,8 @@ func (c *PerformanceTestPlanCtrl) Create(ctx iris.Context) {
 	}
 
 	req.ProjectId = uint(projectId)
-	req.CreateUserName = multi.GetUsername(ctx)
 	req.CreateUserId = multi.GetUserId(ctx)
+	req.CreateUserName = multi.GetUsername(ctx)
 	req.Status = consts.Draft
 
 	po, err := c.PerformanceTestPlanService.Create(req)

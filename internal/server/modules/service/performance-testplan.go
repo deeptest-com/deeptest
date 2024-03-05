@@ -37,8 +37,6 @@ func (s *PerformanceTestPlanService) GetById(id uint) (performanceTestPlan model
 func (s *PerformanceTestPlanService) Create(req model.PerformanceTestPlan) (po model.PerformanceTestPlan, err error) {
 	po, err = s.PerformanceTestPlanRepo.Create(req)
 
-	//s.PerformanceTestPlanNodeRepo.CreateDefault(po.ID, req.ProjectId, req.CreateUserId)
-
 	return
 }
 
@@ -52,5 +50,13 @@ func (s *PerformanceTestPlanService) DeleteById(id uint) error {
 
 func (s *PerformanceTestPlanService) UpdateStatus(id uint, status consts.TestStatus, updateUserId uint, updateUserName string) (err error) {
 	err = s.PerformanceTestPlanRepo.UpdateStatus(id, status, updateUserId, updateUserName)
+	return
+}
+
+func (s *PerformanceTestPlanService) GetScenarioId(planId int) (scenarioId uint, err error) {
+	po, err := s.PerformanceTestPlanRepo.Get(uint(planId))
+
+	scenarioId = po.ScenarioId
+
 	return
 }

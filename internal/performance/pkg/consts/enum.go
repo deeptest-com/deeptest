@@ -3,7 +3,7 @@ package ptconsts
 type TestRole string
 
 const (
-	Conductor TestRole = "Conductor"
+	Conductor TestRole = "conductor"
 	Runner    TestRole = "runner"
 )
 

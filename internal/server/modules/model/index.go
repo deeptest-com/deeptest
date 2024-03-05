@@ -68,6 +68,7 @@ var (
 		&PerformanceTestPlan{},
 		&ProcessorPerformanceRunner{},
 		&ProcessorPerformanceScenario{},
+		&ProcessorPerformanceStage{},
 
 		&ScenarioReport{},
 		&PlanReport{},

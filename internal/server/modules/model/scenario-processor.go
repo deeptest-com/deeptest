@@ -2,6 +2,7 @@ package model
 
 import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 	"time"
@@ -239,10 +240,26 @@ func (ProcessorPerformanceRunner) TableName() string {
 type ProcessorPerformanceScenario struct {
 	BaseModel
 	agentExec.ProcessorEntityBase
+
+	GeneratorType ptconsts.GeneratorType `json:"generatorType"`
+
+	Stages []ProcessorPerformanceStage `gorm:"-" json:"stages"`
 }
 
 func (ProcessorPerformanceScenario) TableName() string {
 	return "biz_processor_performance_scenario"
+}
+
+type ProcessorPerformanceStage struct {
+	BaseModel
+	agentExec.ProcessorEntityBase
+
+	Duration int `json:"duration"`
+	Target   int `json:"target"`
+}
+
+func (ProcessorPerformanceStage) TableName() string {
+	return "biz_processor_performance_stage"
 }
 
 type ProcessorComm struct {

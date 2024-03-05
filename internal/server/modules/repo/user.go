@@ -705,8 +705,13 @@ func (r *UserRepo) GetUserIdNameMap(tenantId consts.TenantId, ids []uint) map[ui
 
 func (r *UserRepo) GetByUsernameOrEmail(tenantId consts.TenantId, username, email string, ids ...uint) (user model.SysUser, err error) {
 	db := r.GetDB(tenantId).Model(&model.SysUser{}).
-		Where("NOT deleted").
-		Where("username = ? OR email = ?", username, email)
+		Where("NOT deleted")
+
+	if email == "" {
+		db = db.Where("username = ?", username)
+	} else {
+		db = db.Where("username = ? OR email = ?", username, email)
+	}
 
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])

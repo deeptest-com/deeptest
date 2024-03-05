@@ -8,7 +8,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -128,7 +127,9 @@ func ProjectPerm() iris.Handler {
 			}
 		} else {
 			userName := multi.GetUsername(ctx)
-			SetIsAdminCache(tenantId, userName)
+
+			roleService := new(integrationService.RoleService)
+			roleService.SetIsSuperAdminCache(tenantId, userName)
 		}
 
 		ctx.Next()
@@ -220,31 +221,6 @@ func GetProjectRolePerm(tenantId consts.TenantId, roleId, permId uint) (data Pro
 		Where("project_role_id = ?", roleId).
 		Where("project_perm_id = ?", permId).
 		First(&data).Error
-	return
-}
-
-func SetIsAdminCache(tenantId consts.TenantId, username string) (ret bool, err error) {
-	redisKey := string(tenantId) + "-" + "isAdmin-" + username
-	isAdmin, err := cache.GetCacheString(redisKey)
-	if err == nil {
-		if isAdmin == serverConsts.IsAdminRole {
-			ret = true
-		}
-		return ret, nil
-	}
-
-	roleService := new(integrationService.RoleService)
-	ret, err = roleService.IsSuperAdmin(tenantId, username)
-	if err != nil {
-		return
-	}
-
-	if ret {
-		err = cache.SetCache(redisKey, serverConsts.IsAdminRole, time.Hour*4)
-	} else {
-		err = cache.SetCache(redisKey, serverConsts.IsNotAdminRole, time.Hour*4)
-	}
-
 	return
 }
 

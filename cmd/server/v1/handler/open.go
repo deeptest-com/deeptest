@@ -5,8 +5,6 @@ import (
 	"github.com/aaronchen2k/deeptest/integration/enum"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -16,6 +14,7 @@ import (
 type OpenCtrl struct {
 	ProjectService            *service.ProjectService            `inject:""`
 	IntegrationProjectService *integrationService.ProjectService `inject:""`
+	IntegrationRoleService    *integrationService.RoleService    `inject:""`
 	BaseCtrl
 }
 
@@ -72,9 +71,9 @@ func (c *OpenCtrl) GetProjectRole(ctx iris.Context) {
 
 	var role string
 	var err error
-	redisKey := string(tenantId) + "-" + "isAdmin-" + username
-	isAdmin, _ := cache.GetCacheString(redisKey)
-	if config.CONFIG.System.SysEnv == "ly" && isAdmin == serverConsts.IsAdminRole {
+	isAdmin, _ := c.IntegrationRoleService.SetIsSuperAdminCache(tenantId, username)
+
+	if config.CONFIG.System.SysEnv == "ly" && isAdmin {
 		role = enum.SuperAdmin
 	} else {
 		role, err = c.ProjectService.GetProjectRole(tenantId, username, projectCode)

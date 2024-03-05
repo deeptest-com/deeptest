@@ -222,6 +222,29 @@ func (ProcessorCustomCode) TableName() string {
 	return "biz_processor_custom_code"
 }
 
+type ProcessorPerformanceRunner struct {
+	BaseModel
+	agentExec.ProcessorEntityBase
+
+	Ip       string `json:"ip"`
+	WebPort  uint   `json:"webPort"`
+	GrpcPort uint   `json:"grpcPort"`
+	Weight   uint   `json:"weight"`
+}
+
+func (ProcessorPerformanceRunner) TableName() string {
+	return "biz_processor_performance_runner"
+}
+
+type ProcessorPerformanceScenario struct {
+	BaseModel
+	agentExec.ProcessorEntityBase
+}
+
+func (ProcessorPerformanceScenario) TableName() string {
+	return "biz_processor_performance_scenario"
+}
+
 type ProcessorComm struct {
 	Id uint `json:"id" yaml:"id"`
 	agentExec.ProcessorEntityBase

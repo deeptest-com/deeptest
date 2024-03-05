@@ -59,6 +59,11 @@ func (r *ScenarioProcessorRepo) GetEntity(processorId uint) (ret interface{}, er
 	case consts.ProcessorCustomCode:
 		ret, _ = r.GetCustomCode(processor)
 
+	case consts.ProcessorPerformanceRunner:
+		ret, _ = r.GetPerformanceRunner(processor)
+	case consts.ProcessorPerformanceScenario:
+		ret, _ = r.GetPerformanceScenario(processor)
+
 	default:
 	}
 
@@ -322,6 +327,33 @@ func (r *ScenarioProcessorRepo) GetCookieById(id uint) (ret model.ProcessorCooki
 }
 
 func (r *ScenarioProcessorRepo) GetAssertion(processor model.Processor) (ret model.ProcessorAssertion, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
+
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
+	} else {
+		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
+	}
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) GetPerformanceRunner(processor model.Processor) (ret model.ProcessorPerformanceRunner, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
+
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
+	} else {
+		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
+	}
+
+	return
+}
+func (r *ScenarioProcessorRepo) GetPerformanceScenario(processor model.Processor) (ret model.ProcessorPerformanceScenario, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
 	if ret.ID == 0 {

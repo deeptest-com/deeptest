@@ -97,12 +97,15 @@ func (r *PerformanceTestPlanRepo) Create(performanceTestPlan model.PerformanceTe
 		CreateUserName: performanceTestPlan.CreateUserName,
 		CreateUserId:   performanceTestPlan.CreateUserId,
 	}
-
 	scenario, err = r.ScenarioRepo.Create(scenario)
 	if err != nil {
 		return
 	}
-	_, err = r.ScenarioNodeRepo.CreateDefault(scenario.ID, scenario.ProjectId, scenario.CreateUserId)
+	root, err := r.ScenarioNodeRepo.CreateDefault(scenario.ID, scenario.ProjectId, scenario.CreateUserId)
+	if err != nil {
+		return
+	}
+	err = r.ScenarioNodeRepo.CreateFoldersForPerformance(root.ID, scenario.ID, scenario.ProjectId, scenario.CreateUserId)
 	if err != nil {
 		return
 	}

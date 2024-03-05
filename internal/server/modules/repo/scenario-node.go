@@ -81,6 +81,33 @@ func (r *ScenarioNodeRepo) CreateDefault(scenarioId, projectId, createUserId uin
 
 	return
 }
+func (r *ScenarioNodeRepo) CreateFoldersForPerformance(parentId, scenarioId, projectId, createUserId uint) (err error) {
+	runnersPo := model.Processor{
+		ParentId:       parentId,
+		ScenarioId:     scenarioId,
+		ProjectId:      projectId,
+		Name:           "执行节点",
+		EntityCategory: consts.ProcessorPerformanceRunners,
+		EntityType:     consts.ProcessorPerformanceRunnersDefault,
+		EntityId:       0,
+		CreatedBy:      createUserId,
+	}
+	err = r.DB.Create(&runnersPo).Error
+
+	scenariosPo := model.Processor{
+		ParentId:       parentId,
+		ScenarioId:     scenarioId,
+		ProjectId:      projectId,
+		Name:           "性能场景",
+		EntityCategory: consts.ProcessorPerformanceScenarios,
+		EntityType:     consts.ProcessorPerformanceScenariosDefault,
+		EntityId:       0,
+		CreatedBy:      createUserId,
+	}
+	err = r.DB.Create(&scenariosPo).Error
+
+	return
+}
 
 func (r *ScenarioNodeRepo) Save(processor *model.Processor) (err error) {
 	err = r.DB.Save(processor).Error

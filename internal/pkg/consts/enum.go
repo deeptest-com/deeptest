@@ -491,10 +491,10 @@ type ProcessorType string
 const (
 	ProcessorRootDefault ProcessorType = "processor_root_default"
 
-	ProcessorPerformanceRunnersDefault   ProcessorCategory = "processor_performance_runners_default"
-	ProcessorPerformanceRunnerDefault    ProcessorCategory = "processor_performance_runner_default"
-	ProcessorPerformanceScenariosDefault ProcessorCategory = "processor_performance_scenarios_default"
-	ProcessorPerformanceScenarioDefault  ProcessorCategory = "processor_performance_scenario_default"
+	ProcessorPerformanceRunnersDefault   ProcessorType = "processor_performance_runners_default"
+	ProcessorPerformanceRunnerDefault    ProcessorType = "processor_performance_runner_default"
+	ProcessorPerformanceScenariosDefault ProcessorType = "processor_performance_scenarios_default"
+	ProcessorPerformanceScenarioDefault  ProcessorType = "processor_performance_scenario_default"
 
 	ProcessorInterfaceDefault ProcessorType = "processor_interface_default"
 	ProcessorGroupDefault     ProcessorType = "processor_group_default"

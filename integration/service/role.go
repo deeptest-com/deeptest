@@ -91,9 +91,9 @@ func (s *RoleService) SetIsSuperAdminCache(tenantId consts.TenantId, username st
 
 	redisKey := string(tenantId) + "-" + "isAdmin-" + username
 	if ret {
-		err = cache.SetCache(redisKey, serverConsts.IsAdminRole, time.Hour*4)
+		err = cache.SetCache(redisKey, serverConsts.IsAdminRole, time.Second*30)
 	} else {
-		err = cache.SetCache(redisKey, serverConsts.IsNotAdminRole, time.Hour*4)
+		err = cache.SetCache(redisKey, serverConsts.IsNotAdminRole, time.Second*30)
 	}
 
 	return

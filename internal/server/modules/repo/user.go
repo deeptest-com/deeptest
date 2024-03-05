@@ -367,7 +367,7 @@ func (r *UserRepo) IsAdminUser(tenantId consts.TenantId, id uint) (ret bool, err
 			ret = true
 		}
 
-		return ret, err
+		return ret, nil
 	}
 
 	return arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil

@@ -48,7 +48,7 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, ex
 			DealwithExtractorCondition(condition, resp, &postConditions, execUuid)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
-			DealwithResponseDefineCondition(condition, resp, &resultStatus, &postConditions)
+			//DealwithResponseDefineCondition(condition, resp, &resultStatus, &postConditions)
 		}
 	}
 

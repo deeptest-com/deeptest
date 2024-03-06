@@ -39,14 +39,15 @@ func CountInterfaceStat(execUuid string, result *agentDomain.ScenarioExecResult)
 			stat.CheckpointFail += 1
 			result.ResultStatus = consts.Fail
 		}
-
-		if item.Type != consts.ConditionTypeResponseDefine {
-			var responseDefineBase domain.ResponseDefineBase
-			json.Unmarshal(item.Raw, &responseDefineBase)
-			if responseDefineBase.Disabled {
-				continue
+		/*
+			if item.Type != consts.ConditionTypeResponseDefine {
+				var responseDefineBase domain.ResponseDefineBase
+				json.Unmarshal(item.Raw, &responseDefineBase)
+				if responseDefineBase.Disabled {
+					continue
+				}
 			}
-		}
+		*/
 	}
 
 	if result.ResultStatus == consts.Pass {

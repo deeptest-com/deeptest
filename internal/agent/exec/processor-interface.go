@@ -148,7 +148,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 				processor.ID, processor.ParentId, &processor.Result.PostConditions, session.ExecUuid)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
-			entity.DealwithResponseDefineCondition(condition, &interfaceStatus, &processor.Result.PostConditions, detail, session.ExecUuid)
+			//entity.DealwithResponseDefineCondition(condition, &interfaceStatus, &processor.Result.PostConditions, detail, session.ExecUuid)
 
 		}
 	}

@@ -61,6 +61,7 @@ func (s *SwaggerCron) Run(options map[string]interface{}) (f func() error) {
 		err = s.EndpointInterfaceService.ImportEndpointData(tenantId, req)
 		if err != nil {
 			logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
+			return err
 		}
 
 		//更新实现执行时间

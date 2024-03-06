@@ -783,6 +783,7 @@ func (s *ThirdPartySyncService) GetEngineeringOptions(baseUrl string) (ret []int
 func (s *ThirdPartySyncService) GetServiceOptions(engineering, baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
 	token, err := s.GetToken(baseUrl)
 	if err != nil {
+		err = errors.New("您输入的环境URL地址有误")
 		return
 	}
 
@@ -798,6 +799,7 @@ func (s *ThirdPartySyncService) GetServiceOptions(engineering, baseUrl string) (
 func (s *ThirdPartySyncService) GetAllServiceList(baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
 	token, err := s.GetToken(baseUrl)
 	if err != nil {
+		err = errors.New("您输入的环境URL地址有误")
 		return
 	}
 

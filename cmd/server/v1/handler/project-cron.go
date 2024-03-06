@@ -263,7 +263,7 @@ func (c *ProjectCronCtrl) EngineeringOptions(ctx iris.Context) {
 
 	data, err := c.ThirdPartySyncService.GetEngineeringOptions(url)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -292,7 +292,7 @@ func (c *ProjectCronCtrl) ServiceOptions(ctx iris.Context) {
 
 	data, err := c.ThirdPartySyncService.GetServiceOptions(engineering, url)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
@@ -318,7 +318,7 @@ func (c *ProjectCronCtrl) AllServiceList(ctx iris.Context) {
 
 	data, err := c.ThirdPartySyncService.GetAllServiceList(url)
 	if err != nil {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 

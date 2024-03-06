@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
+	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -352,10 +353,21 @@ func (r *UserRepo) InviteToProject(tenantId consts.TenantId, req serverDomain.In
 	return
 }
 
-func (r *UserRepo) IsAdminUser(tenantId consts.TenantId, id uint) (bool, error) {
+func (r *UserRepo) IsAdminUser(tenantId consts.TenantId, id uint) (ret bool, err error) {
 	user, err := r.FindDetailById(tenantId, id)
 	if err != nil {
-		return false, err
+		return
+	}
+
+	if config.CONFIG.System.SysEnv == "ly" {
+		redisKey := string(tenantId) + "-" + "isAdmin-" + user.Username
+		isAdminStr, err := cache.GetCacheString(redisKey)
+
+		if err == nil && isAdminStr == serverConsts.IsAdminRole {
+			ret = true
+		}
+
+		return ret, nil
 	}
 
 	return arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil
@@ -693,8 +705,13 @@ func (r *UserRepo) GetUserIdNameMap(tenantId consts.TenantId, ids []uint) map[ui
 
 func (r *UserRepo) GetByUsernameOrEmail(tenantId consts.TenantId, username, email string, ids ...uint) (user model.SysUser, err error) {
 	db := r.GetDB(tenantId).Model(&model.SysUser{}).
-		Where("NOT deleted").
-		Where("username = ? OR email = ?", username, email)
+		Where("NOT deleted")
+
+	if email == "" {
+		db = db.Where("username = ?", username)
+	} else {
+		db = db.Where("username = ? OR email = ?", username, email)
+	}
 
 	if len(ids) == 1 {
 		db.Where("id != ?", ids[0])

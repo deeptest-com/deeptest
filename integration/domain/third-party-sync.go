@@ -176,3 +176,9 @@ type MlServiceQueryAgentRes struct {
 	ThirdPartyCommonRes
 	Data []ServiceItem `json:"data"`
 }
+
+type UserRoleItem struct {
+	Id        uint   `json:"id"`
+	RoleName  string `json:"roleName"`
+	RoleValue string `json:"roleValue"`
+}

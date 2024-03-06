@@ -224,7 +224,7 @@ func (r *ScenarioRepo) AddPlans(tenantId consts.TenantId, scenarioId uint, planI
 	relations, _ := r.ListScenarioRelation(tenantId, scenarioId)
 	existMap := map[uint]bool{}
 	for _, item := range relations {
-		existMap[item.ScenarioId] = true
+		existMap[item.PlanId] = true
 	}
 
 	var pos []model.RelaPlanScenario

@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
@@ -567,8 +568,13 @@ func (r *ServeRepo) AddDefaultServer(tenantId consts.TenantId, projectId, serveI
 			Url:           serverConsts.DefaultSever,
 		}
 		if v.Name == "Mock环境" {
-			host, _ := cache.GetCacheString("host")
-			server.Url = host + "/mocks/" + strconv.Itoa(int(serveId))
+			host, _ := cache.GetCacheString(fmt.Sprintf("%s_host", tenantId))
+			if config.CONFIG.Saas.Switch {
+				server.Url = host + "/lya/mocks/" + strconv.Itoa(int(serveId))
+			} else {
+				server.Url = host + "/mocks/" + strconv.Itoa(int(serveId))
+			}
+
 		}
 		defaultServer = append(defaultServer, server)
 	}

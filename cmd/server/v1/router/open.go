@@ -9,6 +9,7 @@ import (
 
 type OpenModule struct {
 	OpenCtrl *handler.OpenCtrl `inject:""`
+	DataCtrl *handler.DataCtrl `inject:""`
 }
 
 func (m *OpenModule) Party() module.WebModule {
@@ -18,6 +19,7 @@ func (m *OpenModule) Party() module.WebModule {
 		index.Get("/getProjectsBySpace", m.OpenCtrl.GetProjectsBySpace).Name = "获取空间关联的项目列表"
 		index.Post("/saveSpaceRelatedProjects", m.OpenCtrl.SaveSpaceRelatedProjects).Name = "保存空间和项目的关系"
 		index.Get("/getProjectRole", m.OpenCtrl.GetProjectRole).Name = "获取用户项目角色"
+		index.Post("/initdb", m.DataCtrl.Init)
 	}
 
 	return module.NewModule("/openApi", handler)

@@ -6,3 +6,9 @@ const (
 	Lecang AppName = "lecang"
 	Leyan  AppName = "leyan"
 )
+
+type RoleValue string
+
+const (
+	SuperAdmin = "super-admin"
+)

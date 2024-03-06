@@ -404,7 +404,7 @@ func (s *ServeService) AddServerForHistory(tenantId consts.TenantId, req v1.Hist
 			if err != nil {
 				return
 			}
-			host, _ := cache.GetCacheString("host")
+			host, _ := cache.GetCacheString(fmt.Sprintf("%s_host", tenantId))
 
 			//新增Mock环境
 			if server.ID == 0 {

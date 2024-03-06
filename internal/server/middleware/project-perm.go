@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
@@ -106,10 +107,10 @@ func (SysRole) TableName() string {
 // ProjectPerm  项目权限权鉴中间件
 func ProjectPerm() iris.Handler {
 	return func(ctx *context.Context) {
+		tenantId := common.GetTenantId(ctx)
+
 		if config.CONFIG.System.SysEnv != "ly" {
 			userId := multi.GetUserId(ctx)
-			tenantId := common.GetTenantId(ctx)
-
 			isAdminUser, err := IsAdminUser(tenantId, userId)
 			if err != nil {
 				ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Data: nil, Msg: "系统异常，请重新登录或者联系管理员"})
@@ -124,6 +125,11 @@ func ProjectPerm() iris.Handler {
 					return
 				}
 			}
+		} else {
+			userName := multi.GetUsername(ctx)
+
+			roleService := new(integrationService.RoleService)
+			roleService.SetIsSuperAdminCache(tenantId, userName)
 		}
 
 		ctx.Next()
@@ -218,13 +224,15 @@ func GetProjectRolePerm(tenantId consts.TenantId, roleId, permId uint) (data Pro
 	return
 }
 
-func IsAdminUser(tenantId consts.TenantId, id uint) (bool, error) {
+func IsAdminUser(tenantId consts.TenantId, id uint) (ret bool, err error) {
 	user, err := FindUserDetailById(tenantId, id)
 	if err != nil {
 		return false, err
 	}
 
-	return arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil
+	ret, err = arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil
+
+	return
 }
 
 func FindUserDetailById(tenantId consts.TenantId, id uint) (user v1.UserResp, err error) {

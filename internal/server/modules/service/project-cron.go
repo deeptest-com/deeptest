@@ -123,6 +123,7 @@ func (s *ProjectCronService) Clone(tenantId consts.TenantId, id, userId uint) (r
 	oldCron.ID = 0
 	oldCron.CreateUserId = userId
 	oldCron.UpdatedAt = nil
+	oldCron.Name = oldCron.Name + "_copy"
 	ret, err = s.Save(tenantId, oldCron)
 
 	return

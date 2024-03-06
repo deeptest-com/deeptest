@@ -114,13 +114,24 @@ func (s *ProjectCronService) Clone(tenantId consts.TenantId, id, userId uint) (r
 		return
 	}
 
-	oldCron.ID = 0
-	oldCron.CreateUserId = userId
-	oldCron.UpdatedAt = nil
-	oldCron.Name = oldCron.Name + "_copy"
+	s.initClone(&oldCron, userId)
 	ret, err = s.Save(tenantId, oldCron)
 
 	return
+}
+
+func (s *ProjectCronService) initClone(cron *model.ProjectCron, userId uint) {
+	if cron == nil {
+		return
+	}
+
+	cron.ID = 0
+	cron.CreateUserId = userId
+	cron.UpdatedAt = nil
+	cron.Name = cron.Name + "_copy"
+	cron.ExecStatus = ""
+	cron.ExecErr = ""
+	cron.ExecTime = nil
 }
 
 func (s *ProjectCronService) UpdateSwitchStatus(tenantId consts.TenantId, id uint, switchStatus consts.SwitchStatus) (err error) {

@@ -1,6 +1,7 @@
 package source
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -329,8 +330,8 @@ func (s *MockJsExpressionSource) GetSources() (ret []model.MockJsExpression, err
 	return
 }
 
-func (s *MockJsExpressionSource) Init() error {
-	if s.MockJsExpressionRepo.DB.Model(&model.MockJsExpression{}).
+func (s *MockJsExpressionSource) Init(tenantId consts.TenantId) error {
+	if s.MockJsExpressionRepo.GetDB(tenantId).Model(&model.MockJsExpression{}).
 		//Where("id IN ?", []int{1}).
 		Find(&[]model.MockJsExpression{}).RowsAffected > 0 {
 		color.Danger.Printf("\n[Mysql] --> %s 表的初始数据已存在!", model.MockJsExpression{}.TableName())
@@ -342,7 +343,7 @@ func (s *MockJsExpressionSource) Init() error {
 		return err
 	}
 
-	if _, _, err := s.MockJsExpressionRepo.BatchCreateExpression(sources); err != nil {
+	if _, _, err := s.MockJsExpressionRepo.BatchCreateExpression(tenantId, sources); err != nil {
 		return err
 	}
 

@@ -28,6 +28,7 @@ type CategoryCtrl struct {
 // @success	200	{object}	_domain.Response{data=serverDomain.Category}
 // @Router	/api/v1/categories/load	[get]
 func (c *CategoryCtrl) LoadTree(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -39,7 +40,7 @@ func (c *CategoryCtrl) LoadTree(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.CategoryService.GetTree(serverConsts.CategoryDiscriminator(typ), projectId)
+	data, err := c.CategoryService.GetTree(tenantId, serverConsts.CategoryDiscriminator(typ), projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -60,13 +61,14 @@ func (c *CategoryCtrl) LoadTree(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Category}
 // @Router	/api/v1/categories/{id}	[get]
 func (c *CategoryCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	po, err := c.CategoryService.Get(id)
+	po, err := c.CategoryService.Get(tenantId, id)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -86,6 +88,7 @@ func (c *CategoryCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Category}
 // @Router	/api/v1/categories	[post]
 func (c *CategoryCtrl) Create(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -101,7 +104,7 @@ func (c *CategoryCtrl) Create(ctx iris.Context) {
 
 	req.ProjectId = uint(projectId)
 
-	nodePo, bizErr := c.CategoryService.Create(req)
+	nodePo, bizErr := c.CategoryService.Create(tenantId, req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -123,6 +126,7 @@ func (c *CategoryCtrl) Create(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.CategoryReq}
 // @Router	/api/v1/categories	[put]
 func (c *CategoryCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.CategoryReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -130,7 +134,7 @@ func (c *CategoryCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.CategoryService.Update(req)
+	err = c.CategoryService.Update(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -151,6 +155,7 @@ func (c *CategoryCtrl) Update(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/categories/{id}/updateName	[put]
 func (c *CategoryCtrl) UpdateName(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.CategoryReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -159,7 +164,7 @@ func (c *CategoryCtrl) UpdateName(ctx iris.Context) {
 		return
 	}
 
-	err = c.CategoryService.UpdateName(req)
+	err = c.CategoryService.UpdateName(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -180,6 +185,7 @@ func (c *CategoryCtrl) UpdateName(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/categories/{id}	[delete]
 func (c *CategoryCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -193,7 +199,7 @@ func (c *CategoryCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.CategoryService.Delete(serverConsts.CategoryDiscriminator(typ), uint(projectId), uint(id))
+	err = c.CategoryService.Delete(tenantId, serverConsts.CategoryDiscriminator(typ), uint(projectId), uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -213,6 +219,7 @@ func (c *CategoryCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/categories/move	[post]
 func (c *CategoryCtrl) Move(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
 	var req serverDomain.CategoryMoveReq
@@ -222,11 +229,25 @@ func (c *CategoryCtrl) Move(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.CategoryService.Move(uint(req.DragKey), uint(req.DropKey), req.DropPos, req.Type, uint(projectId))
+	_, err = c.CategoryService.Move(tenantId, uint(req.DragKey), uint(req.DropKey), req.DropPos, req.Type, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *CategoryCtrl) BatchAddSchemaRoot(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
+	var req serverDomain.BatchAddSchemaRootReq
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	go c.CategoryService.BatchAddSchemaRoot(tenantId, req.ProjectIds)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
@@ -241,7 +262,9 @@ func (c *CategoryCtrl) Move(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{}
 // @Router	/api/v1/categories/copy/{id}	[get]
 func (c *CategoryCtrl) Copy(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	targetId, err := ctx.Params().GetInt("id")
+
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -250,10 +273,12 @@ func (c *CategoryCtrl) Copy(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
 
-	err = c.CategoryService.Copy(uint(targetId), 0, userId, userName)
+	nodePo, err := c.CategoryService.Copy(tenantId, uint(targetId), 0, userId, userName)
+
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+
 	}
 
-	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: nodePo})
 }

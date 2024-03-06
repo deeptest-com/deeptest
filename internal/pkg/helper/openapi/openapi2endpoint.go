@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	schemaHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/schema"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/getkin/kin-openapi/openapi3"
@@ -18,7 +19,7 @@ type openapi2endpoint struct {
 	endpoints        []*model.Endpoint
 	dirs             *Dirs
 	components       map[string]*model.ComponentSchema
-	componentSchemas map[string]Schema
+	componentSchemas map[string]schemaHelper.Schema
 }
 
 type Dirs struct {

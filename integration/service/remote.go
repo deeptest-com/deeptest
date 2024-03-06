@@ -284,14 +284,16 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 	return
 }
 
-func (s *RemoteService) GetUserInfoByToken(token string) (user integrationDomain.UserInfo, err error) {
+func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token string) (user integrationDomain.UserInfo, err error) {
 	url := fmt.Sprintf("%s/api/v1/user/getUserInfo", config.CONFIG.ThirdParty.Url)
 
-	headers := make([]domain.Header, 0)
-	headers = append(headers, domain.Header{
-		Name:  "X-Token",
-		Value: token,
-	})
+	headers := []domain.Header{
+		{
+			Name:  "X-Token",
+			Value: token,
+		},
+		{Name: "tenantId", Value: string(tenantId)},
+	}
 
 	httpReq := domain.BaseRequest{
 		Url:      url,
@@ -299,15 +301,16 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user integrationDomain
 		Headers:  &headers,
 	}
 
+	logUtils.Infof("leyan-getUserInfoByToken: %s", _commUtils.JsonEncode(httpReq))
 	var resp domain.DebugResponse
 	resp, err = httpHelper.Get(httpReq)
 	if err != nil {
-		logUtils.Infof("meta get method detail failed, error, %s", err.Error())
+		logUtils.Errorf("meta get method detail failed, error, %s", err.Error())
 		return
 	}
 
 	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Infof("meta get method detail failed, response %v", resp)
+		logUtils.Errorf("meta get method detail failed, response %v", _commUtils.JsonEncode(resp))
 		err = fmt.Errorf("meta get method detail failed, response %v", resp)
 		return
 	}
@@ -319,15 +322,15 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user integrationDomain
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
-		logUtils.Infof(err.Error())
+		logUtils.Errorf(err.Error())
 	}
-
+	respContent.Data.UserInfo.Mail = respContent.Data.UserInfo.Username
 	user = respContent.Data.UserInfo
 
 	return
 }
 
-func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret integrationDomain.ProjectInfo, err error) {
+func (s *RemoteService) GetProjectInfo(tenantId consts.TenantId, token, spaceCode string) (ret integrationDomain.ProjectInfo, err error) {
 	url := fmt.Sprintf("%s/api/v1/project/info/%s", config.CONFIG.ThirdParty.Url, spaceCode)
 
 	httpReq := domain.BaseRequest{
@@ -338,6 +341,7 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret integration
 				Name:  "X-Token",
 				Value: token,
 			},
+			{Name: "tenantId", Value: string(tenantId)},
 		},
 	}
 
@@ -374,7 +378,7 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret integration
 	return
 }
 
-func (s *RemoteService) getHeaders(body string) (headers []domain.Header) {
+func (s *RemoteService) GetHeaders(tenantId consts.TenantId, body string) (headers []domain.Header) {
 	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
 	xNancalNonceStr := _commUtils.RandStr(8)
 
@@ -398,6 +402,10 @@ func (s *RemoteService) getHeaders(body string) (headers []domain.Header) {
 		{
 			Name:  "x-nancal-sign",
 			Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, body),
+		},
+		{
+			Name:  "tenantId",
+			Value: string(tenantId),
 		},
 	}
 
@@ -426,12 +434,7 @@ func (s *RemoteService) getLcHeaders(token string) (headers []domain.Header) {
 	return
 }
 
-func (s *RemoteService) getQueryAgentRequest(serviceCode string) interface{} {
-	res := struct {
-		ClassName string      `json:"className"`
-		QueryArgs interface{} `json:"queryArgs"`
-	}{}
-
+func (s *RemoteService) getLcMlClassQueryAgentRequest(serviceCode string) (res integrationDomain.QueryAgentReq) {
 	attrSet := []string{"objId", "code", "parentCode", "parentCodes", "businessClassType", "container", "lastUpdate", "remark", "rightClassCode", "rightClassName", "rightRelationShip", "rightRelationShipName", "leftClassCode", "leftClassName", "leftRelationShip", "leftRelationShipName", "serviceId", "type", "dialogSource", "className", "classIcon", "serviceCode", "name", "displayName", "displayClassName", "displayCreator", "displayModifier"}
 	conditionParam := integrationDomain.QueryAgentConditionParam{
 		Key:     "serviceCode",
@@ -439,28 +442,23 @@ func (s *RemoteService) getQueryAgentRequest(serviceCode string) interface{} {
 		Value:   serviceCode,
 	}
 
-	queryArgs := struct {
-		AttrSet   []string                                     `json:"attrSet"`
-		Condition []integrationDomain.QueryAgentConditionParam `json:"condition"`
-		Sort      struct {
-			SortBy    string `json:"sortBy"`
-			SortOrder string `json:"sortOrder"`
-		} `json:"sort"`
-	}{}
-	queryArgs.AttrSet = attrSet
-	queryArgs.Condition = []integrationDomain.QueryAgentConditionParam{conditionParam}
+	queryArgs := integrationDomain.QueryAgentQueryArgs{
+		AttrSet:   attrSet,
+		Condition: []integrationDomain.QueryAgentConditionParam{conditionParam},
+	}
+
 	queryArgs.Sort.SortBy = "code"
 	queryArgs.Sort.SortOrder = "asc"
 
 	res.ClassName = "MlClass"
 	res.QueryArgs = queryArgs
 
-	return res
+	return
 }
 
-func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []integrationDomain.FindClassByServiceCodeResData) {
+func (s *RemoteService) LcMlClassQueryAgent(serviceCode, token, baseUrl string) (ret []integrationDomain.FindClassByServiceCodeResData) {
 	url := fmt.Sprintf("%s/levault/mdlsvr/MlClass/QueryAgent", baseUrl)
-	req := s.getQueryAgentRequest(serviceCode)
+	req := s.getLcMlClassQueryAgentRequest(serviceCode)
 	body, err := json.Marshal(req)
 	if err != nil {
 		logUtils.Infof("marshal request data failed, error, %s", err.Error())
@@ -486,7 +484,7 @@ func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []
 		return
 	}
 
-	respContent := integrationDomain.QueryAgentRes{}
+	respContent := integrationDomain.MlClassQueryAgentRes{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
@@ -502,10 +500,10 @@ func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []
 	return
 }
 
-func (s *RemoteService) GetUserButtonPermissions(username string) (ret []string, err error) {
+func (s *RemoteService) GetUserButtonPermissions(tenantId consts.TenantId, username string) (ret []string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -521,7 +519,7 @@ func (s *RemoteService) GetUserButtonPermissions(username string) (ret []string,
 			},
 		},
 	}
-
+	logUtils.Infof("leyan-UserButtonPermissions,%s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get UserButtonPermissions failed, error, %s", err.Error())
@@ -599,10 +597,10 @@ func (s *RemoteService) LcQueryMsg(req integrationDomain.QueryMsgReq, token stri
 	return
 }
 
-func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret []integrationDomain.UserMenuPermission, err error) {
+func (s *RemoteService) GetUserMenuPermissions(tenantId consts.TenantId, username, spaceCode string) (ret []integrationDomain.UserMenuPermission, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenu", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -622,7 +620,7 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 			},
 		},
 	}
-
+	logUtils.Infof("leyan-GetUserMenuPermissions %s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get GetUserMenuPermissions failed, error, %s", err.Error())
@@ -656,10 +654,10 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 	return
 }
 
-func (s *RemoteService) GetSpaceRoles() (ret []integrationDomain.SpaceRole, err error) {
+func (s *RemoteService) GetSpaceRoles(tenantId consts.TenantId) (ret []integrationDomain.SpaceRole, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getSpaceInitRole", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -699,10 +697,10 @@ func (s *RemoteService) GetSpaceRoles() (ret []integrationDomain.SpaceRole, err 
 	return
 }
 
-func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
+func (s *RemoteService) GetRoleMenus(tenantId consts.TenantId, role string) (ret []string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getRoleMenus", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -748,10 +746,10 @@ func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
 	return
 }
 
-func (s *RemoteService) GetUserProductList(page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
+func (s *RemoteService) GetUserProductList(tenantId consts.TenantId, page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/listProductManageOptionSecrets", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -806,7 +804,7 @@ func (s *RemoteService) GetUserProductList(page, pageSize int, username string) 
 	return
 }
 
-func (s *RemoteService) GetProductListById(productIds []uint) (ret []integrationDomain.ProductBaseItem, err error) {
+func (s *RemoteService) GetProductListById(tenantId consts.TenantId, productIds []uint) (ret []integrationDomain.ProductBaseItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/listProductManage", config.CONFIG.ThirdParty.Url)
 
 	queryParams := make([]domain.Param, 0)
@@ -819,7 +817,7 @@ func (s *RemoteService) GetProductListById(productIds []uint) (ret []integration
 		queryParams = append(queryParams, paramTmp)
 	}
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
@@ -862,10 +860,10 @@ func (s *RemoteService) GetProductListById(productIds []uint) (ret []integration
 	return
 }
 
-func (s *RemoteService) GetSpacesByUsername(username string) (ret []integrationDomain.SpaceItem, err error) {
+func (s *RemoteService) GetSpacesByUsername(tenantId consts.TenantId, username string) (ret []integrationDomain.SpaceItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/project/user", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -912,7 +910,7 @@ func (s *RemoteService) GetSpacesByUsername(username string) (ret []integrationD
 	return
 }
 
-func (s *RemoteService) BatchGetSpacesByCode(spaceCodes []string) (ret []integrationDomain.SpaceItem, err error) {
+func (s *RemoteService) BatchGetSpacesByCode(tenantId consts.TenantId, spaceCodes []string) (ret []integrationDomain.SpaceItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/project/abbr", config.CONFIG.ThirdParty.Url)
 
 	queryParams := make([]domain.Param, 0)
@@ -924,7 +922,7 @@ func (s *RemoteService) BatchGetSpacesByCode(spaceCodes []string) (ret []integra
 		queryParams = append(queryParams, paramTmp)
 	}
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
@@ -965,7 +963,7 @@ func (s *RemoteService) BatchGetSpacesByCode(spaceCodes []string) (ret []integra
 	return
 }
 
-func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []integrationDomain.SpaceMembersAndRolesItem, err error) {
+func (s *RemoteService) BatchGetMembersBySpaces(tenantId consts.TenantId, spaceCodes []string) (ret []integrationDomain.SpaceMembersAndRolesItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/project/member/abbrs", config.CONFIG.ThirdParty.Url)
 
 	queryParams := make([]domain.Param, 0)
@@ -977,7 +975,7 @@ func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []inte
 		queryParams = append(queryParams, paramTmp)
 	}
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
@@ -1018,10 +1016,10 @@ func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []inte
 	return
 }
 
-func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
+func (s *RemoteService) ApprovalAndMsg(tenantId consts.TenantId, req string) (ret string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/approvalAndMsg", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders(req)
+	headers := s.GetHeaders(tenantId, req)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -1061,6 +1059,187 @@ func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
 	}
 
 	ret = respContent.Data.InstanceId
+
+	return
+}
+
+func (s *RemoteService) getLcContainerQueryAgentRequest() (res integrationDomain.QueryAgentReq) {
+	attrSet := []string{"displayClassName", "displayName", "code", "name", "projectManagerName", "lifeCycleState", "displayCreator", "createAt", "lastUpdate", "container", "objId", "className", "code", "tenantId"}
+	conditionParam := integrationDomain.QueryAgentConditionParam{
+		Key:     "containerRange",
+		Compare: "LIKE",
+		Value:   "all",
+	}
+
+	queryArgs := integrationDomain.QueryAgentQueryArgs{
+		AttrSet:   attrSet,
+		Condition: []integrationDomain.QueryAgentConditionParam{conditionParam},
+	}
+
+	queryArgs.Sort.SortBy = "createAt"
+	queryArgs.Sort.SortOrder = "desc"
+
+	res.ClassName = "Container"
+	res.QueryArgs = queryArgs
+
+	return
+}
+
+func (s *RemoteService) LcContainerQueryAgent(token, baseUrl string) (ret []integrationDomain.EngineeringItem) {
+	url := fmt.Sprintf("%s/levault/acnsvr/Container/QueryAgent", baseUrl)
+	req := s.getLcContainerQueryAgentRequest()
+	body, err := json.Marshal(req)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	headers := s.getLcHeaders(token)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     string(body),
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("LcContainerQueryAgent failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("LcContainerQueryAgent failed, response %v", resp)
+		return
+	}
+
+	respContent := integrationDomain.ContainerQueryAgentRes{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Mfail != "0" {
+		logUtils.Infof("LcContainerQueryAgent failed, response %v", resp.Content)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) getLcMlServiceQueryAgentRequest(engineering string) (res integrationDomain.QueryAgentReq) {
+	attrSet := []string{"className", "code", "langPrefix", "container", "codePrefix", "creator", "createAt", "modifier", "lastUpdate", "developMethod", "lifeCycleState", "objId", "tenantId", "name", "displayName", "displayClassName", "displayCreator", "displayModifier"}
+	conditionParam := integrationDomain.QueryAgentConditionParam{
+		Key:     "container",
+		Compare: "EQ",
+		Value:   engineering,
+	}
+
+	queryArgs := integrationDomain.QueryAgentQueryArgs{
+		AttrSet:   attrSet,
+		Condition: []integrationDomain.QueryAgentConditionParam{conditionParam},
+	}
+
+	queryArgs.Sort.SortBy = "lastUpdate"
+	queryArgs.Sort.SortOrder = "desc"
+
+	res.ClassName = "MlService"
+	res.QueryArgs = queryArgs
+
+	return
+}
+
+func (s *RemoteService) LcMlServiceQueryAgent(engineering, token, baseUrl string) (ret []integrationDomain.ServiceItem) {
+	url := fmt.Sprintf("%s/levault/mdlsvr/MlService/QueryAgent", baseUrl)
+	req := s.getLcMlServiceQueryAgentRequest(engineering)
+	body, err := json.Marshal(req)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	headers := s.getLcHeaders(token)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     string(body),
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("LcMlServiceQueryAgent failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("LcMlServiceQueryAgent failed, response %v", resp)
+		return
+	}
+
+	respContent := integrationDomain.MlServiceQueryAgentRes{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Mfail != "0" {
+		logUtils.Infof("LcMlServiceQueryAgent failed, response %v", resp.Content)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) LcAllServiceList(token, baseUrl string) (ret []integrationDomain.ServiceItem) {
+	url := fmt.Sprintf("%s/levault/mdlsvr/MlMessage/QueryListGroupClass", baseUrl)
+	req := struct {
+		ThisObj struct {
+			Content string `json:"content"`
+		} `json:"thisObj"`
+	}{}
+
+	body, err := json.Marshal(req)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	headers := s.getLcHeaders(token)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     string(body),
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("LcAllServiceList failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("LcAllServiceList failed, response %v", resp)
+		return
+	}
+
+	respContent := integrationDomain.MlServiceQueryAgentRes{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Mfail != "0" {
+		logUtils.Infof("LcAllServiceList failed, response %v", resp.Content)
+		return
+	}
+
+	ret = respContent.Data
 
 	return
 }

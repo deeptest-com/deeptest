@@ -3,6 +3,7 @@ package source
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/gookit/color"
@@ -35,10 +36,10 @@ func (s *ProjectPermSource) GetSources() []model.ProjectPerm {
 	return perms
 }
 
-func (s *ProjectPermSource) Init() error {
+func (s *ProjectPermSource) Init(tenantId consts.TenantId) error {
 	sources := s.GetSources()
 
-	successCount, failItems := s.ProjectPermRepo.CreateIfNotExist(sources)
+	successCount, failItems := s.ProjectPermRepo.CreateIfNotExist(tenantId, sources)
 	color.Info.Printf("\n[Mysql] --> %s 表成功初始化%d行数据,失败数据：%+v!\n", model.ProjectPerm{}.TableName(), successCount, failItems)
 
 	return nil

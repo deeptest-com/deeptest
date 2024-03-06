@@ -3,6 +3,7 @@ package repo
 import (
 	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -20,16 +21,16 @@ func NewEndpointDocumentRepo() *EndpointDocumentRepo {
 	return &EndpointDocumentRepo{}
 }
 
-func (r *EndpointDocumentRepo) ListByProject(projectId uint) (documents []model.EndpointDocument, err error) {
-	err = r.DB.Model(&model.EndpointDocument{}).
+func (r *EndpointDocumentRepo) ListByProject(tenantId consts.TenantId, projectId uint) (documents []model.EndpointDocument, err error) {
+	err = r.GetDB(tenantId).Model(&model.EndpointDocument{}).
 		Where("project_id = ?", projectId).
 		Find(&documents).Error
 
 	return
 }
 
-func (r *EndpointDocumentRepo) GetByVersionAndProject(version string, projectId uint) (document model.EndpointDocument, err error) {
-	err = r.DB.Model(&model.EndpointDocument{}).
+func (r *EndpointDocumentRepo) GetByVersionAndProject(tenantId consts.TenantId, version string, projectId uint) (document model.EndpointDocument, err error) {
+	err = r.GetDB(tenantId).Model(&model.EndpointDocument{}).
 		Where("version = ?", version).
 		Where("project_id = ?", projectId).
 		First(&document).Error
@@ -37,21 +38,21 @@ func (r *EndpointDocumentRepo) GetByVersionAndProject(version string, projectId 
 	return
 }
 
-func (r *EndpointDocumentRepo) GetById(id uint) (document model.EndpointDocument, err error) {
-	err = r.DB.Model(&model.EndpointDocument{}).
+func (r *EndpointDocumentRepo) GetById(tenantId consts.TenantId, id uint) (document model.EndpointDocument, err error) {
+	err = r.GetDB(tenantId).Model(&model.EndpointDocument{}).
 		Where("id = ?", id).
 		First(&document).Error
 
 	return
 }
 
-func (r *EndpointDocumentRepo) Create(req v1.DocumentVersionReq, projectId uint) (id uint, err error) {
+func (r *EndpointDocumentRepo) Create(tenantId consts.TenantId, req v1.DocumentVersionReq, projectId uint) (id uint, err error) {
 	document := model.EndpointDocument{
 		Name:      req.Name,
 		Version:   req.Version,
 		ProjectId: projectId,
 	}
-	err = r.DB.Model(&model.EndpointDocument{}).Create(&document).Error
+	err = r.GetDB(tenantId).Model(&model.EndpointDocument{}).Create(&document).Error
 	if err != nil {
 		logUtils.Errorf("add endpoint document error", zap.String("error:", err.Error()))
 		return
@@ -61,8 +62,8 @@ func (r *EndpointDocumentRepo) Create(req v1.DocumentVersionReq, projectId uint)
 	return
 }
 
-func (r *EndpointDocumentRepo) GetIdByVersionAndProject(req v1.DocumentVersionReq, projectId uint) (id uint, err error) {
-	document, err := r.GetByVersionAndProject(req.Version, projectId)
+func (r *EndpointDocumentRepo) GetIdByVersionAndProject(tenantId consts.TenantId, req v1.DocumentVersionReq, projectId uint) (id uint, err error) {
+	document, err := r.GetByVersionAndProject(tenantId, req.Version, projectId)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return
 	}
@@ -71,11 +72,11 @@ func (r *EndpointDocumentRepo) GetIdByVersionAndProject(req v1.DocumentVersionRe
 		id = document.ID
 		return id, nil
 	}
-	id, err = r.Create(req, projectId)
+	id, err = r.Create(tenantId, req, projectId)
 
 	return
 }
-func (r *EndpointDocumentRepo) Update(req v1.UpdateDocumentVersionReq) (err error) {
+func (r *EndpointDocumentRepo) Update(tenantId consts.TenantId, req v1.UpdateDocumentVersionReq) (err error) {
 	updateFields := map[string]interface{}{}
 	if req.Name != "" {
 		updateFields["name"] = req.Name
@@ -87,7 +88,7 @@ func (r *EndpointDocumentRepo) Update(req v1.UpdateDocumentVersionReq) (err erro
 		return errors.New("update field can't be empty")
 	}
 
-	err = r.DB.Model(&model.EndpointDocument{}).Where("id = ?", req.Id).Updates(updateFields).Error
+	err = r.GetDB(tenantId).Model(&model.EndpointDocument{}).Where("id = ?", req.Id).Updates(updateFields).Error
 	if err != nil {
 		logUtils.Errorf("update endpoint document error", zap.String("error:", err.Error()))
 		return err
@@ -96,8 +97,8 @@ func (r *EndpointDocumentRepo) Update(req v1.UpdateDocumentVersionReq) (err erro
 	return
 }
 
-func (r *EndpointDocumentRepo) DeleteById(id uint) (err error) {
-	err = r.DB.
+func (r *EndpointDocumentRepo) DeleteById(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).
 		Where("id = ?", id).
 		Delete(&model.EndpointDocument{}).Error
 

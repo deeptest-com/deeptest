@@ -29,6 +29,7 @@ type DebugInterfaceCtrl struct {
 // @success	200	{object}	_domain.Response{data=domain.DebugData}
 // @Router	/api/v1/debugs/interface/load	[post]
 func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := domain.DebugInfo{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -37,7 +38,7 @@ func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
 	}
 
 	req.UserId = multi.GetUserId(ctx)
-	data, err := c.DebugInterfaceService.Load(req)
+	data, err := c.DebugInterfaceService.Load(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -57,6 +58,7 @@ func (c *DebugInterfaceCtrl) Load(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=agentExec.InterfaceExecObj}
 // @Router	/api/v1/debugs/interface/loadForExec	[post]
 func (c *DebugInterfaceCtrl) LoadForExec(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := domain.DebugInfo{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -67,7 +69,7 @@ func (c *DebugInterfaceCtrl) LoadForExec(ctx iris.Context) {
 	req.UserId = multi.GetUserId(ctx)
 	req.ProjectId, err = ctx.URLParamInt("currProjectId")
 
-	data, err := c.DebugInterfaceService.LoadForExec(req)
+	data, err := c.DebugInterfaceService.LoadForExec(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -87,6 +89,7 @@ func (c *DebugInterfaceCtrl) LoadForExec(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=agentExec.InterfaceExecObj}
 // @Router	/api/v1/debugs/interface/save	[post]
 func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := domain.DebugData{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -94,7 +97,7 @@ func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	po, err := c.DebugInterfaceService.CreateOrUpdate(req)
+	po, err := c.DebugInterfaceService.CreateOrUpdate(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -106,7 +109,7 @@ func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {
 		UsedBy:              req.UsedBy,
 	}
 
-	data, err := c.DebugInterfaceService.Load(loadReq)
+	data, err := c.DebugInterfaceService.Load(tenantId, loadReq)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -117,6 +120,7 @@ func (c *DebugInterfaceCtrl) Save(ctx iris.Context) {
 
 // SaveAsCase
 func (c *DebugInterfaceCtrl) SaveAsCase(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.EndpointCaseSaveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -127,7 +131,7 @@ func (c *DebugInterfaceCtrl) SaveAsCase(ctx iris.Context) {
 	req.CreateUserName = multi.GetUsername(ctx)
 	req.CreateUserId = multi.GetUserId(ctx)
 
-	c.EndpointCaseService.SaveFromDebugInterface(req)
+	c.EndpointCaseService.SaveFromDebugInterface(tenantId, req)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code})
 }
@@ -143,6 +147,7 @@ func (c *DebugInterfaceCtrl) SaveAsCase(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=string}
 // @Router	/api/v1/debugs/interface/loadCurl	[post]
 func (c *DebugInterfaceCtrl) LoadCurl(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.DiagnoseCurlLoadReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -153,7 +158,7 @@ func (c *DebugInterfaceCtrl) LoadCurl(ctx iris.Context) {
 	req.ProjectId, err = ctx.URLParamInt("currProjectId")
 	req.UserId = multi.GetUserId(ctx)
 
-	content, err := c.DebugInterfaceService.LoadCurl(req)
+	content, err := c.DebugInterfaceService.LoadCurl(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return

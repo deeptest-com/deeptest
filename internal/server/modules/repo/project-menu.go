@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -13,18 +14,19 @@ import (
 )
 
 type ProjectMenuRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
-func (r *ProjectMenuRepo) FindByCode(code string) (projectMenu model.ProjectMenu, err error) {
-	db := r.DB.Model(&model.ProjectMenu{}).Where("code = ?", code)
+func (r *ProjectMenuRepo) FindByCode(tenantId consts.TenantId, code string) (projectMenu model.ProjectMenu, err error) {
+	db := r.GetDB(tenantId).Model(&model.ProjectMenu{}).Where("code = ?", code)
 
 	err = db.First(&projectMenu).Error
 	return
 }
 
-func (r *ProjectMenuRepo) Create(projectMenu model.ProjectMenu) (id uint, err error) {
-	menu, err := r.FindByCode(projectMenu.Code)
+func (r *ProjectMenuRepo) Create(tenantId consts.TenantId, projectMenu model.ProjectMenu) (id uint, err error) {
+	menu, err := r.FindByCode(tenantId, projectMenu.Code)
 	if err != nil && !errors.Is(err, gorm.ErrRecordNotFound) {
 		logUtils.Errorf("创建项目菜单失败%s", err.Error())
 		return
@@ -35,7 +37,7 @@ func (r *ProjectMenuRepo) Create(projectMenu model.ProjectMenu) (id uint, err er
 		return
 	}
 
-	err = r.DB.Create(&projectMenu).Error
+	err = r.GetDB(tenantId).Create(&projectMenu).Error
 	if err != nil {
 		logUtils.Errorf("创建项目菜单失败%s", err.Error())
 		return
@@ -44,9 +46,9 @@ func (r *ProjectMenuRepo) Create(projectMenu model.ProjectMenu) (id uint, err er
 	return
 }
 
-func (r *ProjectMenuRepo) Update(req v1.ProjectMenuReq) error {
+func (r *ProjectMenuRepo) Update(tenantId consts.TenantId, req v1.ProjectMenuReq) error {
 	projectMenu := model.ProjectMenu{ProjectMenuBase: req.ProjectMenuBase}
-	err := r.DB.Model(&model.ProjectMenu{}).Where("id = ?", req.Id).Updates(&projectMenu).Error
+	err := r.GetDB(tenantId).Model(&model.ProjectMenu{}).Where("id = ?", req.Id).Updates(&projectMenu).Error
 	if err != nil {
 		logUtils.Errorf("update project menu error", zap.String("error:", err.Error()))
 		return err
@@ -55,8 +57,8 @@ func (r *ProjectMenuRepo) Update(req v1.ProjectMenuReq) error {
 	return nil
 }
 
-func (r *ProjectMenuRepo) DeleteById(id uint) error {
-	err := r.DB.Unscoped().Delete(&model.ProjectMenu{}, id).Error
+func (r *ProjectMenuRepo) DeleteById(tenantId consts.TenantId, id uint) error {
+	err := r.GetDB(tenantId).Unscoped().Delete(&model.ProjectMenu{}, id).Error
 	if err != nil {
 		logUtils.Errorf("delete project menu by id get  err ", zap.String("错误:", err.Error()))
 		return err
@@ -64,8 +66,8 @@ func (r *ProjectMenuRepo) DeleteById(id uint) error {
 	return nil
 }
 
-func (r *ProjectMenuRepo) GetRoleMenuList(roleId uint) (roleMenus []model.ProjectMenu, err error) {
-	err = r.DB.Model(&model.ProjectMenu{}).
+func (r *ProjectMenuRepo) GetRoleMenuList(tenantId consts.TenantId, roleId uint) (roleMenus []model.ProjectMenu, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMenu{}).
 		Joins("left join biz_project_role_menu m on biz_project_menu.id = m.menu_id").
 		Where("m.role_id = ?", roleId).
 		Scan(&roleMenus).Error
@@ -73,8 +75,8 @@ func (r *ProjectMenuRepo) GetRoleMenuList(roleId uint) (roleMenus []model.Projec
 	return
 }
 
-func (r *ProjectMenuRepo) GetRoleMenuCodeList(roleId uint) (roleMenuCodes []string, err error) {
-	err = r.DB.Model(&model.ProjectMenu{}).
+func (r *ProjectMenuRepo) GetRoleMenuCodeList(tenantId consts.TenantId, roleId uint) (roleMenuCodes []string, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMenu{}).
 		Joins("left join biz_project_role_menu m on biz_project_menu.id = m.menu_id").
 		Select("biz_project_menu.code").
 		Where("m.role_id = ?", roleId).
@@ -83,12 +85,12 @@ func (r *ProjectMenuRepo) GetRoleMenuCodeList(roleId uint) (roleMenuCodes []stri
 	return
 }
 
-func (r *ProjectMenuRepo) GetAllMenuList() (menus []model.ProjectMenu, err error) {
-	err = r.DB.Model(&model.ProjectMenu{}).Scan(&menus).Error
+func (r *ProjectMenuRepo) GetAllMenuList(tenantId consts.TenantId) (menus []model.ProjectMenu, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectMenu{}).Scan(&menus).Error
 	return
 }
 
-func (r *ProjectMenuRepo) GetMenuConfig() (menuConfigs []v1.ProjectMenuConfig, err error) {
+func (r *ProjectMenuRepo) GetMenuConfig(tenantId consts.TenantId) (menuConfigs []v1.ProjectMenuConfig, err error) {
 	data, err := ioutil.ReadFile("config/sample/menu.json")
 	if err != nil {
 		logUtils.Errorf("load menu config err ", zap.String("错误:", err.Error()))
@@ -105,8 +107,8 @@ func (r *ProjectMenuRepo) GetMenuConfig() (menuConfigs []v1.ProjectMenuConfig, e
 	return
 }
 
-func (r *ProjectMenuRepo) GetConfigData(level string) (menus []model.ProjectMenu, err error) {
-	menuConfigs, err := r.GetMenuConfig()
+func (r *ProjectMenuRepo) GetConfigData(tenantId consts.TenantId, level string) (menus []model.ProjectMenu, err error) {
+	menuConfigs, err := r.GetMenuConfig(tenantId)
 	if err != nil {
 		return
 	}
@@ -135,7 +137,7 @@ func (r *ProjectMenuRepo) GetConfigData(level string) (menus []model.ProjectMenu
 			}
 
 			if v.Parent != "" {
-				parentProjectMenu, err := r.FindByCode(v.Parent)
+				parentProjectMenu, err := r.FindByCode(tenantId, v.Parent)
 				if err != nil {
 					logUtils.Errorf("get parent menu err ", zap.String("错误:", err.Error()))
 					continue
@@ -150,9 +152,9 @@ func (r *ProjectMenuRepo) GetConfigData(level string) (menus []model.ProjectMenu
 	return
 }
 
-func (r *ProjectMenuRepo) BatchCreate(menus []model.ProjectMenu) (successCount int, failItems []string) {
+func (r *ProjectMenuRepo) BatchCreate(tenantId consts.TenantId, menus []model.ProjectMenu) (successCount int, failItems []string) {
 	for _, menu := range menus {
-		_, err := r.Create(menu)
+		_, err := r.Create(tenantId, menu)
 		if err != nil {
 			failItems = append(failItems, menu.Code)
 			continue
@@ -162,21 +164,21 @@ func (r *ProjectMenuRepo) BatchCreate(menus []model.ProjectMenu) (successCount i
 	return
 }
 
-func (r *ProjectMenuRepo) DeleteAllData() {
-	r.DB.Delete(&model.ProjectMenu{}, "id > 0")
+func (r *ProjectMenuRepo) DeleteAllData(tenantId consts.TenantId) {
+	r.GetDB(tenantId).Delete(&model.ProjectMenu{}, "id > 0")
 }
 
-func (r *ProjectMenuRepo) BatchInitData(level string) (successCount int, failItems []string) {
-	data, err := r.GetConfigData(level)
+func (r *ProjectMenuRepo) BatchInitData(tenantId consts.TenantId, level string) (successCount int, failItems []string) {
+	data, err := r.GetConfigData(tenantId, level)
 	if err != nil {
 		failItems = append(failItems, fmt.Sprintf("%s级别所有数据", level))
 		return
 	}
-	return r.BatchCreate(data)
+	return r.BatchCreate(tenantId, data)
 }
 
-func (r *ProjectMenuRepo) GetAllMenuCodeIdMap() (data map[string]uint, err error) {
-	menuList, err := r.GetAllMenuList()
+func (r *ProjectMenuRepo) GetAllMenuCodeIdMap(tenantId consts.TenantId) (data map[string]uint, err error) {
+	menuList, err := r.GetAllMenuList(tenantId)
 	if err != nil {
 		logUtils.Errorf("get all menu list err ", zap.String("错误:", err.Error()))
 		return

@@ -1,16 +1,18 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
 
 type DebugRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
-func (r *DebugRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugInvoke, err error) {
-	db := r.DB.Select("id", "name")
+func (r *DebugRepo) List(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint) (pos []model.DebugInvoke, err error) {
+	db := r.GetDB(tenantId).Select("id", "name")
 
 	if debugInterfaceId > 0 { // debugInterfaceId first
 		db.Where("debug_interface_id=?", debugInterfaceId)
@@ -26,8 +28,8 @@ func (r *DebugRepo) List(debugInterfaceId, endpointInterfaceId uint) (pos []mode
 	return
 }
 
-func (r *DebugRepo) GetLast(debugInterfaceId, endpointInterfaceId uint) (debug model.DebugInvoke, err error) {
-	db := r.DB
+func (r *DebugRepo) GetLast(tenantId consts.TenantId, debugInterfaceId, endpointInterfaceId uint) (debug model.DebugInvoke, err error) {
+	db := r.GetDB(tenantId)
 
 	if debugInterfaceId > 0 { // debugInterfaceId first
 		db = db.Where("debug_interface_id=?", debugInterfaceId)
@@ -42,16 +44,16 @@ func (r *DebugRepo) GetLast(debugInterfaceId, endpointInterfaceId uint) (debug m
 	return
 }
 
-func (r *DebugRepo) Get(id uint) (invocation model.DebugInvoke, err error) {
-	err = r.DB.
+func (r *DebugRepo) Get(tenantId consts.TenantId, id uint) (invocation model.DebugInvoke, err error) {
+	err = r.GetDB(tenantId).
 		Where("id=?", id).
 		Where("NOT deleted").
 		First(&invocation).Error
 	return
 }
 
-func (r *DebugRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.DebugInvoke{}).
+func (r *DebugRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugInvoke{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error

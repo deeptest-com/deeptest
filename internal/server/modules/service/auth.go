@@ -15,7 +15,7 @@ type AuthService struct {
 	AuthRepo *repo2.AuthRepo `inject:""`
 }
 
-func (s AuthService) OAuth2Authorization(req model.DebugInterfaceOAuth20) (result iris.Map, err error) {
+func (s AuthService) OAuth2Authorization(tenantId consts.TenantId, req model.DebugInterfaceOAuth20) (result iris.Map, err error) {
 	//s.InterfaceRepo.UpdateOAuth20(req.EndpointInterfaceId, req)
 
 	responseType := ""
@@ -50,7 +50,7 @@ func (s AuthService) OAuth2Authorization(req model.DebugInterfaceOAuth20) (resul
 	return
 }
 
-func (s AuthService) GenOAuth2AccessToken(accessTokenURL, clientId, clientSecret, code string) (result iris.Map, err error) {
+func (s AuthService) GenOAuth2AccessToken(tenantId consts.TenantId, accessTokenURL, clientId, clientSecret, code string) (result iris.Map, err error) {
 	url := fmt.Sprintf(
 		"%s?client_id=%s&client_secret=%s&code=%s",
 		accessTokenURL, clientId, clientSecret, code,
@@ -69,8 +69,8 @@ func (s AuthService) GenOAuth2AccessToken(accessTokenURL, clientId, clientSecret
 	return
 }
 
-func (s AuthService) AddToken(name, token, tokenType string, interfaceId, projectId int) (err error) {
-	_, err = s.AuthRepo.CreateToken(name, token, tokenType, projectId)
+func (s AuthService) AddToken(tenantId consts.TenantId, name, token, tokenType string, interfaceId, projectId int) (err error) {
+	_, err = s.AuthRepo.CreateToken(tenantId, name, token, tokenType, projectId)
 	if err != nil {
 		return
 	}
@@ -80,14 +80,14 @@ func (s AuthService) AddToken(name, token, tokenType string, interfaceId, projec
 	return
 }
 
-func (s AuthService) ListOAuth2Token(projectId int) (pos []model.Auth2Token, err error) {
-	pos, err = s.AuthRepo.ListOAuth2Token(projectId)
+func (s AuthService) ListOAuth2Token(tenantId consts.TenantId, projectId int) (pos []model.Auth2Token, err error) {
+	pos, err = s.AuthRepo.ListOAuth2Token(tenantId, projectId)
 
 	return
 }
 
-func (s AuthService) RemoveToken(id int) (err error) {
-	err = s.AuthRepo.RemoveToken(uint(id))
+func (s AuthService) RemoveToken(tenantId consts.TenantId, id int) (err error) {
+	err = s.AuthRepo.RemoveToken(tenantId, uint(id))
 
 	return
 }

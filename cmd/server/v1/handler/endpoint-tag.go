@@ -7,6 +7,7 @@ import (
 )
 
 type EndpointTagCtrl struct {
+	BaseCtrl
 	EndpointTagService *service.EndpointTagService `inject:""`
 }
 
@@ -20,9 +21,10 @@ type EndpointTagCtrl struct {
 // @success	200	{object}	_domain.Response{data=[]model.EndpointTagRel}
 // @Router	/api/v1/endpoint/tags	[get]
 func (c *EndpointTagCtrl) ListTags(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
-	tags, err := c.EndpointTagService.ListTagsByProject(uint(projectId))
+	tags, err := c.EndpointTagService.ListTagsByProject(tenantId, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

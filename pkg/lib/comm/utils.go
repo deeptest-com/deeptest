@@ -132,13 +132,18 @@ func JsonEncode(data interface{}) (res string) {
 
 	if resByte, err := json.Marshal(data); err == nil {
 		res = string(resByte)
+	} else {
+		panic(err)
 	}
+
 	return
 
 }
 
 func JsonDecode(str string, res interface{}) (err error) {
-
+	if str == "" {
+		return nil
+	}
 	if err = json.Unmarshal([]byte(str), res); err != nil {
 		//panic(err)
 		logUtils.Error(err.Error())
@@ -166,6 +171,22 @@ func ArrayRemoveDuplication(arr []string) []string {
 
 func ArrayRemoveUintDuplication(arr []uint) []uint {
 	set := make(map[uint]struct{}, len(arr))
+	j := 0
+	for _, v := range arr {
+		_, ok := set[v]
+		if ok {
+			continue
+		}
+		set[v] = struct{}{}
+		arr[j] = v
+		j++
+	}
+
+	return arr[:j]
+}
+
+func ArrayRemoveIntDuplication(arr []int) []int {
+	set := make(map[int]struct{}, len(arr))
 	j := 0
 	for _, v := range arr {
 		_, ok := set[v]

@@ -212,6 +212,17 @@ func GetCurrScenarioProcessorId(execUuid string) (ret uint) {
 	return
 }
 
+func SetCurrEnvironmentId(execUuid string, id int) {
+	entity := GetUserExecContext(execUuid)
+	entity.CurrEnvironmentId = id
+}
+func GetCurrEnvironmentId(execUuid string) (id int) {
+	userContext := GetUserExecContext(execUuid)
+	id = userContext.CurrEnvironmentId
+
+	return
+}
+
 func SetCurrDebugInterfaceId(execUuid string, val uint) {
 	entity := GetUserExecContext(execUuid)
 	entity.CurrDebugInterfaceId = val
@@ -310,6 +321,7 @@ type UserContext struct {
 	CurrScenarioProcessor   *Processor
 	CurrScenarioProcessorId uint
 	CurrDebugInterfaceId    uint
+	CurrEnvironmentId       int
 
 	ScopedVariables map[uint][]domain.ExecVariable // for scenario and debug
 	ScopedCookies   map[uint][]domain.ExecCookie   // only for scenario

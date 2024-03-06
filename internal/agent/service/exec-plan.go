@@ -4,10 +4,11 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
 )
 
-func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
+func RunPlan(req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
 	execUuid := req.ExecUuid
 
 	agentExec.ResetStat(req.ExecUuid)
@@ -17,7 +18,6 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	agentExec.SetServerToken(execUuid, req.Token)
 
 	planExecObj := GetPlanToExec(req)
-
 	if planExecObj == nil || len(planExecObj.Scenarios) == 0 {
 		execUtils.SendEndMsg(wsMsg)
 		return
@@ -40,11 +40,13 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 	}
 
 	for _, scenario := range planExecObj.Scenarios {
+		updateLocalValues(&scenario.ExecScene, localVarsCache)
+
 		scenario.ExecUuid = execUuid
-		session, _ := ExecScenario(&scenario, wsMsg)
+		session, _ := ExecScenario(&scenario, req.EnvironmentId, wsMsg)
 
 		scenarioReport, _ := SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,
-			agentExec.GetServerUrl(execUuid), agentExec.GetServerToken(execUuid))
+			agentExec.GetServerUrl(execUuid), agentExec.GetServerToken(execUuid), req.TenantId)
 		session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 
 		session.RootProcessor.Result.ScenarioReportId = uint(scenarioReport.ID)
@@ -54,7 +56,7 @@ func RunPlan(req *agentExec.PlanExecReq, wsMsg *websocket.Message) (err error) {
 
 	// submit result
 	result.Stat = *agentExec.GetInterfaceStat(execUuid)
-	report, _ := SubmitPlanResult(result, req.PlanId, req.ServerUrl, req.Token)
+	report, _ := SubmitPlanResult(result, req.PlanId, req.ServerUrl, req.Token, req.TenantId)
 	execUtils.SendResultMsg(report, wsMsg)
 	//sendPlanSubmitResult(req.PlanId, wsMsg)
 

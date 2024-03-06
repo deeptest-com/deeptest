@@ -29,8 +29,9 @@ const (
 	SummaryDataCheckInterval = 60 * 60
 	MaxNum                   = 10000
 
-	ConfigFileName = "server.yaml"
-	CasbinFileName = "rbac_model.conf" // casbin 规则文件名称
+	AgentConfigFileName  = "agent.yaml"
+	ServerConfigFileName = "server.yaml"
+	CasbinFileName       = "rbac_model.conf" // casbin 规则文件名称
 
 	SupportEmail = "chenqi@deeptest.com"
 	Sys          = "DeepTest"

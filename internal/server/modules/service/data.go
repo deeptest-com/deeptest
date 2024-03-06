@@ -4,6 +4,7 @@ import (
 	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
@@ -22,9 +23,8 @@ var (
 )
 
 type DataService struct {
-	SysConfigSource *source.SysConfigSource `inject:""`
-	SysAgentSource  *source.SysAgentSource  `inject:""`
-
+	SysConfigSource        *source.SysConfigSource        `inject:""`
+	SysAgentSource         *source.SysAgentSource         `inject:""`
 	DataRepo               *repo.DataRepo                 `inject:""`
 	UserRepo               *repo.UserRepo                 `inject:""`
 	UserSource             *source.UserSource             `inject:""`
@@ -58,7 +58,7 @@ func (s *DataService) refreshConfig(viper *viper.Viper, conf config.Config) erro
 }
 
 // InitDB 创建数据库并初始化
-func (s *DataService) InitDB(req v1.DataReq) error {
+func (s *DataService) InitDB(tenantId consts.TenantId, req v1.DataReq) error {
 	defaultConfig := config.CONFIG
 	if config.VIPER == nil {
 		logUtils.Errorf("初始化错误", zap.String("InitDB", ErrViperEmpty.Error()))
@@ -79,22 +79,24 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 	}
 
 	if config.CONFIG.System.DbType == "mysql" {
-		if err := s.DataRepo.CreateMySqlDb(); err != nil {
+		if err := s.DataRepo.CreateMySqlDb(tenantId); err != nil {
 			return err
 		}
 	}
 
-	if err := s.writeConfig(config.VIPER, config.CONFIG); err != nil {
-		logUtils.Errorf("更新配置文件错误", zap.String("writeConfig(consts.VIPER)", err.Error()))
+	if !config.CONFIG.Saas.Switch {
+		if err := s.writeConfig(config.VIPER, config.CONFIG); err != nil {
+			logUtils.Errorf("更新配置文件错误", zap.String("writeConfig(consts.VIPER)", err.Error()))
+		}
 	}
-
-	if s.DataRepo.DB == nil {
+	
+	if s.DataRepo.GetDB(tenantId) == nil {
 		logUtils.Error("数据库初始化错误")
 		s.refreshConfig(config.VIPER, defaultConfig)
 		return errors.New("数据库初始化错误")
 	}
 
-	err := s.DataRepo.DB.AutoMigrate(model.Models...)
+	err := s.DataRepo.GetDB(tenantId).AutoMigrate(model.Models...)
 	if err != nil {
 		logUtils.Errorf("迁移数据表错误", zap.String("错误:", err.Error()))
 		s.refreshConfig(config.VIPER, defaultConfig)
@@ -102,7 +104,7 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 	}
 
 	if req.ClearData {
-		err = s.initData(
+		err = s.initData(tenantId,
 			s.SysConfigSource,
 			s.SysAgentSource,
 			s.PermSource,
@@ -121,7 +123,6 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 			return err
 		}
 	}
-
 	if req.Sys.AdminPassword != "" {
 		hash, err := bcrypt.GenerateFromPassword([]byte(req.Sys.AdminPassword), bcrypt.DefaultCost)
 		if err != nil {
@@ -130,16 +131,16 @@ func (s *DataService) InitDB(req v1.DataReq) error {
 		}
 
 		req.Sys.AdminPassword = string(hash)
-		s.UserRepo.UpdatePasswordByName(serverConsts.AdminUserName, req.Sys.AdminPassword)
+		s.UserRepo.UpdatePasswordByName(tenantId, serverConsts.AdminUserName, req.Sys.AdminPassword)
 	}
 
 	return nil
 }
 
 // initDB 初始化数据
-func (s *DataService) initData(InitDBFunctions ...module.InitDBFunc) error {
+func (s *DataService) initData(tenantId consts.TenantId, InitDBFunctions ...module.InitDBFunc) error {
 	for _, v := range InitDBFunctions {
-		err := v.Init()
+		err := v.Init(tenantId)
 		if err != nil {
 			return err
 		}

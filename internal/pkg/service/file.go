@@ -33,18 +33,19 @@ func (s *FileService) UploadFile(ctx iris.Context, fh *multipart.FileHeader) (re
 	}
 
 	targetDir := filepath.Join(consts.DirUpload, dateUtils.DateStr(time.Now()))
-	absDir := filepath.Join(dir.GetCurrentAbPath(), targetDir)
+	absDir := filepath.Join(consts.WorkDir, targetDir)
+	_fileUtils.MkDirIfNeeded(absDir)
 
 	err = dir.InsureDir(targetDir)
 	if err != nil {
-		logUtils.Errorf("文件上传失败，错误%s", err.Error())
+		logUtils.Errorf("文件上传失败，错误：%s", err.Error())
 		return
 	}
 
 	pth := filepath.Join(absDir, filename)
 	_, err = ctx.SaveFormFile(fh, pth)
 	if err != nil {
-		logUtils.Errorf("文件上传失败，错误%s", "保存文件到本地")
+		logUtils.Errorf("文件保存到本地失败，错误：%s", err.Error())
 		return
 	}
 

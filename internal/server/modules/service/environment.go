@@ -22,8 +22,8 @@ type EnvironmentService struct {
 	DebugInterfaceRepo    *repo.DebugInterfaceRepo    `inject:""`
 }
 
-func (s *EnvironmentService) List(projectId int) (envs []model.Environment, err error) {
-	envs, err = s.EnvironmentRepo.List(projectId)
+func (s *EnvironmentService) List(tenantId consts.TenantId, projectId int) (envs []model.Environment, err error) {
+	envs, err = s.EnvironmentRepo.List(tenantId, projectId)
 
 	return
 }
@@ -43,97 +43,97 @@ func (s *EnvironmentService) List(projectId int) (envs []model.Environment, err 
 //	return
 //}
 
-func (s *EnvironmentService) Get(id, projectId uint) (env model.Environment, err error) {
+func (s *EnvironmentService) Get(tenantId consts.TenantId, id, projectId uint) (env model.Environment, err error) {
 	if id > 0 {
-		env, err = s.EnvironmentRepo.Get(id)
+		env, err = s.EnvironmentRepo.Get(tenantId, id)
 	} else {
-		env, _ = s.EnvironmentRepo.GetByProject(projectId)
+		env, _ = s.EnvironmentRepo.GetByProject(tenantId, projectId)
 	}
 
 	if env.ID > 0 {
-		env.Vars, err = s.EnvironmentRepo.GetVars(env.ID)
+		env.Vars, err = s.EnvironmentRepo.GetVars(tenantId, env.ID)
 	}
 
 	return
 }
 
-func (s *EnvironmentService) Copy(envId int) (err error) {
-	err = s.EnvironmentRepo.Copy(envId)
+func (s *EnvironmentService) Copy(tenantId consts.TenantId, envId int) (err error) {
+	err = s.EnvironmentRepo.Copy(tenantId, envId)
 
 	return
 }
 
-func (s *EnvironmentService) Create(env *model.Environment, projectId uint) (err error) {
-	env.Sort = s.EnvironmentRepo.GetMaxOrder(projectId)
-	err = s.EnvironmentRepo.Save(env)
-	err = s.ProjectRepo.UpdateDefaultEnvironment(projectId, env.ID)
+func (s *EnvironmentService) Create(tenantId consts.TenantId, env *model.Environment, projectId uint) (err error) {
+	env.Sort = s.EnvironmentRepo.GetMaxOrder(tenantId, projectId)
+	err = s.EnvironmentRepo.Save(tenantId, env)
+	err = s.ProjectRepo.UpdateDefaultEnvironment(tenantId, projectId, env.ID)
 
 	return
 }
 
-func (s *EnvironmentService) Update(env *model.Environment) (err error) {
-	err = s.EnvironmentRepo.Save(env)
+func (s *EnvironmentService) Update(tenantId consts.TenantId, env *model.Environment) (err error) {
+	err = s.EnvironmentRepo.Save(tenantId, env)
 
 	return
 }
 
-func (s *EnvironmentService) Delete(reqId uint) (err error) {
-	err = s.EnvironmentRepo.Delete(reqId)
+func (s *EnvironmentService) Delete(tenantId consts.TenantId, reqId uint) (err error) {
+	err = s.EnvironmentRepo.Delete(tenantId, reqId)
 
 	return
 }
 
-func (s *EnvironmentService) Change(id, projectId int) (err error) {
-	err = s.ProjectRepo.UpdateDefaultEnvironment(uint(projectId), uint(id))
+func (s *EnvironmentService) Change(tenantId consts.TenantId, id, projectId int) (err error) {
+	err = s.ProjectRepo.UpdateDefaultEnvironment(tenantId, uint(projectId), uint(id))
 
 	return
 }
 
-func (s *EnvironmentService) GetVar(id uint) (env model.EnvironmentVar, err error) {
-	env, err = s.EnvironmentRepo.GetVar(id)
+func (s *EnvironmentService) GetVar(tenantId consts.TenantId, id uint) (env model.EnvironmentVar, err error) {
+	env, err = s.EnvironmentRepo.GetVar(tenantId, id)
 
 	return
 }
 
-func (s *EnvironmentService) CreateVar(po *model.EnvironmentVar) (err error) {
-	temp, _ := s.EnvironmentRepo.GetVarByName(po.Name, 0, po.EnvironmentId)
+func (s *EnvironmentService) CreateVar(tenantId consts.TenantId, po *model.EnvironmentVar) (err error) {
+	temp, _ := s.EnvironmentRepo.GetVarByName(tenantId, po.Name, 0, po.EnvironmentId)
 
 	if temp.ID > 0 {
 		err = errors.New("")
 		return
 	}
 
-	err = s.EnvironmentRepo.SaveVar(po)
+	err = s.EnvironmentRepo.SaveVar(tenantId, po)
 
 	return
 }
 
-func (s *EnvironmentService) UpdateVar(po *model.EnvironmentVar) (err error) {
-	temp, _ := s.EnvironmentRepo.GetVarByName(po.Name, po.ID, po.EnvironmentId)
+func (s *EnvironmentService) UpdateVar(tenantId consts.TenantId, po *model.EnvironmentVar) (err error) {
+	temp, _ := s.EnvironmentRepo.GetVarByName(tenantId, po.Name, po.ID, po.EnvironmentId)
 	if temp.ID > 0 {
 		err = errors.New("")
 		return
 	}
 
-	err = s.EnvironmentRepo.SaveVar(po)
+	err = s.EnvironmentRepo.SaveVar(tenantId, po)
 
 	return
 }
 
-func (s *EnvironmentService) DeleteVar(id uint) (err error) {
-	err = s.EnvironmentRepo.DeleteVar(id)
+func (s *EnvironmentService) DeleteVar(tenantId consts.TenantId, id uint) (err error) {
+	err = s.EnvironmentRepo.DeleteVar(tenantId, id)
 
 	return
 }
 
-func (s *EnvironmentService) ClearAllVar(environmentId uint) (err error) {
-	err = s.EnvironmentRepo.ClearAllVar(environmentId)
+func (s *EnvironmentService) ClearAllVar(tenantId consts.TenantId, environmentId uint) (err error) {
+	err = s.EnvironmentRepo.ClearAllVar(tenantId, environmentId)
 
 	return
 }
 
-func (s *EnvironmentService) DisableShareVar(id uint) (err error) {
-	err = s.EnvironmentRepo.DisableShareVar(id)
+func (s *EnvironmentService) DisableShareVar(tenantId consts.TenantId, id uint) (err error) {
+	err = s.EnvironmentRepo.DisableShareVar(tenantId, id)
 
 	return
 }
@@ -146,23 +146,23 @@ func (s *EnvironmentService) DisableAllShareVar(interfaceId uint) (err error) {
 	return
 }
 
-func (s *EnvironmentService) Save(req v1.EnvironmentReq) (id uint, err error) {
+func (s *EnvironmentService) Save(tenantId consts.TenantId, req v1.EnvironmentReq) (id uint, err error) {
 	var environment model.Environment
 	copier.CopyWithOption(&environment, req, copier.Option{DeepCopy: true})
 	if req.ID == 0 {
-		environment.Sort = s.EnvironmentRepo.GetMaxOrder(req.ProjectId)
+		environment.Sort = s.EnvironmentRepo.GetMaxOrder(tenantId, req.ProjectId)
 	}
-	err = s.EnvironmentRepo.SaveEnvironment(&environment)
+	err = s.EnvironmentRepo.SaveEnvironment(tenantId, &environment)
 	id = environment.ID
 	return
 }
 
-func (s *EnvironmentService) Clone(id uint) (environment *model.Environment, err error) {
-	environment, err = s.EnvironmentRepo.GetEnvironmentById(id)
+func (s *EnvironmentService) Clone(tenantId consts.TenantId, id uint) (environment *model.Environment, err error) {
+	environment, err = s.EnvironmentRepo.GetEnvironmentById(tenantId, id)
 	if err != nil {
 		return
 	}
-	err = s.EnvironmentRepo.GetEnvironmentDetail(environment)
+	err = s.EnvironmentRepo.GetEnvironmentDetail(tenantId, environment)
 	if err != nil {
 		return
 	}
@@ -176,11 +176,11 @@ func (s *EnvironmentService) Clone(id uint) (environment *model.Environment, err
 		environment.Vars[key].ID = 0
 	}
 
-	err = s.EnvironmentRepo.SaveEnvironment(environment)
+	err = s.EnvironmentRepo.SaveEnvironment(tenantId, environment)
 	return
 }
 
-func (s *EnvironmentService) DeleteEnvironment(id uint) (err error) {
+func (s *EnvironmentService) DeleteEnvironment(tenantId consts.TenantId, id uint) (err error) {
 	/*
 		var count int64
 		count, err = s.ServeRepo.GetServerCountByEnvironmentId(id)
@@ -193,30 +193,30 @@ func (s *EnvironmentService) DeleteEnvironment(id uint) (err error) {
 			return err
 		}
 	*/
-	err = s.EnvironmentRepo.DeleteEnvironment(id)
+	err = s.EnvironmentRepo.DeleteEnvironment(tenantId, id)
 	return
 }
 
-func (s *EnvironmentService) ListAll(projectId uint) (res []model.Environment, err error) {
-	res, err = s.EnvironmentRepo.GetListByProjectId(projectId)
+func (s *EnvironmentService) ListAll(tenantId consts.TenantId, projectId uint) (res []model.Environment, err error) {
+	res, err = s.EnvironmentRepo.GetListByProjectId(tenantId, projectId)
 	return
 }
 
-func (s *EnvironmentService) SaveGlobal(projectId uint, req []v1.EnvironmentVariable) (err error) {
+func (s *EnvironmentService) SaveGlobal(tenantId consts.TenantId, projectId uint, req []v1.EnvironmentVariable) (err error) {
 	var vars []model.EnvironmentVar
 	copier.CopyWithOption(&vars, req, copier.Option{DeepCopy: true})
 
-	err = s.EnvironmentRepo.SaveVars(projectId, 0, vars)
+	err = s.EnvironmentRepo.SaveVars(tenantId, projectId, 0, vars)
 
 	return
 }
 
-func (s *EnvironmentService) ListGlobal(projectId uint) (res []model.EnvironmentVar, err error) {
-	res, err = s.EnvironmentRepo.ListGlobalVar(projectId)
+func (s *EnvironmentService) ListGlobal(tenantId consts.TenantId, projectId uint) (res []model.EnvironmentVar, err error) {
+	res, err = s.EnvironmentRepo.ListGlobalVar(tenantId, projectId)
 	return
 }
 
-func (s *EnvironmentService) SaveParams(req v1.EnvironmentParamsReq) (err error) {
+func (s *EnvironmentService) SaveParams(tenantId consts.TenantId, req v1.EnvironmentParamsReq) (err error) {
 	var params []model.EnvironmentParam
 	if req.Header != nil {
 		params = append(params, s.getParams(req.ProjectId, "header", req.Header)...)
@@ -233,7 +233,7 @@ func (s *EnvironmentService) SaveParams(req v1.EnvironmentParamsReq) (err error)
 	if req.Path != nil {
 		params = append(params, s.getParams(req.ProjectId, "path", req.Path)...)
 	}
-	err = s.EnvironmentRepo.SaveParams(req.ProjectId, params)
+	err = s.EnvironmentRepo.SaveParams(tenantId, req.ProjectId, params)
 	return
 }
 
@@ -250,18 +250,18 @@ func (s *EnvironmentService) getParams(projectId uint, in consts.ParamIn, ReqPar
 	return
 }
 
-func (s *EnvironmentService) ListParams(projectId uint) (ret map[string]interface{}, err error) {
-	return s.EnvironmentRepo.ListParams(projectId)
+func (s *EnvironmentService) ListParams(tenantId consts.TenantId, projectId uint) (ret map[string]interface{}, err error) {
+	return s.EnvironmentRepo.ListParams(tenantId, projectId)
 }
 
-func (s *EnvironmentService) SaveOrder(req v1.EnvironmentIdsReq) (err error) {
-	return s.EnvironmentRepo.SaveOrder(req)
+func (s *EnvironmentService) SaveOrder(tenantId consts.TenantId, req v1.EnvironmentIdsReq) (err error) {
+	return s.EnvironmentRepo.SaveOrder(tenantId, req)
 }
 
-func (s *EnvironmentService) GetVarsByServer(serverId uint) (ret []domain.GlobalVar, err error) {
-	server, _ := s.ServeServerRepo.Get(serverId)
+func (s *EnvironmentService) GetVarsByServer(tenantId consts.TenantId, serverId uint) (ret []domain.GlobalVar, err error) {
+	server, _ := s.ServeServerRepo.Get(tenantId, serverId)
 
-	pos, _ := s.EnvironmentRepo.GetVars(server.EnvironmentId)
+	pos, _ := s.EnvironmentRepo.GetVars(tenantId, server.EnvironmentId)
 
 	for _, po := range pos {
 		ret = append(ret, domain.GlobalVar{
@@ -272,20 +272,20 @@ func (s *EnvironmentService) GetVarsByServer(serverId uint) (ret []domain.Global
 
 	return
 }
-func (s *EnvironmentService) GetVarsByEnv(envId uint) (ret []domain.GlobalVar, err error) {
-	pos, _ := s.EnvironmentRepo.GetVars(envId)
+func (s *EnvironmentService) GetVarsByEnv(tenantId consts.TenantId, envId uint) (ret []domain.GlobalVar, err error) {
+	pos, _ := s.EnvironmentRepo.GetVars(tenantId, envId)
 
 	for _, po := range pos {
 		ret = append(ret, domain.GlobalVar{
-			Name:       po.Name,
-			LocalValue: po.LocalValue,
+			Name:        po.Name,
+			RemoteValue: po.RemoteValue,
 		})
 	}
 
 	return
 }
-func (s *EnvironmentService) GetGlobalVars(projectId uint) (ret []domain.GlobalVar, err error) {
-	pos, _ := s.EnvironmentRepo.ListGlobalVar(projectId)
+func (s *EnvironmentService) GetGlobalVars(tenantId consts.TenantId, projectId uint) (ret []domain.GlobalVar, err error) {
+	pos, _ := s.EnvironmentRepo.ListGlobalVar(tenantId, projectId)
 
 	for _, v := range pos {
 		ret = append(ret, domain.GlobalVar{
@@ -297,8 +297,8 @@ func (s *EnvironmentService) GetGlobalVars(projectId uint) (ret []domain.GlobalV
 
 	return
 }
-func (s *EnvironmentService) GetGlobalParams(projectId uint) (ret []domain.GlobalParam, err error) {
-	pos, _ := s.EnvironmentRepo.ListParamModel(projectId)
+func (s *EnvironmentService) GetGlobalParams(tenantId consts.TenantId, projectId uint) (ret []domain.GlobalParam, err error) {
+	pos, _ := s.EnvironmentRepo.ListParamModel(tenantId, projectId)
 
 	for _, v := range pos {
 		ret = append(ret, domain.GlobalParam{

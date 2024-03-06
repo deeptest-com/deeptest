@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
@@ -14,21 +15,21 @@ type SummaryDetailsService struct {
 	UserRepo           *repo.UserRepo           `inject:""`
 }
 
-func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, err error) {
+func (s *SummaryDetailsService) Card(tenantId consts.TenantId, projectId int64) (res v1.ResSummaryCard, err error) {
 	var summaryCardTotal, oldSummaryCardTotal model.SummaryCardTotal
 
 	startTime, endTime := GetEarlierDateUntilTodayStartAndEndTime(-30)
 
 	if projectId == 0 {
-		summaryCardTotal, err = s.SummaryCard()
-		res.ProjectTotal, err = s.Count()
-		oldSummaryCardTotal, err = s.SummaryCardByDate(startTime, endTime)
-		res.UserTotal, err = s.CountUserTotal()
+		summaryCardTotal, err = s.SummaryCard(tenantId)
+		res.ProjectTotal, err = s.Count(tenantId)
+		oldSummaryCardTotal, err = s.SummaryCardByDate(tenantId, startTime, endTime)
+		res.UserTotal, err = s.CountUserTotal(tenantId)
 	} else {
-		summaryCardTotal, err = s.SummaryCardByProjectId(projectId)
+		summaryCardTotal, err = s.SummaryCardByProjectId(tenantId, projectId)
 		res.ProjectTotal = 1
-		oldSummaryCardTotal, err = s.SummaryCardByDateAndProjectId(startTime, endTime, projectId)
-		res.UserTotal, err = s.CountProjectUserTotal(projectId)
+		oldSummaryCardTotal, err = s.SummaryCardByDateAndProjectId(tenantId, startTime, endTime, projectId)
+		res.UserTotal, err = s.CountProjectUserTotal(tenantId, projectId)
 	}
 
 	copier.CopyWithOption(&res, summaryCardTotal, copier.Option{DeepCopy: true})
@@ -48,28 +49,28 @@ func (s *SummaryDetailsService) Card(projectId int64) (res v1.ResSummaryCard, er
 	return
 }
 
-func (s *SummaryDetailsService) Details(userId int64) (res v1.ResSummaryDetail, err error) {
+func (s *SummaryDetailsService) Details(tenantId consts.TenantId, userId int64) (res v1.ResSummaryDetail, err error) {
 	//从project表收集项目总数
-	res.ProjectTotal, err = s.Count()
-	res.UserProjectTotal, err = s.CountByUserId(userId)
+	res.ProjectTotal, err = s.Count(tenantId)
+	res.UserProjectTotal, err = s.CountByUserId(tenantId, userId)
 	//查找所有项目对应的summaryDetail数据，并转为map
-	allDetails, err := s.GetAllDetailGroupByProjectId()
+	allDetails, err := s.GetAllDetailGroupByProjectId(tenantId)
 	//查找用户参与的项目id,并转为map
-	userProjectIds, err := s.FindProjectIdsByUserId(userId)
+	userProjectIds, err := s.FindProjectIdsByUserId(tenantId, userId)
 	//查询所有项目信息
-	allProjectsInfo, err := s.FindAllProjectInfo()
+	allProjectsInfo, err := s.FindAllProjectInfo(tenantId)
 	//组装返回的json结构体
-	res.ProjectList, res.UserProjectList, err = s.HandleSummaryDetails(userId, userProjectIds, allDetails, allProjectsInfo)
+	res.ProjectList, res.UserProjectList, err = s.HandleSummaryDetails(tenantId, userId, userProjectIds, allDetails, allProjectsInfo)
 	return
 }
 
-func (s *SummaryDetailsService) HandleSummaryDetails(userId int64, userProjectIds []int64, allDetails map[int64]model.SummaryDetails, allProjectsInfo []model.SummaryProjectInfo) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails, err error) {
-	isAdminUser, err := s.UserRepo.IsAdminUser(uint(userId))
+func (s *SummaryDetailsService) HandleSummaryDetails(tenantId consts.TenantId, userId int64, userProjectIds []int64, allDetails map[int64]model.SummaryDetails, allProjectsInfo []model.SummaryProjectInfo) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails, err error) {
+	isAdminUser, err := s.UserRepo.IsAdminUser(tenantId, uint(userId))
 	if err != nil {
 		return
 	}
-	projectsBugCount, err := s.CountBugsGroupByProjectId()
-	projectsUsers, err := s.FindAllUserIdAndNameOfProject()
+	projectsBugCount, err := s.CountBugsGroupByProjectId(tenantId)
+	projectsUsers, err := s.FindAllUserIdAndNameOfProject(tenantId)
 	projectsUserListGroupByProject := s.LetUsersGroupByProjectId(allProjectsInfo, projectsUsers)
 
 	//遍历项目信息，匹配details表结果，进行字段复制，组装返回resAllDetails体
@@ -119,25 +120,25 @@ func (s *SummaryDetailsService) CopyDetailsWithoutBaseModel(detail model.Summary
 	return
 }
 
-func (s *SummaryDetailsService) GetAllDetailGroupByProjectId() (ret map[int64]model.SummaryDetails, err error) {
+func (s *SummaryDetailsService) GetAllDetailGroupByProjectId(tenantId consts.TenantId) (ret map[int64]model.SummaryDetails, err error) {
 
 	//查找所有项目id
-	projectIds, err := s.FindProjectIds()
+	projectIds, err := s.FindProjectIds(tenantId)
 
 	//从biz_scenario表根据projectid,查找场景总数
-	ScenariosTotal, err := s.CountAllScenarioTotalProjectId()
+	ScenariosTotal, err := s.CountAllScenarioTotalProjectId(tenantId)
 
 	//根据projectid,从biz_scenario_report表,获得所有报告总数,然后计算
-	execsTotal, err := s.CountAllExecTotalProjectId()
+	execsTotal, err := s.CountAllExecTotalProjectId(tenantId)
 
 	//从biz_interface表根据projectid,查找接口总数
-	interfacesTotal, err := s.CountAllEndpointTotalProjectId()
+	interfacesTotal, err := s.CountAllEndpointTotalProjectId(tenantId)
 
 	//从biz_scenario_report拿到assertion的相关数据,计算后存储
-	passRates, err := s.FindAllPassRateByProjectId()
+	passRates, err := s.FindAllPassRateByProjectId(tenantId)
 
 	//通过processorInterface、biz_scenario_report、biz_exec_log_processor联合查询，取出来所有被测试过的接口数量，根据project_id分组
-	execLogProcessorInterfaceTotal, err := s.FindAllExecLogProcessorInterfaceTotalGroupByProjectId()
+	execLogProcessorInterfaceTotal, err := s.FindAllExecLogProcessorInterfaceTotalGroupByProjectId(tenantId)
 
 	ret = make(map[int64]model.SummaryDetails, len(projectIds))
 
@@ -187,44 +188,44 @@ func (s *SummaryDetailsService) LetUsersGroupByProjectId(projectsInfo []model.Su
 }
 
 func (s *SummaryDetailsService) HandlerSummaryDetailsRepo() *repo.SummaryDetailsRepo {
-	return repo.NewSummaryDetailsRepo()
+	return s.SummaryDetailsRepo
 }
 
-func (s *SummaryDetailsService) Count() (count int64, err error) {
-	return s.HandlerSummaryDetailsRepo().Count()
+func (s *SummaryDetailsService) Count(tenantId consts.TenantId) (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().Count(tenantId)
 }
 
-func (s *SummaryDetailsService) CountByUserId(userId int64) (count int64, err error) {
-	return s.HandlerSummaryDetailsRepo().CountByUserId(userId)
+func (s *SummaryDetailsService) CountByUserId(tenantId consts.TenantId, userId int64) (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountByUserId(tenantId, userId)
 }
 
-func (s *SummaryDetailsService) CountUserTotal() (count int64, err error) {
-	return s.HandlerSummaryDetailsRepo().CountUserTotal()
+func (s *SummaryDetailsService) CountUserTotal(tenantId consts.TenantId) (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountUserTotal(tenantId)
 }
 
-func (s *SummaryDetailsService) CountProjectUserTotal(projectId int64) (count int64, err error) {
-	return s.HandlerSummaryDetailsRepo().CountProjectUserTotal(projectId)
+func (s *SummaryDetailsService) CountProjectUserTotal(tenantId consts.TenantId, projectId int64) (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountProjectUserTotal(tenantId, projectId)
 }
 
-func (s *SummaryDetailsService) FindAllProjectInfo() (projectDetails []model.SummaryProjectInfo, err error) {
-	return s.HandlerSummaryDetailsRepo().FindAllProjectInfo()
+func (s *SummaryDetailsService) FindAllProjectInfo(tenantId consts.TenantId) (projectDetails []model.SummaryProjectInfo, err error) {
+	return s.HandlerSummaryDetailsRepo().FindAllProjectInfo(tenantId)
 
 }
 
-func (s *SummaryDetailsService) FindAllAdminNameByAdminId(adminId int64) (adminName string, err error) {
-	return s.HandlerSummaryDetailsRepo().FindAdminNameByAdminId(adminId)
+func (s *SummaryDetailsService) FindAllAdminNameByAdminId(tenantId consts.TenantId, adminId int64) (adminName string, err error) {
+	return s.HandlerSummaryDetailsRepo().FindAdminNameByAdminId(tenantId, adminId)
 }
 
-func (s *SummaryDetailsService) FindProjectIdsByUserId(userId int64) (count []int64, err error) {
-	return s.HandlerSummaryDetailsRepo().FindProjectIdsByUserId(userId)
+func (s *SummaryDetailsService) FindProjectIdsByUserId(tenantId consts.TenantId, userId int64) (count []int64, err error) {
+	return s.HandlerSummaryDetailsRepo().FindProjectIdsByUserId(tenantId, userId)
 }
 
-func (s *SummaryDetailsService) FindEndpointIdsByProjectId(projectId int64) (ids []int64, err error) {
-	return s.HandlerSummaryDetailsRepo().FindEndpointIdsByProjectId(projectId)
+func (s *SummaryDetailsService) FindEndpointIdsByProjectId(tenantId consts.TenantId, projectId int64) (ids []int64, err error) {
+	return s.HandlerSummaryDetailsRepo().FindEndpointIdsByProjectId(tenantId, projectId)
 }
 
-func (s *SummaryDetailsService) FindAllEndpointIdsGroupByProjectId(projectIds []int64) (ids map[int64][]int64, err error) {
-	results, err := s.HandlerSummaryDetailsRepo().FindAllEndpointIdsGroupByProjectId()
+func (s *SummaryDetailsService) FindAllEndpointIdsGroupByProjectId(tenantId consts.TenantId, projectIds []int64) (ids map[int64][]int64, err error) {
+	results, err := s.HandlerSummaryDetailsRepo().FindAllEndpointIdsGroupByProjectId(tenantId)
 	ids = make(map[int64][]int64, len(projectIds))
 
 	for _, projectId := range projectIds {
@@ -239,18 +240,18 @@ func (s *SummaryDetailsService) FindAllEndpointIdsGroupByProjectId(projectIds []
 	return
 }
 
-func (s *SummaryDetailsService) FindExecLogProcessorInterfaceTotalGroupByProjectId(projectId int64) (count int64, err error) {
-	count, err = s.HandlerSummaryDetailsRepo().FindExecLogProcessorInterfaceTotalGroupByProjectId(projectId)
+func (s *SummaryDetailsService) FindExecLogProcessorInterfaceTotalGroupByProjectId(tenantId consts.TenantId, projectId int64) (count int64, err error) {
+	count, err = s.HandlerSummaryDetailsRepo().FindExecLogProcessorInterfaceTotalGroupByProjectId(tenantId, projectId)
 	return
 }
 
-func (s *SummaryDetailsService) FindAllExecLogProcessorInterfaceTotal() (count int64, err error) {
-	count, err = s.HandlerSummaryDetailsRepo().FindAllExecLogProcessorInterfaceTotal()
+func (s *SummaryDetailsService) FindAllExecLogProcessorInterfaceTotal(tenantId consts.TenantId) (count int64, err error) {
+	count, err = s.HandlerSummaryDetailsRepo().FindAllExecLogProcessorInterfaceTotal(tenantId)
 	return
 }
 
-func (s *SummaryDetailsService) FindAllExecLogProcessorInterfaceTotalGroupByProjectId() (counts map[int64]int64, err error) {
-	result, err := s.HandlerSummaryDetailsRepo().FindAllExecLogProcessorInterfaceTotalGroupByProjectId()
+func (s *SummaryDetailsService) FindAllExecLogProcessorInterfaceTotalGroupByProjectId(tenantId consts.TenantId) (counts map[int64]int64, err error) {
+	result, err := s.HandlerSummaryDetailsRepo().FindAllExecLogProcessorInterfaceTotalGroupByProjectId(tenantId)
 
 	counts = make(map[int64]int64, len(result))
 	for _, value := range result {
@@ -260,29 +261,29 @@ func (s *SummaryDetailsService) FindAllExecLogProcessorInterfaceTotalGroupByProj
 	return
 }
 
-func (s *SummaryDetailsService) FindByProjectId(projectId int64) (summaryDetail model.SummaryDetails, err error) {
-	return s.HandlerSummaryDetailsRepo().FindByProjectId(projectId)
+func (s *SummaryDetailsService) FindByProjectId(tenantId consts.TenantId, projectId int64) (summaryDetail model.SummaryDetails, err error) {
+	return s.HandlerSummaryDetailsRepo().FindByProjectId(tenantId, projectId)
 }
 
-func (s *SummaryDetailsService) Find() (details []model.SummaryDetails, err error) {
-	return s.HandlerSummaryDetailsRepo().Find()
+func (s *SummaryDetailsService) Find(tenantId consts.TenantId) (details []model.SummaryDetails, err error) {
+	return s.HandlerSummaryDetailsRepo().Find(tenantId)
 }
 
-func (s *SummaryDetailsService) FindByProjectIds(projectIds []int64) (details []model.SummaryDetails, err error) {
-	return s.HandlerSummaryDetailsRepo().FindByProjectIds(projectIds)
+func (s *SummaryDetailsService) FindByProjectIds(tenantId consts.TenantId, projectIds []int64) (details []model.SummaryDetails, err error) {
+	return s.HandlerSummaryDetailsRepo().FindByProjectIds(tenantId, projectIds)
 }
 
-func (s *SummaryDetailsService) FindProjectIds() (ids []int64, err error) {
-	return s.HandlerSummaryDetailsRepo().FindProjectIds()
+func (s *SummaryDetailsService) FindProjectIds(tenantId consts.TenantId) (ids []int64, err error) {
+	return s.HandlerSummaryDetailsRepo().FindProjectIds(tenantId)
 }
 
-func (s *SummaryDetailsService) SummaryCard() (summaryCardTotal model.SummaryCardTotal, err error) {
-	summaryCardTotal.ScenarioTotal, err = s.CountAllScenarioTotal()
-	summaryCardTotal.ExecTotal, err = s.CountAllExecTotal()
-	summaryCardTotal.InterfaceTotal, err = s.CountAllEndpointTotal()
-	summaryCardTotal.PassRate, err = s.FindAllPassRate()
+func (s *SummaryDetailsService) SummaryCard(tenantId consts.TenantId) (summaryCardTotal model.SummaryCardTotal, err error) {
+	summaryCardTotal.ScenarioTotal, err = s.CountAllScenarioTotal(tenantId)
+	summaryCardTotal.ExecTotal, err = s.CountAllExecTotal(tenantId)
+	summaryCardTotal.InterfaceTotal, err = s.CountAllEndpointTotal(tenantId)
+	summaryCardTotal.PassRate, err = s.FindAllPassRate(tenantId)
 
-	endPointCountOfProcessor, err := s.FindAllExecLogProcessorInterfaceTotal()
+	endPointCountOfProcessor, err := s.FindAllExecLogProcessorInterfaceTotal(tenantId)
 	var coverage float64
 	if summaryCardTotal.InterfaceTotal != 0 {
 		coverage = float64(endPointCountOfProcessor) / float64(summaryCardTotal.InterfaceTotal) * 100
@@ -294,18 +295,18 @@ func (s *SummaryDetailsService) SummaryCard() (summaryCardTotal model.SummaryCar
 	return
 }
 
-func (s *SummaryDetailsService) SummaryCardByDate(startTime string, endTime string) (summaryCardTotal model.SummaryCardTotal, err error) {
+func (s *SummaryDetailsService) SummaryCardByDate(tenantId consts.TenantId, startTime string, endTime string) (summaryCardTotal model.SummaryCardTotal, err error) {
 
-	return s.HandlerSummaryDetailsRepo().SummaryCardByDate(startTime, endTime)
+	return s.HandlerSummaryDetailsRepo().SummaryCardByDate(tenantId, startTime, endTime)
 }
 
-func (s *SummaryDetailsService) SummaryCardByProjectId(projectId int64) (summaryCardTotal model.SummaryCardTotal, err error) {
-	summaryCardTotal.ScenarioTotal, err = s.CountScenarioTotalProjectId(projectId)
-	summaryCardTotal.ExecTotal, err = s.CountExecTotalProjectId(projectId)
-	summaryCardTotal.InterfaceTotal, err = s.CountEndpointTotalProjectId(projectId)
-	endPointCountOfProcessor, err := s.FindExecLogProcessorInterfaceTotalGroupByProjectId(projectId)
+func (s *SummaryDetailsService) SummaryCardByProjectId(tenantId consts.TenantId, projectId int64) (summaryCardTotal model.SummaryCardTotal, err error) {
+	summaryCardTotal.ScenarioTotal, err = s.CountScenarioTotalProjectId(tenantId, projectId)
+	summaryCardTotal.ExecTotal, err = s.CountExecTotalProjectId(tenantId, projectId)
+	summaryCardTotal.InterfaceTotal, err = s.CountEndpointTotalProjectId(tenantId, projectId)
+	endPointCountOfProcessor, err := s.FindExecLogProcessorInterfaceTotalGroupByProjectId(tenantId, projectId)
 
-	summaryCardTotal.PassRate, err = s.FindPassRateByProjectId(projectId)
+	summaryCardTotal.PassRate, err = s.FindPassRateByProjectId(tenantId, projectId)
 	var coverage float64
 	if summaryCardTotal.InterfaceTotal != 0 {
 		coverage = float64(endPointCountOfProcessor) / float64(summaryCardTotal.InterfaceTotal) * 100
@@ -317,24 +318,24 @@ func (s *SummaryDetailsService) SummaryCardByProjectId(projectId int64) (summary
 	return
 }
 
-func (s *SummaryDetailsService) SummaryCardByDateAndProjectId(startTime string, endTime string, projectId int64) (summaryCardTotal model.SummaryCardTotal, err error) {
-	return s.HandlerSummaryDetailsRepo().SummaryCardByDateAndProjectId(startTime, endTime, projectId)
+func (s *SummaryDetailsService) SummaryCardByDateAndProjectId(tenantId consts.TenantId, startTime string, endTime string, projectId int64) (summaryCardTotal model.SummaryCardTotal, err error) {
+	return s.HandlerSummaryDetailsRepo().SummaryCardByDateAndProjectId(tenantId, startTime, endTime, projectId)
 }
 
-func (s *SummaryDetailsService) FindByProjectIdAndDate(startTime string, endTime string, projectId int64) (summaryDetails model.SummaryDetails, err error) {
-	return s.HandlerSummaryDetailsRepo().FindByProjectIdAndDate(startTime, endTime, projectId)
+func (s *SummaryDetailsService) FindByProjectIdAndDate(tenantId consts.TenantId, startTime string, endTime string, projectId int64) (summaryDetails model.SummaryDetails, err error) {
+	return s.HandlerSummaryDetailsRepo().FindByProjectIdAndDate(tenantId, startTime, endTime, projectId)
 }
 
-func (s *SummaryDetailsService) FindAllUserIdAndNameOfProject() (users []model.UserIdAndName, err error) {
-	return s.HandlerSummaryDetailsRepo().FindAllUserIdAndNameOfProject()
+func (s *SummaryDetailsService) FindAllUserIdAndNameOfProject(tenantId consts.TenantId) (users []model.UserIdAndName, err error) {
+	return s.HandlerSummaryDetailsRepo().FindAllUserIdAndNameOfProject(tenantId)
 }
 
-func (s *SummaryDetailsService) FindCreateUserNameByProjectId(projectId int64) (userName string, err error) {
-	return s.HandlerSummaryDetailsRepo().FindCreateUserNameByProjectId(projectId)
+func (s *SummaryDetailsService) FindCreateUserNameByProjectId(tenantId consts.TenantId, projectId int64) (userName string, err error) {
+	return s.HandlerSummaryDetailsRepo().FindCreateUserNameByProjectId(tenantId, projectId)
 }
 
-func (s *SummaryDetailsService) CountBugsGroupByProjectId() (bugsCount map[int64]int64, err error) {
-	result, err := s.HandlerSummaryDetailsRepo().CountBugsGroupByProjectId()
+func (s *SummaryDetailsService) CountBugsGroupByProjectId(tenantId consts.TenantId) (bugsCount map[int64]int64, err error) {
+	result, err := s.HandlerSummaryDetailsRepo().CountBugsGroupByProjectId(tenantId)
 	bugsCount = make(map[int64]int64, len(result))
 	for _, value := range result {
 		//这里写的是id实际是count，都是int64，不做多余的明明
@@ -343,16 +344,16 @@ func (s *SummaryDetailsService) CountBugsGroupByProjectId() (bugsCount map[int64
 	return
 }
 
-func (s *SummaryDetailsService) CountScenarioTotalProjectId(projectId int64) (count int64, err error) {
-	return s.HandlerSummaryDetailsRepo().CountScenarioTotalProjectId(projectId)
+func (s *SummaryDetailsService) CountScenarioTotalProjectId(tenantId consts.TenantId, projectId int64) (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountScenarioTotalProjectId(tenantId, projectId)
 }
 
-func (s *SummaryDetailsService) CountAllScenarioTotal() (count int64, err error) {
-	return s.HandlerSummaryDetailsRepo().CountAllScenarioTotal()
+func (s *SummaryDetailsService) CountAllScenarioTotal(tenantId consts.TenantId) (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountAllScenarioTotal(tenantId)
 }
 
-func (s *SummaryDetailsService) CountAllScenarioTotalProjectId() (scenarioTotal map[int64]int64, err error) {
-	scenariosTotal, err := s.HandlerSummaryDetailsRepo().CountAllScenarioTotalProjectId()
+func (s *SummaryDetailsService) CountAllScenarioTotalProjectId(tenantId consts.TenantId) (scenarioTotal map[int64]int64, err error) {
+	scenariosTotal, err := s.HandlerSummaryDetailsRepo().CountAllScenarioTotalProjectId(tenantId)
 
 	scenarioTotal = make(map[int64]int64, len(scenariosTotal))
 	for _, value := range scenariosTotal {
@@ -362,16 +363,16 @@ func (s *SummaryDetailsService) CountAllScenarioTotalProjectId() (scenarioTotal 
 	return
 }
 
-func (s *SummaryDetailsService) CountEndpointTotalProjectId(projectId int64) (count int64, err error) {
-	return s.HandlerSummaryDetailsRepo().CountEndpointInterfaceTotalProjectId(projectId)
+func (s *SummaryDetailsService) CountEndpointTotalProjectId(tenantId consts.TenantId, projectId int64) (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountEndpointInterfaceTotalProjectId(tenantId, projectId)
 }
 
-func (s *SummaryDetailsService) CountAllEndpointTotal() (count int64, err error) {
-	return s.HandlerSummaryDetailsRepo().CountAllEndpointTotal()
+func (s *SummaryDetailsService) CountAllEndpointTotal(tenantId consts.TenantId) (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountAllEndpointTotal(tenantId)
 }
 
-func (s *SummaryDetailsService) CountAllEndpointTotalProjectId() (counts map[int64]int64, err error) {
-	endpointsTotal, err := s.HandlerSummaryDetailsRepo().CountAllEndpointInterfaceTotalProjectId()
+func (s *SummaryDetailsService) CountAllEndpointTotalProjectId(tenantId consts.TenantId) (counts map[int64]int64, err error) {
+	endpointsTotal, err := s.HandlerSummaryDetailsRepo().CountAllEndpointInterfaceTotalProjectId(tenantId)
 	counts = make(map[int64]int64, len(endpointsTotal))
 	for _, value := range endpointsTotal {
 		//这里写的是id实际是count，都是int64，不做多余的明明
@@ -380,15 +381,15 @@ func (s *SummaryDetailsService) CountAllEndpointTotalProjectId() (counts map[int
 	return
 }
 
-func (s *SummaryDetailsService) CountExecTotalProjectId(projectId int64) (count int64, err error) {
-	return s.HandlerSummaryDetailsRepo().CountExecTotalProjectId(projectId)
+func (s *SummaryDetailsService) CountExecTotalProjectId(tenantId consts.TenantId, projectId int64) (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountExecTotalProjectId(tenantId, projectId)
 }
-func (s *SummaryDetailsService) CountAllExecTotal() (count int64, err error) {
-	return s.HandlerSummaryDetailsRepo().CountAllExecTotal()
+func (s *SummaryDetailsService) CountAllExecTotal(tenantId consts.TenantId) (count int64, err error) {
+	return s.HandlerSummaryDetailsRepo().CountAllExecTotal(tenantId)
 }
 
-func (s *SummaryDetailsService) CountAllExecTotalProjectId() (counts map[int64]int64, err error) {
-	execsTotal, err := s.HandlerSummaryDetailsRepo().CountAllExecTotalProjectId()
+func (s *SummaryDetailsService) CountAllExecTotalProjectId(tenantId consts.TenantId) (counts map[int64]int64, err error) {
+	execsTotal, err := s.HandlerSummaryDetailsRepo().CountAllExecTotalProjectId(tenantId)
 	counts = make(map[int64]int64, len(execsTotal))
 	for _, value := range execsTotal {
 		//这里写的是id实际是count，都是int64，不做多余的明明
@@ -397,8 +398,8 @@ func (s *SummaryDetailsService) CountAllExecTotalProjectId() (counts map[int64]i
 	return
 }
 
-func (s *SummaryDetailsService) FindPassRateByProjectId(projectId int64) (passRate float64, err error) {
-	result, err := s.HandlerSummaryDetailsRepo().FindAssertionCountByProjectId(projectId)
+func (s *SummaryDetailsService) FindPassRateByProjectId(tenantId consts.TenantId, projectId int64) (passRate float64, err error) {
+	result, err := s.HandlerSummaryDetailsRepo().FindAssertionCountByProjectId(tenantId, projectId)
 
 	totalCount := result.TotalAssertionNum + result.CheckpointPass + result.CheckpointFail
 	passCount := result.PassAssertionNum + result.CheckpointPass
@@ -411,8 +412,8 @@ func (s *SummaryDetailsService) FindPassRateByProjectId(projectId int64) (passRa
 	return
 }
 
-func (s *SummaryDetailsService) FindAllPassRate() (passRate float64, err error) {
-	result, err := s.HandlerSummaryDetailsRepo().FindAllAssertionCount()
+func (s *SummaryDetailsService) FindAllPassRate(tenantId consts.TenantId) (passRate float64, err error) {
+	result, err := s.HandlerSummaryDetailsRepo().FindAllAssertionCount(tenantId)
 
 	totalCount := result.TotalAssertionNum + result.CheckpointPass + result.CheckpointFail
 	passCount := result.PassAssertionNum + result.CheckpointPass
@@ -426,8 +427,8 @@ func (s *SummaryDetailsService) FindAllPassRate() (passRate float64, err error) 
 
 }
 
-func (s *SummaryDetailsService) FindAllPassRateByProjectId() (ret map[int64]float64, err error) {
-	result, err := s.HandlerSummaryDetailsRepo().FindAllAssertionCountGroupByProjectId()
+func (s *SummaryDetailsService) FindAllPassRateByProjectId(tenantId consts.TenantId) (ret map[int64]float64, err error) {
+	result, err := s.HandlerSummaryDetailsRepo().FindAllAssertionCountGroupByProjectId(tenantId)
 
 	ret = make(map[int64]float64, len(result))
 
@@ -447,36 +448,36 @@ func (s *SummaryDetailsService) FindAllPassRateByProjectId() (ret map[int64]floa
 	return
 }
 
-func (s *SummaryDetailsService) Create(req model.SummaryDetails) (err error) {
-	return s.HandlerSummaryDetailsRepo().Create(req)
+func (s *SummaryDetailsService) Create(tenantId consts.TenantId, req model.SummaryDetails) (err error) {
+	return s.HandlerSummaryDetailsRepo().Create(tenantId, req)
 }
 
-func (s *SummaryDetailsService) UpdateColumnsByDate(id int64, req model.SummaryDetails) (err error) {
-	return s.HandlerSummaryDetailsRepo().UpdateColumnsByDate(id, req)
+func (s *SummaryDetailsService) UpdateColumnsByDate(tenantId consts.TenantId, id int64, req model.SummaryDetails) (err error) {
+	return s.HandlerSummaryDetailsRepo().UpdateColumnsByDate(tenantId, id, req)
 }
 
-func (s *SummaryDetailsService) HasDataOfDate(startTime string, endTime string, projectId int64) (id int64, err error) {
-	return s.HandlerSummaryDetailsRepo().Existed(startTime, endTime, projectId)
+func (s *SummaryDetailsService) HasDataOfDate(tenantId consts.TenantId, startTime string, endTime string, projectId int64) (id int64, err error) {
+	return s.HandlerSummaryDetailsRepo().Existed(tenantId, startTime, endTime, projectId)
 }
 
-func (s *SummaryDetailsService) CreateByDate(req model.SummaryDetails) (err error) {
+func (s *SummaryDetailsService) CreateByDate(tenantId consts.TenantId, req model.SummaryDetails) (err error) {
 	startTime, endTime := GetTodayStartAndEndTime()
-	id, err := s.HasDataOfDate(startTime, endTime, req.ProjectId)
+	id, err := s.HasDataOfDate(tenantId, startTime, endTime, req.ProjectId)
 	if id == 0 {
-		err = s.Create(req)
+		err = s.Create(tenantId, req)
 	} else {
-		err = s.UpdateColumnsByDate(id, req)
+		err = s.UpdateColumnsByDate(tenantId, id, req)
 	}
 	return
 }
 
 // SaveDetails 查询今日是否已存在当前projectId对应的数据，没有则create，有则update
-func (s *SummaryDetailsService) SaveDetails() (err error) {
-	details, err := s.GetAllDetailGroupByProjectId()
+func (s *SummaryDetailsService) SaveDetails(tenantId consts.TenantId) (err error) {
+	details, err := s.GetAllDetailGroupByProjectId(tenantId)
 
 	for _, detail := range details {
 		newDetail := s.CopyDetailsWithoutBaseModel(detail)
-		err = s.CreateByDate(newDetail)
+		err = s.CreateByDate(tenantId, newDetail)
 	}
 
 	return

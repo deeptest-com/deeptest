@@ -32,6 +32,7 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 		BearerToken: domain.BearerToken{
 			Token: req.Token,
 		},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
 	resp, err := httpHelper.Post(httpReq)
@@ -69,6 +70,8 @@ func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 		ret.DebugData = req.Data
 	}
 
+	ret.TenantId = req.TenantId
+
 	return
 }
 func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.DebugResponse, resultStatus consts.ResultStatus,
@@ -94,6 +97,7 @@ func SubmitInterfaceResult(execObj agentExec.InterfaceExecObj, respObj domain.De
 		BearerToken: domain.BearerToken{
 			Token: token,
 		},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(execObj.TenantId)}},
 	}
 
 	resp, err := httpHelper.Post(req)
@@ -138,6 +142,7 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 				Value: _stringUtils.IntToStr(req.EnvironmentId),
 			},
 		},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 	request, err := json.Marshal(httpReq)
 	logUtils.Infof("get exec obj request, request: %s", string(request))
@@ -185,7 +190,6 @@ func GetScenarioToExec(req *agentExec.ScenarioExecReq) (ret *agentExec.ScenarioE
 
 	return
 }
-
 func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Report) {
 	url := "scenarios/exec/getScenarioNormalData"
 
@@ -205,6 +209,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 				Value: _stringUtils.IntToStr(req.EnvironmentId),
 			},
 		},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
 	resp, err := httpHelper.Get(httpReq)
@@ -236,8 +241,7 @@ func GetScenarioNormalData(req *agentExec.ScenarioExecReq) (ret agentDomain.Repo
 
 	return
 }
-
-func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint, serverUrl, token string) (
+func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint, serverUrl, token string, tenantId consts.TenantId) (
 	report agentDomain.Report, err error) {
 
 	bodyBytes, _ := json.Marshal(result)
@@ -249,6 +253,7 @@ func SubmitScenarioResult(result agentDomain.ScenarioExecResult, scenarioId uint
 		BearerToken: domain.BearerToken{
 			Token: token,
 		},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(tenantId)}},
 	}
 
 	resp, err := httpHelper.Post(req)
@@ -298,6 +303,7 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 				Value: _stringUtils.IntToStr(req.EnvironmentId),
 			},
 		},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 
 	resp, err := httpHelper.Get(httpReq)
@@ -332,8 +338,58 @@ func GetPlanToExec(req *agentExec.PlanExecReq) (ret *agentExec.PlanExecObj) {
 
 	return
 }
+func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err error) {
+	url := "plans/exec/getPlanReportNormalData"
 
-func SubmitPlanResult(result agentDomain.PlanExecResult, planId int, serverUrl, token string) (
+	httpReq := domain.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		AuthorizationType: consts.BearerToken,
+		BearerToken: domain.BearerToken{
+			Token: req.Token,
+		},
+		QueryParams: &[]domain.Param{
+			{
+				Name:  "id",
+				Value: fmt.Sprintf("%d", req.PlanId),
+			},
+			{
+				Name:  "environmentId",
+				Value: _stringUtils.IntToStr(req.EnvironmentId),
+			},
+		},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get exec obj failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get exec obj failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{}
+	json.Unmarshal([]byte(resp.Content), &respContent)
+
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	bytes, err := json.Marshal(respContent.Data)
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	json.Unmarshal(bytes, &ret)
+
+	return
+}
+func SubmitPlanResult(result agentDomain.PlanExecResult, planId int, serverUrl, token string, tenantId consts.TenantId) (
 	report agentDomain.Report, err error) {
 	bodyBytes, _ := json.Marshal(result)
 	req := domain.BaseRequest{
@@ -344,6 +400,7 @@ func SubmitPlanResult(result agentDomain.PlanExecResult, planId int, serverUrl, 
 		BearerToken: domain.BearerToken{
 			Token: token,
 		},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(tenantId)}},
 	}
 
 	resp, err := httpHelper.Post(req)
@@ -372,98 +429,7 @@ func SubmitPlanResult(result agentDomain.PlanExecResult, planId int, serverUrl, 
 	return
 }
 
-func GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExecObj) {
-	url := "message/unreadCount"
-
-	httpReq := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
-		AuthorizationType: consts.BearerToken,
-		BearerToken: domain.BearerToken{
-			Token: req.Token,
-		},
-	}
-
-	resp, err := httpHelper.Get(httpReq)
-	if err != nil {
-		logUtils.Infof("get exec obj failed, error, %s", err.Error())
-		return
-	}
-
-	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Infof("get exec obj failed, response %v", resp)
-		return
-	}
-
-	respContent := _domain.Response{}
-	json.Unmarshal([]byte(resp.Content), &respContent)
-
-	if respContent.Code != 0 {
-		logUtils.Infof("get exec obj failed, response %v", resp.Content)
-		return
-	}
-
-	bytes, err := json.Marshal(respContent.Data)
-	if respContent.Code != 0 {
-		logUtils.Infof("get exec obj failed, response %v", resp.Content)
-		return
-	}
-
-	json.Unmarshal(bytes, &ret)
-
-	return
-}
-
-func GetPlanNormalData(req *agentExec.PlanExecReq) (ret agentDomain.Report, err error) {
-	url := "plans/exec/getPlanReportNormalData"
-
-	httpReq := domain.BaseRequest{
-		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
-		AuthorizationType: consts.BearerToken,
-		BearerToken: domain.BearerToken{
-			Token: req.Token,
-		},
-		QueryParams: &[]domain.Param{
-			{
-				Name:  "id",
-				Value: fmt.Sprintf("%d", req.PlanId),
-			},
-			{
-				Name:  "environmentId",
-				Value: _stringUtils.IntToStr(req.EnvironmentId),
-			},
-		},
-	}
-
-	resp, err := httpHelper.Get(httpReq)
-	if err != nil {
-		logUtils.Infof("get exec obj failed, error, %s", err.Error())
-		return
-	}
-
-	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Infof("get exec obj failed, response %v", resp)
-		return
-	}
-
-	respContent := _domain.Response{}
-	json.Unmarshal([]byte(resp.Content), &respContent)
-
-	if respContent.Code != 0 {
-		logUtils.Infof("get exec obj failed, response %v", resp.Content)
-		return
-	}
-
-	bytes, err := json.Marshal(respContent.Data)
-	if respContent.Code != 0 {
-		logUtils.Infof("get exec obj failed, response %v", resp.Content)
-		return
-	}
-
-	json.Unmarshal(bytes, &ret)
-
-	return
-}
-
+// for cases exec
 func GetCasesToExec(req *agentExec.CasesExecReq) (ret agentExec.CaseExecProcessor) {
 	url := "endpoints/cases/alternatives/loadCasesForExec"
 
@@ -477,6 +443,7 @@ func GetCasesToExec(req *agentExec.CasesExecReq) (ret agentExec.CaseExecProcesso
 		},
 		BodyType: consts.ContentTypeJSON,
 		Body:     string(body),
+		Headers:  &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
 	}
 	request, err := json.Marshal(httpReq)
 	logUtils.Infof("get case exec obj request, request: %s", string(request))
@@ -506,6 +473,48 @@ func GetCasesToExec(req *agentExec.CasesExecReq) (ret agentExec.CaseExecProcesso
 	bytes, err := json.Marshal(respContent.Data)
 	if respContent.Code != 0 {
 		logUtils.Infof("get interface obj failed, response %v", resp.Content)
+		return
+	}
+
+	json.Unmarshal(bytes, &ret)
+
+	return
+}
+
+func GetMessageToExec(req *agentExec.MessageExecReq) (ret *agentExec.MessageExecObj) {
+	url := "message/unreadCount"
+
+	httpReq := domain.BaseRequest{
+		Url:               _httpUtils.AddSepIfNeeded(req.ServerUrl) + url,
+		AuthorizationType: consts.BearerToken,
+		BearerToken: domain.BearerToken{
+			Token: req.Token,
+		},
+		Headers: &[]domain.Header{{Name: "tenantId", Value: string(req.TenantId)}},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	if err != nil {
+		logUtils.Infof("get exec obj failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("get exec obj failed, response %v", resp)
+		return
+	}
+
+	respContent := _domain.Response{}
+	json.Unmarshal([]byte(resp.Content), &respContent)
+
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
+		return
+	}
+
+	bytes, err := json.Marshal(respContent.Data)
+	if respContent.Code != 0 {
+		logUtils.Infof("get exec obj failed, response %v", resp.Content)
 		return
 	}
 

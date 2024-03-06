@@ -1,6 +1,7 @@
 package source
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -13,6 +14,6 @@ func (s *SysConfigSource) GetSources() (configs []model.SysConfig, err error) {
 	return
 }
 
-func (s *SysConfigSource) Init() (err error) {
+func (s *SysConfigSource) Init(consts.TenantId) (err error) {
 	return
 }

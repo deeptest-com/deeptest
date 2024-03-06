@@ -30,10 +30,10 @@ type MockAdvanceService struct {
 	EndpointMockCompareService *EndpointMockCompareService `inject:""`
 }
 
-func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInterface, ctx iris.Context) (
+func (s *MockAdvanceService) ByAdvanceMock(tenantId consts.TenantId, endpointInterface model.EndpointInterface, ctx iris.Context) (
 	resp mockGenerator.Response, byAdvance bool) {
 
-	endpoint, _ := s.EndpointRepo.Get(endpointInterface.EndpointId)
+	endpoint, _ := s.EndpointRepo.Get(tenantId, endpointInterface.EndpointId)
 
 	if endpoint.AdvancedMockDisabled && endpoint.ScriptMockDisabled {
 		byAdvance = false
@@ -42,43 +42,43 @@ func (s *MockAdvanceService) ByAdvanceMock(endpointInterface model.EndpointInter
 
 	var req mockGenerator.Request
 	if !endpoint.AdvancedMockDisabled { // expect result
-		req, resp, byAdvance = s.ByExpect(endpointInterface, endpoint, ctx)
+		req, resp, byAdvance = s.ByExpect(tenantId, endpointInterface, endpoint, ctx)
 		if !byAdvance { // return if failed
 			return
 		}
 	}
 
 	if !endpoint.ScriptMockDisabled {
-		s.ByScript(endpoint, req, &resp)
+		s.ByScript(tenantId, endpoint, req, &resp)
 	}
 
 	return
 }
 
-func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (
+func (s *MockAdvanceService) ByExpect(tenantId consts.TenantId, endpointInterface model.EndpointInterface, endpoint model.Endpoint, ctx iris.Context) (
 	req mockGenerator.Request, resp mockGenerator.Response, byAdvance bool) {
 
 	headerParams, queryParams, pathParams, body, bodyForm, cookies :=
-		s.EndpointMockParamService.GetRealRequestValues(ctx, endpointInterface, endpoint)
+		s.EndpointMockParamService.GetRealRequestValues(tenantId, ctx, endpointInterface, endpoint)
 
 	req = s.genRequest(headerParams, queryParams, pathParams, body, bodyForm, cookies)
 	req.Url = ctx.Path()
 	req.Method = endpointInterface.Method
 
-	expects, _ := s.EndpointMockExpectRepo.ListByEndpointId(endpointInterface.EndpointId)
+	expects, _ := s.EndpointMockExpectRepo.ListByEndpointId(tenantId, endpointInterface.EndpointId)
 
 	for _, expect := range expects {
 		if expect.Disabled || expect.Method != endpointInterface.Method {
 			continue
 		}
 
-		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(expect.ID)
+		expectRequestMap, _ := s.EndpointMockExpectRepo.GetExpectRequest(tenantId, expect.ID)
 
 		if s.MatchExpect(expectRequestMap, endpointInterface, endpoint,
 			headerParams, queryParams, pathParams, body, bodyForm, ctx) {
 
-			respData, respHeaders := s.GetExpectResult(expect)
-			respDefine := s.EndpointInterfaceRepo.GetResponse(endpointInterface.ID, respData.Code)
+			respData, respHeaders := s.GetExpectResult(tenantId, expect)
+			respDefine := s.EndpointInterfaceRepo.GetResponse(tenantId, endpointInterface.ID, respData.Code)
 
 			codeInt, _ := strconv.ParseInt(respData.Code, 10, 64)
 			resp.StatusCode = consts.HttpRespCode(codeInt)
@@ -93,7 +93,7 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 				resp.ContentType = consts.ContentTypeJSON
 			}
 
-			expectResp, _ := s.EndpointMockExpectRepo.GetExpectResponse(expect.ID)
+			expectResp, _ := s.EndpointMockExpectRepo.GetExpectResponse(tenantId, expect.ID)
 			resp.DelayTime = expectResp.DelayTime
 
 			if httpHelper.IsJsonRespType(resp.ContentType) && resp.Content != "" {
@@ -109,16 +109,16 @@ func (s *MockAdvanceService) ByExpect(endpointInterface model.EndpointInterface,
 	return
 }
 
-func (s *MockAdvanceService) ByScript(endpoint model.Endpoint, req mockGenerator.Request, resp *mockGenerator.Response) {
-	script, err := s.EndpointMockScriptRepo.Get(endpoint.ID)
+func (s *MockAdvanceService) ByScript(tenantId consts.TenantId, endpoint model.Endpoint, req mockGenerator.Request, resp *mockGenerator.Response) {
+	script, err := s.EndpointMockScriptRepo.Get(tenantId, endpoint.ID)
 	if err != nil || script.Disabled || script.Content == "" {
 		return
 	}
 
-	mockHelper.InitJsRuntime()
+	mockHelper.InitJsRuntime(tenantId)
 	mockHelper.SetReqValueToGoja(req)
 	mockHelper.SetRespValueToGoja(*resp)
-	mockHelper.ExecScript(script.Content)
+	mockHelper.ExecScript(tenantId, script.Content)
 	mockHelper.GetRespValueFromGoja()
 
 	if mockHelper.CurrResponse.Data != nil {
@@ -217,11 +217,11 @@ func (s *MockAdvanceService) MatchExpect(expectRequestMap map[consts.ParamIn][]m
 	return
 }
 
-func (s *MockAdvanceService) GetExpectResult(expect model.EndpointMockExpect) (
+func (s *MockAdvanceService) GetExpectResult(tenantId consts.TenantId, expect model.EndpointMockExpect) (
 	respContent model.EndpointMockExpectResponse, respHeaders []domain.Param) {
 
-	respContent, _ = s.EndpointMockExpectRepo.GetExpectResponse(expect.ID)
-	headers, _ := s.EndpointMockExpectRepo.GetExpectResponseHeaders(expect.ID)
+	respContent, _ = s.EndpointMockExpectRepo.GetExpectResponse(tenantId, expect.ID)
+	headers, _ := s.EndpointMockExpectRepo.GetExpectResponseHeaders(tenantId, expect.ID)
 
 	for _, item := range headers {
 		header := domain.Param{

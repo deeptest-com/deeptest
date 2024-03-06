@@ -1,4 +1,4 @@
-package serverServe
+package serve
 
 import (
 	stdContext "context"
@@ -64,7 +64,7 @@ func Start() {
 		staticPath:        config.CONFIG.System.StaticPath,
 		webPath:           config.CONFIG.System.WebPath,
 		idleConnClosed:    idleConnClosed,
-		globalMiddlewares: []context.Handler{middleware.Error(), middleware.UserAuth()},
+		globalMiddlewares: []context.Handler{middleware.DBResolver(), middleware.Error(), middleware.UserAuth()},
 	}
 
 	server.InjectModule()
@@ -109,7 +109,7 @@ func injectWebsocketModule(websocketCtrl *handler.WebSocketCtrl) {
 	g.Logger = logrus.StandardLogger()
 
 	if err := g.Provide(
-		&inject.Object{Value: dao.GetDB()},
+		&inject.Object{Value: dao.GetDB("")},
 		&inject.Object{Value: websocketCtrl},
 	); err != nil {
 		logrus.Fatalf("provide usecase objects to the Graph: %v", err)
@@ -173,7 +173,7 @@ func (webServer *WebServer) AddWebUi() {
 
 // AddUpload 添加上传文件访问
 func (webServer *WebServer) AddUpload() {
-	pth := filepath.Join(dir.GetCurrentAbPath(), consts.DirUpload)
+	pth := filepath.Join(consts.WorkDir, consts.DirUpload)
 	fileUtils.MkDirIfNeeded(pth)
 	logUtils.Infof("*** upload dir: %s", pth)
 
@@ -256,7 +256,7 @@ func (webServer *WebServer) InjectModule() {
 
 	// inject objects
 	if err := g.Provide(
-		&inject.Object{Value: dao.GetDB()},
+		&inject.Object{Value: dao.GetDB("")},
 		&inject.Object{Value: cron},
 		&inject.Object{Value: indexModule},
 	); err != nil {

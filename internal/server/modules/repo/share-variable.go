@@ -13,18 +13,18 @@ type ShareVariableRepo struct {
 	ScenarioProcessorRepo *ScenarioProcessorRepo `inject:""`
 }
 
-func (r *ShareVariableRepo) Save(po *model.ShareVariable) (err error) {
-	po.ID, _ = r.findExist(*po)
+func (r *ShareVariableRepo) Save(tenantId consts.TenantId, po *model.ShareVariable) (err error) {
+	po.ID, _ = r.findExist(tenantId, *po)
 
-	err = r.DB.Save(po).Error
+	err = r.GetDB(tenantId).Save(po).Error
 
 	return
 }
 
-func (r *ShareVariableRepo) findExist(po model.ShareVariable) (id uint, err error) {
+func (r *ShareVariableRepo) findExist(tenantId consts.TenantId, po model.ShareVariable) (id uint, err error) {
 	existPo := model.ShareVariable{}
 
-	db := r.DB.Model(&po).
+	db := r.GetDB(tenantId).Model(&po).
 		Where("name=?", po.Name).
 		Where("NOT deleted AND NOT disabled")
 
@@ -43,10 +43,10 @@ func (r *ShareVariableRepo) findExist(po model.ShareVariable) (id uint, err erro
 	return
 }
 
-func (r *ShareVariableRepo) GetExistByInterfaceDebug(name string, serveId uint, usedBy consts.UsedBy) (id uint, err error) {
+func (r *ShareVariableRepo) GetExistByInterfaceDebug(tenantId consts.TenantId, name string, serveId uint, usedBy consts.UsedBy) (id uint, err error) {
 	po := model.ShareVariable{}
 
-	err = r.DB.Model(&po).
+	err = r.GetDB(tenantId).Model(&po).
 		Where("name = ? AND used_by = ? AND serve_id =? AND not deleted",
 			name, usedBy, serveId).
 		First(&po).Error
@@ -55,10 +55,10 @@ func (r *ShareVariableRepo) GetExistByInterfaceDebug(name string, serveId uint, 
 
 	return
 }
-func (r *ShareVariableRepo) GetExistByScenarioDebug(name string, scenarioId uint) (id uint, err error) {
+func (r *ShareVariableRepo) GetExistByScenarioDebug(tenantId consts.TenantId, name string, scenarioId uint) (id uint, err error) {
 	po := model.ShareVariable{}
 
-	err = r.DB.Model(&po).
+	err = r.GetDB(tenantId).Model(&po).
 		Where("name = ? AND scenario_id =? AND not deleted",
 			name, scenarioId).
 		First(&po).Error
@@ -68,8 +68,8 @@ func (r *ShareVariableRepo) GetExistByScenarioDebug(name string, scenarioId uint
 	return
 }
 
-func (r *ShareVariableRepo) ListForInterfaceDebug(serveId uint, usedBy consts.UsedBy) (pos []model.ShareVariable, err error) {
-	err = r.DB.Model(&model.ShareVariable{}).
+func (r *ShareVariableRepo) ListForInterfaceDebug(tenantId consts.TenantId, serveId uint, usedBy consts.UsedBy) (pos []model.ShareVariable, err error) {
+	err = r.GetDB(tenantId).Model(&model.ShareVariable{}).
 		Where("serve_id=?", serveId).
 		Where("used_by=?", usedBy).
 		Where("NOT deleted AND NOT disabled").
@@ -78,13 +78,13 @@ func (r *ShareVariableRepo) ListForInterfaceDebug(serveId uint, usedBy consts.Us
 	return
 }
 
-func (r *ShareVariableRepo) ListForScenarioDebug(processorId uint) (pos []model.ShareVariable, err error) {
-	processor, _ := r.ScenarioProcessorRepo.Get(processorId)
+func (r *ShareVariableRepo) ListForScenarioDebug(tenantId consts.TenantId, processorId uint) (pos []model.ShareVariable, err error) {
+	processor, _ := r.ScenarioProcessorRepo.Get(tenantId, processorId)
 	scenarioId := processor.ScenarioId
 
-	ancestorProcessorIds, err := r.GetAncestorIds(processorId, model.Processor{}.TableName())
+	ancestorProcessorIds, err := r.GetAncestorIds(tenantId, processorId, model.Processor{}.TableName())
 
-	err = r.DB.Model(&model.ShareVariable{}).
+	err = r.GetDB(tenantId).Model(&model.ShareVariable{}).
 		Where("scenario_processor_id IN ?", ancestorProcessorIds).
 		Where("scenario_id=?", scenarioId).
 		Where("NOT deleted AND NOT disabled").
@@ -93,8 +93,8 @@ func (r *ShareVariableRepo) ListForScenarioDebug(processorId uint) (pos []model.
 	return
 }
 
-func (r *ShareVariableRepo) Delete(id int) (err error) {
-	err = r.DB.Model(&model.ShareVariable{}).
+func (r *ShareVariableRepo) Delete(tenantId consts.TenantId, id int) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ShareVariable{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -102,16 +102,16 @@ func (r *ShareVariableRepo) Delete(id int) (err error) {
 	return
 }
 
-func (r *ShareVariableRepo) DeleteAllByServeId(serveId uint) (err error) {
-	err = r.DB.Model(&model.ShareVariable{}).
+func (r *ShareVariableRepo) DeleteAllByServeId(tenantId consts.TenantId, serveId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ShareVariable{}).
 		Where("serve_id=?", serveId).
 		Update("deleted", true).
 		Error
 
 	return
 }
-func (r *ShareVariableRepo) DeleteAllByScenarioId(scenarioId uint) (err error) {
-	err = r.DB.Model(&model.ShareVariable{}).
+func (r *ShareVariableRepo) DeleteAllByScenarioId(tenantId consts.TenantId, scenarioId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ShareVariable{}).
 		Where("scenario_id=?", scenarioId).
 		Update("disabled", true).
 		Error

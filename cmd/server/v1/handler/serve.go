@@ -10,6 +10,7 @@ import (
 )
 
 type ServeCtrl struct {
+	BaseCtrl
 	Cron                     *cron.ServerCron                  `inject:""`
 	ServeService             *service.ServeService             `inject:""`
 	EndpointInterfaceService *service.EndpointInterfaceService `inject:""`
@@ -25,6 +26,7 @@ type ServeCtrl struct {
 // @success	200	{object}	_domain.Response{data=object{serves=[]model.Serve,currServe=model.Serve}}
 // @Router	/api/v1/serves/listByProject	[get]
 func (c *ServeCtrl) ListByProject(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 
@@ -33,7 +35,7 @@ func (c *ServeCtrl) ListByProject(ctx iris.Context) {
 		return
 	}
 
-	serves, currServe, err := c.ServeService.ListByProject(projectId, userId)
+	serves, currServe, err := c.ServeService.ListByProject(tenantId, projectId, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -56,9 +58,10 @@ func (c *ServeCtrl) ListByProject(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Serve}}
 // @Router	/api/v1/serves/index	[post]
 func (c *ServeCtrl) Index(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeReqPaginate
 	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.Paginate(req)
+		res, _ := c.ServeService.Paginate(tenantId, req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -77,6 +80,7 @@ func (c *ServeCtrl) Index(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/serves/save	[post]
 func (c *ServeCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -84,7 +88,7 @@ func (c *ServeCtrl) Save(ctx iris.Context) {
 	}
 
 	req.CreateUser = multi.GetUsername(ctx)
-	res, err := c.ServeService.Save(req)
+	res, err := c.ServeService.Save(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -105,9 +109,10 @@ func (c *ServeCtrl) Save(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Serve}
 // @Router	/api/v1/serves/detail	[get]
 func (c *ServeCtrl) Detail(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
 	if id != 0 {
-		res := c.ServeService.GetById(uint(id))
+		res := c.ServeService.GetById(tenantId, uint(id))
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -125,9 +130,10 @@ func (c *ServeCtrl) Detail(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/serves/copy	[get]
 func (c *ServeCtrl) Copy(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
 	if id != 0 {
-		res := c.ServeService.Copy(uint(id))
+		res := c.ServeService.Copy(tenantId, uint(id))
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -145,8 +151,9 @@ func (c *ServeCtrl) Copy(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/serves/delete	[delete]
 func (c *ServeCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	err := c.ServeService.DeleteById(uint(id))
+	err := c.ServeService.DeleteById(tenantId, uint(id))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -165,8 +172,9 @@ func (c *ServeCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/serves/expire	[put]
 func (c *ServeCtrl) Expire(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	err := c.ServeService.DisableById(uint(id))
+	err := c.ServeService.DisableById(tenantId, uint(id))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -185,9 +193,10 @@ func (c *ServeCtrl) Expire(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/serves/version/save	[post]
 func (c *ServeCtrl) SaveVersion(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeVersionReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		if res, err := c.ServeService.SaveVersion(req); err != nil {
+		if res, err := c.ServeService.SaveVersion(tenantId, req); err != nil {
 			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		} else {
 			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
@@ -209,9 +218,10 @@ func (c *ServeCtrl) SaveVersion(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ServeVersion}}
 // @Router	/api/v1/serves/version/list	[post]
 func (c *ServeCtrl) ListVersion(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeVersionPaginate
 	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.PaginateVersion(req)
+		res, _ := c.ServeService.PaginateVersion(tenantId, req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -229,8 +239,9 @@ func (c *ServeCtrl) ListVersion(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/serves/version/delete	[delete]
 func (c *ServeCtrl) DeleteVersion(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	err := c.ServeService.DeleteVersionById(uint(id))
+	err := c.ServeService.DeleteVersionById(tenantId, uint(id))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -249,8 +260,9 @@ func (c *ServeCtrl) DeleteVersion(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/serves/version/expire	[put]
 func (c *ServeCtrl) ExpireVersion(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	err := c.ServeService.DisableVersionById(uint(id))
+	err := c.ServeService.DisableVersionById(tenantId, uint(id))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -269,12 +281,18 @@ func (c *ServeCtrl) ExpireVersion(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/serves/schema/save [post]
 func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeSchemaReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
-	res, err := c.ServeService.SaveSchema(req)
+
+	projectId, _ := ctx.URLParamInt("currProjectId")
+	req.ProjectId = uint(projectId)
+
+	res, err := c.ServeService.SaveSchema(tenantId, req)
+
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -293,9 +311,10 @@ func (c *ServeCtrl) SaveSchema(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/serves/security/save [post]
 func (c *ServeCtrl) SaveSecurity(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeSecurityReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.SaveSecurity(req)
+		res, _ := c.ServeService.SaveSecurity(tenantId, req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -313,9 +332,10 @@ func (c *ServeCtrl) SaveSecurity(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ComponentSchema}}
 // @Router	/api/v1/serves/schema/list	[post]
 func (c *ServeCtrl) ListSchema(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeSchemaPaginate
 	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.PaginateSchema(req)
+		res, _ := c.ServeService.PaginateSchema(tenantId, req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -331,15 +351,13 @@ func (c *ServeCtrl) ListSchema(ctx iris.Context) {
 // @Param 	currProjectId		query	int								true	"当前项目ID"
 // @Param 	ServeSchemaRefReq	body	serverDomain.ServeSchemaRefReq	true	"获取Schema的请求参数"
 // @success	200	{object}	_domain.Response{data=model.ComponentSchema}
-// @Router	/api/v1/serves/schema/detail	[post]
+// @Router	/api/v1/serves/schema/detail	[get]
 func (c *ServeCtrl) GetSchemaByRef(ctx iris.Context) {
-	var req serverDomain.ServeSchemaRefReq
-	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.GetSchema(uint(req.ServeId), req.Ref)
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
-	} else {
-		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
-	}
+	tenantId := c.getTenantId(ctx)
+	id := ctx.URLParamUint64("id")
+	res, _ := c.ServeService.GetSchema(tenantId, uint(id))
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+
 }
 
 // DeleteSchema
@@ -353,8 +371,9 @@ func (c *ServeCtrl) GetSchemaByRef(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/serves/schema/delete	[delete]
 func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	err := c.ServeService.DeleteSchemaById(uint(id))
+	err := c.ServeService.DeleteSchemaById(tenantId, uint(id))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -373,6 +392,7 @@ func (c *ServeCtrl) DeleteSchema(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{servers=[]model.ServeServer, currServer=model.ServeServer}}
 // @Router	/api/v1/serves/server/list	[post]
 func (c *ServeCtrl) ListServer(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeServer
 
 	err := ctx.ReadJSON(&req)
@@ -387,7 +407,7 @@ func (c *ServeCtrl) ListServer(ctx iris.Context) {
 		return
 	}
 
-	servers, currServer, err := c.ServeService.ListServer(req, uint(projectId), userId)
+	servers, currServer, err := c.ServeService.ListServer(tenantId, req, uint(projectId), userId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -410,6 +430,7 @@ func (c *ServeCtrl) ListServer(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.ServeServer}
 // @Router	/api/v1/serves/server/changeServer	[post]
 func (c *ServeCtrl) ChangeServer(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeServer
 
 	err := ctx.ReadJSON(&req)
@@ -424,7 +445,7 @@ func (c *ServeCtrl) ChangeServer(ctx iris.Context) {
 		return
 	}
 
-	currServer, err := c.ServeService.ChangeServer(uint(projectId), userId, req.ServeId, req.ServerId)
+	currServer, err := c.ServeService.ChangeServer(tenantId, uint(projectId), userId, req.ServeId, req.ServerId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -434,9 +455,10 @@ func (c *ServeCtrl) ChangeServer(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) SaveServer(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeServer
 	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.SaveServer(req)
+		res, _ := c.ServeService.SaveServer(tenantId, req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -474,9 +496,10 @@ func (c *ServeCtrl) ExampleToSchema(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/serves/schema/schema2example [post]
 func (c *ServeCtrl) SchemaToExample(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.JsonContent
 	if err := ctx.ReadJSON(&req); err == nil {
-		res := c.ServeService.Schema2Example(req.ServeId, req.Data)
+		res := c.ServeService.Schema2Example(tenantId, req.ProjectId, req.Data)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -514,10 +537,12 @@ func (c *ServeCtrl) SchemaToYaml(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/serves/schema/copy [put]
 func (c *ServeCtrl) CopySchema(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
 	if id != 0 {
-		res, _ := c.ServeService.CopySchema(uint(id))
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res.ID})
+		res, _ := c.ServeService.CopySchema(tenantId, uint(id))
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
+
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 	}
@@ -534,9 +559,10 @@ func (c *ServeCtrl) CopySchema(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/serves/version/bindEndpoint	[post]
 func (c *ServeCtrl) BindEndpoint(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeVersionBindEndpointReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		c.ServeService.BindEndpoint(req)
+		c.ServeService.BindEndpoint(tenantId, req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -554,6 +580,7 @@ func (c *ServeCtrl) BindEndpoint(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Serve}
 // @Router	/api/v1/serves/changeServe	[post]
 func (c *ServeCtrl) ChangeServe(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	req := serverDomain.ChangeServeReq{}
@@ -563,7 +590,7 @@ func (c *ServeCtrl) ChangeServe(ctx iris.Context) {
 		return
 	}
 
-	currServe, err := c.ServeService.ChangeServe(req.Id, userId)
+	currServe, err := c.ServeService.ChangeServe(tenantId, req.Id, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -583,9 +610,10 @@ func (c *ServeCtrl) ChangeServe(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ComponentSchemaSecurity}}
 // @Router	/api/v1/serves/security/list	[post]
 func (c *ServeCtrl) ListSecurity(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ServeSecurityPaginate
 	if err := ctx.ReadJSON(&req); err == nil {
-		res, _ := c.ServeService.PaginateSecurity(req)
+		res, _ := c.ServeService.PaginateSecurity(tenantId, req)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -603,8 +631,9 @@ func (c *ServeCtrl) ListSecurity(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/serves/security/delete	[delete]
 func (c *ServeCtrl) DeleteSecurity(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	err := c.ServeService.DeleteSecurityId(uint(id))
+	err := c.ServeService.DeleteSecurityId(tenantId, uint(id))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 	} else {
@@ -613,6 +642,7 @@ func (c *ServeCtrl) DeleteSecurity(ctx iris.Context) {
 }
 
 func (c *ServeCtrl) AddServerForHistory(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.HistoryServeAddServesReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -620,7 +650,7 @@ func (c *ServeCtrl) AddServerForHistory(ctx iris.Context) {
 		return
 	}
 
-	err = c.ServeService.AddServerForHistory(req)
+	err = c.ServeService.AddServerForHistory(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

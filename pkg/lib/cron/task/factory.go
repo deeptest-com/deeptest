@@ -2,12 +2,13 @@ package task
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-	third_party "github.com/aaronchen2k/deeptest/internal/server/modules/service/third-party"
 )
 
 type Factory struct {
-	name   string
-	taskId uint
+	name              string
+	taskId            uint
+	SwaggerCron       *service.SwaggerCron       `inject:""`
+	LecangCronService *service.LecangCronService `inject:""`
 }
 
 //func c Create() (res CronRun) {
@@ -34,11 +35,11 @@ func newFactory(name string, task2 Task) (factory *Factory) {
 func (e *Factory) Create() (res Task) {
 	switch e.name {
 	case "swagger":
-		res = new(service.SwaggerCron)
+		res = e.SwaggerCron
 	case "lecang":
-		res = new(third_party.LecangCron)
+		res = e.LecangCronService
 	default:
-		res = new(service.SwaggerCron)
+		res = e.SwaggerCron
 	}
 
 	return

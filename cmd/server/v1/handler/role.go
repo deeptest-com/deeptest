@@ -14,6 +14,7 @@ import (
 )
 
 type RoleCtrl struct {
+	BaseCtrl
 	RoleService *service.RoleService `inject:""`
 }
 
@@ -28,6 +29,7 @@ type RoleCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]serverDomain.RoleResp}}
 // @Router	/api/v1/roles	[get]
 func (c *RoleCtrl) GetAllRoles(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.RoleReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -38,7 +40,7 @@ func (c *RoleCtrl) GetAllRoles(ctx iris.Context) {
 		}
 	}
 
-	data, err := c.RoleService.Paginate(req)
+	data, err := c.RoleService.Paginate(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -58,13 +60,14 @@ func (c *RoleCtrl) GetAllRoles(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.RoleResp}
 // @Router	/api/v1/roles/{id}	[get]
 func (c *RoleCtrl) GetRole(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	role, err := c.RoleService.FindById(req.Id)
+	role, err := c.RoleService.FindById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -83,6 +86,7 @@ func (c *RoleCtrl) GetRole(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{id=int}}
 // @Router	/api/v1/roles	[post]
 func (c *RoleCtrl) CreateRole(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.RoleReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -92,7 +96,7 @@ func (c *RoleCtrl) CreateRole(ctx iris.Context) {
 			return
 		}
 	}
-	id, err := c.RoleService.Create(req)
+	id, err := c.RoleService.Create(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -113,6 +117,7 @@ func (c *RoleCtrl) CreateRole(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/roles/{id}	[post]
 func (c *RoleCtrl) UpdateRole(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, _ := ctx.Params().GetInt("id")
 
 	var req serverDomain.RoleReq
@@ -125,7 +130,7 @@ func (c *RoleCtrl) UpdateRole(ctx iris.Context) {
 		}
 	}
 
-	err := c.RoleService.Update(uint(id), req)
+	err := c.RoleService.Update(tenantId, uint(id), req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -144,13 +149,14 @@ func (c *RoleCtrl) UpdateRole(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.RoleResp}
 // @Router	/api/v1/roles/{id}	[delete]
 func (c *RoleCtrl) DeleteRole(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	err := c.RoleService.DeleteById(req.Id)
+	err := c.RoleService.DeleteById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -169,7 +175,8 @@ func (c *RoleCtrl) DeleteRole(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{result=[]serverDomain.RoleResp}}
 // @Router	/api/v1/roles/all	[get]
 func (c *RoleCtrl) AllRoleList(ctx iris.Context) {
-	roles, err := c.RoleService.AllRoleList()
+	tenantId := c.getTenantId(ctx)
+	roles, err := c.RoleService.AllRoleList(tenantId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -179,8 +186,9 @@ func (c *RoleCtrl) AllRoleList(ctx iris.Context) {
 }
 
 func (c *RoleCtrl) GetAuthByEnv(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
-	res, err := c.RoleService.GetAuthByEnv(userId)
+	res, err := c.RoleService.GetAuthByEnv(tenantId, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

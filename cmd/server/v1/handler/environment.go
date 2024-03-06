@@ -23,8 +23,9 @@ type EnvironmentCtrl struct {
 // @success	200	{object}	_domain.Response{data=[]model.Environment}
 // @Router	/api/v1/environments	[get]
 func (c *EnvironmentCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
-	data, err := c.EnvironmentService.List(projectId)
+	data, err := c.EnvironmentService.List(tenantId, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -44,6 +45,7 @@ func (c *EnvironmentCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Environment}
 // @Router	/api/v1/environments{id}	[get]
 func (c *EnvironmentCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	id, err := ctx.Params().GetInt("id")
 
@@ -52,7 +54,7 @@ func (c *EnvironmentCtrl) Get(ctx iris.Context) {
 		return
 	}
 
-	env, err := c.EnvironmentService.Get(uint(id), uint(projectId))
+	env, err := c.EnvironmentService.Get(tenantId, uint(id), uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -71,6 +73,7 @@ func (c *EnvironmentCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/environments/changeEnvironment	[post]
 func (c *EnvironmentCtrl) Change(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	id, err := ctx.URLParamInt("id")
 
@@ -79,7 +82,7 @@ func (c *EnvironmentCtrl) Change(ctx iris.Context) {
 		return
 	}
 
-	err = c.EnvironmentService.Change(id, projectId)
+	err = c.EnvironmentService.Change(tenantId, id, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -101,6 +104,7 @@ func (c *EnvironmentCtrl) Change(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Environment}
 // @Router	/api/v1/environments	[post]
 func (c *EnvironmentCtrl) Create(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -114,7 +118,7 @@ func (c *EnvironmentCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	err = c.EnvironmentService.Create(&env, uint(projectId))
+	err = c.EnvironmentService.Create(tenantId, &env, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -136,6 +140,7 @@ func (c *EnvironmentCtrl) Create(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/environments	[put]
 func (c *EnvironmentCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var env model.Environment
 	err := ctx.ReadJSON(&env)
 	if err != nil {
@@ -143,7 +148,7 @@ func (c *EnvironmentCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.EnvironmentService.Update(&env)
+	err = c.EnvironmentService.Update(tenantId, &env)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -162,13 +167,14 @@ func (c *EnvironmentCtrl) Update(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/environments/copyEnvironment	[post]
 func (c *EnvironmentCtrl) Copy(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.URLParamInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.EnvironmentService.Copy(id)
+	err = c.EnvironmentService.Copy(tenantId, id)
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -190,13 +196,14 @@ func (c *EnvironmentCtrl) Copy(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/environments/{id}	[delete]
 func (c *EnvironmentCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.EnvironmentService.Delete(uint(id))
+	err = c.EnvironmentService.Delete(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -216,6 +223,7 @@ func (c *EnvironmentCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Environment}
 // @Router	/api/v1/environments/vars	[post]
 func (c *EnvironmentCtrl) CreateVar(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	envVar := model.EnvironmentVar{}
 	err := ctx.ReadJSON(&envVar)
 	if err != nil {
@@ -223,13 +231,13 @@ func (c *EnvironmentCtrl) CreateVar(ctx iris.Context) {
 		return
 	}
 
-	err = c.EnvironmentService.CreateVar(&envVar)
+	err = c.EnvironmentService.CreateVar(tenantId, &envVar)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ErrNameExist.Code, Data: nil})
 		return
 	}
 
-	env, err := c.EnvironmentService.Get(envVar.EnvironmentId, 0)
+	env, err := c.EnvironmentService.Get(tenantId, envVar.EnvironmentId, 0)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: env, Msg: _domain.NoErr.Msg})
 }
@@ -245,6 +253,7 @@ func (c *EnvironmentCtrl) CreateVar(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Environment}
 // @Router	/api/v1/environments/vars	[put]
 func (c *EnvironmentCtrl) UpdateVar(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var envVar model.EnvironmentVar
 	err := ctx.ReadJSON(&envVar)
 	if err != nil {
@@ -252,32 +261,33 @@ func (c *EnvironmentCtrl) UpdateVar(ctx iris.Context) {
 		return
 	}
 
-	err = c.EnvironmentService.UpdateVar(&envVar)
+	err = c.EnvironmentService.UpdateVar(tenantId, &envVar)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	env, err := c.EnvironmentService.Get(envVar.EnvironmentId, 0)
+	env, err := c.EnvironmentService.Get(tenantId, envVar.EnvironmentId, 0)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: env, Msg: _domain.NoErr.Msg})
 }
 
 // DeleteVar 删除
 func (c *EnvironmentCtrl) DeleteVar(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.EnvironmentService.DeleteVar(uint(id))
+	err = c.EnvironmentService.DeleteVar(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	envVar, err := c.EnvironmentService.GetVar(uint(id))
-	env, err := c.EnvironmentService.Get(envVar.EnvironmentId, 0)
+	envVar, err := c.EnvironmentService.GetVar(tenantId, uint(id))
+	env, err := c.EnvironmentService.Get(tenantId, envVar.EnvironmentId, 0)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: env, Msg: _domain.NoErr.Msg})
 }
 
@@ -292,19 +302,20 @@ func (c *EnvironmentCtrl) DeleteVar(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Environment}
 // @Router	/api/v1/environments/vars/clear	[post]
 func (c *EnvironmentCtrl) ClearVar(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	environmentId, err := ctx.URLParamInt("environmentId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.EnvironmentService.ClearAllVar(uint(environmentId))
+	err = c.EnvironmentService.ClearAllVar(tenantId, uint(environmentId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	env, err := c.EnvironmentService.Get(uint(environmentId), 0)
+	env, err := c.EnvironmentService.Get(tenantId, uint(environmentId), 0)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: env, Msg: _domain.NoErr.Msg})
 }
 
@@ -319,20 +330,21 @@ func (c *EnvironmentCtrl) ClearVar(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Environment}
 // @Router	/api/v1/environments/shareVars/{id}	[delete]
 func (c *EnvironmentCtrl) DeleteShareVar(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.EnvironmentService.DisableShareVar(uint(id))
+	err = c.EnvironmentService.DisableShareVar(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	envVar, err := c.EnvironmentService.GetVar(uint(id))
-	env, err := c.EnvironmentService.Get(envVar.EnvironmentId, 0)
+	envVar, err := c.EnvironmentService.GetVar(tenantId, uint(id))
+	env, err := c.EnvironmentService.Get(tenantId, envVar.EnvironmentId, 0)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: env, Msg: _domain.NoErr.Msg})
 }
 
@@ -347,6 +359,7 @@ func (c *EnvironmentCtrl) DeleteShareVar(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Environment}
 // @Router	/api/v1/environments/shareVars/clear	[post]
 func (c *EnvironmentCtrl) ClearShareVar(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	interfaceId, err := ctx.URLParamInt("interfaceId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -359,7 +372,7 @@ func (c *EnvironmentCtrl) ClearShareVar(ctx iris.Context) {
 		return
 	}
 
-	env, err := c.EnvironmentService.Get(uint(interfaceId), 0)
+	env, err := c.EnvironmentService.Get(tenantId, uint(interfaceId), 0)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: env, Msg: _domain.NoErr.Msg})
 }
 
@@ -374,13 +387,14 @@ func (c *EnvironmentCtrl) ClearShareVar(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/environments/save	[post]
 func (c *EnvironmentCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EnvironmentReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	if id, err := c.EnvironmentService.Save(req); err == nil {
+	if id, err := c.EnvironmentService.Save(tenantId, req); err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: id, Msg: _domain.NoErr.Msg})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -398,9 +412,10 @@ func (c *EnvironmentCtrl) Save(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=int}
 // @Router	/api/v1/environments/copy	[get]
 func (c *EnvironmentCtrl) Clone(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamIntDefault("id", 0)
 	if id != 0 {
-		if env, err := c.EnvironmentService.Clone(uint(id)); err != nil {
+		if env, err := c.EnvironmentService.Clone(tenantId, uint(id)); err != nil {
 			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		} else {
 			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: env.ID, Msg: _domain.NoErr.Msg})
@@ -419,9 +434,10 @@ func (c *EnvironmentCtrl) Clone(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/environments/delete	[delete]
 func (c *EnvironmentCtrl) DeleteEnvironment(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamIntDefault("id", 0)
 	if id != 0 {
-		if err := c.EnvironmentService.DeleteEnvironment(uint(id)); err != nil {
+		if err := c.EnvironmentService.DeleteEnvironment(tenantId, uint(id)); err != nil {
 			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 			return
 		}
@@ -440,8 +456,9 @@ func (c *EnvironmentCtrl) DeleteEnvironment(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]model.Environment}
 // @Router	/api/v1/environments/list	[get]
 func (c *EnvironmentCtrl) ListAll(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId := ctx.URLParamIntDefault("projectId", 0)
-	if res, err := c.EnvironmentService.ListAll(uint(projectId)); err == nil {
+	if res, err := c.EnvironmentService.ListAll(tenantId, uint(projectId)); err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -459,6 +476,7 @@ func (c *EnvironmentCtrl) ListAll(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/environments/vars/global	[post]
 func (c *EnvironmentCtrl) SaveGlobal(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req []serverDomain.EnvironmentVariable
 	projectId := ctx.URLParamIntDefault("currProjectId", 0)
 
@@ -468,7 +486,7 @@ func (c *EnvironmentCtrl) SaveGlobal(ctx iris.Context) {
 		return
 	}
 
-	err = c.EnvironmentService.SaveGlobal(uint(projectId), req)
+	err = c.EnvironmentService.SaveGlobal(tenantId, uint(projectId), req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -487,8 +505,9 @@ func (c *EnvironmentCtrl) SaveGlobal(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]model.EnvironmentVar}
 // @Router	/api/v1/environments/vars/global	[get]
 func (c *EnvironmentCtrl) ListGlobal(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId := ctx.URLParamIntDefault("currProjectId", 0)
-	res, err := c.EnvironmentService.ListGlobal(uint(projectId))
+	res, err := c.EnvironmentService.ListGlobal(tenantId, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -507,9 +526,10 @@ func (c *EnvironmentCtrl) ListGlobal(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/environments/param	[post]
 func (c *EnvironmentCtrl) SaveParams(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EnvironmentParamsReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		if err = c.EnvironmentService.SaveParams(req); err == nil {
+		if err = c.EnvironmentService.SaveParams(tenantId, req); err == nil {
 			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 		} else {
 			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -530,8 +550,9 @@ func (c *EnvironmentCtrl) SaveParams(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/environments/param	[get]
 func (c *EnvironmentCtrl) ListParams(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId := ctx.URLParamIntDefault("projectId", 0)
-	res, err := c.EnvironmentService.ListParams(uint(projectId))
+	res, err := c.EnvironmentService.ListParams(tenantId, uint(projectId))
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 	} else {
@@ -550,9 +571,10 @@ func (c *EnvironmentCtrl) ListParams(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/environments/order	[post]
 func (c *EnvironmentCtrl) Order(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EnvironmentIdsReq
 	if err := ctx.ReadJSON(&req); err == nil {
-		if err = c.EnvironmentService.SaveOrder(req); err == nil {
+		if err = c.EnvironmentService.SaveOrder(tenantId, req); err == nil {
 			ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 		} else {
 			ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

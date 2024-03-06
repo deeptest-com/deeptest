@@ -5,19 +5,23 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
+
+	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
 
 type IRepo interface {
-	Save(id uint, entity interface{}) error
-	GetCategoryCount(result interface{}, projectId uint) (err error)
+	Save(tenantId consts.TenantId, id uint, entity interface{}) error
+	GetCategoryCount(tenantId consts.TenantId, result interface{}, projectId uint) (err error)
+	SaveEntity(tenantId consts.TenantId, category *model.Category) (err error)
 }
 
 type BaseRepo struct {
 	DB *gorm.DB `inject:""`
 }
 
-func (r *BaseRepo) GetAncestorIds(id uint, tableName string) (ids []uint, err error) {
+func (r *BaseRepo) GetAncestorIds(tenantId consts.TenantId, id uint, tableName string) (ids []uint, err error) {
 	sql := `
 		WITH RECURSIVE temp AS
 		(
@@ -34,7 +38,7 @@ func (r *BaseRepo) GetAncestorIds(id uint, tableName string) (ids []uint, err er
 
 	sql = fmt.Sprintf(sql, tableName, id, tableName)
 
-	err = r.DB.Raw(sql).Scan(&ids).Error
+	err = r.GetDB(tenantId).Raw(sql).Scan(&ids).Error
 	if err != nil {
 		return
 	}
@@ -42,7 +46,7 @@ func (r *BaseRepo) GetAncestorIds(id uint, tableName string) (ids []uint, err er
 	return
 }
 
-func (r *BaseRepo) GetDescendantIds(id uint, tableName string, typ serverConsts.CategoryDiscriminator, projectId int) (
+func (r *BaseRepo) GetDescendantIds(tenantId consts.TenantId, id uint, tableName string, typ serverConsts.CategoryDiscriminator, projectId int) (
 	ids []uint, err error) {
 	sql := `
 		WITH RECURSIVE temp AS
@@ -64,7 +68,7 @@ func (r *BaseRepo) GetDescendantIds(id uint, tableName string, typ serverConsts.
 		tableName,
 		typ, projectId)
 
-	err = r.DB.Raw(sql).Scan(&ids).Error
+	err = r.GetDB(tenantId).Raw(sql).Scan(&ids).Error
 	if err != nil {
 		return
 	}
@@ -72,7 +76,7 @@ func (r *BaseRepo) GetDescendantIds(id uint, tableName string, typ serverConsts.
 	return
 }
 
-func (r *BaseRepo) GetAllChildIdsSimple(id uint, tableName string) (
+func (r *BaseRepo) GetAllChildIdsSimple(tenantId consts.TenantId, id uint, tableName string) (
 	ids []uint, err error) {
 	sql := `
 		WITH RECURSIVE temp AS
@@ -91,7 +95,7 @@ func (r *BaseRepo) GetAllChildIdsSimple(id uint, tableName string) (
 `
 	sql = fmt.Sprintf(sql, tableName, id, tableName)
 
-	err = r.DB.Raw(sql).Scan(&ids).Error
+	err = r.GetDB(tenantId).Raw(sql).Scan(&ids).Error
 	if err != nil {
 		return
 	}
@@ -99,19 +103,23 @@ func (r *BaseRepo) GetAllChildIdsSimple(id uint, tableName string) (
 	return
 }
 
-func (r *BaseRepo) Save(id uint, entity interface{}) (err error) {
+func (r *BaseRepo) Save(tenantId consts.TenantId, id uint, entity interface{}) (err error) {
 	var count int64
 
-	err = r.DB.Model(&entity).Where("id = ?", id).Count(&count).Error
+	err = r.GetDB(tenantId).Model(&entity).Where("id = ?", id).Count(&count).Error
 	if err != nil {
 		return
 	}
 
 	if count == 0 {
-		err = r.DB.Create(entity).Error
+		err = r.GetDB(tenantId).Create(entity).Error
 	} else {
-		err = r.DB.Updates(entity).Error
+		err = r.GetDB(tenantId).Updates(entity).Error
 	}
+	return
+}
+
+func (r *BaseRepo) SaveEntity(tenantId consts.TenantId, category *model.Category) (err error) {
 	return
 }
 
@@ -120,6 +128,21 @@ func (r *BaseRepo) GetAdminRoleName() (roleName consts.RoleType) {
 	if config.CONFIG.System.SysEnv == "ly" {
 		roleName = consts.IntegrationAdmin
 	}
+	return
 
+}
+
+func (r *BaseRepo) GetDB(tenantId consts.TenantId) (db *gorm.DB) {
+	//return default db
+	if tenantId == "" {
+		return dao.GetDB("")
+	}
+	handler := func() (db *gorm.DB, err error) {
+		return dao.InitSaasDBHandler(tenantId)
+	}
+	db = dao.GetDBResolver().Apply(tenantId, handler).GetConnPool(tenantId)
+	if db == nil {
+		panic(fmt.Errorf("tenantId:%s,db is empty", tenantId))
+	}
 	return
 }

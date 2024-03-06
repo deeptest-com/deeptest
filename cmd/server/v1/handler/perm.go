@@ -13,6 +13,7 @@ import (
 )
 
 type PermCtrl struct {
+	BaseCtrl
 	PermService *service.PermService `inject:""`
 }
 
@@ -27,6 +28,7 @@ type PermCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]serverDomain.PermResp}}
 // @Router	/api/v1/perms	[get]
 func (c *PermCtrl) GetAllPerms(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.PermReqPaginate
 	if err := ctx.ReadQuery(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -37,7 +39,7 @@ func (c *PermCtrl) GetAllPerms(ctx iris.Context) {
 		}
 	}
 
-	data, err := c.PermService.Paginate(req)
+	data, err := c.PermService.Paginate(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -57,13 +59,14 @@ func (c *PermCtrl) GetAllPerms(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.PermResp}
 // @Router	/api/v1/perms/{id}	[get]
 func (c *PermCtrl) GetPerm(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	perm, err := c.PermService.FindById(req.Id)
+	perm, err := c.PermService.FindById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -82,6 +85,7 @@ func (c *PermCtrl) GetPerm(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{id=int}}
 // @Router	/api/v1/perms	[post]
 func (c *PermCtrl) CreatePerm(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.PermReq{}
 	if err := ctx.ReadJSON(&req); err != nil {
 		errs := validate.ValidRequest(err)
@@ -91,7 +95,7 @@ func (c *PermCtrl) CreatePerm(ctx iris.Context) {
 			return
 		}
 	}
-	id, err := c.PermService.Create(req)
+	id, err := c.PermService.Create(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -112,6 +116,7 @@ func (c *PermCtrl) CreatePerm(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/perms/{id}	[post]
 func (c *PermCtrl) UpdatePerm(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var reqId _domain.ReqId
 	if err := ctx.ReadParams(&reqId); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
@@ -129,7 +134,7 @@ func (c *PermCtrl) UpdatePerm(ctx iris.Context) {
 		}
 	}
 
-	err := c.PermService.Update(reqId.Id, req)
+	err := c.PermService.Update(tenantId, reqId.Id, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -148,13 +153,14 @@ func (c *PermCtrl) UpdatePerm(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/perms/{id}	[delete]
 func (c *PermCtrl) DeletePerm(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	err := c.PermService.DeleteById(req.Id)
+	err := c.PermService.DeleteById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

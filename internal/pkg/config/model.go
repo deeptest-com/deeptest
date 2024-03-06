@@ -18,9 +18,11 @@ type Config struct {
 	Mcs         Mcs         `mapstructure:"mcs" json:"mcs" yaml:"mcs"`
 	Environment Environment `mapstructure:"environment" json:"environment" yaml:"environment"`
 	OpenApi     OpenApi     `mapstructure:"openapi" json:"openapi" yaml:"openapi"`
+	Saas        Saas        `mapstructure:"saas" json:"saas" yaml:"saas"`
 }
 
 type System struct {
+	Name          string `mapstructure:"name" json:"name" yaml:"name"`
 	SysEnv        string `mapstructure:"sysEnv" json:"sysEnv" yaml:"sysEnv"` // dev, leyan_test, deeptest_demo etc.
 	Level         string `mapstructure:"level" json:"level" yaml:"level"`    // debug,release,test
 	ServerAddress string `mapstructure:"serverAddress" json:"serverAddress" yaml:"serverAddress"`
@@ -43,6 +45,7 @@ type Redis struct {
 	Addr     string `mapstructure:"addr" json:"addr" yaml:"addr"`
 	Password string `mapstructure:"password" json:"password" yaml:"password"`
 	PoolSize int    `mapstructure:"pool-size" json:"poolSize" yaml:"pool-size"`
+	Prefix   string `mapstructure:"prefix" json:"prefix" yaml:"prefix"`
 }
 
 type Mysql struct {
@@ -93,4 +96,13 @@ type Environment struct {
 
 type OpenApi struct {
 	AppSecret string `mapstructure:"appsecret" json:"appsecret" yaml:"appsecret"`
+}
+
+type Saas struct {
+	Switch   bool    `mapstructure:"switch" json:"switch" yaml:"switch"`
+	Username string  `mapstructure:"username" json:"username" yaml:"username"`
+	Password string  `mapstructure:"password" json:"password" yaml:"password"`
+	Url      string  `mapstructure:"url" json:"url" yaml:"url"`
+	ApiSign  ApiSign `mapstructure:"apiSign" json:"apiSign" yaml:"apiSign"`
+	Host     string  `mapstructure:"host" json:"host" yaml:"host"`
 }

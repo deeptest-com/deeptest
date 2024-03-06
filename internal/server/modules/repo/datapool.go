@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -11,13 +12,14 @@ import (
 )
 
 type DatapoolRepo struct {
-	DB       *gorm.DB  `inject:""`
-	UserRepo *UserRepo `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB  `inject:""`
+	UserRepo  *UserRepo `inject:""`
 }
 
-func (r *DatapoolRepo) Paginate(req v1.DatapoolReqPaginate) (ret _domain.PageData, err error) {
+func (r *DatapoolRepo) Paginate(tenantId consts.TenantId, req v1.DatapoolReqPaginate) (ret _domain.PageData, err error) {
 	var count int64
-	db := r.DB.Model(&model.Datapool{}).Where("project_id = ? AND NOT deleted", req.ProjectId)
+	db := r.GetDB(tenantId).Model(&model.Datapool{}).Where("project_id = ? AND NOT deleted", req.ProjectId)
 
 	if req.Name != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Name))
@@ -41,9 +43,9 @@ func (r *DatapoolRepo) Paginate(req v1.DatapoolReqPaginate) (ret _domain.PageDat
 	return
 }
 
-func (r *DatapoolRepo) ListForExec(projectId uint) (ret []v1.DatapoolReq, err error) {
+func (r *DatapoolRepo) ListForExec(tenantId consts.TenantId, projectId uint) (ret []v1.DatapoolReq, err error) {
 	var pos []model.Datapool
-	err = r.DB.Model(&model.Datapool{}).
+	err = r.GetDB(tenantId).Model(&model.Datapool{}).
 		Where("project_id = ? AND NOT deleted", projectId).
 		Find(&pos).Error
 
@@ -63,15 +65,15 @@ func (r *DatapoolRepo) ListForExec(projectId uint) (ret []v1.DatapoolReq, err er
 	return
 }
 
-func (r *DatapoolRepo) Get(id uint) (project model.Datapool, err error) {
-	err = r.DB.Model(&model.Datapool{}).
+func (r *DatapoolRepo) Get(tenantId consts.TenantId, id uint) (project model.Datapool, err error) {
+	err = r.GetDB(tenantId).Model(&model.Datapool{}).
 		Where("id = ?", id).First(&project).Error
 
 	return
 }
 
-func (r *DatapoolRepo) GetByName(name string, projectId uint) (po model.Datapool, err error) {
-	err = r.DB.Model(&model.Datapool{}).
+func (r *DatapoolRepo) GetByName(tenantId consts.TenantId, name string, projectId uint) (po model.Datapool, err error) {
+	err = r.GetDB(tenantId).Model(&model.Datapool{}).
 		Where("name = ?", name).
 		Where("project_id = ?", projectId).
 		First(&po).Error
@@ -79,35 +81,35 @@ func (r *DatapoolRepo) GetByName(name string, projectId uint) (po model.Datapool
 	return
 }
 
-func (r *DatapoolRepo) Save(po *model.Datapool, userId uint) (err error) {
-	user, _ := r.UserRepo.FindById(userId)
+func (r *DatapoolRepo) Save(tenantId consts.TenantId, po *model.Datapool, userId uint) (err error) {
+	user, _ := r.UserRepo.FindById(tenantId, userId)
 	if po.CreateUser == "" {
 		po.CreateUser = user.Username
 	}
 
-	err = r.DB.Save(po).Error
+	err = r.GetDB(tenantId).Save(po).Error
 
 	return
 }
 
-func (r *DatapoolRepo) SaveData(req v1.DatapoolReq) (err error) {
-	err = r.DB.Model(&model.Datapool{}).
+func (r *DatapoolRepo) SaveData(tenantId consts.TenantId, req v1.DatapoolReq) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Datapool{}).
 		Where("id = ?", req.Id).
 		Updates(map[string]interface{}{"data": req.Data}).Error
 
 	return nil
 }
 
-func (r *DatapoolRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.Datapool{}).
+func (r *DatapoolRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Datapool{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 
 	return
 }
 
-func (r *DatapoolRepo) Disable(id uint) (err error) {
-	err = r.DB.Model(&model.Datapool{}).
+func (r *DatapoolRepo) Disable(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Datapool{}).
 		Where("id = ?", id).
 		Updates(map[string]interface{}{"disabled": gorm.Expr("NOT disabled")}).Error
 

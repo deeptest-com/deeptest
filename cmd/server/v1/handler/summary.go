@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/aaronchen2k/deeptest/saas/common"
+	"github.com/aaronchen2k/deeptest/saas/tenant"
 	"github.com/kataras/iris/v12"
 	"github.com/snowlyg/multi"
 	"go.uber.org/zap"
@@ -15,8 +18,18 @@ type SummaryCtrl struct {
 }
 
 func (c *SummaryCtrl) Summary() {
-	c.SummaryService.Collection()
-	return
+	//SAAS
+	if config.CONFIG.Saas.Switch {
+		tenants := tenant.NewTenant().GetInfos()
+		for _, tenant := range tenants {
+			go common.AsyncCatchErrRun(func() {
+				c.SummaryService.Collection(tenant.Id)
+			})
+		}
+	} else { //default
+		c.SummaryService.Collection("")
+	}
+
 }
 
 // Card
@@ -30,6 +43,7 @@ func (c *SummaryCtrl) Summary() {
 // @success	200	{object}	_domain.Response{data=serverDomain.ResSummaryCard}
 // @Router	/api/v1/summary/card/{projectId}	[get]
 func (c *SummaryCtrl) Card(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.Params().GetInt64("projectId")
 
 	if err != nil {
@@ -38,7 +52,7 @@ func (c *SummaryCtrl) Card(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.SummaryService.Card(projectId)
+	data, err := c.SummaryService.Card(tenantId, projectId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -60,6 +74,7 @@ func (c *SummaryCtrl) Card(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.ResSummaryBugs}
 // @Router	/api/v1/summary/bugs/{projectId}	[get]
 func (c *SummaryCtrl) Bugs(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.Params().GetInt64("projectId")
 
 	if err != nil {
@@ -68,7 +83,7 @@ func (c *SummaryCtrl) Bugs(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.SummaryService.Bugs(projectId)
+	data, err := c.SummaryService.Bugs(tenantId, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -88,7 +103,7 @@ func (c *SummaryCtrl) Bugs(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.ResSummaryDetail}
 // @Router	/api/v1/summary/details	[get]
 func (c *SummaryCtrl) Details(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	if userId == 0 {
@@ -96,7 +111,7 @@ func (c *SummaryCtrl) Details(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.SummaryService.Details(int64(userId))
+	data, err := c.SummaryService.Details(tenantId, int64(userId))
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -119,7 +134,7 @@ func (c *SummaryCtrl) Details(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.ResRankingList}
 // @Router	/api/v1/summary/projectUserRanking/{cycle}/{projectId}	[get]
 func (c *SummaryCtrl) ProjectUserRanking(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	cycle, err := ctx.Params().GetInt64("cycle")
 	projectId, err := ctx.Params().GetInt64("projectId")
 
@@ -129,7 +144,7 @@ func (c *SummaryCtrl) ProjectUserRanking(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.SummaryService.ProjectUserRanking(cycle, projectId)
+	data, err := c.SummaryService.ProjectUserRanking(tenantId, cycle, projectId)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -151,15 +166,15 @@ func (c *SummaryCtrl) ProjectUserRanking(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/summary/collection/{store}	[get]
 func (c *SummaryCtrl) Collection(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	name := ctx.Params().GetString("store")
 	switch name {
 	case "details":
-		c.SummaryService.CollectionDetails()
+		c.SummaryService.CollectionDetails(tenantId)
 	case "ranking":
-		c.SummaryService.CollectionRanking()
+		c.SummaryService.CollectionRanking(tenantId)
 	case "bugs":
-		c.SummaryService.CollectionBugs()
+		c.SummaryService.CollectionBugs(tenantId)
 
 	}
 

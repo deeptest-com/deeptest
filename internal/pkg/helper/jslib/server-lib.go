@@ -16,8 +16,8 @@ var (
 	ServerLoadedLibs sync.Map
 )
 
-func LoadServerJslibs(runtime *goja.Runtime, require *require.RequireModule) {
-	LoadCacheIfNeeded()
+func LoadServerJslibs(tenantId consts.TenantId, runtime *goja.Runtime, require *require.RequireModule) {
+	LoadCacheIfNeeded(tenantId)
 
 	JslibCache.Range(func(key, value interface{}) bool {
 		id := key.(uint)
@@ -30,6 +30,9 @@ func LoadServerJslibs(runtime *goja.Runtime, require *require.RequireModule) {
 		updateTime, ok := GetServerCache(id)
 		if !ok || updateTime.Before(lib.UpdatedAt) {
 			pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d.js", id))
+			if tenantId != "" {
+				pth = filepath.Join(consts.TmpDir, fmt.Sprintf("%s_%d.js", tenantId, id))
+			}
 			fileUtils.WriteFile(pth, lib.Script)
 			module, err := require.Require(pth)
 			if err != nil {

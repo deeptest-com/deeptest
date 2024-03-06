@@ -38,7 +38,7 @@ type CronLecangIsExtendOverride string
 const (
 	CronLecangExtendOverride CronLecangIsExtendOverride = "extend_override"     //继承并重写
 	CronLecangExtend         CronLecangIsExtendOverride = "extend_not_override" //继承未重写
-	CronLecangNotExtend      CronLecangIsExtendOverride = "extend_not_override" //未继承，自身
+	CronLecangNotExtend      CronLecangIsExtendOverride = "not_extend"          //未继承，自身
 )
 
 func (e CronLecangIsExtendOverride) String() string {

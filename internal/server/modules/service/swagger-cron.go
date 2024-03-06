@@ -10,7 +10,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/jinzhu/copier"
 )
 
 type SwaggerCron struct {
@@ -18,29 +17,48 @@ type SwaggerCron struct {
 	ProjectSettingsRepo      *repo.ProjectSettingsRepo   `inject:""`
 	EndpointRepo             *repo.EndpointRepo          `inject:""`
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
+	ProjectCronRepo          *repo.ProjectCronRepo       `inject:""`
 	Cron                     *cron.ServerCron            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
-	ProjectSettingsService   *ProjectSettingsService     `inject:""`
+	ProjectCronService       *ProjectCronService         `inject:""`
 }
 
-func (s *SwaggerCron) Run(option map[string]interface{}) (f func() error) {
+func (s *SwaggerCron) Run(options map[string]interface{}) (f func() error) {
 	f = func() error {
-		taskId, ok := option["taskId"].(uint)
+		tenantId, ok := options["tenantId"].(consts.TenantId)
+		if !ok {
+			return errors.New("tenantId is not existed")
+		}
+
+		taskId, ok := options["taskId"].(uint)
 		if !ok {
 			return errors.New("taskId is not existed")
 		}
-		task, err := s.GetSwaggerSyncById(taskId)
+		task, err := s.GetSwaggerSyncById(tenantId, taskId)
 		logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(task))
 		if err != nil {
 			logUtils.Errorf("swagger定时导入任务失败,任务ID：%v,错误原因：%v", task.ID, err.Error())
 			return err
 		}
-		if task.Switch == consts.SwitchOFF {
+
+		cronId, ok := options["cronId"].(uint)
+		if !ok {
+			return errors.New("switch is not existed")
+		}
+		projectCron, err := s.ProjectCronRepo.GetById(tenantId, cronId)
+
+		if projectCron.Switch != consts.SwitchON {
 			logUtils.Infof("swagger定时导入关闭,任务ID:%v", task.ID)
 			return errors.New("task is off")
 		}
-		req := v1.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: task.SyncType, SourceType: 1}
-		err = s.EndpointInterfaceService.ImportEndpointData(req)
+
+		projectId, ok := options["projectId"].(uint)
+		if !ok {
+			return errors.New("projectId is not existed")
+		}
+
+		req := v1.ImportEndpointDataReq{ProjectId: projectId, ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: task.SyncType, SourceType: 1}
+		err = s.EndpointInterfaceService.ImportEndpointData(tenantId, req)
 		if err != nil {
 			logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
 		}
@@ -54,30 +72,30 @@ func (s *SwaggerCron) Run(option map[string]interface{}) (f func() error) {
 	return
 }
 
-func (s *SwaggerCron) SaveSwaggerSync(req v1.SwaggerSyncReq) (data model.SwaggerSync, err error) {
-	var swaggerSync model.SwaggerSync
-	copier.CopyWithOption(&swaggerSync, req, copier.Option{DeepCopy: true})
-	serve, _ := s.ServeRepo.GetDefault(req.ProjectId)
-	swaggerSync.ServeId = int(serve.ID)
-	err = s.ProjectSettingsRepo.SaveSwaggerSync(&swaggerSync)
-	//s.AddSwaggerCron(swaggerSync)
-	//任务
-	data, err = s.ProjectSettingsRepo.GetSwaggerSync(req.ProjectId)
+func (s *SwaggerCron) SaveSwaggerSync(tenantId consts.TenantId, req model.SwaggerSync) (id uint, err error) {
+	err = s.ProjectSettingsRepo.SaveSwaggerSync(tenantId, &req)
+	id = req.ID
+
 	return
 }
 
-func (s *SwaggerCron) GetSwaggerSyncById(id uint) (data model.SwaggerSync, err error) {
-	data, err = s.ProjectSettingsRepo.GetSwaggerSyncById(id)
+func (s *SwaggerCron) GetSwaggerSyncById(tenantId consts.TenantId, id uint) (data model.SwaggerSync, err error) {
+	data, err = s.ProjectSettingsRepo.GetSwaggerSyncById(tenantId, id)
 	return
 }
 
-func (s *SwaggerCron) CallBack(option map[string]interface{}, err error) func() {
+func (s *SwaggerCron) CallBack(options map[string]interface{}, err error) func() {
 	f := func() {
-		taskId, ok := option["taskId"].(uint)
+		tenantId, ok := options["tenantId"].(consts.TenantId)
 		if !ok {
 			return
 		}
-		s.ProjectSettingsService.UpdateCronExecTimeById(taskId, consts.CronSourceSwagger, err)
+
+		taskId, ok := options["taskId"].(uint)
+		if !ok {
+			return
+		}
+		s.ProjectCronService.UpdateCronExecTimeById(tenantId, taskId, consts.CronSourceSwagger, err)
 	}
 
 	return f

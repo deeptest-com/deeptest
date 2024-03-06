@@ -28,74 +28,74 @@ type ScenarioProcessorService struct {
 	DebugSceneService        *DebugSceneService        `inject:""`
 }
 
-func (s *ScenarioProcessorService) GetEntity(id int) (ret interface{}, err error) {
-	ret, err = s.ScenarioProcessorRepo.GetEntity(uint(id))
+func (s *ScenarioProcessorService) GetEntity(tenantId consts.TenantId, id int) (ret interface{}, err error) {
+	ret, err = s.ScenarioProcessorRepo.GetEntity(tenantId, uint(id))
 	return
 }
 
-func (s *ScenarioProcessorService) UpdateName(req agentExec.ProcessorEntityBase) (err error) {
-	err = s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) UpdateName(tenantId consts.TenantId, req agentExec.ProcessorEntityBase) (err error) {
+	err = s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
-func (s *ScenarioProcessorService) SaveBasicInfo(req domain.ScenarioProcessorInfo) (err error) {
-	err = s.ScenarioProcessorRepo.SaveBasicInfo(req)
+func (s *ScenarioProcessorService) SaveBasicInfo(tenantId consts.TenantId, req domain.ScenarioProcessorInfo) (err error) {
+	err = s.ScenarioProcessorRepo.SaveBasicInfo(tenantId, req)
 	return
 }
 
-func (s *ScenarioProcessorService) SaveGroup(req *model.ProcessorGroup) (err error) {
-	err = s.ScenarioProcessorRepo.SaveGroup(req)
-	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) SaveGroup(tenantId consts.TenantId, req *model.ProcessorGroup) (err error) {
+	err = s.ScenarioProcessorRepo.SaveGroup(tenantId, req)
+	s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
-func (s *ScenarioProcessorService) SaveTimer(req *model.ProcessorTimer) (err error) {
-	err = s.ScenarioProcessorRepo.SaveTimer(req)
-	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) SaveTimer(tenantId consts.TenantId, req *model.ProcessorTimer) (err error) {
+	err = s.ScenarioProcessorRepo.SaveTimer(tenantId, req)
+	s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
-func (s *ScenarioProcessorService) SavePrint(req *model.ProcessorPrint) (err error) {
-	err = s.ScenarioProcessorRepo.SavePrint(req)
-	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) SavePrint(tenantId consts.TenantId, req *model.ProcessorPrint) (err error) {
+	err = s.ScenarioProcessorRepo.SavePrint(tenantId, req)
+	s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
-func (s *ScenarioProcessorService) SaveLogic(req *model.ProcessorLogic) (err error) {
-	err = s.ScenarioProcessorRepo.SaveLogic(req)
-	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) SaveLogic(tenantId consts.TenantId, req *model.ProcessorLogic) (err error) {
+	err = s.ScenarioProcessorRepo.SaveLogic(tenantId, req)
+	s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
-func (s *ScenarioProcessorService) SaveLoop(req *model.ProcessorLoop) (err error) {
+func (s *ScenarioProcessorService) SaveLoop(tenantId consts.TenantId, req *model.ProcessorLoop) (err error) {
 	/*
 		if req.ProcessorType == consts.ProcessorLoopTime {
 			req.Name = fmt.Sprintf("迭代%d次", req.Times)
 		}
 	*/
 
-	err = s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+	err = s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 
-	err = s.ScenarioProcessorRepo.SaveLoop(req)
+	err = s.ScenarioProcessorRepo.SaveLoop(tenantId, req)
 
 	return
 }
 
-func (s *ScenarioProcessorService) SaveVariable(req *model.ProcessorVariable) (err error) {
-	err = s.ScenarioProcessorRepo.SaveVariable(req)
-	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) SaveVariable(tenantId consts.TenantId, req *model.ProcessorVariable) (err error) {
+	err = s.ScenarioProcessorRepo.SaveVariable(tenantId, req)
+	s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
-func (s *ScenarioProcessorService) SaveCookie(req *model.ProcessorCookie) (err error) {
-	err = s.ScenarioProcessorRepo.SaveCookie(req)
-	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) SaveCookie(tenantId consts.TenantId, req *model.ProcessorCookie) (err error) {
+	err = s.ScenarioProcessorRepo.SaveCookie(tenantId, req)
+	s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
-func (s *ScenarioProcessorService) SaveAssertion(req *model.ProcessorAssertion) (err error) {
-	err = s.ScenarioProcessorRepo.SaveAssertion(req)
-	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) SaveAssertion(tenantId consts.TenantId, req *model.ProcessorAssertion) (err error) {
+	err = s.ScenarioProcessorRepo.SaveAssertion(tenantId, req)
+	s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
@@ -107,34 +107,34 @@ func (s *ScenarioProcessorService) SaveExtractor(req *model.ProcessorExtractor) 
 }
 */
 
-func (s *ScenarioProcessorService) SaveData(req *model.ProcessorData) (err error) {
-	err = s.ScenarioProcessorRepo.SaveData(req)
-	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) SaveData(tenantId consts.TenantId, req *model.ProcessorData) (err error) {
+	err = s.ScenarioProcessorRepo.SaveData(tenantId, req)
+	s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
-func (s *ScenarioProcessorService) SaveCustomCode(req *model.ProcessorCustomCode) (err error) {
-	err = s.ScenarioProcessorRepo.SaveCustomCode(req)
-	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) SaveCustomCode(tenantId consts.TenantId, req *model.ProcessorCustomCode) (err error) {
+	err = s.ScenarioProcessorRepo.SaveCustomCode(tenantId, req)
+	s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
-func (s *ScenarioProcessorService) SaveInterface(req *model.ProcessorComm) (err error) {
-	err = s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+func (s *ScenarioProcessorService) SaveInterface(tenantId consts.TenantId, req *model.ProcessorComm) (err error) {
+	err = s.ScenarioProcessorRepo.UpdateName(tenantId, req.ProcessorID, req.Name)
 	return
 }
 
-func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor) (ret agentExec.IProcessorEntity, err error) {
-	processor, _ := s.ScenarioProcessorRepo.Get(processorTo.ID)
+func (s *ScenarioProcessorService) GetEntityTo(tenantId consts.TenantId, processorTo *agentExec.Processor) (ret agentExec.IProcessorEntity, err error) {
+	processor, _ := s.ScenarioProcessorRepo.Get(tenantId, processorTo.ID)
 
 	switch processor.EntityCategory {
 	case consts.ProcessorInterface:
-		debugData, _ := s.DebugInterfaceService.GetDetail(processor.EntityId)
+		debugData, _ := s.DebugInterfaceService.GetDetail(tenantId, processor.EntityId)
 
 		//合并全局参数到debugdata 到 GlobalParams，在场景执行中全局参数使用的是 debugData.GlobalParams，所以要提取合并
-		globalParams, _ := s.EnvironmentService.GetGlobalParams(debugData.ProjectId)
+		globalParams, _ := s.EnvironmentService.GetGlobalParams(tenantId, debugData.ProjectId)
 		globalParams = s.DebugInterfaceService.MergeGlobalParams(globalParams, debugData.GlobalParams)
-		endpointInterfaceGlobalParams, _ := s.EndpointInterfaceRepo.GetGlobalParams(debugData.EndpointInterfaceId, debugData.ProjectId)
+		endpointInterfaceGlobalParams, _ := s.EndpointInterfaceRepo.GetGlobalParams(tenantId, debugData.EndpointInterfaceId, debugData.ProjectId)
 		debugData.GlobalParams = s.MergeGlobalParams(endpointInterfaceGlobalParams, globalParams)
 
 		interfaceEntity := agentExec.ProcessorInterface{}
@@ -150,69 +150,69 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		interfaceEntity.ProcessorType = consts.ProcessorInterfaceDefault
 		interfaceEntity.ProcessorInterfaceSrc = debugData.ProcessorInterfaceSrc
 
-		interfaceEntity.PreConditions, _ = s.ConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug, "false", consts.ConditionSrcPre)
-		interfaceEntity.PostConditions, _ = s.ConditionRepo.ListTo(processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug, "false", consts.ConditionSrcPost)
+		interfaceEntity.PreConditions, _ = s.ConditionRepo.ListTo(tenantId, processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug, "false", consts.ConditionSrcPre)
+		interfaceEntity.PostConditions, _ = s.ConditionRepo.ListTo(tenantId, processor.EntityId, processor.EndpointInterfaceId, consts.ScenarioDebug, "false", consts.ConditionSrcPost)
 
 		ret = &interfaceEntity
 
 	case consts.ProcessorRoot:
-		commEntityPo, _ := s.ScenarioProcessorRepo.GetRoot(processor)
+		commEntityPo, _ := s.ScenarioProcessorRepo.GetRoot(tenantId, processor)
 
 		ret = agentExec.ProcessorRoot{}
 		copier.CopyWithOption(&ret, commEntityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorGroup:
-		entityPo, _ := s.ScenarioProcessorRepo.GetGroup(processor)
+		entityPo, _ := s.ScenarioProcessorRepo.GetGroup(tenantId, processor)
 		ret = agentExec.ProcessorGroup{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorLogic:
-		entityPo, _ := s.ScenarioProcessorRepo.GetLogic(processor)
+		entityPo, _ := s.ScenarioProcessorRepo.GetLogic(tenantId, processor)
 		ret = agentExec.ProcessorLogic{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorLoop:
-		entityPo, _ := s.ScenarioProcessorRepo.GetLoop(processor)
+		entityPo, _ := s.ScenarioProcessorRepo.GetLoop(tenantId, processor)
 		ret = agentExec.ProcessorLoop{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorVariable:
-		entityPo, _ := s.ScenarioProcessorRepo.GetVariable(processor)
+		entityPo, _ := s.ScenarioProcessorRepo.GetVariable(tenantId, processor)
 		ret = agentExec.ProcessorVariable{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorTimer:
-		entityPo, _ := s.ScenarioProcessorRepo.GetTimer(processor)
+		entityPo, _ := s.ScenarioProcessorRepo.GetTimer(tenantId, processor)
 		ret = agentExec.ProcessorTimer{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorPrint:
-		entityPo, _ := s.ScenarioProcessorRepo.GetPrint(processor)
+		entityPo, _ := s.ScenarioProcessorRepo.GetPrint(tenantId, processor)
 		ret = agentExec.ProcessorPrint{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorCookie:
-		entityPo, _ := s.ScenarioProcessorRepo.GetCookie(processor)
+		entityPo, _ := s.ScenarioProcessorRepo.GetCookie(tenantId, processor)
 		ret = agentExec.ProcessorCookie{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorAssertion:
-		entityPo, _ := s.ScenarioProcessorRepo.GetAssertion(processor)
+		entityPo, _ := s.ScenarioProcessorRepo.GetAssertion(tenantId, processor)
 		ret = agentExec.ProcessorAssertion{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorData:
-		entityPo, _ := s.ScenarioProcessorRepo.GetData(processor)
+		entityPo, _ := s.ScenarioProcessorRepo.GetData(tenantId, processor)
 		processorData := agentExec.ProcessorData{}
 		copier.CopyWithOption(&processorData, entityPo, copier.Option{DeepCopy: true})
 
-		datapool, _ := s.DatapoolRepo.Get(entityPo.DatapoolId)
+		datapool, _ := s.DatapoolRepo.Get(tenantId, entityPo.DatapoolId)
 		processorData.DatapoolName = datapool.Name
 
 		ret = processorData
 
 	case consts.ProcessorCustomCode:
-		entityPo, _ := s.ScenarioProcessorRepo.GetCustomCode(processor)
+		entityPo, _ := s.ScenarioProcessorRepo.GetCustomCode(tenantId, processor)
 		ret = agentExec.ProcessorCustomCode{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 

@@ -19,7 +19,7 @@ func ExecPreConditions(execObj *InterfaceExecObj, execUuid string) (err error) {
 	for _, condition := range execObj.PreConditions {
 		if condition.Type == consts.ConditionTypeScript {
 			DealwithScriptCondition(condition, nil, execObj.DebugData.ProjectId, &preConditions,
-				execUuid, false)
+				execUuid, false, execObj.TenantId)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
 			DealwithDatabaseCondition(condition, &preConditions, execUuid)
@@ -39,7 +39,7 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, ex
 	for _, condition := range execObj.PostConditions {
 		if condition.Type == consts.ConditionTypeScript {
 			DealwithScriptCondition(condition, &resultStatus, execObj.DebugData.ProjectId, &postConditions,
-				execUuid, true)
+				execUuid, true, execObj.TenantId)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
 			DealwithDatabaseCondition(condition, &postConditions, execUuid)
@@ -65,15 +65,14 @@ func ExecPostConditions(execObj *InterfaceExecObj, resp domain.DebugResponse, ex
 }
 
 func DealwithScriptCondition(condition domain.InterfaceExecCondition, resultStatus *consts.ResultStatus,
-	projectId uint, conditions *[]domain.InterfaceExecCondition, execUuid string, isPostCondition bool) {
+	projectId uint, conditions *[]domain.InterfaceExecCondition, execUuid string, isPostCondition bool, tenantId consts.TenantId) {
 
 	var scriptBase domain.ScriptBase
 	json.Unmarshal(condition.Raw, &scriptBase)
 	if scriptBase.Disabled {
 		return
 	}
-
-	err := ExecScript(&scriptBase, projectId, execUuid)
+	err := ExecScript(&scriptBase, tenantId, projectId, execUuid)
 	if err != nil {
 		_logUtils.Info("script exec failed")
 	}
@@ -101,6 +100,8 @@ func DealwithDatabaseCondition(condition domain.InterfaceExecCondition,
 	if databaseOptBase.Disabled {
 		return
 	}
+
+	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, execUuid)
 
 	err := ExecDbOpt(&databaseOptBase)
 	if err != nil || databaseOptBase.ResultStatus == consts.Fail {

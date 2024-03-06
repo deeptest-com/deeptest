@@ -25,6 +25,7 @@ type AuthCtrl struct {
 // @success	200	{object}	_domain.Response{data=object{url=string}}
 // @Router	/api/v1/auth/oauth2Authorization	[post]
 func (c *AuthCtrl) OAuth2Authorization(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -38,7 +39,7 @@ func (c *AuthCtrl) OAuth2Authorization(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.AuthService.OAuth2Authorization(req)
+	data, err := c.AuthService.OAuth2Authorization(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -61,12 +62,13 @@ func (c *AuthCtrl) OAuth2Authorization(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=iris.Map{}}
 // @Router	/api/v1/auth/getOAuth2AccessToken	[post]
 func (c *AuthCtrl) GetOAuth2AccessToken(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	accessTokenURL := ctx.URLParam("accessTokenURL")
 	clientId := ctx.URLParam("clientId")
 	clientSecret := ctx.URLParam("clientSecret")
 	code := ctx.URLParam("code")
 
-	data, err := c.AuthService.GenOAuth2AccessToken(accessTokenURL, clientId, clientSecret, code)
+	data, err := c.AuthService.GenOAuth2AccessToken(tenantId, accessTokenURL, clientId, clientSecret, code)
 
 	c.WebSocketService.SendMsg(
 		consts.WsDefaultNamespace,
@@ -95,13 +97,14 @@ func (c *AuthCtrl) GetOAuth2AccessToken(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{token=string,tokenType=string}}
 // @Router	/api/v1/auth/useOAuth2AccessToken	[post]
 func (c *AuthCtrl) UseOAuth2AccessToken(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	currProjectId, _ := ctx.URLParamInt("currProjectId")
 	interfaceId, _ := ctx.URLParamInt("interfaceId")
 	name := ctx.URLParam("name")
 	token := ctx.URLParam("token")
 	tokenType := ctx.URLParam("tokenType")
 
-	err := c.AuthService.AddToken(name, token, tokenType, interfaceId, currProjectId)
+	err := c.AuthService.AddToken(tenantId, name, token, tokenType, interfaceId, currProjectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -129,9 +132,10 @@ func (c *AuthCtrl) UseOAuth2AccessToken(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]model.Auth2Token}
 // @Router	/api/v1/auth/listOAuth2Token	[get]
 func (c *AuthCtrl) ListOAuth2Token(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
-	pos, err := c.AuthService.ListOAuth2Token(projectId)
+	pos, err := c.AuthService.ListOAuth2Token(tenantId, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -151,9 +155,10 @@ func (c *AuthCtrl) ListOAuth2Token(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/auth/removeToken	[get]
 func (c *AuthCtrl) RemoveToken(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	tokenId, _ := ctx.URLParamInt("id")
 
-	err := c.AuthService.RemoveToken(tokenId)
+	err := c.AuthService.RemoveToken(tenantId, tokenId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

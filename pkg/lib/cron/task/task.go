@@ -2,7 +2,10 @@ package task
 
 import (
 	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
 type Task interface {
@@ -11,52 +14,64 @@ type Task interface {
 }
 
 type Proxy struct {
-	name   string
-	cron   string
-	task   Task
-	taskId string
-	Cron   *cron.ServerCron `inject:""`
+	source     string
+	cron       string
+	task       Task
+	taskId     string
+	tenantId   consts.TenantId
+	ServerCron *cron.ServerCron `inject:""`
+	Factory    *Factory         `inject:""`
 }
 
 func (p *Proxy) GetTaskId() (taskId string) {
-	taskId = fmt.Sprintf("%s-%s", p.name, p.taskId)
+	taskId = fmt.Sprintf("%s_%s_%s", p.source, p.tenantId, p.taskId)
 	return
 }
 
-func NewProxy(name, cron, taskId string) (proxy Proxy) {
+func NewProxy(source, cron string) (proxy Proxy) {
 	proxy = Proxy{
-		name: name,
-		cron: cron,
+		source: source,
+		cron:   cron,
 	}
 
-	taskEntity := Factory{
-		name: name,
-	}
-
-	proxy.task = taskEntity.Create()
 	return
+}
+
+func (p *Proxy) Init(tenantId consts.TenantId, source, taskId, cron string) {
+	p.tenantId = tenantId
+	p.source = source
+	p.cron = cron
+	p.taskId = taskId
+	p.Factory.name = source
+	p.task = p.Factory.Create()
 }
 
 func (p *Proxy) Add(options map[string]interface{}) (err error) {
 	taskFunc := p.getTaskFunc(options)
 
-	err = p.Cron.AddCommonTask(p.GetTaskId(), p.cron, taskFunc)
+	err = p.ServerCron.AddCommonTask(p.GetTaskId(), p.cron, taskFunc)
 
 	return
 }
 
-func (p *Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
-	runFunc := p.task.Run(options)
-	if runFunc() == nil {
-		return
-	}
-
+func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 	taskFunc = func() {
+		defer func() {
+			if err := recover(); err != nil {
+				logUtils.Errorf(fmt.Sprintf("%v", err))
+			}
+		}()
+
+		runFunc := p.task.Run(options)
+		//if runFunc() == nil {
+		//	return
+		//}
+
 		err := runFunc()
 		callBackFunc := p.task.CallBack(options, err)
-		if callBackFunc == nil {
-			return
-		}
+		//if callBackFunc == nil {
+		//	return
+		//}
 
 		callBackFunc()
 	}
@@ -67,6 +82,6 @@ func (p *Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 func Test() {
 	options := make(map[string]interface{})
 	options["swagger_1"] = 1
-	proxy := NewProxy("swagger", "*****", "1")
+	proxy := NewProxy("swagger", "*****")
 	proxy.Add(options)
 }

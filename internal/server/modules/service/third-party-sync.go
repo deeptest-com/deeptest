@@ -771,6 +771,7 @@ func (s *ThirdPartySyncService) ListFunctionsByClass(baseUrl, classCode string) 
 func (s *ThirdPartySyncService) GetEngineeringOptions(baseUrl string) (ret []integrationDomain.EngineeringItem, err error) {
 	token, err := s.GetToken(baseUrl)
 	if err != nil {
+		err = errors.New("您输入的环境URL地址有误")
 		return
 	}
 

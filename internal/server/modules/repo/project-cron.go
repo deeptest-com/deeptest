@@ -167,3 +167,14 @@ func (r *ProjectCronRepo) UpdateExecResult(tenantId consts.TenantId, configId ui
 
 	return
 }
+
+func (r *ProjectCronRepo) UpdateExecErr(tenantId consts.TenantId, id uint, execErr string) (err error) {
+	updateColumns := make(map[string]interface{})
+	updateColumns["exec_err"] = execErr
+
+	err = r.GetDB(tenantId).Model(&model.ProjectCron{}).
+		Where("id = ?", id).
+		Updates(updateColumns).Error
+
+	return
+}

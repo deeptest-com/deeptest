@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
@@ -14,13 +15,14 @@ type Task interface {
 }
 
 type Proxy struct {
-	source     string
-	cron       string
-	task       Task
-	taskId     string
-	tenantId   consts.TenantId
-	ServerCron *cron.ServerCron `inject:""`
-	Factory    *Factory         `inject:""`
+	source             string
+	cron               string
+	task               Task
+	taskId             string
+	tenantId           consts.TenantId
+	ServerCron         *cron.ServerCron            `inject:""`
+	Factory            *Factory                    `inject:""`
+	ProjectCronService *service.ProjectCronService `inject:""`
 }
 
 func (p *Proxy) GetTaskId() (taskId string) {
@@ -52,6 +54,11 @@ func (p *Proxy) Add(options map[string]interface{}) (err error) {
 	err = p.ServerCron.AddCommonTask(p.GetTaskId(), p.cron, taskFunc)
 
 	return
+}
+
+func (p *Proxy) Remove() {
+	taskId := p.GetTaskId()
+	p.ServerCron.RemoveTask(taskId)
 }
 
 func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {

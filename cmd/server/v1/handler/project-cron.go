@@ -131,9 +131,8 @@ func (c *ProjectCronCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	if req.ID == 0 {
-		c.addCron(tenantId, cron)
-	}
+	c.RemoveCron(tenantId, cron)
+	c.addCron(tenantId, cron)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: cron.ID, Msg: _domain.NoErr.Msg})
 }
@@ -174,7 +173,7 @@ func (c *ProjectCronCtrl) UpdateSwitchStatus(ctx iris.Context) {
 	if req.Switch == consts.SwitchON {
 		c.addCron(tenantId, cron)
 	} else {
-		c.ProjectCronService.RemoveCronTask(cron)
+		c.RemoveCron(tenantId, cron)
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
@@ -205,6 +204,9 @@ func (c *ProjectCronCtrl) Delete(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+
+	cron, err := c.ProjectCronService.Get(tenantId, req.Id)
+	c.RemoveCron(tenantId, cron)
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
@@ -349,5 +351,15 @@ func (c *ProjectCronCtrl) addCron(tenantId consts.TenantId, cron model.ProjectCr
 	options["tenantId"] = tenantId
 
 	c.Proxy.Init(tenantId, string(cron.Source), fmt.Sprintf("%d", cron.ConfigId), cron.Cron)
-	_ = c.Proxy.Add(options)
+	err := c.Proxy.Add(options)
+
+	if err != nil {
+		_ = c.ProjectCronService.UpdateExecErr(tenantId, cron.ID, err.Error())
+		logUtils.Errorf("addCronErr:%+v, cron:%+v", err, cron)
+	}
+}
+
+func (c *ProjectCronCtrl) RemoveCron(tenantId consts.TenantId, cron model.ProjectCron) {
+	c.Proxy.Init(tenantId, string(cron.Source), fmt.Sprintf("%d", cron.ConfigId), cron.Cron)
+	c.Proxy.Remove()
 }

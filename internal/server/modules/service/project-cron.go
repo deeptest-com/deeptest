@@ -1,13 +1,13 @@
 package service
 
 import (
+	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
-	"strconv"
 )
 
 type ProjectCronService struct {
@@ -100,18 +100,12 @@ func (s *ProjectCronService) Delete(tenantId consts.TenantId, id uint) (err erro
 	} else if projectCron.Source == consts.CronSourceSwagger {
 		err = s.ProjectSettingsRepo.DeleteSwaggerSyncById(tenantId, projectCron.ConfigId)
 	}
-	if err != nil {
-		return
-	}
-
-	s.RemoveCronTask(projectCron)
 
 	return
 }
 
-func (s *ProjectCronService) RemoveCronTask(cron model.ProjectCron) {
-	taskName := cron.Source.String() + "_" + strconv.Itoa(int(cron.ConfigId))
-	s.ServerCron.RemoveTask(taskName)
+func (s *ProjectCronService) GetTaskId(source string, taskId string, tenantId consts.TenantId) string {
+	return fmt.Sprintf("%s_%s_%s", source, tenantId, taskId)
 }
 
 func (s *ProjectCronService) Clone(tenantId consts.TenantId, id, userId uint) (ret model.ProjectCron, err error) {
@@ -142,4 +136,8 @@ func (s *ProjectCronService) UpdateCronExecTimeById(tenantId consts.TenantId, co
 	}
 
 	return s.ProjectCronRepo.UpdateExecResult(tenantId, configId, source, execStatus, execErr)
+}
+
+func (s *ProjectCronService) UpdateExecErr(tenantId consts.TenantId, id uint, execErr string) (err error) {
+	return s.ProjectCronRepo.UpdateExecErr(tenantId, id, execErr)
 }

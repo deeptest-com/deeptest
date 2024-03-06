@@ -243,6 +243,15 @@ type ProcessorPerformanceScenario struct {
 
 	GeneratorType ptconsts.GeneratorType `json:"generatorType"`
 
+	Target int `json:"target"`
+
+	Goal         ptconsts.GoalType `json:"goal"`
+	Duration     int               `json:"duration"`
+	Loop         int               `json:"loop"`
+	ResponseTime float32           `json:"responseTime"`
+	Qps          float32           `json:"qps"`
+	FailRate     float32           `json:"failRate"`
+
 	Stages []ProcessorPerformanceStage `gorm:"-" json:"stages"`
 }
 

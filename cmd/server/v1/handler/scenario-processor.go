@@ -154,6 +154,18 @@ func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 		err = c.ScenarioProcessorService.SaveInterface(&entity)
 		po = entity
 
+	} else if processorCategory == consts.ProcessorPerformanceRunner {
+		var entity model.ProcessorPerformanceRunner
+		err = ctx.ReadJSON(&entity)
+		err = c.ScenarioProcessorService.SavePerformanceRunner(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorPerformanceScenario {
+		var entity model.ProcessorPerformanceScenario
+		err = ctx.ReadJSON(&entity)
+		err = c.ScenarioProcessorService.SavePerformanceScenario(&entity)
+		po = entity
+
 	} else {
 		err = errors.New("wrong processorCategory: " + processorCategory.ToString())
 	}

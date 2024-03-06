@@ -82,6 +82,20 @@ func (e GeneratorType) String() string {
 	return string(e)
 }
 
+type GoalType string
+
+const (
+	GoalTypeDuration     GoalType = "duration"
+	GoalTypeLoop         GoalType = "loop"
+	GoalTypeResponseTime GoalType = "responseTime"
+	GoalTypeQps          GoalType = "qps"
+	GoalTypeFailRate     GoalType = "failRate"
+)
+
+func (e GoalType) String() string {
+	return string(e)
+}
+
 type ExecType string
 
 const (

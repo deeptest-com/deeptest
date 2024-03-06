@@ -494,6 +494,19 @@ func (r *ScenarioProcessorRepo) SaveCustomCode(po *model.ProcessorCustomCode) (e
 	return
 }
 
+func (r *ScenarioProcessorRepo) SavePerformanceRunner(po *model.ProcessorPerformanceRunner) (err error) {
+	err = r.DB.Save(po).Error
+	r.UpdateEntityId(po.ProcessorID, po.ID)
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) SavePerformanceScenario(po *model.ProcessorPerformanceScenario) (err error) {
+	err = r.DB.Save(po).Error
+	r.UpdateEntityId(po.ProcessorID, po.ID)
+
+	return
+}
 func (r *ScenarioProcessorRepo) UpdateEntityId(id, entityId uint) (err error) {
 	err = r.DB.Model(&model.Processor{}).
 		Where("id = ?", id).
@@ -569,25 +582,3 @@ func (r *ScenarioProcessorRepo) CopyLogic(srcId uint) (id uint, err error) {
 	return logic.ID, nil
 
 }
-
-//func (r *ScenarioProcessorRepo) SwitchEntityInterface(id, debugInterFaceId uint) (err error) {
-//	processor, _ := r.Get(id)
-//	oldDebugInterFaceId := processor.EntityId
-//
-//	r.DB.Transaction(func(tx *gorm.DB) error {
-//		err = r.DebugInterfaceRepo.UpdateProcessorId(debugInterFaceId, id)
-//		if err != nil {
-//			return err
-//		}
-//
-//		err = r.UpdateEntityId(id, debugInterFaceId)
-//		if err != nil {
-//			return err
-//		}
-//
-//		err = r.DebugInterfaceRepo.Delete(oldDebugInterFaceId)
-//		return err
-//	})
-//
-//	return
-//}

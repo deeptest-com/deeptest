@@ -68,15 +68,8 @@ func (s *ScenarioProcessorService) SaveLogic(req *model.ProcessorLogic) (err err
 }
 
 func (s *ScenarioProcessorService) SaveLoop(req *model.ProcessorLoop) (err error) {
-	/*
-		if req.ProcessorType == consts.ProcessorLoopTime {
-			req.Name = fmt.Sprintf("迭代%d次", req.Times)
-		}
-	*/
-
-	err = s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
-
 	err = s.ScenarioProcessorRepo.SaveLoop(req)
+	err = s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 
 	return
 }
@@ -121,6 +114,18 @@ func (s *ScenarioProcessorService) SaveCustomCode(req *model.ProcessorCustomCode
 
 func (s *ScenarioProcessorService) SaveInterface(req *model.ProcessorComm) (err error) {
 	err = s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+	return
+}
+
+func (s *ScenarioProcessorService) SavePerformanceRunner(req *model.ProcessorPerformanceRunner) (err error) {
+	err = s.ScenarioProcessorRepo.SavePerformanceRunner(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+	return
+}
+
+func (s *ScenarioProcessorService) SavePerformanceScenario(req *model.ProcessorPerformanceScenario) (err error) {
+	err = s.ScenarioProcessorRepo.SavePerformanceScenario(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
 

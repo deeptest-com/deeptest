@@ -274,6 +274,9 @@ func (s *ProjectService) GetSpaceRoleArrays(tenantId consts.TenantId) (res []str
 
 func (s *ProjectService) AddMembers(tenantId consts.TenantId, projectId uint, members map[string]integrationDomain.UserRoleInfo, memberRoles map[string][]string) (err error) {
 	for _, member := range members {
+		if member.Mail == "" {
+			member.Mail = member.Username
+		}
 		createUserReq := v1.UserReq{
 			UserBase: v1.UserBase{
 				Username:  member.Username,

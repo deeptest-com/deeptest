@@ -86,7 +86,7 @@ func (r *ScenarioNodeRepo) CreateFoldersForPerformance(parentId, scenarioId, pro
 		ParentId:       parentId,
 		ScenarioId:     scenarioId,
 		ProjectId:      projectId,
-		Name:           "执行节点",
+		Name:           "执行代理",
 		EntityCategory: consts.ProcessorPerformanceRunners,
 		EntityType:     consts.ProcessorPerformanceRunnersDefault,
 		EntityId:       0,

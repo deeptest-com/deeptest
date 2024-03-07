@@ -347,7 +347,6 @@ func (c *ProjectCronCtrl) addCron(tenantId consts.TenantId, cron model.ProjectCr
 	options := make(map[string]interface{})
 	options["projectId"] = cron.ProjectId
 	options["taskId"] = cron.ConfigId
-	options["cronId"] = cron.ID
 	options["tenantId"] = tenantId
 
 	c.Proxy.Init(tenantId, cron.Source, c.ProjectCronService.UpdateCronExecTimeById, fmt.Sprintf("%d", cron.ConfigId), cron.Cron)

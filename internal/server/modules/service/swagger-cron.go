@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -25,15 +24,9 @@ type SwaggerCron struct {
 
 func (s *SwaggerCron) Run(options map[string]interface{}) (f func() error) {
 	f = func() error {
-		tenantId, ok := options["tenantId"].(consts.TenantId)
-		if !ok {
-			return errors.New("tenantId is not existed")
-		}
+		tenantId := options["tenantId"].(consts.TenantId)
 
-		taskId, ok := options["taskId"].(uint)
-		if !ok {
-			return errors.New("taskId is not existed")
-		}
+		taskId := options["taskId"].(uint)
 		task, err := s.GetSwaggerSyncById(tenantId, taskId)
 		logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(task))
 		if err != nil {
@@ -41,21 +34,7 @@ func (s *SwaggerCron) Run(options map[string]interface{}) (f func() error) {
 			return err
 		}
 
-		cronId, ok := options["cronId"].(uint)
-		if !ok {
-			return errors.New("switch is not existed")
-		}
-		projectCron, err := s.ProjectCronRepo.GetById(tenantId, cronId)
-
-		if projectCron.Switch != consts.SwitchON {
-			logUtils.Infof("swagger定时导入关闭,任务ID:%v", task.ID)
-			return errors.New("task is off")
-		}
-
-		projectId, ok := options["projectId"].(uint)
-		if !ok {
-			return errors.New("projectId is not existed")
-		}
+		projectId := options["projectId"].(uint)
 
 		req := v1.ImportEndpointDataReq{ProjectId: projectId, ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: task.SyncType, SourceType: 1}
 		err = s.EndpointInterfaceService.ImportEndpointData(tenantId, req)

@@ -219,17 +219,28 @@ func (r *PerformanceTestPlanRepo) DeleteByCategoryIds(categoryIds []uint) (err e
 }
 
 func (r *PerformanceTestPlanRepo) ListRunner(performanceScenarioId uint) (runners []model.ProcessorPerformanceRunner, err error) {
-	var processorIds []uint
+	var processorIds []string
+
+	sql1 := fmt.Sprintf("SELECT id FROM %s WHERE scenario_id = %d AND entity_type = '%s'",
+		model.Processor{}.TableName(),
+		performanceScenarioId,
+		consts.ProcessorPerformanceRunnerDefault)
 
 	err = r.DB.Model(&model.Processor{}).
-		Raw(fmt.Sprintf("SELECT id FROM %s WHERE scenario_id = %d AND entity_type = '%s'",
-			model.Processor{}.TableName(), performanceScenarioId, consts.ProcessorPerformanceRunnerDefault)).
+		Raw(sql1).
 		Scan(&processorIds).Error
 	if err != nil {
 		return
 	}
 
-	err = r.DB.Where("id IN (?)", processorIds).Find(&runners).Error
+	sql2 := fmt.Sprintf("SELECT r.id, p.name FROM %s r LEFT JOIN %s p ON r.processor_id = p.id "+
+		"WHERE processor_id IN (%s) AND entity_type = '%s'",
+		model.ProcessorPerformanceRunner{}.TableName(),
+		model.Processor{}.TableName(),
+		strings.Join(processorIds, ","),
+		consts.ProcessorPerformanceRunnerDefault)
+
+	err = r.DB.Raw(sql2).Scan(&runners).Error
 	if err != nil {
 		return
 	}

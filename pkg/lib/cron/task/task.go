@@ -19,6 +19,7 @@ type Proxy struct {
 	cron               string
 	task               Task
 	taskId             string
+	callBack           func(tenantId consts.TenantId, taskId string, source consts.CronSource, err error)
 	tenantId           consts.TenantId
 	ServerCron         *cron.ServerCron            `inject:""`
 	Factory            *Factory                    `inject:""`
@@ -30,21 +31,23 @@ func (p *Proxy) GetTaskId() (taskId string) {
 	return
 }
 
-func NewProxy(source, cron string) (proxy Proxy) {
+func NewProxy(source, cron string, f func(tenantId consts.TenantId, taskId string, source string, err error)) (proxy Proxy) {
 	proxy = Proxy{
-		source: source,
-		cron:   cron,
+		source:   source,
+		cron:     cron,
+		callBack: f,
 	}
 
 	return
 }
 
-func (p *Proxy) Init(tenantId consts.TenantId, source, taskId, cron string) {
+func (p *Proxy) Init(tenantId consts.TenantId, source, taskId, callBack func(tenantId consts.TenantId, taskId string, source consts.CronSource, err error), cron string) {
 	p.tenantId = tenantId
 	p.source = source
 	p.cron = cron
 	p.taskId = taskId
 	p.Factory.name = source
+	p.callBack = callBack
 	p.task = p.Factory.Create()
 }
 
@@ -64,9 +67,15 @@ func (p *Proxy) Remove() {
 func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 	taskFunc = func() {
 		defer func() {
-			if err := recover(); err != nil {
+			var ret error
+			err := recover()
+			if err != nil {
 				logUtils.Errorf(fmt.Sprintf("%v", err))
+				ret = fmt.Errorf("%v", err)
 			}
+
+			p.callBack(p.tenantId, p.taskId, consts.CronSource(p.source), ret)
+
 		}()
 
 		runFunc := p.task.Run(options)
@@ -89,6 +98,6 @@ func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 func Test() {
 	options := make(map[string]interface{})
 	options["swagger_1"] = 1
-	proxy := NewProxy("swagger", "*****")
-	proxy.Add(options)
+	//proxy := NewProxy("swagger", "*****")
+	//proxy.Add(options)
 }

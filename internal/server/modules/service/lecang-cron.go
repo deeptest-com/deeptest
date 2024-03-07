@@ -25,7 +25,7 @@ func (s *LecangCronService) Run(options map[string]interface{}) (f func() error)
 		logUtils.Info("lecang定时任务开启：" + _commUtils.JsonEncode(task))
 		if err != nil {
 			logUtils.Errorf("lecang定时导入任务失败,任务ID：%+v,错误原因：%+v", task.ID, err.Error())
-			return err
+			panic(err)
 		}
 
 		projectId := options["projectId"].(uint)
@@ -33,6 +33,7 @@ func (s *LecangCronService) Run(options map[string]interface{}) (f func() error)
 		err = s.ThirdPartySyncService.ImportEndpoint(tenantId, projectId, task)
 		if err != nil {
 			logUtils.Errorf("lecang定时导入任务失败，任务ID:%+v, 错误原因：%+v", task.ID, err.Error())
+			panic(err)
 		}
 
 		return err

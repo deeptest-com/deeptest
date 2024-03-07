@@ -31,7 +31,7 @@ func (s *SwaggerCron) Run(options map[string]interface{}) (f func() error) {
 		logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(task))
 		if err != nil {
 			logUtils.Errorf("swagger定时导入任务失败,任务ID：%v,错误原因：%v", task.ID, err.Error())
-			return err
+			panic(err)
 		}
 
 		projectId := options["projectId"].(uint)
@@ -40,11 +40,10 @@ func (s *SwaggerCron) Run(options map[string]interface{}) (f func() error) {
 		err = s.EndpointInterfaceService.ImportEndpointData(tenantId, req)
 		if err != nil {
 			logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
-			return err
+			panic(err)
 		}
 
 		//更新实现执行时间
-		//s.UpdateSwaggerSyncExecTimeById(taskId)
 		logUtils.Info("swagger定时任务结束：" + _commUtils.JsonEncode(task))
 
 		return nil
@@ -66,16 +65,6 @@ func (s *SwaggerCron) GetSwaggerSyncById(tenantId consts.TenantId, id uint) (dat
 
 func (s *SwaggerCron) CallBack(options map[string]interface{}, err error) func() {
 	f := func() {
-		tenantId, ok := options["tenantId"].(consts.TenantId)
-		if !ok {
-			return
-		}
-
-		taskId, ok := options["taskId"].(string)
-		if !ok {
-			return
-		}
-		s.ProjectCronService.UpdateCronExecTimeById(tenantId, taskId, consts.CronSourceSwagger, err)
 	}
 
 	return f

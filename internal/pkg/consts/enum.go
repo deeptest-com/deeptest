@@ -463,10 +463,11 @@ type ProcessorCategory string
 const (
 	ProcessorRoot ProcessorCategory = "processor_root"
 
-	ProcessorPerformanceRunners   ProcessorCategory = "processor_performance_runners"
-	ProcessorPerformanceRunner    ProcessorCategory = "processor_performance_runner"
-	ProcessorPerformanceScenarios ProcessorCategory = "processor_performance_scenarios"
-	ProcessorPerformanceScenario  ProcessorCategory = "processor_performance_scenario"
+	ProcessorPerformanceRunners    ProcessorCategory = "processor_performance_runners"
+	ProcessorPerformanceRunner     ProcessorCategory = "processor_performance_runner"
+	ProcessorPerformanceScenarios  ProcessorCategory = "processor_performance_scenarios"
+	ProcessorPerformanceScenario   ProcessorCategory = "processor_performance_scenario"
+	ProcessorPerformanceRendezvous ProcessorCategory = "processor_performance_rendezvous"
 
 	ProcessorInterface ProcessorCategory = "processor_interface"
 	ProcessorGroup     ProcessorCategory = "processor_group"
@@ -491,10 +492,11 @@ type ProcessorType string
 const (
 	ProcessorRootDefault ProcessorType = "processor_root_default"
 
-	ProcessorPerformanceRunnersDefault   ProcessorType = "processor_performance_runners_default"
-	ProcessorPerformanceRunnerDefault    ProcessorType = "processor_performance_runner_default"
-	ProcessorPerformanceScenariosDefault ProcessorType = "processor_performance_scenarios_default"
-	ProcessorPerformanceScenarioDefault  ProcessorType = "processor_performance_scenario_default"
+	ProcessorPerformanceRunnersDefault    ProcessorType = "processor_performance_runners_default"
+	ProcessorPerformanceRunnerDefault     ProcessorType = "processor_performance_runner_default"
+	ProcessorPerformanceScenariosDefault  ProcessorType = "processor_performance_scenarios_default"
+	ProcessorPerformanceScenarioDefault   ProcessorType = "processor_performance_scenario_default"
+	ProcessorPerformanceRendezvousDefault ProcessorType = "processor_performance_rendezvous_default"
 
 	ProcessorInterfaceDefault ProcessorType = "processor_interface_default"
 	ProcessorGroupDefault     ProcessorType = "processor_group_default"

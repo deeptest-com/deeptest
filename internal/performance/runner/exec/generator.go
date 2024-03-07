@@ -11,9 +11,9 @@ type VuGenerator interface {
 }
 
 type VuGeneratorParam struct {
-	Type   ptconsts.GeneratorType `json:"type,omitempty"`
-	Target int                    `json:"target,omitempty"`
-	Stages []VuGeneratorStage     `json:"stages,omitempty"`
+	Type   ptconsts.GenerateType `json:"type,omitempty"`
+	Target int                   `json:"target,omitempty"`
+	Stages []VuGeneratorStage    `json:"stages,omitempty"`
 }
 type VuGeneratorStage struct {
 	Duration int `json:"duration"`

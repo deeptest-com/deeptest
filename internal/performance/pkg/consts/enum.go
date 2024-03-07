@@ -71,14 +71,14 @@ func (e MsgResultTypeToWsClient) String() string {
 	return string(e)
 }
 
-type GeneratorType string
+type GenerateType string
 
 const (
-	GeneratorConstant GeneratorType = "constant"
-	GeneratorRamp     GeneratorType = "ramp"
+	GeneratorConstant GenerateType = "constant"
+	GeneratorRamp     GenerateType = "ramp"
 )
 
-func (e GeneratorType) String() string {
+func (e GenerateType) String() string {
 	return string(e)
 }
 

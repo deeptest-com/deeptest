@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -8,6 +9,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/jinzhu/copier"
+	"github.com/kataras/iris/v12"
 )
 
 type ScenarioProcessorService struct {
@@ -40,6 +42,101 @@ func (s *ScenarioProcessorService) UpdateName(req agentExec.ProcessorEntityBase)
 
 func (s *ScenarioProcessorService) SaveBasicInfo(req domain.ScenarioProcessorInfo) (err error) {
 	err = s.ScenarioProcessorRepo.SaveBasicInfo(req)
+	return
+}
+
+func (s *ScenarioProcessorService) Save(processorCategory consts.ProcessorCategory, ctx iris.Context) (
+	po interface{}, err error) {
+
+	if processorCategory == consts.ProcessorGroup {
+		var entity model.ProcessorGroup
+		err = ctx.ReadJSON(&entity)
+		err = s.SaveGroup(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorLogic {
+		var entity model.ProcessorLogic
+		err = ctx.ReadJSON(&entity)
+		err = s.SaveLogic(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorLoop {
+		var entity model.ProcessorLoop
+		err = ctx.ReadJSON(&entity)
+		err = s.SaveLoop(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorTimer {
+		var entity model.ProcessorTimer
+		err = ctx.ReadJSON(&entity)
+		err = s.SaveTimer(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorPrint {
+		var entity model.ProcessorPrint
+		err = ctx.ReadJSON(&entity)
+		err = s.SavePrint(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorVariable {
+		var entity model.ProcessorVariable
+		err = ctx.ReadJSON(&entity)
+		err = s.SaveVariable(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorCookie {
+		var entity model.ProcessorCookie
+		err = ctx.ReadJSON(&entity)
+		err = s.SaveCookie(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorAssertion {
+		var entity model.ProcessorAssertion
+		err = ctx.ReadJSON(&entity)
+		err = s.SaveAssertion(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorData {
+		var entity model.ProcessorData
+		entity.Separator = ","
+		err = ctx.ReadJSON(&entity)
+		err = s.SaveData(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorCustomCode {
+		var entity model.ProcessorCustomCode
+		err = ctx.ReadJSON(&entity)
+		err = s.SaveCustomCode(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorInterface {
+		var entity model.ProcessorComm
+		err = ctx.ReadJSON(&entity)
+		err = s.SaveInterface(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorPerformanceRunner {
+		var entity model.ProcessorPerformanceRunner
+		err = ctx.ReadJSON(&entity)
+		err = s.SavePerformanceRunner(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorPerformanceScenario {
+		var entity model.ProcessorPerformanceScenario
+		err = ctx.ReadJSON(&entity)
+		err = s.SavePerformanceScenario(&entity)
+		po = entity
+
+	} else if processorCategory == consts.ProcessorPerformanceRendezvous {
+		var entity model.ProcessorPerformanceRendezvous
+		err = ctx.ReadJSON(&entity)
+		err = s.SavePerformanceRendezvous(&entity)
+		po = entity
+
+	} else {
+		err = errors.New("wrong processorCategory: " + processorCategory.ToString())
+	}
+
 	return
 }
 
@@ -125,6 +222,12 @@ func (s *ScenarioProcessorService) SavePerformanceRunner(req *model.ProcessorPer
 
 func (s *ScenarioProcessorService) SavePerformanceScenario(req *model.ProcessorPerformanceScenario) (err error) {
 	err = s.ScenarioProcessorRepo.SavePerformanceScenario(req)
+	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
+	return
+}
+
+func (s *ScenarioProcessorService) SavePerformanceRendezvous(req *model.ProcessorPerformanceRendezvous) (err error) {
+	err = s.ScenarioProcessorRepo.SavePerformanceRendezvous(req)
 	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }

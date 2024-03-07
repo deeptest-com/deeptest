@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"errors"
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -84,91 +82,7 @@ func (c *ScenarioProcessorCtrl) Save(ctx iris.Context) {
 	processorCategoryString := ctx.Params().Get("category")
 	processorCategory := consts.ProcessorCategory(processorCategoryString)
 
-	var err error
-	var po interface{}
-
-	if processorCategory == consts.ProcessorGroup {
-		var entity model.ProcessorGroup
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveGroup(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorLogic {
-		var entity model.ProcessorLogic
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveLogic(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorLoop {
-		var entity model.ProcessorLoop
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveLoop(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorTimer {
-		var entity model.ProcessorTimer
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveTimer(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorPrint {
-		var entity model.ProcessorPrint
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SavePrint(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorVariable {
-		var entity model.ProcessorVariable
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveVariable(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorCookie {
-		var entity model.ProcessorCookie
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveCookie(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorAssertion {
-		var entity model.ProcessorAssertion
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveAssertion(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorData {
-		var entity model.ProcessorData
-		entity.Separator = ","
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveData(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorCustomCode {
-		var entity model.ProcessorCustomCode
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveCustomCode(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorInterface {
-		var entity model.ProcessorComm
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SaveInterface(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorPerformanceRunner {
-		var entity model.ProcessorPerformanceRunner
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SavePerformanceRunner(&entity)
-		po = entity
-
-	} else if processorCategory == consts.ProcessorPerformanceScenario {
-		var entity model.ProcessorPerformanceScenario
-		err = ctx.ReadJSON(&entity)
-		err = c.ScenarioProcessorService.SavePerformanceScenario(&entity)
-		po = entity
-
-	} else {
-		err = errors.New("wrong processorCategory: " + processorCategory.ToString())
-	}
+	po, err := c.ScenarioProcessorService.Save(processorCategory, ctx)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

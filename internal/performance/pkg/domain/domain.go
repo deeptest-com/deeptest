@@ -30,8 +30,8 @@ type BaseExecReqOfRunner struct {
 	PlanId int    `json:"planId"`
 	Title  string `json:"title"`
 
-	GenerateType ptconsts.GeneratorType `json:"generateType"`
-	Stages       []*ptProto.Stage       `json:"stages"`
+	GenerateType ptconsts.GenerateType `json:"generateType"`
+	Stages       []*ptProto.Stage      `json:"stages"`
 
 	Mode      ptconsts.ExecMode   `json:"mode"`
 	Scenarios []*ptProto.Scenario `json:"scenarios"`

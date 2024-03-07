@@ -241,7 +241,7 @@ type ProcessorPerformanceScenario struct {
 	BaseModel
 	agentExec.ProcessorEntityBase
 
-	GeneratorType ptconsts.GeneratorType `json:"generatorType"`
+	GenerateType ptconsts.GenerateType `json:"generateType"`
 
 	Target int `json:"target"`
 
@@ -261,14 +261,26 @@ func (ProcessorPerformanceScenario) TableName() string {
 
 type ProcessorPerformanceStage struct {
 	BaseModel
-	agentExec.ProcessorEntityBase
 
 	Duration int `json:"duration"`
 	Target   int `json:"target"`
+
+	ScenarioId uint `json:"scenarioId"`
 }
 
 func (ProcessorPerformanceStage) TableName() string {
 	return "biz_processor_performance_stage"
+}
+
+type ProcessorPerformanceRendezvous struct {
+	BaseModel
+	agentExec.ProcessorEntityBase
+
+	Target int `json:"target"`
+}
+
+func (ProcessorPerformanceRendezvous) TableName() string {
+	return "biz_processor_performance_rendezvous"
 }
 
 type ProcessorComm struct {

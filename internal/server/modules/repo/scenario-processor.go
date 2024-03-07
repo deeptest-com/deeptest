@@ -63,6 +63,8 @@ func (r *ScenarioProcessorRepo) GetEntity(processorId uint) (ret interface{}, er
 		ret, _ = r.GetPerformanceRunner(processor)
 	case consts.ProcessorPerformanceScenario:
 		ret, _ = r.GetPerformanceScenario(processor)
+	case consts.ProcessorPerformanceRendezvous:
+		ret, _ = r.GetPerformanceRendezvous(processor)
 
 	default:
 	}
@@ -362,6 +364,21 @@ func (r *ScenarioProcessorRepo) GetPerformanceScenario(processor model.Processor
 	} else {
 		ret.Name = processor.Name
 		ret.ParentID = processor.ParentId
+
+		ret.Stages, err = r.loadStages(ret.ID)
+	}
+
+	return
+}
+func (r *ScenarioProcessorRepo) GetPerformanceRendezvous(processor model.Processor) (ret model.ProcessorPerformanceRendezvous, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
+
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
+	} else {
+		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
 	}
 
 	return
@@ -504,6 +521,49 @@ func (r *ScenarioProcessorRepo) SavePerformanceRunner(po *model.ProcessorPerform
 func (r *ScenarioProcessorRepo) SavePerformanceScenario(po *model.ProcessorPerformanceScenario) (err error) {
 	err = r.DB.Save(po).Error
 	r.UpdateEntityId(po.ProcessorID, po.ID)
+
+	r.saveStages(po)
+
+	po.Stages, err = r.loadStages(po.ID)
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) SavePerformanceRendezvous(po *model.ProcessorPerformanceRendezvous) (err error) {
+	err = r.DB.Save(po).Error
+	r.UpdateEntityId(po.ProcessorID, po.ID)
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) saveStages(po *model.ProcessorPerformanceScenario) (err error) {
+	err = r.removeStages(po.ID)
+
+	var stages []model.ProcessorPerformanceStage
+	for _, item := range po.Stages {
+		if item.Duration == 0 || item.Target == 0 {
+			continue
+		}
+
+		stages = append(stages, model.ProcessorPerformanceStage{
+			Duration:   item.Duration,
+			Target:     item.Target,
+			ScenarioId: po.ID,
+		})
+	}
+	err = r.DB.Create(&stages).Error
+
+	return
+}
+func (r *ScenarioProcessorRepo) removeStages(scenarioId uint) (err error) {
+	err = r.DB.
+		Where("scenario_id = ?", scenarioId).
+		Delete(&model.ProcessorPerformanceStage{}).Error
+
+	return
+}
+func (r *ScenarioProcessorRepo) loadStages(scenarioId uint) (ret []model.ProcessorPerformanceStage, err error) {
+	err = r.DB.Where("scenario_id = ?", scenarioId).Find(&ret).Error
 
 	return
 }

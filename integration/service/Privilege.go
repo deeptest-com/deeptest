@@ -9,13 +9,14 @@ type PrivilegeService struct {
 	RemoteService *RemoteService `inject:""`
 }
 
-func (s *PrivilegeService) GetAll(tenantId consts.TenantId, username, roleCode string) (ret []string, err error) {
-	if roleCode != "" {
+func (s *PrivilegeService) GetAll(tenantId consts.TenantId, username, roleCode string, needSysAuth bool) (ret []string, err error) {
+	if roleCode != "" && needSysAuth {
 		ret, err = s.RemoteService.GetRoleMenus(tenantId, roleCode)
 		if err != nil {
 			return
 		}
 	}
+
 	var points []string
 	points, err = s.RemoteService.GetUserButtonPermissions(tenantId, username)
 	if err != nil {

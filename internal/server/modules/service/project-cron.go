@@ -8,6 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	"strconv"
 )
 
 type ProjectCronService struct {
@@ -138,7 +139,7 @@ func (s *ProjectCronService) UpdateSwitchStatus(tenantId consts.TenantId, id uin
 	return s.ProjectCronRepo.UpdateSwitchById(tenantId, id, switchStatus)
 }
 
-func (s *ProjectCronService) UpdateCronExecTimeById(tenantId consts.TenantId, configId uint, source consts.CronSource, err error) error {
+func (s *ProjectCronService) UpdateCronExecTimeById(tenantId consts.TenantId, configId string, source consts.CronSource, err error) error {
 	execStatus := consts.CronExecSuccess
 	execErr := ""
 	if err != nil {
@@ -146,7 +147,8 @@ func (s *ProjectCronService) UpdateCronExecTimeById(tenantId consts.TenantId, co
 		execErr = err.Error()
 	}
 
-	return s.ProjectCronRepo.UpdateExecResult(tenantId, configId, source, execStatus, execErr)
+	configIdInt, _ := strconv.Atoi(configId)
+	return s.ProjectCronRepo.UpdateExecResult(tenantId, uint(configIdInt), source, execStatus, execErr)
 }
 
 func (s *ProjectCronService) UpdateExecErr(tenantId consts.TenantId, id uint, execErr string) (err error) {

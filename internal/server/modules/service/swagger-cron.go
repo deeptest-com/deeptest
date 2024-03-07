@@ -92,7 +92,7 @@ func (s *SwaggerCron) CallBack(options map[string]interface{}, err error) func()
 			return
 		}
 
-		taskId, ok := options["taskId"].(uint)
+		taskId, ok := options["taskId"].(string)
 		if !ok {
 			return
 		}

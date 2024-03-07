@@ -15,11 +15,11 @@ type Task interface {
 }
 
 type Proxy struct {
-	source             string
+	source             consts.CronSource
 	cron               string
 	task               Task
 	taskId             string
-	callBack           func(tenantId consts.TenantId, taskId string, source consts.CronSource, err error)
+	callBack           func(tenantId consts.TenantId, taskId string, source consts.CronSource, err error) error
 	tenantId           consts.TenantId
 	ServerCron         *cron.ServerCron            `inject:""`
 	Factory            *Factory                    `inject:""`
@@ -31,17 +31,17 @@ func (p *Proxy) GetTaskId() (taskId string) {
 	return
 }
 
-func NewProxy(source, cron string, f func(tenantId consts.TenantId, taskId string, source string, err error)) (proxy Proxy) {
-	proxy = Proxy{
-		source:   source,
-		cron:     cron,
-		callBack: f,
-	}
+//func NewProxy(source, cron string, f func(tenantId consts.TenantId, taskId string, source string, err error)) (proxy Proxy) {
+//	proxy = Proxy{
+//		source:   source,
+//		cron:     cron,
+//		callBack: f,
+//	}
+//
+//	return
+//}
 
-	return
-}
-
-func (p *Proxy) Init(tenantId consts.TenantId, source, taskId, callBack func(tenantId consts.TenantId, taskId string, source consts.CronSource, err error), cron string) {
+func (p *Proxy) Init(tenantId consts.TenantId, source consts.CronSource, callBack func(tenantId consts.TenantId, taskId string, source consts.CronSource, err error) error, taskId, cron string) {
 	p.tenantId = tenantId
 	p.source = source
 	p.cron = cron
@@ -74,7 +74,7 @@ func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 				ret = fmt.Errorf("%v", err)
 			}
 
-			p.callBack(p.tenantId, p.taskId, consts.CronSource(p.source), ret)
+			p.callBack(p.tenantId, p.taskId, p.source, ret)
 
 		}()
 
@@ -83,13 +83,13 @@ func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 		//	return
 		//}
 
-		err := runFunc()
-		callBackFunc := p.task.CallBack(options, err)
+		runFunc()
+		//callBackFunc := p.task.CallBack(options, err)
 		//if callBackFunc == nil {
 		//	return
 		//}
 
-		callBackFunc()
+		//callBackFunc()
 	}
 
 	return

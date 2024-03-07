@@ -64,7 +64,7 @@ func (s *LecangCronService) Run(options map[string]interface{}) (f func() error)
 
 func (s *LecangCronService) CallBack(options map[string]interface{}, err error) func() {
 	f := func() {
-		taskId, ok := options["taskId"].(uint)
+		taskId, ok := options["taskId"].(string)
 		if !ok {
 			return
 		}

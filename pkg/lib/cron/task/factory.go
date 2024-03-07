@@ -1,11 +1,12 @@
 package task
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 )
 
 type Factory struct {
-	name              string
+	name              consts.CronSource
 	taskId            uint
 	SwaggerCron       *service.SwaggerCron       `inject:""`
 	LecangCronService *service.LecangCronService `inject:""`
@@ -24,19 +25,19 @@ type Factory struct {
 //	return
 //}
 
-func newFactory(name string, task2 Task) (factory *Factory) {
-	factory = &Factory{
-		name: name,
-	}
-
-	return
-}
+//func newFactory(name string, task2 Task) (factory *Factory) {
+//	factory = &Factory{
+//		name: name,
+//	}
+//
+//	return
+//}
 
 func (e *Factory) Create() (res Task) {
 	switch e.name {
-	case "swagger":
+	case consts.CronSourceSwagger:
 		res = e.SwaggerCron
-	case "lecang":
+	case consts.CronSourceLecang:
 		res = e.LecangCronService
 	default:
 		res = e.SwaggerCron

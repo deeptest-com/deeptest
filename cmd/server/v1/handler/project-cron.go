@@ -350,7 +350,7 @@ func (c *ProjectCronCtrl) addCron(tenantId consts.TenantId, cron model.ProjectCr
 	options["cronId"] = cron.ID
 	options["tenantId"] = tenantId
 
-	c.Proxy.Init(tenantId, string(cron.Source), c.ProjectCronService.UpdateCronExecTimeById, fmt.Sprintf("%d", cron.ConfigId), cron.Cron)
+	c.Proxy.Init(tenantId, cron.Source, c.ProjectCronService.UpdateCronExecTimeById, fmt.Sprintf("%d", cron.ConfigId), cron.Cron)
 	err := c.Proxy.Add(options)
 
 	if err != nil {
@@ -360,6 +360,6 @@ func (c *ProjectCronCtrl) addCron(tenantId consts.TenantId, cron model.ProjectCr
 }
 
 func (c *ProjectCronCtrl) RemoveCron(tenantId consts.TenantId, cron model.ProjectCron) {
-	c.Proxy.Init(tenantId, string(cron.Source), nil, fmt.Sprintf("%d", cron.ConfigId), cron.Cron)
+	c.Proxy.Init(tenantId, cron.Source, nil, fmt.Sprintf("%d", cron.ConfigId), "")
 	c.Proxy.Remove()
 }

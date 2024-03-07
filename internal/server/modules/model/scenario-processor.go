@@ -252,7 +252,9 @@ type ProcessorPerformanceScenario struct {
 	Qps          float32           `json:"qps"`
 	FailRate     float32           `json:"failRate"`
 
-	Stages []ProcessorPerformanceStage `gorm:"-" json:"stages"`
+	Stages       []ProcessorPerformanceStage `gorm:"-" json:"stages"`
+	RunnerIds    []int                       `gorm:"-" json:"runnerIds"`
+	RunnerIdsRaw string                      `json:"runnerIdsRaw"`
 }
 
 func (ProcessorPerformanceScenario) TableName() string {

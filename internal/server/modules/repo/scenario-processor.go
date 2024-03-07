@@ -6,6 +6,8 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
+	"strconv"
+	"strings"
 )
 
 type ScenarioProcessorRepo struct {
@@ -361,11 +363,20 @@ func (r *ScenarioProcessorRepo) GetPerformanceScenario(processor model.Processor
 	if ret.ID == 0 {
 		comm := r.genProcessorComm(processor)
 		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
-	} else {
-		ret.Name = processor.Name
-		ret.ParentID = processor.ParentId
 
-		ret.Stages, err = r.loadStages(ret.ID)
+		return
+	}
+
+	ret.Name = processor.Name
+	ret.ParentID = processor.ParentId
+
+	ret.Stages, err = r.loadStages(ret.ID)
+
+	for _, str := range strings.Split(ret.RunnerIdsRaw, ",") {
+		i, err := strconv.Atoi(str)
+		if err == nil {
+			ret.RunnerIds = append(ret.RunnerIds, i)
+		}
 	}
 
 	return
@@ -519,6 +530,12 @@ func (r *ScenarioProcessorRepo) SavePerformanceRunner(po *model.ProcessorPerform
 }
 
 func (r *ScenarioProcessorRepo) SavePerformanceScenario(po *model.ProcessorPerformanceScenario) (err error) {
+	strArr := make([]string, len(po.RunnerIds))
+	for i, v := range po.RunnerIds {
+		strArr[i] = strconv.Itoa(v)
+	}
+	po.RunnerIdsRaw = strings.Join(strArr, ",")
+
 	err = r.DB.Save(po).Error
 	r.UpdateEntityId(po.ProcessorID, po.ID)
 
@@ -567,6 +584,7 @@ func (r *ScenarioProcessorRepo) loadStages(scenarioId uint) (ret []model.Process
 
 	return
 }
+
 func (r *ScenarioProcessorRepo) UpdateEntityId(id, entityId uint) (err error) {
 	err = r.DB.Model(&model.Processor{}).
 		Where("id = ?", id).

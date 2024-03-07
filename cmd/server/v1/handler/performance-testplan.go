@@ -83,6 +83,21 @@ func (c *PerformanceTestPlanCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: performanceTestPlan, Msg: _domain.NoErr.Msg})
 }
 
+func (c *PerformanceTestPlanCtrl) ListRunner(ctx iris.Context) {
+	performanceScenarioId, err := ctx.URLParamInt("performanceScenarioId")
+	if performanceScenarioId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	runners, err := c.PerformanceTestPlanService.ListRunner(performanceScenarioId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: runners, Msg: _domain.NoErr.Msg})
+}
+
 // Create
 // @Tags	性能测试模块
 // @summary	新建性能测试计划

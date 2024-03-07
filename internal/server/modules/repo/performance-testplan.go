@@ -217,3 +217,28 @@ func (r *PerformanceTestPlanRepo) DeleteByCategoryIds(categoryIds []uint) (err e
 
 	return
 }
+
+func (r *PerformanceTestPlanRepo) ListRunner(performanceScenarioId uint) (runners []model.ProcessorPerformanceRunner, err error) {
+	var processorIds []uint
+
+	err = r.DB.Model(&model.Processor{}).
+		Raw(fmt.Sprintf("SELECT id FROM %s WHERE scenario_id = %d AND entity_type = '%s'",
+			model.Processor{}.TableName(), performanceScenarioId, consts.ProcessorPerformanceRunnerDefault)).
+		Scan(&processorIds).Error
+	if err != nil {
+		return
+	}
+
+	err = r.DB.Where("id IN (?)", processorIds).Find(&runners).Error
+	if err != nil {
+		return
+	}
+
+	return
+}
+
+func (r *PerformanceTestPlanRepo) getPlanByScenario(performanceScenarioId uint) (plan model.PerformanceTestPlan, err error) {
+	err = r.DB.Where("scenario_id = ?", performanceScenarioId).First(&plan).Error
+
+	return
+}

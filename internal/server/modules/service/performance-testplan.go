@@ -60,3 +60,9 @@ func (s *PerformanceTestPlanService) GetScenarioId(planId int) (scenarioId uint,
 
 	return
 }
+
+func (s *PerformanceTestPlanService) ListRunner(performanceScenarioId int) (runners []model.ProcessorPerformanceRunner, err error) {
+	runners, err = s.PerformanceTestPlanRepo.ListRunner(uint(performanceScenarioId))
+
+	return
+}

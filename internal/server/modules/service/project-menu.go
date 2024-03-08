@@ -45,7 +45,7 @@ func (s *ProjectMenuService) GetUserMenuList(tenantId consts.TenantId, projectId
 }
 
 func (s *ProjectMenuService) GetAll(tenantId consts.TenantId, userId, projectRoleId uint, needSysAuth bool) (ret []string, err error) {
-	if needSysAuth {
+	if !needSysAuth {
 		ret, err = s.RoleService.GetAuthByEnv(tenantId, userId)
 		if err != nil {
 			return

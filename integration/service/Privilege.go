@@ -10,7 +10,7 @@ type PrivilegeService struct {
 }
 
 func (s *PrivilegeService) GetAll(tenantId consts.TenantId, username, roleCode string, needSysAuth bool) (ret []string, err error) {
-	if roleCode != "" && needSysAuth {
+	if roleCode != "" && !needSysAuth {
 		ret, err = s.RemoteService.GetRoleMenus(tenantId, roleCode)
 		if err != nil {
 			return

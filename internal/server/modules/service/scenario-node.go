@@ -16,7 +16,6 @@ import (
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
-	"log"
 	"strings"
 )
 
@@ -73,8 +72,6 @@ func (s *ScenarioNodeService) ToTos(pos []*model.Processor, withDetail bool) (to
 		if withDetail {
 			entity, _ := s.ScenarioProcessorService.GetEntityTo(&to)
 			to.EntityRaw, _ = json.Marshal(entity)
-
-			log.Println("")
 		}
 
 		// just to avoid json marshal error for IProcessorEntity

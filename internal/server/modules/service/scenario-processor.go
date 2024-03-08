@@ -324,6 +324,21 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 		ret = agentExec.ProcessorCustomCode{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
+	case consts.ProcessorPerformanceRunner:
+		entityPo, _ := s.ScenarioProcessorRepo.GetPerformanceRunner(processor)
+		ret = agentExec.ProcessorPerformanceRunner{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorPerformanceScenario:
+		entityPo, _ := s.ScenarioProcessorRepo.GetPerformanceScenario(processor)
+		ret = agentExec.ProcessorPerformanceScenario{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
+	case consts.ProcessorPerformanceRendezvous:
+		entityPo, _ := s.ScenarioProcessorRepo.GetPerformanceRendezvous(processor)
+		ret = agentExec.ProcessorPerformanceRendezvous{}
+		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
+
 	default:
 	}
 

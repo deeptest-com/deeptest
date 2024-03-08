@@ -44,10 +44,12 @@ func (s *ProjectMenuService) GetUserMenuList(tenantId consts.TenantId, projectId
 	return
 }
 
-func (s *ProjectMenuService) GetAll(tenantId consts.TenantId, userId, projectRoleId uint) (ret []string, err error) {
-	ret, err = s.RoleService.GetAuthByEnv(tenantId, userId)
-	if err != nil {
-		return
+func (s *ProjectMenuService) GetAll(tenantId consts.TenantId, userId, projectRoleId uint, needSysAuth bool) (ret []string, err error) {
+	if needSysAuth {
+		ret, err = s.RoleService.GetAuthByEnv(tenantId, userId)
+		if err != nil {
+			return
+		}
 	}
 
 	projectRoleMenus, err := s.ProjectMenuRepo.GetRoleMenuCodeList(tenantId, projectRoleId)
@@ -61,7 +63,7 @@ func (s *ProjectMenuService) GetAll(tenantId consts.TenantId, userId, projectRol
 	return
 }
 
-func (s *ProjectMenuService) GetUserMenuListNew(tenantId consts.TenantId, projectId, userId uint, userName string) (ret []string, err error) {
+func (s *ProjectMenuService) GetUserMenuListNew(tenantId consts.TenantId, projectId, userId uint, userName string, needSysAuth bool) (ret []string, err error) {
 	isAdminUser, err := s.UserRepo.IsAdminUser(tenantId, userId)
 	if err != nil {
 		return
@@ -78,9 +80,9 @@ func (s *ProjectMenuService) GetUserMenuListNew(tenantId consts.TenantId, projec
 	}
 
 	if config.CONFIG.System.SysEnv == "ly" && !isAdminUser {
-		ret, err = s.PrivilegeService.GetAll(tenantId, userName, string(projectRole.Name))
+		ret, err = s.PrivilegeService.GetAll(tenantId, userName, string(projectRole.Name), needSysAuth)
 	} else {
-		ret, err = s.GetAll(tenantId, userId, projectRole.ID)
+		ret, err = s.GetAll(tenantId, userId, projectRole.ID, needSysAuth)
 	}
 
 	//if config.CONFIG.System.SysEnv == "ly" {

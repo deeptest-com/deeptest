@@ -45,8 +45,9 @@ func (c *ProjectMenuCtrl) UserMenuListNew(ctx iris.Context) {
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
+	needSysAuth, err := ctx.URLParamBool("needSysAuth")
 
-	data, err := c.ProjectMenuService.GetUserMenuListNew(tenantId, uint(projectId), userId, userName)
+	data, err := c.ProjectMenuService.GetUserMenuListNew(tenantId, uint(projectId), userId, userName, needSysAuth)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

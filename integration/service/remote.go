@@ -285,6 +285,7 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 }
 
 func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token string) (user integrationDomain.UserInfo, err error) {
+
 	url := fmt.Sprintf("%s/api/v1/user/getUserInfo", config.CONFIG.ThirdParty.Url)
 
 	headers := []domain.Header{
@@ -722,7 +723,7 @@ func (s *RemoteService) GetRoleMenus(tenantId consts.TenantId, role string) (ret
 			},
 		},
 	}
-
+	logUtils.Infof("leyan-GetRoleMenus,%s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get RoleMenus failed, error, %s", err.Error())

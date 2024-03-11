@@ -9,6 +9,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
 	"gorm.io/gorm"
 	"strings"
@@ -450,6 +451,19 @@ func (s *CategoryService) copyDataByCategoryId(tenantId consts.TenantId, typ ser
 	//更新实体信息
 	if entityId > 0 {
 		s.CategoryRepo.UpdateEntityId(tenantId, category.ID, entityId)
+	}
+
+	return
+}
+
+func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, categoryId int) (ret []v1.Category, err error) {
+	nodes, err := s.CategoryRepo.GetChildrenNodes(tenantId, uint(categoryId))
+
+	for _, node := range nodes {
+		var category v1.Category
+		copier.CopyWithOption(&category, node, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+		category.Count = s.CategoryRepo.GetEntityCountByCategoryId(tenantId, uint(categoryId))
+		ret = append(ret, category)
 	}
 
 	return

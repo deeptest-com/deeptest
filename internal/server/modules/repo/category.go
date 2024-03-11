@@ -419,3 +419,28 @@ func (r *CategoryRepo) GetRoot(tenantId consts.TenantId, typ serverConsts.Catego
 	return
 
 }
+
+func (r *CategoryRepo) GetChildrenNodes(tenantId consts.TenantId, categoryId uint) (ret []*model.Category, err error) {
+	ret, err = r.GetChildren(tenantId, categoryId)
+	return
+}
+
+func (r *CategoryRepo) GetEntityCountByCategoryId(tenantId consts.TenantId, categoryId uint) int64 {
+	var ret map[string]int64
+	sql := `WITH RECURSIVE temp(id,count) AS
+		(
+			SELECT id,if(entity_id=0,0,1 ) count from biz_category where parent_id = %d and not deleted
+		  UNION ALL
+		  SELECT b.id,if(b.entity_id=0,0,1 ) count from biz_category b, temp c where c.id = b.parent_id and not deleted
+		) 
+		select sum(count) count from temp
+`
+	sql = fmt.Sprintf(sql, categoryId)
+	r.GetDB(tenantId).Raw(sql).Scan(&ret)
+
+	if count, ok := ret["count"]; ok {
+		return count
+	}
+
+	return 0
+}

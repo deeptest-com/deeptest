@@ -282,3 +282,25 @@ func (c *CategoryCtrl) Copy(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: nodePo})
 }
+
+func (c *CategoryCtrl) LoadChildren(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
+	projectId, err := ctx.URLParamInt("currProjectId")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+	typ := ctx.URLParam("type")
+	if typ == "" {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	data, err := c.CategoryService.GetTree(tenantId, serverConsts.CategoryDiscriminator(typ), projectId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
+}

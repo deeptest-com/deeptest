@@ -3,6 +3,7 @@ package middleware
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/integration/enum"
@@ -36,6 +37,10 @@ func init() {
 }
 
 func isIgnore(path string) bool {
+	if config.CONFIG.System.SysEnv == "" {
+		return true
+	}
+
 	for _, item := range whitelist {
 		if strings.HasPrefix(path, item) {
 			return true

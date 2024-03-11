@@ -110,8 +110,8 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 	//}
 
 	// generate openapi spec
-	endpoint, err := s.EndpointRepo.GetAll(endpointId, "v0.1.0")
-	if err != nil {
+	endpoint := s.EndpointService.GetById(endpointId, "v0.1.0")
+	if endpoint.ID == 0 {
 		return
 	}
 

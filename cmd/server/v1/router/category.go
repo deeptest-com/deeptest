@@ -23,6 +23,7 @@ func (m *CategoryModule) Party() module.WebModule {
 		index.Put("/{id:uint}/updateName", m.CategoryCtrl.UpdateName).Name = "更新节点名称"
 		index.Delete("/{id:uint}", m.CategoryCtrl.Delete).Name = "删除节点"
 		index.Post("/move", m.CategoryCtrl.Move).Name = "移动节点"
+		index.Post("/batchAddSchemaRoot", m.CategoryCtrl.BatchAddSchemaRoot).Name = "批量初始化schema的根分类"
 		index.Get("/copy/{id:int}", m.CategoryCtrl.Copy).Name = "复制节点"
 	}
 

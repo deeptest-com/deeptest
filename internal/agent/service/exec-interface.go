@@ -14,6 +14,7 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	agentExec.SetServerUrl(call.ExecUuid, call.ServerUrl)
 	agentExec.SetServerToken(call.ExecUuid, call.Token)
 	req := GetInterfaceToExec(call)
+	updateLocalValues(&req.ExecScene, call.LocalVarsCache)
 
 	agentExec.SetCurrDebugInterfaceId(call.ExecUuid, req.DebugData.DebugInterfaceId)
 	agentExec.SetCurrScenarioProcessorId(call.ExecUuid, 0) // not in a scenario
@@ -64,16 +65,7 @@ func PreRequest(req *domain.DebugData, execUuid string) (originalReqUri string, 
 	agentExec.ReplaceVariables(&req.BaseRequest, execUuid)
 
 	// gen url
-	if req.PathParams != nil {
-		originalReqUri = agentExec.ReplacePathParams(req.Url, *req.PathParams)
-	}
-
-	notUseBaseUrl := execUtils.IsUseBaseUrl(req.UsedBy, req.ProcessorInterfaceSrc)
-	if notUseBaseUrl {
-		req.BaseRequest.Url = originalReqUri
-	} else {
-		req.BaseRequest.Url = _httpUtils.CombineUrls(req.BaseUrl, originalReqUri)
-	}
+	req.BaseRequest.Url, originalReqUri = UpdateUrl(*req)
 	req.BaseRequest.FullUrlToDisplay = req.BaseRequest.Url
 	logUtils.Info("requested url: " + req.BaseRequest.Url)
 
@@ -101,6 +93,22 @@ func RequestInterface(req *domain.DebugData) (ret domain.DebugResponse, err erro
 	ret, err = agentExec.Invoke(&req.BaseRequest)
 
 	ret.Id = req.DebugInterfaceId
+
+	return
+}
+
+func UpdateUrl(debugData domain.DebugData) (reqUrl, originalReqUri string) {
+	// gen url
+	if debugData.PathParams != nil {
+		originalReqUri = agentExec.ReplacePathParams(debugData.Url, *debugData.PathParams)
+	}
+
+	notUseBaseUrl := execUtils.IsNotUseBaseUrl(debugData.UsedBy, debugData.ProcessorInterfaceSrc)
+	if notUseBaseUrl {
+		reqUrl = originalReqUri
+	} else {
+		reqUrl = _httpUtils.CombineUrls(debugData.BaseUrl, originalReqUri)
+	}
 
 	return
 }

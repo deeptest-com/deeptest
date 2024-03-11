@@ -29,11 +29,18 @@ func NewSchema2Code(langType template.LangType, nameRule template.NameRule) *Sch
 func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) *fields.Field {
 	ref := schema.Ref
 	refName := ""
-	if component, ok := s.Components[schema.Ref]; ok {
+	if component, _, refx := s.Components.Component(&schema); component != nil && refx != "" {
 		s.sets[ref]++
 		schema = *component
 		refName = s.getRefName(ref)
-		name = refName
+		//name = refName
+	}
+
+	if schema.Ref != "" {
+		if s.sets[ref] > 1 {
+			return nil
+		}
+		return s.schema2Fields(name, schema)
 	}
 
 	s.CombineSchemas(&schema)
@@ -52,7 +59,7 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 
 		field.FieldType = openapi3.TypeObject
 		if field.FieldName == "" {
-			field.FieldName = fields.FieldName(s.getVarName("var"))
+			field.FieldName = field.FieldRefName
 		}
 
 		for key, property := range schema.Value.Properties {
@@ -77,7 +84,7 @@ func (s *Schema2Code) schema2Fields(name string, schema schemaHelper.SchemaRef) 
 
 func (s *Schema2Code) Convert(schema schemaHelper.SchemaRef) string {
 	field := s.schema2Fields(s.format("response"), schema)
-	fmt.Println(commonUtils.JsonEncode(field))
+	//fmt.Println(commonUtils.JsonEncode(field))
 	t := template.NewTemplate(s.langType, field.ToArray())
 	return t.CreateCode()
 }
@@ -97,6 +104,9 @@ func (s *Schema2Code) getRefName(ref string) string {
 }
 
 func (s *Schema2Code) format(ret string) string {
+	if ret == "" {
+		return ""
+	}
 	ret = commonUtils.Case2Camel(ret)
 	if s.nameRule == template.UpperCase {
 		ret = strings.ToUpper(ret[:1]) + ret[1:]

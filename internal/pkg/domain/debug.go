@@ -10,15 +10,14 @@ type DebugInfo struct {
 	EndpointInterfaceId uint `json:"endpointInterfaceId"` // EndpointInterface without DebugInterface init
 	ScenarioProcessorId uint `json:"scenarioProcessorId"` // used to load vars by scenario processor
 	DiagnoseInterfaceId uint `json:"diagnoseInterfaceId"` // load by interface diagnose
-
-	CaseInterfaceId    uint `json:"caseInterfaceId"`    // load by endpoint case
-	IsForBenchmarkCase bool `json:"isForBenchmarkCase"` // load by endpoint case
+	CaseInterfaceId     uint `json:"caseInterfaceId"`     // load by endpoint case
+	IsForBenchmarkCase  bool `json:"isForBenchmarkCase"`  // load by endpoint case
 
 	UsedBy        consts.UsedBy `json:"usedBy"`
 	UserId        uint          `json:"userId"`        // used by loading debugData for display
 	EnvironmentId uint          `json:"environmentId"` // used by loading debugData for exec
-
-	ProjectId int `json:"projectId"`
+	FromDefine    bool          `json:"fromDefine"`
+	ProjectId     int           `json:"projectId"`
 }
 
 type SubmitDebugResultRequest struct {

@@ -149,7 +149,7 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 				processor.ID, processor.ParentId, &processor.Result.PostConditions, session.ExecUuid)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
-			entity.DealwithResponseDefineCondition(condition, &interfaceStatus, &processor.Result.PostConditions, detail, session.ExecUuid)
+			//entity.DealwithResponseDefineCondition(condition, &interfaceStatus, &processor.Result.PostConditions, detail, session.ExecUuid)
 
 		}
 	}
@@ -203,6 +203,8 @@ func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.
 	if databaseOptBase.Disabled {
 		return
 	}
+
+	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, execUuid)
 
 	conditionStatus := true
 	err := ExecDbOpt(&databaseOptBase)

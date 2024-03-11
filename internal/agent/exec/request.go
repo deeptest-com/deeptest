@@ -170,7 +170,7 @@ func replacePathParams(req *domain.BaseRequest, execUuid string) {
 
 	if req.PathParams != nil {
 		for idx, param := range *req.PathParams {
-			if param.Disabled {
+			if param.Disabled || param.Name == "" {
 				continue
 			}
 			(*req.PathParams)[idx].Value = ReplaceVariableValue(param.Value, execUuid)

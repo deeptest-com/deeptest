@@ -10,6 +10,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/emirpasic/gods/maps"
 	"math/rand"
 	"net"
@@ -131,15 +132,19 @@ func JsonEncode(data interface{}) (res string) {
 
 	if resByte, err := json.Marshal(data); err == nil {
 		res = string(resByte)
+	} else {
+		panic(err)
 	}
+
 	return
 
 }
 
 func JsonDecode(str string, res interface{}) (err error) {
-
+	str = strings.ReplaceAll(str, "\x00", " ")
 	if err = json.Unmarshal([]byte(str), res); err != nil {
 		//panic(err)
+		logUtils.Error(err.Error())
 	}
 
 	return

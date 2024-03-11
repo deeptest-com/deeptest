@@ -22,9 +22,10 @@ type Category struct {
 	Children []*Processor `gorm:"-" json:"children"`
 	Slots    iris.Map     `gorm:"-" json:"slots"`
 
-	Type serverConsts.CategoryDiscriminator `json:"type"`
+	Type serverConsts.CategoryDiscriminator `gorm:"index:idx_entity_id_type,priority:2" json:"type"`
 
 	SourceType consts.SourceType `json:"sourceType" gorm:"default:0"`
+	EntityId   uint              `gorm:"index:idx_entity_id_type,priority:1" json:"entityId"`
 }
 
 func (Category) TableName() string {

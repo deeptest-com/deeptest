@@ -17,6 +17,7 @@ type DocumentRep struct {
 	Version      string                 `json:"version"`
 	DocumentId   uint                   `json:"documentId"`
 	Mock         []interface{}          `json:"mock"`
+	Components   []ServeSchemaReq       `json:"components"`
 }
 
 type DocumentServe struct {

@@ -44,8 +44,8 @@ func ExecResponseDefine(responseDefine *domain.ResponseDefineBase, res domain.De
 	var obj interface{}
 	commonUtils.JsonDecode(res.Content, &obj)
 	schema2conv := responseDefineHelper.NewSchema2conv()
-	var component responseDefineHelper.Components
-	commonUtils.JsonDecode(responseDefine.Component, &component)
+	component := responseDefineHelper.NewComponents()
+	commonUtils.JsonDecode(responseDefine.Component, component)
 	schema2conv.Components = component
 	ret := schema2conv.AssertDataForSchema(schema, obj)
 	if !ret {

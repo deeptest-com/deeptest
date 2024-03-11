@@ -10,6 +10,7 @@ import (
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
+	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
@@ -19,7 +20,7 @@ import (
 )
 
 func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (err error) {
-	InitJsRuntime(projectId, execUuid)
+	//InitJsRuntime(projectId, execUuid)
 	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
 	ResetGojaVariables(execUuid)
 	ResetGojaLogs(execUuid)
@@ -72,6 +73,7 @@ func InitJsRuntime(projectId uint, execUuid string) {
 
 	// load global script
 	pth := filepath.Join(consts.TmpDir, "deeptest.js")
+	//pth = "./res/goja/module/deeptest.js"
 	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
 	dt, err := execRequire.Require(pth)
 	if err != nil {
@@ -248,7 +250,8 @@ func SetRespValueToGoja(resp *domain.DebugResponse) {
 	// set resp.Data to json object for goja edit
 	if httpHelper.IsJsonResp(*resp) {
 		var data interface{}
-		err := json.Unmarshal([]byte(resp.Content), &data)
+		err := _commUtils.JsonDecode(resp.Content, &data)
+		//err := json.Unmarshal([]byte(resp.Content), &data)
 		if err == nil {
 			resp.Data = data
 		} else {

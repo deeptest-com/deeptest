@@ -28,6 +28,7 @@ type ThirdPartySyncService struct {
 	EndpointRepo             *repo.EndpointRepo          `inject:""`
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
 	UserRepo                 *repo.UserRepo              `inject:""`
+	BaseRepo                 *repo.BaseRepo              `inject:""`
 	RemoteService            *service.RemoteService      `inject:""`
 	ServeService             *ServeService               `inject:""`
 	EndpointService          *EndpointService            `inject:""`
@@ -88,7 +89,8 @@ func (s *ThirdPartySyncService) GetFunctionsByClassNew(serviceId, classCode, par
 	getFunctionsByClassResData := s.RemoteService.LcQueryMsg(getFunctionsByClassReq, token, baseUrl)
 	for _, v := range getFunctionsByClassResData {
 		//不同步继承方法和不允许被重写的内部方法
-		if v.IsExtend == consts.IntegrationFuncIsExtend || (v.MessageType == 0 && v.Overridable == consts.IntegrationFuncCanNotOverridable) {
+		//if v.IsExtend == consts.IntegrationFuncIsExtend || (v.MessageType == 0 && v.Overridable == consts.IntegrationFuncCanNotOverridable) {
+		if v.IsExtend == consts.IntegrationFuncIsExtend {
 			continue
 		}
 

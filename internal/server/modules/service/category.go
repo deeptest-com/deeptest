@@ -456,7 +456,17 @@ func (s *CategoryService) copyDataByCategoryId(tenantId consts.TenantId, typ ser
 	return
 }
 
-func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, categoryId int) (ret []v1.Category, err error) {
+func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId, categoryId int) (ret []v1.Category, err error) {
+
+	if categoryId == 0 {
+		node, err := s.CategoryRepo.GetRootNode(tenantId, uint(projectId), typ)
+		if err != nil {
+			return
+		}
+
+		categoryId = int(node.ID)
+	}
+
 	nodes, err := s.CategoryRepo.GetChildrenNodes(tenantId, uint(categoryId))
 
 	for _, node := range nodes {

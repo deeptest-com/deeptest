@@ -295,8 +295,8 @@ func (c *CategoryCtrl) LoadChildren(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-
-	data, err := c.CategoryService.GetTree(tenantId, serverConsts.CategoryDiscriminator(typ), projectId)
+	categoryId, _ := ctx.URLParamInt("categoryId")
+	data, err := c.CategoryService.GetChildrenNodes(tenantId, serverConsts.CategoryDiscriminator(typ), projectId, categoryId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

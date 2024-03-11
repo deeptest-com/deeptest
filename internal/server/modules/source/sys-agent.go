@@ -2,6 +2,7 @@ package source
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/gookit/color"
@@ -30,12 +31,13 @@ func (s *SysAgentSource) GetSources() (configs []model.SysAgent, err error) {
 	return
 }
 
-func (s *SysAgentSource) Init() (err error) {
+func (s *SysAgentSource) Init(tenantId consts.TenantId) (err error) {
 	if config.CONFIG.System.SysEnv != "deeptest_demo" {
 		return
 	}
 
-	s.AgentRepo.DB.Delete(&model.SysAgent{}, "1=1")
+	db := s.AgentRepo.GetDB(tenantId)
+	db.Delete(&model.SysAgent{}, "1=1")
 
 	sources, err := s.GetSources()
 	if err != nil {
@@ -43,7 +45,7 @@ func (s *SysAgentSource) Init() (err error) {
 	}
 
 	for _, source := range sources {
-		if err := s.AgentRepo.Save(&source); err != nil {
+		if err := s.AgentRepo.Save(tenantId, &source); err != nil {
 			return err
 		}
 	}

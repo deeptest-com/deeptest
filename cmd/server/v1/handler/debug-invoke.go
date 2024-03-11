@@ -26,6 +26,7 @@ type DebugInvokeCtrl struct {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/debugs/invoke/submitResult	[post]
 func (c *DebugInvokeCtrl) SubmitResult(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := domain.SubmitDebugResultRequest{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -33,7 +34,7 @@ func (c *DebugInvokeCtrl) SubmitResult(ctx iris.Context) {
 		return
 	}
 	var invoke model.DebugInvoke
-	invoke, err = c.DebugInvokeService.SubmitResult(req)
+	invoke, err = c.DebugInvokeService.SubmitResult(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -54,6 +55,7 @@ func (c *DebugInvokeCtrl) SubmitResult(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]model.DebugInvoke}
 // @Router	/api/v1/debugs/invoke	[get]
 func (c *DebugInvokeCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
@@ -68,7 +70,7 @@ func (c *DebugInvokeCtrl) List(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	data, err := c.DebugInvokeService.ListByInterface(uint(debugInterfaceId), uint(endpointInterfaceId))
+	data, err := c.DebugInvokeService.ListByInterface(tenantId, uint(debugInterfaceId), uint(endpointInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -89,6 +91,7 @@ func (c *DebugInvokeCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=domain.DebugResponse}
 // @Router	/api/v1/debugs/invoke/getLastResp	[get]
 func (c *DebugInvokeCtrl) GetLastResp(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 	if debugInterfaceId <= 0 && endpointInterfaceId <= 0 {
@@ -103,7 +106,7 @@ func (c *DebugInvokeCtrl) GetLastResp(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	reqAndResp, err := c.DebugInvokeService.GetLastResp(uint(debugInterfaceId), uint(endpointInterfaceId))
+	reqAndResp, err := c.DebugInvokeService.GetLastResp(tenantId, uint(debugInterfaceId), uint(endpointInterfaceId))
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -114,13 +117,14 @@ func (c *DebugInvokeCtrl) GetLastResp(ctx iris.Context) {
 
 // GetResult 获取调用结果细节
 func (c *DebugInvokeCtrl) GetResult(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	invokeId, err := ctx.URLParamInt("invokeId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	result, err := c.DebugInvokeService.GetResult(invokeId)
+	result, err := c.DebugInvokeService.GetResult(tenantId, invokeId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -131,13 +135,14 @@ func (c *DebugInvokeCtrl) GetResult(ctx iris.Context) {
 
 // GetLog 获取调用日志
 func (c *DebugInvokeCtrl) GetLog(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	invokeId, err := ctx.URLParamInt("invokeId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	result, err := c.DebugInvokeService.GetLog(invokeId)
+	result, err := c.DebugInvokeService.GetLog(tenantId, invokeId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -157,13 +162,14 @@ func (c *DebugInvokeCtrl) GetLog(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{debugData=domain.DebugData,resp=domain.DebugResponse}}
 // @Router	/api/v1/debugs/invoke/{id}	[get]
 func (c *DebugInvokeCtrl) GetAsInterface(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	debugData, resultReq, resultResp, err := c.DebugInvokeService.GetAsInterface(id)
+	debugData, resultReq, resultResp, err := c.DebugInvokeService.GetAsInterface(tenantId, id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -187,13 +193,14 @@ func (c *DebugInvokeCtrl) GetAsInterface(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/debugs/invoke/{id}	[delete]
 func (c *DebugInvokeCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.DebugInvokeService.Delete(uint(id))
+	err = c.DebugInvokeService.Delete(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

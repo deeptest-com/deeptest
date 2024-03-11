@@ -16,6 +16,7 @@ type ConditionCtrl struct {
 
 // List
 func (c *ConditionCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 	category := consts.ConditionCategory(ctx.URLParam("category"))
@@ -34,7 +35,7 @@ func (c *ConditionCtrl) List(ctx iris.Context) {
 		endpointInterfaceId = 0
 	}
 
-	data, err := c.ConditionService.List(uint(debugInterfaceId), uint(endpointInterfaceId),
+	data, err := c.ConditionService.List(tenantId, uint(debugInterfaceId), uint(endpointInterfaceId),
 		category, consts.UsedBy(usedBy), src)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -46,6 +47,7 @@ func (c *ConditionCtrl) List(ctx iris.Context) {
 
 // Create 添加
 func (c *ConditionCtrl) Create(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	condition := model.DebugCondition{}
 	err := ctx.ReadJSON(&condition)
 	if err != nil {
@@ -53,7 +55,7 @@ func (c *ConditionCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	err = c.ConditionService.Create(&condition)
+	err = c.ConditionService.Create(tenantId, &condition)
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -66,13 +68,14 @@ func (c *ConditionCtrl) Create(ctx iris.Context) {
 
 // Delete 删除
 func (c *ConditionCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.ConditionService.Delete(uint(id))
+	err = c.ConditionService.Delete(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -83,13 +86,14 @@ func (c *ConditionCtrl) Delete(ctx iris.Context) {
 
 // Disable 禁用
 func (c *ConditionCtrl) Disable(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.ConditionService.Disable(uint(id))
+	err = c.ConditionService.Disable(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -100,6 +104,7 @@ func (c *ConditionCtrl) Disable(ctx iris.Context) {
 
 // Move 移动
 func (c *ConditionCtrl) Move(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ConditionMoveReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -107,7 +112,7 @@ func (c *ConditionCtrl) Move(ctx iris.Context) {
 		return
 	}
 
-	err = c.ConditionService.Move(req)
+	err = c.ConditionService.Move(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -117,10 +122,11 @@ func (c *ConditionCtrl) Move(ctx iris.Context) {
 }
 
 func (c *ConditionCtrl) ResetForCase(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	debugInterfaceId, err := ctx.URLParamInt("debugInterfaceId")
 	endpointInterfaceId, err := ctx.URLParamInt("endpointInterfaceId")
 
-	err = c.ConditionService.ResetForCase(uint(endpointInterfaceId), uint(debugInterfaceId))
+	err = c.ConditionService.ResetForCase(tenantId, uint(endpointInterfaceId), uint(debugInterfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

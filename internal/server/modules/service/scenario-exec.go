@@ -38,8 +38,8 @@ type ScenarioExecService struct {
 	ExecConditionService *ExecConditionService `inject:""`
 }
 
-func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Report, err error) {
-	scenario, err := s.ScenarioRepo.Get(uint(scenarioId))
+func (s *ScenarioExecService) LoadExecResult(tenantId consts.TenantId, scenarioId int) (result domain.Report, err error) {
+	scenario, err := s.ScenarioRepo.Get(tenantId, uint(scenarioId))
 	if err != nil {
 		return
 	}
@@ -49,8 +49,8 @@ func (s *ScenarioExecService) LoadExecResult(scenarioId int) (result domain.Repo
 	return
 }
 
-func (s *ScenarioExecService) LoadExecData(scenarioId, environmentId uint) (ret agentExec.ScenarioExecObj, err error) {
-	scenario, err := s.ScenarioRepo.Get(scenarioId)
+func (s *ScenarioExecService) LoadExecData(tenantId consts.TenantId, scenarioId, environmentId uint) (ret agentExec.ScenarioExecObj, err error) {
+	scenario, err := s.ScenarioRepo.Get(tenantId, scenarioId)
 	if err != nil {
 		return
 	}
@@ -58,18 +58,18 @@ func (s *ScenarioExecService) LoadExecData(scenarioId, environmentId uint) (ret 
 	// get processor tree
 	ret.ScenarioId = scenarioId
 	ret.Name = scenario.Name
-	ret.RootProcessor, _ = s.ScenarioNodeService.GetTree(scenario, true)
+	ret.RootProcessor, _ = s.ScenarioNodeService.GetTree(tenantId, scenario, true)
 	ret.RootProcessor.Session = agentExec.Session{}
 
 	// get variables
-	s.SceneService.LoadEnvVarMapByScenario(&ret.ExecScene, scenarioId, environmentId)
-	s.SceneService.LoadProjectSettings(&ret.ExecScene, scenario.ProjectId)
+	s.SceneService.LoadEnvVarMapByScenario(tenantId, &ret.ExecScene, scenarioId, environmentId)
+	s.SceneService.LoadProjectSettings(tenantId, &ret.ExecScene, scenario.ProjectId)
 
 	return
 }
 
-func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
-	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
+func (s *ScenarioExecService) SaveReport(tenantId consts.TenantId, scenarioId int, userId uint, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
+	scenario, _ := s.ScenarioRepo.Get(tenantId, uint(scenarioId))
 	rootResult.Name = scenario.Name
 
 	report = model.ScenarioReport{
@@ -91,32 +91,32 @@ func (s *ScenarioExecService) SaveReport(scenarioId int, userId uint, rootResult
 	report.StatRaw = string(stat)
 
 	// generate report
-	s.countRequest(rootResult, &report)
+	s.countRequest(tenantId, rootResult, &report)
 	s.summarizeInterface(&report)
 
-	s.ScenarioReportRepo.Create(&report)
+	s.ScenarioReportRepo.Create(tenantId, &report)
 
 	// deal with interface and custom code processor's conditions
 	processorToInvokeIdMap := map[uint]uint{}
 	for _, result := range rootResult.Children {
-		err = s.dealwithResult(result, &processorToInvokeIdMap)
+		err = s.dealwithResult(tenantId, result, &processorToInvokeIdMap)
 	}
 
 	// create logs
-	s.TestLogRepo.CreateLogs(rootResult, &report, processorToInvokeIdMap)
+	s.TestLogRepo.CreateLogs(tenantId, rootResult, &report, processorToInvokeIdMap)
 
-	logs, _ := s.ScenarioReportService.GetById(report.ID)
+	logs, _ := s.ScenarioReportService.GetById(tenantId, report.ID)
 	report.Logs = logs.Logs
 	report.Priority = scenario.Priority
 
 	return
 }
 
-func (s *ScenarioExecService) dealwithResult(result *execDomain.ScenarioExecResult, processorToInvokeIdMap *map[uint]uint) (
+func (s *ScenarioExecService) dealwithResult(tenantId consts.TenantId, result *execDomain.ScenarioExecResult, processorToInvokeIdMap *map[uint]uint) (
 	err error) {
 
-	processor, err := s.ScenarioProcessorRepo.Get(result.ProcessorId)
-	debugInterface, err := s.DebugInterfaceRepo.Get(processor.EntityId)
+	processor, err := s.ScenarioProcessorRepo.Get(tenantId, result.ProcessorId)
+	debugInterface, err := s.DebugInterfaceRepo.Get(tenantId, processor.EntityId)
 
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
 		request := domain.DebugData{}
@@ -141,20 +141,20 @@ func (s *ScenarioExecService) dealwithResult(result *execDomain.ScenarioExecResu
 			PreConditions:  result.PreConditions,
 			PostConditions: result.PostConditions,
 		}
-		invoke, _ := s.DebugInvokeService.SubmitResult(req)
+		invoke, _ := s.DebugInvokeService.SubmitResult(tenantId, req)
 		(*processorToInvokeIdMap)[result.ProcessorId] = invoke.ID
 
 	} else if len(result.Children) > 0 {
 		for _, result := range result.Children {
-			err = s.dealwithResult(result, processorToInvokeIdMap)
+			err = s.dealwithResult(tenantId, result, processorToInvokeIdMap)
 		}
 	}
 
 	return
 }
 
-func (s *ScenarioExecService) GenerateReport(scenarioId int, userId uint, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
-	scenario, _ := s.ScenarioRepo.Get(uint(scenarioId))
+func (s *ScenarioExecService) GenerateReport(tenantId consts.TenantId, scenarioId int, userId uint, rootResult execDomain.ScenarioExecResult) (report model.ScenarioReport, err error) {
+	scenario, _ := s.ScenarioRepo.Get(tenantId, uint(scenarioId))
 	rootResult.Name = scenario.Name
 
 	report = model.ScenarioReport{
@@ -171,7 +171,7 @@ func (s *ScenarioExecService) GenerateReport(scenarioId int, userId uint, rootRe
 		CreateUserId: userId,
 	}
 
-	s.countRequest(rootResult, &report)
+	s.countRequest(tenantId, rootResult, &report)
 	s.summarizeInterface(&report)
 
 	//s.ScenarioReportRepo.CreateExpression(&report)
@@ -180,7 +180,7 @@ func (s *ScenarioExecService) GenerateReport(scenarioId int, userId uint, rootRe
 	return
 }
 
-func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult, report *model.ScenarioReport) {
+func (s *ScenarioExecService) countRequest(tenantId consts.TenantId, result execDomain.ScenarioExecResult, report *model.ScenarioReport) {
 	report.TotalProcessorNum++
 	report.FinishProcessorNum++
 	if result.ProcessorType == consts.ProcessorInterfaceDefault {
@@ -228,7 +228,7 @@ func (s *ScenarioExecService) countRequest(result execDomain.ScenarioExecResult,
 	}
 
 	for _, log := range result.Children {
-		s.countRequest(*log, report)
+		s.countRequest(tenantId, *log, report)
 	}
 }
 
@@ -266,26 +266,26 @@ func (s *ScenarioExecService) summarizeInterface(report *model.ScenarioReport) {
 	}
 }
 
-func (s *ScenarioExecService) GetScenarioNormalData(id, environmentId uint) (ret execDomain.Report, err error) {
-	_ = s.ScenarioRepo.UpdateCurrEnvId(id, environmentId)
+func (s *ScenarioExecService) GetScenarioNormalData(tenantId consts.TenantId, id, environmentId uint) (ret execDomain.Report, err error) {
+	_ = s.ScenarioRepo.UpdateCurrEnvId(tenantId, id, environmentId)
 	ret.ScenarioId = id
 
-	environment, err := s.EnvironmentRepo.Get(environmentId)
+	environment, err := s.EnvironmentRepo.Get(tenantId, environmentId)
 	if err != nil {
 		return
 	}
 	ret.ExecEnv = environment.Name
 
 	scenarioIds := []uint{id}
-	interfaceNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "processor_interface")
+	interfaceNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(tenantId, scenarioIds, "processor_interface")
 	if err != nil {
 		return ret, err
 	}
-	assertionNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "processor_assertion")
+	assertionNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(tenantId, scenarioIds, "processor_assertion")
 	if err != nil {
 		return ret, err
 	}
-	processorNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "")
+	processorNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(tenantId, scenarioIds, "")
 	if err != nil {
 		return ret, err
 	}

@@ -10,7 +10,6 @@ import (
 
 type SnippetCtrl struct {
 	SnippetService *service.SnippetService `inject:""`
-
 	BaseCtrl
 }
 
@@ -37,13 +36,14 @@ func (c *SnippetCtrl) Get(ctx iris.Context) {
 }
 
 func (c *SnippetCtrl) ListJslibNames(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	snippets, err := c.SnippetService.ListJslibNames(projectId)
+	snippets, err := c.SnippetService.ListJslibNames(tenantId, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -53,13 +53,14 @@ func (c *SnippetCtrl) ListJslibNames(ctx iris.Context) {
 }
 
 func (c *SnippetCtrl) GetJslibs(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	snippets, err := c.SnippetService.GetJslibs(projectId)
+	snippets, err := c.SnippetService.GetJslibs(tenantId, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -69,6 +70,7 @@ func (c *SnippetCtrl) GetJslibs(ctx iris.Context) {
 }
 
 func (c *SnippetCtrl) GetJslibsForAgent(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("projectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
@@ -82,7 +84,7 @@ func (c *SnippetCtrl) GetJslibsForAgent(ctx iris.Context) {
 		return
 	}
 
-	snippets, err := c.SnippetService.GetJslibsForAgent(agentLoadedLibs, projectId)
+	snippets, err := c.SnippetService.GetJslibsForAgent(tenantId, agentLoadedLibs, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

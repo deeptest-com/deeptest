@@ -32,6 +32,7 @@ type ProjectCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Project}}
 // @Router	/api/v1/projects	[get]
 func (c *ProjectCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	var req serverDomain.ProjectReqPaginate
@@ -45,7 +46,7 @@ func (c *ProjectCtrl) List(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.ProjectService.Paginate(req, userId)
+	data, err := c.ProjectService.Paginate(tenantId, req, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -65,13 +66,14 @@ func (c *ProjectCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Project}
 // @Router	/api/v1/projects/{id}	[get]
 func (c *ProjectCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	project, err := c.ProjectService.Get(req.Id)
+	project, err := c.ProjectService.Get(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -90,6 +92,7 @@ func (c *ProjectCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{id=int}}
 // @Router	/api/v1/projects	[post]
 func (c *ProjectCtrl) Create(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	req := serverDomain.ProjectReq{}
@@ -99,7 +102,7 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 		return
 	}
 
-	id, bizErr := c.ProjectService.Create(req, userId)
+	id, bizErr := c.ProjectService.Create(tenantId, req, userId)
 	if bizErr.Code != 0 {
 		ctx.JSON(_domain.Response{Code: bizErr.Code, Data: nil, Msg: bizErr.Error()})
 		return
@@ -119,7 +122,7 @@ func (c *ProjectCtrl) Create(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/projects	[put]
 func (c *ProjectCtrl) Update(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ProjectReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -127,7 +130,7 @@ func (c *ProjectCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.ProjectService.Update(req)
+	err = c.ProjectService.Update(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -147,6 +150,7 @@ func (c *ProjectCtrl) Update(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/projects/{id}	[delete]
 func (c *ProjectCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
 	if err != nil {
@@ -154,7 +158,7 @@ func (c *ProjectCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.ProjectService.DeleteById(req.Id)
+	err = c.ProjectService.DeleteById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -173,9 +177,10 @@ func (c *ProjectCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{projects=[]model.ProjectMemberRole, currProject=model.Project, recentProjects=[]model.Project}}
 // @Router	/api/v1/projects/getByUser	[get]
 func (c *ProjectCtrl) GetByUser(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
-	projects, currProject, recentProjects, err := c.ProjectService.GetByUser(userId)
+	projects, currProject, recentProjects, err := c.ProjectService.GetByUser(tenantId, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -196,6 +201,7 @@ func (c *ProjectCtrl) GetByUser(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{id=int}}
 // @Router	/api/v1/projects/changeProject	[post]
 func (c *ProjectCtrl) ChangeProject(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	req := serverDomain.ProjectReq{}
@@ -205,15 +211,15 @@ func (c *ProjectCtrl) ChangeProject(ctx iris.Context) {
 		return
 	}
 
-	err = c.ProjectService.ChangeProject(req.Id, userId)
+	err = c.ProjectService.ChangeProject(tenantId, req.Id, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	_, _ = c.ProjectRecentlyVisitedService.Create(userId, req.Id)
+	_, _ = c.ProjectRecentlyVisitedService.Create(tenantId, userId, req.Id)
 
-	projects, currProject, recentProjects, err := c.ProjectService.GetByUser(userId)
+	projects, currProject, recentProjects, err := c.ProjectService.GetByUser(tenantId, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -234,6 +240,7 @@ func (c *ProjectCtrl) ChangeProject(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]serverDomain.MemberResp}}
 // @Router	/api/v1/projects/members	[get]
 func (c *ProjectCtrl) Members(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -250,7 +257,7 @@ func (c *ProjectCtrl) Members(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.ProjectService.Members(req, projectId)
+	data, err := c.ProjectService.Members(tenantId, req, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -270,6 +277,7 @@ func (c *ProjectCtrl) Members(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/projects/removeMember	[post]
 func (c *ProjectCtrl) RemoveMember(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.ProjectMemberRemoveReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -277,7 +285,7 @@ func (c *ProjectCtrl) RemoveMember(ctx iris.Context) {
 		return
 	}
 
-	err = c.ProjectService.RemoveMember(req)
+	err = c.ProjectService.RemoveMember(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -297,6 +305,7 @@ func (c *ProjectCtrl) RemoveMember(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/projects/changeUserRole	[post]
 func (c *ProjectCtrl) ChangeUserRole(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.UpdateProjectMemberReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -304,7 +313,7 @@ func (c *ProjectCtrl) ChangeUserRole(ctx iris.Context) {
 		return
 	}
 
-	err = c.ProjectService.UpdateMemberRole(req)
+	err = c.ProjectService.UpdateMemberRole(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -324,6 +333,7 @@ func (c *ProjectCtrl) ChangeUserRole(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/projects/apply	[post]
 func (c *ProjectCtrl) Apply(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.ApplyProjectReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -331,7 +341,7 @@ func (c *ProjectCtrl) Apply(ctx iris.Context) {
 		return
 	}
 	req.ApplyUserId = multi.GetUserId(ctx)
-	err = c.ProjectService.Apply(req)
+	err = c.ProjectService.Apply(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -351,6 +361,7 @@ func (c *ProjectCtrl) Apply(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/projects/audit	[post]
 func (c *ProjectCtrl) Audit(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.AuditProjectReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -359,7 +370,7 @@ func (c *ProjectCtrl) Audit(ctx iris.Context) {
 	}
 
 	userId := multi.GetUserId(ctx)
-	err = c.ProjectService.Audit(req.Id, userId, req.Status)
+	err = c.ProjectService.Audit(tenantId, req.Id, userId, req.Status)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -379,7 +390,7 @@ func (c *ProjectCtrl) Audit(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.ProjectMemberAudit}}
 // @Router	/api/v1/projects/auditList	[post]
 func (c *ProjectCtrl) AuditList(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.AuditProjectPaginate{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -388,7 +399,7 @@ func (c *ProjectCtrl) AuditList(ctx iris.Context) {
 	}
 	req.AuditUserId = multi.GetUserId(ctx)
 	req.ApplyUserId = multi.GetUserId(ctx)
-	res, err := c.ProjectService.AuditList(req)
+	res, err := c.ProjectService.AuditList(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -407,6 +418,7 @@ func (c *ProjectCtrl) AuditList(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]model.SysUser}
 // @Router	/api/v1/projects/auditUsers	[get]
 func (c *ProjectCtrl) AuditUsers(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("projectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
@@ -416,7 +428,7 @@ func (c *ProjectCtrl) AuditUsers(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: "projectId can't be empty"})
 		return
 	}
-	res, err := c.ProjectService.AuditUsers(uint(projectId))
+	res, err := c.ProjectService.AuditUsers(tenantId, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -435,11 +447,12 @@ func (c *ProjectCtrl) AuditUsers(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Project}
 // @Router	/api/v1/projects/checkProjectAndUser	[get]
 func (c *ProjectCtrl) CheckProjectAndUser(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectCode := ctx.URLParam("project_code")
 	userId := multi.GetUserId(ctx)
 	//xToken := ctx.GetHeader("X-Token")
 
-	project, userInProject, err := c.ProjectService.CheckProjectAndUser(projectCode, userId)
+	project, userInProject, err := c.ProjectService.CheckProjectAndUser(tenantId, projectCode, userId)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 	} else if project.ID == 0 {
@@ -454,13 +467,14 @@ func (c *ProjectCtrl) CheckProjectAndUser(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) GetIntegrationDetail(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("projectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	res, err := c.IntegrationProjectService.Detail(uint(projectId))
+	res, err := c.IntegrationProjectService.Detail(tenantId, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -470,6 +484,7 @@ func (c *ProjectCtrl) GetIntegrationDetail(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) GetUserProducts(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userName := multi.GetUsername(ctx)
 	page, _ := ctx.URLParamInt("page")
 	if page <= 0 {
@@ -481,7 +496,7 @@ func (c *ProjectCtrl) GetUserProducts(ctx iris.Context) {
 		pageSize = 10
 	}
 
-	res, err := c.IntegrationProjectService.GetUserProductList(page, pageSize, userName)
+	res, err := c.IntegrationProjectService.GetUserProductList(tenantId, page, pageSize, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -491,9 +506,10 @@ func (c *ProjectCtrl) GetUserProducts(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) GetUserSpaces(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userName := multi.GetUsername(ctx)
 
-	res, err := c.IntegrationProjectService.GetSpacesByUsername(userName)
+	res, err := c.IntegrationProjectService.GetSpacesByUsername(tenantId, userName)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

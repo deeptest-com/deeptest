@@ -22,6 +22,7 @@ type ProjectMenuCtrl struct {
 // @success	200	{object}	_domain.Response{data=object{result=[]model.ProjectMenu}}
 // @Router	/api/v1/projects/menus/userMenuList	[get]
 func (c *ProjectMenuCtrl) UserMenuList(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 
 	projectId, err := ctx.URLParamInt("projectId")
@@ -29,7 +30,7 @@ func (c *ProjectMenuCtrl) UserMenuList(ctx iris.Context) {
 		projectId, err = ctx.URLParamInt("currProjectId")
 	}
 
-	data, err := c.ProjectMenuService.GetUserMenuList(uint(projectId), userId)
+	data, err := c.ProjectMenuService.GetUserMenuList(tenantId, uint(projectId), userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -40,11 +41,13 @@ func (c *ProjectMenuCtrl) UserMenuList(ctx iris.Context) {
 }
 
 func (c *ProjectMenuCtrl) UserMenuListNew(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
+	needSysAuth, err := ctx.URLParamBool("needSysAuth")
 
-	data, err := c.ProjectMenuService.GetUserMenuListNew(uint(projectId), userId, userName)
+	data, err := c.ProjectMenuService.GetUserMenuListNew(tenantId, uint(projectId), userId, userName, needSysAuth)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

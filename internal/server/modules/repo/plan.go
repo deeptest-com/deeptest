@@ -25,19 +25,19 @@ type PlanRepo struct {
 	RelaPlanScenarioRepo *RelaPlanScenarioRepo `inject:""`
 }
 
-func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain.PageData, err error) {
+func (r *PlanRepo) Paginate(tenantId consts.TenantId, req v1.PlanReqPaginate, projectId int) (data _domain.PageData, err error) {
 	var count int64
 	var categoryIds []uint
 
 	if req.CategoryId > 0 {
-		categoryIds, err = r.BaseRepo.GetDescendantIds(uint(req.CategoryId), model.Category{}.TableName(),
+		categoryIds, err = r.BaseRepo.GetDescendantIds(tenantId, uint(req.CategoryId), model.Category{}.TableName(),
 			serverConsts.PlanCategory, projectId)
 		if err != nil {
 			return
 		}
 	}
 
-	db := r.DB.Model(&model.Plan{}).
+	db := r.GetDB(tenantId).Model(&model.Plan{}).
 		Where("project_id = ? AND NOT deleted",
 			projectId)
 
@@ -74,14 +74,14 @@ func (r *PlanRepo) Paginate(req v1.PlanReqPaginate, projectId int) (data _domain
 		logUtils.Errorf("query scenario error", zap.String("error:", err.Error()))
 		return
 	}
-	r.CombinePassRate(plans)
-	r.CombineUserName(plans)
+	r.CombinePassRate(tenantId, plans)
+	r.CombineUserName(tenantId, plans)
 	data.Populate(plans, count, req.Page, req.PageSize)
 
 	return
 }
 
-func (r *PlanRepo) CombineUserName(data []*model.Plan) {
+func (r *PlanRepo) CombineUserName(tenantId consts.TenantId, data []*model.Plan) {
 	userIds := make([]uint, 0)
 	for _, v := range data {
 		userIds = append(userIds, v.AdminId)
@@ -90,7 +90,7 @@ func (r *PlanRepo) CombineUserName(data []*model.Plan) {
 	}
 	userIds = commonUtils.ArrayRemoveUintDuplication(userIds)
 
-	users, _ := r.UserRepo.FindByIds(userIds)
+	users, _ := r.UserRepo.FindByIds(tenantId, userIds)
 
 	userIdNameMap := make(map[uint]string)
 	for _, v := range users {
@@ -110,9 +110,9 @@ func (r *PlanRepo) CombineUserName(data []*model.Plan) {
 	}
 }
 
-func (r *PlanRepo) CombinePassRate(data []*model.Plan) {
+func (r *PlanRepo) CombinePassRate(tenantId consts.TenantId, data []*model.Plan) {
 	for _, v := range data {
-		planReport, err := r.PlanReportRepo.GetLastByPlanId(v.ID)
+		planReport, err := r.PlanReportRepo.GetLastByPlanId(tenantId, v.ID)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			logUtils.Errorf("get plan report err", zap.String("error:", err.Error()))
 			continue
@@ -129,8 +129,8 @@ func (r *PlanRepo) CombinePassRate(data []*model.Plan) {
 	}
 }
 
-func (r *PlanRepo) Get(id uint) (scenario model.Plan, err error) {
-	err = r.DB.Model(&model.Plan{}).Where("id = ?", id).First(&scenario).Error
+func (r *PlanRepo) Get(tenantId consts.TenantId, id uint) (scenario model.Plan, err error) {
+	err = r.GetDB(tenantId).Model(&model.Plan{}).Where("id = ?", id).First(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("find scenario by id error", zap.String("error:", err.Error()))
 		return scenario, err
@@ -139,8 +139,8 @@ func (r *PlanRepo) Get(id uint) (scenario model.Plan, err error) {
 	return scenario, nil
 }
 
-func (r *PlanRepo) FindByName(scenarioName string, id uint) (scenario model.Plan, err error) {
-	db := r.DB.Model(&model.Plan{}).
+func (r *PlanRepo) FindByName(tenantId consts.TenantId, scenarioName string, id uint) (scenario model.Plan, err error) {
+	db := r.GetDB(tenantId).Model(&model.Plan{}).
 		Where("name = ? AND NOT deleted", scenarioName)
 
 	if id > 0 {
@@ -152,14 +152,14 @@ func (r *PlanRepo) FindByName(scenarioName string, id uint) (scenario model.Plan
 	return
 }
 
-func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.BizErr) {
+func (r *PlanRepo) Create(tenantId consts.TenantId, scenario model.Plan) (ret model.Plan, bizErr *_domain.BizErr) {
 	//po, err := r.FindExpressionByName(scenario.Name, 0)
 	//if po.Name != "" {
 	//	bizErr = &_domain.BizErr{Code: _domain.ErrNameExist.Code}
 	//	return
 	//}
 
-	err := r.DB.Model(&model.Plan{}).Create(&scenario).Error
+	err := r.GetDB(tenantId).Model(&model.Plan{}).Create(&scenario).Error
 	if err != nil {
 		logUtils.Errorf("add scenario error", zap.String("error:", err.Error()))
 		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
@@ -167,7 +167,7 @@ func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.
 		return
 	}
 
-	err = r.UpdateSerialNumber(scenario.ID, scenario.ProjectId)
+	err = r.UpdateSerialNumber(tenantId, scenario.ID, scenario.ProjectId)
 	if err != nil {
 		logUtils.Errorf("add plan serial number error", zap.String("error:", err.Error()))
 		bizErr = &_domain.BizErr{Code: _domain.SystemErr.Code}
@@ -180,7 +180,7 @@ func (r *PlanRepo) Create(scenario model.Plan) (ret model.Plan, bizErr *_domain.
 	return
 }
 
-func (r *PlanRepo) Update(req model.Plan) error {
+func (r *PlanRepo) Update(tenantId consts.TenantId, req model.Plan) error {
 	values := map[string]interface{}{
 		"name":           req.Name,
 		"desc":           req.Desc,
@@ -191,7 +191,7 @@ func (r *PlanRepo) Update(req model.Plan) error {
 		"update_user_id": req.UpdateUserId,
 		"disabled":       req.Disabled,
 	}
-	err := r.DB.Model(&req).Where("id = ?", req.ID).Updates(values).Error
+	err := r.GetDB(tenantId).Model(&req).Where("id = ?", req.ID).Updates(values).Error
 	if err != nil {
 		logUtils.Errorf("update scenario error", zap.String("error:", err.Error()))
 		return err
@@ -200,8 +200,8 @@ func (r *PlanRepo) Update(req model.Plan) error {
 	return nil
 }
 
-func (r *PlanRepo) DeleteById(id uint) (err error) {
-	err = r.DB.Model(&model.Plan{}).Where("id = ?", id).
+func (r *PlanRepo) DeleteById(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Plan{}).Where("id = ?", id).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
 		logUtils.Errorf("delete scenario by id error", zap.String("error:", err.Error()))
@@ -211,7 +211,7 @@ func (r *PlanRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *PlanRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
+func (r *PlanRepo) DeleteChildren(tenantId consts.TenantId, ids []int, tx *gorm.DB) (err error) {
 	err = tx.Model(&model.Plan{}).Where("id IN (?)", ids).
 		Updates(map[string]interface{}{"deleted": true}).Error
 	if err != nil {
@@ -222,7 +222,7 @@ func (r *PlanRepo) DeleteChildren(ids []int, tx *gorm.DB) (err error) {
 	return nil
 }
 
-func (r *PlanRepo) GetChildrenIds(id uint) (ids []int, err error) {
+func (r *PlanRepo) GetChildrenIds(tenantId consts.TenantId, id uint) (ids []int, err error) {
 	tmpl := `
 		WITH RECURSIVE scenario AS (
 			SELECT * FROM biz_scenario WHERE id = %d
@@ -232,7 +232,7 @@ func (r *PlanRepo) GetChildrenIds(id uint) (ids []int, err error) {
 		SELECT id FROM scenario WHERE id != %d
     `
 	sql := fmt.Sprintf(tmpl, id, id)
-	err = r.DB.Raw(sql).Scan(&ids).Error
+	err = r.GetDB(tenantId).Raw(sql).Scan(&ids).Error
 	if err != nil {
 		logUtils.Errorf("get children scenario error", zap.String("error:", err.Error()))
 		return
@@ -241,8 +241,8 @@ func (r *PlanRepo) GetChildrenIds(id uint) (ids []int, err error) {
 	return
 }
 
-func (r *PlanRepo) AddScenarios(planId uint, scenarioIds []uint) (err error) {
-	relations, _ := r.ListScenarioRelation(planId)
+func (r *PlanRepo) AddScenarios(tenantId consts.TenantId, planId uint, scenarioIds []uint) (err error) {
+	relations, _ := r.ListScenarioRelation(tenantId, planId)
 	existMap := map[uint]bool{}
 	for _, item := range relations {
 		existMap[item.ScenarioId] = true
@@ -266,8 +266,8 @@ func (r *PlanRepo) AddScenarios(planId uint, scenarioIds []uint) (err error) {
 	}
 
 	for _, po := range pos {
-		po.Ordr = r.RelaPlanScenarioRepo.GetMaxOrder(planId)
-		err = r.DB.Create(&po).Error
+		po.Ordr = r.RelaPlanScenarioRepo.GetMaxOrder(tenantId, planId)
+		err = r.GetDB(tenantId).Create(&po).Error
 		if err != nil {
 			return
 		}
@@ -276,8 +276,8 @@ func (r *PlanRepo) AddScenarios(planId uint, scenarioIds []uint) (err error) {
 	return
 }
 
-func (r *PlanRepo) ListScenario(id uint) (pos []model.Scenario, err error) {
-	relations, _ := r.ListScenarioRelation(id)
+func (r *PlanRepo) ListScenario(tenantId consts.TenantId, id uint) (pos []model.Scenario, err error) {
+	relations, _ := r.ListScenarioRelation(tenantId, id)
 	var scenarioIds []uint
 	for _, item := range relations {
 		scenarioIds = append(scenarioIds, item.ScenarioId)
@@ -287,7 +287,7 @@ func (r *PlanRepo) ListScenario(id uint) (pos []model.Scenario, err error) {
 		return
 	}
 
-	err = r.DB.Model(model.Scenario{}).
+	err = r.GetDB(tenantId).Model(model.Scenario{}).
 		Where("id IN (?)", scenarioIds).
 		Where("NOT deleted").Order(fmt.Sprintf("field(id,%s)", commonUtils.UintArrToStr(scenarioIds))).
 		Find(&pos).Error
@@ -295,34 +295,34 @@ func (r *PlanRepo) ListScenario(id uint) (pos []model.Scenario, err error) {
 	return
 }
 
-func (r *PlanRepo) ListScenarioRelation(id uint) (pos []model.RelaPlanScenario, err error) {
-	err = r.DB.Model(model.RelaPlanScenario{}).
+func (r *PlanRepo) ListScenarioRelation(tenantId consts.TenantId, id uint) (pos []model.RelaPlanScenario, err error) {
+	err = r.GetDB(tenantId).Model(model.RelaPlanScenario{}).
 		Where("plan_id=?", id).
 		Where("NOT deleted").Order("ordr asc").
 		Find(&pos).Error
 	return
 }
 
-func (r *PlanRepo) RemoveScenario(planId int, scenarioId int) (err error) {
-	r.DB.Where("plan_id = ? && scenario_id = ?", planId, scenarioId).Delete(&model.RelaPlanScenario{})
+func (r *PlanRepo) RemoveScenario(tenantId consts.TenantId, planId int, scenarioId int) (err error) {
+	r.GetDB(tenantId).Where("plan_id = ? && scenario_id = ?", planId, scenarioId).Delete(&model.RelaPlanScenario{})
 
 	return
 }
 
-func (r *PlanRepo) RemoveScenarios(planId int, scenarioIds []uint) (err error) {
-	r.DB.Where("plan_id = ? && scenario_id In (?)", planId, scenarioIds).Delete(&model.RelaPlanScenario{})
+func (r *PlanRepo) RemoveScenarios(tenantId consts.TenantId, planId int, scenarioIds []uint) (err error) {
+	r.GetDB(tenantId).Where("plan_id = ? && scenario_id In (?)", planId, scenarioIds).Delete(&model.RelaPlanScenario{})
 
 	return
 }
 
-func (r *PlanRepo) UpdateSerialNumber(id, projectId uint) (err error) {
+func (r *PlanRepo) UpdateSerialNumber(tenantId consts.TenantId, id, projectId uint) (err error) {
 	var project model.Project
-	project, err = r.ProjectRepo.Get(projectId)
+	project, err = r.ProjectRepo.Get(tenantId, projectId)
 	if err != nil {
 		return
 	}
 
-	err = r.DB.Model(&model.Plan{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TP-"+strconv.Itoa(int(id))).Error
+	err = r.GetDB(tenantId).Model(&model.Plan{}).Where("id=?", id).Update("serial_number", project.ShortName+"-TP-"+strconv.Itoa(int(id))).Error
 	return
 }
 
@@ -344,10 +344,10 @@ func (r *PlanRepo) TestStageDropDownOptions() map[consts.TestStage]string {
 	}
 }
 
-func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId uint) (data _domain.PageData, err error) {
+func (r *PlanRepo) PlanScenariosPaginate(tenantId consts.TenantId, req v1.PlanScenariosReqPaginate, planId uint) (data _domain.PageData, err error) {
 	var count int64
 
-	db := r.DB.Model(&model.Scenario{}).
+	db := r.GetDB(tenantId).Model(&model.Scenario{}).
 		Select("biz_scenario.*, c.name category_name,r.id ref_id").
 		Joins("LEFT JOIN biz_plan_scenario_r r ON biz_scenario.id=r.scenario_id").
 		Joins("LEFT JOIN biz_category c ON biz_scenario.category_id=c.id").
@@ -387,15 +387,15 @@ func (r *PlanRepo) PlanScenariosPaginate(req v1.PlanScenariosReqPaginate, planId
 	return
 }
 
-func (r *PlanRepo) GetScenarioNumByPlan(planId uint) (num int64, err error) {
-	err = r.DB.Model(model.RelaPlanScenario{}).
+func (r *PlanRepo) GetScenarioNumByPlan(tenantId consts.TenantId, planId uint) (num int64, err error) {
+	err = r.GetDB(tenantId).Model(model.RelaPlanScenario{}).
 		Where("plan_id = ? AND NOT deleted", planId).
 		Count(&num).Error
 	return
 }
 
-func (r *PlanRepo) NotRelationScenarioList(req v1.NotRelationScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
-	relations, _ := r.ListScenarioRelation(req.PlanId)
+func (r *PlanRepo) NotRelationScenarioList(tenantId consts.TenantId, req v1.NotRelationScenarioReqPaginate, projectId int) (data _domain.PageData, err error) {
+	relations, _ := r.ListScenarioRelation(tenantId, req.PlanId)
 	var scenarioIds []uint
 	for _, v := range relations {
 		scenarioIds = append(scenarioIds, v.ScenarioId)
@@ -403,7 +403,7 @@ func (r *PlanRepo) NotRelationScenarioList(req v1.NotRelationScenarioReqPaginate
 
 	var count int64
 
-	db := r.DB.Model(&model.Scenario{}).
+	db := r.GetDB(tenantId).Model(&model.Scenario{}).
 		Where("project_id = ? AND NOT deleted",
 			projectId)
 
@@ -451,45 +451,45 @@ func (r *PlanRepo) NotRelationScenarioList(req v1.NotRelationScenarioReqPaginate
 	return
 }
 
-func (r *PlanRepo) GetCategoryCount(result interface{}, projectId uint) (err error) {
-	err = r.DB.Raw("select count(id) count, category_id from "+model.Plan{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
+func (r *PlanRepo) GetCategoryCount(tenantId consts.TenantId, result interface{}, projectId uint) (err error) {
+	err = r.GetDB(tenantId).Raw("select count(id) count, category_id from "+model.Plan{}.TableName()+" where not deleted and not disabled and project_id=? group by category_id", projectId).Scan(result).Error
 	return
 }
 
-func (r *PlanRepo) DeleteByCategoryIds(categoryIds []uint) (err error) {
-	err = r.DB.Model(&model.Plan{}).
+func (r *PlanRepo) DeleteByCategoryIds(tenantId consts.TenantId, categoryIds []uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Plan{}).
 		Where("category_id IN (?)", categoryIds).
 		Update("deleted", 1).Error
 
 	return
 }
 
-func (r *PlanRepo) UpdateCurrEnvId(id, currEnvId uint) error {
-	return r.DB.Model(&model.Plan{}).Where("id = ?", id).UpdateColumn("curr_env_id", currEnvId).Error
+func (r *PlanRepo) UpdateCurrEnvId(tenantId consts.TenantId, id, currEnvId uint) error {
+	return r.GetDB(tenantId).Model(&model.Plan{}).Where("id = ?", id).UpdateColumn("curr_env_id", currEnvId).Error
 }
 
-func (r *PlanRepo) MoveScenario(req v1.MoveReq) (err error) {
-	destination, err := r.RelaPlanScenarioRepo.Get(req.DestinationId)
+func (r *PlanRepo) MoveScenario(tenantId consts.TenantId, req v1.MoveReq) (err error) {
+	destination, err := r.RelaPlanScenarioRepo.Get(tenantId, req.DestinationId)
 	if err != nil {
 		return
 	}
 
-	souurce, err := r.RelaPlanScenarioRepo.Get(req.SourceId)
+	souurce, err := r.RelaPlanScenarioRepo.Get(tenantId, req.SourceId)
 	if err != nil {
 		return
 	}
 
 	if destination.Ordr < souurce.Ordr {
-		err = r.RelaPlanScenarioRepo.IncreaseOrderAfter(destination.Ordr, req.PlanId)
+		err = r.RelaPlanScenarioRepo.IncreaseOrderAfter(tenantId, destination.Ordr, req.PlanId)
 	} else {
-		err = r.RelaPlanScenarioRepo.DecreaseOrderBefore(destination.Ordr, req.PlanId)
+		err = r.RelaPlanScenarioRepo.DecreaseOrderBefore(tenantId, destination.Ordr, req.PlanId)
 	}
 
 	if err != nil {
 		return
 	}
 
-	err = r.RelaPlanScenarioRepo.UpdateOrdrById(req.SourceId, destination.Ordr)
+	err = r.RelaPlanScenarioRepo.UpdateOrdrById(tenantId, req.SourceId, destination.Ordr)
 
 	return
 }

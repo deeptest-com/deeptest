@@ -15,7 +15,6 @@ type EndpointModule struct {
 func (m *EndpointModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
-
 		public.Post("/index", m.EndpointCtrl.Index).Name = "设计器列表"
 		public.Post("/save", m.EndpointCtrl.Save).Name = "保存设计器"
 		public.Get("/detail", m.EndpointCtrl.Detail).Name = "设计器详情"

@@ -25,18 +25,18 @@ type MessageService struct {
 	Cron            *cron.ServerCron      `inject:""`
 }
 
-func (s *MessageService) GetScope(userId uint) (scope map[int][]string) {
-	return s.MessageRepo.GetScope(userId)
+func (s *MessageService) GetScope(tenantId consts.TenantId, userId uint) (scope map[int][]string) {
+	return s.MessageRepo.GetScope(tenantId, userId)
 }
 
-func (s *MessageService) Create(req v1.MessageReq) (uint, *_domain.BizErr) {
-	return s.MessageRepo.Create(req)
+func (s *MessageService) Create(tenantId consts.TenantId, req v1.MessageReq) (uint, *_domain.BizErr) {
+	return s.MessageRepo.Create(tenantId, req)
 }
 
-func (s *MessageService) Paginate(req v1.MessageReqPaginate, userId uint) (ret _domain.PageData, err error) {
-	req.Scope = s.MessageRepo.GetScope(userId)
+func (s *MessageService) Paginate(tenantId consts.TenantId, req v1.MessageReqPaginate, userId uint) (ret _domain.PageData, err error) {
+	req.Scope = s.MessageRepo.GetScope(tenantId, userId)
 
-	ret, err = s.MessageRepo.Paginate(req)
+	ret, err = s.MessageRepo.Paginate(tenantId, req)
 
 	if err != nil {
 		return
@@ -45,11 +45,11 @@ func (s *MessageService) Paginate(req v1.MessageReqPaginate, userId uint) (ret _
 	return
 }
 
-func (s *MessageService) UnreadCount(userId uint) (count int64, err error) {
-	scope := s.MessageRepo.GetScope(userId)
+func (s *MessageService) UnreadCount(tenantId consts.TenantId, userId uint) (count int64, err error) {
+	scope := s.MessageRepo.GetScope(tenantId, userId)
 	req := v1.MessageScope{Scope: scope}
 
-	count, err = s.MessageRepo.GetUnreadCount(req)
+	count, err = s.MessageRepo.GetUnreadCount(tenantId, req)
 
 	if err != nil {
 		return
@@ -58,17 +58,17 @@ func (s *MessageService) UnreadCount(userId uint) (count int64, err error) {
 	return
 }
 
-func (s *MessageService) OperateRead(req v1.MessageReadReq) (uint, error) {
-	return s.MessageReadRepo.Create(req)
+func (s *MessageService) OperateRead(tenantId consts.TenantId, req v1.MessageReadReq) (uint, error) {
+	return s.MessageReadRepo.Create(tenantId, req)
 }
 
-func (s *MessageService) GetEndpointMcsData(projectId, endpointId uint) (mcsData im.EnterpriseWechatInfoData, err error) {
-	userAccount, err := s.ProjectRepo.GetUsernamesByProjectAndRole(projectId, 0, "")
+func (s *MessageService) GetEndpointMcsData(tenantId consts.TenantId, projectId, endpointId uint) (mcsData im.EnterpriseWechatInfoData, err error) {
+	userAccount, err := s.ProjectRepo.GetUsernamesByProjectAndRole(tenantId, projectId, 0, "")
 	if err != nil {
 		return
 	}
 
-	endpoint, err := s.EndpointRepo.Get(endpointId)
+	endpoint, err := s.EndpointRepo.Get(tenantId, endpointId)
 	fmt.Println(endpoint)
 	if err != nil {
 		return
@@ -84,23 +84,23 @@ func (s *MessageService) GetEndpointMcsData(projectId, endpointId uint) (mcsData
 	return
 }
 
-func (s *MessageService) GetAuditProjectResultMcsData(auditId uint) (mcsData im.EnterpriseWechatInfoData, err error) {
-	auditData, err := s.ProjectRepo.GetAudit(auditId)
+func (s *MessageService) GetAuditProjectResultMcsData(tenantId consts.TenantId, auditId uint) (mcsData im.EnterpriseWechatInfoData, err error) {
+	auditData, err := s.ProjectRepo.GetAudit(tenantId, auditId)
 	if err != nil {
 		return
 	}
 
-	applyProject, err := s.ProjectRepo.Get(auditData.ProjectId)
+	applyProject, err := s.ProjectRepo.Get(tenantId, auditData.ProjectId)
 	if err != nil {
 		return
 	}
 
-	applyProjectRole, err := s.ProjectRoleRepo.FindByName(auditData.ProjectRoleName)
+	applyProjectRole, err := s.ProjectRoleRepo.FindByName(tenantId, auditData.ProjectRoleName)
 	if err != nil {
 		return
 	}
 
-	applyUser, err := s.UserRepo.GetByUserId(auditData.ApplyUserId)
+	applyUser, err := s.UserRepo.GetByUserId(tenantId, auditData.ApplyUserId)
 	if err != nil {
 		return
 	}
@@ -110,7 +110,7 @@ func (s *MessageService) GetAuditProjectResultMcsData(auditId uint) (mcsData im.
 		auditRes = "通过"
 	}
 
-	host, _ := cache.GetCacheString("host")
+	host, _ := cache.GetCacheString(fmt.Sprintf("%s_host", tenantId))
 	articles := make([]im.EnterpriseWechatInfoContentArticles, 0)
 	articles = append(articles, im.EnterpriseWechatInfoContentArticles{
 		Title:       "申请加入项目审批结果通知",
@@ -132,13 +132,13 @@ func (s *MessageService) GetAuditProjectResultMcsData(auditId uint) (mcsData im.
 	return
 }
 
-func (s *MessageService) ReceiveMcsApprovalResult(res v1.McsApprovalResData) (err error) {
-	message, err := s.MessageRepo.GetByMcsMessageId(res.InstanceId)
+func (s *MessageService) ReceiveMcsApprovalResult(tenantId consts.TenantId, res v1.McsApprovalResData) (err error) {
+	message, err := s.MessageRepo.GetByMcsMessageId(tenantId, res.InstanceId)
 	if err != nil {
 		return
 	}
 
-	err = s.MessageRepo.UpdateSendStatusByMcsMessageId(res.InstanceId, s.TransferToSendStatus(res.Status))
+	err = s.MessageRepo.UpdateSendStatusByMcsMessageId(tenantId, res.InstanceId, s.TransferToSendStatus(res.Status))
 	if err != nil {
 		return
 	}
@@ -148,7 +148,7 @@ func (s *MessageService) ReceiveMcsApprovalResult(res v1.McsApprovalResData) (er
 	}
 
 	approveUserName := res.ApproveUser[0]
-	approveUser, err := s.UserRepo.GetByUserName(approveUserName)
+	approveUser, err := s.UserRepo.GetByUserName(tenantId, approveUserName)
 	if err != nil {
 		return
 	}
@@ -159,7 +159,7 @@ func (s *MessageService) ReceiveMcsApprovalResult(res v1.McsApprovalResData) (er
 			status = consts.Agreed
 		}
 
-		err = s.ProjectService.Audit(message.BusinessId, approveUser.ID, status)
+		err = s.ProjectService.Audit(tenantId, message.BusinessId, approveUser.ID, status)
 	}
 
 	return

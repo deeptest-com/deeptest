@@ -8,6 +8,7 @@ import (
 )
 
 type DocumentCtrl struct {
+	BaseCtrl
 	DocumentService *service.DocumentService `inject:""`
 }
 
@@ -22,13 +23,14 @@ type DocumentCtrl struct {
 // @success	200	{object}	_domain.Response{data=serverDomain.DocumentRep}
 // @Router	/api/v1/document	[post]
 func (c *DocumentCtrl) Index(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req domain.DocumentReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	res, _ := c.DocumentService.Content(req)
+	res, _ := c.DocumentService.Content(tenantId, req)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 
 	return
@@ -45,6 +47,7 @@ func (c *DocumentCtrl) Index(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]model.EndpointDocument}
 // @Router	/api/v1/document/version_list	[post]
 func (c *DocumentCtrl) DocumentVersionList(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
 	var req domain.DocumentVersionListReq
@@ -53,7 +56,7 @@ func (c *DocumentCtrl) DocumentVersionList(ctx iris.Context) {
 		return
 	}
 
-	res, err := c.DocumentService.GetDocumentVersionList(uint(projectId), req.NeedLatest)
+	res, err := c.DocumentService.GetDocumentVersionList(tenantId, uint(projectId), req.NeedLatest)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -74,6 +77,7 @@ func (c *DocumentCtrl) DocumentVersionList(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/document/publish	[post]
 func (c *DocumentCtrl) Publish(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
 	var req domain.DocumentVersionReq
@@ -82,7 +86,7 @@ func (c *DocumentCtrl) Publish(ctx iris.Context) {
 		return
 	}
 
-	documentId, err := c.DocumentService.Publish(req, uint(projectId))
+	documentId, err := c.DocumentService.Publish(tenantId, req, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -103,8 +107,9 @@ func (c *DocumentCtrl) Publish(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/document/delete	[delete]
 func (c *DocumentCtrl) DeleteSnapshot(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id := ctx.URLParamUint64("id")
-	err := c.DocumentService.RemoveSnapshot(uint(id))
+	err := c.DocumentService.RemoveSnapshot(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -125,13 +130,14 @@ func (c *DocumentCtrl) DeleteSnapshot(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/document/update_version	[post]
 func (c *DocumentCtrl) UpdateDocument(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req domain.UpdateDocumentVersionReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err := c.DocumentService.UpdateDocument(req)
+	err := c.DocumentService.UpdateDocument(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -152,13 +158,14 @@ func (c *DocumentCtrl) UpdateDocument(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{code=string}}
 // @Router	/api/v1/document/share	[post]
 func (c *DocumentCtrl) GetShareLink(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req domain.DocumentShareReq
 	if err := ctx.ReadJSON(&req); err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	code, err := c.DocumentService.GenerateShareLink(req)
+	code, err := c.DocumentService.GenerateShareLink(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -177,13 +184,14 @@ func (c *DocumentCtrl) GetShareLink(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=serverDomain.DocumentRep}
 // @Router	/api/v1/document/get_share_content	[get]
 func (c *DocumentCtrl) GetContentsByShareLink(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	link := ctx.URLParam("code")
 	if link == "" {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: "code can't be empty"})
 		return
 	}
 
-	res, err := c.DocumentService.ContentByShare(link)
+	res, err := c.DocumentService.ContentByShare(tenantId, link)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -207,6 +215,7 @@ func (c *DocumentCtrl) GetContentsByShareLink(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=object{interface=model.EndpointInterface,servers=[]model.ServeServer}}
 // @Router	/api/v1/document/share_detail	[get]
 func (c *DocumentCtrl) GetDocumentDetail(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	documentId, _ := ctx.URLParamInt("documentId")
 	endpointId, _ := ctx.URLParamInt("endpointId")
 	interfaceId, _ := ctx.URLParamInt("interfaceId")
@@ -219,7 +228,7 @@ func (c *DocumentCtrl) GetDocumentDetail(ctx iris.Context) {
 		return
 	}
 
-	res, err := c.DocumentService.GetDocumentDetail(uint(documentId), uint(endpointId), uint(interfaceId))
+	res, err := c.DocumentService.GetDocumentDetail(tenantId, uint(documentId), uint(endpointId), uint(interfaceId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

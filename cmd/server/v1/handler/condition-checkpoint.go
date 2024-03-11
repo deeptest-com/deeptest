@@ -23,13 +23,14 @@ type CheckpointCtrl struct {
 // @success	200	{object}	_domain.Response{data=model.DebugConditionCheckpoint}
 // @Router	/api/v1/checkpoints/{id}	[get]
 func (c *CheckpointCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	checkpoint, err := c.CheckpointService.Get(uint(id))
+	checkpoint, err := c.CheckpointService.Get(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -48,6 +49,7 @@ func (c *CheckpointCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/checkpoints	[put]
 func (c *CheckpointCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var checkpoint model.DebugConditionCheckpoint
 	err := ctx.ReadJSON(&checkpoint)
 	if err != nil {
@@ -55,7 +57,7 @@ func (c *CheckpointCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.CheckpointService.Update(&checkpoint)
+	err = c.CheckpointService.Update(tenantId, &checkpoint)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

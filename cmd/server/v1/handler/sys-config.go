@@ -15,7 +15,7 @@ type ConfigCtrl struct {
 
 const token = "a1bc**2d&&423qvdw"
 
-//Get
+// Get
 // @Tags	配置
 // @summary	获取服务端配置
 // @accept 	application/json
@@ -31,13 +31,14 @@ func (c *ConfigCtrl) Get(ctx iris.Context) {
 }
 
 func (c *ConfigCtrl) GetValue(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	key := ctx.URLParam("key")
 	if key == "" {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	value, err := c.ConfigService.Get(key)
+	value, err := c.ConfigService.Get(tenantId, key)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -47,6 +48,7 @@ func (c *ConfigCtrl) GetValue(ctx iris.Context) {
 }
 
 func (c *ConfigCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	headerToken := ctx.Request().Header.Get("token")
 	if headerToken != token {
 		ctx.JSON(_domain.Response{Code: _domain.AuthActionErr.Code, Msg: _domain.AuthActionErr.Msg})
@@ -59,7 +61,7 @@ func (c *ConfigCtrl) Save(ctx iris.Context) {
 		return
 	}
 
-	err = c.ConfigService.Save(req)
+	err = c.ConfigService.Save(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -38,7 +38,7 @@ type EndpointCaseAlternativeService struct {
 	SceneService    *SceneService         `inject:""`
 }
 
-func (s *EndpointCaseAlternativeService) LoadAlternative(endpointId uint, method consts.HttpMethod) (
+func (s *EndpointCaseAlternativeService) LoadAlternative(tenantId consts.TenantId, endpointId uint, method consts.HttpMethod) (
 	root casesHelper.AlternativeCase, err error) {
 
 	root.Title = "备选用例"
@@ -49,19 +49,19 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(endpointId uint, method
 
 	//casePo, _ := s.EndpointCaseRepo.Get(baseId)
 
-	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(endpointId, method)
+	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(tenantId, endpointId, method)
 	if endpointInterfaceId == 0 {
 		return
 	}
 
-	endpointInterface, _ := s.EndpointInterfaceRepo.Get(endpointInterfaceId)
-	endpoint, err := s.EndpointRepo.GetWithInterface(endpointInterface.EndpointId, "v0.1.0")
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(tenantId, endpointInterfaceId)
+	endpoint, err := s.EndpointRepo.GetWithInterface(tenantId, endpointInterface.EndpointId, "v0.1.0")
 	if err != nil {
 		return
 	}
 
 	// get spec
-	doc3 := s.EndpointService.Yaml(endpoint)
+	doc3 := s.EndpointService.Yaml(tenantId, endpoint)
 
 	// TEST:
 	//pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/test2.yaml"
@@ -101,8 +101,8 @@ func (s *EndpointCaseAlternativeService) LoadAlternative(endpointId uint, method
 	return
 }
 
-func (s *EndpointCaseAlternativeService) LoadFactor(caseId uint) (ret map[string]model.EndpointCaseAlternativeFactor, err error) {
-	pos, err := s.EndpointCaseAlternativeRepo.LoadFactor(caseId)
+func (s *EndpointCaseAlternativeService) LoadFactor(tenantId consts.TenantId, caseId uint) (ret map[string]model.EndpointCaseAlternativeFactor, err error) {
+	pos, err := s.EndpointCaseAlternativeRepo.LoadFactor(tenantId, caseId)
 
 	ret = make(map[string]model.EndpointCaseAlternativeFactor)
 	for _, po := range pos {
@@ -112,17 +112,17 @@ func (s *EndpointCaseAlternativeService) LoadFactor(caseId uint) (ret map[string
 	return
 }
 
-func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.EndpointCaseBenchmarkCreateReq) (
+func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(tenantId consts.TenantId, req serverDomain.EndpointCaseBenchmarkCreateReq) (
 	po model.EndpointCase, err error) {
 
 	if req.BaseCaseId > 0 {
 		// clone
 		//po, _ = s.EndpointCaseService.Copy(req.BaseCaseId, "alter-", req.CreateUserId, req.CreateUserName)
-		po, err = s.EndpointCaseService.Get(uint(req.BaseCaseId))
+		po, err = s.EndpointCaseService.Get(tenantId, uint(req.BaseCaseId))
 	} else if req.EndpointInterfaceId > 0 {
 		// convert from endpoint interface define
-		endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
-		debugData, _ := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(req.EndpointInterfaceId, false)
+		endpointInterface, _ := s.EndpointInterfaceRepo.Get(tenantId, req.EndpointInterfaceId)
+		debugData, _ := s.DebugInterfaceService.GetDebugInterfaceByEndpointInterface(tenantId, req.EndpointInterfaceId, false)
 
 		saveReq := serverDomain.EndpointCaseSaveReq{
 			Name:           req.Name,
@@ -133,7 +133,7 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 			CreateUserName: req.CreateUserName,
 		}
 
-		po, err = s.EndpointCaseService.SaveFromDebugInterface(saveReq)
+		po, err = s.EndpointCaseService.SaveFromDebugInterface(tenantId, saveReq)
 	}
 	if err != nil {
 		return
@@ -142,37 +142,37 @@ func (s *EndpointCaseAlternativeService) CreateBenchmarkCase(req serverDomain.En
 	po.CaseType = consts.CaseBenchmark
 	po.BaseCase = uint(req.BaseCaseId)
 
-	s.EndpointCaseRepo.UpdateInfo(po.ID, map[string]interface{}{
+	s.EndpointCaseRepo.UpdateInfo(tenantId, po.ID, map[string]interface{}{
 		"case_type": po.CaseType,
 		"base_case": po.BaseCase,
 	})
 
 	if req.BaseCaseId > 0 {
-		s.ConditionRepo.CloneAll(po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, "false")
+		s.ConditionRepo.CloneAll(tenantId, po.DebugInterfaceId, 0, po.DebugInterfaceId, consts.CaseDebug, consts.CaseDebug, "false")
 
 	}
 
 	return
 }
 
-func (s *EndpointCaseAlternativeService) SaveFactor(req serverDomain.EndpointCaseFactorSaveReq) (err error) {
-	err = s.EndpointCaseAlternativeRepo.SaveFactor(req)
+func (s *EndpointCaseAlternativeService) SaveFactor(tenantId consts.TenantId, req serverDomain.EndpointCaseFactorSaveReq) (err error) {
+	err = s.EndpointCaseAlternativeRepo.SaveFactor(tenantId, req)
 
 	return
 }
 
-func (s *EndpointCaseAlternativeService) SaveCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
+func (s *EndpointCaseAlternativeService) SaveCase(tenantId consts.TenantId, req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	typ := req.Type
 	if typ == "multi" {
-		count, err = s.GenMultiCases(req)
+		count, err = s.GenMultiCases(tenantId, req)
 	} else if typ == "single" {
-		count, err = s.GenSingleCase(req)
+		count, err = s.GenSingleCase(tenantId, req)
 	}
 
 	return
 }
 
-func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
+func (s *EndpointCaseAlternativeService) GenMultiCases(tenantId consts.TenantId, req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	for _, val := range req.Values.Children {
 		if !val.NeedExec {
 			continue
@@ -180,25 +180,25 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 
 		if val.Category != consts.AlternativeCaseCase {
 			req.Values = *val
-			s.GenMultiCases(req)
+			s.GenMultiCases(tenantId, req)
 
 			continue
 		}
 
 		name := s.getName(val)
 
-		newEndpointCase, err1 := s.EndpointCaseService.Copy(req.BaseId, name, 0, 0, req.CreateUserId, req.CreateUserName, "true")
+		newEndpointCase, err1 := s.EndpointCaseService.Copy(tenantId, req.BaseId, name, 0, 0, req.CreateUserId, req.CreateUserName, "true")
 		if err1 != nil {
 			err = err1
 			return
 		}
 
-		s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
+		s.EndpointCaseRepo.UpdateInfo(tenantId, newEndpointCase.ID, map[string]interface{}{
 			"case_type": consts.CaseAlternative,
 			"base_case": req.BaseId,
 		})
 
-		newDebugData, err1 := s.DebugInterfaceService.GetDebugDataFromDebugInterface(newEndpointCase.DebugInterfaceId)
+		newDebugData, err1 := s.DebugInterfaceService.GetDebugDataFromDebugInterface(tenantId, newEndpointCase.DebugInterfaceId)
 		if err1 != nil {
 			err = err1
 			return
@@ -211,7 +211,7 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 		}
 		s.changeFieldProps(&newDebugData, fieldIn, fieldNameOrPath, val.Sample, val.FieldType)
 
-		_, err = s.DebugInterfaceService.Update(newDebugData, newDebugData.DebugInterfaceId)
+		_, err = s.DebugInterfaceService.Update(tenantId, newDebugData, newDebugData.DebugInterfaceId)
 
 		count += 1
 	}
@@ -219,18 +219,18 @@ func (s *EndpointCaseAlternativeService) GenMultiCases(req serverDomain.Endpoint
 	return
 }
 
-func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
+func (s *EndpointCaseAlternativeService) GenSingleCase(tenantId consts.TenantId, req serverDomain.EndpointCaseAlternativeSaveReq) (count int, err error) {
 	// copy new case
-	newEndpointCase, err := s.EndpointCaseService.Copy(req.BaseId, "多参数异常", 0, 0,
+	newEndpointCase, err := s.EndpointCaseService.Copy(tenantId, req.BaseId, "多参数异常", 0, 0,
 		req.CreateUserId, req.CreateUserName, "true")
 
-	s.EndpointCaseRepo.UpdateInfo(newEndpointCase.ID, map[string]interface{}{
+	s.EndpointCaseRepo.UpdateInfo(tenantId, newEndpointCase.ID, map[string]interface{}{
 		"case_type": consts.CaseAlternative,
 		"base_case": req.BaseId,
 	})
 
 	// get new case's debug data
-	newDebugData, err := s.DebugInterfaceService.GetDebugDataFromDebugInterface(newEndpointCase.DebugInterfaceId)
+	newDebugData, err := s.DebugInterfaceService.GetDebugDataFromDebugInterface(tenantId, newEndpointCase.DebugInterfaceId)
 	if err != nil {
 		return
 	}
@@ -239,10 +239,10 @@ func (s *EndpointCaseAlternativeService) GenSingleCase(req serverDomain.Endpoint
 	for _, val := range req.Values.Children {
 		s.getValidPaths(*val, &validPaths)
 	}
-	s.updateDebugData(&newDebugData, validPaths)
+	s.updateDebugData(tenantId, &newDebugData, validPaths)
 
 	// update to db
-	_, err = s.DebugInterfaceService.Update(newDebugData, newDebugData.DebugInterfaceId)
+	_, err = s.DebugInterfaceService.Update(tenantId, newDebugData, newDebugData.DebugInterfaceId)
 	if err != nil {
 		return
 	}
@@ -453,14 +453,14 @@ func (s *EndpointCaseAlternativeService) getFieldProps(pth string) (fieldIn stri
 	return
 }
 
-func (s *EndpointCaseAlternativeService) LoadCasesForExec(req agentExec.CasesExecReq) (
+func (s *EndpointCaseAlternativeService) LoadCasesForExec(tenantId consts.TenantId, req agentExec.CasesExecReq) (
 	ret agentExec.CaseExecProcessor, err error) {
 
 	if req.ExecType == "multi" {
-		s.loadMultiCasesData(req.ExecObj, &ret, req.BaseCaseId, req.EnvironmentId)
+		s.loadMultiCasesData(tenantId, req.ExecObj, &ret, req.BaseCaseId, req.EnvironmentId)
 
 	} else if req.ExecType == "single" {
-		ret, _ = s.loadSingleCasesData(req, req.BaseCaseId, req.EnvironmentId)
+		ret, _ = s.loadSingleCasesData(tenantId, req, req.BaseCaseId, req.EnvironmentId)
 	}
 
 	ret.Key = "root"
@@ -468,7 +468,7 @@ func (s *EndpointCaseAlternativeService) LoadCasesForExec(req agentExec.CasesExe
 	return
 }
 
-func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.AlternativeCase, parent *agentExec.CaseExecProcessor,
+func (s *EndpointCaseAlternativeService) loadMultiCasesData(tenantId consts.TenantId, cs casesHelper.AlternativeCase, parent *agentExec.CaseExecProcessor,
 	baseCaseId, envId uint) (err error) {
 
 	if !cs.NeedExec {
@@ -483,7 +483,7 @@ func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.Alter
 		}
 
 		for _, son := range cs.Children {
-			s.loadMultiCasesData(*son, &processor, baseCaseId, envId)
+			s.loadMultiCasesData(tenantId, *son, &processor, baseCaseId, envId)
 		}
 
 		parent.Children = append(parent.Children, &processor)
@@ -497,9 +497,9 @@ func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.Alter
 	if cs.Title == "required" {
 		cs.Title += ": 空"
 	}
-	execObj.DebugData, _ = s.LoadDebugDataForExec(cs, envId)
+	execObj.DebugData, _ = s.LoadDebugDataForExec(tenantId, cs, envId)
 
-	s.loadConditionsAndScene(&execObj, envId)
+	s.loadConditionsAndScene(tenantId, &execObj, envId)
 
 	title := cs.Title
 	if cs.Sample != "" {
@@ -518,26 +518,26 @@ func (s *EndpointCaseAlternativeService) loadMultiCasesData(cs casesHelper.Alter
 	return
 }
 
-func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.CasesExecReq, baseCaseId, envId uint) (
+func (s *EndpointCaseAlternativeService) loadSingleCasesData(tenantId consts.TenantId, req agentExec.CasesExecReq, baseCaseId, envId uint) (
 	ret agentExec.CaseExecProcessor, err error) {
 
 	execObj := agentExec.InterfaceExecObj{}
 
-	endpointCase, err := s.EndpointCaseService.Get(baseCaseId)
+	endpointCase, err := s.EndpointCaseService.Get(tenantId, baseCaseId)
 	if err != nil {
 		return
 	}
 
-	execObj.DebugData, err = s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
+	execObj.DebugData, err = s.DebugInterfaceService.GetDebugDataFromDebugInterface(tenantId, endpointCase.DebugInterfaceId)
 	if err != nil {
 		return
 	}
 
 	var validPaths []casesHelper.AlternativeCase
 	s.getValidPaths(req.ExecObj, &validPaths)
-	s.updateDebugData(&execObj.DebugData, validPaths)
+	s.updateDebugData(tenantId, &execObj.DebugData, validPaths)
 
-	s.loadConditionsAndScene(&execObj, envId)
+	s.loadConditionsAndScene(tenantId, &execObj, envId)
 
 	root := agentExec.CaseExecProcessor{
 		Title:    req.ExecObj.Title,
@@ -560,22 +560,22 @@ func (s *EndpointCaseAlternativeService) loadSingleCasesData(req agentExec.Cases
 	return
 }
 
-func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req casesHelper.AlternativeCase, envId uint) (
+func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(tenantId consts.TenantId, req casesHelper.AlternativeCase, envId uint) (
 	ret domain.DebugData, err error) {
 
-	endpointCase, err := s.EndpointCaseService.Get(req.BaseCaseId)
+	endpointCase, err := s.EndpointCaseService.Get(tenantId, req.BaseCaseId)
 	if err != nil {
 		return
 	}
 
-	ret, err1 := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
+	ret, err1 := s.DebugInterfaceService.GetDebugDataFromDebugInterface(tenantId, endpointCase.DebugInterfaceId)
 	if err1 != nil {
 		err = err1
 		return
 	}
 
 	// update base url by selected environment
-	server, err := s.ServeServerRepo.FindByServeAndExecEnv(ret.ServeId, envId)
+	server, err := s.ServeServerRepo.FindByServeAndExecEnv(tenantId, ret.ServeId, envId)
 	if err == nil {
 		ret.BaseUrl = server.Url
 	}
@@ -592,20 +592,20 @@ func (s *EndpointCaseAlternativeService) LoadDebugDataForExec(req casesHelper.Al
 	return
 }
 
-func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentExec.InterfaceExecObj, envId uint) {
+func (s *EndpointCaseAlternativeService) loadConditionsAndScene(tenantId consts.TenantId, execObj *agentExec.InterfaceExecObj, envId uint) {
 	// load default environment for user
-	env, _ := s.EnvironmentRepo.Get(envId)
+	env, _ := s.EnvironmentRepo.Get(tenantId, envId)
 	if env.ID > 0 {
-		server, _ := s.ServeServerRepo.FindByServeAndExecEnv(execObj.DebugData.ServeId, env.ID)
+		server, _ := s.ServeServerRepo.FindByServeAndExecEnv(tenantId, execObj.DebugData.ServeId, env.ID)
 		if server.ID > 0 {
 			execObj.DebugData.ServerId = server.ID
 		}
 	}
 
-	execObj.PreConditions, _ = s.ConditionRepo.ListTo(
+	execObj.PreConditions, _ = s.ConditionRepo.ListTo(tenantId,
 		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId,
 		execObj.DebugData.UsedBy, "true", consts.ConditionSrcPre)
-	execObj.PostConditions, _ = s.ConditionRepo.ListTo(
+	execObj.PostConditions, _ = s.ConditionRepo.ListTo(tenantId,
 		execObj.DebugData.DebugInterfaceId, execObj.DebugData.EndpointInterfaceId,
 		execObj.DebugData.UsedBy, "true", consts.ConditionSrcPost)
 
@@ -613,12 +613,12 @@ func (s *EndpointCaseAlternativeService) loadConditionsAndScene(execObj *agentEx
 
 	//
 	_, execObj.ExecScene.ShareVars, _, _, *execObj.DebugData.GlobalParams =
-		s.DebugSceneService.LoadScene(&execObj.DebugData, 0, envId)
+		s.DebugSceneService.LoadScene(tenantId, &execObj.DebugData, 0, envId)
 	execObj.DebugData.EnvDataToView = nil
 
 	// get environment and settings on project level
-	s.SceneService.LoadEnvVars(&execObj.ExecScene, execObj.DebugData.ServerId, execObj.DebugData.DebugInterfaceId)
-	s.SceneService.LoadProjectSettings(&execObj.ExecScene, execObj.DebugData.ProjectId)
+	s.SceneService.LoadEnvVars(tenantId, &execObj.ExecScene, execObj.DebugData.ServerId, execObj.DebugData.DebugInterfaceId)
+	s.SceneService.LoadProjectSettings(tenantId, &execObj.ExecScene, execObj.DebugData.ProjectId)
 }
 
 func (s *EndpointCaseAlternativeService) getValidPaths(alternativeCase casesHelper.AlternativeCase,
@@ -648,7 +648,7 @@ func (s *EndpointCaseAlternativeService) getValidPaths(alternativeCase casesHelp
 	*validPaths = append(*validPaths, validPath)
 }
 
-func (s *EndpointCaseAlternativeService) updateDebugData(debugData *domain.DebugData, validPaths []casesHelper.AlternativeCase) {
+func (s *EndpointCaseAlternativeService) updateDebugData(tenantId consts.TenantId, debugData *domain.DebugData, validPaths []casesHelper.AlternativeCase) {
 	for _, val := range validPaths {
 		if val.Category != consts.AlternativeCaseCase || !val.NeedExec {
 			continue

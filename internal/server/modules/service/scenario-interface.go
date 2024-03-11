@@ -31,29 +31,29 @@ type ScenarioInterfaceService struct {
 	EndpointCaseService   *EndpointCaseService   `inject:""`
 }
 
-func (s *ScenarioInterfaceService) GetDebugDataFromScenarioInterface(scenarioInterfaceId uint) (req domain.DebugData, err error) {
-	scenarioInterfacePo, _ := s.ScenarioInterfaceRepo.GetDetail(scenarioInterfaceId)
+func (s *ScenarioInterfaceService) GetDebugDataFromScenarioInterface(tenantId consts.TenantId, scenarioInterfaceId uint) (req domain.DebugData, err error) {
+	scenarioInterfacePo, _ := s.ScenarioInterfaceRepo.GetDetail(tenantId, scenarioInterfaceId)
 	if err != nil {
 		return
 	}
 
-	endpointInterface, _ := s.EndpointInterfaceRepo.Get(scenarioInterfacePo.EndpointInterfaceId)
+	endpointInterface, _ := s.EndpointInterfaceRepo.Get(tenantId, scenarioInterfacePo.EndpointInterfaceId)
 
-	s.SetProps(endpointInterface, &scenarioInterfacePo, &req)
+	s.SetProps(tenantId, endpointInterface, &scenarioInterfacePo, &req)
 
 	return
 }
 
-func (s *ScenarioInterfaceService) SetProps(
+func (s *ScenarioInterfaceService) SetProps(tenantId consts.TenantId,
 	endpointInterface model.EndpointInterface, scenarioInterfacePo *model.DebugInterface, debugData *domain.DebugData) {
 
-	endpoint, err := s.EndpointRepo.GetAll(endpointInterface.EndpointId, "v0.1.0")
-	serve, err := s.ServeRepo.Get(endpoint.ServeId)
+	endpoint, err := s.EndpointRepo.GetAll(tenantId, endpointInterface.EndpointId, "v0.1.0")
+	serve, err := s.ServeRepo.Get(tenantId, endpoint.ServeId)
 	if err != nil {
 		return
 	}
 
-	securities, err := s.ServeRepo.ListSecurity(serve.ID)
+	securities, err := s.ServeRepo.ListSecurity(tenantId, serve.ID)
 	if err != nil {
 		return
 	}
@@ -111,8 +111,8 @@ func (s *ScenarioInterfaceService) SetProps(
 //	return
 //}
 
-func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug model.DebugInterface, err error) {
-	s.DebugInterfaceService.CopyValueFromRequest(&debug, req)
+func (s *ScenarioInterfaceService) SaveDebugData(tenantId consts.TenantId, req domain.DebugData) (debug model.DebugInterface, err error) {
+	s.DebugInterfaceService.CopyValueFromRequest(tenantId, &debug, req)
 
 	//endpointInterface, _ := s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
 	//debug.EndpointId = endpointInterface.EndpointId
@@ -121,33 +121,33 @@ func (s *ScenarioInterfaceService) SaveDebugData(req domain.DebugData) (debug mo
 		debug.ID = req.DebugInterfaceId
 	}
 
-	err = s.ScenarioInterfaceRepo.SaveDebugData(&debug)
+	err = s.ScenarioInterfaceRepo.SaveDebugData(tenantId, &debug)
 
 	//更新执行器method
-	s.ScenarioProcessorRepo.UpdateMethod(debug.ScenarioProcessorId, debug.Method)
+	s.ScenarioProcessorRepo.UpdateMethod(tenantId, debug.ScenarioProcessorId, debug.Method)
 
 	return
 }
 
-func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, createBy uint) (
+func (s *ScenarioInterfaceService) ResetDebugData(tenantId consts.TenantId, scenarioProcessorId int, createBy uint) (
 	newProcessor model.Processor, err error) {
 
-	scenarioProcessor, _ := s.ScenarioProcessorRepo.Get(uint(scenarioProcessorId))
-	parentProcessor, _ := s.ScenarioProcessorRepo.Get(scenarioProcessor.ParentId)
-	debugInterface, _ := s.DebugInterfaceRepo.Get(scenarioProcessor.EntityId)
+	scenarioProcessor, _ := s.ScenarioProcessorRepo.Get(tenantId, uint(scenarioProcessorId))
+	parentProcessor, _ := s.ScenarioProcessorRepo.Get(tenantId, scenarioProcessor.ParentId)
+	debugInterface, _ := s.DebugInterfaceRepo.Get(tenantId, scenarioProcessor.EntityId)
 
 	if debugInterface.DiagnoseInterfaceId > 0 {
-		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(debugInterface.DiagnoseInterfaceId)
+		diagnoseInterface, _ := s.DiagnoseInterfaceRepo.Get(tenantId, debugInterface.DiagnoseInterfaceId)
 		if diagnoseInterface.Deleted {
 			err = errors.New("interface is deleted")
 			return
 		}
 
-		diagnoseInterfaceTo := s.DiagnoseInterfaceRepo.ToTo(&diagnoseInterface)
-		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromDiagnose(diagnoseInterfaceTo, parentProcessor, scenarioProcessor.Ordr)
+		diagnoseInterfaceTo := s.DiagnoseInterfaceRepo.ToTo(tenantId, &diagnoseInterface)
+		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromDiagnose(tenantId, diagnoseInterfaceTo, parentProcessor, scenarioProcessor.Ordr)
 
 	} else if debugInterface.CaseInterfaceId > 0 {
-		endpointCase, _ := s.EndpointCaseRepo.Get(debugInterface.CaseInterfaceId)
+		endpointCase, _ := s.EndpointCaseRepo.Get(tenantId, debugInterface.CaseInterfaceId)
 		if endpointCase.Deleted {
 			err = errors.New("interface is deleted")
 			return
@@ -156,23 +156,23 @@ func (s *ScenarioInterfaceService) ResetDebugData(scenarioProcessorId int, creat
 		interfaceCase := serverDomain.InterfaceCase{}
 		copier.CopyWithOption(&interfaceCase, &endpointCase, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 
-		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(&interfaceCase)
-		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromCase(endpointCaseTo, parentProcessor, scenarioProcessor.Ordr)
+		endpointCaseTo := s.EndpointCaseService.EndpointCaseToTo(tenantId, &interfaceCase)
+		newProcessor, err = s.ScenarioNodeService.createDirOrInterfaceFromCase(tenantId, endpointCaseTo, parentProcessor, scenarioProcessor.Ordr)
 
 	} else if debugInterface.EndpointInterfaceId > 0 {
 		serveId := uint(0)
-		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name, scenarioProcessor.Ordr)
+		newProcessor, err = s.ScenarioNodeService.createInterfaceFromDefine(tenantId, debugInterface.EndpointInterfaceId, &serveId, createBy, parentProcessor, scenarioProcessor.Name, scenarioProcessor.Ordr)
 	}
 
 	if err != nil {
 		return
 	}
 
-	s.DebugInvokeRepo.ChangeProcessorOwner(scenarioProcessor.ID, newProcessor.ID, newProcessor.EntityId, newProcessor.EndpointInterfaceId)
+	s.DebugInvokeRepo.ChangeProcessorOwner(tenantId, scenarioProcessor.ID, newProcessor.ID, newProcessor.EntityId, newProcessor.EndpointInterfaceId)
 
 	// must put below, since creation will use its DebugInterface
-	s.DebugInterfaceRepo.Delete(scenarioProcessor.EntityId)
-	s.ScenarioProcessorRepo.Delete(scenarioProcessor.ID)
+	s.DebugInterfaceRepo.Delete(tenantId, scenarioProcessor.EntityId)
+	s.ScenarioProcessorRepo.Delete(tenantId, scenarioProcessor.ID)
 
 	return
 }

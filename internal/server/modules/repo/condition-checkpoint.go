@@ -10,21 +10,22 @@ import (
 )
 
 type CheckpointRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
-func (r *CheckpointRepo) Get(id uint) (checkpoint model.DebugConditionCheckpoint, err error) {
-	err = r.DB.
+func (r *CheckpointRepo) Get(tenantId consts.TenantId, id uint) (checkpoint model.DebugConditionCheckpoint, err error) {
+	err = r.GetDB(tenantId).
 		Where("id=?", id).
 		Where("NOT deleted").
 		First(&checkpoint).Error
 	return
 }
 
-func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint model.DebugConditionCheckpoint, err error) {
+func (r *CheckpointRepo) GetByName(tenantId consts.TenantId, name string, interfaceId uint) (checkpoint model.DebugConditionCheckpoint, err error) {
 	var checkpoints []model.DebugConditionCheckpoint
 
-	db := r.DB.Model(&checkpoint).
+	db := r.GetDB(tenantId).Model(&checkpoint).
 		Where("name = ? AND endpoint_interface_id =? AND not deleted", name, interfaceId)
 
 	err = db.Find(&checkpoints).Error
@@ -40,36 +41,36 @@ func (r *CheckpointRepo) GetByName(name string, interfaceId uint) (checkpoint mo
 	return
 }
 
-func (r *CheckpointRepo) Save(checkpoint *model.DebugConditionCheckpoint) (err error) {
-	r.UpdateDesc(checkpoint)
+func (r *CheckpointRepo) Save(tenantId consts.TenantId, checkpoint *model.DebugConditionCheckpoint) (err error) {
+	r.UpdateDesc(tenantId, checkpoint)
 
-	err = r.DB.Save(checkpoint).Error
+	err = r.GetDB(tenantId).Save(checkpoint).Error
 	return
 }
-func (r *CheckpointRepo) UpdateDesc(po *model.DebugConditionCheckpoint) (err error) {
+func (r *CheckpointRepo) UpdateDesc(tenantId consts.TenantId, po *model.DebugConditionCheckpoint) (err error) {
 	desc := checkpointHelpper.GenDesc(po.Type, po.Operator, po.Value, po.Expression,
 		po.ExtractorVariable, po.ExtractorType, po.ExtractorExpression)
 	values := map[string]interface{}{
 		"desc": desc,
 	}
 
-	err = r.DB.Model(&model.DebugCondition{}).
+	err = r.GetDB(tenantId).Model(&model.DebugCondition{}).
 		Where("id=?", po.ConditionId).
 		Updates(values).Error
 
 	return
 }
 
-func (r *CheckpointRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.DebugConditionCheckpoint{}).
+func (r *CheckpointRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugConditionCheckpoint{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
 
 	return
 }
-func (r *CheckpointRepo) DeleteByCondition(conditionId uint) (err error) {
-	err = r.DB.Model(&model.DebugConditionCheckpoint{}).
+func (r *CheckpointRepo) DeleteByCondition(tenantId consts.TenantId, conditionId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugConditionCheckpoint{}).
 		Where("condition_id=?", conditionId).
 		Update("deleted", true).
 		Error
@@ -77,13 +78,13 @@ func (r *CheckpointRepo) DeleteByCondition(conditionId uint) (err error) {
 	return
 }
 
-func (r *CheckpointRepo) UpdateResult(checkpoint domain.CheckpointBase) (err error) {
+func (r *CheckpointRepo) UpdateResult(tenantId consts.TenantId, checkpoint domain.CheckpointBase) (err error) {
 	values := map[string]interface{}{
 		"actual_result": checkpoint.ActualResult,
 		"result_status": checkpoint.ResultStatus,
 	}
 
-	err = r.DB.Model(&model.DebugConditionCheckpoint{}).
+	err = r.GetDB(tenantId).Model(&model.DebugConditionCheckpoint{}).
 		Where("id=?", checkpoint.ConditionEntityId).
 		Updates(values).
 		Error
@@ -91,7 +92,7 @@ func (r *CheckpointRepo) UpdateResult(checkpoint domain.CheckpointBase) (err err
 	return
 }
 
-func (r *CheckpointRepo) CreateLog(checkpoint domain.CheckpointBase) (
+func (r *CheckpointRepo) CreateLog(tenantId consts.TenantId, checkpoint domain.CheckpointBase) (
 	log model.ExecLogCheckpoint, err error) {
 
 	copier.CopyWithOption(&log, checkpoint, copier.Option{DeepCopy: true})
@@ -104,12 +105,12 @@ func (r *CheckpointRepo) CreateLog(checkpoint domain.CheckpointBase) (
 	log.CreatedAt = nil
 	log.UpdatedAt = nil
 
-	err = r.DB.Save(&log).Error
+	err = r.GetDB(tenantId).Save(&log).Error
 
 	return
 }
 
-func (r *CheckpointRepo) CreateDefault(conditionId uint) (po model.DebugConditionCheckpoint) {
+func (r *CheckpointRepo) CreateDefault(tenantId consts.TenantId, conditionId uint) (po model.DebugConditionCheckpoint) {
 	po.ConditionId = conditionId
 
 	po = model.DebugConditionCheckpoint{
@@ -124,13 +125,13 @@ func (r *CheckpointRepo) CreateDefault(conditionId uint) (po model.DebugConditio
 		},
 	}
 
-	r.Save(&po)
+	r.Save(tenantId, &po)
 
 	return
 }
 
-func (r *CheckpointRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogCheckpoint, err error) {
-	err = r.DB.
+func (r *CheckpointRepo) GetLog(tenantId consts.TenantId, conditionId, invokeId uint) (ret model.ExecLogCheckpoint, err error) {
+	err = r.GetDB(tenantId).
 		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
 		Where("NOT deleted").
 		First(&ret).Error
@@ -140,8 +141,8 @@ func (r *CheckpointRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogCh
 	return
 }
 
-func (r *CheckpointRepo) GetLogFromScriptAssert(conditionId, invokeId uint) (ret []model.ExecLogCheckpoint, err error) {
-	err = r.DB.
+func (r *CheckpointRepo) GetLogFromScriptAssert(tenantId consts.TenantId, conditionId, invokeId uint) (ret []model.ExecLogCheckpoint, err error) {
+	err = r.GetDB(tenantId).
 		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
 		Where("NOT deleted").
 		Find(&ret).Error

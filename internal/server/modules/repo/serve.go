@@ -3,6 +3,7 @@ package repo
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
@@ -23,30 +24,31 @@ type ServeRepo struct {
 	EnvironmentRepo *EnvironmentRepo `inject:""`
 }
 
-func (r *ServeRepo) ListVersion(serveId uint) (res []model.ServeVersion, err error) {
-	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
+func (r *ServeRepo) ListVersion(tenantId consts.TenantId, serveId uint) (res []model.ServeVersion, err error) {
+	err = r.GetDB(tenantId).Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
 	return
 }
 
-func (r *ServeRepo) ListByProject(projectId uint) (pos []model.Serve, err error) {
-	err = r.DB.
+func (r *ServeRepo) ListByProject(tenantId consts.TenantId, projectId uint) (pos []model.Serve, err error) {
+	err = r.GetDB(tenantId).
 		Where("project_id=?", projectId).
 		Where("NOT deleted").
 		Find(&pos).Error
 	return
 }
 
-func (r *ServeRepo) ListByProjects(projectIds []uint) (pos []model.Serve, err error) {
-	err = r.DB.
+func (r *ServeRepo) ListByProjects(tenantId consts.TenantId, projectIds []uint) (pos []model.Serve, err error) {
+	err = r.GetDB(tenantId).
 		Where("project_id IN (?)", projectIds).
 		Where("NOT deleted").
 		Find(&pos).Error
 	return
 }
 
-func (r *ServeRepo) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, err error) {
+func (r *ServeRepo) Paginate(tenantId consts.TenantId, req v1.ServeReqPaginate) (ret _domain.PageData, err error) {
+
 	var count int64
-	db := r.DB.Model(&model.Serve{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
+	db := r.GetDB(tenantId).Model(&model.Serve{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 
 	if req.Name != "" {
 		db = db.Where("name LIKE ?", fmt.Sprintf("%%%s%%", req.Name))
@@ -68,7 +70,7 @@ func (r *ServeRepo) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, err
 
 	//关联环境
 	for key, result := range results {
-		results[key].Servers, err = r.ListServer(result.ID)
+		results[key].Servers, err = r.ListServer(tenantId, result.ID)
 		if err != nil {
 			return
 		}
@@ -80,9 +82,9 @@ func (r *ServeRepo) Paginate(req v1.ServeReqPaginate) (ret _domain.PageData, err
 	return
 }
 
-func (r *ServeRepo) PaginateVersion(req v1.ServeVersionPaginate) (ret _domain.PageData, err error) {
+func (r *ServeRepo) PaginateVersion(tenantId consts.TenantId, req v1.ServeVersionPaginate) (ret _domain.PageData, err error) {
 	var count int64
-	db := r.DB.Model(&model.ServeVersion{}).Where("serve_id = ? AND NOT deleted AND NOT disabled", req.ServeId)
+	db := r.GetDB(tenantId).Model(&model.ServeVersion{}).Where("serve_id = ? AND NOT deleted AND NOT disabled", req.ServeId)
 
 	if req.Version != "" {
 		db = db.Where("value LIKE ?", fmt.Sprintf("%%%s%%", req.Version))
@@ -110,10 +112,9 @@ func (r *ServeRepo) PaginateVersion(req v1.ServeVersionPaginate) (ret _domain.Pa
 	return
 }
 
-func (r *ServeRepo) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.PageData, err error) {
+func (r *ServeRepo) PaginateSchema(tenantId consts.TenantId, req v1.ServeSchemaPaginate) (ret _domain.PageData, err error) {
 	var count int64
-	db := r.DB.Model(&model.ComponentSchema{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
-
+	db := r.GetDB(tenantId).Model(&model.ComponentSchema{}).Where("project_id = ? AND NOT deleted AND NOT disabled", req.ProjectId)
 	if req.Type != "" {
 		db.Where("type=?", req.Type)
 	}
@@ -138,16 +139,16 @@ func (r *ServeRepo) PaginateSchema(req v1.ServeSchemaPaginate) (ret _domain.Page
 
 	//事实计算schema组件引用信息
 	for key, item := range results {
-		results[key].Ref, err = r.GetSchemaRef(item.ID)
+		results[key].Ref, err = r.GetSchemaRef(tenantId, item.ID)
 	}
 	ret.Populate(results, count, req.Page, req.PageSize)
 
 	return
 }
 
-func (r *ServeRepo) PaginateSecurity(req v1.ServeSecurityPaginate) (ret _domain.PageData, err error) {
+func (r *ServeRepo) PaginateSecurity(tenantId consts.TenantId, req v1.ServeSecurityPaginate) (ret _domain.PageData, err error) {
 	var count int64
-	db := r.DB.Model(&model.ComponentSchemaSecurity{}).Where("serve_id = ? AND NOT deleted AND NOT disabled", req.ServeId)
+	db := r.GetDB(tenantId).Model(&model.ComponentSchemaSecurity{}).Where("serve_id = ? AND NOT deleted AND NOT disabled", req.ServeId)
 
 	err = db.Count(&count).Error
 	if err != nil {
@@ -167,14 +168,14 @@ func (r *ServeRepo) PaginateSecurity(req v1.ServeSecurityPaginate) (ret _domain.
 	return
 }
 
-func (r *ServeRepo) Get(id uint) (res model.Serve, err error) {
-	//err = r.DB.Where("NOT deleted AND not disabled").First(&res, id).Error
-	err = r.DB.Where("NOT deleted").First(&res, id).Error
+func (r *ServeRepo) Get(tenantId consts.TenantId, id uint) (res model.Serve, err error) {
+	//err = r.GetDB(tenantId).Where("NOT deleted AND not disabled").First(&res, id).Error
+	err = r.GetDB(tenantId).Where("NOT deleted").First(&res, id).Error
 	return
 }
 
-func (r *ServeRepo) GetByCode(projectId uint, shortName string) (ret model.Serve, err error) {
-	db := r.DB.Model(&ret).
+func (r *ServeRepo) GetByCode(tenantId consts.TenantId, projectId uint, shortName string) (ret model.Serve, err error) {
+	db := r.GetDB(tenantId).Model(&ret).
 		Where("short_name = ? AND NOT deleted", shortName)
 
 	if projectId > 0 {
@@ -186,13 +187,18 @@ func (r *ServeRepo) GetByCode(projectId uint, shortName string) (ret model.Serve
 	return
 }
 
-func (r *ServeRepo) GetSchema(id uint) (res model.ComponentSchema, err error) {
-	err = r.DB.Where("NOT deleted AND not disabled").First(&res, id).Error
+func (r *ServeRepo) GetSchema(tenantId consts.TenantId, id uint) (res model.ComponentSchema, err error) {
+	err = r.GetDB(tenantId).Where("NOT deleted AND not disabled").First(&res, id).Error
 	return
 }
 
-func (r *ServeRepo) GetSchemasByProjectId(projectId uint, options ...[]interface{}) (res []model.ComponentSchema, err error) {
-	db := r.DB.Select("id", fmt.Sprintf("(WITH RECURSIVE temp(id,parent_id,name) AS (SELECT id,parent_id,name from biz_category where entity_id = biz_project_serve_component_schema.id and type = '%s'  UNION ALL SELECT b.id,b.parent_id,b.name from biz_category b, temp c where c.parent_id = b.id and  b.parent_id > 0) select GROUP_CONCAT(name ORDER BY (@row_number:=@row_number+1) desc SEPARATOR  '.') name from temp,(select @row_number := 0) x  ) name", serverConsts.SchemaCategory), "type", "content", "serve_id", "examples", "tags", "description", "ref", "source_type", "project_id")
+func (r *ServeRepo) GetSchemasByServeId(tenantId consts.TenantId, serveId uint) (res []model.ComponentSchema, err error) {
+	err = r.GetDB(tenantId).Where("NOT deleted AND not disabled AND serve_id = ?", serveId).Find(&res).Error
+	return
+}
+
+func (r *ServeRepo) GetSchemasByProjectId(tenantId consts.TenantId, projectId uint, options ...[]interface{}) (res []model.ComponentSchema, err error) {
+	db := r.GetDB(tenantId).Select("id", fmt.Sprintf("(WITH RECURSIVE temp(id,parent_id,name) AS (SELECT id,parent_id,name from biz_category where entity_id = biz_project_serve_component_schema.id and type = '%s'  UNION ALL SELECT b.id,b.parent_id,b.name from biz_category b, temp c where c.parent_id = b.id and  b.parent_id > 0) select GROUP_CONCAT(name ORDER BY (@row_number:=@row_number+1) desc SEPARATOR  '.') name from temp,(select @row_number := 0) x  ) name", serverConsts.SchemaCategory), "type", "content", "serve_id", "examples", "tags", "description", "ref", "source_type", "project_id")
 	db = db.Where("NOT deleted AND not disabled AND project_id = ?", projectId)
 	if len(options) > 0 && len(options[0]) > 0 {
 		db = db.Where("id in ?", options[0])
@@ -206,29 +212,29 @@ func (r *ServeRepo) GetSchemasByProjectId(projectId uint, options ...[]interface
 	return
 }
 
-func (r *ServeRepo) DeleteById(id uint) error {
-	return r.DB.Model(&model.Serve{}).Where("id = ?", id).Update("deleted", 1).Error
+func (r *ServeRepo) DeleteById(tenantId consts.TenantId, id uint) error {
+	return r.GetDB(tenantId).Model(&model.Serve{}).Where("id = ?", id).Update("deleted", 1).Error
 }
 
-func (r *ServeRepo) DisableById(id uint) error {
-	return r.DB.Model(&model.Serve{}).Where("id = ?", id).Update("status", 4).Error
+func (r *ServeRepo) DisableById(tenantId consts.TenantId, id uint) error {
+	return r.GetDB(tenantId).Model(&model.Serve{}).Where("id = ?", id).Update("status", 4).Error
 }
 
-func (r *ServeRepo) DeleteVersionById(id uint) error {
-	return r.DB.Model(&model.ServeVersion{}).Where("id = ?", id).Update("deleted", 1).Error
+func (r *ServeRepo) DeleteVersionById(tenantId consts.TenantId, id uint) error {
+	return r.GetDB(tenantId).Model(&model.ServeVersion{}).Where("id = ?", id).Update("deleted", 1).Error
 }
 
-func (r *ServeRepo) DisableVersionById(id uint) error {
-	return r.DB.Model(&model.ServeVersion{}).Where("id = ?", id).Update("disabled", 1).Error
+func (r *ServeRepo) DisableVersionById(tenantId consts.TenantId, id uint) error {
+	return r.GetDB(tenantId).Model(&model.ServeVersion{}).Where("id = ?", id).Update("disabled", 1).Error
 }
 
-func (r *ServeRepo) ListServer(serveId uint) (servers model.ServeServerArr, err error) {
-	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).
+func (r *ServeRepo) ListServer(tenantId consts.TenantId, serveId uint) (servers model.ServeServerArr, err error) {
+	err = r.GetDB(tenantId).Where("serve_id = ? AND NOT deleted AND not disabled", serveId).
 		Find(&servers).Error
 
 	for index, server := range servers {
 		var environment model.Environment
-		environment, err = r.EnvironmentRepo.Get(server.EnvironmentId)
+		environment, err = r.EnvironmentRepo.Get(tenantId, server.EnvironmentId)
 		if err != nil {
 			return
 		}
@@ -242,34 +248,34 @@ func (r *ServeRepo) ListServer(serveId uint) (servers model.ServeServerArr, err 
 	return
 }
 
-func (r *ServeRepo) ListSecurity(serveId uint) (res []model.ComponentSchemaSecurity, err error) {
-	err = r.DB.Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
+func (r *ServeRepo) ListSecurity(tenantId consts.TenantId, serveId uint) (res []model.ComponentSchemaSecurity, err error) {
+	err = r.GetDB(tenantId).Where("serve_id = ? AND NOT deleted AND not disabled", serveId).Find(&res).Error
 	return
 }
 
-func (r *ServeRepo) DeleteSchemaById(id uint) error {
-	return r.DB.Model(&model.ComponentSchema{}).Where("id = ?", id).Update("deleted", 1).Error
+func (r *ServeRepo) DeleteSchemaById(tenantId consts.TenantId, id uint) error {
+	return r.GetDB(tenantId).Model(&model.ComponentSchema{}).Where("id = ?", id).Update("deleted", 1).Error
 }
 
-func (r *ServeRepo) DeleteSecurityId(id uint) error {
-	return r.DB.Model(&model.ComponentSchemaSecurity{}).Where("id = ?", id).Update("deleted", 1).Error
+func (r *ServeRepo) DeleteSecurityId(tenantId consts.TenantId, id uint) error {
+	return r.GetDB(tenantId).Model(&model.ComponentSchemaSecurity{}).Where("id = ?", id).Update("deleted", 1).Error
 }
 
-func (r *ServeRepo) SaveServeEndpointVersions(versions []model.ServeEndpointVersion) error {
-	return r.DB.Create(&versions).Error
+func (r *ServeRepo) SaveServeEndpointVersions(tenantId consts.TenantId, versions []model.ServeEndpointVersion) error {
+	return r.GetDB(tenantId).Create(&versions).Error
 }
 
-func (r *ServeRepo) DeleteSaveServeEndpointVersions(serveId int64, version string) error {
-	return r.DB.Delete(&model.ServeEndpointVersion{}, "serve_id=? and serve_version=?", serveId, version).Error
+func (r *ServeRepo) DeleteSaveServeEndpointVersions(tenantId consts.TenantId, serveId int64, version string) error {
+	return r.GetDB(tenantId).Delete(&model.ServeEndpointVersion{}, "serve_id=? and serve_version=?", serveId, version).Error
 }
 
-func (r *ServeRepo) BindEndpoint(serveId int64, serveVersion string, serveEndpointVersion []model.ServeEndpointVersion) (err error) {
-	r.DB.Transaction(func(tx *gorm.DB) error {
-		err = r.DeleteSaveServeEndpointVersions(serveId, serveVersion)
+func (r *ServeRepo) BindEndpoint(tenantId consts.TenantId, serveId int64, serveVersion string, serveEndpointVersion []model.ServeEndpointVersion) (err error) {
+	r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
+		err = r.DeleteSaveServeEndpointVersions(tenantId, serveId, serveVersion)
 		if err != nil {
 			return err
 		}
-		err = r.SaveServeEndpointVersions(serveEndpointVersion)
+		err = r.SaveServeEndpointVersions(tenantId, serveEndpointVersion)
 		if err != nil {
 			return err
 		}
@@ -278,9 +284,9 @@ func (r *ServeRepo) BindEndpoint(serveId int64, serveVersion string, serveEndpoi
 	return
 }
 
-func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, servers []model.ServeServer) (err error) {
+func (r *ServeRepo) SaveServer(tenantId consts.TenantId, environmentId uint, environmentName string, servers []model.ServeServer) (err error) {
 
-	err = r.DB.Delete(&model.ServeServer{}, "environment_id=?", environmentId).Error
+	err = r.GetDB(tenantId).Delete(&model.ServeServer{}, "environment_id=?", environmentId).Error
 	if err != nil {
 		return err
 	}
@@ -293,13 +299,13 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 		//servers[key].ID = 0
 		servers[key].EnvironmentId = environmentId
 		servers[key].Description = environmentName
-		err = r.Save(servers[key].ID, &servers[key])
+		err = r.Save(tenantId, servers[key].ID, &servers[key])
 		if err != nil {
 			return err
 		}
 	}
 	/*
-		err = r.DB.CreateExpression(servers).Error
+		err = r.GetDB(tenantId).CreateExpression(servers).Error
 		if err != nil {
 			return err
 		}
@@ -307,22 +313,22 @@ func (r *ServeRepo) SaveServer(environmentId uint, environmentName string, serve
 	return
 }
 
-func (r *ServeRepo) SaveServerForServe(serveId uint, servers []model.ServeServer) (err error) {
+func (r *ServeRepo) SaveServerForServe(tenantId consts.TenantId, serveId uint, servers []model.ServeServer) (err error) {
 	if len(servers) == 0 {
 		return
 	}
-	err = r.DB.Delete(&model.ServeServer{}, "serve_id=?", serveId).Error
+	err = r.GetDB(tenantId).Delete(&model.ServeServer{}, "serve_id=?", serveId).Error
 	if err != nil {
 		return err
 	}
 
-	err = r.DB.Create(servers).Error
+	err = r.GetDB(tenantId).Create(servers).Error
 	return
 }
 
-func (r *ServeRepo) ServeExist(id, projectId uint, name string) (res bool) {
+func (r *ServeRepo) ServeExist(tenantId consts.TenantId, id, projectId uint, name string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.Serve{}).Where("id != ? and name = ? and project_id = ? AND NOT deleted", id, name, projectId).Count(&count).Error
+	err := r.GetDB(tenantId).Model(&model.Serve{}).Where("id != ? and name = ? and project_id = ? AND NOT deleted", id, name, projectId).Count(&count).Error
 	if err != nil {
 		return false
 	}
@@ -330,9 +336,9 @@ func (r *ServeRepo) ServeExist(id, projectId uint, name string) (res bool) {
 
 }
 
-func (r *ServeRepo) VersionExist(id, serveId uint, value string) (res bool) {
+func (r *ServeRepo) VersionExist(tenantId consts.TenantId, id, serveId uint, value string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.ServeVersion{}).Where("id != ? and value = ? and serve_id=? AND NOT deleted", id, value, serveId).Count(&count).Error
+	err := r.GetDB(tenantId).Model(&model.ServeVersion{}).Where("id != ? and value = ? and serve_id=? AND NOT deleted", id, value, serveId).Count(&count).Error
 	if err != nil {
 		return false
 	}
@@ -340,9 +346,9 @@ func (r *ServeRepo) VersionExist(id, serveId uint, value string) (res bool) {
 
 }
 
-func (r *ServeRepo) SecurityExist(id, serveId uint, name string) (res bool) {
+func (r *ServeRepo) SecurityExist(tenantId consts.TenantId, id, serveId uint, name string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.ComponentSchemaSecurity{}).Where("id != ? and name = ? and serve_id=? AND NOT deleted", id, name, serveId).Count(&count).Error
+	err := r.GetDB(tenantId).Model(&model.ComponentSchemaSecurity{}).Where("id != ? and name = ? and serve_id=? AND NOT deleted", id, name, serveId).Count(&count).Error
 	if err != nil {
 		return false
 	}
@@ -350,9 +356,9 @@ func (r *ServeRepo) SecurityExist(id, serveId uint, name string) (res bool) {
 
 }
 
-func (r *ServeRepo) SchemaExist(id, serveId uint, name string) (res bool) {
+func (r *ServeRepo) SchemaExist(tenantId consts.TenantId, id, serveId uint, name string) (res bool) {
 	var count int64
-	err := r.DB.Model(&model.ComponentSchema{}).Where("id != ? and name = ? and serve_id=? AND NOT deleted", id, name, serveId).Count(&count).Error
+	err := r.GetDB(tenantId).Model(&model.ComponentSchema{}).Where("id != ? and name = ? and serve_id=? AND NOT deleted", id, name, serveId).Count(&count).Error
 	if err != nil {
 		return false
 	}
@@ -360,50 +366,50 @@ func (r *ServeRepo) SchemaExist(id, serveId uint, name string) (res bool) {
 
 }
 
-func (r *ServeRepo) SaveVersion(id uint, version *model.ServeVersion) (err error) {
+func (r *ServeRepo) SaveVersion(tenantId consts.TenantId, id uint, version *model.ServeVersion) (err error) {
 	if id == 0 {
-		err = r.CopyEndpointsVersionRef(version)
+		err = r.CopyEndpointsVersionRef(tenantId, version)
 		if err != nil {
 			return err
 		}
 	}
-	err = r.Save(id, &version)
+	err = r.Save(tenantId, id, &version)
 	if err != nil {
 		return err
 	}
 	return
 }
 
-func (r *ServeRepo) GetLatestVersion(serveId uint) (res model.ServeVersion, err error) {
+func (r *ServeRepo) GetLatestVersion(tenantId consts.TenantId, serveId uint) (res model.ServeVersion, err error) {
 	var version model.ServeVersion
-	err = r.DB.Take(&version, "serve_id=?", serveId).Order("value desc").Error
+	err = r.GetDB(tenantId).Take(&version, "serve_id=?", serveId).Order("value desc").Error
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (r *ServeRepo) GetBindEndpoints(serveId uint, version string) (endpoints []model.ServeEndpointVersion, err error) {
-	err = r.DB.Find(&endpoints, "serve_id=? and serve_version=?", serveId, version).Error
+func (r *ServeRepo) GetBindEndpoints(tenantId consts.TenantId, serveId uint, version string) (endpoints []model.ServeEndpointVersion, err error) {
+	err = r.GetDB(tenantId).Find(&endpoints, "serve_id=? and serve_version=?", serveId, version).Error
 	return
 }
 
-func (r *ServeRepo) CopyEndpoints(endpoints []model.ServeEndpointVersion, version string) (err error) {
+func (r *ServeRepo) CopyEndpoints(tenantId consts.TenantId, endpoints []model.ServeEndpointVersion, version string) (err error) {
 	for key, _ := range endpoints {
 		endpoints[key].ID = 0
 		endpoints[key].ServeVersion = version
 	}
-	return r.DB.Create(endpoints).Error
+	return r.GetDB(tenantId).Create(endpoints).Error
 }
 
-func (r *ServeRepo) CopyEndpointsVersionRef(version *model.ServeVersion) (err error) {
+func (r *ServeRepo) CopyEndpointsVersionRef(tenantId consts.TenantId, version *model.ServeVersion) (err error) {
 	var latestVersion model.ServeVersion
-	latestVersion, _ = r.GetLatestVersion(uint(version.ServeId))
+	latestVersion, _ = r.GetLatestVersion(tenantId, uint(version.ServeId))
 	if latestVersion.Value != "" {
 		var endpoints []model.ServeEndpointVersion
-		endpoints, err = r.GetBindEndpoints(uint(version.ServeId), latestVersion.Value)
+		endpoints, err = r.GetBindEndpoints(tenantId, uint(version.ServeId), latestVersion.Value)
 		if err != nil {
-			err = r.CopyEndpoints(endpoints, version.Value)
+			err = r.CopyEndpoints(tenantId, endpoints, version.Value)
 			if err != nil {
 				return
 			}
@@ -411,55 +417,55 @@ func (r *ServeRepo) CopyEndpointsVersionRef(version *model.ServeVersion) (err er
 	}
 	return err
 }
-func (r *ServeRepo) GetBindEndpointIds(serveId uint, version string) (ids []int64, err error) {
+func (r *ServeRepo) GetBindEndpointIds(tenantId consts.TenantId, serveId uint, version string) (ids []int64, err error) {
 	var endpointVersions []model.ServeEndpointVersion
-	endpointVersions, err = r.GetBindEndpoints(serveId, version)
+	endpointVersions, err = r.GetBindEndpoints(tenantId, serveId, version)
 	for _, endpointVersion := range endpointVersions {
 		ids = append(ids, endpointVersion.EndpointId)
 	}
 	return
 }
 
-func (r *ServeRepo) ChangeServe(serveId, userId uint) (serve model.Serve, err error) {
-	err = r.DB.Model(&model.SysUserProfile{}).Where("user_id = ?", userId).
+func (r *ServeRepo) ChangeServe(tenantId consts.TenantId, serveId, userId uint) (serve model.Serve, err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUserProfile{}).Where("user_id = ?", userId).
 		Updates(map[string]interface{}{"curr_serve_id": serveId}).Error
 
-	serve, err = r.Get(serveId)
+	serve, err = r.Get(tenantId, serveId)
 
 	return
 }
 
-func (r *ServeRepo) GetCurrServeByUser(userId uint) (currServe model.Serve, err error) {
+func (r *ServeRepo) GetCurrServeByUser(tenantId consts.TenantId, userId uint) (currServe model.Serve, err error) {
 	var user model.SysUser
-	err = r.DB.Preload("Profile").
+	err = r.GetDB(tenantId).Preload("Profile").
 		Where("id = ?", userId).
 		First(&user).
 		Error
 
 	// may be null
-	r.DB.Model(&model.Serve{}).
+	r.GetDB(tenantId).Model(&model.Serve{}).
 		Where("id = ?", user.Profile.CurrServeId).
 		First(&currServe)
 
 	return
 }
 
-func (r *ServeRepo) SetCurrServeByUser(serveId, userId uint) (err error) {
-	err = r.DB.Model(&model.SysUserProfile{}).
+func (r *ServeRepo) SetCurrServeByUser(tenantId consts.TenantId, serveId, userId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUserProfile{}).
 		Where("user_id = ?", userId).
 		Update("curr_serve_id", serveId).Error
 
 	return
 }
 
-func (r *ServeRepo) GetCurrServerByUser(projectId, serveId, userId uint) (currServer model.ServeServer, err error) {
-	projectUserServer, err := r.EnvironmentRepo.GetProjectUserServer(projectId, userId)
+func (r *ServeRepo) GetCurrServerByUser(tenantId consts.TenantId, projectId, serveId, userId uint) (currServer model.ServeServer, err error) {
+	projectUserServer, err := r.EnvironmentRepo.GetProjectUserServer(tenantId, projectId, userId)
 	if err != nil {
 		return
 	}
 
 	// may be null
-	err = r.DB.Model(&model.ServeServer{}).
+	err = r.GetDB(tenantId).Model(&model.ServeServer{}).
 		Where("environment_id = ? and serve_id = ?", projectUserServer.ServerId, serveId).
 		First(&currServer).Error
 	if err != nil && err != gorm.ErrRecordNotFound {
@@ -469,7 +475,7 @@ func (r *ServeRepo) GetCurrServerByUser(projectId, serveId, userId uint) (currSe
 		return currServer, nil
 	}
 
-	environment, err := r.EnvironmentRepo.Get(projectUserServer.ServerId)
+	environment, err := r.EnvironmentRepo.Get(tenantId, projectUserServer.ServerId)
 	if err != nil {
 		return
 	}
@@ -479,16 +485,16 @@ func (r *ServeRepo) GetCurrServerByUser(projectId, serveId, userId uint) (currSe
 	return
 }
 
-func (r *ServeRepo) SetCurrServerByUser(serverId, userId uint) (err error) {
-	err = r.DB.Model(&model.SysUserProfile{}).
+func (r *ServeRepo) SetCurrServerByUser(tenantId consts.TenantId, serverId, userId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.SysUserProfile{}).
 		Where("user_id = ?", userId).
 		Update("curr_server_id", serverId).Error
 
 	return
 }
 
-func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
-	return r.DB.Transaction(func(tx *gorm.DB) error {
+func (r *ServeRepo) SaveServe(tenantId consts.TenantId, serve *model.Serve) (err error) {
+	return r.GetDB(tenantId).Transaction(func(tx *gorm.DB) error {
 		if serve.ID == 0 { //生成目录树跟节点
 			/*
 				err = r.AddDefaultCategory(serve.ProjectId)
@@ -498,12 +504,12 @@ func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 			*/
 
 			//创建默认环境
-			err = r.Save(serve.ID, &serve)
+			err = r.Save(tenantId, serve.ID, &serve)
 			if err != nil {
 				return err
 			}
 
-			err = r.AddDefaultServer(serve.ProjectId, serve.ID)
+			err = r.AddDefaultServer(tenantId, serve.ProjectId, serve.ID)
 			if err != nil {
 				return err
 			}
@@ -511,7 +517,7 @@ func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 			//			err = r.AddDefaultTestCategory(serve.ProjectId, serve.ID)
 
 		} else {
-			err = r.Save(serve.ID, &serve)
+			err = r.Save(tenantId, serve.ID, &serve)
 		}
 
 		if err != nil {
@@ -521,34 +527,34 @@ func (r *ServeRepo) SaveServe(serve *model.Serve) (err error) {
 	})
 }
 
-func (r *ServeRepo) GetSchemaByRef(projectId uint, ref string) (res model.ComponentSchema, err error) {
-	err = r.DB.Where("project_id = ? AND NOT deleted AND not disabled and ref = ?", projectId, ref).Find(&res).Error
+func (r *ServeRepo) GetSchemaByRef(tenantId consts.TenantId, projectId uint, ref string) (res model.ComponentSchema, err error) {
+	err = r.GetDB(tenantId).Where("project_id = ? AND NOT deleted AND not disabled and ref = ?", projectId, ref).Find(&res).Error
 	return
 }
 
-func (r *ServeRepo) GetServerCountByEnvironmentId(environmentId uint) (count int64, err error) {
-	err = r.DB.Model(&model.ServeServer{}).Where("environment_id = ? AND NOT deleted AND not disabled ", environmentId).Count(&count).Error
+func (r *ServeRepo) GetServerCountByEnvironmentId(tenantId consts.TenantId, environmentId uint) (count int64, err error) {
+	err = r.GetDB(tenantId).Model(&model.ServeServer{}).Where("environment_id = ? AND NOT deleted AND not disabled ", environmentId).Count(&count).Error
 	return
 }
 
-func (r *ServeRepo) GetCountByProject(projectId uint) (count int64, err error) {
-	err = r.DB.Model(&model.Serve{}).Where("project_id = ? AND NOT deleted AND not disabled ", projectId).Count(&count).Error
+func (r *ServeRepo) GetCountByProject(tenantId consts.TenantId, projectId uint) (count int64, err error) {
+	err = r.GetDB(tenantId).Model(&model.Serve{}).Where("project_id = ? AND NOT deleted AND not disabled ", projectId).Count(&count).Error
 	return
 }
 
-func (r *ServeRepo) CreateServeSample(projectId uint) (serveId uint, err error) {
+func (r *ServeRepo) CreateServeSample(tenantId consts.TenantId, projectId uint) (serveId uint, err error) {
 	return
 }
 
-func (r *ServeRepo) AddDefaultCategory(projectId uint) (err error) {
+func (r *ServeRepo) AddDefaultCategory(tenantId consts.TenantId, projectId uint) (err error) {
 	category := model.Category{Name: "所属分类", ProjectId: projectId, Type: serverConsts.EndpointCategory}
-	err = r.CategoryRepo.Save(&category)
+	err = r.CategoryRepo.Save(tenantId, &category)
 	return
 }
 
-func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
+func (r *ServeRepo) AddDefaultServer(tenantId consts.TenantId, projectId, serveId uint) (err error) {
 	//var defaultEnv model.Environment
-	defaultEnvs, err := r.EnvironmentRepo.GetDefaultByProject(projectId)
+	defaultEnvs, err := r.EnvironmentRepo.GetDefaultByProject(tenantId, projectId)
 	if err != nil {
 		return
 	}
@@ -562,12 +568,17 @@ func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
 			Url:           serverConsts.DefaultSever,
 		}
 		if v.Name == "Mock环境" {
-			host, _ := cache.GetCacheString("host")
-			server.Url = host + "/mocks/" + strconv.Itoa(int(serveId))
+			host, _ := cache.GetCacheString(fmt.Sprintf("%s_host", tenantId))
+			if config.CONFIG.Saas.Switch {
+				server.Url = host + "/lya/mocks/" + strconv.Itoa(int(serveId))
+			} else {
+				server.Url = host + "/mocks/" + strconv.Itoa(int(serveId))
+			}
+
 		}
 		defaultServer = append(defaultServer, server)
 	}
-	err = r.SaveServerForServe(serveId, defaultServer)
+	err = r.SaveServerForServe(tenantId, serveId, defaultServer)
 
 	if err != nil {
 		return
@@ -576,81 +587,81 @@ func (r *ServeRepo) AddDefaultServer(projectId, serveId uint) (err error) {
 	return
 }
 
-func (r *ServeRepo) AddDefaultTestCategory(projectId uint) (err error) {
+func (r *ServeRepo) AddDefaultTestCategory(tenantId consts.TenantId, projectId uint) (err error) {
 	root := model.DiagnoseInterface{
 		Title:     "根节点",
 		ProjectId: projectId,
 		IsDir:     true,
 		Type:      "dir",
 	}
-	err = r.DB.Create(&root).Error
+	err = r.GetDB(tenantId).Create(&root).Error
 	return
 }
 
-func (r *ServeRepo) GetServesByIds(ids []uint) (serves []model.Serve, err error) {
-	err = r.DB.Where("id in ? AND not deleted AND not disabled ", ids).Find(&serves).Error
+func (r *ServeRepo) GetServesByIds(tenantId consts.TenantId, ids []uint) (serves []model.Serve, err error) {
+	err = r.GetDB(tenantId).Where("id in ? AND not deleted AND not disabled ", ids).Find(&serves).Error
 	return
 }
 
-func (r *ServeRepo) GetSchemas(serveIs []uint) (res []model.ComponentSchema, err error) {
-	err = r.DB.Where("NOT deleted AND not disabled and serve_id in ?", serveIs).Find(&res).Error
+func (r *ServeRepo) GetSchemas(tenantId consts.TenantId, serveIs []uint) (res []model.ComponentSchema, err error) {
+	err = r.GetDB(tenantId).Where("NOT deleted AND not disabled and serve_id in ?", serveIs).Find(&res).Error
 	return
 }
 
-func (r *ServeRepo) GetSecurities(serveIs []uint) (res []model.ComponentSchemaSecurity, err error) {
-	err = r.DB.Where("NOT deleted AND not disabled and serve_id in ?", serveIs).Find(&res).Error
+func (r *ServeRepo) GetSecurities(tenantId consts.TenantId, serveIs []uint) (res []model.ComponentSchemaSecurity, err error) {
+	err = r.GetDB(tenantId).Where("NOT deleted AND not disabled and serve_id in ?", serveIs).Find(&res).Error
 	return
 }
 
-func (r *ServeRepo) GetServers(serveIs []uint) (res []model.ServeServer, err error) {
-	err = r.DB.Where("NOT deleted AND not disabled and serve_id in ?", serveIs).Find(&res).Error
+func (r *ServeRepo) GetServers(tenantId consts.TenantId, serveIs []uint) (res []model.ServeServer, err error) {
+	err = r.GetDB(tenantId).Where("NOT deleted AND not disabled and serve_id in ?", serveIs).Find(&res).Error
 	var environmentIds []uint
 	for _, server := range res {
 		environmentIds = append(environmentIds, server.EnvironmentId)
 	}
 
-	environments, _ := r.EnvironmentRepo.GetByIds(environmentIds)
+	environments, _ := r.EnvironmentRepo.GetByIds(tenantId, environmentIds)
 	for key, server := range res {
 		res[key].EnvironmentName = environments[server.EnvironmentId].Name
 	}
 	return
 }
 
-func (r *ServeRepo) CreateSchemas(schemas []*model.ComponentSchema) (err error) {
-	return r.DB.Create(schemas).Error
+func (r *ServeRepo) CreateSchemas(tenantId consts.TenantId, schemas []*model.ComponentSchema) (err error) {
+	return r.GetDB(tenantId).Create(schemas).Error
 }
 
-func (r *ServeRepo) SaveSwaggerSync(sync *model.SwaggerSync) (err error) {
-	return r.Save(sync.ID, sync)
+func (r *ServeRepo) SaveSwaggerSync(tenantId consts.TenantId, sync *model.SwaggerSync) (err error) {
+	return r.Save(tenantId, sync.ID, sync)
 }
 
-func (r *ServeRepo) GetSwaggerSync(projectId uint) (sync model.SwaggerSync, err error) {
-	err = r.DB.First(&sync, "project_id=?", projectId).Error
+func (r *ServeRepo) GetSwaggerSync(tenantId consts.TenantId, projectId uint) (sync model.SwaggerSync, err error) {
+	err = r.GetDB(tenantId).First(&sync, "project_id=?", projectId).Error
 	return
 }
 
-func (r *ServeRepo) GetSwaggerSyncById(id uint) (sync model.SwaggerSync, err error) {
-	err = r.DB.First(&sync, "id=?", id).Error
+func (r *ServeRepo) GetSwaggerSyncById(tenantId consts.TenantId, id uint) (sync model.SwaggerSync, err error) {
+	err = r.GetDB(tenantId).First(&sync, "id=?", id).Error
 	return
 }
 
-func (r *ServeRepo) GetSwaggerSyncList() (res []model.SwaggerSync, err error) {
-	err = r.DB.Find(&res).Error
+func (r *ServeRepo) GetSwaggerSyncList(tenantId consts.TenantId) (res []model.SwaggerSync, err error) {
+	err = r.GetDB(tenantId).Find(&res).Error
 	return
 }
 
-func (r *ServeRepo) GetDefault(projectId uint) (res model.Serve, err error) {
-	err = r.DB.Where("NOT deleted and project_id=?", projectId).First(&res).Error
+func (r *ServeRepo) GetDefault(tenantId consts.TenantId, projectId uint) (res model.Serve, err error) {
+	err = r.GetDB(tenantId).Where("NOT deleted and project_id=?", projectId).First(&res).Error
 	return
 }
 
-func (r *ServeRepo) GetComponentByItem(sourceType consts.SourceType, projectId uint, ref string) (res model.ComponentSchema, err error) {
-	err = r.DB.First(&res, "source_type=? AND project_id=? AND ref=? AND NOT deleted", sourceType, projectId, ref).Error
+func (r *ServeRepo) GetComponentByItem(tenantId consts.TenantId, sourceType consts.SourceType, projectId uint, ref string) (res model.ComponentSchema, err error) {
+	err = r.GetDB(tenantId).First(&res, "source_type=? AND project_id=? AND ref=? AND NOT deleted", sourceType, projectId, ref).Error
 	return
 }
 
-func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
-	err = r.DB.Save(schemas).Error
+func (r *ServeRepo) SaveSchemas(tenantId consts.TenantId, schemas []*model.ComponentSchema) (err error) {
+	err = r.GetDB(tenantId).Save(schemas).Error
 	if err == nil {
 		var categories []*model.Category
 		if len(schemas) == 0 {
@@ -659,14 +670,14 @@ func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
 
 		var rootCategory model.Category
 		projectId := schemas[0].ProjectId
-		rootCategory, err = r.CategoryRepo.GetRoot(serverConsts.SchemaCategory, schemas[0].ProjectId)
+		rootCategory, err = r.CategoryRepo.GetRoot(tenantId, serverConsts.SchemaCategory, schemas[0].ProjectId)
 		if err != nil {
 			return err
 		}
 
-		ordr := r.CategoryRepo.GetMaxOrder(rootCategory.ID, serverConsts.SchemaCategory, projectId)
+		ordr := r.CategoryRepo.GetMaxOrder(tenantId, rootCategory.ID, serverConsts.SchemaCategory, projectId)
 		for _, schema := range schemas {
-			category, _ := r.CategoryRepo.GetByEntityId(schema.ID, serverConsts.SchemaCategory)
+			category, _ := r.CategoryRepo.GetByEntityId(tenantId, schema.ID, serverConsts.SchemaCategory)
 			category.Name = schema.Name
 			category.EntityId = schema.ID
 			category.ParentId = int(rootCategory.ID)
@@ -677,35 +688,35 @@ func (r *ServeRepo) SaveSchemas(schemas []*model.ComponentSchema) (err error) {
 			ordr += 1
 		}
 
-		err = r.DB.Save(categories).Error
+		err = r.GetDB(tenantId).Save(categories).Error
 
 	}
 
 	return err
 }
 
-func (r *ServeRepo) UpdateSwaggerSyncExecTimeById(id uint) (err error) {
-	return r.DB.Model(&model.SwaggerSync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
+func (r *ServeRepo) UpdateSwaggerSyncExecTimeById(tenantId consts.TenantId, id uint) (err error) {
+	return r.GetDB(tenantId).Model(&model.SwaggerSync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
 }
 
-func (r *ServeRepo) ListAll() (res []model.Serve, err error) {
-	err = r.DB.Model(&model.Serve{}).
+func (r *ServeRepo) ListAll(tenantId consts.TenantId) (res []model.Serve, err error) {
+	err = r.GetDB(tenantId).Model(&model.Serve{}).
 		Where("not disabled and not deleted").
 		Find(&res).Error
 	return
 }
 
-func (r *ServeRepo) BatchUpdateSchemaProjectByServeId(serveIds []uint, projectId uint) (err error) {
-	err = r.DB.Model(&model.ComponentSchema{}).Where("serve_id IN (?)", serveIds).Update("project_id", projectId).Error
+func (r *ServeRepo) BatchUpdateSchemaProjectByServeId(tenantId consts.TenantId, serveIds []uint, projectId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ComponentSchema{}).Where("serve_id IN (?)", serveIds).Update("project_id", projectId).Error
 	return
 }
 
-func (r *ServeRepo) GetSchemaRef(schemaId uint) (ref string, err error) {
-	category, err := r.CategoryRepo.GetByEntityId(schemaId, serverConsts.SchemaCategory)
+func (r *ServeRepo) GetSchemaRef(tenantId consts.TenantId, schemaId uint) (ref string, err error) {
+	category, err := r.CategoryRepo.GetByEntityId(tenantId, schemaId, serverConsts.SchemaCategory)
 	if err != nil {
 		return
 	}
-	path, err := r.CategoryRepo.GetJoinedPath(category.ID)
+	path, err := r.CategoryRepo.GetJoinedPath(tenantId, category.ID)
 	if err != nil {
 		return
 	}
@@ -715,7 +726,7 @@ func (r *ServeRepo) GetSchemaRef(schemaId uint) (ref string, err error) {
 
 }
 
-func (r *ServeRepo) GetDefaultServer(serveId uint) (server model.ServeServer, err error) {
-	err = r.DB.Model(&model.ServeServer{}).Where("serve_id=? AND NOT deleted ", serveId).First(&server).Order("created_at desc").Error
+func (r *ServeRepo) GetDefaultServer(tenantId consts.TenantId, serveId uint) (server model.ServeServer, err error) {
+	err = r.GetDB(tenantId).Model(&model.ServeServer{}).Where("serve_id=? AND NOT deleted ", serveId).First(&server).Order("created_at desc").Error
 	return
 }

@@ -28,6 +28,7 @@ type PlanReportCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.PlanReportDetail}}
 // @Router	/api/v1/plans/reports	[get]
 func (c *PlanReportCtrl) List(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -45,7 +46,7 @@ func (c *PlanReportCtrl) List(ctx iris.Context) {
 	}
 	req.ConvertParams()
 
-	data, err := c.ReportService.Paginate(req, projectId)
+	data, err := c.ReportService.Paginate(tenantId, req, projectId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -65,13 +66,14 @@ func (c *PlanReportCtrl) List(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.PlanReportDetail}
 // @Router	/api/v1/plans/reports/{id}	[get]
 func (c *PlanReportCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	if err := ctx.ReadParams(&req); err != nil {
 		logUtils.Errorf("参数解析失败", zap.String("错误:", err.Error()))
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
-	report, err := c.ReportService.GetById(req.Id)
+	report, err := c.ReportService.GetById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -90,6 +92,7 @@ func (c *PlanReportCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/plans/reports/{id}	[delete]
 func (c *PlanReportCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req _domain.ReqId
 	err := ctx.ReadParams(&req)
 	if err != nil {
@@ -97,7 +100,7 @@ func (c *PlanReportCtrl) Delete(ctx iris.Context) {
 		return
 	}
 
-	err = c.ReportService.DeleteById(req.Id)
+	err = c.ReportService.DeleteById(tenantId, req.Id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

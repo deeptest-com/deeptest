@@ -22,13 +22,14 @@ type EndpointMockScriptCtrl struct {
 // @success	200	{object}	_domain.Response{data=model.EndpointMockScript}
 // @Router	/api/v1/mockScripts/{id}	[get]
 func (c *EndpointMockScriptCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	endpointId, err := ctx.Params().GetInt("endpointId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	ret, err := c.EndpointMockScriptService.Get(uint(endpointId))
+	ret, err := c.EndpointMockScriptService.Get(tenantId, uint(endpointId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -47,6 +48,7 @@ func (c *EndpointMockScriptCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/mockScripts	[put]
 func (c *EndpointMockScriptCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req model.EndpointMockScript
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -54,7 +56,7 @@ func (c *EndpointMockScriptCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.EndpointMockScriptService.Update(req)
+	err = c.EndpointMockScriptService.Update(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -63,13 +65,14 @@ func (c *EndpointMockScriptCtrl) Update(ctx iris.Context) {
 }
 
 func (c *EndpointMockScriptCtrl) Disable(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	endpointId, err := ctx.Params().GetInt("endpointId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.EndpointMockScriptService.Disable(uint(endpointId))
+	err = c.EndpointMockScriptService.Disable(tenantId, uint(endpointId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return

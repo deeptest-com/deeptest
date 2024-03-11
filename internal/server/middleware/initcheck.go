@@ -1,10 +1,12 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
+	"github.com/aaronchen2k/deeptest/saas/common"
 	"net/http"
 
 	"github.com/kataras/iris/v12"
@@ -14,7 +16,8 @@ import (
 // InitCheck 初始化检测中间件
 func InitCheck() iris.Handler {
 	return func(ctx *context.Context) {
-		if dao.GetDB() == nil || (config.CONFIG.System.CacheType == "redis" && config.CACHE == nil) {
+		tenantId := common.GetTenantId(ctx)
+		if dao.GetDB(tenantId) == nil || (config.CONFIG.System.CacheType == "redis" && config.CACHE == nil) {
 			ctx.StopWithJSON(http.StatusOK, _domain.Response{Code: _domain.NeedInitErr.Code, Data: nil, Msg: _domain.NeedInitErr.Msg})
 		} else {
 			host := ctx.Request().Header.Get("Origin")
@@ -23,7 +26,7 @@ func InitCheck() iris.Handler {
 				host = ctx.Request().Header.Get("X-API-Origin")
 			}
 			if host != "" {
-				cache.SetCache("host", host, -1)
+				cache.SetCache(fmt.Sprintf("%s_host", tenantId), host, -1)
 			}
 			ctx.Next()
 		}

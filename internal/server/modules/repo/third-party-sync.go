@@ -12,18 +12,18 @@ type ThirdPartySyncRepo struct {
 	DB        *gorm.DB `inject:""`
 }
 
-func (r *ThirdPartySyncRepo) AllData() (data []model.ThirdPartySync, err error) {
-	err = r.DB.Where("switch = ?", consts.SwitchON).Find(&data).Error
+func (r *ThirdPartySyncRepo) AllData(tenantId consts.TenantId) (data []model.ThirdPartySync, err error) {
+	err = r.GetDB(tenantId).Where("switch = ?", consts.SwitchON).Find(&data).Error
 
 	return
 }
 
-func (r *ThirdPartySyncRepo) UpdateExecTimeById(id uint) (err error) {
-	return r.DB.Model(&model.ThirdPartySync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
+func (r *ThirdPartySyncRepo) UpdateExecTimeById(tenantId consts.TenantId, id uint) (err error) {
+	return r.GetDB(tenantId).Model(&model.ThirdPartySync{}).Where("id=?", id).Update("exec_time", time.Now()).Error
 }
 
-func (r *ThirdPartySyncRepo) GetByProjectAndServe(projectId, serveId uint) (data model.ThirdPartySync, err error) {
-	err = r.DB.Where("project_id = ? and serve_id = ?", projectId, serveId).First(&data).Error
+func (r *ThirdPartySyncRepo) GetByProjectAndServe(tenantId consts.TenantId, projectId, serveId uint) (data model.ThirdPartySync, err error) {
+	err = r.GetDB(tenantId).Where("project_id = ? and serve_id = ?", projectId, serveId).First(&data).Error
 
 	return
 }

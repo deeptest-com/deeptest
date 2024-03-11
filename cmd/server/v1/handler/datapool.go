@@ -26,6 +26,7 @@ type DatapoolCtrl struct {
 // @success	200	{object}	_domain.Response{data=_domain.PageData{result=[]model.Datapool}}
 // @Router	/api/v1/datapools/index	[post]
 func (c *DatapoolCtrl) Index(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.DatapoolReqPaginate
 
 	err := ctx.ReadJSON(&req)
@@ -38,7 +39,7 @@ func (c *DatapoolCtrl) Index(ctx iris.Context) {
 		req.ProjectId, _ = ctx.URLParamInt64("currProjectId")
 	}
 
-	res, _ := c.DatapoolService.Paginate(req)
+	res, _ := c.DatapoolService.Paginate(tenantId, req)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 }
 
@@ -53,13 +54,14 @@ func (c *DatapoolCtrl) Index(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Datapool}
 // @Router	/api/v1/datapools/{id}	[get]
 func (c *DatapoolCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	datapool, err := c.DatapoolService.Get(uint(id))
+	datapool, err := c.DatapoolService.Get(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -79,6 +81,7 @@ func (c *DatapoolCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/datapools/save	[post]
 func (c *DatapoolCtrl) Save(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
@@ -95,14 +98,14 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 	req.ProjectId = uint(projectId)
 
 	// check name exist
-	po, err := c.DatapoolService.GetByName(req.Name, req.ProjectId)
+	po, err := c.DatapoolService.GetByName(tenantId, req.Name, req.ProjectId)
 	if po.ID > 0 && po.ID != req.ID {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code,
 			MsgKey: fmt.Sprintf("%v", _domain.ErrNameExist.Code)})
 		return
 	}
 
-	err = c.DatapoolService.Save(&req, userId)
+	err = c.DatapoolService.Save(tenantId, &req, userId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: err.Error()})
 		return
@@ -122,13 +125,14 @@ func (c *DatapoolCtrl) Save(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/datapools/{id}	[delete]
 func (c *DatapoolCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.DatapoolService.Delete(uint(id))
+	err = c.DatapoolService.Delete(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -149,13 +153,14 @@ func (c *DatapoolCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/datapools/{id}/disable	[put]
 func (c *DatapoolCtrl) Disable(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.DatapoolService.Disable(uint(id))
+	err = c.DatapoolService.Disable(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

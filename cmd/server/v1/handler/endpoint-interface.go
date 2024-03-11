@@ -11,6 +11,7 @@ import (
 )
 
 type EndpointInterfaceCtrl struct {
+	BaseCtrl
 	EndpointInterfaceService *service.EndpointInterfaceService `inject:""`
 	ThirdPartySyncService    *service.ThirdPartySyncService    `inject:""`
 }
@@ -26,6 +27,7 @@ type EndpointInterfaceCtrl struct {
 // @success	200	{object}	_domain.Response{data=object{result=[]model.EndpointInterface}}
 // @Router	/api/v1/endpoints/interfaces/listForSelection	[post]
 func (c *EndpointInterfaceCtrl) ListForSelection(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.EndpointInterfaceReqPaginate
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -33,7 +35,7 @@ func (c *EndpointInterfaceCtrl) ListForSelection(ctx iris.Context) {
 		return
 	}
 
-	res, _ := c.EndpointInterfaceService.Paginate(req)
+	res, _ := c.EndpointInterfaceService.Paginate(tenantId, req)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 
 	return
@@ -50,7 +52,7 @@ func (c *EndpointInterfaceCtrl) ListForSelection(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/endpoints/interfaces/importEndpointData	[post]
 func (c *EndpointInterfaceCtrl) ImportEndpointData(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ImportEndpointDataReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -69,9 +71,9 @@ func (c *EndpointInterfaceCtrl) ImportEndpointData(ctx iris.Context) {
 	req.UserId = userId
 
 	if req.DriverType == convert.LZOS {
-		err = c.ThirdPartySyncService.ImportThirdPartyFunctions(req)
+		err = c.ThirdPartySyncService.ImportThirdPartyFunctions(tenantId, req)
 	} else {
-		err = c.EndpointInterfaceService.ImportEndpointData(req)
+		err = c.EndpointInterfaceService.ImportEndpointData(tenantId, req)
 	}
 
 	if err != nil {
@@ -85,7 +87,7 @@ func (c *EndpointInterfaceCtrl) ImportEndpointData(ctx iris.Context) {
 }
 
 func (c *EndpointInterfaceCtrl) GenerateFromResponse(ctx iris.Context) {
-
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.GenerateFromResponseReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -93,7 +95,7 @@ func (c *EndpointInterfaceCtrl) GenerateFromResponse(ctx iris.Context) {
 		return
 	}
 	var data model.EndpointInterfaceResponseBody
-	data, err = c.EndpointInterfaceService.GenerateFromResponse(req)
+	data, err = c.EndpointInterfaceService.GenerateFromResponse(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

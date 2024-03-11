@@ -2,6 +2,7 @@ package service
 
 import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -22,7 +23,7 @@ type DebugSceneService struct {
 	EnvironmentService *EnvironmentService `inject:""`
 }
 
-func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userIdForDisplay, environmentIdForExec uint) (
+func (s *DebugSceneService) LoadScene(tenantId consts.TenantId, debugData *domain.DebugData, userIdForDisplay, environmentIdForExec uint) (
 	baseUrl string, shareVars []domain.GlobalVar, envVars []domain.GlobalVar,
 	globalVars []domain.GlobalVar, globalParams []domain.GlobalParam) {
 
@@ -30,8 +31,8 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userIdForDisp
 	debugServerId := debugData.ServerId
 
 	if debugData.EndpointInterfaceId > 0 && (debugServeId <= 0 || debugServerId <= 0) {
-		interf, _ := s.EndpointInterfaceRepo.Get(debugData.EndpointInterfaceId)
-		endpoint, _ := s.EndpointRepo.Get(interf.EndpointId)
+		interf, _ := s.EndpointInterfaceRepo.Get(tenantId, debugData.EndpointInterfaceId)
+		endpoint, _ := s.EndpointRepo.Get(tenantId, interf.EndpointId)
 
 		if debugServeId <= 0 {
 			debugServeId = endpoint.ServeId
@@ -42,11 +43,11 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userIdForDisp
 	}
 
 	if environmentIdForExec > 0 {
-		serveServer, _ := s.ServeRepo.GetCurrServerByUser(debugData.ProjectId, debugServeId, userIdForDisplay)
+		serveServer, _ := s.ServeRepo.GetCurrServerByUser(tenantId, debugData.ProjectId, debugServeId, userIdForDisplay)
 		debugServerId = serveServer.ID
 	}
 
-	serveServer, _ := s.ServeServerRepo.Get(debugServerId)
+	serveServer, _ := s.ServeServerRepo.Get(tenantId, debugServerId)
 
 	if debugData.DiagnoseInterfaceId > 0 {
 		baseUrl = debugData.BaseUrl
@@ -60,30 +61,30 @@ func (s *DebugSceneService) LoadScene(debugData *domain.DebugData, userIdForDisp
 		envId = environmentIdForExec
 
 	} else if userIdForDisplay != 0 { // display loading
-		projectUserServer, _ := s.EnvironmentRepo.GetProjectUserServer(debugData.ProjectId, userIdForDisplay)
+		projectUserServer, _ := s.EnvironmentRepo.GetProjectUserServer(tenantId, debugData.ProjectId, userIdForDisplay)
 		if projectUserServer.ServerId != 0 {
 			envId = projectUserServer.ServerId
 		}
 	}
 
-	environment, _ := s.EnvironmentRepo.Get(envId)
+	environment, _ := s.EnvironmentRepo.Get(tenantId, envId)
 
 	if debugData.ProjectId == 0 {
 		debugData.ProjectId = environment.ProjectId
 	}
 
 	if userIdForDisplay > 0 {
-		shareVars, _ = s.ShareVarService.ListForDebug(debugServeId, debugData.ScenarioProcessorId, debugData.UsedBy)
-		envVars, _ = s.EnvironmentService.GetVarsByEnv(environmentIdForExec)
-		globalVars, _ = s.EnvironmentService.GetGlobalVars(environment.ProjectId)
+		shareVars, _ = s.ShareVarService.ListForDebug(tenantId, debugServeId, debugData.ScenarioProcessorId, debugData.UsedBy)
+		envVars, _ = s.EnvironmentService.GetVarsByEnv(tenantId, environmentIdForExec)
+		globalVars, _ = s.EnvironmentService.GetGlobalVars(tenantId, environment.ProjectId)
 	}
 
 	// dealwith global params
-	globalParams, _ = s.EnvironmentService.GetGlobalParams(environment.ProjectId)
+	globalParams, _ = s.EnvironmentService.GetGlobalParams(tenantId, environment.ProjectId)
 
 	//	if git s > 0 { // merge global params
 	globalParams = agentExec.MergeGlobalParams(globalParams, *debugData.GlobalParams)
-	endpointInterfaceGlobalParams, _ := s.EndpointInterfaceRepo.GetGlobalParams(debugData.EndpointInterfaceId, debugData.ProjectId)
+	endpointInterfaceGlobalParams, _ := s.EndpointInterfaceRepo.GetGlobalParams(tenantId, debugData.EndpointInterfaceId, debugData.ProjectId)
 	globalParams = s.MergeGlobalParams(endpointInterfaceGlobalParams, globalParams)
 	//	}
 

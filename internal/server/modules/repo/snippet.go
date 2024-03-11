@@ -1,16 +1,18 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 )
 
 type SnippetRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
-func (r *SnippetRepo) Get(name string) (po model.Snippet, err error) {
-	err = r.DB.
+func (r *SnippetRepo) Get(tenantId consts.TenantId, name string) (po model.Snippet, err error) {
+	err = r.GetDB(tenantId).
 		Where("name=?", name).
 		Where("NOT deleted").
 		First(&po).Error

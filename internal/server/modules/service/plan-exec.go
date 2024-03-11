@@ -25,8 +25,8 @@ type PlanExecService struct {
 	DatapoolService    *DatapoolService    `inject:""`
 }
 
-func (s *PlanExecService) LoadExecResult(planId int) (result domain.Report, err error) {
-	plan, err := s.PlanRepo.Get(uint(planId))
+func (s *PlanExecService) LoadExecResult(tenantId consts.TenantId, planId int) (result domain.Report, err error) {
+	plan, err := s.PlanRepo.Get(tenantId, uint(planId))
 	if err != nil {
 		return
 	}
@@ -36,17 +36,17 @@ func (s *PlanExecService) LoadExecResult(planId int) (result domain.Report, err 
 	return
 }
 
-func (s *PlanExecService) LoadExecData(planId, environmentId int) (ret agentExec.PlanExecObj, err error) {
-	_ = s.PlanRepo.UpdateCurrEnvId(uint(planId), uint(environmentId))
+func (s *PlanExecService) LoadExecData(tenantId consts.TenantId, planId, environmentId int) (ret agentExec.PlanExecObj, err error) {
+	_ = s.PlanRepo.UpdateCurrEnvId(tenantId, uint(planId), uint(environmentId))
 
-	plan, err := s.PlanRepo.Get(uint(planId))
+	plan, err := s.PlanRepo.Get(tenantId, uint(planId))
 	if err != nil {
 		return
 	}
 
-	scenarios, err := s.PlanRepo.ListScenario(plan.ID)
+	scenarios, err := s.PlanRepo.ListScenario(tenantId, plan.ID)
 	for _, scenario := range scenarios {
-		scenarioExecObj, _ := s.ScenarioExecService.LoadExecData(scenario.ID, uint(environmentId))
+		scenarioExecObj, _ := s.ScenarioExecService.LoadExecData(tenantId, scenario.ID, uint(environmentId))
 		ret.Scenarios = append(ret.Scenarios, scenarioExecObj)
 	}
 
@@ -55,9 +55,9 @@ func (s *PlanExecService) LoadExecData(planId, environmentId int) (ret agentExec
 	return
 }
 
-func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain.PlanExecResult) (
+func (s *PlanExecService) SaveReport(tenantId consts.TenantId, planId int, userId uint, result agentDomain.PlanExecResult) (
 	report model.PlanReport, err error) {
-	plan, err := s.PlanRepo.Get(uint(planId))
+	plan, err := s.PlanRepo.Get(tenantId, uint(planId))
 	if err != nil {
 		return
 	}
@@ -76,19 +76,19 @@ func (s *PlanExecService) SaveReport(planId int, userId uint, result agentDomain
 
 	scenarioReportIds := make([]uint, 0)
 	for _, scenarioResult := range result.Scenarios {
-		scenarioReport, _ := s.ScenarioExecService.GenerateReport(int(scenarioResult.ScenarioId), userId, *scenarioResult)
-		s.CombineReport(scenarioReport, &report)
+		scenarioReport, _ := s.ScenarioExecService.GenerateReport(tenantId, int(scenarioResult.ScenarioId), userId, *scenarioResult)
+		s.CombineReport(tenantId, scenarioReport, &report)
 		scenarioReportIds = append(scenarioReportIds, scenarioResult.ScenarioReportId)
 	}
 
 	//report.Duration = report.EndTime.UnixMilli() - report.StartTime.UnixMilli()
-	_ = s.PlanReportRepo.Create(&report)
+	_ = s.PlanReportRepo.Create(tenantId, &report)
 
-	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(scenarioReportIds, report.ID)
+	_ = s.ScenarioReportRepo.BatchUpdatePlanReportId(tenantId, scenarioReportIds, report.ID)
 
 	return
 }
-func (s *PlanExecService) CombineReport(scenarioReport model.ScenarioReport, planReport *model.PlanReport) (err error) {
+func (s *PlanExecService) CombineReport(tenantId consts.TenantId, scenarioReport model.ScenarioReport, planReport *model.PlanReport) (err error) {
 
 	planReport.InterfaceStatusMap = map[uint]map[consts.ResultStatus]int{}
 
@@ -222,18 +222,18 @@ func (s *PlanExecService) summarizeInterface(report *model.PlanReport) {
 	}
 }
 
-func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (ret agentDomain.Report, err error) {
-	plan, err := s.PlanRepo.Get(planId)
+func (s *PlanExecService) GetPlanReportNormalData(tenantId consts.TenantId, planId, environmentId uint) (ret agentDomain.Report, err error) {
+	plan, err := s.PlanRepo.Get(tenantId, planId)
 	if err != nil {
 		return
 	}
 
-	environment, err := s.EnvironmentRepo.Get(environmentId)
+	environment, err := s.EnvironmentRepo.Get(tenantId, environmentId)
 	if err != nil {
 		return
 	}
 
-	planScenarioRelation, err := s.PlanRepo.ListScenarioRelation(planId)
+	planScenarioRelation, err := s.PlanRepo.ListScenarioRelation(tenantId, planId)
 	if err != nil && err != gorm.ErrRecordNotFound {
 		return
 	}
@@ -244,15 +244,15 @@ func (s *PlanExecService) GetPlanReportNormalData(planId, environmentId uint) (r
 			scenarioIds = append(scenarioIds, v.ScenarioId)
 		}
 
-		interfaceNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "processor_interface")
+		interfaceNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(tenantId, scenarioIds, "processor_interface")
 		if err != nil {
 			return ret, err
 		}
-		assertionNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "processor_assertion")
+		assertionNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(tenantId, scenarioIds, "processor_assertion")
 		if err != nil {
 			return ret, err
 		}
-		processorNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(scenarioIds, "")
+		processorNum, err := s.ScenarioNodeRepo.GetNumberByScenariosAndEntityCategory(tenantId, scenarioIds, "")
 		if err != nil {
 			return ret, err
 		}

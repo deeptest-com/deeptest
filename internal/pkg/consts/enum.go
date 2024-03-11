@@ -463,6 +463,7 @@ type ProcessorCategory string
 const (
 	ProcessorRoot ProcessorCategory = "processor_root"
 
+	ProcessorPerformanceGoal       ProcessorCategory = "processor_performance_goal"
 	ProcessorPerformanceRunners    ProcessorCategory = "processor_performance_runners"
 	ProcessorPerformanceRunner     ProcessorCategory = "processor_performance_runner"
 	ProcessorPerformanceScenarios  ProcessorCategory = "processor_performance_scenarios"
@@ -492,6 +493,7 @@ type ProcessorType string
 const (
 	ProcessorRootDefault ProcessorType = "processor_root_default"
 
+	ProcessorPerformanceGoalDefault       ProcessorType = "processor_performance_goal_default"
 	ProcessorPerformanceRunnersDefault    ProcessorType = "processor_performance_runners_default"
 	ProcessorPerformanceRunnerDefault     ProcessorType = "processor_performance_runner_default"
 	ProcessorPerformanceScenariosDefault  ProcessorType = "processor_performance_scenarios_default"

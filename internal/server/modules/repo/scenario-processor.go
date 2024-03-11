@@ -61,6 +61,8 @@ func (r *ScenarioProcessorRepo) GetEntity(processorId uint) (ret interface{}, er
 	case consts.ProcessorCustomCode:
 		ret, _ = r.GetCustomCode(processor)
 
+	case consts.ProcessorPerformanceGoal:
+		ret, _ = r.GetPerformanceGoal(processor)
 	case consts.ProcessorPerformanceRunner:
 		ret, _ = r.GetPerformanceRunner(processor)
 	case consts.ProcessorPerformanceScenario:
@@ -344,6 +346,19 @@ func (r *ScenarioProcessorRepo) GetAssertion(processor model.Processor) (ret mod
 	return
 }
 
+func (r *ScenarioProcessorRepo) GetPerformanceGoal(processor model.Processor) (ret model.ProcessorPerformanceGoal, err error) {
+	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
+
+	if ret.ID == 0 {
+		comm := r.genProcessorComm(processor)
+		copier.CopyWithOption(&ret, comm, copier.Option{DeepCopy: true})
+	} else {
+		ret.Name = processor.Name
+		ret.ParentID = processor.ParentId
+	}
+
+	return
+}
 func (r *ScenarioProcessorRepo) GetPerformanceRunner(processor model.Processor) (ret model.ProcessorPerformanceRunner, err error) {
 	err = r.DB.Where("processor_id = ?", processor.ID).First(&ret).Error
 
@@ -516,6 +531,13 @@ func (r *ScenarioProcessorRepo) SaveData(po *model.ProcessorData) (err error) {
 }
 
 func (r *ScenarioProcessorRepo) SaveCustomCode(po *model.ProcessorCustomCode) (err error) {
+	err = r.DB.Save(po).Error
+	r.UpdateEntityId(po.ProcessorID, po.ID)
+
+	return
+}
+
+func (r *ScenarioProcessorRepo) SavePerformanceGoal(po *model.ProcessorPerformanceGoal) (err error) {
 	err = r.DB.Save(po).Error
 	r.UpdateEntityId(po.ProcessorID, po.ID)
 

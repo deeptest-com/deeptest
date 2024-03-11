@@ -67,6 +67,7 @@ type IndexModule struct {
 	PlanExecModule *router.PlanExecModule `inject:""`
 
 	PerformanceTestPlanModule *router.PerformanceTestPlanModule `inject:""`
+	PerformanceExecModule     *router.PerformanceExecModule     `inject:""`
 
 	ScenarioReportModule *router.ScenarioReportModule `inject:""`
 	PlanReportModule     *router.PlanReportModule     `inject:""`
@@ -152,6 +153,7 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.PlanModule.Party(),
 		m.PlanExecModule.Party(),
 		m.PerformanceTestPlanModule.Party(),
+		m.PerformanceExecModule.Party(),
 
 		m.ScenarioReportModule.Party(),
 		m.PlanReportModule.Party(),

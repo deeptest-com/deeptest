@@ -3,6 +3,7 @@ package model
 import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
+	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 	"time"
@@ -223,6 +224,16 @@ func (ProcessorCustomCode) TableName() string {
 	return "biz_processor_custom_code"
 }
 
+type ProcessorPerformanceGoal struct {
+	BaseModel
+	agentExec.ProcessorEntityBase
+	ptdomain.Goal
+}
+
+func (ProcessorPerformanceGoal) TableName() string {
+	return "biz_processor_performance_goal"
+}
+
 type ProcessorPerformanceRunner struct {
 	BaseModel
 	agentExec.ProcessorEntityBase
@@ -241,20 +252,12 @@ type ProcessorPerformanceScenario struct {
 	BaseModel
 	agentExec.ProcessorEntityBase
 
-	GenerateType ptconsts.GenerateType `json:"generateType"`
-
-	Target int `json:"target"`
-
-	Goal         ptconsts.GoalType `json:"goal"`
-	Duration     int               `json:"duration"`
-	Loop         int               `json:"loop"`
-	ResponseTime float32           `json:"responseTime"`
-	Qps          float32           `json:"qps"`
-	FailRate     float32           `json:"failRate"`
-
+	GenerateType ptconsts.GenerateType       `json:"generateType"`
+	Target       int                         `json:"target"`
 	Stages       []ProcessorPerformanceStage `gorm:"-" json:"stages"`
-	RunnerIds    []int                       `gorm:"-" json:"runnerIds"`
-	RunnerIdsRaw string                      `json:"runnerIdsRaw"`
+
+	RunnerIds    []int  `gorm:"-" json:"runnerIds"`
+	RunnerIdsRaw string `json:"runnerIdsRaw"`
 }
 
 func (ProcessorPerformanceScenario) TableName() string {

@@ -8,7 +8,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/websocket"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/kataras/iris/v12/websocket"
@@ -23,7 +22,7 @@ type ScheduleService struct {
 }
 
 func (s *ScheduleService) SendMetricsToClient(execCtx context.Context, execCancel context.CancelFunc,
-	req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) {
+	req ptdomain.PerformanceTestData, wsMsg *websocket.Message) {
 
 	s.genRunnerIdToNameMap(req.Runners)
 
@@ -150,7 +149,7 @@ func (s *ScheduleService) SaveReportItems(data ptdomain.PerformanceExecResults, 
 	}
 }
 
-func (s *ScheduleService) genRunnerIdToNameMap(runners []*ptProto.Runner) {
+func (s *ScheduleService) genRunnerIdToNameMap(runners []*ptdomain.Runner) {
 	s.RunnerIdToNameMap = map[int]string{}
 
 	for _, runner := range runners {

@@ -66,6 +66,7 @@ var (
 		&ProcessorCustomCode{},
 
 		&PerformanceTestPlan{},
+		&ProcessorPerformanceGoal{},
 		&ProcessorPerformanceRunner{},
 		&ProcessorPerformanceScenario{},
 		&ProcessorPerformanceStage{},

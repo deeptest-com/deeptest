@@ -22,94 +22,23 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// exec request
-type Processor struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id               int32  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name             string `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	Type             string `protobuf:"bytes,3,opt,name=type,proto3" json:"type,omitempty"`
-	RendezvousTarget int32  `protobuf:"varint,4,opt,name=rendezvousTarget,proto3" json:"rendezvousTarget,omitempty"`
-}
-
-func (x *Processor) Reset() {
-	*x = Processor{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[0]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Processor) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Processor) ProtoMessage() {}
-
-func (x *Processor) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[0]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Processor.ProtoReflect.Descriptor instead.
-func (*Processor) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *Processor) GetId() int32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *Processor) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *Processor) GetType() string {
-	if x != nil {
-		return x.Type
-	}
-	return ""
-}
-
-func (x *Processor) GetRendezvousTarget() int32 {
-	if x != nil {
-		return x.RendezvousTarget
-	}
-	return 0
-}
-
 type Scenario struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Id           int32        `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name         string       `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	GenerateType string       `protobuf:"bytes,3,opt,name=generateType,proto3" json:"generateType,omitempty"`
-	Stages       []*Stage     `protobuf:"bytes,4,rep,name=stages,proto3" json:"stages,omitempty"`
-	Processors   []*Processor `protobuf:"bytes,5,rep,name=processors,proto3" json:"processors,omitempty"`
+	Id           int32    `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	Name         string   `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	GenerateType string   `protobuf:"bytes,3,opt,name=generateType,proto3" json:"generateType,omitempty"`
+	Target       int32    `protobuf:"varint,4,opt,name=target,proto3" json:"target,omitempty"`
+	Stages       []*Stage `protobuf:"bytes,5,rep,name=stages,proto3" json:"stages,omitempty"`
+	ProcessorRaw []byte   `protobuf:"bytes,6,opt,name=processorRaw,proto3" json:"processorRaw,omitempty"`
 }
 
 func (x *Scenario) Reset() {
 	*x = Scenario{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[1]
+		mi := &file_internal_performance_proto_performance_proto_msgTypes[0]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -122,7 +51,7 @@ func (x *Scenario) String() string {
 func (*Scenario) ProtoMessage() {}
 
 func (x *Scenario) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[1]
+	mi := &file_internal_performance_proto_performance_proto_msgTypes[0]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -135,7 +64,7 @@ func (x *Scenario) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Scenario.ProtoReflect.Descriptor instead.
 func (*Scenario) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{1}
+	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Scenario) GetId() int32 {
@@ -159,6 +88,13 @@ func (x *Scenario) GetGenerateType() string {
 	return ""
 }
 
+func (x *Scenario) GetTarget() int32 {
+	if x != nil {
+		return x.Target
+	}
+	return 0
+}
+
 func (x *Scenario) GetStages() []*Stage {
 	if x != nil {
 		return x.Stages
@@ -166,9 +102,9 @@ func (x *Scenario) GetStages() []*Stage {
 	return nil
 }
 
-func (x *Scenario) GetProcessors() []*Processor {
+func (x *Scenario) GetProcessorRaw() []byte {
 	if x != nil {
-		return x.Processors
+		return x.ProcessorRaw
 	}
 	return nil
 }
@@ -186,7 +122,7 @@ type Stage struct {
 func (x *Stage) Reset() {
 	*x = Stage{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[2]
+		mi := &file_internal_performance_proto_performance_proto_msgTypes[1]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -199,7 +135,7 @@ func (x *Stage) String() string {
 func (*Stage) ProtoMessage() {}
 
 func (x *Stage) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[2]
+	mi := &file_internal_performance_proto_performance_proto_msgTypes[1]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -212,7 +148,7 @@ func (x *Stage) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Stage.ProtoReflect.Descriptor instead.
 func (*Stage) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{2}
+	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *Stage) GetTarget() int32 {
@@ -234,93 +170,6 @@ func (x *Stage) GetLoop() int32 {
 		return x.Loop
 	}
 	return 0
-}
-
-type Runner struct {
-	state         protoimpl.MessageState
-	sizeCache     protoimpl.SizeCache
-	unknownFields protoimpl.UnknownFields
-
-	Id          int32   `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Name        string  `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
-	GrpcAddress string  `protobuf:"bytes,3,opt,name=grpcAddress,proto3" json:"grpcAddress,omitempty"`
-	WebAddress  string  `protobuf:"bytes,4,opt,name=webAddress,proto3" json:"webAddress,omitempty"`
-	Weight      int32   `protobuf:"varint,5,opt,name=weight,proto3" json:"weight,omitempty"`
-	Scenarios   []int32 `protobuf:"varint,6,rep,packed,name=scenarios,proto3" json:"scenarios,omitempty"`
-}
-
-func (x *Runner) Reset() {
-	*x = Runner{}
-	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[3]
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		ms.StoreMessageInfo(mi)
-	}
-}
-
-func (x *Runner) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Runner) ProtoMessage() {}
-
-func (x *Runner) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[3]
-	if protoimpl.UnsafeEnabled && x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Runner.ProtoReflect.Descriptor instead.
-func (*Runner) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *Runner) GetId() int32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *Runner) GetName() string {
-	if x != nil {
-		return x.Name
-	}
-	return ""
-}
-
-func (x *Runner) GetGrpcAddress() string {
-	if x != nil {
-		return x.GrpcAddress
-	}
-	return ""
-}
-
-func (x *Runner) GetWebAddress() string {
-	if x != nil {
-		return x.WebAddress
-	}
-	return ""
-}
-
-func (x *Runner) GetWeight() int32 {
-	if x != nil {
-		return x.Weight
-	}
-	return 0
-}
-
-func (x *Runner) GetScenarios() []int32 {
-	if x != nil {
-		return x.Scenarios
-	}
-	return nil
 }
 
 type PerformanceExecStartReq struct {
@@ -345,7 +194,7 @@ type PerformanceExecStartReq struct {
 func (x *PerformanceExecStartReq) Reset() {
 	*x = PerformanceExecStartReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[4]
+		mi := &file_internal_performance_proto_performance_proto_msgTypes[2]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -358,7 +207,7 @@ func (x *PerformanceExecStartReq) String() string {
 func (*PerformanceExecStartReq) ProtoMessage() {}
 
 func (x *PerformanceExecStartReq) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[4]
+	mi := &file_internal_performance_proto_performance_proto_msgTypes[2]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -371,7 +220,7 @@ func (x *PerformanceExecStartReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PerformanceExecStartReq.ProtoReflect.Descriptor instead.
 func (*PerformanceExecStartReq) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{4}
+	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *PerformanceExecStartReq) GetRoom() string {
@@ -469,7 +318,7 @@ type PerformanceExecStopReq struct {
 func (x *PerformanceExecStopReq) Reset() {
 	*x = PerformanceExecStopReq{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[5]
+		mi := &file_internal_performance_proto_performance_proto_msgTypes[3]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -482,7 +331,7 @@ func (x *PerformanceExecStopReq) String() string {
 func (*PerformanceExecStopReq) ProtoMessage() {}
 
 func (x *PerformanceExecStopReq) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[5]
+	mi := &file_internal_performance_proto_performance_proto_msgTypes[3]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -495,7 +344,7 @@ func (x *PerformanceExecStopReq) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PerformanceExecStopReq.ProtoReflect.Descriptor instead.
 func (*PerformanceExecStopReq) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{5}
+	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *PerformanceExecStopReq) GetRoom() string {
@@ -524,7 +373,7 @@ type PerformanceExecResp struct {
 func (x *PerformanceExecResp) Reset() {
 	*x = PerformanceExecResp{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[6]
+		mi := &file_internal_performance_proto_performance_proto_msgTypes[4]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -537,7 +386,7 @@ func (x *PerformanceExecResp) String() string {
 func (*PerformanceExecResp) ProtoMessage() {}
 
 func (x *PerformanceExecResp) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[6]
+	mi := &file_internal_performance_proto_performance_proto_msgTypes[4]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -550,7 +399,7 @@ func (x *PerformanceExecResp) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PerformanceExecResp.ProtoReflect.Descriptor instead.
 func (*PerformanceExecResp) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{6}
+	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *PerformanceExecResp) GetRoom() string {
@@ -634,7 +483,7 @@ type PerformanceExecRecord struct {
 func (x *PerformanceExecRecord) Reset() {
 	*x = PerformanceExecRecord{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[7]
+		mi := &file_internal_performance_proto_performance_proto_msgTypes[5]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -647,7 +496,7 @@ func (x *PerformanceExecRecord) String() string {
 func (*PerformanceExecRecord) ProtoMessage() {}
 
 func (x *PerformanceExecRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[7]
+	mi := &file_internal_performance_proto_performance_proto_msgTypes[5]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -660,7 +509,7 @@ func (x *PerformanceExecRecord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PerformanceExecRecord.ProtoReflect.Descriptor instead.
 func (*PerformanceExecRecord) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{7}
+	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *PerformanceExecRecord) GetRecordId() int32 {
@@ -734,7 +583,7 @@ type PerformanceExecMetrics struct {
 func (x *PerformanceExecMetrics) Reset() {
 	*x = PerformanceExecMetrics{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[8]
+		mi := &file_internal_performance_proto_performance_proto_msgTypes[6]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -747,7 +596,7 @@ func (x *PerformanceExecMetrics) String() string {
 func (*PerformanceExecMetrics) ProtoMessage() {}
 
 func (x *PerformanceExecMetrics) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[8]
+	mi := &file_internal_performance_proto_performance_proto_msgTypes[6]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -760,7 +609,7 @@ func (x *PerformanceExecMetrics) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PerformanceExecMetrics.ProtoReflect.Descriptor instead.
 func (*PerformanceExecMetrics) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{8}
+	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *PerformanceExecMetrics) GetTimestamp() int64 {
@@ -811,7 +660,7 @@ type GlobalVarRequest struct {
 func (x *GlobalVarRequest) Reset() {
 	*x = GlobalVarRequest{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[9]
+		mi := &file_internal_performance_proto_performance_proto_msgTypes[7]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -824,7 +673,7 @@ func (x *GlobalVarRequest) String() string {
 func (*GlobalVarRequest) ProtoMessage() {}
 
 func (x *GlobalVarRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[9]
+	mi := &file_internal_performance_proto_performance_proto_msgTypes[7]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -837,7 +686,7 @@ func (x *GlobalVarRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GlobalVarRequest.ProtoReflect.Descriptor instead.
 func (*GlobalVarRequest) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{9}
+	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *GlobalVarRequest) GetRoom() string {
@@ -872,7 +721,7 @@ type GlobalVarResponse struct {
 func (x *GlobalVarResponse) Reset() {
 	*x = GlobalVarResponse{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_internal_performance_proto_performance_proto_msgTypes[10]
+		mi := &file_internal_performance_proto_performance_proto_msgTypes[8]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -885,7 +734,7 @@ func (x *GlobalVarResponse) String() string {
 func (*GlobalVarResponse) ProtoMessage() {}
 
 func (x *GlobalVarResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_internal_performance_proto_performance_proto_msgTypes[10]
+	mi := &file_internal_performance_proto_performance_proto_msgTypes[8]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -898,7 +747,7 @@ func (x *GlobalVarResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GlobalVarResponse.ProtoReflect.Descriptor instead.
 func (*GlobalVarResponse) Descriptor() ([]byte, []int) {
-	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{10}
+	return file_internal_performance_proto_performance_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *GlobalVarResponse) GetValue() int32 {
@@ -918,40 +767,23 @@ var file_internal_performance_proto_performance_proto_rawDesc = []byte{
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x73, 0x74, 0x72, 0x75, 0x63, 0x74, 0x2e,
 	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x1a, 0x1e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2f, 0x70, 0x72,
 	0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2f, 0x77, 0x72, 0x61, 0x70, 0x70, 0x65, 0x72, 0x73, 0x2e,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0x6f, 0x0a, 0x09, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73,
-	0x6f, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x22, 0xb6, 0x01, 0x0a, 0x08, 0x53, 0x63, 0x65, 0x6e, 0x61, 0x72,
+	0x69, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x02,
 	0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09,
-	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x03,
-	0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x2a, 0x0a, 0x10, 0x72, 0x65,
-	0x6e, 0x64, 0x65, 0x7a, 0x76, 0x6f, 0x75, 0x73, 0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x18, 0x04,
-	0x20, 0x01, 0x28, 0x05, 0x52, 0x10, 0x72, 0x65, 0x6e, 0x64, 0x65, 0x7a, 0x76, 0x6f, 0x75, 0x73,
-	0x54, 0x61, 0x72, 0x67, 0x65, 0x74, 0x22, 0xae, 0x01, 0x0a, 0x08, 0x53, 0x63, 0x65, 0x6e, 0x61,
-	0x72, 0x69, 0x6f, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
-	0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x67, 0x65, 0x6e, 0x65, 0x72,
-	0x61, 0x74, 0x65, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x67,
-	0x65, 0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x26, 0x0a, 0x06, 0x73,
-	0x74, 0x61, 0x67, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x70, 0x74,
-	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x53, 0x74, 0x61, 0x67, 0x65, 0x52, 0x06, 0x73, 0x74, 0x61,
-	0x67, 0x65, 0x73, 0x12, 0x32, 0x0a, 0x0a, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x6f, 0x72,
-	0x73, 0x18, 0x05, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x12, 0x2e, 0x70, 0x74, 0x70, 0x72, 0x6f, 0x74,
-	0x6f, 0x2e, 0x50, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x6f, 0x72, 0x52, 0x0a, 0x70, 0x72, 0x6f,
-	0x63, 0x65, 0x73, 0x73, 0x6f, 0x72, 0x73, 0x22, 0x4f, 0x0a, 0x05, 0x53, 0x74, 0x61, 0x67, 0x65,
-	0x12, 0x16, 0x0a, 0x06, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05,
-	0x52, 0x06, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x12, 0x1a, 0x0a, 0x08, 0x64, 0x75, 0x72, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x52, 0x08, 0x64, 0x75, 0x72, 0x61,
-	0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x6c, 0x6f, 0x6f, 0x70, 0x18, 0x03, 0x20, 0x01,
-	0x28, 0x05, 0x52, 0x04, 0x6c, 0x6f, 0x6f, 0x70, 0x22, 0xa4, 0x01, 0x0a, 0x06, 0x52, 0x75, 0x6e,
-	0x6e, 0x65, 0x72, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52,
-	0x02, 0x69, 0x64, 0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x20, 0x0a, 0x0b, 0x67, 0x72, 0x70, 0x63, 0x41,
-	0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x67, 0x72,
-	0x70, 0x63, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x1e, 0x0a, 0x0a, 0x77, 0x65, 0x62,
-	0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x18, 0x04, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0a, 0x77,
-	0x65, 0x62, 0x41, 0x64, 0x64, 0x72, 0x65, 0x73, 0x73, 0x12, 0x16, 0x0a, 0x06, 0x77, 0x65, 0x69,
-	0x67, 0x68, 0x74, 0x18, 0x05, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x77, 0x65, 0x69, 0x67, 0x68,
-	0x74, 0x12, 0x1c, 0x0a, 0x09, 0x73, 0x63, 0x65, 0x6e, 0x61, 0x72, 0x69, 0x6f, 0x73, 0x18, 0x06,
-	0x20, 0x03, 0x28, 0x05, 0x52, 0x09, 0x73, 0x63, 0x65, 0x6e, 0x61, 0x72, 0x69, 0x6f, 0x73, 0x22,
+	0x52, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x12, 0x22, 0x0a, 0x0c, 0x67, 0x65, 0x6e, 0x65, 0x72, 0x61,
+	0x74, 0x65, 0x54, 0x79, 0x70, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c, 0x67, 0x65,
+	0x6e, 0x65, 0x72, 0x61, 0x74, 0x65, 0x54, 0x79, 0x70, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x74, 0x61,
+	0x72, 0x67, 0x65, 0x74, 0x18, 0x04, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x74, 0x61, 0x72, 0x67,
+	0x65, 0x74, 0x12, 0x26, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x67, 0x65, 0x73, 0x18, 0x05, 0x20, 0x03,
+	0x28, 0x0b, 0x32, 0x0e, 0x2e, 0x70, 0x74, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x2e, 0x53, 0x74, 0x61,
+	0x67, 0x65, 0x52, 0x06, 0x73, 0x74, 0x61, 0x67, 0x65, 0x73, 0x12, 0x22, 0x0a, 0x0c, 0x70, 0x72,
+	0x6f, 0x63, 0x65, 0x73, 0x73, 0x6f, 0x72, 0x52, 0x61, 0x77, 0x18, 0x06, 0x20, 0x01, 0x28, 0x0c,
+	0x52, 0x0c, 0x70, 0x72, 0x6f, 0x63, 0x65, 0x73, 0x73, 0x6f, 0x72, 0x52, 0x61, 0x77, 0x22, 0x4f,
+	0x0a, 0x05, 0x53, 0x74, 0x61, 0x67, 0x65, 0x12, 0x16, 0x0a, 0x06, 0x74, 0x61, 0x72, 0x67, 0x65,
+	0x74, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x74, 0x61, 0x72, 0x67, 0x65, 0x74, 0x12,
+	0x1a, 0x0a, 0x08, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x02, 0x20, 0x01, 0x28,
+	0x05, 0x52, 0x08, 0x64, 0x75, 0x72, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x12, 0x12, 0x0a, 0x04, 0x6c,
+	0x6f, 0x6f, 0x70, 0x18, 0x03, 0x20, 0x01, 0x28, 0x05, 0x52, 0x04, 0x6c, 0x6f, 0x6f, 0x70, 0x22,
 	0x86, 0x03, 0x0a, 0x17, 0x50, 0x65, 0x72, 0x66, 0x6f, 0x72, 0x6d, 0x61, 0x6e, 0x63, 0x65, 0x45,
 	0x78, 0x65, 0x63, 0x53, 0x74, 0x61, 0x72, 0x74, 0x52, 0x65, 0x71, 0x12, 0x12, 0x0a, 0x04, 0x72,
 	0x6f, 0x6f, 0x6d, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04, 0x72, 0x6f, 0x6f, 0x6d, 0x12,
@@ -1099,51 +931,48 @@ func file_internal_performance_proto_performance_proto_rawDescGZIP() []byte {
 	return file_internal_performance_proto_performance_proto_rawDescData
 }
 
-var file_internal_performance_proto_performance_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_internal_performance_proto_performance_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_internal_performance_proto_performance_proto_goTypes = []interface{}{
-	(*Processor)(nil),               // 0: ptproto.Processor
-	(*Scenario)(nil),                // 1: ptproto.Scenario
-	(*Stage)(nil),                   // 2: ptproto.Stage
-	(*Runner)(nil),                  // 3: ptproto.Runner
-	(*PerformanceExecStartReq)(nil), // 4: ptproto.PerformanceExecStartReq
-	(*PerformanceExecStopReq)(nil),  // 5: ptproto.PerformanceExecStopReq
-	(*PerformanceExecResp)(nil),     // 6: ptproto.PerformanceExecResp
-	(*PerformanceExecRecord)(nil),   // 7: ptproto.PerformanceExecRecord
-	(*PerformanceExecMetrics)(nil),  // 8: ptproto.PerformanceExecMetrics
-	(*GlobalVarRequest)(nil),        // 9: ptproto.GlobalVarRequest
-	(*GlobalVarResponse)(nil),       // 10: ptproto.GlobalVarResponse
-	nil,                             // 11: ptproto.PerformanceExecMetrics.DiskUsagesEntry
-	nil,                             // 12: ptproto.PerformanceExecMetrics.NetworkUsagesEntry
-	(*structpb.Value)(nil),          // 13: google.protobuf.Value
-	(*wrapperspb.Int32Value)(nil),   // 14: google.protobuf.Int32Value
-	(*wrapperspb.BoolValue)(nil),    // 15: google.protobuf.BoolValue
+	(*Scenario)(nil),                // 0: ptproto.Scenario
+	(*Stage)(nil),                   // 1: ptproto.Stage
+	(*PerformanceExecStartReq)(nil), // 2: ptproto.PerformanceExecStartReq
+	(*PerformanceExecStopReq)(nil),  // 3: ptproto.PerformanceExecStopReq
+	(*PerformanceExecResp)(nil),     // 4: ptproto.PerformanceExecResp
+	(*PerformanceExecRecord)(nil),   // 5: ptproto.PerformanceExecRecord
+	(*PerformanceExecMetrics)(nil),  // 6: ptproto.PerformanceExecMetrics
+	(*GlobalVarRequest)(nil),        // 7: ptproto.GlobalVarRequest
+	(*GlobalVarResponse)(nil),       // 8: ptproto.GlobalVarResponse
+	nil,                             // 9: ptproto.PerformanceExecMetrics.DiskUsagesEntry
+	nil,                             // 10: ptproto.PerformanceExecMetrics.NetworkUsagesEntry
+	(*structpb.Value)(nil),          // 11: google.protobuf.Value
+	(*wrapperspb.Int32Value)(nil),   // 12: google.protobuf.Int32Value
+	(*wrapperspb.BoolValue)(nil),    // 13: google.protobuf.BoolValue
 }
 var file_internal_performance_proto_performance_proto_depIdxs = []int32{
-	2,  // 0: ptproto.Scenario.stages:type_name -> ptproto.Stage
-	0,  // 1: ptproto.Scenario.processors:type_name -> ptproto.Processor
-	1,  // 2: ptproto.PerformanceExecStartReq.scenarios:type_name -> ptproto.Scenario
-	7,  // 3: ptproto.PerformanceExecResp.requests:type_name -> ptproto.PerformanceExecRecord
-	8,  // 4: ptproto.PerformanceExecResp.metrics:type_name -> ptproto.PerformanceExecMetrics
-	11, // 5: ptproto.PerformanceExecMetrics.diskUsages:type_name -> ptproto.PerformanceExecMetrics.DiskUsagesEntry
-	12, // 6: ptproto.PerformanceExecMetrics.networkUsages:type_name -> ptproto.PerformanceExecMetrics.NetworkUsagesEntry
-	13, // 7: ptproto.GlobalVarRequest.value:type_name -> google.protobuf.Value
-	4,  // 8: ptproto.PerformanceService.RunnerExecStart:input_type -> ptproto.PerformanceExecStartReq
-	5,  // 9: ptproto.PerformanceService.RunnerExecStop:input_type -> ptproto.PerformanceExecStopReq
-	9,  // 10: ptproto.PerformanceService.ConductorGetGlobalVar:input_type -> ptproto.GlobalVarRequest
-	9,  // 11: ptproto.PerformanceService.ConductorAddGlobalVar:input_type -> ptproto.GlobalVarRequest
-	9,  // 12: ptproto.PerformanceService.ConductorClearGlobalVar:input_type -> ptproto.GlobalVarRequest
-	9,  // 13: ptproto.PerformanceService.ConductorClearAllGlobalVar:input_type -> ptproto.GlobalVarRequest
-	6,  // 14: ptproto.PerformanceService.RunnerExecStart:output_type -> ptproto.PerformanceExecResp
-	6,  // 15: ptproto.PerformanceService.RunnerExecStop:output_type -> ptproto.PerformanceExecResp
-	14, // 16: ptproto.PerformanceService.ConductorGetGlobalVar:output_type -> google.protobuf.Int32Value
-	14, // 17: ptproto.PerformanceService.ConductorAddGlobalVar:output_type -> google.protobuf.Int32Value
-	15, // 18: ptproto.PerformanceService.ConductorClearGlobalVar:output_type -> google.protobuf.BoolValue
-	15, // 19: ptproto.PerformanceService.ConductorClearAllGlobalVar:output_type -> google.protobuf.BoolValue
-	14, // [14:20] is the sub-list for method output_type
-	8,  // [8:14] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	1,  // 0: ptproto.Scenario.stages:type_name -> ptproto.Stage
+	0,  // 1: ptproto.PerformanceExecStartReq.scenarios:type_name -> ptproto.Scenario
+	5,  // 2: ptproto.PerformanceExecResp.requests:type_name -> ptproto.PerformanceExecRecord
+	6,  // 3: ptproto.PerformanceExecResp.metrics:type_name -> ptproto.PerformanceExecMetrics
+	9,  // 4: ptproto.PerformanceExecMetrics.diskUsages:type_name -> ptproto.PerformanceExecMetrics.DiskUsagesEntry
+	10, // 5: ptproto.PerformanceExecMetrics.networkUsages:type_name -> ptproto.PerformanceExecMetrics.NetworkUsagesEntry
+	11, // 6: ptproto.GlobalVarRequest.value:type_name -> google.protobuf.Value
+	2,  // 7: ptproto.PerformanceService.RunnerExecStart:input_type -> ptproto.PerformanceExecStartReq
+	3,  // 8: ptproto.PerformanceService.RunnerExecStop:input_type -> ptproto.PerformanceExecStopReq
+	7,  // 9: ptproto.PerformanceService.ConductorGetGlobalVar:input_type -> ptproto.GlobalVarRequest
+	7,  // 10: ptproto.PerformanceService.ConductorAddGlobalVar:input_type -> ptproto.GlobalVarRequest
+	7,  // 11: ptproto.PerformanceService.ConductorClearGlobalVar:input_type -> ptproto.GlobalVarRequest
+	7,  // 12: ptproto.PerformanceService.ConductorClearAllGlobalVar:input_type -> ptproto.GlobalVarRequest
+	4,  // 13: ptproto.PerformanceService.RunnerExecStart:output_type -> ptproto.PerformanceExecResp
+	4,  // 14: ptproto.PerformanceService.RunnerExecStop:output_type -> ptproto.PerformanceExecResp
+	12, // 15: ptproto.PerformanceService.ConductorGetGlobalVar:output_type -> google.protobuf.Int32Value
+	12, // 16: ptproto.PerformanceService.ConductorAddGlobalVar:output_type -> google.protobuf.Int32Value
+	13, // 17: ptproto.PerformanceService.ConductorClearGlobalVar:output_type -> google.protobuf.BoolValue
+	13, // 18: ptproto.PerformanceService.ConductorClearAllGlobalVar:output_type -> google.protobuf.BoolValue
+	13, // [13:19] is the sub-list for method output_type
+	7,  // [7:13] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_internal_performance_proto_performance_proto_init() }
@@ -1153,18 +982,6 @@ func file_internal_performance_proto_performance_proto_init() {
 	}
 	if !protoimpl.UnsafeEnabled {
 		file_internal_performance_proto_performance_proto_msgTypes[0].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Processor); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_internal_performance_proto_performance_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Scenario); i {
 			case 0:
 				return &v.state
@@ -1176,7 +993,7 @@ func file_internal_performance_proto_performance_proto_init() {
 				return nil
 			}
 		}
-		file_internal_performance_proto_performance_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
+		file_internal_performance_proto_performance_proto_msgTypes[1].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*Stage); i {
 			case 0:
 				return &v.state
@@ -1188,19 +1005,7 @@ func file_internal_performance_proto_performance_proto_init() {
 				return nil
 			}
 		}
-		file_internal_performance_proto_performance_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
-			switch v := v.(*Runner); i {
-			case 0:
-				return &v.state
-			case 1:
-				return &v.sizeCache
-			case 2:
-				return &v.unknownFields
-			default:
-				return nil
-			}
-		}
-		file_internal_performance_proto_performance_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
+		file_internal_performance_proto_performance_proto_msgTypes[2].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PerformanceExecStartReq); i {
 			case 0:
 				return &v.state
@@ -1212,7 +1017,7 @@ func file_internal_performance_proto_performance_proto_init() {
 				return nil
 			}
 		}
-		file_internal_performance_proto_performance_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
+		file_internal_performance_proto_performance_proto_msgTypes[3].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PerformanceExecStopReq); i {
 			case 0:
 				return &v.state
@@ -1224,7 +1029,7 @@ func file_internal_performance_proto_performance_proto_init() {
 				return nil
 			}
 		}
-		file_internal_performance_proto_performance_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
+		file_internal_performance_proto_performance_proto_msgTypes[4].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PerformanceExecResp); i {
 			case 0:
 				return &v.state
@@ -1236,7 +1041,7 @@ func file_internal_performance_proto_performance_proto_init() {
 				return nil
 			}
 		}
-		file_internal_performance_proto_performance_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+		file_internal_performance_proto_performance_proto_msgTypes[5].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PerformanceExecRecord); i {
 			case 0:
 				return &v.state
@@ -1248,7 +1053,7 @@ func file_internal_performance_proto_performance_proto_init() {
 				return nil
 			}
 		}
-		file_internal_performance_proto_performance_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+		file_internal_performance_proto_performance_proto_msgTypes[6].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*PerformanceExecMetrics); i {
 			case 0:
 				return &v.state
@@ -1260,7 +1065,7 @@ func file_internal_performance_proto_performance_proto_init() {
 				return nil
 			}
 		}
-		file_internal_performance_proto_performance_proto_msgTypes[9].Exporter = func(v interface{}, i int) interface{} {
+		file_internal_performance_proto_performance_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GlobalVarRequest); i {
 			case 0:
 				return &v.state
@@ -1272,7 +1077,7 @@ func file_internal_performance_proto_performance_proto_init() {
 				return nil
 			}
 		}
-		file_internal_performance_proto_performance_proto_msgTypes[10].Exporter = func(v interface{}, i int) interface{} {
+		file_internal_performance_proto_performance_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*GlobalVarResponse); i {
 			case 0:
 				return &v.state
@@ -1291,7 +1096,7 @@ func file_internal_performance_proto_performance_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_internal_performance_proto_performance_proto_rawDesc,
 			NumEnums:      0,
-			NumMessages:   13,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

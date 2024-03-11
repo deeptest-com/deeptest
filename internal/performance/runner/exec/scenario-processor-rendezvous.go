@@ -2,14 +2,18 @@ package runnerExec
 
 import (
 	"context"
+	"encoding/json"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"time"
 )
 
-func ExecRendezvousProcessor(timeoutCtx context.Context, processor *ptProto.Processor, vuNo, index int, room, serverAddress string) {
+func ExecRendezvousProcessor(timeoutCtx context.Context, processor *agentExec.Processor, vuNo, index int, room, serverAddress string) {
 	name := processor.Name
+
+	entity := agentExec.ProcessorPerformanceRendezvous{}
+	json.Unmarshal(processor.EntityRaw, &entity)
 
 	newArrivedVal := IncreaseRendezvousArrived(room, name, serverAddress)
 	ptlog.Logf("====== VU %d: rendezvous Arrived Value added, value is %d", vuNo, newArrivedVal)
@@ -20,7 +24,7 @@ func ExecRendezvousProcessor(timeoutCtx context.Context, processor *ptProto.Proc
 	var newPassedVal int
 
 	for !ready {
-		value, ready = IsRendezvousReady(room, name, serverAddress, int(processor.RendezvousTarget))
+		value, ready = IsRendezvousReady(room, name, serverAddress, entity.Target)
 
 		ptlog.Logf("------ VU %d: rendezvous wait, Arrived Value is %d", vuNo, value)
 		time.Sleep(1 * time.Second)
@@ -38,7 +42,7 @@ func ExecRendezvousProcessor(timeoutCtx context.Context, processor *ptProto.Proc
 
 	// reset if all vus passed
 	newPassedVal = IncreaseRendezvousPassed(room, name, serverAddress)
-	if newPassedVal >= int(processor.RendezvousTarget) {
+	if newPassedVal >= entity.Target {
 		ptlog.Logf("------ VU %d: before rendezvous reset, Arrived Value is %d", vuNo, value)
 
 		value = ResetRendezvous(room, name, serverAddress)

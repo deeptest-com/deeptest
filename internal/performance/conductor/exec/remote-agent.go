@@ -13,7 +13,7 @@ type RemoteRunnerService struct {
 	client *ptProto.PerformanceServiceClient
 }
 
-func (s *RemoteRunnerService) Connect(runner *ptProto.Runner) (client ptProto.PerformanceServiceClient) {
+func (s *RemoteRunnerService) Connect(runner *ptdomain.Runner) (client ptProto.PerformanceServiceClient) {
 	connect, err := grpc.Dial(runner.GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalln(err)
@@ -24,7 +24,7 @@ func (s *RemoteRunnerService) Connect(runner *ptProto.Runner) (client ptProto.Pe
 	return
 }
 
-func (s *RemoteRunnerService) CallStop(req ptdomain.PerformanceTestReq) (err error) {
+func (s *RemoteRunnerService) CallStop(req ptdomain.PerformanceTestData) (err error) {
 	for _, runner := range req.Runners {
 		client := s.Connect(runner)
 

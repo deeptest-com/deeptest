@@ -2,6 +2,8 @@ package runnerExec
 
 import (
 	"context"
+	"encoding/json"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
@@ -12,12 +14,15 @@ import (
 func ExecProcessors(timeoutCtx context.Context, sender metrics.MessageSender, runnerId int32, vuNo int) {
 	execParams := getExecParamsInCtx(timeoutCtx)
 
-	for index, processor := range execParams.Scenario.Processors {
-		if processor.Type == consts.ProcessorInterfaceDefault.ToString() {
+	rootProcessor := agentExec.Processor{}
+	json.Unmarshal(execParams.Scenario.ProcessorRaw, &rootProcessor)
+
+	for index, processor := range rootProcessor.Children {
+		if processor.EntityType == consts.ProcessorInterfaceDefault {
 			ptlog.Logf("exec processor %v", processor)
 			ExecInterfaceProcessor(processor, execParams.Room, vuNo, index, runnerId, sender)
 
-		} else if execParams.Mode == ptconsts.Parallel && processor.Type == ptconsts.Rendezvous.String() {
+		} else if execParams.Mode == ptconsts.Parallel && processor.EntityType == consts.ProcessorPerformanceRendezvousDefault {
 			ptlog.Logf("exec processor %v", processor)
 			ExecRendezvousProcessor(timeoutCtx, processor, vuNo, index, execParams.Room, execParams.ServerAddress)
 

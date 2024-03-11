@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func IsGoalMet(req ptdomain.PerformanceTestReq,
+func IsGoalMet(req ptdomain.PerformanceTestData,
 	avgResponseTime, avgQps float64, failed, total int32) (ret bool) {
 
 	if req.GoalAvgResponseTime > 0 {
@@ -21,23 +21,11 @@ func IsGoalMet(req ptdomain.PerformanceTestReq,
 		}
 	}
 
-	if req.GoalFailed != "" {
-		val, isPercent := ParseFailTarget(req.GoalFailed)
-		if val <= 0 {
-			return
-		}
-
-		if isPercent {
-			percent := failed / total
-			if percent > val {
-				return true
-			}
-
-		} else {
-			if failed > val {
-				return true
-			}
-		}
+	if req.GoalFailRate > 0 {
+		// 改成比率
+		//if failed > req.GoalFailRate {
+		//	return true
+		//}
 	}
 
 	return

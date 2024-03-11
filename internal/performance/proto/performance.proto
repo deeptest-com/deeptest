@@ -15,35 +15,21 @@ service PerformanceService {
   rpc ConductorClearAllGlobalVar (GlobalVarRequest) returns (google.protobuf.BoolValue);
 }
 
-// exec request
-message Processor {
-  int32 id = 1;
-  string name = 2;
-  string type = 3;
-  int32 rendezvousTarget = 4;
-}
-
 message Scenario {
   int32 id = 1;
   string name = 2;
 
   string generateType = 3;
-  repeated Stage stages = 4;
-  repeated Processor processors = 5;
+  int32 target = 4;
+
+  repeated Stage stages = 5;
+  bytes processorRaw = 6;
 }
 
 message Stage {
   int32 target = 1;
   int32 duration  = 2;
   int32 loop     = 3;
-}
-message Runner {
-  int32 id = 1;
-  string name = 2;
-  string grpcAddress  = 3;
-  string webAddress  = 4;
-  int32 weight = 5;
-  repeated int32 scenarios = 6;
 }
 
 message PerformanceExecStartReq {

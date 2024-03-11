@@ -1,18 +1,56 @@
 package ptdomain
 
 import (
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
 type PerformanceTestReq struct {
+	UserId    uint   `json:"userId"`
+	ProjectId uint   `json:"projectId"`
+	ServerUrl string `json:"serverUrl"`
+	Token     string `json:"token"`
+
+	Room          string `json:"room"`
+	PlanId        uint   `json:"planId"`
+	EnvironmentId int    `json:"environmentId"`
+}
+
+type PerformanceTestData struct {
 	BaseExecReqOfRunner
 
-	Runners []*ptProto.Runner `json:"runners"`
+	Goal    Goal      `json:"goal"`
+	Runners []*Runner `json:"runners"`
 
-	GoalAvgResponseTime float64 `json:"goalAvgResponseTime"`
-	GoalAvgQps          float64 `json:"goalAvgQps"`
-	GoalFailed          string  `json:"goalFailed"`
+	ServerUrl string `json:"serverUrl"`
+	Token     string `json:"token"`
+
+	ExecScene domain.ExecScene `json:"execScene"`
+}
+
+type Goal struct {
+	Type ptconsts.GoalType `json:"type,omitempty"`
+
+	Duration int `json:"duration,omitempty"`
+	Loop     int `json:"loop,omitempty"`
+
+	ResponseTime float32 `json:"responseTime,omitempty"`
+	Qps          float32 `json:"qps,omitempty"`
+	FailRate     float32 `json:"failRate,omitempty"`
+}
+
+type Runner struct {
+	Id          int32   `json:"id,omitempty"`
+	Name        string  `json:"name,omitempty"`
+	GrpcAddress string  `json:"grpcAddress,omitempty"`
+	WebAddress  string  `json:"webAddress,omitempty"`
+	Weight      int32   `json:"weight,omitempty"`
+	Scenarios   []int32 `json:"scenarios,omitempty"`
+}
+
+type PerformanceExecResult struct {
 }
 
 type PerformanceLogReq struct {
@@ -31,10 +69,10 @@ type BaseExecReqOfRunner struct {
 	Title  string `json:"title"`
 
 	GenerateType ptconsts.GenerateType `json:"generateType"`
-	Stages       []*ptProto.Stage      `json:"stages"`
+	Stages       []*ptproto.Stage      `json:"stages"`
 
 	Mode      ptconsts.ExecMode   `json:"mode"`
-	Scenarios []*ptProto.Scenario `json:"scenarios"`
+	Scenarios []*ptproto.Scenario `json:"scenarios"`
 
 	ServerAddress   string `json:"serverAddress,omitempty"`
 	InfluxdbAddress string `json:"influxdbAddress,omitempty"`
@@ -46,17 +84,13 @@ type Scenario struct {
 	Name string `json:"name"`
 
 	GenerateType string           `protobuf:"bytes,2,opt,name=generateType,proto3" json:"generateType,omitempty"`
-	Stages       []*ptProto.Stage `protobuf:"bytes,3,rep,name=stages,proto3" json:"stages,omitempty"`
+	Stages       []*ptproto.Stage `protobuf:"bytes,3,rep,name=stages,proto3" json:"stages,omitempty"`
 
 	Uuid string `json:"uuid,omitempty"`
 	Dur  int    `json:"dur,omitempty"`
 
-	TargetQps      int32  `json:"targetQps"`
-	TargetDuration int32  `json:"targetDuration"`
-	TargetFailRate string `json:"targetFailRate"`
-
-	VuNo       int                  `json:"vuNo,omitempty"`
-	Processors []*ptProto.Processor `json:"processors,omitempty"`
+	VuNo       int                    `json:"vuNo,omitempty"`
+	Processors []*agentExec.Processor `json:"processors,omitempty"`
 
 	NsqServerAddress string `json:"nsqServerAddress,omitempty"`
 	NsqLookupAddress string `json:"nsqLookupAddress,omitempty"`

@@ -2,7 +2,7 @@ package ptdomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 )
 
 type ExecParamsInCtx struct {
@@ -13,14 +13,14 @@ type ExecParamsInCtx struct {
 	Target int
 	Weight int
 
-	Stages []*ptProto.Stage // ramp generator
+	Stages []*ptproto.Stage // ramp generator
 
 	Duration int
 	Loop     int
 
 	Mode ptconsts.ExecMode
 
-	Scenario            *ptProto.Scenario
+	Scenario            *ptproto.Scenario
 	RunnerExecScenarios map[uint]map[uint]bool
 
 	ServerAddress string

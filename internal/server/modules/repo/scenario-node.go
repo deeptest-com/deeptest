@@ -82,6 +82,18 @@ func (r *ScenarioNodeRepo) CreateDefault(scenarioId, projectId, createUserId uin
 	return
 }
 func (r *ScenarioNodeRepo) CreateFoldersForPerformance(parentId, scenarioId, projectId, createUserId uint) (err error) {
+	goalPo := model.Processor{
+		ParentId:       parentId,
+		ScenarioId:     scenarioId,
+		ProjectId:      projectId,
+		Name:           "测试目标",
+		EntityCategory: consts.ProcessorPerformanceGoal,
+		EntityType:     consts.ProcessorPerformanceGoalDefault,
+		EntityId:       0,
+		CreatedBy:      createUserId,
+	}
+	err = r.DB.Create(&goalPo).Error
+
 	runnersPo := model.Processor{
 		ParentId:       parentId,
 		ScenarioId:     scenarioId,

@@ -155,6 +155,26 @@ func (p *Processor) RestoreEntity() (err error) {
 		json.Unmarshal(bytes, &ret)
 		p.Entity = ret
 
+	//case consts.ProcessorPerformanceGoal:
+	//	ret := ProcessorPerformanceGoal{}
+	//	json.Unmarshal(bytes, &ret)
+	//	p.Entity = ret
+	//
+	//case consts.ProcessorPerformanceRunner:
+	//	ret := ProcessorPerformanceRunner{}
+	//	json.Unmarshal(bytes, &ret)
+	//	p.Entity = ret
+	//
+	//case consts.ProcessorPerformanceScenario:
+	//	ret := ProcessorPerformanceScenario{}
+	//	json.Unmarshal(bytes, &ret)
+	//	p.Entity = ret
+	//
+	//case consts.ProcessorPerformanceRendezvous:
+	//	ret := ProcessorPerformanceRendezvous{}
+	//	json.Unmarshal(bytes, &ret)
+	//	p.Entity = ret
+
 	default:
 	}
 

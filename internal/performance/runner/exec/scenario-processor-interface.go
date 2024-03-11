@@ -1,8 +1,9 @@
 package runnerExec
 
 import (
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
@@ -13,7 +14,7 @@ var (
 	requestCountSent = 0
 )
 
-func ExecInterfaceProcessor(processor *ptProto.Processor, room string, vuNo, index int, runnerId int32, sender metrics.MessageSender) {
+func ExecInterfaceProcessor(processor *agentExec.Processor, room string, vuNo, index int, runnerId int32, sender metrics.MessageSender) {
 	startTime := time.Now().UnixMilli()
 
 	_, err := _httpUtils.Get("http://111.231.16.35:9000/get")
@@ -23,7 +24,7 @@ func ExecInterfaceProcessor(processor *ptProto.Processor, room string, vuNo, ind
 
 	// simulate processor result
 	r := _intUtils.GenUniqueRandNum(100, 300, 1)[0]
-	duration := int(processor.Id)*1000 + _intUtils.GenUniqueRandNum(100, 3001, 1)[0]
+	duration := int(processor.ID)*1000 + _intUtils.GenUniqueRandNum(100, 3001, 1)[0]
 	endTime := startTime + int64(duration)
 	time.Sleep(time.Duration(r) * time.Millisecond)
 
@@ -32,8 +33,8 @@ func ExecInterfaceProcessor(processor *ptProto.Processor, room string, vuNo, ind
 		status = "fail"
 	}
 
-	record := ptProto.PerformanceExecRecord{
-		RecordId:   processor.Id,
+	record := ptproto.PerformanceExecRecord{
+		RecordId:   int32(processor.ID),
 		RecordName: processor.Name,
 
 		StartTime: startTime,
@@ -44,12 +45,12 @@ func ExecInterfaceProcessor(processor *ptProto.Processor, room string, vuNo, ind
 		VuId: int32(vuNo),
 	}
 
-	result := ptProto.PerformanceExecResp{
+	result := ptproto.PerformanceExecResp{
 		Timestamp: time.Now().UnixMilli(),
 		RunnerId:  runnerId,
 		Room:      room,
 
-		Requests: []*ptProto.PerformanceExecRecord{
+		Requests: []*ptproto.PerformanceExecRecord{
 			&record,
 		},
 	}

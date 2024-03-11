@@ -60,8 +60,11 @@ type PerformanceTestService struct {
 
 	client *ptproto.PerformanceServiceClient
 
-	GrpcService         *GrpcService         `inject:"private"`
-	ScheduleService     *ScheduleService     `inject:"private"`
+	PerformanceRemoteService *PerformanceRemoteService `inject:""`
+
+	GrpcService     *GrpcService     `inject:"private"`
+	ScheduleService *ScheduleService `inject:"private"`
+
 	RemoteRunnerService *RemoteRunnerService `inject:"private"`
 }
 
@@ -70,18 +73,26 @@ type PerformanceTestService struct {
 func (s *PerformanceTestService) ExecStart(
 	req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
 
+	// ignore if already a test is running
 	if s.TestReq != nil {
 		ptwebsocket.SendExecInstructionToClient(
 			"performance testing is running on conductor", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
 		return
 	}
 
+	// cache request
+	s.TestReq = &req
+
+	// load test data from remote server
+	data, err := s.PerformanceRemoteService.GetPlanToExec(req)
+	if err != nil {
+		return
+	}
+
 	ptwebsocket.SendExecInstructionToClient(
 		"performance testing start", nil, ptconsts.MsgInstructionStart, wsMsg)
 
-	ptlog.Init(req.Room)
-
-	s.TestReq = &req
+	ptlog.Init(data.Room)
 
 	AddTestItem(s.TestReq.Room, ptconsts.Conductor, s.TestReq, nil)
 
@@ -89,21 +100,21 @@ func (s *PerformanceTestService) ExecStart(
 	go func() {
 		s.execCtx, s.execCancel = context.WithCancel(context.Background())
 
-		dao.ClearData(req.Room)
-		dao.ResetInfluxdb(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
+		dao.ClearData(data.Room)
+		dao.ResetInfluxdb(data.Room, data.InfluxdbAddress, data.InfluxdbOrg, data.InfluxdbToken)
 		s.GrpcService.ConductorClearAllGlobalVar(context.Background(), &ptproto.GlobalVarRequest{})
 
 		// stop execution in 2 ways:
 		// 1. call cancel in this method by websocket request OR after all runners completed
 		// 2. sub cancel instruction from runner via grpc
 
-		go s.ScheduleService.SendMetricsToClient(s.execCtx, s.execCancel, req, wsMsg)
+		go s.ScheduleService.SendMetricsToClient(s.execCtx, s.execCancel, data, wsMsg)
 
 		var wgRunners sync.WaitGroup
-		for _, runner := range req.Runners {
+		for _, runner := range data.Runners {
 			client := s.ConnectGrpc(runner)
 
-			stream, err := s.CallRunnerExecStartByGrpc(client, req, runner.Id, runner.Name, runner.Weight)
+			stream, err := s.CallRunnerExecStartByGrpc(client, data, runner.Id, runner.Name, runner.Weight)
 			if err != nil {
 				ptlog.Logf("failed to call remote runner via grpc, err %s", err.Error())
 				continue
@@ -122,7 +133,7 @@ func (s *PerformanceTestService) ExecStart(
 		// wait all runners finished
 		wgRunners.Wait()
 
-		s.StopAndClearScene(req.Room, wsMsg)
+		s.StopAndClearScene(data.Room, wsMsg)
 	}()
 
 	return
@@ -133,8 +144,14 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 		return
 	}
 
+	// load test data from remote server
+	data, err := s.PerformanceRemoteService.GetPlanToExec(*s.TestReq)
+	if err != nil {
+		return
+	}
+
 	// call remote runners to stop
-	s.RemoteRunnerService.CallStop(*s.TestReq)
+	s.RemoteRunnerService.CallStop(data)
 
 	s.StopAndClearScene(s.TestReq.Room, wsMsg)
 
@@ -157,7 +174,7 @@ func (s *PerformanceTestService) StopAndClearScene(room string, wsMsg *websocket
 }
 
 // call grpc client
-func (s *PerformanceTestService) ConnectGrpc(runner *ptproto.Runner) (client ptproto.PerformanceServiceClient) {
+func (s *PerformanceTestService) ConnectGrpc(runner *ptdomain.Runner) (client ptproto.PerformanceServiceClient) {
 	connect, err := grpc.Dial(runner.GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalln(err)
@@ -169,7 +186,7 @@ func (s *PerformanceTestService) ConnectGrpc(runner *ptproto.Runner) (client ptp
 }
 
 func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
-	client ptproto.PerformanceServiceClient, req ptdomain.PerformanceTestReq, runnerId int32, runnerName string, weight int32) (stream ptproto.PerformanceService_RunnerExecStartClient, err error) {
+	client ptproto.PerformanceServiceClient, req ptdomain.PerformanceTestData, runnerId int32, runnerName string, weight int32) (stream ptproto.PerformanceService_RunnerExecStartClient, err error) {
 
 	stream, err = client.RunnerExecStart(context.Background())
 	if err != nil {
@@ -232,7 +249,7 @@ func (s *PerformanceTestService) handleGrpcMsg(stream ptproto.PerformanceService
 }
 
 // helper methods
-func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.PerformanceTestReq, runnerId int32) (
+func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.PerformanceTestData, runnerId int32) (
 	ret []*ptproto.Scenario) {
 
 	notSet := false

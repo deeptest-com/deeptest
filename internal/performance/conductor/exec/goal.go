@@ -9,19 +9,19 @@ import (
 func IsGoalMet(req ptdomain.PerformanceTestData,
 	avgResponseTime, avgQps float64, failed, total int32) (ret bool) {
 
-	if req.GoalAvgResponseTime > 0 {
-		if avgResponseTime > req.GoalAvgResponseTime*1000 {
+	if req.Goal.ResponseTime > 0 {
+		if avgResponseTime > float64(req.Goal.ResponseTime*1000) {
 			return true
 		}
 	}
 
-	if req.GoalAvgQps > 0 {
-		if avgQps > req.GoalAvgQps {
+	if req.Goal.Qps > 0 {
+		if avgQps > float64(req.Goal.Qps) {
 			return true
 		}
 	}
 
-	if req.GoalFailRate > 0 {
+	if req.Goal.FailRate > 0 {
 		// 改成比率
 		//if failed > req.GoalFailRate {
 		//	return true

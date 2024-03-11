@@ -4,20 +4,20 @@ import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 )
 
 func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
-	scenario *ptProto.Scenario, weight int32, room, serverAddress string,
-	runnerId int32, runnerName string, sender metrics.MessageSender) (result ptProto.PerformanceExecResp) {
+	scenario *ptproto.Scenario, weight int32, room, serverAddress string,
+	runnerId int32, runnerName string, sender metrics.MessageSender) (result ptproto.PerformanceExecResp) {
 
 	var generater VuGenerator
 
 	var valueCtx context.Context
 
 	if scenario.GenerateType == ptconsts.GeneratorConstant.String() {
-		runDur := int(scenario.Stages[0].Duration)
+		runDur := int(scenario.Duration)
 
 		data := ptdomain.ExecParamsInCtx{
 			Scenario: scenario,

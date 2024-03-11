@@ -252,9 +252,14 @@ type ProcessorPerformanceScenario struct {
 	BaseModel
 	agentExec.ProcessorEntityBase
 
-	GenerateType ptconsts.GenerateType       `json:"generateType"`
-	Target       int                         `json:"target"`
-	Stages       []ProcessorPerformanceStage `gorm:"-" json:"stages"`
+	GenerateType ptconsts.GenerateType `json:"generateType"`
+
+	// for constant generate type
+	Target   int `json:"target"`
+	Duration int `json:"duration"`
+
+	// for ramp generate type
+	Stages []ProcessorPerformanceStage `gorm:"-" json:"stages"`
 
 	RunnerIds    []int  `gorm:"-" json:"runnerIds"`
 	RunnerIdsRaw string `json:"runnerIdsRaw"`

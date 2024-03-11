@@ -20,10 +20,15 @@ message Scenario {
   string name = 2;
 
   string generateType = 3;
-  int32 target = 4;
 
-  repeated Stage stages = 5;
-  bytes processorRaw = 6;
+  // for constant generate type
+  int32 target = 4;
+  int32 duration = 5;
+
+  // for ramp generate type
+  repeated Stage stages = 6;
+
+  bytes processorRaw = 7;
 }
 
 message Stage {

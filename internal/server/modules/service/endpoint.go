@@ -46,6 +46,7 @@ type EndpointService struct {
 	EndpointMockExpectRepo    *repo.EndpointMockExpectRepo `inject:""`
 	EndpointMockExpectService *EndpointMockExpectService   `inject:""`
 	EndpointMockScriptService *EndpointMockScriptService   `inject:""`
+	EndpointFavoriteRepo      *repo.EndpointFavoriteRepo   `inject:""`
 }
 
 func (s *EndpointService) Paginate(tenantId consts.TenantId, req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -896,4 +897,25 @@ func (s *EndpointService) dependComponents(endpoint *model.Endpoint, components 
 
 	return
 
+}
+
+func (s *EndpointService) Favorite(tenantId consts.TenantId, endpointId, userId uint) (err error) {
+	record := s.EndpointFavoriteRepo.Get(tenantId, endpointId, userId)
+	if record.ID == 0 {
+		record.EndpointId = endpointId
+		record.UserId = userId
+		err = s.EndpointFavoriteRepo.Save(tenantId, 0, record)
+	} else {
+		err = s.EndpointFavoriteRepo.Delete(tenantId, record)
+	}
+
+	return
+}
+
+func (s *EndpointService) IsFavorite(tenantId consts.TenantId, endpointId, userId uint) bool {
+	record := s.EndpointFavoriteRepo.Get(tenantId, endpointId, userId)
+	if record.ID != 0 {
+		return true
+	}
+	return false
 }

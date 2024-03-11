@@ -105,6 +105,8 @@ func (c *EndpointCtrl) Detail(ctx iris.Context) {
 	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(tenantId, uint(id)))
 	if id != 0 {
 		res := c.EndpointService.GetById(tenantId, uint(id), version)
+		userId := multi.GetUserId(ctx)
+		res.IsFavorite = c.EndpointService.IsFavorite(tenantId, uint(id), userId)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})

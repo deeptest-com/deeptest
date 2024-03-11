@@ -21,6 +21,7 @@ type EndpointRepo struct {
 	ProjectRepo           *ProjectRepo           `inject:""`
 	EndpointTagRepo       *EndpointTagRepo       `inject:""`
 	EnvironmentRepo       *EnvironmentRepo       `inject:""`
+	EndpointFavoriteRepo  *EndpointFavoriteRepo  `inject:""`
 }
 
 func (r *EndpointRepo) Paginate(tenantId consts.TenantId, req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -560,4 +561,14 @@ func (r *EndpointRepo) ChangeSnapShot(tenantId consts.TenantId, endpointId uint,
 func (r *EndpointRepo) GetByCategoryId(tenantId consts.TenantId, categoryId uint) (endpoints []model.Endpoint, err error) {
 	err = r.GetDB(tenantId).Where("category_id = ?", categoryId).Order("created_at desc").Find(&endpoints).Error
 	return endpoints, err
+}
+
+func (r *EndpointRepo) FavoriteList(tenantId consts.TenantId, userId uint) (endpoints []model.Endpoint, err error) {
+	endpointIds, err := r.EndpointFavoriteRepo.GetEndpointIds(tenantId, userId)
+	if err != nil {
+		return
+	}
+	err = r.GetDB(tenantId).Where("id in  ? and not deleted", endpointIds).Order("created_at desc").Find(&endpoints).Error
+
+	return
 }

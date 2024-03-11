@@ -7,13 +7,14 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-type FavoriteModule struct {
-	DocumentCtrl *handler.DocumentCtrl `inject:""`
+type EndpointFavoriteModule struct {
+	EndpointFavoriteCtrl *handler.EndpointFavoriteCtrl `inject:""`
 }
 
-func (m *FavoriteModule) Party() module.WebModule {
+func (m *EndpointFavoriteModule) Party() module.WebModule {
 	handler := func(public iris.Party) {
 		public.Use(middleware.InitCheck(), middleware.JwtHandler(), middleware.OperationRecord(), middleware.Casbin(), middleware.ProjectPerm())
+		public.Post("/favorite", m.EndpointFavoriteCtrl.Favorite).Name = "收藏"
 	}
-	return module.NewModule("/favorite", handler)
+	return module.NewModule("/endpoints", handler)
 }

@@ -36,6 +36,8 @@ type Endpoint struct {
 	Snapshot      string               `gorm:"type:longtext" json:"snapshot"`
 	ChangedTime   *time.Time           `json:"changedTime,omitempty"`
 	ChangedStatus consts.ChangedStatus `gorm:"default:1" json:"changedStatus,omitempty"`
+
+	IsFavorite bool `gorm:"-" json:"isFavorite"`
 }
 
 func (Endpoint) TableName() string {

@@ -140,3 +140,7 @@ type UpdateNameReq struct {
 	Id   uint   `json:"id"`
 	Name string `json:"name"`
 }
+
+type FavoriteReq struct {
+	Id uint `json:"id"`
+}

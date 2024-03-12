@@ -65,10 +65,12 @@ func (s *SummaryDetailsService) Details(tenantId consts.TenantId, userId int64) 
 }
 
 func (s *SummaryDetailsService) HandleSummaryDetails(tenantId consts.TenantId, userId int64, userProjectIds []int64, allDetails map[int64]model.SummaryDetails, allProjectsInfo []model.SummaryProjectInfo) (resAllDetails []v1.ResSummaryDetails, resUserDetails []v1.ResSummaryDetails, err error) {
+
 	isAdminUser, err := s.UserRepo.IsAdminUser(tenantId, uint(userId))
 	if err != nil {
 		return
 	}
+
 	projectsBugCount, err := s.CountBugsGroupByProjectId(tenantId)
 	projectsUsers, err := s.FindAllUserIdAndNameOfProject(tenantId)
 	projectsUserListGroupByProject := s.LetUsersGroupByProjectId(allProjectsInfo, projectsUsers)
@@ -82,10 +84,13 @@ func (s *SummaryDetailsService) HandleSummaryDetails(tenantId consts.TenantId, u
 		resDetail.Id = uint(allProjectsInfoIndex + 1)
 		resDetail.BugTotal = projectsBugCount[int64(projectInfo.ID)]
 		resDetail.UserList = projectsUserListGroupByProject[int64(projectInfo.ID)]
+		if isAdminUser { //管理员所有项目都能访问
+			resDetail.Accessible = 1
+		}
 
 		//当前项目如果是用户参与的项目，则添加到resUserDetails中
 		for userProjectIdsIndex, id := range userProjectIds {
-			if int64(projectInfo.ID) == id || isAdminUser {
+			if int64(projectInfo.ID) == id {
 				resDetail.Id = uint(userProjectIdsIndex + 1)
 				resDetail.Accessible = 1
 				resUserDetails = append(resUserDetails, resDetail)

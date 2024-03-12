@@ -3,7 +3,7 @@ package service
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/integration/service"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -18,7 +18,7 @@ type ProjectRolePermService struct {
 	ProjectRoleRepo     *repo.ProjectRoleRepo     `inject:""`
 	ProjectRoleMenuRepo *repo.ProjectRoleMenuRepo `inject:""`
 	ProfileRepo         *repo.ProfileRepo         `inject:""`
-	RemoteService       *service.RemoteService    `inject:""`
+	RemoteService       *leyan.RemoteService      `inject:""`
 }
 
 func (s *ProjectRolePermService) AllRoleList(tenantId consts.TenantId) (data []model.ProjectRole, err error) {

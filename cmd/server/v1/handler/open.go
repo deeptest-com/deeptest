@@ -3,6 +3,7 @@ package handler
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/integration/enum"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -14,7 +15,7 @@ import (
 type OpenCtrl struct {
 	ProjectService            *service.ProjectService            `inject:""`
 	IntegrationProjectService *integrationService.ProjectService `inject:""`
-	IntegrationRoleService    *integrationService.RoleService    `inject:""`
+	UserService               *leyan.User                        `inject:""`
 	BaseCtrl
 }
 
@@ -71,7 +72,7 @@ func (c *OpenCtrl) GetProjectRole(ctx iris.Context) {
 
 	var role string
 	var err error
-	isAdmin, _ := c.IntegrationRoleService.SetIsSuperAdminCache(tenantId, username)
+	isAdmin, _ := c.UserService.SetIsSuperAdminCache(tenantId, username)
 
 	if config.CONFIG.System.SysEnv == "ly" && isAdmin {
 		role = enum.SuperAdmin

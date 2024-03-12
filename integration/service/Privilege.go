@@ -1,12 +1,13 @@
 package service
 
 import (
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 )
 
 type PrivilegeService struct {
-	RemoteService *RemoteService `inject:""`
+	RemoteService *leyan.RemoteService `inject:""`
 }
 
 func (s *PrivilegeService) GetAll(tenantId consts.TenantId, username, roleCode string, needSysAuth bool) (ret []string, err error) {

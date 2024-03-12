@@ -6,7 +6,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/integration/service"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -29,7 +29,7 @@ type ThirdPartySyncService struct {
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
 	UserRepo                 *repo.UserRepo              `inject:""`
 	BaseRepo                 *repo.BaseRepo              `inject:""`
-	RemoteService            *service.RemoteService      `inject:""`
+	RemoteService            *leyan.RemoteService        `inject:""`
 	ServeService             *ServeService               `inject:""`
 	EndpointService          *EndpointService            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`

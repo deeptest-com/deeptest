@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -19,7 +20,7 @@ type MessageService struct {
 	MessageRepo     *repo.MessageRepo     `inject:""`
 	BaseRepo        *repo.BaseRepo        `inject:""`
 	RoleService     *RoleService          `inject:""`
-	RemoteService   *RemoteService        `inject:""`
+	RemoteService   *leyan.RemoteService  `inject:""`
 	Cron            *cron.ServerCron      `inject:""`
 }
 

@@ -1,16 +1,13 @@
 package service
 
 import (
-	"github.com/aaronchen2k/deeptest/integration/enum"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
-	"github.com/snowlyg/helper/arr"
-	"time"
 )
 
 type RoleService struct {
-	RemoteService *RemoteService `inject:""`
+	RemoteService *leyan.RemoteService `inject:""`
+	UserService   *leyan.User          `inject:""`
 }
 
 func (s *RoleService) GetRoleValueNameMap(tenantId consts.TenantId) (res map[string]string, err error) {
@@ -35,65 +32,6 @@ func (s *RoleService) GetRoleNameByValue(tenantId consts.TenantId, value string)
 
 	if name, ok := roleValueNameMap[value]; ok {
 		res = name
-	}
-
-	return
-}
-
-func (s *RoleService) GetUserRoleArr(tenantId consts.TenantId, username string) (ret []string, err error) {
-	roles, err := s.RemoteService.GetUserOpenRoles(tenantId, username)
-	if err != nil {
-		return
-	}
-
-	for _, v := range roles {
-		ret = append(ret, v.RoleValue)
-	}
-
-	return
-}
-
-func (s *RoleService) IsSuperAdmin(tenantId consts.TenantId, username string) (ret bool, err error) {
-	roleValueArr, err := s.GetUserRoleArr(tenantId, username)
-	if err != nil {
-		return
-	}
-
-	ret = arr.InArrayS(roleValueArr, enum.SuperAdmin)
-
-	return
-}
-
-func (s *RoleService) IsSuperAdminInCache(tenantId consts.TenantId, username string) (ret bool, err error) {
-	redisKey := string(tenantId) + "-" + "isAdmin-" + username
-
-	isAdmin, err := cache.GetCacheString(redisKey)
-	if err == nil {
-		if isAdmin == serverConsts.IsAdminRole {
-			ret = true
-		}
-		return ret, err
-	}
-
-	return
-}
-
-func (s *RoleService) SetIsSuperAdminCache(tenantId consts.TenantId, username string) (ret bool, err error) {
-	ret, err = s.IsSuperAdminInCache(tenantId, username)
-	if err == nil {
-		return
-	}
-
-	ret, err = s.IsSuperAdmin(tenantId, username)
-	if err != nil {
-		return
-	}
-
-	redisKey := string(tenantId) + "-" + "isAdmin-" + username
-	if ret {
-		err = cache.SetCache(redisKey, serverConsts.IsAdminRole, time.Second*30)
-	} else {
-		err = cache.SetCache(redisKey, serverConsts.IsNotAdminRole, time.Second*30)
 	}
 
 	return

@@ -7,14 +7,15 @@ import (
 
 // category
 type Category struct {
-	Id       int64       `json:"id"`
-	Name     string      `json:"name"`
-	Desc     string      `json:"desc"`
-	ParentId int64       `json:"parentId"`
-	Children []*Category `json:"children"`
-	Slots    iris.Map    `json:"slots"`
-	Count    int64       `json:"count"`
-	EntityId uint        `json:"entityId"`
+	Id         int64       `json:"id"`
+	Name       string      `json:"name"`
+	Desc       string      `json:"desc"`
+	ParentId   int64       `json:"parentId"`
+	Children   []*Category `json:"children"`
+	Slots      iris.Map    `json:"slots"`
+	Count      int64       `json:"count"`
+	EntityId   uint        `json:"entityId"`
+	EntityData interface{} `json:"entityData"`
 }
 
 type CategoryCreateReq struct {

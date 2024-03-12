@@ -1,6 +1,7 @@
 package service
 
 import (
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -14,7 +15,7 @@ type ProjectMenuService struct {
 	ProjectMenuRepo  *repo.ProjectMenuRepo     `inject:""`
 	ProjectRoleRepo  *repo.ProjectRoleRepo     `inject:""`
 	UserRepo         *repo.UserRepo            `inject:""`
-	RemoteService    *service.RemoteService    `inject:""`
+	RemoteService    *leyan.RemoteService      `inject:""`
 	PrivilegeService *service.PrivilegeService `inject:""`
 	RoleService      *RoleService              `inject:""`
 }

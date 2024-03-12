@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -360,14 +360,7 @@ func (r *UserRepo) IsAdminUser(tenantId consts.TenantId, id uint) (ret bool, err
 	}
 
 	if config.CONFIG.System.SysEnv == "ly" {
-		redisKey := string(tenantId) + "-" + "isAdmin-" + user.Username
-		isAdminStr, err := cache.GetCacheString(redisKey)
-
-		if err == nil && isAdminStr == serverConsts.IsAdminRole {
-			ret = true
-		}
-
-		return ret, nil
+		return new(service.User).SetIsSuperAdminCache(tenantId, user.Username)
 	}
 
 	return arr.InArrayS(user.SysRoles, serverConsts.AdminRoleName), nil

@@ -25,7 +25,7 @@ func (m *CategoryModule) Party() module.WebModule {
 		index.Post("/move", m.CategoryCtrl.Move).Name = "移动节点"
 		index.Post("/batchAddSchemaRoot", m.CategoryCtrl.BatchAddSchemaRoot).Name = "批量初始化schema的根分类"
 		index.Get("/copy/{id:int}", m.CategoryCtrl.Copy).Name = "复制节点"
-		index.Get("/loadChildren", m.CategoryCtrl.Load).Name = "分类树状数据"
+		index.Get("/loadChildren", m.CategoryCtrl.LoadChildren).Name = "分类树状数据"
 	}
 
 	return module.NewModule("/categories", handler)

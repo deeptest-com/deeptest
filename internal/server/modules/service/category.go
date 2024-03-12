@@ -458,23 +458,33 @@ func (s *CategoryService) copyDataByCategoryId(tenantId consts.TenantId, typ ser
 
 func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId, categoryId int) (ret []v1.Category, err error) {
 
+	var nodes []*model.Category
 	if categoryId == 0 {
-		node, err := s.CategoryRepo.GetRootNode(tenantId, uint(projectId), typ)
-		if err != nil {
-			return
+		rootNode, err := s.CategoryRepo.GetRootNode(tenantId, uint(projectId), typ)
+		if err == nil {
+			nodes = append(nodes, &rootNode)
 		}
-
-		categoryId = int(node.ID)
+	} else {
+		nodes, _ = s.CategoryRepo.GetChildrenNodes(tenantId, uint(categoryId))
 	}
-
-	nodes, err := s.CategoryRepo.GetChildrenNodes(tenantId, uint(categoryId))
 
 	for _, node := range nodes {
 		var category v1.Category
-		copier.CopyWithOption(&category, node, copier.Option{IgnoreEmpty: true, DeepCopy: true})
-		category.Count = s.CategoryRepo.GetEntityCountByCategoryId(tenantId, uint(categoryId))
+		copier.CopyWithOption(&category, *node, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+		category.Id = int64(node.ID)
+		if node.EntityId != 0 {
+			//category.Count = s.CategoryRepo.GetEntityCountByCategoryId(tenantId, node.ID)
+		} else {
+			category.Count = s.CategoryRepo.GetEntityCountByCategoryId(tenantId, node.ID)
+		}
+
 		ret = append(ret, category)
 	}
 
 	return
+}
+
+func (s *CategoryService) GetEntity(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, id uint) (data map[string]interface{}, err error) {
+	repo := s.getRepo(tenantId, typ)
+	return repo.GetEntity(tenantId, id)
 }

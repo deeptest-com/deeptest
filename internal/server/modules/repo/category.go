@@ -195,7 +195,7 @@ func (r *CategoryRepo) BatchDelete(tenantId consts.TenantId, ids []uint) (err er
 	return
 }
 func (r *CategoryRepo) GetChildren(tenantId consts.TenantId, nodeId uint) (children []*model.Category, err error) {
-	err = r.GetDB(tenantId).Where("parent_id=?", nodeId).Find(&children).Error
+	err = r.GetDB(tenantId).Where("parent_id=? and not deleted", nodeId).Find(&children).Error
 	return
 }
 
@@ -290,7 +290,7 @@ func (r *CategoryRepo) GetRootNode(tenantId consts.TenantId, projectId uint, typ
 	err = r.GetDB(tenantId).Model(&model.Category{}).
 		Where("project_id = ?", projectId).
 		Where("type = ?", typ).
-		Where("name = ? AND NOT deleted", "分类").
+		Where("parent_id = ? AND NOT deleted", 0).
 		First(&node).Error
 
 	return
@@ -426,7 +426,7 @@ func (r *CategoryRepo) GetChildrenNodes(tenantId consts.TenantId, categoryId uin
 }
 
 func (r *CategoryRepo) GetEntityCountByCategoryId(tenantId consts.TenantId, categoryId uint) int64 {
-	var ret map[string]int64
+	var ret []int64
 	sql := `WITH RECURSIVE temp(id,count) AS
 		(
 			SELECT id,if(entity_id=0,0,1 ) count from biz_category where parent_id = %d and not deleted
@@ -438,8 +438,8 @@ func (r *CategoryRepo) GetEntityCountByCategoryId(tenantId consts.TenantId, cate
 	sql = fmt.Sprintf(sql, categoryId)
 	r.GetDB(tenantId).Raw(sql).Scan(&ret)
 
-	if count, ok := ret["count"]; ok {
-		return count
+	if len(ret) > 0 {
+		return ret[0]
 	}
 
 	return 0

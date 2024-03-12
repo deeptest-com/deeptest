@@ -1,5 +1,5 @@
 package serverDomain
 
 type ReqFavorite struct {
-	Id uint `json:"id"`git
+	Id uint `json:"id"`
 }

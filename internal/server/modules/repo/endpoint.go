@@ -572,3 +572,15 @@ func (r *EndpointRepo) FavoriteList(tenantId consts.TenantId, userId uint) (endp
 
 	return
 }
+
+func (r *EndpointRepo) GetEntity(tenantId consts.TenantId, id uint) (data map[string]interface{}, err error) {
+	data = map[string]interface{}{}
+	endpoint, err := r.Get(tenantId, id)
+	if err != nil {
+		return
+	}
+	data["id"] = endpoint.ID
+	data["name"] = endpoint.Title
+	data["method"], _ = r.EndpointInterfaceRepo.GetMethodsByEndpointId(tenantId, id)
+	return
+}

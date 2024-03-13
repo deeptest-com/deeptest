@@ -78,6 +78,8 @@ func (s *EndpointService) Save(tenantId consts.TenantId, endpoint model.Endpoint
 
 	s.DebugInterfaceRepo.SyncPath(tenantId, ret.ID, endpoint.ServeId, endpoint.Path, ret.Path)
 
+	s.CategoryRepo.SaveEntityNode(tenantId, serverConsts.EndpointCategory, endpoint.ProjectId, uint(endpoint.CategoryId), endpoint.ID, endpoint.Title)
+
 	return endpoint.ID, err
 }
 

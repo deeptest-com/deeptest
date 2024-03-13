@@ -444,3 +444,13 @@ func (r *CategoryRepo) GetEntityCountByCategoryId(tenantId consts.TenantId, cate
 
 	return 0
 }
+
+func (r *CategoryRepo) SaveEntityNode(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId, categoryId, entityId uint, name string) (err error) {
+
+	entity, _ := r.GetByEntityId(tenantId, entityId, typ)
+	entity.ProjectId, entity.Name, entity.ParentId, entity.Type = projectId, name, int(categoryId), typ
+	entity.Ordr = r.GetMaxOrder(tenantId, categoryId, typ, projectId)
+
+	return r.GetDB(tenantId).Save(&entity).Error
+
+}

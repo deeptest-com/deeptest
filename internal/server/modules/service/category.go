@@ -473,7 +473,7 @@ func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, typ serverC
 		copier.CopyWithOption(&category, *node, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 		category.Id = int64(node.ID)
 		if node.EntityId != 0 {
-			//category.Count = s.CategoryRepo.GetEntityCountByCategoryId(tenantId, node.ID)
+			category.EntityData, _ = s.GetEntity(tenantId, typ, node.EntityId)
 		} else {
 			category.Count = s.CategoryRepo.GetEntityCountByCategoryId(tenantId, node.ID)
 		}

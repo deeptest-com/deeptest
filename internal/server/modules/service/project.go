@@ -11,7 +11,6 @@ import (
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/source"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -21,7 +20,6 @@ import (
 type ProjectService struct {
 	ProjectRepo               *repo.ProjectRepo                  `inject:""`
 	ServeRepo                 *repo.ServeRepo                    `inject:""`
-	SampleSource              *source.SampleSource               `inject:""`
 	UserRepo                  *repo.UserRepo                     `inject:""`
 	ProjectRoleRepo           *repo.ProjectRoleRepo              `inject:""`
 	MessageRepo               *repo.MessageRepo                  `inject:""`

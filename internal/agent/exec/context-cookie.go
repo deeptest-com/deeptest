@@ -17,7 +17,6 @@ func ListScopeCookie(session *ExecSession, processorId uint) (cookies []domain.E
 			}
 		}
 	}
-
 	return
 }
 

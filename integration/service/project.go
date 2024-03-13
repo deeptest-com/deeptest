@@ -88,7 +88,7 @@ func (s *ProjectService) Save(tenantId consts.TenantId, req integrationDomain.Pr
 		return
 	}
 
-	if req.SyncMembers {
+	if req.SyncMembers && len(req.Spaces) > 0 {
 		err = s.SyncSpaceMembers(tenantId, projectId, req.Spaces)
 	}
 

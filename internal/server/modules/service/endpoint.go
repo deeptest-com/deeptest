@@ -122,7 +122,14 @@ func (s *EndpointService) DeleteById(tenantId consts.TenantId, id uint) (err err
 	//}
 
 	err = s.EndpointRepo.DeleteById(tenantId, id)
+	if err != nil {
+		return
+	}
 	err = s.EndpointInterfaceRepo.DeleteByEndpoint(tenantId, id)
+	if err != nil {
+		return
+	}
+	err = s.CategoryRepo.DeleteByEntityId(tenantId, id)
 
 	return
 }

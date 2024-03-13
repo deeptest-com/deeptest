@@ -3,7 +3,7 @@ package service
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/integration/service"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -14,8 +14,8 @@ import (
 )
 
 type UserAuthService struct {
-	RemoteService *service.RemoteService `inject:""`
-	UserRepo      *repo.UserRepo         `inject:""`
+	RemoteService *leyan.RemoteService `inject:""`
+	UserRepo      *repo.UserRepo       `inject:""`
 }
 
 func (s *UserAuthService) Auth(tenantId consts.TenantId, token string) (user model.SysUser, err error) {

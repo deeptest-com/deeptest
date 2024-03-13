@@ -5,7 +5,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/integration/service"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
@@ -27,7 +27,7 @@ type ProjectService struct {
 	MessageRepo               *repo.MessageRepo                  `inject:""`
 	BaseRepo                  *repo.BaseRepo                     `inject:""`
 	IntegrationRepo           *repo.IntegrationRepo              `inject:""`
-	RemoteService             *service.RemoteService             `inject:""`
+	RemoteService             *leyan.RemoteService               `inject:""`
 	MessageService            *MessageService                    `inject:""`
 	UserService               *UserService                       `inject:""`
 	IntegrationProjectService *integrationService.ProjectService `inject:""`

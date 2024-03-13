@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
-	integrationService "github.com/aaronchen2k/deeptest/integration/service"
+	integrationService "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
@@ -128,7 +128,7 @@ func ProjectPerm() iris.Handler {
 		} else {
 			userName := multi.GetUsername(ctx)
 
-			roleService := new(integrationService.RoleService)
+			roleService := new(integrationService.User)
 			roleService.SetIsSuperAdminCache(tenantId, userName)
 		}
 

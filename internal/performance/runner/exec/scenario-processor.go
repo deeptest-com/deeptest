@@ -18,7 +18,6 @@ func ExecProcessors(timeoutCtx context.Context) (err error) {
 			ScenarioId: uint(execParams.Scenario.Id),
 			Name:       execParams.Scenario.Name,
 
-			BaseUrl:   "",
 			ExecScene: execParams.ExecScene,
 			ExecUuid:  execParams.Room,
 		},

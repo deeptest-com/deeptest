@@ -28,8 +28,6 @@ type ScenarioExecObjBase struct {
 	ScenarioId uint   `json:"scenarioId"`
 	Name       string `json:"name"`
 
-	BaseUrl string `json:"baseUrl"`
-
 	ExecScene domain.ExecScene `json:"execScene"`
 
 	ExecUuid  string `json:"execUuid"`

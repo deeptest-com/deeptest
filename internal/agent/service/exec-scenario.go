@@ -6,45 +6,35 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
-	"go.uber.org/zap"
 )
 
 func RunScenario(req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
-	logUtils.Infof("run scenario", zap.Int("ScenarioId", req.ScenarioId), zap.Int("environmentId", req.EnvironmentId))
+	logUtils.Infof("run scenario %d on environment %d", req.ScenarioId, req.EnvironmentId)
 
-	agentExec.ResetStat(req.ExecUuid)
-	agentExec.SetForceStopExec(req.ExecUuid, false)
-
-	agentExec.SetServerUrl(req.ExecUuid, req.ServerUrl)
-	agentExec.SetServerToken(req.ExecUuid, req.Token)
-
-	// start msg
+	// send start msg
 	execUtils.SendStartMsg(wsMsg)
 
-	//场景执行初始信息
+	// send init data
 	normalData := GetScenarioNormalData(req)
 	execUtils.SendInitializeMsg(normalData, wsMsg)
 
 	scenarioExecObj := GetScenarioToExec(req)
-	if scenarioExecObj == nil {
-		execUtils.SendEndMsg(wsMsg)
-		return
-	}
 	updateLocalValues(&scenarioExecObj.ExecScene, localVarsCache)
 
 	scenarioExecObj.ExecUuid = req.ExecUuid
 
-	session, err := ExecScenario(scenarioExecObj, req.EnvironmentId, wsMsg)
-	session.RootProcessor.Result.Stat = *agentExec.GetInterfaceStat(req.ExecUuid)
+	session := agentExec.NewScenarioExecSession(scenarioExecObj, req.EnvironmentId, wsMsg)
+	err = ExecScenario(session)
+
+	session.RootProcessor.Result.Stat = *agentExec.GetInterfaceStat(session.ExecUuid)
 	session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 	session.RootProcessor.Result.ScenarioId = uint(req.ScenarioId)
 
 	// submit result
 	report, _ := SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecObj.RootProcessor.ScenarioId,
-		agentExec.GetServerUrl(req.ExecUuid), agentExec.GetServerToken(req.ExecUuid))
+		session.ServerUrl, session.ServerToken)
 
 	execUtils.SendResultMsg(report, session.WsMsg)
-	//sendScenarioSubmitResult(session.RootProcessor.ID, session.WsMsg)
 
 	// end msg
 	execUtils.SendEndMsg(wsMsg)
@@ -52,28 +42,13 @@ func RunScenario(req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg 
 	return
 }
 
-func ExecScenario(execObj *agentExec.ScenarioExecObj, selectedEnvironmentId int, wsMsg *websocket.Message) (
-	session *agentExec.Session, err error) {
-	// variables etc.
-	agentExec.SetCurrEnvironmentId(execObj.ExecUuid, selectedEnvironmentId)
-	agentExec.SetExecScene(execObj.ExecUuid, execObj.ExecScene)
-
-	RestoreEntityFromRawAndSetParent(execObj.RootProcessor)
-
-	agentExec.InitScenarioExecContext(execObj)
-	agentExec.InitJsRuntime(execObj.RootProcessor.ProjectId, execObj.ExecUuid)
-
-	// start msg
-	//execUtils.SendStartMsg(wsMsg)
-
-	// execution
-	session = agentExec.NewSession(execObj, false, wsMsg)
-	session.ExecUuid = execObj.ExecUuid
+func ExecScenario(session *agentExec.ExecSession) (err error) {
+	RestoreEntityFromRawAndSetParent(session.RootProcessor)
 
 	session.Run()
 
 	if session.RootProcessor.Result != nil {
-		session.RootProcessor.Result.ScenarioId = execObj.ScenarioId
+		session.RootProcessor.Result.ScenarioId = session.ScenarioId
 	}
 
 	return

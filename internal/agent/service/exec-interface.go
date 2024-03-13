@@ -1,7 +1,6 @@
 package service
 
 import (
-	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -10,46 +9,35 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
-func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
-	agentExec.SetServerUrl(call.ExecUuid, call.ServerUrl)
-	agentExec.SetServerToken(call.ExecUuid, call.Token)
+func RunInterface(call domain.InterfaceCall) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
 	req := GetInterfaceToExec(call)
-	updateLocalValues(&req.ExecScene, call.LocalVarsCache)
-
-	agentExec.SetCurrDebugInterfaceId(call.ExecUuid, req.DebugData.DebugInterfaceId)
-	agentExec.SetCurrScenarioProcessorId(call.ExecUuid, 0) // not in a scenario
-
-	agentExec.SetCurrRequest(call.ExecUuid, domain.BaseRequest{})
-	agentExec.SetCurrResponse(call.ExecUuid, domain.DebugResponse{})
-	agentExec.SetExecScene(call.ExecUuid, req.ExecScene)
-
-	// init context
-	agentExec.InitDebugExecContext(call.ExecUuid)
-	agentExec.InitJsRuntime(call.Data.ProjectId, call.ExecUuid)
+	call.ExecScene = req.ExecScene
+	updateLocalValues(&call.ExecScene, call.LocalVarsCache)
+	session := agentExec.NewInterfaceExecSession(call)
 
 	agentExec.SetReqValueToGoja(&req.DebugData.BaseRequest)
 
-	agentExec.ExecPreConditions(&req, call.ExecUuid) // must before PreRequest, since it will update the vari in script
-	originalReqUri, _ := PreRequest(&req.DebugData, call.ExecUuid)
+	agentExec.ExecPreConditions(session, &req) // must before PreRequest, since it will update the vari in script
+	originalReqUri, _ := PreRequest(session, &req.DebugData)
 
-	agentExec.GetReqValueFromGoja(call.ExecUuid, call.Data.ProjectId)
+	agentExec.GetReqValueFromGoja(session)
 
-	// TODO: a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
-	if agentExec.GetCurrRequest(call.ExecUuid).Url != "" {
-		req.DebugData.BaseRequest = agentExec.GetCurrRequest(call.ExecUuid) // update to the value changed in goja
+	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
+	if session.CurrRequest.Url != "" {
+		req.DebugData.BaseRequest = session.CurrRequest // update to the value changed in goja
 	}
 
 	resultResp, err = RequestInterface(&req.DebugData)
 
 	agentExec.SetRespValueToGoja(&resultResp)
-	assertResultStatusPost, _ := agentExec.ExecPostConditions(&req, resultResp, call.ExecUuid)
+	assertResultStatusPost, _ := agentExec.ExecPostConditions(session, &req, resultResp)
 
-	agentExec.GetRespValueFromGoja(call.ExecUuid, call.Data.ProjectId)
+	agentExec.GetRespValueFromGoja(session)
 	PostRequest(originalReqUri, &req.DebugData)
 
 	// get the response data updated by script post-condition
-	if agentExec.GetCurrResponse(call.ExecUuid).Data != nil {
-		resultResp = agentExec.GetCurrResponse(call.ExecUuid)
+	if session.CurrResponse.Data != nil {
+		resultResp = session.CurrResponse
 	}
 
 	// submit result
@@ -60,9 +48,9 @@ func RunInterface(call agentDomain.InterfaceCall) (resultReq domain.DebugData, r
 	return
 }
 
-func PreRequest(req *domain.DebugData, execUuid string) (originalReqUri string, err error) {
+func PreRequest(session *agentExec.ExecSession, req *domain.DebugData) (originalReqUri string, err error) {
 	// replace variables
-	agentExec.ReplaceVariables(&req.BaseRequest, execUuid)
+	agentExec.ReplaceVariables(session, &req.BaseRequest)
 
 	// gen url
 	req.BaseRequest.Url, originalReqUri = UpdateUrl(*req)
@@ -73,7 +61,7 @@ func PreRequest(req *domain.DebugData, execUuid string) (originalReqUri string, 
 	if req.BodyFormData != nil {
 		for index, item := range *req.BodyFormData {
 			if item.Type == consts.FormDataTypeFile {
-				(*req.BodyFormData)[index].Value, err = agentExec.DownloadUploadedFile(item.Value, execUuid)
+				(*req.BodyFormData)[index].Value, err = agentExec.DownloadUploadedFile(session, item.Value)
 			}
 		}
 	}

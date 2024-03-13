@@ -30,17 +30,18 @@ type ProcessorInterface struct {
 	PostConditions []domain.InterfaceExecCondition `json:"postConditions"`
 }
 
-func (entity ProcessorInterface) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
 		}
 	}()
 	logUtils.Infof("interface entity")
-	SetCurrDebugInterfaceId(session.ExecUuid, processor.EntityId)
+	session.CurrScenarioProcessorId = processor.ID
+	session.CurrDebugInterfaceId = processor.EntityId
 
 	execStartTime := time.Now()
-	processor.Result = &agentDomain.ScenarioExecResult{
+	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                  int(entity.ProcessorID),
 		Name:                processor.Name,
 		ProcessorCategory:   entity.ProcessorCategory,
@@ -67,18 +68,18 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	SetReqValueToGoja(&baseRequest)
 
 	// exec pre-condition
-	entity.ExecPreConditions(processor, session)
+	entity.ExecPreConditions(session, processor)
 
 	// dealwith variables
-	ReplaceVariables(&baseRequest, session.ExecUuid)
+	ReplaceVariables(session, &baseRequest)
 
-	GetReqValueFromGoja(session.ExecUuid, processor.ProjectId)
+	GetReqValueFromGoja(session)
 
 	// add cookies
-	DealwithCookies(&baseRequest, entity.ProcessorID, session.ExecUuid)
+	DealwithCookies(session, entity.ProcessorID, &baseRequest)
 
 	// gen request url
-	GenRequestUrlWithBaseUrlAndPathParam(&baseRequest, processor.EntityId, entity.BaseUrl, session.ExecUuid)
+	GenRequestUrlWithBaseUrlAndPathParam(session, &baseRequest, processor.EntityId, entity.BaseUrl)
 
 	// send request
 	requestStartTime := time.Now()
@@ -87,13 +88,13 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 
 	// exec post-condition
 	SetRespValueToGoja(&entity.Response)
-	processor.Result.ResultStatus, _ = entity.ExecPostConditions(processor, &detail, session)
-	GetRespValueFromGoja(session.ExecUuid, processor.ProjectId)
+	processor.Result.ResultStatus, _ = entity.ExecPostConditions(session, processor, &detail)
+	GetRespValueFromGoja(session)
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	// get the response data updated by script post-condition
-	if GetCurrResponse(session.ExecUuid).Data != nil {
-		entity.Response = GetCurrResponse(session.ExecUuid)
+	if session.CurrResponse.Data != nil {
+		entity.Response = session.CurrResponse
 	}
 
 	// dealwith response
@@ -103,7 +104,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	}
 
 	for _, c := range entity.Response.Cookies {
-		SetCookie(processor.ParentId, c.Name, c.Value, c.Domain, c.ExpireTime, session.ExecUuid)
+		SetCookie(session, processor.ParentId, c.Name, c.Value, c.Domain, c.ExpireTime)
 	}
 
 	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
@@ -118,35 +119,35 @@ func (entity ProcessorInterface) Run(processor *Processor, session *Session) (er
 	return
 }
 
-func (entity *ProcessorInterface) ExecPreConditions(processor *Processor, session *Session) (err error) {
+func (entity *ProcessorInterface) ExecPreConditions(session *ExecSession, processor *Processor) (err error) {
 	for _, condition := range entity.PreConditions {
 		if condition.Type == consts.ConditionTypeScript {
-			entity.DealwithScriptCondition(condition, nil, processor.ProjectId, &processor.Result.PreConditions,
-				session.ExecUuid, false)
+			entity.DealwithScriptCondition(session, condition, nil, processor.ProjectId, &processor.Result.PreConditions,
+				false)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
-			entity.DealwithDatabaseOptCondition(condition, processor.ID, processor.ParentId, &processor.Result.PreConditions,
-				session.ExecUuid)
+			entity.DealwithDatabaseOptCondition(session, condition, processor.ID, processor.ParentId,
+				&processor.Result.PreConditions)
 		}
 	}
 
 	return
 }
 
-func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detail *map[string]interface{}, session *Session) (
+func (entity *ProcessorInterface) ExecPostConditions(session *ExecSession, processor *Processor, detail *map[string]interface{}) (
 	interfaceStatus consts.ResultStatus, err error) {
 	interfaceStatus = processor.Result.ResultStatus
 	for _, condition := range entity.PostConditions {
 		if condition.Type == consts.ConditionTypeScript {
-			entity.DealwithScriptCondition(condition, &interfaceStatus, processor.ProjectId, &processor.Result.PostConditions,
-				session.ExecUuid, true)
+			entity.DealwithScriptCondition(session, condition, &interfaceStatus, processor.ProjectId,
+				&processor.Result.PostConditions, true)
 
 		} else if condition.Type == consts.ConditionTypeDatabase {
-			entity.DealwithDatabaseOptCondition(condition, processor.ID, processor.ParentId, &processor.Result.PostConditions, session.ExecUuid)
+			entity.DealwithDatabaseOptCondition(session, condition, processor.ID, processor.ParentId, &processor.Result.PostConditions)
 
 		} else if condition.Type == consts.ConditionTypeExtractor {
-			entity.DealwithExtractorCondition(condition,
-				processor.ID, processor.ParentId, &processor.Result.PostConditions, session.ExecUuid)
+			entity.DealwithExtractorCondition(session, condition,
+				processor.ID, processor.ParentId, &processor.Result.PostConditions)
 
 		} else if condition.Type == consts.ConditionTypeResponseDefine {
 			entity.DealwithResponseDefineCondition(condition, &interfaceStatus, &processor.Result.PostConditions, detail, session.ExecUuid)
@@ -156,17 +157,17 @@ func (entity *ProcessorInterface) ExecPostConditions(processor *Processor, detai
 
 	for _, condition := range entity.PostConditions {
 		if condition.Type == consts.ConditionTypeCheckpoint {
-			entity.DealwithCheckpointCondition(condition, &interfaceStatus, &processor.Result.PostConditions,
-				detail, session.ExecUuid)
+			entity.DealwithCheckpointCondition(session, condition, &interfaceStatus, &processor.Result.PostConditions,
+				detail)
 		}
 	}
 
 	return
 }
 
-func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.InterfaceExecCondition,
+func (entity *ProcessorInterface) DealwithScriptCondition(session *ExecSession, condition domain.InterfaceExecCondition,
 	interfaceStatus *consts.ResultStatus, projectId uint, conditions *[]domain.InterfaceExecCondition,
-	execUuid string, isPostCondition bool) {
+	isPostCondition bool) {
 
 	var scriptBase domain.ScriptBase
 	json.Unmarshal(condition.Raw, &scriptBase)
@@ -174,12 +175,12 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 		return
 	}
 
-	err := ExecScript(&scriptBase, projectId, execUuid) // will set vari
+	err := ExecScript(session, &scriptBase, projectId) // will set vari
 	if err != nil {
 	}
 
 	scriptHelper.GenResultMsg(&scriptBase)
-	scriptBase.VariableSettings = *GetGojaVariables(execUuid)
+	scriptBase.VariableSettings = *session.GojaVariables
 
 	interfaceExecCondition := domain.InterfaceExecCondition{
 		Type: condition.Type,
@@ -188,15 +189,15 @@ func (entity *ProcessorInterface) DealwithScriptCondition(condition domain.Inter
 	*conditions = append(*conditions, interfaceExecCondition)
 
 	if isPostCondition {
-		for _, item := range *GetGojaLogs(execUuid) {
+		for _, item := range *session.GojaLogs {
 			createAssertFromScriptResult(item, conditions, interfaceStatus,
 				scriptBase.ConditionId, scriptBase.ConditionEntityId)
 		}
 	}
 }
 
-func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.InterfaceExecCondition,
-	processorId, parentId uint, conditions *[]domain.InterfaceExecCondition, execUuid string) {
+func (entity *ProcessorInterface) DealwithDatabaseOptCondition(session *ExecSession, condition domain.InterfaceExecCondition,
+	processorId, parentId uint, conditions *[]domain.InterfaceExecCondition) {
 
 	var databaseOptBase domain.DatabaseOptBase
 	json.Unmarshal(condition.Raw, &databaseOptBase)
@@ -204,7 +205,7 @@ func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.
 		return
 	}
 
-	databaseOptBase.Sql = ReplaceVariableValue(databaseOptBase.Sql, execUuid)
+	databaseOptBase.Sql = ReplaceVariableValue(session, databaseOptBase.Sql)
 
 	conditionStatus := true
 	err := ExecDbOpt(&databaseOptBase)
@@ -220,16 +221,16 @@ func (entity *ProcessorInterface) DealwithDatabaseOptCondition(condition domain.
 			scopeId = processorId
 		}
 
-		SetVariable(scopeId, databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
-			consts.Public, execUuid)
+		SetVariable(session, scopeId, databaseOptBase.Variable, databaseOptBase.Result, databaseOptBase.ResultType,
+			consts.Public)
 	}
 
 	condition.Raw, _ = json.Marshal(databaseOptBase)
 	*conditions = append(*conditions, condition)
 }
 
-func (entity *ProcessorInterface) DealwithExtractorCondition(condition domain.InterfaceExecCondition,
-	processorId, parentId uint, conditions *[]domain.InterfaceExecCondition, execUuid string) {
+func (entity *ProcessorInterface) DealwithExtractorCondition(session *ExecSession, condition domain.InterfaceExecCondition,
+	processorId, parentId uint, conditions *[]domain.InterfaceExecCondition) {
 
 	var extractorBase domain.ExtractorBase
 	json.Unmarshal(condition.Raw, &extractorBase)
@@ -253,8 +254,8 @@ func (entity *ProcessorInterface) DealwithExtractorCondition(condition domain.In
 			scopeId = processorId
 		}
 
-		SetVariable(scopeId, extractorBase.Variable, extractorBase.Result,
-			extractorBase.ResultType, extractorBase.Scope, execUuid)
+		SetVariable(session, scopeId, extractorBase.Variable, extractorBase.Result,
+			extractorBase.ResultType, extractorBase.Scope)
 	}
 
 	interfaceExecCondition := domain.InterfaceExecCondition{
@@ -264,9 +265,9 @@ func (entity *ProcessorInterface) DealwithExtractorCondition(condition domain.In
 	*conditions = append(*conditions, interfaceExecCondition)
 }
 
-func (entity *ProcessorInterface) DealwithCheckpointCondition(condition domain.InterfaceExecCondition,
+func (entity *ProcessorInterface) DealwithCheckpointCondition(session *ExecSession, condition domain.InterfaceExecCondition,
 	interfaceStatus *consts.ResultStatus, conditions *[]domain.InterfaceExecCondition,
-	detail *map[string]interface{}, execUuid string) {
+	detail *map[string]interface{}) {
 
 	var checkpointBase domain.CheckpointBase
 	json.Unmarshal(condition.Raw, &checkpointBase)
@@ -275,7 +276,7 @@ func (entity *ProcessorInterface) DealwithCheckpointCondition(condition domain.I
 	}
 
 	resp := entity.Response
-	err := ExecCheckPoint(&checkpointBase, resp, 0, execUuid)
+	err := ExecCheckPoint(session, &checkpointBase, resp, 0)
 	if err != nil || checkpointBase.ResultStatus == consts.Fail {
 		*interfaceStatus = consts.Fail
 	}
@@ -330,7 +331,7 @@ func (entity *ProcessorInterface) DealwithResponseDefineCondition(condition doma
 
 func (entity *ProcessorInterface) GenResultFromResponse(
 	processor *Processor, baseRequest domain.BaseRequest, requestEndTime, requestStartTime time.Time,
-	detail *map[string]interface{}, session *Session, err error) (ok bool) {
+	detail *map[string]interface{}, session *ExecSession, err error) (ok bool) {
 
 	processor.Result.Cost = requestEndTime.UnixMilli() - requestStartTime.UnixMilli()
 	reqContent, _ := json.Marshal(baseRequest)

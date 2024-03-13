@@ -37,11 +37,11 @@ type ProcessorData struct {
 	VariableName string `json:"variableName,omitempty" yaml:"variableName,omitempty"`
 }
 
-func (entity ProcessorData) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorData) Run(processor *Processor, session *ExecSession) (err error) {
 	logUtils.Infof("data entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.ScenarioExecResult{
+	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -71,7 +71,7 @@ func (entity ProcessorData) Run(processor *Processor, session *Session) (err err
 	return
 }
 
-func (entity *ProcessorData) runDataItems(session *Session, processor *Processor, iterator agentDomain.ExecIterator) (err error) {
+func (entity *ProcessorData) runDataItems(session *ExecSession, processor *Processor, iterator agentExecDomain.ExecIterator) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -88,7 +88,7 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 				break
 			}
 
-			SetVariable(processor.ID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public, session.ExecUuid)
+			SetVariable(session, processor.ID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public)
 
 			round := ""
 
@@ -118,7 +118,7 @@ func (entity *ProcessorData) runDataItems(session *Session, processor *Processor
 	return
 }
 
-func (entity *ProcessorData) getIterator(session *Session) (iterator agentDomain.ExecIterator, msg string) {
+func (entity *ProcessorData) getIterator(session *ExecSession) (iterator agentExecDomain.ExecIterator, msg string) {
 	if entity.ID == 0 {
 		msg = "执行前请先配置处理器。"
 		return
@@ -132,9 +132,9 @@ func (entity *ProcessorData) getIterator(session *Session) (iterator agentDomain
 	return
 }
 
-func (entity *ProcessorData) GenerateLoopList(session *Session) (ret agentDomain.ExecIterator, err error) {
+func (entity *ProcessorData) GenerateLoopList(session *ExecSession) (ret agentExecDomain.ExecIterator, err error) {
 	if entity.Src == consts.SrcDatapool {
-		for name, dp := range GetExecScene(session.ExecUuid).Datapools {
+		for name, dp := range session.ExecScene.Datapools {
 			if name == entity.DatapoolName {
 				ret.Data = dp
 				break
@@ -142,7 +142,7 @@ func (entity *ProcessorData) GenerateLoopList(session *Session) (ret agentDomain
 		}
 
 	} else {
-		pth, _ := DownloadUploadedFile(entity.Url, session.ExecUuid)
+		pth, _ := DownloadUploadedFile(session, entity.Url)
 		if err != nil {
 			logUtils.Infof("Download file %s failed", pth)
 		}

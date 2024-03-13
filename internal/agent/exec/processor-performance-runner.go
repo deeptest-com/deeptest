@@ -10,6 +10,6 @@ type ProcessorPerformanceRunner struct {
 	Weight   uint   `json:"weight"`
 }
 
-func (entity ProcessorPerformanceRunner) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorPerformanceRunner) Run(processor *Processor, session *ExecSession) (err error) {
 	return
 }

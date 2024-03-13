@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func ReplaceVariableValueInBody(value string, execUuid string) (ret string) {
+func ReplaceVariableValueInBody(session *ExecSession, value string) (ret string) {
 	// add a plus to set field vale as a number
 	// {"id": "${+dev_env_var1}"} => {"id": 2}
 
@@ -21,7 +21,7 @@ func ReplaceVariableValueInBody(value string, execUuid string) (ret string) {
 		}
 
 		placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
-		newVal := getPlaceholderVariableValue(placeholderWithoutPlus, execUuid)
+		newVal := getPlaceholderVariableValue(session, placeholderWithoutPlus)
 
 		ret = strings.ReplaceAll(ret, oldVal, newVal)
 	}
@@ -29,7 +29,7 @@ func ReplaceVariableValueInBody(value string, execUuid string) (ret string) {
 	return
 }
 
-func ReplaceVariableValue(value string, execUuid string) (ret string) {
+func ReplaceVariableValue(session *ExecSession, value string) (ret string) {
 	ret = value
 	variablePlaceholders := commUtils.GetVariablesInExpressionPlaceholder(value)
 
@@ -37,7 +37,7 @@ func ReplaceVariableValue(value string, execUuid string) (ret string) {
 		oldVal := fmt.Sprintf("${%s}", placeholder)
 
 		placeholderWithoutPlus := strings.TrimLeft(placeholder, "+")
-		newVal := getPlaceholderVariableValue(placeholderWithoutPlus, execUuid)
+		newVal := getPlaceholderVariableValue(session, placeholderWithoutPlus)
 
 		ret = strings.ReplaceAll(ret, oldVal, newVal)
 	}
@@ -45,15 +45,15 @@ func ReplaceVariableValue(value string, execUuid string) (ret string) {
 	return
 }
 
-func getPlaceholderVariableValue(name string, execUuid string) (ret string) {
+func getPlaceholderVariableValue(session *ExecSession, name string) (ret string) {
 	typ := getPlaceholderType(name)
 
 	if typ == consts.PlaceholderTypeVariable {
-		variable, _ := GetVariable(GetCurrScenarioProcessorId(execUuid), name, execUuid)
+		variable, _ := GetVariable(session, session.CurrScenarioProcessorId, name)
 		ret, _ = commUtils.ConvertValueForPersistence(variable.Value)
 
 	} else if typ == consts.PlaceholderTypeDatapool {
-		ret = getDatapoolValue(name, execUuid)
+		ret = getDatapoolValue(session, name)
 	}
 	//else if typ == consts.PlaceholderTypeFunction {
 	//}

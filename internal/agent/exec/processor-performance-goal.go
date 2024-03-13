@@ -16,6 +16,6 @@ type ProcessorPerformanceGoal struct {
 	FailRate     float32 `json:"failRate,omitempty"`
 }
 
-func (entity ProcessorPerformanceGoal) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorPerformanceGoal) Run(processor *Processor, session *ExecSession) (err error) {
 	return
 }

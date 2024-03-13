@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-func GenRequestUrlWithBaseUrlAndPathParam(req *domain.BaseRequest, debugInterfaceId uint, baseUrl string, execUuid string) {
-	execScene := GetExecScene(execUuid)
+func GenRequestUrlWithBaseUrlAndPathParam(session *ExecSession, req *domain.BaseRequest, debugInterfaceId uint, baseUrl string) {
+	execScene := session.ExecScene
 
 	// get base url by key consts.KEY_BASE_URL in Environment Variables from server
 	envId := execScene.DebugInterfaceToEnvMap[debugInterfaceId]

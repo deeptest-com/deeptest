@@ -19,7 +19,7 @@ type ProcessorVariable struct {
 	Expression   string `json:"expression" yaml:"expression"`
 }
 
-func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorVariable) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -28,7 +28,7 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 	logUtils.Infof("variable entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.ScenarioExecResult{
+	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -44,20 +44,20 @@ func (entity ProcessorVariable) Run(processor *Processor, session *Session) (err
 	detail := map[string]interface{}{"name": entity.Name, "variableName": entity.VariableName}
 	if entity.ProcessorType == consts.ProcessorVariableSet {
 		var variableValue interface{}
-		variableValue, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, processor.ID, session.ExecUuid)
+		variableValue, _, err = EvaluateGovaluateExpressionByProcessorScope(session, processor.ID, entity.Expression)
 
 		if err != nil {
 			panic(err)
 			//variableValue = err.Error()
 		}
 
-		SetVariable(processor.ParentId, entity.VariableName, variableValue, consts.ExtractorResultTypeString,
-			consts.Public, session.ExecUuid) // set in parent scope
+		SetVariable(session, processor.ParentId, entity.VariableName, variableValue, consts.ExtractorResultTypeString,
+			consts.Public) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("\"%s\"为\"%v\"。", entity.VariableName, variableValue)
 		detail["variableValue"] = variableValue
 
 	} else if entity.ProcessorType == consts.ProcessorVariableClear {
-		ClearVariable(processor.ParentId, entity.VariableName, session.ExecUuid)
+		ClearVariable(session, processor.ParentId, entity.VariableName)
 		processor.Result.Summary = fmt.Sprintf("\"%s\"成功。", entity.VariableName)
 	}
 

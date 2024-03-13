@@ -1,4 +1,4 @@
-package agentDomain
+package agentExecDomain
 
 import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"

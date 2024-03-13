@@ -1,6 +1,7 @@
 package runnerExec
 
 import (
+	"context"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
@@ -14,7 +15,7 @@ var (
 	requestCountSent = 0
 )
 
-func ExecInterfaceProcessor(processor *agentExec.Processor, room string, vuNo, index int, runnerId int32, sender metrics.MessageSender) {
+func ExecInterfaceProcessor(processor *agentExec.Processor, timeoutCtx context.Context, room string, runnerId int32, vuNo, index int, sender metrics.MessageSender) {
 	startTime := time.Now().UnixMilli()
 
 	_, err := _httpUtils.Get("http://111.231.16.35:9000/get")

@@ -17,7 +17,7 @@ type ProcessorLogic struct {
 	Expression string `json:"expression" yaml:"expression"`
 }
 
-func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorLogic) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -26,7 +26,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	logUtils.Infof("logic entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.ScenarioExecResult{
+	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -45,7 +45,7 @@ func (entity ProcessorLogic) Run(processor *Processor, session *Session) (err er
 	detail := map[string]interface{}{"name": entity.Name, "expression": entity.Expression}
 	if typ == consts.ProcessorLogicIf {
 		var result interface{}
-		result, _, err = EvaluateGovaluateExpressionByProcessorScope(entity.Expression, entity.ProcessorID, session.ExecUuid)
+		result, _, err = EvaluateGovaluateExpressionByProcessorScope(session, entity.ProcessorID, entity.Expression)
 		if err != nil {
 			pass = false
 		} else {

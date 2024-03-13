@@ -9,9 +9,9 @@ import (
 	"strings"
 )
 
-func ResetStat(execUuid string) {
-	SetInterfaceStat(execUuid, &agentDomain.InterfaceStat{})
-}
+//func ResetStat(execUuid string) {
+//	//SetInterfaceStat(execUuid, &agentDomain.InterfaceStat{})
+//}
 
 func CountInterfaceStat(execUuid string, result *agentDomain.ScenarioExecResult) agentDomain.InterfaceStat {
 	stat := GetInterfaceStat(execUuid)

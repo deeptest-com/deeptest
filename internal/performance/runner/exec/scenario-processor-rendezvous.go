@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func ExecRendezvousProcessor(timeoutCtx context.Context, processor *agentExec.Processor, vuNo, index int, room, serverAddress string) {
+func ExecRendezvousProcessor(processor *agentExec.Processor, timeoutCtx context.Context, room string, runnerId int32, vuNo int, serverAddress string, index int) {
 	name := processor.Name
 
 	entity := agentExec.ProcessorPerformanceRendezvous{}

@@ -3,7 +3,6 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	v1 "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -16,7 +15,7 @@ import (
 )
 
 // for interface invocation in both endpoint and scenario
-func GetInterfaceToExec(req v1.InterfaceCall) (ret agentExec.InterfaceExecObj) {
+func GetInterfaceToExec(req domain.InterfaceCall) (ret agentExec.InterfaceExecObj) {
 	url := fmt.Sprintf("debugs/interface/loadForExec?currProjectId=%d", req.Data.ProjectId)
 	body, err := json.Marshal(req.Data)
 	if err != nil {

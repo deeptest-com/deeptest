@@ -1,7 +1,7 @@
-package ptutils
+package commUtils
 
 import (
-	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	_floatUtils "github.com/aaronchen2k/deeptest/pkg/lib/float"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/shirou/gopsutil/v3/cpu"
@@ -15,8 +15,8 @@ import (
 )
 
 func GetMachineMetrics(prevDiskInfoMap *map[string]*int64, prevDiskTsMap *map[string]*int64,
-	prevNetworkInfoMap *map[string]*int64, prevNetworkTsMap *map[string]*int64) *ptdomain.StatData {
-	data := new(ptdomain.StatData)
+	prevNetworkInfoMap *map[string]*int64, prevNetworkTsMap *map[string]*int64) *domain.MachineStat {
+	data := new(domain.MachineStat)
 
 	data.Name = GetHostName()
 	data.Ip = GetIp()

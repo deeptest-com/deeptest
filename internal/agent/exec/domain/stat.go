@@ -1,4 +1,4 @@
-package agentDomain
+package agentExecDomain
 
 type InterfaceStat struct {
 	InterfaceDurationTotal   int64 `json:"interfaceDurationTotal"` // milliseconds

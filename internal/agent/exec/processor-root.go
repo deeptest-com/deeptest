@@ -14,14 +14,14 @@ type ProcessorRoot struct {
 	ProcessorEntityBase
 }
 
-func (entity ProcessorRoot) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorRoot) Run(processor *Processor, session *ExecSession) (err error) {
 
 	logUtils.Infof("root entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.ScenarioExecResult{
+	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
-		Name:              session.Name,
+		Name:              "root",
 		ProcessorCategory: entity.ProcessorCategory,
 		ProcessorType:     entity.ProcessorType,
 		StartTime:         &startTime,

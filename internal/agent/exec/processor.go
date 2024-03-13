@@ -52,13 +52,13 @@ type ProcessorBase struct {
 
 	Round string `json:"round"`
 
-	Session Session `json:"-"`
+	Session ExecSession `json:"-"`
 }
 
-func (p *Processor) Run(s *Session) (err error) {
+func (p *Processor) Run(s *ExecSession) (err error) {
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
-	SetCurrScenarioProcessorId(s.ExecUuid, p.ID)
-	SetCurrScenarioProcessor(s.ExecUuid, p)
+	s.CurrScenarioProcessorId = p.ID
+	s.CurrScenarioProcessor = p
 
 	//每个执行器延迟0.1秒，防止发送ws消息过快，导致前端消息错误
 	time.Sleep(100 * time.Microsecond)
@@ -69,7 +69,7 @@ func (p *Processor) Run(s *Session) (err error) {
 	return
 }
 
-func (p *Processor) Error(s *Session, err interface{}) {
+func (p *Processor) Error(s *ExecSession, err interface{}) {
 
 	var detail map[string]interface{}
 	commonUtils.JsonDecode(p.Result.Detail, &detail)

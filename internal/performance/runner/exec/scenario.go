@@ -25,14 +25,14 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 			RunnerId:   runnerId,
 			RunnerName: runnerName,
 			Room:       room,
-			Target:     int(scenario.Stages[0].Target),
+			Target:     int(scenario.Target),
 			Weight:     int(weight),
 			Mode:       mode,
 
 			Duration: runDur,
 			Loop:     int(scenario.Stages[0].Loop),
 
-			ServerAddress: serverAddress,
+			ConductorGrpcAddress: serverAddress,
 		}
 
 		valueCtx = genExecParamsCtx(&data, execCtx)

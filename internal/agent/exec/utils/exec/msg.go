@@ -27,7 +27,7 @@ func SendEndMsg(wsMsg *websocket.Message) (err error) {
 	return
 }
 
-func SendResultMsg(report agentDomain.Report, wsMsg *websocket.Message) (err error) {
+func SendResultMsg(report agentExecDomain.Report, wsMsg *websocket.Message) (err error) {
 	websocketHelper.SendExecResult(report, wsMsg)
 
 	return
@@ -64,13 +64,13 @@ func SendErrorMsg(log interface{}, category consts.WsMsgCategory, wsMsg *websock
 
 func SendAlreadyRunningMsg(processor consts.WsMsgCategory, wsMsg *websocket.Message) (err error) {
 	msg := _i118Utils.Sprintf("pls_stop_previous")
-	websocketHelper.SendExecMsg(msg, agentDomain.ScenarioExecResult{ProgressStatus: consts.InProgress}, processor, wsMsg)
+	websocketHelper.SendExecMsg(msg, agentExecDomain.ScenarioExecResult{ProgressStatus: consts.InProgress}, processor, wsMsg)
 	_logUtils.Infof(msg)
 
 	return
 }
 
-func SendStatMsg(data agentDomain.InterfaceStat, wsMsg *websocket.Message) (err error) {
+func SendStatMsg(data agentExecDomain.InterfaceStat, wsMsg *websocket.Message) (err error) {
 	websocketHelper.SendStatInfo(data, wsMsg)
 
 	return

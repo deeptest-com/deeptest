@@ -38,5 +38,5 @@ type Report struct {
 	ScenarioId uint `json:"scenarioId"`
 	ProjectId  uint `json:"projectId"`
 
-	Logs []*agentDomain.ScenarioExecResult `json:"logs"`
+	Logs []*agentExecDomain.ScenarioExecResult `json:"logs"`
 }

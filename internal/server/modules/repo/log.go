@@ -50,14 +50,14 @@ func (r *LogRepo) DeleteById(id uint) (err error) {
 	return
 }
 
-func (r *LogRepo) CreateLogs(rootResult agentDomain.ScenarioExecResult, report *model.ScenarioReport, processorToInvokeIdMap map[uint]uint) (
+func (r *LogRepo) CreateLogs(rootResult agentExecDomain.ScenarioExecResult, report *model.ScenarioReport, processorToInvokeIdMap map[uint]uint) (
 	err error) {
 	r.CreateLog(rootResult, 0, report.ID, processorToInvokeIdMap)
 
 	return
 }
 
-func (r *LogRepo) CreateLog(result agentDomain.ScenarioExecResult, parentId, reportId uint, processorToInvokeIdMap map[uint]uint) (
+func (r *LogRepo) CreateLog(result agentExecDomain.ScenarioExecResult, parentId, reportId uint, processorToInvokeIdMap map[uint]uint) (
 	id uint, err error) {
 
 	if result.ProcessorCategory == consts.ProcessorInterface {
@@ -74,7 +74,7 @@ func (r *LogRepo) CreateLog(result agentDomain.ScenarioExecResult, parentId, rep
 	return
 }
 
-func (r *LogRepo) CreateInterfaceLog(result agentDomain.ScenarioExecResult, parentId, reportId, invokeId uint) (id uint, err error) {
+func (r *LogRepo) CreateInterfaceLog(result agentExecDomain.ScenarioExecResult, parentId, reportId, invokeId uint) (id uint, err error) {
 	po := model.ExecLogProcessor{
 		Name:              result.Name,
 		ProcessorCategory: result.ProcessorCategory,
@@ -103,7 +103,7 @@ func (r *LogRepo) CreateInterfaceLog(result agentDomain.ScenarioExecResult, pare
 	return
 }
 
-func (r *LogRepo) CreateCommonLog(result agentDomain.ScenarioExecResult, parentId, reportId uint) (id uint, err error) {
+func (r *LogRepo) CreateCommonLog(result agentExecDomain.ScenarioExecResult, parentId, reportId uint) (id uint, err error) {
 	po := model.ExecLogProcessor{
 		Name:              result.Name,
 		ProcessorCategory: result.ProcessorCategory,

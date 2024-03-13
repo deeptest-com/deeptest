@@ -1,4 +1,4 @@
-package agentDomain
+package agentExecDomain
 
 //type Posts struct {
 //	BaseRequest

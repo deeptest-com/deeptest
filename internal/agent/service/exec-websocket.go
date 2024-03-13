@@ -16,8 +16,7 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 	act := req.Act
 	execUuid := getExecUuid(req)
 	if execUuid == "" {
-		logUtils.Info("****** execUuid is empty")
-		logUtils.Infof("%v", req)
+		logUtils.Info("!!!!!! execUuid is empty")
 		return
 	}
 
@@ -56,8 +55,6 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 		} else if act == consts.ExecMessage {
 			RunMessage(&req.MessageReq, wsMsg)
 		}
-
-		agentExec.ClearExecContext(execUuid)
 	}()
 
 	return
@@ -81,7 +78,6 @@ func getExecUuid(req agentDomain.WsReq) (ret string) {
 func StopExec(execUuid string, wsMsg *websocket.Message) (err error) {
 	agentExec.SetForceStopExec(execUuid, true)
 
-	agentExec.SetIsRunning(execUuid, false)
 	execUtils.SendCancelMsg(wsMsg)
 
 	return

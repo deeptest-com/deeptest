@@ -20,11 +20,11 @@ func ExecProcessors(timeoutCtx context.Context, sender metrics.MessageSender, ru
 	for index, processor := range rootProcessor.Children {
 		if processor.EntityType == consts.ProcessorInterfaceDefault {
 			ptlog.Logf("exec processor %v", processor)
-			ExecInterfaceProcessor(processor, execParams.Room, vuNo, index, runnerId, sender)
+			ExecInterfaceProcessor(processor, timeoutCtx, execParams.Room, runnerId, vuNo, index, sender)
 
 		} else if execParams.Mode == ptconsts.Parallel && processor.EntityType == consts.ProcessorPerformanceRendezvousDefault {
 			ptlog.Logf("exec processor %v", processor)
-			ExecRendezvousProcessor(timeoutCtx, processor, vuNo, index, execParams.Room, execParams.ServerAddress)
+			ExecRendezvousProcessor(processor, timeoutCtx, execParams.Room, runnerId, vuNo, execParams.ConductorGrpcAddress, index)
 
 		}
 

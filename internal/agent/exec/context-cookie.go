@@ -5,14 +5,15 @@ import (
 	"time"
 )
 
-func ListScopeCookie(processorId uint, execUuid string) (cookies []domain.ExecCookie) {
-	scopeHierarchy := GetScopeHierarchy(execUuid)
+func ListScopeCookie(session *ExecSession, processorId uint) (cookies []domain.ExecCookie) {
+	scopeHierarchy := session.ScopeHierarchy
+	scopedCookies := session.ScopedCookies
 
 	allValidIds := scopeHierarchy[processorId]
 	if allValidIds != nil {
 		if scopeHierarchy[processorId] != nil {
 			for _, id := range *scopeHierarchy[processorId] {
-				cookies = append(cookies, GetScopedCookies(execUuid)[id]...)
+				cookies = append(cookies, scopedCookies[id]...)
 			}
 		}
 	}
@@ -20,9 +21,9 @@ func ListScopeCookie(processorId uint, execUuid string) (cookies []domain.ExecCo
 	return
 }
 
-func GetCookie(processorId uint, cookieName, domain string, execUuid string) (cookie domain.ExecCookie) {
-	scopeHierarchy := GetScopeHierarchy(execUuid)
-	scopedCookies := GetScopedCookies(execUuid)
+func GetCookie(session *ExecSession, processorId uint, cookieName, domain string) (cookie domain.ExecCookie) {
+	scopeHierarchy := session.ScopeHierarchy
+	scopedCookies := session.ScopedCookies
 
 	allValidIds := scopeHierarchy[processorId]
 	if allValidIds != nil {
@@ -43,8 +44,8 @@ LABEL:
 	return
 }
 
-func SetCookie(processorId uint, cookieName string, cookieValue string, domainName string, expireTime *time.Time, execUuid string) (err error) {
-	scopedCookies := GetScopedCookies(execUuid)
+func SetCookie(session *ExecSession, processorId uint, cookieName string, cookieValue string, domainName string, expireTime *time.Time) (err error) {
+	scopedCookies := session.ScopedCookies
 
 	found := false
 
@@ -73,8 +74,8 @@ func SetCookie(processorId uint, cookieName string, cookieValue string, domainNa
 	return
 }
 
-func ClearCookie(processorId uint, cookieName string, execUuid string) (err error) {
-	scopedCookies := GetScopedCookies(execUuid)
+func ClearCookie(session *ExecSession, processorId uint, cookieName string) (err error) {
+	scopedCookies := session.ScopedCookies
 
 	deleteIndex := -1
 	for index, item := range scopedCookies[processorId] {

@@ -20,7 +20,7 @@ type ProcessorCustomCode struct {
 	Desc    string `json:"desc" yaml:"desc"`
 }
 
-func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorCustomCode) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -29,7 +29,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 	logUtils.Infof("print entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.ScenarioExecResult{
+	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -47,12 +47,12 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 		Content: entity.Content,
 	}
 
-	err = ExecScript(&scriptBase, processor.ProjectId, session.ExecUuid)
+	err = ExecScript(session, &scriptBase, processor.ProjectId)
 	scriptHelper.GenResultMsg(&scriptBase)
 	//scriptBase.VariableSettings = VariableSettings
 
-	for _, item := range *GetGojaVariables(session.ExecUuid) {
-		SetVariable(processor.ParentId, item.Name, item.Value, item.ValueType, consts.Public, session.ExecUuid)
+	for _, item := range *session.GojaVariables {
+		SetVariable(session, processor.ParentId, item.Name, item.Value, item.ValueType, consts.Public)
 	}
 
 	processor.Result.Summary = scriptBase.ResultStatus.String()

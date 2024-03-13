@@ -18,7 +18,7 @@ type ProcessorTimer struct {
 	SleepTime int `json:"sleepTime" yaml:"sleepTime"`
 }
 
-func (entity ProcessorTimer) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorTimer) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -27,7 +27,7 @@ func (entity ProcessorTimer) Run(processor *Processor, session *Session) (err er
 	logUtils.Infof("timer entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.ScenarioExecResult{
+	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,

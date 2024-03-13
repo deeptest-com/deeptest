@@ -1,8 +1,8 @@
 package metrics
 
 import (
-	ptutils "github.com/aaronchen2k/deeptest/internal/performance/pkg/utils"
 	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	"time"
 )
 
@@ -16,7 +16,7 @@ type MessageSender interface {
 
 func SendMetrics(sender MessageSender, runnerId int32, runnerName, room string, prevDiskInfoMap *map[string]*int64, prevDiskTsMap *map[string]*int64, prevNetworkInfoMap *map[string]*int64, prevNetworkTsMap *map[string]*int64) {
 	// machine metrics
-	machineMetrics := ptutils.GetMachineMetrics(prevDiskInfoMap, prevDiskTsMap, prevNetworkInfoMap, prevNetworkTsMap)
+	machineMetrics := commUtils.GetMachineMetrics(prevDiskInfoMap, prevDiskTsMap, prevNetworkInfoMap, prevNetworkTsMap)
 
 	// send results
 	result := ptproto.PerformanceExecResp{

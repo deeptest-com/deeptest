@@ -5,6 +5,10 @@ import (
 	"os"
 )
 
+const (
+	ServerApiPath = "api/v1"
+)
+
 var (
 	DemoTestSite = GetDemoSite()
 )

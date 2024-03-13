@@ -15,7 +15,7 @@ type ProcessorGroup struct {
 	ProcessorEntityBase
 }
 
-func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorGroup) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -24,7 +24,7 @@ func (entity ProcessorGroup) Run(processor *Processor, session *Session) (err er
 	logUtils.Infof("group entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.ScenarioExecResult{
+	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,

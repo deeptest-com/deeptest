@@ -11,12 +11,6 @@ import (
 func RunPlan(req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
 	execUuid := req.ExecUuid
 
-	agentExec.ResetStat(req.ExecUuid)
-	agentExec.SetForceStopExec(execUuid, false)
-
-	agentExec.SetServerUrl(execUuid, req.ServerUrl)
-	agentExec.SetServerToken(execUuid, req.Token)
-
 	planExecObj := GetPlanToExec(req)
 	if planExecObj == nil || len(planExecObj.Scenarios) == 0 {
 		execUtils.SendEndMsg(wsMsg)
@@ -34,19 +28,22 @@ func RunPlan(req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websock
 	execUtils.SendInitializeMsg(normalData, wsMsg)
 
 	// execution
-	var result = agentDomain.PlanExecResult{
+	var result = agentExecDomain.PlanExecResult{
 		EnvironmentId: req.EnvironmentId,
 		ID:            req.PlanId,
 	}
 
-	for _, scenario := range planExecObj.Scenarios {
-		updateLocalValues(&scenario.ExecScene, localVarsCache)
+	for _, scenarioExecObj := range planExecObj.Scenarios {
+		scenarioExecObj.ExecUuid = execUuid
+		scenarioExecObj.ServerUrl = req.ServerUrl
+		scenarioExecObj.Token = req.Token
+		updateLocalValues(&scenarioExecObj.ExecScene, localVarsCache)
 
-		scenario.ExecUuid = execUuid
-		session, _ := ExecScenario(&scenario, req.EnvironmentId, wsMsg)
+		session := agentExec.NewScenarioExecSession(&scenarioExecObj, req.EnvironmentId, wsMsg)
+		err = ExecScenario(session)
 
 		scenarioReport, _ := SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,
-			agentExec.GetServerUrl(execUuid), agentExec.GetServerToken(execUuid))
+			session.ServerUrl, session.ServerToken)
 		session.RootProcessor.Result.EnvironmentId = req.EnvironmentId
 
 		session.RootProcessor.Result.ScenarioReportId = uint(scenarioReport.ID)

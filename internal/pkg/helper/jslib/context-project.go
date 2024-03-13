@@ -52,14 +52,6 @@ func InitGojaRuntime(projectId uint) (execRuntime *goja.Runtime, execRequire *re
 	return
 }
 
-func GetGojaRuntime(projectId uint) (execRuntime *goja.Runtime, execRequire *require.RequireModule) {
-	projectContext := GetProjectContext(projectId)
-	execRuntime = projectContext.GojaRuntime
-	execRequire = projectContext.GojaRequire
-
-	return
-}
-
 func GetAgentLoadedLibs(projectId uint) (agentLoadedLibs *map[uint]time.Time) {
 	projectContext := GetProjectContext(projectId)
 	agentLoadedLibs = projectContext.AgentLoadedLibs

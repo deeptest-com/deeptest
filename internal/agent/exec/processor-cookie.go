@@ -24,7 +24,7 @@ type ProcessorCookie struct {
 	Children []interface{} `json:"children" yaml:"children" gorm:"-"`
 }
 
-func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorCookie) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -33,7 +33,7 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 	logUtils.Infof("cookie entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.ScenarioExecResult{
+	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,
@@ -55,16 +55,16 @@ func (entity ProcessorCookie) Run(processor *Processor, session *Session) (err e
 
 	detail := map[string]interface{}{"name": entity.Name, "cookieName": cookieName}
 	if typ == consts.ProcessorCookieSet {
-		variableValue := ReplaceVariableValue(rightValue, session.ExecUuid)
+		variableValue := ReplaceVariableValue(session, rightValue)
 
-		SetCookie(processor.ParentId, cookieName, variableValue, domain, expireTime, session.ExecUuid) // set in parent scope
+		SetCookie(session, processor.ParentId, cookieName, variableValue, domain, expireTime) // set in parent scope
 
 		processor.Result.Summary = fmt.Sprintf("%s为%v。", cookieName, variableValue)
 		detail["variableValue"] = variableValue
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
 
 	} else if typ == consts.ProcessorCookieClear {
-		ClearCookie(processor.ParentId, cookieName, session.ExecUuid) // set in parent scope
+		ClearCookie(session, processor.ParentId, cookieName) // set in parent scope
 		processor.Result.Summary = fmt.Sprintf("%s。", cookieName)
 		processor.Result.Detail = commonUtils.JsonEncode(detail)
 	}

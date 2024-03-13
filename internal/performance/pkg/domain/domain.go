@@ -1,7 +1,6 @@
 package ptdomain
 
 import (
-	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -89,8 +88,7 @@ type Scenario struct {
 	Uuid string `json:"uuid,omitempty"`
 	Dur  int    `json:"dur,omitempty"`
 
-	VuNo       int                    `json:"vuNo,omitempty"`
-	Processors []*agentExec.Processor `json:"processors,omitempty"`
+	VuNo int `json:"vuNo,omitempty"`
 
 	NsqServerAddress string `json:"nsqServerAddress,omitempty"`
 	NsqLookupAddress string `json:"nsqLookupAddress,omitempty"`

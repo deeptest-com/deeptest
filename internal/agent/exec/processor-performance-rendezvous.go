@@ -16,7 +16,7 @@ type ProcessorPerformanceRendezvous struct {
 	Target int `json:"target"`
 }
 
-func (entity ProcessorPerformanceRendezvous) Run(processor *Processor, session *Session) (err error) {
+func (entity ProcessorPerformanceRendezvous) Run(processor *Processor, session *ExecSession) (err error) {
 	defer func() {
 		if errX := recover(); errX != nil {
 			processor.Error(session, errX)
@@ -25,7 +25,7 @@ func (entity ProcessorPerformanceRendezvous) Run(processor *Processor, session *
 	logUtils.Infof("performance rendezvous entity")
 
 	startTime := time.Now()
-	processor.Result = &agentDomain.ScenarioExecResult{
+	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
 		Name:              entity.Name,
 		ProcessorCategory: entity.ProcessorCategory,

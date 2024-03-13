@@ -80,8 +80,8 @@ func ReadDataFromExcel(url string) (ret []domain.VarKeyValuePair, err error) {
 	return
 }
 
-func DownloadUploadedFile(uri string, execUuid string) (ret string, err error) {
-	serverBaseUrl := strings.TrimSuffix(GetServerUrl(execUuid), ServerApiPath)
+func DownloadUploadedFile(session *ExecSession, uri string) (ret string, err error) {
+	serverBaseUrl := strings.TrimSuffix(session.ServerUrl, ServerApiPath)
 
 	url := _httpUtils.AddSepIfNeeded(serverBaseUrl) + uri
 

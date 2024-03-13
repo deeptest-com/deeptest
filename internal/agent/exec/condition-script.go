@@ -19,9 +19,9 @@ import (
 	"reflect"
 )
 
-func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (err error) {
+func ExecScript(scriptObj *domain.ScriptBase, tenantId consts.TenantId, projectId uint, execUuid string) (err error) {
 	//InitJsRuntime(projectId, execUuid)
-	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
+	execRuntime, _ := jslibHelper.GetGojaRuntime(tenantId, projectId)
 	ResetGojaVariables(execUuid)
 	ResetGojaLogs(execUuid)
 
@@ -62,14 +62,14 @@ func ExecScript(scriptObj *domain.ScriptBase, projectId uint, execUuid string) (
 	return
 }
 
-func InitJsRuntime(projectId uint, execUuid string) {
-	jslibHelper.InitGojaRuntime(projectId)
-	execRuntime, execRequire := jslibHelper.GetGojaRuntime(projectId)
+func InitJsRuntime(tenantId consts.TenantId, projectId uint, execUuid string) {
+	jslibHelper.InitGojaRuntime(tenantId, projectId)
+	execRuntime, execRequire := jslibHelper.GetGojaRuntime(tenantId, projectId)
 
 	jslibHelper.LoadChaiJslibs(execRuntime)
 
-	defineJsFuncs(execUuid, projectId)
-	defineGoFuncs(projectId)
+	defineJsFuncs(execUuid, tenantId, projectId)
+	defineGoFuncs(tenantId, projectId)
 
 	// load global script
 	pth := filepath.Join(consts.TmpDir, "deeptest.js")
@@ -84,11 +84,11 @@ func InitJsRuntime(projectId uint, execUuid string) {
 	execRuntime.Set("dt", dt)
 
 	// import other custom libs
-	jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, projectId, GetServerUrl(execUuid), GetServerToken(execUuid))
+	jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, tenantId, projectId, GetServerUrl(execUuid), GetServerToken(execUuid))
 }
 
-func defineJsFuncs(execUuid string, projectId uint) (err error) {
-	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
+func defineJsFuncs(execUuid string, tenantId consts.TenantId, projectId uint) (err error) {
+	execRuntime, _ := jslibHelper.GetGojaRuntime(tenantId, projectId)
 
 	/* START: called by js */
 	err = execRuntime.Set("getDatapoolVariable", func(dpName, field, seq string) (ret interface{}) {
@@ -232,13 +232,13 @@ func defineJsFuncs(execUuid string, projectId uint) (err error) {
 	return
 }
 
-func GetReqValueFromGoja(execUuid string, projectId uint) (err error) {
-	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
+func GetReqValueFromGoja(execUuid string, tenantId consts.TenantId, projectId uint) (err error) {
+	execRuntime, _ := jslibHelper.GetGojaRuntime(tenantId, projectId)
 	_, err = execRuntime.RunString(fmt.Sprintf("getReqValueFromGoja('%s', dt.request);", execUuid))
 	return
 }
-func GetRespValueFromGoja(execUuid string, projectId uint) (err error) {
-	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
+func GetRespValueFromGoja(execUuid string, tenantId consts.TenantId, projectId uint) (err error) {
+	execRuntime, _ := jslibHelper.GetGojaRuntime(tenantId, projectId)
 	_, err = execRuntime.RunString(fmt.Sprintf("getRespValueFromGoja('%s', dt.response);", execUuid))
 	return
 }
@@ -272,8 +272,8 @@ var (
 func SetValueToGoja(name string, value interface{}) {
 	_setValueFunc(name, value)
 }
-func defineGoFuncs(projectId uint) {
-	execRuntime, _ := jslibHelper.GetGojaRuntime(projectId)
+func defineGoFuncs(tenantId consts.TenantId, projectId uint) {
+	execRuntime, _ := jslibHelper.GetGojaRuntime(tenantId, projectId)
 
 	// set data
 	script := `function _setData(name, val) {

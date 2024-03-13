@@ -3,7 +3,7 @@ package service
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/integration/service"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -18,21 +18,21 @@ type ProjectRolePermService struct {
 	ProjectRoleRepo     *repo.ProjectRoleRepo     `inject:""`
 	ProjectRoleMenuRepo *repo.ProjectRoleMenuRepo `inject:""`
 	ProfileRepo         *repo.ProfileRepo         `inject:""`
-	RemoteService       *service.RemoteService    `inject:""`
+	RemoteService       *leyan.RemoteService      `inject:""`
 }
 
-func (s *ProjectRolePermService) AllRoleList() (data []model.ProjectRole, err error) {
+func (s *ProjectRolePermService) AllRoleList(tenantId consts.TenantId) (data []model.ProjectRole, err error) {
 	if config.CONFIG.System.SysEnv == "ly" {
-		data, err = s.GetRoleFromOther()
+		data, err = s.GetRoleFromOther(tenantId)
 	} else {
-		data, err = s.ProjectRoleRepo.AllRoleList()
+		data, err = s.ProjectRoleRepo.AllRoleList(tenantId)
 	}
 
 	return
 }
 
-func (s *ProjectRolePermService) GetRoleFromOther() (data []model.ProjectRole, err error) {
-	spaceRoles, err := s.RemoteService.GetSpaceRoles()
+func (s *ProjectRolePermService) GetRoleFromOther(tenantId consts.TenantId) (data []model.ProjectRole, err error) {
+	spaceRoles, err := s.RemoteService.GetSpaceRoles(tenantId)
 	if err != nil {
 		return
 	}
@@ -44,12 +44,12 @@ func (s *ProjectRolePermService) GetRoleFromOther() (data []model.ProjectRole, e
 		return
 	}
 
-	err = s.ComplementRoleFromOther(allRoleArr, spaceRoleValueMap)
+	err = s.ComplementRoleFromOther(tenantId, allRoleArr, spaceRoleValueMap)
 	if err != nil {
 		return
 	}
 
-	data = s.GetRoleListFromOther(spaceRoles)
+	data = s.GetRoleListFromOther(tenantId, spaceRoles)
 
 	return
 }
@@ -69,9 +69,9 @@ func (s *ProjectRolePermService) DealSpaceRoles(spaceRoles []integrationDomain.S
 	return
 }
 
-func (s *ProjectRolePermService) GetRoleListMap() (res map[consts.RoleType]model.ProjectRole, err error) {
+func (s *ProjectRolePermService) GetRoleListMap(tenantId consts.TenantId) (res map[consts.RoleType]model.ProjectRole, err error) {
 	res = make(map[consts.RoleType]model.ProjectRole)
-	roleList, err := s.ProjectRoleRepo.AllRoleList()
+	roleList, err := s.ProjectRoleRepo.AllRoleList(tenantId)
 	if err != nil {
 		return
 	}
@@ -82,8 +82,8 @@ func (s *ProjectRolePermService) GetRoleListMap() (res map[consts.RoleType]model
 
 	return
 }
-func (s *ProjectRolePermService) GetRoleListFromOther(spaceRoles []integrationDomain.SpaceRole) (data []model.ProjectRole) {
-	roleMap, _ := s.GetRoleListMap()
+func (s *ProjectRolePermService) GetRoleListFromOther(tenantId consts.TenantId, spaceRoles []integrationDomain.SpaceRole) (data []model.ProjectRole) {
+	roleMap, _ := s.GetRoleListMap(tenantId)
 	for _, spaceRole := range spaceRoles {
 		projectRoleTmp := model.ProjectRole{
 			Name:        consts.RoleType(spaceRole.RoleValue),
@@ -109,8 +109,8 @@ func (s *ProjectRolePermService) GetAllRoleValueMap(spaceRoles []integrationDoma
 	return
 }
 
-func (s *ProjectRolePermService) GetRolesNotExisted(allRoleArr []string) (notExistedRoles []string, err error) {
-	existedRoles, err := s.ProjectRoleRepo.GetRoleNamesByNames(allRoleArr)
+func (s *ProjectRolePermService) GetRolesNotExisted(tenantId consts.TenantId, allRoleArr []string) (notExistedRoles []string, err error) {
+	existedRoles, err := s.ProjectRoleRepo.GetRoleNamesByNames(tenantId, allRoleArr)
 	if err != nil {
 		return
 	}
@@ -120,18 +120,18 @@ func (s *ProjectRolePermService) GetRolesNotExisted(allRoleArr []string) (notExi
 	return
 }
 
-func (s *ProjectRolePermService) ComplementRoleFromOther(allRoleArr []string, roleValueMap map[string]integrationDomain.SpaceRole) (err error) {
-	notExistedRoles, err := s.GetRolesNotExisted(allRoleArr)
+func (s *ProjectRolePermService) ComplementRoleFromOther(tenantId consts.TenantId, allRoleArr []string, roleValueMap map[string]integrationDomain.SpaceRole) (err error) {
+	notExistedRoles, err := s.GetRolesNotExisted(tenantId, allRoleArr)
 	if err != nil || len(notExistedRoles) == 0 {
 		return
 	}
 
-	err = s.BatchCreateSpaceRole(roleValueMap, notExistedRoles)
+	err = s.BatchCreateSpaceRole(tenantId, roleValueMap, notExistedRoles)
 
 	return
 }
 
-func (s *ProjectRolePermService) BatchCreateSpaceRole(roleValueMap map[string]integrationDomain.SpaceRole, notExistedRoles []string) (err error) {
+func (s *ProjectRolePermService) BatchCreateSpaceRole(tenantId consts.TenantId, roleValueMap map[string]integrationDomain.SpaceRole, notExistedRoles []string) (err error) {
 	var roleNeedCreate []model.ProjectRole
 	for _, v := range notExistedRoles {
 		if roleValue, ok := roleValueMap[v]; ok {
@@ -145,19 +145,19 @@ func (s *ProjectRolePermService) BatchCreateSpaceRole(roleValueMap map[string]in
 		}
 	}
 
-	err = s.ProjectRoleRepo.BatchCreate(roleNeedCreate)
+	err = s.ProjectRoleRepo.BatchCreate(tenantId, roleNeedCreate)
 
 	return
 }
 
-func (s *ProjectRolePermService) GetProjectUserRole(userId, projectId uint) (data model.ProjectRole, err error) {
-	return s.ProjectRoleRepo.ProjectUserRoleList(userId, projectId)
+func (s *ProjectRolePermService) GetProjectUserRole(tenantId consts.TenantId, userId, projectId uint) (data model.ProjectRole, err error) {
+	return s.ProjectRoleRepo.ProjectUserRoleList(tenantId, userId, projectId)
 }
 
-func (s *ProjectRolePermService) PaginateRolePerms(req v1.ProjectRolePermPaginateReq) (ret _domain.PageData, err error) {
-	return s.ProjectRolePermRepo.PaginateRolePerms(req)
+func (s *ProjectRolePermService) PaginateRolePerms(tenantId consts.TenantId, req v1.ProjectRolePermPaginateReq) (ret _domain.PageData, err error) {
+	return s.ProjectRolePermRepo.PaginateRolePerms(tenantId, req)
 }
 
-func (s *ProjectRolePermService) PaginateUserPerms(req v1.ProjectUserPermsPaginate, userId uint) (ret _domain.PageData, err error) {
-	return s.ProjectRolePermRepo.UserPermList(req, userId)
+func (s *ProjectRolePermService) PaginateUserPerms(tenantId consts.TenantId, req v1.ProjectUserPermsPaginate, userId uint) (ret _domain.PageData, err error) {
+	return s.ProjectRolePermRepo.UserPermList(tenantId, req, userId)
 }

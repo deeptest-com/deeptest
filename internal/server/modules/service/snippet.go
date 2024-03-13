@@ -1,6 +1,7 @@
 package service
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -19,8 +20,8 @@ type SnippetService struct {
 	JslibRepo   *repo.JslibRepo   `inject:""`
 }
 
-func (s *SnippetService) ListJslibNames(projectId int) (names []string, err error) {
-	libs, _ := s.JslibRepo.List("", projectId, true)
+func (s *SnippetService) ListJslibNames(tenantId consts.TenantId, projectId int) (names []string, err error) {
+	libs, _ := s.JslibRepo.List(tenantId, "", projectId, true)
 
 	for _, po := range libs {
 		names = append(names, po.Name)
@@ -38,11 +39,11 @@ func (s *SnippetService) Get(name scriptHelper.ScriptType) (po jslibHelper.Jslib
 	return
 }
 
-func (s *SnippetService) GetJslibs(projectId int) (pos []jslibHelper.Jslib, err error) {
+func (s *SnippetService) GetJslibs(tenantId consts.TenantId, projectId int) (pos []jslibHelper.Jslib, err error) {
 	//if JslibsDeclares == nil {
 
 	JslibsDeclares = nil
-	libs, _ := s.JslibRepo.List("", projectId, true)
+	libs, _ := s.JslibRepo.List(tenantId, "", projectId, true)
 
 	for _, lib := range libs {
 		pth := filepath.Join(dir.GetCurrentAbPath(), lib.TypesFile)
@@ -62,8 +63,8 @@ func (s *SnippetService) GetJslibs(projectId int) (pos []jslibHelper.Jslib, err 
 	return
 }
 
-func (s *SnippetService) GetJslibsForAgent(loadedLibs map[uint]time.Time, projectId int) (tos []jslibHelper.Jslib, err error) {
-	pos, _ := s.JslibRepo.List("", projectId, true)
+func (s *SnippetService) GetJslibsForAgent(tenantId consts.TenantId, loadedLibs map[uint]time.Time, projectId int) (tos []jslibHelper.Jslib, err error) {
+	pos, _ := s.JslibRepo.List(tenantId, "", projectId, true)
 
 	for _, po := range pos {
 		pth := filepath.Join(dir.GetCurrentAbPath(), po.ScriptFile)

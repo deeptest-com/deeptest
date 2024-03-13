@@ -28,15 +28,16 @@ type ScenarioNodeCtrl struct {
 // @success	200	{object}	_domain.Response{data=agentExec.Processor}
 // @Router	/api/v1/scenarios/load	[get]
 func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	scenarioId, err := ctx.URLParamInt("scenarioId")
 
-	scenario, err := c.ScenarioService.GetById(uint(scenarioId))
+	scenario, err := c.ScenarioService.GetById(tenantId, uint(scenarioId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	data, err := c.ScenarioNodeService.GetTree(scenario, false)
+	data, err := c.ScenarioNodeService.GetTree(tenantId, scenario, false)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -56,6 +57,7 @@ func (c *ScenarioNodeCtrl) LoadTree(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Processor}
 // @Router	/api/v1/scenarios/nodes/addInterfacesFromDefine	[post]
 func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.ScenarioAddInterfacesReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -64,7 +66,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromDefine(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromDefine(tenantId, req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -86,6 +88,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDefine(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Processor}
 // @Router	/api/v1/scenarios/nodes/addInterfacesFromTest	[post]
 func (c *ScenarioNodeCtrl) AddInterfacesFromDiagnose(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.ScenarioAddInterfacesFromTreeReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -94,7 +97,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDiagnose(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromDiagnose(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromDiagnose(tenantId, req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -116,6 +119,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromDiagnose(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Processor}
 // @Router	/api/v1/scenarios/nodes/addInterfacesFromCase	[post]
 func (c *ScenarioNodeCtrl) AddInterfacesFromCase(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.ScenarioAddCasesFromTreeReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -124,7 +128,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromCase(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromCase(req)
+	nodePo, bizErr := c.ScenarioNodeService.AddInterfacesFromCase(tenantId, req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -146,6 +150,7 @@ func (c *ScenarioNodeCtrl) AddInterfacesFromCase(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Processor}
 // @Router	/api/v1/scenarios/nodes/addProcessor	[post]
 func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
@@ -162,7 +167,7 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 	req.ProjectId = uint(projectId)
 	req.CreateBy = multi.GetUserId(ctx)
 
-	nodePo, bizErr := c.ScenarioNodeService.AddProcessor(req, "add")
+	nodePo, bizErr := c.ScenarioNodeService.AddProcessor(tenantId, req, "add")
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -185,6 +190,7 @@ func (c *ScenarioNodeCtrl) AddProcessor(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/nodes/{id}/updateName	[put]
 func (c *ScenarioNodeCtrl) UpdateName(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ScenarioNodeReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -193,7 +199,7 @@ func (c *ScenarioNodeCtrl) UpdateName(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScenarioNodeService.UpdateName(req)
+	err = c.ScenarioNodeService.UpdateName(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -213,13 +219,14 @@ func (c *ScenarioNodeCtrl) UpdateName(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/nodes/{id}	[delete]
 func (c *ScenarioNodeCtrl) Delete(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.ScenarioNodeService.Delete(uint(id))
+	err = c.ScenarioNodeService.Delete(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -239,13 +246,14 @@ func (c *ScenarioNodeCtrl) Delete(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/nodes/{id}/disableOrNot	[post]
 func (c *ScenarioNodeCtrl) DisableOrNot(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	err = c.ScenarioNodeService.DisableOrNot(uint(id))
+	err = c.ScenarioNodeService.DisableOrNot(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -265,6 +273,7 @@ func (c *ScenarioNodeCtrl) DisableOrNot(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/nodes/move	[put]
 func (c *ScenarioNodeCtrl) Move(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	projectId, _ := ctx.URLParamInt("currProjectId")
 
 	var req serverDomain.ScenarioNodeMoveReq
@@ -274,7 +283,7 @@ func (c *ScenarioNodeCtrl) Move(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.ScenarioNodeService.Move(uint(req.DragKey), uint(req.DropKey), req.DropPos, uint(projectId))
+	_, err = c.ScenarioNodeService.Move(tenantId, uint(req.DragKey), uint(req.DropKey), req.DropPos, uint(projectId))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -293,6 +302,7 @@ func (c *ScenarioNodeCtrl) Move(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Processor}
 // @Router	/api/v1/scenarios/nodes/importCurl	[post]
 func (c *ScenarioNodeCtrl) ImportCurl(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := serverDomain.ScenarioCurlImportReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -301,7 +311,7 @@ func (c *ScenarioNodeCtrl) ImportCurl(ctx iris.Context) {
 	}
 
 	req.CreateBy = multi.GetUserId(ctx)
-	newNode, bizErr := c.ScenarioNodeService.ImportCurl(req)
+	newNode, bizErr := c.ScenarioNodeService.ImportCurl(tenantId, req)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,
@@ -314,6 +324,7 @@ func (c *ScenarioNodeCtrl) ImportCurl(ctx iris.Context) {
 }
 
 func (c *ScenarioNodeCtrl) CopyProcessor(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := agentExec.Processor{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -328,7 +339,7 @@ func (c *ScenarioNodeCtrl) CopyProcessor(ctx iris.Context) {
 		mod = "child"
 	}
 
-	bizErr := c.ScenarioNodeService.CopyProcessor(&req, createBy, mod, &rootId)
+	bizErr := c.ScenarioNodeService.CopyProcessor(tenantId, &req, createBy, mod, &rootId)
 	if bizErr != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,

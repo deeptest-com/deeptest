@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	mockGenerator "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator"
 	mockData "github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi-mock/openapi/generator/data"
@@ -37,24 +38,24 @@ type MockService struct {
 	ProjectSettingsRepo      *repo.ProjectSettingsRepo `inject:""`
 }
 
-func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGenerator.Response, err error) {
+func (s *MockService) ByRequest(tenantId consts.TenantId, req *MockRequest, ctx iris.Context) (resp mockGenerator.Response, err error) {
 	// load endpoint interface
-	endpointInterface, _, err := s.FindEndpointInterface(req)
+	endpointInterface, _, err := s.FindEndpointInterface(tenantId, req)
 	if err != nil {
 		return
 	}
 
-	resp, ok := s.MockAdvanceService.ByAdvanceMock(endpointInterface, ctx)
+	resp, ok := s.MockAdvanceService.ByAdvanceMock(tenantId, endpointInterface, ctx)
 	if ok {
 		return
 	}
 
 	// init mock generator if needed
-	settings, _ := s.ProjectSettingsRepo.GetMock(endpointInterface.ProjectId)
+	settings, _ := s.ProjectSettingsRepo.GetMock(tenantId, endpointInterface.ProjectId)
 	req.UseExamples = settings.UseExamples
 
 	// init and cache endpoint router if needed
-	err = s.generateEndpointRouter(endpointInterface.EndpointId)
+	err = s.generateEndpointRouter(tenantId, endpointInterface.EndpointId)
 	if err != nil {
 		return
 	}
@@ -68,12 +69,12 @@ func (s *MockService) ByRequest(req *MockRequest, ctx iris.Context) (resp mockGe
 	}
 
 	// find request route
-	requestRoute, _, err := s.findRequestRoute(apiRequest, endpointInterface.EndpointId)
+	requestRoute, _, err := s.findRequestRoute(tenantId, apiRequest, endpointInterface.EndpointId)
 	if err != nil {
 		return
 	}
 
-	generator, _ := s.getGeneratorFromMap(endpointInterface.ProjectId, req)
+	generator, _ := s.getGeneratorFromMap(tenantId, endpointInterface.ProjectId, req)
 	response, err := (*generator).GenerateResponse(&apiRequest, requestRoute, req.Code)
 
 	if err != nil {
@@ -102,7 +103,7 @@ func (s *MockService) initMockGenerator(config mockData.Options) (ret mockGenera
 	return
 }
 
-func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
+func (s *MockService) generateEndpointRouter(tenantId consts.TenantId, endpointId uint) (err error) {
 	// cache if need
 	//endpointRouter, ok := s.getRouterFromMap(endpointId)
 	//if ok && endpointRouter != nil {
@@ -110,12 +111,14 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 	//}
 
 	// generate openapi spec
-	endpoint := s.EndpointService.GetById(endpointId, "v0.1.0")
+
+	endpoint := s.EndpointService.GetById(tenantId, endpointId, "v0.1.0")
 	if endpoint.ID == 0 {
+
 		return
 	}
 
-	doc3 := s.EndpointService.Yaml(endpoint)
+	doc3 := s.EndpointService.Yaml(tenantId, endpoint)
 
 	/* chenqi test
 	pth := "/Users/aaron/rd/project/gudi/deeptest/xdoc/openapi/openapi3/test1.json"
@@ -170,33 +173,34 @@ func (s *MockService) generateEndpointRouter(endpointId uint) (err error) {
 		return
 	}
 
-	s.endpointRouterMap.Store(endpointId, ret)
+	key := fmt.Sprintf("%s_%d", tenantId, endpointId)
+	s.endpointRouterMap.Store(key, ret)
 
 	return
 }
 
-func (s *MockService) FindEndpointInterface(req *MockRequest) (
+func (s *MockService) FindEndpointInterface(tenantId consts.TenantId, req *MockRequest) (
 	endpointInterface model.EndpointInterface, paramsMap map[string]string, err error) {
 
 	if req.EndpointInterfaceId <= 0 {
 		var serve model.Serve
-		serve, err = s.ServeRepo.Get(uint(req.ServeId))
+		serve, err = s.ServeRepo.Get(tenantId, uint(req.ServeId))
 		if err != nil {
 			return
 		}
 
-		endpoint, paramsMap1, err1 := s.findEndpointByPath(serve.ID, req.EndpointPath, req.EndpointMethod)
+		endpoint, paramsMap1, err1 := s.findEndpointByPath(tenantId, serve.ID, req.EndpointPath, req.EndpointMethod)
 		if err1 != nil {
 			err = errors.New("not found")
 			return
 		}
 
 		paramsMap = paramsMap1
-		_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(endpoint.ID, req.EndpointMethod)
+		_, req.EndpointInterfaceId = s.EndpointInterfaceRepo.GetByMethod(tenantId, endpoint.ID, req.EndpointMethod)
 
 	}
 
-	endpointInterface, err = s.EndpointInterfaceRepo.Get(req.EndpointInterfaceId)
+	endpointInterface, err = s.EndpointInterfaceRepo.Get(tenantId, req.EndpointInterfaceId)
 	if err != nil {
 		return
 	}
@@ -204,16 +208,16 @@ func (s *MockService) FindEndpointInterface(req *MockRequest) (
 	return
 }
 
-func (s *MockService) findEndpointByPath(serveId uint, mockPath string, method consts.HttpMethod) (
+func (s *MockService) findEndpointByPath(tenantId consts.TenantId, serveId uint, mockPath string, method consts.HttpMethod) (
 	ret model.Endpoint, paramsMap map[string]string, err error) {
 
-	endpoints, _ := s.EndpointRepo.GetByPath(serveId, mockPath, method)
+	endpoints, _ := s.EndpointRepo.GetByPath(tenantId, serveId, mockPath, method)
 	if len(endpoints) == 0 {
-		endpoints, _ = s.EndpointRepo.ListByProjectIdAndServeId(serveId, method)
+		endpoints, _ = s.EndpointRepo.ListByProjectIdAndServeId(tenantId, serveId, method)
 	}
 
 	for _, endpoint := range endpoints {
-		paramsMap1, matched := s.EndpointMockParamService.MatchEndpointByMockPath(mockPath, *endpoint)
+		paramsMap1, matched := s.EndpointMockParamService.MatchEndpointByMockPath(tenantId, mockPath, *endpoint)
 
 		if matched {
 			ret = *endpoint
@@ -226,9 +230,9 @@ func (s *MockService) findEndpointByPath(serveId uint, mockPath string, method c
 	return
 }
 
-func (s *MockService) findRequestRoute(httpRequest http.Request, endpointId uint) (requestRoute *routers.Route, pathParameters map[string]string, err error) {
+func (s *MockService) findRequestRoute(tenantId consts.TenantId, httpRequest http.Request, endpointId uint) (requestRoute *routers.Route, pathParameters map[string]string, err error) {
 	// find matched requestRoute
-	endpointRouter, ok := s.getRouterFromMap(endpointId)
+	endpointRouter, ok := s.getRouterFromMap(tenantId, endpointId)
 	if !ok {
 		return
 	}
@@ -238,28 +242,30 @@ func (s *MockService) findRequestRoute(httpRequest http.Request, endpointId uint
 	return
 }
 
-func (s *MockService) getGeneratorFromMap(projectId uint, req *MockRequest) (ret *mockGenerator.ResponseGenerator, ok bool) {
-	obj, ok := s.projectGeneratorMap.Load(projectId)
+func (s *MockService) getGeneratorFromMap(tenantId consts.TenantId, projectId uint, req *MockRequest) (ret *mockGenerator.ResponseGenerator, ok bool) {
+	key := fmt.Errorf("%s_%d", tenantId, projectId)
+	obj, ok := s.projectGeneratorMap.Load(key)
 	if ok {
 		temp := obj.(*mockGenerator.ResponseGenerator)
 		ret = temp
 	}
 
-	if obj == nil || s.isOptionsChanged(projectId, req) {
+	if obj == nil || s.isOptionsChanged(tenantId, projectId, req) {
 		newConfig := mockData.Options{
 			UseExamples: req.UseExamples,
 		}
 		temp, _ := s.initMockGenerator(newConfig)
 		ret = &temp
 
-		s.projectOptionsMap.Store(projectId, newConfig)
-		s.projectGeneratorMap.Store(projectId, ret)
+		s.projectOptionsMap.Store(key, newConfig)
+		s.projectGeneratorMap.Store(key, ret)
 	}
 
 	return
 }
-func (s *MockService) getOptionsFromMap(projectId uint) (ret *mockData.Options, ok bool) {
-	obj, ok := s.projectOptionsMap.Load(projectId)
+func (s *MockService) getOptionsFromMap(tenantId consts.TenantId, projectId uint) (ret *mockData.Options, ok bool) {
+	key := fmt.Errorf("%s_%d", tenantId, projectId)
+	obj, ok := s.projectOptionsMap.Load(key)
 	if ok {
 		val := obj.(mockData.Options)
 		ret = &val
@@ -269,13 +275,13 @@ func (s *MockService) getOptionsFromMap(projectId uint) (ret *mockData.Options, 
 		ret = &mockData.Options{
 			UseExamples: mockData.No,
 		}
-		s.endpointRouterMap.Store(projectId, ret)
+		s.projectOptionsMap.Store(key, ret)
 	}
 
 	return
 }
-func (s *MockService) isOptionsChanged(projectId uint, req *MockRequest) (ret bool) {
-	old, _ := s.getOptionsFromMap(projectId)
+func (s *MockService) isOptionsChanged(tenantId consts.TenantId, projectId uint, req *MockRequest) (ret bool) {
+	old, _ := s.getOptionsFromMap(tenantId, projectId)
 
 	if old.UseExamples != req.UseExamples {
 		return true
@@ -284,7 +290,8 @@ func (s *MockService) isOptionsChanged(projectId uint, req *MockRequest) (ret bo
 	}
 }
 
-func (s *MockService) getRouterFromMap(key uint) (ret routers.Router, ok bool) {
+func (s *MockService) getRouterFromMap(tenantId consts.TenantId, endpointId uint) (ret routers.Router, ok bool) {
+	key := fmt.Sprintf("%s_%d", tenantId, endpointId)
 	obj, ok := s.endpointRouterMap.Load(key)
 
 	if ok {

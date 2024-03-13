@@ -27,6 +27,7 @@ type ScenarioInterfaceCtrl struct {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/scenarios/interface/saveDebugData	[post]
 func (c *ScenarioInterfaceCtrl) SaveDebugData(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := domain.DebugData{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -34,7 +35,7 @@ func (c *ScenarioInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 		return
 	}
 
-	_, err = c.ScenarioInterfaceService.SaveDebugData(req)
+	_, err = c.ScenarioInterfaceService.SaveDebugData(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -54,6 +55,7 @@ func (c *ScenarioInterfaceCtrl) SaveDebugData(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=model.Processor}
 // @Router	/api/v1/scenarios/interface/resetDebugData	[post]
 func (c *ScenarioInterfaceCtrl) ResetDebugData(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	createBy := multi.GetUserId(ctx)
 	scenarioProcessorId, err := ctx.URLParamInt("scenarioProcessorId")
 	if err != nil {
@@ -61,7 +63,7 @@ func (c *ScenarioInterfaceCtrl) ResetDebugData(ctx iris.Context) {
 		return
 	}
 
-	newProcessor, err := c.ScenarioInterfaceService.ResetDebugData(scenarioProcessorId, createBy)
+	newProcessor, err := c.ScenarioInterfaceService.ResetDebugData(tenantId, scenarioProcessorId, createBy)
 	if err != nil {
 		if err.Error() == "interface is deleted" {
 			ctx.JSON(_domain.Response{Code: _domain.ErrImportSourceDeleted.Code, Msg: _domain.ErrImportSourceDeleted.Msg})

@@ -8,10 +8,12 @@ import (
 )
 
 type ResponseDefineCtrl struct {
+	BaseCtrl
 	ResponseDefineService *service.ResponseDefineService `inject:""`
 }
 
 func (c *ResponseDefineCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req model.DebugConditionResponseDefine
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -19,7 +21,7 @@ func (c *ResponseDefineCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.ResponseDefineService.Update(req.ID, req.Disabled, req.Code)
+	err = c.ResponseDefineService.Update(tenantId, req.ID, req.Disabled, req.Code)
 	if err != nil {
 		ctx.JSON(_domain.Response{
 			Code: _domain.SystemErr.Code,

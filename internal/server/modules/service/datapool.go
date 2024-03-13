@@ -25,27 +25,27 @@ type DatapoolService struct {
 	DatapoolRepo *repo.DatapoolRepo `inject:""`
 }
 
-func (s *DatapoolService) Paginate(req v1.DatapoolReqPaginate) (ret _domain.PageData, err error) {
-	ret, err = s.DatapoolRepo.Paginate(req)
+func (s *DatapoolService) Paginate(tenantId consts.TenantId, req v1.DatapoolReqPaginate) (ret _domain.PageData, err error) {
+	ret, err = s.DatapoolRepo.Paginate(tenantId, req)
 	return
 }
 
-func (s *DatapoolService) Get(id uint) (model.Datapool, error) {
-	return s.DatapoolRepo.Get(id)
+func (s *DatapoolService) Get(tenantId consts.TenantId, id uint) (model.Datapool, error) {
+	return s.DatapoolRepo.Get(tenantId, id)
 }
-func (s *DatapoolService) GetByName(name string, projectId uint) (model.Datapool, error) {
-	return s.DatapoolRepo.GetByName(name, projectId)
-}
-
-func (s *DatapoolService) Save(req *model.Datapool, userId uint) (err error) {
-	return s.DatapoolRepo.Save(req, userId)
+func (s *DatapoolService) GetByName(tenantId consts.TenantId, name string, projectId uint) (model.Datapool, error) {
+	return s.DatapoolRepo.GetByName(tenantId, name, projectId)
 }
 
-func (s *DatapoolService) Delete(id uint) (err error) {
-	return s.DatapoolRepo.Delete(id)
+func (s *DatapoolService) Save(tenantId consts.TenantId, req *model.Datapool, userId uint) (err error) {
+	return s.DatapoolRepo.Save(tenantId, req, userId)
 }
-func (s *DatapoolService) Disable(id uint) (err error) {
-	return s.DatapoolRepo.Disable(id)
+
+func (s *DatapoolService) Delete(tenantId consts.TenantId, id uint) (err error) {
+	return s.DatapoolRepo.Delete(tenantId, id)
+}
+func (s *DatapoolService) Disable(tenantId consts.TenantId, id uint) (err error) {
+	return s.DatapoolRepo.Disable(tenantId, id)
 }
 
 // Upload 上传文件
@@ -100,10 +100,10 @@ func (s *DatapoolService) ReadExcel(pth string) (ret [][]interface{}, err error)
 	return
 }
 
-func (s *DatapoolService) ListForExec(projectId uint) (ret domain.Datapools, error interface{}) {
+func (s *DatapoolService) ListForExec(tenantId consts.TenantId, projectId uint) (ret domain.Datapools, error interface{}) {
 	ret = domain.Datapools{}
 
-	datapools, err := s.DatapoolRepo.ListForExec(projectId)
+	datapools, err := s.DatapoolRepo.ListForExec(tenantId, projectId)
 	if err != nil {
 		return
 	}

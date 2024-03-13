@@ -15,9 +15,9 @@ import (
 type ProcessorCustomCode struct {
 	ID uint `json:"id" yaml:"id"`
 	ProcessorEntityBase
-
-	Content string `gorm:"type:longtext;" json:"content" yaml:"content"`
-	Desc    string `json:"desc" yaml:"desc"`
+	TenantId consts.TenantId `json:"tenantId"`
+	Content  string          `gorm:"type:longtext;" json:"content" yaml:"content"`
+	Desc     string          `json:"desc" yaml:"desc"`
 }
 
 func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (err error) {
@@ -47,7 +47,7 @@ func (entity ProcessorCustomCode) Run(processor *Processor, session *Session) (e
 		Content: entity.Content,
 	}
 
-	err = ExecScript(&scriptBase, processor.ProjectId, session.ExecUuid)
+	err = ExecScript(&scriptBase, session.TenantId, processor.ProjectId, session.ExecUuid)
 	scriptHelper.GenResultMsg(&scriptBase)
 	//scriptBase.VariableSettings = VariableSettings
 

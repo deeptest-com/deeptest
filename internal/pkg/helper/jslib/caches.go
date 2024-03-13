@@ -1,6 +1,8 @@
 package jslibHelper
 
 import (
+	"fmt"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	"github.com/snowlyg/helper/dir"
@@ -13,19 +15,20 @@ var (
 	JslibCache   sync.Map
 )
 
-func LoadCacheIfNeeded() (err error) {
+func LoadCacheIfNeeded(tenantId consts.TenantId) (err error) {
 	if IsCacheReady {
 		return
 	}
 
-	InitJslibCache()
+	InitJslibCache(tenantId)
 	IsCacheReady = true
 
 	return
 }
 
-func GetJslibCache(id uint) (val Jslib) {
-	inf, ok := JslibCache.Load(id)
+func GetJslibCache(tenantId consts.TenantId, id uint) (val Jslib) {
+	key := fmt.Sprintf("%s_%d", tenantId, id)
+	inf, ok := JslibCache.Load(key)
 
 	if ok {
 		val = inf.(Jslib)
@@ -34,12 +37,13 @@ func GetJslibCache(id uint) (val Jslib) {
 	return
 }
 
-func SetJslibCache(id uint, val Jslib) {
-	JslibCache.Store(id, val)
+func SetJslibCache(tenantId consts.TenantId, id uint, val Jslib) {
+	key := fmt.Sprintf("%s_%d", tenantId, id)
+	JslibCache.Store(key, val)
 }
 
-func InitJslibCache() (err error) {
-	db := dao.GetDB()
+func InitJslibCache(tenantId consts.TenantId) (err error) {
+	db := dao.GetDB(tenantId)
 	if db == nil {
 		return
 	}
@@ -64,7 +68,7 @@ func InitJslibCache() (err error) {
 			to.UpdatedAt = *po.CreatedAt
 		}
 
-		SetJslibCache(po.ID, to)
+		SetJslibCache(tenantId, po.ID, to)
 	}
 
 	return

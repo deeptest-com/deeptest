@@ -14,13 +14,14 @@ type ScriptCtrl struct {
 
 // Get 详情
 func (c *ScriptCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	po, err := c.ScriptService.Get(uint(id))
+	po, err := c.ScriptService.Get(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -30,6 +31,7 @@ func (c *ScriptCtrl) Get(ctx iris.Context) {
 
 // Update 更新
 func (c *ScriptCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var script model.DebugConditionScript
 	err := ctx.ReadJSON(&script)
 	if err != nil {
@@ -37,7 +39,7 @@ func (c *ScriptCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.ScriptService.Update(&script)
+	err = c.ScriptService.Update(tenantId, &script)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

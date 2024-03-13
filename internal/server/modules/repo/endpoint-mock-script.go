@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"go.uber.org/zap"
@@ -8,11 +9,12 @@ import (
 )
 
 type EndpointMockScriptRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
-func (r *EndpointMockScriptRepo) Get(endpointId uint) (script model.EndpointMockScript, err error) {
-	err = r.DB.Model(&model.EndpointMockScript{}).
+func (r *EndpointMockScriptRepo) Get(tenantId consts.TenantId, endpointId uint) (script model.EndpointMockScript, err error) {
+	err = r.GetDB(tenantId).Model(&model.EndpointMockScript{}).
 		Where("endpoint_id = ?", endpointId).
 		First(&script).Error
 
@@ -21,16 +23,16 @@ func (r *EndpointMockScriptRepo) Get(endpointId uint) (script model.EndpointMock
 			EndpointId: endpointId,
 			Content:    "",
 		}
-		err = r.DB.Save(&script).Error
+		err = r.GetDB(tenantId).Save(&script).Error
 	}
 
 	return
 }
 
-func (r *EndpointMockScriptRepo) Update(po model.EndpointMockScript) (err error) {
+func (r *EndpointMockScriptRepo) Update(tenantId consts.TenantId, po model.EndpointMockScript) (err error) {
 	values := map[string]interface{}{"content": po.Content}
 
-	err = r.DB.Model(&model.EndpointMockScript{}).
+	err = r.GetDB(tenantId).Model(&model.EndpointMockScript{}).
 		Where("id = ?", po.ID).Updates(values).Error
 
 	if err != nil {
@@ -41,8 +43,8 @@ func (r *EndpointMockScriptRepo) Update(po model.EndpointMockScript) (err error)
 	return
 }
 
-func (r *EndpointMockScriptRepo) Disable(endpointId uint) (err error) {
-	err = r.DB.Model(&model.Endpoint{}).
+func (r *EndpointMockScriptRepo) Disable(tenantId consts.TenantId, endpointId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.Endpoint{}).
 		Where("id = ?", endpointId).
 		Update("script_mock_disabled", gorm.Expr("NOT script_mock_disabled")).Error
 

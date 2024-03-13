@@ -3,7 +3,8 @@ package service
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/integration/service"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -13,13 +14,13 @@ import (
 )
 
 type UserAuthService struct {
-	RemoteService *service.RemoteService `inject:""`
-	UserRepo      *repo.UserRepo         `inject:""`
+	RemoteService *leyan.RemoteService `inject:""`
+	UserRepo      *repo.UserRepo       `inject:""`
 }
 
-func (s *UserAuthService) Auth(token string) (user model.SysUser, err error) {
+func (s *UserAuthService) Auth(tenantId consts.TenantId, token string) (user model.SysUser, err error) {
 	var userInfo integrationDomain.UserInfo
-	userInfo, err = s.RemoteService.GetUserInfoByToken(token)
+	userInfo, err = s.RemoteService.GetUserInfoByToken(tenantId, token)
 	if err != nil {
 		req := v1.UserReq{UserBase: v1.UserBase{
 			Username:  userInfo.Username,
@@ -28,10 +29,10 @@ func (s *UserAuthService) Auth(token string) (user model.SysUser, err error) {
 			Name:      userInfo.RealName,
 			Password:  commonUtils.RandStr(8),
 		}}
-		s.UserRepo.Create(req)
+		s.UserRepo.Create(tenantId, req)
 
 	}
-	user, err = s.UserRepo.GetByUserName(userInfo.Username)
+	user, err = s.UserRepo.GetByUserName(tenantId, userInfo.Username)
 	return
 }
 

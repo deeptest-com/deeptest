@@ -140,3 +140,9 @@ type OtherUserInfo struct {
 	RealName string `json:"name"`
 	Mail     string `json:"email"`
 }
+
+type UserRoleItem struct {
+	Id        uint   `json:"id"`
+	RoleName  string `json:"roleName"`
+	RoleValue string `json:"roleValue"`
+}

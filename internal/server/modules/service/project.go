@@ -5,7 +5,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	"github.com/aaronchen2k/deeptest/integration/service"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
@@ -27,14 +27,14 @@ type ProjectService struct {
 	MessageRepo               *repo.MessageRepo                  `inject:""`
 	BaseRepo                  *repo.BaseRepo                     `inject:""`
 	IntegrationRepo           *repo.IntegrationRepo              `inject:""`
-	RemoteService             *service.RemoteService             `inject:""`
+	RemoteService             *leyan.RemoteService               `inject:""`
 	MessageService            *MessageService                    `inject:""`
 	UserService               *UserService                       `inject:""`
 	IntegrationProjectService *integrationService.ProjectService `inject:""`
 }
 
-func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _domain.PageData, err error) {
-	ret, err = s.ProjectRepo.Paginate(req, userId)
+func (s *ProjectService) Paginate(tenantId consts.TenantId, req v1.ProjectReqPaginate, userId uint) (ret _domain.PageData, err error) {
+	ret, err = s.ProjectRepo.Paginate(tenantId, req, userId)
 
 	if err != nil {
 		return
@@ -43,17 +43,17 @@ func (s *ProjectService) Paginate(req v1.ProjectReqPaginate, userId uint) (ret _
 	return
 }
 
-func (s *ProjectService) Get(id uint) (model.Project, error) {
-	return s.ProjectRepo.Get(id)
+func (s *ProjectService) Get(tenantId consts.TenantId, id uint) (model.Project, error) {
+	return s.ProjectRepo.Get(tenantId, id)
 }
 
-func (s *ProjectService) Create(req v1.ProjectReq, userId uint) (id uint, err _domain.BizErr) {
-	id, err = s.ProjectRepo.Create(req, userId)
+func (s *ProjectService) Create(tenantId consts.TenantId, req v1.ProjectReq, userId uint) (id uint, err _domain.BizErr) {
+	id, err = s.ProjectRepo.Create(tenantId, req, userId)
 	if err.Code != 0 {
 		return
 	}
 
-	integrationErr := s.IntegrationProjectService.Save(req.ProjectReq, id)
+	integrationErr := s.IntegrationProjectService.Save(tenantId, req.ProjectReq, id)
 	if integrationErr != nil {
 		err = _domain.SystemErr
 	}
@@ -61,18 +61,18 @@ func (s *ProjectService) Create(req v1.ProjectReq, userId uint) (id uint, err _d
 	return
 }
 
-func (s *ProjectService) Update(req v1.ProjectReq) (err error) {
-	err = s.ProjectRepo.Update(req)
+func (s *ProjectService) Update(tenantId consts.TenantId, req v1.ProjectReq) (err error) {
+	err = s.ProjectRepo.Update(tenantId, req)
 	if err != nil {
 		return
 	}
 
-	err = s.IntegrationProjectService.Save(req.ProjectReq, req.Id)
+	err = s.IntegrationProjectService.Save(tenantId, req.ProjectReq, req.Id)
 
 	return
 }
 
-func (s *ProjectService) DeleteById(id uint) error {
+func (s *ProjectService) DeleteById(tenantId consts.TenantId, id uint) error {
 	/*
 		count, err := s.ServeRepo.GetCountByProject(id)
 		if err != nil {
@@ -84,64 +84,64 @@ func (s *ProjectService) DeleteById(id uint) error {
 			return err
 		}
 	*/
-	return s.ProjectRepo.DeleteById(id)
+	return s.ProjectRepo.DeleteById(tenantId, id)
 }
 
-func (s *ProjectService) GetByUser(userId uint) (projects []model.ProjectMemberRole, currProject model.Project, recentProjects []model.Project, err error) {
-	projects, err = s.ProjectRepo.ListProjectByUser(userId)
-	currProject, err = s.ProjectRepo.GetCurrProjectByUser(userId)
-	recentProjects, err = s.ProjectRepo.ListProjectsRecentlyVisited(userId)
+func (s *ProjectService) GetByUser(tenantId consts.TenantId, userId uint) (projects []model.ProjectMemberRole, currProject model.Project, recentProjects []model.Project, err error) {
+	projects, err = s.ProjectRepo.ListProjectByUser(tenantId, userId)
+	currProject, err = s.ProjectRepo.GetCurrProjectByUser(tenantId, userId)
+	recentProjects, err = s.ProjectRepo.ListProjectsRecentlyVisited(tenantId, userId)
 
 	return
 }
 
-func (s *ProjectService) ChangeProject(projectId, userId uint) (err error) {
-	err = s.ProjectRepo.ChangeProject(projectId, userId)
+func (s *ProjectService) ChangeProject(tenantId consts.TenantId, projectId, userId uint) (err error) {
+	err = s.ProjectRepo.ChangeProject(tenantId, projectId, userId)
 
 	return
 }
 
-func (s *ProjectService) Members(req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
-	data, err = s.ProjectRepo.Members(req, projectId)
+func (s *ProjectService) Members(tenantId consts.TenantId, req v1.ProjectReqPaginate, projectId int) (data _domain.PageData, err error) {
+	data, err = s.ProjectRepo.Members(tenantId, req, projectId)
 
 	return
 }
 
-func (s *ProjectService) RemoveMember(req v1.ProjectMemberRemoveReq) (err error) {
-	err = s.ProjectRepo.RemoveMember(req.UserId, req.ProjectId)
+func (s *ProjectService) RemoveMember(tenantId consts.TenantId, req v1.ProjectMemberRemoveReq) (err error) {
+	err = s.ProjectRepo.RemoveMember(tenantId, req.UserId, req.ProjectId)
 
 	return
 }
 
-func (s *ProjectService) UpdateMemberRole(req v1.UpdateProjectMemberReq) (err error) {
-	return s.ProjectRepo.UpdateUserRole(req)
+func (s *ProjectService) UpdateMemberRole(tenantId consts.TenantId, req v1.UpdateProjectMemberReq) (err error) {
+	return s.ProjectRepo.UpdateUserRole(tenantId, req)
 }
 
-func (s *ProjectService) GetCurrProjectByUser(userId uint) (currProject model.Project, err error) {
-	currProject, err = s.ProjectRepo.GetCurrProjectByUser(userId)
+func (s *ProjectService) GetCurrProjectByUser(tenantId consts.TenantId, userId uint) (currProject model.Project, err error) {
+	currProject, err = s.ProjectRepo.GetCurrProjectByUser(tenantId, userId)
 
 	return
 }
 
-func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
+func (s *ProjectService) Apply(tenantId consts.TenantId, req v1.ApplyProjectReq) (err error) {
 	//如果已经有审批记录，就不创建新的了
 	var b bool
-	b, err = s.ProjectRepo.IfProjectMember(req.ApplyUserId, req.ProjectId)
+	b, err = s.ProjectRepo.IfProjectMember(tenantId, req.ApplyUserId, req.ProjectId)
 	if err != nil || b {
 		return
 	}
-	result, _ := s.ProjectRepo.GetAuditByItem(req.ProjectId, req.ApplyUserId, []consts.AuditStatus{consts.Init})
+	result, _ := s.ProjectRepo.GetAuditByItem(tenantId, req.ProjectId, req.ApplyUserId, []consts.AuditStatus{consts.Init})
 	if result.ID != 0 {
 		return
 		//return fmt.Errorf("您已提交了申请，请联系审批人审批")
 	}
-	auditId, err := s.ProjectRepo.SaveAudit(model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
+	auditId, err := s.ProjectRepo.SaveAudit(tenantId, model.ProjectMemberAudit{ProjectId: req.ProjectId, ApplyUserId: req.ApplyUserId, ProjectRoleName: req.ProjectRoleName, Description: req.Description})
 	if err != nil {
 		return
 	}
 
 	go func() {
-		err = s.IntegrationProjectService.SendApplyMessage(req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
+		err = s.IntegrationProjectService.SendApplyMessage(tenantId, req.ProjectId, req.ApplyUserId, auditId, req.ProjectRoleName)
 		if err != nil {
 			logUtils.Infof("申请加入项目发送消息失败，err:%+v", err)
 		}
@@ -150,10 +150,10 @@ func (s *ProjectService) Apply(req v1.ApplyProjectReq) (err error) {
 	return
 }
 
-func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) (err error) {
+func (s *ProjectService) Audit(tenantId consts.TenantId, id, auditUserId uint, status consts.AuditStatus) (err error) {
 
 	var record model.ProjectMemberAudit
-	record, err = s.ProjectRepo.GetAudit(id)
+	record, err = s.ProjectRepo.GetAudit(tenantId, id)
 	if err != nil {
 		return err
 	}
@@ -163,7 +163,7 @@ func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) 
 		return
 	}
 
-	err = s.ProjectRepo.UpdateAuditStatus(id, auditUserId, status)
+	err = s.ProjectRepo.UpdateAuditStatus(tenantId, id, auditUserId, status)
 	if err != nil {
 		return err
 	}
@@ -173,7 +173,7 @@ func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) 
 	}
 
 	var res bool
-	res, err = s.ProjectRepo.IfProjectMember(record.ApplyUserId, record.ProjectId)
+	res, err = s.ProjectRepo.IfProjectMember(tenantId, record.ApplyUserId, record.ProjectId)
 	if err != nil {
 		return
 	}
@@ -182,23 +182,23 @@ func (s *ProjectService) Audit(id, auditUserId uint, status consts.AuditStatus) 
 		return
 	}
 
-	err = s.ProjectRepo.AddProjectMember(record.ProjectId, record.ApplyUserId, record.ProjectRoleName)
+	err = s.ProjectRepo.AddProjectMember(tenantId, record.ProjectId, record.ApplyUserId, record.ProjectRoleName)
 	if err != nil {
 		return
 	}
 	return
 }
 
-func (s *ProjectService) AuditList(req v1.AuditProjectPaginate) (data _domain.PageData, err error) {
-	return s.ProjectRepo.GetAuditList(req)
+func (s *ProjectService) AuditList(tenantId consts.TenantId, req v1.AuditProjectPaginate) (data _domain.PageData, err error) {
+	return s.ProjectRepo.GetAuditList(tenantId, req)
 }
 
-func (s *ProjectService) AuditUsers(projectId uint) (data []model.SysUser, err error) {
-	return s.ProjectRepo.GetAuditUsers(projectId)
+func (s *ProjectService) AuditUsers(tenantId consts.TenantId, projectId uint) (data []model.SysUser, err error) {
+	return s.ProjectRepo.GetAuditUsers(tenantId, projectId)
 }
 
-func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (project model.Project, userInProject bool, err error) {
-	project, err = s.ProjectRepo.GetByShortName(shortName)
+func (s *ProjectService) CheckProjectAndUser(tenantId consts.TenantId, shortName string, userId uint) (project model.Project, userInProject bool, err error) {
+	project, err = s.ProjectRepo.GetByShortName(tenantId, shortName)
 	if err != nil {
 		return
 	}
@@ -231,7 +231,7 @@ func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (pro
 	//	}
 	//}
 
-	isAdminUser, err := s.UserRepo.IsAdminUser(userId)
+	isAdminUser, err := s.UserRepo.IsAdminUser(tenantId, userId)
 	if err != nil {
 		return
 	}
@@ -239,7 +239,7 @@ func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (pro
 		return project, true, nil
 	}
 
-	userInProject, err = s.ProjectRepo.IfProjectMember(userId, project.ID)
+	userInProject, err = s.ProjectRepo.IfProjectMember(tenantId, userId, project.ID)
 	if err != nil {
 		return
 	}
@@ -256,9 +256,9 @@ func (s *ProjectService) CheckProjectAndUser(shortName string, userId uint) (pro
 	return
 }
 
-func (s *ProjectService) CreateProjectForThirdParty(project integrationDomain.ProjectInfo) (projectId uint, err error) {
+func (s *ProjectService) CreateProjectForThirdParty(tenantId consts.TenantId, project integrationDomain.ProjectInfo) (projectId uint, err error) {
 	adminName := "admin"
-	adminUser, err := s.UserRepo.GetByUserName(adminName)
+	adminUser, err := s.UserRepo.GetByUserName(tenantId, adminName)
 	if err != nil {
 		return
 	}
@@ -273,7 +273,7 @@ func (s *ProjectService) CreateProjectForThirdParty(project integrationDomain.Pr
 			Source:    serverConsts.ProjectSourceLY,
 		},
 	}
-	projectId, createErr := s.Create(createReq, adminUser.ID)
+	projectId, createErr := s.Create(tenantId, createReq, adminUser.ID)
 	if projectId == 0 {
 		err = errors.New(createErr.Error())
 		return
@@ -281,7 +281,7 @@ func (s *ProjectService) CreateProjectForThirdParty(project integrationDomain.Pr
 
 	//创建项目管理员
 	for _, spaceAdmin := range project.SpaceAdmins {
-		spaceAdminUser, err := s.UserRepo.GetByUserName(spaceAdmin.Username)
+		spaceAdminUser, err := s.UserRepo.GetByUserName(tenantId, spaceAdmin.Username)
 		if err != nil && err != gorm.ErrRecordNotFound {
 			continue
 		}
@@ -299,13 +299,13 @@ func (s *ProjectService) CreateProjectForThirdParty(project integrationDomain.Pr
 					Password:  commonUtils.RandStr(8),
 				},
 			}
-			spaceAdminId, err = s.UserService.Create(createUserReq)
+			spaceAdminId, err = s.UserService.Create(tenantId, createUserReq)
 			if err != nil {
 				continue
 			}
 		}
 
-		err = s.ProjectRepo.AddProjectMember(projectId, spaceAdminId, s.BaseRepo.GetAdminRoleName())
+		err = s.ProjectRepo.AddProjectMember(tenantId, projectId, spaceAdminId, s.BaseRepo.GetAdminRoleName())
 	}
 
 	return
@@ -323,26 +323,26 @@ func (s *ProjectService) createSample(projectId uint) (err error) {
 }
 */
 
-func (s *ProjectService) AllProjectList(username string) (res []model.Project, err error) {
-	return s.ProjectRepo.ListByUsername(username)
+func (s *ProjectService) AllProjectList(tenantId consts.TenantId, username string) (res []model.Project, err error) {
+	return s.ProjectRepo.ListByUsername(tenantId, username)
 }
 
-func (s *ProjectService) GetProjectRole(username, projectCode string) (role string, err error) {
+func (s *ProjectService) GetProjectRole(tenantId consts.TenantId, username, projectCode string) (role string, err error) {
 	var user model.SysUser
-	user, _ = s.UserRepo.GetByUserName(username)
+	user, _ = s.UserRepo.GetByUserName(tenantId, username)
 	if user.ID == 0 {
 		err = fmt.Errorf("用户名不存在")
 		return
 	}
 	var project model.Project
-	project, _ = s.ProjectRepo.GetByShortName(projectCode)
+	project, _ = s.ProjectRepo.GetByShortName(tenantId, projectCode)
 	if project.ID == 0 {
 		err = fmt.Errorf("项目不存在")
 		return
 	}
 
 	var projectRole model.ProjectRole
-	projectRole, _ = s.ProjectRoleRepo.ProjectUserRoleList(user.ID, project.ID)
+	projectRole, _ = s.ProjectRoleRepo.ProjectUserRoleList(tenantId, user.ID, project.ID)
 	if projectRole.Name == "" {
 		err = fmt.Errorf("用户角色不存在")
 		return

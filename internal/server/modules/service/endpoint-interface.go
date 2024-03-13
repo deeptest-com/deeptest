@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi"
@@ -21,12 +22,12 @@ type EndpointInterfaceService struct {
 	EndpointService       *EndpointService            `inject:""`
 }
 
-func (s *EndpointInterfaceService) Paginate(req v1.EndpointInterfaceReqPaginate) (ret _domain.PageData, err error) {
-	ret, err = s.EndpointInterfaceRepo.Paginate(req)
+func (s *EndpointInterfaceService) Paginate(tenantId consts.TenantId, req v1.EndpointInterfaceReqPaginate) (ret _domain.PageData, err error) {
+	ret, err = s.EndpointInterfaceRepo.Paginate(tenantId, req)
 	return
 }
 
-func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataReq) (err error) {
+func (s *EndpointInterfaceService) ImportEndpointData(tenantId consts.TenantId, req v1.ImportEndpointDataReq) (err error) {
 	var data []byte
 	if req.OpenUrlImport {
 		request := domain.BaseRequest{Url: req.FilePath}
@@ -42,7 +43,7 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 		return err
 	}
 
-	req.DriverType, err = s.resetDriverType(req.DriverType, data)
+	req.DriverType, err = s.resetDriverType(tenantId, req.DriverType, data)
 	if err != nil {
 		return
 	}
@@ -56,13 +57,13 @@ func (s *EndpointInterfaceService) ImportEndpointData(req v1.ImportEndpointDataR
 
 	openapi2endpoint := openapi.NewOpenapi2endpoint(doc, req.CategoryId)
 	endpoints, dirs, components := openapi2endpoint.Convert()
-	go s.EndpointService.SaveEndpoints(endpoints, dirs, components, req)
+	go s.EndpointService.SaveEndpoints(tenantId, endpoints, dirs, components, req)
 
 	return
 
 }
 
-func (s *EndpointInterfaceService) resetDriverType(driverType convert.DriverType, data []byte) (newDriverType convert.DriverType, err error) {
+func (s *EndpointInterfaceService) resetDriverType(tenantId consts.TenantId, driverType convert.DriverType, data []byte) (newDriverType convert.DriverType, err error) {
 	if driverType == convert.SWAGGER {
 		res := make(map[string]interface{})
 		err = commonUtils.JsonDecode(string(data), &res)
@@ -95,12 +96,12 @@ func (s *EndpointInterfaceService) resetDriverType(driverType convert.DriverType
 	return
 }
 
-func (s *EndpointInterfaceService) GenerateFromResponse(req v1.GenerateFromResponseReq) (responseBody model.EndpointInterfaceResponseBody, err error) {
+func (s *EndpointInterfaceService) GenerateFromResponse(tenantId consts.TenantId, req v1.GenerateFromResponseReq) (responseBody model.EndpointInterfaceResponseBody, err error) {
 	responseBody = model.EndpointInterfaceResponseBody{}
 	responseBodyItem := model.EndpointInterfaceResponseBodyItem{}
-	responseBody, err = s.EndpointInterfaceRepo.GetResponseBody(req.InterfaceId, req.Code)
+	responseBody, err = s.EndpointInterfaceRepo.GetResponseBody(tenantId, req.InterfaceId, req.Code)
 	if err == nil {
-		responseBodyItem, err = s.EndpointInterfaceRepo.GetResponseBodyItem(responseBody.ID)
+		responseBodyItem, err = s.EndpointInterfaceRepo.GetResponseBodyItem(tenantId, responseBody.ID)
 		if err != nil {
 			return
 		}
@@ -112,18 +113,18 @@ func (s *EndpointInterfaceService) GenerateFromResponse(req v1.GenerateFromRespo
 	responseBodyItem.Content = req.Data
 	responseBody.SchemaItem = responseBodyItem
 
-	err = s.EndpointInterfaceRepo.SaveResponseBody(&responseBody)
+	err = s.EndpointInterfaceRepo.SaveResponseBody(tenantId, &responseBody)
 
 	return
 
 }
 
-func (s *EndpointInterfaceService) GenerateFromRequest(req v1.GenerateFromRequestReq) (requestBody model.EndpointInterfaceRequestBody, err error) {
+func (s *EndpointInterfaceService) GenerateFromRequest(tenantId consts.TenantId, req v1.GenerateFromRequestReq) (requestBody model.EndpointInterfaceRequestBody, err error) {
 	requestBody = model.EndpointInterfaceRequestBody{}
 	requestBodyItem := model.EndpointInterfaceRequestBodyItem{}
-	requestBody, err = s.EndpointInterfaceRepo.GetRequestBody(req.InterfaceId)
+	requestBody, err = s.EndpointInterfaceRepo.GetRequestBody(tenantId, req.InterfaceId)
 	if err == nil {
-		requestBodyItem, err = s.EndpointInterfaceRepo.GetRequestBodyItem(requestBody.ID)
+		requestBodyItem, err = s.EndpointInterfaceRepo.GetRequestBodyItem(tenantId, requestBody.ID)
 		if err != nil {
 			return
 		}
@@ -134,7 +135,7 @@ func (s *EndpointInterfaceService) GenerateFromRequest(req v1.GenerateFromReques
 	requestBodyItem.Content = req.Data
 	requestBody.SchemaItem = requestBodyItem
 
-	err = s.EndpointInterfaceRepo.UpdateRequestBody(&requestBody)
+	err = s.EndpointInterfaceRepo.UpdateRequestBody(tenantId, &requestBody)
 
 	return
 

@@ -5,6 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/integration/enum"
 	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
 	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 )
 
 type user struct {
@@ -18,8 +19,8 @@ func NewUser(appName enum.AppName) *user {
 	return ret
 }
 
-func (s *user) GetUserInfoByToken(token, origin string) (v1.UserInfo, error) {
-	return s.u.GetUserInfoByToken(token, origin)
+func (s *user) GetUserInfoByToken(tenantId consts.TenantId, token, origin string) (v1.UserInfo, error) {
+	return s.u.GetUserInfoByToken(tenantId, token, origin)
 }
 
 func (s *user) getEntity(appName enum.AppName) (u IUser) {

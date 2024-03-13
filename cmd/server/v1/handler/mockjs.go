@@ -20,7 +20,8 @@ type MockJsCtrl struct {
 // @success	200	{object}	_domain.Response{data=[]serverDomain.MockJsExpression}
 // @Router	/api/v1/mockjs/expressions	[get]
 func (c *MockJsCtrl) ListExpressions(ctx iris.Context) {
-	data, err := c.MockJsService.ListExpressions()
+	tenantId := c.getTenantId(ctx)
+	data, err := c.MockJsService.ListExpressions(tenantId)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -2,6 +2,7 @@ package service
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
@@ -26,13 +27,13 @@ func (s *ComponentService) SaveSchemaSecurity(req v1.SchemaReq) (interface{}, er
 	return nil, nil
 }
 
-func (s *ComponentService) UpdateRefById(id uint) (err error) {
-	category, err := s.CategoryRepo.GetByEntityId(id, serverConsts.SchemaCategory)
+func (s *ComponentService) UpdateRefById(tenantId consts.TenantId, id uint) (err error) {
+	category, err := s.CategoryRepo.GetByEntityId(tenantId, id, serverConsts.SchemaCategory)
 	if err != nil {
 		return
 	}
 
-	err = s.ComponentSchemaRepo.ChangeRef(id, category.ID)
+	err = s.ComponentSchemaRepo.ChangeRef(tenantId, id, category.ID)
 
 	return
 }

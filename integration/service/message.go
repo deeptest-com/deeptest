@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -19,37 +20,37 @@ type MessageService struct {
 	MessageRepo     *repo.MessageRepo     `inject:""`
 	BaseRepo        *repo.BaseRepo        `inject:""`
 	RoleService     *RoleService          `inject:""`
-	RemoteService   *RemoteService        `inject:""`
+	RemoteService   *leyan.RemoteService  `inject:""`
 	Cron            *cron.ServerCron      `inject:""`
 }
 
-func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint, roleValue consts.RoleType) (mcsData integrationDomain.ApprovalReq, err error) {
-	sender, err := s.UserRepo.GetByUserId(senderId)
+func (s *MessageService) GetJoinProjectMcsData(tenantId consts.TenantId, senderId, projectId, auditId uint, roleValue consts.RoleType) (mcsData integrationDomain.ApprovalReq, err error) {
+	sender, err := s.UserRepo.GetByUserId(tenantId, senderId)
 	if err != nil {
 		return
 	}
 
-	project, err := s.ProjectRepo.Get(projectId)
+	project, err := s.ProjectRepo.Get(tenantId, projectId)
 	if err != nil {
 		return
 	}
 
-	adminRole, err := s.ProjectRoleRepo.FindByName(s.BaseRepo.GetAdminRoleName())
+	adminRole, err := s.ProjectRoleRepo.FindByName(tenantId, s.BaseRepo.GetAdminRoleName())
 	if err != nil {
 		return
 	}
 
-	applyRole, err := s.RoleService.GetRoleNameByValue(string(roleValue))
+	applyRole, err := s.RoleService.GetRoleNameByValue(tenantId, string(roleValue))
 	if err != nil {
 		return
 	}
 
-	userAccount, err := s.ProjectRepo.GetUsernamesByProjectAndRole(projectId, adminRole.ID, serverConsts.AdminUserName)
+	userAccount, err := s.ProjectRepo.GetUsernamesByProjectAndRole(tenantId, projectId, adminRole.ID, serverConsts.AdminUserName)
 	if err != nil {
 		return
 	}
 
-	auditData, err := s.ProjectRepo.GetAudit(auditId)
+	auditData, err := s.ProjectRepo.GetAudit(tenantId, auditId)
 	if err != nil {
 		return
 	}
@@ -70,46 +71,46 @@ func (s *MessageService) GetJoinProjectMcsData(senderId, projectId, auditId uint
 	return
 }
 
-func (s *MessageService) SendMessageToMcs(message model.Message) (mcsMessageId string, err error) {
-	mcsMessageId, err = s.RemoteService.ApprovalAndMsg(message.Content)
+func (s *MessageService) SendMessageToMcs(tenantId consts.TenantId, message model.Message) (mcsMessageId string, err error) {
+	mcsMessageId, err = s.RemoteService.ApprovalAndMsg(tenantId, message.Content)
 	if err != nil {
-		_ = s.MessageRepo.UpdateSendStatusById(message.ID, consts.MessageSendFailed)
+		_ = s.MessageRepo.UpdateSendStatusById(tenantId, message.ID, consts.MessageSendFailed)
 		return
 	}
 
 	message.McsMessageId = mcsMessageId
 	if mcsMessageId != "" {
 		if message.ServiceType == consts.ServiceTypeInfo {
-			err = s.MessageRepo.UpdateCombinedSendStatus(message.MessageSource, message.BusinessId, consts.MessageSendSuccess)
+			err = s.MessageRepo.UpdateCombinedSendStatus(tenantId, message.MessageSource, message.BusinessId, consts.MessageSendSuccess)
 		} else {
 			message.SendStatus = consts.MessageSendSuccess
-			s.MessageRepo.DB.Save(&message)
+			s.MessageRepo.GetDB(tenantId).Save(&message)
 		}
 	}
 
 	return
 }
 
-func (s *MessageService) SendMessageToMcsAsync() (err error) {
-	messages, err := s.MessageRepo.ListMsgNeedAsyncToMcs()
+func (s *MessageService) SendMessageToMcsAsync(tenantId consts.TenantId) (err error) {
+	messages, err := s.MessageRepo.ListMsgNeedAsyncToMcs(tenantId)
 	if err != nil {
 		return
 	}
 
 	for _, message := range messages {
-		_, err = s.SendMessageToMcs(message)
+		_, err = s.SendMessageToMcs(tenantId, message)
 	}
 
 	return
 }
 
-func (s *MessageService) SendMessageCron() {
-	name := "SendMessageSync"
+func (s *MessageService) SendMessageCron(tenantId consts.TenantId) {
+	name := fmt.Sprintf("SendMessageSync_%s", tenantId)
 
 	s.Cron.RemoveTask(name)
 
 	s.Cron.AddCommonTask(name, "*/5 * * * *", func() {
-		err := s.SendMessageToMcsAsync()
+		err := s.SendMessageToMcsAsync(tenantId)
 		if err != nil {
 			logUtils.Error("send message 定时导入任务失败，错误原因：" + err.Error())
 		}

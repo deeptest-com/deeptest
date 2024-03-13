@@ -26,46 +26,46 @@ type EndpointCaseService struct {
 	DebugInterfaceService *DebugInterfaceService `inject:""`
 }
 
-func (s *EndpointCaseService) Paginate(req serverDomain.EndpointCaseReqPaginate) (ret _domain.PageData, err error) {
-	ret, err = s.EndpointCaseRepo.Paginate(req)
+func (s *EndpointCaseService) Paginate(tenantId consts.TenantId, req serverDomain.EndpointCaseReqPaginate) (ret _domain.PageData, err error) {
+	ret, err = s.EndpointCaseRepo.Paginate(tenantId, req)
 
 	return
 }
 
-func (s *EndpointCaseService) List(endpointId uint) (ret []model.EndpointCase, err error) {
-	ret, err = s.EndpointCaseRepo.List(endpointId)
+func (s *EndpointCaseService) List(tenantId consts.TenantId, endpointId uint) (ret []model.EndpointCase, err error) {
+	ret, err = s.EndpointCaseRepo.List(tenantId, endpointId)
 
 	return
 }
 
-func (s *EndpointCaseService) Get(id uint) (ret model.EndpointCase, err error) {
-	ret, err = s.EndpointCaseRepo.Get(id)
+func (s *EndpointCaseService) Get(tenantId consts.TenantId, id uint) (ret model.EndpointCase, err error) {
+	ret, err = s.EndpointCaseRepo.Get(tenantId, id)
 	// its debug data will load in webpage
 
 	return
 }
 
-func (s *EndpointCaseService) Create(req serverDomain.EndpointCaseSaveReq) (casePo model.EndpointCase, err error) {
-	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
-	req.DebugData, err = s.DebugInterfaceService.ConvertDebugDataFromEndpointInterface(endpointInterfaceId)
+func (s *EndpointCaseService) Create(tenantId consts.TenantId, req serverDomain.EndpointCaseSaveReq) (casePo model.EndpointCase, err error) {
+	_, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(tenantId, req.EndpointId, req.Method)
+	req.DebugData, err = s.DebugInterfaceService.ConvertDebugDataFromEndpointInterface(tenantId, endpointInterfaceId)
 
-	casePo, err = s.SaveFromDebugInterface(req)
+	casePo, err = s.SaveFromDebugInterface(tenantId, req)
 
 	if casePo.DebugInterfaceId > 0 {
 		values := map[string]interface{}{
 			"case_interface_id": casePo.ID,
 		}
-		err = s.DebugInterfaceRepo.UpdateDebugInfo(casePo.DebugInterfaceId, values)
+		err = s.DebugInterfaceRepo.UpdateDebugInfo(tenantId, casePo.DebugInterfaceId, values)
 	}
 
 	return
 }
 
-func (s *EndpointCaseService) Copy(id int, newNamePrefix string, newEndpointId, baseCaseId, userId uint, userName,
+func (s *EndpointCaseService) Copy(tenantId consts.TenantId, id int, newNamePrefix string, newEndpointId, baseCaseId, userId uint, userName,
 	forAlternativeCase string) (po model.EndpointCase, err error) {
 
-	endpointCase, _ := s.EndpointCaseRepo.Get(uint(id))
-	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(endpointCase.DebugInterfaceId)
+	endpointCase, _ := s.EndpointCaseRepo.Get(tenantId, uint(id))
+	debugData, _ := s.DebugInterfaceService.GetDebugDataFromDebugInterface(tenantId, endpointCase.DebugInterfaceId)
 	debugData.UsedBy = consts.CaseDebug
 
 	if newEndpointId != 0 {
@@ -99,9 +99,9 @@ func (s *EndpointCaseService) Copy(id int, newNamePrefix string, newEndpointId, 
 		BaseCase:  endpointCase.BaseCase,
 	}
 
-	s.CopyValueFromRequest(&po, req)
+	s.CopyValueFromRequest(tenantId, &po, req)
 
-	endpoint, err := s.EndpointRepo.Get(req.EndpointId)
+	endpoint, err := s.EndpointRepo.Get(tenantId, req.EndpointId)
 
 	// create new DebugInterface
 	url := req.DebugData.Url
@@ -111,65 +111,65 @@ func (s *EndpointCaseService) Copy(id int, newNamePrefix string, newEndpointId, 
 
 	debugInterface := model.DebugInterface{}
 
-	s.DebugInterfaceService.CopyValueFromRequest(&debugInterface, req.DebugData)
+	s.DebugInterfaceService.CopyValueFromRequest(tenantId, &debugInterface, req.DebugData)
 	debugInterface.Name = req.Name
 	debugInterface.Url = url
 
-	err = s.DebugInterfaceRepo.Save(&debugInterface)
+	err = s.DebugInterfaceRepo.Save(tenantId, &debugInterface)
 
 	// clone conditions
-	s.ConditionRepo.CloneAll(req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy, forAlternativeCase)
+	s.ConditionRepo.CloneAll(tenantId, req.DebugData.DebugInterfaceId, 0, debugInterface.ID, debugData.UsedBy, debugData.UsedBy, forAlternativeCase)
 
 	// save case
 	po.ProjectId = endpoint.ProjectId
 	po.ServeId = endpoint.ServeId
 	po.DebugInterfaceId = debugInterface.ID
-	err = s.EndpointCaseRepo.Save(&po)
+	err = s.EndpointCaseRepo.Save(tenantId, &po)
 
 	if po.DebugInterfaceId > 0 {
 		values := map[string]interface{}{
 			"case_interface_id": po.ID,
 		}
-		err = s.DebugInterfaceRepo.UpdateDebugInfo(po.DebugInterfaceId, values)
+		err = s.DebugInterfaceRepo.UpdateDebugInfo(tenantId, po.DebugInterfaceId, values)
 	}
 
 	return
 }
 
-func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCaseSaveReq) (po model.EndpointCase, err error) {
+func (s *EndpointCaseService) SaveFromDebugInterface(tenantId consts.TenantId, req serverDomain.EndpointCaseSaveReq) (po model.EndpointCase, err error) {
 	if req.Method != req.DebugData.Method {
-		debugInterfaceId, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(req.EndpointId, req.Method)
+		debugInterfaceId, endpointInterfaceId := s.EndpointInterfaceRepo.GetByMethod(tenantId, req.EndpointId, req.Method)
 		info := domain.DebugInfo{DebugInterfaceId: debugInterfaceId, EndpointInterfaceId: endpointInterfaceId}
 
-		req.DebugData, err = s.DebugInterfaceService.Load(info)
+		req.DebugData, err = s.DebugInterfaceService.Load(tenantId, info)
 	}
 
 	// save debug data
 	srcDebugUsedBy := req.DebugData.UsedBy
 	req.DebugData.UsedBy = consts.CaseDebug
 	srcDebugInterfaceId := req.DebugData.DebugInterfaceId
-	debugInterface, err := s.DebugInterfaceService.SaveAs(req.DebugData, srcDebugInterfaceId, srcDebugUsedBy)
+	debugInterface, err := s.DebugInterfaceService.SaveAs(tenantId, req.DebugData, srcDebugInterfaceId, srcDebugUsedBy)
 
 	// save case
-	s.CopyValueFromRequest(&po, req)
+	s.CopyValueFromRequest(tenantId, &po, req)
 
 	if po.EndpointId == 0 {
 		po.EndpointId = req.EndpointId
 	}
-	endpoint, err := s.EndpointRepo.Get(po.EndpointId)
+	endpoint, err := s.EndpointRepo.Get(tenantId, po.EndpointId)
 	po.ProjectId = endpoint.ProjectId
 	po.ServeId = endpoint.ServeId
 
 	po.Method = debugInterface.Method
 	po.DebugInterfaceId = debugInterface.ID
 	po.ID = 0
-	err = s.EndpointCaseRepo.Save(&po)
+	err = s.EndpointCaseRepo.Save(tenantId, &po)
 
 	if po.DebugInterfaceId > 0 {
 		values := map[string]interface{}{
 			"case_interface_id": po.ID,
 		}
-		err = s.DebugInterfaceRepo.UpdateDebugInfo(po.DebugInterfaceId, values)
+		err = s.DebugInterfaceRepo.UpdateDebugInfo(tenantId, po.DebugInterfaceId, values)
 	}
 
 	if err != nil {
@@ -179,24 +179,24 @@ func (s *EndpointCaseService) SaveFromDebugInterface(req serverDomain.EndpointCa
 	return
 }
 
-func (s *EndpointCaseService) UpdateName(req serverDomain.EndpointCaseSaveReq) (err error) {
-	err = s.EndpointCaseRepo.UpdateName(req)
+func (s *EndpointCaseService) UpdateName(tenantId consts.TenantId, req serverDomain.EndpointCaseSaveReq) (err error) {
+	err = s.EndpointCaseRepo.UpdateName(tenantId, req)
 
 	return
 }
 
-func (s *EndpointCaseService) Remove(id uint) (err error) {
-	err = s.EndpointCaseRepo.Remove(id)
+func (s *EndpointCaseService) Remove(tenantId consts.TenantId, id uint) (err error) {
+	err = s.EndpointCaseRepo.Remove(tenantId, id)
 	return
 }
 
-func (s *EndpointCaseService) CopyValueFromRequest(po *model.EndpointCase, req serverDomain.EndpointCaseSaveReq) {
+func (s *EndpointCaseService) CopyValueFromRequest(tenantId consts.TenantId, po *model.EndpointCase, req serverDomain.EndpointCaseSaveReq) {
 	copier.CopyWithOption(po, req, copier.Option{
 		DeepCopy: true,
 	})
 }
 
-func (s *EndpointCaseService) EndpointCaseToTo(po *serverDomain.InterfaceCase) (to *serverDomain.EndpointCaseTree) {
+func (s *EndpointCaseService) EndpointCaseToTo(tenantId consts.TenantId, po *serverDomain.InterfaceCase) (to *serverDomain.EndpointCaseTree) {
 	to = &serverDomain.EndpointCaseTree{
 		//Id:               uuid.NewV4(),
 		Id:               "case_" + strconv.FormatInt(int64(po.ID), 10),
@@ -216,8 +216,8 @@ func (s *EndpointCaseService) EndpointCaseToTo(po *serverDomain.InterfaceCase) (
 	return
 }
 
-func (s *EndpointCaseService) LoadTree(projectId uint, serveIds consts.Integers) (ret []*serverDomain.EndpointCaseTree, err error) {
-	list, err := s.EndpointCaseRepo.GetCategoryEndpointCase(projectId, serveIds)
+func (s *EndpointCaseService) LoadTree(tenantId consts.TenantId, projectId uint, serveIds consts.Integers) (ret []*serverDomain.EndpointCaseTree, err error) {
+	list, err := s.EndpointCaseRepo.GetCategoryEndpointCase(tenantId, projectId, serveIds)
 	if err != nil {
 		return
 	}
@@ -256,7 +256,7 @@ func (s *EndpointCaseService) LoadTree(projectId uint, serveIds consts.Integers)
 		}
 	}
 
-	categories, err := s.CategoryRepo.ListByProject(serverConsts.EndpointCategory, projectId)
+	categories, err := s.CategoryRepo.ListByProject(tenantId, serverConsts.EndpointCategory, projectId)
 	for _, v := range categories {
 		uniqueId := "category_" + strconv.FormatInt(int64(v.ID), 10)
 		entityMap[uniqueId] = &serverDomain.EndpointCaseTree{
@@ -284,37 +284,37 @@ func (s *EndpointCaseService) LoadTree(projectId uint, serveIds consts.Integers)
 		Slots:     iris.Map{"icon": "icon"},
 	}
 
-	ret = s.MapToTree(entityMap, "category_"+strconv.FormatInt(int64(categories[0].ID), 10))
-	return s.GetNodeCaseNum(ret), nil
+	ret = s.MapToTree(tenantId, entityMap, "category_"+strconv.FormatInt(int64(categories[0].ID), 10))
+	return s.GetNodeCaseNum(tenantId, ret), nil
 
 }
 
-func (s *EndpointCaseService) MapToTree(mapData map[string]*serverDomain.EndpointCaseTree, parentId string) (res []*serverDomain.EndpointCaseTree) {
+func (s *EndpointCaseService) MapToTree(tenantId consts.TenantId, mapData map[string]*serverDomain.EndpointCaseTree, parentId string) (res []*serverDomain.EndpointCaseTree) {
 	for k, v := range mapData {
 		if v.ParentId == parentId {
-			v.Children = s.MapToTree(mapData, k)
+			v.Children = s.MapToTree(tenantId, mapData, k)
 			res = append(res, v)
 		}
 	}
 	return
 }
 
-func (s *EndpointCaseService) GetNodeCaseNum(req []*serverDomain.EndpointCaseTree) (ret []*serverDomain.EndpointCaseTree) {
+func (s *EndpointCaseService) GetNodeCaseNum(tenantId consts.TenantId, req []*serverDomain.EndpointCaseTree) (ret []*serverDomain.EndpointCaseTree) {
 
 	root := &serverDomain.EndpointCaseTree{Children: req}
-	s.GetNodeCaseNumNew(root)
+	s.GetNodeCaseNumNew(tenantId, root)
 	return root.Children
 
 }
 
-func (s *EndpointCaseService) GetNodeCaseNumNew(node *serverDomain.EndpointCaseTree) (num int64) {
+func (s *EndpointCaseService) GetNodeCaseNumNew(tenantId consts.TenantId, node *serverDomain.EndpointCaseTree) (num int64) {
 	if node.Type == serverConsts.EndpointCaseTreeTypeCase {
 		return 1
 	}
 
 	var children []*serverDomain.EndpointCaseTree
 	for _, child := range node.Children {
-		n := s.GetNodeCaseNumNew(child)
+		n := s.GetNodeCaseNumNew(tenantId, child)
 		if n != 0 {
 			children = append(children, child)
 		}
@@ -326,21 +326,21 @@ func (s *EndpointCaseService) GetNodeCaseNumNew(node *serverDomain.EndpointCaseT
 
 }
 
-func (s *EndpointCaseService) ListByCaseType(endpointId uint, caseType consts.CaseType) (ret []model.EndpointCase, err error) {
-	ret, err = s.EndpointCaseRepo.ListByCaseType(endpointId, []consts.CaseType{caseType})
+func (s *EndpointCaseService) ListByCaseType(tenantId consts.TenantId, endpointId uint, caseType consts.CaseType) (ret []model.EndpointCase, err error) {
+	ret, err = s.EndpointCaseRepo.ListByCaseType(tenantId, endpointId, []consts.CaseType{caseType})
 
 	return
 }
 
-func (s *EndpointCaseService) CopyChildrenCases(caseId, newCaseId, endpointId, userId uint, username string) (err error) {
-	childrenCases, err := s.EndpointCaseRepo.ListByCaseTypeAndBaseCase(consts.CaseAlternative, caseId)
+func (s *EndpointCaseService) CopyChildrenCases(tenantId consts.TenantId, caseId, newCaseId, endpointId, userId uint, username string) (err error) {
+	childrenCases, err := s.EndpointCaseRepo.ListByCaseTypeAndBaseCase(tenantId, consts.CaseAlternative, caseId)
 	if err != nil {
 		return err
 	}
 
 	for _, item := range childrenCases {
 
-		_, err = s.Copy(int(item.ID), item.Name, endpointId, newCaseId, userId, username, "false")
+		_, err = s.Copy(tenantId, int(item.ID), item.Name, endpointId, newCaseId, userId, username, "false")
 		if err != nil {
 			return err
 		}

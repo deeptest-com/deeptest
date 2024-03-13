@@ -1,11 +1,17 @@
 package service
 
+import (
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
+
 type RoleService struct {
-	RemoteService *RemoteService `inject:""`
+	RemoteService *leyan.RemoteService `inject:""`
+	UserService   *leyan.User          `inject:""`
 }
 
-func (s *RoleService) GetRoleValueNameMap() (res map[string]string, err error) {
-	spaceRoles, err := s.RemoteService.GetSpaceRoles()
+func (s *RoleService) GetRoleValueNameMap(tenantId consts.TenantId) (res map[string]string, err error) {
+	spaceRoles, err := s.RemoteService.GetSpaceRoles(tenantId)
 	if err != nil {
 		return
 	}
@@ -18,8 +24,8 @@ func (s *RoleService) GetRoleValueNameMap() (res map[string]string, err error) {
 	return
 }
 
-func (s *RoleService) GetRoleNameByValue(value string) (res string, err error) {
-	roleValueNameMap, err := s.GetRoleValueNameMap()
+func (s *RoleService) GetRoleNameByValue(tenantId consts.TenantId, value string) (res string, err error) {
+	roleValueNameMap, err := s.GetRoleValueNameMap(tenantId)
 	if err != nil {
 		return
 	}

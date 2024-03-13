@@ -41,7 +41,7 @@ func RunScenario(req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg 
 
 	// submit result
 	report, _ := SubmitScenarioResult(*session.RootProcessor.Result, scenarioExecObj.RootProcessor.ScenarioId,
-		agentExec.GetServerUrl(req.ExecUuid), agentExec.GetServerToken(req.ExecUuid))
+		agentExec.GetServerUrl(req.ExecUuid), agentExec.GetServerToken(req.ExecUuid), req.TenantId)
 
 	execUtils.SendResultMsg(report, session.WsMsg)
 	//sendScenarioSubmitResult(session.RootProcessor.ID, session.WsMsg)
@@ -61,7 +61,7 @@ func ExecScenario(execObj *agentExec.ScenarioExecObj, selectedEnvironmentId int,
 	RestoreEntityFromRawAndSetParent(execObj.RootProcessor)
 
 	agentExec.InitScenarioExecContext(execObj)
-	agentExec.InitJsRuntime(execObj.RootProcessor.ProjectId, execObj.ExecUuid)
+	agentExec.InitJsRuntime(execObj.TenantId, execObj.RootProcessor.ProjectId, execObj.ExecUuid)
 
 	// start msg
 	//execUtils.SendStartMsg(wsMsg)

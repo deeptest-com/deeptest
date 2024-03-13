@@ -13,8 +13,8 @@ type RoleSource struct {
 	PermRepo *repo2.PermRepo `inject:""`
 }
 
-func (s *RoleSource) GetSources() ([]v1.RoleReq, error) {
-	perms, err := s.PermRepo.GetPermsForRoles()
+func (s *RoleSource) GetSources(tenantId consts.TenantId) ([]v1.RoleReq, error) {
+	perms, err := s.PermRepo.GetPermsForRoles(tenantId)
 	if err != nil {
 		return []v1.RoleReq{}, err
 	}
@@ -38,21 +38,22 @@ func (s *RoleSource) GetSources() ([]v1.RoleReq, error) {
 	return sources, err
 }
 
-func (s *RoleSource) Init() error {
-	if s.RoleRepo.DB.Model(&model.SysRole{}).
+func (s *RoleSource) Init(tenantId consts.TenantId) error {
+	db := s.RoleRepo.GetDB(tenantId)
+	if db.Model(&model.SysRole{}).
 		Where("id IN ?", []int{1}).
 		Find(&[]model.SysRole{}).RowsAffected == 2 {
 		color.Danger.Printf("\n[Mysql] --> %s 表的初始数据已存在!", model.SysRole{}.TableName())
 		return nil
 	}
 
-	sources, err := s.GetSources()
+	sources, err := s.GetSources(tenantId)
 	if err != nil {
 		return err
 	}
 
 	for _, source := range sources {
-		if _, err := s.RoleRepo.Create(source); err != nil { // 遇到错误时回滚事务
+		if _, err := s.RoleRepo.Create(tenantId, source); err != nil { // 遇到错误时回滚事务
 			return err
 		}
 	}

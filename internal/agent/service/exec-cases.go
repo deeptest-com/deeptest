@@ -34,7 +34,7 @@ func doExecCases(req *agentExec.CasesExecReq, localVarsCache iris.Map, wsMsg *we
 	casesExecObj := GetCasesToExec(req)
 
 	for _, cs := range casesExecObj.Children {
-		doExecCase(cs, localVarsCache, wsMsg, req.ExecUuid, parentUuid, req.ProjectId)
+		doExecCase(cs, localVarsCache, wsMsg, req.TenantId, req.ExecUuid, parentUuid, req.ProjectId)
 
 		// stop if needed
 		if agentExec.GetForceStopExec(parentUuid) {
@@ -45,7 +45,7 @@ func doExecCases(req *agentExec.CasesExecReq, localVarsCache iris.Map, wsMsg *we
 	return
 }
 
-func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg *websocket.Message, execUuid, parentUuid string, projectId uint) (err error) {
+func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg *websocket.Message, tenantId consts.TenantId, execUuid, parentUuid string, projectId uint) (err error) {
 	if cs.Category != "case" {
 		startMsg := iris.Map{
 			"source":     "execCases",
@@ -59,7 +59,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 	}
 
 	for _, child := range cs.Children {
-		doExecCase(child, localVarsCache, wsMsg, execUuid, cs.Key, projectId)
+		doExecCase(child, localVarsCache, wsMsg, tenantId, execUuid, cs.Key, projectId)
 	}
 
 	if cs.Category != "case" {
@@ -81,13 +81,13 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 
 	// init context
 	agentExec.InitDebugExecContext(execUuid)
-	agentExec.InitJsRuntime(projectId, execUuid)
+	agentExec.InitJsRuntime(tenantId, projectId, execUuid)
 
 	agentExec.ExecPreConditions(caseInterfaceExecObj, execUuid) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(&caseInterfaceExecObj.DebugData, execUuid)
 
 	agentExec.SetReqValueToGoja(&caseInterfaceExecObj.DebugData.BaseRequest)
-	agentExec.GetReqValueFromGoja(execUuid, projectId)
+	agentExec.GetReqValueFromGoja(execUuid, tenantId, projectId)
 
 	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
 	if agentExec.GetCurrRequest(execUuid).Url != "" {
@@ -102,7 +102,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 
 	agentExec.SetRespValueToGoja(&resultResp)
 	assertResultStatus, _ := agentExec.ExecPostConditions(caseInterfaceExecObj, resultResp, execUuid)
-	agentExec.GetRespValueFromGoja(execUuid, projectId)
+	agentExec.GetRespValueFromGoja(execUuid, tenantId, projectId)
 	PostRequest(originalReqUri, &caseInterfaceExecObj.DebugData)
 
 	// get the response data updated by script post-condition

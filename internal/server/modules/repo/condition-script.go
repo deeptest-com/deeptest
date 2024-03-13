@@ -10,29 +10,30 @@ import (
 )
 
 type ScriptRepo struct {
-	DB *gorm.DB `inject:""`
+	*BaseRepo `inject:""`
+	DB        *gorm.DB `inject:""`
 }
 
-func (r *ScriptRepo) Get(id uint) (script model.DebugConditionScript, err error) {
-	err = r.DB.
+func (r *ScriptRepo) Get(tenantId consts.TenantId, id uint) (script model.DebugConditionScript, err error) {
+	err = r.GetDB(tenantId).
 		Where("id=?", id).
 		Where("NOT deleted").
 		First(&script).Error
 	return
 }
 
-func (r *ScriptRepo) GetByCondition(conditionId uint) (script model.DebugConditionScript, err error) {
-	err = r.DB.
+func (r *ScriptRepo) GetByCondition(tenantId consts.TenantId, conditionId uint) (script model.DebugConditionScript, err error) {
+	err = r.GetDB(tenantId).
 		Where("condition_id=?", conditionId).
 		Where("NOT deleted").
 		First(&script).Error
 	return
 }
 
-func (r *ScriptRepo) GetByName(name string, interfaceId uint) (script model.DebugConditionScript, err error) {
+func (r *ScriptRepo) GetByName(tenantId consts.TenantId, name string, interfaceId uint) (script model.DebugConditionScript, err error) {
 	var scripts []model.DebugConditionScript
 
-	db := r.DB.Model(&script).
+	db := r.GetDB(tenantId).Model(&script).
 		Where("name = ? AND endpoint_interface_id =? AND not deleted", name, interfaceId)
 
 	err = db.Find(&scripts).Error
@@ -48,13 +49,13 @@ func (r *ScriptRepo) GetByName(name string, interfaceId uint) (script model.Debu
 	return
 }
 
-func (r *ScriptRepo) Save(script *model.DebugConditionScript) (err error) {
-	err = r.DB.Save(script).Error
+func (r *ScriptRepo) Save(tenantId consts.TenantId, script *model.DebugConditionScript) (err error) {
+	err = r.GetDB(tenantId).Save(script).Error
 	return
 }
 
-func (r *ScriptRepo) Delete(id uint) (err error) {
-	err = r.DB.Model(&model.DebugConditionScript{}).
+func (r *ScriptRepo) Delete(tenantId consts.TenantId, id uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugConditionScript{}).
 		Where("id=?", id).
 		Update("deleted", true).
 		Error
@@ -62,8 +63,8 @@ func (r *ScriptRepo) Delete(id uint) (err error) {
 	return
 }
 
-func (r *ScriptRepo) DeleteByCondition(conditionId uint) (err error) {
-	err = r.DB.Model(&model.DebugConditionScript{}).
+func (r *ScriptRepo) DeleteByCondition(tenantId consts.TenantId, conditionId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.DebugConditionScript{}).
 		Where("condition_id=?", conditionId).
 		Update("deleted", true).
 		Error
@@ -71,13 +72,13 @@ func (r *ScriptRepo) DeleteByCondition(conditionId uint) (err error) {
 	return
 }
 
-func (r *ScriptRepo) UpdateResult(script domain.ScriptBase) (err error) {
+func (r *ScriptRepo) UpdateResult(tenantId consts.TenantId, script domain.ScriptBase) (err error) {
 	values := map[string]interface{}{
 		"output":        script.Output,
 		"result_status": script.ResultStatus,
 	}
 
-	err = r.DB.Model(&model.DebugConditionScript{}).
+	err = r.GetDB(tenantId).Model(&model.DebugConditionScript{}).
 		Where("id=?", script.ConditionEntityId).
 		Updates(values).
 		Error
@@ -85,7 +86,7 @@ func (r *ScriptRepo) UpdateResult(script domain.ScriptBase) (err error) {
 	return
 }
 
-func (r *ScriptRepo) CreateLog(script domain.ScriptBase) (
+func (r *ScriptRepo) CreateLog(tenantId consts.TenantId, script domain.ScriptBase) (
 	log model.ExecLogScript, err error) {
 
 	copier.CopyWithOption(&log, script, copier.Option{DeepCopy: true})
@@ -97,12 +98,12 @@ func (r *ScriptRepo) CreateLog(script domain.ScriptBase) (
 	log.CreatedAt = nil
 	log.UpdatedAt = nil
 
-	err = r.DB.Save(&log).Error
+	err = r.GetDB(tenantId).Save(&log).Error
 
 	return
 }
 
-func (r *ScriptRepo) CreateDefault(conditionId uint, src consts.ConditionSrc) (po model.DebugConditionScript) {
+func (r *ScriptRepo) CreateDefault(tenantId consts.TenantId, conditionId uint, src consts.ConditionSrc) (po model.DebugConditionScript) {
 	po = model.DebugConditionScript{
 		ScriptBase: domain.ScriptBase{
 			ConditionId:  conditionId,
@@ -111,13 +112,13 @@ func (r *ScriptRepo) CreateDefault(conditionId uint, src consts.ConditionSrc) (p
 		},
 	}
 
-	r.Save(&po)
+	r.Save(tenantId, &po)
 
 	return
 }
 
-func (r *ScriptRepo) GetLog(conditionId, invokeId uint) (ret model.ExecLogScript, err error) {
-	err = r.DB.
+func (r *ScriptRepo) GetLog(tenantId consts.TenantId, conditionId, invokeId uint) (ret model.ExecLogScript, err error) {
+	err = r.GetDB(tenantId).
 		Where("condition_id=? AND invoke_id=?", conditionId, invokeId).
 		Where("NOT deleted").
 		First(&ret).Error

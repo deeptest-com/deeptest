@@ -26,13 +26,14 @@ type ExtractorCtrl struct {
 // @success	200	{object}	_domain.Response{data=model.DebugConditionExtractor}
 // @Router	/api/v1/extractors/{id}	[get]
 func (c *ExtractorCtrl) Get(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	id, err := ctx.Params().GetInt("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	extractor, err := c.ExtractorService.Get(uint(id))
+	extractor, err := c.ExtractorService.Get(tenantId, uint(id))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 		return
@@ -51,6 +52,7 @@ func (c *ExtractorCtrl) Get(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/extractors	[post]
 func (c *ExtractorCtrl) QuickCreate(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var req serverDomain.ExtractorConditionQuickCreateReq
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -58,7 +60,7 @@ func (c *ExtractorCtrl) QuickCreate(ctx iris.Context) {
 		return
 	}
 
-	err = c.ExtractorService.QuickCreate(req, consts.InterfaceDebug)
+	err = c.ExtractorService.QuickCreate(tenantId, req, consts.InterfaceDebug)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
 		return
@@ -78,6 +80,7 @@ func (c *ExtractorCtrl) QuickCreate(ctx iris.Context) {
 // @success	200	{object}	_domain.Response
 // @Router	/api/v1/extractors	[put]
 func (c *ExtractorCtrl) Update(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	var extractor model.DebugConditionExtractor
 	err := ctx.ReadJSON(&extractor)
 	if err != nil {
@@ -85,7 +88,7 @@ func (c *ExtractorCtrl) Update(ctx iris.Context) {
 		return
 	}
 
-	err = c.ExtractorService.Update(&extractor)
+	err = c.ExtractorService.Update(tenantId, &extractor)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: err.Error()})
 		return
@@ -105,6 +108,7 @@ func (c *ExtractorCtrl) Update(ctx iris.Context) {
 // @success	200	{object}	_domain.Response{data=[]domain.Variable}
 // @Router	/api/v1/extractors/listExtractorVariableForCheckpoint	[post]
 func (c *ExtractorCtrl) ListExtractorVariableForCheckpoint(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := domain.DebugInfo{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -112,7 +116,7 @@ func (c *ExtractorCtrl) ListExtractorVariableForCheckpoint(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.ExtractorService.ListExtractorVariableByInterface(req)
+	data, err := c.ExtractorService.ListExtractorVariableByInterface(tenantId, req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

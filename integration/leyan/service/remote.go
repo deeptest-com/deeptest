@@ -284,14 +284,17 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 	return
 }
 
-func (s *RemoteService) GetUserInfoByToken(token string) (user integrationDomain.UserInfo, err error) {
+func (s *RemoteService) GetUserInfoByToken(tenantId consts.TenantId, token string) (user integrationDomain.UserInfo, err error) {
+
 	url := fmt.Sprintf("%s/api/v1/user/getUserInfo", config.CONFIG.ThirdParty.Url)
 
-	headers := make([]domain.Header, 0)
-	headers = append(headers, domain.Header{
-		Name:  "X-Token",
-		Value: token,
-	})
+	headers := []domain.Header{
+		{
+			Name:  "X-Token",
+			Value: token,
+		},
+		{Name: "tenantId", Value: string(tenantId)},
+	}
 
 	httpReq := domain.BaseRequest{
 		Url:      url,
@@ -299,15 +302,16 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user integrationDomain
 		Headers:  &headers,
 	}
 
+	logUtils.Infof("leyan-getUserInfoByToken: %s", _commUtils.JsonEncode(httpReq))
 	var resp domain.DebugResponse
 	resp, err = httpHelper.Get(httpReq)
 	if err != nil {
-		logUtils.Infof("meta get method detail failed, error, %s", err.Error())
+		logUtils.Errorf("meta get method detail failed, error, %s", err.Error())
 		return
 	}
 
 	if resp.StatusCode != consts.OK.Int() {
-		logUtils.Infof("meta get method detail failed, response %v", resp)
+		logUtils.Errorf("meta get method detail failed, response %v", _commUtils.JsonEncode(resp))
 		err = fmt.Errorf("meta get method detail failed, response %v", resp)
 		return
 	}
@@ -319,15 +323,15 @@ func (s *RemoteService) GetUserInfoByToken(token string) (user integrationDomain
 	}{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
-		logUtils.Infof(err.Error())
+		logUtils.Errorf(err.Error())
 	}
-
+	respContent.Data.UserInfo.Mail = respContent.Data.UserInfo.Username
 	user = respContent.Data.UserInfo
 
 	return
 }
 
-func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret integrationDomain.ProjectInfo, err error) {
+func (s *RemoteService) GetProjectInfo(tenantId consts.TenantId, token, spaceCode string) (ret integrationDomain.ProjectInfo, err error) {
 	url := fmt.Sprintf("%s/api/v1/project/info/%s", config.CONFIG.ThirdParty.Url, spaceCode)
 
 	httpReq := domain.BaseRequest{
@@ -338,6 +342,7 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret integration
 				Name:  "X-Token",
 				Value: token,
 			},
+			{Name: "tenantId", Value: string(tenantId)},
 		},
 	}
 
@@ -374,7 +379,7 @@ func (s *RemoteService) GetProjectInfo(token, spaceCode string) (ret integration
 	return
 }
 
-func (s *RemoteService) getHeaders(body string) (headers []domain.Header) {
+func (s *RemoteService) GetHeaders(tenantId consts.TenantId, body string) (headers []domain.Header) {
 	xNancalTimestamp := strconv.FormatInt(time.Now().UnixMilli(), 10)
 	xNancalNonceStr := _commUtils.RandStr(8)
 
@@ -398,6 +403,10 @@ func (s *RemoteService) getHeaders(body string) (headers []domain.Header) {
 		{
 			Name:  "x-nancal-sign",
 			Value: _commUtils.GetSign(config.CONFIG.ThirdParty.ApiSign.AppKey, config.CONFIG.ThirdParty.ApiSign.AppSecret, xNancalNonceStr, xNancalTimestamp, body),
+		},
+		{
+			Name:  "tenantId",
+			Value: string(tenantId),
 		},
 	}
 
@@ -502,10 +511,10 @@ func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []
 	return
 }
 
-func (s *RemoteService) GetUserButtonPermissions(username string) (ret []string, err error) {
+func (s *RemoteService) GetUserButtonPermissions(tenantId consts.TenantId, username string) (ret []string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenuPermission", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -521,7 +530,7 @@ func (s *RemoteService) GetUserButtonPermissions(username string) (ret []string,
 			},
 		},
 	}
-
+	logUtils.Infof("leyan-UserButtonPermissions,%s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get UserButtonPermissions failed, error, %s", err.Error())
@@ -599,10 +608,10 @@ func (s *RemoteService) LcQueryMsg(req integrationDomain.QueryMsgReq, token stri
 	return
 }
 
-func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret []integrationDomain.UserMenuPermission, err error) {
+func (s *RemoteService) GetUserMenuPermissions(tenantId consts.TenantId, username, spaceCode string) (ret []integrationDomain.UserMenuPermission, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserDynamicMenu", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -622,7 +631,7 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 			},
 		},
 	}
-
+	logUtils.Infof("leyan-GetUserMenuPermissions %s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get GetUserMenuPermissions failed, error, %s", err.Error())
@@ -656,10 +665,10 @@ func (s *RemoteService) GetUserMenuPermissions(username, spaceCode string) (ret 
 	return
 }
 
-func (s *RemoteService) GetSpaceRoles() (ret []integrationDomain.SpaceRole, err error) {
+func (s *RemoteService) GetSpaceRoles(tenantId consts.TenantId) (ret []integrationDomain.SpaceRole, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getSpaceInitRole", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -699,10 +708,10 @@ func (s *RemoteService) GetSpaceRoles() (ret []integrationDomain.SpaceRole, err 
 	return
 }
 
-func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
+func (s *RemoteService) GetRoleMenus(tenantId consts.TenantId, role string) (ret []string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getRoleMenus", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -714,7 +723,7 @@ func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
 			},
 		},
 	}
-
+	logUtils.Infof("leyan-GetRoleMenus,%s", _commUtils.JsonEncode(httpReq))
 	resp, err := httpHelper.Get(httpReq)
 	if err != nil {
 		logUtils.Infof("get RoleMenus failed, error, %s", err.Error())
@@ -748,10 +757,10 @@ func (s *RemoteService) GetRoleMenus(role string) (ret []string, err error) {
 	return
 }
 
-func (s *RemoteService) GetUserProductList(page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
+func (s *RemoteService) GetUserProductList(tenantId consts.TenantId, page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/listProductManageOptionSecrets", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -806,7 +815,7 @@ func (s *RemoteService) GetUserProductList(page, pageSize int, username string) 
 	return
 }
 
-func (s *RemoteService) GetProductListById(productIds []uint) (ret []integrationDomain.ProductBaseItem, err error) {
+func (s *RemoteService) GetProductListById(tenantId consts.TenantId, productIds []uint) (ret []integrationDomain.ProductBaseItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/listProductManage", config.CONFIG.ThirdParty.Url)
 
 	queryParams := make([]domain.Param, 0)
@@ -819,7 +828,7 @@ func (s *RemoteService) GetProductListById(productIds []uint) (ret []integration
 		queryParams = append(queryParams, paramTmp)
 	}
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
@@ -862,10 +871,10 @@ func (s *RemoteService) GetProductListById(productIds []uint) (ret []integration
 	return
 }
 
-func (s *RemoteService) GetSpacesByUsername(username string) (ret []integrationDomain.SpaceItem, err error) {
+func (s *RemoteService) GetSpacesByUsername(tenantId consts.TenantId, username string) (ret []integrationDomain.SpaceItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/project/user", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -912,7 +921,7 @@ func (s *RemoteService) GetSpacesByUsername(username string) (ret []integrationD
 	return
 }
 
-func (s *RemoteService) BatchGetSpacesByCode(spaceCodes []string) (ret []integrationDomain.SpaceItem, err error) {
+func (s *RemoteService) BatchGetSpacesByCode(tenantId consts.TenantId, spaceCodes []string) (ret []integrationDomain.SpaceItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/project/abbr", config.CONFIG.ThirdParty.Url)
 
 	queryParams := make([]domain.Param, 0)
@@ -924,7 +933,7 @@ func (s *RemoteService) BatchGetSpacesByCode(spaceCodes []string) (ret []integra
 		queryParams = append(queryParams, paramTmp)
 	}
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
@@ -965,7 +974,7 @@ func (s *RemoteService) BatchGetSpacesByCode(spaceCodes []string) (ret []integra
 	return
 }
 
-func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []integrationDomain.SpaceMembersAndRolesItem, err error) {
+func (s *RemoteService) BatchGetMembersBySpaces(tenantId consts.TenantId, spaceCodes []string) (ret []integrationDomain.SpaceMembersAndRolesItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/project/member/abbrs", config.CONFIG.ThirdParty.Url)
 
 	queryParams := make([]domain.Param, 0)
@@ -977,7 +986,7 @@ func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []inte
 		queryParams = append(queryParams, paramTmp)
 	}
 
-	headers := s.getHeaders("")
+	headers := s.GetHeaders(tenantId, "")
 	httpReq := domain.BaseRequest{
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
@@ -1018,10 +1027,10 @@ func (s *RemoteService) BatchGetMembersBySpaces(spaceCodes []string) (ret []inte
 	return
 }
 
-func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
+func (s *RemoteService) ApprovalAndMsg(tenantId consts.TenantId, req string) (ret string, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/approvalAndMsg", config.CONFIG.ThirdParty.Url)
 
-	headers := s.getHeaders(req)
+	headers := s.GetHeaders(tenantId, req)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -1061,6 +1070,56 @@ func (s *RemoteService) ApprovalAndMsg(req string) (ret string, err error) {
 	}
 
 	ret = respContent.Data.InstanceId
+
+	return
+}
+
+func (s *RemoteService) GetUserOpenRoles(tenantId consts.TenantId, username string) (ret []integrationDomain.UserRoleItem, err error) {
+	url := fmt.Sprintf("%s/api/v1/openApi/getUserOpenRole", config.CONFIG.ThirdParty.Url)
+
+	headers := s.GetHeaders(tenantId, "")
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		QueryParams: &[]domain.Param{
+			{
+				Name:  "username",
+				Value: username,
+			},
+		},
+	}
+
+	resp, err := httpHelper.Get(httpReq)
+	logUtils.Infof("GetUserOpenRoles username: +%v, resp:%+v", username, resp)
+	if err != nil {
+		logUtils.Errorf("GetUserOpenRoles failed, username: +%v,error: %s", username, err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("GetUserOpenRoles failed, response %v", resp)
+		err = fmt.Errorf("GetUserOpenRoles failed, response %v", resp)
+		return
+	}
+
+	respContent := struct {
+		Code int
+		Data []integrationDomain.UserRoleItem
+		Msg  string
+	}{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Code != 200 {
+		logUtils.Infof("GetUserOpenRoles failed, response %v", resp)
+		err = fmt.Errorf("GetUserOpenRoles failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
 
 	return
 }

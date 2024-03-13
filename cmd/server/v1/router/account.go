@@ -17,6 +17,7 @@ func (m *AccountModule) Party() module.WebModule {
 		public.Use(middleware.InitCheck())
 
 		public.Post("/login", m.AccountCtrl.Login)
+		public.Get("/login", m.AccountCtrl.Login)
 		public.Post("/register", m.AccountCtrl.Register)
 
 		public.Post("/forgotPassword", m.AccountCtrl.ForgotPassword)

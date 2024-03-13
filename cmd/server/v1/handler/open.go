@@ -2,22 +2,28 @@ package handler
 
 import (
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	"github.com/aaronchen2k/deeptest/integration/enum"
+	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 )
 
 type OpenCtrl struct {
 	ProjectService            *service.ProjectService            `inject:""`
 	IntegrationProjectService *integrationService.ProjectService `inject:""`
+	UserService               *leyan.User                        `inject:""`
 	BaseCtrl
 }
 
 func (c *OpenCtrl) AllProjectList(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	username := ctx.URLParam("username")
 
-	data, err := c.ProjectService.AllProjectList(username)
+	data, err := c.ProjectService.AllProjectList(tenantId, username)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -27,10 +33,12 @@ func (c *OpenCtrl) AllProjectList(ctx iris.Context) {
 }
 
 func (c *OpenCtrl) GetProjectsBySpace(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	spaceCode := ctx.URLParam("spaceCode")
 	username := ctx.URLParam("username")
 
-	data, err := c.IntegrationProjectService.GetListWithRoleBySpace(spaceCode, username)
+	logUtils.Infof("GetProjectsBySpace tenantId:%+v, spaceCode:%+v, username:%+v", tenantId, spaceCode, username)
+	data, err := c.IntegrationProjectService.GetListWithRoleBySpace(tenantId, spaceCode, username)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -40,6 +48,7 @@ func (c *OpenCtrl) GetProjectsBySpace(ctx iris.Context) {
 }
 
 func (c *OpenCtrl) SaveSpaceRelatedProjects(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	req := v1.SaveSpaceRelatedProjectsReq{}
 	err := ctx.ReadJSON(&req)
 	if err != nil {
@@ -47,7 +56,7 @@ func (c *OpenCtrl) SaveSpaceRelatedProjects(ctx iris.Context) {
 		return
 	}
 
-	err = c.IntegrationProjectService.SaveSpaceRelatedProjects(req.SpaceCode, req.ProjectShortNames)
+	err = c.IntegrationProjectService.SaveSpaceRelatedProjects(tenantId, req.SpaceCode, req.ProjectShortNames)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -57,11 +66,24 @@ func (c *OpenCtrl) SaveSpaceRelatedProjects(ctx iris.Context) {
 }
 
 func (c *OpenCtrl) GetProjectRole(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
 	username := ctx.URLParam("username")
 	projectCode := ctx.URLParam("projectCode")
-	if role, err := c.ProjectService.GetProjectRole(username, projectCode); err == nil {
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: role})
+
+	var role string
+	var err error
+	isAdmin, _ := c.UserService.SetIsSuperAdminCache(tenantId, username)
+
+	if config.CONFIG.System.SysEnv == "ly" && isAdmin {
+		role = enum.SuperAdmin
 	} else {
-		ctx.JSON(_domain.Response{Code: _domain.ErrUserNotInProject.Code, Msg: err.Error()})
+		role, err = c.ProjectService.GetProjectRole(tenantId, username, projectCode)
 	}
+
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ErrUserNotInProject.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: role})
 }

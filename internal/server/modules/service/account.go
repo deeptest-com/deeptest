@@ -29,19 +29,19 @@ type AccountService struct {
 }
 
 // Login 登录
-func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
+func (s *AccountService) Login(tenantId consts.TenantId, req v1.LoginReq) (ret v1.LoginResp, err error) {
 	var Id uint
 	var userBase v1.UserBase
 	var user model.SysUser
-	user, _ = s.UserRepo.GetByUserName(req.Username)
+	user, _ = s.UserRepo.GetByUserName(tenantId, req.Username)
 	if config.CONFIG.Ldap && req.Username != "admin" && !user.Type {
 		userBase, err = s.LdapService.LdapUserInfo(req)
 		if err != nil {
 			return
 		}
-		Id, err = s.UserRepo.UpdateByLdapInfo(userBase)
+		Id, err = s.UserRepo.UpdateByLdapInfo(tenantId, userBase)
 	} else {
-		Id, err = s.UserLogin(req)
+		Id, err = s.UserLogin(tenantId, req)
 	}
 
 	if err != nil {
@@ -51,7 +51,7 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 	claims := &multi.CustomClaims{
 		ID:            strconv.FormatUint(uint64(Id), 10),
 		Username:      req.Username,
-		AuthorityId:   "",
+		AuthorityId:   string(tenantId),
 		AuthorityType: multi.AdminAuthority,
 		LoginType:     multi.LoginTypeApp,
 		AuthType:      multi.AuthPwd,
@@ -67,10 +67,10 @@ func (s *AccountService) Login(req v1.LoginReq) (ret v1.LoginResp, err error) {
 	return
 }
 
-func (s *AccountService) UserLogin(req v1.LoginReq) (userId uint, err error) {
-	user, err := s.UserRepo.FindPasswordByUserName(req.Username)
+func (s *AccountService) UserLogin(tenantId consts.TenantId, req v1.LoginReq) (userId uint, err error) {
+	user, err := s.UserRepo.FindPasswordByUserName(tenantId, req.Username)
 	if err != nil {
-		user, err = s.UserRepo.FindPasswordByEmail(req.Username)
+		user, err = s.UserRepo.FindPasswordByEmail(tenantId, req.Username)
 		if err != nil {
 			return
 		}
@@ -86,7 +86,7 @@ func (s *AccountService) UserLogin(req v1.LoginReq) (userId uint, err error) {
 	return
 }
 
-func (s *AccountService) Register(req v1.RegisterReq) (err _domain.BizErr) {
+func (s *AccountService) Register(tenantId consts.TenantId, req v1.RegisterReq) (err _domain.BizErr) {
 	err = _domain.NoErr
 
 	if req.Password != req.Confirm {
@@ -94,7 +94,7 @@ func (s *AccountService) Register(req v1.RegisterReq) (err _domain.BizErr) {
 		return
 	}
 
-	po, _ := s.UserRepo.FindByUserName(req.Username)
+	po, _ := s.UserRepo.FindByUserName(tenantId, req.Username)
 	if po.Id > 0 {
 		err = _domain.ErrUsernameExist
 		return
@@ -108,7 +108,7 @@ func (s *AccountService) Register(req v1.RegisterReq) (err _domain.BizErr) {
 		Password: req.Password,
 	}
 
-	s.UserRepo.Register(&user)
+	s.UserRepo.Register(tenantId, &user)
 
 	//mp := map[string]string{
 	//	"name": user.Name,
@@ -120,10 +120,10 @@ func (s *AccountService) Register(req v1.RegisterReq) (err _domain.BizErr) {
 	return
 }
 
-func (s *AccountService) ForgotPassword(usernameOrPassword string) (err error) {
-	user, err := s.UserRepo.GetByUsernameOrPassword(usernameOrPassword)
+func (s *AccountService) ForgotPassword(tenantId consts.TenantId, usernameOrPassword string) (err error) {
+	user, err := s.UserRepo.GetByUsernameOrPassword(tenantId, usernameOrPassword)
 
-	vcode, err := s.UserRepo.GenAndUpdateVcode(user.ID)
+	vcode, err := s.UserRepo.GenAndUpdateVcode(tenantId, user.ID)
 
 	url := consts.Url
 	if !consts.IsRelease {
@@ -139,18 +139,18 @@ func (s *AccountService) ForgotPassword(usernameOrPassword string) (err error) {
 	return
 }
 
-func (s *AccountService) ResetPassword(req v1.ResetPasswordReq) (err error) {
-	user, err := s.UserRepo.FindByUserNameAndVcode(req.Username, req.Vcode)
+func (s *AccountService) ResetPassword(tenantId consts.TenantId, req v1.ResetPasswordReq) (err error) {
+	user, err := s.UserRepo.FindByUserNameAndVcode(tenantId, req.Username, req.Vcode)
 	if err != nil {
 		return
 	}
 
-	err = s.UserRepo.UpdatePassword(req.Password, user.ID)
+	err = s.UserRepo.UpdatePassword(tenantId, req.Password, user.ID)
 	if err != nil {
 		return
 	}
 
-	err = s.UserRepo.ClearVcode(user.ID)
+	err = s.UserRepo.ClearVcode(tenantId, user.ID)
 	if err != nil {
 		return
 	}

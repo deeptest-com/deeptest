@@ -11,6 +11,7 @@ import (
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/facebookgo/inject"
+	"github.com/goccy/go-json"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -114,7 +115,8 @@ func (s *PerformanceTestService) ExecStart(
 		for _, runner := range data.Runners {
 			client := s.ConnectGrpc(runner)
 
-			stream, err := s.CallRunnerExecStartByGrpc(client, data, runner.Id, runner.Name, runner.Weight)
+			stream, err := s.CallRunnerExecStartByGrpc(client, data,
+				runner.Id, runner.Name, runner.Weight, int32(req.EnvironmentId))
 			if err != nil {
 				ptlog.Logf("failed to call remote runner via grpc, err %s", err.Error())
 				continue
@@ -186,7 +188,7 @@ func (s *PerformanceTestService) ConnectGrpc(runner *ptdomain.Runner) (client pt
 }
 
 func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
-	client ptproto.PerformanceServiceClient, req ptdomain.PerformanceTestData, runnerId int32, runnerName string, weight int32) (stream ptproto.PerformanceService_RunnerExecStartClient, err error) {
+	client ptproto.PerformanceServiceClient, req ptdomain.PerformanceTestData, runnerId int32, runnerName string, weight, environmentId int32) (stream ptproto.PerformanceService_RunnerExecStartClient, err error) {
 
 	stream, err = client.RunnerExecStart(context.Background())
 	if err != nil {
@@ -195,6 +197,8 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 	}
 
 	runnerExecScenarios := s.getRunnerExecScenarios(req, runnerId)
+	localVarsCacheRaw, _ := json.Marshal(req.LocalVarsCache)
+	execSceneRaw, _ := json.Marshal(req.ExecScene)
 
 	err = stream.Send(&ptproto.PerformanceExecStartReq{
 		Room:       req.Room,
@@ -202,9 +206,12 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 		RunnerName: runnerName,
 		Title:      req.Title,
 
-		Mode:      req.Mode.String(),
-		Scenarios: runnerExecScenarios,
-		Weight:    weight,
+		Mode:              req.Mode.String(),
+		Scenarios:         runnerExecScenarios,
+		Weight:            weight,
+		EnvironmentId:     environmentId,
+		LocalVarsCacheRaw: localVarsCacheRaw,
+		ExecSceneRaw:      execSceneRaw,
 
 		ServerAddress:   req.ServerAddress,
 		InfluxdbAddress: req.InfluxdbAddress,

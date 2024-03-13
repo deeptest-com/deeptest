@@ -24,7 +24,7 @@ type PerformanceExecCtrl struct {
 // @success	200	{object}	_domain.Response{data=agentExec.PerformanceExecObjMsg}
 // @Router	/api/v1/scenarios/exec/loadExecPerformance	[get]
 func (c *PerformanceExecCtrl) LoadExecData(ctx iris.Context) {
-	planId, err := ctx.URLParamInt("PlanId")
+	planId, err := ctx.URLParamInt("planId")
 	environmentId, err := ctx.URLParamInt("environmentId")
 
 	data, err := c.PerformanceExecService.LoadExecData(uint(planId), uint(environmentId))

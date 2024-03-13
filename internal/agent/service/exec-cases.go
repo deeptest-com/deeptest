@@ -68,7 +68,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 		Data:      cs.Data.DebugData,
 		ExecScene: cs.Data.ExecScene,
 	}
-	updateLocalValues(&call.ExecScene, localVarsCache)
+	UpdateLocalValues(&call.ExecScene, localVarsCache)
 	session := agentExec.NewInterfaceExecSession(call)
 
 	// exec

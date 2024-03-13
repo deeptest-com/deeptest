@@ -52,15 +52,15 @@ func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerEx
 	// runner add item to cache
 	AddTestItem(req.Room, ptconsts.Runner, nil, req)
 
-	// context
-	s.execCtx, s.execCancel = context.WithCancel(context.Background())
-
 	// gen influxdb sender
 	influxdbSender := metrics.GetInfluxdbSenderInstant(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
 	if influxdbSender == nil {
 		ptlog.Logf("stop to run since msgSender return nil")
 		return
 	}
+
+	// context
+	s.execCtx, s.execCancel = context.WithCancel(context.Background())
 
 	// schedule job to send metrics
 	go metrics.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, influxdbSender)

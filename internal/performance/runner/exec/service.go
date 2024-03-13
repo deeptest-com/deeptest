@@ -19,7 +19,8 @@ func ExecProgram(execCtx context.Context, execCancel context.CancelFunc, req *pt
 			go func() {
 				defer wgScenarios.Done()
 
-				ExecScenario(execCtx, ptconsts.ExecMode(req.Mode), scenario, req.Weight,
+				ExecScenario(execCtx, ptconsts.ExecMode(req.Mode), scenario,
+					req.Weight, req.EnvironmentId, req.ExecSceneRaw,
 					req.Room, req.ServerAddress, req.RunnerId, req.RunnerName, sender)
 
 				ptlog.Logf("scenario %s exec completed", scenario.Name)
@@ -33,7 +34,8 @@ func ExecProgram(execCtx context.Context, execCancel context.CancelFunc, req *pt
 
 	} else {
 		for _, scenario := range req.Scenarios {
-			ExecScenario(execCtx, ptconsts.ExecMode(req.Mode), scenario, req.Weight,
+			ExecScenario(execCtx, ptconsts.ExecMode(req.Mode), scenario,
+				req.Weight, req.EnvironmentId, req.ExecSceneRaw,
 				req.Room, req.ServerAddress, req.RunnerId, req.RunnerName, sender)
 		}
 

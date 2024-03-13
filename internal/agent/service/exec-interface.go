@@ -12,7 +12,7 @@ import (
 func RunInterface(call domain.InterfaceCall) (resultReq domain.DebugData, resultResp domain.DebugResponse, err error) {
 	req := GetInterfaceToExec(call)
 	call.ExecScene = req.ExecScene
-	updateLocalValues(&call.ExecScene, call.LocalVarsCache)
+	UpdateLocalValues(&call.ExecScene, call.LocalVarsCache)
 	session := agentExec.NewInterfaceExecSession(call)
 
 	agentExec.SetReqValueToGoja(&req.DebugData.BaseRequest)

@@ -37,7 +37,7 @@ func RunPlan(req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websock
 		scenarioExecObj.ExecUuid = execUuid
 		scenarioExecObj.ServerUrl = req.ServerUrl
 		scenarioExecObj.Token = req.Token
-		updateLocalValues(&scenarioExecObj.ExecScene, localVarsCache)
+		UpdateLocalValues(&scenarioExecObj.ExecScene, localVarsCache)
 
 		session := agentExec.NewScenarioExecSession(&scenarioExecObj, req.EnvironmentId, wsMsg)
 		err = ExecScenario(session)

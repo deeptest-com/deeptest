@@ -3,11 +3,10 @@ package runnerExec
 import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 )
 
 type VuGenerator interface {
-	Run(execCtx context.Context, sender metrics.MessageSender) error
+	Run(execCtx context.Context) error
 }
 
 type VuGeneratorParam struct {

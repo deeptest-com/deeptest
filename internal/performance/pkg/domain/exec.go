@@ -3,6 +3,9 @@ package ptdomain
 import (
 	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
+	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/kataras/iris/v12"
 )
 
 type ExecParamsInCtx struct {
@@ -13,7 +16,9 @@ type ExecParamsInCtx struct {
 	ConductorGrpcAddress string
 	//InfluxdbSender       metrics.MessageSender
 
-	Weight int
+	Weight        int
+	EnvironmentId int
+	Sender        metrics.MessageSender
 
 	// for constant generate type
 	Target   int `json:"target"`
@@ -27,5 +32,7 @@ type ExecParamsInCtx struct {
 
 	Loop int
 
-	Mode ptconsts.ExecMode
+	Mode           ptconsts.ExecMode
+	LocalVarsCache iris.Map
+	ExecScene      domain.ExecScene
 }

@@ -19,7 +19,7 @@ func RunScenario(req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg 
 	execUtils.SendInitializeMsg(normalData, wsMsg)
 
 	scenarioExecObj := GetScenarioToExec(req)
-	updateLocalValues(&scenarioExecObj.ExecScene, localVarsCache)
+	UpdateLocalValues(&scenarioExecObj.ExecScene, localVarsCache)
 
 	scenarioExecObj.ExecUuid = req.ExecUuid
 

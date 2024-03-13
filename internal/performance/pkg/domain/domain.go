@@ -4,6 +4,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
+	"github.com/kataras/iris/v12"
 )
 
 type PerformanceTestReq struct {
@@ -26,7 +27,8 @@ type PerformanceTestData struct {
 	ServerUrl string `json:"serverUrl"`
 	Token     string `json:"token"`
 
-	ExecScene domain.ExecScene `json:"execScene"`
+	ExecScene      domain.ExecScene `json:"execScene"`
+	LocalVarsCache iris.Map         `json:"localVarsCache"`
 }
 
 type Goal struct {

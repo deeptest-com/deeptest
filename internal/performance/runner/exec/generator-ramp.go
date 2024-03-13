@@ -4,7 +4,6 @@ import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 	"sync"
@@ -14,7 +13,7 @@ import (
 type RampVuGenerator struct {
 }
 
-func (g RampVuGenerator) Run(execCtx context.Context, sender metrics.MessageSender) (err error) {
+func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 	execParams := getExecParamsInCtx(execCtx)
 
 	if len(execParams.Stages) != 1 {
@@ -54,11 +53,13 @@ func (g RampVuGenerator) Run(execCtx context.Context, sender metrics.MessageSend
 
 				VuCount: 1,
 			}
-			sender.Send(result)
+			execParams.Sender.Send(result)
 
 			go func() {
 				defer wgVus.Done()
-				ExecScenarioWithVu(childCtx, sender, index)
+
+				execParams.VuNo = index
+				ExecScenarioWithVu(childCtx)
 			}()
 
 			vuNo++

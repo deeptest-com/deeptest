@@ -4,7 +4,6 @@ import (
 	"context"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"sync"
 	"time"
@@ -13,7 +12,7 @@ import (
 type ConstantVuGenerator struct {
 }
 
-func (g ConstantVuGenerator) Run(execCtx context.Context, sender metrics.MessageSender) (err error) {
+func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
 	execParams := getExecParamsInCtx(execCtx)
 
 	var wgVus sync.WaitGroup
@@ -36,12 +35,14 @@ func (g ConstantVuGenerator) Run(execCtx context.Context, sender metrics.Message
 
 			VuCount: 1,
 		}
-		sender.Send(result)
+		execParams.Sender.Send(result)
 
 		index := i
 		go func() {
 			defer wgVus.Done()
-			ExecScenarioWithVu(childCtx, sender, index)
+
+			execParams.VuNo = index
+			ExecScenarioWithVu(childCtx)
 
 			ptlog.Logf("vu %d completed", index)
 		}()

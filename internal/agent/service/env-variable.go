@@ -6,7 +6,7 @@ import (
 	"github.com/kataras/iris/v12"
 )
 
-func updateLocalValues(execScene *domain.ExecScene, localVarsCache iris.Map) {
+func UpdateLocalValues(execScene *domain.ExecScene, localVarsCache iris.Map) {
 	for envId, varsObj := range localVarsCache {
 		varMap := varsObj.(map[string]interface{})
 

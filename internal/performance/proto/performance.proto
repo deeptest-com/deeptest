@@ -48,11 +48,15 @@ message PerformanceExecStartReq {
   repeated Scenario scenarios = 7;
 
   int32 weight = 8;
+  int32 environmentId = 9;
 
-  string serverAddress = 9;
-  string influxdbAddress = 10;
-  string influxdbOrg = 11;
-  string influxdbToken = 12;
+  bytes localVarsCacheRaw = 10;
+  bytes execSceneRaw = 11;
+
+  string serverAddress = 12;
+  string influxdbAddress = 13;
+  string influxdbOrg = 14;
+  string influxdbToken = 15;
 }
 message PerformanceExecStopReq {
   string room = 1;

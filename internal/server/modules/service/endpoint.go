@@ -961,7 +961,12 @@ func (s *EndpointService) FavoriteList(tenantId consts.TenantId, projectId, user
 		category := new(v1.Category)
 		category.EntityId = item.ID
 		category.Name = item.Title
-		
+		method, _ := s.EndpointInterfaceRepo.GetMethodsByEndpointId(tenantId, item.ID)
+		category.EntityData = map[string]interface{}{
+			"name":       item.Title,
+			"endpointId": item.ID,
+			"method":     method,
+		}
 	}
 	return
 

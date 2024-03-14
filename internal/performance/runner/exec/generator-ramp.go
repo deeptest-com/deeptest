@@ -2,7 +2,8 @@ package runnerExec
 
 import (
 	"context"
-	"github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	agentExecDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
@@ -14,7 +15,7 @@ type RampVuGenerator struct {
 }
 
 func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
-	execParams := getExecParamsInCtx(execCtx)
+	execParams := performanceUtils.GetExecParamsInCtx(execCtx)
 
 	if len(execParams.Stages) != 1 {
 		return
@@ -24,7 +25,7 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 	for i := 1; i <= len(execParams.Stages); i++ {
 		stage := execParams.Stages[i]
 
-		target := getVuNumbByWeight(int(stage.Target), execParams.Weight)
+		target := performanceUtils.GetVuNumbByWeight(int(stage.Target), execParams.Weight)
 		stageDuration := int(stage.Duration)
 		stageLoop := int(stage.Loop)
 
@@ -38,11 +39,11 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 			childTimeoutCtx, _ := context.WithTimeout(execCtx, time.Duration(stageDuration)*time.Second)
 
 			// generate ExecParams for each stage
-			execPramsOfStage := ptdomain.ExecParamsInCtx{}
+			execPramsOfStage := agentExecDomain.ExecParamsInCtx{}
 			copier.CopyWithOption(&execPramsOfStage, execParams, copier.Option{DeepCopy: true})
 			execPramsOfStage.Loop = stageLoop
 
-			childCtx = genExecParamsCtx(&execPramsOfStage, childTimeoutCtx)
+			childCtx = performanceUtils.GenExecParamsCtx(&execPramsOfStage, childTimeoutCtx)
 
 			wgVus.Add(1)
 

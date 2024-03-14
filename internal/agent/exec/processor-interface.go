@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
+	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	checkpointHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/checkpoint"
@@ -40,13 +42,13 @@ func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession)
 	session.CurrScenarioProcessorId = processor.ID
 	session.CurrDebugInterfaceId = processor.EntityId
 
-	execStartTime := time.Now()
+	startTime := time.Now()
 	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                  int(entity.ProcessorID),
 		Name:                processor.Name,
 		ProcessorCategory:   entity.ProcessorCategory,
 		ProcessorType:       entity.ProcessorType,
-		StartTime:           &execStartTime,
+		StartTime:           &startTime,
 		ParentId:            int(entity.ParentID),
 		EndpointInterfaceId: processor.EndpointInterfaceId,
 		DebugInterfaceId:    processor.EntityId,
@@ -115,6 +117,34 @@ func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession)
 	stat := CountInterfaceStat(session.ExecUuid, processor.Result)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 	processor.AddResultToParent()
+
+	if session.InfluxdbSender == nil {
+		return
+	}
+
+	// send performance metrics
+	execParams := performanceUtils.GetExecParamsInCtx(session.Ctx)
+
+	result := ptproto.PerformanceExecResp{
+		Timestamp: time.Now().UnixMilli(),
+		RunnerId:  execParams.RunnerId,
+		Room:      execParams.Room,
+
+		Requests: []*ptproto.PerformanceExecRecord{
+			{
+				RecordId:   int32(processor.ID),
+				RecordName: processor.Name,
+
+				StartTime: startTime.UnixMilli(),
+				EndTime:   endTime.UnixMilli(),
+				Duration:  int32(endTime.UnixMilli() - startTime.UnixMilli()), // 毫秒
+				Status:    processor.Result.ResultStatus.String(),
+
+				VuId: int32(execParams.VuNo),
+			},
+		},
+	}
+	session.InfluxdbSender.Send(result)
 
 	return
 }

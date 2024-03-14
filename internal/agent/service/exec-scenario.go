@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -23,7 +24,8 @@ func RunScenario(req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg 
 
 	scenarioExecObj.ExecUuid = req.ExecUuid
 
-	session := agentExec.NewScenarioExecSession(scenarioExecObj, req.EnvironmentId, wsMsg)
+	ctx := context.Background()
+	session := agentExec.NewScenarioExecSession(ctx, scenarioExecObj, req.EnvironmentId, wsMsg)
 	err = ExecScenario(session)
 
 	session.RootProcessor.Result.Stat = *agentExec.GetInterfaceStat(session.ExecUuid)

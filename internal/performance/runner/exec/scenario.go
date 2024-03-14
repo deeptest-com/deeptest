@@ -3,8 +3,9 @@ package runnerExec
 import (
 	"context"
 	"encoding/json"
+	agentExecDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
+	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
-	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
 	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -25,7 +26,7 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 	if scenario.GenerateType == ptconsts.GeneratorConstant.String() {
 		runDur := int(scenario.Duration)
 
-		data := ptdomain.ExecParamsInCtx{
+		data := agentExecDomain.ExecParamsInCtx{
 			Scenario:      scenario,
 			EnvironmentId: int(environmentId),
 
@@ -45,12 +46,12 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 			ConductorGrpcAddress: serverAddress,
 		}
 
-		valueCtx = genExecParamsCtx(&data, execCtx)
+		valueCtx = performanceUtils.GenExecParamsCtx(&data, execCtx)
 
 		generater = ConstantVuGenerator{}
 
 	} else if scenario.GenerateType == ptconsts.GeneratorRamp.String() {
-		data := ptdomain.ExecParamsInCtx{
+		data := agentExecDomain.ExecParamsInCtx{
 			Stages:        scenario.Stages,
 			Scenario:      scenario,
 			EnvironmentId: int(environmentId),
@@ -67,7 +68,7 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 			// computer Duration and Loop in each stage
 		}
 
-		valueCtx = genExecParamsCtx(&data, execCtx)
+		valueCtx = performanceUtils.GenExecParamsCtx(&data, execCtx)
 
 		generater = RampVuGenerator{}
 	}

@@ -1,9 +1,13 @@
 package agentExec
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
+	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	uuid "github.com/satori/go.uuid"
 	"time"
@@ -39,16 +43,57 @@ func (entity ProcessorPerformanceRendezvous) Run(processor *Processor, session *
 		Round:             processor.Round,
 	}
 
-	//processor.Result.Summary = fmt.Sprintf("等待\"%d\"秒。", entity.SleepTime)
+	processor.Result.Summary = fmt.Sprintf("集合点%s开始。", entity.Name)
 	processor.AddResultToParent()
-	//detail := map[string]interface{}{"name": entity.Name, "sleepTime": entity.SleepTime}
-	//processor.Result.Detail = commonUtils.JsonEncode(detail)
+	detail := map[string]interface{}{"name": entity.Name, "target": entity.Target}
+	processor.Result.Detail = commonUtils.JsonEncode(detail)
 	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
-
-	//<-time.After(time.Duration(entity.SleepTime) * time.Second)
 
 	endTime := time.Now()
 	processor.Result.EndTime = &endTime
+
+	// rendezvous control
+	execParams := performanceUtils.GetExecParamsInCtx(session.Ctx)
+	name := processor.Name
+
+	newArrivedVal := performanceUtils.IncreaseRendezvousArrived(execParams.Room, name, execParams.ConductorGrpcAddress)
+	ptlog.Logf("====== VU %d: rendezvous Arrived Value added, value is %d", execParams.VuNo, newArrivedVal)
+
+	// wait condition util rendezvous ready
+	var value int
+	var ready bool
+	var newPassedVal int
+
+	for !ready {
+		value, ready = performanceUtils.IsRendezvousReady(execParams.Room, name, execParams.ConductorGrpcAddress, entity.Target)
+
+		ptlog.Logf("------ VU %d: rendezvous wait, Arrived Value is %d", execParams.VuNo, value)
+		time.Sleep(1 * time.Second)
+
+		select {
+		case <-session.Ctx.Done():
+			ptlog.Logf("****** VU %d: rendezvous processor exit scenario processors by signal", execParams.VuNo)
+			goto Label_END_RENDEZVOUS_PROCESSOR
+
+		default:
+		}
+	}
+
+	ptlog.Logf("------ VU %d: rendezvous passed, Arrived Value is %d", execParams.VuNo, value)
+
+	// reset if all vus passed
+	newPassedVal = performanceUtils.IncreaseRendezvousPassed(execParams.Room, name, execParams.ConductorGrpcAddress)
+	if newPassedVal >= entity.Target {
+		ptlog.Logf("------ VU %d: before rendezvous reset, Arrived Value is %d", execParams.VuNo, value)
+
+		value = performanceUtils.ResetRendezvous(execParams.Room, name, execParams.ConductorGrpcAddress)
+
+		ptlog.Logf("====== VU %d: after rendezvous reset, Arrived Value is %d", execParams.VuNo, value)
+
+		ptlog.Logf("\n")
+	}
+
+Label_END_RENDEZVOUS_PROCESSOR:
 
 	return
 }

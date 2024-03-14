@@ -2,10 +2,11 @@ package runnerExec
 
 import (
 	"context"
+	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
 )
 
 func ExecScenarioWithVu(timeoutCtx context.Context) (err error) {
-	execParams := getExecParamsInCtx(timeoutCtx)
+	execParams := performanceUtils.GetExecParamsInCtx(timeoutCtx)
 
 	for index := 0; execParams.Loop == 0 || index < execParams.Loop; index++ {
 		ExecProcessors(timeoutCtx)

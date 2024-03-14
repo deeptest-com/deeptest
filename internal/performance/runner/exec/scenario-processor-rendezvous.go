@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"time"
@@ -15,7 +16,7 @@ func ExecRendezvousProcessor(processor *agentExec.Processor, timeoutCtx context.
 	entity := agentExec.ProcessorPerformanceRendezvous{}
 	json.Unmarshal(processor.EntityRaw, &entity)
 
-	newArrivedVal := IncreaseRendezvousArrived(room, name, serverAddress)
+	newArrivedVal := performanceUtils.IncreaseRendezvousArrived(room, name, serverAddress)
 	ptlog.Logf("====== VU %d: rendezvous Arrived Value added, value is %d", vuNo, newArrivedVal)
 
 	// wait condition util rendezvous ready
@@ -24,7 +25,7 @@ func ExecRendezvousProcessor(processor *agentExec.Processor, timeoutCtx context.
 	var newPassedVal int
 
 	for !ready {
-		value, ready = IsRendezvousReady(room, name, serverAddress, entity.Target)
+		value, ready = performanceUtils.IsRendezvousReady(room, name, serverAddress, entity.Target)
 
 		ptlog.Logf("------ VU %d: rendezvous wait, Arrived Value is %d", vuNo, value)
 		time.Sleep(1 * time.Second)
@@ -41,11 +42,11 @@ func ExecRendezvousProcessor(processor *agentExec.Processor, timeoutCtx context.
 	ptlog.Logf("------ VU %d: rendezvous passed, Arrived Value is %d", vuNo, value)
 
 	// reset if all vus passed
-	newPassedVal = IncreaseRendezvousPassed(room, name, serverAddress)
+	newPassedVal = performanceUtils.IncreaseRendezvousPassed(room, name, serverAddress)
 	if newPassedVal >= entity.Target {
 		ptlog.Logf("------ VU %d: before rendezvous reset, Arrived Value is %d", vuNo, value)
 
-		value = ResetRendezvous(room, name, serverAddress)
+		value = performanceUtils.ResetRendezvous(room, name, serverAddress)
 
 		ptlog.Logf("====== VU %d: after rendezvous reset, Arrived Value is %d", vuNo, value)
 

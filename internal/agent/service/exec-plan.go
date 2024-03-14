@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
@@ -39,7 +40,8 @@ func RunPlan(req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websock
 		scenarioExecObj.Token = req.Token
 		UpdateLocalValues(&scenarioExecObj.ExecScene, localVarsCache)
 
-		session := agentExec.NewScenarioExecSession(&scenarioExecObj, req.EnvironmentId, wsMsg)
+		ctx := context.Background()
+		session := agentExec.NewScenarioExecSession(ctx, &scenarioExecObj, req.EnvironmentId, wsMsg)
 		err = ExecScenario(session)
 
 		scenarioReport, _ := SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,

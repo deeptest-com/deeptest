@@ -2,6 +2,7 @@ package runnerExec
 
 import (
 	"context"
+	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
 	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -13,11 +14,11 @@ type ConstantVuGenerator struct {
 }
 
 func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
-	execParams := getExecParamsInCtx(execCtx)
+	execParams := performanceUtils.GetExecParamsInCtx(execCtx)
 
 	var wgVus sync.WaitGroup
 
-	target := getVuNumbByWeight(execParams.Target, execParams.Weight)
+	target := performanceUtils.GetVuNumbByWeight(execParams.Target, execParams.Weight)
 
 	for i := 1; i <= target; i++ {
 		childCtx := execCtx

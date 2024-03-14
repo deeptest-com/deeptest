@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
+	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
 )
 
 func ExecProcessors(timeoutCtx context.Context) (err error) {
-	execParams := getExecParamsInCtx(timeoutCtx)
+	execParams := performanceUtils.GetExecParamsInCtx(timeoutCtx)
 
 	rootProcessor := agentExec.Processor{}
 	json.Unmarshal(execParams.Scenario.ProcessorRaw, &rootProcessor)
@@ -25,7 +26,7 @@ func ExecProcessors(timeoutCtx context.Context) (err error) {
 	}
 	service.UpdateLocalValues(&scenarioExecObj.ExecScene, execParams.LocalVarsCache)
 
-	session := agentExec.NewScenarioExecSession(scenarioExecObj, execParams.EnvironmentId, nil)
+	session := agentExec.NewScenarioExecSession(timeoutCtx, scenarioExecObj, execParams.EnvironmentId, nil)
 	err = service.ExecScenario(session)
 
 	//	for index, processor := range rootProcessor.Children {

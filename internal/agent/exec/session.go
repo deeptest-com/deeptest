@@ -1,6 +1,7 @@
 package agentExec
 
 import (
+	"context"
 	"crypto/tls"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
@@ -60,6 +61,7 @@ type ExecSession struct {
 	DatapoolCursor map[string]int // only for scenario
 
 	/** communication related */
+	Ctx   context.Context
 	WsMsg *websocket.Message
 
 	ConductorGrpcAddress string
@@ -94,7 +96,9 @@ func NewInterfaceExecSession(call domain.InterfaceCall) (ret *ExecSession) {
 	return
 }
 
-func NewScenarioExecSession(req *ScenarioExecObj, environmentId int, wsMsg *websocket.Message) (ret *ExecSession) {
+func NewScenarioExecSession(ctx context.Context, req *ScenarioExecObj, environmentId int, wsMsg *websocket.Message) (
+	ret *ExecSession) {
+
 	session := ExecSession{
 		ExecUuid:   req.ExecUuid,
 		ScenarioId: req.ScenarioId,
@@ -102,6 +106,7 @@ func NewScenarioExecSession(req *ScenarioExecObj, environmentId int, wsMsg *webs
 
 		RootProcessor: req.RootProcessor,
 		WsMsg:         wsMsg,
+		Ctx:           ctx,
 
 		ScopedVariables: map[uint][]domain.ExecVariable{},
 		ScopedCookies:   map[uint][]domain.ExecCookie{},

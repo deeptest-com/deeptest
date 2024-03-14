@@ -21,17 +21,7 @@ func InitUserExecContext(execUuid string) {
 	ExecContextStore.Store(execUuid, &val)
 }
 
-func GetExecCtx(execUuid string) (ctx context.Context, cancel context.CancelFunc) {
-	userContext := GetUserExecContext(execUuid)
-
-	if userContext != nil {
-		ctx = userContext.ExecCtx
-		cancel = userContext.ExecCancel
-	}
-
-	return
-}
-func CloseExecCtx(execUuid string) (ctx context.Context, cancel context.CancelFunc) {
+func CloseUserExecCtx(execUuid string) (ctx context.Context, cancel context.CancelFunc) {
 	userContext := GetUserExecContext(execUuid)
 
 	if userContext.ExecCancel != nil {
@@ -42,6 +32,17 @@ func CloseExecCtx(execUuid string) (ctx context.Context, cancel context.CancelFu
 	userContext.ExecCancel = nil
 
 	ExecContextStore.Store(execUuid, nil)
+
+	return
+}
+
+func GetExecCtx(execUuid string) (ctx context.Context, cancel context.CancelFunc) {
+	userContext := GetUserExecContext(execUuid)
+
+	if userContext != nil {
+		ctx = userContext.ExecCtx
+		cancel = userContext.ExecCancel
+	}
 
 	return
 }

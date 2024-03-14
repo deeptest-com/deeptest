@@ -3,6 +3,7 @@ package runnerExec
 import (
 	"context"
 	"encoding/json"
+	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentExecDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
 	"github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
@@ -77,7 +78,11 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 		generater = RampVuGenerator{}
 	}
 
+	agentExec.InitUserExecContext(room)
+
 	generater.Run(valueCtx)
+
+	agentExec.CloseUserExecCtx(room)
 
 	return
 }

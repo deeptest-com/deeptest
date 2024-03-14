@@ -53,7 +53,7 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 			RunMessage(ctx, &req.MessageReq, wsMsg)
 		}
 
-		agentExec.CloseExecCtx(execUuid)
+		agentExec.CloseUserExecCtx(execUuid)
 	}()
 
 	return
@@ -75,7 +75,7 @@ func getExecUuid(req agentDomain.WsReq) (ret string) {
 }
 
 func StopExec(execUuid string, wsMsg *websocket.Message) (err error) {
-	agentExec.CloseExecCtx(execUuid)
+	agentExec.CloseUserExecCtx(execUuid)
 	execUtils.SendCancelMsg(wsMsg)
 
 	return

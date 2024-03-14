@@ -21,7 +21,10 @@ var (
 
 // Instance casbin 单例
 func Instance(tenantId consts.TenantId) *casbin.Enforcer {
-	res, _ := store.LoadOrStore(tenantId, GetEnforcer(tenantId))
+	res, ok := store.Load(tenantId)
+	if !ok {
+		res, _ = store.LoadOrStore(tenantId, GetEnforcer(tenantId))
+	}
 	/*
 		once.Do(func() {
 			enforcer = GetEnforcer()

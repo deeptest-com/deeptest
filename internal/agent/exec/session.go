@@ -89,7 +89,7 @@ func NewInterfaceExecSession(call domain.InterfaceCall) (ret *ExecSession) {
 		CurrResponse:         domain.DebugResponse{},
 	}
 
-	session.GojaRuntime, session.GojaRequire = InitGojaRuntime(&session)
+	InitGojaRuntime(&session)
 
 	ret = &session
 
@@ -124,7 +124,7 @@ func NewScenarioExecSession(ctx context.Context, req *ScenarioExecObj, environme
 	}
 
 	ComputerScopeHierarchy(req.RootProcessor, &session.ScopeHierarchy)
-	session.GojaRuntime, session.GojaRequire = InitGojaRuntime(&session)
+	InitGojaRuntime(&session)
 
 	jar, _ := cookiejar.New(nil)
 	session.HttpClient = &http.Client{

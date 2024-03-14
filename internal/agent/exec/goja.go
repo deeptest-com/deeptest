@@ -12,15 +12,14 @@ import (
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/dop251/goja"
-	"github.com/dop251/goja_nodejs/require"
 	"path/filepath"
 	"reflect"
 )
 
-func InitGojaRuntime(session *ExecSession) (execRuntime *goja.Runtime, execRequire *require.RequireModule) {
-	execRuntime, execRequire = gojaUtils.InitGojaRuntime()
+func InitGojaRuntime(session *ExecSession) {
+	session.GojaRuntime, session.GojaRequire = gojaUtils.InitGojaRuntime()
 
-	jslibHelper.LoadChaiJslibs(execRuntime)
+	jslibHelper.LoadChaiJslibs(session.GojaRuntime)
 
 	defineJsFuncs(session)
 	defineGoFuncs(session)
@@ -28,16 +27,16 @@ func InitGojaRuntime(session *ExecSession) (execRuntime *goja.Runtime, execRequi
 	// load global script
 	pth := filepath.Join(consts.TmpDir, "deeptest.js")
 	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
-	dt, err := execRequire.Require(pth)
+	dt, err := session.GojaRequire.Require(pth)
 	if err != nil {
 		logUtils.Info(err.Error())
 		return
 	}
 
-	execRuntime.Set("dt", dt)
+	session.GojaRuntime.Set("dt", dt)
 
 	// import other custom libs
-	jslibHelper.RefreshRemoteAgentJslibs(execRuntime, execRequire, session.ProjectId, session.ServerUrl, session.ServerToken)
+	jslibHelper.RefreshRemoteAgentJslibs(session.GojaRuntime, session.GojaRequire, session.ProjectId, session.ServerUrl, session.ServerToken)
 
 	return
 }

@@ -11,21 +11,37 @@ var (
 )
 
 func InitUserExecContext(execUuid string) {
-	val := UserContext{}
+	ctx, cancel := context.WithCancel(context.Background())
+	val := UserContext{
+		ExecCtx:       ctx,
+		ExecCancel:    cancel,
+		InterfaceStat: &agentDomain.InterfaceStat{},
+	}
 
 	ExecContextStore.Store(execUuid, &val)
 }
 
-func SetExecCtx(execUuid string, ctx context.Context, cancel context.CancelFunc) {
-	entity := GetUserExecContext(execUuid)
-	entity.ExecCtx = ctx
-	entity.ExecCancel = cancel
-}
 func GetExecCtx(execUuid string) (ctx context.Context, cancel context.CancelFunc) {
 	userContext := GetUserExecContext(execUuid)
 
-	ctx = userContext.ExecCtx
-	cancel = userContext.ExecCancel
+	if userContext != nil {
+		ctx = userContext.ExecCtx
+		cancel = userContext.ExecCancel
+	}
+
+	return
+}
+func CloseExecCtx(execUuid string) (ctx context.Context, cancel context.CancelFunc) {
+	userContext := GetUserExecContext(execUuid)
+
+	if userContext.ExecCancel != nil {
+		userContext.ExecCancel()
+	}
+
+	userContext.ExecCtx = nil
+	userContext.ExecCancel = nil
+
+	ExecContextStore.Store(execUuid, nil)
 
 	return
 }
@@ -44,7 +60,7 @@ func GetInterfaceStat(execUuid string) (ret *agentDomain.InterfaceStat) {
 func GetUserExecContext(execUuid string) (val *UserContext) {
 	inf, ok := ExecContextStore.Load(execUuid)
 	if !ok {
-		InitUserExecContext(execUuid)
+		return
 	}
 
 	inf, _ = ExecContextStore.Load(execUuid)

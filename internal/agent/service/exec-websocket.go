@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
@@ -21,25 +20,25 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 		return
 	}
 
-	ctx, cancel := agentExec.GetExecCtx(execUuid)
-
 	// stop exec
 	if act == consts.ExecStop {
-		StopExec(cancel, wsMsg)
+		StopExec(execUuid, wsMsg)
 		return
 	}
 
-	// already running
-	if ctx != nil && (strings.Include(
-		[]string{consts.ExecScenario.String(), consts.ExecPlan.String(), consts.ExecCase.String()}, act.String())) {
-
-		execUtils.SendAlreadyRunningMsg(consts.Processor, wsMsg)
+	// is running
+	ctx, _ := agentExec.GetExecCtx(execUuid)
+	if ctx != nil && (strings.Include([]string{consts.ExecScenario.String(), consts.ExecPlan.String(), consts.ExecCase.String()}, act.String())) {
+		IsRunning(wsMsg)
 		return
 	}
 
 	// exec task
 	go func() {
 		defer errDefer(wsMsg)
+
+		agentExec.InitUserExecContext(execUuid)
+		ctx, _ := agentExec.GetExecCtx(execUuid)
 
 		if act == consts.ExecScenario {
 			RunScenario(ctx, &req.ScenarioExecReq, req.LocalVarsCache, wsMsg)
@@ -53,6 +52,8 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 		} else if act == consts.ExecMessage {
 			RunMessage(ctx, &req.MessageReq, wsMsg)
 		}
+
+		agentExec.CloseExecCtx(execUuid)
 	}()
 
 	return
@@ -73,10 +74,15 @@ func getExecUuid(req agentDomain.WsReq) (ret string) {
 	return
 }
 
-func StopExec(cancel context.CancelFunc, wsMsg *websocket.Message) (err error) {
-	cancel()
-
+func StopExec(execUuid string, wsMsg *websocket.Message) (err error) {
+	agentExec.CloseExecCtx(execUuid)
 	execUtils.SendCancelMsg(wsMsg)
+
+	return
+}
+
+func IsRunning(wsMsg *websocket.Message) (err error) {
+	execUtils.SendAlreadyRunningMsg(wsMsg)
 
 	return
 }

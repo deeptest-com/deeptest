@@ -77,6 +77,8 @@ func (entity *ProcessorData) runDataItems(session *ExecSession, processor *Proce
 			processor.Error(session, errX)
 		}
 	}()
+
+	ctx := session.Ctx
 	executedProcessorIds := map[uint]bool{}
 
 	for i := 0; i < entity.RepeatTimes; i++ {
@@ -93,8 +95,11 @@ func (entity *ProcessorData) runDataItems(session *ExecSession, processor *Proce
 			round := ""
 
 			for _, child := range processor.Children {
-				if GetForceStopExec(session.ExecUuid) {
+				select {
+				case <-ctx.Done():
 					break
+
+				default:
 				}
 				if child.Disable {
 					continue

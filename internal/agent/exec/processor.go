@@ -55,15 +55,22 @@ type ProcessorBase struct {
 	Session ExecSession `json:"-"`
 }
 
-func (p *Processor) Run(s *ExecSession) (err error) {
+func (p *Processor) Run(session *ExecSession) (err error) {
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
-	s.CurrScenarioProcessorId = p.ID
-	s.CurrScenarioProcessor = p
+
+	select {
+	case <-session.Ctx.Done():
+		break
+	default:
+	}
+
+	session.CurrScenarioProcessorId = p.ID
+	session.CurrScenarioProcessor = p
 
 	//每个执行器延迟0.1秒，防止发送ws消息过快，导致前端消息错误
 	time.Sleep(100 * time.Microsecond)
-	if !p.Disable && p.Entity != nil && !GetForceStopExec(s.ExecUuid) {
-		p.Entity.Run(p, s)
+	if !p.Disable && p.Entity != nil {
+		p.Entity.Run(p, session)
 	}
 
 	return

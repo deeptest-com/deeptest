@@ -13,9 +13,7 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-var (
-	ch chan int
-)
+var ()
 
 type ExecByWebSocketCtrl struct {
 	Namespace         string

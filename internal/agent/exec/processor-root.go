@@ -15,8 +15,9 @@ type ProcessorRoot struct {
 }
 
 func (entity ProcessorRoot) Run(processor *Processor, session *ExecSession) (err error) {
-
 	logUtils.Infof("root entity")
+
+	ctx := session.Ctx
 
 	startTime := time.Now()
 	processor.Result = &agentExecDomain.ScenarioExecResult{
@@ -35,8 +36,11 @@ func (entity ProcessorRoot) Run(processor *Processor, session *ExecSession) (err
 	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	for _, child := range processor.Children {
-		if GetForceStopExec(session.ExecUuid) {
+		select {
+		case <-ctx.Done():
 			break
+
+		default:
 		}
 		if child.Disable {
 			continue

@@ -1,6 +1,7 @@
 package agentExec
 
 import (
+	"context"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"sync"
 )
@@ -15,28 +16,16 @@ func InitUserExecContext(execUuid string) {
 	ExecContextStore.Store(execUuid, &val)
 }
 
-func ClearExecContext(execUuid string) {
-	ExecContextStore.Store(execUuid, nil)
-}
-
-func SetForceStopExec(execUuid string, val bool) {
+func SetExecCtx(execUuid string, ctx context.Context, cancel context.CancelFunc) {
 	entity := GetUserExecContext(execUuid)
-	entity.ForceStopExec = val
+	entity.ExecCtx = ctx
+	entity.ExecCancel = cancel
 }
-func GetForceStopExec(execUuid string) (ret bool) {
+func GetExecCtx(execUuid string) (ctx context.Context, cancel context.CancelFunc) {
 	userContext := GetUserExecContext(execUuid)
-	ret = userContext.ForceStopExec
 
-	return
-}
-
-func SetIsRunning(execUuid string, val bool) {
-	entity := GetUserExecContext(execUuid)
-	entity.IsRunning = val
-}
-func GetIsRunning(execUuid string) (ret bool) {
-	userContext := GetUserExecContext(execUuid)
-	ret = userContext.ForceStopExec
+	ctx = userContext.ExecCtx
+	cancel = userContext.ExecCancel
 
 	return
 }
@@ -52,12 +41,6 @@ func GetInterfaceStat(execUuid string) (ret *agentDomain.InterfaceStat) {
 	return
 }
 
-type UserContext struct {
-	IsRunning     bool
-	ForceStopExec bool
-	InterfaceStat *agentDomain.InterfaceStat // for report data
-}
-
 func GetUserExecContext(execUuid string) (val *UserContext) {
 	inf, ok := ExecContextStore.Load(execUuid)
 	if !ok {
@@ -68,4 +51,10 @@ func GetUserExecContext(execUuid string) (val *UserContext) {
 	val = inf.(*UserContext)
 
 	return
+}
+
+type UserContext struct {
+	ExecCtx       context.Context
+	ExecCancel    context.CancelFunc
+	InterfaceStat *agentDomain.InterfaceStat // for report data
 }

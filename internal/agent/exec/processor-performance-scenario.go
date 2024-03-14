@@ -45,6 +45,8 @@ func (entity ProcessorPerformanceScenario) Run(processor *Processor, session *Ex
 	}()
 	logUtils.Infof("performance scenario entity")
 
+	ctx := session.Ctx
+
 	startTime := time.Now()
 	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
@@ -66,8 +68,11 @@ func (entity ProcessorPerformanceScenario) Run(processor *Processor, session *Ex
 	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	for _, child := range processor.Children {
-		if GetForceStopExec(session.ExecUuid) {
+		select {
+		case <-ctx.Done():
 			break
+
+		default:
 		}
 		if child.Disable {
 			continue

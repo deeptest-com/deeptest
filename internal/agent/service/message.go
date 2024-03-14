@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
@@ -8,7 +9,7 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-func RunMessage(req *agentExec.MessageExecReq, wsMsg *websocket.Message) (err error) {
+func RunMessage(ctx context.Context, req *agentExec.MessageExecReq, wsMsg *websocket.Message) (err error) {
 	// start msg
 	err = execUtils.SendStartMsg(wsMsg)
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-func RunScenario(req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
+func RunScenario(ctx context.Context, req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
 	logUtils.Infof("run scenario %d on environment %d", req.ScenarioId, req.EnvironmentId)
 
 	// send start msg
@@ -24,7 +24,6 @@ func RunScenario(req *agentExec.ScenarioExecReq, localVarsCache iris.Map, wsMsg 
 
 	scenarioExecObj.ExecUuid = req.ExecUuid
 
-	ctx := context.Background()
 	session := agentExec.NewScenarioExecSession(ctx, scenarioExecObj, req.EnvironmentId, wsMsg)
 	err = ExecScenario(session)
 

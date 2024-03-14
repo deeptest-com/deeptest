@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
@@ -20,21 +21,18 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 		return
 	}
 
-	isRunning := agentExec.GetIsRunning(execUuid)
+	ctx, cancel := agentExec.GetExecCtx(execUuid)
 
 	// stop exec
 	if act == consts.ExecStop {
-		StopExec(execUuid, wsMsg)
-
+		StopExec(cancel, wsMsg)
 		return
 	}
 
 	// already running
-	if isRunning && (strings.Include([]string{
-		consts.ExecScenario.String(),
-		consts.ExecPlan.String(),
-		consts.ExecCase.String(),
-	}, act.String())) {
+	if ctx != nil && (strings.Include(
+		[]string{consts.ExecScenario.String(), consts.ExecPlan.String(), consts.ExecCase.String()}, act.String())) {
+
 		execUtils.SendAlreadyRunningMsg(consts.Processor, wsMsg)
 		return
 	}
@@ -44,16 +42,16 @@ func StartExec(req agentDomain.WsReq, wsMsg *websocket.Message) (err error) {
 		defer errDefer(wsMsg)
 
 		if act == consts.ExecScenario {
-			RunScenario(&req.ScenarioExecReq, req.LocalVarsCache, wsMsg)
+			RunScenario(ctx, &req.ScenarioExecReq, req.LocalVarsCache, wsMsg)
 
 		} else if act == consts.ExecPlan {
-			RunPlan(&req.PlanExecReq, req.LocalVarsCache, wsMsg)
+			RunPlan(ctx, &req.PlanExecReq, req.LocalVarsCache, wsMsg)
 
 		} else if act == consts.ExecCase {
-			RunCases(&req.CasesExecReq, req.LocalVarsCache, wsMsg)
+			RunCases(ctx, &req.CasesExecReq, req.LocalVarsCache, wsMsg)
 
 		} else if act == consts.ExecMessage {
-			RunMessage(&req.MessageReq, wsMsg)
+			RunMessage(ctx, &req.MessageReq, wsMsg)
 		}
 	}()
 
@@ -75,8 +73,8 @@ func getExecUuid(req agentDomain.WsReq) (ret string) {
 	return
 }
 
-func StopExec(execUuid string, wsMsg *websocket.Message) (err error) {
-	agentExec.SetForceStopExec(execUuid, true)
+func StopExec(cancel context.CancelFunc, wsMsg *websocket.Message) (err error) {
+	cancel()
 
 	execUtils.SendCancelMsg(wsMsg)
 

@@ -25,6 +25,8 @@ func (entity ProcessorLogic) Run(processor *Processor, session *ExecSession) (er
 	}()
 	logUtils.Infof("logic entity")
 
+	ctx := session.Ctx
+
 	startTime := time.Now()
 	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
@@ -72,8 +74,11 @@ func (entity ProcessorLogic) Run(processor *Processor, session *ExecSession) (er
 	executedProcessorIds := map[uint]bool{}
 	if pass {
 		for _, child := range processor.Children {
-			if GetForceStopExec(session.ExecUuid) {
+			select {
+			case <-ctx.Done():
 				break
+
+			default:
 			}
 			if child.Disable {
 				continue

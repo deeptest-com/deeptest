@@ -13,15 +13,6 @@ func (s *ExecSession) GetIsRunning() (ret bool) {
 	return
 }
 
-func (s *ExecSession) SetForceStopExec(val bool) {
-	s.ForceStopExec = val
-}
-func (s *ExecSession) GetForceStopExec() (ret bool) {
-	ret = s.ForceStopExec
-
-	return
-}
-
 func (s *ExecSession) SetScopedVariables(val map[uint][]domain.ExecVariable) {
 	s.ScopedVariables = val
 }

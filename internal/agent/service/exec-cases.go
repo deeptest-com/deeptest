@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
@@ -11,14 +12,14 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-func RunCases(req *agentExec.CasesExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
+func RunCases(ctx context.Context, req *agentExec.CasesExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
 	logUtils.Infof("run cases %s on env %d", req.ExecUuid, req.EnvironmentId)
 
 	// start msg
 	execUtils.SendStartMsg(wsMsg)
 
 	// run case one by one
-	doExecCases(req, localVarsCache, wsMsg, "")
+	doExecCases(ctx, req, localVarsCache, wsMsg, "")
 
 	// end msg
 	execUtils.SendEndMsg(wsMsg)
@@ -26,22 +27,24 @@ func RunCases(req *agentExec.CasesExecReq, localVarsCache iris.Map, wsMsg *webso
 	return
 }
 
-func doExecCases(req *agentExec.CasesExecReq, localVarsCache iris.Map, wsMsg *websocket.Message, parentUuid string) (err error) {
+func doExecCases(ctx context.Context, req *agentExec.CasesExecReq, localVarsCache iris.Map, wsMsg *websocket.Message, parentUuid string) (err error) {
 	casesExecObj := GetCasesToExec(req)
 
 	for _, cs := range casesExecObj.Children {
-		doExecCase(cs, localVarsCache, wsMsg, req.ExecUuid, parentUuid, req.ProjectId)
+		doExecCase(ctx, cs, localVarsCache, wsMsg, req.ExecUuid, parentUuid, req.ProjectId)
 
-		// stop if needed
-		if agentExec.GetForceStopExec(parentUuid) {
+		select {
+		case <-ctx.Done():
 			break
+
+		default:
 		}
 	}
 
 	return
 }
 
-func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg *websocket.Message, execUuid, parentUuid string, projectId uint) (err error) {
+func doExecCase(ctx context.Context, cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg *websocket.Message, execUuid, parentUuid string, projectId uint) (err error) {
 	if cs.Category != "case" {
 		startMsg := iris.Map{
 			"source":     "execCases",
@@ -55,7 +58,7 @@ func doExecCase(cs *agentExec.CaseExecProcessor, localVarsCache iris.Map, wsMsg 
 	}
 
 	for _, child := range cs.Children {
-		doExecCase(child, localVarsCache, wsMsg, execUuid, cs.Key, projectId)
+		doExecCase(ctx, child, localVarsCache, wsMsg, execUuid, cs.Key, projectId)
 	}
 
 	if cs.Category != "case" {

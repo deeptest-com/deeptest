@@ -23,6 +23,8 @@ func (entity ProcessorGroup) Run(processor *Processor, session *ExecSession) (er
 	}()
 	logUtils.Infof("group entity")
 
+	ctx := session.Ctx
+
 	startTime := time.Now()
 	processor.Result = &agentExecDomain.ScenarioExecResult{
 		ID:                int(entity.ProcessorID),
@@ -44,8 +46,11 @@ func (entity ProcessorGroup) Run(processor *Processor, session *ExecSession) (er
 	execUtils.SendExecMsg(*processor.Result, consts.Processor, session.WsMsg)
 
 	for _, child := range processor.Children {
-		if GetForceStopExec(session.ExecUuid) {
+		select {
+		case <-ctx.Done():
 			break
+
+		default:
 		}
 		if child.Disable {
 			continue

@@ -77,31 +77,30 @@ func (entity ProcessorLoop) Run(processor *Processor, session *ExecSession) (err
 }
 
 func (entity *ProcessorLoop) runLoopItems(session *ExecSession, processor *Processor, iterator agentExecDomain.ExecIterator) (err error) {
+	ctx := session.Ctx
+
 	executedProcessorIds := map[uint]bool{}
 
 	for index, item := range iterator.Items {
-		if GetForceStopExec(session.ExecUuid) {
+		select {
+		case <-ctx.Done():
 			break
+
+		default:
 		}
 		if DemoTestSite != "" && index > 2 {
 			break
 		}
-		/*
-			msg := agentDomain.ScenarioExecResult{
-				ParentId:          int(processor.ID),
-				Summary:           fmt.Sprintf("%d. %s为%v", index+1, iterator.VariableName, item),
-				Name:              "循环变量",
-				ProcessorCategory: consts.ProcessorPrint,
-			}
-			execUtils.SendExecMsg(msg, session.WsMsg)
-		*/
 
 		SetVariable(session, entity.ProcessorID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public)
 
 		round := ""
 		for _, child := range processor.Children {
-			if GetForceStopExec(session.ExecUuid) {
+			select {
+			case <-ctx.Done():
 				break
+
+			default:
 			}
 			if child.Disable {
 				continue
@@ -140,13 +139,18 @@ func (entity *ProcessorLoop) runLoopItems(session *ExecSession, processor *Proce
 }
 
 func (entity *ProcessorLoop) runLoopUntil(session *ExecSession, processor *Processor, iterator agentExecDomain.ExecIterator) (err error) {
+	ctx := session.Ctx
+
 	expression := iterator.UntilExpression
 
 	executedProcessorIds := map[uint]bool{}
 	index := 0
 	for {
-		if GetForceStopExec(session.ExecUuid) {
+		select {
+		case <-ctx.Done():
 			break
+
+		default:
 		}
 		if DemoTestSite != "" && index > 2 {
 			break
@@ -167,8 +171,11 @@ func (entity *ProcessorLoop) runLoopUntil(session *ExecSession, processor *Proce
 
 		round := ""
 		for _, child := range processor.Children {
-			if GetForceStopExec(session.ExecUuid) {
+			select {
+			case <-ctx.Done():
 				break
+
+			default:
 			}
 			if child.Disable {
 				continue

@@ -9,7 +9,7 @@ import (
 	"github.com/kataras/iris/v12/websocket"
 )
 
-func RunPlan(req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
+func RunPlan(ctx context.Context, req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websocket.Message) (err error) {
 	execUuid := req.ExecUuid
 
 	planExecObj := GetPlanToExec(req)
@@ -40,7 +40,6 @@ func RunPlan(req *agentExec.PlanExecReq, localVarsCache iris.Map, wsMsg *websock
 		scenarioExecObj.Token = req.Token
 		UpdateLocalValues(&scenarioExecObj.ExecScene, localVarsCache)
 
-		ctx := context.Background()
 		session := agentExec.NewScenarioExecSession(ctx, &scenarioExecObj, req.EnvironmentId, wsMsg)
 		err = ExecScenario(session)
 

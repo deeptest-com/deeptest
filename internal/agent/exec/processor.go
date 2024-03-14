@@ -77,16 +77,15 @@ func (p *Processor) Run(session *ExecSession) (err error) {
 }
 
 func (p *Processor) Error(s *ExecSession, err interface{}) {
+	detail := map[string]interface{}{}
 
-	var detail map[string]interface{}
 	commonUtils.JsonDecode(p.Result.Detail, &detail)
-	if detail == nil {
-		detail = map[string]interface{}{}
-	}
 
 	detail["exception"] = fmt.Sprintf("错误：%v", err)
 	p.Result.Detail = commonUtils.JsonEncode(detail)
-	fmt.Printf("err=%v, stack=%s\n", err, string(debug.Stack()))
+
+	fmt.Printf("err=%v\n stack=%s\n", err, string(debug.Stack()))
+
 	p.AddResultToParent()
 	execUtils.SendExecMsg(p.Result, consts.Processor, s.WsMsg)
 

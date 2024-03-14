@@ -179,6 +179,15 @@ func defineJsFuncs(session *ExecSession) (err error) {
 	return
 }
 
+// we can call go SetValueToGoja as call js _setData
+var (
+	_setValueFunc func(name string, value interface{})
+)
+
+func SetValueToGoja(name string, value interface{}) {
+	_setValueFunc(name, value)
+}
+
 func defineGoFuncs(session *ExecSession) {
 	// set data
 	script := `function _setData(name, val) {

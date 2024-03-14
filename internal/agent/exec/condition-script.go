@@ -84,15 +84,6 @@ func SetRespValueToGoja(resp *domain.DebugResponse) {
 	SetValueToGoja("response", resp)
 }
 
-// call go SetValueToGoja = call js _setData
-var (
-	_setValueFunc func(name string, value interface{})
-)
-
-func SetValueToGoja(name string, value interface{}) {
-	_setValueFunc(name, value)
-}
-
 func jsErrMsg(msg string, category string, success bool) (ret string) {
 	mp := iris.Map{
 		"isCustomObj": true,

@@ -68,7 +68,7 @@ func (s *Remote) GetTenants() (ret []domain.Tenant) {
 		Url:         url,
 		BodyType:    consts.ContentTypeJSON,
 		Headers:     &headers,
-		QueryParams: &[]v1.Param{{Name: "moduleValue", Value: "leyanapi"}, {Name: "page", Value: "1"}, {Name: "pageSize", Value: "9999999999"}},
+		QueryParams: &[]v1.Param{{Name: "page", Value: "1"}, {Name: "pageSize", Value: "9999999999"}},
 	}
 
 	resp, err := httpHelper.Get(httpReq)

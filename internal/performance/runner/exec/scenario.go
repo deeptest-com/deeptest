@@ -13,7 +13,7 @@ import (
 
 func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 	scenario *ptproto.Scenario, weight int32, environmentId int32, execSceneRaw []byte,
-	room, serverAddress string,
+	room, conductorGrpcAddress string,
 	runnerId int32, runnerName string, sender metrics.MessageSender) (result ptproto.PerformanceExecResp) {
 
 	var generater VuGenerator
@@ -25,6 +25,11 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 
 	if scenario.GenerateType == ptconsts.GeneratorConstant.String() {
 		runDur := int(scenario.Duration)
+
+		//loop := 0
+		//if scenario.GenerateType == ptconsts.GeneratorConstant {
+		//	loop = scenario.Loop
+		//}
 
 		data := agentExecDomain.ExecParamsInCtx{
 			Scenario:      scenario,
@@ -41,9 +46,8 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 			Sender: sender,
 
 			Duration: runDur,
-			Loop:     int(scenario.Stages[0].Loop),
 
-			ConductorGrpcAddress: serverAddress,
+			ConductorGrpcAddress: conductorGrpcAddress,
 		}
 
 		valueCtx = performanceUtils.GenExecParamsCtx(&data, execCtx)

@@ -53,7 +53,7 @@ func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerEx
 	AddTestItem(req.Room, ptconsts.Runner, nil, req)
 
 	// gen influxdb sender
-	influxdbSender := metrics.GetInfluxdbSenderInstant(req.Room, req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
+	influxdbSender := metrics.GetInfluxdbSenderInstant(req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)
 	if influxdbSender == nil {
 		ptlog.Logf("stop to run since msgSender return nil")
 		return

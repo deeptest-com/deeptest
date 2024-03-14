@@ -29,7 +29,7 @@ func (s *PerformanceRemoteService) GetPlanToExec(req ptdomain.PerformanceTestReq
 		},
 		QueryParams: &[]domain.Param{
 			{
-				Name:  "PlanId",
+				Name:  "planId",
 				Value: fmt.Sprintf("%d", req.PlanId),
 			},
 			{

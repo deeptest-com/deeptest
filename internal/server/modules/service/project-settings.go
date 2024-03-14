@@ -98,3 +98,25 @@ func (s *ProjectSettingsService) SaveMock(req v1.MockReq) (ret model.ProjectMock
 
 	return
 }
+
+func (s *ProjectSettingsService) GetPerformance(projectId uint) (data model.ProjectPerformanceSetting, err error) {
+	data, err = s.ProjectSettingsRepo.GetPerformance(projectId)
+	return
+}
+func (s *ProjectSettingsService) SavePerformance(req v1.PerformanceReq) (ret model.ProjectPerformanceSetting, err error) {
+	ret = model.ProjectPerformanceSetting{
+		BaseModel: model.BaseModel{ID: req.ID},
+
+		ConductorGrpcAddress: req.ConductorGrpcAddress,
+
+		InfluxdbAddress: req.InfluxdbAddress,
+		InfluxdbOrg:     req.InfluxdbOrg,
+		InfluxdbToken:   req.InfluxdbToken,
+
+		ProjectId: req.ProjectId,
+	}
+
+	err = s.ProjectSettingsRepo.SavePerformance(&ret)
+
+	return
+}

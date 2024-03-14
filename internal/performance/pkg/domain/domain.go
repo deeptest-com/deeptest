@@ -75,10 +75,10 @@ type BaseExecReqOfRunner struct {
 	Mode      ptconsts.ExecMode   `json:"mode"`
 	Scenarios []*ptproto.Scenario `json:"scenarios"`
 
-	ServerAddress   string `json:"serverAddress,omitempty"`
-	InfluxdbAddress string `json:"influxdbAddress,omitempty"`
-	InfluxdbOrg     string `json:"influxdbOrg,omitempty"`
-	InfluxdbToken   string `json:"influxdbToken,omitempty"`
+	ConductorGrpcAddress string `json:"conductorGrpcAddress,omitempty"`
+	InfluxdbAddress      string `json:"influxdbAddress,omitempty"`
+	InfluxdbOrg          string `json:"influxdbOrg,omitempty"`
+	InfluxdbToken        string `json:"influxdbToken,omitempty"`
 }
 
 type Scenario struct {

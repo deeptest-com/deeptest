@@ -114,6 +114,41 @@ func (c *ProjectSettingsCtrl) SaveMock(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
 
+// GetPerformance - Get Project Performance Settings
+func (c *ProjectSettingsCtrl) GetPerformance(ctx iris.Context) {
+	projectId := ctx.URLParamUint64("currProjectId")
+
+	res, err := c.ProjectSettingsService.GetPerformance(uint(projectId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
+// SavePerformance - Save Project Performance Settings
+func (c *ProjectSettingsCtrl) SavePerformance(ctx iris.Context) {
+	var req serverDomain.PerformanceReq
+	if err := ctx.ReadJSON(&req); err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	projectId, _ := ctx.URLParamInt("currProjectId")
+	if req.ProjectId == 0 {
+		req.ProjectId = uint(projectId)
+	}
+
+	res, err := c.ProjectSettingsService.SavePerformance(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
 func (c *ProjectSettingsCtrl) InitThirdPartySyncCron() {
 	c.ThirdPartySyncService.AddThirdPartySyncCron()
 }

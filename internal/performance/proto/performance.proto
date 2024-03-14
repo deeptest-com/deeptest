@@ -53,7 +53,7 @@ message PerformanceExecStartReq {
   bytes localVarsCacheRaw = 10;
   bytes execSceneRaw = 11;
 
-  string serverAddress = 12;
+  string conductorGrpcAddress = 12;
   string influxdbAddress = 13;
   string influxdbOrg = 14;
   string influxdbToken = 15;

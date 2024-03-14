@@ -213,10 +213,10 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 		LocalVarsCacheRaw: localVarsCacheRaw,
 		ExecSceneRaw:      execSceneRaw,
 
-		ServerAddress:   req.ServerAddress,
-		InfluxdbAddress: req.InfluxdbAddress,
-		InfluxdbOrg:     req.InfluxdbOrg,
-		InfluxdbToken:   req.InfluxdbToken,
+		ConductorGrpcAddress: req.ConductorGrpcAddress,
+		InfluxdbAddress:      req.InfluxdbAddress,
+		InfluxdbOrg:          req.InfluxdbOrg,
+		InfluxdbToken:        req.InfluxdbToken,
 	})
 
 	if err != nil {

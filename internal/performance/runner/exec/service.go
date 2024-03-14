@@ -21,7 +21,7 @@ func ExecProgram(execCtx context.Context, execCancel context.CancelFunc, req *pt
 
 				ExecScenario(execCtx, ptconsts.ExecMode(req.Mode), scenario,
 					req.Weight, req.EnvironmentId, req.ExecSceneRaw,
-					req.Room, req.ServerAddress, req.RunnerId, req.RunnerName, sender)
+					req.Room, req.ConductorGrpcAddress, req.RunnerId, req.RunnerName, sender)
 
 				ptlog.Logf("scenario %s exec completed", scenario.Name)
 			}()
@@ -36,7 +36,7 @@ func ExecProgram(execCtx context.Context, execCancel context.CancelFunc, req *pt
 		for _, scenario := range req.Scenarios {
 			ExecScenario(execCtx, ptconsts.ExecMode(req.Mode), scenario,
 				req.Weight, req.EnvironmentId, req.ExecSceneRaw,
-				req.Room, req.ServerAddress, req.RunnerId, req.RunnerName, sender)
+				req.Room, req.ConductorGrpcAddress, req.RunnerId, req.RunnerName, sender)
 		}
 
 		// sequential exec completed

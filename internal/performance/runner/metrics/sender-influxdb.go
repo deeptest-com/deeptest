@@ -33,7 +33,7 @@ type InfluxdbSender struct {
 	DbAddress string
 }
 
-func GetInfluxdbSenderInstant(room, dbAddress, orgName, token string) MessageSender {
+func GetInfluxdbSenderInstant(dbAddress, orgName, token string) MessageSender {
 	if InfluxdbInstant != nil {
 		return InfluxdbInstant
 	}

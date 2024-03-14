@@ -168,6 +168,18 @@ type MockReq struct {
 	ProjectId uint                `json:"projectId"`
 }
 
+type PerformanceReq struct {
+	ID uint `json:"id"`
+
+	ConductorGrpcAddress string `json:"conductorGrpcAddress"`
+
+	InfluxdbAddress string `json:"influxdbAddress"`
+	InfluxdbOrg     string `json:"influxdbOrg"`
+	InfluxdbToken   string `json:"influxdbToken"`
+
+	ProjectId uint `json:"projectId"`
+}
+
 type HistoryServeAddServesReq struct {
 	ServerName string `json:"serverName"`
 	Url        string `json:"url"`

@@ -14,6 +14,7 @@ type PerformanceExecService struct {
 	EnvironmentRepo         *repo.EnvironmentRepo         `inject:""`
 	PerformanceTestPlanRepo *repo.PerformanceTestPlanRepo `inject:""`
 	ScenarioRepo            *repo.ScenarioRepo            `inject:""`
+	ProjectSettingsRepo     *repo.ProjectSettingsRepo     `inject:""`
 
 	ScenarioExecService *ScenarioExecService `inject:""`
 	EnvironmentService  *EnvironmentService  `inject:""`
@@ -32,6 +33,8 @@ func (s *PerformanceExecService) LoadExecData(planId, environmentId uint) (
 	if err != nil {
 		return
 	}
+
+	s.UpdateServerInfo(plan.ProjectId, &ret)
 
 	ret.Goal = s.getGoalFromScenarioExecObj(scenarioExecObj)
 	ret.Runners = s.getRunnersFromScenarioExecObj(scenarioExecObj)
@@ -149,4 +152,14 @@ func (s *PerformanceExecService) getScenariosFromScenarioExecObj(execObj agentEx
 	}
 
 	return
+}
+
+func (s *PerformanceExecService) UpdateServerInfo(projectId uint, data *ptdomain.PerformanceTestData) {
+	po, _ := s.ProjectSettingsRepo.GetPerformance(projectId)
+
+	data.ConductorGrpcAddress = po.ConductorGrpcAddress
+
+	data.InfluxdbAddress = po.InfluxdbAddress
+	data.InfluxdbOrg = po.InfluxdbOrg
+	data.InfluxdbToken = po.InfluxdbToken
 }

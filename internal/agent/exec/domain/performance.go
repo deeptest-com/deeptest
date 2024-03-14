@@ -30,7 +30,7 @@ type ExecParamsInCtx struct {
 	Scenario            *ptproto.Scenario
 	RunnerExecScenarios map[uint]map[uint]bool
 
-	Loop int
+	Loop int // used in stage
 
 	Mode           ptconsts.ExecMode
 	LocalVarsCache iris.Map

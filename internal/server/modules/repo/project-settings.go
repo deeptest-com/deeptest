@@ -58,3 +58,13 @@ func (r *ProjectSettingsRepo) SaveMock(po *model.ProjectMockSetting) (err error)
 	err = r.Save(po.ID, po)
 	return
 }
+
+func (r *ProjectSettingsRepo) GetPerformance(projectId uint) (po model.ProjectPerformanceSetting, err error) {
+	r.DB.First(&po, "project_id=?", projectId)
+
+	return
+}
+func (r *ProjectSettingsRepo) SavePerformance(po *model.ProjectPerformanceSetting) (err error) {
+	err = r.Save(po.ID, po)
+	return
+}

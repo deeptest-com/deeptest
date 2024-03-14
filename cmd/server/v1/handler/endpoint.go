@@ -271,7 +271,7 @@ func (c *EndpointCtrl) Copy(ctx iris.Context) {
 
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
-	res, err := c.EndpointService.Copy(tenantId, uint(id), 0, userId, userName, version)
+	res, err := c.EndpointService.Copy(tenantId, 0, uint(id), 0, userId, userName, version)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 	} else {

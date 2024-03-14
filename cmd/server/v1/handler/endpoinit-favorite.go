@@ -32,3 +32,7 @@ func (c *EndpointFavoriteCtrl) Favorite(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }
+
+func (c *EndpointFavoriteCtrl) Index(ctx iris.Context) {
+
+}

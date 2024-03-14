@@ -141,9 +141,16 @@ func (s *CategoryService) deleteNodeAndChildren(tenantId consts.TenantId, typ se
 		return
 	}
 
+	entityIds, err := s.CategoryRepo.GetEntityIdsByIds(tenantId, categoryIds)
+	if err != nil {
+		return err
+	}
+
 	switch typ {
 	case serverConsts.EndpointCategory:
-		err = s.EndpointService.DeleteByCategories(tenantId, categoryIds)
+		//err = s.EndpointService.DeleteByCategories(tenantId, categoryIds) //留着可能有用
+		s.EndpointService.DeleteByEndpointIds(tenantId, categoryIds)
+
 	case serverConsts.ScenarioCategory:
 		err = s.ScenarioRepo.DeleteByCategoryIds(tenantId, categoryIds)
 	case serverConsts.PlanCategory:
@@ -151,11 +158,6 @@ func (s *CategoryService) deleteNodeAndChildren(tenantId consts.TenantId, typ se
 		err = s.PlanRepo.DeleteByCategoryIds(tenantId, categoryIds)
 
 	case serverConsts.SchemaCategory:
-		entityIds, err := s.CategoryRepo.GetEntityIdsByIds(tenantId, categoryIds)
-		if err != nil {
-			return err
-		}
-
 		err = s.ComponentSchemaRepo.DeleteByIds(tenantId, entityIds)
 
 	}
@@ -447,7 +449,7 @@ func (s *CategoryService) copyDataByCategoryId(tenantId consts.TenantId, typ ser
 
 	switch typ {
 	case serverConsts.EndpointCategory:
-		entityId, err = s.EndpointService.Copy(tenantId, category.EntityId, uint(category.ParentId), userId, username, "v0.1.0")
+		entityId, err = s.EndpointService.Copy(tenantId, category.ID, category.EntityId, uint(category.ParentId), userId, username, "v0.1.0")
 	case serverConsts.SchemaCategory:
 		entityId, err = s.ServeService.CopySchemaOther(tenantId, category.EntityId)
 	}

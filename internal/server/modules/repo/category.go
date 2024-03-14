@@ -462,11 +462,17 @@ func (r *CategoryRepo) GetEntityCountByCategoryId(tenantId consts.TenantId, cate
 	return 0
 }
 
-func (r *CategoryRepo) SaveEntityNode(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId, categoryId, entityId uint, name string) (nodeId uint, err error) {
+func (r *CategoryRepo) SaveEntityNode(tenantId consts.TenantId, nodeId uint, typ serverConsts.CategoryDiscriminator, projectId, categoryId, entityId uint, name string) (id uint, err error) {
+	var entity model.Category
+	if nodeId == 0 {
+		entity, _ = r.GetByEntityId(tenantId, entityId, typ)
+	} else {
+		entity, _ = r.Get(tenantId, int(nodeId))
+	}
 
-	entity, _ := r.GetByEntityId(tenantId, entityId, typ)
-	entity.ProjectId, entity.Name, entity.ParentId, entity.Type = projectId, name, int(categoryId), typ
+	entity.ProjectId, entity.Name, entity.ParentId, entity.Type, entity.EntityId = projectId, name, int(categoryId), typ, entityId
 	entity.Ordr = r.GetMaxOrder(tenantId, categoryId, typ, projectId)
+	entity.IsDir = false
 
 	err = r.GetDB(tenantId).Save(&entity).Error
 	return entity.ID, err

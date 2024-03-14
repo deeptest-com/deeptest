@@ -85,7 +85,7 @@ func (s *EndpointService) Save(tenantId consts.TenantId, endpoint model.Endpoint
 
 	s.DebugInterfaceRepo.SyncPath(tenantId, ret.ID, endpoint.ServeId, endpoint.Path, ret.Path)
 
-	nodeId, err := s.CategoryRepo.SaveEntityNode(tenantId, serverConsts.EndpointCategory, endpoint.ProjectId, uint(endpoint.CategoryId), endpoint.ID, endpoint.Title)
+	nodeId, err := s.CategoryRepo.SaveEntityNode(tenantId, 0, serverConsts.EndpointCategory, endpoint.ProjectId, uint(endpoint.CategoryId), endpoint.ID, endpoint.Title)
 	if err != nil {
 		logUtils.Errorf(err.Error())
 	}
@@ -173,13 +173,15 @@ func (s *EndpointService) Develop(tenantId consts.TenantId, id uint) (err error)
 	return
 }
 
-func (s *EndpointService) Copy(tenantId consts.TenantId, id, categoryId, userId uint, username string, version string) (res uint, err error) {
+func (s *EndpointService) Copy(tenantId consts.TenantId, nodeId, id, categoryId, userId uint, username string, version string) (res uint, err error) {
 
 	endpoint, _ := s.EndpointRepo.GetAll(tenantId, id, version)
 	s.removeIds(&endpoint)
 
 	if categoryId != 0 {
 		endpoint.CategoryId = int64(categoryId)
+	} else if nodeId == 0 {
+		endpoint.Title += "_copy"
 	} else { //复制目录而复制的接口不重命名
 		endpoint.Title += "_copy"
 	}
@@ -198,6 +200,12 @@ func (s *EndpointService) Copy(tenantId consts.TenantId, id, categoryId, userId 
 	err = s.copyMockExpect(tenantId, id, endpoint.ID, username)
 	if err != nil {
 		return
+	}
+
+	_, err = s.CategoryRepo.SaveEntityNode(tenantId, nodeId, serverConsts.EndpointCategory, endpoint.ProjectId, uint(endpoint.CategoryId), endpoint.ID, endpoint.Title)
+	if err != nil {
+		logUtils.Errorf(err.Error())
+
 	}
 
 	return endpoint.ID, err
@@ -847,7 +855,7 @@ func (s *EndpointService) CopyDataByCategoryId(tenantId consts.TenantId, targetI
 	}
 
 	for _, endpoint := range endpoints {
-		_, err = s.Copy(tenantId, endpoint.ID, categoryId, userId, username, "v0.1.0")
+		_, err = s.Copy(tenantId, 0, endpoint.ID, categoryId, userId, username, "v0.1.0")
 		if err != nil {
 			return
 		}
@@ -942,4 +950,27 @@ func (s *EndpointService) IsFavorite(tenantId consts.TenantId, endpointId, userI
 		return true
 	}
 	return false
+}
+
+func (s *EndpointService) FavoriteList(tenantId consts.TenantId, projectId, userId uint) (ret []v1.Category, err error) {
+	endpoints, err := s.EndpointRepo.FavoriteList(tenantId, projectId, userId)
+	if err != nil {
+		return
+	}
+	for _, item := range endpoints {
+		category := new(v1.Category)
+		category.EntityId = item.ID
+		category.Name = item.Title
+		
+	}
+	return
+
+}
+
+func (s *EndpointService) DeleteByEndpointIds(tenantId consts.TenantId, endpointIds []uint) (err error) {
+	if len(endpointIds) > 0 {
+		err = s.EndpointRepo.DeleteByIds(tenantId, endpointIds)
+		err = s.EndpointInterfaceRepo.DeleteByEndpoints(tenantId, endpointIds)
+	}
+	return
 }

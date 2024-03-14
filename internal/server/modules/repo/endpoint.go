@@ -563,8 +563,8 @@ func (r *EndpointRepo) GetByCategoryId(tenantId consts.TenantId, categoryId uint
 	return endpoints, err
 }
 
-func (r *EndpointRepo) FavoriteList(tenantId consts.TenantId, userId uint) (endpoints []model.Endpoint, err error) {
-	endpointIds, err := r.EndpointFavoriteRepo.GetEndpointIds(tenantId, userId)
+func (r *EndpointRepo) FavoriteList(tenantId consts.TenantId, projectId, userId uint) (endpoints []model.Endpoint, err error) {
+	endpointIds, err := r.EndpointFavoriteRepo.GetEndpointIds(tenantId, projectId, userId)
 	if err != nil {
 		return
 	}

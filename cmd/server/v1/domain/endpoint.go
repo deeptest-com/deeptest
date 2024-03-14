@@ -142,5 +142,6 @@ type UpdateNameReq struct {
 }
 
 type FavoriteReq struct {
-	Id uint `json:"id"`
+	Id        uint `json:"id"`
+	ProjectId uint
 }

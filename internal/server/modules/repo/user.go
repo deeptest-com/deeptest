@@ -664,8 +664,12 @@ func (r *UserRepo) GetUsersNotExistedInProject(tenantId consts.TenantId, project
 		userIdsExisted = append(userIdsExisted, v.UserId)
 	}
 
-	db := r.GetDB(tenantId).Model(&model.SysUser{}).
-		Where("id NOT IN (?)", userIdsExisted)
+	db := r.GetDB(tenantId).Model(&model.SysUser{})
+
+	if len(userIdsExisted) > 0 {
+		db = db.Where("id NOT IN (?)", userIdsExisted)
+	}
+
 	if config.CONFIG.System.SysEnv == "ly" {
 		db = db.Where("username != ?", serverConsts.AdminUserName)
 	}

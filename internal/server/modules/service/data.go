@@ -36,6 +36,7 @@ type DataService struct {
 	ProjectMenuSource      *source.ProjectMenuSource      `inject:""`
 	ProjectRoleMenuSource  *source.ProjectRoleMenuSource  `inject:""`
 	MockJsExpressionSource *source.MockJsExpressionSource `inject:""`
+	ProjectRolePermService *ProjectRolePermService        `inject:""`
 }
 
 // writeConfig 写入配置文件
@@ -89,7 +90,7 @@ func (s *DataService) InitDB(tenantId consts.TenantId, req v1.DataReq) error {
 			logUtils.Errorf("更新配置文件错误", zap.String("writeConfig(consts.VIPER)", err.Error()))
 		}
 	}
-	
+
 	if s.DataRepo.GetDB(tenantId) == nil {
 		logUtils.Error("数据库初始化错误")
 		s.refreshConfig(config.VIPER, defaultConfig)
@@ -123,6 +124,15 @@ func (s *DataService) InitDB(tenantId consts.TenantId, req v1.DataReq) error {
 			return err
 		}
 	}
+
+	if config.CONFIG.System.SysEnv == "ly" {
+		_, err = s.ProjectRolePermService.GetRoleFromOther(tenantId)
+		if err != nil { // 遇到错误时回滚事务
+			logUtils.Errorf("[Mysql] --> %s 表初始数据失败!,err:%s", model.ProjectRole{}.TableName(), err.Error())
+			return nil
+		}
+	}
+
 	if req.Sys.AdminPassword != "" {
 		hash, err := bcrypt.GenerateFromPassword([]byte(req.Sys.AdminPassword), bcrypt.DefaultCost)
 		if err != nil {

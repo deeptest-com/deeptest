@@ -16,8 +16,8 @@ type CategoryRepo struct {
 	ProjectRepo *ProjectRepo `inject:""`
 }
 
-func (r *CategoryRepo) GetTree(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint) (root *v1.Category, err error) {
-	pos, err := r.ListByProject(tenantId, typ, projectId)
+func (r *CategoryRepo) GetTree(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint, nodeType serverConsts.NodeCreateType) (root *v1.Category, err error) {
+	pos, err := r.ListByProject(tenantId, typ, projectId, nodeType)
 	if err != nil {
 		return
 	}
@@ -35,11 +35,19 @@ func (r *CategoryRepo) GetTree(tenantId consts.TenantId, typ serverConsts.Catego
 	return
 }
 
-func (r *CategoryRepo) ListByProject(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint) (pos []*model.Category, err error) {
+func (r *CategoryRepo) ListByProject(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint, nodeType serverConsts.NodeCreateType) (pos []*model.Category, err error) {
 	db := r.GetDB(tenantId).
 		Where("project_id=?", projectId).
 		Where("type=?", typ).
 		Where("NOT deleted")
+
+	if nodeType != "" {
+		if nodeType == serverConsts.Dir {
+			db = db.Where("entity_id = 0 or entity_id IS NULL")
+		} else {
+			db = db.Where("entity_id != 0")
+		}
+	}
 
 	err = db.
 		Order("parent_id ASC, ordr ASC").
@@ -194,8 +202,17 @@ func (r *CategoryRepo) BatchDelete(tenantId consts.TenantId, ids []uint) (err er
 
 	return
 }
-func (r *CategoryRepo) GetChildren(tenantId consts.TenantId, nodeId uint) (children []*model.Category, err error) {
-	err = r.GetDB(tenantId).Where("parent_id=? and not deleted", nodeId).Find(&children).Error
+func (r *CategoryRepo) GetChildren(tenantId consts.TenantId, nodeId uint, nodeType serverConsts.NodeCreateType) (children []*model.Category, err error) {
+	db := r.GetDB(tenantId).Where("parent_id=? and not deleted", nodeId)
+	if nodeType != "" {
+		if nodeType == serverConsts.Dir {
+			db = db.Where("entity_id = 0 or entity_id IS NULL")
+		} else {
+			db = db.Where("entity_id != 0")
+		}
+	}
+
+	err = db.Find(&children).Error
 	return
 }
 
@@ -276,8 +293,8 @@ func (r *CategoryRepo) GetChild(tenantId consts.TenantId, categories, result []*
 	return result
 }
 
-func (r *CategoryRepo) GetAllChild(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint, parentId int) (child []*model.Category, err error) {
-	pos, err := r.ListByProject(tenantId, typ, projectId)
+func (r *CategoryRepo) GetAllChild(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint, parentId int, nodeType serverConsts.NodeCreateType) (child []*model.Category, err error) {
+	pos, err := r.ListByProject(tenantId, typ, projectId, nodeType)
 	if err != nil || len(pos) == 0 {
 		return
 	}
@@ -420,8 +437,8 @@ func (r *CategoryRepo) GetRoot(tenantId consts.TenantId, typ serverConsts.Catego
 
 }
 
-func (r *CategoryRepo) GetChildrenNodes(tenantId consts.TenantId, categoryId uint) (ret []*model.Category, err error) {
-	ret, err = r.GetChildren(tenantId, categoryId)
+func (r *CategoryRepo) GetChildrenNodes(tenantId consts.TenantId, categoryId uint, nodeType serverConsts.NodeCreateType) (ret []*model.Category, err error) {
+	ret, err = r.GetChildren(tenantId, categoryId, nodeType)
 	return
 }
 
@@ -445,12 +462,13 @@ func (r *CategoryRepo) GetEntityCountByCategoryId(tenantId consts.TenantId, cate
 	return 0
 }
 
-func (r *CategoryRepo) SaveEntityNode(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId, categoryId, entityId uint, name string) (err error) {
+func (r *CategoryRepo) SaveEntityNode(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId, categoryId, entityId uint, name string) (nodeId uint, err error) {
 
 	entity, _ := r.GetByEntityId(tenantId, entityId, typ)
 	entity.ProjectId, entity.Name, entity.ParentId, entity.Type = projectId, name, int(categoryId), typ
 	entity.Ordr = r.GetMaxOrder(tenantId, categoryId, typ, projectId)
 
-	return r.GetDB(tenantId).Save(&entity).Error
+	err = r.GetDB(tenantId).Save(&entity).Error
+	return entity.ID, err
 
 }

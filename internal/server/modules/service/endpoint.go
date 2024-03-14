@@ -54,7 +54,7 @@ func (s *EndpointService) Paginate(tenantId consts.TenantId, req v1.EndpointReqP
 	return
 }
 
-func (s *EndpointService) Save(tenantId consts.TenantId, endpoint model.Endpoint) (res uint, err error) {
+func (s *EndpointService) Save(tenantId consts.TenantId, endpoint model.Endpoint) (res map[string]uint, err error) {
 
 	if endpoint.ServerId == 0 {
 		server, _ := s.ServeServerRepo.GetDefaultByServe(tenantId, endpoint.ServeId)
@@ -68,9 +68,16 @@ func (s *EndpointService) Save(tenantId consts.TenantId, endpoint model.Endpoint
 		}
 	}
 
-	ret, _ := s.EndpointRepo.Get(tenantId, endpoint.ID)
+	ret, err := s.EndpointRepo.Get(tenantId, endpoint.ID)
+
+	if err != nil {
+		logUtils.Errorf(err.Error())
+	}
 
 	err = s.EndpointRepo.SaveAll(tenantId, &endpoint)
+	if err != nil {
+		logUtils.Errorf(err.Error())
+	}
 
 	//go func() {
 	//	_ = s.SendEndpointMessage(endpoint.ProjectId, endpoint.ID, userId)
@@ -78,9 +85,17 @@ func (s *EndpointService) Save(tenantId consts.TenantId, endpoint model.Endpoint
 
 	s.DebugInterfaceRepo.SyncPath(tenantId, ret.ID, endpoint.ServeId, endpoint.Path, ret.Path)
 
-	s.CategoryRepo.SaveEntityNode(tenantId, serverConsts.EndpointCategory, endpoint.ProjectId, uint(endpoint.CategoryId), endpoint.ID, endpoint.Title)
+	nodeId, err := s.CategoryRepo.SaveEntityNode(tenantId, serverConsts.EndpointCategory, endpoint.ProjectId, uint(endpoint.CategoryId), endpoint.ID, endpoint.Title)
+	if err != nil {
+		logUtils.Errorf(err.Error())
+	}
 
-	return endpoint.ID, err
+	res = map[string]uint{
+		"endpointId": endpoint.ID,
+		"nodeId":     nodeId,
+	}
+
+	return res, err
 }
 
 func (s *EndpointService) SendEndpointMessage(tenantId consts.TenantId, projectId, endpointId, userId uint) (err error) {
@@ -295,7 +310,7 @@ func (s *EndpointService) AddVersion(tenantId consts.TenantId, version *model.En
 func (s *EndpointService) SaveEndpoints(tenantId consts.TenantId, endpoints []*model.Endpoint, dirs *openapi.Dirs, components map[string]*model.ComponentSchema, req v1.ImportEndpointDataReq) (err error) {
 
 	if dirs.Id == 0 || dirs.Id == -1 {
-		root, _ := s.CategoryRepo.ListByProject(tenantId, serverConsts.EndpointCategory, req.ProjectId)
+		root, _ := s.CategoryRepo.ListByProject(tenantId, serverConsts.EndpointCategory, req.ProjectId, "")
 		dirs.Id = int64(root[0].ID)
 	}
 	s.createDirs(tenantId, dirs, req)

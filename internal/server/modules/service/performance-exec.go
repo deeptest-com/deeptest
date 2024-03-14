@@ -138,10 +138,13 @@ func (s *PerformanceExecService) getScenariosFromScenarioExecObj(execObj agentEx
 
 				rootProcessor := agentExec.Processor{
 					ProcessorBase: agentExec.ProcessorBase{
+						ID:             scenarioProcessor.ID,
 						Name:           "root",
 						EntityCategory: consts.ProcessorRoot,
 						EntityType:     consts.ProcessorRootDefault,
 						Children:       scenarioProcessor.Children,
+
+						ParentId: 0,
 					},
 				}
 				scenario.ProcessorRaw, _ = json.Marshal(rootProcessor)

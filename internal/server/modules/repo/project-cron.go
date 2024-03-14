@@ -22,17 +22,16 @@ type ProjectCronRepo struct {
 }
 
 func (r *ProjectCronRepo) Paginate(tenantId consts.TenantId, req v1.ProjectCronReqPaginate) (data _domain.PageData, err error) {
-	baseSql := " FROM biz_project_cron t1 LEFT JOIN biz_project_cron_config_lecang t2 ON t1.config_id = t2.id LEFT JOIN biz_project_serve_swagger_sync t3 ON t1.config_id = t3.id WHERE NOT t1.deleted"
-
+	baseSql := fmt.Sprintf(" FROM biz_project_cron t1 LEFT JOIN biz_project_cron_config_lecang t2 ON t1.config_id = t2.id LEFT JOIN biz_project_serve_swagger_sync t3 ON t1.config_id = t3.id WHERE NOT t1.deleted AND t1.project_id = %d", req.ProjectId)
 	if req.Name != "" {
-		baseSql = baseSql + fmt.Sprintf("where t1.name LIKE %s", fmt.Sprintf("%%%s%%", req.Name))
+		baseSql = baseSql + fmt.Sprintf("AND t1.name LIKE %s", fmt.Sprintf("%%%s%%", req.Name))
 	}
 	if req.Source != "" {
-		baseSql = baseSql + fmt.Sprintf("where t1.source = %s", req.Source)
+		baseSql = baseSql + fmt.Sprintf("AND t1.source = %s", req.Source)
 	}
 
 	if req.Switch != 0 {
-		baseSql = baseSql + fmt.Sprintf("where t1.switch = %d", req.Switch)
+		baseSql = baseSql + fmt.Sprintf("AND t1.switch = %d", req.Switch)
 	}
 
 	selectSql := "SELECT t1.*,CASE WHEN t1.source = 'lecang' THEN t2.category_id WHEN t1.source = 'swagger' THEN t3.category_id ELSE 0 END AS category_id" + baseSql

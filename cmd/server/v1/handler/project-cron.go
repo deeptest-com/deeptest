@@ -57,7 +57,6 @@ func (c *ProjectCronCtrl) List(ctx iris.Context) {
 			return
 		}
 	}
-	req.ConvertParams()
 	req.ProjectId = uint(projectId)
 
 	data, err := c.ProjectCronService.Paginate(tenantId, req)

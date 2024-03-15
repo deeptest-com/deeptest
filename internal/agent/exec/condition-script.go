@@ -64,10 +64,10 @@ func GetRespValueFromGoja(session *ExecSession) (err error) {
 	return
 }
 
-func SetReqValueToGoja(req *domain.BaseRequest) {
-	SetValueToGoja("request", req)
+func SetReqValueToGoja(session *ExecSession, req *domain.BaseRequest) {
+	session.GojaSetValueFunc("request", req)
 }
-func SetRespValueToGoja(resp *domain.DebugResponse) {
+func SetRespValueToGoja(session *ExecSession, resp *domain.DebugResponse) {
 	// set resp.Data to json object for goja edit
 	if httpHelper.IsJsonResp(*resp) {
 		var data interface{}
@@ -81,7 +81,7 @@ func SetRespValueToGoja(resp *domain.DebugResponse) {
 		resp.Data = resp.Content
 	}
 
-	SetValueToGoja("response", resp)
+	session.GojaSetValueFunc("response", resp)
 }
 
 func jsErrMsg(msg string, category string, success bool) (ret string) {

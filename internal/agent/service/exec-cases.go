@@ -78,7 +78,7 @@ func doExecCase(ctx context.Context, cs *agentExec.CaseExecProcessor, localVarsC
 	agentExec.ExecPreConditions(session, cs.Data) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(session, &cs.Data.DebugData)
 
-	agentExec.SetReqValueToGoja(&cs.Data.DebugData.BaseRequest)
+	agentExec.SetReqValueToGoja(session, &cs.Data.DebugData.BaseRequest)
 	agentExec.GetReqValueFromGoja(session)
 
 	// a new interface may not has a pre-script, which will not update agentExec.CurrRequest, need to skip
@@ -92,7 +92,7 @@ func doExecCase(ctx context.Context, cs *agentExec.CaseExecProcessor, localVarsC
 		return err1
 	}
 
-	agentExec.SetRespValueToGoja(&resultResp)
+	agentExec.SetRespValueToGoja(session, &resultResp)
 	assertResultStatus, _ := agentExec.ExecPostConditions(session, cs.Data, resultResp)
 	agentExec.GetRespValueFromGoja(session)
 	PostRequest(originalReqUri, &cs.Data.DebugData)

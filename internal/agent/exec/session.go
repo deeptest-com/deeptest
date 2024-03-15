@@ -16,7 +16,9 @@ import (
 
 type ExecSession struct {
 	/** quick info */
-	ExecUuid string // PerformanceRoom_RunnerId_VuId
+	ExecUuid string
+	RunnerId uint
+	VuNo     int
 
 	/** exec status */
 	IsRunning bool
@@ -39,6 +41,8 @@ type ExecSession struct {
 	GojaRequire   *require.RequireModule
 	GojaVariables *[]domain.ExecVariable
 	GojaLogs      *[]string
+	// we can call GojaSetValueFunc as call js _setData
+	GojaSetValueFunc func(name string, value interface{})
 
 	/** below for scenario */
 	/** quick info */
@@ -89,18 +93,21 @@ func NewInterfaceExecSession(call domain.InterfaceCall) (ret *ExecSession) {
 		CurrResponse:         domain.DebugResponse{},
 	}
 
-	InitGojaRuntime(&session)
+	InitGojaRuntime(&session, 0)
 
 	ret = &session
 
 	return
 }
 
-func NewScenarioExecSession(ctx context.Context, req *ScenarioExecObj, environmentId int, wsMsg *websocket.Message) (
+func NewScenarioExecSession(ctx context.Context, runnerId int32, vuNo int, req *ScenarioExecObj, environmentId int, wsMsg *websocket.Message) (
 	ret *ExecSession) {
 
 	session := ExecSession{
-		ExecUuid:   req.ExecUuid,
+		ExecUuid: req.ExecUuid,
+		RunnerId: uint(runnerId),
+		VuNo:     vuNo,
+
 		ScenarioId: req.ScenarioId,
 		ProjectId:  req.RootProcessor.ProjectId,
 
@@ -124,7 +131,7 @@ func NewScenarioExecSession(ctx context.Context, req *ScenarioExecObj, environme
 	}
 
 	ComputerScopeHierarchy(req.RootProcessor, &session.ScopeHierarchy)
-	InitGojaRuntime(&session)
+	InitGojaRuntime(&session, vuNo)
 
 	jar, _ := cookiejar.New(nil)
 	session.HttpClient = &http.Client{

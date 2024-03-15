@@ -14,7 +14,7 @@ import (
 
 func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 	scenario *ptproto.Scenario, weight int32, environmentId int32, execSceneRaw []byte,
-	room, conductorGrpcAddress string,
+	room, webServerUrl, webServerToken, conductorGrpcAddress string,
 	runnerId int32, runnerName string, sender metrics.MessageSender) (result ptproto.PerformanceExecResp) {
 
 	var generater VuGenerator
@@ -48,6 +48,8 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 
 			Duration: runDur,
 
+			WebServerUrl:         webServerUrl,
+			WebServerToken:       webServerToken,
 			ConductorGrpcAddress: conductorGrpcAddress,
 		}
 
@@ -69,6 +71,9 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 			ExecScene:  execScene,
 
 			Sender: sender,
+
+			WebServerUrl:         webServerUrl,
+			ConductorGrpcAddress: conductorGrpcAddress,
 
 			// computer Duration and Loop in each stage
 		}

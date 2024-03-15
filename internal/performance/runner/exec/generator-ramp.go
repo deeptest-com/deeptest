@@ -59,8 +59,8 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 			go func() {
 				defer wgVus.Done()
 
-				execParams.VuNo = index
-				ExecScenarioWithVu(childCtx)
+				//execParams.VuNo = index
+				ExecScenarioWithVu(childCtx, index)
 			}()
 
 			vuNo++

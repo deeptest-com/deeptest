@@ -8,7 +8,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
 )
 
-func ExecProcessors(timeoutCtx context.Context) (err error) {
+func ExecProcessors(timeoutCtx context.Context, vuNo int) (err error) {
 	execParams := performanceUtils.GetExecParamsInCtx(timeoutCtx)
 
 	rootProcessor := agentExec.Processor{}
@@ -21,12 +21,15 @@ func ExecProcessors(timeoutCtx context.Context) (err error) {
 
 			ExecScene: execParams.ExecScene,
 			ExecUuid:  execParams.Room,
+
+			ServerUrl: execParams.WebServerUrl,
+			Token:     execParams.WebServerToken,
 		},
 		RootProcessor: &rootProcessor,
 	}
 	service.UpdateLocalValues(&scenarioExecObj.ExecScene, execParams.LocalVarsCache)
 
-	session := agentExec.NewScenarioExecSession(timeoutCtx, scenarioExecObj, execParams.EnvironmentId, nil)
+	session := agentExec.NewScenarioExecSession(timeoutCtx, execParams.RunnerId, vuNo, scenarioExecObj, execParams.EnvironmentId, nil)
 	err = service.ExecScenario(session)
 
 	//	for index, processor := range rootProcessor.Children {

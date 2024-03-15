@@ -213,6 +213,9 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 		LocalVarsCacheRaw: localVarsCacheRaw,
 		ExecSceneRaw:      execSceneRaw,
 
+		WebServerUrl:   req.ServerUrl,
+		WebServerToken: req.Token,
+
 		ConductorGrpcAddress: req.ConductorGrpcAddress,
 		InfluxdbAddress:      req.InfluxdbAddress,
 		InfluxdbOrg:          req.InfluxdbOrg,

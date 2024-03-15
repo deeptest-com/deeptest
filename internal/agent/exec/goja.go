@@ -2,6 +2,7 @@ package agentExec
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	gojaUtils "github.com/aaronchen2k/deeptest/internal/pkg/goja"
@@ -16,17 +17,18 @@ import (
 	"reflect"
 )
 
-func InitGojaRuntime(session *ExecSession) {
+func InitGojaRuntime(session *ExecSession, vuNo int) {
 	session.GojaRuntime, session.GojaRequire = gojaUtils.InitGojaRuntime()
 
 	jslibHelper.LoadChaiJslibs(session.GojaRuntime)
 
 	defineJsFuncs(session)
-	defineGoFuncs(session)
 
 	// load global script
-	pth := filepath.Join(consts.TmpDir, "deeptest.js")
-	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
+	script := scriptHelper.GetScript(scriptHelper.ScriptDeepTest)
+	pth := filepath.Join(consts.TmpDir, fmt.Sprintf("deeptest-%d.js", vuNo))
+	fileUtils.RmDir(pth)
+	fileUtils.WriteFile(pth, script)
 	dt, err := session.GojaRequire.Require(pth)
 	if err != nil {
 		logUtils.Info(err.Error())
@@ -34,9 +36,11 @@ func InitGojaRuntime(session *ExecSession) {
 	}
 
 	session.GojaRuntime.Set("dt", dt)
+	defineGoFuncs(session)
 
 	// import other custom libs
-	jslibHelper.RefreshRemoteAgentJslibs(session.GojaRuntime, session.GojaRequire, session.ProjectId, session.ServerUrl, session.ServerToken)
+	jslibHelper.RefreshRemoteAgentJslibs(session.GojaRuntime, session.GojaRequire, session.ProjectId,
+		session.ServerUrl, session.ServerToken)
 
 	return
 }
@@ -179,15 +183,6 @@ func defineJsFuncs(session *ExecSession) (err error) {
 	return
 }
 
-// we can call go SetValueToGoja as call js _setData
-var (
-	_setValueFunc func(name string, value interface{})
-)
-
-func SetValueToGoja(name string, value interface{}) {
-	_setValueFunc(name, value)
-}
-
 func defineGoFuncs(session *ExecSession) {
 	// set data
 	script := `function _setData(name, val) {
@@ -198,5 +193,5 @@ func defineGoFuncs(session *ExecSession) {
 		logUtils.Infof(err.Error())
 	}
 
-	err = session.GojaRuntime.ExportTo(session.GojaRuntime.Get("_setData"), &_setValueFunc)
+	err = session.GojaRuntime.ExportTo(session.GojaRuntime.Get("_setData"), &session.GojaSetValueFunc)
 }

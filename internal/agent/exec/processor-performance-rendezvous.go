@@ -57,7 +57,7 @@ func (entity ProcessorPerformanceRendezvous) Run(processor *Processor, session *
 	name := processor.Name
 
 	newArrivedVal := performanceUtils.IncreaseRendezvousArrived(execParams.Room, name, execParams.ConductorGrpcAddress)
-	ptlog.Logf("====== VU %d: rendezvous Arrived Value added, value is %d", execParams.VuNo, newArrivedVal)
+	ptlog.Logf("====== VU %d: rendezvous Arrived Value added, value is %d", session.VuNo, newArrivedVal)
 
 	// wait condition util rendezvous ready
 	var value int
@@ -67,28 +67,28 @@ func (entity ProcessorPerformanceRendezvous) Run(processor *Processor, session *
 	for !ready {
 		value, ready = performanceUtils.IsRendezvousReady(execParams.Room, name, execParams.ConductorGrpcAddress, entity.Target)
 
-		ptlog.Logf("------ VU %d: rendezvous wait, Arrived Value is %d", execParams.VuNo, value)
+		ptlog.Logf("------ VU %d: rendezvous wait, Arrived Value is %d", session.VuNo, value)
 		time.Sleep(1 * time.Second)
 
 		select {
 		case <-session.Ctx.Done():
-			ptlog.Logf("****** VU %d: rendezvous processor exit scenario processors by signal", execParams.VuNo)
+			ptlog.Logf("****** VU %d: rendezvous processor exit scenario processors by signal", session.VuNo)
 			goto Label_END_RENDEZVOUS_PROCESSOR
 
 		default:
 		}
 	}
 
-	ptlog.Logf("------ VU %d: rendezvous passed, Arrived Value is %d", execParams.VuNo, value)
+	ptlog.Logf("------ VU %d: rendezvous passed, Arrived Value is %d", session.VuNo, value)
 
 	// reset if all vus passed
 	newPassedVal = performanceUtils.IncreaseRendezvousPassed(execParams.Room, name, execParams.ConductorGrpcAddress)
 	if newPassedVal >= entity.Target {
-		ptlog.Logf("------ VU %d: before rendezvous reset, Arrived Value is %d", execParams.VuNo, value)
+		ptlog.Logf("------ VU %d: before rendezvous reset, Arrived Value is %d", session.VuNo, value)
 
 		value = performanceUtils.ResetRendezvous(execParams.Room, name, execParams.ConductorGrpcAddress)
 
-		ptlog.Logf("====== VU %d: after rendezvous reset, Arrived Value is %d", execParams.VuNo, value)
+		ptlog.Logf("====== VU %d: after rendezvous reset, Arrived Value is %d", session.VuNo, value)
 
 		ptlog.Logf("\n")
 	}

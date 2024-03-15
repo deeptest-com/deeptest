@@ -21,7 +21,7 @@ func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
 	target := performanceUtils.GetVuNumbByWeight(execParams.Target, execParams.Weight)
 
 	for i := 1; i <= target; i++ {
-		childCtx := execCtx
+		childCtx := context.WithoutCancel(execCtx)
 		if execParams.Duration > 0 {
 			childCtx, _ = context.WithTimeout(execCtx, time.Duration(execParams.Duration)*time.Second)
 		}
@@ -42,8 +42,8 @@ func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
 		go func() {
 			defer wgVus.Done()
 
-			execParams.VuNo = index
-			ExecScenarioWithVu(childCtx)
+			//execParams.VuNo = index
+			ExecScenarioWithVu(childCtx, index)
 
 			ptlog.Logf("vu %d completed", index)
 		}()

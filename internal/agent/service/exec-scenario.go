@@ -24,7 +24,7 @@ func RunScenario(ctx context.Context, req *agentExec.ScenarioExecReq, localVarsC
 
 	scenarioExecObj.ExecUuid = req.ExecUuid
 
-	session := agentExec.NewScenarioExecSession(ctx, scenarioExecObj, req.EnvironmentId, wsMsg)
+	session := agentExec.NewScenarioExecSession(ctx, 0, 0, scenarioExecObj, req.EnvironmentId, wsMsg)
 	err = ExecScenario(session)
 
 	session.RootProcessor.Result.Stat = *agentExec.GetInterfaceStat(session.ExecUuid)

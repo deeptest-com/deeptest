@@ -9,10 +9,12 @@ import (
 )
 
 type ExecParamsInCtx struct {
-	Room                 string
-	VuNo                 int
+	Room string
+	//VuNo                 int
 	RunnerId             int32
 	RunnerName           string
+	WebServerUrl         string
+	WebServerToken       string
 	ConductorGrpcAddress string
 	//InfluxdbSender       metrics.MessageSender
 

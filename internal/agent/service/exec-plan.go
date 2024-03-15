@@ -40,7 +40,7 @@ func RunPlan(ctx context.Context, req *agentExec.PlanExecReq, localVarsCache iri
 		scenarioExecObj.Token = req.Token
 		UpdateLocalValues(&scenarioExecObj.ExecScene, localVarsCache)
 
-		session := agentExec.NewScenarioExecSession(ctx, &scenarioExecObj, req.EnvironmentId, wsMsg)
+		session := agentExec.NewScenarioExecSession(ctx, 0, 0, &scenarioExecObj, req.EnvironmentId, wsMsg)
 		err = ExecScenario(session)
 
 		scenarioReport, _ := SubmitScenarioResult(*session.RootProcessor.Result, session.RootProcessor.Result.ScenarioId,

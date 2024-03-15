@@ -15,7 +15,7 @@ func RunInterface(call domain.InterfaceCall) (resultReq domain.DebugData, result
 	UpdateLocalValues(&call.ExecScene, call.LocalVarsCache)
 	session := agentExec.NewInterfaceExecSession(call)
 
-	agentExec.SetReqValueToGoja(&req.DebugData.BaseRequest)
+	agentExec.SetReqValueToGoja(session, &req.DebugData.BaseRequest)
 
 	agentExec.ExecPreConditions(session, &req) // must before PreRequest, since it will update the vari in script
 	originalReqUri, _ := PreRequest(session, &req.DebugData)
@@ -29,7 +29,7 @@ func RunInterface(call domain.InterfaceCall) (resultReq domain.DebugData, result
 
 	resultResp, err = RequestInterface(&req.DebugData)
 
-	agentExec.SetRespValueToGoja(&resultResp)
+	agentExec.SetRespValueToGoja(session, &resultResp)
 	assertResultStatusPost, _ := agentExec.ExecPostConditions(session, &req, resultResp)
 
 	agentExec.GetRespValueFromGoja(session)

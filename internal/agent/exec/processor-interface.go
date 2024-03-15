@@ -67,7 +67,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession)
 
 	// init context
 	//InitJsRuntime(processor.ProjectId, session.ExecUuid)
-	SetReqValueToGoja(&baseRequest)
+	SetReqValueToGoja(session, &baseRequest)
 
 	// exec pre-condition
 	entity.ExecPreConditions(session, processor)
@@ -89,7 +89,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession)
 	requestEndTime := time.Now()
 
 	// exec post-condition
-	SetRespValueToGoja(&entity.Response)
+	SetRespValueToGoja(session, &entity.Response)
 	processor.Result.ResultStatus, _ = entity.ExecPostConditions(session, processor, &detail)
 	GetRespValueFromGoja(session)
 	processor.Result.Detail = commonUtils.JsonEncode(detail)
@@ -140,7 +140,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession)
 				Duration:  int32(endTime.UnixMilli() - startTime.UnixMilli()), // 毫秒
 				Status:    processor.Result.ResultStatus.String(),
 
-				VuId: int32(execParams.VuNo),
+				VuId: int32(session.VuNo),
 			},
 		},
 	}

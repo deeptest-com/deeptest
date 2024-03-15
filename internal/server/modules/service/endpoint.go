@@ -178,13 +178,17 @@ func (s *EndpointService) Copy(tenantId consts.TenantId, nodeId, id, categoryId,
 	endpoint, _ := s.EndpointRepo.GetAll(tenantId, id, version)
 	s.removeIds(&endpoint)
 
+	copyTitle := fmt.Sprintf("CopyOf%s", endpoint.Title)
+
 	if categoryId != 0 {
+		if uint(endpoint.CategoryId) == categoryId { //如果节点数据上级id 不为空，并且和当前的复制的数据一致，则说明是复制在同级目录，字段名称要加上copy
+			endpoint.Title = copyTitle
+		}
 		endpoint.CategoryId = int64(categoryId)
-	} else if nodeId == 0 {
-		endpoint.Title += "_copy"
 	} else { //复制目录而复制的接口不重命名
-		endpoint.Title += "_copy"
+		endpoint.Title = copyTitle
 	}
+
 	endpoint.CreateUser = username
 	endpoint.UpdateUser = ""
 	err = s.EndpointRepo.SaveAll(tenantId, &endpoint)
@@ -931,14 +935,19 @@ func (s *EndpointService) dependComponents(endpoint *model.Endpoint, components 
 
 }
 
-func (s *EndpointService) Favorite(tenantId consts.TenantId, endpointId, userId uint) (err error) {
+func (s *EndpointService) Favorite(tenantId consts.TenantId, endpointId, userId uint) (ret bool, err error) {
+	if endpointId == 0 {
+		return
+	}
 	record := s.EndpointFavoriteRepo.Get(tenantId, endpointId, userId)
 	if record.ID == 0 {
 		record.EndpointId = endpointId
 		record.UserId = userId
-		err = s.EndpointFavoriteRepo.Save(tenantId, 0, record)
+		err = s.EndpointFavoriteRepo.Create(tenantId, record)
+		ret = true
 	} else {
 		err = s.EndpointFavoriteRepo.Delete(tenantId, record)
+		ret = false
 	}
 
 	return
@@ -967,6 +976,7 @@ func (s *EndpointService) FavoriteList(tenantId consts.TenantId, projectId, user
 			"endpointId": item.ID,
 			"method":     method,
 		}
+		ret = append(ret, *category)
 	}
 	return
 

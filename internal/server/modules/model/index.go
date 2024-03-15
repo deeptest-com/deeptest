@@ -136,5 +136,7 @@ var (
 
 		&ProjectProductRel{},
 		&ProjectSpaceRel{},
+
+		&EndpointFavorite{},
 	}
 )

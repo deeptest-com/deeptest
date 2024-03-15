@@ -407,7 +407,7 @@ func (s *CategoryService) Copy(tenantId consts.TenantId, targetId, newParentId, 
 		return
 	}
 
-	entityId, err := s.copyDataByCategoryId(tenantId, category.Type, targetId, category, userId, username)
+	entityId, err := s.copyDataByCategoryId(tenantId, category.Type, category, userId, username)
 	if err != nil {
 		return
 	}
@@ -441,7 +441,7 @@ func (s *CategoryService) copyChildren(tenantId consts.TenantId, parentId, newPa
 	return err
 }
 
-func (s *CategoryService) copyDataByCategoryId(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, targetId uint, category model.Category, userId uint, username string) (entityId uint, err error) {
+func (s *CategoryService) copyDataByCategoryId(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, category model.Category, userId uint, username string) (entityId uint, err error) {
 
 	if category.EntityId == 0 {
 		return

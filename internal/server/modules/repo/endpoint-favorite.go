@@ -19,11 +19,16 @@ func (r *EndpointFavoriteRepo) Delete(tenantId consts.TenantId, record model.End
 	return
 }
 
-func (r *EndpointFavoriteRepo) GetEndpointIds(tenantId consts.TenantId, projectId, userId uint) (ids []uint, err error) {
+func (r *EndpointFavoriteRepo) GetEndpointIds(tenantId consts.TenantId, userId uint) (ids []uint, err error) {
 	var ret []model.EndpointFavorite
-	err = r.GetDB(tenantId).Model(model.EndpointFavorite{}).Where(" user_id = ? and project_id =? ", userId, projectId).Find(&ret).Error
+	err = r.GetDB(tenantId).Model(model.EndpointFavorite{}).Where(" user_id = ?", userId).Find(&ret).Error
 	for _, item := range ret {
-		ids = append(ids, item.ID)
+		ids = append(ids, item.EndpointId)
 	}
+	return
+}
+
+func (r *EndpointFavoriteRepo) Create(tenantId consts.TenantId, record model.EndpointFavorite) (err error) {
+	err = r.GetDB(tenantId).Create(&record).Error
 	return
 }

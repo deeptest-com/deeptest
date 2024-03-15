@@ -2,8 +2,8 @@ package model
 
 type EndpointFavorite struct {
 	BaseModel
-	UserId     uint
-	EndpointId uint
+	UserId     uint `json:"userId"`
+	EndpointId uint `json:"endpointId"`
 }
 
 func (EndpointFavorite) TableName() string {

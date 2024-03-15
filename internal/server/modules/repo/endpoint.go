@@ -564,11 +564,11 @@ func (r *EndpointRepo) GetByCategoryId(tenantId consts.TenantId, categoryId uint
 }
 
 func (r *EndpointRepo) FavoriteList(tenantId consts.TenantId, projectId, userId uint) (endpoints []model.Endpoint, err error) {
-	endpointIds, err := r.EndpointFavoriteRepo.GetEndpointIds(tenantId, projectId, userId)
+	endpointIds, err := r.EndpointFavoriteRepo.GetEndpointIds(tenantId, userId)
 	if err != nil {
 		return
 	}
-	err = r.GetDB(tenantId).Where("id in  ? and not deleted", endpointIds).Order("created_at desc").Find(&endpoints).Error
+	err = r.GetDB(tenantId).Where("project_id = ? and id in  ? and not deleted", projectId, endpointIds).Order("created_at desc").Find(&endpoints).Error
 
 	return
 }

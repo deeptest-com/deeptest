@@ -144,7 +144,8 @@ func (s *PerformanceExecService) getScenariosFromScenarioExecObj(execObj agentEx
 						EntityType:     consts.ProcessorRootDefault,
 						Children:       scenarioProcessor.Children,
 
-						ParentId: 0,
+						ParentId:  0,
+						ProjectId: processor.ProjectId,
 					},
 				}
 				scenario.ProcessorRaw, _ = json.Marshal(rootProcessor)

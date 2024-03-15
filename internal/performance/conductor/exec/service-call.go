@@ -90,6 +90,8 @@ func (s *PerformanceTestService) ExecStart(
 		return
 	}
 
+	data.Room = req.Room
+
 	ptwebsocket.SendExecInstructionToClient(
 		"performance testing start", nil, ptconsts.MsgInstructionStart, wsMsg)
 

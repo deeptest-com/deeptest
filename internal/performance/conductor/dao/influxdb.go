@@ -248,7 +248,10 @@ union(tables: [passNumb, failNumb, errNumb])
 
 	ret.Total = ret.Pass + ret.Pass + ret.Error
 	ret.Duration = ret.EndTime - ret.StartTime
-	ret.Qps = float64(ret.Total) * 1000 / float64(ret.Duration)
+
+	if ret.Duration > 0 {
+		ret.Qps = float64(ret.Total) * 1000 / float64(ret.Duration)
+	}
 
 	return
 }

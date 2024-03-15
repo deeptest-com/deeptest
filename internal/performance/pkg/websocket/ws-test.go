@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -46,7 +47,10 @@ func SendExecResultToClient(data interface{}, resultType ptconsts.MsgResultTypeT
 	if data != nil {
 		resp.Data = data
 	}
-	bytes, _ := json.Marshal(resp)
+	bytes, err := json.Marshal(resp)
+	if err != nil {
+		ptlog.Logf("SendExecResultToClient err: %s", err.Error())
+	}
 
 	if wsMsg != nil {
 		mqData := _domain.MqMsg{
@@ -55,7 +59,7 @@ func SendExecResultToClient(data interface{}, resultType ptconsts.MsgResultTypeT
 			Event:     wsMsg.Event,
 			Content:   string(bytes),
 		}
-		logUtils.Infof(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, ptconsts.MsgCategoryResult))
+		ptlog.Logf(_i118Utils.Sprintf("ws_send_exec_msg", wsMsg.Room, ptconsts.MsgCategoryResult))
 
 		PubTestMsg(mqData)
 

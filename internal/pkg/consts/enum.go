@@ -911,24 +911,24 @@ const (
 	IgnoreChanged ChangedStatus = 3
 )
 
-type IntegrationFuncExtendStatus string
+type CronSource string
 
 const (
-	IntegrationFuncIsExtend    IntegrationFuncExtendStatus = "YES"
-	IntegrationFuncIsNotExtend IntegrationFuncExtendStatus = "NO"
+	CronSourceSwagger CronSource = "swagger"
+	CronSourceLecang  CronSource = "lecang"
 )
 
-func (e IntegrationFuncExtendStatus) String() string {
+func (e CronSource) String() string {
 	return string(e)
 }
 
-type IntegrationFuncOverridable string
+type CronExecStatus string
 
 const (
-	IntegrationFuncCanOverridable    IntegrationFuncOverridable = "YES"
-	IntegrationFuncCanNotOverridable IntegrationFuncOverridable = "NO"
+	CronExecSuccess CronExecStatus = "success"
+	CronExecFail    CronExecStatus = "fail"
 )
 
-func (e IntegrationFuncOverridable) String() string {
+func (e CronExecStatus) String() string {
 	return string(e)
 }

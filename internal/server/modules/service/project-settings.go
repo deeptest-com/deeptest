@@ -1,15 +1,11 @@
 package service
 
 import (
-	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
-	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/convert"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
 )
 
@@ -47,37 +43,36 @@ func (s *ProjectSettingsService) GetSwaggerSyncById(tenantId consts.TenantId, id
 }
 
 func (s *ProjectSettingsService) AddSwaggerCron(tenantId consts.TenantId, item model.SwaggerSync) {
-	name := fmt.Sprintf("swaggerSync_%v_%d", tenantId, item.ID)
-	s.Cron.RemoveTask(name)
-
-	if item.Switch == consts.SwitchOFF {
-		return
-	}
-
-	taskId := item.ID
-	s.Cron.AddCommonTask(name, item.Cron, func() {
-
-		task, err := s.GetSwaggerSyncById(tenantId, taskId)
-		logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(item))
-		if err != nil {
-			logUtils.Errorf("swagger定时导入任务失败,任务ID：%v,错误原因：%v", name, err.Error())
-			return
-		}
-		if task.Switch == consts.SwitchOFF {
-			logUtils.Infof("swagger定时导入关闭,任务ID:%v", name)
-			return
-		}
-		req := v1.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: task.SyncType, SourceType: 1}
-		err = s.EndpointInterfaceService.ImportEndpointData(tenantId, req)
-		if err != nil {
-			logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
-		}
-
-		//更新实现执行时间
-		s.UpdateSwaggerSyncExecTimeById(tenantId, taskId)
-		logUtils.Info("swagger定时任务结束：" + _commUtils.JsonEncode(item))
-	})
-
+	//name := fmt.Sprintf("swaggerSync_%v_%d", tenantId, item.ID)
+	//s.Cron.RemoveTask(name)
+	//
+	//if item.Switch == consts.SwitchOFF {
+	//	return
+	//}
+	//
+	//taskId := item.ID
+	//s.Cron.AddCommonTask(name, item.Cron, func() {
+	//
+	//	task, err := s.GetSwaggerSyncById(tenantId, taskId)
+	//	logUtils.Info("swagger定时任务开启：" + _commUtils.JsonEncode(item))
+	//	if err != nil {
+	//		logUtils.Errorf("swagger定时导入任务失败,任务ID：%v,错误原因：%v", name, err.Error())
+	//		return
+	//	}
+	//	if task.Switch == consts.SwitchOFF {
+	//		logUtils.Infof("swagger定时导入关闭,任务ID:%v", name)
+	//		return
+	//	}
+	//	req := v1.ImportEndpointDataReq{ProjectId: uint(task.ProjectId), ServeId: uint(task.ServeId), CategoryId: int64(task.CategoryId), OpenUrlImport: true, DriverType: convert.SWAGGER, FilePath: task.Url, DataSyncType: task.SyncType, SourceType: 1}
+	//	err = s.EndpointInterfaceService.ImportEndpointData(tenantId, req)
+	//	if err != nil {
+	//		logUtils.Error("swagger定时导入任务失败，错误原因：" + err.Error())
+	//	}
+	//
+	//	//更新实现执行时间
+	//	s.UpdateSwaggerSyncExecTimeById(tenantId, taskId)
+	//	logUtils.Info("swagger定时任务结束：" + _commUtils.JsonEncode(item))
+	//})
 }
 
 func (s *ProjectSettingsService) UpdateSwaggerSyncExecTimeById(tenantId consts.TenantId, id uint) (err error) {

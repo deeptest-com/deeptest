@@ -136,5 +136,8 @@ var (
 
 		&ProjectProductRel{},
 		&ProjectSpaceRel{},
+
+		&ProjectCron{},
+		&CronConfigLecang{},
 	}
 )

@@ -46,3 +46,20 @@ func (s *EndpointTagService) GetTagIdsNyName(tenantId consts.TenantId, tagNames 
 	tagIds, err = s.EndpointTagRepo.BatchGetIdsByName(tenantId, tagNames, projectId)
 	return
 }
+
+func (s *EndpointTagService) BatchAddEndpointForTag(tagName string, endpointIds []uint, projectId uint) (err error) {
+	existedEndpointIds, err := s.EndpointTagRepo.BatchGetEndpointIdsByTag(tagName, endpointIds, projectId)
+	if err != nil {
+		return
+	}
+
+	endpointNeedAdd := _commonUtils.DifferenceUint(endpointIds, existedEndpointIds)
+
+	if len(endpointNeedAdd) == 0 {
+		return
+	}
+
+	err = s.EndpointTagRepo.BatchAddRelForTag(tagName, endpointNeedAdd, projectId)
+
+	return
+}

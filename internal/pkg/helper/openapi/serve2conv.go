@@ -300,6 +300,10 @@ func (s *serve2conv) requestBodySchema(item model.EndpointInterfaceRequestBodyIt
 }
 
 func (s *serve2conv) requestBodyExamples(examplesStr string) (examples openapi3.Examples) {
+	if examplesStr == "" {
+		return
+	}
+
 	examples = make(openapi3.Examples)
 	//examplesStr = "{\"user\":{\"value\":{\"id\":1,\"name\":\"王大锤\"}},\"product\":{\"value\":{\"id\":1,\"name\":\"服装\"}}}"
 	var examplesArr []map[string]string

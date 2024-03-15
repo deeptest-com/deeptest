@@ -435,12 +435,7 @@ func (s *RemoteService) getLcHeaders(token string) (headers []domain.Header) {
 	return
 }
 
-func (s *RemoteService) getQueryAgentRequest(serviceCode string) interface{} {
-	res := struct {
-		ClassName string      `json:"className"`
-		QueryArgs interface{} `json:"queryArgs"`
-	}{}
-
+func (s *RemoteService) getLcMlClassQueryAgentRequest(serviceCode string) (res integrationDomain.QueryAgentReq) {
 	attrSet := []string{"objId", "code", "parentCode", "parentCodes", "businessClassType", "container", "lastUpdate", "remark", "rightClassCode", "rightClassName", "rightRelationShip", "rightRelationShipName", "leftClassCode", "leftClassName", "leftRelationShip", "leftRelationShipName", "serviceId", "type", "dialogSource", "className", "classIcon", "serviceCode", "name", "displayName", "displayClassName", "displayCreator", "displayModifier"}
 	conditionParam := integrationDomain.QueryAgentConditionParam{
 		Key:     "serviceCode",
@@ -448,28 +443,23 @@ func (s *RemoteService) getQueryAgentRequest(serviceCode string) interface{} {
 		Value:   serviceCode,
 	}
 
-	queryArgs := struct {
-		AttrSet   []string                                     `json:"attrSet"`
-		Condition []integrationDomain.QueryAgentConditionParam `json:"condition"`
-		Sort      struct {
-			SortBy    string `json:"sortBy"`
-			SortOrder string `json:"sortOrder"`
-		} `json:"sort"`
-	}{}
-	queryArgs.AttrSet = attrSet
-	queryArgs.Condition = []integrationDomain.QueryAgentConditionParam{conditionParam}
+	queryArgs := integrationDomain.QueryAgentQueryArgs{
+		AttrSet:   attrSet,
+		Condition: []integrationDomain.QueryAgentConditionParam{conditionParam},
+	}
+
 	queryArgs.Sort.SortBy = "code"
 	queryArgs.Sort.SortOrder = "asc"
 
 	res.ClassName = "MlClass"
 	res.QueryArgs = queryArgs
 
-	return res
+	return
 }
 
-func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []integrationDomain.FindClassByServiceCodeResData) {
+func (s *RemoteService) LcMlClassQueryAgent(serviceCode, token, baseUrl string) (ret []integrationDomain.FindClassByServiceCodeResData) {
 	url := fmt.Sprintf("%s/levault/mdlsvr/MlClass/QueryAgent", baseUrl)
-	req := s.getQueryAgentRequest(serviceCode)
+	req := s.getLcMlClassQueryAgentRequest(serviceCode)
 	body, err := json.Marshal(req)
 	if err != nil {
 		logUtils.Infof("marshal request data failed, error, %s", err.Error())
@@ -495,7 +485,7 @@ func (s *RemoteService) LcQueryAgent(serviceCode, token, baseUrl string) (ret []
 		return
 	}
 
-	respContent := integrationDomain.QueryAgentRes{}
+	respContent := integrationDomain.MlClassQueryAgentRes{}
 	err = json.Unmarshal([]byte(resp.Content), &respContent)
 	if err != nil {
 		logUtils.Infof(err.Error())
@@ -1074,6 +1064,72 @@ func (s *RemoteService) ApprovalAndMsg(tenantId consts.TenantId, req string) (re
 	return
 }
 
+func (s *RemoteService) getLcContainerQueryAgentRequest() (res integrationDomain.QueryAgentReq) {
+	attrSet := []string{"displayClassName", "displayName", "code", "name", "projectManagerName", "lifeCycleState", "displayCreator", "createAt", "lastUpdate", "container", "objId", "className", "code", "tenantId"}
+	conditionParam := integrationDomain.QueryAgentConditionParam{
+		Key:     "containerRange",
+		Compare: "LIKE",
+		Value:   "all",
+	}
+
+	queryArgs := integrationDomain.QueryAgentQueryArgs{
+		AttrSet:   attrSet,
+		Condition: []integrationDomain.QueryAgentConditionParam{conditionParam},
+	}
+
+	queryArgs.Sort.SortBy = "createAt"
+	queryArgs.Sort.SortOrder = "desc"
+
+	res.ClassName = "Container"
+	res.QueryArgs = queryArgs
+
+	return
+}
+
+func (s *RemoteService) LcContainerQueryAgent(token, baseUrl string) (ret []integrationDomain.EngineeringItem) {
+	url := fmt.Sprintf("%s/levault/acnsvr/Container/QueryAgent", baseUrl)
+	req := s.getLcContainerQueryAgentRequest()
+	body, err := json.Marshal(req)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	headers := s.getLcHeaders(token)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     string(body),
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("LcContainerQueryAgent failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("LcContainerQueryAgent failed, response %v", resp)
+		return
+	}
+
+	respContent := integrationDomain.ContainerQueryAgentRes{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Mfail != "0" {
+		logUtils.Infof("LcContainerQueryAgent failed, response %v", resp.Content)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
 func (s *RemoteService) GetUserOpenRoles(tenantId consts.TenantId, username string) (ret []integrationDomain.UserRoleItem, err error) {
 	url := fmt.Sprintf("%s/api/v1/openApi/getUserOpenRole", config.CONFIG.ThirdParty.Url)
 
@@ -1116,6 +1172,121 @@ func (s *RemoteService) GetUserOpenRoles(tenantId consts.TenantId, username stri
 	if respContent.Code != 200 {
 		logUtils.Infof("GetUserOpenRoles failed, response %v", resp)
 		err = fmt.Errorf("GetUserOpenRoles failed, response %v", resp)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) getLcMlServiceQueryAgentRequest(engineering string) (res integrationDomain.QueryAgentReq) {
+	attrSet := []string{"className", "code", "langPrefix", "container", "codePrefix", "creator", "createAt", "modifier", "lastUpdate", "developMethod", "lifeCycleState", "objId", "tenantId", "name", "displayName", "displayClassName", "displayCreator", "displayModifier"}
+	conditionParam := integrationDomain.QueryAgentConditionParam{
+		Key:     "container",
+		Compare: "EQ",
+		Value:   engineering,
+	}
+
+	queryArgs := integrationDomain.QueryAgentQueryArgs{
+		AttrSet:   attrSet,
+		Condition: []integrationDomain.QueryAgentConditionParam{conditionParam},
+	}
+
+	queryArgs.Sort.SortBy = "lastUpdate"
+	queryArgs.Sort.SortOrder = "desc"
+
+	res.ClassName = "MlService"
+	res.QueryArgs = queryArgs
+
+	return
+}
+
+func (s *RemoteService) LcMlServiceQueryAgent(engineering, token, baseUrl string) (ret []integrationDomain.ServiceItem) {
+	url := fmt.Sprintf("%s/levault/mdlsvr/MlService/QueryAgent", baseUrl)
+	req := s.getLcMlServiceQueryAgentRequest(engineering)
+	body, err := json.Marshal(req)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	headers := s.getLcHeaders(token)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     string(body),
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("LcMlServiceQueryAgent failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("LcMlServiceQueryAgent failed, response %v", resp)
+		return
+	}
+
+	respContent := integrationDomain.MlServiceQueryAgentRes{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Mfail != "0" {
+		logUtils.Infof("LcMlServiceQueryAgent failed, response %v", resp.Content)
+		return
+	}
+
+	ret = respContent.Data
+
+	return
+}
+
+func (s *RemoteService) LcAllServiceList(token, baseUrl string) (ret []integrationDomain.ServiceItem) {
+	url := fmt.Sprintf("%s/levault/mdlsvr/MlMessage/QueryListGroupClass", baseUrl)
+	req := struct {
+		ThisObj struct {
+			Content string `json:"content"`
+		} `json:"thisObj"`
+	}{}
+
+	body, err := json.Marshal(req)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	headers := s.getLcHeaders(token)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     string(body),
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("LcAllServiceList failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("LcAllServiceList failed, response %v", resp)
+		return
+	}
+
+	respContent := integrationDomain.MlServiceQueryAgentRes{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Mfail != "0" {
+		logUtils.Infof("LcAllServiceList failed, response %v", resp.Content)
 		return
 	}
 

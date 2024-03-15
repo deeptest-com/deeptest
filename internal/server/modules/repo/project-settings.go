@@ -58,3 +58,9 @@ func (r *ProjectSettingsRepo) SaveMock(tenantId consts.TenantId, po *model.Proje
 	err = r.Save(tenantId, po.ID, po)
 	return
 }
+
+func (r *ProjectSettingsRepo) DeleteSwaggerSyncById(tenantId consts.TenantId, id uint) error {
+	return r.GetDB(tenantId).Model(&model.SwaggerSync{}).
+		Where("id = ?", id).
+		Update("deleted", true).Error
+}

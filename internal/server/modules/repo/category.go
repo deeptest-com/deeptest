@@ -419,3 +419,11 @@ func (r *CategoryRepo) GetRoot(tenantId consts.TenantId, typ serverConsts.Catego
 	return
 
 }
+
+func (r *CategoryRepo) BatchGetByIds(tenantId consts.TenantId, ids []int) (res []model.Category, err error) {
+	err = r.GetDB(tenantId).Model(&model.Category{}).
+		Where("id IN (?) AND NOT deleted", ids).
+		Find(&res).Error
+
+	return
+}

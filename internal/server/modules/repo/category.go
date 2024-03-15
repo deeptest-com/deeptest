@@ -345,9 +345,9 @@ func (r *CategoryRepo) GetByEntityId(tenantId consts.TenantId, entityId uint, _t
 	return
 }
 
-func (r *CategoryRepo) DeleteByEntityId(tenantId consts.TenantId, entityId uint) (err error) {
+func (r *CategoryRepo) DeleteByEntityId(tenantId consts.TenantId, entityId uint, _type serverConsts.CategoryDiscriminator) (err error) {
 	err = r.GetDB(tenantId).Model(&model.Category{}).
-		Where("entity_id = ?", entityId).
+		Where("entity_id = ? AND type = ?", entityId, _type).
 		Update("deleted", true).Error
 
 	return
@@ -356,7 +356,7 @@ func (r *CategoryRepo) DeleteByEntityId(tenantId consts.TenantId, entityId uint)
 func (r *CategoryRepo) UpdateEntityId(tenantId consts.TenantId, id, entityId uint) (err error) {
 	err = r.GetDB(tenantId).Model(&model.Category{}).
 		Where("id = ?", id).
-		Update("entity_id", entityId).Error
+		Update("entity_id AND type = ?", entityId).Error
 
 	return
 }

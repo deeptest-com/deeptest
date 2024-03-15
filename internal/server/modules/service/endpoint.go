@@ -144,7 +144,7 @@ func (s *EndpointService) DeleteById(tenantId consts.TenantId, id uint) (err err
 	if err != nil {
 		return
 	}
-	err = s.CategoryRepo.DeleteByEntityId(tenantId, id)
+	err = s.CategoryRepo.DeleteByEntityId(tenantId, id, serverConsts.EndpointCategory)
 
 	return
 }

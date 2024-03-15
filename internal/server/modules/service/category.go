@@ -120,7 +120,7 @@ func (s *CategoryService) deleteNodeAndChildren(tenantId consts.TenantId, typ se
 	//}
 
 	categoryIds, err := s.CategoryRepo.GetDescendantIds(tenantId, nodeId, model.Category{}.TableName(), typ, int(projectId))
-	if err != nil {
+	if err != nil || len(categoryIds) == 0 {
 		return
 	}
 	/*
@@ -149,7 +149,7 @@ func (s *CategoryService) deleteNodeAndChildren(tenantId consts.TenantId, typ se
 	switch typ {
 	case serverConsts.EndpointCategory:
 		//err = s.EndpointService.DeleteByCategories(tenantId, categoryIds) //留着可能有用
-		s.EndpointService.DeleteByEndpointIds(tenantId, categoryIds)
+		s.EndpointService.DeleteByEndpointIds(tenantId, entityIds)
 
 	case serverConsts.ScenarioCategory:
 		err = s.ScenarioRepo.DeleteByCategoryIds(tenantId, categoryIds)

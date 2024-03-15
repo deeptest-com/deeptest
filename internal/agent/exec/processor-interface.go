@@ -118,7 +118,7 @@ func (entity ProcessorInterface) Run(processor *Processor, session *ExecSession)
 	execUtils.SendStatMsg(stat, session.WsMsg)
 	processor.AddResultToParent()
 
-	if session.InfluxdbSender == nil {
+	if session.InfluxdbSender == nil { // not performance testing
 		return
 	}
 

@@ -25,7 +25,7 @@ func (s *ProcessorDataService) Upload(ctx iris.Context, fh *multipart.FileHeader
 	}
 
 	targetDir := filepath.Join(consts.DirUpload, dateUtils.DateStr(time.Now()))
-	targetDir = filepath.Join(dir.GetCurrentAbPath(), targetDir)
+	targetDir = filepath.Join(consts.WorkDir, targetDir)
 
 	err = dir.InsureDir(targetDir)
 	if err != nil {

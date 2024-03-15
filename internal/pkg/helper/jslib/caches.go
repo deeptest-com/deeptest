@@ -1,9 +1,9 @@
 package jslibHelper
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
-	"github.com/snowlyg/helper/dir"
 	"path/filepath"
 	"sync"
 )
@@ -50,7 +50,7 @@ func InitJslibCache() (err error) {
 		Find(&pos).Error
 
 	for _, po := range pos {
-		pth := filepath.Join(dir.GetCurrentAbPath(), po.ScriptFile)
+		pth := filepath.Join(consts.WorkDir, po.ScriptFile)
 		content := fileUtils.ReadFile(pth)
 
 		to := Jslib{

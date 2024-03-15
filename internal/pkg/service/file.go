@@ -76,7 +76,7 @@ func (s *FileService) UploadFileByPath(ctx iris.Context, fh *multipart.FileHeade
 	}
 
 	targetDir := filepath.Join(consts.DirUpload, path)
-	absDir := filepath.Join(dir.GetCurrentAbPath(), targetDir)
+	absDir := filepath.Join(consts.WorkDir, targetDir)
 
 	err = dir.InsureDir(targetDir)
 	if err != nil {

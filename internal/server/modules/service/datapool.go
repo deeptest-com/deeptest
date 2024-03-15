@@ -57,7 +57,7 @@ func (s *DatapoolService) Upload(ctx iris.Context, fh *multipart.FileHeader) (re
 	}
 
 	targetDir := filepath.Join(consts.DirUpload, dateUtils.DateStr(time.Now()))
-	absDir := filepath.Join(dir.GetCurrentAbPath(), targetDir)
+	absDir := filepath.Join(consts.WorkDir, targetDir)
 
 	err = dir.InsureDir(targetDir)
 	if err != nil {

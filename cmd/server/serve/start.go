@@ -29,7 +29,6 @@ import (
 
 	"github.com/go-playground/validator/v10"
 	"github.com/kataras/iris/v12/context"
-	"github.com/snowlyg/helper/dir"
 	"github.com/snowlyg/helper/str"
 	"github.com/snowlyg/helper/tests"
 
@@ -151,8 +150,8 @@ func (webServer *WebServer) AddModule(module ...module.WebModule) {
 
 // AddWebUi 添加前端页面访问
 func (webServer *WebServer) AddWebUi() {
-	pth1 := filepath.Join(dir.GetCurrentAbPath(), "ui", "dist")
-	pth2 := filepath.Join(dir.GetCurrentAbPath(), "deeptest-ui")
+	pth1 := filepath.Join(consts.WorkDir, "ui", "dist")
+	pth2 := filepath.Join(consts.WorkDir, "deeptest-ui")
 
 	pth := ""
 	if fileUtils.FileExist(pth1) {
@@ -182,7 +181,7 @@ func (webServer *WebServer) AddUpload() {
 
 // AddTest 添加测试文件访问
 func (webServer *WebServer) AddTest() {
-	pth := filepath.Join(dir.GetCurrentAbPath(), filepath.Join(webServer.staticPath, "test"))
+	pth := filepath.Join(consts.WorkDir, filepath.Join(webServer.staticPath, "test"))
 	fileUtils.MkDirIfNeeded(pth)
 	logUtils.Infof("*** test dir: %s", pth)
 

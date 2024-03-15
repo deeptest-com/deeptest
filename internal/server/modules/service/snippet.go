@@ -1,11 +1,11 @@
 package service
 
 import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	jslibHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/jslib"
 	scriptHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/script"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
-	"github.com/snowlyg/helper/dir"
 	"path/filepath"
 	"time"
 )
@@ -45,7 +45,7 @@ func (s *SnippetService) GetJslibs(projectId int) (pos []jslibHelper.Jslib, err 
 	libs, _ := s.JslibRepo.List("", projectId, true)
 
 	for _, lib := range libs {
-		pth := filepath.Join(dir.GetCurrentAbPath(), lib.TypesFile)
+		pth := filepath.Join(consts.WorkDir, lib.TypesFile)
 		content := fileUtils.ReadFile(pth)
 
 		JslibsDeclares = append(JslibsDeclares, content)
@@ -66,7 +66,7 @@ func (s *SnippetService) GetJslibsForAgent(loadedLibs map[uint]time.Time, projec
 	pos, _ := s.JslibRepo.List("", projectId, true)
 
 	for _, po := range pos {
-		pth := filepath.Join(dir.GetCurrentAbPath(), po.ScriptFile)
+		pth := filepath.Join(consts.WorkDir, po.ScriptFile)
 		content := fileUtils.ReadFile(pth)
 
 		updateTime := po.UpdatedAt

@@ -3,6 +3,7 @@ package agentExec
 import (
 	"context"
 	"crypto/tls"
+	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
 	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/dop251/goja"
@@ -103,6 +104,8 @@ func NewInterfaceExecSession(call domain.InterfaceCall) (ret *ExecSession) {
 func NewScenarioExecSession(ctx context.Context, runnerId int32, vuNo int, req *ScenarioExecObj, environmentId int, wsMsg *websocket.Message) (
 	ret *ExecSession) {
 
+	execParams := performanceUtils.GetExecParamsInCtx(ctx)
+
 	session := ExecSession{
 		ExecUuid: req.ExecUuid,
 		RunnerId: uint(runnerId),
@@ -126,8 +129,9 @@ func NewScenarioExecSession(ctx context.Context, runnerId int32, vuNo int, req *
 		GojaVariables: &[]domain.ExecVariable{},
 		GojaLogs:      &[]string{},
 
-		ServerUrl:   req.ServerUrl,
-		ServerToken: req.Token,
+		InfluxdbSender: execParams.Sender,
+		ServerUrl:      req.ServerUrl,
+		ServerToken:    req.Token,
 	}
 
 	ComputerScopeHierarchy(req.RootProcessor, &session.ScopeHierarchy)

@@ -54,14 +54,16 @@ func LoadChaiJslibs(runtime *goja.Runtime) {
 	runtime.Set("expect", chaiInst.Exports().Named["expect"])
 }
 
-func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule, projectId uint, serverUrl, token string) {
+func RefreshRemoteAgentJslibs(runtime *goja.Runtime, require *require.RequireModule,
+	vuNo int, projectId uint, serverUrl, token string) {
+
 	libs := getJslibsFromServer(projectId, serverUrl, token)
 
 	for _, lib := range libs {
 		id := lib.Id
 		//updateTime, ok := GetAgentCache(projectId, id)
 		//if  !ok || updateTime.Before(lib.UpdatedAt) {
-		pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d.js", id))
+		pth := filepath.Join(consts.TmpDir, fmt.Sprintf("%d_%d.js", vuNo, id))
 		fileUtils.WriteFile(pth, lib.Script)
 		module, err := require.Require(pth)
 		if err != nil {

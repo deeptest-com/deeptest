@@ -135,7 +135,7 @@ func (s *PerformanceTestService) ExecStart(
 		// wait all runners finished
 		wgRunners.Wait()
 
-		s.StopAndClearScene(data.Room, wsMsg)
+		//s.StopAndClearScene(data.Room, wsMsg)
 	}()
 
 	return

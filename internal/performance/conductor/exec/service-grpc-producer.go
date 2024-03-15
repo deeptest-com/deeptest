@@ -50,7 +50,7 @@ func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerEx
 	ptlog.Init(req.Room)
 
 	// runner add item to cache
-	AddTestItem(req.Room, ptconsts.Runner, nil, req)
+	AddTestItem(req.Room, ptconsts.Runner, nil, nil, req)
 
 	// gen influxdb sender
 	influxdbSender := metrics.GetInfluxdbSenderInstant(req.InfluxdbAddress, req.InfluxdbOrg, req.InfluxdbToken)

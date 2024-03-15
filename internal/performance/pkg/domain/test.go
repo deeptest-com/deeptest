@@ -7,8 +7,9 @@ import (
 )
 
 type TestItem struct {
-	Room string            `json:"room"`
-	Role ptconsts.TestRole `json:"role"`
+	Room    string            `json:"room"`
+	Role    ptconsts.TestRole `json:"role"`
+	Runners []*Runner         `json:"runners"`
 
 	ConductorReq *PerformanceTestReq              `json:"conductorReq"`
 	RunnerReq    *ptproto.PerformanceExecStartReq `json:"runnerReq"`

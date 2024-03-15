@@ -102,12 +102,14 @@ func (c *PerformanceTestWebSocketCtrl) exec(req agentDomain.WsReq, wsMsg websock
 				return
 			}
 
-			ptwebsocket.SendExecInstructionToClient(testItem.Room, nil, ptconsts.MsgInstructionJoinExist, &wsMsg)
+			ptwebsocket.SendExecInstructionToClient(testItem.Room, testItem.ConductorReq, ptconsts.MsgInstructionJoinExist, &wsMsg)
 			conductorExec.ResumeWsMsg()
 
 		} else { //  join exist room successfully, do nothing except sending a start msg
 			service := conductorExec.GetTestService(room)
-			ptwebsocket.SendExecInstructionToClient("performance test joined", service.TestReq, ptconsts.MsgInstructionStart, &wsMsg)
+			if service != nil {
+				ptwebsocket.SendExecInstructionToClient("performance test joined", service.TestReq, ptconsts.MsgInstructionStart, &wsMsg)
+			}
 		}
 
 	}

@@ -30,8 +30,10 @@ func GetCurrItem() (ret *ptdomain.TestItem) {
 
 	items := obj.(*[]*ptdomain.TestItem)
 
-	if len(*items) > 0 {
-		ret = (*items)[len(*items)-1] // get last one
+	for i := len(*items) - 1; i >= 0; i-- {
+		if (*items)[i].ConductorReq != nil { // get last one conductor item
+			ret = (*items)[i]
+		}
 	}
 
 	return
@@ -44,8 +46,8 @@ func GetTestItems() (ret *[]*ptdomain.TestItem) {
 
 	return
 }
-func AddTestItem(room string, role ptconsts.TestRole,
-	conductorReq *ptdomain.PerformanceTestReq, runnerReq *ptproto.PerformanceExecStartReq) {
+func AddTestItem(room string, role ptconsts.TestRole, conductorReq *ptdomain.PerformanceTestReq,
+	runners []*ptdomain.Runner, runnerReq *ptproto.PerformanceExecStartReq) (ret *ptdomain.TestItem) {
 
 	arr := make([]*ptdomain.TestItem, 0)
 	tests := &arr
@@ -57,19 +59,22 @@ func AddTestItem(room string, role ptconsts.TestRole,
 		ItemsStore.Store(KeyTests, tests)
 	}
 
-	test := &ptdomain.TestItem{
+	ret = &ptdomain.TestItem{
 		Room:       room,
 		Role:       role,
+		Runners:    runners,
 		CreateTime: time.Now(),
 	}
 
-	if test.Role == ptconsts.Conductor {
-		test.ConductorReq = conductorReq
+	if ret.Role == ptconsts.Conductor {
+		ret.ConductorReq = conductorReq
 	} else {
-		test.RunnerReq = runnerReq
+		ret.RunnerReq = runnerReq
 	}
 
-	*tests = append(*tests, test)
+	*tests = append(*tests, ret)
+
+	return
 }
 func RemoveTestItem(room string) {
 	obj, ok := ItemsStore.Load(KeyTests)

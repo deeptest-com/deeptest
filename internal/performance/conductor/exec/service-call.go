@@ -92,12 +92,12 @@ func (s *PerformanceTestService) ExecStart(
 
 	data.Room = req.Room
 
-	ptwebsocket.SendExecInstructionToClient(
-		"performance testing start", nil, ptconsts.MsgInstructionStart, wsMsg)
-
 	ptlog.Init(data.Room)
 
-	AddTestItem(s.TestReq.Room, ptconsts.Conductor, s.TestReq, nil)
+	item := AddTestItem(s.TestReq.Room, ptconsts.Conductor, s.TestReq, data.Runners, nil)
+
+	ptwebsocket.SendExecInstructionToClient(
+		"performance testing start", item, ptconsts.MsgInstructionStart, wsMsg)
 
 	// start execution
 	go func() {

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
-	ptProto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	ptdomain "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
+	ptProto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )

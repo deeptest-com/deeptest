@@ -2,8 +2,8 @@ package model
 
 import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
-	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	ptconsts "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/consts"
+	ptdomain "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 	"time"

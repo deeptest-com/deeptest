@@ -5,7 +5,7 @@ import (
 	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
-	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
+	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"

@@ -1,9 +1,9 @@
 package agentExecDomain
 
 import (
-	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
-	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
+	ptconsts "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/consts"
+	ptproto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
+	"github.com/aaronchen2k/deeptest/internal/agent/performance/runner/metrics"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/kataras/iris/v12"
 )

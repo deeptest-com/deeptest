@@ -2,7 +2,7 @@ package agentDomain
 
 import (
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
-	ptdomain "github.com/aaronchen2k/deeptest/internal/performance/pkg/domain"
+	ptdomain "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/kataras/iris/v12"
 )

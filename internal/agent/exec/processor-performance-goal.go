@@ -1,6 +1,6 @@
 package agentExec
 
-import ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
+import ptconsts "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/consts"
 
 type ProcessorPerformanceGoal struct {
 	ID uint `json:"id" yaml:"id"`

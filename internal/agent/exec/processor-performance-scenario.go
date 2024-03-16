@@ -3,7 +3,7 @@ package agentExec
 import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
-	ptconsts "github.com/aaronchen2k/deeptest/internal/performance/pkg/consts"
+	ptconsts "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"

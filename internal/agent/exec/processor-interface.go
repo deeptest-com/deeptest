@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
-	ptproto "github.com/aaronchen2k/deeptest/internal/performance/proto"
+	ptproto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	checkpointHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/checkpoint"

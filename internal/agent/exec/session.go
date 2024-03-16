@@ -4,7 +4,7 @@ import (
 	"context"
 	"crypto/tls"
 	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
-	"github.com/aaronchen2k/deeptest/internal/performance/runner/metrics"
+	"github.com/aaronchen2k/deeptest/internal/agent/performance/runner/metrics"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/dop251/goja"
 	"github.com/dop251/goja_nodejs/require"

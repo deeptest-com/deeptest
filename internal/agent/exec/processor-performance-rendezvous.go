@@ -5,7 +5,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
 	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
-	ptlog "github.com/aaronchen2k/deeptest/internal/performance/pkg/log"
+	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"

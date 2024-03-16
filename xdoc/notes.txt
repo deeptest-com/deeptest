@@ -47,6 +47,8 @@ cd ui && yarn build --mode deeptest-client --dest ../client/ui && cd ..
 
 convert logo-mini.png -scale 256 ../../../public/favicon.ico
 
+yarn add echarts vue-echarts
+
 ${_rand(10, 2)}
 ${_dp(myData, A, seq|rand|2)}
 

@@ -99,20 +99,32 @@ func (s *PerformanceTestService) ExecStart(
 	ptwebsocket.SendExecInstructionToClient(
 		"performance testing start", item, ptconsts.MsgInstructionStart, wsMsg)
 
+	s.execCtx, s.execCancel = context.WithCancel(context.Background())
+
+	err = dao.ClearData(data.Room)
+	if err != nil {
+		ptwebsocket.SendExecInstructionToClient(
+			"performance testing error", "", ptconsts.MsgInstructionException, wsMsg)
+		return
+	}
+
+	err = dao.ResetInfluxdb(data.Room, data.InfluxdbAddress, data.InfluxdbOrg, data.InfluxdbToken)
+	if err != nil {
+		ptwebsocket.SendExecInstructionToClient(
+			"performance testing error", "", ptconsts.MsgInstructionException, wsMsg)
+		return
+	}
+
+	s.GrpcService.ConductorClearAllGlobalVar(context.Background(), &ptproto.GlobalVarRequest{})
+
+	// stop execution in 2 ways:
+	// 1. call cancel in this method by websocket request OR after all runners completed
+	// 2. sub cancel instruction from runner via grpc
+
+	go s.ScheduleService.SendMetricsToClient(s.execCtx, s.execCancel, data, wsMsg)
+
 	// start execution
 	go func() {
-		s.execCtx, s.execCancel = context.WithCancel(context.Background())
-
-		dao.ClearData(data.Room)
-		dao.ResetInfluxdb(data.Room, data.InfluxdbAddress, data.InfluxdbOrg, data.InfluxdbToken)
-		s.GrpcService.ConductorClearAllGlobalVar(context.Background(), &ptproto.GlobalVarRequest{})
-
-		// stop execution in 2 ways:
-		// 1. call cancel in this method by websocket request OR after all runners completed
-		// 2. sub cancel instruction from runner via grpc
-
-		go s.ScheduleService.SendMetricsToClient(s.execCtx, s.execCancel, data, wsMsg)
-
 		var wgRunners sync.WaitGroup
 		for _, runner := range data.Runners {
 			client := s.ConnectGrpc(runner)
@@ -134,7 +146,6 @@ func (s *PerformanceTestService) ExecStart(
 			}()
 		}
 
-		// wait all runners finished
 		wgRunners.Wait()
 
 		//s.StopAndClearScene(data.Room, wsMsg)

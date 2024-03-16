@@ -45,6 +45,7 @@ const (
 	MsgInstructionEnd            MsgInstructionServerToRunner = "end"
 	MsgInstructionTerminal       MsgInstructionServerToRunner = "terminal"
 	MsgInstructionAlreadyRunning MsgInstructionServerToRunner = "alreadyRunning"
+	MsgInstructionException      MsgInstructionServerToRunner = "exception"
 )
 
 func (e MsgInstructionServerToRunner) String() string {

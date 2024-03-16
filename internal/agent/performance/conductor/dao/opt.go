@@ -8,16 +8,33 @@ import (
 	"time"
 )
 
-func ClearData(room string) {
+func ClearData(room string) (err error) {
 	db := GetDB(consts.AppServer)
 
-	condtion := "created_at < ?"
+	condtion := true // "created_at < ?"
 	oneHourAgo := time.Now().Add(-1 * time.Minute)
 
-	db.Where(condtion, oneHourAgo).Delete(&BizRequest{})
-	db.Where(condtion, oneHourAgo).Delete(&BizMetrics{})
-	db.Where(condtion, oneHourAgo).Delete(&BizDiskUsage{})
-	db.Where(condtion, oneHourAgo).Delete(&BizNetworkUsage{})
+	err = db.Where(condtion, oneHourAgo).Delete(&BizRequest{}).Error
+	if err != nil {
+		return
+	}
+
+	err = db.Where(condtion, oneHourAgo).Delete(&BizMetrics{}).Error
+	if err != nil {
+		return
+	}
+
+	err = db.Where(condtion, oneHourAgo).Delete(&BizDiskUsage{}).Error
+	if err != nil {
+		return
+	}
+
+	err = db.Where(condtion, oneHourAgo).Delete(&BizNetworkUsage{}).Error
+	if err != nil {
+		return
+	}
+
+	return
 }
 
 func ListLastMinRequestRecordForResponseTime(room string) (ret []BizRequest) {

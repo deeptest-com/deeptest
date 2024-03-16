@@ -24,7 +24,7 @@ var (
 	tableNetworkUsage = "network_usage"
 )
 
-func ResetInfluxdb(room, dbAddress, orgName, token string) {
+func ResetInfluxdb(room, dbAddress, orgName, token string) (err error) {
 	influxdbClient := influxdb2.NewClient(dbAddress, token)
 
 	// 删除已有bucket
@@ -35,14 +35,17 @@ func ResetInfluxdb(room, dbAddress, orgName, token string) {
 	bucketsAPI := influxdbClient.BucketsAPI()
 
 	bucket, err := bucketsAPI.FindBucketByName(ctx, bucketName)
-	if err == nil {
-		err = influxdbClient.BucketsAPI().DeleteBucket(ctx, bucket)
-		if err != nil {
-			ptlog.Logf("failed to delete bucket %s, err %s", bucketName, err.Error())
-			return
-		}
-		ptlog.Logf("success to delete bucket %s", bucketName)
+	if err != nil {
+		ptlog.Logf("failed to connect to influxdb %s, err %s", dbAddress, err.Error())
+		return
 	}
+
+	err = influxdbClient.BucketsAPI().DeleteBucket(ctx, bucket)
+	if err != nil {
+		ptlog.Logf("failed to delete bucket %s, err %s", bucketName, err.Error())
+		return
+	}
+	ptlog.Logf("success to delete bucket %s", bucketName)
 
 	org, err2 := influxdbClient.OrganizationsAPI().FindOrganizationByName(ctx, orgName)
 	if err2 != nil {

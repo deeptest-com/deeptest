@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/agent/domain"
+	"github.com/aaronchen2k/deeptest/internal/agent/pkg/domain"
 	_floatUtils "github.com/aaronchen2k/deeptest/pkg/lib/float"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/shirou/gopsutil/v3/cpu"

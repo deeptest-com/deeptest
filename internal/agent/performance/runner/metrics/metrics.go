@@ -2,7 +2,7 @@ package metrics
 
 import (
 	ptproto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
-	commUtils "github.com/aaronchen2k/deeptest/internal/agent/utils"
+	commUtils "github.com/aaronchen2k/deeptest/internal/agent/pkg/utils"
 	"time"
 )
 

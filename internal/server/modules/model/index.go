@@ -138,5 +138,8 @@ var (
 		&ProjectSpaceRel{},
 
 		&EndpointFavorite{},
+
+		&ProjectCron{},
+		&CronConfigLecang{},
 	}
 )

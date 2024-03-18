@@ -12,13 +12,14 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/openapi/thirdPart"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
-	"github.com/aaronchen2k/deeptest/internal/server/core/cache"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
+	"strings"
 	"time"
 )
 
@@ -33,6 +34,7 @@ type ThirdPartySyncService struct {
 	ServeService             *ServeService               `inject:""`
 	EndpointService          *EndpointService            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
+	EndpointTagService       *EndpointTagService         `inject:""`
 	Cron                     *cron.ServerCron            `inject:""`
 }
 
@@ -58,43 +60,69 @@ func (s *ThirdPartySyncService) GetToken(baseUrl string) (token string, err erro
 }
 
 func (s *ThirdPartySyncService) GetClasses(serviceCode, token string, baseUrl string) (classes []integrationDomain.FindClassByServiceCodeResData) {
-	classes = s.RemoteService.LcQueryAgent(serviceCode, token, baseUrl)
+	classes = s.RemoteService.LcMlClassQueryAgent(serviceCode, token, baseUrl)
 	return
 }
 
 // GetFunctionsByClass 已废弃
-func (s *ThirdPartySyncService) GetFunctionsByClass(serviceCode, classCode, token string, baseUrl string) (functions []string) {
-	getFunctionsByClassReq := integrationDomain.GetFunctionsByClassReq{
-		ServiceCode: serviceCode,
-		ClassCode:   classCode,
-	}
-	getFunctionsByClassResData := s.RemoteService.GetFunctionsByClass(getFunctionsByClassReq, token, baseUrl)
-	for _, v := range getFunctionsByClassResData {
-		//不同步内部方法
-		if v.MessageType == 1 {
-			functions = append(functions, v.Code)
-		}
-	}
+//func (s *ThirdPartySyncService) GetFunctionsByClass(serviceCode, classCode, token string, baseUrl string) (functions []string) {
+//	getFunctionsByClassReq := integrationDomain.GetFunctionsByClassReq{
+//		ServiceCode: serviceCode,
+//		ClassCode:   classCode,
+//	}
+//	getFunctionsByClassResData := s.RemoteService.GetFunctionsByClass(getFunctionsByClassReq, token, baseUrl)
+//	for _, v := range getFunctionsByClassResData {
+//		//不同步内部方法
+//		if v.MessageType == 1 {
+//			functions = append(functions, v.Code)
+//		}
+//	}
+//
+//	return
+//}
+
+func (s *ThirdPartySyncService) GetFunctionsByClassNew(classInfo integrationDomain.FindClassByServiceCodeResData, funcLimit v1.LecangFuncLimit, token, baseUrl string) (functions []integrationDomain.GetFunctionsByClassResData) {
+	getFunctionsByClassResData := s.DoGetFunctionsByClass(classInfo, token, baseUrl)
+
+	functions = s.GetFilteredFunctions(getFunctionsByClassResData, funcLimit)
 
 	return
 }
 
-func (s *ThirdPartySyncService) GetFunctionsByClassNew(serviceId, classCode, parentCodes, objId, token string, baseUrl string) (functions []string) {
+func (s *ThirdPartySyncService) DoGetFunctionsByClass(classInfo integrationDomain.FindClassByServiceCodeResData, token, baseUrl string) (ret []integrationDomain.GetFunctionsByClassResData) {
 	getFunctionsByClassReq := integrationDomain.QueryMsgReq{}
-	getFunctionsByClassReq.ClassInfo.ParentCodes = parentCodes
-	getFunctionsByClassReq.ClassInfo.ObjId = objId
-	getFunctionsByClassReq.ClassInfo.Code = classCode
-	getFunctionsByClassReq.ClassInfo.ServiceId = serviceId
+	getFunctionsByClassReq.ClassInfo.ParentCodes = classInfo.ParentCodes
+	getFunctionsByClassReq.ClassInfo.ObjId = classInfo.ObjId
+	getFunctionsByClassReq.ClassInfo.Code = classInfo.Code
+	getFunctionsByClassReq.ClassInfo.ServiceId = classInfo.ServiceId
 
-	getFunctionsByClassResData := s.RemoteService.LcQueryMsg(getFunctionsByClassReq, token, baseUrl)
-	for _, v := range getFunctionsByClassResData {
-		//不同步继承方法和不允许被重写的内部方法
-		//if v.IsExtend == consts.IntegrationFuncIsExtend || (v.MessageType == 0 && v.Overridable == consts.IntegrationFuncCanNotOverridable) {
-		if v.IsExtend == consts.IntegrationFuncIsExtend {
+	return s.RemoteService.LcQueryMsg(getFunctionsByClassReq, token, baseUrl)
+}
+
+func (s *ThirdPartySyncService) GetFilteredFunctions(oldFunctions []integrationDomain.GetFunctionsByClassResData, limit v1.LecangFuncLimit) (res []integrationDomain.GetFunctionsByClassResData) {
+	for _, v := range oldFunctions {
+		//过滤消息类型
+		if (limit.MessageType == consts.CronLecangMessageTypeInner && v.MessageType == 1) || (limit.MessageType == consts.CronLecangMessageTypeOutside && v.MessageType == 0) {
 			continue
 		}
 
-		functions = append(functions, v.Code)
+		//过滤继承父类和是否已重写父类
+		if limit.ExtendOverride == consts.CronLecangExtendOverride && !(v.IsExtend == consts.IntegrationFuncIsNotExtend && v.IsSelfOverride == consts.IntegrationFuncCanOverridable) {
+			continue
+		}
+		if limit.ExtendOverride == consts.CronLecangExtend && !(v.IsExtend == consts.IntegrationFuncIsExtend && v.IsSelfOverride == consts.IntegrationFuncCanNotOverridable) {
+			continue
+		}
+		if limit.ExtendOverride == consts.CronLecangNotExtend && !(v.IsExtend == consts.IntegrationFuncIsNotExtend && v.IsSelfOverride == consts.IntegrationFuncCanNotOverridable) {
+			continue
+		}
+
+		//过滤自身是否允许重写
+		if limit.Overridable != "" && limit.Overridable != v.Overridable {
+			continue
+		}
+
+		res = append(res, v)
 	}
 
 	return
@@ -111,110 +139,286 @@ func (s *ThirdPartySyncService) GetFunctionDetail(classCode, function, token str
 	return
 }
 
-func (s *ThirdPartySyncService) SaveData(tenantId consts.TenantId) (err error) {
-	thirdPartySyncStatus, _ := cache.GetCacheString("thirdPartySyncStatus")
-	if thirdPartySyncStatus == "Start" {
-		return
-	}
-
-	_ = cache.SetCache("thirdPartySyncStatus", "Start", 1*time.Hour)
-	syncList, err := s.GetAllData(tenantId)
+func (s *ThirdPartySyncService) ImportEndpoint(tenantId consts.TenantId, projectId uint, cronConfig model.CronConfigLecang) (err error) {
+	baseUrl := cronConfig.Url
+	token, err := s.GetToken(baseUrl)
 	if err != nil {
 		return
 	}
 
-	for _, syncConfig := range syncList {
-		if syncConfig.Switch == consts.SwitchOFF {
-			continue
-		}
-		projectId, serveId, userId, baseUrl := syncConfig.ProjectId, syncConfig.ServeId, syncConfig.CreateUserId, syncConfig.Url
+	serviceCodeArr := strings.Split(cronConfig.ServiceCodes, ",")
+	for _, serviceCode := range serviceCodeArr {
+		req := v1.LecangCronReq{}
+		copier.CopyWithOption(&req, cronConfig, copier.Option{DeepCopy: true})
+		req.Token = token
+		req.ProjectId = projectId
+		req.ServiceCode = serviceCode
 
-		token, err := s.GetToken(baseUrl)
+		s.ImportEndpointForService(tenantId, req)
+	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) getParentNodeId(tenantId consts.TenantId, categoryId int, projectId uint) (parentNodeId int, err error) {
+	parentNodeId = categoryId
+	if categoryId == 0 || categoryId == -1 {
+		rootNode, err := s.CategoryRepo.GetRootNode(tenantId, projectId, serverConsts.EndpointCategory)
 		if err != nil {
+			return parentNodeId, err
+		}
+		parentNodeId = int(rootNode.ID)
+	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) BatchAddTag(data map[string][]uint, projectId uint) (err error) {
+	for tagName, endpointIds := range data {
+		err = s.EndpointTagService.BatchAddEndpointForTag(tagName, endpointIds, projectId)
+		if err != nil {
+			logUtils.Errorf("ThirdPartySyncService-BatchAddTagErr, tagName:%+v, endpointIds:%+v, projectId:%+v", tagName, endpointIds, projectId)
+		}
+	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) FillTagEndpointRel(rel *map[string][]uint, function integrationDomain.GetFunctionsByClassResData, endpointId uint) {
+	innerTag := "内部"
+	overridableTag := "允许重写"
+	isSelfOverrideTag := "重写父类"
+
+	if function.MessageType == 0 {
+		if _, ok := (*rel)[innerTag]; !ok {
+			(*rel)[innerTag] = []uint{}
+		}
+		(*rel)[innerTag] = append((*rel)[innerTag], endpointId)
+	}
+
+	if function.Overridable == consts.IntegrationFuncCanOverridable {
+		if _, ok := (*rel)[overridableTag]; !ok {
+			(*rel)[overridableTag] = []uint{}
+		}
+		(*rel)[overridableTag] = append((*rel)[overridableTag], endpointId)
+	}
+
+	if function.IsSelfOverride == consts.IntegrationFuncCanOverridable {
+		if _, ok := (*rel)[isSelfOverrideTag]; !ok {
+			(*rel)[isSelfOverrideTag] = []uint{}
+		}
+		(*rel)[isSelfOverrideTag] = append((*rel)[isSelfOverrideTag], endpointId)
+	}
+}
+
+func (s *ThirdPartySyncService) ImportEndpointForService(tenantId consts.TenantId, req v1.LecangCronReq) (err error) {
+	tagEndpointRel := make(map[string][]uint)
+
+	baseUrl, token, serviceCode, projectId, serveId, userId := req.Url, req.Token, req.ServiceCode, req.ProjectId, req.ServeId, req.CreateUserId
+	parentNodeId, err := s.getParentNodeId(tenantId, req.CategoryId, req.ProjectId)
+	if err != nil {
+		return
+	}
+
+	classes := s.GetClasses(serviceCode, token, baseUrl)
+	for _, class := range classes {
+		classCode := class.Code
+
+		functionList := s.GetFunctionsByClassNew(class, req.LecangFuncLimit, token, baseUrl)
+		if len(functionList) == 0 {
 			continue
 		}
 
-		classes := s.GetClasses(syncConfig.ServiceCode, token, baseUrl)
-		for _, class := range classes {
-			classCode := class.Code
+		var categoryId int64
+		//categoryId, err := s.SaveCategory(class, projectId, serveId, req.CategoryId)
+		//if err != nil {
+		//	continue
+		//}
 
-			functionList := s.GetFunctionsByClassNew(class.ServiceId, classCode, class.ParentCodes, class.ObjId, token, baseUrl)
-			if len(functionList) == 0 {
+		for _, function := range functionList {
+			var path string
+			if req.AddServicePrefix {
+				path = "/" + serviceCode
+			}
+			path = path + "/" + classCode + "/" + function.Code
+
+			functionDetail := s.GetFunctionDetail(classCode, function.Code, token, baseUrl)
+			if functionDetail.Code == "" {
 				continue
 			}
 
-			categoryId, err := s.SaveCategory(tenantId, class, projectId, syncConfig.ServeId)
+			title := classCode + "-" + functionDetail.Code
+			endpoint, err := s.EndpointRepo.GetByItem(tenantId, consts.ThirdPartySync, projectId, path, serveId, int64(parentNodeId))
+			if err != nil && err != gorm.ErrRecordNotFound {
+				continue
+			}
+
+			if (endpoint.ID == 0 || req.SyncType == consts.Add) && categoryId == 0 {
+				err = s.SaveCategory(tenantId, class, projectId, serveId, req.CategoryId, &categoryId)
+				if err != nil {
+					continue
+				}
+			}
+
+			oldEndpointDetail, err := s.EndpointRepo.GetAll(tenantId, endpoint.ID, "v0.1.0")
+			if err != nil && err != gorm.ErrRecordNotFound {
+				continue
+			}
+
+			newEndpointDetail, err := s.GenerateEndpoint(functionDetail)
+			if err != nil && err != gorm.ErrRecordNotFound {
+				continue
+			}
+
+			oldEndpointDetail.ServeId = 0
+			newEndpointDetail.ServeId = 0
+			newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(tenantId, newEndpointDetail))
+
+			if oldEndpointDetail.Snapshot == newSnapshot && req.SyncType == consts.AutoAdd {
+				s.FillTagEndpointRel(&tagEndpointRel, function, endpoint.ID)
+				continue
+			}
+			oldEndpointId := endpoint.ID
+
+			oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(tenantId, oldEndpointDetail))
+			if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson && req.SyncType == consts.AutoAdd {
+				s.EndpointRepo.UpdateSnapshot(tenantId, endpoint.ID, newSnapshot)
+				s.FillTagEndpointRel(&tagEndpointRel, function, endpoint.ID)
+
+				continue
+			}
+
+			saveEndpointReq := v1.SaveLcEndpointReq{Title: title, ProjectId: projectId, ServeId: serveId, UserId: userId, OldEndpointId: oldEndpointId, Path: path, Snapshot: newSnapshot, DataSyncType: req.SyncType, CategoryId: categoryId}
+			endpointId, err := s.SaveEndpoint(tenantId, saveEndpointReq)
 			if err != nil {
 				continue
 			}
 
-			for _, function := range functionList {
-				path := "/" + syncConfig.ServiceCode + "/" + classCode + "/" + function
-				functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)
-				if functionDetail.Code == "" {
-					continue
-				}
-
-				fmt.Println(functionDetail)
-				title := classCode + "-" + functionDetail.Code
-				endpoint, err := s.EndpointRepo.GetByItem(tenantId, consts.ThirdPartySync, projectId, path, serveId, int64(categoryId))
-				if err != nil && err != gorm.ErrRecordNotFound {
-					continue
-				}
-
-				oldEndpointDetail, err := s.EndpointRepo.GetAll(tenantId, endpoint.ID, "v0.1.0")
-				if err != nil && err != gorm.ErrRecordNotFound {
-					continue
-				}
-
-				newEndpointDetail, err := s.GenerateEndpoint(functionDetail)
-				if err != nil && err != gorm.ErrRecordNotFound {
-					continue
-				}
-
-				oldEndpointDetail.ServeId = 0
-				newEndpointDetail.ServeId = 0
-				newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(tenantId, newEndpointDetail))
-				if oldEndpointDetail.Snapshot == newSnapshot {
-					continue
-				}
-				oldEndpointId := endpoint.ID
-
-				oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(tenantId, oldEndpointDetail))
-				if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson {
-					s.EndpointRepo.UpdateSnapshot(tenantId, endpoint.ID, newSnapshot)
-					continue
-				}
-
-				endpointId, err := s.SaveEndpoint(tenantId, title, projectId, serveId, userId, oldEndpointId, int64(categoryId), path, newSnapshot, consts.AutoAdd)
-				if err != nil {
-					continue
-				}
-
-				interfaceId, err := s.SaveEndpointInterface(tenantId, title, functionDetail, endpointId, projectId, path)
-				if err != nil {
-					continue
-				}
-
-				if err = s.SaveBody(tenantId, functionDetail, interfaceId); err != nil {
-					continue
-				}
+			interfaceId, err := s.SaveEndpointInterface(tenantId, title, functionDetail, endpointId, projectId, path)
+			if err != nil {
+				continue
 			}
+
+			if err = s.SaveBody(tenantId, functionDetail, interfaceId); err != nil {
+				continue
+			}
+
+			s.FillTagEndpointRel(&tagEndpointRel, function, endpointId)
 		}
 	}
 
-	cache.SetCache("thirdPartySyncStatus", "Stop", -1)
+	err = s.BatchAddTag(tagEndpointRel, projectId)
 	return
 }
 
-func (s *ThirdPartySyncService) SaveCategory(tenantId consts.TenantId, class integrationDomain.FindClassByServiceCodeResData, projectId, serveId uint) (categoryId uint, err error) {
-	rootNode, err := s.CategoryRepo.GetRootNode(tenantId, projectId, serverConsts.EndpointCategory)
-	if err != nil {
-		return
+func (s *ThirdPartySyncService) SaveData(tenantId consts.TenantId) (err error) {
+	//thirdPartySyncStatus, _ := cache.GetCacheString("thirdPartySyncStatus")
+	//if thirdPartySyncStatus == "Start" {
+	//	return
+	//}
+	//
+	//_ = cache.SetCache("thirdPartySyncStatus", "Start", 1*time.Hour)
+	//syncList, err := s.GetAllData()
+	//if err != nil {
+	//	return
+	//}
+	//
+	//for _, syncConfig := range syncList {
+	//	if syncConfig.Switch == consts.SwitchOFF {
+	//		continue
+	//	}
+	//	projectId, serveId, userId, baseUrl := syncConfig.ProjectId, syncConfig.ServeId, syncConfig.CreateUserId, syncConfig.Url
+	//
+	//	token, err := s.GetToken(baseUrl)
+	//	if err != nil {
+	//		continue
+	//	}
+	//
+	//	classes := s.GetClasses(syncConfig.ServiceCode, token, baseUrl)
+	//	for _, class := range classes {
+	//		classCode := class.Code
+	//
+	//		funcLimit := v1.LecangFuncLimit{}
+	//		functionList := s.GetFunctionsByClassNew(class, funcLimit, token, baseUrl)
+	//		if len(functionList) == 0 {
+	//			continue
+	//		}
+	//
+	//		categoryId, err := s.SaveCategory(class, projectId, syncConfig.ServeId)
+	//		if err != nil {
+	//			continue
+	//		}
+	//
+	//		for _, function := range functionList {
+	//			path := "/" + syncConfig.ServiceCode + "/" + classCode + "/" + function
+	//			functionDetail := s.GetFunctionDetail(classCode, function, token, baseUrl)
+	//			if functionDetail.Code == "" {
+	//				continue
+	//			}
+	//
+	//			fmt.Println(functionDetail)
+	//			title := classCode + "-" + functionDetail.Code
+	//			endpoint, err := s.EndpointRepo.GetByItem(consts.ThirdPartySync, projectId, path, serveId, int64(categoryId))
+	//			if err != nil && err != gorm.ErrRecordNotFound {
+	//				continue
+	//			}
+	//
+	//			oldEndpointDetail, err := s.EndpointRepo.GetAll(endpoint.ID, "v0.1.0")
+	//			if err != nil && err != gorm.ErrRecordNotFound {
+	//				continue
+	//			}
+	//
+	//			newEndpointDetail, err := s.GenerateEndpoint(functionDetail)
+	//			if err != nil && err != gorm.ErrRecordNotFound {
+	//				continue
+	//			}
+	//
+	//			oldEndpointDetail.ServeId = 0
+	//			newEndpointDetail.ServeId = 0
+	//			newSnapshot := _commUtils.JsonEncode(s.EndpointService.Yaml(newEndpointDetail))
+	//			if oldEndpointDetail.Snapshot == newSnapshot {
+	//				continue
+	//			}
+	//			oldEndpointId := endpoint.ID
+	//
+	//			oldEndpointDetailJson := _commUtils.JsonEncode(s.EndpointService.Yaml(oldEndpointDetail))
+	//			if endpoint.ID != 0 && oldEndpointDetail.Snapshot != oldEndpointDetailJson {
+	//				s.EndpointRepo.UpdateSnapshot(endpoint.ID, newSnapshot)
+	//				continue
+	//			}
+	//			saveEndpointReq := v1.SaveLcEndpointReq{Title: title, ProjectId: projectId, ServeId: serveId, UserId: userId, OldEndpointId: oldEndpointId, Path: path, Snapshot: newSnapshot, DataSyncType: consts.AutoAdd, CategoryId: int64(categoryId)}
+	//			endpointId, err := s.SaveEndpoint(saveEndpointReq)
+	//			if err != nil {
+	//				continue
+	//			}
+	//
+	//			interfaceId, err := s.SaveEndpointInterface(title, functionDetail, endpointId, projectId, path)
+	//			if err != nil {
+	//				continue
+	//			}
+	//
+	//			if err = s.SaveBody(functionDetail, interfaceId); err != nil {
+	//				continue
+	//			}
+	//		}
+	//	}
+	//}
+	//
+	//cache.SetCache("thirdPartySyncStatus", "Stop", -1)
+	return
+}
+
+func (s *ThirdPartySyncService) SaveCategory(tenantId consts.TenantId, class integrationDomain.FindClassByServiceCodeResData, projectId, serveId uint, parentCategoryId int, categoryId *int64) (err error) {
+	if parentCategoryId == 0 || parentCategoryId == -1 {
+		rootNode, err := s.CategoryRepo.GetRootNode(tenantId, projectId, serverConsts.EndpointCategory)
+		if err != nil {
+			return err
+		}
+		parentCategoryId = int(rootNode.ID)
 	}
 
 	name := class.Code
-	if class.Code != class.Name {
+	if class.Code != class.Name && class.Name != "" {
 		name = class.Name + "(" + name + ")"
 	}
 	categoryReq := model.Category{
@@ -223,7 +427,7 @@ func (s *ThirdPartySyncService) SaveCategory(tenantId consts.TenantId, class int
 		ServeId:    serveId,
 		Type:       serverConsts.EndpointCategory,
 		SourceType: consts.ThirdPartySync,
-		ParentId:   int(rootNode.ID),
+		ParentId:   parentCategoryId,
 	}
 
 	category, err := s.CategoryRepo.GetDetail(tenantId, categoryReq)
@@ -232,48 +436,49 @@ func (s *ThirdPartySyncService) SaveCategory(tenantId consts.TenantId, class int
 	}
 
 	if category.ID != 0 {
-		return category.ID, nil
+		*categoryId = int64(category.ID)
+		return
 	}
 
 	err = s.CategoryRepo.Save(tenantId, &categoryReq)
 	if err != nil {
-		return 0, err
+		return
 	}
-	categoryId = categoryReq.ID
+	*categoryId = int64(categoryReq.ID)
 
 	return
 }
 
-func (s *ThirdPartySyncService) SaveEndpoint(tenantId consts.TenantId, title string, projectId, serveId, userId, oldEndpointId uint, categoryId int64, path, snapshot string, dataSyncType consts.DataSyncType) (endpointId uint, err error) {
+func (s *ThirdPartySyncService) SaveEndpoint(tenantId consts.TenantId, req v1.SaveLcEndpointReq) (endpointId uint, err error) {
 	timeNow := time.Now()
 	endpoint := model.Endpoint{
-		Title:       title,
-		ProjectId:   projectId,
-		ServeId:     serveId,
-		Path:        path,
+		Title:       req.Title,
+		ProjectId:   req.ProjectId,
+		ServeId:     req.ServeId,
+		Path:        req.Path,
 		Status:      1,
-		Snapshot:    snapshot,
+		Snapshot:    req.Snapshot,
 		SourceType:  consts.ThirdPartySync,
 		ChangedTime: &timeNow,
 	}
-	if dataSyncType == consts.FullCover {
+	if req.DataSyncType == consts.FullCover {
 		endpoint.ChangedStatus = consts.NoChanged
 	}
 
-	if oldEndpointId == 0 || dataSyncType == consts.Add {
-		endpoint.CategoryId = categoryId
+	if req.OldEndpointId == 0 || req.DataSyncType == consts.Add {
+		endpoint.CategoryId = req.CategoryId
 	}
 
-	if userId != 0 {
-		user, err := s.UserRepo.FindById(tenantId, userId)
+	if req.UserId != 0 {
+		user, err := s.UserRepo.FindById(tenantId, req.UserId)
 		if err != nil {
 			return 0, err
 		}
 		endpoint.CreateUser = user.Username
 	}
 
-	if oldEndpointId != 0 {
-		endpoint.ID = oldEndpointId
+	if req.OldEndpointId != 0 && req.DataSyncType != consts.Add {
+		endpoint.ID = req.OldEndpointId
 	}
 
 	err = s.EndpointRepo.SaveAll(tenantId, &endpoint)
@@ -517,7 +722,8 @@ func (s *ThirdPartySyncService) ImportThirdPartyFunctions(tenantId consts.Tenant
 			oldEndpointId = endpoint.ID
 		}
 
-		endpointId, err := s.SaveEndpoint(tenantId, title, req.ProjectId, req.ServeId, req.UserId, oldEndpointId, req.CategoryId, path, newSnapshot, req.DataSyncType)
+		saveEndpointReq := v1.SaveLcEndpointReq{Title: title, ProjectId: req.ProjectId, ServeId: req.ServeId, UserId: req.UserId, OldEndpointId: oldEndpointId, Path: path, Snapshot: newSnapshot, DataSyncType: req.DataSyncType, CategoryId: req.CategoryId}
+		endpointId, err := s.SaveEndpoint(tenantId, saveEndpointReq)
 		if err != nil {
 			continue
 		}
@@ -558,6 +764,46 @@ func (s *ThirdPartySyncService) ListFunctionsByClass(baseUrl, classCode string) 
 			res = append(res, function)
 		}
 	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) GetEngineeringOptions(baseUrl string) (ret []integrationDomain.EngineeringItem, err error) {
+	token, err := s.GetToken(baseUrl)
+	if err != nil {
+		err = errors.New("您输入的环境URL地址有误")
+		return
+	}
+
+	ret = s.RemoteService.LcContainerQueryAgent(token, baseUrl)
+
+	return
+}
+
+func (s *ThirdPartySyncService) GetServiceOptions(engineering, baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
+	token, err := s.GetToken(baseUrl)
+	if err != nil {
+		err = errors.New("您输入的环境URL地址有误")
+		return
+	}
+
+	if engineering == "" {
+		ret = s.RemoteService.LcAllServiceList(token, baseUrl)
+	} else {
+		ret = s.RemoteService.LcMlServiceQueryAgent(engineering, token, baseUrl)
+	}
+
+	return
+}
+
+func (s *ThirdPartySyncService) GetAllServiceList(baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
+	token, err := s.GetToken(baseUrl)
+	if err != nil {
+		err = errors.New("您输入的环境URL地址有误")
+		return
+	}
+
+	ret = s.RemoteService.LcAllServiceList(token, baseUrl)
 
 	return
 }

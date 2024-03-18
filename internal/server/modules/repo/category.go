@@ -478,3 +478,11 @@ func (r *CategoryRepo) SaveEntityNode(tenantId consts.TenantId, nodeId uint, typ
 	return entity.ID, err
 
 }
+
+func (r *CategoryRepo) BatchGetByIds(tenantId consts.TenantId, ids []int) (res []model.Category, err error) {
+	err = r.GetDB(tenantId).Model(&model.Category{}).
+		Where("id IN (?) AND NOT deleted", ids).
+		Find(&res).Error
+
+	return
+}

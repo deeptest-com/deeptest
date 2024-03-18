@@ -81,6 +81,7 @@ func (c *PerformanceTestWebSocketCtrl) exec(req agentDomain.WsReq, wsMsg websock
 		service := conductorExec.GetTestService(room)
 		if service == nil {
 			ptlog.Logf("not found test service for room %s to stop", room)
+			ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, &wsMsg)
 			return
 		}
 

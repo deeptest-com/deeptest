@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.2.0
 // - protoc             v3.17.3
-// source: internal/performance/proto/performance.proto
+// source: internal/agent/performance/proto/performance.proto
 
 package ptproto
 
@@ -25,6 +25,7 @@ const _ = grpc.SupportPackageIsVersion7
 type PerformanceServiceClient interface {
 	RunnerExecStart(ctx context.Context, opts ...grpc.CallOption) (PerformanceService_RunnerExecStartClient, error)
 	RunnerExecStop(ctx context.Context, opts ...grpc.CallOption) (PerformanceService_RunnerExecStopClient, error)
+	RunnerIsBusy(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
 	ConductorGetGlobalVar(ctx context.Context, in *GlobalVarRequest, opts ...grpc.CallOption) (*wrapperspb.Int32Value, error)
 	ConductorAddGlobalVar(ctx context.Context, in *GlobalVarRequest, opts ...grpc.CallOption) (*wrapperspb.Int32Value, error)
 	ConductorClearGlobalVar(ctx context.Context, in *GlobalVarRequest, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error)
@@ -101,6 +102,15 @@ func (x *performanceServiceRunnerExecStopClient) Recv() (*PerformanceExecResp, e
 	return m, nil
 }
 
+func (c *performanceServiceClient) RunnerIsBusy(ctx context.Context, in *wrapperspb.StringValue, opts ...grpc.CallOption) (*wrapperspb.BoolValue, error) {
+	out := new(wrapperspb.BoolValue)
+	err := c.cc.Invoke(ctx, "/ptproto.PerformanceService/RunnerIsBusy", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *performanceServiceClient) ConductorGetGlobalVar(ctx context.Context, in *GlobalVarRequest, opts ...grpc.CallOption) (*wrapperspb.Int32Value, error) {
 	out := new(wrapperspb.Int32Value)
 	err := c.cc.Invoke(ctx, "/ptproto.PerformanceService/ConductorGetGlobalVar", in, out, opts...)
@@ -143,6 +153,7 @@ func (c *performanceServiceClient) ConductorClearAllGlobalVar(ctx context.Contex
 type PerformanceServiceServer interface {
 	RunnerExecStart(PerformanceService_RunnerExecStartServer) error
 	RunnerExecStop(PerformanceService_RunnerExecStopServer) error
+	RunnerIsBusy(context.Context, *wrapperspb.StringValue) (*wrapperspb.BoolValue, error)
 	ConductorGetGlobalVar(context.Context, *GlobalVarRequest) (*wrapperspb.Int32Value, error)
 	ConductorAddGlobalVar(context.Context, *GlobalVarRequest) (*wrapperspb.Int32Value, error)
 	ConductorClearGlobalVar(context.Context, *GlobalVarRequest) (*wrapperspb.BoolValue, error)
@@ -158,6 +169,9 @@ func (UnimplementedPerformanceServiceServer) RunnerExecStart(PerformanceService_
 }
 func (UnimplementedPerformanceServiceServer) RunnerExecStop(PerformanceService_RunnerExecStopServer) error {
 	return status.Errorf(codes.Unimplemented, "method RunnerExecStop not implemented")
+}
+func (UnimplementedPerformanceServiceServer) RunnerIsBusy(context.Context, *wrapperspb.StringValue) (*wrapperspb.BoolValue, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RunnerIsBusy not implemented")
 }
 func (UnimplementedPerformanceServiceServer) ConductorGetGlobalVar(context.Context, *GlobalVarRequest) (*wrapperspb.Int32Value, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ConductorGetGlobalVar not implemented")
@@ -233,6 +247,24 @@ func (x *performanceServiceRunnerExecStopServer) Recv() (*PerformanceExecStopReq
 		return nil, err
 	}
 	return m, nil
+}
+
+func _PerformanceService_RunnerIsBusy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(wrapperspb.StringValue)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PerformanceServiceServer).RunnerIsBusy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/ptproto.PerformanceService/RunnerIsBusy",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PerformanceServiceServer).RunnerIsBusy(ctx, req.(*wrapperspb.StringValue))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _PerformanceService_ConductorGetGlobalVar_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -315,6 +347,10 @@ var PerformanceService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*PerformanceServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "RunnerIsBusy",
+			Handler:    _PerformanceService_RunnerIsBusy_Handler,
+		},
+		{
 			MethodName: "ConductorGetGlobalVar",
 			Handler:    _PerformanceService_ConductorGetGlobalVar_Handler,
 		},
@@ -345,5 +381,5 @@ var PerformanceService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "internal/performance/proto/performance.proto",
+	Metadata: "internal/agent/performance/proto/performance.proto",
 }

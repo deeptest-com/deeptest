@@ -16,6 +16,7 @@ import (
 	"github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 	"io"
 	"log"
 	"sync"
@@ -93,6 +94,12 @@ func (s *PerformanceTestService) ExecStart(
 	data.Room = req.Room
 
 	ptlog.Init(data.Room)
+
+	if s.IsaRunnerBusy(data) {
+		ptwebsocket.SendExecInstructionToClient(
+			"performance testing is running on runner", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
+		return
+	}
 
 	item := AddTestItem(s.TestReq.Room, ptconsts.Conductor, s.TestReq, data.Runners, nil)
 
@@ -299,6 +306,21 @@ func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.Performance
 		if notSet || scenarioIdsMap[scenario.Id] {
 			ret = append(ret, scenario)
 		}
+	}
+
+	return
+}
+
+func (s *PerformanceTestService) IsaRunnerBusy(data ptdomain.PerformanceTestData) (ret bool) {
+	for _, runner := range data.Runners {
+		client := s.ConnectGrpc(runner)
+
+		isBusy, _ := client.RunnerIsBusy(context.Background(), &wrapperspb.StringValue{Value: data.Room})
+		if isBusy.Value {
+			ret = isBusy.Value
+			return
+		}
+
 	}
 
 	return

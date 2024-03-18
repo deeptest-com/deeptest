@@ -8,6 +8,7 @@ import "google/protobuf/wrappers.proto";
 service PerformanceService {
   rpc RunnerExecStart(stream PerformanceExecStartReq) returns (stream PerformanceExecResp){};
   rpc RunnerExecStop(stream PerformanceExecStopReq) returns (stream PerformanceExecResp){};
+  rpc RunnerIsBusy (google.protobuf.StringValue) returns (google.protobuf.BoolValue);
 
   rpc ConductorGetGlobalVar (GlobalVarRequest) returns (google.protobuf.Int32Value);
   rpc ConductorAddGlobalVar (GlobalVarRequest) returns (google.protobuf.Int32Value);

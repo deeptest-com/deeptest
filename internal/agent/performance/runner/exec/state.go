@@ -4,10 +4,10 @@ var (
 	isRunnerRunning = false
 )
 
-func IsRunnerTestRunning() bool {
+func IsTestRunning() bool {
 	return isRunnerRunning
 }
 
-func SetRunnerTestRunning(val bool) {
+func SetTestRunning(val bool) {
 	isRunnerRunning = val
 }

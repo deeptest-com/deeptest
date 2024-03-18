@@ -30,12 +30,12 @@ type GrpcService struct {
 
 // conductor call runner, executed on runner side
 func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerExecStartServer) (err error) {
-	if runnerExec.IsRunnerTestRunning() {
+	if runnerExec.IsTestRunning() {
 		err = &ptdomain.ErrorAlreadyRunning{}
 		return
 	}
 
-	runnerExec.SetRunnerTestRunning(true)
+	runnerExec.SetTestRunning(true)
 
 	req, err := stream.Recv()
 	if err == io.EOF {
@@ -66,7 +66,7 @@ func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerEx
 	go metrics.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, influxdbSender)
 
 	go func() {
-		defer runnerExec.SetRunnerTestRunning(false)
+		defer runnerExec.SetTestRunning(false)
 
 		// SYNC exec testing
 		runnerExec.ExecProgram(s.execCtx, s.execCancel, req, influxdbSender)
@@ -81,6 +81,18 @@ func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerEx
 		grpcSender := metrics.NewGrpcSender(&stream)
 		grpcSender.Send(result)
 	}()
+
+	return
+}
+
+func (s *GrpcService) RunnerIsBusy(ctx context.Context, roomVal *wrapperspb.StringValue) (ret *wrapperspb.BoolValue, err error) {
+	ret = &wrapperspb.BoolValue{}
+
+	if runnerExec.IsTestRunning() {
+		ret.Value = true
+	} else {
+		ret.Value = false
+	}
 
 	return
 }

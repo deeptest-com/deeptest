@@ -45,4 +45,5 @@ package-ly.json
 
 /internal/performance/proto/performance.pb.go
 /internal/performance/proto/performance_grpc.pb.go
+/log
 /log/*.log

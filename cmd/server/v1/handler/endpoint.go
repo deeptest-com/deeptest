@@ -38,6 +38,7 @@ func (c *EndpointCtrl) Index(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+	req.UserId = multi.GetUserId(ctx)
 	res, _ := c.EndpointService.Paginate(tenantId, req)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 

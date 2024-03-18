@@ -19,6 +19,8 @@ type EndpointReqPaginate struct {
 	ServeVersion string   `json:"serveVersion"`
 	TagNames     []string `json:"tagNames"`
 	ServeIds     []uint   `json:"serveIds"`
+	IsFavorite   bool     `json:"isFavorite"`
+	UserId       uint     `json:"UserId"`
 }
 
 type EndpointInterfaceReqPaginate struct {

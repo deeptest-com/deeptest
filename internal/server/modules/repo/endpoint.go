@@ -47,7 +47,13 @@ func (r *EndpointRepo) Paginate(tenantId consts.TenantId, req v1.EndpointReqPagi
 	}
 
 	if req.ServeVersion != "" {
-		if ids, err := r.ServeRepo.GetBindEndpointIds(tenantId, req.ServeId, req.ServeVersion); err != nil {
+		if ids, err := r.ServeRepo.GetBindEndpointIds(tenantId, req.ServeId, req.ServeVersion); err == nil {
+			db = db.Where("id in ?", ids)
+		}
+	}
+
+	if req.IsFavorite {
+		if ids, err := r.EndpointFavoriteRepo.GetEndpointIds(tenantId, req.UserId); err == nil {
 			db = db.Where("id in ?", ids)
 		}
 	}

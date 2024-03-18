@@ -32,30 +32,5 @@ func ExecProcessors(timeoutCtx context.Context, vuNo int) (err error) {
 	session := agentExec.NewScenarioExecSession(timeoutCtx, execParams.RunnerId, vuNo, scenarioExecObj, execParams.EnvironmentId, nil)
 	err = service.ExecScenario(session)
 
-	//	for index, processor := range rootProcessor.Children {
-	//		if processor.EntityType == consts.ProcessorInterfaceDefault {
-	//			ptlog.Logf("exec processor %v", processor)
-	//			ExecInterfaceProcessor(processor, timeoutCtx, execParams.Room, runnerId, vuNo, index, sender)
-	//
-	//		} else if execParams.Mode == ptconsts.Parallel && processor.EntityType == consts.ProcessorPerformanceRendezvousDefault {
-	//			ptlog.Logf("exec processor %v", processor)
-	//			ExecRendezvousProcessor(processor, timeoutCtx, execParams.Room, runnerId, vuNo, execParams.ConductorGrpcAddress, index)
-	//
-	//		}
-	//
-	//		// 每个场景处理器完成后，检测是否有终止执行的信号
-	//		select {
-	//		case <-timeoutCtx.Done():
-	//			_logUtils.Debugf("vu %d exit scenario processors by signal", vuNo)
-	//			goto Label_END_SCENARIO
-	//
-	//		default:
-	//		}
-	//	}
-	//
-	//	_logUtils.Debugf("vu %d complete scenario normally", vuNo)
-	//
-	//Label_END_SCENARIO:
-
 	return
 }

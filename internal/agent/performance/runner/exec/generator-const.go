@@ -60,7 +60,7 @@ func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
 	// wait all vus completed
 	wgVus.Wait()
 
-	ptlog.Log("all vus completed")
+	ptlog.Logf("all vus completed")
 
 Label_END_STAGES:
 

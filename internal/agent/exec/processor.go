@@ -5,7 +5,7 @@ import (
 	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
-	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
+	agentLog "github.com/aaronchen2k/deeptest/internal/agent/pkg/utils/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	"github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -89,7 +89,7 @@ func (p *Processor) Error(s *ExecSession, err interface{}) {
 
 	msg := fmt.Sprintf("err=%v\n stack=%s\n", err, string(debug.Stack()))
 	_logUtils.Errorf(msg)
-	ptlog.Logf(msg)
+	agentLog.Errf(msg)
 
 	p.AddResultToParent()
 	execUtils.SendExecMsg(p.Result, consts.Processor, s.WsMsg)

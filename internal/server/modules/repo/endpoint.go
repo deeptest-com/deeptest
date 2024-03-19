@@ -588,5 +588,6 @@ func (r *EndpointRepo) GetEntity(tenantId consts.TenantId, id uint) (data map[st
 	data["id"] = endpoint.ID
 	data["name"] = endpoint.Title
 	data["method"], _ = r.EndpointInterfaceRepo.GetMethodsByEndpointId(tenantId, id)
+	data["serialNumber"] = endpoint.SerialNumber
 	return
 }

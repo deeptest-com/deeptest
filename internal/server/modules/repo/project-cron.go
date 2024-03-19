@@ -177,3 +177,16 @@ func (r *ProjectCronRepo) UpdateExecErr(tenantId consts.TenantId, id uint, execE
 
 	return
 }
+
+func (r *ProjectCronRepo) UpdateExecStatus(tenantId consts.TenantId, configId int, source consts.CronSource, execStatus consts.CronExecStatus) (err error) {
+	updateColumns := make(map[string]interface{})
+	updateColumns["exec_status"] = execStatus
+	updateColumns["exec_err"] = ""
+
+	err = r.GetDB(tenantId).Model(&model.ProjectCron{}).
+		Where("config_id = ?", configId).
+		Where("source = ?", source).
+		Updates(updateColumns).Error
+
+	return
+}

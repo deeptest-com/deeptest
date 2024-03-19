@@ -77,12 +77,15 @@ func (s *ProjectCronService) initCron(req *model.ProjectCron) {
 		req.Switch = consts.SwitchON
 	}
 
-	if req.SwaggerConfig.CategoryId == 0 {
-		req.SwaggerConfig.CategoryId = -1
-	}
-	if req.LecangConfig.CategoryId == 0 {
-		req.LecangConfig.CategoryId = -1
-	}
+	//TODO  分类id 不能为空
+	/*
+		if req.SwaggerConfig.CategoryId == 0 {
+			req.SwaggerConfig.CategoryId = -1
+		}
+		if req.LecangConfig.CategoryId == 0 {
+			req.LecangConfig.CategoryId = -1
+		}
+	*/
 }
 
 func (s *ProjectCronService) Delete(tenantId consts.TenantId, id uint) (err error) {
@@ -153,4 +156,13 @@ func (s *ProjectCronService) UpdateCronExecTimeById(tenantId consts.TenantId, co
 
 func (s *ProjectCronService) UpdateExecErr(tenantId consts.TenantId, id uint, execErr string) (err error) {
 	return s.ProjectCronRepo.UpdateExecErr(tenantId, id, execErr)
+}
+
+func (s *ProjectCronService) ListAllCron(tenantId consts.TenantId) (res []model.ProjectCron, err error) {
+	return s.ProjectCronRepo.ListAllCron(tenantId)
+}
+
+func (s *ProjectCronService) UpdateExecStatusRunning(tenantId consts.TenantId, taskId string, source consts.CronSource) error {
+	configId, _ := strconv.Atoi(taskId)
+	return s.ProjectCronRepo.UpdateExecStatus(tenantId, configId, source, consts.CronExecIng)
 }

@@ -19,6 +19,7 @@ type Proxy struct {
 	cron               string
 	task               Task
 	taskId             string
+	beforeCall         func(tenantId consts.TenantId, taskId string, source consts.CronSource) error
 	callBack           func(tenantId consts.TenantId, taskId string, source consts.CronSource, err error) error
 	tenantId           consts.TenantId
 	ServerCron         *cron.ServerCron            `inject:""`
@@ -41,13 +42,14 @@ func (p *Proxy) GetTaskId() (taskId string) {
 //	return
 //}
 
-func (p *Proxy) Init(tenantId consts.TenantId, source consts.CronSource, callBack func(tenantId consts.TenantId, taskId string, source consts.CronSource, err error) error, taskId, cron string) {
+func (p *Proxy) Init(tenantId consts.TenantId, source consts.CronSource, beforeCall func(tenantId consts.TenantId, taskId string, source consts.CronSource) error, callBack func(tenantId consts.TenantId, taskId string, source consts.CronSource, err error) error, taskId, cron string) {
 	p.tenantId = tenantId
 	p.source = source
 	p.cron = cron
 	p.taskId = taskId
 	p.Factory.name = source
 	p.callBack = callBack
+	p.beforeCall = beforeCall
 	p.task = p.Factory.Create()
 }
 
@@ -74,9 +76,15 @@ func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 				ret = fmt.Errorf("%v", err)
 			}
 
-			p.callBack(p.tenantId, p.taskId, p.source, ret)
+			if p.callBack != nil {
+				p.callBack(p.tenantId, p.taskId, p.source, ret) //后置处理任务，处理调用结果
+			}
 
 		}()
+
+		if p.beforeCall != nil { // 前置处理任务，初始化任务状态为执行中，防止任务重复执行
+			p.beforeCall(p.tenantId, p.taskId, p.source)
+		}
 
 		runFunc := p.task.Run(options)
 		//if runFunc() == nil {
@@ -93,6 +101,10 @@ func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 	}
 
 	return
+}
+
+func (p Proxy) Run(options map[string]interface{}) {
+	p.getTaskFunc(options)
 }
 
 func Test() {

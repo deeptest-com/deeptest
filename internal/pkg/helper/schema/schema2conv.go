@@ -238,7 +238,7 @@ func (s *Schema2conv) Schema2Example(schema SchemaRef) (object interface{}) {
 	}
 
 	if schema.Ref != "" {
-		if s.sets[ref] > 1 {
+		if s.sets[schema.Ref] > 1 {
 			return
 		}
 		return s.Schema2Example(schema)
@@ -295,6 +295,13 @@ func (s *Schema2conv) SchemaComponents(schema *SchemaRef, components *Components
 
 	if component, refId, ref := s.Components.Component(schema); refId != 0 {
 		components.Add(refId, ref, component)
+		if schema.Ref != "" {
+			s.sets[ref]++
+
+			if s.sets[ref] > 1 {
+				return
+			}
+		}
 		schema = component
 	}
 

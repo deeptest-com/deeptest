@@ -14,11 +14,8 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/sirupsen/logrus"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 	"io"
-	"log"
 	"sync"
 )
 
@@ -51,7 +48,6 @@ func CreatePerformanceTestService() *PerformanceTestService {
 type PerformanceTestService struct {
 	uuid string
 
-	TestReq      *ptdomain.PerformanceTestReq
 	suspendWsMsg bool
 
 	execCtx    context.Context
@@ -75,15 +71,14 @@ type PerformanceTestService struct {
 func (s *PerformanceTestService) ExecStart(
 	req ptdomain.PerformanceTestReq, wsMsg *websocket.Message) (err error) {
 
+	conductorTask := GetConductorTask()
+
 	// ignore if already a test is running
-	if s.TestReq != nil {
+	if conductorTask != nil {
 		ptwebsocket.SendExecInstructionToClient(
-			"performance testing is running on conductor", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
+			"主控端有正在执行的性能测试", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
 		return
 	}
-
-	// cache request
-	s.TestReq = &req
 
 	// load test data from remote server
 	data, err := s.PerformanceRemoteService.GetPlanToExec(req)
@@ -95,16 +90,16 @@ func (s *PerformanceTestService) ExecStart(
 
 	ptlog.Init(data.Room)
 
-	if s.IsaRunnerBusy(data) {
+	if s.IsRunnerBusy(data) {
 		ptwebsocket.SendExecInstructionToClient(
-			"performance testing is running on runner", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
+			"代理端有正在执行的性能测试", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
 		return
 	}
 
-	item := AddTestItem(s.TestReq.Room, ptconsts.Conductor, s.TestReq, data.Runners, nil)
+	conductorTask = AddTestItem(req.Room, ptconsts.Conductor, &req, data.Runners, nil)
 
 	ptwebsocket.SendExecInstructionToClient(
-		"performance testing start", item, ptconsts.MsgInstructionStart, wsMsg)
+		"performance testing start", conductorTask, ptconsts.MsgInstructionStart, wsMsg)
 
 	s.execCtx, s.execCancel = context.WithCancel(context.Background())
 
@@ -145,42 +140,31 @@ func (s *PerformanceTestService) ExecStart(
 
 			wgRunners.Add(1)
 
+			// async handle runner grpc msg
 			go func() {
 				defer wgRunners.Done()
 
-				s.handleGrpcMsg(stream)
+				s.handleGrpcMsg(s.execCtx, stream, runner.Id, runner.Name) //  finish loop if got a runnerFinish instruction, now do nothing
 				stream.CloseSend()
 			}()
 		}
 
 		wgRunners.Wait()
-
-		//s.StopAndClearScene(data.Room, wsMsg)
 	}()
 
 	return
 }
 
 func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) {
-	if s.TestReq == nil {
-		return
-	}
+	conductorTask := GetConductorTask()
 
-	// load test data from remote server
-	data, err := s.PerformanceRemoteService.GetPlanToExec(*s.TestReq)
-	if err != nil {
+	if conductorTask == nil {
 		return
 	}
 
 	// call remote runners to stop
-	s.RemoteRunnerService.CallStop(data)
+	s.RemoteRunnerService.CallStop(conductorTask.Room, conductorTask.Runners)
 
-	s.StopAndClearScene(s.TestReq.Room, wsMsg)
-
-	return
-}
-
-func (s *PerformanceTestService) StopAndClearScene(room string, wsMsg *websocket.Message) (err error) {
 	// close exec and send msg
 	if s.execCancel != nil {
 		s.execCancel()
@@ -188,21 +172,15 @@ func (s *PerformanceTestService) StopAndClearScene(room string, wsMsg *websocket
 	ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 
 	// remove from cache
-	s.TestReq = nil
-	RemoveTestItem(room)
-	DeleteTestService(room)
+	RemoveTestTask(conductorTask.Room, ptconsts.Conductor)
+	DeleteTestService(conductorTask.Room)
 
 	return
 }
 
 // call grpc client
 func (s *PerformanceTestService) ConnectGrpc(runner *ptdomain.Runner) (client ptproto.PerformanceServiceClient) {
-	connect, err := grpc.Dial(runner.GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	client = ptproto.NewPerformanceServiceClient(connect)
+	client = GetGrpcClient(runner.GrpcAddress)
 
 	return
 }
@@ -249,7 +227,7 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 	return
 }
 
-func (s *PerformanceTestService) handleGrpcMsg(stream ptproto.PerformanceService_RunnerExecStartClient) (err error) {
+func (s *PerformanceTestService) handleGrpcMsg(ctx context.Context, stream ptproto.PerformanceService_RunnerExecStartClient, runnerId int32, runnerName string) (err error) {
 	for true {
 		resp, err := stream.Recv()
 		if err == io.EOF {
@@ -259,10 +237,15 @@ func (s *PerformanceTestService) handleGrpcMsg(stream ptproto.PerformanceService
 			continue
 		}
 
-		ptlog.Logf("get grpc msg from runner: %v", resp)
+		ptlog.Logf("get grpc msg from runner %d-%s: %v", runnerId, runnerName, resp)
 
 		// dealwith Instruction from agent
 		if resp.Instruction == ptconsts.MsgInstructionRunnerFinish.String() {
+			break
+		} else if resp.Instruction == ptconsts.MsgInstructionConductorFinish.String() {
+			ctx.Done()
+			ptlog.Logf("stop conductor whole execution by runner %d-%s", runnerId, runnerName)
+
 			break
 		}
 
@@ -311,7 +294,7 @@ func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.Performance
 	return
 }
 
-func (s *PerformanceTestService) IsaRunnerBusy(data ptdomain.PerformanceTestData) (ret bool) {
+func (s *PerformanceTestService) IsRunnerBusy(data ptdomain.PerformanceTestData) (ret bool) {
 	for _, runner := range data.Runners {
 		client := s.ConnectGrpc(runner)
 

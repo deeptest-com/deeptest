@@ -20,6 +20,16 @@ var (
 	logInst *PerformanceLogService
 )
 
+func DestroyPerformanceLogService(room string) {
+	logService := GetLogService(room)
+	if logService != nil {
+		if logService.logCancel != nil {
+			logService.logCancel()
+		}
+		DeleteLogService(room)
+	}
+}
+
 func CreatePerformanceLogService() *PerformanceLogService {
 	logInst = &PerformanceLogService{
 		uuid: _stringUtils.Uuid(),

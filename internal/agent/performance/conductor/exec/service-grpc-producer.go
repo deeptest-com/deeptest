@@ -30,12 +30,12 @@ type GrpcService struct {
 
 // conductor call runner, executed on runner side
 func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerExecStartServer) (err error) {
-	if runnerExec.IsTestRunning() {
+	runnerTask := GetRunnerTask()
+
+	if runnerTask != nil {
 		err = &ptdomain.ErrorAlreadyRunning{}
 		return
 	}
-
-	runnerExec.SetTestRunning(true)
 
 	req, err := stream.Recv()
 	if err == io.EOF {
@@ -66,38 +66,28 @@ func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerEx
 	go metrics.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, influxdbSender)
 
 	go func() {
-		defer runnerExec.SetTestRunning(false)
-
 		// SYNC exec testing
 		runnerExec.ExecProgram(s.execCtx, s.execCancel, req, influxdbSender)
 
+		// remove runner item
+		RemoveTestTask(req.Room, ptconsts.Runner)
+
 		// send end signal to conductor
-		result := ptProto.PerformanceExecResp{
+		instruction := ptProto.PerformanceExecResp{
 			Timestamp:   time.Now().UnixMilli(),
 			RunnerId:    req.RunnerId,
 			Room:        req.Room,
 			Instruction: ptconsts.MsgInstructionRunnerFinish.String(),
 		}
 		grpcSender := metrics.NewGrpcSender(&stream)
-		grpcSender.Send(result)
+		grpcSender.Send(instruction)
 	}()
 
 	return
 }
 
-func (s *GrpcService) RunnerIsBusy(ctx context.Context, roomVal *wrapperspb.StringValue) (ret *wrapperspb.BoolValue, err error) {
-	ret = &wrapperspb.BoolValue{}
-
-	if runnerExec.IsTestRunning() {
-		ret.Value = true
-	} else {
-		ret.Value = false
-	}
-
-	return
-}
-
 func (s *GrpcService) RunnerExecStop(stream ptProto.PerformanceService_RunnerExecStopServer) (err error) {
+	// get request
 	req, err := stream.Recv()
 	if err == io.EOF {
 		err = nil
@@ -109,16 +99,29 @@ func (s *GrpcService) RunnerExecStop(stream ptProto.PerformanceService_RunnerExe
 
 	room := req.Room
 
-	logService := GetLogService(room)
-	if logService != nil {
-		if logService.logCancel != nil {
-			logService.logCancel()
-		}
-		DeleteLogService(room)
-	}
-
+	// cancel context
 	if s.execCancel != nil {
 		s.execCancel()
+	}
+
+	// destroy log service
+	DestroyPerformanceLogService(room)
+
+	// remove runner task
+	RemoveTestTask(room, ptconsts.Runner)
+
+	return
+}
+
+func (s *GrpcService) RunnerIsBusy(ctx context.Context, roomVal *wrapperspb.StringValue) (ret *wrapperspb.BoolValue, err error) {
+	ret = &wrapperspb.BoolValue{}
+
+	runnerTask := GetRunnerTask()
+
+	if runnerTask != nil {
+		ret.Value = true
+	} else {
+		ret.Value = false
 	}
 
 	return

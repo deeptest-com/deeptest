@@ -91,26 +91,26 @@ func (c *PerformanceTestWebSocketCtrl) exec(req agentDomain.WsReq, wsMsg websock
 
 	} else if req.Act == consts.JoinPerformanceTest {
 		if room == "" { // to join exist room, may be reload page with no room field
-			testItem := conductorExec.GetCurrItem()
-			if testItem == nil {
+			conductorTask := conductorExec.GetConductorTask()
+			if conductorTask == nil {
 				ptwebsocket.SendExecInstructionToClient("", nil, ptconsts.MsgInstructionJoinExist, &wsMsg)
 				return
 			}
 
-			service := conductorExec.GetTestService(testItem.Room)
+			service := conductorExec.GetTestService(conductorTask.Room)
 			if service == nil {
 				ptwebsocket.SendExecInstructionToClient("", nil, ptconsts.MsgInstructionJoinExist, &wsMsg)
 				return
 			}
 
-			ptwebsocket.SendExecInstructionToClient(testItem.Room, testItem.ConductorReq, ptconsts.MsgInstructionJoinExist, &wsMsg)
+			ptwebsocket.SendExecInstructionToClient(conductorTask.Room, conductorTask.ConductorReq, ptconsts.MsgInstructionJoinExist, &wsMsg)
 			conductorExec.ResumeWsMsg()
 
 		} else { //  join exist room successfully, do nothing except sending a start msg
 			service := conductorExec.GetTestService(room)
 			if service != nil {
-				testItem := conductorExec.GetCurrItem()
-				ptwebsocket.SendExecInstructionToClient("performance test joined", testItem, ptconsts.MsgInstructionStart, &wsMsg)
+				conductorTask := conductorExec.GetConductorTask()
+				ptwebsocket.SendExecInstructionToClient("performance test joined", conductorTask, ptconsts.MsgInstructionStart, &wsMsg)
 			}
 		}
 

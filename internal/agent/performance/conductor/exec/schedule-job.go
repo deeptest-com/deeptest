@@ -73,7 +73,7 @@ func (s *ScheduleService) SendMetricsToClient(execCtx context.Context, execCance
 		if IsGoalMet(req, summary.Mean, summary.Qps, int32(summary.Fail+summary.Error), int32(summary.Total)) {
 			execCancel()
 
-			s.RemoteRunnerService.CallStop(req)
+			s.RemoteRunnerService.CallStop(req.Room, req.Runners)
 		}
 
 		lastTime = time.Now().UnixMilli()

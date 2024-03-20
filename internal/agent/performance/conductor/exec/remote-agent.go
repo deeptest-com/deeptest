@@ -4,9 +4,6 @@ import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
 	ptProto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-	"log"
 )
 
 type RemoteRunnerService struct {
@@ -14,21 +11,16 @@ type RemoteRunnerService struct {
 }
 
 func (s *RemoteRunnerService) Connect(runner *ptdomain.Runner) (client ptProto.PerformanceServiceClient) {
-	connect, err := grpc.Dial(runner.GrpcAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalln(err)
-	}
-
-	client = ptProto.NewPerformanceServiceClient(connect)
+	client = GetGrpcClient(runner.GrpcAddress)
 
 	return
 }
 
-func (s *RemoteRunnerService) CallStop(req ptdomain.PerformanceTestData) (err error) {
-	for _, runner := range req.Runners {
+func (s *RemoteRunnerService) CallStop(room string, runners []*ptdomain.Runner) (err error) {
+	for _, runner := range runners {
 		client := s.Connect(runner)
 
-		stream, err := s.CallRunnerExecStopByGrpc(client, req.Room)
+		stream, err := s.callRunnerExecStopByGrpc(client, room)
 		if err != nil {
 			continue
 		}
@@ -39,7 +31,7 @@ func (s *RemoteRunnerService) CallStop(req ptdomain.PerformanceTestData) (err er
 	return
 }
 
-func (s *RemoteRunnerService) CallRunnerExecStopByGrpc(
+func (s *RemoteRunnerService) callRunnerExecStopByGrpc(
 	client ptProto.PerformanceServiceClient, room string) (
 	stream ptProto.PerformanceService_RunnerExecStopClient, err error) {
 

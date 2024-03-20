@@ -17,13 +17,13 @@ var (
 )
 
 var (
-	ItemsStore        sync.Map
+	TasksStore        sync.Map
 	TestServicesStore sync.Map
 	LogServicesStore  sync.Map
 )
 
-func GetCurrItem() (ret *ptdomain.TestItem) {
-	obj, ok := ItemsStore.Load(KeyTests)
+func GetConductorTask() (ret *ptdomain.TestItem) {
+	obj, ok := TasksStore.Load(KeyTests)
 	if !ok {
 		return
 	}
@@ -31,7 +31,23 @@ func GetCurrItem() (ret *ptdomain.TestItem) {
 	items := obj.(*[]*ptdomain.TestItem)
 
 	for i := len(*items) - 1; i >= 0; i-- {
-		if (*items)[i].ConductorReq != nil { // get last one conductor item
+		if (*items)[i].Role == ptconsts.Conductor { // get last conductor item
+			ret = (*items)[i]
+		}
+	}
+
+	return
+}
+func GetRunnerTask() (ret *ptdomain.TestItem) {
+	obj, ok := TasksStore.Load(KeyTests)
+	if !ok {
+		return
+	}
+
+	items := obj.(*[]*ptdomain.TestItem)
+
+	for i := len(*items) - 1; i >= 0; i-- {
+		if (*items)[i].Role == ptconsts.Runner { // get last runner item
 			ret = (*items)[i]
 		}
 	}
@@ -39,7 +55,7 @@ func GetCurrItem() (ret *ptdomain.TestItem) {
 	return
 }
 func GetTestItems() (ret *[]*ptdomain.TestItem) {
-	obj, ok := ItemsStore.Load(KeyTests)
+	obj, ok := TasksStore.Load(KeyTests)
 	if ok {
 		ret = obj.(*[]*ptdomain.TestItem)
 	}
@@ -52,11 +68,11 @@ func AddTestItem(room string, role ptconsts.TestRole, conductorReq *ptdomain.Per
 	arr := make([]*ptdomain.TestItem, 0)
 	tests := &arr
 
-	obj, ok := ItemsStore.Load(KeyTests)
+	obj, ok := TasksStore.Load(KeyTests)
 	if ok {
 		tests = obj.(*[]*ptdomain.TestItem)
 	} else {
-		ItemsStore.Store(KeyTests, tests)
+		TasksStore.Store(KeyTests, tests)
 	}
 
 	ret = &ptdomain.TestItem{
@@ -76,8 +92,8 @@ func AddTestItem(room string, role ptconsts.TestRole, conductorReq *ptdomain.Per
 
 	return
 }
-func RemoveTestItem(room string) {
-	obj, ok := ItemsStore.Load(KeyTests)
+func RemoveTestTask(room string, role ptconsts.TestRole) {
+	obj, ok := TasksStore.Load(KeyTests)
 	if !ok {
 		return
 	}
@@ -86,7 +102,7 @@ func RemoveTestItem(room string) {
 
 	index := -1
 	for i, item := range *tests {
-		if (*item).Room == room {
+		if (*item).Room == room && (*item).Role == role {
 			index = i
 			break
 		}

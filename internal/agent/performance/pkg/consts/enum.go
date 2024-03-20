@@ -55,7 +55,8 @@ func (e MsgInstructionServerToRunner) String() string {
 type MsgInstructionRunnerToServer string
 
 const (
-	MsgInstructionRunnerFinish MsgInstructionRunnerToServer = "runnerFinish"
+	MsgInstructionRunnerFinish    MsgInstructionRunnerToServer = "runnerFinish"
+	MsgInstructionConductorFinish MsgInstructionRunnerToServer = "conductorFinish"
 )
 
 func (e MsgInstructionRunnerToServer) String() string {

@@ -40,9 +40,9 @@ func (c *PerformanceLogWebSocketCtrl) OnNamespaceDisconnect(wsMsg websocket.Mess
 		consts.WsPerformanceLogNamespace, c.Conn.ID(), wsMsg.Room))
 
 	// stop performance log msg
-	testItem := conductorExec.GetCurrItem()
-	if testItem != nil {
-		service := conductorExec.GetLogService(testItem.Room)
+	runnerTask := conductorExec.GetRunnerTask()
+	if runnerTask != nil {
+		service := conductorExec.GetLogService(runnerTask.Room)
 		if service != nil {
 			service.StopSendLog()
 		}

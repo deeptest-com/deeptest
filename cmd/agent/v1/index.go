@@ -12,10 +12,10 @@ import (
 )
 
 type IndexModule struct {
-	SpecModule             *router.SpecModule             `inject:""`
-	InvocationModule       *router.ExecModule             `inject:""`
-	PerformanceStateModule *router.PerformanceStateModule `inject:""`
-	HealthzModule          *router.HealthzModule          `inject:""`
+	SpecModule        *router.SpecModule        `inject:""`
+	InvocationModule  *router.ExecModule        `inject:""`
+	PerformanceModule *router.PerformanceModule `inject:""`
+	HealthzModule     *router.HealthzModule     `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -36,7 +36,7 @@ func (m *IndexModule) Party() module.WebModule {
 	modules := []module.WebModule{
 		m.SpecModule.Party(),
 		m.InvocationModule.Party(),
-		m.PerformanceStateModule.Party(),
+		m.PerformanceModule.Party(),
 		m.HealthzModule.Party(),
 	}
 	return module.NewModule(consts.ApiPathAgent, handler, modules...)

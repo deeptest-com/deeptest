@@ -151,11 +151,13 @@ func (s *PerformanceTestService) ExecStart(
 			go func() {
 				defer wgRunners.Done()
 
-				s.handleGrpcMsg(s.execCtx, stream, runner.Id, runner.Name) //  finish loop if got a runnerFinish instruction, now do nothing
+				s.handleGrpcMsg(s.execCtx, stream, runner.Id, runner.Name) // finish loop in it if got a runnerFinish instruction
+
 				stream.CloseSend()
 			}()
 		}
 
+		// wait all async remote runner executions completed
 		wgRunners.Wait()
 
 		ptlog.Logf("condutor: all runner stopped")
@@ -252,6 +254,7 @@ func (s *PerformanceTestService) handleGrpcMsg(ctx context.Context, stream ptpro
 		// dealwith Instruction from agent
 		if resp.Instruction == ptconsts.MsgInstructionRunnerFinish.String() {
 			break
+
 		} else if resp.Instruction == ptconsts.MsgInstructionConductorFinish.String() {
 			ctx.Done()
 			ptlog.Logf("stop conductor whole execution by runner %d-%s", runnerId, runnerName)

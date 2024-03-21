@@ -75,7 +75,7 @@ func (c *PerformanceTestWebSocketCtrl) exec(req agentDomain.WsReq, wsMsg websock
 		service := conductorExec.CreatePerformanceTestService()
 		conductorExec.SetTestService(room, service)
 
-		err = service.ExecStart(req.PerformanceTestExecReq, &wsMsg)
+		service.ExecStart(req.PerformanceTestExecReq, &wsMsg)
 
 	} else if req.Act == consts.StopPerformanceTest {
 		service := conductorExec.GetTestService(room)

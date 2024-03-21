@@ -70,7 +70,7 @@ func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerEx
 		runnerExec.ExecProgram(s.execCtx, s.execCancel, req, influxdbSender)
 
 		// remove runner item
-		RemoveTestTask(req.Room, ptconsts.Runner)
+		RemoveTestTask(ptconsts.Runner)
 
 		// send end signal to conductor
 		instruction := ptProto.PerformanceExecResp{
@@ -108,7 +108,7 @@ func (s *GrpcService) RunnerExecStop(stream ptProto.PerformanceService_RunnerExe
 	DestroyPerformanceLogService(room)
 
 	// remove runner task
-	RemoveTestTask(room, ptconsts.Runner)
+	RemoveTestTask(ptconsts.Runner)
 
 	return
 }

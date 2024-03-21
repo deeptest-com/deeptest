@@ -126,8 +126,9 @@ func NewScenarioExecSession(ctx context.Context, runnerId int32, vuNo int, req *
 		DatapoolCursor:    map[string]int{},
 		CurrEnvironmentId: environmentId,
 
-		GojaVariables: &[]domain.ExecVariable{},
-		GojaLogs:      &[]string{},
+		GojaSetValueFunc: func(name string, value interface{}) {},
+		GojaVariables:    &[]domain.ExecVariable{},
+		GojaLogs:         &[]string{},
 
 		InfluxdbSender: execParams.Sender,
 		ServerUrl:      req.ServerUrl,

@@ -60,19 +60,17 @@ func (c *PerformanceCtrl) GetState(ctx iris.Context) {
 }
 
 func (c *PerformanceCtrl) ForceStop(ctx iris.Context) {
-	room := ctx.URLParam("room")
-	if room == "" {
-		return
-	}
-
-	// stop log
-	conductorExec.DestroyPerformanceLogService(room)
+	// stop all log services
+	conductorExec.DestroyAllPerformanceLogServices()
 
 	// stop conductor
-	service := conductorExec.GetTestService(room)
-	if service != nil {
-		service.ExecStop(nil)
-		conductorExec.DeleteTestService(room)
+	conductorTask := conductorExec.GetConductorTask()
+	if conductorTask != nil {
+		service := conductorExec.GetTestService(conductorTask.Room)
+		if service != nil {
+			service.ExecStop(nil)
+			conductorExec.DeleteTestService(conductorTask.Room)
+		}
 	}
 
 	// stop runner

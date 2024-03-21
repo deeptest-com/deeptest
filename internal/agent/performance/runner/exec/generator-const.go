@@ -21,7 +21,7 @@ func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
 	target := performanceUtils.GetVuNumbByWeight(execParams.Target, execParams.Weight)
 
 	for i := 1; i <= target; i++ {
-		childCtx := context.WithoutCancel(execCtx)
+		childCtx, _ := context.WithCancel(execCtx)
 		if execParams.Duration > 0 {
 			childCtx, _ = context.WithTimeout(execCtx, time.Duration(execParams.Duration)*time.Second)
 		}

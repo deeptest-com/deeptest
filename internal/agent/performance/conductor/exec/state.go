@@ -92,7 +92,7 @@ func AddTestItem(room string, role ptconsts.TestRole, conductorReq *ptdomain.Per
 
 	return
 }
-func RemoveTestTask(room string, role ptconsts.TestRole) {
+func RemoveTestTask(role ptconsts.TestRole) {
 	obj, ok := TasksStore.Load(KeyTests)
 	if !ok {
 		return
@@ -102,13 +102,13 @@ func RemoveTestTask(room string, role ptconsts.TestRole) {
 
 	index := -1
 	for i, item := range *tests {
-		if (*item).Room == room && (*item).Role == role {
+		if (*item).Role == role {
 			index = i
 			break
 		}
 	}
 
-	if index > 0 {
+	if index >= 0 {
 		*tests = append((*tests)[:index], (*tests)[index+1:]...)
 	}
 }

@@ -20,6 +20,20 @@ var (
 	logInst *PerformanceLogService
 )
 
+func DestroyAllPerformanceLogServices() {
+	LogServicesStore.Range(func(key, obj interface{}) bool {
+		room := key.(string)
+		service := obj.(*PerformanceLogService)
+
+		if service.logCancel != nil {
+			service.logCancel()
+		}
+		DeleteLogService(room)
+
+		return true
+	})
+}
+
 func DestroyPerformanceLogService(room string) {
 	logService := GetLogService(room)
 	if logService != nil {

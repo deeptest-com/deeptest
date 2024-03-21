@@ -2,6 +2,7 @@ package conductorExec
 
 import (
 	"context"
+	"errors"
 	"github.com/aaronchen2k/deeptest/internal/agent/performance/conductor/dao"
 	"github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
@@ -77,6 +78,12 @@ func (s *PerformanceTestService) ExecStart(
 	if conductorTask != nil {
 		ptwebsocket.SendExecInstructionToClient(
 			"主控端有正在执行的性能测试", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
+
+		err = errors.New("主控端有正在执行的性能测试")
+
+		RemoveTestTask(ptconsts.Conductor)
+		DeleteTestService(req.Room)
+
 		return
 	}
 
@@ -172,7 +179,7 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 	ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 
 	// remove from cache
-	RemoveTestTask(conductorTask.Room, ptconsts.Conductor)
+	RemoveTestTask(ptconsts.Conductor)
 	DeleteTestService(conductorTask.Room)
 
 	return

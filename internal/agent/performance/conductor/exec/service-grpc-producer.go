@@ -65,23 +65,21 @@ func (s *GrpcService) RunnerExecStart(stream ptProto.PerformanceService_RunnerEx
 	// schedule job to send metrics
 	go metrics.ScheduleJob(s.execCtx, req.RunnerId, req.RunnerName, req.Room, influxdbSender)
 
-	go func() {
-		// SYNC exec testing
-		runnerExec.ExecProgram(s.execCtx, s.execCancel, req, influxdbSender)
+	// SYNC exec testing
+	runnerExec.ExecProgram(s.execCtx, s.execCancel, req, influxdbSender)
 
-		// remove runner item
-		RemoveTestTask(ptconsts.Runner)
+	// remove runner item
+	RemoveTestTask(ptconsts.Runner)
 
-		// send end signal to conductor
-		instruction := ptProto.PerformanceExecResp{
-			Timestamp:   time.Now().UnixMilli(),
-			RunnerId:    req.RunnerId,
-			Room:        req.Room,
-			Instruction: ptconsts.MsgInstructionRunnerFinish.String(),
-		}
-		grpcSender := metrics.NewGrpcSender(&stream)
-		grpcSender.Send(instruction)
-	}()
+	// send end signal to conductor
+	instruction := ptProto.PerformanceExecResp{
+		Timestamp:   time.Now().UnixMilli(),
+		RunnerId:    req.RunnerId,
+		Room:        req.Room,
+		Instruction: ptconsts.MsgInstructionRunnerFinish.String(),
+	}
+	grpcSender := metrics.NewGrpcSender(&stream)
+	grpcSender.Send(instruction)
 
 	return
 }

@@ -3,6 +3,7 @@ package conductorExec
 import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
+	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
 )
 
@@ -20,29 +21,32 @@ func (s *RemoteRunnerService) CallStop(room string, runners []*ptdomain.Runner) 
 	for _, runner := range runners {
 		client := s.Connect(runner)
 
-		stream, err := s.callRunnerExecStopByGrpc(client, room)
+		err := CallRunnerExecStopByGrpc(client, room)
 		if err != nil {
 			continue
 		}
 
-		stream.CloseSend()
 	}
 
 	return
 }
 
-func (s *RemoteRunnerService) callRunnerExecStopByGrpc(
-	client ptProto.PerformanceServiceClient, room string) (
-	stream ptProto.PerformanceService_RunnerExecStopClient, err error) {
+func CallRunnerExecStopByGrpc(
+	client ptProto.PerformanceServiceClient, room string) (err error) {
 
-	stream, err = client.RunnerExecStop(context.Background())
+	stream, err := client.RunnerExecStop(context.Background())
 	if err != nil {
-		return
+		ptlog.Logf("failed to get grpc stream of remote runner, err %s", err.Error())
 	}
 
 	err = stream.Send(&ptProto.PerformanceExecStopReq{
 		Room: room,
 	})
+	if err != nil {
+		ptlog.Logf("failed to call remote runner via grpc, err %s", err.Error())
+	}
+
+	stream.CloseSend()
 
 	return
 }

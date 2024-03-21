@@ -157,6 +157,9 @@ func (s *PerformanceTestService) ExecStart(
 		}
 
 		wgRunners.Wait()
+
+		ptlog.Logf("condutor: all runner stopped")
+		ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 	}()
 
 	return

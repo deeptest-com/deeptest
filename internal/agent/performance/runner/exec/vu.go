@@ -14,9 +14,7 @@ func ExecScenarioWithVu(timeoutCtx context.Context, vuNo int) (err error) {
 		// loop util stage duration end
 		select {
 		case <-timeoutCtx.Done():
-			{
-				goto Label_END_TASK
-			}
+			goto Label_END_TASK
 
 		default:
 		}

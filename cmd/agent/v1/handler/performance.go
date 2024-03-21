@@ -6,6 +6,7 @@ import (
 	ptconsts "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/consts"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
 	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
+	ptProto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
@@ -80,7 +81,14 @@ func (c *PerformanceCtrl) ForceStop(ctx iris.Context) {
 
 		client := conductorExec.GetGrpcClient(runnerTask.RunnerReq.ConductorGrpcAddress)
 
-		_, err := client.RunnerExecStop(context.Background())
+		stream, err := client.RunnerExecStop(context.Background())
+		if err != nil {
+			ptlog.Logf("failed to get grpc stream of remote runner, err %s", err.Error())
+		}
+
+		err = stream.Send(&ptProto.PerformanceExecStopReq{
+			Room: runnerTask.Room,
+		})
 		if err != nil {
 			ptlog.Logf("failed to call remote runner via grpc, err %s", err.Error())
 		}

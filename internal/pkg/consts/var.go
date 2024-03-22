@@ -5,12 +5,12 @@ var (
 	Verbose  = true
 
 	RunFrom   RunType
-	ExecFrom  ExecFromType
 	IsRelease bool
 	ExecDir   string
 	WorkDir   string
 
-	Port int
+	WebPort  int
+	GrpcPort int
 
 	FolderTmp = "tmp"
 	TmpDir    = ""

@@ -4,9 +4,11 @@ import (
 	conductorExec "github.com/aaronchen2k/deeptest/internal/agent/performance/conductor/exec"
 	ptconsts "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/consts"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
+	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	"github.com/jinzhu/copier"
 	"github.com/kataras/iris/v12"
+	"strings"
 )
 
 type PerformanceCtrl struct {
@@ -16,7 +18,12 @@ func (c *PerformanceCtrl) GetState(ctx iris.Context) {
 	runningTests := conductorExec.GetTestItems()
 
 	if runningTests == nil || *runningTests == nil {
-		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: iris.Map{}})
+		ret := iris.Map{
+			"isBusy":   false,
+			"grpcPort": getGrpcPort(),
+		}
+
+		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
 		return
 	}
 
@@ -52,6 +59,9 @@ func (c *PerformanceCtrl) GetState(ctx iris.Context) {
 	ret := iris.Map{
 		"conductorTests": conductorItems,
 		"runnerTests":    runnerItems,
+		"isBusy":         len(conductorItems) > 0 || len(runnerItems) > 0,
+
+		"grpcPort": getGrpcPort(),
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: ret})
@@ -102,4 +112,15 @@ func removeRunnerRawData(item *ptdomain.TestItem) {
 	}
 
 	item.RunnerReq.ExecSceneRaw = nil
+}
+
+func getGrpcPort() (ret string) {
+	ret = "9528"
+
+	arr1 := strings.Split(config.CONFIG.System.GrpcAddress, ":")
+	if len(arr1) > 1 {
+		ret = arr1[1]
+	}
+
+	return
 }

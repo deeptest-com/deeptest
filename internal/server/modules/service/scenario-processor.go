@@ -121,12 +121,6 @@ func (s *ScenarioProcessorService) Save(processorCategory consts.ProcessorCatego
 		err = s.SavePerformanceGoal(&entity)
 		po = entity
 
-	} else if processorCategory == consts.ProcessorPerformanceRunner {
-		var entity model.ProcessorPerformanceRunner
-		err = ctx.ReadJSON(&entity)
-		err = s.SavePerformanceRunner(&entity)
-		po = entity
-
 	} else if processorCategory == consts.ProcessorPerformanceScenario {
 		var entity model.ProcessorPerformanceScenario
 		err = ctx.ReadJSON(&entity)
@@ -222,12 +216,6 @@ func (s *ScenarioProcessorService) SaveInterface(req *model.ProcessorComm) (err 
 
 func (s *ScenarioProcessorService) SavePerformanceGoal(req *model.ProcessorPerformanceGoal) (err error) {
 	err = s.ScenarioProcessorRepo.SavePerformanceGoal(req)
-	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
-	return
-}
-
-func (s *ScenarioProcessorService) SavePerformanceRunner(req *model.ProcessorPerformanceRunner) (err error) {
-	err = s.ScenarioProcessorRepo.SavePerformanceRunner(req)
 	s.ScenarioProcessorRepo.UpdateName(req.ProcessorID, req.Name)
 	return
 }
@@ -339,11 +327,6 @@ func (s *ScenarioProcessorService) GetEntityTo(processorTo *agentExec.Processor)
 	case consts.ProcessorPerformanceGoal:
 		entityPo, _ := s.ScenarioProcessorRepo.GetPerformanceGoal(processor)
 		ret = agentExec.ProcessorPerformanceGoal{}
-		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
-
-	case consts.ProcessorPerformanceRunner:
-		entityPo, _ := s.ScenarioProcessorRepo.GetPerformanceRunner(processor)
-		ret = agentExec.ProcessorPerformanceRunner{}
 		copier.CopyWithOption(&ret, entityPo, copier.Option{DeepCopy: true})
 
 	case consts.ProcessorPerformanceScenario:

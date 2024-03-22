@@ -60,8 +60,11 @@ func Init() {
 			panic(fmt.Errorf("解析配置文件错误: %w ", err))
 		}
 
-		if consts.Port > 0 {
-			CONFIG.System.AgentAddress = fmt.Sprintf("0.0.0.0:%d", consts.Port)
+		if consts.WebPort > 0 {
+			CONFIG.System.AgentAddress = fmt.Sprintf("0.0.0.0:%d", consts.WebPort)
+		}
+		if consts.GrpcPort > 0 {
+			CONFIG.System.GrpcAddress = fmt.Sprintf("0.0.0.0:%d", consts.GrpcPort)
 		}
 
 		myZap.ZapInst = CONFIG.Zap
@@ -107,6 +110,13 @@ func Init() {
 	// load config
 	if err := VIPER.Unmarshal(&CONFIG); err != nil {
 		fmt.Println(err)
+	}
+
+	if consts.WebPort > 0 {
+		CONFIG.System.ServerAddress = fmt.Sprintf("0.0.0.0:%d", consts.WebPort)
+	}
+	if consts.GrpcPort > 0 {
+		CONFIG.System.GrpcAddress = fmt.Sprintf("0.0.0.0:%d", consts.GrpcPort)
 	}
 
 	// create casbin rbac_model.conf if needed

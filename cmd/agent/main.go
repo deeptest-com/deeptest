@@ -24,6 +24,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 var (
@@ -40,13 +42,19 @@ var (
 // @contact.name API Support
 
 func main() {
+	channel := make(chan os.Signal)
+	signal.Notify(channel, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-channel
+		cleanup()
+		os.Exit(0)
+	}()
+
 	flagSet = flag.NewFlagSet("deeptest", flag.ContinueOnError)
-	flagSet.IntVar(&consts.Port, "p", 0, "")
+	flagSet.IntVar(&consts.WebPort, "p", 0, "")
+	flagSet.IntVar(&consts.GrpcPort, "g", 0, "")
 	flagSet.BoolVar(&_consts.Verbose, "verbose", false, "")
 	flagSet.Parse(os.Args[1:])
-
-	// grpc service
-	go performance.StartGrpcServe()
 
 	// init queues
 	websocketHelper.InitMq()
@@ -57,6 +65,9 @@ func main() {
 	if agent == nil {
 		return
 	}
+
+	// grpc service
+	go performance.StartGrpcServe()
 
 	injectWebSocketModule((*agent).GetApp())
 

@@ -45,8 +45,8 @@ type Goal struct {
 type Runner struct {
 	Id          int32   `json:"id,omitempty"`
 	Name        string  `json:"name,omitempty"`
-	GrpcAddress string  `json:"grpcAddress,omitempty"`
 	WebAddress  string  `json:"webAddress,omitempty"`
+	GrpcAddress string  `json:"grpcAddress,omitempty"`
 	Weight      int32   `json:"weight,omitempty"`
 	Scenarios   []int32 `json:"scenarios,omitempty"`
 }

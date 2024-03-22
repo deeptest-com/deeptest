@@ -11,12 +11,11 @@ import (
 	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	"github.com/kataras/iris/v12"
+	"path"
 )
 
-type PerformanceRemoteService struct {
-}
-
-func (s *PerformanceRemoteService) GetPlanToExec(req ptdomain.PerformanceTestReq) (
+func GetPlanToExec(req ptdomain.PerformanceTestReq) (
 	ret ptdomain.PerformanceTestData, err error) {
 
 	url := "performanceTestPlans/exec/loadScenario"
@@ -39,7 +38,7 @@ func (s *PerformanceRemoteService) GetPlanToExec(req ptdomain.PerformanceTestReq
 		},
 	}
 
-	bytes, err := s.GetRequest(httpReq)
+	bytes, err := GetRequest(httpReq)
 	if err != nil {
 		return
 	}
@@ -55,7 +54,29 @@ func (s *PerformanceRemoteService) GetPlanToExec(req ptdomain.PerformanceTestReq
 	return
 }
 
-func (s *PerformanceRemoteService) GetRequest(httpReq domain.BaseRequest) (
+func GetRunnerState(req *ptdomain.Runner) (
+	ret iris.Map, err error) {
+
+	url := "performance/getState"
+
+	httpReq := domain.BaseRequest{
+		Url: _httpUtils.AddSepIfNeeded(req.WebAddress) + path.Join("api/v1", url),
+	}
+
+	bytes, err := GetRequest(httpReq)
+	if err != nil {
+		return
+	}
+
+	err = json.Unmarshal(bytes, &ret)
+	if err != nil {
+		logUtils.Infof("get exec obj failed,err:%v", err.Error())
+	}
+
+	return
+}
+
+func GetRequest(httpReq domain.BaseRequest) (
 	ret []byte, err error) {
 
 	request, err := json.Marshal(httpReq)

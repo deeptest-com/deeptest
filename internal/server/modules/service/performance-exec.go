@@ -2,7 +2,6 @@ package service
 
 import (
 	"encoding/json"
-	"fmt"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	ptdomain "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
 	ptProto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
@@ -15,6 +14,7 @@ type PerformanceExecService struct {
 	PerformanceTestPlanRepo *repo.PerformanceTestPlanRepo `inject:""`
 	ScenarioRepo            *repo.ScenarioRepo            `inject:""`
 	ProjectSettingsRepo     *repo.ProjectSettingsRepo     `inject:""`
+	PerformanceRunnerRepo   *repo.PerformanceRunnerRepo   `inject:""`
 
 	ScenarioExecService *ScenarioExecService `inject:""`
 	EnvironmentService  *EnvironmentService  `inject:""`
@@ -69,32 +69,24 @@ func (s *PerformanceExecService) getGoalFromScenarioExecObj(execObj agentExec.Sc
 }
 
 func (s *PerformanceExecService) getRunnersFromScenarioExecObj(execObj agentExec.ScenarioExecObj) (ret []*ptdomain.Runner) {
-	for _, processor := range execObj.RootProcessor.Children {
-		if processor.EntityType == consts.ProcessorPerformanceRunnersDefault {
-			for _, runnerProcessor := range processor.Children {
-				runnerEntity := agentExec.ProcessorPerformanceRunner{}
-				json.Unmarshal(runnerProcessor.EntityRaw, &runnerEntity)
+	runners, _ := s.PerformanceRunnerRepo.List(int(execObj.ScenarioId))
 
-				runner := ptdomain.Runner{
-					Id:          int32(runnerProcessor.EntityId),
-					Name:        processor.Name,
-					WebAddress:  fmt.Sprintf("%s:%d", runnerEntity.Ip, runnerEntity.WebPort),
-					GrpcAddress: fmt.Sprintf("%s:%d", runnerEntity.Ip, runnerEntity.GrpcPort),
-					Weight:      int32(runnerEntity.Weight),
-					Scenarios:   s.getScenarioIdsForRunner(runnerProcessor.EntityId, execObj),
-				}
-
-				ret = append(ret, &runner)
-			}
-
-			return
+	for _, runner := range runners {
+		runner := ptdomain.Runner{
+			Id:         int32(runner.ID),
+			Name:       runner.Name,
+			WebAddress: runner.WebAddress,
+			Weight:     int32(runner.Weight),
+			Scenarios:  s.getScenarioIdsForRunner(runner.ID, execObj),
 		}
+
+		ret = append(ret, &runner)
 	}
 
 	return
 }
 
-func (s *PerformanceExecService) getScenarioIdsForRunner(runnerProcessorId uint, execObj agentExec.ScenarioExecObj) (
+func (s *PerformanceExecService) getScenarioIdsForRunner(runnerId uint, execObj agentExec.ScenarioExecObj) (
 	ret []int32) {
 
 	for _, processor := range execObj.RootProcessor.Children {
@@ -103,8 +95,8 @@ func (s *PerformanceExecService) getScenarioIdsForRunner(runnerProcessorId uint,
 				scenarioEntity := agentExec.ProcessorPerformanceScenario{}
 				json.Unmarshal(scenarioProcessor.EntityRaw, &scenarioEntity)
 
-				for _, runnerId := range scenarioEntity.RunnerIds {
-					if uint(runnerId) == runnerProcessorId {
+				for _, id := range scenarioEntity.RunnerIds {
+					if uint(id) == runnerId {
 						ret = append(ret, int32(scenarioProcessor.EntityId))
 
 						break

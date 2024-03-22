@@ -234,20 +234,6 @@ func (ProcessorPerformanceGoal) TableName() string {
 	return "biz_processor_performance_goal"
 }
 
-type ProcessorPerformanceRunner struct {
-	BaseModel
-	agentExec.ProcessorEntityBase
-
-	Ip       string `json:"ip"`
-	WebPort  uint   `json:"webPort"`
-	GrpcPort uint   `json:"grpcPort"`
-	Weight   uint   `json:"weight"`
-}
-
-func (ProcessorPerformanceRunner) TableName() string {
-	return "biz_processor_performance_runner"
-}
-
 type ProcessorPerformanceScenario struct {
 	BaseModel
 	agentExec.ProcessorEntityBase

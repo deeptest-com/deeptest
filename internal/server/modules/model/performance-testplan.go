@@ -1,6 +1,8 @@
 package model
 
-import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
+import (
+	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
+)
 
 type PerformanceTestPlan struct {
 	BaseModel
@@ -29,6 +31,22 @@ type PerformanceTestPlan struct {
 
 func (PerformanceTestPlan) TableName() string {
 	return "biz_performance_test_plan"
+}
+
+type PerformanceRunner struct {
+	BaseModel
+
+	Name       string `json:"name"`
+	WebAddress string `json:"webAddress"`
+	Weight     uint   `json:"weight"`
+
+	SerialNumber string `json:"serialNumber"`
+	ScenarioId   uint   `json:"scenarioId"`
+	ProjectId    uint   `json:"projectId"`
+}
+
+func (PerformanceRunner) TableName() string {
+	return "biz_performance_runner"
 }
 
 type PerformanceTestPlanDetail struct {

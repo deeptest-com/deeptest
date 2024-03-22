@@ -3,6 +3,7 @@ package conductorExec
 import (
 	"context"
 	"errors"
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/agent/performance/conductor/dao"
 	"github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
@@ -15,8 +16,9 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 	"io"
+	"net/url"
+	"strings"
 	"sync"
 )
 
@@ -59,8 +61,6 @@ type PerformanceTestService struct {
 
 	client *ptproto.PerformanceServiceClient
 
-	PerformanceRemoteService *PerformanceRemoteService `inject:""`
-
 	GrpcService     *GrpcService     `inject:"private"`
 	ScheduleService *ScheduleService `inject:"private"`
 
@@ -88,7 +88,7 @@ func (s *PerformanceTestService) ExecStart(
 	}
 
 	// load test data from remote server
-	data, err := s.PerformanceRemoteService.GetPlanToExec(req)
+	data, err := GetPlanToExec(req)
 	if err != nil {
 		return
 	}
@@ -97,7 +97,7 @@ func (s *PerformanceTestService) ExecStart(
 
 	ptlog.Init(data.Room)
 
-	if s.IsRunnerBusy(data) {
+	if s.IsRunnerBusyWithGrpcAddressUpdated(&data) {
 		ptwebsocket.SendExecInstructionToClient(
 			"代理端有正在执行的性能测试", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
 		return
@@ -241,6 +241,7 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 
 func (s *PerformanceTestService) handleGrpcMsg(ctx context.Context, stream ptproto.PerformanceService_RunnerExecStartClient, runnerId int32, runnerName string) (err error) {
 	for true {
+		// will hold-on to wait agent's msg
 		resp, err := stream.Recv()
 		if err == io.EOF {
 			break
@@ -307,16 +308,28 @@ func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.Performance
 	return
 }
 
-func (s *PerformanceTestService) IsRunnerBusy(data ptdomain.PerformanceTestData) (ret bool) {
-	for _, runner := range data.Runners {
-		client := s.ConnectGrpc(runner)
-
-		isBusy, _ := client.RunnerIsBusy(context.Background(), &wrapperspb.StringValue{Value: data.Room})
-		if isBusy.Value {
-			ret = isBusy.Value
-			return
+func (s *PerformanceTestService) IsRunnerBusyWithGrpcAddressUpdated(data *ptdomain.PerformanceTestData) (ret bool) {
+	for index, runner := range data.Runners {
+		mp, err := GetRunnerState(runner)
+		if err != nil {
+			return false
 		}
 
+		if mp["grpcPort"] != nil {
+			u, _ := url.Parse(runner.WebAddress)
+			arr := strings.Split(u.Host, ":")
+			host := arr[0]
+
+			data.Runners[index].GrpcAddress = fmt.Sprintf("%s:%s", host, mp["grpcPort"].(string))
+		}
+
+		if mp["isBusy"] != nil {
+			isBusy := mp["isBusy"].(bool)
+			if isBusy {
+				ret = isBusy
+				return
+			}
+		}
 	}
 
 	return

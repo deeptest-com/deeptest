@@ -9,8 +9,6 @@ tmp/
 
 /deeptest.db
 /res/res.go
-/res/agent.yaml
-/res/server.yaml
 /bin/
 /xdoc/openapi/out/
 /static/upload/spec/

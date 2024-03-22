@@ -160,6 +160,9 @@ func (s *PerformanceTestService) ExecStart(
 		// wait all async remote runner executions completed
 		wgRunners.Wait()
 
+		RemoveTestTask(ptconsts.Conductor)
+		DeleteTestService(req.Room)
+
 		ptlog.Logf("condutor: all runner stopped")
 		ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 	}()

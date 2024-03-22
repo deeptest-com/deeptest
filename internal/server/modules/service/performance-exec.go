@@ -126,6 +126,7 @@ func (s *PerformanceExecService) getScenariosFromScenarioExecObj(execObj agentEx
 
 					GenerateType: scenarioEntity.GenerateType.String(),
 					Target:       int32(scenarioEntity.Target),
+					Stages:       s.genStages(scenarioEntity.Stages),
 				}
 
 				rootProcessor := agentExec.Processor{
@@ -158,4 +159,15 @@ func (s *PerformanceExecService) UpdateServerInfo(projectId uint, data *ptdomain
 	data.InfluxdbAddress = po.InfluxdbAddress
 	data.InfluxdbOrg = po.InfluxdbOrg
 	data.InfluxdbToken = po.InfluxdbToken
+}
+
+func (s *PerformanceExecService) genStages(stages []agentExec.ProcessorPerformanceStage) (ret []*ptProto.Stage) {
+	for _, item := range stages {
+		ret = append(ret, &ptProto.Stage{
+			Target:   int32(item.Target),
+			Duration: int32(item.Duration),
+		})
+	}
+
+	return
 }

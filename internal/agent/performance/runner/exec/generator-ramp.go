@@ -17,12 +17,12 @@ type RampVuGenerator struct {
 func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 	execParams := performanceUtils.GetExecParamsInCtx(execCtx)
 
-	if len(execParams.Stages) != 1 {
+	if len(execParams.Stages) == 0 {
 		return
 	}
 
 	vuNo := 0
-	for i := 1; i <= len(execParams.Stages); i++ {
+	for i := 1; i < len(execParams.Stages); i++ {
 		stage := execParams.Stages[i]
 
 		target := performanceUtils.GetVuNumbByWeight(int(stage.Target), execParams.Weight)
@@ -48,9 +48,10 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 			wgVus.Add(1)
 
 			result := ptProto.PerformanceExecResp{
-				Timestamp: time.Now().UnixMilli(),
-				RunnerId:  execParams.RunnerId,
-				Room:      execParams.Room,
+				Timestamp:  time.Now().UnixMilli(),
+				RunnerId:   execParams.RunnerId,
+				RunnerName: execParams.RunnerName,
+				Room:       execParams.Room,
 
 				VuCount: 1,
 			}
@@ -68,6 +69,10 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 			// 尽量平均加载
 			leftVus := target - index - 1
 			leftTime := getLeftTime(startTime, stageDuration)
+
+			if leftTime > 0 {
+
+			}
 			waitTime(int64(leftVus), leftTime)
 
 			select {
@@ -108,7 +113,9 @@ func getLeftTime(startTime int64, dur int) (leftTime int64) {
 }
 
 func waitTime(leftVus, leftTime int64) (err error) {
-	time.Sleep(time.Duration(leftTime/leftVus) * time.Second)
+	if leftTime > 0 && leftVus > 0 {
+		time.Sleep(time.Duration(leftTime/leftVus) * time.Second)
+	}
 
 	return
 }

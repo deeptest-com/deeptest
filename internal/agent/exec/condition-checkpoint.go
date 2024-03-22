@@ -33,6 +33,9 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 	// 非表达式判断
 	checkpointValue, variablesArr := computerExpr(checkpoint.Value, execUuid, processorId)
+	if len(variablesArr) == 0 {
+		checkpointValue = _stringUtils.InterfToStr(checkpointValue)
+	}
 	checkpoint.Variables = getVariableArrDesc(variablesArr)
 
 	// Response ResultStatus

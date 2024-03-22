@@ -37,6 +37,7 @@ func CallRunnerExecStopByGrpc(
 	stream, err := client.RunnerExecStop(context.Background())
 	if err != nil || stream == nil {
 		ptlog.Logf("failed to get grpc stream of remote runner, err %s", err.Error())
+		return
 	}
 
 	err = stream.Send(&ptProto.PerformanceExecStopReq{

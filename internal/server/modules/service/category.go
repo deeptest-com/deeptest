@@ -72,7 +72,7 @@ func (s *CategoryService) Create(tenantId consts.TenantId, req v1.CategoryCreate
 	}
 
 	if req.IsEntity {
-		repo := s.getRepo(tenantId, req.Type)
+		repo := s.getRepo(req.Type)
 		repo.SaveEntity(tenantId, &ret)
 	}
 
@@ -104,8 +104,9 @@ func (s *CategoryService) Move(tenantId consts.TenantId, srcId, targetId uint, p
 		return
 	}
 
-	if typ == serverConsts.SchemaCategory && srcScenarioNode.EntityId != 0 {
-		s.ComponentSchemaRepo.ChangeRef(tenantId, srcScenarioNode.EntityId, srcScenarioNode.ID)
+	if srcScenarioNode.EntityId != 0 {
+		repo := s.getRepo(typ)
+		repo.MoveEntity(tenantId, &srcScenarioNode)
 	}
 	return
 }
@@ -167,7 +168,7 @@ func (s *CategoryService) deleteNodeAndChildren(tenantId consts.TenantId, typ se
 
 func (s *CategoryService) mountCount(tenantId consts.TenantId, root *v1.Category, typ serverConsts.CategoryDiscriminator, projectId uint) {
 
-	repo := s.getRepo(tenantId, typ)
+	repo := s.getRepo(typ)
 
 	var data []v1.CategoryCount
 
@@ -176,14 +177,14 @@ func (s *CategoryService) mountCount(tenantId consts.TenantId, root *v1.Category
 		return
 	}
 
-	result := s.convertMap(tenantId, data)
+	result := s.convertMap(data)
 
 	s.mountCountOnNode(tenantId, root, result)
 
 	//TODO 遍历数据挂载数量。
 }
 
-func (s *CategoryService) getRepo(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator) repo.IRepo {
+func (s *CategoryService) getRepo(typ serverConsts.CategoryDiscriminator) repo.IRepo {
 
 	repos := map[serverConsts.CategoryDiscriminator]repo.IRepo{
 		serverConsts.EndpointCategory: s.EndpointRepo,
@@ -194,7 +195,7 @@ func (s *CategoryService) getRepo(tenantId consts.TenantId, typ serverConsts.Cat
 
 	return repos[typ]
 }
-func (s *CategoryService) convertMap(tenantId consts.TenantId, data []v1.CategoryCount) (result map[int64]int64) {
+func (s *CategoryService) convertMap(data []v1.CategoryCount) (result map[int64]int64) {
 	result = make(map[int64]int64)
 	for _, item := range data {
 		result[item.CategoryId] = item.Count
@@ -491,6 +492,6 @@ func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, typ serverC
 }
 
 func (s *CategoryService) GetEntity(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, id uint) (data map[string]interface{}, err error) {
-	repo := s.getRepo(tenantId, typ)
+	repo := s.getRepo(typ)
 	return repo.GetEntity(tenantId, id)
 }

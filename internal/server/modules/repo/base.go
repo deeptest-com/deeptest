@@ -16,6 +16,7 @@ type IRepo interface {
 	GetCategoryCount(tenantId consts.TenantId, result interface{}, projectId uint) (err error)
 	SaveEntity(tenantId consts.TenantId, category *model.Category) (err error)
 	GetEntity(tenantId consts.TenantId, id uint) (entity map[string]interface{}, err error)
+	MoveEntity(tenantId consts.TenantId, category *model.Category) (err error)
 }
 
 type BaseRepo struct {
@@ -149,5 +150,9 @@ func (r *BaseRepo) GetDB(tenantId consts.TenantId) (db *gorm.DB) {
 }
 
 func (r *BaseRepo) GetEntity(tenantId consts.TenantId, id uint) (entity map[string]interface{}, err error) {
+	return
+}
+
+func (r *BaseRepo) MoveEntity(tenantId consts.TenantId, category *model.Category) (err error) {
 	return
 }

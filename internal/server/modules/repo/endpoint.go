@@ -591,3 +591,11 @@ func (r *EndpointRepo) GetEntity(tenantId consts.TenantId, id uint) (data map[st
 	data["serialNumber"] = endpoint.SerialNumber
 	return
 }
+
+func (r *EndpointRepo) UpdateCategory(tenantId consts.TenantId, id, categoryId uint) (err error) {
+	return r.GetDB(tenantId).Model(&model.Endpoint{}).Where("id = ?", id).Update("category_id", categoryId).Error
+}
+
+func (r *EndpointRepo) MoveEntity(tenantId consts.TenantId, category *model.Category) (err error) {
+	return r.UpdateCategory(tenantId, category.EntityId, uint(category.ParentId))
+}

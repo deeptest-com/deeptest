@@ -33,18 +33,16 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 	// 非表达式判断
 	checkpointValue, variablesArr := computerExpr(checkpoint.Value, execUuid, processorId)
-	if len(variablesArr) == 0 {
-		checkpointValue = _stringUtils.InterfToStr(checkpointValue)
-	}
+	checkpointValue = _stringUtils.InterfToStr(checkpointValue)
 	checkpoint.Variables = getVariableArrDesc(variablesArr)
 
 	// Response ResultStatus
 	if checkpoint.Type == consts.ResponseStatus {
-		expectCode := _stringUtils.ParseInt(fmt.Sprintf("%v", checkpointValue))
+		expectCodeNum := _stringUtils.ParseInt(fmt.Sprintf("%v", checkpointValue))
 
 		checkpoint.ActualResult = fmt.Sprintf("%d", resp.StatusCode)
 
-		if checkpoint.Operator == consts.Equal && resp.StatusCode == expectCode {
+		if checkpoint.Operator == consts.Equal && resp.StatusCode == expectCodeNum {
 			checkpoint.ResultStatus = consts.Pass
 		} else {
 			checkpoint.ResultStatus = consts.Fail

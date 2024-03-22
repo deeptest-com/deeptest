@@ -12,9 +12,10 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 )
 
-func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
-	scenario *ptproto.Scenario, weight int32, environmentId int32, execSceneRaw []byte,
-	room, webServerUrl, webServerToken, conductorGrpcAddress string,
+func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode, scenario *ptproto.Scenario,
+	weight, environmentId int32, execSceneRaw []byte,
+	goalDuration, goalLoop int32, room,
+	webServerUrl, webServerToken, conductorGrpcAddress string,
 	runnerId int32, runnerName string, sender metrics.MessageSender) (result ptproto.PerformanceExecResp) {
 
 	var generater VuGenerator
@@ -25,13 +26,6 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 	json.Unmarshal(execSceneRaw, &execScene)
 
 	if scenario.GenerateType == ptconsts.GeneratorConstant.String() {
-		runDur := int(scenario.Duration)
-
-		//loop := 0
-		//if scenario.GenerateType == ptconsts.GeneratorConstant {
-		//	loop = scenario.Loop
-		//}
-
 		data := agentExecDomain.ExecParamsInCtx{
 			Scenario:      scenario,
 			EnvironmentId: int(environmentId),
@@ -46,7 +40,8 @@ func ExecScenario(execCtx context.Context, mode ptconsts.ExecMode,
 
 			Sender: sender,
 
-			Duration: runDur,
+			GoalDuration: int(goalDuration),
+			GoalLoop:     int(goalLoop),
 
 			WebServerUrl:         webServerUrl,
 			WebServerToken:       webServerToken,

@@ -157,7 +157,7 @@ func (s *PerformanceTestService) ExecStart(
 			}()
 		}
 
-		// wait all async remote runner executions completed
+		// wait all async remote runner executions completed/canceled
 		wgRunners.Wait()
 
 		RemoveTestTask(ptconsts.Conductor)
@@ -218,6 +218,10 @@ func (s *PerformanceTestService) CallRunnerExecStartByGrpc(
 		RunnerId:   runnerId,
 		RunnerName: runnerName,
 		Title:      req.Title,
+
+		GoalLoop:     int32(req.Goal.Loop),
+		GoalDuration: int32(req.Goal.Duration),
+		// other goals will be controlled on conductor side
 
 		Mode:              req.Mode.String(),
 		Scenarios:         runnerExecScenarios,

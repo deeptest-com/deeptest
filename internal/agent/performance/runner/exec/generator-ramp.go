@@ -2,11 +2,9 @@ package runnerExec
 
 import (
 	"context"
-	agentExecDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
 	ptProto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/jinzhu/copier"
 	"sync"
 	"time"
 )
@@ -26,24 +24,16 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 		stage := execParams.Stages[i]
 
 		target := performanceUtils.GetVuNumbByWeight(int(stage.Target), execParams.Weight)
-		stageDuration := int(stage.Duration)
-		stageLoop := int(stage.Loop)
 
 		startTime := time.Now().Unix()
 
 		var wgVus sync.WaitGroup
 
 		for index := 1; index <= target; index++ {
-			childCtx := execCtx
-
-			childTimeoutCtx, _ := context.WithTimeout(execCtx, time.Duration(stageDuration)*time.Second)
-
-			// generate ExecParams for each stage
-			execPramsOfStage := agentExecDomain.ExecParamsInCtx{}
-			copier.CopyWithOption(&execPramsOfStage, execParams, copier.Option{DeepCopy: true})
-			execPramsOfStage.Loop = stageLoop
-
-			childCtx = performanceUtils.GenExecParamsCtx(&execPramsOfStage, childTimeoutCtx)
+			vuCtx, _ := context.WithCancel(execCtx)
+			if execParams.GoalDuration > 0 { // control exec time
+				vuCtx, _ = context.WithTimeout(execCtx, time.Duration(execParams.GoalDuration)*time.Second)
+			}
 
 			wgVus.Add(1)
 
@@ -61,14 +51,14 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 				defer wgVus.Done()
 
 				//execParams.VuNo = index
-				ExecScenarioWithVu(childCtx, index)
+				ExecScenarioWithVu(vuCtx, index)
 			}()
 
 			vuNo++
 
 			// 尽量平均加载
 			leftVus := target - index - 1
-			leftTime := getLeftTime(startTime, stageDuration)
+			leftTime := getLeftTime(startTime, int(stage.Duration))
 
 			if leftTime > 0 {
 
@@ -76,7 +66,7 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 			waitTime(int64(leftVus), leftTime)
 
 			select {
-			case <-childCtx.Done():
+			case <-vuCtx.Done():
 				_logUtils.Debug("<<<<<<< stop stage targets")
 				goto Label_END_STAGES
 

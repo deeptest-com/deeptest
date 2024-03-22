@@ -35,7 +35,6 @@ message Scenario {
 message Stage {
   int32 target = 1;
   int32 duration  = 2;
-  int32 loop     = 3;
 }
 
 message PerformanceExecStartReq {
@@ -44,23 +43,26 @@ message PerformanceExecStartReq {
   string runnerName = 3;
   string title = 4;
 
-  int64 dur = 5;
-  string mode = 6;
-  repeated Scenario scenarios = 7;
+  int32 GoalLoop = 5;
+  int32 GoalDuration = 6;
 
-  int32 weight = 8;
-  int32 environmentId = 9;
+  int64 dur = 7;
+  string mode = 8;
+  repeated Scenario scenarios = 9;
 
-  bytes localVarsCacheRaw = 10;
-  bytes execSceneRaw = 11;
+  int32 weight = 10;
+  int32 environmentId = 11;
 
-  string webServerUrl = 12;
-  string webServerToken = 13;
+  bytes localVarsCacheRaw = 12;
+  bytes execSceneRaw = 13;
 
-  string conductorGrpcAddress = 14;
-  string influxdbAddress = 15;
-  string influxdbOrg = 16;
-  string influxdbToken = 17;
+  string webServerUrl = 14;
+  string webServerToken = 15;
+
+  string conductorGrpcAddress = 16;
+  string influxdbAddress = 17;
+  string influxdbOrg = 18;
+  string influxdbToken = 19;
 }
 message PerformanceExecStopReq {
   string room = 1;

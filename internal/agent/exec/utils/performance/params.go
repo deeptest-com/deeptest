@@ -14,11 +14,11 @@ func GetVuNumbByWeight(target, weight int) (ret int) {
 	return
 }
 
-func GenExecParamsCtx(data *agentExecDomain.ExecParamsInCtx, parentCtx context.Context) (ret context.Context) {
-	ret = context.WithValue(parentCtx, "execParams", data)
-
-	return
-}
+//func GenExecParamsCtx(data *agentExecDomain.ExecParamsInCtx, parentCtx context.Context) (ret context.Context) {
+//	ret = context.WithValue(parentCtx, "execParams", data)
+//
+//	return
+//}
 
 func GetExecParamsInCtx(ctx context.Context) (data *agentExecDomain.ExecParamsInCtx) {
 	data = ctx.Value("execParams").(*agentExecDomain.ExecParamsInCtx)

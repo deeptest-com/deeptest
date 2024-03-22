@@ -22,17 +22,19 @@ type ExecParamsInCtx struct {
 	EnvironmentId int
 	Sender        metrics.MessageSender
 
+	GoalLoop     int
+	GoalDuration int
+
 	// for constant generate type
-	Target   int `json:"target"`
-	Duration int `json:"duration"`
+	Target int `json:"target"`
 
 	// for ramp generate type
 	Stages []*ptproto.Stage // ramp generator
 
+	Loop int
+
 	Scenario            *ptproto.Scenario
 	RunnerExecScenarios map[uint]map[uint]bool
-
-	Loop int // used in stage
 
 	Mode           ptconsts.ExecMode
 	LocalVarsCache iris.Map

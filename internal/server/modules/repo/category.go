@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"database/sql"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -443,7 +444,7 @@ func (r *CategoryRepo) GetChildrenNodes(tenantId consts.TenantId, categoryId uin
 }
 
 func (r *CategoryRepo) GetEntityCountByCategoryId(tenantId consts.TenantId, categoryId uint) int64 {
-	var ret []int64
+	var ret []sql.NullInt64
 	sql := `WITH RECURSIVE temp(id,count) AS
 		(
 			SELECT id,if(entity_id=0,0,1 ) count from biz_category where parent_id = %d and not deleted
@@ -456,7 +457,7 @@ func (r *CategoryRepo) GetEntityCountByCategoryId(tenantId consts.TenantId, cate
 	r.GetDB(tenantId).Raw(sql).Scan(&ret)
 
 	if len(ret) > 0 {
-		return ret[0]
+		return ret[0].Int64
 	}
 
 	return 0

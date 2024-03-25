@@ -36,9 +36,11 @@ func (PerformanceTestPlan) TableName() string {
 type PerformanceRunner struct {
 	BaseModel
 
-	Name       string `json:"name"`
-	WebAddress string `json:"webAddress"`
-	Weight     uint   `json:"weight"`
+	AgentId uint `json:"agentId"`
+	Weight  uint `json:"weight"`
+
+	Name       string `gorm:"-" json:"name"`
+	WebAddress string `gorm:"-" json:"webAddress"`
 
 	SerialNumber string `json:"serialNumber"`
 	ScenarioId   uint   `json:"scenarioId"`

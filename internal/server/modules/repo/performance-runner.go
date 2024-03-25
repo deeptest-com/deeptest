@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"gorm.io/gorm"
 	"strconv"
@@ -15,10 +16,12 @@ type PerformanceRunnerRepo struct {
 }
 
 func (r *PerformanceRunnerRepo) List(scenarioId int) (pos []model.PerformanceRunner, err error) {
-	err = r.DB.
+	err = r.DB.Model(&model.PerformanceRunner{}).
+		Select(fmt.Sprintf("%s.*, a.name, a.url web_address", model.PerformanceRunner{}.TableName())).
+		Joins(fmt.Sprintf("LEFT JOIN %s a ON %s.agent_id=a.id",
+			model.SysAgent{}.TableName(), model.PerformanceRunner{}.TableName())).
 		Where("scenario_id = ?", scenarioId).
-		Find(&pos).
-		Error
+		Find(&pos).Error
 
 	return
 }

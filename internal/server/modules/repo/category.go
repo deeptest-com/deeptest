@@ -213,7 +213,7 @@ func (r *CategoryRepo) GetChildren(tenantId consts.TenantId, nodeId uint, nodeTy
 		}
 	}
 
-	err = db.Find(&children).Error
+	err = db.Order("ordr desc").Find(&children).Error
 	return
 }
 

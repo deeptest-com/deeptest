@@ -20,6 +20,9 @@ func (m *PerformanceRunnerModule) Party() module.WebModule {
 		index.Get("/{id:uint}", m.PerformanceRunnerCtrl.Get).Name = "性能代理详情"
 		index.Post("/", m.PerformanceRunnerCtrl.Select).Name = "添加性能代理"
 		index.Delete("/{id:uint}", m.PerformanceRunnerCtrl.Delete).Name = "删除性能代理"
+
+		index.Put("/{id:uint}/updateIsConductor", m.PerformanceRunnerCtrl.UpdateIsConductor).Name = "更新是否是主控"
+		index.Put("/{id:uint}/updateWeight", m.PerformanceRunnerCtrl.UpdateWeight).Name = "更新权重"
 	}
 
 	return module.NewModule("/performanceTestRunners", handler)

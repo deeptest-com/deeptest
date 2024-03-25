@@ -2,6 +2,7 @@ package handler
 
 import (
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
+	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -80,6 +81,40 @@ func (c *PerformanceRunnerCtrl) Delete(ctx iris.Context) {
 	}
 
 	err = c.PerformanceRunnerService.DeleteById(id)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *PerformanceRunnerCtrl) UpdateIsConductor(ctx iris.Context) {
+	req := serverDomain.PerformanceTestUpdateIsConductorReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	err = c.PerformanceRunnerService.UpdateIsConductor(req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
+}
+
+func (c *PerformanceRunnerCtrl) UpdateWeight(ctx iris.Context) {
+	req := serverDomain.PerformanceTestUpdateWeightReq{}
+	err := ctx.ReadJSON(&req)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+
+	err = c.PerformanceRunnerService.UpdateWeight(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

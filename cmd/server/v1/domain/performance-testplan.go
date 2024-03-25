@@ -132,3 +132,12 @@ type PerformanceTestPlanCurlImportReq struct {
 	TargetId uint   `json:"targetId"`
 	CreateBy uint   `json:"createBy"`
 }
+
+type PerformanceTestUpdateIsConductorReq struct {
+	Id    uint `json:"id"`
+	Value bool `json:"value"`
+}
+type PerformanceTestUpdateWeightReq struct {
+	Id    uint `json:"id"`
+	Value int  `json:"value"`
+}

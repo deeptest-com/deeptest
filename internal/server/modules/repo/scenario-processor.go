@@ -4,6 +4,7 @@ import (
 	domain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	_intUtils "github.com/aaronchen2k/deeptest/pkg/lib/int"
 	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 	"strconv"
@@ -13,10 +14,11 @@ import (
 type ScenarioProcessorRepo struct {
 	DB *gorm.DB `inject:""`
 
-	ScenarioNodeRepo   *ScenarioNodeRepo   `inject:""`
-	ExtractorRepo      *ExtractorRepo      `inject:""`
-	CheckpointRepo     *CheckpointRepo     `inject:""`
-	DebugInterfaceRepo *DebugInterfaceRepo `inject:""`
+	ScenarioNodeRepo      *ScenarioNodeRepo      `inject:""`
+	ExtractorRepo         *ExtractorRepo         `inject:""`
+	CheckpointRepo        *CheckpointRepo        `inject:""`
+	DebugInterfaceRepo    *DebugInterfaceRepo    `inject:""`
+	PerformanceRunnerRepo *PerformanceRunnerRepo `inject:""`
 }
 
 func (r *ScenarioProcessorRepo) Get(id uint) (processor model.Processor, err error) {
@@ -372,9 +374,15 @@ func (r *ScenarioProcessorRepo) GetPerformanceScenario(processor model.Processor
 
 	ret.Stages, err = r.loadStages(ret.ID)
 
+	idsExist := r.PerformanceRunnerRepo.ListExistOnes(ret.RunnerIdsRaw)
+
 	for _, str := range strings.Split(ret.RunnerIdsRaw, ",") {
 		i, err := strconv.Atoi(str)
-		if err == nil {
+		if err != nil {
+			continue
+		}
+
+		if _intUtils.FindInArr(i, idsExist) {
 			ret.RunnerIds = append(ret.RunnerIds, i)
 		}
 	}

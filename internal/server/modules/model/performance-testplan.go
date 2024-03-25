@@ -39,8 +39,8 @@ type PerformanceRunner struct {
 	AgentId uint `json:"agentId"`
 	Weight  uint `json:"weight"`
 
-	Name       string `gorm:"-" json:"name"`
-	WebAddress string `gorm:"-" json:"webAddress"`
+	Name       string `json:"name"`
+	WebAddress string `json:"webAddress"`
 
 	SerialNumber string `json:"serialNumber"`
 	ScenarioId   uint   `json:"scenarioId"`

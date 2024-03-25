@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
@@ -47,23 +47,23 @@ func (c *PerformanceRunnerCtrl) Get(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: performanceTestPlan, Msg: _domain.NoErr.Msg})
 }
 
-func (c *PerformanceRunnerCtrl) Save(ctx iris.Context) {
+func (c *PerformanceRunnerCtrl) Select(ctx iris.Context) {
 	projectId, err := ctx.URLParamInt("currProjectId")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
 	}
 
-	req := model.PerformanceRunner{}
+	req := agentDomain.PerformanceRunnerSelectionReq{}
 	err = ctx.ReadJSON(&req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	req.ProjectId = uint(projectId)
+	req.ProjectId = projectId
 
-	err = c.PerformanceRunnerService.Save(&req)
+	err = c.PerformanceRunnerService.Select(req)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Data: nil})
 		return
@@ -73,14 +73,13 @@ func (c *PerformanceRunnerCtrl) Save(ctx iris.Context) {
 }
 
 func (c *PerformanceRunnerCtrl) Delete(ctx iris.Context) {
-	var req _domain.ReqId
-	err := ctx.ReadParams(&req)
+	id, err := ctx.Params().GetUint("id")
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
 
-	err = c.PerformanceRunnerService.DeleteById(req.Id)
+	err = c.PerformanceRunnerService.DeleteById(id)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

@@ -92,7 +92,7 @@ func (c *ProjectSettingsCtrl) GetMock(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
 
-// SaveMock - Save Project Mock Settings
+// SaveMock - Select Project Mock Settings
 func (c *ProjectSettingsCtrl) SaveMock(ctx iris.Context) {
 	var req serverDomain.MockReq
 	if err := ctx.ReadJSON(&req); err != nil {
@@ -127,7 +127,7 @@ func (c *ProjectSettingsCtrl) GetPerformance(ctx iris.Context) {
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
 
-// SavePerformance - Save Project Performance Settings
+// SavePerformance - Select Project Performance Settings
 func (c *ProjectSettingsCtrl) SavePerformance(ctx iris.Context) {
 	var req serverDomain.PerformanceReq
 	if err := ctx.ReadJSON(&req); err != nil {

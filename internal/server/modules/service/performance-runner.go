@@ -1,6 +1,7 @@
 package service
 
 import (
+	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	repo "github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 )
@@ -25,8 +26,8 @@ func (s *PerformanceRunnerService) GetById(id uint) (performanceTestPlan model.P
 	return
 }
 
-func (s *PerformanceRunnerService) Save(req *model.PerformanceRunner) (err error) {
-	err = s.PerformanceRunnerRepo.Save(req)
+func (s *PerformanceRunnerService) Select(req agentDomain.PerformanceRunnerSelectionReq) (err error) {
+	err = s.PerformanceRunnerRepo.Select(req)
 
 	return
 }

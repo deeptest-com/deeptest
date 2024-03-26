@@ -66,13 +66,15 @@ func (webServer *WebServer) GetSources() []map[string]string {
 
 	ch := make(chan map[string]string, routeLen)
 	for _, r := range webServer.app.GetRoutes() {
-
 		r := r
 		// 去除非接口路径
 		handerNames := context.HandlersNames(r.Handlers)
 		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) ||
 			!arr.InArrayS(strings.Split(handerNames, ","), "github.com/snowlyg/multi.(*Verifier).Verify.func1") {
 			routeLen--
+
+			logUtils.Infof("continue")
+
 			continue
 		}
 		go func(r *router.Route) {
@@ -89,6 +91,7 @@ func (webServer *WebServer) GetSources() []map[string]string {
 	for i := 0; i < routeLen; i++ {
 		routes[i] = <-ch
 	}
+
 	return routes
 }
 

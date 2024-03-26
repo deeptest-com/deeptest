@@ -160,6 +160,7 @@ func (webServer *WebServer) AddWebUi() {
 	} else {
 		pth = pth2
 	}
+	logUtils.Infof("ui dir = %s", pth)
 
 	if !fileUtils.FileExist(pth) {
 		return

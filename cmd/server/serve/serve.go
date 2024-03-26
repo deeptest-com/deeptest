@@ -67,29 +67,15 @@ func (webServer *WebServer) GetSources() []map[string]string {
 
 	ch := make(chan map[string]string, routeLen)
 	for _, r := range serverRoutes {
-		//if strings.Index(r.Path, "login") > -1 {
-		//	handerNames := context.HandlersNames(r.Handlers)
-		//	logUtils.Info(handerNames)
-		//}
-
 		r := r
 		// 去除非接口路径
-		handerNames := context.HandlersNames(r.Handlers)
-		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) {
-			continue
-		}
+		handlerNames := context.HandlersNames(r.Handlers)
+		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) || !hasPerm(handlerNames) {
+			routeLen--
 
-		names := strings.Split(handerNames, ",")
+			logUtils.Infof("continue")
+			logUtils.Infof(handlerNames)
 
-		hasPerm := false
-		for _, name := range names {
-			if strings.Index(name, "middleware.Casbin") > -1 {
-				hasPerm = true
-				break
-			}
-		}
-
-		if !hasPerm {
 			continue
 		}
 
@@ -141,4 +127,18 @@ func DebugParty() module.WebModule {
 		index.Any("/pprof/{action:path}", pprof.New())
 	}
 	return module.NewModule("/debug", handler)
+}
+
+func hasPerm(handlerNames string) bool {
+	names := strings.Split(handlerNames, ",")
+
+	hasPerm := false
+	for _, name := range names {
+		if strings.Index(name, "middleware.Casbin") > -1 {
+			hasPerm = true
+			break
+		}
+	}
+
+	return hasPerm
 }

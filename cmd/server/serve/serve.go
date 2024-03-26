@@ -76,19 +76,21 @@ func (webServer *WebServer) GetSources() []map[string]string {
 		// 去除非接口路径
 		handerNames := context.HandlersNames(r.Handlers)
 		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) {
-			names := strings.Split(handerNames, ",")
+			continue
+		}
 
-			hasPerm := false
-			for _, name := range names {
-				if strings.Index(name, "middleware.Casbin") > -1 {
-					hasPerm = true
-					break
-				}
-			}
+		names := strings.Split(handerNames, ",")
 
-			if !hasPerm {
-				continue
+		hasPerm := false
+		for _, name := range names {
+			if strings.Index(name, "middleware.Casbin") > -1 {
+				hasPerm = true
+				break
 			}
+		}
+
+		if !hasPerm {
+			continue
 		}
 
 		go func(r *router.Route) {

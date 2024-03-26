@@ -92,3 +92,17 @@ func (r *IntegrationRepo) GetSpacesByProject(tenantId consts.TenantId, projectId
 
 	return
 }
+
+func (r *IntegrationRepo) DeleteEngineeringByProject(tenantId consts.TenantId, projectId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectSpaceRel{}).
+		Where("project_id = ?", projectId).
+		Delete(&model.ProjectSpaceRel{}).Error
+
+	return
+}
+
+func (r *IntegrationRepo) BatchCreateProjectEngineeringRel(tenantId consts.TenantId, relations []model.ProjectEngineeringRel) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectEngineeringRel{}).Create(&relations).Error
+
+	return
+}

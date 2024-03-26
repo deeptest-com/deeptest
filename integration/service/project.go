@@ -10,18 +10,20 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
+	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 )
 
 type ProjectService struct {
-	RemoteService   *leyan.RemoteService  `inject:""`
-	IntegrationRepo *repo.IntegrationRepo `inject:""`
-	ProjectRepo     *repo.ProjectRepo     `inject:""`
-	UserRepo        *repo.UserRepo        `inject:""`
-	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
-	MessageRepo     *repo.MessageRepo     `inject:""`
-	BaseRepo        *repo.BaseRepo        `inject:""`
-	MessageService  *MessageService       `inject:""`
+	RemoteService         *leyan.RemoteService  `inject:""`
+	IntegrationRepo       *repo.IntegrationRepo `inject:""`
+	ProjectRepo           *repo.ProjectRepo     `inject:""`
+	UserRepo              *repo.UserRepo        `inject:""`
+	ProjectRoleRepo       *repo.ProjectRoleRepo `inject:""`
+	MessageRepo           *repo.MessageRepo     `inject:""`
+	BaseRepo              *repo.BaseRepo        `inject:""`
+	MessageService        *MessageService       `inject:""`
+	ThirdPartySyncService *service.ThirdPartySyncService
 }
 
 func (s *ProjectService) GetUserProductList(tenantId consts.TenantId, page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
@@ -341,6 +343,34 @@ func (s *ProjectService) SendApplyMessage(tenantId consts.TenantId, projectId, u
 	}
 
 	_, err = s.MessageService.SendMessageToMcs(tenantId, message)
+
+	return
+}
+
+func (s *ProjectService) SaveEngineering(tenantId consts.TenantId, projectId uint, engineering []string) (err error) {
+	if err = s.IntegrationRepo.DeleteEngineeringByProject(tenantId, projectId); err != nil {
+		return
+	}
+
+	err = s.AddProjectRelatedEngineering(tenantId, projectId, engineering)
+
+	return
+}
+
+func (s *ProjectService) AddProjectRelatedEngineering(tenantId consts.TenantId, projectId uint, engineering []string) (err error) {
+	relations := make([]model.ProjectEngineeringRel, 0)
+
+	s.ThirdPartySyncService.GetEngineeringOptions("")
+	for _, item := range engineering {
+		relations = append(relations, model.ProjectEngineeringRel{
+			ProjectId: projectId,
+			Code:      item,
+		})
+	}
+
+	if len(relations) > 0 {
+		err = s.IntegrationRepo.BatchCreateProjectEngineeringRel(tenantId, relations)
+	}
 
 	return
 }

@@ -21,3 +21,15 @@ type ProjectSpaceRel struct {
 func (ProjectSpaceRel) TableName() string {
 	return "biz_integration_project_space_rel"
 }
+
+type ProjectEngineeringRel struct {
+	BaseModel
+
+	ProjectId uint   `json:"projectId"`
+	Code      string `json:"code"`
+	Name      string `json:"name"`
+}
+
+func (ProjectEngineeringRel) TableName() string {
+	return "biz_integration_project_engineering_rel"
+}

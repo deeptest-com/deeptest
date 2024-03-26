@@ -42,6 +42,7 @@ func (s *ThirdPartySyncService) GetToken(baseUrl string) (token string, err erro
 	loginByOauthReq := integrationDomain.LoginByOauthReq{
 		LoginName: config.CONFIG.ThirdParty.Username,
 		Password:  _commUtils.Sha256(config.CONFIG.ThirdParty.Password),
+		TenantId:  "1632931640315338752",
 	}
 
 	loginByOauthResData := s.RemoteService.LoginByOauth(loginByOauthReq, baseUrl)

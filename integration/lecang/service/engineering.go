@@ -5,10 +5,10 @@ import (
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 )
 
-type EngineerService struct {
+type EngineeringService struct {
 }
 
-func (s *EngineerService) GetEngineeringOptions(baseUrl string) (ret []integrationDomain.EngineeringItem, err error) {
+func (s *EngineeringService) GetEngineeringOptions(baseUrl string) (ret []integrationDomain.EngineeringItem, err error) {
 	token, err := new(User).GetToken(baseUrl)
 	if err != nil {
 		err = errors.New("您输入的环境URL地址有误")
@@ -20,7 +20,7 @@ func (s *EngineerService) GetEngineeringOptions(baseUrl string) (ret []integrati
 	return
 }
 
-func (s *EngineerService) GetServiceOptions(engineering, baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
+func (s *EngineeringService) GetServiceOptions(engineering, baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
 	token, err := new(User).GetToken(baseUrl)
 	if err != nil {
 		err = errors.New("您输入的环境URL地址有误")
@@ -36,7 +36,7 @@ func (s *EngineerService) GetServiceOptions(engineering, baseUrl string) (ret []
 	return
 }
 
-func (s *EngineerService) GetAllServiceList(baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
+func (s *EngineeringService) GetAllServiceList(baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
 	token, err := new(User).GetToken(baseUrl)
 	if err != nil {
 		err = errors.New("您输入的环境URL地址有误")

@@ -28,7 +28,7 @@ type ProjectCronCtrl struct {
 	DB                 *gorm.DB                    `inject:""`
 	Proxy              *task.Proxy                 `inject:""`
 	BaseCtrl
-	EngineerService *lecang.EngineerService `inject:""`
+	EngineerService *lecang.EngineeringService `inject:""`
 }
 
 // List

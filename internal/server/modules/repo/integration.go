@@ -106,3 +106,12 @@ func (r *IntegrationRepo) BatchCreateProjectEngineeringRel(tenantId consts.Tenan
 
 	return
 }
+
+func (r *IntegrationRepo) GetEngineeringByProject(tenantId consts.TenantId, projectId uint) (res []string, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectEngineeringRel{}).
+		Select("code").
+		Where("project_id = ? AND NOT deleted AND NOT disabled", projectId).
+		Find(&res).Error
+
+	return
+}

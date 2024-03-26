@@ -3,6 +3,7 @@ package integrationDomain
 type ProjectReq struct {
 	Products    []uint   `json:"products"`
 	Spaces      []string `json:"spaces"`
+	Engineering []string `json:"engineering"`
 	SyncMembers bool     `json:"syncMembers"`
 }
 

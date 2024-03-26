@@ -656,3 +656,7 @@ func (s *RemoteService) getLcMlServiceQueryAgentRequest(engineering string) (res
 
 	return
 }
+
+func (s *RemoteService) GetLovByCode() {
+	
+}

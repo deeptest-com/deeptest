@@ -74,6 +74,7 @@ func (webServer *WebServer) GetSources() []map[string]string {
 			routeLen--
 
 			logUtils.Infof("continue")
+			logUtils.Infof(handerNames)
 
 			continue
 		}

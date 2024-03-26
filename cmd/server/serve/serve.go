@@ -58,6 +58,7 @@ func (webServer *WebServer) InitRouter() error {
 		}
 
 		config.PermRoutes = webServer.GetSources()
+		logUtils.Infof("routes len = %d", len(config.PermRoutes))
 
 		return nil
 	}

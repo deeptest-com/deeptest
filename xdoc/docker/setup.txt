@@ -1,0 +1,44 @@
+yarn config set ignore-engines true
+set NODE_OPTIONS=--max_old_space_size=6000
+
+docker commit e1763f508940 deeptest
+
+docker pull registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
+
+docker run  --privileged=true -it \
+    -p 50022:22 -p 53306:3306 -p 8085:8085 -p 8086:8086 -p 8087:8087 -p 9528:9528  \
+    -v ~/rd/docker/deeptest:/deeptest \
+    -m 6G \
+    --name deeptest \
+    -d registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0 \
+    /sbin/init
+
+docker exec -it deeptest /bin/bash
+env:NODE_OPTIONS="--max-old-space-size=5000"
+
+docker login --username=aaronchen2k@aliyun.com registry.cn-hangzhou.aliyuncs.com
+docker tag deeptest registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
+docker push registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
+
+docker pull registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
+
+wget -q https://repos.influxdata.com/influxdata-archive_compat.key
+echo '393e8779c89ac8d958f81f942f9ad7fb82a25e133faddaf92e15b16e6ac9ce4c influxdata-archive_compat.key' | sha256sum -c && cat influxdata-archive_compat.key | gpg --dearmor | tee /etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg > /dev/null
+echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https://repos.influxdata.com/debian stable main' | tee /etc/apt/sources.list.d/influxdata.list
+
+apt-get update && apt-get install influxdb2
+
+create user 'root'@'%' identified by 'P2ssw0rd';
+create user 'deeptest'@'%' identified by 'P2ssw0rd';
+grant all privileges on *.* to 'deeptest'@'%' with grant option;
+grant all privileges on *.* to 'root'@'%' with grant option;
+
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'P2ssw0rd';
+ALTER USER 'root'@'%' IDENTIFIED BY 'P2ssw0rd';
+flush privileges;
+
+CREATE DATABASE IF NOT EXISTS deeptest DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
+
+nohup ./run.sh > runner.log 2>&1 &
+
+nohup ./usr/bin/influxd > runner.log 2>&1 &

@@ -22,6 +22,7 @@ import (
 	"github.com/kataras/iris/v12/core/router"
 	"github.com/kataras/iris/v12/websocket"
 	"github.com/sirupsen/logrus"
+	"github.com/snowlyg/helper/dir"
 	"path/filepath"
 	"sync"
 	"testing"
@@ -150,14 +151,18 @@ func (webServer *WebServer) AddModule(module ...module.WebModule) {
 
 // AddWebUi 添加前端页面访问
 func (webServer *WebServer) AddWebUi() {
-	pth1 := filepath.Join(consts.WorkDir, "ui", "dist")
-	pth2 := filepath.Join(consts.WorkDir, "deeptest-ui")
+	pth1 := filepath.Join(dir.GetCurrentAbPath(), "ui", "dist")
+	pth2 := filepath.Join(dir.GetCurrentAbPath(), "deeptest-ui")
 
 	pth := ""
 	if fileUtils.FileExist(pth1) {
 		pth = pth1
 	} else {
 		pth = pth2
+	}
+
+	if !fileUtils.FileExist(pth) {
+		return
 	}
 
 	//fileUtils.MkDirIfNeeded(pth)

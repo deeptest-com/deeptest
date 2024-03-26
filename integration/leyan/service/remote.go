@@ -18,7 +18,12 @@ import (
 type RemoteService struct {
 }
 
-func (s *RemoteService) LoginByOauth(req integrationDomain.LoginByOauthReq, baseUrl string) (ret integrationDomain.LoginByOauthResData) {
+func (s *RemoteService) LoginByOauth(loginByOauthReq integrationDomain.LoginByOauthReq, baseUrl string) (ret integrationDomain.LoginByOauthResData) {
+	req := struct {
+		ThisObj integrationDomain.LoginByOauthReq `json:"thisObj"`
+	}{}
+	req.ThisObj = loginByOauthReq
+
 	url := fmt.Sprintf("%s/levault/usrsvr/Usr/LoginByOauth", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {

@@ -73,9 +73,6 @@ func (webServer *WebServer) GetSources() []map[string]string {
 		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) || !hasPerm(handlerNames) {
 			routeLen--
 
-			logUtils.Infof("continue")
-			logUtils.Infof(handlerNames)
-
 			continue
 		}
 

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
 	v1 "github.com/aaronchen2k/deeptest/integration/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
@@ -12,7 +13,7 @@ type User struct {
 }
 
 func (s *User) GetUserInfoByToken(tenantId consts.TenantId, token, origin string) (user v1.UserInfo, err error) {
-	user, err = new(remote).GetUserInfoByToken(token, origin)
+	user, err = new(RemoteService).GetUserInfoByToken(token, origin)
 	return
 }
 
@@ -22,7 +23,7 @@ func (s *User) GetToken(baseUrl string) (token string, err error) {
 		Password:  _commUtils.Sha256(config.CONFIG.ThirdParty.Password),
 	}
 
-	loginByOauthResData := s.RemoteService.LoginByOauth(loginByOauthReq, baseUrl)
+	loginByOauthResData := new(RemoteService).LoginByOauth(loginByOauthReq, baseUrl)
 	if loginByOauthResData.Code == "" {
 		return "", errors.New("login fail")
 	}
@@ -31,7 +32,7 @@ func (s *User) GetToken(baseUrl string) (token string, err error) {
 		Code: loginByOauthResData.Code,
 	}
 
-	getTokenFromCodeResData := s.RemoteService.GetTokenFromCode(getTokenFromCodeReq, baseUrl)
+	getTokenFromCodeResData := new(RemoteService).GetTokenFromCode(getTokenFromCodeReq, baseUrl)
 	token = getTokenFromCodeResData.Token
 
 	return

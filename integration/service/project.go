@@ -5,25 +5,25 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
 	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
-	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 )
 
 type ProjectService struct {
-	RemoteService         *leyan.RemoteService  `inject:""`
-	IntegrationRepo       *repo.IntegrationRepo `inject:""`
-	ProjectRepo           *repo.ProjectRepo     `inject:""`
-	UserRepo              *repo.UserRepo        `inject:""`
-	ProjectRoleRepo       *repo.ProjectRoleRepo `inject:""`
-	MessageRepo           *repo.MessageRepo     `inject:""`
-	BaseRepo              *repo.BaseRepo        `inject:""`
-	MessageService        *MessageService       `inject:""`
-	ThirdPartySyncService *service.ThirdPartySyncService
+	RemoteService   *leyan.RemoteService    `inject:""`
+	IntegrationRepo *repo.IntegrationRepo   `inject:""`
+	ProjectRepo     *repo.ProjectRepo       `inject:""`
+	UserRepo        *repo.UserRepo          `inject:""`
+	ProjectRoleRepo *repo.ProjectRoleRepo   `inject:""`
+	MessageRepo     *repo.MessageRepo       `inject:""`
+	BaseRepo        *repo.BaseRepo          `inject:""`
+	MessageService  *MessageService         `inject:""`
+	EngineerService *lecang.EngineerService `inject:""`
 }
 
 func (s *ProjectService) GetUserProductList(tenantId consts.TenantId, page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
@@ -360,7 +360,6 @@ func (s *ProjectService) SaveEngineering(tenantId consts.TenantId, projectId uin
 func (s *ProjectService) AddProjectRelatedEngineering(tenantId consts.TenantId, projectId uint, engineering []string) (err error) {
 	relations := make([]model.ProjectEngineeringRel, 0)
 
-	s.ThirdPartySyncService.GetEngineeringOptions("")
 	for _, item := range engineering {
 		relations = append(relations, model.ProjectEngineeringRel{
 			ProjectId: projectId,

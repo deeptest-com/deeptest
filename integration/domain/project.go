@@ -29,8 +29,9 @@ type SpaceItem struct {
 }
 
 type ProjectDetail struct {
-	Products []ProductBaseItem `json:"products"`
-	Spaces   []SpaceItem       `json:"spaces"`
+	Products    []ProductBaseItem `json:"products"`
+	Spaces      []SpaceItem       `json:"spaces"`
+	Engineering []EngineeringItem `json:"engineeringItem"`
 }
 
 type UserInfo struct {

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
-	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
+	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
@@ -30,7 +30,7 @@ type ThirdPartySyncService struct {
 	EndpointInterfaceRepo    *repo.EndpointInterfaceRepo `inject:""`
 	UserRepo                 *repo.UserRepo              `inject:""`
 	BaseRepo                 *repo.BaseRepo              `inject:""`
-	RemoteService            *leyan.RemoteService        `inject:""`
+	RemoteService            *lecang.RemoteService       `inject:""`
 	ServeService             *ServeService               `inject:""`
 	EndpointService          *EndpointService            `inject:""`
 	EndpointInterfaceService *EndpointInterfaceService   `inject:""`
@@ -765,46 +765,6 @@ func (s *ThirdPartySyncService) ListFunctionsByClass(baseUrl, classCode string) 
 			res = append(res, function)
 		}
 	}
-
-	return
-}
-
-func (s *ThirdPartySyncService) GetEngineeringOptions(baseUrl string) (ret []integrationDomain.EngineeringItem, err error) {
-	token, err := s.GetToken(baseUrl)
-	if err != nil {
-		err = errors.New("您输入的环境URL地址有误")
-		return
-	}
-
-	ret = s.RemoteService.LcContainerQueryAgent(token, baseUrl)
-
-	return
-}
-
-func (s *ThirdPartySyncService) GetServiceOptions(engineering, baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
-	token, err := s.GetToken(baseUrl)
-	if err != nil {
-		err = errors.New("您输入的环境URL地址有误")
-		return
-	}
-
-	if engineering == "" {
-		ret = s.RemoteService.LcAllServiceList(token, baseUrl)
-	} else {
-		ret = s.RemoteService.LcMlServiceQueryAgent(engineering, token, baseUrl)
-	}
-
-	return
-}
-
-func (s *ThirdPartySyncService) GetAllServiceList(baseUrl string) (ret []integrationDomain.ServiceItem, err error) {
-	token, err := s.GetToken(baseUrl)
-	if err != nil {
-		err = errors.New("您输入的环境URL地址有误")
-		return
-	}
-
-	ret = s.RemoteService.LcAllServiceList(token, baseUrl)
 
 	return
 }

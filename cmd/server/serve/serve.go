@@ -43,14 +43,10 @@ func (webServer *WebServer) InitRouter() error {
 		}
 		webServer.initModule()
 
-		logUtils.Infof("before GetSources")
-
 		webServer.AddWebUi()
 		webServer.AddUpload()
 		webServer.AddTest()
 		webServer.AddSwagger()
-
-		logUtils.Infof("after GetSources")
 
 		err := webServer.app.Build()
 		if err != nil {
@@ -58,7 +54,6 @@ func (webServer *WebServer) InitRouter() error {
 		}
 
 		config.PermRoutes = webServer.GetSources()
-		logUtils.Infof("routes len = %d", len(config.PermRoutes))
 
 		return nil
 	}
@@ -67,11 +62,10 @@ func (webServer *WebServer) InitRouter() error {
 // GetSources 获取web服务需要认证的权限
 func (webServer *WebServer) GetSources() []map[string]string {
 	routeLen := len(webServer.app.GetRoutes())
+	logUtils.Infof("routes len = %d", routeLen)
+
 	ch := make(chan map[string]string, routeLen)
 	for _, r := range webServer.app.GetRoutes() {
-		if strings.Index(r.Path, "test123") > -1 {
-			logUtils.Info("")
-		}
 
 		r := r
 		// 去除非接口路径

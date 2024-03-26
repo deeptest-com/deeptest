@@ -12,8 +12,6 @@ import (
 )
 
 func InitConfig() {
-	consts.ExecFrom = consts.FromCmd
-
 	consts.IsRelease = _commUtils.IsRelease()
 	consts.ExecDir = commUtils.GetExecDir()
 

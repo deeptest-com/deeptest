@@ -1,6 +1,8 @@
 yarn config set ignore-engines true
 set NODE_OPTIONS=--max_old_space_size=6000
 
+redis-server
+
 docker commit e1763f508940 deeptest
 
 docker pull registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0

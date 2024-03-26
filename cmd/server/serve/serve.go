@@ -61,23 +61,36 @@ func (webServer *WebServer) InitRouter() error {
 
 // GetSources 获取web服务需要认证的权限
 func (webServer *WebServer) GetSources() []map[string]string {
-	routeLen := len(webServer.app.GetRoutes())
+	serverRoutes := webServer.app.GetRoutes()
+	routeLen := len(serverRoutes)
 	logUtils.Infof("routes len = %d", routeLen)
 
 	ch := make(chan map[string]string, routeLen)
-	for _, r := range webServer.app.GetRoutes() {
+	for _, r := range serverRoutes {
+		//if strings.Index(r.Path, "login") > -1 {
+		//	handerNames := context.HandlersNames(r.Handlers)
+		//	logUtils.Info(handerNames)
+		//}
+
 		r := r
 		// 去除非接口路径
 		handerNames := context.HandlersNames(r.Handlers)
-		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) ||
-			!arr.InArrayS(strings.Split(handerNames, ","), "github.com/snowlyg/multi.(*Verifier).Verify.func1") {
-			routeLen--
+		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) {
+			names := strings.Split(handerNames, ",")
 
-			logUtils.Infof("continue")
-			logUtils.Infof(handerNames)
+			hasPerm := false
+			for _, name := range names {
+				if strings.Index(name, "middleware.Casbin") > -1 {
+					hasPerm = true
+					break
+				}
+			}
 
-			continue
+			if !hasPerm {
+				continue
+			}
 		}
+
 		go func(r *router.Route) {
 			route := map[string]string{
 				"path": r.Path,

@@ -43,10 +43,14 @@ func (webServer *WebServer) InitRouter() error {
 		}
 		webServer.initModule()
 
+		logUtils.Infof("before GetSources")
+
 		webServer.AddWebUi()
 		webServer.AddUpload()
 		webServer.AddTest()
 		webServer.AddSwagger()
+
+		logUtils.Infof("after GetSources")
 
 		err := webServer.app.Build()
 		if err != nil {

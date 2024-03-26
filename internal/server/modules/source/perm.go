@@ -40,7 +40,7 @@ func (s *PermSource) Init() error {
 
 	count, err := s.PermRepo.CreateIfNotExist(sources)
 	if err == nil {
-		color.Info.Printf("\n[Mysql] --> %s 表成功初始化%d行数据!\n", model.SysPerm{}.TableName(), count)
+		color.Info.Printf("\n[Mysql] --> %s table success to create %d records\n", model.SysPerm{}.TableName(), count)
 	}
 
 	return nil

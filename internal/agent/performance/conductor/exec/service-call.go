@@ -137,8 +137,8 @@ func (s *PerformanceTestService) ExecStart(
 		var wgRunners sync.WaitGroup
 		for _, runner := range data.Runners {
 			client := s.ConnectGrpc(runner)
-			ptlog.Logf("connect to runner via grpc, runner %v", runner)
-			ptlog.Logf("connect to runner via grpc, client %v", client)
+			ptlog.Logf("connect to runner via grpc, runner %#v", &runner)
+			ptlog.Logf("connect to runner via grpc, client %#v", client)
 
 			stream, err := s.CallRunnerExecStartByGrpc(client, data,
 				runner.Id, runner.Name, runner.Weight, int32(req.EnvironmentId))

@@ -1,24 +1,56 @@
 yarn config set ignore-engines true
 set NODE_OPTIONS=--max_old_space_size=6000
 
+env:NODE_OPTIONS="--max-old-space-size=6000"
+
 redis-server
 
-docker commit e1763f508940 deeptest
 
-docker pull registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
+export ZENOPS_HOME=/home/ubuntu/rd/docker && echo $ZENOPS_HOME
 
-docker run  --privileged=true -it \
-    -p 50022:22 -p 53306:3306 -p 8085:8085 -p 8086:8086 -p 8087:8087 -p 9528:9528  \
-    -v ~/rd/docker/deeptest:/deeptest \
+sudo rm -rf ${ZENOPS_HOME}/docker/mysql && mkdir -p ${ZENOPS_HOME}/docker/mysql && \
+    chmod 666 ${ZENOPS_HOME}/docker/mysql
+docker run \
+    --name mysql \
+    -p 53306:3306 \
+    -v ${ZENOPS_HOME}/docker/mysql/data:/var/lib/mysql:rw \
+    -v ${ZENOPS_HOME}/docker/mysql/conf.d:/etc/mysql/conf.d:rw \
+    -e MYSQL_ROOT_PASSWORD=P2ssw0rd \
+    --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci \
+    --restart always \
+    -d mysql:8.0.32
+
+sudo rm -rf ${ZENOPS_HOME}/docker/influxdb2 && mkdir -p ${ZENOPS_HOME}/docker/influxdb2 && \
+    chmod 666 ${ZENOPS_HOME}/docker/influxdb2
+docker run \
+    -p 58086:8086 \
+    -v ${ZENOPS_HOME}/docker/influxdb2/data:/var/lib/influxdb2 \
+    -v ${ZENOPS_HOME}/docker/influxdb2/config:/etc/influxdb2 \
+    -e DOCKER_INFLUXDB_INIT_MODE=setup \
+    -e DOCKER_INFLUXDB_INIT_USERNAME=root \
+    -e DOCKER_INFLUXDB_INIT_PASSWORD=P2ssw0rd \
+    -e DOCKER_INFLUXDB_INIT_ORG=deeptest \
+    -e DOCKER_INFLUXDB_INIT_BUCKET=performance \
+    -e DOCKER_INFLUXDB_INIT_RETENTION=1w \
+    -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=influxdb-token \
+    --name influxdb2 \
+    -d influxdb:2.7.5-alpine
+
+sudo rm -rf ${ZENOPS_HOME}/docker/deeptest && mkdir -p ${ZENOPS_HOME}/docker/deeptest && \
+    chmod 666 ${ZENOPS_HOME}/docker/deeptest
+docker run --privileged=true -it \
+    --link mysql \
+    --link influxdb2 \
+    -p 50022:22 -p 8085:8085 -p 8086:8086 -p 8087:8087 -p 9528:9528  \
+    -v ${ZENOPS_HOME}/docker/deeptest:/deeptest \
     -m 6G \
     --name deeptest \
-    -d registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0 \
-    /sbin/init
+    -d ubuntu:22.04
 
 docker exec -it deeptest /bin/bash
-env:NODE_OPTIONS="--max-old-space-size=5000"
 
 docker login --username=aaronchen2k@aliyun.com registry.cn-hangzhou.aliyuncs.com
+docker commit -m "update" -a "aaron" deeptest registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
 docker tag deeptest registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
 docker push registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
 
@@ -30,17 +62,13 @@ echo 'deb [signed-by=/etc/apt/trusted.gpg.d/influxdata-archive_compat.gpg] https
 
 apt-get update && apt-get install influxdb2
 
-create user 'root'@'%' identified by 'P2ssw0rd';
-create user 'deeptest'@'%' identified by 'P2ssw0rd';
-grant all privileges on *.* to 'deeptest'@'%' with grant option;
-grant all privileges on *.* to 'root'@'%' with grant option;
-
-ALTER USER 'root'@'localhost' IDENTIFIED BY 'P2ssw0rd';
-ALTER USER 'root'@'%' IDENTIFIED BY 'P2ssw0rd';
-flush privileges;
-
-CREATE DATABASE IF NOT EXISTS deeptest DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
+CREATE DATABASE deeptest DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
 
 nohup ./run.sh > runner.log 2>&1 &
 
 nohup ./usr/bin/influxd > runner.log 2>&1 &
+
+export GOPROXY=https://goproxy.cn
+export GOROOT=/rd/sdk/go
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin:$GOROOT/bin

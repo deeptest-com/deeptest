@@ -6,6 +6,8 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
 	"github.com/gookit/color"
+	"log"
+	"strings"
 )
 
 type PermSource struct {
@@ -15,6 +17,12 @@ type PermSource struct {
 func (s *PermSource) GetSources() []model.SysPerm {
 	permRouteLen := len(config.PermRoutes)
 	ch := make(chan model.SysPerm, permRouteLen)
+
+	for _, r := range config.PermRoutes {
+		if strings.Contains(r["path"], "summary/details") {
+			log.Print("")
+		}
+	}
 
 	for _, permRoute := range config.PermRoutes {
 		p := permRoute

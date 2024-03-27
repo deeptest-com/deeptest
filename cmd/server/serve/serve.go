@@ -7,6 +7,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/server/middleware"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"log"
 	"strings"
 	"sync"
 
@@ -54,6 +55,11 @@ func (webServer *WebServer) InitRouter() error {
 		}
 
 		config.PermRoutes = webServer.GetSources()
+		for _, r := range config.PermRoutes {
+			if strings.Contains(r["path"], "summary/details") {
+				log.Print("")
+			}
+		}
 
 		return nil
 	}
@@ -68,11 +74,12 @@ func (webServer *WebServer) GetSources() []map[string]string {
 	ch := make(chan map[string]string, routeLen)
 	for _, r := range serverRoutes {
 		r := r
-		// 去除非接口路径
-		handlerNames := context.HandlersNames(r.Handlers)
-		if !arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, r.Method) || !hasPerm(handlerNames) {
-			routeLen--
 
+		// ignore no api OR no perm methods
+		handlerNames := context.HandlersNames(r.Handlers)
+
+		if !isApiMethod(r.Method) || !hasPerm(handlerNames) {
+			routeLen--
 			continue
 		}
 
@@ -89,6 +96,12 @@ func (webServer *WebServer) GetSources() []map[string]string {
 	routes := make([]map[string]string, routeLen)
 	for i := 0; i < routeLen; i++ {
 		routes[i] = <-ch
+	}
+
+	for _, r := range routes {
+		if strings.Contains(r["path"], "summary/details") {
+			log.Print("")
+		}
 	}
 
 	return routes
@@ -126,6 +139,9 @@ func DebugParty() module.WebModule {
 	return module.NewModule("/debug", handler)
 }
 
+func isApiMethod(method string) bool {
+	return arr.InArrayS([]string{"GET", "POST", "PUT", "DELETE"}, method)
+}
 func hasPerm(handlerNames string) bool {
 	names := strings.Split(handlerNames, ",")
 

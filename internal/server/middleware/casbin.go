@@ -6,8 +6,10 @@ import (
 	casbinServer "github.com/aaronchen2k/deeptest/internal/server/core/casbin"
 	"github.com/aaronchen2k/deeptest/pkg/domain"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	"github.com/rs/zerolog/log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/context"
@@ -36,18 +38,21 @@ func Check(r *http.Request, userId string) (bool, error) {
 	method := r.Method
 	path := r.URL.Path
 
+	if strings.Contains(path, "profile") {
+		log.Print("")
+	}
+
 	ok, err := casbinServer.Instance().Enforce(userId, path, method)
 	if err != nil {
 		logUtils.Errorf(fmt.Sprintf("验证权限报错：%s-%s-%s", userId, path, method), zap.String("casbinServer.Instance().Enforce()", err.Error()))
 		return false, err
 	}
 
-	logUtils.Debugf(fmt.Sprintf("权限：%s-%s-%s", userId, path, method))
-	fmt.Println(fmt.Sprintf("权限：%s-%s-%s", userId, path, method))
+	logUtils.Infof("check permission %s-%s-%s result is %t", userId, path, method, ok)
 
 	if !ok {
 		return ok, errors.New("你未拥有当前系统操作权限，请联系管理员")
+	} else {
+		return ok, nil
 	}
-
-	return ok, nil
 }

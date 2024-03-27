@@ -98,35 +98,6 @@ func (r *PermRepo) CreateIfNotExist(perms []model.SysPerm) (count int, err error
 			count++
 		}
 	}
-	//enforcer := casbinServer.Instance()
-	//
-	//adminRole, _ := r.RoleRepo.FindFirstAdminUser()
-	//adminRoleId := strconv.Itoa(int(adminRole.Id))
-	//
-	//r.DB.Transaction(func(tx *gorm.DB) (err error) {
-	//	for _, perm := range perms {
-	//		found := enforcer.HasNamedPolicy("p", adminRoleId, perm.Name, perm.Act)
-	//		if found {
-	//			continue
-	//		}
-	//
-	//		// add to casbin table
-	//		namedPolicy := []string{adminRoleId, perm.Name, perm.Act}
-	//		success, _ := enforcer.AddNamedPolicy("p", namedPolicy)
-	//		if success {
-	//			count++
-	//		}
-	//
-	//		// add to permission table
-	//		err = r.DB.Model(&model.SysPerm{}).CreateExpression(&perm).Error
-	//		if err != nil {
-	//			logUtils.Errorf("添加权限%s失败，错误%s。", perm.Name, err.Error())
-	//			continue
-	//		}
-	//	}
-	//
-	//	return
-	//})
 
 	return
 }

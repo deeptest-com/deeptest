@@ -6,26 +6,26 @@ env:NODE_OPTIONS="--max-old-space-size=6000"
 redis-server
 
 
-export ZENOPS_HOME=/home/ubuntu/rd/docker && echo $ZENOPS_HOME
+export DEEPTEST_OPS_HOME=/home/ubuntu/rd/docker && echo $DEEPTEST_OPS_HOME
 
-sudo rm -rf ${ZENOPS_HOME}/docker/mysql && mkdir -p ${ZENOPS_HOME}/docker/mysql && \
-    chmod 666 ${ZENOPS_HOME}/docker/mysql
+sudo rm -rf ${DEEPTEST_OPS_HOME}/docker/mysql && mkdir -p ${DEEPTEST_OPS_HOME}/docker/mysql && \
+    chmod 666 ${DEEPTEST_OPS_HOME}/docker/mysql
 docker run \
     --name mysql \
     -p 53306:3306 \
-    -v ${ZENOPS_HOME}/docker/mysql/data:/var/lib/mysql:rw \
-    -v ${ZENOPS_HOME}/docker/mysql/conf.d:/etc/mysql/conf.d:rw \
+    -v ${DEEPTEST_OPS_HOME}/docker/mysql/data:/var/lib/mysql:rw \
+    -v ${DEEPTEST_OPS_HOME}/docker/mysql/conf.d:/etc/mysql/conf.d:rw \
     -e MYSQL_ROOT_PASSWORD=P2ssw0rd \
     --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci \
     --restart always \
     -d mysql:8.0.32
 
-sudo rm -rf ${ZENOPS_HOME}/docker/influxdb2 && mkdir -p ${ZENOPS_HOME}/docker/influxdb2 && \
-    chmod 666 ${ZENOPS_HOME}/docker/influxdb2
+sudo rm -rf ${DEEPTEST_OPS_HOME}/docker/influxdb2 && mkdir -p ${DEEPTEST_OPS_HOME}/docker/influxdb2 && \
+    chmod 666 ${DEEPTEST_OPS_HOME}/docker/influxdb2
 docker run \
     -p 58086:8086 \
-    -v ${ZENOPS_HOME}/docker/influxdb2/data:/var/lib/influxdb2 \
-    -v ${ZENOPS_HOME}/docker/influxdb2/config:/etc/influxdb2 \
+    -v ${DEEPTEST_OPS_HOME}/docker/influxdb2/data:/var/lib/influxdb2 \
+    -v ${DEEPTEST_OPS_HOME}/docker/influxdb2/config:/etc/influxdb2 \
     -e DOCKER_INFLUXDB_INIT_MODE=setup \
     -e DOCKER_INFLUXDB_INIT_USERNAME=root \
     -e DOCKER_INFLUXDB_INIT_PASSWORD=P2ssw0rd \
@@ -36,22 +36,21 @@ docker run \
     --name influxdb2 \
     -d influxdb:2.7.5-alpine
 
-sudo rm -rf ${ZENOPS_HOME}/docker/deeptest && mkdir -p ${ZENOPS_HOME}/docker/deeptest && \
-    chmod 666 ${ZENOPS_HOME}/docker/deeptest
+sudo rm -rf ${DEEPTEST_OPS_HOME}/docker/deeptest && mkdir -p ${DEEPTEST_OPS_HOME}/docker/deeptest && \
+    chmod 666 ${DEEPTEST_OPS_HOME}/docker/deeptest
 docker run --privileged=true -it \
     --link mysql \
     --link influxdb2 \
     -p 50022:22 -p 8085:8085 -p 8086:8086 -p 8087:8087 -p 9528:9528  \
-    -v ${ZENOPS_HOME}/docker/deeptest:/deeptest \
+    -v ${DEEPTEST_OPS_HOME}/docker/deeptest:/deeptest \
     -m 6G \
-    --name deeptest \
+    --name registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0 \
     -d ubuntu:22.04
 
 docker exec -it deeptest /bin/bash
 
 docker login --username=aaronchen2k@aliyun.com registry.cn-hangzhou.aliyuncs.com
 docker commit -m "update" -a "aaron" deeptest registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
-docker tag deeptest registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
 docker push registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
 
 docker pull registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
@@ -67,6 +66,9 @@ CREATE DATABASE deeptest DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
 nohup ./run.sh > runner.log 2>&1 &
 
 nohup ./usr/bin/influxd > runner.log 2>&1 &
+
+apt install gcc
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64
 
 export GOPROXY=https://goproxy.cn
 export GOROOT=/rd/sdk/go

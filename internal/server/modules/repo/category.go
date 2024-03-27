@@ -79,13 +79,13 @@ func (r *CategoryRepo) toTos(pos []*model.Category) (tos []*v1.Category) {
 }
 
 func (r *CategoryRepo) makeTree(tenantId consts.TenantId, findIn []*v1.Category, parent *v1.Category) { //参数为父节点，添加父节点的子节点指针切片
-	children, _ := r.hasChild(tenantId, findIn, parent) // 判断节点是否有子节点并返回
+	children, _ := r.hasChild(findIn, parent) // 判断节点是否有子节点并返回
 
 	if children != nil {
 		parent.Children = append(parent.Children, children[0:]...) // 添加子节点
 
 		for _, child := range children { // 查询子节点的子节点，并添加到子节点
-			_, has := r.hasChild(tenantId, findIn, child)
+			_, has := r.hasChild(findIn, child)
 			if has {
 				r.makeTree(tenantId, findIn, child) // 递归添加节点
 			}
@@ -93,7 +93,7 @@ func (r *CategoryRepo) makeTree(tenantId consts.TenantId, findIn []*v1.Category,
 	}
 }
 
-func (r *CategoryRepo) hasChild(tenantId consts.TenantId, categories []*v1.Category, parent *v1.Category) (
+func (r *CategoryRepo) hasChild(categories []*v1.Category, parent *v1.Category) (
 	ret []*v1.Category, yes bool) {
 
 	for _, item := range categories {
@@ -484,6 +484,30 @@ func (r *CategoryRepo) BatchGetByIds(tenantId consts.TenantId, ids []int) (res [
 	err = r.GetDB(tenantId).Model(&model.Category{}).
 		Where("id IN (?) AND NOT deleted", ids).
 		Find(&res).Error
+
+	return
+}
+
+func (r *CategoryRepo) GetAllChildrenMap(tenantId consts.TenantId, categoryId uint) (root *model.Category, ret map[uint][]*model.Category, err error) {
+	var res []*model.Category
+	ret = map[uint][]*model.Category{}
+	sql := `WITH RECURSIVE temp(id,name,parent_id,entity_id,ordr) AS
+		(
+			SELECT id,name,parent_id,entity_id,ordr from biz_category where id = %d and not deleted
+		  UNION ALL
+		  SELECT b.id,b.name,b.parent_id,b.entity_id,b.ordr from biz_category b, temp c where c.id = b.parent_id and not deleted
+		) 
+		select * from temp`
+	sql = fmt.Sprintf(sql, categoryId)
+	err = r.GetDB(tenantId).Raw(sql).Scan(&res).Error
+
+	if len(res) > 0 {
+		root = res[0]
+	}
+
+	for _, item := range res {
+		ret[uint(item.ParentId)] = append(ret[uint(item.ParentId)], item)
+	}
 
 	return
 }

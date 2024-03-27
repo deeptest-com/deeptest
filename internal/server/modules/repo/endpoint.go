@@ -11,6 +11,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -598,4 +599,41 @@ func (r *EndpointRepo) UpdateCategory(tenantId consts.TenantId, id, categoryId u
 
 func (r *EndpointRepo) MoveEntity(tenantId consts.TenantId, category *model.Category) (err error) {
 	return r.UpdateCategory(tenantId, category.EntityId, uint(category.ParentId))
+}
+
+func (r *EndpointRepo) GetEntities(tenantId consts.TenantId, categoryId uint) (ret map[uint]interface{}, err error) {
+	ret = map[uint]interface{}{}
+	var data []struct {
+		Id           uint   `json:"id"`
+		Name         string `json:"name"`
+		Method       string `json:"method"`
+		SerialNumber string `json:"serialNumber"`
+	}
+	sql := `SELECT
+	biz_endpoint.id,
+	biz_endpoint.title name,
+	GROUP_CONCAT( biz_endpoint_interface.method ) method,
+	biz_endpoint.serial_number
+FROM
+	biz_endpoint
+	LEFT JOIN biz_endpoint_interface ON biz_endpoint.id = biz_endpoint_interface.endpoint_id 
+WHERE
+	biz_endpoint.category_id = %d 
+	AND NOT biz_endpoint.deleted 
+	AND NOT biz_endpoint_interface.deleted 
+GROUP BY
+	biz_endpoint.id `
+
+	sql = fmt.Sprintf(sql, categoryId)
+	err = r.GetDB(tenantId).Raw(sql).Scan(&data).Error
+
+	for _, item := range data {
+		ret[item.Id] = map[string]interface{}{
+			"id":           item.Id,
+			"name":         item.Name,
+			"method":       strings.Split(item.Method, ","),
+			"serialNumber": item.SerialNumber,
+		}
+	}
+	return
 }

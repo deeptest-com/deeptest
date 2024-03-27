@@ -17,6 +17,7 @@ type IRepo interface {
 	SaveEntity(tenantId consts.TenantId, category *model.Category) (err error)
 	GetEntity(tenantId consts.TenantId, id uint) (entity map[string]interface{}, err error)
 	MoveEntity(tenantId consts.TenantId, category *model.Category) (err error)
+	GetEntities(tenantId consts.TenantId, id uint) (entity map[uint]interface{}, err error)
 }
 
 type BaseRepo struct {
@@ -154,5 +155,9 @@ func (r *BaseRepo) GetEntity(tenantId consts.TenantId, id uint) (entity map[stri
 }
 
 func (r *BaseRepo) MoveEntity(tenantId consts.TenantId, category *model.Category) (err error) {
+	return
+}
+
+func (r *BaseRepo) GetEntities(tenantId consts.TenantId, id uint) (entities map[uint]interface{}, err error) {
 	return
 }

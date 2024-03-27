@@ -466,6 +466,7 @@ func (s *CategoryService) copyDataByCategoryId(tenantId consts.TenantId, typ ser
 func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId, categoryId int, nodeType serverConsts.NodeCreateType) (ret []v1.Category, err error) {
 
 	var nodes []*model.Category
+	entities := map[uint]interface{}{}
 	if categoryId == 0 {
 		rootNode, err := s.CategoryRepo.GetRootNode(tenantId, uint(projectId), typ)
 		if err == nil {
@@ -473,6 +474,7 @@ func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, typ serverC
 		}
 	} else {
 		nodes, _ = s.CategoryRepo.GetChildrenNodes(tenantId, uint(categoryId), nodeType)
+		entities, _ = s.GetEntities(tenantId, typ, uint(categoryId))
 	}
 
 	for _, node := range nodes {
@@ -480,9 +482,7 @@ func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, typ serverC
 		copier.CopyWithOption(&category, *node, copier.Option{IgnoreEmpty: true, DeepCopy: true})
 		category.Id = int64(node.ID)
 		if node.EntityId != 0 {
-			category.EntityData, _ = s.GetEntity(tenantId, typ, node.EntityId)
-		} else {
-			category.Count = s.CategoryRepo.GetEntityCountByCategoryId(tenantId, node.ID)
+			category.EntityData, _ = entities[category.EntityId]
 		}
 
 		ret = append(ret, category)
@@ -494,4 +494,17 @@ func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, typ serverC
 func (s *CategoryService) GetEntity(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, id uint) (data map[string]interface{}, err error) {
 	repo := s.getRepo(typ)
 	return repo.GetEntity(tenantId, id)
+}
+
+func (s *CategoryService) GetPartTree(nodeId uint, nodes map[uint]*model.Category) (category v1.Category) {
+	node := nodes[nodeId]
+	copier.CopyWithOption(&category, *node, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+
+	return
+
+}
+
+func (s *CategoryService) GetEntities(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, id uint) (data map[uint]interface{}, err error) {
+	repo := s.getRepo(typ)
+	return repo.GetEntities(tenantId, id)
 }

@@ -97,6 +97,7 @@ func (s *PerformanceTestService) ExecStart(
 
 	ptlog.Init(data.Room)
 
+	ptlog.Logf("before to update runner's GrpcAddress %#v", data)
 	if s.IsRunnerBusyWithGrpcAddressUpdated(&data) {
 		ptwebsocket.SendExecInstructionToClient(
 			"代理端有正在执行的性能测试", "", ptconsts.MsgInstructionAlreadyRunning, wsMsg)
@@ -321,6 +322,8 @@ func (s *PerformanceTestService) getRunnerExecScenarios(req ptdomain.Performance
 }
 
 func (s *PerformanceTestService) IsRunnerBusyWithGrpcAddressUpdated(data *ptdomain.PerformanceTestData) (ret bool) {
+	ptlog.Logf("start to update runner's GrpcAddress %#v", *data)
+
 	for index, runner := range data.Runners {
 		mp, err := GetRunnerState(runner)
 		if err != nil {

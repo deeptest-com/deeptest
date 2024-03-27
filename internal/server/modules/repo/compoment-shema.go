@@ -88,3 +88,7 @@ func (r *ComponentSchemaRepo) ChangeRef(tenantId consts.TenantId, id, categoryId
 
 	return
 }
+
+func (r *ComponentSchemaRepo) MoveEntity(tenantId consts.TenantId, category *model.Category) (err error) {
+	return r.ChangeRef(tenantId, category.EntityId, category.ID)
+}

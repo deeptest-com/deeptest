@@ -11,6 +11,7 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/gorm"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -21,6 +22,7 @@ type EndpointRepo struct {
 	ProjectRepo           *ProjectRepo           `inject:""`
 	EndpointTagRepo       *EndpointTagRepo       `inject:""`
 	EnvironmentRepo       *EnvironmentRepo       `inject:""`
+	EndpointFavoriteRepo  *EndpointFavoriteRepo  `inject:""`
 }
 
 func (r *EndpointRepo) Paginate(tenantId consts.TenantId, req v1.EndpointReqPaginate) (ret _domain.PageData, err error) {
@@ -46,7 +48,13 @@ func (r *EndpointRepo) Paginate(tenantId consts.TenantId, req v1.EndpointReqPagi
 	}
 
 	if req.ServeVersion != "" {
-		if ids, err := r.ServeRepo.GetBindEndpointIds(tenantId, req.ServeId, req.ServeVersion); err != nil {
+		if ids, err := r.ServeRepo.GetBindEndpointIds(tenantId, req.ServeId, req.ServeVersion); err == nil {
+			db = db.Where("id in ?", ids)
+		}
+	}
+
+	if req.IsFavorite {
+		if ids, err := r.EndpointFavoriteRepo.GetEndpointIds(tenantId, req.UserId); err == nil {
 			db = db.Where("id in ?", ids)
 		}
 	}
@@ -560,4 +568,72 @@ func (r *EndpointRepo) ChangeSnapShot(tenantId consts.TenantId, endpointId uint,
 func (r *EndpointRepo) GetByCategoryId(tenantId consts.TenantId, categoryId uint) (endpoints []model.Endpoint, err error) {
 	err = r.GetDB(tenantId).Where("category_id = ?", categoryId).Order("created_at desc").Find(&endpoints).Error
 	return endpoints, err
+}
+
+func (r *EndpointRepo) FavoriteList(tenantId consts.TenantId, projectId, userId uint) (endpoints []model.Endpoint, err error) {
+	endpointIds, err := r.EndpointFavoriteRepo.GetEndpointIds(tenantId, userId)
+	if err != nil {
+		return
+	}
+	err = r.GetDB(tenantId).Where("project_id = ? and id in  ? and not deleted", projectId, endpointIds).Order("created_at desc").Find(&endpoints).Error
+
+	return
+}
+
+func (r *EndpointRepo) GetEntity(tenantId consts.TenantId, id uint) (data map[string]interface{}, err error) {
+	data = map[string]interface{}{}
+	endpoint, err := r.Get(tenantId, id)
+	if err != nil {
+		return
+	}
+	data["id"] = endpoint.ID
+	data["name"] = endpoint.Title
+	data["method"], _ = r.EndpointInterfaceRepo.GetMethodsByEndpointId(tenantId, id)
+	data["serialNumber"] = endpoint.SerialNumber
+	return
+}
+
+func (r *EndpointRepo) UpdateCategory(tenantId consts.TenantId, id, categoryId uint) (err error) {
+	return r.GetDB(tenantId).Model(&model.Endpoint{}).Where("id = ?", id).Update("category_id", categoryId).Error
+}
+
+func (r *EndpointRepo) MoveEntity(tenantId consts.TenantId, category *model.Category) (err error) {
+	return r.UpdateCategory(tenantId, category.EntityId, uint(category.ParentId))
+}
+
+func (r *EndpointRepo) GetEntities(tenantId consts.TenantId, categoryId uint) (ret map[uint]interface{}, err error) {
+	ret = map[uint]interface{}{}
+	var data []struct {
+		Id           uint   `json:"id"`
+		Name         string `json:"name"`
+		Method       string `json:"method"`
+		SerialNumber string `json:"serialNumber"`
+	}
+	sql := `SELECT
+	biz_endpoint.id,
+	biz_endpoint.title name,
+	GROUP_CONCAT( biz_endpoint_interface.method ) method,
+	biz_endpoint.serial_number
+FROM
+	biz_endpoint
+	LEFT JOIN biz_endpoint_interface ON biz_endpoint.id = biz_endpoint_interface.endpoint_id 
+WHERE
+	biz_endpoint.category_id = %d 
+	AND NOT biz_endpoint.deleted 
+	AND NOT biz_endpoint_interface.deleted 
+GROUP BY
+	biz_endpoint.id `
+
+	sql = fmt.Sprintf(sql, categoryId)
+	err = r.GetDB(tenantId).Raw(sql).Scan(&data).Error
+
+	for _, item := range data {
+		ret[item.Id] = map[string]interface{}{
+			"id":           item.Id,
+			"name":         item.Name,
+			"method":       strings.Split(item.Method, ","),
+			"serialNumber": item.SerialNumber,
+		}
+	}
+	return
 }

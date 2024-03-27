@@ -85,6 +85,8 @@ type IndexModule struct {
 	OpenModule         *router.OpenModule         `inject:""`
 	ProjectCronModule  *router.ProjectCronModule  `inject:""`
 	SaaSModule         *router.SaaSModule         `inject:""`
+
+	EndpointFavoriteModule *router.EndpointFavoriteModule `inject:""`
 }
 
 func NewIndexModule() *IndexModule {
@@ -174,6 +176,7 @@ func (m *IndexModule) ApiParty() module.WebModule {
 		m.OpenModule.Party(),
 		m.ProjectCronModule.Party(),
 		m.SaaSModule.Party(),
+		m.EndpointFavoriteModule.Party(),
 	}
 
 	return module.NewModule(consts.ApiPathServer, handler, modules...)

@@ -261,7 +261,7 @@ func (s *ServeService) DeleteSchemaById(tenantId consts.TenantId, id uint) (err 
 		return
 	}
 
-	err = s.CategoryRepo.DeleteByEntityId(tenantId, id)
+	err = s.CategoryRepo.DeleteByEntityId(tenantId, id, serverConsts.SchemaCategory)
 
 	return
 }

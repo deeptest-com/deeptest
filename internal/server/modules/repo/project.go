@@ -452,7 +452,7 @@ func (r *ProjectRepo) AddProjectMember(tenantId consts.TenantId, projectId, user
 
 func (r *ProjectRepo) AddProjectRootEndpointCategory(tenantId consts.TenantId, projectId uint) (id uint, err error) {
 	root := model.Category{
-		Name:      "分类",
+		Name:      "所有API",
 		Type:      serverConsts.EndpointCategory,
 		ProjectId: projectId,
 		IsDir:     true,

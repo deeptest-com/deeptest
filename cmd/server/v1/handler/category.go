@@ -30,6 +30,7 @@ type CategoryCtrl struct {
 func (c *CategoryCtrl) LoadTree(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	projectId, err := ctx.URLParamInt("currProjectId")
+	nodeType := ctx.URLParamDefault("nodeType", "")
 	if projectId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
 		return
@@ -40,7 +41,7 @@ func (c *CategoryCtrl) LoadTree(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.CategoryService.GetTree(tenantId, serverConsts.CategoryDiscriminator(typ), projectId)
+	data, err := c.CategoryService.GetTree(tenantId, serverConsts.CategoryDiscriminator(typ), projectId, serverConsts.NodeCreateType(nodeType))
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -281,4 +282,27 @@ func (c *CategoryCtrl) Copy(ctx iris.Context) {
 	}
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: nodePo})
+}
+
+func (c *CategoryCtrl) LoadChildren(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
+	projectId, err := ctx.URLParamInt("currProjectId")
+	nodeType := ctx.URLParamDefault("nodeType", "")
+	if projectId == 0 {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+	typ := ctx.URLParam("type")
+	if typ == "" {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: _domain.ParamErr.Msg})
+		return
+	}
+	categoryId := ctx.URLParamIntDefault("categoryId", 0)
+	data, err := c.CategoryService.GetChildrenNodes(tenantId, serverConsts.CategoryDiscriminator(typ), projectId, categoryId, serverConsts.NodeCreateType(nodeType))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data, Msg: _domain.NoErr.Msg})
 }

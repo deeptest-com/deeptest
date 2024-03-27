@@ -38,6 +38,7 @@ func (c *EndpointCtrl) Index(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
 	}
+	req.UserId = multi.GetUserId(ctx)
 	res, _ := c.EndpointService.Paginate(tenantId, req)
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 
@@ -105,6 +106,8 @@ func (c *EndpointCtrl) Detail(ctx iris.Context) {
 	version := ctx.URLParamDefault("version", c.EndpointService.GetLatestVersion(tenantId, uint(id)))
 	if id != 0 {
 		res := c.EndpointService.GetById(tenantId, uint(id), version)
+		userId := multi.GetUserId(ctx)
+		res.IsFavorite = c.EndpointService.IsFavorite(tenantId, uint(id), userId)
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res})
 	} else {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
@@ -269,7 +272,7 @@ func (c *EndpointCtrl) Copy(ctx iris.Context) {
 
 	userId := multi.GetUserId(ctx)
 	userName := multi.GetUsername(ctx)
-	res, err := c.EndpointService.Copy(tenantId, uint(id), 0, userId, userName, version)
+	res, err := c.EndpointService.Copy(tenantId, 0, uint(id), 0, userId, userName, version)
 	if err == nil {
 		ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: res, Msg: _domain.NoErr.Msg})
 	} else {

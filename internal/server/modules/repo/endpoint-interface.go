@@ -1096,3 +1096,8 @@ func (r *EndpointInterfaceRepo) GetMapGlobalParams(tenantId consts.TenantId, int
 
 	return
 }
+
+func (r *EndpointInterfaceRepo) GetMethodsByEndpointId(tenantId consts.TenantId, endpointId uint) (ret []string, err error) {
+	err = r.GetDB(tenantId).Model(model.EndpointInterface{}).Select("method").Where("endpoint_id = ? and not deleted", endpointId).Scan(&ret).Error
+	return
+}

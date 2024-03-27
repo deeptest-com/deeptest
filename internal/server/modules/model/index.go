@@ -137,6 +137,8 @@ var (
 		&ProjectProductRel{},
 		&ProjectSpaceRel{},
 
+		&EndpointFavorite{},
+
 		&ProjectCron{},
 		&CronConfigLecang{},
 	}

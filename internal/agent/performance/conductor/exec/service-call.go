@@ -113,14 +113,14 @@ func (s *PerformanceTestService) ExecStart(
 	err = dao.ClearData(data.Room)
 	if err != nil {
 		ptwebsocket.SendExecInstructionToClient(
-			err.Error(), "", ptconsts.MsgInstructionException, wsMsg)
+			err.Error(), "dao.ClearData", ptconsts.MsgInstructionException, wsMsg)
 		return
 	}
 
 	err = dao.ResetInfluxdb(data.Room, data.InfluxdbAddress, data.InfluxdbOrg, data.InfluxdbToken)
 	if err != nil {
 		ptwebsocket.SendExecInstructionToClient(
-			err.Error(), "", ptconsts.MsgInstructionException, wsMsg)
+			err.Error(), "dao.ResetInfluxdb", ptconsts.MsgInstructionException, wsMsg)
 		return
 	}
 

@@ -376,14 +376,19 @@ func (r *ScenarioProcessorRepo) GetPerformanceScenario(processor model.Processor
 
 	idsExist := r.PerformanceRunnerRepo.ListExistOnes(ret.RunnerIdsRaw)
 
-	for _, str := range strings.Split(ret.RunnerIdsRaw, ",") {
-		i, err := strconv.Atoi(str)
-		if err != nil {
-			continue
-		}
+	if ret.RunnerIdsRaw == "-" {
+		ret.RunnerIds = append(ret.RunnerIds, idsExist...)
 
-		if _intUtils.FindInArr(i, idsExist) {
-			ret.RunnerIds = append(ret.RunnerIds, i)
+	} else {
+		for _, str := range strings.Split(ret.RunnerIdsRaw, ",") {
+			i, err := strconv.Atoi(str)
+			if err != nil {
+				continue
+			}
+
+			if _intUtils.FindInArr(i, idsExist) {
+				ret.RunnerIds = append(ret.RunnerIds, i)
+			}
 		}
 	}
 
@@ -537,19 +542,22 @@ func (r *ScenarioProcessorRepo) SavePerformanceGoal(po *model.ProcessorPerforman
 	return
 }
 
-func (r *ScenarioProcessorRepo) SavePerformanceScenario(po *model.ProcessorPerformanceScenario) (err error) {
-	strArr := make([]string, len(po.RunnerIds))
-	for i, v := range po.RunnerIds {
-		strArr[i] = strconv.Itoa(v)
+func (r *ScenarioProcessorRepo) SavePerformanceScenario(entity *model.ProcessorPerformanceScenario) (err error) {
+	if entity.RunnerIdsRaw != "-" { // changed on client
+		strArr := make([]string, len(entity.RunnerIds))
+		for i, v := range entity.RunnerIds {
+			strArr[i] = strconv.Itoa(v)
+		}
+		entity.RunnerIdsRaw = strings.Join(strArr, ",")
 	}
-	po.RunnerIdsRaw = strings.Join(strArr, ",")
 
-	err = r.DB.Save(po).Error
-	r.UpdateEntityId(po.ProcessorID, po.ID)
+	err = r.DB.Save(entity).Error
 
-	r.saveStages(po)
+	r.UpdateEntityId(entity.ProcessorID, entity.ID)
 
-	po.Stages, err = r.loadStages(po.ID)
+	r.saveStages(entity)
+
+	entity.Stages, err = r.loadStages(entity.ID)
 
 	return
 }

@@ -154,8 +154,6 @@ func (s *PerformanceExecService) getScenariosFromScenarioExecObj(execObj agentEx
 func (s *PerformanceExecService) UpdateServerInfo(projectId uint, data *ptdomain.PerformanceTestData) {
 	po, _ := s.ProjectSettingsRepo.GetPerformance(projectId)
 
-	data.ConductorGrpcAddress = po.ConductorGrpcAddress
-
 	data.InfluxdbAddress = po.InfluxdbAddress
 	data.InfluxdbOrg = po.InfluxdbOrg
 	data.InfluxdbToken = po.InfluxdbToken

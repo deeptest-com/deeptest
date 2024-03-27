@@ -28,7 +28,7 @@ type ProcessorPerformanceScenario struct {
 
 	Stages       []ProcessorPerformanceStage `gorm:"-" json:"stages"`
 	RunnerIds    []int                       `gorm:"-" json:"runnerIds"`
-	RunnerIdsRaw string                      `json:"runnerIdsRaw"`
+	RunnerIdsRaw string                      `gorm:"default:"-" json:"runnerIdsRaw"`
 }
 type ProcessorPerformanceStage struct {
 	Duration int `json:"duration"`

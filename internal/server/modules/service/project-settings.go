@@ -107,8 +107,6 @@ func (s *ProjectSettingsService) SavePerformance(req v1.PerformanceReq) (ret mod
 	ret = model.ProjectPerformanceSetting{
 		BaseModel: model.BaseModel{ID: req.ID},
 
-		ConductorGrpcAddress: req.ConductorGrpcAddress,
-
 		InfluxdbAddress: req.InfluxdbAddress,
 		InfluxdbOrg:     req.InfluxdbOrg,
 		InfluxdbToken:   req.InfluxdbToken,

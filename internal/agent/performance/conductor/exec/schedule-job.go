@@ -8,7 +8,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/domain"
 	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/websocket"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
 	"github.com/kataras/iris/v12/websocket"
 	"time"
@@ -39,7 +38,7 @@ func (s *ScheduleService) SendMetricsToClient(execCtx context.Context, execCance
 		if start-lastTime < 6*1000 {
 			continue
 		}
-		_logUtils.Debug(">>>>>> start server schedule job")
+		ptlog.Logf(">>>>>> start conductor schedule job")
 
 		summary, _ := dao.QueryResponseTimeSummary(influxdbClient, req.InfluxdbOrg)
 		vuCount, _ := dao.QueryVuCount(influxdbClient, req.InfluxdbOrg)
@@ -80,7 +79,7 @@ func (s *ScheduleService) SendMetricsToClient(execCtx context.Context, execCance
 
 		select {
 		case <-execCtx.Done():
-			_logUtils.Debug("<<<<<<< stop server schedule job")
+			ptlog.Logf("<<<<<<< stop conductor schedule job")
 			return
 
 		default:

@@ -3,8 +3,6 @@ package model
 type ProjectPerformanceSetting struct {
 	BaseModel
 
-	ConductorGrpcAddress string `json:"conductorGrpcAddress"`
-
 	InfluxdbAddress string `json:"influxdbAddress"`
 	InfluxdbOrg     string `json:"influxdbOrg"`
 	InfluxdbToken   string `json:"influxdbToken"`

@@ -96,10 +96,15 @@ func (r *PerformanceRunnerRepo) UpdateSerialNumber(id, projectId uint) (err erro
 }
 
 func (r *PerformanceRunnerRepo) ListExistOnes(ids string) (ret []int) {
-	r.DB.Model(model.PerformanceRunner{}).
+	db := r.DB.Model(model.PerformanceRunner{}).
 		Select("id").
-		Where("id IN (?)", ids).
-		Scan(&ret)
+		Where("NOT deleted")
+
+	if ids != "-" {
+		db.Where("id IN (?)", ids)
+	}
+
+	db.Select("id").Scan(&ret)
 
 	return
 }

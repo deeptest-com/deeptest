@@ -12,7 +12,6 @@ import (
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"github.com/kataras/iris/v12"
-	"path"
 )
 
 func GetPlanToExec(req ptdomain.PerformanceTestReq) (
@@ -60,7 +59,7 @@ func GetRunnerState(req *ptdomain.Runner) (
 	url := "performance/getState"
 
 	httpReq := domain.BaseRequest{
-		Url: _httpUtils.AddSepIfNeeded(req.WebAddress) + path.Join("api/v1", url),
+		Url: _httpUtils.AddSepIfNeeded(req.WebAddress) + url,
 	}
 
 	bytes, err := GetRequest(httpReq)
@@ -70,7 +69,8 @@ func GetRunnerState(req *ptdomain.Runner) (
 
 	err = json.Unmarshal(bytes, &ret)
 	if err != nil {
-		logUtils.Infof("get exec obj failed,err:%v", err.Error())
+		logUtils.Infof("call runner getState failed, url: %s,err:%v", httpReq.Url, err.Error())
+		return
 	}
 
 	return

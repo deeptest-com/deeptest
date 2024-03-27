@@ -328,6 +328,8 @@ func (s *PerformanceTestService) IsRunnerBusyWithGrpcAddressUpdated(data *ptdoma
 			host := arr[0]
 
 			data.Runners[index].GrpcAddress = fmt.Sprintf("%s:%s", host, mp["grpcPort"].(string))
+		} else {
+			return
 		}
 
 		if mp["isBusy"] != nil {

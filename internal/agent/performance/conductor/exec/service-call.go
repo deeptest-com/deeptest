@@ -331,8 +331,8 @@ func (s *PerformanceTestService) IsRunnerBusyWithGrpcAddressUpdated(data *ptdoma
 		}
 
 		if mp["grpcPort"] != nil {
-			runner.WebAddress = "http://agent.api.deeptest.com/api/v1"
-			mp["grpcPort"] = "9528"
+			//runner.WebAddress = "http://agent.api.deeptest.com/api/v1"
+			//mp["grpcPort"] = "9528"
 
 			u, _ := url.Parse(runner.WebAddress)
 			arr := strings.Split(u.Host, ":")

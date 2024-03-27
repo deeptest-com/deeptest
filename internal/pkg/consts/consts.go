@@ -21,7 +21,7 @@ const (
 	ApiPathServer = "/api/v1"
 	ApiPathAgent  = "/api/v1"
 	ApiPathMock   = "/mocks"
-	WsPath        = ApiPathAgent + "/ws"
+	WsPath        = "/ws"
 
 	WsDefaultNamespace         = "default"
 	WsPerformanceTestNamespace = "performance_test"

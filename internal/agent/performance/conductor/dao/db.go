@@ -1,8 +1,8 @@
 package dao
 
 import (
+	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
-	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -18,6 +18,7 @@ var (
 func GetDB(app string) *gorm.DB {
 	once.Do(func() {
 		DB = GormSQLLite(app)
+		ptlog.Logf("sqlite db conn obj = %v", DB)
 
 		DB.AutoMigrate(Models...)
 	})
@@ -26,14 +27,15 @@ func GetDB(app string) *gorm.DB {
 }
 
 func GormSQLLite(app string) (db *gorm.DB) {
-	conn := DBFile(app)
+	pth := DBFile(app)
+	ptlog.Logf("sqlite file is %s", pth)
 
-	db, err := gorm.Open(sqlite.Open(conn), &gorm.Config{
+	db, err := gorm.Open(sqlite.Open(pth), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Info),
 	})
 
 	if err != nil {
-		logUtils.Info(err.Error())
+		ptlog.Logf("sqlite db conn err %s", err.Error())
 		return
 	}
 

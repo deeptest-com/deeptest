@@ -61,15 +61,17 @@ func GetRunnerState(req *ptdomain.Runner) (
 	httpReq := domain.BaseRequest{
 		Url: _httpUtils.AddSepIfNeeded(req.WebAddress) + url,
 	}
+	logUtils.Infof("start to call runner getState, url: %s", httpReq.Url)
 
 	bytes, err := GetRequest(httpReq)
+	logUtils.Infof("call runner getState, return %s", bytes)
 	if err != nil {
 		return
 	}
 
 	err = json.Unmarshal(bytes, &ret)
 	if err != nil {
-		logUtils.Infof("call runner getState failed, url: %s,err:%v", httpReq.Url, err.Error())
+		logUtils.Infof("Unmarshal runner getState response failed, url: %s,err:%v", httpReq.Url, err.Error())
 		return
 	}
 

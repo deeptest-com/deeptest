@@ -5,6 +5,7 @@ import "github.com/aaronchen2k/deeptest/internal/pkg/consts"
 type LoginByOauthReq struct {
 	LoginName string `json:"loginName"`
 	Password  string `json:"password"`
+	TenantId  string `json:"tenantId"`
 }
 
 type LoginByOauthRes struct {
@@ -15,6 +16,7 @@ type LoginByOauthRes struct {
 type LoginByOauthResData struct {
 	Code     string `json:"code"`
 	TenantId string `json:"tenantId"`
+	UserId   string `json:"userId"`
 }
 
 type GetTokenFromCodeReq struct {

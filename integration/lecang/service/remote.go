@@ -657,6 +657,52 @@ func (s *RemoteService) getLcMlServiceQueryAgentRequest(engineering string) (res
 	return
 }
 
-func (s *RemoteService) GetLovByCode() {
-	
+func (s *RemoteService) GetLovByCode(token, baseUrl string) (ret []integrationDomain.EngineeringItem) {
+	url := fmt.Sprintf("%s/levault/lovsvr/Lov/GetLovByCode", baseUrl)
+	req := map[string]string{
+		"code": "container",
+	}
+
+	body, err := json.Marshal(req)
+	if err != nil {
+		logUtils.Infof("marshal request data failed, error, %s", err.Error())
+		return
+	}
+
+	headers := s.getLcHeaders(token)
+	httpReq := domain.BaseRequest{
+		Url:      url,
+		BodyType: consts.ContentTypeJSON,
+		Headers:  &headers,
+		Body:     string(body),
+	}
+
+	resp, err := httpHelper.Post(httpReq)
+	if err != nil {
+		logUtils.Infof("LcAllServiceList failed, error, %s", err.Error())
+		return
+	}
+
+	if resp.StatusCode != consts.OK.Int() {
+		logUtils.Infof("LcAllServiceList failed, response %v", resp)
+		return
+	}
+
+	respContent := integrationDomain.LovByCodeRes{}
+	err = json.Unmarshal([]byte(resp.Content), &respContent)
+	if err != nil {
+		logUtils.Infof(err.Error())
+	}
+
+	if respContent.Mfail != "0" {
+		logUtils.Infof("LcAllServiceList failed, response %v", resp.Content)
+		return
+	}
+
+	for _, detail := range respContent.Data.Details {
+		ret = append(ret, integrationDomain.EngineeringItem{Code: detail.Code, Name: detail.Name})
+	}
+
+	return
+
 }

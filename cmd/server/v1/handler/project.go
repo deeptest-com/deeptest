@@ -517,3 +517,27 @@ func (c *ProjectCtrl) GetUserSpaces(ctx iris.Context) {
 
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
+
+func (c *ProjectCtrl) GetMyEngineeringList(ctx iris.Context) {
+	token := ctx.GetHeader("Token")
+	res := c.IntegrationProjectService.GetMyEngineeringList(token)
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+}
+
+func (c *ProjectCtrl) GetEngineeringByProject(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
+	projectId, err := ctx.URLParamInt("projectId")
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: err.Error()})
+		return
+	}
+
+	res, err := c.IntegrationProjectService.GetEngineeringByProject(tenantId, uint(projectId))
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
+
+}

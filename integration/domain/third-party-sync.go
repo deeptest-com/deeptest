@@ -184,3 +184,13 @@ type UserRoleItem struct {
 	RoleName  string `json:"roleName"`
 	RoleValue string `json:"roleValue"`
 }
+
+type LovByCodeRes struct {
+	ThirdPartyCommonRes
+	Data struct {
+		Details []struct {
+			Code string `json:"internalValue"`
+			Name string `json:"externalValue"`
+		} `json:"details"`
+	} `json:"data"`
+}

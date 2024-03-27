@@ -390,7 +390,7 @@ func (s *ProjectService) GetEngineeringByProject(tenantId consts.TenantId, proje
 		return
 	}
 
-	list, _ := s.EngineerService.GetEngineeringOptions("")
+	list, _ := s.EngineerService.GetEngineeringOptions(config.CONFIG.ThirdParty.Lcurl)
 
 	for _, item := range list {
 		for _, code := range engineeringCodes {
@@ -401,4 +401,11 @@ func (s *ProjectService) GetEngineeringByProject(tenantId consts.TenantId, proje
 	}
 
 	return
+}
+
+func (s *ProjectService) GetMyEngineeringList(token string) (ret []integrationDomain.EngineeringItem) {
+	if token == "" {
+		return
+	}
+	return s.EngineerService.GetMyEngineeringList(token, config.CONFIG.ThirdParty.Lcurl)
 }

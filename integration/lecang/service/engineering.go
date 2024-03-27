@@ -47,3 +47,7 @@ func (s *EngineeringService) GetAllServiceList(baseUrl string) (ret []integratio
 
 	return
 }
+
+func (s *EngineeringService) GetMyEngineeringList(token, baseUrl string) (ret []integrationDomain.EngineeringItem) {
+	return new(RemoteService).GetLovByCode(token, baseUrl)
+}

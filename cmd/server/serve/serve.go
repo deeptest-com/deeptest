@@ -79,7 +79,7 @@ func (webServer *WebServer) GetSources() []map[string]string {
 		handlerNames := context.HandlersNames(r.Handlers)
 
 		if !isApiMethod(r.Method) || !hasPerm(handlerNames) {
-			logUtils.Infof("no Perm NAME: %s, PATH: %s, METHOD: %s, NAMES: %s ", r.Name, r.Path, r.Method, handlerNames)
+			logUtils.Infof("NoPerm NAME: %s, PATH: %s, METHOD: %s, NAMES: %s ", r.Name, r.Path, r.Method, handlerNames)
 
 			routeLen--
 			continue
@@ -149,7 +149,7 @@ func hasPerm(handlerNames string) bool {
 
 	hasPerm := false
 	for _, name := range names {
-		if strings.Index(name, "middleware.Casbin") > -1 {
+		if strings.Index(name, ".Casbin") > -1 {
 			hasPerm = true
 			break
 		}

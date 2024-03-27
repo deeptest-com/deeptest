@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec"
 	"github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/websocket"
@@ -44,7 +45,10 @@ func RunScenario(ctx context.Context, req *agentExec.ScenarioExecReq, localVarsC
 }
 
 func ExecScenario(session *agentExec.ExecSession) (err error) {
+	ptlog.Logf("3. perfomance exec session %v", session)
+
 	RestoreEntityFromRawAndSetParent(session.RootProcessor)
+	ptlog.Logf("4. perfomance exec session %v", session)
 
 	session.Run()
 

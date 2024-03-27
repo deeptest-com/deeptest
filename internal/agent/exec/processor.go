@@ -5,6 +5,7 @@ import (
 	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/internal/agent/exec/domain"
 	execUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/exec"
+	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
 	agentLog "github.com/aaronchen2k/deeptest/internal/agent/pkg/utils/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	commonUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
@@ -57,6 +58,7 @@ type ProcessorBase struct {
 }
 
 func (p *Processor) Run(session *ExecSession) (err error) {
+	ptlog.Logf("4. perfomance exec processor %d - %s %s", p.ID, p.Name, p.EntityType)
 	_logUtils.Infof("%d - %s %s", p.ID, p.Name, p.EntityType)
 
 	select {

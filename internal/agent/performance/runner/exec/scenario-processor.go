@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	agentExec "github.com/aaronchen2k/deeptest/internal/agent/exec"
 	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
+	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/agent/service"
 )
 
 func ExecProcessors(timeoutCtx context.Context, vuNo int) (err error) {
 	execParams := performanceUtils.GetExecParamsInCtx(timeoutCtx)
+	ptlog.Logf("1. perfomance ExecProcessors, param %v", execParams)
 
 	rootProcessor := agentExec.Processor{}
 	json.Unmarshal(execParams.Scenario.ProcessorRaw, &rootProcessor)
@@ -27,6 +29,8 @@ func ExecProcessors(timeoutCtx context.Context, vuNo int) (err error) {
 		},
 		RootProcessor: &rootProcessor,
 	}
+	ptlog.Logf("2. perfomance generate scenarioExecObj %v", scenarioExecObj)
+
 	service.UpdateLocalValues(&scenarioExecObj.ExecScene, execParams.LocalVarsCache)
 
 	session := agentExec.NewScenarioExecSession(timeoutCtx, execParams.RunnerId, vuNo, scenarioExecObj, execParams.EnvironmentId, nil)

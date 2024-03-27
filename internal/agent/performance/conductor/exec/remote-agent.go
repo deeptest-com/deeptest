@@ -44,7 +44,7 @@ func CallRunnerExecStopByGrpc(
 		Room: room,
 	})
 	if err != nil {
-		ptlog.Logf("failed to call remote runner via grpc, err %s", err.Error())
+		ptlog.Logf("failed to call STOP on remote runner via grpc, err %s", err.Error())
 	}
 
 	stream.CloseSend()

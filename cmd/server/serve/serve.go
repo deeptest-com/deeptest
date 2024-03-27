@@ -79,6 +79,8 @@ func (webServer *WebServer) GetSources() []map[string]string {
 		handlerNames := context.HandlersNames(r.Handlers)
 
 		if !isApiMethod(r.Method) || !hasPerm(handlerNames) {
+			logUtils.Infof("no Perm NAME: %s, PATH: %s, METHOD: %s, NAMES: %s ", r.Name, r.Path, r.Method, handlerNames)
+
 			routeLen--
 			continue
 		}

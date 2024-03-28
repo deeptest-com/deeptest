@@ -31,7 +31,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 		return
 	}
 
-	// 非表达式判断
+	// 计算表达式
 	checkpointValue, variablesArr := computerExpr(checkpoint.Value, execUuid, processorId)
 	checkpointValue = _stringUtils.InterfToStr(checkpointValue)
 	checkpoint.Variables = getVariableArrDesc(variablesArr)
@@ -128,10 +128,15 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 func computerExpr(expression, execUuid string, processorId uint) (result interface{}, variablesArr domain.VarKeyValuePair) {
 	expr := ReplaceDatapoolVariInGovaluateExpress(expression, execUuid)
 
+	var err error
 	if processorId > 0 { // exec interface processor in scenario
-		result, variablesArr, _ = EvaluateGovaluateExpressionByProcessorScope(expr, processorId, execUuid)
+		result, variablesArr, err = EvaluateGovaluateExpressionByProcessorScope(expr, processorId, execUuid)
 	} else { // exec by interface invocation
-		result, variablesArr, _ = EvaluateGovaluateExpressionWithDebugVariables(expr, execUuid)
+		result, variablesArr, err = EvaluateGovaluateExpressionWithDebugVariables(expr, execUuid)
+	}
+
+	if err != nil {
+		result = expr
 	}
 
 	return

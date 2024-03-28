@@ -91,6 +91,7 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 	}
 
 Label_END_STAGES:
+
 	return
 }
 

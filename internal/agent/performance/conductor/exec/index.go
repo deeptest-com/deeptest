@@ -177,20 +177,19 @@ func (s *PerformanceTestService) ExecStart(
 }
 
 func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) {
-	conductorTask := GetConductorTask()
+	// close exec and send msg
+	if s.execCancel != nil {
+		s.execCancel()
+	}
+	ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 
+	conductorTask := GetConductorTask()
 	if conductorTask == nil {
 		return
 	}
 
 	// call remote runners to stop
 	s.RemoteRunnerService.CallStop(conductorTask.Room, conductorTask.Runners)
-
-	// close exec and send msg
-	if s.execCancel != nil {
-		s.execCancel()
-	}
-	ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 
 	// remove from cache
 	RemoveTestTask(ptconsts.Conductor)

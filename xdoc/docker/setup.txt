@@ -72,7 +72,7 @@ nohup ./usr/bin/influxd > runner.log 2>&1 &
 apt install gcc
 CGO_ENABLED=0 GOOS=darwin GOARCH=amd64
 
-yarn build:demo --dest ../deeptest/deeptest-ui
+rm -rf ../deeptest/deeptest-ui && yarn build:demo --dest ../deeptest/deeptest-ui
 
 export GOPROXY=https://goproxy.cn
 export GOROOT=/rd/sdk/go

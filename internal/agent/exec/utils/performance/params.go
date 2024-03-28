@@ -11,6 +11,10 @@ func GetVuNumbByWeight(target, weight int) (ret int) {
 
 	ret = int(runnerTarget)
 
+	if ret == 0 {
+		ret = 1
+	}
+
 	return
 }
 

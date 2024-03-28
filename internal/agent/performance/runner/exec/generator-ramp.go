@@ -3,8 +3,10 @@ package runnerExec
 import (
 	"context"
 	performanceUtils "github.com/aaronchen2k/deeptest/internal/agent/exec/utils/performance"
+	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"sync"
 	"time"
 )
@@ -14,6 +16,7 @@ type RampVuGenerator struct {
 
 func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 	execParams := performanceUtils.GetExecParamsInCtx(execCtx)
+	ptlog.Logf("Ramp Generator run, execParams: %s", _stringUtils.ToJsonStr(execParams))
 
 	if len(execParams.Stages) == 0 {
 		return

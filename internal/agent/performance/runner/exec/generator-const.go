@@ -6,6 +6,7 @@ import (
 	ptlog "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/log"
 	ptProto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
 	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"sync"
 	"time"
 )
@@ -15,6 +16,7 @@ type ConstantVuGenerator struct {
 
 func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
 	execParams := performanceUtils.GetExecParamsInCtx(execCtx)
+	ptlog.Logf("Constant Generator run, execParams: %s", _stringUtils.ToJsonStr(execParams))
 
 	var wgVus sync.WaitGroup
 

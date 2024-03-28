@@ -2,6 +2,7 @@ package _stringUtils
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/jameskeane/bcrypt"
 	"math/rand"
@@ -154,5 +155,17 @@ func IntToStr(i int) (ret string) {
 }
 func InterfToStr(i interface{}) (ret string) {
 	ret = fmt.Sprintf("%v", i)
+	return
+}
+
+func ToJsonStr(i interface{}) (ret string) {
+	b, err := json.Marshal(i)
+
+	if err != nil {
+		ret = err.Error()
+	} else {
+		ret = string(b)
+	}
+
 	return
 }

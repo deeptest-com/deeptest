@@ -21,6 +21,7 @@ func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
 	var wgVus sync.WaitGroup
 
 	target := performanceUtils.GetVuNumbByWeight(execParams.Target, execParams.Weight)
+	ptlog.Logf("Constant Generator global vu num is %d", target)
 
 	for i := 1; i <= target; i++ {
 		vuCtx, _ := context.WithCancel(execCtx)

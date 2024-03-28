@@ -27,6 +27,7 @@ func (g RampVuGenerator) Run(execCtx context.Context) (err error) {
 		stage := execParams.Stages[i]
 
 		target := performanceUtils.GetVuNumbByWeight(int(stage.Target), execParams.Weight)
+		ptlog.Logf("Constant Generator stage %d, vu num is %d", i, target)
 
 		startTime := time.Now().Unix()
 

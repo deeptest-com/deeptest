@@ -43,7 +43,7 @@ docker run --privileged=true -itd \
     -v ${DEEPTEST_OPS_HOME}/docker/deeptest:/deeptest \
     -m 6G \
     --name deeptest \
-    registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
+    registry.cn-hangzhou.aliyuncs.com/com-deeptest/single:1.0
 
 docker exec -it deeptest /bin/bash
 
@@ -55,6 +55,11 @@ CGO_ENABLED=1 go run cmd/agent/main.go    启动代理端
 docker login --username=aaronchen2k@aliyun.com registry.cn-hangzhou.aliyuncs.com
 docker commit -m "update" -a "aaron" deeptest registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
 docker push registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
+
+// 镜像瘦身
+docker export -o deeptest-image.tar deeptest
+docker import deeptest-image.tar registry.cn-hangzhou.aliyuncs.com/com-deeptest/single:1.0
+docker push registry.cn-hangzhou.aliyuncs.com/com-deeptest/single:1.0
 
 docker pull registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
 

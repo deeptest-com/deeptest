@@ -9,15 +9,10 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
 	"github.com/aaronchen2k/deeptest/internal/pkg/log"
-	"github.com/aaronchen2k/deeptest/internal/pkg/service"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"github.com/facebookgo/inject"
-	gorillaWs "github.com/gorilla/websocket"
-	"github.com/kataras/iris/v12/websocket"
-	"github.com/kataras/neffos/gorilla"
 	"github.com/sirupsen/logrus"
-	"net/http"
 	"sync"
 	"testing"
 	"time"
@@ -56,20 +51,6 @@ func Init() *AgentServer {
 
 	// init grpc
 	mvc.New(app)
-
-	// init websocket
-	websocketCtrl := handler.NewWebsocketCtrl()
-	injectWebsocketModule(websocketCtrl)
-
-	websocketAPI := app.Party(consts.WsPath)
-	m := mvc.New(websocketAPI)
-	m.Register(
-		&commService.PrefixedLogger{Prefix: ""},
-	)
-	m.HandleWebsocket(websocketCtrl)
-
-	websocketServer := websocket.New(gorilla.Upgrader(gorillaWs.Upgrader{CheckOrigin: func(*http.Request) bool { return true }}), m)
-	websocketAPI.Get("/", websocket.Handler(websocketServer))
 
 	return &AgentServer{
 		app:               app,

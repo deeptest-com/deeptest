@@ -3,9 +3,9 @@ package serve
 import (
 	"fmt"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
-	middleware2 "github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/module"
-	"github.com/aaronchen2k/deeptest/internal/server/middleware"
+	serverMiddleware "github.com/aaronchen2k/deeptest/internal/server/middleware"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"log"
 	"strings"
@@ -33,11 +33,11 @@ type WebServer struct {
 
 // InitRouter 初始化模块路由
 func (webServer *WebServer) InitRouter() error {
-	webServer.app.UseRouter(middleware2.CrsAuth("server"))
+	webServer.app.UseRouter(middleware.CrsAuth("server"))
 
 	app := webServer.app.Party("/").AllowMethods(iris.MethodOptions)
 	{
-		app.Use(middleware.InitCheck())
+		app.Use(serverMiddleware.InitCheck())
 		if config.CONFIG.System.Level == "debug" {
 			debug := DebugParty()
 			app.PartyFunc(debug.RelativePath, debug.Handler)

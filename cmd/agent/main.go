@@ -9,6 +9,7 @@ import (
 	ptwebsocket "github.com/aaronchen2k/deeptest/internal/agent/performance/pkg/websocket"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
+	"github.com/aaronchen2k/deeptest/internal/pkg/core/middleware"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/websocket"
 	commService "github.com/aaronchen2k/deeptest/internal/pkg/service"
 	"github.com/aaronchen2k/deeptest/internal/server/core/dao"
@@ -102,7 +103,9 @@ func injectWebSocketModule(app *iris.Application) {
 	}
 
 	websocketAPI := app.Party(consts.WsPath)
+	websocketAPI.UseRouter(middleware.CrsAuth("agent"))
 	mvcApp := mvc.New(websocketAPI)
+
 	mvcApp.Register(&commService.PrefixedLogger{Prefix: ""})
 	mvcApp.HandleWebsocket(websocketCtrl)
 	mvcApp.HandleWebsocket(websocketTestCtrl)

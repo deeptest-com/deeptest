@@ -184,6 +184,7 @@ func (s *PerformanceTestService) ExecStop(wsMsg *websocket.Message) (err error) 
 	ptwebsocket.SendExecInstructionToClient("", "", ptconsts.MsgInstructionEnd, wsMsg)
 
 	conductorTask := GetConductorTask()
+
 	if conductorTask == nil {
 		return
 	}

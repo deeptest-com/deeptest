@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"fmt"
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
@@ -17,12 +18,18 @@ type PerformanceRunnerRepo struct {
 	ScenarioNodeRepo *ScenarioNodeRepo `inject:""`
 }
 
-func (r *PerformanceRunnerRepo) List(scenarioId int) (pos []model.PerformanceRunner, err error) {
+func (r *PerformanceRunnerRepo) List(scenarioId uint) (pos []model.PerformanceRunner, err error) {
+	where := "true"
+	if scenarioId > 0 {
+		where = fmt.Sprintf("r.scenario_id = %d", scenarioId)
+	}
+
 	sql := "SELECT r.id, r.agent_id, r.weight, r.name, r.web_address, r.serial_number, " +
 		"r.is_conductor, r.weight, r.scenario_id, r.project_id, " +
 		"a.name, a.url web_address " +
 		"FROM biz_performance_runner r " +
-		"LEFT JOIN sys_agent a ON r.agent_id = a.id"
+		"LEFT JOIN sys_agent a ON r.agent_id = a.id " +
+		fmt.Sprintf("WHERE %s ", where)
 
 	err = r.DB.Raw(sql).
 		Scan(&pos).Error

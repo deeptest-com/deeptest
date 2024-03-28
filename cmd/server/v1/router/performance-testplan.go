@@ -24,7 +24,7 @@ func (m *PerformanceTestPlanModule) Party() module.WebModule {
 		index.Put("/{id:uint}/updateStatus", m.PerformanceTestPlanCtrl.UpdateStatus).Name = "更新性能测试计划状态"
 
 		index.Get("/listRunner", m.PerformanceTestPlanCtrl.ListRunner).Name = "获取性能测试代理列表"
-		index.Get("/listRunner", m.PerformanceTestPlanCtrl.ListRunner).Name = "获取性能测试代理列表"
+		index.Get("/getConductor", m.PerformanceTestPlanCtrl.GetConductor).Name = "获取性能测试的主控节点信息"
 	}
 
 	return module.NewModule("/performanceTestPlans", handler)

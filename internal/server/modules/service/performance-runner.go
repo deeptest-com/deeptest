@@ -13,7 +13,7 @@ type PerformanceRunnerService struct {
 }
 
 func (s *PerformanceRunnerService) List(scenarioId int) (pos []model.PerformanceRunner, err error) {
-	pos, err = s.PerformanceRunnerRepo.List(scenarioId)
+	pos, err = s.PerformanceRunnerRepo.List(uint(scenarioId))
 
 	return
 }

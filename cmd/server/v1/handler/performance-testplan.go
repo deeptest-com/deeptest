@@ -217,3 +217,15 @@ func (c *PerformanceTestPlanCtrl) UpdateStatus(ctx iris.Context) {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
 	}
 }
+
+func (c *PerformanceTestPlanCtrl) GetConductor(ctx iris.Context) {
+	performanceScenarioId, _ := ctx.URLParamInt("planId")
+
+	data, err := c.PerformanceTestPlanService.GetConductor(performanceScenarioId)
+	if err != nil {
+		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: _domain.SystemErr.Msg})
+		return
+	}
+
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: data})
+}

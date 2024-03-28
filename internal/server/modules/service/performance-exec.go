@@ -69,7 +69,7 @@ func (s *PerformanceExecService) getGoalFromScenarioExecObj(execObj agentExec.Sc
 }
 
 func (s *PerformanceExecService) getRunnersFromScenarioExecObj(execObj agentExec.ScenarioExecObj) (ret []*ptdomain.Runner) {
-	runners, _ := s.PerformanceRunnerRepo.List(int(execObj.ScenarioId))
+	runners, _ := s.PerformanceRunnerRepo.List(execObj.ScenarioId)
 
 	for _, runner := range runners {
 		runner := ptdomain.Runner{

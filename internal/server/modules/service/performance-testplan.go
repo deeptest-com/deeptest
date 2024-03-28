@@ -10,6 +10,7 @@ import (
 
 type PerformanceTestPlanService struct {
 	PerformanceTestPlanRepo *repo.PerformanceTestPlanRepo `inject:""`
+	PerformanceRunnerRepo   *repo.PerformanceRunnerRepo   `inject:""`
 	UserRepo                *repo.UserRepo                `inject:""`
 }
 
@@ -63,6 +64,25 @@ func (s *PerformanceTestPlanService) GetScenarioId(planId int) (scenarioId uint,
 
 func (s *PerformanceTestPlanService) ListRunner(performanceScenarioId int) (runners []model.PerformanceRunner, err error) {
 	runners, err = s.PerformanceTestPlanRepo.ListRunner(uint(performanceScenarioId))
+
+	return
+}
+
+func (s *PerformanceTestPlanService) GetConductor(planId int) (ret model.PerformanceRunner, err error) {
+	plan, err := s.PerformanceTestPlanRepo.Get(uint(planId))
+
+	runners, err := s.PerformanceRunnerRepo.List(plan.ScenarioId)
+
+	for _, runner := range runners {
+		if runner.IsConductor {
+			ret = runner
+			break
+		}
+	}
+
+	if !ret.IsConductor && len(runners) > 0 {
+		ret = runners[0]
+	}
 
 	return
 }

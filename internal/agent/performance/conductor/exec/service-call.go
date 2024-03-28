@@ -121,7 +121,7 @@ func (s *PerformanceTestService) ExecStart(
 	err = dao.ResetInfluxdb(data.Room, data.InfluxdbAddress, data.InfluxdbOrg, data.InfluxdbToken)
 	if err != nil {
 		ptwebsocket.SendExecInstructionToClient(
-			err.Error(), "dao.ResetInfluxdb", ptconsts.MsgInstructionException, wsMsg)
+			"连接Influxdb错误："+err.Error(), "dao.ResetInfluxdb", ptconsts.MsgInstructionException, wsMsg)
 		return
 	}
 

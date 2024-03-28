@@ -88,9 +88,6 @@ func (entity *ProcessorLoop) runLoopItems(session *ExecSession, processor *Proce
 
 		default:
 		}
-		if DemoTestSite != "" && index > 2 {
-			break
-		}
 
 		SetVariable(session, entity.ProcessorID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public)
 
@@ -151,9 +148,6 @@ func (entity *ProcessorLoop) runLoopUntil(session *ExecSession, processor *Proce
 			break
 
 		default:
-		}
-		if DemoTestSite != "" && index > 2 {
-			break
 		}
 		index += 1
 

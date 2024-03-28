@@ -5,29 +5,12 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
-	_httpUtils "github.com/aaronchen2k/deeptest/pkg/lib/http"
-	_logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"strings"
 )
 
 func Invoke(req *domain.BaseRequest) (resp domain.DebugResponse, err error) {
 	GetRequestProps(req)
-
-	if DemoTestSite != "" {
-		req.Url = _httpUtils.AddSepIfNeeded(DemoTestSite) + strings.ToLower(req.Method.String())
-
-		notes := fmt.Sprintf("We change request url to %s on demo site.", req.Url)
-
-		if req.QueryParams == nil {
-			req.QueryParams = &[]domain.Param{}
-		}
-		*req.QueryParams = append(*req.QueryParams, domain.Param{
-			Name:  "notes",
-			Value: notes,
-		})
-		_logUtils.Infof(notes)
-	}
 
 	if req.Method == consts.GET {
 		resp, err = httpHelper.Get(*req)

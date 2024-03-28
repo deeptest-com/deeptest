@@ -85,11 +85,7 @@ func (entity *ProcessorData) runDataItems(session *ExecSession, processor *Proce
 		if entity.IsRand {
 			iterator.Data = randArr(iterator.Data)
 		}
-		for index, item := range iterator.Data {
-			if DemoTestSite != "" && index > 2 {
-				break
-			}
-
+		for _, item := range iterator.Data {
 			SetVariable(session, processor.ID, iterator.VariableName, item, consts.ExtractorResultTypeString, consts.Public)
 
 			round := ""

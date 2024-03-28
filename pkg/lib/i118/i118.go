@@ -19,7 +19,7 @@ func Init(lang string, app string) {
 	fmt.Printf("path %s\n", langRes)
 
 	bytes, _ := deeptest.ReadResData(langRes)
-	fmt.Printf("content %s\n", string(bytes))
+	//fmt.Printf("content %s\n", string(bytes))
 
 	InitResFromAsset(bytes)
 

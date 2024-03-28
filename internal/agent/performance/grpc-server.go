@@ -4,6 +4,7 @@ import (
 	controllerService "github.com/aaronchen2k/deeptest/internal/agent/performance/conductor/exec"
 	ptProto "github.com/aaronchen2k/deeptest/internal/agent/performance/proto"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
+	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -18,4 +19,6 @@ func StartGrpcServe() {
 		log.Fatalf("grpc net.Listen err: %v", err)
 	}
 	server.Serve(lis)
+
+	logUtils.Info("grpc")
 }

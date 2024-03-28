@@ -19,7 +19,7 @@ docker run \
 
 sudo rm -rf ${DEEPTEST_OPS_HOME}/docker/influxdb2 && mkdir -p ${DEEPTEST_OPS_HOME}/docker/influxdb2 && \
     chmod 666 ${DEEPTEST_OPS_HOME}/docker/influxdb2
-docker run \
+docker run -itd \
     -p 58086:8086 \
     -v ${DEEPTEST_OPS_HOME}/docker/influxdb2/data:/var/lib/influxdb2 \
     -v ${DEEPTEST_OPS_HOME}/docker/influxdb2/config:/etc/influxdb2 \
@@ -31,18 +31,19 @@ docker run \
     -e DOCKER_INFLUXDB_INIT_RETENTION=1w \
     -e DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=influxdb-token \
     --name influxdb2 \
-    -d influxdb:2.7.5-alpine
+    influxdb:2.7.5-alpine
 
+export DEEPTEST_OPS_HOME=/home/ubuntu/rd/docker && echo $DEEPTEST_OPS_HOME
 sudo rm -rf ${DEEPTEST_OPS_HOME}/docker/deeptest && mkdir -p ${DEEPTEST_OPS_HOME}/docker/deeptest && \
     chmod 666 ${DEEPTEST_OPS_HOME}/docker/deeptest
-docker run --privileged=true -it \
+docker run --privileged=true -itd \
     --link mysql \
     --link influxdb2 \
     -p 50022:22 -p 8085:8085 -p 8086:8086 -p 8087:8087 -p 9528:9528  \
     -v ${DEEPTEST_OPS_HOME}/docker/deeptest:/deeptest \
     -m 6G \
     --name deeptest \
-    -d registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
+    registry.cn-hangzhou.aliyuncs.com/com-deeptest/deeptest:1.0
 
 docker exec -it deeptest /bin/bash
 
@@ -65,15 +66,21 @@ apt-get update && apt-get install influxdb2
 
 CREATE DATABASE deeptest DEFAULT CHARSET utf8mb4 COLLATE utf8mb4_general_ci;
 
-nohup ./run.sh > runner.log 2>&1 &
-
-nohup ./usr/bin/influxd > runner.log 2>&1 &
+ps -ef | grep 'go run' | grep -v grep | awk '{print $2}' | xargs --no-run-if-empty kill -9
+ps -ef | grep redis-server | grep -v grep | awk '{print $2}' | xargs --no-run-if-empty kill -9
+lsof -i :9528 | grep -v grep | grep -v PID | awk '{print $2}' | xargs --no-run-if-empty kill -9
+nohup redis-server > redis.log 2>&1 &
+CGO_ENABLED=1
+cd /rd/project/deeptest
+nohup go run cmd/server/main.go > server.log 2>&1 &
+nohup go run cmd/agent/main.go > agent.log 2>&1 &
 
 apt install gcc
 CGO_ENABLED=0 GOOS=darwin GOARCH=amd64
 
 rm -rf ../deeptest/deeptest-ui && yarn build:demo --dest ../deeptest/deeptest-ui
 
+vi ~/.bashrc
 export GOPROXY=https://goproxy.cn
 export GOROOT=/rd/sdk/go
 export GOPATH=$HOME/go

@@ -57,7 +57,7 @@ func (g ConstantVuGenerator) Run(execCtx context.Context) (err error) {
 		}
 	}
 
-	// wait all vus completed
+	// wait
 	wgVus.Wait()
 
 	ptlog.Logf("all vus completed")

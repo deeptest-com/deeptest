@@ -620,7 +620,7 @@ FROM
 WHERE
 	biz_endpoint.category_id = %d 
 	AND NOT biz_endpoint.deleted 
-	AND NOT biz_endpoint_interface.deleted 
+	AND if(biz_endpoint_interface.endpoint_id > 0,biz_endpoint_interface.deleted = 0,true)
 GROUP BY
 	biz_endpoint.id `
 
@@ -628,10 +628,14 @@ GROUP BY
 	err = r.GetDB(tenantId).Raw(sql).Scan(&data).Error
 
 	for _, item := range data {
+		var method []string
+		if item.Method != "" {
+			method = strings.Split(item.Method, ",")
+		}
 		ret[item.Id] = map[string]interface{}{
 			"id":           item.Id,
 			"name":         item.Name,
-			"method":       strings.Split(item.Method, ","),
+			"method":       method,
 			"serialNumber": item.SerialNumber,
 		}
 	}

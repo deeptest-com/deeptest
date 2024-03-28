@@ -5,9 +5,11 @@ import (
 	agentDomain "github.com/aaronchen2k/deeptest/cmd/agent/v1/domain"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/model"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"gorm.io/gorm"
 	"sort"
 	"strconv"
+	"strings"
 )
 
 type PerformanceRunnerRepo struct {
@@ -103,12 +105,18 @@ func (r *PerformanceRunnerRepo) UpdateSerialNumber(id, projectId uint) (err erro
 }
 
 func (r *PerformanceRunnerRepo) ListExistOnes(ids string) (ret []int) {
+	arr := strings.Split(ids, ",")
+	var inIds []int
+	for _, item := range arr {
+		inIds = append(inIds, _stringUtils.StrToInt(item))
+	}
+
 	db := r.DB.Model(model.PerformanceRunner{}).
 		Select("id").
 		Where("NOT deleted")
 
 	if ids != "-" {
-		db.Where("id IN (?)", ids)
+		db.Where("id IN (?)", inIds)
 	}
 
 	db.Select("id").Scan(&ret)

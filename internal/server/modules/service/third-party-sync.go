@@ -486,6 +486,10 @@ func (s *ThirdPartySyncService) SaveEndpoint(tenantId consts.TenantId, req v1.Sa
 	if err != nil {
 		return 0, err
 	}
+	_, err = s.CategoryRepo.SaveEntityNode(tenantId, 0, serverConsts.EndpointCategory, endpoint.ProjectId, uint(endpoint.CategoryId), endpoint.ID, endpoint.Title)
+	if err != nil {
+		logUtils.Errorf(err.Error())
+	}
 
 	endpointId = endpoint.ID
 

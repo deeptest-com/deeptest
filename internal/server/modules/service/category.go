@@ -9,7 +9,7 @@ import (
 	_domain "github.com/aaronchen2k/deeptest/pkg/domain"
 	_commUtils "github.com/aaronchen2k/deeptest/pkg/lib/comm"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
-	"github.com/kataras/iris/v12"
+	"github.com/jinzhu/copier"
 	"gorm.io/gorm"
 	"strings"
 )
@@ -26,10 +26,10 @@ type CategoryService struct {
 	ServeRepo           *repo.ServeRepo           `inject:""`
 }
 
-func (s *CategoryService) GetTree(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId int) (root *v1.Category, err error) {
-	root, err = s.CategoryRepo.GetTree(tenantId, typ, uint(projectId))
+func (s *CategoryService) GetTree(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId int, nodeType serverConsts.NodeCreateType) (root *v1.Category, err error) {
+	root, err = s.CategoryRepo.GetTree(tenantId, typ, uint(projectId), nodeType)
 	if typ != serverConsts.SchemaCategory {
-		root.Children = append(root.Children, &v1.Category{Id: -1, Name: "未分类", ParentId: root.Id, Slots: iris.Map{"icon": "icon"}})
+		//root.Children = append(root.Children, &v1.Category{Id: -1, Name: "未分类", ParentId: root.Id, Slots: iris.Map{"icon": "icon"}})
 	}
 	s.mountCount(tenantId, root, typ, uint(projectId))
 
@@ -72,7 +72,7 @@ func (s *CategoryService) Create(tenantId consts.TenantId, req v1.CategoryCreate
 	}
 
 	if req.IsEntity {
-		repo := s.getRepo(tenantId, req.Type)
+		repo := s.getRepo(req.Type)
 		repo.SaveEntity(tenantId, &ret)
 	}
 
@@ -104,8 +104,9 @@ func (s *CategoryService) Move(tenantId consts.TenantId, srcId, targetId uint, p
 		return
 	}
 
-	if typ == serverConsts.SchemaCategory && srcScenarioNode.EntityId != 0 {
-		s.ComponentSchemaRepo.ChangeRef(tenantId, srcScenarioNode.EntityId, srcScenarioNode.ID)
+	if srcScenarioNode.EntityId != 0 {
+		repo := s.getRepo(typ)
+		repo.MoveEntity(tenantId, &srcScenarioNode)
 	}
 	return
 }
@@ -120,7 +121,7 @@ func (s *CategoryService) deleteNodeAndChildren(tenantId consts.TenantId, typ se
 	//}
 
 	categoryIds, err := s.CategoryRepo.GetDescendantIds(tenantId, nodeId, model.Category{}.TableName(), typ, int(projectId))
-	if err != nil {
+	if err != nil || len(categoryIds) == 0 {
 		return
 	}
 	/*
@@ -141,9 +142,16 @@ func (s *CategoryService) deleteNodeAndChildren(tenantId consts.TenantId, typ se
 		return
 	}
 
+	entityIds, err := s.CategoryRepo.GetEntityIdsByIds(tenantId, categoryIds)
+	if err != nil {
+		return err
+	}
+
 	switch typ {
 	case serverConsts.EndpointCategory:
-		err = s.EndpointService.DeleteByCategories(tenantId, categoryIds)
+		//err = s.EndpointService.DeleteByCategories(tenantId, categoryIds) //留着可能有用
+		s.EndpointService.DeleteByEndpointIds(tenantId, entityIds)
+
 	case serverConsts.ScenarioCategory:
 		err = s.ScenarioRepo.DeleteByCategoryIds(tenantId, categoryIds)
 	case serverConsts.PlanCategory:
@@ -151,11 +159,6 @@ func (s *CategoryService) deleteNodeAndChildren(tenantId consts.TenantId, typ se
 		err = s.PlanRepo.DeleteByCategoryIds(tenantId, categoryIds)
 
 	case serverConsts.SchemaCategory:
-		entityIds, err := s.CategoryRepo.GetEntityIdsByIds(tenantId, categoryIds)
-		if err != nil {
-			return err
-		}
-
 		err = s.ComponentSchemaRepo.DeleteByIds(tenantId, entityIds)
 
 	}
@@ -165,7 +168,7 @@ func (s *CategoryService) deleteNodeAndChildren(tenantId consts.TenantId, typ se
 
 func (s *CategoryService) mountCount(tenantId consts.TenantId, root *v1.Category, typ serverConsts.CategoryDiscriminator, projectId uint) {
 
-	repo := s.getRepo(tenantId, typ)
+	repo := s.getRepo(typ)
 
 	var data []v1.CategoryCount
 
@@ -174,14 +177,14 @@ func (s *CategoryService) mountCount(tenantId consts.TenantId, root *v1.Category
 		return
 	}
 
-	result := s.convertMap(tenantId, data)
+	result := s.convertMap(data)
 
 	s.mountCountOnNode(tenantId, root, result)
 
 	//TODO 遍历数据挂载数量。
 }
 
-func (s *CategoryService) getRepo(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator) repo.IRepo {
+func (s *CategoryService) getRepo(typ serverConsts.CategoryDiscriminator) repo.IRepo {
 
 	repos := map[serverConsts.CategoryDiscriminator]repo.IRepo{
 		serverConsts.EndpointCategory: s.EndpointRepo,
@@ -192,7 +195,7 @@ func (s *CategoryService) getRepo(tenantId consts.TenantId, typ serverConsts.Cat
 
 	return repos[typ]
 }
-func (s *CategoryService) convertMap(tenantId consts.TenantId, data []v1.CategoryCount) (result map[int64]int64) {
+func (s *CategoryService) convertMap(data []v1.CategoryCount) (result map[int64]int64) {
 	result = make(map[int64]int64)
 	for _, item := range data {
 		result[item.CategoryId] = item.Count
@@ -209,7 +212,7 @@ func (s *CategoryService) mountCountOnNode(tenantId consts.TenantId, root *v1.Ca
 }
 
 func (s *CategoryService) GetJoinedPath(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId, categoryId uint) (path string, err error) {
-	categories, err := s.CategoryRepo.ListByProject(tenantId, typ, projectId)
+	categories, err := s.CategoryRepo.ListByProject(tenantId, typ, projectId, "")
 	categoryIdParentMap := make(map[uint]uint)
 	categoryIdNameMap := make(map[uint]string)
 	for _, v := range categories {
@@ -405,7 +408,7 @@ func (s *CategoryService) Copy(tenantId consts.TenantId, targetId, newParentId, 
 		return
 	}
 
-	entityId, err := s.copyDataByCategoryId(tenantId, category.Type, targetId, category, userId, username)
+	entityId, err := s.copyDataByCategoryId(tenantId, category.Type, category, userId, username)
 	if err != nil {
 		return
 	}
@@ -422,7 +425,7 @@ func (s *CategoryService) Copy(tenantId consts.TenantId, targetId, newParentId, 
 }
 
 func (s *CategoryService) copyChildren(tenantId consts.TenantId, parentId, newParentId, userId uint, username string) (err error) {
-	children, err := s.CategoryRepo.GetChildren(tenantId, parentId)
+	children, err := s.CategoryRepo.GetChildren(tenantId, parentId, "")
 	if err != nil {
 		return err
 	}
@@ -439,10 +442,15 @@ func (s *CategoryService) copyChildren(tenantId consts.TenantId, parentId, newPa
 	return err
 }
 
-func (s *CategoryService) copyDataByCategoryId(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, targetId uint, category model.Category, userId uint, username string) (entityId uint, err error) {
+func (s *CategoryService) copyDataByCategoryId(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, category model.Category, userId uint, username string) (entityId uint, err error) {
+
+	if category.EntityId == 0 {
+		return
+	}
+
 	switch typ {
 	case serverConsts.EndpointCategory:
-		err = s.EndpointService.CopyDataByCategoryId(tenantId, targetId, category.ID, userId, username)
+		entityId, err = s.EndpointService.Copy(tenantId, category.ID, category.EntityId, uint(category.ParentId), userId, username, "v0.1.0")
 	case serverConsts.SchemaCategory:
 		entityId, err = s.ServeService.CopySchemaOther(tenantId, category.EntityId)
 	}
@@ -453,4 +461,50 @@ func (s *CategoryService) copyDataByCategoryId(tenantId consts.TenantId, typ ser
 	}
 
 	return
+}
+
+func (s *CategoryService) GetChildrenNodes(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId, categoryId int, nodeType serverConsts.NodeCreateType) (ret []v1.Category, err error) {
+
+	var nodes []*model.Category
+	entities := map[uint]interface{}{}
+	if categoryId == 0 {
+		rootNode, err := s.CategoryRepo.GetRootNode(tenantId, uint(projectId), typ)
+		if err == nil {
+			nodes = append(nodes, &rootNode)
+		}
+	} else {
+		nodes, _ = s.CategoryRepo.GetChildrenNodes(tenantId, uint(categoryId), nodeType)
+		entities, _ = s.GetEntities(tenantId, typ, uint(categoryId))
+	}
+
+	for _, node := range nodes {
+		var category v1.Category
+		copier.CopyWithOption(&category, *node, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+		category.Id = int64(node.ID)
+		if node.EntityId != 0 {
+			category.EntityData, _ = entities[category.EntityId]
+		}
+
+		ret = append(ret, category)
+	}
+
+	return
+}
+
+func (s *CategoryService) GetEntity(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, id uint) (data map[string]interface{}, err error) {
+	repo := s.getRepo(typ)
+	return repo.GetEntity(tenantId, id)
+}
+
+func (s *CategoryService) GetPartTree(nodeId uint, nodes map[uint]*model.Category) (category v1.Category) {
+	node := nodes[nodeId]
+	copier.CopyWithOption(&category, *node, copier.Option{IgnoreEmpty: true, DeepCopy: true})
+
+	return
+
+}
+
+func (s *CategoryService) GetEntities(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, id uint) (data map[uint]interface{}, err error) {
+	repo := s.getRepo(typ)
+	return repo.GetEntities(tenantId, id)
 }

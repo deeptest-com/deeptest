@@ -21,6 +21,7 @@ func (s *User) GetToken(baseUrl string) (token string, err error) {
 	loginByOauthReq := integrationDomain.LoginByOauthReq{
 		LoginName: config.CONFIG.ThirdParty.Username,
 		Password:  _commUtils.Sha256(config.CONFIG.ThirdParty.Password),
+		TenantId:  "1632931640315338752",
 	}
 
 	loginByOauthResData := new(RemoteService).LoginByOauth(loginByOauthReq, baseUrl)

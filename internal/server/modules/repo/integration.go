@@ -94,9 +94,9 @@ func (r *IntegrationRepo) GetSpacesByProject(tenantId consts.TenantId, projectId
 }
 
 func (r *IntegrationRepo) DeleteEngineeringByProject(tenantId consts.TenantId, projectId uint) (err error) {
-	err = r.GetDB(tenantId).Model(&model.ProjectSpaceRel{}).
+	err = r.GetDB(tenantId).Model(&model.ProjectEngineeringRel{}).
 		Where("project_id = ?", projectId).
-		Delete(&model.ProjectSpaceRel{}).Error
+		Delete(&model.ProjectEngineeringRel{}).Error
 
 	return
 }

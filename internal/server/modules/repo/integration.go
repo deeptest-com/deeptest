@@ -115,3 +115,12 @@ func (r *IntegrationRepo) GetEngineeringByProject(tenantId consts.TenantId, proj
 
 	return
 }
+
+func (r *IntegrationRepo) GetProjectByEngineering(tenantId consts.TenantId, engineering string) (res []uint, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectEngineeringRel{}).
+		Select("project_id").
+		Where("code = ? AND NOT deleted AND NOT disabled", engineering).
+		Find(&res).Error
+
+	return
+}

@@ -409,3 +409,8 @@ func (s *ProjectService) GetMyEngineeringList(token string) (ret []integrationDo
 	}
 	return s.EngineerService.GetMyEngineeringList(token, config.CONFIG.ThirdParty.Lcurl)
 }
+
+func (s *ProjectService) GetEngineeringOptions() (ret []integrationDomain.EngineeringItem) {
+	ret, _ = s.EngineerService.GetEngineeringOptions(config.CONFIG.ThirdParty.Lcurl)
+	return
+}

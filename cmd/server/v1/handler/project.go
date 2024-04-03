@@ -2,6 +2,8 @@ package handler
 
 import (
 	"github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
 	integrationService "github.com/aaronchen2k/deeptest/integration/service"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
@@ -18,6 +20,7 @@ type ProjectCtrl struct {
 	ProjectService                *service.ProjectService                `inject:""`
 	ProjectRecentlyVisitedService *service.ProjectRecentlyVisitedService `inject:""`
 	IntegrationProjectService     *integrationService.ProjectService     `inject:""`
+	EngineerService               *lecang.EngineeringService             `inject:""`
 	BaseCtrl
 }
 
@@ -519,8 +522,14 @@ func (c *ProjectCtrl) GetUserSpaces(ctx iris.Context) {
 }
 
 func (c *ProjectCtrl) GetMyEngineeringList(ctx iris.Context) {
+	var res []integrationDomain.EngineeringItem
 	token := ctx.GetHeader("Token")
-	res := c.IntegrationProjectService.GetMyEngineeringList(token)
+	if token == "" {
+		res = c.IntegrationProjectService.GetEngineeringOptions()
+	} else {
+		res = c.IntegrationProjectService.GetMyEngineeringList(token)
+	}
+
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg, Data: res})
 }
 

@@ -105,13 +105,14 @@ func (c *SummaryCtrl) Bugs(ctx iris.Context) {
 func (c *SummaryCtrl) Details(ctx iris.Context) {
 	tenantId := c.getTenantId(ctx)
 	userId := multi.GetUserId(ctx)
+	engineering := ctx.URLParamDefault("engineering", "")
 
 	if userId == 0 {
 		ctx.JSON(_domain.Response{Code: _domain.ParamErr.Code, Msg: "userId为0，或获取userId失败"})
 		return
 	}
 
-	data, err := c.SummaryService.Details(tenantId, int64(userId))
+	data, err := c.SummaryService.Details(tenantId, int64(userId), engineering)
 
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})

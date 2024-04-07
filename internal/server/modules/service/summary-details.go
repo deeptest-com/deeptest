@@ -49,7 +49,7 @@ func (s *SummaryDetailsService) Card(tenantId consts.TenantId, projectId int64) 
 	return
 }
 
-func (s *SummaryDetailsService) Details(tenantId consts.TenantId, userId int64) (res v1.ResSummaryDetail, err error) {
+func (s *SummaryDetailsService) Details(tenantId consts.TenantId, userId int64, engineering string) (res v1.ResSummaryDetail, err error) {
 	//从project表收集项目总数
 	res.ProjectTotal, err = s.Count(tenantId)
 	res.UserProjectTotal, err = s.CountByUserId(tenantId, userId)
@@ -58,7 +58,7 @@ func (s *SummaryDetailsService) Details(tenantId consts.TenantId, userId int64) 
 	//查找用户参与的项目id,并转为map
 	userProjectIds, err := s.FindProjectIdsByUserId(tenantId, userId)
 	//查询所有项目信息
-	allProjectsInfo, err := s.FindAllProjectInfo(tenantId)
+	allProjectsInfo, err := s.FindAllProjectInfo(tenantId, engineering)
 	//组装返回的json结构体
 	res.ProjectList, res.UserProjectList, err = s.HandleSummaryDetails(tenantId, userId, userProjectIds, allDetails, allProjectsInfo)
 	return
@@ -212,8 +212,8 @@ func (s *SummaryDetailsService) CountProjectUserTotal(tenantId consts.TenantId, 
 	return s.HandlerSummaryDetailsRepo().CountProjectUserTotal(tenantId, projectId)
 }
 
-func (s *SummaryDetailsService) FindAllProjectInfo(tenantId consts.TenantId) (projectDetails []model.SummaryProjectInfo, err error) {
-	return s.HandlerSummaryDetailsRepo().FindAllProjectInfo(tenantId)
+func (s *SummaryDetailsService) FindAllProjectInfo(tenantId consts.TenantId, engineering string) (projectDetails []model.SummaryProjectInfo, err error) {
+	return s.HandlerSummaryDetailsRepo().FindAllProjectInfo(tenantId, engineering)
 
 }
 

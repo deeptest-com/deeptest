@@ -5,6 +5,7 @@ import (
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	integrationDomain "github.com/aaronchen2k/deeptest/integration/domain"
+	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
 	leyan "github.com/aaronchen2k/deeptest/integration/leyan/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -14,14 +15,15 @@ import (
 )
 
 type ProjectService struct {
-	RemoteService   *leyan.RemoteService  `inject:""`
-	IntegrationRepo *repo.IntegrationRepo `inject:""`
-	ProjectRepo     *repo.ProjectRepo     `inject:""`
-	UserRepo        *repo.UserRepo        `inject:""`
-	ProjectRoleRepo *repo.ProjectRoleRepo `inject:""`
-	MessageRepo     *repo.MessageRepo     `inject:""`
-	BaseRepo        *repo.BaseRepo        `inject:""`
-	MessageService  *MessageService       `inject:""`
+	RemoteService   *leyan.RemoteService       `inject:""`
+	IntegrationRepo *repo.IntegrationRepo      `inject:""`
+	ProjectRepo     *repo.ProjectRepo          `inject:""`
+	UserRepo        *repo.UserRepo             `inject:""`
+	ProjectRoleRepo *repo.ProjectRoleRepo      `inject:""`
+	MessageRepo     *repo.MessageRepo          `inject:""`
+	BaseRepo        *repo.BaseRepo             `inject:""`
+	MessageService  *MessageService            `inject:""`
+	EngineerService *lecang.EngineeringService `inject:""`
 }
 
 func (s *ProjectService) GetUserProductList(tenantId consts.TenantId, page, pageSize int, username string) (ret []integrationDomain.ProductItem, err error) {
@@ -88,6 +90,10 @@ func (s *ProjectService) Save(tenantId consts.TenantId, req integrationDomain.Pr
 		return
 	}
 
+	if err = s.SaveEngineering(tenantId, projectId, req.Engineering); err != nil {
+		return
+	}
+
 	if req.SyncMembers && len(req.Spaces) > 0 {
 		err = s.SyncSpaceMembers(tenantId, projectId, req.Spaces)
 	}
@@ -117,7 +123,7 @@ func (s *ProjectService) SaveSpaces(tenantId consts.TenantId, projectId uint, sp
 
 func (s *ProjectService) GetProductsByProject(tenantId consts.TenantId, projectId uint) (res []integrationDomain.ProductBaseItem, err error) {
 	productIds, err := s.IntegrationRepo.GetProductsByProject(tenantId, projectId)
-	if err != nil {
+	if err != nil || len(productIds) == 0 {
 		return
 	}
 
@@ -128,7 +134,7 @@ func (s *ProjectService) GetProductsByProject(tenantId consts.TenantId, projectI
 
 func (s *ProjectService) GetSpacesByProject(tenantId consts.TenantId, projectId uint) (res []integrationDomain.SpaceItem, err error) {
 	spaceCodes, err := s.IntegrationRepo.GetSpacesByProject(tenantId, projectId)
-	if err != nil {
+	if err != nil || len(spaceCodes) == 0 {
 		return
 	}
 
@@ -148,8 +154,14 @@ func (s *ProjectService) Detail(tenantId consts.TenantId, projectId uint) (res i
 		return
 	}
 
+	engineering, err := s.GetEngineeringByProject(tenantId, projectId)
+	if err != nil {
+		return
+	}
+
 	res.Products = products
 	res.Spaces = spaces
+	res.Engineering = engineering
 
 	return
 }
@@ -342,5 +354,63 @@ func (s *ProjectService) SendApplyMessage(tenantId consts.TenantId, projectId, u
 
 	_, err = s.MessageService.SendMessageToMcs(tenantId, message)
 
+	return
+}
+
+func (s *ProjectService) SaveEngineering(tenantId consts.TenantId, projectId uint, engineering []string) (err error) {
+	if err = s.IntegrationRepo.DeleteEngineeringByProject(tenantId, projectId); err != nil {
+		return
+	}
+
+	err = s.AddProjectRelatedEngineering(tenantId, projectId, engineering)
+
+	return
+}
+
+func (s *ProjectService) AddProjectRelatedEngineering(tenantId consts.TenantId, projectId uint, engineering []string) (err error) {
+	relations := make([]model.ProjectEngineeringRel, 0)
+
+	for _, item := range engineering {
+		relations = append(relations, model.ProjectEngineeringRel{
+			ProjectId: projectId,
+			Code:      item,
+		})
+	}
+
+	if len(relations) > 0 {
+		err = s.IntegrationRepo.BatchCreateProjectEngineeringRel(tenantId, relations)
+	}
+
+	return
+}
+
+func (s *ProjectService) GetEngineeringByProject(tenantId consts.TenantId, projectId uint) (res []integrationDomain.EngineeringItem, err error) {
+	engineeringCodes, err := s.IntegrationRepo.GetEngineeringByProject(tenantId, projectId)
+	if err != nil || len(engineeringCodes) == 0 {
+		return
+	}
+
+	list, _ := s.EngineerService.GetEngineeringOptions(config.CONFIG.ThirdParty.Lcurl)
+
+	for _, item := range list {
+		for _, code := range engineeringCodes {
+			if item.Code == code {
+				res = append(res, item)
+			}
+		}
+	}
+
+	return
+}
+
+func (s *ProjectService) GetMyEngineeringList(token string) (ret []integrationDomain.EngineeringItem) {
+	if token == "" {
+		return
+	}
+	return s.EngineerService.GetMyEngineeringList(token, config.CONFIG.ThirdParty.Lcurl)
+}
+
+func (s *ProjectService) GetEngineeringOptions() (ret []integrationDomain.EngineeringItem) {
+	ret, _ = s.EngineerService.GetEngineeringOptions(config.CONFIG.ThirdParty.Lcurl)
 	return
 }

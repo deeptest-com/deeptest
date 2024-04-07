@@ -3,6 +3,7 @@ package integrationDomain
 type ProjectReq struct {
 	Products    []uint   `json:"products"`
 	Spaces      []string `json:"spaces"`
+	Engineering []string `json:"engineering"`
 	SyncMembers bool     `json:"syncMembers"`
 }
 
@@ -29,8 +30,9 @@ type SpaceItem struct {
 }
 
 type ProjectDetail struct {
-	Products []ProductBaseItem `json:"products"`
-	Spaces   []SpaceItem       `json:"spaces"`
+	Products    []ProductBaseItem `json:"products"`
+	Spaces      []SpaceItem       `json:"spaces"`
+	Engineering []EngineeringItem `json:"engineeringItem"`
 }
 
 type UserInfo struct {

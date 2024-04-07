@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	serverDomain "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
+	lecang "github.com/aaronchen2k/deeptest/integration/lecang/service"
 	"github.com/aaronchen2k/deeptest/internal/pkg/config"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/server/core/web/validate"
@@ -21,13 +22,13 @@ import (
 )
 
 type ProjectCronCtrl struct {
-	ProjectCronService    *service.ProjectCronService    `inject:""`
-	LecangCronService     *service.LecangCronService     `inject:""`
-	ThirdPartySyncService *service.ThirdPartySyncService `inject:""`
-	ProjectCronRepo       *repo.ProjectCronRepo          `inject:""`
-	DB                    *gorm.DB                       `inject:""`
-	Proxy                 *task.Proxy                    `inject:""`
+	ProjectCronService *service.ProjectCronService `inject:""`
+	LecangCronService  *service.LecangCronService  `inject:""`
+	ProjectCronRepo    *repo.ProjectCronRepo       `inject:""`
+	DB                 *gorm.DB                    `inject:""`
+	Proxy              *task.Proxy                 `inject:""`
 	BaseCtrl
+	EngineerService *lecang.EngineeringService `inject:""`
 }
 
 // List
@@ -260,7 +261,7 @@ func (c *ProjectCronCtrl) EngineeringOptions(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.ThirdPartySyncService.GetEngineeringOptions(url)
+	data, err := c.EngineerService.GetEngineeringOptions(url)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -289,7 +290,7 @@ func (c *ProjectCronCtrl) ServiceOptions(ctx iris.Context) {
 
 	engineering := ctx.URLParam("engineering")
 
-	data, err := c.ThirdPartySyncService.GetServiceOptions(engineering, url)
+	data, err := c.EngineerService.GetServiceOptions(engineering, url)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return
@@ -315,7 +316,7 @@ func (c *ProjectCronCtrl) AllServiceList(ctx iris.Context) {
 		return
 	}
 
-	data, err := c.ThirdPartySyncService.GetAllServiceList(url)
+	data, err := c.EngineerService.GetAllServiceList(url)
 	if err != nil {
 		ctx.JSON(_domain.Response{Code: _domain.SystemErr.Code, Msg: err.Error()})
 		return

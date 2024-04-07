@@ -141,5 +141,6 @@ var (
 
 		&ProjectCron{},
 		&CronConfigLecang{},
+		&ProjectEngineeringRel{},
 	}
 )

@@ -17,6 +17,7 @@ func JsonPath(content string, expression string) (result interface{}, resultType
 		return
 	}
 
+	content = strings.ReplaceAll(content, "\x00", "")
 	var jsonData interface{}
 	err = json.Unmarshal([]byte(content), &jsonData)
 	if err != nil {

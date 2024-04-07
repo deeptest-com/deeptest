@@ -18,9 +18,9 @@ func (s *SummaryService) Bugs(tenantId consts.TenantId, projectId int64) (res v1
 	return
 }
 
-func (s *SummaryService) Details(tenantId consts.TenantId, userId int64) (res v1.ResSummaryDetail, err error) {
+func (s *SummaryService) Details(tenantId consts.TenantId, userId int64, engineering string) (res v1.ResSummaryDetail, err error) {
 	//改为项目数据实时，但统计数据非实时
-	res, err = s.SummaryDetailsService.Details(tenantId, userId)
+	res, err = s.SummaryDetailsService.Details(tenantId, userId, engineering)
 	return
 }
 

@@ -6,6 +6,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	curlHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/gcurl"
+	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	serverConsts "github.com/aaronchen2k/deeptest/internal/server/consts"
 	model "github.com/aaronchen2k/deeptest/internal/server/modules/model"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/repo"
@@ -335,4 +336,182 @@ func (s *DiagnoseInterfaceService) getMethod(contentType, method string) (ret co
 	}
 
 	return consts.HttpMethod(method)
+}
+
+func (s *DiagnoseInterfaceService) ImportRecordData(tenantId consts.TenantId, req serverDomain.RecordReq) (err error) {
+	parent, err := s.DiagnoseInterfaceRepo.Get(tenantId, req.TargetId)
+	server, _ := s.ServeServerRepo.GetDefaultByServe(tenantId, parent.ServeId)
+
+	for _, item := range req.Items {
+		contentType := s.getContentTypeFromRecordData(item.Request.Headers)
+
+		method := consts.HttpMethod(item.Request.Method)
+		url, queryParams := s.getUrlAndQueryParamsFromRecordData(item.Request.Url)
+		headers := s.getHeadersFromRecordData(item.Request.Headers)
+		//cookies := s.getCookiesFromRecordData(item.Request.Cookies)
+
+		debugInterface := model.DebugInterface{
+			QueryParams: queryParams,
+			Headers:     headers,
+			//Cookies: cookies,
+
+			InterfaceBase: model.InterfaceBase{
+				InterfaceConfigBase: model.InterfaceConfigBase{
+					Method: method,
+					Url:    url,
+				},
+			},
+
+			ServeId:  parent.ServeId,
+			ServerId: server.ID,
+		}
+
+		debugInterface.BodyType, debugInterface.Body, debugInterface.BodyFormData, debugInterface.BodyFormUrlencoded =
+			s.getPostData(item.Request.PostData, contentType)
+
+		s.DebugInterfaceRepo.Save(tenantId, &debugInterface)
+
+		diagnoseInterface := model.DiagnoseInterface{
+			Title:  fmt.Sprintf("%s %s", debugInterface.Method, debugInterface.Url),
+			Method: method,
+			Type:   serverConsts.DiagnoseInterfaceTypeInterface,
+
+			DebugInterfaceId: debugInterface.ID,
+			ParentId:         req.TargetId,
+			ServeId:          parent.ServeId,
+			ProjectId:        parent.ProjectId,
+			CreatedBy:        req.UserId,
+		}
+		s.DiagnoseInterfaceRepo.Save(tenantId, &diagnoseInterface)
+
+		values := map[string]interface{}{
+			"diagnose_interface_id": diagnoseInterface.ID,
+		}
+		err = s.DebugInterfaceRepo.UpdateDebugInfo(tenantId, diagnoseInterface.DebugInterfaceId, values)
+	}
+
+	return
+}
+
+func (s *DiagnoseInterfaceService) getContentTypeFromRecordData(headers map[string]string) (ret consts.HttpContentType) {
+	for key, val := range headers {
+		if strings.Index(key, consts.ContentType) > -1 {
+			ret = consts.HttpContentType(val)
+			return
+		}
+	}
+
+	return
+}
+
+func (s *DiagnoseInterfaceService) getUrlAndQueryParamsFromRecordData(urlStr string) (
+	urlWithoutParams string, queryParams []model.DebugInterfaceParam) {
+
+	obj, _ := url.ParseRequestURI(urlStr)
+
+	urlWithoutParams = fmt.Sprintf("%s://%s%s", obj.Scheme, obj.Host, obj.Path)
+
+	arr := strings.Split(obj.RawQuery, "&")
+	for _, item := range arr {
+		sections := strings.Split(item, "=")
+
+		if len(sections) < 2 || strings.TrimSpace(sections[0]) == "" || strings.TrimSpace(sections[1]) == "" {
+			continue
+		}
+
+		param := model.DebugInterfaceParam{
+			InterfaceParamBase: model.InterfaceParamBase{
+				Name:  strings.TrimSpace(sections[0]),
+				Value: strings.TrimSpace(sections[1]),
+			},
+		}
+		queryParams = append(queryParams, param)
+	}
+
+	return
+}
+
+func (s *DiagnoseInterfaceService) getHeadersFromRecordData(headersMap map[string]string) (ret []model.DebugInterfaceHeader) {
+	for key, value := range headersMap {
+		if key == "" || value == "" {
+			continue
+		}
+
+		header := model.DebugInterfaceHeader{
+			InterfaceHeaderBase: model.InterfaceHeaderBase{
+				Name:  key,
+				Value: value,
+			},
+		}
+		ret = append(ret, header)
+	}
+
+	return
+}
+
+func (s *DiagnoseInterfaceService) getCookiesFromRecordData(cookies map[string]map[string]interface{}) (ret []model.DebugInterfaceCookie) {
+	for key, value := range cookies {
+		if key == "" {
+			continue
+		}
+
+		header := model.DebugInterfaceCookie{
+			InterfaceCookieBase: model.InterfaceCookieBase{
+				Name:  key,
+				Value: fmt.Sprintf("%v", value["value"]),
+			},
+		}
+		ret = append(ret, header)
+	}
+
+	return
+}
+
+func (s *DiagnoseInterfaceService) getPostData(postData string, contentType consts.HttpContentType) (
+	bodyType consts.HttpContentType, body string,
+	formDataItems []model.DebugInterfaceBodyFormDataItem, formEncodedItems []model.DebugInterfaceBodyFormUrlEncodedItem) {
+
+	if httpHelper.IsJsonBody(contentType) {
+		body = postData
+		bodyType = consts.ContentTypeJSON
+
+	} else if httpHelper.IsFormBody(contentType) || httpHelper.IsFormUrlencodedBody(contentType) {
+		if postData != "" {
+			arr := strings.Split(postData, "&")
+
+			for _, val := range arr {
+				sections := strings.Split(val, "=")
+				if len(sections) < 2 || strings.TrimSpace(sections[0]) == "" || strings.TrimSpace(sections[1]) == "" {
+					continue
+				}
+
+				name := strings.TrimSpace(sections[0])
+				value := strings.TrimSpace(sections[1])
+
+				if httpHelper.IsFormBody(contentType) {
+					bodyType = consts.ContentTypeFormData
+
+					formDataItems = append(formDataItems, model.DebugInterfaceBodyFormDataItem{
+						InterfaceBodyFormDataItemBase: model.InterfaceBodyFormDataItemBase{
+							Name:  name,
+							Value: value,
+							Type:  consts.FormDataTypeText,
+						},
+					})
+
+				} else if httpHelper.IsFormUrlencodedBody(contentType) {
+					bodyType = consts.ContentTypeFormUrlencoded
+
+					formEncodedItems = append(formEncodedItems, model.DebugInterfaceBodyFormUrlEncodedItem{
+						InterfaceBodyFormUrlEncodedItemBase: model.InterfaceBodyFormUrlEncodedItemBase{
+							Name:  name,
+							Value: value,
+						},
+					})
+				}
+			}
+		}
+	}
+
+	return
 }

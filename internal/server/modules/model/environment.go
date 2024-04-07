@@ -15,8 +15,9 @@ type EnvironmentVar struct {
 	BaseModel
 	domain.GlobalVar
 
-	EnvironmentId uint `json:"environmentId"`
-	ProjectId     uint `json:"projectId"`
+	EnvironmentId uint   `json:"environmentId"`
+	ProjectId     uint   `json:"projectId"`
+	Description   string `json:"description"`
 }
 
 type EnvironmentParam struct {

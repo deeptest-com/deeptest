@@ -12,5 +12,5 @@ type InterfaceExecObj struct {
 	PostConditions []domain.InterfaceExecCondition `json:"postConditions"`
 
 	ExecScene domain.ExecScene `json:"execScene"`
-	TenantId  consts.TenantId  `json:"execScene"`
+	TenantId  consts.TenantId  `json:"tenantId"`
 }

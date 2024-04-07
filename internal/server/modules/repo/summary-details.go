@@ -9,8 +9,9 @@ import (
 )
 
 type SummaryDetailsRepo struct {
-	*BaseRepo `inject:""`
-	DB        *gorm.DB `inject:""`
+	*BaseRepo       `inject:""`
+	DB              *gorm.DB         `inject:""`
+	IntegrationRepo *IntegrationRepo `inject:""`
 }
 
 func (r *SummaryDetailsRepo) Create(tenantId consts.TenantId, summaryDetails model.SummaryDetails) (err error) {
@@ -50,8 +51,20 @@ func (r *SummaryDetailsRepo) CountProjectUserTotal(tenantId consts.TenantId, pro
 	return
 }
 
-func (r *SummaryDetailsRepo) FindAllProjectInfo(tenantId consts.TenantId) (projectsInfo []model.SummaryProjectInfo, err error) {
-	err = r.GetDB(tenantId).Model(&model.Project{}).Select("biz_project.id,biz_project.created_at,biz_project.deleted,biz_project.disabled,biz_project.updated_at,biz_project.name,biz_project.descr,biz_project.logo,biz_project.short_name,biz_project.admin_id,biz_project.include_example ,sys_user.name as admin_name ").Joins("left join sys_user on biz_project.admin_id = sys_user.id").Where("biz_project.deleted !=1").Order("id desc").Find(&projectsInfo).Error
+func (r *SummaryDetailsRepo) FindAllProjectInfo(tenantId consts.TenantId, engineering string) (projectsInfo []model.SummaryProjectInfo, err error) {
+	db := r.GetDB(tenantId).Model(&model.Project{}).Select("biz_project.id,biz_project.created_at,biz_project.deleted,biz_project.disabled,biz_project.updated_at,biz_project.name,biz_project.descr,biz_project.logo,biz_project.short_name,biz_project.admin_id,biz_project.include_example ,sys_user.name as admin_name ").Joins("left join sys_user on biz_project.admin_id = sys_user.id").Where("biz_project.deleted !=1")
+	var projectIds []uint
+	if engineering != "" {
+		projectIds, err = r.IntegrationRepo.GetProjectByEngineering(tenantId, engineering)
+		if err != nil || len(projectIds) == 0 {
+			return
+		}
+
+		db = db.Where("biz_project.id in ?", projectIds)
+	}
+	
+	err = db.Order("id desc").Find(&projectsInfo).Error
+
 	return
 }
 

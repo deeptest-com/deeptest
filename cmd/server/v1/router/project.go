@@ -38,6 +38,8 @@ func (m *ProjectModule) Party() module.WebModule {
 		index.Get("/integrationDetail", m.ProjectCtrl.GetIntegrationDetail).Name = "集成详情"
 		index.Get("/userProducts", m.ProjectCtrl.GetUserProducts).Name = "获取用户的产品列表"
 		index.Get("/userSpaces", m.ProjectCtrl.GetUserSpaces).Name = "获取用户的空间列表"
+		index.Get("/userEngineering", m.ProjectCtrl.GetMyEngineeringList).Name = "获取用户工程列表"
+		index.Get("/projectEngineering", m.ProjectCtrl.GetEngineeringByProject).Name = "获取项目工程列表"
 
 	}
 	return module.NewModule("/projects", handler)

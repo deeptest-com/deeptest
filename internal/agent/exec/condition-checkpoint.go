@@ -7,20 +7,42 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/domain"
 	extractorHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/extractor"
-	stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
+	_stringUtils "github.com/aaronchen2k/deeptest/pkg/lib/string"
 	"strings"
 )
 
 func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse, processorId uint, execUuid string) (err error) {
 	checkpoint.ResultStatus = consts.Pass
 
+	// Judgement 表达式
+	if checkpoint.Type == consts.Judgement {
+		result, variablesArr := computerExpr(checkpoint.Expression, execUuid, processorId)
+
+		checkpoint.Variables = getVariableArrDesc(variablesArr)
+		checkpoint.ActualResult = fmt.Sprintf("%v", result)
+
+		ret, ok := result.(bool)
+		if ok && ret {
+			checkpoint.ResultStatus = consts.Pass
+		} else {
+			checkpoint.ResultStatus = consts.Fail
+		}
+
+		return
+	}
+
+	// 计算表达式
+	checkpointValue, variablesArr := computerExpr(checkpoint.Value, execUuid, processorId)
+	checkpointValue = _stringUtils.InterfToStr(checkpointValue)
+	checkpoint.Variables = getVariableArrDesc(variablesArr)
+
 	// Response ResultStatus
 	if checkpoint.Type == consts.ResponseStatus {
-		expectCode := stringUtils.ParseInt(checkpoint.Value)
+		expectCodeNum := _stringUtils.ParseInt(fmt.Sprintf("%v", checkpointValue))
 
 		checkpoint.ActualResult = fmt.Sprintf("%d", resp.StatusCode)
 
-		if checkpoint.Operator == consts.Equal && resp.StatusCode == expectCode {
+		if checkpoint.Operator == consts.Equal && resp.StatusCode == expectCodeNum {
 			checkpoint.ResultStatus = consts.Pass
 		} else {
 			checkpoint.ResultStatus = consts.Fail
@@ -41,11 +63,11 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 		checkpoint.ActualResult = headerValue
 
-		if checkpoint.Operator == consts.Equal && headerValue == checkpoint.Value {
+		if checkpoint.Operator == consts.Equal && headerValue == checkpointValue {
 			checkpoint.ResultStatus = consts.Pass
-		} else if checkpoint.Operator == consts.NotEqual && headerValue != checkpoint.Value {
+		} else if checkpoint.Operator == consts.NotEqual && headerValue != checkpointValue {
 			checkpoint.ResultStatus = consts.Pass
-		} else if checkpoint.Operator == consts.Contain && strings.Contains(headerValue, checkpoint.Value) {
+		} else if checkpoint.Operator == consts.Contain && strings.Contains(headerValue, _stringUtils.InterfToStr(checkpointValue)) {
 			checkpoint.ResultStatus = consts.Pass
 		} else {
 			checkpoint.ResultStatus = consts.Fail
@@ -61,38 +83,11 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 	// Response Body
 	if checkpoint.Type == consts.ResponseBody {
-		if checkpoint.Operator == consts.Equal && resp.Content == checkpoint.Value {
+		if checkpoint.Operator == consts.Equal && resp.Content == checkpointValue {
 			checkpoint.ResultStatus = consts.Pass
-		} else if checkpoint.Operator == consts.NotEqual && resp.Content != checkpoint.Value {
+		} else if checkpoint.Operator == consts.NotEqual && resp.Content != checkpointValue {
 			checkpoint.ResultStatus = consts.Pass
-		} else if checkpoint.Operator == consts.Contain && strings.Contains(resp.Content, checkpoint.Value) {
-			checkpoint.ResultStatus = consts.Pass
-		} else {
-			checkpoint.ResultStatus = consts.Fail
-		}
-
-		return
-	}
-
-	// Judgement
-	if checkpoint.Type == consts.Judgement {
-		var result interface{}
-		var variablesArr domain.VarKeyValuePair
-
-		expr := ReplaceDatapoolVariInGovaluateExpress(checkpoint.Expression, execUuid)
-
-		if processorId > 0 { // exec interface processor in scenario
-			result, variablesArr, _ = EvaluateGovaluateExpressionByProcessorScope(expr, processorId, execUuid)
-		} else { // exec by interface invocation
-			result, variablesArr, _ = EvaluateGovaluateExpressionWithDebugVariables(expr, execUuid)
-		}
-
-		checkpoint.ActualResult = fmt.Sprintf("%v", result)
-		variablesBytes, _ := json.Marshal(combineSameVars(variablesArr))
-		checkpoint.Variables = string(variablesBytes)
-
-		ret, ok := result.(bool)
-		if ok && ret {
+		} else if checkpoint.Operator == consts.Contain && strings.Contains(resp.Content, _stringUtils.InterfToStr(checkpointValue)) {
 			checkpoint.ResultStatus = consts.Pass
 		} else {
 			checkpoint.ResultStatus = consts.Fail
@@ -107,7 +102,7 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", variable.Value)
 
-		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
+		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpointValue)
 
 		return
 	}
@@ -122,10 +117,34 @@ func ExecCheckPoint(checkpoint *domain.CheckpointBase, resp domain.DebugResponse
 
 		checkpoint.ActualResult = fmt.Sprintf("%v", extractor.Result)
 
-		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpoint.Value)
+		checkpoint.ResultStatus = agentUtils.Compare(checkpoint.Operator, checkpoint.ActualResult, checkpointValue)
 
 		return
 	}
+
+	return
+}
+
+func computerExpr(expression, execUuid string, processorId uint) (result interface{}, variablesArr domain.VarKeyValuePair) {
+	expr := ReplaceDatapoolVariInGovaluateExpress(expression, execUuid)
+
+	var err error
+	if processorId > 0 { // exec interface processor in scenario
+		result, variablesArr, err = EvaluateGovaluateExpressionByProcessorScope(expr, processorId, execUuid)
+	} else { // exec by interface invocation
+		result, variablesArr, err = EvaluateGovaluateExpressionWithDebugVariables(expr, execUuid)
+	}
+
+	if err != nil {
+		result = expr
+	}
+
+	return
+}
+
+func getVariableArrDesc(variablesArr domain.VarKeyValuePair) (ret string) {
+	variablesBytes, _ := json.Marshal(combineSameVars(variablesArr))
+	ret = string(variablesBytes)
 
 	return
 }

@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"database/sql"
 	"fmt"
 	v1 "github.com/aaronchen2k/deeptest/cmd/server/v1/domain"
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
@@ -16,8 +17,8 @@ type CategoryRepo struct {
 	ProjectRepo *ProjectRepo `inject:""`
 }
 
-func (r *CategoryRepo) GetTree(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint) (root *v1.Category, err error) {
-	pos, err := r.ListByProject(tenantId, typ, projectId)
+func (r *CategoryRepo) GetTree(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint, nodeType serverConsts.NodeCreateType) (root *v1.Category, err error) {
+	pos, err := r.ListByProject(tenantId, typ, projectId, nodeType)
 	if err != nil {
 		return
 	}
@@ -35,11 +36,19 @@ func (r *CategoryRepo) GetTree(tenantId consts.TenantId, typ serverConsts.Catego
 	return
 }
 
-func (r *CategoryRepo) ListByProject(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint) (pos []*model.Category, err error) {
+func (r *CategoryRepo) ListByProject(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint, nodeType serverConsts.NodeCreateType) (pos []*model.Category, err error) {
 	db := r.GetDB(tenantId).
 		Where("project_id=?", projectId).
 		Where("type=?", typ).
 		Where("NOT deleted")
+
+	if nodeType != "" {
+		if nodeType == serverConsts.Dir {
+			db = db.Where("entity_id = 0 or entity_id IS NULL")
+		} else {
+			db = db.Where("entity_id != 0")
+		}
+	}
 
 	err = db.
 		Order("parent_id ASC, ordr ASC").
@@ -70,13 +79,13 @@ func (r *CategoryRepo) toTos(pos []*model.Category) (tos []*v1.Category) {
 }
 
 func (r *CategoryRepo) makeTree(tenantId consts.TenantId, findIn []*v1.Category, parent *v1.Category) { //参数为父节点，添加父节点的子节点指针切片
-	children, _ := r.hasChild(tenantId, findIn, parent) // 判断节点是否有子节点并返回
+	children, _ := r.hasChild(findIn, parent) // 判断节点是否有子节点并返回
 
 	if children != nil {
 		parent.Children = append(parent.Children, children[0:]...) // 添加子节点
 
 		for _, child := range children { // 查询子节点的子节点，并添加到子节点
-			_, has := r.hasChild(tenantId, findIn, child)
+			_, has := r.hasChild(findIn, child)
 			if has {
 				r.makeTree(tenantId, findIn, child) // 递归添加节点
 			}
@@ -84,7 +93,7 @@ func (r *CategoryRepo) makeTree(tenantId consts.TenantId, findIn []*v1.Category,
 	}
 }
 
-func (r *CategoryRepo) hasChild(tenantId consts.TenantId, categories []*v1.Category, parent *v1.Category) (
+func (r *CategoryRepo) hasChild(categories []*v1.Category, parent *v1.Category) (
 	ret []*v1.Category, yes bool) {
 
 	for _, item := range categories {
@@ -194,8 +203,17 @@ func (r *CategoryRepo) BatchDelete(tenantId consts.TenantId, ids []uint) (err er
 
 	return
 }
-func (r *CategoryRepo) GetChildren(tenantId consts.TenantId, nodeId uint) (children []*model.Category, err error) {
-	err = r.GetDB(tenantId).Where("parent_id=?", nodeId).Find(&children).Error
+func (r *CategoryRepo) GetChildren(tenantId consts.TenantId, nodeId uint, nodeType serverConsts.NodeCreateType) (children []*model.Category, err error) {
+	db := r.GetDB(tenantId).Where("parent_id=? and not deleted", nodeId)
+	if nodeType != "" {
+		if nodeType == serverConsts.Dir {
+			db = db.Where("entity_id = 0 or entity_id IS NULL")
+		} else {
+			db = db.Where("entity_id != 0")
+		}
+	}
+
+	err = db.Order("ordr ASC").Find(&children).Error
 	return
 }
 
@@ -276,8 +294,8 @@ func (r *CategoryRepo) GetChild(tenantId consts.TenantId, categories, result []*
 	return result
 }
 
-func (r *CategoryRepo) GetAllChild(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint, parentId int) (child []*model.Category, err error) {
-	pos, err := r.ListByProject(tenantId, typ, projectId)
+func (r *CategoryRepo) GetAllChild(tenantId consts.TenantId, typ serverConsts.CategoryDiscriminator, projectId uint, parentId int, nodeType serverConsts.NodeCreateType) (child []*model.Category, err error) {
+	pos, err := r.ListByProject(tenantId, typ, projectId, nodeType)
 	if err != nil || len(pos) == 0 {
 		return
 	}
@@ -290,7 +308,7 @@ func (r *CategoryRepo) GetRootNode(tenantId consts.TenantId, projectId uint, typ
 	err = r.GetDB(tenantId).Model(&model.Category{}).
 		Where("project_id = ?", projectId).
 		Where("type = ?", typ).
-		Where("name = ? AND NOT deleted", "分类").
+		Where("parent_id = ? AND NOT deleted", 0).
 		First(&node).Error
 
 	return
@@ -328,9 +346,9 @@ func (r *CategoryRepo) GetByEntityId(tenantId consts.TenantId, entityId uint, _t
 	return
 }
 
-func (r *CategoryRepo) DeleteByEntityId(tenantId consts.TenantId, entityId uint) (err error) {
+func (r *CategoryRepo) DeleteByEntityId(tenantId consts.TenantId, entityId uint, _type serverConsts.CategoryDiscriminator) (err error) {
 	err = r.GetDB(tenantId).Model(&model.Category{}).
-		Where("entity_id = ?", entityId).
+		Where("entity_id = ? AND type = ?", entityId, _type).
 		Update("deleted", true).Error
 
 	return
@@ -339,7 +357,7 @@ func (r *CategoryRepo) DeleteByEntityId(tenantId consts.TenantId, entityId uint)
 func (r *CategoryRepo) UpdateEntityId(tenantId consts.TenantId, id, entityId uint) (err error) {
 	err = r.GetDB(tenantId).Model(&model.Category{}).
 		Where("id = ?", id).
-		Update("entity_id", entityId).Error
+		Update("entity_id = ?", entityId).Error
 
 	return
 }
@@ -420,10 +438,89 @@ func (r *CategoryRepo) GetRoot(tenantId consts.TenantId, typ serverConsts.Catego
 
 }
 
+func (r *CategoryRepo) GetChildrenNodes(tenantId consts.TenantId, categoryId uint, nodeType serverConsts.NodeCreateType) (ret []*model.Category, err error) {
+	ret, err = r.GetChildren(tenantId, categoryId, nodeType)
+	return
+}
+
+func (r *CategoryRepo) GetEntityCountByCategoryId(tenantId consts.TenantId, categoryId uint) int64 {
+	var ret []sql.NullInt64
+	sql := `WITH RECURSIVE temp(id,count) AS
+		(
+			SELECT id,if(entity_id=0,0,1 ) count from biz_category where parent_id = %d and not deleted
+		  UNION ALL
+		  SELECT b.id,if(b.entity_id=0,0,1 ) count from biz_category b, temp c where c.id = b.parent_id and not deleted
+		) 
+		select sum(count) count from temp
+`
+	sql = fmt.Sprintf(sql, categoryId)
+	r.GetDB(tenantId).Raw(sql).Scan(&ret)
+
+	if len(ret) > 0 {
+		return ret[0].Int64
+	}
+
+	return 0
+}
+
+func (r *CategoryRepo) SaveEntityNode(tenantId consts.TenantId, nodeId uint, typ serverConsts.CategoryDiscriminator, projectId, categoryId, entityId uint, name string) (id uint, err error) {
+	var entity model.Category
+	if nodeId == 0 {
+		entity, _ = r.GetByEntityId(tenantId, entityId, typ)
+	} else {
+		entity, _ = r.Get(tenantId, int(nodeId))
+	}
+
+	entity.ProjectId, entity.Name, entity.ParentId, entity.Type, entity.EntityId = projectId, name, int(categoryId), typ, entityId
+	entity.Ordr = r.GetMaxOrder(tenantId, categoryId, typ, projectId)
+	entity.IsDir = false
+
+	err = r.GetDB(tenantId).Save(&entity).Error
+	return entity.ID, err
+
+}
+
 func (r *CategoryRepo) BatchGetByIds(tenantId consts.TenantId, ids []int) (res []model.Category, err error) {
 	err = r.GetDB(tenantId).Model(&model.Category{}).
 		Where("id IN (?) AND NOT deleted", ids).
 		Find(&res).Error
 
 	return
+}
+
+func (r *CategoryRepo) GetAllChildrenMap(tenantId consts.TenantId, categoryId uint) (root *model.Category, ret map[uint][]*model.Category, err error) {
+	var res []*model.Category
+	ret = map[uint][]*model.Category{}
+	sql := `WITH RECURSIVE temp(id,name,parent_id,entity_id,ordr) AS
+		(
+			SELECT id,name,parent_id,entity_id,ordr from biz_category where id = %d and not deleted
+		  UNION ALL
+		  SELECT b.id,b.name,b.parent_id,b.entity_id,b.ordr from biz_category b, temp c where c.id = b.parent_id and not deleted
+		) 
+		select * from temp`
+	sql = fmt.Sprintf(sql, categoryId)
+	err = r.GetDB(tenantId).Raw(sql).Scan(&res).Error
+
+	if len(res) > 0 {
+		root = res[0]
+	}
+
+	for _, item := range res {
+		ret[uint(item.ParentId)] = append(ret[uint(item.ParentId)], item)
+	}
+
+	return
+}
+
+func (r *CategoryRepo) UpdateParentIdByEntityIds(tenantId consts.TenantId, entityIds []uint, parentId uint, _type serverConsts.CategoryDiscriminator) (err error) {
+	for _, entityId := range entityIds {
+		entity, err := r.GetByEntityId(tenantId, entityId, _type)
+		if err != nil {
+			continue
+		}
+		entity.ParentId = int(parentId)
+		entity.Ordr = r.GetMaxOrder(tenantId, parentId, _type, entity.ProjectId)
+		err = r.GetDB(tenantId).Save(&entity).Error
+	}
+	return err
 }

@@ -92,3 +92,35 @@ func (r *IntegrationRepo) GetSpacesByProject(tenantId consts.TenantId, projectId
 
 	return
 }
+
+func (r *IntegrationRepo) DeleteEngineeringByProject(tenantId consts.TenantId, projectId uint) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectEngineeringRel{}).
+		Where("project_id = ?", projectId).
+		Delete(&model.ProjectEngineeringRel{}).Error
+
+	return
+}
+
+func (r *IntegrationRepo) BatchCreateProjectEngineeringRel(tenantId consts.TenantId, relations []model.ProjectEngineeringRel) (err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectEngineeringRel{}).Create(&relations).Error
+
+	return
+}
+
+func (r *IntegrationRepo) GetEngineeringByProject(tenantId consts.TenantId, projectId uint) (res []string, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectEngineeringRel{}).
+		Select("code").
+		Where("project_id = ? AND NOT deleted AND NOT disabled", projectId).
+		Find(&res).Error
+
+	return
+}
+
+func (r *IntegrationRepo) GetProjectByEngineering(tenantId consts.TenantId, engineering string) (res []uint, err error) {
+	err = r.GetDB(tenantId).Model(&model.ProjectEngineeringRel{}).
+		Select("project_id").
+		Where("code = ? AND NOT deleted AND NOT disabled", engineering).
+		Find(&res).Error
+
+	return
+}

@@ -76,6 +76,7 @@ type ThirdParty struct {
 	Url      string  `mapstructure:"url" json:"url" yaml:"url"`
 	ApiSign  ApiSign `mapstructure:"apiSign" json:"apiSign" yaml:"apiSign"`
 	Host     string  `mapstructure:"host" json:"host" yaml:"host"`
+	Lcurl    string  `mapstructure:"lcurl" json:"lcurl" yaml:"lcurl"`
 }
 
 type ApiSign struct {

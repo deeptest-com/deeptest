@@ -24,6 +24,7 @@ func (m *ProjectCronModule) Party() module.WebModule {
 		index.Get("/engineeringOptions", m.ProjectCronCtrl.EngineeringOptions).Name = "获取工程下拉选项"
 		index.Get("/serviceOptions", m.ProjectCronCtrl.ServiceOptions).Name = "获取服务下拉选项"
 		index.Get("/allServiceList", m.ProjectCronCtrl.AllServiceList).Name = "获取所有服务列表"
+		index.Get("/run", m.ProjectCronCtrl.Run).Name = "立刻导入"
 
 	}
 	m.ProjectCronCtrl.InitProjectCron()

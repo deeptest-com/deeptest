@@ -511,3 +511,16 @@ func (r *CategoryRepo) GetAllChildrenMap(tenantId consts.TenantId, categoryId ui
 
 	return
 }
+
+func (r *CategoryRepo) UpdateParentIdByEntityIds(tenantId consts.TenantId, entityIds []uint, parentId uint, _type serverConsts.CategoryDiscriminator) (err error) {
+	for _, entityId := range entityIds {
+		entity, err := r.GetByEntityId(tenantId, entityId, _type)
+		if err != nil {
+			continue
+		}
+		entity.ParentId = int(parentId)
+		entity.Ordr = r.GetMaxOrder(tenantId, parentId, _type, entity.ProjectId)
+		err = r.GetDB(tenantId).Save(&entity).Error
+	}
+	return err
+}

@@ -505,6 +505,9 @@ func (s *EndpointService) BatchUpdateByField(tenantId consts.TenantId, req v1.Ba
 			if serveId, ok := req.Value.(float64); ok {
 				s.DebugInterfaceRepo.SyncServeId(tenantId, req.EndpointIds, uint(serveId))
 			}
+		} else if req.FieldName == "categoryId" {
+			categoryId := req.Value.(float64)
+			s.CategoryRepo.UpdateParentIdByEntityIds(tenantId, req.EndpointIds, uint(categoryId), serverConsts.EndpointCategory)
 		}
 
 	} else {

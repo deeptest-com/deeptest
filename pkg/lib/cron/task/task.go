@@ -5,7 +5,6 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/internal/pkg/core/cron"
 	"github.com/aaronchen2k/deeptest/internal/server/modules/service"
-
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 )
 
@@ -87,24 +86,18 @@ func (p Proxy) getTaskFunc(options map[string]interface{}) (taskFunc func()) {
 		}
 
 		runFunc := p.task.Run(options)
-		//if runFunc() == nil {
-		//	return
-		//}
 
 		runFunc()
-		//callBackFunc := p.task.CallBack(options, err)
-		//if callBackFunc == nil {
-		//	return
-		//}
-
-		//callBackFunc()
+		
 	}
 
 	return
 }
 
 func (p Proxy) Run(options map[string]interface{}) {
-	p.getTaskFunc(options)
+	f := p.getTaskFunc(options)
+	//异步执行
+	go f()
 }
 
 func Test() {

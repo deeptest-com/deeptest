@@ -15,7 +15,7 @@ type ProjectCron struct {
 	ProjectId     uint                  `json:"projectId"`
 	ExecTime      *time.Time            `json:"execTime"`
 	ExecStatus    consts.CronExecStatus `json:"execStatus"`
-	ExecErr       string                `json:"execErr"`
+	ExecErr       string                `gorm:"type:text" json:"execErr"`
 	CreateUserId  uint                  `json:"createUserId"`
 	UpdateUserId  uint                  `json:"updateUserId"`
 	SwaggerConfig SwaggerSync           `gorm:"-" json:"swaggerReq"`

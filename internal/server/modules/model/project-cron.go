@@ -20,6 +20,7 @@ type ProjectCron struct {
 	UpdateUserId  uint                  `json:"updateUserId"`
 	SwaggerConfig SwaggerSync           `gorm:"-" json:"swaggerReq"`
 	LecangConfig  CronConfigLecang      `gorm:"-" json:"lecangReq"`
+	RunAtOnce     bool                  `gorm:"-" json:"runAtOnce"`
 }
 
 type ProjectCronList struct {

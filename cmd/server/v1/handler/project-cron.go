@@ -134,6 +134,10 @@ func (c *ProjectCronCtrl) Save(ctx iris.Context) {
 	c.RemoveCron(tenantId, cron)
 	c.addCron(tenantId, cron)
 
+	if req.RunAtOnce {
+		c.RunAtOnce(tenantId, cron.ID)
+	}
+
 	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Data: cron.ID, Msg: _domain.NoErr.Msg})
 }
 
@@ -337,7 +341,7 @@ func (c *ProjectCronCtrl) InitProjectCron() {
 }
 
 func (c *ProjectCronCtrl) addCronForSaas(tenantId consts.TenantId) {
-	cronList, _ := c.ProjectCronRepo.ListAllCron(tenantId)
+	cronList, _ := c.ProjectCronService.ListAllCron(tenantId)
 	for _, item := range cronList {
 		c.addCron(tenantId, item)
 	}
@@ -349,16 +353,41 @@ func (c *ProjectCronCtrl) addCron(tenantId consts.TenantId, cron model.ProjectCr
 	options["taskId"] = cron.ConfigId
 	options["tenantId"] = tenantId
 
-	c.Proxy.Init(tenantId, cron.Source, c.ProjectCronService.UpdateCronExecTimeById, fmt.Sprintf("%d", cron.ConfigId), cron.Cron)
+	c.Proxy.Init(tenantId, cron.Source, c.ProjectCronService.UpdateExecStatusRunning, c.ProjectCronService.UpdateCronExecTimeById, fmt.Sprintf("%d", cron.ConfigId), cron.Cron)
 	err := c.Proxy.Add(options)
 
 	if err != nil {
 		_ = c.ProjectCronService.UpdateExecErr(tenantId, cron.ID, err.Error())
-		logUtils.Errorf("addCronErr:%+v, cron:%+v", err, cron)
+		logUtils.Errorf("addCronErr:%v, cron:%v", err, cron)
 	}
 }
 
 func (c *ProjectCronCtrl) RemoveCron(tenantId consts.TenantId, cron model.ProjectCron) {
-	c.Proxy.Init(tenantId, cron.Source, nil, fmt.Sprintf("%d", cron.ConfigId), "")
+	c.Proxy.Init(tenantId, cron.Source, nil, nil, fmt.Sprintf("%d", cron.ConfigId), "")
 	c.Proxy.Remove()
+}
+
+func (c *ProjectCronCtrl) RunAtOnce(tenantId consts.TenantId, id uint) {
+	cron, err := c.ProjectCronService.Get(tenantId, id)
+	if err != nil {
+		return
+	}
+
+	if cron.ExecStatus == consts.CronExecIng { //执行中，不在执行
+		return
+	}
+
+	options := make(map[string]interface{})
+	options["projectId"] = cron.ProjectId
+	options["taskId"] = cron.ConfigId
+	options["tenantId"] = tenantId
+	c.Proxy.Init(tenantId, cron.Source, c.ProjectCronService.UpdateExecStatusRunning, c.ProjectCronService.UpdateCronExecTimeById, fmt.Sprintf("%d", cron.ConfigId), cron.Cron)
+	c.Proxy.Run(options)
+}
+
+func (c *ProjectCronCtrl) Run(ctx iris.Context) {
+	tenantId := c.getTenantId(ctx)
+	id := ctx.URLParamIntDefault("id", 0)
+	c.RunAtOnce(tenantId, uint(id))
+	ctx.JSON(_domain.Response{Code: _domain.NoErr.Code, Msg: _domain.NoErr.Msg})
 }

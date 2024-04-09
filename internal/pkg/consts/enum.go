@@ -926,6 +926,7 @@ type CronExecStatus string
 
 const (
 	CronExecSuccess CronExecStatus = "success"
+	CronExecIng     CronExecStatus = "running"
 	CronExecFail    CronExecStatus = "fail"
 )
 

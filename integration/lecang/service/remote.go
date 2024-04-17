@@ -10,6 +10,7 @@ import (
 	httpHelper "github.com/aaronchen2k/deeptest/internal/pkg/helper/http"
 	logUtils "github.com/aaronchen2k/deeptest/pkg/lib/log"
 	"github.com/jinzhu/copier"
+	"net/url"
 )
 
 type RemoteService struct {
@@ -72,7 +73,30 @@ func (s *RemoteService) GetUserInfoByToken(token, origin string) (user v1.UserIn
 	return
 }
 
+func (s *RemoteService) GetUrlAndTenantId(filePath string) (urlRes, tenantId string, err error) {
+	parsedURL, err := url.Parse(filePath)
+	if err != nil {
+		return
+	}
+
+	urlRes = fmt.Sprintf("%s://%s%s", parsedURL.Scheme, parsedURL.Host, parsedURL.Path)
+	queryParams := parsedURL.Query()
+	for key, value := range queryParams {
+		if key == "tenantId" && len(value) > 0 {
+			tenantId = value[0]
+			break
+		}
+	}
+
+	return
+}
+
 func (s *RemoteService) LoginByOauth(loginByOauthReq integrationDomain.LoginByOauthReq, baseUrl string) (ret integrationDomain.LoginByOauthResData) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
+	if tenantId != "" {
+		loginByOauthReq.TenantId = tenantId
+	}
+
 	req := struct {
 		ThisObj integrationDomain.LoginByOauthReq `json:"thisObj"`
 	}{}
@@ -85,7 +109,7 @@ func (s *RemoteService) LoginByOauth(loginByOauthReq integrationDomain.LoginByOa
 		return
 	}
 
-	headers := s.getLcHeaders("")
+	headers := s.getLcHeaders("", tenantId)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -120,11 +144,14 @@ func (s *RemoteService) LoginByOauth(loginByOauthReq integrationDomain.LoginByOa
 	return
 }
 
-func (s *RemoteService) getLcHeaders(token string) (headers []domain.Header) {
+func (s *RemoteService) getLcHeaders(token, tenantId string) (headers []domain.Header) {
+	if tenantId == "" {
+		tenantId = "1632931640315338752" //TODO 做saas后可以考虑提到配置文件里
+	}
 	headers = []domain.Header{
 		{
 			Name:  "Tenant-Id",
-			Value: "1632931640315338752", //TODO 做saas后可以考虑提到配置文件里
+			Value: tenantId,
 		},
 		{
 			Name:  "Ds-Tenant-Id",
@@ -144,6 +171,8 @@ func (s *RemoteService) getLcHeaders(token string) (headers []domain.Header) {
 }
 
 func (s *RemoteService) GetTokenFromCode(req integrationDomain.GetTokenFromCodeReq, baseUrl string) (ret integrationDomain.GetTokenFromCodeResData) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
+
 	url := fmt.Sprintf("%s/levault/usrsvr/Usr/GetTokenFromCode", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -151,7 +180,7 @@ func (s *RemoteService) GetTokenFromCode(req integrationDomain.GetTokenFromCodeR
 		return
 	}
 
-	headers := s.getLcHeaders("")
+	headers := s.getLcHeaders("", tenantId)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -187,6 +216,8 @@ func (s *RemoteService) GetTokenFromCode(req integrationDomain.GetTokenFromCodeR
 }
 
 func (s *RemoteService) FindClassByServiceCode(req integrationDomain.FindClassByServiceCodeReq, token string, baseUrl string) (ret []integrationDomain.FindClassByServiceCodeResData) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
+
 	url := fmt.Sprintf("%s/levault/agentdesigner/classInfo/findByServiceCode", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -194,7 +225,7 @@ func (s *RemoteService) FindClassByServiceCode(req integrationDomain.FindClassBy
 		return
 	}
 
-	headers := s.getLcHeaders(token)
+	headers := s.getLcHeaders(token, tenantId)
 
 	httpReq := domain.BaseRequest{
 		Url:      url,
@@ -231,6 +262,7 @@ func (s *RemoteService) FindClassByServiceCode(req integrationDomain.FindClassBy
 }
 
 func (s *RemoteService) GetFunctionsByClass(req integrationDomain.GetFunctionsByClassReq, token string, baseUrl string) (ret []integrationDomain.GetFunctionsByClassResData) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
 	url := fmt.Sprintf("%s/levault/agentdesigner/classMethod/listData", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -238,7 +270,7 @@ func (s *RemoteService) GetFunctionsByClass(req integrationDomain.GetFunctionsBy
 		return
 	}
 
-	headers := s.getLcHeaders(token)
+	headers := s.getLcHeaders(token, tenantId)
 
 	httpReq := domain.BaseRequest{
 		Url:      url,
@@ -275,6 +307,7 @@ func (s *RemoteService) GetFunctionsByClass(req integrationDomain.GetFunctionsBy
 }
 
 func (s *RemoteService) MetaGetMethodDetail(req integrationDomain.MetaGetMethodDetailReq, token string, baseUrl string) (ret integrationDomain.MetaGetMethodDetailResData) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
 	url := fmt.Sprintf("%s/levault/meta/metaClassMethod/metaGetClassMethodDetail", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -282,7 +315,7 @@ func (s *RemoteService) MetaGetMethodDetail(req integrationDomain.MetaGetMethodD
 		return
 	}
 
-	headers := s.getLcHeaders(token)
+	headers := s.getLcHeaders(token, tenantId)
 	headers = append(headers, domain.Header{
 		Name:  "Token",
 		Value: token,
@@ -323,9 +356,10 @@ func (s *RemoteService) MetaGetMethodDetail(req integrationDomain.MetaGetMethodD
 }
 
 func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string, baseUrl string) (ret []integrationDomain.GetFunctionDetailsByClassResData, err error) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
 	url := fmt.Sprintf("%s/levault/meta/metaClassMethod/metaGetClassMessages", baseUrl)
 
-	headers := s.getLcHeaders(token)
+	headers := s.getLcHeaders(token, tenantId)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -367,6 +401,7 @@ func (s *RemoteService) GetFunctionDetailsByClass(classCode string, token string
 }
 
 func (s *RemoteService) LcContainerQueryAgent(token, baseUrl string) (ret []integrationDomain.EngineeringItem) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
 	url := fmt.Sprintf("%s/levault/acnsvr/Container/QueryAgent", baseUrl)
 	req := s.getLcContainerQueryAgentRequest()
 	body, err := json.Marshal(req)
@@ -375,7 +410,7 @@ func (s *RemoteService) LcContainerQueryAgent(token, baseUrl string) (ret []inte
 		return
 	}
 
-	headers := s.getLcHeaders(token)
+	headers := s.getLcHeaders(token, tenantId)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -433,6 +468,7 @@ func (s *RemoteService) getLcContainerQueryAgentRequest() (res integrationDomain
 }
 
 func (s *RemoteService) LcMlClassQueryAgent(serviceCode, token, baseUrl string) (ret []integrationDomain.FindClassByServiceCodeResData) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
 	url := fmt.Sprintf("%s/levault/mdlsvr/MlClass/QueryAgent", baseUrl)
 	req := s.getLcMlClassQueryAgentRequest(serviceCode)
 	body, err := json.Marshal(req)
@@ -441,7 +477,7 @@ func (s *RemoteService) LcMlClassQueryAgent(serviceCode, token, baseUrl string) 
 		return
 	}
 
-	headers := s.getLcHeaders(token)
+	headers := s.getLcHeaders(token, tenantId)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -499,6 +535,7 @@ func (s *RemoteService) getLcMlClassQueryAgentRequest(serviceCode string) (res i
 }
 
 func (s *RemoteService) LcQueryMsg(req integrationDomain.QueryMsgReq, token string, baseUrl string) (ret []integrationDomain.GetFunctionsByClassResData) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
 	url := fmt.Sprintf("%s/levault/mdlsvr/ClsMsg/QueryMsg", baseUrl)
 	body, err := json.Marshal(req)
 	if err != nil {
@@ -506,7 +543,7 @@ func (s *RemoteService) LcQueryMsg(req integrationDomain.QueryMsgReq, token stri
 		return
 	}
 
-	headers := s.getLcHeaders(token)
+	headers := s.getLcHeaders(token, tenantId)
 
 	httpReq := domain.BaseRequest{
 		Url:      url,
@@ -543,6 +580,7 @@ func (s *RemoteService) LcQueryMsg(req integrationDomain.QueryMsgReq, token stri
 }
 
 func (s *RemoteService) LcMlServiceQueryAgent(engineering, token, baseUrl string) (ret []integrationDomain.ServiceItem) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
 	url := fmt.Sprintf("%s/levault/mdlsvr/MlService/QueryAgent", baseUrl)
 	req := s.getLcMlServiceQueryAgentRequest(engineering)
 	body, err := json.Marshal(req)
@@ -551,7 +589,7 @@ func (s *RemoteService) LcMlServiceQueryAgent(engineering, token, baseUrl string
 		return
 	}
 
-	headers := s.getLcHeaders(token)
+	headers := s.getLcHeaders(token, tenantId)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -587,6 +625,7 @@ func (s *RemoteService) LcMlServiceQueryAgent(engineering, token, baseUrl string
 }
 
 func (s *RemoteService) LcAllServiceList(token, baseUrl string) (ret []integrationDomain.ServiceItem) {
+	baseUrl, tenantId, _ := s.GetUrlAndTenantId(baseUrl)
 	url := fmt.Sprintf("%s/levault/mdlsvr/MlMessage/QueryListGroupClass", baseUrl)
 	req := struct {
 		ThisObj struct {
@@ -600,7 +639,7 @@ func (s *RemoteService) LcAllServiceList(token, baseUrl string) (ret []integrati
 		return
 	}
 
-	headers := s.getLcHeaders(token)
+	headers := s.getLcHeaders(token, tenantId)
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,
@@ -669,7 +708,7 @@ func (s *RemoteService) GetLovByCode(token, baseUrl string) (ret []integrationDo
 		return
 	}
 
-	headers := s.getLcHeaders(token)
+	headers := s.getLcHeaders(token, "")
 	httpReq := domain.BaseRequest{
 		Url:      url,
 		BodyType: consts.ContentTypeJSON,

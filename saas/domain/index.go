@@ -21,6 +21,8 @@ type DbConfig struct {
 
 type Tenant struct {
 	Id       consts.TenantId `json:"id"`
+	SpecCode string          `json:"specCode"`
+	SkuCode  string          `json:"skuCode"`
 	DbConfig DbConfig        `json:"leyanapiDB"`
 }
 

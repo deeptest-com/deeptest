@@ -5,11 +5,14 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/consts"
 	"github.com/aaronchen2k/deeptest/saas/domain"
 	"github.com/aaronchen2k/deeptest/saas/remote"
+	"strings"
 )
 
 type Tenant struct {
 	Id       consts.TenantId `json:"id"`
 	DbConfig domain.DbConfig `json:"dbConfig"`
+	SpecCode string          `json:"specCode"`
+	SkuCode  string          `json:"skuCode"`
 }
 
 func NewTenant() *Tenant {
@@ -32,4 +35,11 @@ func (t *Tenant) GetInfos() (tenants []domain.Tenant) {
 		tenants = new(remote.Remote).GetTenants()
 	}
 	return
+}
+
+func (t *Tenant) ForFree(tenantId consts.TenantId) bool {
+	tenant := new(remote.Remote).GetTenant(tenantId)
+	version := strings.ReplaceAll(tenant.SpecCode, tenant.SkuCode, "")
+	return version == "-01"
+
 }

@@ -67,7 +67,7 @@ func (s *SnippetService) GetJslibsForAgent(tenantId consts.TenantId, loadedLibs 
 	pos, _ := s.JslibRepo.List(tenantId, "", projectId, true)
 
 	for _, po := range pos {
-		pth := filepath.Join(dir.GetCurrentAbPath(), po.ScriptFile)
+		pth := filepath.Join(consts.WorkDir, po.ScriptFile)
 		content := fileUtils.ReadFile(pth)
 
 		updateTime := po.UpdatedAt

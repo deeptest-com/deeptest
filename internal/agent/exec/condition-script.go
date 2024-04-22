@@ -73,6 +73,7 @@ func InitJsRuntime(tenantId consts.TenantId, projectId uint, execUuid string) {
 	// load global script
 	pth := "tmp/deeptest.js"
 	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
+
 	dt, err := execRequire.Require("./" + pth)
 	if err != nil {
 		logUtils.Infof("goja require failed, path: %s, err: %s.", pth, err.Error())

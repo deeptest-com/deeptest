@@ -32,8 +32,8 @@ func LoadServerJslibs(tenantId consts.TenantId, runtime *goja.Runtime, require *
 			if tenantId != "" {
 				pth = fmt.Sprintf("tmp/%s_%d.js", tenantId, id)
 			}
-
 			fileUtils.WriteFile(pth, lib.Script)
+
 			module, err := require.Require("./" + pth)
 			if err != nil {
 				logUtils.Infof("goja require failed, path: %s, err: %s.", pth, err.Error())

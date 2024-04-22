@@ -125,6 +125,7 @@ func InitJsRuntime(tenantId consts.TenantId) {
 	// import deeptest lib
 	script := scriptHelper.GetScript(scriptHelper.ScriptMock)
 	fileUtils.WriteFile(pth, script)
+
 	dt, err := mockRequire.Require("./" + pth)
 	if err != nil {
 		logUtils.Infof("goja require failed, path: %s, err: %s.", pth, err.Error())

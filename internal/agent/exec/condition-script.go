@@ -71,12 +71,13 @@ func InitJsRuntime(tenantId consts.TenantId, projectId uint, execUuid string) {
 	defineGoFuncs(tenantId, projectId)
 
 	// load global script
-	pth := "tmp/deeptest.js"
-	fileUtils.WriteFile(pth, scriptHelper.GetScript(scriptHelper.ScriptDeepTest))
+	tmpPath := fmt.Sprintf("%s/deeptest.js", consts.TmpDirRelatedAgent)
+	tmpContent := scriptHelper.GetScript(scriptHelper.ScriptDeepTest)
+	fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
 
-	dt, err := execRequire.Require("./" + pth)
+	dt, err := execRequire.Require("./" + tmpPath)
 	if err != nil {
-		logUtils.Infof("goja require failed, path: %s, err: %s.", pth, err.Error())
+		logUtils.Infof("goja require failed, path: %s, err: %s.", tmpPath, err.Error())
 	}
 
 	execRuntime.Set("dt", dt)

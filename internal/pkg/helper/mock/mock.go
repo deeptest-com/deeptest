@@ -28,11 +28,7 @@ type JsVm struct {
 	JsRuntime *goja.Runtime
 }
 
-func ExecScript(tenantId consts.TenantId, script string) (err error) {
-	if mockVm.JsRuntime == nil {
-		InitJsRuntime(tenantId)
-	}
-
+func ExecScript(script string) (err error) {
 	if script == "" {
 		return
 	}
@@ -120,15 +116,15 @@ func InitJsRuntime(tenantId consts.TenantId) {
 
 	// load global script
 	mockRequire = registry.Enable(mockVm.JsRuntime)
-	pth := "tmp/mock.js"
 
 	// import deeptest lib
-	script := scriptHelper.GetScript(scriptHelper.ScriptMock)
-	fileUtils.WriteFile(pth, script)
+	tmpPath := fmt.Sprintf("%smock.js", consts.TmpDirRelatedServer)
+	tmpContent := scriptHelper.GetScript(scriptHelper.ScriptMock)
+	fileUtils.WriteFileIfNotExist(tmpPath, tmpContent)
 
-	dt, err := mockRequire.Require("./" + pth)
+	dt, err := mockRequire.Require("./" + tmpPath)
 	if err != nil {
-		logUtils.Infof("goja require failed, path: %s, err: %s.", pth, err.Error())
+		logUtils.Infof("goja require failed, path: %s, err: %s.", tmpPath, err.Error())
 	}
 
 	mockVm.JsRuntime.Set("dt", dt)

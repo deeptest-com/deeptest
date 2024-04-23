@@ -11,6 +11,7 @@ import (
 	"github.com/aaronchen2k/deeptest/internal/pkg/log"
 	"github.com/aaronchen2k/deeptest/internal/pkg/service"
 	commUtils "github.com/aaronchen2k/deeptest/internal/pkg/utils"
+	fileUtils "github.com/aaronchen2k/deeptest/pkg/lib/file"
 	_i118Utils "github.com/aaronchen2k/deeptest/pkg/lib/i118"
 	"github.com/facebookgo/inject"
 	gorillaWs "github.com/gorilla/websocket"
@@ -38,6 +39,7 @@ func Init() *AgentServer {
 	consts.RunFrom = consts.FromAgent
 	consts.WorkDir = commUtils.GetWorkDir()
 
+	fileUtils.RmDir(consts.TmpDirRelatedAgent)
 	config.Init()
 	zapLog.Init()
 	_i118Utils.Init(consts.Language, "")
